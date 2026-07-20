@@ -26,13 +26,13 @@ export default function HoverCard({ content, children }: { content: ReactNode; c
   }, [pos, hide])
 
   const hideRef = useRef<() => void>(() => {})
+  const hide = useRef(() => hideRef.current()).current
   hideRef.current = () => {
     if (enterTimer.current !== null) window.clearTimeout(enterTimer.current)
     if (leaveTimer.current !== null) window.clearTimeout(leaveTimer.current)
     if (closeActive === hide) closeActive = null
     setPos(null)
   }
-  const hide = useRef(() => hideRef.current()).current
 
   const enter = () => {
     if (leaveTimer.current !== null) window.clearTimeout(leaveTimer.current)
