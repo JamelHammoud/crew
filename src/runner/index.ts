@@ -180,7 +180,7 @@ export class Runner {
         this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
         break
       case 'steer':
-        void this.steer(msg.promptId, msg.text, msg.attachments ?? [])
+        void this.steer(msg.promptId, msg.text, msg.byName, msg.attachments ?? [])
         break
       case 'cancel':
         this.running.get(msg.promptId)?.kill()
