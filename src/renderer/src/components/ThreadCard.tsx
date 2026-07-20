@@ -1,6 +1,7 @@
 import { CheckIcon, ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useCrew, type ThreadMeta } from '../state/store'
 import Avatar from './Avatar'
+import { AgentMention, MemberName } from './Mention'
 import Spinner from './Spinner'
 import { formatTime } from './time'
 
@@ -17,14 +18,19 @@ export default function ThreadCard({
   status: string
   onOpen: () => void
 }) {
-  const owner = useCrew(s => s.agents.find(a => a.id === thread.agentId)?.ownerName)
+  const agent = useCrew(s => s.agents.find(a => a.id === thread.agentId))
+  const owner = agent?.ownerName
 
   return (
     <div className="flex gap-4 animate-rise">
       <Avatar name={thread.createdBy} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
-          <span className="text-base font-semibold text-fg-muted">{thread.createdBy}</span>
+          <MemberName name={thread.createdBy}>
+            <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
+              {thread.createdBy}
+            </span>
+          </MemberName>
           <span className="text-sm text-fg-faint">{formatTime(ts)}</span>
         </div>
         <button
@@ -32,7 +38,11 @@ export default function ThreadCard({
           className="group w-full text-left mt-2 border-2 border-ink-700 rounded-card overflow-hidden transition-colors duration-200 hover:border-ink-600"
         >
           <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">
-            <strong className="font-semibold">@{thread.agentLabel}</strong>{' '}
+            {agent ? (
+              <AgentMention agent={agent}>@{thread.agentLabel}</AgentMention>
+            ) : (
+              <strong className="font-semibold">@{thread.agentLabel}</strong>
+            )}{' '}
             {thread.title.replace(new RegExp(`^@${thread.agentLabel}\\s*`), '')}
           </p>
           <div className="relative bg-ink-700 px-5 h-[52px] flex items-center gap-3">

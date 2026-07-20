@@ -65,7 +65,7 @@ export default function AgentCard({
     .reverse()
 
   return (
-    <div className="group border-2 border-ink-700 rounded-card overflow-hidden flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
+    <div className="group border-2 border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
           <Avatar name={agent.label} />
@@ -120,7 +120,7 @@ export default function AgentCard({
           </div>
         )}
       </div>
-      <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5">
+      <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[18px]">
         {status === 'busy' ? (
           <Spinner size={14} className="text-fg" />
         ) : (
