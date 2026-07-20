@@ -141,6 +141,10 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
               kind: out.activity.kind,
               name: out.activity.name,
               detail: out.activity.detail,
+              files: out.activity.files?.map(file => ({
+                ...file,
+                path: file.path.startsWith(`${cwd}/`) ? file.path.slice(cwd.length + 1) : file.path
+              })),
               status: out.activity.status === 'started' ? 'running' : 'done'
             })
           }

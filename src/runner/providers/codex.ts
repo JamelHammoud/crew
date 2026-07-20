@@ -1,4 +1,4 @@
-import type { AgentSettingField } from '../../shared/llm'
+import type { AgentSettingField, FileChange } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { codexModels } from './codex-models'
 import { activityDetail } from './detail'
@@ -10,6 +10,16 @@ const TOOL_LABELS: Record<string, string> = {
   mcp_tool_call: 'Mcp',
   web_search: 'WebSearch',
   todo_list: 'Todo'
+}
+
+const changeFiles = (changes: unknown): FileChange[] | undefined => {
+  const paths = Array.isArray(changes)
+    ? changes.map(c => (typeof c === 'string' ? c : c?.path)).filter((p): p is string => typeof p === 'string')
+    : changes && typeof changes === 'object'
+      ? Object.keys(changes as Record<string, unknown>)
+      : []
+  if (!paths.length) return undefined
+  return paths.map(path => ({ path, added: 0, removed: 0 }))
 }
 
 const changedPaths = (changes: unknown): string | undefined => {
@@ -82,7 +92,8 @@ export const parseCodexLine: OutputParser = line => {
         kind: 'tool' as const,
         name: toolName(item),
         status: done ? ('finished' as const) : ('started' as const),
-        detail: toolDetail(item)
+        detail: toolDetail(item),
+        files: item.type === 'file_change' ? changeFiles(item.changes) : undefined
       }
     })
     return out
