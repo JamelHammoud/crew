@@ -76,6 +76,16 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   }, [threadSteps])
 
   const didInitialScroll = useRef(false)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const [overlayHeight, setOverlayHeight] = useState(240)
+
+  useEffect(() => {
+    const el = overlayRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => setOverlayHeight(el.offsetHeight))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   useLayoutEffect(() => {
     const el = scrollRef.current
@@ -109,7 +119,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   return (
     <div className="h-full relative">
       <div ref={scrollRef} className="h-full overflow-y-auto px-6">
-        <div className="max-w-[660px] mx-auto pt-28 pb-64 space-y-5">
+        <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: overlayHeight + 40 }}>
           <ThreadItems items={items} />
           {activePromptId && startedAt && (
             <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
@@ -118,7 +128,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 pointer-events-none">
+      <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
           <div className="max-w-[660px] mx-auto pointer-events-auto">

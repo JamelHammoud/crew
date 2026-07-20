@@ -47,9 +47,13 @@ describe('queued messages', () => {
     const fake = agentId('jamel', 'fake')
     ui.chat('start @Fake', [fake])
     const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
-    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
+    const first = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === started.threadId
+    )) as Extract<SessionEvent, { kind: 'agent.start' }>
     ui.chat(text, [], started.threadId)
-    const routed = (await ui.waitForEvent(e => e.kind === 'message.route' && e.mode === 'queued')) as Routed
+    const routed = (await ui.waitForEvent(
+      e => e.kind === 'message.route' && e.mode === 'queued' && e.promptId !== first.promptId
+    )) as Routed
     return { started, routed }
   }
 
