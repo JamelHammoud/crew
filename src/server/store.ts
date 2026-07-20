@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { isAttachmentFile } from '../shared/attachments'
 import type { SessionEvent } from '../shared/events'
 import type { PooledAgent } from '../shared/llm'
 
