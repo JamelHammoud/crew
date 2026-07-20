@@ -8,6 +8,16 @@ export interface AgentActivity {
   detail?: string
 }
 
+export type AgentSettings = Record<string, string>
+
+export interface AgentSettingField {
+  key: string
+  label: string
+  kind: 'text' | 'select'
+  options?: string[]
+  placeholder?: string
+}
+
 export interface PooledAgent {
   id: string
   label: string
@@ -16,6 +26,8 @@ export interface PooledAgent {
   ownerName: string
   status: AgentStatus
   activities: AgentActivity[]
+  settings: AgentSettings
+  fields: AgentSettingField[]
 }
 
 export function agentId(ownerName: string, provider: string): string {

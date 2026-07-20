@@ -9,11 +9,13 @@ export interface RunnerOptions {
   repoPath: string
   providers: Provider[]
   reconnectDelayMs?: number
+  silenceTimeoutMs?: number
 }
 
 export type RunnerStatus = 'connecting' | 'online' | 'offline'
 
 const MAX_DELAY_MS = 10000
+const SILENCE_TIMEOUT_MS = 45000
 
 export class Runner {
   private ws: WebSocket | null = null
@@ -23,7 +25,10 @@ export class Runner {
   private stopped = false
   private attempts = 0
   private baseDelay: number
+  private silenceTimeout: number
   private reconnectTimer: NodeJS.Timeout | null = null
+  private watchdog: NodeJS.Timeout | null = null
+  private lastSeen = 0
   onStatus: ((status: RunnerStatus) => void) | null = null
 
   constructor(private opts: RunnerOptions) {
@@ -31,6 +36,7 @@ export class Runner {
       this.providers.set(agentId(opts.name, provider.name), provider)
     }
     this.baseDelay = opts.reconnectDelayMs ?? 1000
+    this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
   }
 
   connect(url: string): void {
@@ -38,7 +44,9 @@ export class Runner {
     this.onStatus?.('connecting')
     const ws = new WebSocket(url)
     this.ws = ws
+    this.lastSeen = Date.now()
     ws.on('open', () => {
+      this.lastSeen = Date.now()
       this.send({
         type: 'hello',
         role: 'runner',
@@ -48,6 +56,7 @@ export class Runner {
       })
     })
     ws.on('message', raw => {
+      this.lastSeen = Date.now()
       let msg: ServerMessage
       try {
         msg = JSON.parse(raw.toString())
@@ -56,8 +65,16 @@ export class Runner {
       }
       this.handle(msg)
     })
+    ws.on('ping', () => {
+      this.lastSeen = Date.now()
+    })
+    ws.on('pong', () => {
+      this.lastSeen = Date.now()
+    })
     ws.on('error', () => {})
     ws.on('close', () => {
+      this.stopWatchdog()
+      this.killRunning()
       this.onStatus?.('offline')
       if (this.stopped) return
       const wait = Math.min(this.baseDelay * 2 ** this.attempts, MAX_DELAY_MS)
@@ -65,17 +82,37 @@ export class Runner {
       this.reconnectTimer = setTimeout(() => this.connect(url), wait)
       this.reconnectTimer.unref?.()
     })
+    this.startWatchdog(ws)
   }
 
   close(): void {
     this.stopped = true
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
-    for (const run of this.running.values()) run.kill()
+    this.stopWatchdog()
+    this.killRunning()
     this.ws?.close()
   }
 
   dropConnection(): void {
     this.ws?.terminate()
+  }
+
+  private startWatchdog(ws: WebSocket): void {
+    this.stopWatchdog()
+    const interval = Math.max(50, Math.floor(this.silenceTimeout / 3))
+    this.watchdog = setInterval(() => {
+      if (Date.now() - this.lastSeen > this.silenceTimeout) ws.terminate()
+    }, interval)
+    this.watchdog.unref?.()
+  }
+
+  private stopWatchdog(): void {
+    if (this.watchdog) clearInterval(this.watchdog)
+    this.watchdog = null
+  }
+
+  private killRunning(): void {
+    for (const run of this.running.values()) run.kill()
   }
 
   private handle(msg: ServerMessage): void {

@@ -6,6 +6,7 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'person.left'; memberId: string; name: string }
   | { id: string; ts: number; kind: 'agent.online'; agentId: string; label: string }
   | { id: string; ts: number; kind: 'agent.offline'; agentId: string; label: string }
+  | { id: string; ts: number; kind: 'agent.updated'; agentId: string; settings: AgentSettings }
   | { id: string; ts: number; kind: 'doc'; page: string; text: string; byName: string }
 
 export const SYSTEM_AUTHOR_ID = 'crew'

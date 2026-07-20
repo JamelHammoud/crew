@@ -208,3 +208,8 @@
 {"id":"f06c5c2d-a2bf-45b3-9432-eb7196afbfe8","ts":1784511657454,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
 {"id":"56259b97-e6d4-4697-908a-91832a2f5139","ts":1784511657454,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"750305d7-ea63-447f-8e10-fc290fad856c","ts":1784511657455,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"ea2c1f3e-ac04-4dc7-98d3-573272b6f80b","ts":1784511686277,"kind":"person.joined","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
+{"id":"35134894-9a52-4696-9cb7-4f077ec1ad36","ts":1784511688125,"kind":"person.left","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
+{"id":"75bd2d5b-138e-4150-b217-189ffff38c61","ts":1784511688125,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"94d14920-5718-4633-9dc0-93516d00a865","ts":1784511688125,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"53186157-8f4a-4a55-ab6f-00180d6d15ea","ts":1784511688125,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
