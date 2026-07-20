@@ -34,14 +34,17 @@ describe('connection health', () => {
   })
 
   it('terminates a client that stops answering', async () => {
-    host = await startHost(undefined, { heartbeatMs: 100 })
-    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    const live = await startHost(undefined, { heartbeatMs: 100 })
+    host = live
+    const ui = await TestUi.connect(live.url, 'sam', live.code)
     uis.push(ui)
 
     ui.pauseTransport()
+    await waitUntil(() => live.session.snapshot().members.some(m => m.name === 'sam' && !m.connected), 5000)
+    ui.resumeTransport()
     await ui.waitForClose(5000)
 
-    const fresh = await TestUi.connect(host.url, 'sam', host.code)
+    const fresh = await TestUi.connect(live.url, 'sam', live.code)
     uis.push(fresh)
     expect(fresh.selfId).toBeTruthy()
   })
