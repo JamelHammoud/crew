@@ -132,3 +132,10 @@
 {"id":"680e6867-9a56-43d7-a076-05911b06d328","ts":1784511157383,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"b71c644d-4ad1-4bc0-943d-8031144b568b","ts":1784511159914,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"@Kimi We need a better way to manage the model version, thinking level, etc. you're talking too. Also make sure everything defaults to bypass-permissions mode (or what would be like that for their platform)","mentions":["jamel/kimi"]}
 {"id":"da8ee98e-56d4-4dc5-8466-0e1937e6d4ff","ts":1784511159915,"kind":"agent.start","promptId":"290e4946-8a1c-47d3-9799-bf94caae27b9","agentId":"jamel/kimi","agentLabel":"Kimi","promptText":"@Kimi We need a better way to manage the model version, thinking level, etc. you're talking too. Also make sure everything defaults to bypass-permissions mode (or what would be like that for their platform)","byName":"Jamel"}
+{"id":"1ead3637-1d90-4197-8746-b74686a39b78","ts":1784511206387,"kind":"agent.end","promptId":"290e4946-8a1c-47d3-9799-bf94caae27b9","agentId":"jamel/kimi","agentLabel":"Kimi","ok":false,"error":"Kimi disconnected."}
+{"id":"8db1e08c-febc-4373-b4ef-ff5e7d12c087","ts":1784511206390,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"33fddc5d-f7ea-4d46-be97-8c81e7833b7c","ts":1784511206391,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"383d5eb5-b672-4f91-aff2-9285d7e2e5bb","ts":1784511206391,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"29c8dc20-916c-4354-b6c1-6d0a25c25969","ts":1784511207392,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"79310089-0e1d-4253-8376-cbd5cdcc8bab","ts":1784511207394,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"2f8b7528-57f5-4d65-90b7-f0edb006d5de","ts":1784511207394,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
