@@ -87,7 +87,7 @@ export function Popover({
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('scroll', onScroll, { capture: true })
     }
-  }, [open, onClose])
+  }, [open, onClose, at])
 
   return (
     <>
