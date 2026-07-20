@@ -66,14 +66,15 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
 }
 
 // A queued message stops being newsworthy the moment its own run starts, but a
-// steered one keeps its badge: nothing else in the thread shows where it went.
+// steered one keeps its badge for good: nothing else in the thread records that
+// it was answered inside someone else's run.
 const routeBadge = (
   route: Extract<SessionEvent, { kind: 'message.route' }> | undefined,
   started: Set<string>,
   ended: Set<string>
 ): MessageRoute | undefined => {
   if (!route) return undefined
-  if (route.mode === 'steered') return ended.has(route.promptId) ? undefined : 'steered'
+  if (route.mode === 'steered') return ended.has(route.promptId) ? 'steered' : 'steering'
   return started.has(route.promptId) ? undefined : 'queued'
 }
 
