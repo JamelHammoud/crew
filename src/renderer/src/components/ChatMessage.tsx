@@ -1,5 +1,6 @@
 import Avatar from './Avatar'
 import Markdown from './Markdown'
+import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatTime } from './time'
 
@@ -20,8 +21,9 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
             {item.error ? item.text : <Markdown text={item.text || '…'} />}
           </div>
         ) : (
-          <p className="text-sm text-zinc-200 whitespace-pre-wrap mt-1">{item.text}</p>
+          item.text && <p className="text-sm text-zinc-200 whitespace-pre-wrap mt-1">{item.text}</p>
         )}
+        {item.attachments && <MessageImages attachments={item.attachments} />}
         {item.streaming && <span className="inline-block w-2 h-4 bg-zinc-500 animate-pulse mt-1" />}
       </div>
     </div>
