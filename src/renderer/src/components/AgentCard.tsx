@@ -118,7 +118,7 @@ export default function AgentCard({
         )}
       </div>
       {status === 'busy' && (
-        <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[18px]">
+        <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
           <Spinner size={14} className="text-fg" />
           <span className="text-sm font-semibold text-fg">Working</span>
           {threadCount > 1 && <span className="text-sm text-fg-muted">on {threadCount} threads</span>}
