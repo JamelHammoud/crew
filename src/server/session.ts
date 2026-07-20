@@ -410,14 +410,20 @@ export class CrewSession {
     return agent
   }
 
-  private enqueuePrompt(agent: AgentState, text: string, byName: string, threadId: string): void {
+  private enqueuePrompt(
+    agent: AgentState,
+    text: string,
+    byName: string,
+    threadId: string,
+    attachments: Attachment[]
+  ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
     if (!agent.runner) {
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
-    thread.queue.push({ promptId: randomUUID(), text, byName, threadId })
+    thread.queue.push({ promptId: randomUUID(), text, byName, threadId, attachments })
     this.runThread(thread)
   }
 
@@ -448,7 +454,8 @@ export class CrewSession {
       agentId: agent.id,
       threadId: thread.id,
       text: this.buildPrompt(agent, next),
-      settings: agent.settings
+      settings: agent.settings,
+      attachments: next.attachments
     })
   }
 
