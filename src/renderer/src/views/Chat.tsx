@@ -1,8 +1,10 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
 import ThreadCard from '../components/ThreadCard'
-import type { ThreadItem } from '../components/thread'
+import { describeStep, type ThreadItem } from '../components/thread'
+import { formatElapsed, formatTokens } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
+import { useNow } from '../components/useNow'
 import { useCrew, type ThreadMeta } from '../state/store'
 
 type Feed =
@@ -16,6 +18,7 @@ export default function Chat() {
   const threads = useCrew(s => s.threads)
   const threadPrompts = useCrew(s => s.threadPrompts)
   const steps = useCrew(s => s.steps)
+  const tokens = useCrew(s => s.tokens)
   const sendChat = useCrew(s => s.sendChat)
   const openThread = useCrew(s => s.openThread)
 
@@ -24,6 +27,8 @@ export default function Chat() {
   const inputRef = useAutoResize(text)
   const scrollRef = useRef<HTMLDivElement>(null)
   const didInitialScroll = useRef(false)
+  const working = Object.keys(threadPrompts).length > 0
+  const now = useNow(working)
 
   const feed = useMemo<Feed[]>(() => {
     const list: Feed[] = []
@@ -66,13 +71,12 @@ export default function Chat() {
   const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
     const promptId = threadPrompts[thread.id]
     if (promptId) {
-      const last = (steps[promptId] ?? []).at(-1)
-      if (!last) return { working: true, status: 'Working…' }
-      if (last.kind === 'text' || last.kind === 'thinking') {
-        return { working: true, status: last.kind === 'thinking' ? 'Thinking…' : 'Writing…' }
-      }
-      const name = last.kind === 'subagent' ? `${last.name} (agent)` : (last.name ?? '')
-      return { working: true, status: (last.detail ? `${name} ${last.detail}` : name) || 'Working…' }
+      const start = events.find(e => e.kind === 'agent.start' && e.promptId === promptId)
+      const parts = [describeStep((steps[promptId] ?? []).at(-1))]
+      if (start) parts.push(formatElapsed(now - start.ts))
+      const count = tokens[promptId] ?? 0
+      if (count > 0) parts.push(`${formatTokens(count)} tokens`)
+      return { working: true, status: parts.join(' · ') }
     }
     for (let i = events.length - 1; i >= 0; i--) {
       const e = events[i]
