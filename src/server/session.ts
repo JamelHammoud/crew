@@ -642,6 +642,7 @@ export class CrewSession {
     if (existing) {
       existing.runner = ws
       existing.fields = llm.fields
+      existing.steerable = llm.steerable === true
       existing.settings = resolveSettings(llm.fields, existing.settings)
       meta?.agentIds.push(id)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label: existing.label })
@@ -657,6 +658,7 @@ export class CrewSession {
       ownerName: member.name,
       settings: resolveSettings(llm.fields, llm.settings ?? {}),
       fields: llm.fields,
+      steerable: llm.steerable === true,
       runner: ws,
       running: new Set(),
       runs: new Map()
