@@ -62,6 +62,48 @@ describe('doc pages', () => {
     await host.close()
   })
 
+  it('deletes a page and its sub-pages', async () => {
+    const repoPath = tmpDir('docs-delete')
+    const host = await startHost(repoPath)
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+
+    ui.send({ type: 'doc.update', page: 'main', text: 'home' })
+    ui.send({ type: 'doc.update', page: 'scratch', text: 'S' })
+    ui.send({ type: 'doc.update', page: 'scratch/child', text: 'C' })
+    const store = new Store(repoPath)
+    await waitUntil(() => store.loadDocs()['scratch/child'] === 'C')
+
+    ui.send({ type: 'doc.delete', page: 'scratch' })
+    await ui.waitForEvent(e => e.kind === 'doc.deleted' && e.page === 'scratch')
+    await waitUntil(() => store.loadDocs()['scratch'] === undefined)
+    expect(store.loadDocs()['scratch/child']).toBeUndefined()
+
+    ui.send({ type: 'doc.delete', page: 'main' })
+    await new Promise(r => setTimeout(r, 150))
+    expect(host.session.snapshot().docs['main']).not.toBeUndefined()
+
+    ui.close()
+    await host.close()
+  })
+
+  it('redirects a stale save that lands right after a rename', async () => {
+    const repoPath = tmpDir('docs-stale-save')
+    const host = await startHost(repoPath)
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+
+    ui.send({ type: 'doc.update', page: 'draft', text: 'v1' })
+    const store = new Store(repoPath)
+    await waitUntil(() => store.loadDocs()['draft'] === 'v1')
+
+    ui.send({ type: 'doc.rename', from: 'draft', to: 'final' })
+    ui.send({ type: 'doc.update', page: 'draft', text: 'v2' })
+    await waitUntil(() => store.loadDocs()['final'] === 'v2')
+    expect(store.loadDocs()['draft']).toBeUndefined()
+
+    ui.close()
+    await host.close()
+  })
+
   it('refuses to rename main or clobber an existing page', async () => {
     const repoPath = tmpDir('docs-rename-guard')
     const host = await startHost(repoPath)
