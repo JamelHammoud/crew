@@ -32,7 +32,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 ## Layout
 
-- `src/shared` — protocol and event types, no dependencies
+- `src/shared` — protocol and event types, git exec helper, no dependencies
 - `src/server` — host: ws server, session state, `.crew/` persistence, git sync
 - `src/runner` — agent runner: CLI provider adapters, executes prompts, streams back
 - `src/main` — Electron main and preload, wires server and runner to the app
