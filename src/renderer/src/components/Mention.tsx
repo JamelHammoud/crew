@@ -6,7 +6,6 @@ import { useCrew } from '../state/store'
 import Avatar from './Avatar'
 import HoverCard from './HoverCard'
 import Pill from './Pill'
-import Spinner from './Spinner'
 
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
   const settings = agent.fields

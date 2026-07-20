@@ -45,7 +45,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       return
     }
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
-    if (nearBottom) el.scrollTop = el.scrollHeight
+    if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
   }, [items])
 
   const send = () => {
