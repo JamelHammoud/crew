@@ -28,7 +28,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
       <div className="pl-14 animate-rise">
         <button
           onClick={() => expandable && setOpen(!expanded)}
-          className={`group flex items-center gap-2.5 text-sm max-w-full text-left ${
+          className={`group flex items-center gap-2.5 text-sm w-full text-left ${
             expandable ? '' : 'cursor-default'
           }`}
         >
@@ -39,10 +39,12 @@ export default function StepRow({ item }: { item: ThreadItem }) {
           {item.detail && !expanded && (
             <span className="text-fg-faint truncate font-mono text-xs">{item.detail}</span>
           )}
-          {expandable && <Chevron open={expanded} />}
         </button>
         {expanded && item.detail && (
-          <p className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-4 animate-pop">
+          <p
+            onClick={() => setOpen(false)}
+            className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-4 cursor-pointer"
+          >
             {item.detail}
           </p>
         )}

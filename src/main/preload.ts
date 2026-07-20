@@ -11,7 +11,10 @@ const bridge = {
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
     ipcRenderer.invoke('agents:create', input),
-  removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId)
+  removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
+  onFullScreen: (listener: (full: boolean) => void): void => {
+    ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
+  }
 }
 
 export type CrewBridge = typeof bridge

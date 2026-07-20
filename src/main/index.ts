@@ -15,7 +15,8 @@ function createWindow(): void {
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    backgroundColor: '#141414',
+    transparent: true,
+    backgroundColor: '#00000000',
     title: 'crew',
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 20, y: 27 },
@@ -25,6 +26,8 @@ function createWindow(): void {
       sandbox: false
     }
   })
+  win.on('enter-full-screen', () => win.webContents.send('window:fullscreen', true))
+  win.on('leave-full-screen', () => win.webContents.send('window:fullscreen', false))
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   if (devUrl) {
     win.loadURL(devUrl)

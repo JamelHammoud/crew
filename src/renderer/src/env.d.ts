@@ -11,6 +11,7 @@ declare global {
     agentCapabilities(): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>
+    onFullScreen(listener: (full: boolean) => void): void
   }
 
   interface Window {
