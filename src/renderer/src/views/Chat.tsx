@@ -141,7 +141,7 @@ export default function Chat() {
         setMentionQuery(null)
         return
       }
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if ((e.key === 'Enter' && !e.shiftKey) || e.key === 'Tab') {
         e.preventDefault()
         pickMention(mentionMatches[activeIndex].label)
         return
