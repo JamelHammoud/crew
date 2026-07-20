@@ -225,14 +225,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784571207467,
+        "fetchedAt": 1784571327474,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1784584800016,
+            "resetsAt": 1784584800031,
             "active": true
           },
           {
@@ -240,7 +240,7 @@
             "label": "Weekly (all models)",
             "percent": 14,
             "severity": "normal",
-            "resetsAt": 1784894400016,
+            "resetsAt": 1784894400031,
             "active": false
           },
           {
@@ -248,7 +248,7 @@
             "label": "Weekly (Fable)",
             "percent": 26,
             "severity": "normal",
-            "resetsAt": 1784894400017,
+            "resetsAt": 1784894400031,
             "active": false
           }
         ],
@@ -330,7 +330,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784571207724,
+        "fetchedAt": 1784571327751,
         "windows": [],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -411,7 +411,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784571207724,
+        "fetchedAt": 1784571327751,
         "windows": [],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
