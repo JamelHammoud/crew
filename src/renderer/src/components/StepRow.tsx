@@ -6,7 +6,7 @@ function Dot({ running }: { running: boolean }) {
 }
 
 export default function StepRow({ item }: { item: ThreadItem }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
 
   if (item.kind === 'tool') {
     return (
@@ -18,18 +18,20 @@ export default function StepRow({ item }: { item: ThreadItem }) {
     )
   }
 
-  const lines = item.text.trim().split('\n')
+  const text = item.text.trim()
   return (
     <div className="pl-10">
-      <button onClick={() => setOpen(!open)} className="text-left w-full group">
-        <div className="flex items-center gap-2 text-xs">
-          <Dot running={item.streaming} />
-          <span className="text-zinc-500 group-hover:text-zinc-400">Thinking</span>
-        </div>
-        <p className={`text-xs text-zinc-500 mt-1 whitespace-pre-wrap ${open ? '' : 'line-clamp-2'}`}>
-          {open ? item.text.trim() : lines[0]}
-        </p>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300"
+      >
+        <Dot running={item.streaming} />
+        <span>Thinking</span>
+        <span className="text-zinc-600">{open ? 'hide' : 'show'}</span>
       </button>
+      {open && (
+        <p className="text-xs text-zinc-500 mt-1 whitespace-pre-wrap border-l border-zinc-800 pl-3">{text}</p>
+      )}
     </div>
   )
 }

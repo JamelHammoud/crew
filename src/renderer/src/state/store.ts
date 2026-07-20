@@ -27,6 +27,7 @@ interface CrewState {
   events: SessionEvent[]
   docs: Record<string, string>
   steps: Record<string, AgentStep[]>
+  tokens: Record<string, number>
   activePrompts: Record<string, string[]>
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
@@ -49,6 +50,7 @@ const EMPTY = {
   events: [],
   docs: {},
   steps: {},
+  tokens: {},
   activePrompts: {},
   threads: {},
   threadPrompts: {},
@@ -157,6 +159,7 @@ export const useCrew = create<CrewState>((set, get) => {
         const threadPrompts: Record<string, string> = {}
         const activePrompts: Record<string, string[]> = {}
         const steps: Record<string, AgentStep[]> = {}
+        const tokens: Record<string, number> = {}
         for (const event of msg.snapshot.events) {
           if (event.kind === 'thread.started') {
             threads[event.threadId] = {
@@ -178,8 +181,9 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         }
         for (const agent of msg.snapshot.agents) {
-          for (const [promptId, live] of Object.entries(agent.runs)) {
-            for (const step of live) steps[promptId] = upsertStep(steps[promptId], step)
+          for (const [promptId, run] of Object.entries(agent.runs)) {
+            for (const step of run.steps) steps[promptId] = upsertStep(steps[promptId], step)
+            tokens[promptId] = run.tokens
           }
         }
         set({
@@ -191,6 +195,7 @@ export const useCrew = create<CrewState>((set, get) => {
           events: msg.snapshot.events.slice(-EVENT_LIMIT),
           docs: msg.snapshot.docs,
           steps,
+          tokens,
           activePrompts,
           threads,
           threadPrompts,
@@ -213,6 +218,9 @@ export const useCrew = create<CrewState>((set, get) => {
         break
       case 'agent.step':
         set(state => ({ steps: { ...state.steps, [msg.promptId]: upsertStep(state.steps[msg.promptId], msg.step) } }))
+        break
+      case 'agent.tokens':
+        set(state => ({ tokens: { ...state.tokens, [msg.promptId]: msg.tokens } }))
         break
     }
   }

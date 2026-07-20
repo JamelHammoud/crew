@@ -203,7 +203,8 @@ export class Runner {
   ): Promise<void> {
     await this.puller?.pullNow()
     const run = provider.start(text, this.opts.repoPath, {
-      onStep: step => this.send({ type: 'agent.step', promptId, step })
+      onStep: step => this.send({ type: 'agent.step', promptId, step }),
+      onTokens: tokens => this.send({ type: 'agent.tokens', promptId, tokens })
     }, settings)
     this.running.set(promptId, run)
     try {

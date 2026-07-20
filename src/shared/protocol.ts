@@ -33,6 +33,7 @@ export type ClientMessage =
   | { type: 'agent.register'; llm: RegisteredLlm }
   | { type: 'agent.deregister'; instanceId: string }
   | { type: 'agent.step'; promptId: string; step: RunStep }
+  | { type: 'agent.tokens'; promptId: string; tokens: number }
   | { type: 'agent.done'; promptId: string; text: string }
   | { type: 'agent.error'; promptId: string; message: string }
 
@@ -42,6 +43,7 @@ export type ServerMessage =
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
+  | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
   | { type: 'prompt'; promptId: string; agentId: string; threadId: string; text: string; settings: AgentSettings }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }

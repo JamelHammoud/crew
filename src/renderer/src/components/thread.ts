@@ -73,19 +73,6 @@ export function buildThread(
         const item = stepItem(step, event.agentLabel, event.promptId, live)
         if (item) items.push({ ...item, agentId: event.agentId })
       }
-      if (live && runSteps.length === 0) {
-        items.push({
-          key: event.id,
-          ts: event.ts,
-          kind: 'reply',
-          author: event.agentLabel,
-          self: false,
-          text: '',
-          streaming: true,
-          promptId: event.promptId,
-          agentId: event.agentId
-        })
-      }
     }
     if (event.kind === 'agent.end') {
       const wrote = (steps[event.promptId] ?? []).some(step => step.kind === 'text' && step.text)

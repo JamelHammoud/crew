@@ -15,6 +15,12 @@ export interface AgentStep extends RunStep {
   ts: number
 }
 
+export interface LiveRun {
+  steps: AgentStep[]
+  tokens: number
+  startedAt: number
+}
+
 export type AgentSettings = Record<string, string>
 
 export interface AgentSettingOption {
@@ -46,7 +52,7 @@ export interface PooledAgent {
   ownerId: string
   ownerName: string
   status: AgentStatus
-  runs: Record<string, AgentStep[]>
+  runs: Record<string, LiveRun>
   settings: AgentSettings
   fields: AgentSettingField[]
 }

@@ -33,7 +33,13 @@ export const parseClaudeLine: OutputParser = line => {
         })
       }
     }
+    const outputTokens = msg.message?.usage?.output_tokens
+    if (typeof outputTokens === 'number') out.push({ tokens: outputTokens })
     return out
+  }
+  if (msg?.type === 'result') {
+    const outputTokens = msg?.usage?.output_tokens
+    return typeof outputTokens === 'number' ? [{ tokens: outputTokens }] : []
   }
   if (msg?.type === 'user' && Array.isArray(msg.message?.content)) {
     const out = []

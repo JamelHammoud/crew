@@ -7,6 +7,7 @@ import {
   type AgentStatus,
   type AgentSettings,
   type AgentStep,
+  type LiveRun,
   type PooledAgent,
   type RunStep
 } from '../shared/llm'
@@ -22,7 +23,13 @@ interface Member {
 interface AgentState extends Omit<PooledAgent, 'runs' | 'status'> {
   runner: WebSocket | null
   running: Set<string>
-  runs: Map<string, Map<string, StepEntry>>
+  runs: Map<string, RunState>
+}
+
+interface RunState {
+  steps: Map<string, StepEntry>
+  tokens: number
+  startedAt: number
 }
 
 interface StepEntry {
@@ -189,6 +196,9 @@ export class CrewSession {
       case 'agent.step':
         this.handleStep(meta, msg.promptId, msg.step)
         break
+      case 'agent.tokens':
+        this.handleTokens(meta, msg.promptId, msg.tokens)
+        break
       case 'agent.done':
         this.handleDone(meta, msg.promptId, msg.text)
         break
@@ -282,12 +292,21 @@ export class CrewSession {
     )
   }
 
+  private handleTokens(meta: ConnMeta, promptId: string, tokens: number): void {
+    const agent = this.ownedAgent(meta, promptId)
+    const ref = this.prompts.get(promptId)
+    const run = agent?.runs.get(promptId)
+    if (!agent || !ref || !run) return
+    run.tokens = Math.max(run.tokens, tokens)
+    this.broadcast({ type: 'agent.tokens', promptId, agentId: agent.id, threadId: ref.threadId, tokens: run.tokens })
+  }
+
   private handleStep(meta: ConnMeta, promptId: string, step: RunStep): void {
     const agent = this.ownedAgent(meta, promptId)
     const ref = this.prompts.get(promptId)
     const run = agent?.runs.get(promptId)
     if (!agent || !ref || !run) return
-    const existing = run.get(step.id)?.step
+    const existing = run.steps.get(step.id)?.step
     const merged: AgentStep = {
       id: step.id,
       ts: existing?.ts ?? Date.now(),
@@ -297,13 +316,13 @@ export class CrewSession {
       detail: step.detail ?? existing?.detail,
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
-    run.set(step.id, { step: merged, persisted: false })
+    run.steps.set(step.id, { step: merged, persisted: false })
     this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
     if (merged.status === 'done') this.persistStep(agent, promptId, ref.threadId, step.id)
   }
 
   private persistStep(agent: AgentState, promptId: string, threadId: string, stepId: string): void {
-    const entry = agent.runs.get(promptId)?.get(stepId)
+    const entry = agent.runs.get(promptId)?.steps.get(stepId)
     if (!entry || entry.persisted) return
     entry.persisted = true
     this.emit({
@@ -364,7 +383,7 @@ export class CrewSession {
     if (!next) return
     thread.running = next.promptId
     agent.running.add(next.promptId)
-    agent.runs.set(next.promptId, new Map())
+    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now() })
     this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id })
     this.emit({
       id: randomUUID(),
@@ -394,7 +413,7 @@ export class CrewSession {
     const thread = threadId ? this.threads.get(threadId) : undefined
     if (thread?.running === promptId) thread.running = null
     if (threadId) {
-      for (const [stepId, entry] of agent.runs.get(promptId) ?? []) {
+      for (const [stepId, entry] of agent.runs.get(promptId)?.steps ?? []) {
         entry.step.status = 'done'
         this.persistStep(agent, promptId, threadId, stepId)
       }
@@ -531,8 +550,14 @@ export class CrewSession {
 
   private pooled(agent: AgentState): PooledAgent {
     const { runner, running, runs, ...rest } = agent
-    const live: Record<string, AgentStep[]> = {}
-    for (const [promptId, steps] of runs) live[promptId] = [...steps.values()].map(entry => entry.step)
+    const live: Record<string, LiveRun> = {}
+    for (const [promptId, run] of runs) {
+      live[promptId] = {
+        steps: [...run.steps.values()].map(entry => entry.step),
+        tokens: run.tokens,
+        startedAt: run.startedAt
+      }
+    }
     return { ...rest, status: this.statusOf(agent), runs: live }
   }
 

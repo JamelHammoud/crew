@@ -46,6 +46,8 @@ export const parseKimiLine: OutputParser = line => {
   if (msg?.role === 'tool' && typeof msg.tool_call_id === 'string') {
     out.push({ activity: { id: msg.tool_call_id, kind: 'tool' as const, name: '', status: 'finished' as const } })
   }
+  const tokens = msg?.usage?.output_tokens ?? msg?.usage?.completion_tokens
+  if (typeof tokens === 'number') out.push({ tokens })
   return out
 }
 
