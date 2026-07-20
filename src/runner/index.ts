@@ -189,7 +189,8 @@ export class Runner {
     forAgentId: string,
     threadId: string,
     text: string,
-    settings: AgentSettings
+    settings: AgentSettings,
+    attachments: Attachment[]
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -197,7 +198,9 @@ export class Runner {
       return
     }
     const tail = this.tails.get(threadId) ?? Promise.resolve()
-    const next = tail.then(() => this.execute(agent.provider, promptId, text, settings)).catch(() => {})
+    const next = tail
+      .then(() => this.execute(agent.provider, promptId, text, settings, attachments))
+      .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
       if (this.tails.get(threadId) === next) this.tails.delete(threadId)
