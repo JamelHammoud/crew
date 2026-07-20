@@ -11,6 +11,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const thread = useCrew(s => s.threads[threadId])
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
   const activities = useCrew(s => s.threadActivities[threadId])
+  const waiting = useCrew(s => s.waitingThreads[threadId])
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const closeThread = useCrew(s => s.closeThread)
@@ -28,7 +29,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     if (!el) return
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
     if (nearBottom) el.scrollTop = el.scrollHeight
-  }, [items, activities, streams])
+  }, [items, activities, streams, waiting])
 
   const send = () => {
     if (!text.trim()) return
@@ -69,6 +70,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
           {items.map(item => (
             <ChatMessage key={item.key} item={item} onStop={cancelPrompt} />
           ))}
+          {waiting && (
+            <div className="flex items-center gap-2 text-xs text-zinc-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
+              <span>Waiting for {thread.agentLabel} to finish something else</span>
+            </div>
+          )}
           {acts.length > 0 && (
             <div className="space-y-1.5 border-t border-zinc-800 pt-3">
               {acts.map(activity => (

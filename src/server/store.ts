@@ -12,7 +12,7 @@ export interface PersistedSession {
   code: string
   createdAt: number
   members: PersistedMember[]
-  agents: Array<Omit<PooledAgent, 'status' | 'activities'>>
+  agents: Array<Omit<PooledAgent, 'status' | 'activities' | 'waitingThreadIds'>>
 }
 
 const PAGE_NAME = /^[a-z0-9][a-z0-9-]*$/

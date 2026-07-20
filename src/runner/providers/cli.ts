@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption } from '../../shared/llm'
 import { crewPath, resolveCommand } from './path'
-import type { OutputParser, Provider, RunningPrompt } from './types'
+import type { OutputParser, Provider, RunningPrompt, RunProgress } from './types'
 
 export function commandExists(command: string): boolean {
   return resolveCommand(command) !== null
@@ -44,18 +44,37 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let errText = ''
       let buffer = ''
       let raw = ''
+      let thinking = ''
+      let reportedTokens = 0
+      let sentTokens = 0
       let killed = false
+
+      const emitProgress = (thinkingDelta?: string) => {
+        if (!hooks.onProgress) return
+        const estimate = Math.ceil((text.length + thinking.length) / 4)
+        const tokens = Math.max(reportedTokens, estimate)
+        if (!thinkingDelta && tokens === sentTokens) return
+        sentTokens = tokens
+        const progress: RunProgress = { tokens }
+        if (thinkingDelta) progress.thinking = thinkingDelta
+        hooks.onProgress(progress)
+      }
 
       const handleLine = (line: string) => {
         if (!line.trim()) return
         raw += (raw ? '\n' : '') + line
+        let thinkingDelta = ''
         for (const out of opts.parser!(line)) {
           if (out.text) {
             text += (text ? '\n' : '') + out.text
             hooks.onChunk(out.text)
           }
           if (out.activity) hooks.onActivity(out.activity)
+          if (out.thinking) thinkingDelta += (thinkingDelta ? '\n' : '') + out.thinking
+          if (typeof out.tokens === 'number') reportedTokens = Math.max(reportedTokens, out.tokens)
         }
+        if (thinkingDelta) thinking += (thinking ? '\n' : '') + thinkingDelta
+        emitProgress(thinkingDelta || undefined)
       }
 
       child.stdout.on('data', data => {
@@ -64,6 +83,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           text += chunk
           raw += chunk
           hooks.onChunk(chunk)
+          emitProgress()
           return
         }
         buffer += chunk

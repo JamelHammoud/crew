@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
+import type { ServerMessage } from '../src/shared/protocol'
 import { agentId } from '../src/shared/llm'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
@@ -106,6 +107,36 @@ describe('threads', () => {
 
     expect(secondEnd.text).toContain('now say banana')
     expect(secondEnd.text).toContain('remember apple')
+  })
+
+  it('answers a reply sent while the agent is busy in another thread', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '300' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('first @Fake', [fake])
+    const first = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === first.threadId)
+
+    ui.chat('second @Fake', [fake])
+    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId !== first.threadId)
+
+    ui.chat('are you still there', [], first.threadId)
+    const waiting = (await ui.waitFor(
+      m => m.type === 'agent.waiting' && m.waitingThreadIds.includes(first.threadId)
+    )) as Extract<ServerMessage, { type: 'agent.waiting' }>
+    expect(waiting.agentId).toBe(fake)
+
+    const reply = (await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === first.threadId && e.text?.includes('are you still there') === true
+    )) as Ended
+    expect(reply.ok).toBe(true)
+    const last = [...ui.messages].reverse().find(m => m.type === 'agent.waiting') as Extract<
+      ServerMessage,
+      { type: 'agent.waiting' }
+    >
+    expect(last.waitingThreadIds).toEqual([])
   })
 
   it('stops one thread without touching another', async () => {
