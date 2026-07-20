@@ -51,9 +51,10 @@ export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
         onClick={() => inputRef.current?.click()}
         disabled={full}
         title={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}
-        className="border border-zinc-800 text-zinc-300 rounded-lg px-3 py-2 text-sm hover:text-white hover:border-zinc-600 disabled:text-zinc-600 disabled:hover:border-zinc-800 shrink-0"
+        aria-label="Add an image"
+        className="flex items-center justify-center border border-zinc-800 text-zinc-300 rounded-lg h-[34px] w-[34px] text-lg leading-none hover:text-white hover:border-zinc-600 disabled:text-zinc-600 disabled:hover:border-zinc-800 shrink-0"
       >
-        Image
+        +
       </button>
     </>
   )
