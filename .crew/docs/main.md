@@ -2,8 +2,6 @@
 
 - We need a "Files" tab, this is the file explorer for the repo, that's synced across computers, searchable, and allows manual editing (Just like VS code)
 
-- The chat textarea should auto-resize when typing in it
-
 
 - "Docs" should be like Google Docs, a much better editing experience, and you can create other pages
 
@@ -12,3 +10,5 @@
 Completed:
 
 - Auto-git sync
+
+- The chat textarea should auto-resize when typing in it
