@@ -25,7 +25,14 @@ interface CliProviderOptions {
   args: (prompt: string, get: SettingReader) => string[]
   parser?: OutputParser
   env?: NodeJS.ProcessEnv
+  idleTimeoutMs?: number
 }
+
+// A run is killed only after this long with no output at all. Reasoning models
+// can sit quiet for minutes, so this guards against hangs, not slowness.
+const IDLE_TIMEOUT_MS = 10 * 60 * 1000
+// Grace period before escalating to SIGKILL for a process ignoring SIGTERM.
+const KILL_GRACE_MS = 5000
 
 export function makeCliProvider(opts: CliProviderOptions): Provider {
   const fields = () => opts.fields?.() ?? []
