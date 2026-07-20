@@ -6,6 +6,8 @@
 
 ## In progress
 
+* [ ] Add the ability to "archive" a thread (most likely the same right-click context menu as message deleting). Don't delete the info, just don't show it in chat. We'll come up with a place for them to be in a later project
+
 ## Blocked
 
 * [ ] Every time you @ mention an agent, it has to re-build it's knowledge of the codebase (and takes a long time)
