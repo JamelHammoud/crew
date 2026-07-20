@@ -47,11 +47,24 @@ function MentionText({ text }: { text: string }) {
 
 export default function ChatMessage({ item }: { item: ThreadItem }) {
   const presence = usePresence(item.author)
+  const deleteMessage = useCrew(s => s.deleteMessage)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const deletable = item.kind === 'message' && item.self
   if (item.kind === 'note') {
     return <p className="text-xs text-fg-muted text-center animate-rise">{item.text}</p>
   }
   return (
-    <div className="flex gap-4 animate-rise">
+    <div
+      className="flex gap-4 animate-rise"
+      onContextMenu={
+        deletable
+          ? event => {
+              event.preventDefault()
+              setMenuOpen(true)
+            }
+          : undefined
+      }
+    >
       <Avatar name={item.author} presence={presence} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
