@@ -15,6 +15,7 @@ export interface RunnerOptions {
   reconnectDelayMs?: number
   silenceTimeoutMs?: number
   autoPullMs?: number
+  usagePollMs?: number
 }
 
 interface RunnerAgent {
@@ -28,6 +29,7 @@ export type RunnerStatus = 'connecting' | 'online' | 'offline'
 
 const MAX_DELAY_MS = 10000
 const SILENCE_TIMEOUT_MS = 45000
+const USAGE_POLL_MS = 60000
 
 export class Runner {
   private ws: WebSocket | null = null
