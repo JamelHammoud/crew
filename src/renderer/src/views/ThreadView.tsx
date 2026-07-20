@@ -1,7 +1,7 @@
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { useLayoutEffect, useMemo, useRef } from 'react'
-import Avatar from '../components/Avatar'
+import AgentIcon from '../components/AgentIcon'
 import Composer from '../components/Composer'
 import FilesChanged from '../components/FilesChanged'
 import { hoverCardOpen } from '../components/HoverCard'
@@ -122,7 +122,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               </Tooltip>
               <MemberName name={thread.agentLabel}>
                 <span className="flex items-center gap-3 min-w-0 cursor-default">
-                  <Avatar name={thread.agentLabel} presence={agentPresence} />
+                  <AgentIcon seed={thread.agentId} presence={agentPresence} />
                   <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
                 </span>
               </MemberName>

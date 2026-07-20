@@ -1,6 +1,7 @@
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 import { useCrew } from '../state/store'
+import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
 import Markdown from './Markdown'
 import { AgentMention, MemberName } from './Mention'
@@ -71,6 +72,7 @@ function RouteBadge({ route }: { route?: MessageRoute }) {
 
 export default function ChatMessage({ item }: { item: ThreadItem }) {
   const presence = usePresence(item.author)
+  const agentSeed = useCrew(s => (item.self ? undefined : s.agents.find(a => a.label === item.author)?.id))
   const deleteMessage = useCrew(s => s.deleteMessage)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
   const deletable = item.kind === 'message' && item.self
@@ -89,7 +91,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
           : undefined
       }
     >
-      <Avatar name={item.author} presence={presence} />
+      {agentSeed ? <AgentIcon seed={agentSeed} presence={presence} /> : <Avatar name={item.author} presence={presence} />}
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
           <MemberName name={item.author}>

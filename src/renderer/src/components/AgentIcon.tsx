@@ -23,12 +23,13 @@ function prng(seed: string): () => number {
   }
 }
 
+const EYE_RADIUS = 4.5
+
 interface Pet {
   hue: number
   body: string
   eyeY: number
   eyeGap: number
-  eyeR: number
   tilt: number
 }
 
@@ -40,6 +41,12 @@ function blobPath(rand: () => number, straight: boolean): string {
     const angle = (i / points) * Math.PI * 2 - Math.PI / 2
     const radius = 30 + (rand() - 0.5) * 2 * jitter
     coords.push([50 + Math.cos(angle) * radius, 54 + Math.sin(angle) * radius * 0.92])
+  }
+  const cx = coords.reduce((sum, c) => sum + c[0], 0) / points
+  const cy = coords.reduce((sum, c) => sum + c[1], 0) / points
+  for (const c of coords) {
+    c[0] += 50 - cx
+    c[1] += 53 - cy
   }
   if (straight) {
     return `M ${coords.map(c => c.join(' ')).join(' L ')} Z`
@@ -55,14 +62,14 @@ function blobPath(rand: () => number, straight: boolean): string {
 
 function makePet(seed: string): Pet {
   const rand = prng(seed)
-  return {
+  const pet = {
     hue: Math.floor(rand() * 360),
     body: blobPath(rand, rand() < 0.3),
     eyeY: 48 + rand() * 8,
-    eyeGap: 11 + rand() * 7,
-    eyeR: 3.5 + rand() * 1.8,
-    tilt: (rand() - 0.5) * 14
+    eyeGap: 11 + rand() * 7
   }
+  rand()
+  return { ...pet, tilt: (rand() - 0.5) * 14 }
 }
 
 const pets = new Map<string, Pet>()
@@ -88,17 +95,14 @@ export default function AgentIcon({
   const pet = petOf(seed)
   const bg = `oklch(0.3 0.055 ${pet.hue})`
   const body = `oklch(0.76 0.15 ${pet.hue})`
-  const eye = `oklch(0.22 0.05 ${pet.hue})`
   return (
     <span className={`${SIZES[size]} relative inline-block shrink-0 self-start`}>
       <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>
         <rect width="100" height="100" fill={bg} />
         <g transform={`rotate(${pet.tilt} 50 54)`}>
-          <path d={pet.body} fill={body} />
-          <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={pet.eyeR} fill={eye} />
-          <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={pet.eyeR} fill={eye} />
-          <circle cx={50 - pet.eyeGap / 2 + pet.eyeR / 3} cy={pet.eyeY - pet.eyeR / 3} r={pet.eyeR / 4} fill="#fff" />
-          <circle cx={50 + pet.eyeGap / 2 + pet.eyeR / 3} cy={pet.eyeY - pet.eyeR / 3} r={pet.eyeR / 4} fill="#fff" />
+          <path d={pet.body} fill={body} stroke={body} strokeWidth={7} strokeLinejoin="round" />
+          <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
+          <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
         </g>
       </svg>
       {presence && (
