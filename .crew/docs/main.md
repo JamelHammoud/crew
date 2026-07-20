@@ -6,7 +6,7 @@
 
 ## In progress
 
-* [ ] Add the ability to "archive" a thread (most likely the same right-click context menu as message deleting). Don't delete the info, just don't show it in chat. We'll come up with a place for them to be in a later project
+* [ ] 
 
 ## Blocked
 
@@ -14,6 +14,7 @@
 
 ## Completed
 
+* [x] Add the ability to "archive" a thread (most likely the same right-click context menu as message deleting). Don't delete the info, just don't show it in chat. We'll come up with a place for them to be in a later project
 * [x] Deleting messages
 * [x] "Docs" should be like Google Docs, a much better editing experience, and you can create other pages
 * [x] Auto-git sync
