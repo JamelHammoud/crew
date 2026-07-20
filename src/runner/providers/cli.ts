@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption } from '../../shared/llm'
 import { crewPath, resolveCommand } from './path'
-import type { OutputParser, Provider, RunningPrompt, RunProgress } from './types'
+import type { OutputParser, Provider, RunningPrompt } from './types'
 
 export function commandExists(command: string): boolean {
   return resolveCommand(command) !== null
@@ -44,37 +44,31 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let errText = ''
       let buffer = ''
       let raw = ''
-      let thinking = ''
-      let reportedTokens = 0
-      let sentTokens = 0
+      let blocks = 0
+      let rawOpen = false
       let killed = false
-
-      const emitProgress = (thinkingDelta?: string) => {
-        if (!hooks.onProgress) return
-        const estimate = Math.ceil((text.length + thinking.length) / 4)
-        const tokens = Math.max(reportedTokens, estimate)
-        if (!thinkingDelta && tokens === sentTokens) return
-        sentTokens = tokens
-        const progress: RunProgress = { tokens }
-        if (thinkingDelta) progress.thinking = thinkingDelta
-        hooks.onProgress(progress)
-      }
 
       const handleLine = (line: string) => {
         if (!line.trim()) return
         raw += (raw ? '\n' : '') + line
-        let thinkingDelta = ''
         for (const out of opts.parser!(line)) {
+          if (out.thinking) {
+            hooks.onStep({ id: `b${blocks++}`, kind: 'thinking', text: out.thinking, status: 'done' })
+          }
           if (out.text) {
             text += (text ? '\n' : '') + out.text
-            hooks.onChunk(out.text)
+            hooks.onStep({ id: `b${blocks++}`, kind: 'text', text: out.text, status: 'done' })
           }
-          if (out.activity) hooks.onActivity(out.activity)
-          if (out.thinking) thinkingDelta += (thinkingDelta ? '\n' : '') + out.thinking
-          if (typeof out.tokens === 'number') reportedTokens = Math.max(reportedTokens, out.tokens)
+          if (out.activity) {
+            hooks.onStep({
+              id: `t${out.activity.id}`,
+              kind: out.activity.kind,
+              name: out.activity.name,
+              detail: out.activity.detail,
+              status: out.activity.status === 'started' ? 'running' : 'done'
+            })
+          }
         }
-        if (thinkingDelta) thinking += (thinking ? '\n' : '') + thinkingDelta
-        emitProgress(thinkingDelta || undefined)
       }
 
       child.stdout.on('data', data => {
@@ -82,8 +76,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         if (!opts.parser) {
           text += chunk
           raw += chunk
-          hooks.onChunk(chunk)
-          emitProgress()
+          rawOpen = true
+          hooks.onStep({ id: 'b0', kind: 'text', text: chunk, status: 'running' })
           return
         }
         buffer += chunk
@@ -99,6 +93,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         child.on('error', reject)
         child.on('close', code => {
           if (buffer.trim()) handleLine(buffer)
+          if (rawOpen) hooks.onStep({ id: 'b0', kind: 'text', status: 'done' })
           if (killed) {
             reject(new Error('Stopped'))
           } else if (code === 0) {

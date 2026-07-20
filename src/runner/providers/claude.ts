@@ -15,6 +15,9 @@ export const parseClaudeLine: OutputParser = line => {
   if (msg?.type === 'assistant' && Array.isArray(msg.message?.content)) {
     const out = []
     for (const block of msg.message.content) {
+      if (block?.type === 'thinking' && typeof block.thinking === 'string' && block.thinking.trim()) {
+        out.push({ thinking: block.thinking })
+      }
       if (block?.type === 'text' && typeof block.text === 'string' && block.text.trim()) {
         out.push({ text: block.text })
       }

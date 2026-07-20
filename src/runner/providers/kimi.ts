@@ -13,36 +13,40 @@ export const parseKimiLine: OutputParser = line => {
   } catch {
     return []
   }
-  if (msg?.role === 'assistant' && typeof msg.content === 'string' && msg.content.trim()) {
-    return [{ text: msg.content }]
-  }
-  if (msg?.role === 'assistant' && Array.isArray(msg.tool_calls)) {
-    const out = []
-    for (const call of msg.tool_calls) {
-      const name = call?.function?.name
-      if (!call?.id || !name) continue
-      let input: unknown
-      try {
-        input = JSON.parse(call.function.arguments ?? '{}')
-      } catch {
-        input = undefined
-      }
-      out.push({
-        activity: {
-          id: call.id,
-          kind: SUBAGENT_TOOLS.has(name) ? ('subagent' as const) : ('tool' as const),
-          name,
-          status: 'started' as const,
-          detail: activityDetail(input)
-        }
-      })
+  const out = []
+  if (msg?.role === 'assistant') {
+    if (typeof msg.reasoning_content === 'string' && msg.reasoning_content.trim()) {
+      out.push({ thinking: msg.reasoning_content })
     }
-    return out
+    if (typeof msg.content === 'string' && msg.content.trim()) {
+      out.push({ text: msg.content })
+    }
+    if (Array.isArray(msg.tool_calls)) {
+      for (const call of msg.tool_calls) {
+        const name = call?.function?.name
+        if (!call?.id || !name) continue
+        let input: unknown
+        try {
+          input = JSON.parse(call.function.arguments ?? '{}')
+        } catch {
+          input = undefined
+        }
+        out.push({
+          activity: {
+            id: call.id,
+            kind: SUBAGENT_TOOLS.has(name) ? ('subagent' as const) : ('tool' as const),
+            name,
+            status: 'started' as const,
+            detail: activityDetail(input)
+          }
+        })
+      }
+    }
   }
   if (msg?.role === 'tool' && typeof msg.tool_call_id === 'string') {
-    return [{ activity: { id: msg.tool_call_id, kind: 'tool' as const, name: '', status: 'finished' as const } }]
+    out.push({ activity: { id: msg.tool_call_id, kind: 'tool' as const, name: '', status: 'finished' as const } })
   }
-  return []
+  return out
 }
 
 export const kimiFields = (): AgentSettingField[] => [
