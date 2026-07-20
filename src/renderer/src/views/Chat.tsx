@@ -58,7 +58,7 @@ export default function Chat() {
           }
         })
       }
-      if (e.kind === 'thread.started' && threads[e.threadId]) {
+      if (e.kind === 'thread.started' && threads[e.threadId] && !threads[e.threadId].archived) {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
     }
