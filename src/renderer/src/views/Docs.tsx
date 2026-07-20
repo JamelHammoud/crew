@@ -261,7 +261,10 @@ export default function Docs() {
                 label="Delete page"
                 danger
                 onClick={() => {
-                  if (menu) deleteDoc(menu.slug)
+                  if (menu) {
+                    if (current === menu.slug || current.startsWith(`${menu.slug}/`)) editorRef.current?.discard()
+                    deleteDoc(menu.slug)
+                  }
                   setMenu(null)
                 }}
               />

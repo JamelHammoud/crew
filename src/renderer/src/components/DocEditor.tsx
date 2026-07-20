@@ -58,7 +58,14 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
         if (first) editor.setTextCursorPosition(first, 'start')
         editor.focus()
       },
-      flush: () => flushRef.current()
+      flush: () => flushRef.current(),
+      discard: () => {
+        if (timer.current !== null) {
+          window.clearTimeout(timer.current)
+          timer.current = null
+        }
+        lastMarkdown.current = editor.blocksToMarkdownLossy(editor.document)
+      }
     }),
     [editor]
   )
