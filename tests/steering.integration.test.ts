@@ -84,16 +84,14 @@ describe('steering a run in flight', () => {
     const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Start
 
     ui.chat('and one more thing', [], thread.threadId)
-    const route = (await ui.waitForEvent(
-      e => e.kind === 'message.route' && e.promptId !== start.promptId
-    )) as Route
-    expect(route.mode).toBe('queued')
 
-    // The queued message gets a run of its own once the first one is done.
+    // The message waits in the queue and gets a run of its own once the first
+    // one is done, only then landing in the thread.
     const second = (await ui.waitForEvent(
-      e => e.kind === 'agent.start' && e.promptId === route.promptId
+      e => e.kind === 'agent.start' && e.promptId !== start.promptId && e.threadId === thread.threadId
     )) as Start
     expect(second.promptText).toBe('and one more thing')
+    await ui.waitForEvent(e => e.kind === 'message' && e.text === 'and one more thing')
   })
 
   it('reports a steerable agent so the UI can label the composer', async () => {
