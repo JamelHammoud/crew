@@ -13,6 +13,7 @@ export interface ParsedOutput {
   thinking?: string
   activity?: ParsedActivity
   tokens?: number
+  error?: string
 }
 
 export type OutputParser = (line: string) => ParsedOutput[]
