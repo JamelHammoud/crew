@@ -2056,3 +2056,6 @@
 {"id":"f7ea3501-a976-4a2e-a61b-d907e5037305","ts":1784526330726,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"01004465-dc49-4044-9293-e07e69be2c99","ts":1784526330726,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"590547cb-1185-41c0-88f5-91de11adbfde","ts":1784526331126,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"fbba6ed1-c5ec-4b73-baba-b92c8550d59c","ts":1784526332147,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"1c54ee6d-3667-4c0b-8f3f-45290326ef6e","ts":1784526332147,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"b75081b0-364f-41dc-914f-34c40d16b930","ts":1784526332147,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
