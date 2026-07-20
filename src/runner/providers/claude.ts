@@ -1,6 +1,6 @@
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail } from './detail'
-import type { AgentSettingField } from '../../shared/llm'
+import type { AgentSettingField, FileChange } from '../../shared/llm'
 import type { OutputParser, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
