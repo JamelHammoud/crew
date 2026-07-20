@@ -11,6 +11,7 @@ export class CrewSocket {
   private attempts = 0
   private intentionalClose = false
   private reconnectTimer: number | null = null
+  private pending: ClientMessage[] = []
   onMessage: (msg: ServerMessage) => void = () => {}
   onStatus: (status: SocketStatus) => void = () => {}
 
@@ -23,11 +24,16 @@ export class CrewSocket {
   }
 
   send(msg: ClientMessage): void {
-    if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(msg))
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(msg))
+    } else if (!this.intentionalClose) {
+      this.pending.push(msg)
+    }
   }
 
   close(): void {
     this.intentionalClose = true
+    this.pending = []
     if (this.reconnectTimer !== null) window.clearTimeout(this.reconnectTimer)
     this.ws?.close()
   }
@@ -40,6 +46,9 @@ export class CrewSocket {
       this.attempts = 0
       if (this.hello) ws.send(JSON.stringify(this.hello))
       this.onStatus('open')
+      const queued = this.pending
+      this.pending = []
+      for (const msg of queued) this.send(msg)
     }
     ws.onmessage = event => {
       try {
