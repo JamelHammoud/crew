@@ -11,6 +11,9 @@ export interface ParsedActivity {
 export interface ParsedOutput {
   text?: string
   thinking?: string
+  thinkingStart?: { index: number }
+  thinkingDelta?: { index: number; text: string }
+  thinkingStop?: { index: number }
   activity?: ParsedActivity
   tokens?: number
   error?: string
