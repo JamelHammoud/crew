@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-100 font-sans antialiased;
+}
+
+.md {
+  @apply text-sm leading-6 text-zinc-200;
+}
+
+.md h1,
+.md h2,
+.md h3 {
+  @apply text-zinc-100 font-semibold mt-4 mb-2;
+}
+
+.md h1 {
+  @apply text-lg;
+}
+
+.md p {
+  @apply my-2;
+}
+
+.md ul,
+.md ol {
+  @apply my-2 pl-5;
+}
+
+.md ul {
+  @apply list-disc;
+}
+
+.md ol {
+  @apply list-decimal;
+}
+
+.md code {
+  @apply font-mono text-[13px] bg-zinc-800 rounded px-1 py-0.5;
+}
+
+.md pre {
+  @apply bg-zinc-900 border border-zinc-800 rounded-lg p-3 my-2 overflow-x-auto;
+}
+
+.md pre code {
+  @apply bg-transparent p-0;
+}
+
+.md a {
+  @apply text-white underline underline-offset-2;
+}
+
+.md blockquote {
+  @apply border-l-2 border-zinc-700 pl-3 text-zinc-400 my-2;
+}

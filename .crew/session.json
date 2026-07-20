@@ -1,0 +1,26 @@
+{
+  "code": "6329c2",
+  "createdAt": 1784510280906,
+  "members": [
+    {
+      "id": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "name": "Jamel"
+    }
+  ],
+  "agents": [
+    {
+      "id": "jamel/kimi",
+      "label": "Kimi",
+      "provider": "kimi",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel"
+    },
+    {
+      "id": "jamel/claude",
+      "label": "Claude",
+      "provider": "claude",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel"
+    }
+  ]
+}
