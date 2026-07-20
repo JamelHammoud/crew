@@ -228,6 +228,9 @@ export class CrewSession {
       case 'agent.tokens':
         this.handleTokens(meta, msg.promptId, msg.tokens)
         break
+      case 'agent.steered':
+        this.handleSteered(meta, msg.promptId, msg.ok)
+        break
       case 'agent.done':
         this.handleDone(meta, msg.promptId, msg.text)
         break
@@ -586,6 +589,11 @@ export class CrewSession {
       threadId,
       ...result
     })
+    // Steers the run never acknowledged died with it, so give them a turn of
+    // their own rather than losing them.
+    const orphaned = this.steers.get(promptId) ?? []
+    this.steers.delete(promptId)
+    for (const steer of orphaned) this.requeueSteer(agent, steer)
     if (thread) this.runThread(thread)
   }
 
