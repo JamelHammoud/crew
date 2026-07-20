@@ -92,6 +92,9 @@ interface ConnMeta {
 const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
 const TITLE_LIMIT = 80
+// How long a stop gets to come back as agent.error from the runner before the
+// server closes the run itself. Covers the SIGTERM→SIGKILL grace plus slack.
+const CANCEL_REPORT_TIMEOUT_MS = 15000
 
 export class CrewSession {
   readonly code: string
