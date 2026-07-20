@@ -304,3 +304,4 @@
 {"id":"053b97cb-7b17-4208-bc83-2f43e6048e1c","ts":1784514405033,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"ec805d87-c4d5-46fd-84a3-8bda7dbbdeb6","ts":1784514428699,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"effe36a0-c9cd-40b7-b67b-f4539ad72ea1","ts":1784514451105,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"e21940c7-c91b-4a97-ad7f-192a12164bda","ts":1784514539442,"kind":"agent.end","promptId":"a52ea4ad-7a8f-4123-b2bf-d8a516117dc9","agentId":"jamel/kimi","agentLabel":"Kimi","ok":false,"error":"Stopped"}
