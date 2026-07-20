@@ -707,6 +707,12 @@ export class CrewSession {
       if (thread.agentId !== agent.id) continue
       for (const prompt of thread.queue.splice(0)) this.systemMessage(reason, prompt.threadId)
     }
+    // Steers still waiting on an ack go the same way as the queue: there is no
+    // run left to fold them into, and nothing to re-queue them onto.
+    for (const promptId of agent.running) {
+      for (const steer of this.steers.get(promptId) ?? []) this.systemMessage(reason, steer.threadId)
+      this.steers.delete(promptId)
+    }
   }
 
   private dropRunning(agent: AgentState, reason: string): void {
