@@ -2489,3 +2489,4 @@
 {"id":"db858d0e-efef-49c7-845a-90a0461fe9df","ts":1784569742856,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"9b004516-5136-41bd-9a1f-c038a231a07a","ts":1784569813239,"kind":"agent.online","agentId":"ali/92159464-bc88-4f54-8308-ccb5425c2bd7","label":"Kimi 2"}
 {"id":"a063e26d-3a1d-440d-8d99-adc15a0b060c","ts":1784569827502,"kind":"agent.online","agentId":"ali/f001e68a-48d4-4b1a-b922-e947b5141134","label":"Kimi (ALI)"}
+{"id":"5cd447dd-2bb4-49b4-aa33-10e963c14665","ts":1784569947593,"kind":"agent.updated","agentId":"ali/claude","settings":{"model":"fable","effort":"high"}}

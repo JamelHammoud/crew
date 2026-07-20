@@ -164,7 +164,7 @@
       "ownerName": "ALI",
       "settings": {
         "model": "fable",
-        "effort": "max"
+        "effort": "high"
       },
       "fields": [
         {
@@ -511,30 +511,6 @@
         }
       ],
       "steerable": true
-    },
-    {
-      "id": "ali/92159464-bc88-4f54-8308-ccb5425c2bd7",
-      "label": "Kimi 2",
-      "provider": "kimi",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": ""
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            }
-          ],
-          "default": ""
-        }
-      ],
-      "steerable": false
     },
     {
       "id": "ali/f001e68a-48d4-4b1a-b922-e947b5141134",
