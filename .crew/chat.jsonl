@@ -243,3 +243,13 @@
 {"id":"b53c3bf1-5801-4fd9-9b7a-ba21cb88ea6c","ts":1784512451077,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"ea1e3853-1be4-412f-be17-63e79c70c0a7","ts":1784512478223,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"b2bb9790-547e-40fd-b419-8040980e58ff","ts":1784512500520,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"60037a6a-d36b-408c-bb2f-dfa4d12a6892","ts":1784512516522,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"639dd0fc-8f5e-4941-a2d7-2ab89ace1af8","ts":1784512516522,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"08c13efc-c93a-4905-9d36-17a7a4a7127b","ts":1784512516522,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"501e5f29-9c2d-4344-ae21-f555ba5544ae","ts":1784512518457,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"cd909dbb-142e-463f-9aff-e256d63197f8","ts":1784512518457,"kind":"agent.end","promptId":"266b1af7-08c8-40d7-9fbd-6b5b35782e2a","agentId":"jamel/kimi","agentLabel":"Kimi","ok":false,"error":"Kimi disconnected."}
+{"id":"c923122d-d1d0-4a58-a8b9-a7e9a0f64b08","ts":1784512518457,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"2026d737-559d-4200-a375-2b7f7810a058","ts":1784512518457,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"46977044-1d5f-48a4-b1bc-afe6348b5391","ts":1784512525144,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"e8227900-7818-4c84-b21f-c6cb7827f771","ts":1784512525144,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"772d0f17-f7bd-40ec-8093-b85f61cc3b9d","ts":1784512525144,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
