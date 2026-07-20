@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { resolveSettings, type AgentSettingField, type AgentSettingOption } from '../../shared/llm'
+import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
 import { crewPath, resolveCommand } from './path'
 import type { OutputParser, Provider, RunningPrompt } from './types'
 
@@ -29,6 +29,7 @@ interface CliProviderOptions {
   // When set, the prompt is written to stdin as a JSON message instead of being
   // passed in argv, and stdin stays open so later messages can steer the run.
   streamInput?: boolean
+  usage?: () => Promise<AgentUsage | null>
 }
 
 // A run is killed only after this long with no output at all. Reasoning models
