@@ -161,8 +161,12 @@ export const useCrew = create<CrewState>((set, get) => {
           return { events, docs: { ...state.docs, [event.page]: event.text } }
         }
         case 'doc.renamed': {
-          const docs = { ...state.docs, [event.to]: state.docs[event.from] ?? '' }
-          delete docs[event.from]
+          const docs = { ...state.docs }
+          for (const page of Object.keys(docs)) {
+            if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
+            docs[event.to + page.slice(event.from.length)] = docs[page]
+            delete docs[page]
+          }
           return { events, docs }
         }
       }

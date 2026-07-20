@@ -360,13 +360,17 @@ export class CrewSession {
 
   private handleDocRename(member: Member, from: string, to: string): void {
     if (from === to || from === 'main' || !this.docs.has(from)) return
+    if (to === from || to.startsWith(`${from}/`)) return
     try {
       this.store.renameDoc(from, to)
     } catch {
       return
     }
-    this.docs.set(to, this.docs.get(from) ?? '')
-    this.docs.delete(from)
+    for (const [page, text] of [...this.docs.entries()]) {
+      if (page !== from && !page.startsWith(`${from}/`)) continue
+      this.docs.delete(page)
+      this.docs.set(to + page.slice(from.length), text)
+    }
     this.emit(
       { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, byName: member.name },
       { persist: false }
