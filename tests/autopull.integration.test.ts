@@ -83,9 +83,9 @@ describe('auto pull', () => {
   it('pulls before running a prompt so the agent sees fresh code', async () => {
     const { a, b } = await originWithClones()
     host = await startHost(a)
-    connectRunner(b, 60000)
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
+    connectRunner(b, 60000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === agentId('jamel', 'fake'))
 
     await commitAndPush(a, 'fresh.ts', 'export const z = 3\n', 'add fresh')
@@ -97,9 +97,9 @@ describe('auto pull', () => {
 
   it('leaves a plain folder alone and still runs prompts', async () => {
     host = await startHost(tmpDir('autopull-host'))
-    connectRunner(tmpDir('autopull-plain'), 200)
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
+    connectRunner(tmpDir('autopull-plain'), 200)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === agentId('jamel', 'fake'))
 
     ui.chat('hello @Fake', [agentId('jamel', 'fake')])
