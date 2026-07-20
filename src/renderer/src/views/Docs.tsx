@@ -1,3 +1,4 @@
+import { EyeIcon, PencilIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
 import Markdown from '../components/Markdown'
 import { useCrew } from '../state/store'
@@ -30,44 +31,60 @@ export default function Docs() {
   }
 
   return (
-    <div className="h-full flex">
-      <aside className="w-44 border-r border-zinc-800 px-3 py-4 space-y-1 shrink-0">
-        {pages.map(name => (
-          <button
-            key={name}
-            onClick={() => switchPage(name)}
-            className={`w-full text-left px-2 py-1.5 rounded-md text-sm ${
-              name === page ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            {name}
-          </button>
-        ))}
-      </aside>
-      <div className="flex-1 min-w-0 flex flex-col">
-        <div className="flex justify-end px-6 pt-3 shrink-0">
-          <button
-            onClick={() => setEditing(e => !e)}
-            className="text-xs px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:border-zinc-500"
-          >
-            {editing ? 'Preview' : 'Edit'}
-          </button>
-        </div>
-        <div className="flex-1 min-h-0 px-6 pb-6 pt-2">
-          {editing ? (
-            <textarea
-              value={draft}
-              onChange={e => onChange(e.target.value)}
-              onFocus={() => (focused.current = true)}
-              onBlur={() => (focused.current = false)}
-              placeholder="Plan together. Markdown works here."
-              className="w-full h-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 outline-none resize-none font-mono leading-6"
-            />
-          ) : (
-            <div className="max-w-3xl">
-              <Markdown text={draft || 'Nothing here yet.'} />
+    <div className="h-full flex px-6">
+      <div className="max-w-[880px] w-full mx-auto flex pt-24 pb-6 gap-8 min-h-0">
+        <aside className="w-44 shrink-0 pt-14 space-y-1">
+          {pages.map(name => (
+            <button
+              key={name}
+              onClick={() => switchPage(name)}
+              className={`w-full text-left px-3.5 py-2 rounded-full text-sm font-semibold transition-all duration-150 active:scale-[0.98] ${
+                name === page ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
+              }`}
+            >
+              {name}
+            </button>
+          ))}
+        </aside>
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className="flex justify-end shrink-0">
+            <div className="flex items-center gap-0.5 bg-ink-800 rounded-full p-1">
+              <button
+                onClick={() => setEditing(true)}
+                className={`flex items-center gap-1.5 h-8 px-3.5 rounded-full text-sm font-semibold transition-all duration-150 ${
+                  editing ? 'bg-ink-600 text-fg' : 'text-fg-muted hover:text-fg-secondary'
+                }`}
+              >
+                <PencilIcon className="w-3.5 h-3.5" />
+                Edit
+              </button>
+              <button
+                onClick={() => setEditing(false)}
+                className={`flex items-center gap-1.5 h-8 px-3.5 rounded-full text-sm font-semibold transition-all duration-150 ${
+                  !editing ? 'bg-ink-600 text-fg' : 'text-fg-muted hover:text-fg-secondary'
+                }`}
+              >
+                <EyeIcon className="w-3.5 h-3.5" />
+                Preview
+              </button>
             </div>
-          )}
+          </div>
+          <div className="flex-1 min-h-0 pt-4">
+            {editing ? (
+              <textarea
+                value={draft}
+                onChange={e => onChange(e.target.value)}
+                onFocus={() => (focused.current = true)}
+                onBlur={() => (focused.current = false)}
+                placeholder="Plan together. Markdown works here."
+                className="w-full h-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none font-mono leading-6"
+              />
+            ) : (
+              <div className="h-full overflow-y-auto">
+                <Markdown text={draft || 'Nothing here yet.'} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

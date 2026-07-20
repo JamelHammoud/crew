@@ -1,10 +1,43 @@
+import { StopIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { useState } from 'react'
 import type { AgentStep, PooledAgent } from '../../../shared/llm'
+import Avatar from './Avatar'
 import Pill from './Pill'
+import Select from './Select'
+import Spinner from './Spinner'
 
 const STATUS_LABEL: Record<PooledAgent['status'], string> = {
   idle: 'Ready',
   busy: 'Working',
   offline: 'Away'
+}
+
+function ActivityRow({ activity }: { activity: AgentStep }) {
+  const [open, setOpen] = useState(false)
+  const expandable = Boolean(activity.detail)
+  return (
+    <div>
+      <button
+        onClick={() => expandable && setOpen(!open)}
+        className={`flex items-center gap-2.5 text-sm max-w-full text-left ${expandable ? '' : 'cursor-default'}`}
+      >
+        {activity.status === 'running' ? (
+          <Spinner size={12} className="text-fg-secondary" />
+        ) : (
+          <span className="w-1.5 h-1.5 mx-[3px] rounded-full bg-ink-500 shrink-0" />
+        )}
+        <span className="text-fg-secondary shrink-0">
+          {activity.kind === 'subagent' ? `${activity.name} (agent)` : activity.name}
+        </span>
+        {activity.detail && !open && <span className="text-fg-faint truncate font-mono text-xs">{activity.detail}</span>}
+      </button>
+      {open && activity.detail && (
+        <p className="text-xs font-mono text-fg-muted leading-5 mt-1.5 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-3 animate-pop">
+          {activity.detail}
+        </p>
+      )}
+    </div>
+  )
 }
 
 export default function AgentCard({
@@ -25,65 +58,76 @@ export default function AgentCard({
   const status = threadCount > 0 ? 'busy' : agent.status
   const activities = steps
     .filter(step => step.kind === 'tool' || step.kind === 'subagent')
-    .slice(-8)
+    .slice(-6)
     .reverse()
+
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-white">{agent.label}</span>
-        <Pill>{agent.provider}</Pill>
-        <span className="text-xs text-zinc-500">{agent.ownerName}</span>
-        <div className="ml-auto flex items-center gap-2">
-          {threadCount > 0 && onStop && (
-            <button onClick={onStop} className="text-[11px] text-zinc-400 hover:text-white">
-              {threadCount > 1 ? 'Stop all' : 'Stop'}
-            </button>
-          )}
-          {onRemove && threadCount === 0 && (
-            <button onClick={onRemove} className="text-[11px] text-zinc-500 hover:text-red-400">
-              Remove
-            </button>
-          )}
-          <Pill solid={status === 'busy'}>
-            {status === 'busy' && threadCount > 1 ? `Working on ${threadCount}` : STATUS_LABEL[status]}
-          </Pill>
-        </div>
-      </div>
-      {onSetting && agent.fields.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {agent.fields.map(field => (
-            <label key={field.key} className="flex items-center gap-1.5 text-xs text-zinc-500">
-              {field.label}
-              <select
-                value={agent.settings[field.key] ?? field.default}
-                onChange={event => onSetting(field.key, event.target.value)}
-                className="bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-zinc-300 outline-none focus:border-zinc-700"
-              >
-                {field.options.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ))}
-        </div>
-      )}
-      {activities.length > 0 && (
-        <div className="space-y-1.5">
-          {activities.map(activity => (
-            <div key={activity.id} className="flex items-center gap-2 text-xs">
-              <span
-                className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                  activity.status === 'running' ? 'bg-white animate-pulse' : 'bg-zinc-600'
-                }`}
-              />
-              <span className="text-zinc-300">{activity.kind === 'subagent' ? `${activity.name} (agent)` : activity.name}</span>
-              {activity.detail && <span className="text-zinc-600 truncate">{activity.detail}</span>}
+    <div className="group border-2 border-ink-700 rounded-card overflow-hidden flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
+      <div className="px-5 py-4 flex-1 space-y-4">
+        <div className="flex items-center gap-3">
+          <Avatar name={agent.label} />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
+              <Pill>{agent.provider}</Pill>
             </div>
-          ))}
+            <span className="text-sm text-fg-muted">{agent.ownerName}</span>
+          </div>
+          <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+            {threadCount > 0 && onStop && (
+              <button
+                onClick={onStop}
+                title={threadCount > 1 ? 'Stop all threads' : 'Stop'}
+                aria-label="Stop"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.06] transition-colors"
+              >
+                <StopIcon className="w-4 h-4" />
+              </button>
+            )}
+            {onRemove && threadCount === 0 && (
+              <button
+                onClick={onRemove}
+                title="Remove agent"
+                aria-label="Remove agent"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors"
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
-      )}
+        {onSetting && agent.fields.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {agent.fields.map(field => (
+              <Select
+                key={field.key}
+                label={field.label}
+                value={agent.settings[field.key] ?? field.default}
+                options={field.options}
+                onChange={value => onSetting(field.key, value)}
+              />
+            ))}
+          </div>
+        )}
+        {activities.length > 0 && (
+          <div className="space-y-2">
+            {activities.map(activity => (
+              <ActivityRow key={activity.id} activity={activity} />
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5">
+        {status === 'busy' ? (
+          <Spinner size={14} className="text-fg" />
+        ) : (
+          <span
+            className={`w-2 h-2 rounded-full shrink-0 ${status === 'idle' ? 'bg-positive' : 'bg-ink-500'}`}
+          />
+        )}
+        <span className="text-sm font-semibold text-fg">{STATUS_LABEL[status]}</span>
+        {threadCount > 1 && <span className="text-sm text-fg-muted">on {threadCount} threads</span>}
+      </div>
     </div>
   )
 }

@@ -31,10 +31,10 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
   }
 
   return (
-    <header className="relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0">
-      <span className="font-mono font-semibold text-xl text-fg select-none">crew</span>
+    <header className="app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0">
+      <span className="font-mono font-semibold text-xl text-fg select-none pl-[64px]">crew</span>
 
-      <nav className="flex items-center gap-2">
+      <nav className="app-no-drag flex items-center gap-2">
         {TABS.map(t => (
           <button
             key={t.id}
@@ -48,7 +48,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
         ))}
       </nav>
 
-      <div className="flex items-center justify-end gap-3">
+      <div className="app-no-drag flex items-center justify-end gap-3">
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse">Connection lost. Trying again…</span>
         )}

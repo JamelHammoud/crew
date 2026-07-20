@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { mentionCandidates } from '../../../shared/llm'
-import { AttachButton, AttachmentTray } from '../components/Attachments'
+import Avatar from '../components/Avatar'
 import ChatMessage from '../components/ChatMessage'
+import Composer from '../components/Composer'
 import ThreadCard from '../components/ThreadCard'
 import { describeStep, type ThreadItem } from '../components/thread'
 import { formatElapsed, formatTokens } from '../components/time'
@@ -11,7 +12,7 @@ import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
 
 type Feed =
   | { kind: 'msg'; key: string; item: ThreadItem }
-  | { kind: 'card'; key: string; thread: ThreadMeta }
+  | { kind: 'card'; key: string; ts: number; thread: ThreadMeta }
 
 export default function Chat() {
   const events = useCrew(s => s.events)
@@ -25,7 +26,6 @@ export default function Chat() {
   const openThread = useCrew(s => s.openThread)
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
-  const attach = useCrew(s => s.attach)
   const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
 
   const [mentionQuery, setMentionQuery] = useState<string | null>(null)
@@ -57,7 +57,7 @@ export default function Chat() {
         })
       }
       if (e.kind === 'thread.started' && threads[e.threadId]) {
-        list.push({ kind: 'card', key: e.id, thread: threads[e.threadId] })
+        list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
     }
     return list
@@ -152,19 +152,20 @@ export default function Chat() {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-4">
-        {feed.length === 0 && (
-          <p className="text-sm text-zinc-500 mt-8 text-center">
-            Say hi, or mention an agent with @ to start a thread.
-          </p>
-        )}
-        <div className="max-w-3xl mx-auto space-y-5">
+    <div className="h-full relative">
+      <div ref={scrollRef} className="h-full overflow-y-auto px-6">
+        <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
+          {feed.length === 0 && (
+            <p className="text-base text-fg-muted mt-16 text-center">
+              Say hi, or mention an agent with @ to start a thread.
+            </p>
+          )}
           {feed.map(entry =>
             entry.kind === 'card' ? (
               <ThreadCard
                 key={entry.key}
                 thread={entry.thread}
+                ts={entry.ts}
                 onOpen={() => openThread(entry.thread.id)}
                 {...threadStatus(entry.thread)}
               />
@@ -175,54 +176,41 @@ export default function Chat() {
         </div>
       </div>
 
-      <div className="border-t border-zinc-800 px-6 py-4 shrink-0">
-        <div className="max-w-3xl mx-auto relative">
-          {mentionMatches.length > 0 && (
-            <div
-              ref={listRef}
-              className="absolute bottom-full mb-2 left-0 bg-zinc-900 border border-zinc-800 rounded-lg min-w-48 max-h-56 overflow-y-auto"
-            >
-              {mentionMatches.map((agent, index) => (
-                <button
-                  key={agent.id}
-                  onClick={() => pickMention(agent.label)}
-                  onMouseEnter={() => setActiveMention(index)}
-                  className={`w-full text-left px-3 py-2 text-sm text-zinc-200 flex items-center justify-between gap-4 ${
-                    index === activeIndex ? 'bg-zinc-800' : ''
-                  }`}
-                >
-                  <span>@{agent.label}</span>
-                  <span className="text-xs text-zinc-500">{agent.ownerName}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          <AttachmentTray attachmentKey={CHAT_KEY} />
-          <div
-            className="flex gap-3 items-end"
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => {
-              e.preventDefault()
-              void attach(CHAT_KEY, e.dataTransfer.files)
-            }}
-          >
-            <textarea
-              ref={inputRef}
+      <div className="absolute inset-x-0 bottom-0 pointer-events-none">
+        <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
+        <div className="bg-ink-900 px-6 pb-6">
+          <div className="max-w-[660px] mx-auto pointer-events-auto">
+            <Composer
+              attachmentKey={CHAT_KEY}
               value={text}
-              onChange={e => onChange(e.target.value)}
+              placeholder="Send a message or @ an agent to start a thread"
+              inputRef={inputRef}
+              onChange={onChange}
               onKeyDown={onKeyDown}
-              onPaste={e => void attach(CHAT_KEY, e.clipboardData.files)}
-              rows={2}
-              placeholder="Message the crew. Use @ to start an agent thread."
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500 resize-none"
-            />
-            <AttachButton attachmentKey={CHAT_KEY} />
-            <button
-              onClick={send}
-              className="bg-white text-black rounded-lg px-4 py-2 text-sm font-medium hover:bg-zinc-200 shrink-0"
+              onSend={send}
             >
-              Send
-            </button>
+              {mentionMatches.length > 0 && (
+                <div
+                  ref={listRef}
+                  className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
+                >
+                  {mentionMatches.map((agent, index) => (
+                    <button
+                      key={agent.id}
+                      onClick={() => pickMention(agent.label)}
+                      onMouseEnter={() => setActiveMention(index)}
+                      className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
+                        index === activeIndex ? 'bg-white/[0.08] text-fg' : 'text-fg-secondary'
+                      }`}
+                    >
+                      <Avatar name={agent.label} size="sm" />
+                      <span className="flex-1 truncate">@{agent.label}</span>
+                      <span className="text-xs text-fg-muted shrink-0">{agent.ownerName}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </Composer>
           </div>
         </div>
       </div>

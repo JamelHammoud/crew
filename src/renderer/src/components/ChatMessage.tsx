@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useCrew } from '../state/store'
 import Avatar from './Avatar'
 import Markdown from './Markdown'
+import Pill from './Pill'
 import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatTime } from './time'
@@ -41,10 +42,8 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
       <Avatar name={item.author} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
-          <span className="text-base font-semibold text-fg-muted">
-            {item.author}
-            {item.self && <span className="font-normal text-fg-faint"> (you)</span>}
-          </span>
+          <span className="text-base font-semibold text-fg-muted">{item.author}</span>
+          {item.self && <Pill>You</Pill>}
           <span className="text-sm text-fg-faint">{formatTime(item.ts)}</span>
         </div>
         {item.kind === 'reply' ? (
@@ -53,7 +52,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
           </div>
         ) : (
           item.text && (
-            <p className="text-base text-fg leading-[26px] whitespace-pre-wrap mt-1">
+            <p className="text-base text-fg leading-[22px] whitespace-pre-wrap mt-1">
               <MentionText text={item.text} />
             </p>
           )
