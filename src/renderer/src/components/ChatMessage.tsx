@@ -1,30 +1,65 @@
+import { useMemo } from 'react'
+import { useCrew } from '../state/store'
 import Avatar from './Avatar'
 import Markdown from './Markdown'
 import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatTime } from './time'
 
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function MentionText({ text }: { text: string }) {
+  const agents = useCrew(s => s.agents)
+  const parts = useMemo(() => {
+    const labels = agents.map(a => escapeRegex(a.label)).sort((a, b) => b.length - a.length)
+    if (labels.length === 0) return [text]
+    return text.split(new RegExp(`(@(?:${labels.join('|')}))`, 'g'))
+  }, [agents, text])
+  return (
+    <>
+      {parts.map((part, index) =>
+        index % 2 === 1 ? (
+          <strong key={index} className="font-semibold text-fg">
+            {part}
+          </strong>
+        ) : (
+          part
+        )
+      )}
+    </>
+  )
+}
+
 export default function ChatMessage({ item }: { item: ThreadItem }) {
   if (item.kind === 'note') {
-    return <p className="text-xs text-zinc-500 text-center">{item.text}</p>
+    return <p className="text-xs text-fg-muted text-center animate-rise">{item.text}</p>
   }
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-4 animate-rise">
       <Avatar name={item.author} />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-2">
-          <span className="text-sm font-medium text-zinc-100">{item.self ? `${item.author} (you)` : item.author}</span>
-          <span className="text-[11px] text-zinc-500">{formatTime(item.ts)}</span>
+      <div className="min-w-0 flex-1 pt-0.5">
+        <div className="flex items-baseline gap-2.5">
+          <span className="text-base font-semibold text-fg-muted">
+            {item.author}
+            {item.self && <span className="font-normal text-fg-faint"> (you)</span>}
+          </span>
+          <span className="text-sm text-fg-faint">{formatTime(item.ts)}</span>
         </div>
         {item.kind === 'reply' ? (
-          <div className={item.error ? 'text-sm text-red-400 mt-1' : 'mt-1'}>
+          <div className={item.error ? 'text-base text-danger mt-1.5' : 'mt-1.5'}>
             {item.error ? item.text : <Markdown text={item.text || '…'} />}
           </div>
         ) : (
-          item.text && <p className="text-sm text-zinc-200 whitespace-pre-wrap mt-1">{item.text}</p>
+          item.text && (
+            <p className="text-base text-fg leading-[26px] whitespace-pre-wrap mt-1">
+              <MentionText text={item.text} />
+            </p>
+          )
         )}
         {item.attachments && <MessageImages attachments={item.attachments} />}
-        {item.streaming && <span className="inline-block w-2 h-4 bg-zinc-500 animate-pulse mt-1" />}
+        {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
       </div>
     </div>
   )
