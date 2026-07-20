@@ -46,6 +46,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
   return {
     name: opts.name,
     label: opts.label,
+    steerable: opts.streamInput === true,
     fields,
     detect: async () => commandExists(opts.command),
     start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
@@ -54,9 +55,6 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env }
       })
-      // Codex reads stdin to EOF even when the prompt is an argument, so an open
-      // pipe hangs the process before it ever contacts the model.
-      child.stdin?.end()
       let text = ''
       let errText = ''
       let buffer = ''
