@@ -39,8 +39,19 @@ export type SessionEvent =
 export const SYSTEM_AUTHOR_ID = 'crew'
 export const SYSTEM_AUTHOR_NAME = 'crew'
 
+const EPHEMERAL_KINDS = new Set([
+  'doc',
+  'doc.renamed',
+  'doc.deleted',
+  'person.joined',
+  'person.left',
+  'agent.online',
+  'agent.offline',
+  'agent.updated'
+])
+
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
-  const lasting = events.filter(e => e.kind !== 'doc' && e.kind !== 'doc.renamed')
+  const lasting = events.filter(e => !EPHEMERAL_KINDS.has(e.kind))
   let count = 0
   let start = lasting.length
   for (let i = lasting.length - 1; i >= 0; i--) {

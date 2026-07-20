@@ -6,6 +6,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 
 export interface DocEditorHandle {
   focusStart: () => void
+  flush: () => void
 }
 
 export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(
@@ -25,10 +26,27 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     loaded.current = true
   }, [editor, text])
 
-  useEffect(() => {
-    return () => {
-      if (timer.current !== null) window.clearTimeout(timer.current)
+  const save = () => {
+    const markdown = editor.blocksToMarkdownLossy(editor.document)
+    if (markdown === lastMarkdown.current) return
+    lastMarkdown.current = markdown
+    onChange(markdown)
+  }
+  const saveRef = useRef(save)
+  saveRef.current = save
+
+  const flush = () => {
+    if (timer.current !== null) {
+      window.clearTimeout(timer.current)
+      timer.current = null
     }
+    if (loaded.current) saveRef.current()
+  }
+  const flushRef = useRef(flush)
+  flushRef.current = flush
+
+  useEffect(() => {
+    return () => flushRef.current()
   }, [])
 
   useImperativeHandle(
@@ -38,22 +56,16 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
         const first = editor.document[0]
         if (first) editor.setTextCursorPosition(first, 'start')
         editor.focus()
-      }
+      },
+      flush: () => flushRef.current()
     }),
     [editor]
   )
 
-  const save = () => {
-    const markdown = editor.blocksToMarkdownLossy(editor.document)
-    if (markdown === lastMarkdown.current) return
-    lastMarkdown.current = markdown
-    onChange(markdown)
-  }
-
   const handleChange = () => {
     if (!loaded.current) return
     if (timer.current !== null) window.clearTimeout(timer.current)
-    timer.current = window.setTimeout(save, 600)
+    timer.current = window.setTimeout(() => saveRef.current(), 600)
   }
 
   return (

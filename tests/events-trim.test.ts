@@ -51,6 +51,21 @@ describe('trimEvents', () => {
     expect(trimEvents(events, 10)).toEqual(events)
   })
 
+  it('does not let presence churn crowd out messages', () => {
+    const joined = (): SessionEvent => ({
+      id: `j${seq++}`,
+      ts: seq,
+      kind: 'person.joined',
+      memberId: 'm1',
+      name: 'A'
+    })
+    const online = (): SessionEvent => ({ id: `o${seq++}`, ts: seq, kind: 'agent.online', agentId: 'ag', label: 'Agent' })
+    const events = [message(), message(), ...Array.from({ length: 400 }, joined), ...Array.from({ length: 400 }, online), message()]
+    const trimmed = trimEvents(events, 5)
+    expect(trimmed.filter(e => e.kind === 'message')).toHaveLength(3)
+    expect(trimmed.some(e => e.kind === 'person.joined' || e.kind === 'agent.online')).toBe(false)
+  })
+
   it('drops doc events and does not count them', () => {
     const doc = (): SessionEvent => ({
       id: `d${seq++}`,

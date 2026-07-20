@@ -49,6 +49,7 @@ interface CrewState {
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
   renameDoc: (from: string, to: string) => void
+  deleteDoc: (page: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
@@ -166,6 +167,13 @@ export const useCrew = create<CrewState>((set, get) => {
             if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
             docs[event.to + page.slice(event.from.length)] = docs[page]
             delete docs[page]
+          }
+          return { events, docs }
+        }
+        case 'doc.deleted': {
+          const docs = { ...state.docs }
+          for (const page of Object.keys(docs)) {
+            if (page === event.page || page.startsWith(`${event.page}/`)) delete docs[page]
           }
           return { events, docs }
         }
@@ -330,6 +338,16 @@ export const useCrew = create<CrewState>((set, get) => {
         return { docs }
       })
       socket.send({ type: 'doc.rename', from, to })
+    },
+    deleteDoc: page => {
+      set(state => {
+        const docs = { ...state.docs }
+        for (const key of Object.keys(docs)) {
+          if (key === page || key.startsWith(`${page}/`)) delete docs[key]
+        }
+        return { docs }
+      })
+      socket.send({ type: 'doc.delete', page })
     },
     updateAgentSetting: (agentId, key, value) => {
       set(state => ({
