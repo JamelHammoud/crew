@@ -42,6 +42,17 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     return promptIds.flatMap(promptId => steps[promptId] ?? [])
   }, [threadEvents, steps])
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
+  const diffTotals = useMemo(() => {
+    let added = 0
+    let removed = 0
+    for (const step of threadSteps) {
+      for (const file of step.files ?? []) {
+        added += file.added
+        removed += file.removed
+      }
+    }
+    return { added, removed }
+  }, [threadSteps])
 
   const didInitialScroll = useRef(false)
 
@@ -123,6 +134,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     <CheckIcon className="w-5 h-5 text-fg" />
                     <span className="text-base font-semibold text-fg">Done</span>
                   </>
+                )}
+                {(diffTotals.added > 0 || diffTotals.removed > 0) && (
+                  <Pill>
+                    <Counts added={diffTotals.added} removed={diffTotals.removed} />
+                  </Pill>
                 )}
               </div>
             </div>

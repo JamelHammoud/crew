@@ -60,7 +60,7 @@ describe('steering a run in flight', () => {
 
     // Wait for output so we know the run is genuinely under way before steering.
     await ui.waitFor(msg => msg.type === 'agent.step' && msg.promptId === start.promptId)
-    ui.chat('actually do it the other way', [], thread.id)
+    ui.chat('actually do it the other way', [], thread.threadId)
 
     const route = (await ui.waitForEvent(e => e.kind === 'message.route' && e.mode === 'steered')) as Route
     expect(route.promptId).toBe(start.promptId)
@@ -83,7 +83,7 @@ describe('steering a run in flight', () => {
     const thread = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
     const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Start
 
-    ui.chat('and one more thing', [], thread.id)
+    ui.chat('and one more thing', [], thread.threadId)
     const route = (await ui.waitForEvent(
       e => e.kind === 'message.route' && e.promptId !== start.promptId
     )) as Route
@@ -114,9 +114,9 @@ describe('steering a run in flight', () => {
     const thread = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
     const first = (await ui.waitForEvent(e => e.kind === 'agent.end')) as Ended
 
-    ui.chat('follow up', [], thread.id)
+    ui.chat('follow up', [], thread.threadId)
     const second = (await ui.waitForEvent(
-      e => e.kind === 'agent.start' && e.promptId !== first.promptId && e.threadId === thread.id
+      e => e.kind === 'agent.start' && e.promptId !== first.promptId && e.threadId === thread.threadId
     )) as Start
     expect(second.promptText).toBe('follow up')
   })
