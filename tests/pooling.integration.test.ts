@@ -83,16 +83,16 @@ describe('pooling', () => {
     expect(end.text).toContain('fake[')
     expect(end.text).toContain('hello @Fake')
 
-    const chunks = ui.chunks.filter(c => c.promptId === start.promptId)
-    expect(chunks.length).toBe(3)
-    expect(chunks[0].text).toBe('fake[')
-    expect(chunks[2].text).toBe(']')
+    const texts = ui.steps.filter(s => s.promptId === start.promptId && s.step.kind === 'text')
+    expect(texts.length).toBe(3)
+    expect(texts[0].step.text).toBe('fake[')
+    expect(texts[2].step.text).toBe(']')
 
     const persisted = host.store.loadEvents().filter(e => e.kind === 'agent.end')
     expect(persisted.length).toBe(1)
   })
 
-  it('streams tool and subagent activity', async () => {
+  it('streams tool and subagent steps', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     await connectRunner('jamel', { FAKE_CLI_ACTIVITY: '1' })
@@ -105,12 +105,12 @@ describe('pooling', () => {
     >
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)
 
-    const activity = ui.activities.filter(a => a.promptId === start.promptId)
-    const subagent = activity.find(a => a.activity.kind === 'subagent' && a.activity.status === 'running')
-    expect(subagent?.activity.name).toBe('Helper')
-    const subagentDone = activity.find(a => a.activity.id === 'a1' && a.activity.status === 'done')
+    const steps = ui.steps.filter(s => s.promptId === start.promptId)
+    const subagent = steps.find(s => s.step.kind === 'subagent' && s.step.status === 'running')
+    expect(subagent?.step.name).toBe('Helper')
+    const subagentDone = steps.find(s => s.step.id === 'ta1' && s.step.status === 'done')
     expect(subagentDone).toBeTruthy()
-    const toolNames = activity.filter(a => a.activity.kind === 'tool').map(a => a.activity.name)
+    const toolNames = steps.filter(s => s.step.kind === 'tool').map(s => s.step.name)
     expect(toolNames).toContain('Glob')
   })
 
@@ -129,35 +129,36 @@ describe('pooling', () => {
     expect(note.text).toContain('not here')
   })
 
-  it('runs queued prompts one at a time, in order', async () => {
+  it('runs follow ups in one thread one at a time, in order', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '150' })
     await ui.waitForEvent(e => e.kind === 'agent.online')
 
     ui.chat('first @Fake', [agentId('jamel', 'fake')])
-    ui.chat('second @Fake', [agentId('jamel', 'fake')])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Extract<
+      import('../src/shared/events').SessionEvent,
+      { kind: 'thread.started' }
+    >
+    ui.chat('second', [], started.threadId)
 
-    const ends: string[] = []
+    const ends: Array<Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }>> = []
     for (let i = 0; i < 2; i++) {
       const end = (await ui.waitForEvent(
-        (e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }> =>
-          e.kind === 'agent.end' && !ends.includes(e.promptId)
+        e => e.kind === 'agent.end' && !ends.some(seen => seen.promptId === e.promptId)
       )) as Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }>
-      ends.push(end.promptId)
+      ends.push(end)
       expect(end.ok).toBe(true)
     }
 
-    const firstEnd = ui.events.find(
-      (e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }> =>
-        e.kind === 'agent.end' && e.promptId === ends[0]
+    expect(ends[0].text).toContain('first @Fake')
+    expect(ends[1].text).toContain('second')
+
+    const starts = ui.events.filter(
+      (e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.start' }> =>
+        e.kind === 'agent.start'
     )
-    const secondEnd = ui.events.find(
-      (e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'agent.end' }> =>
-        e.kind === 'agent.end' && e.promptId === ends[1]
-    )
-    expect(firstEnd?.text).toContain('first @Fake')
-    expect(secondEnd?.text).toContain('second @Fake')
+    expect(starts[1].ts).toBeGreaterThanOrEqual(ends[0].ts)
   })
 
   it('stops a running prompt when asked', async () => {

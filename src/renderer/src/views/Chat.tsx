@@ -15,8 +15,7 @@ export default function Chat() {
   const agents = useCrew(s => s.agents)
   const threads = useCrew(s => s.threads)
   const threadPrompts = useCrew(s => s.threadPrompts)
-  const threadActivities = useCrew(s => s.threadActivities)
-  const waitingThreads = useCrew(s => s.waitingThreads)
+  const steps = useCrew(s => s.steps)
   const sendChat = useCrew(s => s.sendChat)
   const openThread = useCrew(s => s.openThread)
 
@@ -62,17 +61,17 @@ export default function Chat() {
     }
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
     if (nearBottom) el.scrollTop = el.scrollHeight
-  }, [feed, threadActivities, threadPrompts])
+  }, [feed, steps, threadPrompts])
 
   const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
-    if (waitingThreads[thread.id]) {
-      return { working: true, status: `Waiting for ${thread.agentLabel} to finish something else` }
-    }
-    if (threadPrompts[thread.id]) {
-      const acts = threadActivities[thread.id] ?? []
-      const last = acts[acts.length - 1]
+    const promptId = threadPrompts[thread.id]
+    if (promptId) {
+      const last = (steps[promptId] ?? []).at(-1)
       if (!last) return { working: true, status: 'Working…' }
-      const name = last.kind === 'subagent' ? `${last.name} (agent)` : last.name
+      if (last.kind === 'text' || last.kind === 'thinking') {
+        return { working: true, status: last.kind === 'thinking' ? 'Thinking…' : 'Writing…' }
+      }
+      const name = last.kind === 'subagent' ? `${last.name} (agent)` : (last.name ?? '')
       return { working: true, status: (last.detail ? `${name} ${last.detail}` : name) || 'Working…' }
     }
     for (let i = events.length - 1; i >= 0; i--) {

@@ -282,39 +282,39 @@ export class CrewSession {
     )
   }
 
-  private handleChunk(meta: ConnMeta, promptId: string, text: string): void {
+  private handleStep(meta: ConnMeta, promptId: string, step: RunStep): void {
     const agent = this.ownedAgent(meta, promptId)
-    if (!agent) return
-    this.broadcast({ type: 'agent.chunk', promptId, agentId: agent.id, threadId: this.prompts.get(promptId)?.threadId, text })
+    const ref = this.prompts.get(promptId)
+    const run = agent?.runs.get(promptId)
+    if (!agent || !ref || !run) return
+    const existing = run.get(step.id)?.step
+    const merged: AgentStep = {
+      id: step.id,
+      ts: existing?.ts ?? Date.now(),
+      kind: existing?.kind ?? step.kind,
+      status: step.status,
+      name: step.name || existing?.name,
+      detail: step.detail ?? existing?.detail,
+      text: (existing?.text ?? '') + (step.text ?? '') || undefined
+    }
+    run.set(step.id, { step: merged, persisted: false })
+    this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
+    if (merged.status === 'done') this.persistStep(agent, promptId, ref.threadId, step.id)
   }
 
-  private handleProgress(meta: ConnMeta, promptId: string, msg: { thinking?: string; tokens?: number }): void {
-    const agent = this.ownedAgent(meta, promptId)
-    if (!agent) return
-    this.broadcast({
-      type: 'agent.progress',
+  private persistStep(agent: AgentState, promptId: string, threadId: string, stepId: string): void {
+    const entry = agent.runs.get(promptId)?.get(stepId)
+    if (!entry || entry.persisted) return
+    entry.persisted = true
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'agent.step',
       promptId,
       agentId: agent.id,
-      threadId: this.prompts.get(promptId)?.threadId,
-      thinking: msg.thinking,
-      tokens: msg.tokens
-    })
-  }
-
-  private handleActivity(meta: ConnMeta, promptId: string, activity: AgentActivity): void {
-    const agent = this.ownedAgent(meta, promptId)
-    if (!agent) return
-    const existing = agent.activities.get(activity.id)
-    const merged: AgentActivity = activity.name
-      ? activity
-      : { ...(existing ?? { kind: 'tool' as const, name: '' }), id: activity.id, status: activity.status }
-    agent.activities.set(activity.id, merged)
-    this.broadcast({
-      type: 'agent.activity',
-      promptId,
-      agentId: agent.id,
-      threadId: this.prompts.get(promptId)?.threadId,
-      activity: merged
+      agentLabel: agent.label,
+      threadId,
+      step: entry.step
     })
   }
 
@@ -346,31 +346,26 @@ export class CrewSession {
   }
 
   private enqueuePrompt(agent: AgentState, text: string, byName: string, threadId: string): void {
-    if (!agent.runner || agent.status === 'offline') {
+    const thread = this.threads.get(threadId)
+    if (!thread) return
+    if (!agent.runner) {
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
-    agent.queue.push({ promptId: randomUUID(), text, byName, threadId })
-    this.runNext(agent)
-    this.broadcastWaiting(agent)
+    thread.queue.push({ promptId: randomUUID(), text, byName, threadId })
+    this.runThread(thread)
   }
 
-  private broadcastWaiting(agent: AgentState): void {
-    this.broadcast({
-      type: 'agent.waiting',
-      agentId: agent.id,
-      waitingThreadIds: agent.queue.map(p => p.threadId)
-    })
-  }
-
-  private runNext(agent: AgentState): void {
-    if (agent.status !== 'idle' || !agent.runner) return
-    const next = agent.queue.shift()
+  private runThread(thread: Thread): void {
+    if (thread.running) return
+    const agent = this.agents.get(thread.agentId)
+    if (!agent?.runner) return
+    const next = thread.queue.shift()
     if (!next) return
-    agent.status = 'busy'
-    agent.activities.clear()
-    this.broadcastWaiting(agent)
-    this.prompts.set(next.promptId, { agentId: agent.id, threadId: next.threadId })
+    thread.running = next.promptId
+    agent.running.add(next.promptId)
+    agent.runs.set(next.promptId, new Map())
+    this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id })
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -380,12 +375,13 @@ export class CrewSession {
       agentLabel: agent.label,
       promptText: next.text,
       byName: next.byName,
-      threadId: next.threadId
+      threadId: thread.id
     })
     this.send(agent.runner, {
       type: 'prompt',
       promptId: next.promptId,
       agentId: agent.id,
+      threadId: thread.id,
       text: this.buildPrompt(agent, next),
       settings: agent.settings
     })
@@ -394,8 +390,16 @@ export class CrewSession {
   private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
     const threadId = this.prompts.get(promptId)?.threadId
     this.prompts.delete(promptId)
-    agent.status = agent.runner ? 'idle' : 'offline'
-    for (const activity of agent.activities.values()) activity.status = 'done'
+    agent.running.delete(promptId)
+    const thread = threadId ? this.threads.get(threadId) : undefined
+    if (thread?.running === promptId) thread.running = null
+    if (threadId) {
+      for (const [stepId, entry] of agent.runs.get(promptId) ?? []) {
+        entry.step.status = 'done'
+        this.persistStep(agent, promptId, threadId, stepId)
+      }
+    }
+    agent.runs.delete(promptId)
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -406,7 +410,7 @@ export class CrewSession {
       threadId,
       ...result
     })
-    this.runNext(agent)
+    if (thread) this.runThread(thread)
   }
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt): string {
@@ -450,12 +454,11 @@ export class CrewSession {
     const existing = this.agents.get(id)
     if (existing) {
       existing.runner = ws
-      existing.status = 'idle'
       existing.fields = llm.fields
       existing.settings = resolveSettings(llm.fields, existing.settings)
       meta?.agentIds.push(id)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label: existing.label })
-      this.runNext(existing)
+      this.runThreadsOf(existing)
       return
     }
     const label = this.uniqueLabel(llm.label)
@@ -465,12 +468,11 @@ export class CrewSession {
       provider: llm.provider,
       ownerId: member.id,
       ownerName: member.name,
-      status: 'idle',
       settings: resolveSettings(llm.fields, llm.settings ?? {}),
       fields: llm.fields,
       runner: ws,
-      queue: [],
-      activities: new Map()
+      running: new Set(),
+      runs: new Map()
     }
     this.agents.set(id, agent)
     meta?.agentIds.push(id)
@@ -483,8 +485,7 @@ export class CrewSession {
     const id = agentId(member.name, instanceId)
     const agent = this.agents.get(id)
     if (!agent) return
-    const inFlight = [...this.prompts.entries()].find(([, ref]) => ref.agentId === id)
-    if (inFlight) this.finishPrompt(agent, inFlight[0], { ok: false, error: `${agent.label} was removed.` })
+    this.dropRunning(agent, `${agent.label} was removed.`)
     this.agents.delete(id)
     const meta = this.meta.get(ws)
     if (meta) meta.agentIds = meta.agentIds.filter(a => a !== id)
@@ -505,9 +506,26 @@ export class CrewSession {
     return flat.length > TITLE_LIMIT ? flat.slice(0, TITLE_LIMIT) + '…' : flat
   }
 
+  private runThreadsOf(agent: AgentState): void {
+    for (const thread of this.threads.values()) {
+      if (thread.agentId === agent.id) this.runThread(thread)
+    }
+  }
+
+  private dropRunning(agent: AgentState, reason: string): void {
+    for (const promptId of [...agent.running]) this.finishPrompt(agent, promptId, { ok: false, error: reason })
+  }
+
+  private statusOf(agent: AgentState): AgentStatus {
+    if (!agent.runner) return 'offline'
+    return agent.running.size > 0 ? 'busy' : 'idle'
+  }
+
   private pooled(agent: AgentState): PooledAgent {
-    const { runner, queue, activities, ...rest } = agent
-    return { ...rest, activities: [...activities.values()], waitingThreadIds: queue.map(p => p.threadId) }
+    const { runner, running, runs, ...rest } = agent
+    const live: Record<string, AgentStep[]> = {}
+    for (const [promptId, steps] of runs) live[promptId] = [...steps.values()].map(entry => entry.step)
+    return { ...rest, status: this.statusOf(agent), runs: live }
   }
 
   private memberFor(name: string): Member {
@@ -535,17 +553,13 @@ export class CrewSession {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
       agent.runner = null
-      const dropped = agent.queue.splice(0)
-      agent.activities.clear()
-      this.broadcastWaiting(agent)
-      for (const prompt of dropped) {
-        this.systemMessage(`${agent.label} went offline before getting to this.`, prompt.threadId)
+      for (const thread of this.threads.values()) {
+        if (thread.agentId !== id) continue
+        for (const prompt of thread.queue.splice(0)) {
+          this.systemMessage(`${agent.label} went offline before getting to this.`, prompt.threadId)
+        }
       }
-      const inFlight = [...this.prompts.entries()].find(([, ref]) => ref.agentId === id)
-      if (inFlight) {
-        this.finishPrompt(agent, inFlight[0], { ok: false, error: `${agent.label} disconnected.` })
-      }
-      agent.status = 'offline'
+      this.dropRunning(agent, `${agent.label} disconnected.`)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.offline', agentId: id, label: agent.label })
     }
     this.persistMeta()
@@ -586,7 +600,7 @@ export class CrewSession {
       code: this.code,
       createdAt: this.createdAt,
       members: [...this.members.values()].map(m => ({ id: m.id, name: m.name })),
-      agents: [...this.agents.values()].map(({ runner, queue, status, activities, ...agent }) => agent)
+      agents: [...this.agents.values()].map(({ runner, running, runs, ...agent }) => agent)
     })
   }
 }

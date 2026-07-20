@@ -7,6 +7,7 @@ export const fakeCliPath = fileURLToPath(new URL('./fake-cli.mjs', import.meta.u
 
 export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('TEXT ')) return [{ text: line.slice(5) }]
+  if (line.startsWith('THINK ')) return [{ thinking: line.slice(6) }]
   if (line.startsWith('ACT ')) {
     const [, id, kind, ...rest] = line.split(' ')
     return [

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { SessionEvent } from '../../../shared/events'
-import { mentionsIn, type PooledAgent } from '../../../shared/llm'
+import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
 
@@ -26,12 +26,10 @@ interface CrewState {
   agents: PooledAgent[]
   events: SessionEvent[]
   docs: Record<string, string>
-  streams: Record<string, string>
-  activePrompts: Record<string, string>
+  steps: Record<string, AgentStep[]>
+  activePrompts: Record<string, string[]>
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
-  threadActivities: Record<string, PooledAgent['activities']>
-  waitingThreads: Record<string, string>
   openThreadId: string | null
   connect: (wsUrl: string, name: string, code: string, joinLink?: string) => void
   leave: () => void
@@ -50,22 +48,22 @@ const EMPTY = {
   agents: [],
   events: [],
   docs: {},
-  streams: {},
+  steps: {},
   activePrompts: {},
   threads: {},
   threadPrompts: {},
-  threadActivities: {},
-  waitingThreads: {},
   openThreadId: null
 }
 
-const waitingFrom = (agents: PooledAgent[]): Record<string, string> => {
-  const out: Record<string, string> = {}
-  for (const agent of agents) {
-    for (const threadId of agent.waitingThreadIds ?? []) out[threadId] = agent.label
-  }
-  return out
+const upsertStep = (steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
+  const rest = (steps ?? []).filter(s => s.id !== step.id)
+  return [...rest, step].sort((a, b) => a.ts - b.ts)
 }
+
+const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: string): string[] => [
+  ...(active[agentId] ?? []).filter(id => id !== promptId),
+  promptId
+]
 
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
@@ -74,10 +72,9 @@ export const useCrew = create<CrewState>((set, get) => {
       const members = [...state.members]
       const agents = [...state.agents]
       const activePrompts = { ...state.activePrompts }
-      const streams = { ...state.streams }
+      const steps = { ...state.steps }
       const threads = { ...state.threads }
       const threadPrompts = { ...state.threadPrompts }
-      const threadActivities = { ...state.threadActivities }
       switch (event.kind) {
         case 'person.joined': {
           const member = members.find(m => m.id === event.memberId)
@@ -116,24 +113,24 @@ export const useCrew = create<CrewState>((set, get) => {
           break
         }
         case 'agent.start': {
-          activePrompts[event.agentId] = event.promptId
-          if (event.threadId) {
-            threadPrompts[event.threadId] = event.promptId
-            threadActivities[event.threadId] = []
-          }
+          activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
+          if (event.threadId) threadPrompts[event.threadId] = event.promptId
+          break
+        }
+        case 'agent.step': {
+          steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
           break
         }
         case 'agent.end': {
-          delete activePrompts[event.agentId]
-          delete streams[event.promptId]
-          if (event.threadId) delete threadPrompts[event.threadId]
+          activePrompts[event.agentId] = (activePrompts[event.agentId] ?? []).filter(id => id !== event.promptId)
+          if (event.threadId && threadPrompts[event.threadId] === event.promptId) delete threadPrompts[event.threadId]
           break
         }
         case 'doc': {
           return { events, docs: { ...state.docs, [event.page]: event.text } }
         }
       }
-      return { events, members, agents, activePrompts, streams, threads, threadPrompts, threadActivities }
+      return { events, members, agents, activePrompts, steps, threads, threadPrompts }
     })
   }
 
@@ -142,6 +139,8 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'welcome': {
         const threads: Record<string, ThreadMeta> = {}
         const threadPrompts: Record<string, string> = {}
+        const activePrompts: Record<string, string[]> = {}
+        const steps: Record<string, AgentStep[]> = {}
         for (const event of msg.snapshot.events) {
           if (event.kind === 'thread.started') {
             threads[event.threadId] = {
@@ -152,8 +151,20 @@ export const useCrew = create<CrewState>((set, get) => {
               createdBy: event.byName
             }
           }
-          if (event.kind === 'agent.start' && event.threadId) threadPrompts[event.threadId] = event.promptId
-          if (event.kind === 'agent.end' && event.threadId) delete threadPrompts[event.threadId]
+          if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
+          if (event.kind === 'agent.start') {
+            activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
+            if (event.threadId) threadPrompts[event.threadId] = event.promptId
+          }
+          if (event.kind === 'agent.end') {
+            activePrompts[event.agentId] = (activePrompts[event.agentId] ?? []).filter(id => id !== event.promptId)
+            if (event.threadId && threadPrompts[event.threadId] === event.promptId) delete threadPrompts[event.threadId]
+          }
+        }
+        for (const agent of msg.snapshot.agents) {
+          for (const [promptId, live] of Object.entries(agent.runs)) {
+            for (const step of live) steps[promptId] = upsertStep(steps[promptId], step)
+          }
         }
         set({
           connection: 'online',
@@ -163,12 +174,10 @@ export const useCrew = create<CrewState>((set, get) => {
           agents: msg.snapshot.agents,
           events: msg.snapshot.events.slice(-EVENT_LIMIT),
           docs: msg.snapshot.docs,
-          streams: {},
-          activePrompts: {},
+          steps,
+          activePrompts,
           threads,
           threadPrompts,
-          threadActivities: {},
-          waitingThreads: waitingFrom(msg.snapshot.agents),
           openThreadId: null
         })
         break
@@ -177,44 +186,17 @@ export const useCrew = create<CrewState>((set, get) => {
         applyEvent(msg.event)
         break
       case 'agent.added':
-        set(state => {
-          const agents = state.agents.some(a => a.id === msg.agent.id)
-            ? state.agents.map(a => (a.id === msg.agent.id ? msg.agent : a))
-            : [...state.agents, msg.agent]
-          return { agents, waitingThreads: waitingFrom(agents) }
-        })
+        set(state =>
+          state.agents.some(a => a.id === msg.agent.id)
+            ? { agents: state.agents.map(a => (a.id === msg.agent.id ? msg.agent : a)) }
+            : { agents: [...state.agents, msg.agent] }
+        )
         break
       case 'agent.removed':
-        set(state => {
-          const agents = state.agents.filter(a => a.id !== msg.agentId)
-          return { agents, waitingThreads: waitingFrom(agents) }
-        })
+        set(state => ({ agents: state.agents.filter(a => a.id !== msg.agentId) }))
         break
-      case 'agent.waiting':
-        set(state => {
-          const agents = state.agents.map(a =>
-            a.id === msg.agentId ? { ...a, waitingThreadIds: msg.waitingThreadIds } : a
-          )
-          return { agents, waitingThreads: waitingFrom(agents) }
-        })
-        break
-      case 'agent.chunk':
-        set(state => ({
-          streams: { ...state.streams, [msg.promptId]: (state.streams[msg.promptId] ?? '') + msg.text }
-        }))
-        break
-      case 'agent.activity':
-        set(state => {
-          const agents = state.agents.map(agent => {
-            if (agent.id !== msg.agentId) return agent
-            const rest = agent.activities.filter(a => a.id !== msg.activity.id)
-            return { ...agent, activities: [...rest, msg.activity] }
-          })
-          if (!msg.threadId) return { agents }
-          const current = state.threadActivities[msg.threadId] ?? []
-          const rest = current.filter(a => a.id !== msg.activity.id)
-          return { agents, threadActivities: { ...state.threadActivities, [msg.threadId]: [...rest, msg.activity] } }
-        })
+      case 'agent.step':
+        set(state => ({ steps: { ...state.steps, [msg.promptId]: upsertStep(state.steps[msg.promptId], msg.step) } }))
         break
     }
   }

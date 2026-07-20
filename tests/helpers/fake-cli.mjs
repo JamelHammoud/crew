@@ -2,11 +2,13 @@ const prompt = (process.argv[2] ?? '').replace(/\s+/g, ' ')
 const delay = Number(process.env.FAKE_CLI_DELAY_MS ?? 20)
 const fail = process.env.FAKE_CLI_FAIL === '1'
 const withActivity = process.env.FAKE_CLI_ACTIVITY === '1'
+const withThinking = process.env.FAKE_CLI_THINK === '1'
 
 const rest = process.argv.slice(3).join(' ')
 
 const lines = []
 if (rest) lines.push(`TEXT flags: ${rest}`)
+if (withThinking) lines.push('THINK weighing the options')
 if (withActivity) {
   lines.push('ACT a1 subagent Helper researching the question')
   lines.push('ACT t1 tool Glob *.md')
