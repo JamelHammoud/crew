@@ -1,3 +1,4 @@
+import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useRef } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
@@ -10,18 +11,18 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   return (
     <div className="flex flex-wrap gap-2 mb-2">
       {pending.map(item => (
-        <div key={item.id} className="relative">
+        <div key={item.id} className="relative group animate-pop">
           <img
             src={previewSrc(item)}
             alt={item.name}
-            className="h-16 w-16 object-cover rounded-lg border border-zinc-800"
+            className="h-16 w-16 object-cover rounded-xl border border-white/10"
           />
           <button
             onClick={() => detach(attachmentKey, item.id)}
             title={`Remove ${item.name}`}
-            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 hover:text-white"
+            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full glass flex items-center justify-center text-fg-secondary opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
           >
-            ×
+            <XMarkIcon className="w-3 h-3" />
           </button>
         </div>
       ))}
@@ -52,9 +53,9 @@ export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
         disabled={full}
         title={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}
         aria-label="Add an image"
-        className="flex items-center justify-center border border-zinc-800 text-zinc-300 rounded-lg h-[34px] w-[34px] text-lg leading-none hover:text-white hover:border-zinc-600 disabled:text-zinc-600 disabled:hover:border-zinc-800 shrink-0"
+        className="w-10 h-10 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-white/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"
       >
-        +
+        <PlusIcon className="w-5 h-5" />
       </button>
     </>
   )
