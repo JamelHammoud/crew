@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { httpBaseFrom } from '../../../shared/attachments'
 import { trimEvents, type SessionEvent } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
-import type { ClientMessage, MemberInfo, ServerMessage } from '../../../shared/protocol'
+import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 
@@ -28,6 +28,7 @@ interface CrewState {
   agents: PooledAgent[]
   events: SessionEvent[]
   docs: Record<string, string>
+  queues: Record<string, QueuedItem[]>
   steps: Record<string, AgentStep[]>
   tokens: Record<string, number>
   activePrompts: Record<string, string[]>
@@ -64,6 +65,7 @@ const EMPTY = {
   agents: [],
   events: [],
   docs: {},
+  queues: {},
   steps: {},
   tokens: {},
   activePrompts: {},

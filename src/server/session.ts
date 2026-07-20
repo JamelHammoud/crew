@@ -62,6 +62,7 @@ interface PendingSteer {
   messageId: string
   text: string
   byName: string
+  authorId?: string
   threadId: string
   attachments: Attachment[]
 }
@@ -184,7 +185,20 @@ export class CrewSession {
       })),
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: trimEvents(this.events, SNAPSHOT_EVENT_LIMIT),
-      docs: Object.fromEntries(this.docs)
+      docs: Object.fromEntries(this.docs),
+      queues: Object.fromEntries(
+        [...this.threads.values()]
+          .filter(thread => thread.queue.length > 0)
+          .map(thread => [
+            thread.id,
+            thread.queue.map(({ promptId, authorId, byName, text }) => ({
+              promptId,
+              authorId,
+              authorName: byName,
+              text
+            }))
+          ])
+      )
     }
   }
 
@@ -429,19 +443,24 @@ export class CrewSession {
   private handleQueueEdit(member: Member, promptId: string, text: string): void {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
-    if (!found || !trimmed) return
-    const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
-    if (!message || message.kind !== 'message' || message.authorId !== member.id) return
+    if (!found || !trimmed || found.entry.authorId !== member.id) return
     found.entry.text = trimmed
-    message.text = trimmed
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.edited', messageId: message.id, text: trimmed })
+    if (found.entry.emitted) {
+      const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
+      if (message && message.kind === 'message') {
+        message.text = trimmed
+        this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.edited', messageId: message.id, text: trimmed })
+      }
+    }
+    this.broadcastQueue(found.thread)
   }
 
   private handleQueueRemove(member: Member, promptId: string): void {
     const found = this.queuedEntry(promptId)
-    if (!found) return
+    if (!found || found.entry.authorId !== member.id) return
     found.thread.queue = found.thread.queue.filter(q => q.promptId !== promptId)
-    this.handleDeleteMessage(member, found.entry.messageId)
+    if (found.entry.emitted) this.handleDeleteMessage(member, found.entry.messageId)
+    this.broadcastQueue(found.thread)
   }
 
   private handleDocRename(member: Member, from: string, to: string): void {
@@ -567,6 +586,7 @@ export class CrewSession {
         messageId: entry.messageId,
         text,
         byName: member.name,
+        authorId: member.id,
         threadId,
         attachments
       })
@@ -626,8 +646,18 @@ export class CrewSession {
       return
     }
     const promptId = randomUUID()
-    thread.queue.push({ promptId, ...steer })
+    thread.queue.push({
+      promptId,
+      text: steer.text,
+      byName: steer.byName,
+      authorId: steer.authorId ?? '',
+      threadId: steer.threadId,
+      attachments: steer.attachments,
+      messageId: steer.messageId,
+      emitted: true
+    })
     this.routed(steer.messageId, steer.threadId, promptId, 'queued')
+    this.broadcastQueue(thread)
     this.runThread(thread)
   }
 
@@ -641,6 +671,8 @@ export class CrewSession {
     if (!agent?.runner) return
     const next = thread.queue.shift()
     if (!next) return
+    this.broadcastQueue(thread)
+    this.emitThreadMessage(next, agent.id)
     thread.running = next.promptId
     agent.running.add(next.promptId)
     agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now() })
