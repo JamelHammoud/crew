@@ -222,7 +222,40 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784570787398,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 100,
+            "severity": "critical",
+            "resetsAt": 1784584800213,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 14,
+            "severity": "normal",
+            "resetsAt": 1784894400213,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 26,
+            "severity": "normal",
+            "resetsAt": 1784894400214,
+            "active": false
+          }
+        ],
+        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "pro"
+      }
     },
     {
       "id": "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
@@ -294,7 +327,16 @@
           "default": "high"
         }
       ],
-      "steerable": false
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784570787975,
+        "windows": [],
+        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "team",
+        "error": "No usage recorded yet — appears after this Codex runs once."
+      }
     },
     {
       "id": "ali/20890e3a-ce3f-4240-95da-1509a65df80a",
@@ -366,7 +408,16 @@
           "default": "high"
         }
       ],
-      "steerable": false
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784570787975,
+        "windows": [],
+        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "team",
+        "error": "No usage recorded yet — appears after this Codex runs once."
+      }
     },
     {
       "id": "jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
