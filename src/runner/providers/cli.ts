@@ -36,6 +36,10 @@ interface CliProviderOptions {
 const IDLE_TIMEOUT_MS = 10 * 60 * 1000
 // Grace period before escalating to SIGKILL for a process ignoring SIGTERM.
 const KILL_GRACE_MS = 5000
+// 'close' waits on the stdio pipes, which a grandchild left running by the CLI
+// can hold open long after the CLI itself has exited. Once 'exit' fires the
+// run is over; this is how long the pipes get to flush before settling anyway.
+const EXIT_FLUSH_MS = 1500
 // In streaming-input mode the CLI ends a turn but keeps running, waiting for
 // more stdin. We wait this long after a turn ends before closing stdin, so a
 // steer already in flight over the socket still lands in the same run.
