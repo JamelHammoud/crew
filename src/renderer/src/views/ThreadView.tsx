@@ -46,13 +46,15 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const diffTotals = useMemo(() => {
     let added = 0
     let removed = 0
+    const paths = new Set<string>()
     for (const step of threadSteps) {
       for (const file of step.files ?? []) {
         added += file.added
         removed += file.removed
+        paths.add(file.path)
       }
     }
-    return { added, removed }
+    return { added, removed, files: paths.size }
   }, [threadSteps])
 
   const didInitialScroll = useRef(false)
