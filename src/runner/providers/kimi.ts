@@ -54,7 +54,6 @@ export const kimiArgs = (prompt: string, get: SettingReader): string[] => [
   prompt,
   '--output-format',
   'stream-json',
-  '--yolo',
   ...flag('--model', get('model'))
 ]
 
