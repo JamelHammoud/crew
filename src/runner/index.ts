@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 import { httpBaseFrom, type Attachment } from '../shared/attachments'
-import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
+import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../shared/llm'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
@@ -175,6 +175,47 @@ export class Runner {
 
   private killRunning(): void {
     for (const run of this.running.values()) run.kill()
+  }
+
+  private startUsagePolling(): void {
+    this.stopUsagePolling()
+    const tick = () => void this.pollUsage()
+    tick()
+    this.usageTimer = setInterval(tick, this.opts.usagePollMs ?? USAGE_POLL_MS)
+    this.usageTimer.unref?.()
+  }
+
+  private stopUsagePolling(): void {
+    if (this.usageTimer) clearInterval(this.usageTimer)
+    this.usageTimer = null
+  }
+
+  // All agents backed by the same provider share one account on this machine,
+  // so usage is read once per provider and reported for each instance.
+  private async pollUsage(): Promise<void> {
+    if (this.pollingUsage) return
+    this.pollingUsage = true
+    try {
+      const byProvider = new Map<Provider, string[]>()
+      for (const agent of this.agents.values()) {
+        if (!agent.provider.usage) continue
+        const list = byProvider.get(agent.provider) ?? []
+        list.push(agent.instanceId)
+        byProvider.set(agent.provider, list)
+      }
+      for (const [provider, instanceIds] of byProvider) {
+        let usage: AgentUsage | null = null
+        try {
+          usage = await provider.usage!()
+        } catch {
+          usage = null
+        }
+        if (!usage) continue
+        for (const instanceId of instanceIds) this.send({ type: 'agent.usage', instanceId, usage })
+      }
+    } finally {
+      this.pollingUsage = false
+    }
   }
 
   private handle(msg: ServerMessage): void {
