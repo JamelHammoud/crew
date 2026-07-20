@@ -45,6 +45,7 @@ interface CrewState {
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
   sendChat: (text: string, threadId?: string) => void
+  deleteMessage: (messageId: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
@@ -91,6 +92,10 @@ const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]):
 
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
+    if (event.kind === 'message.deleted') {
+      set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
+      return
+    }
     set(state => {
       const all = [...state.events, event]
       const events = trimEvents(all, EVENT_LIMIT)
@@ -291,6 +296,9 @@ export const useCrew = create<CrewState>((set, get) => {
       const mentions = mentionsIn(text, get().agents)
       socket.send({ type: 'chat.send', text, mentions, attachments })
       set(state => ({ chatDraft: '', pending: { ...state.pending, [key]: [] } }))
+    },
+    deleteMessage: messageId => {
+      socket.send({ type: 'chat.delete', messageId })
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
