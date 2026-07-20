@@ -93,7 +93,7 @@ export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     set(state => {
       const all = [...state.events, event]
-      const events = all.slice(-EVENT_LIMIT)
+      const events = trimEvents(all, EVENT_LIMIT)
       const members = [...state.members]
       const agents = [...state.agents]
       const activePrompts = { ...state.activePrompts }
@@ -207,7 +207,7 @@ export const useCrew = create<CrewState>((set, get) => {
           code: msg.snapshot.code,
           members: msg.snapshot.members,
           agents: msg.snapshot.agents,
-          events: msg.snapshot.events.slice(-EVENT_LIMIT),
+          events: trimEvents(msg.snapshot.events, EVENT_LIMIT),
           docs: msg.snapshot.docs,
           steps,
           tokens,
