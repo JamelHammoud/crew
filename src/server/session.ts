@@ -222,6 +222,12 @@ export class CrewSession {
       case 'doc.delete':
         if (meta.role === 'ui') this.handleDocDelete(member, msg.page)
         break
+      case 'queue.edit':
+        if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
+        break
+      case 'queue.remove':
+        if (meta.role === 'ui') this.handleQueueRemove(member, msg.promptId)
+        break
       case 'prompt.cancel':
         if (meta.role === 'ui') this.handleCancel(msg.promptId)
         break
@@ -416,6 +422,32 @@ export class CrewSession {
       { persist: false }
     )
     this.onSyncNeeded?.()
+  }
+
+  private queuedEntry(promptId: string): { thread: Thread; entry: QueuedPrompt } | null {
+    for (const thread of this.threads.values()) {
+      const entry = thread.queue.find(q => q.promptId === promptId)
+      if (entry) return { thread, entry }
+    }
+    return null
+  }
+
+  private handleQueueEdit(member: Member, promptId: string, text: string): void {
+    const found = this.queuedEntry(promptId)
+    const trimmed = text.trim()
+    if (!found || !trimmed) return
+    const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
+    if (!message || message.kind !== 'message' || message.authorId !== member.id) return
+    found.entry.text = trimmed
+    message.text = trimmed
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.edited', messageId: message.id, text: trimmed })
+  }
+
+  private handleQueueRemove(member: Member, promptId: string): void {
+    const found = this.queuedEntry(promptId)
+    if (!found) return
+    found.thread.queue = found.thread.queue.filter(q => q.promptId !== promptId)
+    this.handleDeleteMessage(member, found.entry.messageId)
   }
 
   private handleDocRename(member: Member, from: string, to: string): void {
@@ -835,7 +867,12 @@ export class CrewSession {
   }
 
   private emit(event: SessionEvent, opts: { persist?: boolean } = {}): void {
-    if (event.kind !== 'doc' && event.kind !== 'doc.renamed') this.events.push(event)
+    const ephemeral =
+      event.kind === 'doc' ||
+      event.kind === 'doc.renamed' ||
+      event.kind === 'doc.deleted' ||
+      event.kind === 'message.edited'
+    if (!ephemeral) this.events.push(event)
     if (opts.persist !== false) this.store.appendEvent(event)
     this.broadcast({ type: 'event', event })
     if (opts.persist !== false) this.onSyncNeeded?.()

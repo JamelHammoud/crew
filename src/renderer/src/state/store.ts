@@ -50,6 +50,8 @@ interface CrewState {
   updateDoc: (page: string, text: string) => void
   renameDoc: (from: string, to: string) => void
   deleteDoc: (page: string) => void
+  editQueued: (promptId: string, text: string) => void
+  removeQueued: (promptId: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
@@ -96,6 +98,14 @@ export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     if (event.kind === 'message.deleted') {
       set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
+      return
+    }
+    if (event.kind === 'message.edited') {
+      set(state => ({
+        events: state.events.map(e =>
+          e.kind === 'message' && e.id === event.messageId ? { ...e, text: event.text } : e
+        )
+      }))
       return
     }
     set(state => {
@@ -348,6 +358,12 @@ export const useCrew = create<CrewState>((set, get) => {
         return { docs }
       })
       socket.send({ type: 'doc.delete', page })
+    },
+    editQueued: (promptId, text) => {
+      socket.send({ type: 'queue.edit', promptId, text })
+    },
+    removeQueued: promptId => {
+      socket.send({ type: 'queue.remove', promptId })
     },
     updateAgentSetting: (agentId, key, value) => {
       set(state => ({
