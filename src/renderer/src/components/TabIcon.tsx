@@ -1,76 +1,81 @@
 import type { Tab } from './TopBar'
 
 const SVG = {
+  className: 'tab-icon-svg',
   width: 20,
   height: 20,
   viewBox: '0 0 20 20',
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 1.6,
+  strokeWidth: 1.55,
   strokeLinecap: 'round',
   strokeLinejoin: 'round'
 } as const
 
-/** Speech bubble draws itself, then the three dots land one after another. */
+/** The one orbit the satellite rides — shared by the ring path and its offset-path. */
+const ORBIT = 'M16.24 6.4A7.2 3 -30 1 1 3.76 13.6A7.2 3 -30 1 1 16.24 6.4'
+const ORBIT_MIRROR = 'M16.24 13.6A7.2 3 30 1 1 3.76 6.4A7.2 3 30 1 1 16.24 13.6'
+
+/** Bubble strokes itself in one pass, then the three dots land left to right. */
 function ChatIcon() {
   return (
     <svg {...SVG}>
       <path
         className="tab-icon-draw"
         pathLength={1}
-        d="M6.5 4H13.5A3 3 0 0 1 16.5 7V10.5A3 3 0 0 1 13.5 13.5H9.5L6.2 16.1A0.6 0.6 0 0 1 5.2 15.6V13.3A3 3 0 0 1 3.5 10.5V7A3 3 0 0 1 6.5 4Z"
-        style={{ '--draw-dur': '340ms' } as React.CSSProperties}
+        d="M6.2 3.5H13.8A3.2 3.2 0 0 1 17 6.7V10.1A3.2 3.2 0 0 1 13.8 13.3H8.9L6.05 16.05Q5.25 16.75 5.25 15.7V13.05A3.2 3.2 0 0 1 3 10.1V6.7A3.2 3.2 0 0 1 6.2 3.5Z"
+        style={{ '--draw-dur': '320ms' } as React.CSSProperties}
       />
-      {[7.4, 10, 12.6].map((cx, i) => (
+      {[7.1, 10, 12.9].map((cx, i) => (
         <circle
           key={cx}
           className="tab-icon-pop"
           cx={cx}
-          cy={8.75}
-          r={0.95}
+          cy={8.4}
+          r={0.9}
           fill="currentColor"
           stroke="none"
-          style={{ '--pop-delay': `${200 + i * 70}ms` } as React.CSSProperties}
+          style={{ '--pop-delay': `${215 + i * 65}ms` } as React.CSSProperties}
         />
       ))}
     </svg>
   )
 }
 
-/** Two orbits sweep out from the core, then a satellite settles onto the outer ring. */
+/** Core pops, two orbits swing open from opposite tilts, a satellite slides along the ring. */
 function SpaceIcon() {
   return (
     <svg {...SVG}>
-      <circle className="tab-icon-pop" cx={10} cy={10} r={2.1} fill="currentColor" stroke="none" />
-      <ellipse
-        className="tab-icon-draw"
-        pathLength={1}
-        cx={10}
-        cy={10}
-        rx={7.6}
-        ry={3.4}
-        transform="rotate(-28 10 10)"
-        style={{ '--draw-dur': '360ms', '--draw-delay': '60ms' } as React.CSSProperties}
-      />
-      <ellipse
-        className="tab-icon-draw"
-        pathLength={1}
-        cx={10}
-        cy={10}
-        rx={7.6}
-        ry={3.4}
-        transform="rotate(52 10 10)"
-        style={{ '--draw-dur': '360ms', '--draw-delay': '150ms' } as React.CSSProperties}
-      />
-      <circle
-        className="tab-icon-pop"
-        cx={16.1}
-        cy={6.8}
-        r={1.35}
-        fill="currentColor"
-        stroke="none"
-        style={{ '--pop-delay': '400ms' } as React.CSSProperties}
-      />
+      <circle className="tab-icon-pop" cx={10} cy={10} r={2.05} fill="currentColor" stroke="none" />
+      <g
+        className="tab-icon-sweep"
+        style={{ '--sweep-from': '-26deg', '--sweep-delay': '70ms' } as React.CSSProperties}
+      >
+        <path
+          className="tab-icon-draw"
+          pathLength={1}
+          d={ORBIT}
+          style={{ '--draw-dur': '340ms', '--draw-delay': '70ms' } as React.CSSProperties}
+        />
+        <circle
+          className="tab-icon-orbit"
+          r={1.3}
+          fill="currentColor"
+          stroke="none"
+          style={{ offsetPath: `path("${ORBIT}")` } as React.CSSProperties}
+        />
+      </g>
+      <g
+        className="tab-icon-sweep"
+        style={{ '--sweep-from': '26deg', '--sweep-delay': '150ms' } as React.CSSProperties}
+      >
+        <path
+          className="tab-icon-draw"
+          pathLength={1}
+          d={ORBIT_MIRROR}
+          style={{ '--draw-dur': '340ms', '--draw-delay': '150ms' } as React.CSSProperties}
+        />
+      </g>
     </svg>
   )
 }
@@ -82,28 +87,28 @@ function DocsIcon() {
       <path
         className="tab-icon-draw"
         pathLength={1}
-        d="M11 2.75H6.25A1.75 1.75 0 0 0 4.5 4.5V15.5A1.75 1.75 0 0 0 6.25 17.25H13.75A1.75 1.75 0 0 0 15.5 15.5V7.25Z"
-        style={{ '--draw-dur': '360ms' } as React.CSSProperties}
+        d="M11.2 2.6H6.2A1.8 1.8 0 0 0 4.4 4.4V15.6A1.8 1.8 0 0 0 6.2 17.4H13.8A1.8 1.8 0 0 0 15.6 15.6V7Z"
+        style={{ '--draw-dur': '340ms' } as React.CSSProperties}
       />
       <path
         className="tab-icon-draw"
         pathLength={1}
-        d="M11 2.75V6.25A1 1 0 0 0 12 7.25H15.5"
-        style={{ '--draw-dur': '180ms', '--draw-delay': '260ms' } as React.CSSProperties}
+        d="M11.2 2.6V6A1 1 0 0 0 12.2 7H15.6"
+        style={{ '--draw-dur': '170ms', '--draw-delay': '250ms' } as React.CSSProperties}
       />
       {[
-        { y: 10.75, x2: 12.75 },
-        { y: 13.25, x2: 12.75 },
-        { y: 15.75, x2: 10.5 }
+        { y: 10.7, x2: 12.8 },
+        { y: 13, x2: 12.8 },
+        { y: 15.3, x2: 10.4 }
       ].map((line, i) => (
         <path
           key={line.y}
           className="tab-icon-draw"
           pathLength={1}
-          strokeWidth={1.5}
-          d={`M7.25 ${line.y}H${line.x2}`}
+          strokeWidth={1.45}
+          d={`M7.2 ${line.y}H${line.x2}`}
           style={
-            { '--draw-dur': '160ms', '--draw-delay': `${340 + i * 70}ms` } as React.CSSProperties
+            { '--draw-dur': '150ms', '--draw-delay': `${330 + i * 65}ms` } as React.CSSProperties
           }
         />
       ))}
