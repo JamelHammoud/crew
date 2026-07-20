@@ -28,7 +28,7 @@ const step = (promptId: string): SessionEvent => ({
   promptId,
   agentId: 'ag',
   agentLabel: 'Agent',
-  step: { id: `b${seq}`, kind: 'tool', status: 'done', name: 'Bash' }
+  step: { id: `b${seq}`, ts: seq, kind: 'tool', status: 'done', name: 'Bash' }
 })
 
 describe('trimEvents', () => {
