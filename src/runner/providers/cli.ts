@@ -240,13 +240,15 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       })
 
       const done = new Promise<{ text: string }>((resolve, reject) => {
-        child.on('error', err => {
+        let settled = false
+        let exitTimer: NodeJS.Timeout | null = null
+        const settle = (code: number | null) => {
+          if (settled) return
+          settled = true
           clearTimers()
-          reject(err)
-        })
-        child.on('close', code => {
-          clearTimers()
+          if (exitTimer) clearTimeout(exitTimer)
           if (buffer.trim()) handleLine(buffer)
+          buffer = ''
           if (rawOpen) hooks.onStep({ id: 'b0', kind: 'text', status: 'done' })
           if (killed) {
             reject(new Error('Stopped'))
@@ -258,6 +260,21 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           } else {
             reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} exited with code ${code}`))
           }
+        }
+        child.on('error', err => {
+          if (settled) return
+          settled = true
+          clearTimers()
+          if (exitTimer) clearTimeout(exitTimer)
+          reject(err)
+        })
+        child.on('close', code => settle(code))
+        // 'close' can be held open indefinitely by whatever inherited the
+        // stdio pipes, so settle from 'exit' too once they have had a moment
+        // to flush.
+        child.on('exit', code => {
+          exitTimer = setTimeout(() => settle(code), EXIT_FLUSH_MS)
+          exitTimer.unref()
         })
       })
 
