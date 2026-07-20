@@ -4,6 +4,7 @@ import { choices, flag, makeCliProvider } from '../../src/runner/providers/cli'
 import type { OutputParser, Provider } from '../../src/runner/providers/types'
 
 export const fakeCliPath = fileURLToPath(new URL('./fake-cli.mjs', import.meta.url))
+export const fakeSteerCliPath = fileURLToPath(new URL('./fake-steer-cli.mjs', import.meta.url))
 
 export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('TEXT ')) return [{ text: line.slice(5) }]

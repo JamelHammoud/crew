@@ -218,9 +218,8 @@ export default function Docs() {
   }
 
   return (
-    <div className="h-full flex px-6">
-      <div className="max-w-[980px] w-full mx-auto flex pt-24 gap-8 min-h-0">
-        <aside className="w-56 shrink-0 flex flex-col min-h-0 pb-6">
+    <div className="h-full flex">
+      <aside className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
           <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
           <div className="flex-1 min-h-0 overflow-y-auto space-y-0.5">
             {tree.map(node => renderNode(node, 0))}
@@ -238,9 +237,9 @@ export default function Docs() {
             <PlusIcon className="w-4 h-4 shrink-0" />
             New page
           </button>
-        </aside>
-        <div className="flex-1 min-w-0 overflow-y-auto">
-          <div className="max-w-[760px]">
+      </aside>
+      <div className="flex-1 min-w-0 overflow-y-auto px-6">
+        <div className="max-w-[760px] mx-auto pt-24">
             <div className="px-[54px] pb-2">
               <input
                 ref={titleRef}
