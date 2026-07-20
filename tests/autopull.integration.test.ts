@@ -76,7 +76,11 @@ describe('auto pull', () => {
     fs.appendFileSync(path.join(b, '.gitattributes'), 'local wip\n')
     await commitAndPush(a, 'other.ts', 'export const y = 2\n', 'add other')
 
-    await waitUntil(() => fs.existsSync(path.join(b, 'other.ts')))
+    await waitUntil(
+      () =>
+        fs.existsSync(path.join(b, 'other.ts')) &&
+        fs.readFileSync(path.join(b, '.gitattributes'), 'utf8').includes('local wip')
+    )
     expect(fs.readFileSync(path.join(b, '.gitattributes'), 'utf8')).toContain('local wip')
   })
 
