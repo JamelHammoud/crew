@@ -105,6 +105,25 @@ const CLAUDE_FLAT_LABELS: Record<string, string> = {
   seven_day_sonnet: 'Weekly (Sonnet)'
 }
 
+export function claudeWindowsFrom(body: any): UsageWindow[] {
+  const windows: UsageWindow[] = []
+  if (Array.isArray(body?.limits)) {
+    for (const limit of body.limits) {
+      const window = claudeWindowFromLimit(limit)
+      if (window) windows.push(window)
+    }
+  }
+  if (windows.length === 0) {
+    for (const [key, label] of Object.entries(CLAUDE_FLAT_LABELS)) {
+      const entry = body?.[key]
+      const percent = clampPercent(entry?.utilization)
+      if (percent === null) continue
+      windows.push({ key, label, percent, resetsAt: parseWhen(entry?.resets_at) })
+    }
+  }
+  return windows
+}
+
 export async function claudeUsage(): Promise<AgentUsage | null> {
   const base: AgentUsage = { provider: 'claude', fetchedAt: Date.now(), windows: [], ...claudeAccount() }
   const creds = await claudeCredentials()
