@@ -161,7 +161,7 @@
       "ownerName": "ALI",
       "settings": {
         "model": "fable",
-        "effort": "high"
+        "effort": "max"
       },
       "fields": [
         {
