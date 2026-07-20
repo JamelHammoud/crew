@@ -6,7 +6,7 @@ import { parseCodexLine } from '../src/runner/providers/codex'
 import { parseKimiLine } from '../src/runner/providers/kimi'
 import { tmpDir } from './helpers/session'
 import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
-import { commandExists } from '../src/runner/providers/cli'
+import { commandExists, makeCliProvider } from '../src/runner/providers/cli'
 import { crewPath, resolveCommand } from '../src/runner/providers/path'
 
 describe('fake provider contract', () => {
