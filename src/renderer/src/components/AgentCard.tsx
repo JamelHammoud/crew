@@ -29,7 +29,7 @@ function ActivityRow({ activity }: { activity: AgentStep }) {
       {open && activity.detail && (
         <p
           onClick={() => setOpen(false)}
-          className="text-xs font-mono text-fg-muted leading-5 mt-1.5 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-3 cursor-pointer"
+          className="text-xs font-mono text-fg-muted leading-5 mt-1.5 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-3 cursor-pointer"
         >
           {activity.detail}
         </p>
@@ -60,7 +60,7 @@ export default function AgentCard({
     .reverse()
 
   return (
-    <div className="group border-2 border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
+    <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
           <Avatar name={agent.label} presence={agent.status === 'offline' ? 'offline' : 'online'} />

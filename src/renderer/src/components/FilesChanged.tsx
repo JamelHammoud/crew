@@ -25,7 +25,7 @@ export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
   )
 
   return (
-    <div className="ml-14 border-2 border-ink-700 rounded-card overflow-hidden animate-rise">
+    <div className="ml-14 border border-ink-700 rounded-card overflow-hidden animate-rise">
       <div className="flex items-center gap-2.5 px-4 h-11 bg-ink-700/50">
         <DocumentTextIcon className="w-4 h-4 text-fg-muted shrink-0" />
         <span className="text-sm font-semibold text-fg">
