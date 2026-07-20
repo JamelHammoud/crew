@@ -23,11 +23,19 @@ export default function ThreadCard({
   onOpen: () => void
 }) {
   const agent = useCrew(s => s.agents.find(a => a.id === thread.agentId))
+  const archiveThread = useCrew(s => s.archiveThread)
   const owner = agent?.ownerName
   const presence = usePresence(thread.createdBy)
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   return (
-    <div className="flex gap-4 animate-rise">
+    <div
+      className="flex gap-4 animate-rise"
+      onContextMenu={event => {
+        event.preventDefault()
+        setMenuAt({ x: event.clientX, y: event.clientY })
+      }}
+    >
       <Avatar name={thread.createdBy} presence={presence} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
