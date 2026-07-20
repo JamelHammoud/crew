@@ -295,3 +295,4 @@
 {"id":"93556788-9335-4cc7-8b43-c12eb66c2941","ts":1784514109162,"kind":"agent.start","promptId":"22438754-a161-4dda-b356-c9e9854d7e9c","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","agentLabel":"Bob (Kimi K3)","promptText":"@Bob (Kimi K3) hi","byName":"Jamel","threadId":"2b49b799-cfba-48e0-b741-159d858afc36"}
 {"id":"0b37abd8-c022-4879-863d-e52de7141361","ts":1784514121817,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"756a6374-0794-40e6-9572-4563c256554c","ts":1784514140773,"kind":"agent.end","promptId":"22438754-a161-4dda-b356-c9e9854d7e9c","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","agentLabel":"Bob (Kimi K3)","threadId":"2b49b799-cfba-48e0-b741-159d858afc36","ok":true,"text":"Hi Jamel. Bob here, ready when you are. What do you want to work on?"}
+{"id":"dd694769-daa0-45d9-b638-7968a4cf66c2","ts":1784514147255,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
