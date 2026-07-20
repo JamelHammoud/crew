@@ -320,8 +320,13 @@ export const useCrew = create<CrewState>((set, get) => {
     renameDoc: (from, to) => {
       set(state => {
         if (state.docs[from] === undefined || state.docs[to] !== undefined) return state
-        const docs = { ...state.docs, [to]: state.docs[from] }
-        delete docs[from]
+        if (to === from || to.startsWith(`${from}/`)) return state
+        const docs = { ...state.docs }
+        for (const page of Object.keys(docs)) {
+          if (page !== from && !page.startsWith(`${from}/`)) continue
+          docs[to + page.slice(from.length)] = docs[page]
+          delete docs[page]
+        }
         return { docs }
       })
       socket.send({ type: 'doc.rename', from, to })
