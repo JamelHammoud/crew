@@ -194,6 +194,10 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         })
       })
 
+      // Start the clock at spawn: a process that hangs before its first byte
+      // (as codex did on stdin) is the case this exists for.
+      bump()
+
       return {
         done,
         kill: () => {
