@@ -1,5 +1,5 @@
 import http from 'node:http'
-import { WebSocketServer } from 'ws'
+import { WebSocketServer, WebSocket } from 'ws'
 import type { CrewSession } from './session'
 
 export interface CrewServer {
@@ -8,9 +8,17 @@ export interface CrewServer {
   close: () => Promise<void>
 }
 
-const HEARTBEAT_MS = 25000
+interface CrewServerOptions {
+  port?: number
+  host?: string
+  heartbeatMs?: number
+}
 
-export function createCrewServer(session: CrewSession, opts: { port?: number; host?: string } = {}): Promise<CrewServer> {
+type LiveSocket = WebSocket & { isAlive: boolean }
+
+const HEARTBEAT_MS = 20000
+
+export function createCrewServer(session: CrewSession, opts: CrewServerOptions = {}): Promise<CrewServer> {
   const httpServer = http.createServer((req, res) => {
     if (req.url === '/') {
       res.writeHead(200, { 'content-type': 'text/plain' })
@@ -22,32 +30,40 @@ export function createCrewServer(session: CrewSession, opts: { port?: number; ho
   })
 
   const wss = new WebSocketServer({ noServer: true })
+  const clients = new Set<LiveSocket>()
+
   httpServer.on('upgrade', (req, socket, head) => {
     if (!req.url?.startsWith('/ws')) {
       socket.destroy()
       return
     }
-    wss.handleUpgrade(req, socket, head, ws => session.attach(ws))
+    wss.handleUpgrade(req, socket, head, ws => {
+      const live = ws as LiveSocket
+      live.isAlive = true
+      ws.on('pong', () => {
+        live.isAlive = true
+      })
+      ws.on('close', () => clients.delete(live))
+      clients.add(live)
+      session.attach(ws)
+    })
   })
 
   const heartbeat = setInterval(() => {
-    for (const ws of wss.clients) {
-      const alive = ws as unknown as { isAlive?: boolean }
-      if (alive.isAlive === false) {
+    for (const ws of clients) {
+      if (!ws.isAlive) {
         ws.terminate()
         continue
       }
-      alive.isAlive = false
-      ws.ping()
+      ws.isAlive = false
+      try {
+        ws.ping()
+        if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' }))
+      } catch {
+        ws.terminate()
+      }
     }
-  }, HEARTBEAT_MS)
-
-  wss.on('connection', ws => {
-    ;(ws as unknown as { isAlive?: boolean }).isAlive = true
-    ws.on('pong', () => {
-      ;(ws as unknown as { isAlive?: boolean }).isAlive = true
-    })
-  })
+  }, opts.heartbeatMs ?? HEARTBEAT_MS)
 
   return new Promise((resolve, reject) => {
     httpServer.once('error', reject)
@@ -60,7 +76,7 @@ export function createCrewServer(session: CrewSession, opts: { port?: number; ho
         close: () =>
           new Promise(done => {
             clearInterval(heartbeat)
-            for (const ws of wss.clients) ws.terminate()
+            for (const ws of clients) ws.terminate()
             httpServer.close(() => done())
           })
       })
