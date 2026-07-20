@@ -9,8 +9,8 @@ function cleanError(err: unknown): string {
 export default function Home() {
   const connect = useCrew(s => s.connect)
   const [name, setName] = useState(() => localStorage.getItem('crew.name') ?? '')
-  const [folder, setFolder] = useState<string | null>(null)
-  const [link, setLink] = useState('')
+  const [folder, setFolder] = useState<string | null>(() => localStorage.getItem('crew.folder'))
+  const [link, setLink] = useState(() => localStorage.getItem('crew.link') ?? '')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
