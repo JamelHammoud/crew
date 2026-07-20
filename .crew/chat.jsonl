@@ -1364,3 +1364,21 @@
 {"id":"abfae4ab-a379-417b-b3ee-e294663c8ed7","ts":1784523076749,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
 {"id":"3408db6a-8404-4789-9b49-aa1a776746cd","ts":1784523076749,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"fc1a3810-d564-495e-b018-c568c5441837","ts":1784523076749,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"710d5b8d-8b0a-47c7-956d-78fab023ab1e","ts":1784523084354,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"11ed4ad1-c33a-4588-a59e-52593052d878","ts":1784523084354,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"0df264cf-ec83-46cc-9247-def4af58d6c5","ts":1784523084355,"kind":"agent.offline","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"00cf7520-0034-42f0-9764-b268d294f697","ts":1784523084355,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"de86db09-fa9b-4018-892e-617ea5f19232","ts":1784523084355,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"91f0ca58-d6d8-4880-baec-325cfb41f755","ts":1784523084355,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"9ff585fe-e4b7-4ca9-8825-7ebe872434a3","ts":1784523084355,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"52b1f364-5866-491b-9faf-4d921a2f0578","ts":1784523084355,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"23c559ad-5e1c-4eb0-a734-155f3008f2d2","ts":1784523084355,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"c60d8a64-623a-4754-b597-575cf65477b0","ts":1784523084374,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"9a952f26-b818-4054-b01a-f1a39409df9f","ts":1784523084374,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"750adbc6-3d1d-46e7-ad42-cf7aa6a42978","ts":1784523084374,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"e00b6c59-5ccb-425e-993a-844d75af92ca","ts":1784523084374,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"c282552f-2616-4e2f-8b97-52c59d4d28eb","ts":1784523084374,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"a984df1b-508a-4f74-b242-bf3758edb1d1","ts":1784523085676,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"5fd1fbcf-1f78-400f-a0e3-8094c2bb56c4","ts":1784523085686,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"dee25e30-cf92-439b-b193-f75ef8b758b9","ts":1784523085686,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"12c12e5d-ae64-466f-aba7-ad8d4cc014d6","ts":1784523085686,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}

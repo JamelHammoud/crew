@@ -24,6 +24,7 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'agent.offline'; agentId: string; label: string }
   | { id: string; ts: number; kind: 'agent.updated'; agentId: string; settings: AgentSettings }
   | { id: string; ts: number; kind: 'doc'; page: string; text: string; byName: string }
+  | { id: string; ts: number; kind: 'doc.renamed'; from: string; to: string; byName: string }
 
 export const SYSTEM_AUTHOR_ID = 'crew'
 export const SYSTEM_AUTHOR_NAME = 'crew'
