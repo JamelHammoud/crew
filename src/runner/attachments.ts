@@ -7,6 +7,10 @@ export interface LocalAttachment {
   path: string
 }
 
+// A download runs before the provider starts, so a stalled fetch would hold
+// the whole run hostage.
+const DOWNLOAD_TIMEOUT_MS = 30000
+
 export class AttachmentCache {
   constructor(private repoPath: string) {}
 
@@ -28,7 +32,7 @@ export class AttachmentCache {
 
   private async download(url: string): Promise<Buffer | null> {
     try {
-      const res = await fetch(url)
+      const res = await fetch(url, { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) })
       if (!res.ok) return null
       return Buffer.from(await res.arrayBuffer())
     } catch {
