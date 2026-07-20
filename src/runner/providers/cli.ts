@@ -173,12 +173,19 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       })
 
       const done = new Promise<{ text: string }>((resolve, reject) => {
-        child.on('error', reject)
+        child.on('error', err => {
+          clearTimers()
+          reject(err)
+        })
         child.on('close', code => {
+          clearTimers()
           if (buffer.trim()) handleLine(buffer)
           if (rawOpen) hooks.onStep({ id: 'b0', kind: 'text', status: 'done' })
           if (killed) {
             reject(new Error('Stopped'))
+          } else if (timedOut) {
+            const mins = Math.round(idleMs / 60000)
+            reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} sent no output for ${mins}m and was stopped.`))
           } else if (code === 0) {
             resolve({ text: text.trim() || raw.trim() })
           } else {
