@@ -65,10 +65,18 @@ const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: 
   promptId
 ]
 
+const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]): Record<string, AgentStep[]> => {
+  const live = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
+  const kept = Object.keys(steps).filter(promptId => live.has(promptId))
+  if (kept.length === Object.keys(steps).length) return steps
+  return Object.fromEntries(kept.map(promptId => [promptId, steps[promptId]]))
+}
+
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     set(state => {
-      const events = [...state.events, event].slice(-EVENT_LIMIT)
+      const all = [...state.events, event]
+      const events = all.slice(-EVENT_LIMIT)
       const members = [...state.members]
       const agents = [...state.agents]
       const activePrompts = { ...state.activePrompts }
@@ -130,7 +138,15 @@ export const useCrew = create<CrewState>((set, get) => {
           return { events, docs: { ...state.docs, [event.page]: event.text } }
         }
       }
-      return { events, members, agents, activePrompts, steps, threads, threadPrompts }
+      return {
+        events,
+        members,
+        agents,
+        activePrompts,
+        steps: all.length > events.length ? pruneSteps(steps, events) : steps,
+        threads,
+        threadPrompts
+      }
     })
   }
 
