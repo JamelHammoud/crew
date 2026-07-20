@@ -1,4 +1,5 @@
-import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
+import { ChevronLeftIcon } from '@heroicons/react/20/solid'
+import { CheckIcon } from '@heroicons/react/24/outline'
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import Avatar from '../components/Avatar'
 import Composer from '../components/Composer'
@@ -131,7 +132,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   </>
                 ) : (
                   <>
-                    <CheckIcon className="w-5 h-5 text-fg" />
+                    <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />
                     <span className="text-base font-semibold text-fg">Done</span>
                   </>
                 )}
