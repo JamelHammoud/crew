@@ -16,7 +16,8 @@
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "test": "vitest run",
-    "dist": "electron-vite build && electron-builder"
+    "dist": "electron-vite build && electron-builder",
+    "postinstall": "node scripts/ensure-electron.mjs"
   },
   "dependencies": {
     "dompurify": "^3.1.6",
