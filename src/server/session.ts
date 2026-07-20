@@ -373,6 +373,7 @@ export class CrewSession {
       { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, byName: member.name },
       { persist: false }
     )
+    this.onSyncNeeded?.()
   }
 
   private handleDocRename(member: Member, from: string, to: string): void {
@@ -392,6 +393,7 @@ export class CrewSession {
       { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, byName: member.name },
       { persist: false }
     )
+    this.onSyncNeeded?.()
   }
 
   private handleTokens(meta: ConnMeta, promptId: string, tokens: number): void {

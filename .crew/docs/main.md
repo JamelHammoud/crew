@@ -1,12 +1,14 @@
+## Queue
+
 * [ ] We need a "Files" tab, this is the file explorer for the repo, that's synced across computers, searchable, and allows manual editing (Just like VS code)
 * [ ] You should be able to archive a thread
 * [ ] People should be able to steer (i.e. send a message while an agent is working in a thread to get that message to it quickly and "steer" it to start including that too). Right now it just keeps having the message I sent on the bottom of what you keep doing, with no indication it was picked up for steering (I don't think it ever was). support it where you can, make it obvious in the UI if it's queued or steered
 
-## In progress:
+## In progress
 
 ## Blocked
 
-* Every time you @ mention an agent, it has to re-build it's knowledge of the codebase (and takes a long time)
+* [ ] Every time you @ mention an agent, it has to re-build it's knowledge of the codebase (and takes a long time)
 
 ## Completed
 
