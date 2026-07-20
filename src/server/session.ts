@@ -8,7 +8,7 @@ import {
   type Attachment,
   type OutgoingAttachment
 } from '../shared/attachments'
-import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, type SessionEvent } from '../shared/events'
+import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, trimEvents, type SessionEvent } from '../shared/events'
 import {
   agentId,
   resolveSettings,

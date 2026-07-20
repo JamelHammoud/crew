@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { httpBaseFrom } from '../../../shared/attachments'
-import type { SessionEvent } from '../../../shared/events'
+import { trimEvents, type SessionEvent } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
