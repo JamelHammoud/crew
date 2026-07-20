@@ -151,6 +151,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       }
 
       child.stdout.on('data', data => {
+        bump()
         const chunk = data.toString()
         if (!opts.parser) {
           text += chunk
@@ -167,6 +168,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         for (const line of lines) handleLine(line)
       })
       child.stderr.on('data', data => {
+        bump()
         errText += data.toString()
       })
 
