@@ -158,6 +158,29 @@ export class CrewSession {
         if (thread) thread.archived = true
       }
     }
+    // A run that was in flight when this process last stopped left an
+    // 'agent.start' with no matching 'agent.end', and nothing will ever finish
+    // it. Balance the log now or the thread shows as working forever.
+    const ended = new Set<string>()
+    for (const event of this.events) {
+      if (event.kind === 'agent.end') ended.add(event.promptId)
+    }
+    for (const event of [...this.events]) {
+      if (event.kind !== 'agent.start' || ended.has(event.promptId)) continue
+      const close: SessionEvent = {
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'agent.end',
+        promptId: event.promptId,
+        agentId: event.agentId,
+        agentLabel: event.agentLabel,
+        threadId: event.threadId,
+        ok: false,
+        error: 'Interrupted by a restart'
+      }
+      this.events.push(close)
+      store.appendEvent(close)
+    }
     for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
     this.persistMeta()
   }
