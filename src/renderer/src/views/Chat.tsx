@@ -1,11 +1,12 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { mentionCandidates } from '../../../shared/llm'
 import Avatar from '../components/Avatar'
 import ChatMessage from '../components/ChatMessage'
 import Composer from '../components/Composer'
+import DayDivider from '../components/DayDivider'
 import ThreadCard from '../components/ThreadCard'
 import { describeStep, type ThreadItem } from '../components/thread'
-import { formatElapsed, formatTokens } from '../components/time'
+import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
 import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
@@ -160,19 +161,26 @@ export default function Chat() {
               Say hi, or mention an agent with @ to start a thread.
             </p>
           )}
-          {feed.map(entry =>
-            entry.kind === 'card' ? (
-              <ThreadCard
-                key={entry.key}
-                thread={entry.thread}
-                ts={entry.ts}
-                onOpen={() => openThread(entry.thread.id)}
-                {...threadStatus(entry.thread)}
-              />
-            ) : (
-              <ChatMessage key={entry.key} item={entry.item} />
+          {feed.map((entry, index) => {
+            const tsOf = (e: Feed) => (e.kind === 'card' ? e.ts : e.item.ts)
+            const ts = tsOf(entry)
+            const prev = index > 0 ? tsOf(feed[index - 1]) : undefined
+            return (
+              <Fragment key={entry.key}>
+                {isNewDay(prev, ts) && <DayDivider ts={ts} />}
+                {entry.kind === 'card' ? (
+                  <ThreadCard
+                    thread={entry.thread}
+                    ts={entry.ts}
+                    onOpen={() => openThread(entry.thread.id)}
+                    {...threadStatus(entry.thread)}
+                  />
+                ) : (
+                  <ChatMessage item={entry.item} />
+                )}
+              </Fragment>
             )
-          )}
+          })}
         </div>
       </div>
 

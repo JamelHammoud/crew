@@ -9,6 +9,6 @@ export function activityDetail(input: unknown): string | undefined {
 }
 
 function truncate(text: string): string {
-  const flat = text.replace(/\s+/g, ' ').trim()
-  return flat.length > 100 ? flat.slice(0, 100) + '…' : flat
+  const trimmed = text.trim()
+  return trimmed.length > 4000 ? trimmed.slice(0, 4000) + '…' : trimmed
 }

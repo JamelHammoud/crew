@@ -770,3 +770,4 @@
 {"id":"e3c55cec-207d-44cd-a9bc-daa99f881a8d","ts":1784520440494,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
 {"id":"06cc8309-d622-4dc4-91be-b1a720a8fbd6","ts":1784520440495,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
 {"id":"5a8580c8-e6e2-47ce-bffd-02a4e63b799f","ts":1784520440495,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"b89e6e36-f44d-4a30-a969-52272da7deff","ts":1784520791178,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}

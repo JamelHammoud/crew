@@ -16,6 +16,15 @@ export function formatTime(ts: number): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
+export function formatDay(ts: number): string {
+  return new Date(ts).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+export function isNewDay(prev: number | undefined, ts: number): boolean {
+  if (prev === undefined) return true
+  return new Date(prev).toDateString() !== new Date(ts).toDateString()
+}
+
 export function formatFullTime(ts: number): string {
   const date = new Date(ts)
   const day = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })

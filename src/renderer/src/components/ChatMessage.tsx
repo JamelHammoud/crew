@@ -5,6 +5,7 @@ import Markdown from './Markdown'
 import { AgentMention, MemberName } from './Mention'
 import Pill from './Pill'
 import { usePresence } from './presence'
+import Tooltip from './Tooltip'
 import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
@@ -58,9 +59,9 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
             </span>
           </MemberName>
           {item.self && <Pill>You</Pill>}
-          <span className="text-sm text-fg-faint cursor-default" title={formatFullTime(item.ts)}>
-            {formatTime(item.ts)}
-          </span>
+          <Tooltip label={formatFullTime(item.ts)}>
+            <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
+          </Tooltip>
         </div>
         {item.kind === 'reply' ? (
           <div className={item.error ? 'text-base text-danger mt-1.5' : 'mt-1.5'}>

@@ -5,6 +5,7 @@ import Avatar from './Avatar'
 import Pill from './Pill'
 import Select from './Select'
 import Spinner from './Spinner'
+import Tooltip from './Tooltip'
 
 function ActivityRow({ activity }: { activity: AgentStep }) {
   const [open, setOpen] = useState(false)
@@ -72,24 +73,26 @@ export default function AgentCard({
           </div>
           <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             {threadCount > 0 && onStop && (
-              <button
-                onClick={onStop}
-                title={threadCount > 1 ? 'Stop all threads' : 'Stop'}
-                aria-label="Stop"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.06] transition-colors"
-              >
-                <StopIcon className="w-4 h-4" />
-              </button>
+              <Tooltip label={threadCount > 1 ? 'Stop all threads' : 'Stop'}>
+                <button
+                  onClick={onStop}
+                  aria-label="Stop"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.06] transition-colors"
+                >
+                  <StopIcon className="w-4 h-4" />
+                </button>
+              </Tooltip>
             )}
             {onRemove && threadCount === 0 && (
-              <button
-                onClick={onRemove}
-                title="Remove agent"
-                aria-label="Remove agent"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors"
-              >
-                <TrashIcon className="w-4 h-4" />
-              </button>
+              <Tooltip label="Remove agent">
+                <button
+                  onClick={onRemove}
+                  aria-label="Remove agent"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              </Tooltip>
             )}
           </div>
         </div>

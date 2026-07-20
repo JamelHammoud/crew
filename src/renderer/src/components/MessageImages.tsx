@@ -1,5 +1,6 @@
 import { attachmentUrl, type Attachment } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
+import Tooltip from './Tooltip'
 
 export default function MessageImages({ attachments }: { attachments: Attachment[] }) {
   const httpBase = useCrew(s => s.httpBase)
@@ -7,19 +8,15 @@ export default function MessageImages({ attachments }: { attachments: Attachment
   return (
     <div className="flex flex-wrap gap-2 mt-2">
       {attachments.map(attachment => (
-        <a
-          key={attachment.id}
-          href={attachmentUrl(httpBase, attachment)}
-          target="_blank"
-          rel="noreferrer"
-          title={attachment.name}
-        >
-          <img
-            src={attachmentUrl(httpBase, attachment)}
-            alt={attachment.name}
-            className="max-h-64 rounded-xl border border-white/10 transition-opacity hover:opacity-90"
-          />
-        </a>
+        <Tooltip key={attachment.id} label={attachment.name}>
+          <a href={attachmentUrl(httpBase, attachment)} target="_blank" rel="noreferrer">
+            <img
+              src={attachmentUrl(httpBase, attachment)}
+              alt={attachment.name}
+              className="max-h-64 rounded-xl border border-white/10 transition-opacity hover:opacity-90"
+            />
+          </a>
+        </Tooltip>
       ))}
     </div>
   )

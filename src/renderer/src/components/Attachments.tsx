@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import { previewSrc } from './images'
+import Tooltip from './Tooltip'
 
 export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   const pending = useCrew(s => s.pending[attachmentKey])
@@ -17,13 +18,15 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
             alt={item.name}
             className="h-16 w-16 object-cover rounded-xl border border-white/10"
           />
-          <button
-            onClick={() => detach(attachmentKey, item.id)}
-            title={`Remove ${item.name}`}
-            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full glass flex items-center justify-center text-fg-secondary opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
-          >
-            <XMarkIcon className="w-3 h-3" />
-          </button>
+          <Tooltip label={`Remove ${item.name}`}>
+            <button
+              onClick={() => detach(attachmentKey, item.id)}
+              aria-label={`Remove ${item.name}`}
+              className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full glass flex items-center justify-center text-fg-secondary opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
+            >
+              <XMarkIcon className="w-3 h-3" />
+            </button>
+          </Tooltip>
         </div>
       ))}
     </div>
@@ -48,15 +51,16 @@ export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
           event.target.value = ''
         }}
       />
-      <button
-        onClick={() => inputRef.current?.click()}
-        disabled={full}
-        title={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}
-        aria-label="Add an image"
-        className="w-10 h-10 rounded-full border border-ink-600 flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:border-ink-500 hover:bg-white/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:border-ink-600 shrink-0"
-      >
-        <PlusIcon className="w-5 h-5" />
-      </button>
+      <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}>
+        <button
+          onClick={() => inputRef.current?.click()}
+          disabled={full}
+          aria-label="Add an image"
+          className="w-10 h-10 rounded-full border border-ink-600 flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:border-ink-500 hover:bg-white/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:border-ink-600 shrink-0"
+        >
+          <PlusIcon className="w-5 h-5" />
+        </button>
+      </Tooltip>
     </>
   )
 }

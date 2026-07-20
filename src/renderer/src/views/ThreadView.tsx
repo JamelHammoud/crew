@@ -6,6 +6,7 @@ import { usePresence } from '../components/presence'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
 import ThreadItems from '../components/ThreadItems'
+import Tooltip from '../components/Tooltip'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
 import { useCrew } from '../state/store'
@@ -76,14 +77,15 @@ export default function ThreadView({ threadId }: { threadId: string }) {
         <div className="bg-ink-900 px-6 pb-6">
           <div className="max-w-[660px] mx-auto pointer-events-auto animate-rise">
             <div className="bg-ink-900 border-2 border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
-              <button
-                onClick={closeThread}
-                aria-label="Back to chat"
-                title="Back to chat"
-                className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
-              >
-                <ChevronLeftIcon className="w-5 h-5" />
-              </button>
+              <Tooltip label="Back to chat">
+                <button
+                  onClick={closeThread}
+                  aria-label="Back to chat"
+                  className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
+                >
+                  <ChevronLeftIcon className="w-5 h-5" />
+                </button>
+              </Tooltip>
               <Avatar name={thread.agentLabel} presence={agentPresence} />
               <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
               <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
