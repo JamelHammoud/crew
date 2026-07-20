@@ -81,6 +81,7 @@ export const claudeArgs = (prompt: string, get: SettingReader): string[] => [
   '--output-format',
   'stream-json',
   '--verbose',
+  '--include-partial-messages',
   ...flag('--model', get('model')),
   ...flag('--effort', get('effort')),
   '--permission-mode',
