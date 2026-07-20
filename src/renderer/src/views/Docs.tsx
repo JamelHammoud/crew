@@ -1,7 +1,6 @@
 import { DocumentTextIcon, PlusIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
 import DocEditor from '../components/DocEditor'
-import Tooltip from '../components/Tooltip'
 import { useCrew } from '../state/store'
 
 function slugify(name: string): string {
@@ -72,6 +71,7 @@ export default function Docs() {
       ref={titleRef}
       value={title}
       readOnly={current === 'main'}
+      title={current === 'main' ? undefined : undefined}
       onChange={e => setTitle(e.target.value)}
       onBlur={commitTitle}
       onKeyDown={e => {
@@ -118,13 +118,7 @@ export default function Docs() {
         </aside>
         <div className="flex-1 min-w-0 overflow-y-auto">
           <div className="max-w-[760px]">
-            <div className="px-[54px] pb-2">
-              {current === 'main' ? (
-                <Tooltip label="The main page can't be renamed">{titleInput}</Tooltip>
-              ) : (
-                titleInput
-              )}
-            </div>
+            <div className="px-[54px] pb-2">{titleInput}</div>
             <DocEditor key={current} text={docs[current] ?? ''} onChange={markdown => updateDoc(current, markdown)} />
             <div className="h-40" />
           </div>

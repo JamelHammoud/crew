@@ -6,6 +6,7 @@ export function Popover({
   onClose,
   align = 'end',
   side = 'bottom',
+  at,
   className = '',
   children
 }: {
@@ -13,6 +14,7 @@ export function Popover({
   onClose: () => void
   align?: 'start' | 'end'
   side?: 'top' | 'bottom'
+  at?: { x: number; y: number }
   className?: string
   children: ReactNode
 }) {
@@ -27,9 +29,13 @@ export function Popover({
       setSize(null)
       return
     }
+    if (at) {
+      setRect(new DOMRect(at.x, at.y, 0, 0))
+      return
+    }
     const anchor = holderRef.current?.parentElement
     if (anchor) setRect(anchor.getBoundingClientRect())
-  }, [open])
+  }, [open, at])
 
   useLayoutEffect(() => {
     const el = popRef.current
