@@ -18,7 +18,13 @@ export interface ThreadItem {
   subagent?: boolean
   files?: FileChange[]
   attachments?: Attachment[]
+  route?: MessageRoute
 }
+
+// How a message reached the agent, shown on the message itself: 'steered' once
+// it has been folded into a run already in flight, 'queued' while it is still
+// waiting for its own turn.
+export type MessageRoute = 'queued' | 'steered'
 
 export function describeStep(step: AgentStep | undefined): string {
   if (!step) return 'Starting'
