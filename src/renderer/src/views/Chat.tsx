@@ -16,6 +16,7 @@ export default function Chat() {
   const threads = useCrew(s => s.threads)
   const threadPrompts = useCrew(s => s.threadPrompts)
   const threadActivities = useCrew(s => s.threadActivities)
+  const waitingThreads = useCrew(s => s.waitingThreads)
   const sendChat = useCrew(s => s.sendChat)
   const openThread = useCrew(s => s.openThread)
 
@@ -64,6 +65,9 @@ export default function Chat() {
   }, [feed, threadActivities, threadPrompts])
 
   const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
+    if (waitingThreads[thread.id]) {
+      return { working: true, status: `Waiting for ${thread.agentLabel} to finish something else` }
+    }
     if (threadPrompts[thread.id]) {
       const acts = threadActivities[thread.id] ?? []
       const last = acts[acts.length - 1]
