@@ -73,6 +73,7 @@ interface Thread {
   agentLabel: string
   title: string
   createdBy: string
+  archived: boolean
   queue: QueuedPrompt[]
   running: string | null
 }
