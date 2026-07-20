@@ -45,21 +45,17 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
     return promptIds.flatMap(promptId => steps[promptId] ?? [])
   }, [threadEvents, steps])
-  const queuedMessages = useMemo<QueuedMessage[]>(() => {
-    const started = new Set(threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId))
-    const routes = new Map<string, { promptId: string; mode: string }>()
-    for (const e of threadEvents) {
-      if (e.kind === 'message.route') routes.set(e.messageId, { promptId: e.promptId, mode: e.mode })
-    }
-    const list: QueuedMessage[] = []
-    for (const e of threadEvents) {
-      if (e.kind !== 'message') continue
-      const route = routes.get(e.id)
-      if (!route || route.mode !== 'queued' || started.has(route.promptId)) continue
-      list.push({ promptId: route.promptId, author: e.authorName, self: e.authorId === selfId, text: e.text })
-    }
-    return list
-  }, [threadEvents, selfId])
+  const queueItems = useCrew(s => s.queues[threadId])
+  const queuedMessages = useMemo<QueuedMessage[]>(
+    () =>
+      (queueItems ?? []).map(item => ({
+        promptId: item.promptId,
+        author: item.authorName,
+        self: item.authorId === selfId,
+        text: item.text
+      })),
+    [queueItems, selfId]
+  )
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
   const diffTotals = useMemo(() => {
     let added = 0
