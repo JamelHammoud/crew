@@ -86,10 +86,9 @@ export class CrewSession {
         ...a,
         settings: a.settings ?? {},
         fields: a.fields ?? [],
-        status: 'offline',
         runner: null,
-        queue: [],
-        activities: new Map()
+        running: new Set(),
+        runs: new Map()
       })
     }
     this.events = store.loadEvents()
@@ -100,7 +99,9 @@ export class CrewSession {
           agentId: event.agentId,
           agentLabel: event.agentLabel,
           title: event.title,
-          createdBy: event.byName
+          createdBy: event.byName,
+          queue: [],
+          running: null
         })
       }
     }
@@ -185,14 +186,8 @@ export class CrewSession {
       case 'agent.deregister':
         if (meta.role === 'runner') this.deregisterAgent(ws, member, msg.instanceId)
         break
-      case 'agent.chunk':
-        this.handleChunk(meta, msg.promptId, msg.text)
-        break
-      case 'agent.progress':
-        this.handleProgress(meta, msg.promptId, msg)
-        break
-      case 'agent.activity':
-        this.handleActivity(meta, msg.promptId, msg.activity)
+      case 'agent.step':
+        this.handleStep(meta, msg.promptId, msg.step)
         break
       case 'agent.done':
         this.handleDone(meta, msg.promptId, msg.text)
@@ -245,7 +240,9 @@ export class CrewSession {
         agentId: id,
         agentLabel: agent.label,
         title: this.titleFrom(trimmed),
-        createdBy: member.name
+        createdBy: member.name,
+        queue: [],
+        running: null
       }
       this.threads.set(newThreadId, thread)
       this.emit({
