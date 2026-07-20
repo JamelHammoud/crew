@@ -1,9 +1,10 @@
-import { spawn, spawnSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption } from '../../shared/llm'
+import { crewPath, resolveCommand } from './path'
 import type { OutputParser, Provider, RunningPrompt } from './types'
 
 export function commandExists(command: string): boolean {
-  return spawnSync('which', [command], { stdio: 'ignore' }).status === 0
+  return resolveCommand(command) !== null
 }
 
 export type SettingReader = (key: string) => string
@@ -35,9 +36,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     detect: async () => commandExists(opts.command),
     start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
-      const child = spawn(opts.command, opts.args(prompt, key => resolved[key] ?? ''), {
+      const child = spawn(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, key => resolved[key] ?? ''), {
         cwd,
-        env: { ...process.env, ...opts.env }
+        env: { ...process.env, PATH: crewPath(), ...opts.env }
       })
       let text = ''
       let errText = ''
