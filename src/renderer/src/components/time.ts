@@ -12,8 +12,7 @@ export function formatTokens(tokens: number): string {
 }
 
 export function formatTime(ts: number): string {
-  const date = new Date(ts)
-  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+  return new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
 }
 
 export function formatDay(ts: number): string {
