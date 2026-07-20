@@ -1,3 +1,5 @@
+import type { AgentSettingField, AgentSettings } from '../../shared/llm'
+
 export interface ParsedActivity {
   id: string
   kind: 'tool' | 'subagent'
@@ -26,6 +28,7 @@ export interface RunningPrompt {
 export interface Provider {
   name: string
   label: string
+  fields(): AgentSettingField[]
   detect(): Promise<boolean>
-  start(prompt: string, cwd: string, hooks: RunHooks): RunningPrompt
+  start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings): RunningPrompt
 }

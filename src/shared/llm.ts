@@ -10,12 +10,26 @@ export interface AgentActivity {
 
 export type AgentSettings = Record<string, string>
 
+export interface AgentSettingOption {
+  value: string
+  label: string
+}
+
 export interface AgentSettingField {
   key: string
   label: string
-  kind: 'text' | 'select'
-  options?: string[]
-  placeholder?: string
+  options: AgentSettingOption[]
+  default: string
+}
+
+export function resolveSettings(fields: AgentSettingField[], settings: AgentSettings): AgentSettings {
+  const out: AgentSettings = {}
+  for (const field of fields) {
+    const chosen = settings[field.key]
+    const valid = field.options.some(option => option.value === chosen)
+    out[field.key] = valid ? chosen : field.default
+  }
+  return out
 }
 
 export interface PooledAgent {

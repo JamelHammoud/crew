@@ -1,5 +1,6 @@
-import { makeCliProvider } from './cli'
+import { choices, flag, makeCliProvider } from './cli'
 import { activityDetail } from './detail'
+import { kimiModels } from './kimi-models'
 import type { OutputParser, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Agent'])
@@ -47,6 +48,9 @@ export const kimiProvider: Provider = makeCliProvider({
   name: 'kimi',
   label: 'Kimi',
   command: 'kimi',
-  args: prompt => ['-p', prompt, '--output-format', 'stream-json'],
+  fields: () => [
+    { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' }
+  ],
+  args: (prompt, get) => ['-p', prompt, '--output-format', 'stream-json', '--yolo', ...flag('--model', get('model'))],
   parser: parseKimiLine
 })

@@ -1,26 +1,41 @@
 import { spawn, spawnSync } from 'node:child_process'
+import { resolveSettings, type AgentSettingField, type AgentSettingOption } from '../../shared/llm'
 import type { OutputParser, Provider, RunningPrompt } from './types'
 
 export function commandExists(command: string): boolean {
   return spawnSync('which', [command], { stdio: 'ignore' }).status === 0
 }
 
+export type SettingReader = (key: string) => string
+
+export function flag(name: string, value: string): string[] {
+  return value ? [name, value] : []
+}
+
+export function choices(values: string[]): AgentSettingOption[] {
+  return values.map(value => ({ value, label: value || 'Default' }))
+}
+
 interface CliProviderOptions {
   name: string
   label: string
   command: string
-  args: (prompt: string) => string[]
+  fields?: () => AgentSettingField[]
+  args: (prompt: string, get: SettingReader) => string[]
   parser?: OutputParser
   env?: NodeJS.ProcessEnv
 }
 
 export function makeCliProvider(opts: CliProviderOptions): Provider {
+  const fields = () => opts.fields?.() ?? []
   return {
     name: opts.name,
     label: opts.label,
+    fields,
     detect: async () => commandExists(opts.command),
-    start: (prompt, cwd, hooks): RunningPrompt => {
-      const child = spawn(opts.command, opts.args(prompt), {
+    start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
+      const resolved = resolveSettings(fields(), settings)
+      const child = spawn(opts.command, opts.args(prompt, key => resolved[key] ?? ''), {
         cwd,
         env: { ...process.env, ...opts.env }
       })
