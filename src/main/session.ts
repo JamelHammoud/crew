@@ -43,6 +43,7 @@ function lanAddress(): string {
 }
 
 const PREFERRED_PORT = 2739
+const AUTO_PULL_MS = 15000
 
 export class AppSession {
   private server: CrewServer | null = null
@@ -142,7 +143,8 @@ export class AppSession {
       code: target.code,
       repoPath,
       providers,
-      agents: this.agentDefs(providers)
+      agents: this.agentDefs(providers),
+      autoPullMs: AUTO_PULL_MS
     })
     this.runner.connect(wsUrl(target))
     return { wsUrl: wsUrl(target) }

@@ -121,8 +121,8 @@ export class TestUi {
     this.ws.send(JSON.stringify(msg))
   }
 
-  chat(text: string, mentions: string[] = []): void {
-    this.send({ type: 'chat.send', text, mentions })
+  chat(text: string, mentions: string[] = [], threadId?: string): void {
+    this.send({ type: 'chat.send', text, mentions, threadId })
   }
 
   cancel(promptId: string): void {
