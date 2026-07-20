@@ -2,9 +2,14 @@ import '@blocknote/mantine/style.css'
 import type { PartialBlock } from '@blocknote/core'
 import { BlockNoteView } from '@blocknote/mantine'
 import { useCreateBlockNote } from '@blocknote/react'
-import { useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 
-export default function DocEditor({ text, onChange }: { text: string; onChange: (markdown: string) => void }) {
+export interface DocEditorHandle {
+  focusStart: () => void
+}
+
+export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(
+  function DocEditor({ text, onChange }, ref) {
   const editor = useCreateBlockNote()
   const containerRef = useRef<HTMLDivElement>(null)
   const lastMarkdown = useRef('')
