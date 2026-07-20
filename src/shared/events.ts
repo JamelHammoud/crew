@@ -14,6 +14,7 @@ export type SessionEvent =
       attachments?: Attachment[]
     }
   | { id: string; ts: number; kind: 'message.deleted'; messageId: string }
+  | { id: string; ts: number; kind: 'message.edited'; messageId: string; text: string }
   | {
       id: string
       ts: number
@@ -43,6 +44,7 @@ const EPHEMERAL_KINDS = new Set([
   'doc',
   'doc.renamed',
   'doc.deleted',
+  'message.edited',
   'person.joined',
   'person.left',
   'agent.online',
