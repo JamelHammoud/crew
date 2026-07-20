@@ -1,6 +1,6 @@
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { CheckIcon } from '@heroicons/react/24/outline'
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import AgentIcon from '../components/AgentIcon'
 import Composer from '../components/Composer'
 import FilesChanged from '../components/FilesChanged'
@@ -95,9 +95,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       el.scrollTop = el.scrollHeight
       return
     }
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240 + overlayHeight
     if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [items])
+  }, [items, overlayHeight])
 
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
@@ -119,7 +119,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   return (
     <div className="h-full relative">
       <div ref={scrollRef} className="h-full overflow-y-auto px-6">
-        <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: overlayHeight + 40 }}>
+        <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 36) }}>
           <ThreadItems items={items} />
           {activePromptId && startedAt && (
             <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
