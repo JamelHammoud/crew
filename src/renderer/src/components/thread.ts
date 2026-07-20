@@ -1,3 +1,4 @@
+import type { Attachment } from '../../../shared/attachments'
 import type { SessionEvent } from '../../../shared/events'
 import type { AgentStep } from '../../../shared/llm'
 
@@ -15,6 +16,7 @@ export interface ThreadItem {
   name?: string
   detail?: string
   subagent?: boolean
+  attachments?: Attachment[]
 }
 
 export function describeStep(step: AgentStep | undefined): string {
@@ -71,7 +73,8 @@ export function buildThread(
         author: event.authorName,
         self: event.authorId === selfId,
         text: event.text,
-        streaming: false
+        streaming: false,
+        attachments: event.attachments
       })
     }
     if (event.kind === 'agent.start') {
