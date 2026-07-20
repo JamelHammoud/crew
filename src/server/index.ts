@@ -27,6 +27,11 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
       res.end('crew')
       return
     }
+    const attachment = /^\/attachments\/([^/?#]+)$/.exec(req.url ?? '')
+    if (attachment) {
+      serveAttachment(session, decodeURIComponent(attachment[1]), res)
+      return
+    }
     res.writeHead(404)
     res.end()
   })
