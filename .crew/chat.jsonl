@@ -201,3 +201,4 @@
 {"id":"d0c95537-bdd3-45ed-803d-ceb78385a1b3","ts":1784511607455,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"2728d49f-d13d-4dec-bac0-24e500cf789a","ts":1784511631451,"kind":"person.left","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
 {"id":"64f82cec-ca68-4c20-89ad-4a46b6246c3a","ts":1784511632776,"kind":"person.joined","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
+{"id":"27c08cd3-85f2-47bd-80de-6e432cd1b04d","ts":1784511650121,"kind":"person.left","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
