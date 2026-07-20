@@ -43,6 +43,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
               tab === t.id ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
             }`}
           >
+            {tab === t.id && <TabIcon tab={t.id} />}
             {t.label}
           </button>
         ))}
