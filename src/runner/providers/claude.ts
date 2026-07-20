@@ -1,7 +1,7 @@
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges } from './detail'
 import type { AgentSettingField } from '../../shared/llm'
-import type { OutputParser, Provider } from './types'
+import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
 
@@ -57,7 +57,9 @@ export const parseClaudeLine: OutputParser = line => {
   }
   if (msg?.type === 'result') {
     const outputTokens = msg?.usage?.output_tokens
-    return typeof outputTokens === 'number' ? [{ tokens: outputTokens }] : []
+    const out: ParsedOutput[] = [{ turnEnd: true }]
+    if (typeof outputTokens === 'number') out.push({ tokens: outputTokens })
+    return out
   }
   if (msg?.type === 'user' && Array.isArray(msg.message?.content)) {
     const out = []

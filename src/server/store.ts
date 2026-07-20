@@ -75,27 +75,41 @@ export class Store {
   }
 
   loadDocs(): Record<string, string> {
-    const docsDir = path.join(this.root, 'docs')
     const docs: Record<string, string> = {}
-    for (const file of fs.readdirSync(docsDir)) {
-      if (!file.endsWith('.md')) continue
-      docs[file.slice(0, -3)] = fs.readFileSync(path.join(docsDir, file), 'utf8')
+    const walk = (dir: string, prefix: string) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name)
+        if (entry.isDirectory()) {
+          walk(full, `${prefix}${entry.name}/`)
+        } else if (entry.name.endsWith('.md')) {
+          docs[`${prefix}${entry.name.slice(0, -3)}`] = fs.readFileSync(full, 'utf8')
+        }
+      }
     }
+    walk(path.join(this.root, 'docs'), '')
     return docs
   }
 
   saveDoc(page: string, text: string): void {
     if (!PAGE_NAME.test(page)) throw new Error(`Bad page name: ${page}`)
-    this.writeAtomic(path.join(this.root, 'docs', `${page}.md`), text)
+    const file = path.join(this.root, 'docs', `${page}.md`)
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    this.writeAtomic(file, text)
   }
 
   renameDoc(from: string, to: string): void {
     if (!PAGE_NAME.test(from)) throw new Error(`Bad page name: ${from}`)
     if (!PAGE_NAME.test(to)) throw new Error(`Bad page name: ${to}`)
-    const source = path.join(this.root, 'docs', `${from}.md`)
-    const target = path.join(this.root, 'docs', `${to}.md`)
-    if (fs.existsSync(target)) throw new Error(`Page exists: ${to}`)
-    fs.renameSync(source, target)
+    const docsDir = path.join(this.root, 'docs')
+    const sourceFile = path.join(docsDir, `${from}.md`)
+    const targetFile = path.join(docsDir, `${to}.md`)
+    const sourceDir = path.join(docsDir, from)
+    const targetDir = path.join(docsDir, to)
+    if (fs.existsSync(targetFile)) throw new Error(`Page exists: ${to}`)
+    if (fs.existsSync(sourceDir) && fs.existsSync(targetDir)) throw new Error(`Page exists: ${to}`)
+    fs.mkdirSync(path.dirname(targetFile), { recursive: true })
+    fs.renameSync(sourceFile, targetFile)
+    if (fs.existsSync(sourceDir)) fs.renameSync(sourceDir, targetDir)
   }
 
   private sessionPath(): string {
