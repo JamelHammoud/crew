@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { mentionCandidates } from '../../../shared/llm'
+import { AttachButton, AttachmentTray } from '../components/Attachments'
 import ChatMessage from '../components/ChatMessage'
 import ThreadCard from '../components/ThreadCard'
 import { describeStep, type ThreadItem } from '../components/thread'
 import { formatElapsed, formatTokens } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
-import { useCrew, type ThreadMeta } from '../state/store'
+import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
 
 type Feed =
   | { kind: 'msg'; key: string; item: ThreadItem }
@@ -24,6 +25,8 @@ export default function Chat() {
   const openThread = useCrew(s => s.openThread)
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
+  const attach = useCrew(s => s.attach)
+  const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
 
   const [mentionQuery, setMentionQuery] = useState<string | null>(null)
   const [activeMention, setActiveMention] = useState(0)
@@ -48,7 +51,8 @@ export default function Chat() {
             author: e.authorName,
             self: e.authorId === selfId,
             text: e.text,
-            streaming: false
+            streaming: false,
+            attachments: e.attachments
           }
         })
       }
@@ -117,7 +121,7 @@ export default function Chat() {
   }
 
   const send = () => {
-    if (!text.trim()) return
+    if (!text.trim() && pendingCount === 0) return
     sendChat(text)
     setMentionQuery(null)
   }
