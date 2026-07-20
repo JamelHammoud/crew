@@ -4,6 +4,48 @@ import type { AgentSettingField } from '../../shared/llm'
 import type { OutputParser, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
+const DIFF_LIMIT = 20000
+
+const lineCount = (text: string): number => (text ? text.split('\n').length : 0)
+
+const diffOf = (removed: string, added: string): string => {
+  const lines = [
+    ...(removed ? removed.split('\n').map(line => `- ${line}`) : []),
+    ...(added ? added.split('\n').map(line => `+ ${line}`) : [])
+  ]
+  const joined = lines.join('\n')
+  return joined.length > DIFF_LIMIT ? joined.slice(0, DIFF_LIMIT) + '…' : joined
+}
+
+export const fileChanges = (tool: string, input: any): FileChange[] | undefined => {
+  const path = input?.file_path
+  if (typeof path !== 'string' || !path) return undefined
+  if (tool === 'Edit') {
+    const removed = typeof input.old_string === 'string' ? input.old_string : ''
+    const added = typeof input.new_string === 'string' ? input.new_string : ''
+    if (!removed && !added) return undefined
+    return [{ path, added: lineCount(added), removed: lineCount(removed), diff: diffOf(removed, added) }]
+  }
+  if (tool === 'MultiEdit' && Array.isArray(input.edits)) {
+    let added = 0
+    let removed = 0
+    const parts: string[] = []
+    for (const edit of input.edits) {
+      const oldS = typeof edit?.old_string === 'string' ? edit.old_string : ''
+      const newS = typeof edit?.new_string === 'string' ? edit.new_string : ''
+      if (!oldS && !newS) continue
+      added += lineCount(newS)
+      removed += lineCount(oldS)
+      parts.push(diffOf(oldS, newS))
+    }
+    if (!parts.length) return undefined
+    return [{ path, added, removed, diff: parts.join('\n') }]
+  }
+  if (tool === 'Write' && typeof input.content === 'string') {
+    return [{ path, added: lineCount(input.content), removed: 0, diff: diffOf('', input.content) }]
+  }
+  return undefined
+}
 
 export const parseClaudeLine: OutputParser = line => {
   let msg: any
