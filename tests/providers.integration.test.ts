@@ -121,7 +121,13 @@ describe('claude parser matches the real CLI format', () => {
     expect(thinking).toEqual([{ thinking: 'let me check' }, { text: 'ok' }])
 
     expect(parseClaudeLine('{"type":"system","subtype":"init"}')).toEqual([])
-    expect(parseClaudeLine('{"type":"result","subtype":"success","result":"ok"}')).toEqual([])
+    // A result ends the turn; in streaming-input mode that is what lets the run
+    // close stdin instead of waiting forever for another message.
+    expect(parseClaudeLine('{"type":"result","subtype":"success","result":"ok"}')).toEqual([{ turnEnd: true }])
+    expect(parseClaudeLine('{"type":"result","subtype":"success","usage":{"output_tokens":12}}')).toEqual([
+      { turnEnd: true },
+      { tokens: 12 }
+    ])
   })
 })
 
