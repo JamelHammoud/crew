@@ -2,6 +2,7 @@ import AgentCard from '../components/AgentCard'
 import Avatar from '../components/Avatar'
 import CreateAgent from '../components/CreateAgent'
 import Pill from '../components/Pill'
+import UsageLimits from '../components/UsageLimits'
 import { useCrew } from '../state/store'
 
 function instanceOf(agentId: string): string {
@@ -65,6 +66,8 @@ export default function Dashboard() {
             </div>
           )}
         </section>
+
+        <UsageLimits agents={sortedAgents} />
       </div>
     </div>
   )
