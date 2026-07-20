@@ -91,3 +91,9 @@
 {"id":"125c42bf-b72e-4d24-ae34-bc265f34ebef","ts":1784510891733,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"8524ba11-dda6-46a7-bb10-edc975798ccc","ts":1784510891736,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
 {"id":"72585bae-85f8-421e-af6d-3f21617ffe1d","ts":1784510891736,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"087f6cef-ad24-404a-aa7a-e1d6d5fed559","ts":1784510930981,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"cffd89ab-5f89-436d-96a7-9ee8424d3886","ts":1784510930982,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"3bf54fd2-2776-446c-9af0-c1119c72d153","ts":1784510930982,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"251a3572-bdb8-4837-ba8b-1ca8beac6349","ts":1784510931984,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"2029713a-b176-4301-9c81-517bb5ccb6f4","ts":1784510931985,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"55edfc82-3aff-4f05-aef8-bca7951593bc","ts":1784510931985,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
