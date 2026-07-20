@@ -1,5 +1,5 @@
 import { CheckIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/16/solid'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import Tooltip from './Tooltip'
 
@@ -114,7 +114,7 @@ export default function QueueBar({
       >
         {items.length === 1 ? '1 message queued' : `${items.length} messages queued`}
         <ChevronDownIcon
-          strokeWidth={2.5}
+          strokeWidth={3}
           className={`w-4 h-4 ml-auto text-fg-muted group-hover:text-fg-secondary transition-transform duration-200 ${
             open ? 'rotate-180' : ''
           }`}
