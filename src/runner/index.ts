@@ -191,8 +191,11 @@ export class Runner {
       return
     }
     const tail = this.tails.get(threadId) ?? Promise.resolve()
-    const next = tail.then(() => this.execute(agent.provider, promptId, text, settings))
-    this.tails.set(threadId, next.catch(() => {}))
+    const next = tail.then(() => this.execute(agent.provider, promptId, text, settings)).catch(() => {})
+    this.tails.set(threadId, next)
+    void next.then(() => {
+      if (this.tails.get(threadId) === next) this.tails.delete(threadId)
+    })
   }
 
   private async execute(
