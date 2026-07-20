@@ -49,7 +49,8 @@
           ],
           "default": ""
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "jamel/claude",
@@ -116,7 +117,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": true
     },
     {
       "id": "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
@@ -151,7 +153,8 @@
           ],
           "default": ""
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "ali/claude",
@@ -435,7 +438,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": false
     }
   ]
 }

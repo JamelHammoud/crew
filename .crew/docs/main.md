@@ -12,6 +12,7 @@
 
 ## Completed
 
+* [x] Deleting messages
 * [x] "Docs" should be like Google Docs, a much better editing experience, and you can create other pages
 * [x] Auto-git sync
 * [x] The chat textarea should auto-resize when typing in it
