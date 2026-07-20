@@ -1,36 +1,57 @@
-import type { ThreadMeta } from '../state/store'
-import Pill from './Pill'
+import { CheckIcon, ChevronRightIcon } from '@heroicons/react/16/solid'
+import { useCrew, type ThreadMeta } from '../state/store'
+import Avatar from './Avatar'
+import Spinner from './Spinner'
+import { formatTime } from './time'
 
 export default function ThreadCard({
   thread,
+  ts,
   working,
   status,
   onOpen
 }: {
   thread: ThreadMeta
+  ts: number
   working: boolean
   status: string
   onOpen: () => void
 }) {
+  const owner = useCrew(s => s.agents.find(a => a.id === thread.agentId)?.ownerName)
+
   return (
-    <button
-      onClick={onOpen}
-      className="w-full text-left bg-zinc-900 border border-zinc-800 rounded-xl p-4 hover:border-zinc-600 space-y-1.5"
-    >
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-white truncate">{thread.title}</span>
-        <div className="ml-auto shrink-0">
-          <Pill solid={working}>{working ? 'Working' : 'Done'}</Pill>
+    <div className="flex gap-4 animate-rise">
+      <Avatar name={thread.createdBy} />
+      <div className="min-w-0 flex-1 pt-0.5">
+        <div className="flex items-baseline gap-2.5">
+          <span className="text-base font-semibold text-fg-muted">{thread.createdBy}</span>
+          <span className="text-sm text-fg-faint">{formatTime(ts)}</span>
         </div>
+        <button
+          onClick={onOpen}
+          className="group w-full text-left mt-2 border-2 border-ink-700 rounded-card overflow-hidden transition-all duration-200 hover:border-ink-600 hover:-translate-y-px active:translate-y-0"
+        >
+          <p className="px-5 py-4 text-base text-fg leading-[26px] line-clamp-2">
+            <strong className="font-semibold">@{thread.agentLabel}</strong>{' '}
+            {thread.title.replace(new RegExp(`^@${thread.agentLabel}\\s*`), '')}
+          </p>
+          <div className="relative bg-ink-700 px-5 h-[52px] flex items-center gap-3">
+            {working ? (
+              <Spinner size={16} className="text-fg" />
+            ) : (
+              <CheckIcon className="w-4 h-4 text-fg shrink-0" />
+            )}
+            <span className="text-base font-semibold text-fg shrink-0">{working ? 'Working' : 'Done'}</span>
+            <span className="text-base text-fg-muted truncate flex-1">{status}</span>
+            {owner && (
+              <span className="text-base font-semibold text-fg-muted shrink-0 transition-transform duration-200 group-hover:-translate-x-5">
+                {owner}
+              </span>
+            )}
+            <ChevronRightIcon className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
+          </div>
+        </button>
       </div>
-      <div className="flex items-center gap-2 text-xs text-zinc-500">
-        <span className="text-zinc-400">{thread.agentLabel}</span>
-        <span>·</span>
-        <span className="truncate flex items-center gap-1.5">
-          {working && <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />}
-          {status}
-        </span>
-      </div>
-    </button>
+    </div>
   )
 }

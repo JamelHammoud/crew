@@ -1,0 +1,81 @@
+import { ArrowUpIcon } from '@heroicons/react/20/solid'
+import { StopIcon } from '@heroicons/react/16/solid'
+import type { ReactNode, RefObject } from 'react'
+import { useCrew } from '../state/store'
+import { AttachButton, AttachmentTray } from './Attachments'
+
+export default function Composer({
+  attachmentKey,
+  value,
+  placeholder,
+  inputRef,
+  onChange,
+  onKeyDown,
+  onSend,
+  onStop,
+  children
+}: {
+  attachmentKey: string
+  value: string
+  placeholder: string
+  inputRef: RefObject<HTMLTextAreaElement>
+  onChange: (value: string) => void
+  onKeyDown: (event: React.KeyboardEvent) => void
+  onSend: () => void
+  onStop?: () => void
+  children?: ReactNode
+}) {
+  const attach = useCrew(s => s.attach)
+  const pendingCount = useCrew(s => (s.pending[attachmentKey] ?? []).length)
+  const canSend = value.trim().length > 0 || pendingCount > 0
+
+  return (
+    <div className="relative">
+      {children}
+      <div
+        className="bg-ink-800 rounded-shell px-5 pt-4 pb-3 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] cursor-text"
+        onClick={() => inputRef.current?.focus()}
+        onDragOver={event => event.preventDefault()}
+        onDrop={event => {
+          event.preventDefault()
+          void attach(attachmentKey, event.dataTransfer.files)
+        }}
+      >
+        <AttachmentTray attachmentKey={attachmentKey} />
+        <textarea
+          ref={inputRef}
+          value={value}
+          onChange={event => onChange(event.target.value)}
+          onKeyDown={onKeyDown}
+          onPaste={event => void attach(attachmentKey, event.clipboardData.files)}
+          rows={2}
+          placeholder={placeholder}
+          className="w-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
+        />
+        <div className="flex items-center justify-between mt-1">
+          <AttachButton attachmentKey={attachmentKey} />
+          {onStop ? (
+            <button
+              onClick={onStop}
+              aria-label="Stop"
+              title="Stop"
+              className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95"
+            >
+              <StopIcon className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={onSend}
+              disabled={!canSend}
+              aria-label="Send"
+              title="Send"
+              className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+            >
+              <ArrowUpIcon className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
