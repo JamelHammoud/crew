@@ -260,9 +260,6 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           reject(err)
         })
         child.on('close', code => settle(code))
-        // 'close' can be held open indefinitely by whatever inherited the
-        // stdio pipes, so settle from 'exit' too once they have had a moment
-        // to flush.
         child.on('exit', code => {
           exitTimer = setTimeout(() => settle(code), EXIT_FLUSH_MS)
           exitTimer.unref()
