@@ -33,6 +33,8 @@ export type ClientMessage =
   | { type: 'doc.update'; page: string; text: string }
   | { type: 'doc.rename'; from: string; to: string }
   | { type: 'doc.delete'; page: string }
+  | { type: 'queue.edit'; promptId: string; text: string }
+  | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
   | { type: 'agent.register'; llm: RegisteredLlm }
