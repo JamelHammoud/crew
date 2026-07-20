@@ -1,6 +1,7 @@
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges } from './detail'
 import type { AgentSettingField } from '../../shared/llm'
+import { claudeUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
@@ -102,5 +103,6 @@ export const claudeProvider: Provider = makeCliProvider({
   fields: claudeFields,
   args: claudeArgs,
   parser: parseClaudeLine,
-  streamInput: true
+  streamInput: true,
+  usage: claudeUsage
 })
