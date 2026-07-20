@@ -39,7 +39,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
           <button
             key={t.id}
             onClick={() => onTab(t.id)}
-            className={`h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
+            className={`flex items-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
               tab === t.id ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
             }`}
           >
