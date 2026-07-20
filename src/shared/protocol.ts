@@ -58,6 +58,7 @@ export type ServerMessage =
       settings: AgentSettings
       attachments?: Attachment[]
     }
+  | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[] }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
   | { type: 'error'; message: string }
