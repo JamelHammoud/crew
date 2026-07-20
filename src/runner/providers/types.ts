@@ -18,6 +18,7 @@ export interface ParsedOutput {
   activity?: ParsedActivity
   tokens?: number
   error?: string
+  turnEnd?: boolean
 }
 
 export type OutputParser = (line: string) => ParsedOutput[]

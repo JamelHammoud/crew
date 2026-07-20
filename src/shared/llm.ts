@@ -63,6 +63,7 @@ export interface PooledAgent {
   runs: Record<string, LiveRun>
   settings: AgentSettings
   fields: AgentSettingField[]
+  steerable?: boolean
 }
 
 export interface AgentDef {
