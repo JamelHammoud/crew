@@ -27,6 +27,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
+  const steerable = useCrew(s => s.agents.find(a => a.id === s.threads[threadId]?.agentId)?.steerable === true)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useAutoResize(text)
