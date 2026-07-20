@@ -2153,3 +2153,4 @@
 {"id":"6166eb91-7a85-4406-b6ee-1c72ee85b92a","ts":1784544629926,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"928832f4-730d-4c92-a88e-60d973097ea2","ts":1784544629926,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"3b44bf73-da2e-4dba-8574-857515bfe262","ts":1784544691638,"kind":"agent.updated","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","settings":{"model":"gpt-5.6-luna","effort":"high"}}
+{"id":"b0a69bee-7ca7-49ad-b0b3-193608511a72","ts":1784544695566,"kind":"agent.updated","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","settings":{"model":"gpt-5.6-luna","effort":"medium"}}
