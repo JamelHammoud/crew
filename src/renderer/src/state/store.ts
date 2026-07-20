@@ -31,6 +31,7 @@ interface CrewState {
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
   threadActivities: Record<string, PooledAgent['activities']>
+  waitingThreads: Record<string, string>
   openThreadId: string | null
   connect: (wsUrl: string, name: string, code: string, joinLink?: string) => void
   leave: () => void
@@ -54,7 +55,16 @@ const EMPTY = {
   threads: {},
   threadPrompts: {},
   threadActivities: {},
+  waitingThreads: {},
   openThreadId: null
+}
+
+const waitingFrom = (agents: PooledAgent[]): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const agent of agents) {
+    for (const threadId of agent.waitingThreadIds ?? []) out[threadId] = agent.label
+  }
+  return out
 }
 
 export const useCrew = create<CrewState>((set, get) => {
@@ -158,6 +168,7 @@ export const useCrew = create<CrewState>((set, get) => {
           threads,
           threadPrompts,
           threadActivities: {},
+          waitingThreads: waitingFrom(msg.snapshot.agents),
           openThreadId: null
         })
         break
@@ -166,14 +177,26 @@ export const useCrew = create<CrewState>((set, get) => {
         applyEvent(msg.event)
         break
       case 'agent.added':
-        set(state =>
-          state.agents.some(a => a.id === msg.agent.id)
-            ? { agents: state.agents.map(a => (a.id === msg.agent.id ? msg.agent : a)) }
-            : { agents: [...state.agents, msg.agent] }
-        )
+        set(state => {
+          const agents = state.agents.some(a => a.id === msg.agent.id)
+            ? state.agents.map(a => (a.id === msg.agent.id ? msg.agent : a))
+            : [...state.agents, msg.agent]
+          return { agents, waitingThreads: waitingFrom(agents) }
+        })
         break
       case 'agent.removed':
-        set(state => ({ agents: state.agents.filter(a => a.id !== msg.agentId) }))
+        set(state => {
+          const agents = state.agents.filter(a => a.id !== msg.agentId)
+          return { agents, waitingThreads: waitingFrom(agents) }
+        })
+        break
+      case 'agent.waiting':
+        set(state => {
+          const agents = state.agents.map(a =>
+            a.id === msg.agentId ? { ...a, waitingThreadIds: msg.waitingThreadIds } : a
+          )
+          return { agents, waitingThreads: waitingFrom(agents) }
+        })
         break
       case 'agent.chunk':
         set(state => ({
