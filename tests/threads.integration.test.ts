@@ -109,6 +109,35 @@ describe('threads', () => {
     expect(secondEnd.text).toContain('remember apple')
   })
 
+  it('runs two threads with the same agent at the same time', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '300' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('first @Fake', [fake])
+    ui.chat('second @Fake', [fake])
+
+    const starts: Array<Extract<SessionEvent, { kind: 'agent.start' }>> = []
+    for (let i = 0; i < 2; i++) {
+      const start = (await ui.waitForEvent(
+        e => e.kind === 'agent.start' && !starts.some(seen => seen.promptId === e.promptId)
+      )) as Extract<SessionEvent, { kind: 'agent.start' }>
+      starts.push(start)
+    }
+    expect(new Set(starts.map(s => s.threadId)).size).toBe(2)
+
+    const firstEnd = await ui.waitForEvent(e => e.kind === 'agent.end')
+    expect(starts[1].ts).toBeLessThan(firstEnd.ts)
+
+    for (const start of starts) {
+      const end = (await ui.waitForEvent(
+        e => e.kind === 'agent.end' && e.promptId === start.promptId
+      )) as Ended
+      expect(end.ok).toBe(true)
+    }
+  })
+
   it('answers a reply sent while the agent is busy in another thread', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
@@ -120,23 +149,53 @@ describe('threads', () => {
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === first.threadId)
 
     ui.chat('second @Fake', [fake])
-    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId !== first.threadId)
+    const second = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId !== first.threadId
+    )) as Extract<SessionEvent, { kind: 'agent.start' }>
 
     ui.chat('are you still there', [], first.threadId)
-    const waiting = (await ui.waitFor(
-      m => m.type === 'agent.waiting' && m.waitingThreadIds.includes(first.threadId)
-    )) as Extract<ServerMessage, { type: 'agent.waiting' }>
-    expect(waiting.agentId).toBe(fake)
+    const replyStart = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === first.threadId && e.promptText === 'are you still there'
+    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+
+    const secondEnd = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === second.promptId)) as Ended
+    expect(replyStart.ts).toBeLessThanOrEqual(secondEnd.ts)
 
     const reply = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.threadId === first.threadId && e.text?.includes('are you still there') === true
+      e => e.kind === 'agent.end' && e.promptId === replyStart.promptId
     )) as Ended
     expect(reply.ok).toBe(true)
-    const last = [...ui.messages].reverse().find(m => m.type === 'agent.waiting') as Extract<
-      ServerMessage,
-      { type: 'agent.waiting' }
-    >
-    expect(last.waitingThreadIds).toEqual([])
+    expect(reply.text).toContain('are you still there')
+  })
+
+  it('streams steps per thread and replays them after a restart', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_ACTIVITY: '1', FAKE_CLI_THINK: '1' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('do things @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
+
+    const live = ui.steps.filter(s => s.promptId === end.promptId)
+    expect(live.every(s => s.threadId === started.threadId)).toBe(true)
+    expect(live.filter(s => s.step.kind === 'text').length).toBeGreaterThan(1)
+    expect(live.some(s => s.step.kind === 'thinking' && s.step.text === 'weighing the options')).toBe(true)
+    expect(live.some(s => s.step.kind === 'subagent')).toBe(true)
+
+    const persisted = host.store
+      .loadEvents()
+      .filter(
+        (e): e is Extract<SessionEvent, { kind: 'agent.step' }> =>
+          e.kind === 'agent.step' && e.promptId === end.promptId
+      )
+    expect(persisted.map(e => e.step.kind)).toContain('thinking')
+    expect(persisted.every(e => e.step.status === 'done')).toBe(true)
+    expect(persisted.every(e => e.threadId === started.threadId)).toBe(true)
+    const texts = persisted.filter(e => e.step.kind === 'text').map(e => e.step.text)
+    expect(texts).toContain('fake[')
+    expect(texts).toContain(']')
   })
 
   it('stops one thread without touching another', async () => {

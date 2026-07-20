@@ -485,6 +485,7 @@ export class CrewSession {
     const id = agentId(member.name, instanceId)
     const agent = this.agents.get(id)
     if (!agent) return
+    this.clearQueues(agent, `${agent.label} was removed before getting to this.`)
     this.dropRunning(agent, `${agent.label} was removed.`)
     this.agents.delete(id)
     const meta = this.meta.get(ws)
@@ -509,6 +510,13 @@ export class CrewSession {
   private runThreadsOf(agent: AgentState): void {
     for (const thread of this.threads.values()) {
       if (thread.agentId === agent.id) this.runThread(thread)
+    }
+  }
+
+  private clearQueues(agent: AgentState, reason: string): void {
+    for (const thread of this.threads.values()) {
+      if (thread.agentId !== agent.id) continue
+      for (const prompt of thread.queue.splice(0)) this.systemMessage(reason, prompt.threadId)
     }
   }
 
@@ -553,12 +561,7 @@ export class CrewSession {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
       agent.runner = null
-      for (const thread of this.threads.values()) {
-        if (thread.agentId !== id) continue
-        for (const prompt of thread.queue.splice(0)) {
-          this.systemMessage(`${agent.label} went offline before getting to this.`, prompt.threadId)
-        }
-      }
+      this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
       this.dropRunning(agent, `${agent.label} disconnected.`)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.offline', agentId: id, label: agent.label })
     }
