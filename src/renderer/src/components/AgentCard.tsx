@@ -1,63 +1,25 @@
 import { StopIcon, TrashIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
-import type { AgentStep, PooledAgent } from '../../../shared/llm'
+import type { PooledAgent } from '../../../shared/llm'
 import AgentIcon from './AgentIcon'
 import Pill from './Pill'
 import Select from './Select'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 
-function ActivityRow({ activity }: { activity: AgentStep }) {
-  const [open, setOpen] = useState(false)
-  const expandable = Boolean(activity.detail)
-  return (
-    <div>
-      <button
-        onClick={() => expandable && setOpen(!open)}
-        className={`flex items-center gap-2.5 text-sm w-full text-left ${expandable ? '' : 'cursor-default'}`}
-      >
-        {activity.status === 'running' ? (
-          <Spinner size={12} className="text-fg-secondary" />
-        ) : (
-          <span className="w-1.5 h-1.5 mx-[3px] rounded-full bg-ink-500 shrink-0" />
-        )}
-        <span className="text-fg-secondary shrink-0">
-          {activity.kind === 'subagent' ? `${activity.name} (agent)` : activity.name}
-        </span>
-        {activity.detail && !open && <span className="text-fg-faint truncate font-mono text-xs">{activity.detail}</span>}
-      </button>
-      {open && activity.detail && (
-        <p
-          onClick={() => setOpen(false)}
-          className="text-xs font-mono text-fg-muted leading-5 mt-1.5 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-3 cursor-pointer"
-        >
-          {activity.detail}
-        </p>
-      )}
-    </div>
-  )
-}
-
 export default function AgentCard({
   agent,
-  steps,
   threadCount,
   onStop,
   onSetting,
   onRemove
 }: {
   agent: PooledAgent
-  steps: AgentStep[]
   threadCount: number
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
   onRemove?: () => void
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
-  const activities = steps
-    .filter(step => step.kind === 'tool' || step.kind === 'subagent')
-    .slice(-6)
-    .reverse()
 
   return (
     <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
@@ -106,13 +68,6 @@ export default function AgentCard({
                 options={field.options}
                 onChange={value => onSetting(field.key, value)}
               />
-            ))}
-          </div>
-        )}
-        {activities.length > 0 && (
-          <div className="space-y-2">
-            {activities.map(activity => (
-              <ActivityRow key={activity.id} activity={activity} />
             ))}
           </div>
         )}

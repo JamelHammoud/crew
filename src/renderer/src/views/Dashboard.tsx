@@ -12,8 +12,8 @@ function instanceOf(agentId: string): string {
 export default function Dashboard() {
   const members = useCrew(s => s.members)
   const agents = useCrew(s => s.agents)
+  const sortedAgents = [...agents].sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }))
   const activePrompts = useCrew(s => s.activePrompts)
-  const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const updateAgentSetting = useCrew(s => s.updateAgentSetting)
@@ -48,14 +48,13 @@ export default function Dashboard() {
             </p>
           ) : (
             <div className="space-y-4">
-              {agents.map(agent => {
+              {sortedAgents.map(agent => {
                 const mine = agent.ownerId === selfId
                 const running = activePrompts[agent.id] ?? []
                 return (
                   <AgentCard
                     key={agent.id}
                     agent={agent}
-                    steps={running.flatMap(promptId => steps[promptId] ?? [])}
                     threadCount={running.length}
                     onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}

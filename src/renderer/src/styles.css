@@ -136,7 +136,7 @@ body {
 }
 
 .tab-icon-draw {
-  stroke-dasharray: 1;
+  stroke-dasharray: 1 1.2;
   animation: tab-icon-draw var(--draw-dur, 320ms) cubic-bezier(0.4, 0, 0.2, 1) var(--draw-delay, 0ms)
     both;
 }
@@ -152,12 +152,6 @@ body {
   transform-box: view-box;
   transform-origin: 9.2px 10.6px;
   animation: tab-icon-sweep 0.42s cubic-bezier(0.22, 1, 0.36, 1) var(--sweep-delay, 0ms) both;
-}
-
-.tab-icon-spark {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: tab-icon-spark 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.35) 0.36s both;
 }
 
 @keyframes tab-icon-in {
@@ -177,7 +171,7 @@ body {
 
 @keyframes tab-icon-draw {
   from {
-    stroke-dashoffset: 1;
+    stroke-dashoffset: 1.1;
   }
   to {
     stroke-dashoffset: 0;
@@ -213,22 +207,10 @@ body {
   }
 }
 
-@keyframes tab-icon-spark {
-  from {
-    opacity: 0;
-    transform: scale(0.2) rotate(-80deg);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tab-icon,
   .tab-icon-svg,
   .tab-icon-sweep,
-  .tab-icon-spark,
   .tab-icon-draw,
   .tab-icon-pop {
     animation-duration: 1ms;

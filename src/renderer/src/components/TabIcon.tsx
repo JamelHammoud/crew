@@ -39,9 +39,9 @@ function ChatIcon() {
 }
 
 /**
- * Planet draws itself, its ring swings level as the two lobes sweep out behind it,
- * then a sparkle twists in. Lobe endpoints sit exactly where the ring meets the
- * planet's silhouette, so the ring reads as passing behind it.
+ * Planet draws itself, its ring swings level as the two lobes sweep out behind it.
+ * Lobe endpoints sit exactly where the ring meets the planet's silhouette, so the
+ * ring reads as passing behind it.
  */
 function SpaceIcon() {
   return (
@@ -71,12 +71,6 @@ function SpaceIcon() {
           style={{ '--draw-dur': '230ms', '--draw-delay': '240ms' } as React.CSSProperties}
         />
       </g>
-      <path
-        className="tab-icon-spark"
-        d="M16.8 2.6C16.96 3.7 17.3 4.04 18.4 4.2C17.3 4.36 16.96 4.7 16.8 5.8C16.64 4.7 16.3 4.36 15.2 4.2C16.3 4.04 16.64 3.7 16.8 2.6Z"
-        fill="currentColor"
-        stroke="none"
-      />
     </svg>
   )
 }
