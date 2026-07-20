@@ -513,16 +513,12 @@ export class CrewSession {
     const steer = waiting?.shift()
     if (waiting?.length === 0) this.steers.delete(promptId)
     if (!steer || ok) return
-    this.requeue(agent, steer)
+    this.requeueSteer(agent, steer)
   }
 
   // The run would not take the message, so fall back to a normal prompt. The
   // fresh route event supersedes the optimistic 'steered' one in the UI.
-  private requeue(agent: AgentState, steer: PendingSteer): void {
-    this.enqueuePromptAfterSteer(agent, steer)
-  }
-
-  private enqueuePromptAfterSteer(agent: AgentState, steer: PendingSteer): void {
+  private requeueSteer(agent: AgentState, steer: PendingSteer): void {
     const thread = this.threads.get(steer.threadId)
     if (!thread || !agent.runner) return
     const promptId = randomUUID()
