@@ -14,6 +14,7 @@ export interface ThreadMeta {
   agentLabel: string
   title: string
   createdBy: string
+  archived?: boolean
 }
 
 const EVENT_LIMIT = 500
@@ -47,6 +48,7 @@ interface CrewState {
   detach: (key: string, id: string) => void
   sendChat: (text: string, threadId?: string) => void
   deleteMessage: (messageId: string) => void
+  archiveThread: (threadId: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
   renameDoc: (from: string, to: string) => void

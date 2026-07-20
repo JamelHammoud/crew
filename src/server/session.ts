@@ -371,6 +371,13 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
+  private handleArchiveThread(member: Member, threadId: string): void {
+    const thread = this.threads.get(threadId)
+    if (!thread || thread.archived) return
+    thread.archived = true
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.archived', threadId, byName: member.name })
+  }
+
   private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
     const saved: Attachment[] = []
     for (const item of (incoming ?? []).slice(0, MAX_ATTACHMENTS)) {
