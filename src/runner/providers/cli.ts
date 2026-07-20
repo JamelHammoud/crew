@@ -198,7 +198,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         done,
         kill: () => {
           killed = true
-          child.kill('SIGTERM')
+          if (idleTimer) clearTimeout(idleTimer)
+          idleTimer = null
+          terminate()
         }
       }
     }
