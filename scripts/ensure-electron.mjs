@@ -1,7 +1,10 @@
+import { execFile } from 'node:child_process'
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
 import path from 'node:path'
+import { promisify } from 'node:util'
 
+const run = promisify(execFile)
 const require = createRequire(import.meta.url)
 const electronPkg = require.resolve('electron/package.json')
 const electronDir = path.dirname(electronPkg)
@@ -24,9 +27,9 @@ const ready =
 
 if (!ready) {
   const { downloadArtifact } = require('@electron/get')
-  const extract = require('extract-zip')
   const zipPath = await downloadArtifact({ version, artifactName: 'electron' })
-  await extract(zipPath, { dir: path.join(electronDir, 'dist') })
+  fs.mkdirSync(path.join(electronDir, 'dist'), { recursive: true })
+  await run('unzip', ['-oq', zipPath, '-d', path.join(electronDir, 'dist')])
   fs.writeFileSync(pathFile, platformPath)
   console.log('electron binary ready')
 }
