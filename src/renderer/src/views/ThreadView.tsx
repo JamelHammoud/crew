@@ -139,11 +139,15 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   </>
                 )}
                 {(diffTotals.added > 0 || diffTotals.removed > 0) && (
-                  <span className="ml-2">
-                    <Pill lg>
-                      <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
-                    </Pill>
-                  </span>
+                  <Tooltip
+                    label={`${diffTotals.added} ${diffTotals.added === 1 ? 'addition' : 'additions'} and ${diffTotals.removed} ${diffTotals.removed === 1 ? 'deletion' : 'deletions'}`}
+                  >
+                    <span className="ml-2 cursor-default">
+                      <Pill lg>
+                        <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
+                      </Pill>
+                    </span>
+                  </Tooltip>
                 )}
               </div>
             </div>

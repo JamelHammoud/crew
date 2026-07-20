@@ -1,7 +1,7 @@
 import { StopIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { AgentStep, PooledAgent } from '../../../shared/llm'
-import Avatar from './Avatar'
+import AgentIcon from './AgentIcon'
 import Pill from './Pill'
 import Select from './Select'
 import Spinner from './Spinner'
@@ -63,7 +63,7 @@ export default function AgentCard({
     <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
-          <Avatar name={agent.label} presence={agent.status === 'offline' ? 'offline' : 'online'} />
+          <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
