@@ -34,6 +34,7 @@ export class Runner {
   private providersByName = new Map<string, Provider>()
   private agents = new Map<string, RunnerAgent>()
   private running = new Map<string, RunningPrompt>()
+  private cancelled = new Set<string>()
   private tails = new Map<string, Promise<void>>()
   private stopped = false
   private attempts = 0
@@ -182,9 +183,12 @@ export class Runner {
       case 'steer':
         void this.steer(msg.promptId, msg.text, msg.byName, msg.attachments ?? [])
         break
-      case 'cancel':
-        this.running.get(msg.promptId)?.kill()
+      case 'cancel': {
+        const live = this.running.get(msg.promptId)
+        if (live) live.kill()
+        else this.cancelled.add(msg.promptId)
         break
+      }
     }
   }
 
@@ -239,6 +243,13 @@ export class Runner {
   ): Promise<void> {
     await this.puller?.pullNow()
     const local = await this.attachments.ensure(attachments, this.httpBase)
+    // A cancel can land before the provider process exists (during the pull or
+    // attachment fetch, or while queued behind another run in this thread), so
+    // it is remembered and honored here instead of being dropped.
+    if (this.cancelled.delete(promptId)) {
+      this.send({ type: 'agent.error', promptId, message: 'Stopped' })
+      return
+    }
     const run = provider.start(promptWithAttachments(text, local), this.opts.repoPath, {
       onStep: step => this.send({ type: 'agent.step', promptId, step }),
       onTokens: tokens => this.send({ type: 'agent.tokens', promptId, tokens })
@@ -251,6 +262,7 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: err instanceof Error ? err.message : String(err) })
     } finally {
       this.running.delete(promptId)
+      this.cancelled.delete(promptId)
     }
   }
 
