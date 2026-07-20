@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 
-export default function Pill({ children, solid }: { children: ReactNode; solid?: boolean }) {
+export default function Pill({ children, solid, lg }: { children: ReactNode; solid?: boolean; lg?: boolean }) {
   return (
     <span
-      className={`text-[11px] font-medium px-2 py-0.5 rounded-full transition-colors ${
+      className={`font-medium rounded-full transition-colors ${lg ? 'text-xs px-2.5 py-1' : 'text-[11px] px-2 py-0.5'} ${
         solid ? 'bg-fg text-ink-900' : 'bg-white/[0.06] text-fg-muted'
       }`}
     >
