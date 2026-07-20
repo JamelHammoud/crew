@@ -192,3 +192,10 @@
 {"id":"4d86fce9-1071-4b08-bd9b-8047b30dfd7f","ts":1784511582766,"kind":"person.joined","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
 {"id":"c55ae2f4-1b8d-4604-a667-0667fb1c78ba","ts":1784511596472,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"@Claude  We need a better way to manage the model version, thinking level, etc. you're talking too. Also make sure everything defaults to bypass-permissions mode (or what would be like that for their platform)","mentions":["jamel/claude"]}
 {"id":"63d6e6e7-8444-452c-af95-65ff634714a5","ts":1784511596473,"kind":"agent.start","promptId":"5bfd2c51-25ca-49d1-bb66-2af637f7004b","agentId":"jamel/claude","agentLabel":"Claude","promptText":"@Claude  We need a better way to manage the model version, thinking level, etc. you're talking too. Also make sure everything defaults to bypass-permissions mode (or what would be like that for their platform)","byName":"Jamel"}
+{"id":"3c05112f-9fc6-453c-b688-f4f2b364391f","ts":1784511606451,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"d0877cb1-75f1-464b-b160-5cb11d289104","ts":1784511606451,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"aeb8357c-7c4d-4bee-ad8d-8c1863693eb7","ts":1784511606451,"kind":"agent.end","promptId":"5bfd2c51-25ca-49d1-bb66-2af637f7004b","agentId":"jamel/claude","agentLabel":"Claude","ok":false,"error":"Claude disconnected."}
+{"id":"d547ff34-3c53-41b9-8ef4-8a9e92cbe6cd","ts":1784511606452,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"d7f545b7-934e-4b34-b984-c84757e47a9d","ts":1784511607454,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"dc393fef-09ce-48ad-8665-1089df884f6c","ts":1784511607455,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"d0c95537-bdd3-45ed-803d-ceb78385a1b3","ts":1784511607455,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
