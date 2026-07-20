@@ -15,6 +15,7 @@ import {
   type AgentStatus,
   type AgentSettings,
   type AgentStep,
+  type AgentUsage,
   type LiveRun,
   type PooledAgent,
   type RunStep
@@ -290,6 +291,9 @@ export class CrewSession {
         break
       case 'agent.step':
         this.handleStep(meta, msg.promptId, msg.step)
+        break
+      case 'agent.usage':
+        if (meta.role === 'runner') this.handleUsage(meta, member, msg.instanceId, msg.usage)
         break
       case 'agent.tokens':
         this.handleTokens(meta, msg.promptId, msg.tokens)
