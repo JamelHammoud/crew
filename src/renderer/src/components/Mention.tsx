@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
 import { useCrew } from '../state/store'
+import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
 import HoverCard from './HoverCard'
 import Pill from './Pill'
@@ -17,7 +18,7 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   return (
     <>
       <span className="flex items-center gap-2.5">
-        <Avatar name={agent.label} size="sm" presence={agent.status === 'offline' ? 'offline' : 'online'} />
+        <AgentIcon seed={agent.id} size="sm" presence={agent.status === 'offline' ? 'offline' : 'online'} />
         <span className="min-w-0 flex-1 flex items-center gap-2">
           <span className="text-sm font-semibold text-fg truncate">{agent.label}</span>
           <Pill>{agent.provider}</Pill>
