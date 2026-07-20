@@ -62,6 +62,7 @@ export type ServerMessage =
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
+  | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
   | {
       type: 'prompt'
