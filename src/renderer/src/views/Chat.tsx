@@ -197,16 +197,26 @@ export default function Chat() {
               ))}
             </div>
           )}
-          <div className="flex gap-3 items-end">
+          <AttachmentTray attachmentKey={CHAT_KEY} />
+          <div
+            className="flex gap-3 items-end"
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => {
+              e.preventDefault()
+              void attach(CHAT_KEY, e.dataTransfer.files)
+            }}
+          >
             <textarea
               ref={inputRef}
               value={text}
               onChange={e => onChange(e.target.value)}
               onKeyDown={onKeyDown}
+              onPaste={e => void attach(CHAT_KEY, e.clipboardData.files)}
               rows={2}
               placeholder="Message the crew. Use @ to start an agent thread."
               className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500 resize-none"
             />
+            <AttachButton attachmentKey={CHAT_KEY} />
             <button
               onClick={send}
               className="bg-white text-black rounded-lg px-4 py-2 text-sm font-medium hover:bg-zinc-200 shrink-0"

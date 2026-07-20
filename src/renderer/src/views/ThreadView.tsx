@@ -1,4 +1,5 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
+import { AttachButton, AttachmentTray } from '../components/Attachments'
 import RunStatus from '../components/RunStatus'
 import ThreadItems from '../components/ThreadItems'
 import { buildThread } from '../components/thread'
