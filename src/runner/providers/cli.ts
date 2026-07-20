@@ -40,6 +40,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env }
       })
+      // Codex reads stdin to EOF even when the prompt is an argument, so an open
+      // pipe hangs the process before it ever contacts the model.
+      child.stdin?.end()
       let text = ''
       let errText = ''
       let buffer = ''
