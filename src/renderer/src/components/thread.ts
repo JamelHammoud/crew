@@ -130,5 +130,9 @@ export function buildThread(
       }
     }
   }
-  return items
+  // Steps render under their run's agent.start event, so a message steered
+  // into a live run would otherwise sit below steps that happened after it.
+  // A stable sort by time puts every item where it actually happened while
+  // keeping event-log order for same-millisecond neighbours.
+  return items.sort((a, b) => a.ts - b.ts)
 }
