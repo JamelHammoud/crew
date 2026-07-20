@@ -117,41 +117,6 @@
           "default": "high"
         }
       ]
-    },
-    {
-      "id": "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
-      "label": "Bob (Kimi K3)",
-      "provider": "kimi",
-      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
-      "ownerName": "Jamel",
-      "settings": {
-        "model": "kimi-code/k3"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "kimi-code/kimi-for-coding",
-              "label": "kimi-code/kimi-for-coding"
-            },
-            {
-              "value": "kimi-code/kimi-for-coding-highspeed",
-              "label": "kimi-code/kimi-for-coding-highspeed"
-            },
-            {
-              "value": "kimi-code/k3",
-              "label": "kimi-code/k3"
-            }
-          ],
-          "default": ""
-        }
-      ]
     }
   ]
 }
