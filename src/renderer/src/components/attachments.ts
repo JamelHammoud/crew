@@ -28,8 +28,8 @@ export function imagesFrom(items: FileList | File[] | null | undefined): File[] 
 export async function readImages(files: File[], taken: number): Promise<PendingAttachment[]> {
   const room = Math.max(0, MAX_ATTACHMENTS - taken)
   const read = await Promise.all(
-    files.slice(0, room).map(async (file, index) => ({
-      id: `${file.name}:${file.size}:${index}:${taken}`,
+    files.slice(0, room).map(async file => ({
+      id: crypto.randomUUID(),
       name: file.name || 'image',
       mime: file.type,
       size: file.size,
