@@ -303,7 +303,7 @@
       "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
       "ownerName": "ALI",
       "settings": {
-        "model": "gpt-5.6-sol",
+        "model": "gpt-5.6-luna",
         "effort": "high"
       },
       "fields": [
