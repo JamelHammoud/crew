@@ -12,10 +12,6 @@ const SVG = {
   strokeLinejoin: 'round'
 } as const
 
-/** The one orbit the satellite rides — shared by the ring path and its offset-path. */
-const ORBIT = 'M15.9 6.5A6.9 2.6 -30 1 1 4.1 13.5A6.9 2.6 -30 1 1 15.9 6.5'
-const ORBIT_MIRROR = 'M15.9 13.5A6.9 2.6 30 1 1 4.1 6.5A6.9 2.6 30 1 1 15.9 13.5'
-
 /** Bubble strokes itself in one pass, then the three dots land left to right. */
 function ChatIcon() {
   return (
