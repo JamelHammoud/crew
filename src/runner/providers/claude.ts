@@ -12,6 +12,23 @@ export const parseClaudeLine: OutputParser = line => {
   } catch {
     return []
   }
+  if (msg?.type === 'stream_event' && msg.event) {
+    const event = msg.event
+    if (event.type === 'content_block_start' && event.content_block?.type === 'thinking') {
+      return [{ thinkingStart: { index: event.index } }]
+    }
+    if (
+      event.type === 'content_block_delta' &&
+      event.delta?.type === 'thinking_delta' &&
+      typeof event.delta.thinking === 'string'
+    ) {
+      return [{ thinkingDelta: { index: event.index, text: event.delta.thinking } }]
+    }
+    if (event.type === 'content_block_stop') {
+      return [{ thinkingStop: { index: event.index } }]
+    }
+    return []
+  }
   if (msg?.type === 'assistant' && Array.isArray(msg.message?.content)) {
     const out = []
     for (const block of msg.message.content) {
