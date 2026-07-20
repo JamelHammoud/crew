@@ -531,6 +531,17 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
+  private handleUsage(meta: ConnMeta, member: Member, instanceId: string, usage: AgentUsage): void {
+    const id = agentId(member.name, instanceId)
+    const agent = this.agents.get(id)
+    if (!agent || !meta.agentIds.includes(id)) return
+    agent.usage = usage
+    this.broadcast({ type: 'agent.usage', agentId: id, usage })
+    // Kept in session.json so the last known limits still show while the
+    // owner's machine is offline.
+    this.persistMeta()
+  }
+
   private handleTokens(meta: ConnMeta, promptId: string, tokens: number): void {
     const agent = this.ownedAgent(meta, promptId)
     const ref = this.prompts.get(promptId)
