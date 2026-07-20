@@ -74,8 +74,10 @@ describe('agent instances', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
 
     runner.addAgent({ instanceId: 'x', provider: 'fake', name: 'Fake X', settings: {} })
-    const added = (await ui.waitFor(m => m.type === 'agent.added')) as Extract<ServerMessage, { type: 'agent.added' }>
-    expect(added.agent.label).toBe('Fake X')
+    const added = (await ui.waitFor(
+      m => m.type === 'agent.added' && m.agent.label === 'Fake X'
+    )) as Extract<ServerMessage, { type: 'agent.added' }>
+    expect(added.agent.id).toBe(agentId('jamel', 'x'))
     const online = (await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake X')) as Extract<
       SessionEvent,
       { kind: 'agent.online' }
