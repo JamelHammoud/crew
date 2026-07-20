@@ -160,3 +160,9 @@
 {"id":"35c5a2e9-5c62-4eb6-bbda-7f0a0552fe66","ts":1784511373533,"kind":"person.joined","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
 {"id":"4cebc1d2-aebc-4791-aca9-cc200688b945","ts":1784511381056,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Hi ALi!","mentions":[]}
 {"id":"c834d666-8b10-40d5-92a6-ca0ec966c25b","ts":1784511402188,"kind":"person.left","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
+{"id":"8584322e-67c7-4158-a9f3-a16855c15260","ts":1784511406420,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"f0a907c0-b826-429f-adf9-4f13970f5c5e","ts":1784511406420,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"447430ac-c624-4549-b724-5af0cd0b87b9","ts":1784511406421,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"70be8db7-e948-4294-b4b2-9f7277716389","ts":1784511407424,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"a6acfbe7-2049-46b3-b8d7-c1a767297a50","ts":1784511407426,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"69e70e87-668a-4b72-9ed3-fe7d5f3ef321","ts":1784511407426,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
