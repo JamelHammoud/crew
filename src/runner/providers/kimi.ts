@@ -1,6 +1,6 @@
 import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
-import { activityDetail } from './detail'
+import { activityDetail, fileChanges } from './detail'
 import { kimiModels } from './kimi-models'
 import type { OutputParser, Provider } from './types'
 
@@ -37,7 +37,8 @@ export const parseKimiLine: OutputParser = line => {
             kind: SUBAGENT_TOOLS.has(name) ? ('subagent' as const) : ('tool' as const),
             name,
             status: 'started' as const,
-            detail: activityDetail(input)
+            detail: activityDetail(input),
+            files: fileChanges(name, input)
           }
         })
       }
