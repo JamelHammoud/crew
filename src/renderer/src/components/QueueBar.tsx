@@ -1,4 +1,5 @@
-import { CheckIcon, ChevronRightIcon, PencilIcon, QueueListIcon, TrashIcon, XMarkIcon } from '@heroicons/react/16/solid'
+import { CheckIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/16/solid'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import Tooltip from './Tooltip'
 
@@ -111,11 +112,11 @@ export default function QueueBar({
         onClick={() => setOpen(o => !o)}
         className="group w-full flex items-center gap-2 h-8 text-sm font-semibold text-fg-muted hover:text-fg-secondary transition-colors"
       >
-        <QueueListIcon className="w-4 h-4 shrink-0" />
         {items.length === 1 ? '1 message queued' : `${items.length} messages queued`}
-        <ChevronRightIcon
-          className={`w-3.5 h-3.5 ml-auto text-fg-faint group-hover:text-fg-muted transition-transform duration-200 ${
-            open ? 'rotate-90' : ''
+        <ChevronDownIcon
+          strokeWidth={2.5}
+          className={`w-4 h-4 ml-auto text-fg-muted group-hover:text-fg-secondary transition-transform duration-200 ${
+            open ? 'rotate-180' : ''
           }`}
         />
       </button>
