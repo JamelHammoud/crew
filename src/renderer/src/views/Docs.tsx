@@ -1,89 +1,95 @@
-import { EyeIcon, PencilIcon } from '@heroicons/react/16/solid'
-import { useEffect, useRef, useState } from 'react'
-import Markdown from '../components/Markdown'
+import { DocumentTextIcon, PlusIcon } from '@heroicons/react/16/solid'
+import { useState } from 'react'
+import DocEditor from '../components/DocEditor'
 import { useCrew } from '../state/store'
+
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/^-+/, '')
+}
+
+function prettify(slug: string): string {
+  const words = slug.replace(/-/g, ' ')
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
 
 export default function Docs() {
   const docs = useCrew(s => s.docs)
   const updateDoc = useCrew(s => s.updateDoc)
   const [page, setPage] = useState('main')
-  const [draft, setDraft] = useState(docs['main'] ?? '')
-  const [editing, setEditing] = useState(true)
-  const focused = useRef(false)
-  const timer = useRef<number | null>(null)
+  const [creating, setCreating] = useState(false)
+  const [newName, setNewName] = useState('')
 
   const pages = Object.keys(docs).sort((a, b) => (a === 'main' ? -1 : b === 'main' ? 1 : a.localeCompare(b)))
+  const current = docs[page] !== undefined ? page : 'main'
 
-  useEffect(() => {
-    if (!focused.current) setDraft(docs[page] ?? '')
-  }, [docs, page])
-
-  const onChange = (value: string) => {
-    setDraft(value)
-    if (timer.current !== null) window.clearTimeout(timer.current)
-    timer.current = window.setTimeout(() => updateDoc(page, value), 700)
-  }
-
-  const switchPage = (next: string) => {
-    setPage(next)
-    setDraft(docs[next] ?? '')
-    setEditing(true)
+  const createPage = () => {
+    const slug = slugify(newName)
+    if (!slug) return
+    if (docs[slug] === undefined) updateDoc(slug, '')
+    setPage(slug)
+    setCreating(false)
+    setNewName('')
   }
 
   return (
     <div className="h-full flex px-6">
-      <div className="max-w-[880px] w-full mx-auto flex pt-24 pb-6 gap-8 min-h-0">
-        <aside className="w-44 shrink-0 pt-14 space-y-1">
-          {pages.map(name => (
-            <button
-              key={name}
-              onClick={() => switchPage(name)}
-              className={`w-full text-left px-3.5 py-2 rounded-full text-sm font-semibold transition-all duration-150 active:scale-[0.98] ${
-                name === page ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
-              }`}
-            >
-              {name}
-            </button>
-          ))}
-        </aside>
-        <div className="flex-1 min-w-0 flex flex-col">
-          <div className="flex justify-end shrink-0">
-            <div className="flex items-center gap-0.5 bg-ink-800 rounded-full p-1">
+      <div className="max-w-[980px] w-full mx-auto flex pt-24 gap-8 min-h-0">
+        <aside className="w-48 shrink-0 flex flex-col min-h-0 pb-6">
+          <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-0.5">
+            {pages.map(name => (
               <button
-                onClick={() => setEditing(true)}
-                className={`flex items-center gap-1.5 h-8 px-3.5 rounded-full text-sm font-semibold transition-all duration-150 ${
-                  editing ? 'bg-ink-600 text-fg' : 'text-fg-muted hover:text-fg-secondary'
+                key={name}
+                onClick={() => setPage(name)}
+                className={`w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold transition-all duration-150 active:scale-[0.98] ${
+                  name === current ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
                 }`}
               >
-                <PencilIcon className="w-3.5 h-3.5" />
-                Edit
+                <DocumentTextIcon className="w-4 h-4 shrink-0 opacity-60" />
+                <span className="truncate">{prettify(name)}</span>
               </button>
-              <button
-                onClick={() => setEditing(false)}
-                className={`flex items-center gap-1.5 h-8 px-3.5 rounded-full text-sm font-semibold transition-all duration-150 ${
-                  !editing ? 'bg-ink-600 text-fg' : 'text-fg-muted hover:text-fg-secondary'
-                }`}
-              >
-                <EyeIcon className="w-3.5 h-3.5" />
-                Preview
-              </button>
-            </div>
+            ))}
           </div>
-          <div className="flex-1 min-h-0 pt-4">
-            {editing ? (
-              <textarea
-                value={draft}
-                onChange={e => onChange(e.target.value)}
-                onFocus={() => (focused.current = true)}
-                onBlur={() => (focused.current = false)}
-                placeholder="Plan together. Markdown works here."
-                className="w-full h-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none font-mono leading-6"
-              />
-            ) : (
-              <div className="h-full overflow-y-auto">
-                <Markdown text={draft || 'Nothing here yet.'} />
-              </div>
-            )}
+          {creating ? (
+            <input
+              autoFocus
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') createPage()
+                if (e.key === 'Escape') {
+                  setCreating(false)
+                  setNewName('')
+                }
+              }}
+              onBlur={() => {
+                setCreating(false)
+                setNewName('')
+              }}
+              placeholder="Page name"
+              className="mt-1 w-full bg-ink-800 rounded-full px-3.5 py-2 text-sm text-fg placeholder:text-fg-muted outline-none"
+            />
+          ) : (
+            <button
+              onClick={() => setCreating(true)}
+              className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-white/[0.04]"
+            >
+              <PlusIcon className="w-4 h-4 shrink-0" />
+              New page
+            </button>
+          )}
+        </aside>
+        <div className="flex-1 min-w-0 overflow-y-auto">
+          <div className="max-w-[760px]">
+            <h1 className="text-3xl font-bold text-fg px-[54px] pb-2">{prettify(current)}</h1>
+            <DocEditor key={current} text={docs[current] ?? ''} onChange={markdown => updateDoc(current, markdown)} />
+            <div className="h-40" />
           </div>
         </div>
       </div>

@@ -236,6 +236,35 @@ body {
   }
 }
 
+.doc .bn-container {
+  --bn-colors-editor-background: transparent;
+  --bn-colors-editor-text: #ffffff;
+  --bn-colors-menu-background: #1c1c1c;
+  --bn-colors-menu-text: #b3b3b3;
+  --bn-colors-hovered-background: rgb(255 255 255 / 0.06);
+  --bn-colors-hovered-text: #ffffff;
+  --bn-colors-selected-background: rgb(255 255 255 / 0.1);
+  --bn-colors-selected-text: #ffffff;
+  --bn-colors-disabled-background: transparent;
+  --bn-colors-disabled-text: #4a4a4a;
+  --bn-colors-side-menu: #4a4a4a;
+  --bn-colors-tooltip-background: #1c1c1c;
+  --bn-colors-tooltip-text: #b3b3b3;
+  --bn-colors-border: rgb(255 255 255 / 0.08);
+  --bn-colors-shadow: rgb(0 0 0 / 0.5);
+  --bn-colors-highlights-gray-background: #333333;
+  --bn-font-family: var(--font-sans);
+  --bn-border-radius: 12px;
+}
+
+.doc .bn-editor {
+  @apply text-base;
+}
+
+.doc .bn-editor .bn-inline-content code {
+  @apply font-mono text-[13px] bg-ink-800 rounded-md px-1.5 py-0.5;
+}
+
 .md {
   @apply text-base leading-[1.65] text-fg;
 }
