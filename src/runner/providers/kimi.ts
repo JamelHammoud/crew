@@ -1,4 +1,5 @@
-import { choices, flag, makeCliProvider } from './cli'
+import type { AgentSettingField } from '../../shared/llm'
+import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail } from './detail'
 import { kimiModels } from './kimi-models'
 import type { OutputParser, Provider } from './types'
@@ -44,13 +45,24 @@ export const parseKimiLine: OutputParser = line => {
   return []
 }
 
+export const kimiFields = (): AgentSettingField[] => [
+  { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' }
+]
+
+export const kimiArgs = (prompt: string, get: SettingReader): string[] => [
+  '-p',
+  prompt,
+  '--output-format',
+  'stream-json',
+  '--yolo',
+  ...flag('--model', get('model'))
+]
+
 export const kimiProvider: Provider = makeCliProvider({
   name: 'kimi',
   label: 'Kimi',
   command: 'kimi',
-  fields: () => [
-    { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' }
-  ],
-  args: (prompt, get) => ['-p', prompt, '--output-format', 'stream-json', '--yolo', ...flag('--model', get('model'))],
+  fields: kimiFields,
+  args: kimiArgs,
   parser: parseKimiLine
 })

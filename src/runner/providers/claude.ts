@@ -1,5 +1,6 @@
-import { choices, flag, makeCliProvider } from './cli'
+import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail } from './detail'
+import type { AgentSettingField } from '../../shared/llm'
 import type { OutputParser, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
@@ -43,30 +44,29 @@ export const parseClaudeLine: OutputParser = line => {
   return []
 }
 
+export const claudeFields = (): AgentSettingField[] => [
+  { key: 'model', label: 'Model', options: choices(['', 'opus', 'sonnet', 'haiku', 'fable']), default: 'opus' },
+  { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high', 'xhigh', 'max']), default: 'high' }
+]
+
+export const claudeArgs = (prompt: string, get: SettingReader): string[] => [
+  '-p',
+  prompt,
+  '--output-format',
+  'stream-json',
+  '--verbose',
+  ...flag('--model', get('model')),
+  ...flag('--effort', get('effort')),
+  '--permission-mode',
+  'bypassPermissions',
+  '--dangerously-skip-permissions'
+]
+
 export const claudeProvider: Provider = makeCliProvider({
   name: 'claude',
   label: 'Claude',
   command: 'claude',
-  fields: () => [
-    { key: 'model', label: 'Model', options: choices(['', 'opus', 'sonnet', 'haiku', 'fable']), default: 'opus' },
-    {
-      key: 'effort',
-      label: 'Thinking',
-      options: choices(['low', 'medium', 'high', 'xhigh', 'max']),
-      default: 'high'
-    }
-  ],
-  args: (prompt, get) => [
-    '-p',
-    prompt,
-    '--output-format',
-    'stream-json',
-    '--verbose',
-    ...flag('--model', get('model')),
-    ...flag('--effort', get('effort')),
-    '--permission-mode',
-    'bypassPermissions',
-    '--dangerously-skip-permissions'
-  ],
+  fields: claudeFields,
+  args: claudeArgs,
   parser: parseClaudeLine
 })

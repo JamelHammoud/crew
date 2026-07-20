@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { Runner } from '../src/runner'
+import type { SessionEvent } from '../src/shared/events'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 
@@ -25,10 +26,10 @@ describe('connection health', () => {
     await new Promise(r => setTimeout(r, 600))
 
     ui.chat('still here?')
-    const echo = await ui.waitForEvent(
-      (e): e is Extract<import('../src/shared/events').SessionEvent, { kind: 'message' }> =>
-        e.kind === 'message' && e.text === 'still here?'
-    )
+    const echo = (await ui.waitForEvent(e => e.kind === 'message' && e.text === 'still here?')) as Extract<
+      SessionEvent,
+      { kind: 'message' }
+    >
     expect(echo.text).toBe('still here?')
   })
 
