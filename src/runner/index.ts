@@ -44,6 +44,8 @@ export class Runner {
   private silenceTimeout: number
   private reconnectTimer: NodeJS.Timeout | null = null
   private watchdog: NodeJS.Timeout | null = null
+  private usageTimer: NodeJS.Timeout | null = null
+  private pollingUsage = false
   private puller: GitPuller | null = null
   private attachments: AttachmentCache
   private httpBase = ''
@@ -131,6 +133,7 @@ export class Runner {
     ws.on('error', () => {})
     ws.on('close', () => {
       this.stopWatchdog()
+      this.stopUsagePolling()
       this.killRunning()
       this.onStatus?.('offline')
       if (this.stopped) return
