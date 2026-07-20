@@ -1,5 +1,5 @@
 import type { SessionEvent } from './events'
-import type { AgentActivity, AgentSettingField, AgentSettings, PooledAgent } from './llm'
+import type { AgentSettingField, AgentSettings, AgentStep, PooledAgent, RunStep } from './llm'
 
 export interface RegisteredLlm {
   instanceId: string
@@ -32,22 +32,17 @@ export type ClientMessage =
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
   | { type: 'agent.register'; llm: RegisteredLlm }
   | { type: 'agent.deregister'; instanceId: string }
-  | { type: 'agent.chunk'; promptId: string; text: string }
-  | { type: 'agent.progress'; promptId: string; thinking?: string; tokens?: number }
+  | { type: 'agent.step'; promptId: string; step: RunStep }
   | { type: 'agent.done'; promptId: string; text: string }
   | { type: 'agent.error'; promptId: string; message: string }
-  | { type: 'agent.activity'; promptId: string; activity: AgentActivity }
 
 export type ServerMessage =
   | { type: 'welcome'; selfId: string; snapshot: SessionSnapshot }
   | { type: 'event'; event: SessionEvent }
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
-  | { type: 'agent.waiting'; agentId: string; waitingThreadIds: string[] }
-  | { type: 'agent.chunk'; promptId: string; agentId: string; threadId?: string; text: string }
-  | { type: 'agent.progress'; promptId: string; agentId: string; threadId?: string; thinking?: string; tokens?: number }
-  | { type: 'agent.activity'; promptId: string; agentId: string; threadId?: string; activity: AgentActivity }
-  | { type: 'prompt'; promptId: string; agentId: string; text: string; settings: AgentSettings }
+  | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
+  | { type: 'prompt'; promptId: string; agentId: string; threadId: string; text: string; settings: AgentSettings }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
   | { type: 'error'; message: string }

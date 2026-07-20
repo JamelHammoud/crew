@@ -1,4 +1,4 @@
-import type { AgentSettingField, AgentSettings } from '../../shared/llm'
+import type { AgentSettingField, AgentSettings, RunStep } from '../../shared/llm'
 
 export interface ParsedActivity {
   id: string
@@ -10,22 +10,14 @@ export interface ParsedActivity {
 
 export interface ParsedOutput {
   text?: string
-  activity?: ParsedActivity
   thinking?: string
-  tokens?: number
+  activity?: ParsedActivity
 }
 
 export type OutputParser = (line: string) => ParsedOutput[]
 
-export interface RunProgress {
-  thinking?: string
-  tokens?: number
-}
-
 export interface RunHooks {
-  onChunk: (text: string) => void
-  onActivity: (activity: ParsedActivity) => void
-  onProgress?: (progress: RunProgress) => void
+  onStep: (step: RunStep) => void
 }
 
 export interface RunningPrompt {

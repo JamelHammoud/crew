@@ -1,7 +1,15 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
 import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, type SessionEvent } from '../shared/events'
-import { agentId, resolveSettings, type AgentActivity, type AgentSettings, type PooledAgent } from '../shared/llm'
+import {
+  agentId,
+  resolveSettings,
+  type AgentStatus,
+  type AgentSettings,
+  type AgentStep,
+  type PooledAgent,
+  type RunStep
+} from '../shared/llm'
 import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import { Store } from './store'
 
@@ -11,10 +19,15 @@ interface Member {
   connections: Set<WebSocket>
 }
 
-interface AgentState extends Omit<PooledAgent, 'activities' | 'waitingThreadIds'> {
+interface AgentState extends Omit<PooledAgent, 'runs' | 'status'> {
   runner: WebSocket | null
-  queue: QueuedPrompt[]
-  activities: Map<string, AgentActivity>
+  running: Set<string>
+  runs: Map<string, Map<string, StepEntry>>
+}
+
+interface StepEntry {
+  step: AgentStep
+  persisted: boolean
 }
 
 interface QueuedPrompt {
@@ -30,6 +43,8 @@ interface Thread {
   agentLabel: string
   title: string
   createdBy: string
+  queue: QueuedPrompt[]
+  running: string | null
 }
 
 interface PromptRef {
@@ -173,6 +188,9 @@ export class CrewSession {
       case 'agent.chunk':
         this.handleChunk(meta, msg.promptId, msg.text)
         break
+      case 'agent.progress':
+        this.handleProgress(meta, msg.promptId, msg)
+        break
       case 'agent.activity':
         this.handleActivity(meta, msg.promptId, msg.activity)
         break
@@ -271,6 +289,19 @@ export class CrewSession {
     const agent = this.ownedAgent(meta, promptId)
     if (!agent) return
     this.broadcast({ type: 'agent.chunk', promptId, agentId: agent.id, threadId: this.prompts.get(promptId)?.threadId, text })
+  }
+
+  private handleProgress(meta: ConnMeta, promptId: string, msg: { thinking?: string; tokens?: number }): void {
+    const agent = this.ownedAgent(meta, promptId)
+    if (!agent) return
+    this.broadcast({
+      type: 'agent.progress',
+      promptId,
+      agentId: agent.id,
+      threadId: this.prompts.get(promptId)?.threadId,
+      thinking: msg.thinking,
+      tokens: msg.tokens
+    })
   }
 
   private handleActivity(meta: ConnMeta, promptId: string, activity: AgentActivity): void {

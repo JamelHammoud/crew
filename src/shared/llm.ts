@@ -1,11 +1,18 @@
 export type AgentStatus = 'idle' | 'busy' | 'offline'
 
-export interface AgentActivity {
+export type StepKind = 'text' | 'thinking' | 'tool' | 'subagent'
+
+export interface RunStep {
   id: string
-  kind: 'tool' | 'subagent'
-  name: string
+  kind: StepKind
   status: 'running' | 'done'
+  text?: string
+  name?: string
   detail?: string
+}
+
+export interface AgentStep extends RunStep {
+  ts: number
 }
 
 export type AgentSettings = Record<string, string>
@@ -39,10 +46,9 @@ export interface PooledAgent {
   ownerId: string
   ownerName: string
   status: AgentStatus
-  activities: AgentActivity[]
+  runs: Record<string, AgentStep[]>
   settings: AgentSettings
   fields: AgentSettingField[]
-  waitingThreadIds: string[]
 }
 
 export interface AgentDef {

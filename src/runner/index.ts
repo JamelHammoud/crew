@@ -170,7 +170,7 @@ export class Runner {
         this.onStatus?.('online')
         break
       case 'prompt':
-        this.runPrompt(msg.promptId, msg.agentId, msg.text, msg.settings)
+        this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings)
         break
       case 'cancel':
         this.running.get(msg.promptId)?.kill()
@@ -178,15 +178,21 @@ export class Runner {
     }
   }
 
-  private runPrompt(promptId: string, forAgentId: string, text: string, settings: AgentSettings): void {
+  private runPrompt(
+    promptId: string,
+    forAgentId: string,
+    threadId: string,
+    text: string,
+    settings: AgentSettings
+  ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
-    const tail = this.tails.get(forAgentId) ?? Promise.resolve()
+    const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail.then(() => this.execute(agent.provider, promptId, text, settings))
-    this.tails.set(forAgentId, next.catch(() => {}))
+    this.tails.set(threadId, next.catch(() => {}))
   }
 
   private async execute(
@@ -197,19 +203,7 @@ export class Runner {
   ): Promise<void> {
     await this.puller?.pullNow()
     const run = provider.start(text, this.opts.repoPath, {
-      onChunk: chunk => this.send({ type: 'agent.chunk', promptId, text: chunk }),
-      onActivity: activity =>
-        this.send({
-          type: 'agent.activity',
-          promptId,
-          activity: {
-            id: activity.id,
-            kind: activity.kind,
-            name: activity.name,
-            status: activity.status === 'started' ? 'running' : 'done',
-            detail: activity.detail
-          }
-        })
+      onStep: step => this.send({ type: 'agent.step', promptId, step })
     }, settings)
     this.running.set(promptId, run)
     try {
