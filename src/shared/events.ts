@@ -13,6 +13,7 @@ export type SessionEvent =
       threadId?: string
       attachments?: Attachment[]
     }
+  | { id: string; ts: number; kind: 'message.deleted'; messageId: string }
   | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string }
   | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string; threadId?: string }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
