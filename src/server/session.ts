@@ -51,6 +51,17 @@ interface QueuedPrompt {
   byName: string
   threadId: string
   attachments: Attachment[]
+  messageId: string
+}
+
+// A steer sent to a runner but not yet acknowledged. Kept so it can be turned
+// back into a normal queued prompt if the run refuses it.
+interface PendingSteer {
+  messageId: string
+  text: string
+  byName: string
+  threadId: string
+  attachments: Attachment[]
 }
 
 interface Thread {
@@ -88,6 +99,7 @@ export class CrewSession {
   private docs = new Map<string, string>()
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
+  private steers = new Map<string, PendingSteer[]>()
   onSyncNeeded: (() => void) | null = null
 
   constructor(private store: Store) {
