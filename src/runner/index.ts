@@ -136,6 +136,7 @@ export class Runner {
     this.stopped = true
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
     this.stopWatchdog()
+    this.puller?.stop()
     this.killRunning()
     this.ws?.close()
   }
