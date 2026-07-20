@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Runner } from '../src/runner'
 import type { SessionEvent } from '../src/shared/events'
 import { makeFakeProvider } from './helpers/fake-provider'
-import { startHost, TestUi, type TestHost } from './helpers/session'
+import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
 describe('connection health', () => {
   let host: TestHost | null = null
