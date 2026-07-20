@@ -54,6 +54,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let written = 0
       let reported = 0
       let sent = 0
+      const thinkingBlocks = new Map<number, string>()
+      let streamedThinking = false
 
       const reportTokens = () => {
         if (!hooks.onTokens) return
