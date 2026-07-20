@@ -158,6 +158,11 @@ export const useCrew = create<CrewState>((set, get) => {
           }
           break
         }
+        case 'thread.archived': {
+          const thread = threads[event.threadId]
+          if (thread) threads[event.threadId] = { ...thread, archived: true }
+          break
+        }
         case 'agent.start': {
           activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
           if (event.threadId) threadPrompts[event.threadId] = event.promptId
@@ -221,6 +226,9 @@ export const useCrew = create<CrewState>((set, get) => {
               title: event.title,
               createdBy: event.byName
             }
+          }
+          if (event.kind === 'thread.archived' && threads[event.threadId]) {
+            threads[event.threadId].archived = true
           }
           if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
           if (event.kind === 'agent.start') {
@@ -335,6 +343,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
+    },
+    archiveThread: threadId => {
+      socket.send({ type: 'thread.archive', threadId })
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
