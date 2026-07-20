@@ -523,7 +523,11 @@ export class CrewSession {
   // fresh route event supersedes the optimistic 'steered' one in the UI.
   private requeueSteer(agent: AgentState, steer: PendingSteer): void {
     const thread = this.threads.get(steer.threadId)
-    if (!thread || !agent.runner) return
+    if (!thread) return
+    if (!agent.runner) {
+      this.systemMessage(`${agent.label} went offline before getting to this.`, steer.threadId)
+      return
+    }
     const promptId = randomUUID()
     thread.queue.push({ promptId, ...steer })
     this.routed(steer.messageId, steer.threadId, promptId, 'queued')
