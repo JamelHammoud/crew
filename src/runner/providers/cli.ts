@@ -51,6 +51,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     steerable: opts.streamInput === true,
     fields,
     detect: async () => commandExists(opts.command),
+    usage: opts.usage,
     start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
       const child = spawn(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, key => resolved[key] ?? ''), {
