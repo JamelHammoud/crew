@@ -36,10 +36,14 @@ interface CrewState {
   openThreadId: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
+  httpBase: string
+  pending: Record<string, PendingAttachment[]>
   connect: (wsUrl: string, name: string, code: string, joinLink?: string) => void
   leave: () => void
   setChatDraft: (text: string) => void
   setThreadDraft: (threadId: string, text: string) => void
+  attach: (key: string, files: FileList | File[] | null) => Promise<void>
+  detach: (key: string, id: string) => void
   sendChat: (text: string, threadId?: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
@@ -62,8 +66,11 @@ const EMPTY = {
   threadPrompts: {},
   openThreadId: null,
   chatDraft: '',
-  threadDrafts: {}
+  threadDrafts: {},
+  pending: {}
 }
+
+export const CHAT_KEY = 'chat'
 
 const upsertStep = (steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
   const rest = (steps ?? []).filter(s => s.id !== step.id)
