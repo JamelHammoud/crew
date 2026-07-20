@@ -1,7 +1,10 @@
-import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, powerSaveBlocker } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { AppSession } from './session'
+
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
+app.commandLine.appendSwitch('disable-renderer-backgrounding')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
