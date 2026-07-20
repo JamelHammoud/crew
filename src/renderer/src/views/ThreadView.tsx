@@ -119,12 +119,13 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               <Composer
               attachmentKey={threadId}
               value={text}
-              placeholder="Send a message"
+              placeholder={placeholder}
               inputRef={inputRef}
               onChange={value => setThreadDraft(threadId, value)}
               onKeyDown={onKeyDown}
               onSend={send}
                 onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
+                sendLabel={canSteer ? 'Steer' : 'Send'}
               />
             </div>
           </div>
