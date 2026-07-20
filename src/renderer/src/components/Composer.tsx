@@ -14,6 +14,7 @@ export default function Composer({
   onKeyDown,
   onSend,
   onStop,
+  sendLabel = 'Send',
   children
 }: {
   attachmentKey: string
@@ -24,6 +25,7 @@ export default function Composer({
   onKeyDown: (event: React.KeyboardEvent) => void
   onSend: () => void
   onStop?: () => void
+  sendLabel?: string
   children?: ReactNode
 }) {
   const attach = useCrew(s => s.attach)
@@ -66,11 +68,11 @@ export default function Composer({
               </button>
             </Tooltip>
           ) : (
-            <Tooltip label="Send">
+            <Tooltip label={sendLabel}>
               <button
                 onClick={onSend}
                 disabled={!canSend}
-                aria-label="Send"
+                aria-label={sendLabel}
                 className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
               >
                 <ArrowUpIcon className="w-5 h-5" />
