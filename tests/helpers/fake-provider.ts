@@ -45,3 +45,16 @@ export function makeFakeProvider(env: NodeJS.ProcessEnv = {}, name = 'fake', lab
     env
   })
 }
+
+export function makeSteerableProvider(env: NodeJS.ProcessEnv = {}, name = 'steery', label = 'Steery'): Provider {
+  return makeCliProvider({
+    name,
+    label,
+    command: process.execPath,
+    fields: fakeFields,
+    args: () => [fakeSteerCliPath],
+    parser: parseFakeLine,
+    streamInput: true,
+    env
+  })
+}
