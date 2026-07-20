@@ -1,7 +1,9 @@
 import WebSocket from 'ws'
+import { httpBaseFrom, type Attachment } from '../shared/attachments'
 import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
 import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
+import { AttachmentCache, promptWithAttachments } from './attachments'
 import { GitPuller } from './pull'
 
 export interface RunnerOptions {
@@ -40,6 +42,8 @@ export class Runner {
   private reconnectTimer: NodeJS.Timeout | null = null
   private watchdog: NodeJS.Timeout | null = null
   private puller: GitPuller | null = null
+  private attachments: AttachmentCache
+  private httpBase = ''
   private lastSeen = 0
   onStatus: ((status: RunnerStatus) => void) | null = null
 
@@ -47,6 +51,7 @@ export class Runner {
     for (const provider of opts.providers) this.providersByName.set(provider.name, provider)
     const defs = opts.agents ?? opts.providers.map(p => ({ instanceId: p.name, provider: p.name, name: p.label, settings: {} }))
     for (const def of defs) this.define(def)
+    this.attachments = new AttachmentCache(opts.repoPath)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
     if (opts.autoPullMs) {
@@ -89,6 +94,7 @@ export class Runner {
   connect(url: string): void {
     if (this.stopped) return
     this.onStatus?.('connecting')
+    this.httpBase = httpBaseFrom(url)
     const ws = new WebSocket(url)
     this.ws = ws
     this.lastSeen = Date.now()
