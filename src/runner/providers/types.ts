@@ -12,12 +12,14 @@ export interface ParsedOutput {
   text?: string
   thinking?: string
   activity?: ParsedActivity
+  tokens?: number
 }
 
 export type OutputParser = (line: string) => ParsedOutput[]
 
 export interface RunHooks {
   onStep: (step: RunStep) => void
+  onTokens?: (tokens: number) => void
 }
 
 export interface RunningPrompt {

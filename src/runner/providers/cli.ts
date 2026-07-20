@@ -47,16 +47,29 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let blocks = 0
       let rawOpen = false
       let killed = false
+      let written = 0
+      let reported = 0
+      let sent = 0
+
+      const reportTokens = () => {
+        if (!hooks.onTokens) return
+        const tokens = Math.max(reported, Math.ceil(written / 4))
+        if (tokens === sent) return
+        sent = tokens
+        hooks.onTokens(tokens)
+      }
 
       const handleLine = (line: string) => {
         if (!line.trim()) return
         raw += (raw ? '\n' : '') + line
         for (const out of opts.parser!(line)) {
           if (out.thinking) {
+            written += out.thinking.length
             hooks.onStep({ id: `b${blocks++}`, kind: 'thinking', text: out.thinking, status: 'done' })
           }
           if (out.text) {
             text += (text ? '\n' : '') + out.text
+            written += out.text.length
             hooks.onStep({ id: `b${blocks++}`, kind: 'text', text: out.text, status: 'done' })
           }
           if (out.activity) {
@@ -68,7 +81,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
               status: out.activity.status === 'started' ? 'running' : 'done'
             })
           }
+          if (typeof out.tokens === 'number') reported = Math.max(reported, out.tokens)
         }
+        reportTokens()
       }
 
       child.stdout.on('data', data => {
@@ -76,8 +91,10 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         if (!opts.parser) {
           text += chunk
           raw += chunk
+          written += chunk.length
           rawOpen = true
           hooks.onStep({ id: 'b0', kind: 'text', text: chunk, status: 'running' })
+          reportTokens()
           return
         }
         buffer += chunk

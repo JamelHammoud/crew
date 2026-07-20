@@ -1,4 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import RunStatus from '../components/RunStatus'
 import ThreadItems from '../components/ThreadItems'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
@@ -10,6 +11,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const selfId = useCrew(s => s.selfId)
   const thread = useCrew(s => s.threads[threadId])
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
+  const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const closeThread = useCrew(s => s.closeThread)
@@ -20,6 +22,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
+  const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
 
   useLayoutEffect(() => {
     const el = scrollRef.current
@@ -64,7 +67,15 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-4">
         <div className="max-w-3xl mx-auto space-y-4">
-          <ThreadItems items={items} onStop={cancelPrompt} />
+          <ThreadItems items={items} />
+          {activePromptId && startedAt && (
+            <RunStatus
+              startedAt={startedAt}
+              tokens={tokens}
+              steps={steps[activePromptId] ?? []}
+              onStop={() => cancelPrompt(activePromptId)}
+            />
+          )}
         </div>
       </div>
 
