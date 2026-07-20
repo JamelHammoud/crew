@@ -789,7 +789,7 @@ export class CrewSession {
   }
 
   private emit(event: SessionEvent, opts: { persist?: boolean } = {}): void {
-    this.events.push(event)
+    if (event.kind !== 'doc' && event.kind !== 'doc.renamed') this.events.push(event)
     if (opts.persist !== false) this.store.appendEvent(event)
     this.broadcast({ type: 'event', event })
     if (opts.persist !== false) this.onSyncNeeded?.()

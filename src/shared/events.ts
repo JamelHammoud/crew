@@ -39,16 +39,17 @@ export const SYSTEM_AUTHOR_ID = 'crew'
 export const SYSTEM_AUTHOR_NAME = 'crew'
 
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
+  const lasting = events.filter(e => e.kind !== 'doc' && e.kind !== 'doc.renamed')
   let count = 0
-  let start = events.length
-  for (let i = events.length - 1; i >= 0; i--) {
-    if (events[i].kind !== 'agent.step') {
+  let start = lasting.length
+  for (let i = lasting.length - 1; i >= 0; i--) {
+    if (lasting[i].kind !== 'agent.step') {
       if (count === limit) break
       count++
     }
     start = i
   }
-  const kept = events.slice(start)
+  const kept = lasting.slice(start)
   const prompts = new Set(kept.filter(e => e.kind === 'agent.start').map(e => e.promptId))
   return kept.filter(e => e.kind !== 'agent.step' || prompts.has(e.promptId))
 }
