@@ -62,8 +62,7 @@ describe('steering a run in flight', () => {
     await ui.waitFor(msg => msg.type === 'agent.step' && msg.promptId === start.promptId)
     ui.chat('actually do it the other way', [], thread.id)
 
-    const route = (await ui.waitForEvent(e => e.kind === 'message.route')) as Route
-    expect(route.mode).toBe('steered')
+    const route = (await ui.waitForEvent(e => e.kind === 'message.route' && e.mode === 'steered')) as Route
     expect(route.promptId).toBe(start.promptId)
 
     const end = (await ui.waitForEvent(e => e.kind === 'agent.end')) as Ended
@@ -85,8 +84,10 @@ describe('steering a run in flight', () => {
     const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Start
 
     ui.chat('and one more thing', [], thread.id)
-    const route = (await ui.waitForEvent(e => e.kind === 'message.route' && e.mode === 'queued')) as Route
-    expect(route.promptId).not.toBe(start.promptId)
+    const route = (await ui.waitForEvent(
+      e => e.kind === 'message.route' && e.promptId !== start.promptId
+    )) as Route
+    expect(route.mode).toBe('queued')
 
     // The queued message gets a run of its own once the first one is done.
     const second = (await ui.waitForEvent(
