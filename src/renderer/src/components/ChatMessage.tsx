@@ -8,10 +8,9 @@ import { AgentMention, MemberName } from './Mention'
 import Pill from './Pill'
 import { MenuItem, Popover } from './Popover'
 import { usePresence } from './presence'
-import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 import MessageImages from './MessageImages'
-import type { MessageRoute, ThreadItem } from './thread'
+import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
 function escapeRegex(value: string): string {
@@ -47,29 +46,6 @@ function MentionText({ text }: { text: string }) {
   )
 }
 
-const ROUTE_LABELS: Record<MessageRoute, { text: string; hint: string }> = {
-  queued: { text: 'Queued', hint: 'Waiting for the current run to finish before this gets its own turn' },
-  steering: { text: 'Steering', hint: 'Sent into the run already in progress' },
-  steered: { text: 'Steered', hint: 'Was picked up by the run that was already in progress' }
-}
-
-function RouteBadge({ route }: { route?: MessageRoute }) {
-  if (!route) return null
-  const { text, hint } = ROUTE_LABELS[route]
-  return (
-    <Tooltip label={hint}>
-      <span className="cursor-default">
-        <Pill>
-          <span className="inline-flex items-center gap-1">
-            {route === 'steering' && <Spinner size={9} />}
-            {text}
-          </span>
-        </Pill>
-      </span>
-    </Tooltip>
-  )
-}
-
 export default function ChatMessage({ item }: { item: ThreadItem }) {
   const presence = usePresence(item.author)
   const agentSeed = useCrew(s => (item.self ? undefined : s.agents.find(a => a.label === item.author)?.id))
@@ -100,7 +76,6 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
             </span>
           </MemberName>
           {item.self && <Pill>You</Pill>}
-          <RouteBadge route={item.route} />
           <Tooltip label={formatFullTime(item.ts)}>
             <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
           </Tooltip>

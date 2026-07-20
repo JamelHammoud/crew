@@ -115,7 +115,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   return (
     <div className="h-full relative">
       <div ref={scrollRef} className="h-full overflow-y-auto px-6">
-        <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 36) }}>
+        <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
           <ThreadItems items={items} />
           {activePromptId && startedAt && (
             <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
