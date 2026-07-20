@@ -85,6 +85,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
+  const canSteer = Boolean(activePromptId) && steerable
   const placeholder = 'Send a message'
 
   return (
