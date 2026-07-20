@@ -1,7 +1,7 @@
 ## Queue
 
 * [ ] We need a "Files" tab, this is the file explorer for the repo, that's synced across computers, searchable, and allows manual editing (Just like VS code)
-* [ ] If you've already scrolled in a thread upwards, don't auto-scroll the user back down (there's a threshold, if the user is actively scrolling up to go read/find something). Keep the user where they scrolled and instead show a "back 
+* [ ] If you've already scrolled in a thread upwards, don't auto-scroll the user back down (there's a threshold, if the user is actively scrolling up to go read/find something). Keep the user where they scrolled and instead show a "Jump to bottom" centered button
 * [ ] Spellcheck doesn't work in docs because a right-click is hijacked
 
 ## In progress
