@@ -2292,3 +2292,4 @@
 {"id":"2e4556dc-6551-4a37-9824-d42913ec84bf","ts":1784560908053,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"9435cb7e-24b7-41df-aec7-50aa734bf330","ts":1784560908053,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"724311b4-47ea-4084-be55-3badbf331b17","ts":1784560908053,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"5ba7e657-93a4-47b8-8fea-541836beedb4","ts":1784560932387,"kind":"thread.archived","threadId":"d1dc699b-2973-4d2c-8a97-fbfbda681abf","byName":"Jamel"}
