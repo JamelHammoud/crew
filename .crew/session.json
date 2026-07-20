@@ -222,7 +222,7 @@
           "default": "high"
         }
       ],
-      "steerable": false
+      "steerable": true
     },
     {
       "id": "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
