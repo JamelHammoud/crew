@@ -8,6 +8,7 @@ export interface RegisteredLlm {
   label: string
   fields: AgentSettingField[]
   settings: AgentSettings
+  steerable?: boolean
 }
 
 export interface MemberInfo {
@@ -37,6 +38,7 @@ export type ClientMessage =
   | { type: 'agent.deregister'; instanceId: string }
   | { type: 'agent.step'; promptId: string; step: RunStep }
   | { type: 'agent.tokens'; promptId: string; tokens: number }
+  | { type: 'agent.steered'; promptId: string; ok: boolean }
   | { type: 'agent.done'; promptId: string; text: string }
   | { type: 'agent.error'; promptId: string; message: string }
 

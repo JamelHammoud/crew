@@ -70,7 +70,8 @@ export function Popover({
     const anchor = holderRef.current?.parentElement
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node
-      if (!anchor?.contains(target) && !popRef.current?.contains(target)) onClose()
+      if (popRef.current?.contains(target)) return
+      if (at || !anchor?.contains(target)) onClose()
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
