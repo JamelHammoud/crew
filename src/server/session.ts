@@ -580,9 +580,47 @@ export class CrewSession {
 
   private handleCancel(promptId: string): void {
     const ref = this.prompts.get(promptId)
-    if (!ref) return
+    if (!ref) {
+      this.closeOrphanRun(promptId)
+      return
+    }
     const agent = this.agents.get(ref.agentId)
-    if (agent?.runner) this.send(agent.runner, { type: 'cancel', promptId })
+    if (!agent) return
+    if (!agent.runner) {
+      this.finishPrompt(agent, promptId, { ok: false, error: 'Stopped' })
+      return
+    }
+    this.send(agent.runner, { type: 'cancel', promptId })
+    // The kill normally comes back as agent.error, but a runner wedged before
+    // the provider even started can never report. The stop must still work,
+    // so close the run here if no report arrives; a late one is ignored.
+    const timer = setTimeout(() => {
+      if (this.prompts.has(promptId)) this.finishPrompt(agent, promptId, { ok: false, error: 'Stopped' })
+    }, this.cancelTimeoutMs)
+    timer.unref?.()
+  }
+
+  // A UI can hold a run this process no longer tracks (started before a
+  // restart, say). There is nothing left to kill, but the dangling
+  // 'agent.start' still needs its 'agent.end' or the thread never clears.
+  private closeOrphanRun(promptId: string): void {
+    let start: Extract<SessionEvent, { kind: 'agent.start' }> | null = null
+    for (const event of this.events) {
+      if (event.kind === 'agent.start' && event.promptId === promptId) start = event
+      if (event.kind === 'agent.end' && event.promptId === promptId) return
+    }
+    if (!start) return
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'agent.end',
+      promptId,
+      agentId: start.agentId,
+      agentLabel: start.agentLabel,
+      threadId: start.threadId,
+      ok: false,
+      error: 'Stopped'
+    })
   }
 
   private handleDone(meta: ConnMeta, promptId: string, text: string): void {
