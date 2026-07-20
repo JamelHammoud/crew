@@ -2,6 +2,7 @@ import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import Avatar from '../components/Avatar'
 import Composer from '../components/Composer'
+import FilesChanged from '../components/FilesChanged'
 import { hoverCardOpen } from '../components/HoverCard'
 import { MemberName } from '../components/Mention'
 import { usePresence } from '../components/presence'
@@ -33,6 +34,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
+  const threadSteps = useMemo(() => {
+    const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
+    return promptIds.flatMap(promptId => steps[promptId] ?? [])
+  }, [threadEvents, steps])
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
 
   const didInitialScroll = useRef(false)
@@ -71,6 +76,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
           {activePromptId && startedAt && (
             <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
           )}
+          <FilesChanged steps={threadSteps} />
         </div>
       </div>
 
