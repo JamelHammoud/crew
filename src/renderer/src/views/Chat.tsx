@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { SessionEvent } from '../../../shared/events'
 import Avatar from '../components/Avatar'
 import Markdown from '../components/Markdown'
@@ -74,12 +74,19 @@ export default function Chat() {
   const [mentionQuery, setMentionQuery] = useState<string | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const didInitialScroll = useRef(false)
 
   const items = useMemo(() => buildThread(events, streams, selfId), [events, streams, selfId])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = scrollRef.current
     if (!el) return
+    if (!didInitialScroll.current) {
+      if (items.length === 0) return
+      didInitialScroll.current = true
+      el.scrollTop = el.scrollHeight
+      return
+    }
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
     if (nearBottom) el.scrollTop = el.scrollHeight
   }, [items, streams])
