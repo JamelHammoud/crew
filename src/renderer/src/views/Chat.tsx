@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { mentionCandidates } from '../../../shared/llm'
-import Avatar from '../components/Avatar'
+import AgentIcon from '../components/AgentIcon'
 import ChatMessage from '../components/ChatMessage'
 import Composer from '../components/Composer'
 import DayDivider from '../components/DayDivider'
@@ -214,7 +214,7 @@ export default function Chat() {
                           index === activeIndex ? 'bg-white/[0.08] text-fg' : 'text-fg-secondary'
                         }`}
                       >
-                        <Avatar name={agent.label} size="sm" presence={status === 'offline' ? 'offline' : 'online'} />
+                        <AgentIcon seed={agent.id} size="sm" presence={status === 'offline' ? 'offline' : 'online'} />
                         <span className="flex-1 truncate">@{agent.label}</span>
                         <span className="text-xs text-fg-muted shrink-0">{agent.ownerName}</span>
                       </button>

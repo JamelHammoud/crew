@@ -511,6 +511,42 @@
         }
       ],
       "steerable": true
+    },
+    {
+      "id": "jamel/6d0e947c-dd44-4953-ab8f-7aadc1c7db39",
+      "label": "Kimi 2",
+      "provider": "kimi",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ]
 }

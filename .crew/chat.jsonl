@@ -1822,3 +1822,4 @@
 {"id":"bcee6188-c84e-41f1-ab99-843ec8881c5f","ts":1784524697863,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
 {"id":"17eb3e6f-02f6-4704-b0d0-a85d4837b292","ts":1784524697863,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"d1779a94-8754-4946-8cfd-3313ba18f337","ts":1784524763482,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"135370c8-cd05-449e-b54b-a954a8ee60c1","ts":1784525059274,"kind":"agent.online","agentId":"jamel/6d0e947c-dd44-4953-ab8f-7aadc1c7db39","label":"Kimi 2"}
