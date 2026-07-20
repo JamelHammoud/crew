@@ -7,8 +7,6 @@ export interface LocalAttachment {
   path: string
 }
 
-// A download runs before the provider starts, so a stalled fetch would hold
-// the whole run hostage.
 const DOWNLOAD_TIMEOUT_MS = 30000
 
 export class AttachmentCache {

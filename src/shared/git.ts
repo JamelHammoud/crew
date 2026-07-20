@@ -6,8 +6,6 @@ export interface GitResult {
   stderr: string
 }
 
-// A git that prompts for credentials or stalls on the network would wedge
-// every run queued behind it, so never let it ask and never let it run forever.
 const GIT_TIMEOUT_MS = 120000
 
 export function runGit(args: string[], cwd: string): Promise<GitResult> {
