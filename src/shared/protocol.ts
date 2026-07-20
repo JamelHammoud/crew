@@ -38,6 +38,7 @@ export type ClientMessage =
   | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[] }
   | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'chat.delete'; messageId: string }
+  | { type: 'thread.archive'; threadId: string }
   | { type: 'doc.update'; page: string; text: string }
   | { type: 'doc.rename'; from: string; to: string }
   | { type: 'doc.delete'; page: string }
