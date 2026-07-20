@@ -15,33 +15,51 @@ describe('fake provider contract', () => {
     const provider = makeFakeProvider()
     expect(await provider.detect()).toBe(true)
     const chunks: string[] = []
-    const run = provider.start('hello there', repo, { onChunk: t => chunks.push(t), onActivity: () => {} })
+    const run = provider.start('hello there', repo, {
+      onStep: step => {
+        if (step.kind === 'text' && step.text) chunks.push(step.text)
+      }
+    })
     const { text } = await run.done
     expect(chunks).toEqual(['fake[', 'hello there', ']'])
     expect(text).toBe('fake[\nhello there\n]')
   })
 
-  it('reports activity with start and finish', async () => {
+  it('reports tool steps with start and finish', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_ACTIVITY: '1' })
-    const activities: Array<{ name: string; status: string }> = []
+    const steps: Array<{ name?: string; status: string }> = []
     const run = provider.start('work', repo, {
-      onChunk: () => {},
-      onActivity: a => activities.push({ name: a.name, status: a.status })
+      onStep: step => {
+        if (step.kind === 'tool' || step.kind === 'subagent') steps.push({ name: step.name, status: step.status })
+      }
     })
     await run.done
-    expect(activities).toContainEqual({ name: 'Helper', status: 'started' })
-    expect(activities.filter(a => a.status === 'finished').length).toBe(2)
+    expect(steps).toContainEqual({ name: 'Helper', status: 'running' })
+    expect(steps.filter(s => s.status === 'done').length).toBe(2)
+  })
+
+  it('reports thinking as its own step', async () => {
+    const provider = makeFakeProvider({ FAKE_CLI_THINK: '1' })
+    const thoughts: string[] = []
+    const run = provider.start('ponder', repo, {
+      onStep: step => {
+        if (step.kind === 'thinking' && step.text) thoughts.push(step.text)
+      }
+    })
+    const { text } = await run.done
+    expect(thoughts).toEqual(['weighing the options'])
+    expect(text).not.toContain('weighing the options')
   })
 
   it('rejects with stderr on failure', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_FAIL: '1' })
-    const run = provider.start('boom', repo, { onChunk: () => {}, onActivity: () => {} })
+    const run = provider.start('boom', repo, { onStep: () => {} })
     await expect(run.done).rejects.toThrow('fake cli failed')
   })
 
   it('kill stops the run and rejects with Stopped', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_DELAY_MS: '300' })
-    const run = provider.start('slow', repo, { onChunk: () => {}, onActivity: () => {} })
+    const run = provider.start('slow', repo, { onStep: () => {} })
     run.kill()
     await expect(run.done).rejects.toThrow('Stopped')
   })
@@ -96,6 +114,11 @@ describe('claude parser matches the real CLI format', () => {
     )
     expect(result).toEqual([{ activity: { id: 'toolu_1', kind: 'tool', name: '', status: 'finished' } }])
 
+    const thinking = parseClaudeLine(
+      '{"type":"assistant","message":{"content":[{"type":"thinking","thinking":"let me check"},{"type":"text","text":"ok"}]}}'
+    )
+    expect(thinking).toEqual([{ thinking: 'let me check' }, { text: 'ok' }])
+
     expect(parseClaudeLine('{"type":"system","subtype":"init"}')).toEqual([])
     expect(parseClaudeLine('{"type":"result","subtype":"success","result":"ok"}')).toEqual([])
   })
@@ -109,10 +132,7 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
     'kimi answers',
     async () => {
       const { kimiProvider } = await import('../src/runner/providers/kimi')
-      const run = kimiProvider.start('Reply with exactly: crew-ok', tmpDir('real-kimi'), {
-        onChunk: () => {},
-        onActivity: () => {}
-      })
+      const run = kimiProvider.start('Reply with exactly: crew-ok', tmpDir('real-kimi'), { onStep: () => {} })
       const { text } = await run.done
       expect(text).toContain('crew-ok')
     },
@@ -123,10 +143,7 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
     'claude answers',
     async () => {
       const { claudeProvider } = await import('../src/runner/providers/claude')
-      const run = claudeProvider.start('Reply with exactly: crew-ok', tmpDir('real-claude'), {
-        onChunk: () => {},
-        onActivity: () => {}
-      })
+      const run = claudeProvider.start('Reply with exactly: crew-ok', tmpDir('real-claude'), { onStep: () => {} })
       const { text } = await run.done
       expect(text).toContain('crew-ok')
     },

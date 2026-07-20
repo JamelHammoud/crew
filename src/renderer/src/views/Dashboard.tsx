@@ -12,6 +12,7 @@ export default function Dashboard() {
   const members = useCrew(s => s.members)
   const agents = useCrew(s => s.agents)
   const activePrompts = useCrew(s => s.activePrompts)
+  const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const updateAgentSetting = useCrew(s => s.updateAgentSetting)
@@ -48,11 +49,14 @@ export default function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               {agents.map(agent => {
                 const mine = agent.ownerId === selfId
+                const running = activePrompts[agent.id] ?? []
                 return (
                   <AgentCard
                     key={agent.id}
                     agent={agent}
-                    onStop={activePrompts[agent.id] ? () => cancelPrompt(activePrompts[agent.id]) : undefined}
+                    steps={running.flatMap(promptId => steps[promptId] ?? [])}
+                    threadCount={running.length}
+                    onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
                     onRemove={mine ? () => void window.crew.removeAgent(instanceOf(agent.id)) : undefined}
                   />

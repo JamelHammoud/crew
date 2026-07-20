@@ -1,17 +1,15 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import ChatMessage from '../components/ChatMessage'
+import ThreadItems from '../components/ThreadItems'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
 import { useCrew } from '../state/store'
 
 export default function ThreadView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)
-  const streams = useCrew(s => s.streams)
+  const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
   const thread = useCrew(s => s.threads[threadId])
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
-  const activities = useCrew(s => s.threadActivities[threadId])
-  const waiting = useCrew(s => s.waitingThreads[threadId])
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const closeThread = useCrew(s => s.closeThread)
@@ -21,15 +19,14 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const inputRef = useAutoResize(text)
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
-  const items = useMemo(() => buildThread(threadEvents, streams, selfId), [threadEvents, streams, selfId])
-  const acts = (activities ?? []).slice(-12)
+  const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
 
   useLayoutEffect(() => {
     const el = scrollRef.current
     if (!el) return
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
     if (nearBottom) el.scrollTop = el.scrollHeight
-  }, [items, activities, streams, waiting])
+  }, [items])
 
   const send = () => {
     if (!text.trim()) return
@@ -66,33 +63,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-4">
-        <div className="max-w-3xl mx-auto space-y-5">
-          {items.map(item => (
-            <ChatMessage key={item.key} item={item} onStop={cancelPrompt} />
-          ))}
-          {waiting && (
-            <div className="flex items-center gap-2 text-xs text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
-              <span>Waiting for {thread.agentLabel} to finish something else</span>
-            </div>
-          )}
-          {acts.length > 0 && (
-            <div className="space-y-1.5 border-t border-zinc-800 pt-3">
-              {acts.map(activity => (
-                <div key={activity.id} className="flex items-center gap-2 text-xs">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                      activity.status === 'running' ? 'bg-white animate-pulse' : 'bg-zinc-600'
-                    }`}
-                  />
-                  <span className="text-zinc-300">
-                    {activity.kind === 'subagent' ? `${activity.name} (agent)` : activity.name}
-                  </span>
-                  {activity.detail && <span className="text-zinc-600 truncate">{activity.detail}</span>}
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="max-w-3xl mx-auto space-y-4">
+          <ThreadItems items={items} onStop={cancelPrompt} />
         </div>
       </div>
 

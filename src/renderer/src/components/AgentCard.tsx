@@ -1,4 +1,4 @@
-import type { PooledAgent } from '../../../shared/llm'
+import type { AgentStep, PooledAgent } from '../../../shared/llm'
 import Pill from './Pill'
 
 const STATUS_LABEL: Record<PooledAgent['status'], string> = {
@@ -9,16 +9,24 @@ const STATUS_LABEL: Record<PooledAgent['status'], string> = {
 
 export default function AgentCard({
   agent,
+  steps,
+  threadCount,
   onStop,
   onSetting,
   onRemove
 }: {
   agent: PooledAgent
+  steps: AgentStep[]
+  threadCount: number
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
   onRemove?: () => void
 }) {
-  const activities = agent.activities.slice(-8).reverse()
+  const status = threadCount > 0 ? 'busy' : agent.status
+  const activities = steps
+    .filter(step => step.kind === 'tool' || step.kind === 'subagent')
+    .slice(-8)
+    .reverse()
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
       <div className="flex items-center gap-2">
@@ -26,17 +34,19 @@ export default function AgentCard({
         <Pill>{agent.provider}</Pill>
         <span className="text-xs text-zinc-500">{agent.ownerName}</span>
         <div className="ml-auto flex items-center gap-2">
-          {agent.status === 'busy' && onStop && (
+          {threadCount > 0 && onStop && (
             <button onClick={onStop} className="text-[11px] text-zinc-400 hover:text-white">
-              Stop
+              {threadCount > 1 ? 'Stop all' : 'Stop'}
             </button>
           )}
-          {onRemove && agent.status !== 'busy' && (
+          {onRemove && threadCount === 0 && (
             <button onClick={onRemove} className="text-[11px] text-zinc-500 hover:text-red-400">
               Remove
             </button>
           )}
-          <Pill solid={agent.status === 'busy'}>{STATUS_LABEL[agent.status]}</Pill>
+          <Pill solid={status === 'busy'}>
+            {status === 'busy' && threadCount > 1 ? `Working on ${threadCount}` : STATUS_LABEL[status]}
+          </Pill>
         </div>
       </div>
       {onSetting && agent.fields.length > 0 && (

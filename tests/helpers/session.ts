@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import WebSocket from 'ws'
 import type { SessionEvent } from '../../src/shared/events'
-import type { AgentActivity } from '../../src/shared/llm'
+import type { AgentStep } from '../../src/shared/llm'
 import type { ClientMessage, ServerMessage } from '../../src/shared/protocol'
 import { createCrewServer, type CrewServer } from '../../src/server/index'
 import { CrewSession } from '../../src/server/session'
@@ -57,8 +57,7 @@ interface Waiter<T> {
 export class TestUi {
   messages: ServerMessage[] = []
   events: SessionEvent[] = []
-  chunks: Array<{ promptId: string; agentId: string; text: string }> = []
-  activities: Array<{ promptId: string; agentId: string; activity: AgentActivity }> = []
+  steps: Array<{ promptId: string; agentId: string; threadId: string; step: AgentStep }> = []
   selfId = ''
   private waiters: Array<Waiter<ServerMessage>> = []
   private eventWaiters: Array<Waiter<SessionEvent>> = []
@@ -88,9 +87,13 @@ export class TestUi {
             return true
           })
         }
-        if (msg.type === 'agent.chunk') ui.chunks.push({ promptId: msg.promptId, agentId: msg.agentId, text: msg.text })
-        if (msg.type === 'agent.activity') {
-          ui.activities.push({ promptId: msg.promptId, agentId: msg.agentId, activity: msg.activity })
+        if (msg.type === 'agent.step') {
+          ui.steps.push({
+            promptId: msg.promptId,
+            agentId: msg.agentId,
+            threadId: msg.threadId,
+            step: msg.step
+          })
         }
         ui.messages.push(msg)
         ui.waiters = ui.waiters.filter(w => {
