@@ -179,10 +179,31 @@ export class Runner {
       case 'prompt':
         this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
         break
+      case 'steer':
+        void this.steer(msg.promptId, msg.text, msg.attachments ?? [])
+        break
       case 'cancel':
         this.running.get(msg.promptId)?.kill()
         break
     }
+  }
+
+  // The run may finish while the attachments are being fetched, so the ack is
+  // what tells the server whether the message landed or needs re-queueing.
+  private async steer(promptId: string, text: string, attachments: Attachment[]): Promise<void> {
+    const run = this.running.get(promptId)
+    if (!run?.steer) {
+      this.send({ type: 'agent.steered', promptId, ok: false })
+      return
+    }
+    let body = text
+    try {
+      body = promptWithAttachments(text, await this.attachments.ensure(attachments, this.httpBase))
+    } catch {
+      // Fall back to the bare text rather than dropping the steer entirely.
+    }
+    const live = this.running.get(promptId)
+    this.send({ type: 'agent.steered', promptId, ok: live === run && run.steer(body) })
   }
 
   private runPrompt(
