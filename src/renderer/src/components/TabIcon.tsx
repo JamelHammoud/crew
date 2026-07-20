@@ -13,8 +13,8 @@ const SVG = {
 } as const
 
 /** The one orbit the satellite rides — shared by the ring path and its offset-path. */
-const ORBIT = 'M16.24 6.4A7.2 3 -30 1 1 3.76 13.6A7.2 3 -30 1 1 16.24 6.4'
-const ORBIT_MIRROR = 'M16.24 13.6A7.2 3 30 1 1 3.76 6.4A7.2 3 30 1 1 16.24 13.6'
+const ORBIT = 'M15.9 6.5A6.9 2.6 -30 1 1 4.1 13.5A6.9 2.6 -30 1 1 15.9 6.5'
+const ORBIT_MIRROR = 'M15.9 13.5A6.9 2.6 30 1 1 4.1 6.5A6.9 2.6 30 1 1 15.9 13.5'
 
 /** Bubble strokes itself in one pass, then the three dots land left to right. */
 function ChatIcon() {
@@ -46,7 +46,7 @@ function ChatIcon() {
 function SpaceIcon() {
   return (
     <svg {...SVG}>
-      <circle className="tab-icon-pop" cx={10} cy={10} r={2.05} fill="currentColor" stroke="none" />
+      <circle className="tab-icon-pop" cx={10} cy={10} r={1.75} fill="currentColor" stroke="none" />
       <g
         className="tab-icon-sweep"
         style={{ '--sweep-from': '-26deg', '--sweep-delay': '70ms' } as React.CSSProperties}
