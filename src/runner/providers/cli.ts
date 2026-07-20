@@ -118,16 +118,12 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         turnTimer.unref()
       }
 
-      // Signal the whole group: helpers the CLI spawned share its stdio pipes,
-      // and any survivor keeps the run's streams open after the CLI dies.
       const signalTree = (sig: NodeJS.Signals) => {
         if (child.pid) {
           try {
             process.kill(-child.pid, sig)
             return
-          } catch {
-            // Group already gone or unavailable; fall through to the child.
-          }
+          } catch {}
         }
         child.kill(sig)
       }
