@@ -324,6 +324,15 @@ export class CrewSession {
     }
     agent.queue.push({ promptId: randomUUID(), text, byName, threadId })
     this.runNext(agent)
+    this.broadcastWaiting(agent)
+  }
+
+  private broadcastWaiting(agent: AgentState): void {
+    this.broadcast({
+      type: 'agent.waiting',
+      agentId: agent.id,
+      waitingThreadIds: agent.queue.map(p => p.threadId)
+    })
   }
 
   private runNext(agent: AgentState): void {
@@ -332,6 +341,7 @@ export class CrewSession {
     if (!next) return
     agent.status = 'busy'
     agent.activities.clear()
+    this.broadcastWaiting(agent)
     this.prompts.set(next.promptId, { agentId: agent.id, threadId: next.threadId })
     this.emit({
       id: randomUUID(),
@@ -469,7 +479,7 @@ export class CrewSession {
 
   private pooled(agent: AgentState): PooledAgent {
     const { runner, queue, activities, ...rest } = agent
-    return { ...rest, activities: [...activities.values()] }
+    return { ...rest, activities: [...activities.values()], waitingThreadIds: queue.map(p => p.threadId) }
   }
 
   private memberFor(name: string): Member {
@@ -499,6 +509,7 @@ export class CrewSession {
       agent.runner = null
       agent.queue.length = 0
       agent.activities.clear()
+      this.broadcastWaiting(agent)
       const inFlight = [...this.prompts.entries()].find(([, ref]) => ref.agentId === id)
       if (inFlight) {
         this.finishPrompt(agent, inFlight[0], { ok: false, error: `${agent.label} disconnected.` })

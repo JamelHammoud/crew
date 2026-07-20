@@ -42,6 +42,7 @@ export interface PooledAgent {
   activities: AgentActivity[]
   settings: AgentSettings
   fields: AgentSettingField[]
+  waitingThreadIds: string[]
 }
 
 export interface AgentDef {

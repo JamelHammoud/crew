@@ -42,6 +42,7 @@ export type ServerMessage =
   | { type: 'event'; event: SessionEvent }
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
+  | { type: 'agent.waiting'; agentId: string; waitingThreadIds: string[] }
   | { type: 'agent.chunk'; promptId: string; agentId: string; threadId?: string; text: string }
   | { type: 'agent.activity'; promptId: string; agentId: string; threadId?: string; activity: AgentActivity }
   | { type: 'prompt'; promptId: string; agentId: string; text: string; settings: AgentSettings }
