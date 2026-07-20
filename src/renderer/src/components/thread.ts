@@ -21,10 +21,10 @@ export interface ThreadItem {
   route?: MessageRoute
 }
 
-// How a message reached the agent, shown on the message itself: 'steered' once
-// it has been folded into a run already in flight, 'queued' while it is still
-// waiting for its own turn.
-export type MessageRoute = 'queued' | 'steered'
+// How a message reached the agent, shown on the message itself: it was folded
+// into a run already in flight ('steering' while that run lasts, then
+// 'steered'), or it is still waiting for a turn of its own ('queued').
+export type MessageRoute = 'queued' | 'steering' | 'steered'
 
 export function describeStep(step: AgentStep | undefined): string {
   if (!step) return 'Starting'
