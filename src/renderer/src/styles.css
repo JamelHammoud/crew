@@ -213,17 +213,14 @@ body {
   }
 }
 
-@keyframes tab-icon-orbit {
+@keyframes tab-icon-spark {
   from {
     opacity: 0;
-    offset-distance: 58%;
-  }
-  40% {
-    opacity: 1;
+    transform: scale(0.2) rotate(-80deg);
   }
   to {
     opacity: 1;
-    offset-distance: 76%;
+    transform: none;
   }
 }
 
