@@ -92,6 +92,19 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
         {item.attachments && <MessageImages attachments={item.attachments} />}
         {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
       </div>
+      {deletable && (
+        <Popover open={menuOpen} onClose={() => setMenuOpen(false)} align="start">
+          <MenuItem
+            icon={<TrashIcon />}
+            label="Delete message"
+            danger
+            onClick={() => {
+              setMenuOpen(false)
+              deleteMessage(item.key)
+            }}
+          />
+        </Popover>
+      )}
     </div>
   )
 }

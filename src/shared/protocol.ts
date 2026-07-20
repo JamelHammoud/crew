@@ -30,6 +30,7 @@ export type ClientMessage =
   | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'doc.update'; page: string; text: string }
+  | { type: 'doc.rename'; from: string; to: string }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
   | { type: 'agent.register'; llm: RegisteredLlm }
