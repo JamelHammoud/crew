@@ -1,4 +1,4 @@
-import type { AgentSettingField, AgentSettings, FileChange, RunStep } from '../../shared/llm'
+import type { AgentSettingField, AgentSettings, AgentUsage, FileChange, RunStep } from '../../shared/llm'
 
 export interface ParsedActivity {
   id: string
