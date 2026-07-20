@@ -74,6 +74,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
             </span>
           </MemberName>
           {item.self && <Pill>You</Pill>}
+          <RouteBadge route={item.route} />
           <Tooltip label={formatFullTime(item.ts)}>
             <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
           </Tooltip>
