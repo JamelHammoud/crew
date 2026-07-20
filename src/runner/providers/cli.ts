@@ -83,6 +83,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         idleTimer = killTimer = turnTimer = null
       }
 
+      // A CLI that exits while a message is being written breaks the pipe. That
+      // arrives as a stream error, which is fatal to the process if unhandled;
+      // the run's own exit path already reports what went wrong.
+      child.stdin?.on('error', () => {})
+
       // Closing stdin is what tells a streaming-input CLI the conversation is
       // over; it exits and `close` resolves the run.
       const endInput = () => {
