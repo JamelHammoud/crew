@@ -249,13 +249,9 @@ export default function Docs() {
                 onChange={e => setTitle(e.target.value)}
                 onBlur={commitTitle}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' || (e.key === 'ArrowDown' && current !== 'main')) {
+                  if (e.key === 'Enter' || e.key === 'ArrowDown') {
                     e.preventDefault()
                     titleRef.current?.blur()
-                    focusBody()
-                  }
-                  if (e.key === 'ArrowDown' && current === 'main') {
-                    e.preventDefault()
                     focusBody()
                   }
                   if (e.key === 'Escape') {
