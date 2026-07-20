@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import fs from 'node:fs'
+import path from 'node:path'
+import { afterEach, describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
 import { parseKimiLine } from '../src/runner/providers/kimi'
 import { tmpDir } from './helpers/session'
 import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
 import { commandExists } from '../src/runner/providers/cli'
+import { crewPath, resolveCommand } from '../src/runner/providers/path'
 
 describe('fake provider contract', () => {
   const repo = tmpDir('providers')
@@ -129,6 +132,52 @@ describe('real CLI smoke (CREW_REAL_CLI=1)', () => {
     },
     90000
   )
+})
+
+describe('cli detection outside the app PATH', () => {
+  const home = process.env.HOME
+  const envPath = process.env.PATH
+  const shell = process.env.SHELL
+
+  afterEach(() => {
+    process.env.HOME = home
+    process.env.PATH = envPath
+    if (shell === undefined) delete process.env.SHELL
+    else process.env.SHELL = shell
+  })
+
+  it('finds a cli installed in the home bin dirs when PATH is bare', () => {
+    const fakeHome = tmpDir('home')
+    const bin = path.join(fakeHome, '.local/bin')
+    fs.mkdirSync(bin, { recursive: true })
+    const tool = path.join(bin, 'crewtool')
+    fs.writeFileSync(tool, '#!/bin/sh\necho ok\n')
+    fs.chmodSync(tool, 0o755)
+
+    process.env.HOME = fakeHome
+    process.env.PATH = '/usr/bin:/bin'
+    delete process.env.SHELL
+
+    expect(commandExists('crewtool')).toBe(true)
+    expect(resolveCommand('crewtool')).toBe(tool)
+    expect(crewPath().split(':')).toContain(bin)
+    expect(commandExists('crewtool-missing')).toBe(false)
+  })
+
+  it('ignores directories and non executable files', () => {
+    const fakeHome = tmpDir('home')
+    const bin = path.join(fakeHome, '.local/bin')
+    fs.mkdirSync(path.join(bin, 'crewdir'), { recursive: true })
+    fs.writeFileSync(path.join(bin, 'crewplain'), 'not executable')
+    fs.chmodSync(path.join(bin, 'crewplain'), 0o644)
+
+    process.env.HOME = fakeHome
+    process.env.PATH = '/usr/bin:/bin'
+    delete process.env.SHELL
+
+    expect(commandExists('crewdir')).toBe(false)
+    expect(commandExists('crewplain')).toBe(false)
+  })
 })
 
 describe('fake cli is on disk for spawned tests', () => {
