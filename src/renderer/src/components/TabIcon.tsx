@@ -59,7 +59,7 @@ function SpaceIcon() {
         />
         <circle
           className="tab-icon-orbit"
-          r={1.3}
+          r={1.2}
           fill="currentColor"
           stroke="none"
           style={{ offsetPath: `path("${ORBIT}")` } as React.CSSProperties}
