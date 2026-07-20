@@ -2002,3 +2002,5 @@
 {"id":"e9b9b5b3-f4cf-4a57-8ca6-152601a008c9","ts":1784526177253,"kind":"message.route","messageId":"7c2dfebf-ec11-4551-a7ee-71ca89401ad6","threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","promptId":"4d0d0765-1b12-40b8-86f2-bbd89e6fc4a9","mode":"queued"}
 {"id":"62576bfb-5e41-48a3-9fe7-0ad6a8d2ed0b","ts":1784526179051,"kind":"message.deleted","messageId":"efb41be6-2b56-4b2a-848d-382db9621e1c"}
 {"id":"e226177a-2a34-46db-885d-57f00eeb4ef3","ts":1784526180183,"kind":"message.deleted","messageId":"7c2dfebf-ec11-4551-a7ee-71ca89401ad6"}
+{"id":"0e7e4d26-1ed7-439b-86f2-06f3468da660","ts":1784526191275,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Testing 123","mentions":["ali/20890e3a-ce3f-4240-95da-1509a65df80a"],"threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","attachments":[]}
+{"id":"0633bfb3-17e5-4154-9b1c-9148704d1f2b","ts":1784526191275,"kind":"message.route","messageId":"0e7e4d26-1ed7-439b-86f2-06f3468da660","threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","promptId":"a408f140-43a8-4ebc-9843-3521e5205bbf","mode":"queued"}
