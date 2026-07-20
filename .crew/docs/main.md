@@ -8,6 +8,10 @@
 
 In progress:
 
+- 1) You should be able to have lots of different threads open with the "same" agent (just type of agent) but actually spawning multiple versions. Right now when you start a new thread with an agent that's already working, it just says done and doesn't do anything or respond. 2) The progress in a chat shouldn't just keep ebing appended ot one message. It should be the agent sending multiple messages, seeing thinking in between and the tool calls in-between too (not all stacked at the bottom). The tool calls should only be for that one thread. This is like how Claude and Codex's apps actually work. The agent keeps sending follow up messages
+
+Blocked:
+
 - Every time you @ mention an agent, it has to re-build it's knowledge of the codebase (and takes a long time)
 
 Completed:
@@ -15,3 +19,4 @@ Completed:
 - Auto-git sync
 
 - The chat textarea should auto-resize when typing in it
+
