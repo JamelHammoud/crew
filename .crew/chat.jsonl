@@ -2157,3 +2157,9 @@
 {"id":"7e21e744-4a5d-4254-b6e4-74a638980abe","ts":1784544718836,"kind":"thread.started","threadId":"30654e65-0aa8-4596-b727-e4d5f4c6e4c4","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","agentLabel":"Codex Gpt-5.6-sol","title":"@Codex Gpt-5.6-sol Hello!","byName":"ALI"}
 {"id":"6b29ca79-7d1b-48dd-af0a-16daf666e3f0","ts":1784544718837,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"@Codex Gpt-5.6-sol Hello!","mentions":["ali/20890e3a-ce3f-4240-95da-1509a65df80a"],"threadId":"30654e65-0aa8-4596-b727-e4d5f4c6e4c4","attachments":[]}
 {"id":"08434db0-7352-4358-8763-0b132965a802","ts":1784544718837,"kind":"agent.start","promptId":"e6c1c214-1879-429a-aa98-76fbfe87864b","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","agentLabel":"Codex Gpt-5.6-sol","promptText":"@Codex Gpt-5.6-sol Hello!","byName":"ALI","threadId":"30654e65-0aa8-4596-b727-e4d5f4c6e4c4"}
+{"id":"57edce90-855c-47f9-bb8f-2b78ce2ab2db","ts":1784560254206,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"8054a2fb-c816-45ca-a0db-b4073c7cf078","ts":1784560254206,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"d1cf0deb-43aa-4538-9bef-f8015015f0f0","ts":1784560254207,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"2ce5d8fd-597c-4206-8855-2dc123c98fa5","ts":1784560254207,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"aa5a2b80-f0b3-4a5c-9b4b-f2ded7540cbc","ts":1784560254207,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"9b78962a-b04d-4585-ae95-f82abf279e5b","ts":1784560254207,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
