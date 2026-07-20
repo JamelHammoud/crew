@@ -66,6 +66,7 @@ body,
 
 body {
   @apply bg-transparent text-fg font-sans antialiased;
+  filter: blur(0);
 }
 
 #root {
