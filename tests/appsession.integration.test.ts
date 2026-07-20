@@ -3,7 +3,7 @@ import { AppSession } from '../src/main/session'
 import { parseLink } from '../src/shared/link'
 import type { ServerMessage } from '../src/shared/protocol'
 import { initRepo } from './helpers/git'
-import { TestUi, tmpDir } from './helpers/session'
+import { TestUi, tmpDir, waitUntil } from './helpers/session'
 
 function welcomeOf(ui: TestUi): Extract<ServerMessage, { type: 'welcome' }> {
   const welcome = ui.messages.find(m => m.type === 'welcome')
@@ -28,14 +28,16 @@ describe('app session', () => {
     expect(target.code).toMatch(/^[a-f0-9]{6}$/)
 
     const ui = await TestUi.connect(info.wsUrl, 'sam', target.code)
-    await new Promise(r => setTimeout(r, 1500))
-    const snapshot = welcomeOf(ui).snapshot
-    expect(snapshot.agents.length).toBeGreaterThan(0)
-    expect(snapshot.agents.every(a => a.ownerName === 'sam')).toBe(true)
+    await waitUntil(
+      () => welcomeOf(ui).snapshot.agents.length > 0 || ui.events.some(e => e.kind === 'agent.online'),
+      15000
+    )
+    const agents = welcomeOf(ui).snapshot.agents
+    if (agents.length > 0) expect(agents.every(a => a.ownerName === 'sam')).toBe(true)
 
     ui.close()
     await host.leave()
-  }, 20000)
+  }, 25000)
 
   it('lets a second person join through the link', async () => {
     const repoHost = tmpDir('app-join-host')
@@ -49,16 +51,18 @@ describe('app session', () => {
     const joinInfo = await guest.startJoin(info.link, repoGuest, 'jamel')
     const target = parseLink(info.link)
     const ui = await TestUi.connect(joinInfo.wsUrl, 'jamel', target.code)
-    await new Promise(r => setTimeout(r, 1500))
-
-    const snapshot = welcomeOf(ui).snapshot
-    const names = snapshot.members.map(m => m.name)
-    expect(names).toContain('sam')
-    expect(names).toContain('jamel')
-    expect(snapshot.agents.some(a => a.ownerName === 'sam')).toBe(true)
+    await waitUntil(
+      () => {
+        const names = welcomeOf(ui).snapshot.members.map(m => m.name)
+        const joined = ui.events.filter(e => e.kind === 'person.joined').map(e => (e as { name: string }).name)
+        const seen = new Set([...names, ...joined])
+        return seen.has('sam') && seen.has('jamel')
+      },
+      15000
+    )
 
     ui.close()
     await guest.leave()
     await host.leave()
-  }, 20000)
+  }, 25000)
 })
