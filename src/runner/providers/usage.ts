@@ -151,21 +151,7 @@ export async function claudeUsage(): Promise<AgentUsage | null> {
   } catch {
     return { ...base, error: 'Could not reach Anthropic to read usage.' }
   }
-  const windows: UsageWindow[] = []
-  if (Array.isArray(body?.limits)) {
-    for (const limit of body.limits) {
-      const window = claudeWindowFromLimit(limit)
-      if (window) windows.push(window)
-    }
-  }
-  if (windows.length === 0) {
-    for (const [key, label] of Object.entries(CLAUDE_FLAT_LABELS)) {
-      const entry = body?.[key]
-      const percent = clampPercent(entry?.utilization)
-      if (percent === null) continue
-      windows.push({ key, label, percent, resetsAt: parseWhen(entry?.resets_at) })
-    }
-  }
+  const windows = claudeWindowsFrom(body)
   if (windows.length === 0) {
     return { ...base, error: 'Anthropic returned no usage limits for this account.' }
   }
@@ -242,7 +228,7 @@ function codexWindowLabel(minutes: unknown, fallback: string): string {
   return hours >= 1 ? `${hours}-hour limit` : `${Math.round(minutes)}-minute limit`
 }
 
-function codexWindows(rateLimits: any, recordedAt: number): UsageWindow[] {
+export function codexWindowsFrom(rateLimits: any, recordedAt: number): UsageWindow[] {
   const windows: UsageWindow[] = []
   for (const key of ['primary', 'secondary']) {
     const entry = rateLimits?.[key]
@@ -285,7 +271,7 @@ export async function codexUsage(): Promise<AgentUsage | null> {
       const rateLimits = parsed?.payload?.rate_limits ?? parsed?.rate_limits
       if (!rateLimits) continue
       const recordedAt = parseWhen(parsed?.timestamp) ?? fs.statSync(file).mtimeMs
-      const windows = codexWindows(rateLimits, recordedAt)
+      const windows = codexWindowsFrom(rateLimits, recordedAt)
       if (windows.length === 0) continue
       return { ...base, asOf: recordedAt, windows }
     }
