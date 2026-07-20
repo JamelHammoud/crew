@@ -87,7 +87,8 @@ export class Runner {
       provider: agent.provider.name,
       label: agent.name,
       fields: agent.provider.fields(),
-      settings: agent.settings
+      settings: agent.settings,
+      steerable: agent.provider.steerable === true
     }
   }
 

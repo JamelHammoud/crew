@@ -78,9 +78,12 @@ export const claudeFields = (): AgentSettingField[] => [
   { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high', 'xhigh', 'max']), default: 'high' }
 ]
 
-export const claudeArgs = (prompt: string, get: SettingReader): string[] => [
+// The prompt is not passed in argv: with --input-format stream-json it goes in
+// over stdin, which is also the channel later messages use to steer the run.
+export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   '-p',
-  prompt,
+  '--input-format',
+  'stream-json',
   '--output-format',
   'stream-json',
   '--verbose',
@@ -98,5 +101,6 @@ export const claudeProvider: Provider = makeCliProvider({
   command: 'claude',
   fields: claudeFields,
   args: claudeArgs,
-  parser: parseClaudeLine
+  parser: parseClaudeLine,
+  streamInput: true
 })
