@@ -188,3 +188,5 @@
 {"id":"dae9b7b7-8a80-44a7-b4af-bbb08cecb069","ts":1784511557449,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
 {"id":"69e56fbc-f720-492a-b06d-125e3a303381","ts":1784511557450,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"3a815ba0-ac06-4c1f-b09e-f6062bfd6d6c","ts":1784511557451,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"a739ae93-e6c9-4eb9-9518-14b4abdbd93b","ts":1784511581448,"kind":"person.left","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
+{"id":"4d86fce9-1071-4b08-bd9b-8047b30dfd7f","ts":1784511582766,"kind":"person.joined","memberId":"c8e6c6a8-daa0-4678-bef8-0318224bb159","name":"Ali Hammoud"}
