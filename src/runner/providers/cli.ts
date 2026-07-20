@@ -67,7 +67,27 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         if (!line.trim()) return
         raw += (raw ? '\n' : '') + line
         for (const out of opts.parser!(line)) {
-          if (out.thinking) {
+          if (out.thinkingStart) {
+            thinkingBlocks.set(out.thinkingStart.index, `b${blocks++}`)
+          }
+          if (out.thinkingDelta) {
+            let id = thinkingBlocks.get(out.thinkingDelta.index)
+            if (!id) {
+              id = `b${blocks++}`
+              thinkingBlocks.set(out.thinkingDelta.index, id)
+            }
+            streamedThinking = true
+            written += out.thinkingDelta.text.length
+            hooks.onStep({ id, kind: 'thinking', text: out.thinkingDelta.text, status: 'running' })
+          }
+          if (out.thinkingStop) {
+            const id = thinkingBlocks.get(out.thinkingStop.index)
+            if (id) {
+              thinkingBlocks.delete(out.thinkingStop.index)
+              hooks.onStep({ id, kind: 'thinking', status: 'done' })
+            }
+          }
+          if (out.thinking && !streamedThinking) {
             written += out.thinking.length
             hooks.onStep({ id: `b${blocks++}`, kind: 'thinking', text: out.thinking, status: 'done' })
           }
