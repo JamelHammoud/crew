@@ -250,8 +250,9 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
+      const messageId = randomUUID()
       this.emit({
-        id: randomUUID(),
+        id: messageId,
         ts: Date.now(),
         kind: 'message',
         authorId: member.id,
@@ -263,7 +264,7 @@ export class CrewSession {
       })
       const agent = this.agents.get(thread.agentId)
       if (!agent) return
-      this.enqueuePrompt(agent, trimmed, member.name, threadId, attachments)
+      this.enqueuePrompt(agent, trimmed, member.name, threadId, attachments, messageId)
       return
     }
     const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
@@ -303,8 +304,9 @@ export class CrewSession {
         title: thread.title,
         byName: member.name
       })
+      const messageId = randomUUID()
       this.emit({
-        id: randomUUID(),
+        id: messageId,
         ts: Date.now(),
         kind: 'message',
         authorId: member.id,
@@ -314,7 +316,7 @@ export class CrewSession {
         threadId: newThreadId,
         attachments
       })
-      this.enqueuePrompt(agent, trimmed, member.name, newThreadId, attachments)
+      this.enqueuePrompt(agent, trimmed, member.name, newThreadId, attachments, messageId)
     }
   }
 
