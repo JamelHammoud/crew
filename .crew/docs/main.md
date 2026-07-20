@@ -4,11 +4,11 @@
 
 In progress:
 
-Blocked:
+## Blocked:
 
 * Every time you @ mention an agent, it has to re-build it's knowledge of the codebase (and takes a long time)
 
-## Completed:
+## Completed
 
 * [x] "Docs" should be like Google Docs, a much better editing experience, and you can create other pages
 * [x] Auto-git sync
