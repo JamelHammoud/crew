@@ -83,6 +83,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             })
           }
           if (typeof out.tokens === 'number') reported = Math.max(reported, out.tokens)
+          if (out.error) parsedError = out.error
         }
         reportTokens()
       }
@@ -117,7 +118,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           } else if (code === 0) {
             resolve({ text: text.trim() || raw.trim() })
           } else {
-            reject(new Error(errText.trim() || `${opts.label} exited with code ${code}`))
+            reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} exited with code ${code}`))
           }
         })
       })
