@@ -2137,3 +2137,14 @@
 {"id":"e580627c-37cc-4f26-a91b-76fa6ed0027a","ts":1784526412667,"kind":"agent.end","promptId":"0cde2b16-b88f-4abe-bd76-0775bf369c60","agentId":"jamel/claude","agentLabel":"Claude","threadId":"d1dc699b-2973-4d2c-8a97-fbfbda681abf","ok":false,"error":"Stopped"}
 {"id":"7a149cd3-9b7e-4136-a908-49d932ccac71","ts":1784526428251,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"TEst","mentions":["ali/20890e3a-ce3f-4240-95da-1509a65df80a"],"threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","attachments":[]}
 {"id":"ceea54d6-cb2f-45c9-8031-b3dcf85c2699","ts":1784526428252,"kind":"agent.start","promptId":"948d9e8f-0430-4f7c-af6d-f9e30ac161ac","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","agentLabel":"Codex Gpt-5.6-sol","promptText":"TEst","byName":"Jamel","threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a"}
+{"id":"e7e01791-cf98-41be-9d6c-b0b7d9b6bac3","ts":1784526545136,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"a99c80b0-4b8a-4ae2-87fc-9660de6352e6","ts":1784526545140,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"9ec12175-f71e-45eb-af22-b44f645a6ee2","ts":1784526545140,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"00994da6-08f8-4c2f-b0aa-bab1032425c4","ts":1784526545140,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"616bdc2d-51a4-4fd2-94e6-0c751b23a7bd","ts":1784526545140,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"5b1a2f18-e1c8-4087-87df-d3a9532f43f3","ts":1784526545140,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"a05fd323-f08b-4f7d-b156-ebeb64bf975a","ts":1784526545141,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"0a01220b-4a95-4ee9-990e-cd86e193e2ef","ts":1784526545141,"kind":"agent.offline","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"d0e36537-a809-4a3c-aa90-276804f8420c","ts":1784526545141,"kind":"agent.end","promptId":"948d9e8f-0430-4f7c-af6d-f9e30ac161ac","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","agentLabel":"Codex Gpt-5.6-sol","threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","ok":false,"error":"Codex Gpt-5.6-sol disconnected."}
+{"id":"e4770aeb-93b9-4ec0-afbf-195223de5c7f","ts":1784526545141,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"df7e4068-0e25-4a94-9fbc-44b025970e73","ts":1784526545141,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
