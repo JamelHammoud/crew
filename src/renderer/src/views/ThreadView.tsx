@@ -6,6 +6,7 @@ import Composer from '../components/Composer'
 import FilesChanged from '../components/FilesChanged'
 import { hoverCardOpen } from '../components/HoverCard'
 import { MemberName } from '../components/Mention'
+import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import Pill from '../components/Pill'
 import { usePresence } from '../components/presence'
 import RunStatus from '../components/RunStatus'
@@ -42,6 +43,21 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
     return promptIds.flatMap(promptId => steps[promptId] ?? [])
   }, [threadEvents, steps])
+  const queuedMessages = useMemo<QueuedMessage[]>(() => {
+    const started = new Set(threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId))
+    const routes = new Map<string, { promptId: string; mode: string }>()
+    for (const e of threadEvents) {
+      if (e.kind === 'message.route') routes.set(e.messageId, { promptId: e.promptId, mode: e.mode })
+    }
+    const list: QueuedMessage[] = []
+    for (const e of threadEvents) {
+      if (e.kind !== 'message') continue
+      const route = routes.get(e.id)
+      if (!route || route.mode !== 'queued' || started.has(route.promptId)) continue
+      list.push({ promptId: route.promptId, author: e.authorName, self: e.authorId === selfId, text: e.text })
+    }
+    return list
+  }, [threadEvents, selfId])
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
   const diffTotals = useMemo(() => {
     let added = 0
