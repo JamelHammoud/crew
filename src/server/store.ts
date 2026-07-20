@@ -24,6 +24,18 @@ export class Store {
   constructor(repoPath: string) {
     this.root = path.join(repoPath, '.crew')
     fs.mkdirSync(path.join(this.root, 'docs'), { recursive: true })
+    fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
+  }
+
+  saveAttachment(file: string, data: Buffer): void {
+    if (!isAttachmentFile(file)) throw new Error(`Bad attachment name: ${file}`)
+    this.writeAtomic(path.join(this.root, 'attachments', file), data)
+  }
+
+  attachmentPath(file: string): string | null {
+    if (!isAttachmentFile(file)) return null
+    const full = path.join(this.root, 'attachments', file)
+    return fs.existsSync(full) ? full : null
   }
 
   loadSession(): PersistedSession | null {
@@ -80,7 +92,7 @@ export class Store {
     return path.join(this.root, 'session.json')
   }
 
-  private writeAtomic(file: string, contents: string): void {
+  private writeAtomic(file: string, contents: string | Buffer): void {
     const tmp = `${file}.tmp`
     fs.writeFileSync(tmp, contents)
     fs.renameSync(tmp, file)
