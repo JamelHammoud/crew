@@ -253,9 +253,10 @@ export const useCrew = create<CrewState>((set, get) => {
     selfId: '',
     selfName: '',
     code: '',
+    httpBase: '',
     ...EMPTY,
     connect: (wsUrl, name, code, joinLink) => {
-      set({ connection: 'connecting', selfName: name, joinLink: joinLink ?? null })
+      set({ connection: 'connecting', selfName: name, joinLink: joinLink ?? null, httpBase: httpBaseFrom(wsUrl) })
       const hello: ClientMessage = { type: 'hello', role: 'ui', name, code }
       socket.connect(wsUrl, hello)
     },
