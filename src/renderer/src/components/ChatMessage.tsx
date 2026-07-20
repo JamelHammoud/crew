@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useCrew } from '../state/store'
 import Avatar from './Avatar'
 import Markdown from './Markdown'
+import { AgentMention, MemberName } from './Mention'
 import Pill from './Pill'
 import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
@@ -20,15 +21,22 @@ function MentionText({ text }: { text: string }) {
   }, [agents, text])
   return (
     <>
-      {parts.map((part, index) =>
-        index % 2 === 1 ? (
-          <strong key={index} className="font-semibold text-fg">
+      {parts.map((part, index) => {
+        if (index % 2 === 0) return part
+        const agent = agents.find(a => `@${a.label}` === part)
+        if (!agent) {
+          return (
+            <strong key={index} className="font-semibold text-fg">
+              {part}
+            </strong>
+          )
+        }
+        return (
+          <AgentMention key={index} agent={agent}>
             {part}
-          </strong>
-        ) : (
-          part
+          </AgentMention>
         )
-      )}
+      })}
     </>
   )
 }
@@ -42,7 +50,11 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
       <Avatar name={item.author} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
-          <span className="text-base font-semibold text-fg-muted">{item.author}</span>
+          <MemberName name={item.author}>
+            <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
+              {item.author}
+            </span>
+          </MemberName>
           {item.self && <Pill>You</Pill>}
           <span className="text-sm text-fg-faint">{formatTime(item.ts)}</span>
         </div>
