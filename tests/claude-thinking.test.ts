@@ -85,4 +85,42 @@ describe('claude file changes', () => {
     const [out] = parseClaudeLine(line)
     expect(out.activity?.files).toEqual([{ path: '/r/a.ts', added: 1, removed: 1, diff: '- a\n+ b' }])
   })
+
+  it('handles snake_case edit shapes from other CLIs', () => {
+    const [change] = fileChanges('str_replace', { path: '/r/d.ts', old_str: 'x\ny', new_str: 'z' })!
+    expect(change.added).toBe(1)
+    expect(change.removed).toBe(2)
+    expect(change.diff).toBe('- x\n- y\n+ z')
+  })
+
+  it('attaches files to kimi tool calls', () => {
+    const line = JSON.stringify({
+      role: 'assistant',
+      tool_calls: [
+        {
+          id: 'c1',
+          function: {
+            name: 'edit_file',
+            arguments: JSON.stringify({ file_path: '/r/e.ts', old_string: 'one', new_string: 'one\ntwo' })
+          }
+        }
+      ]
+    })
+    const [out] = parseKimiLine(line)
+    expect(out.activity?.files).toEqual([{ path: '/r/e.ts', added: 2, removed: 1, diff: '- one\n+ one\n+ two' }])
+  })
+
+  it('attaches files to kimi write calls', () => {
+    const line = JSON.stringify({
+      role: 'assistant',
+      tool_calls: [
+        {
+          id: 'c2',
+          function: { name: 'write_file', arguments: JSON.stringify({ path: '/r/f.ts', content: 'a\nb' }) }
+        }
+      ]
+    })
+    const [out] = parseKimiLine(line)
+    expect(out.activity?.files).toEqual([{ path: '/r/f.ts', added: 2, removed: 0, diff: '+ a\n+ b' }])
+  })
 })
