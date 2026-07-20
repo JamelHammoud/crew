@@ -289,3 +289,4 @@
 {"id":"f4a8ba6e-3b10-4a59-81d6-3a86ee3c940b","ts":1784514063209,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
 {"id":"3a084fd9-59f5-4ac7-9f4f-30383ac6deb4","ts":1784514063209,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"22098764-f64e-4818-a9e2-c51894ca2c7e","ts":1784514063210,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"8cbcab44-5bee-49ff-b8fc-378e537faabb","ts":1784514100182,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
