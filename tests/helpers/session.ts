@@ -13,13 +13,13 @@ export function tmpDir(prefix: string): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), `crew-${prefix}-`))
 }
 
-export async function waitUntil(pred: () => boolean, timeoutMs = 10000): Promise<void> {
+export async function waitUntil(pred: () => boolean | Promise<boolean>, timeoutMs = 10000): Promise<void> {
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
-    if (pred()) return
+    if (await pred()) return
     await new Promise(r => setTimeout(r, 100))
   }
-  if (!pred()) throw new Error('waitUntil timed out')
+  if (!(await pred())) throw new Error('waitUntil timed out')
 }
 
 export interface TestHost {
