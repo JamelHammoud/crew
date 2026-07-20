@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { AppSession } from '../src/main/session'
 import { parseLink } from '../src/shared/link'
+import type { ServerMessage } from '../src/shared/protocol'
 import { initRepo } from './helpers/git'
 import { TestUi, tmpDir } from './helpers/session'
+
+function welcomeOf(ui: TestUi): Extract<ServerMessage, { type: 'welcome' }> {
+  const welcome = ui.messages.find(m => m.type === 'welcome')
+  if (!welcome) throw new Error('no welcome message')
+  return welcome as Extract<ServerMessage, { type: 'welcome' }>
+}
 
 describe('app session', () => {
   it('refuses a folder that is not a git repository', async () => {
@@ -21,9 +28,10 @@ describe('app session', () => {
     expect(target.code).toMatch(/^[a-f0-9]{6}$/)
 
     const ui = await TestUi.connect(info.wsUrl, 'sam', target.code)
-    await ui.waitForEvent(e => e.kind === 'agent.online', 15000)
-    const agents = ui.events.filter(e => e.kind === 'agent.online')
-    expect(agents.length).toBeGreaterThan(0)
+    await new Promise(r => setTimeout(r, 1500))
+    const snapshot = welcomeOf(ui).snapshot
+    expect(snapshot.agents.length).toBeGreaterThan(0)
+    expect(snapshot.agents.every(a => a.ownerName === 'sam')).toBe(true)
 
     ui.close()
     await host.leave()
@@ -41,13 +49,15 @@ describe('app session', () => {
     const joinInfo = await guest.startJoin(info.link, repoGuest, 'jamel')
     const target = parseLink(info.link)
     const ui = await TestUi.connect(joinInfo.wsUrl, 'jamel', target.code)
-    await ui.waitForEvent(e => e.kind === 'person.joined' && e.name === 'sam', 15000)
+    await new Promise(r => setTimeout(r, 1500))
 
-    const jamelUi = await TestUi.connect(joinInfo.wsUrl, 'jamel', target.code)
-    await jamelUi.waitForEvent(e => e.kind === 'person.joined' && e.name === 'sam', 15000)
+    const snapshot = welcomeOf(ui).snapshot
+    const names = snapshot.members.map(m => m.name)
+    expect(names).toContain('sam')
+    expect(names).toContain('jamel')
+    expect(snapshot.agents.some(a => a.ownerName === 'sam')).toBe(true)
 
     ui.close()
-    jamelUi.close()
     await guest.leave()
     await host.leave()
   }, 20000)
