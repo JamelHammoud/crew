@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 import RunStatus from '../components/RunStatus'
 import ThreadItems from '../components/ThreadItems'
 import { buildThread } from '../components/thread'
@@ -15,8 +15,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const closeThread = useCrew(s => s.closeThread)
+  const text = useCrew(s => s.threadDrafts[threadId] ?? '')
+  const setThreadDraft = useCrew(s => s.setThreadDraft)
 
-  const [text, setText] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useAutoResize(text)
 
@@ -34,7 +35,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const send = () => {
     if (!text.trim()) return
     sendChat(text, threadId)
-    setText('')
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -84,7 +84,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
           <textarea
             ref={inputRef}
             value={text}
-            onChange={e => setText(e.target.value)}
+            onChange={e => setThreadDraft(threadId, e.target.value)}
             onKeyDown={onKeyDown}
             rows={2}
             placeholder={`Reply in this thread with ${thread.agentLabel}.`}

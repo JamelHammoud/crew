@@ -59,16 +59,27 @@ export function crewPath(): string {
   return searchDirs().join(delimiter)
 }
 
+function commandCandidates(command: string): string[] {
+  if (process.platform !== 'win32') return [command]
+  const exts = (process.env.PATHEXT ?? '.COM;.EXE;.BAT;.CMD').split(';').filter(Boolean)
+  const hasExt = exts.some(ext => command.toLowerCase().endsWith(ext.toLowerCase()))
+  if (hasExt) return [command]
+  return [...exts.map(ext => command + ext.toLowerCase()), command]
+}
+
 export function resolveCommand(command: string): string | null {
-  if (command.includes('/')) return command
+  if (command.includes('/') || command.includes('\\')) return command
+  const candidates = commandCandidates(command)
   for (const dir of searchDirs()) {
-    const candidate = join(dir, command)
-    try {
-      if (!statSync(candidate).isFile()) continue
-      accessSync(candidate, constants.X_OK)
-      return candidate
-    } catch {
-      continue
+    for (const name of candidates) {
+      const candidate = join(dir, name)
+      try {
+        if (!statSync(candidate).isFile()) continue
+        if (process.platform !== 'win32') accessSync(candidate, constants.X_OK)
+        return candidate
+      } catch {
+        continue
+      }
     }
   }
   return null

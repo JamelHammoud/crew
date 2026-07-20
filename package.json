@@ -7,9 +7,16 @@
   "build": {
     "appId": "app.crew",
     "productName": "crew",
-    "directories": { "output": "dist" },
-    "files": ["out/**"],
-    "mac": { "target": "dmg", "category": "public.app-category.productivity" }
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**"
+    ],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity"
+    }
   },
   "scripts": {
     "dev": "electron-vite dev",
