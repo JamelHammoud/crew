@@ -33,6 +33,7 @@ export type ClientMessage =
   | { type: 'agent.register'; llm: RegisteredLlm }
   | { type: 'agent.deregister'; instanceId: string }
   | { type: 'agent.chunk'; promptId: string; text: string }
+  | { type: 'agent.progress'; promptId: string; thinking?: string; tokens?: number }
   | { type: 'agent.done'; promptId: string; text: string }
   | { type: 'agent.error'; promptId: string; message: string }
   | { type: 'agent.activity'; promptId: string; activity: AgentActivity }
@@ -44,6 +45,7 @@ export type ServerMessage =
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.waiting'; agentId: string; waitingThreadIds: string[] }
   | { type: 'agent.chunk'; promptId: string; agentId: string; threadId?: string; text: string }
+  | { type: 'agent.progress'; promptId: string; agentId: string; threadId?: string; thinking?: string; tokens?: number }
   | { type: 'agent.activity'; promptId: string; agentId: string; threadId?: string; activity: AgentActivity }
   | { type: 'prompt'; promptId: string; agentId: string; text: string; settings: AgentSettings }
   | { type: 'cancel'; promptId: string }

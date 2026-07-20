@@ -11,7 +11,7 @@ interface Member {
   connections: Set<WebSocket>
 }
 
-interface AgentState extends Omit<PooledAgent, 'activities'> {
+interface AgentState extends Omit<PooledAgent, 'activities' | 'waitingThreadIds'> {
   runner: WebSocket | null
   queue: QueuedPrompt[]
   activities: Map<string, AgentActivity>

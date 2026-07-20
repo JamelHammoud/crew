@@ -11,13 +11,21 @@ export interface ParsedActivity {
 export interface ParsedOutput {
   text?: string
   activity?: ParsedActivity
+  thinking?: string
+  tokens?: number
 }
 
 export type OutputParser = (line: string) => ParsedOutput[]
 
+export interface RunProgress {
+  thinking?: string
+  tokens?: number
+}
+
 export interface RunHooks {
   onChunk: (text: string) => void
   onActivity: (activity: ParsedActivity) => void
+  onProgress?: (progress: RunProgress) => void
 }
 
 export interface RunningPrompt {
