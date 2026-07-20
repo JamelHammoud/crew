@@ -61,4 +61,4 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
       <BlockNoteView editor={editor} theme="dark" onChange={handleChange} filePanel={false} />
     </div>
   )
-}
+})
