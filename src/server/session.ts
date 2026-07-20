@@ -586,9 +586,6 @@ export class CrewSession {
       return
     }
     this.send(agent.runner, { type: 'cancel', promptId })
-    // The kill normally comes back as agent.error, but a runner wedged before
-    // the provider even started can never report. The stop must still work,
-    // so close the run here if no report arrives; a late one is ignored.
     const timer = setTimeout(() => {
       if (this.prompts.has(promptId)) this.finishPrompt(agent, promptId, { ok: false, error: 'Stopped' })
     }, this.cancelTimeoutMs)
