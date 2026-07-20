@@ -40,7 +40,7 @@ export default function ThreadCard({
         </div>
         <button
           onClick={onOpen}
-          className="group w-full text-left mt-2 border-2 border-ink-700 rounded-card overflow-hidden transition-colors duration-200 hover:border-ink-600"
+          className="group w-full text-left mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 hover:border-ink-600"
         >
           <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">
             {agent ? (

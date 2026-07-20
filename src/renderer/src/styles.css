@@ -287,5 +287,5 @@ body {
 }
 
 .md blockquote {
-  @apply border-l-2 border-ink-600 pl-3 text-fg-muted my-2;
+  @apply border-l border-ink-600 pl-3 text-fg-muted my-2;
 }

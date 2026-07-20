@@ -84,7 +84,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
           <div className="max-w-[660px] mx-auto pointer-events-auto">
-            <div className="bg-ink-900 border-2 border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
+            <div className="bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
               <Tooltip label="Back to chat">
                 <button
                   onClick={closeThread}

@@ -49,7 +49,7 @@ function Diff({ diff }: { diff: string }) {
 
 function FileRows({ files }: { files: FileChange[] }) {
   return (
-    <div className="mt-2 ml-[5px] border-l-2 border-ink-700 pl-4 space-y-3">
+    <div className="mt-2 ml-[5px] border-l border-ink-700 pl-4 space-y-3">
       {files.map(file => (
         <div key={file.path}>
           <span className="flex items-center gap-2 text-xs font-mono">
@@ -108,7 +108,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
             item.detail && (
               <p
                 onClick={() => setOpen(false)}
-                className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-4 cursor-pointer"
+                className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-4 cursor-pointer"
               >
                 {item.detail}
               </p>
@@ -130,7 +130,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
         <Chevron open={expanded} />
       </button>
       {expanded && (
-        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l-2 border-ink-700 pl-4">
+        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l border-ink-700 pl-4">
           {item.text.trim()}
         </p>
       )}
