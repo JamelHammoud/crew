@@ -49,7 +49,8 @@
           ],
           "default": ""
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "jamel/claude",
@@ -116,7 +117,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": true
     },
     {
       "id": "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
@@ -151,7 +153,8 @@
           ],
           "default": ""
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "ali/claude",
@@ -218,7 +221,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
@@ -289,7 +293,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "ali/20890e3a-ce3f-4240-95da-1509a65df80a",
@@ -360,7 +365,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": false
     },
     {
       "id": "jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
@@ -435,7 +441,8 @@
           ],
           "default": "high"
         }
-      ]
+      ],
+      "steerable": false
     }
   ]
 }

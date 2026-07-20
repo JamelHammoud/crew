@@ -50,4 +50,19 @@ describe('trimEvents', () => {
     const events = [message(), start('p1'), step('p1'), message()]
     expect(trimEvents(events, 10)).toEqual(events)
   })
+
+  it('drops doc events and does not count them', () => {
+    const doc = (): SessionEvent => ({
+      id: `d${seq++}`,
+      ts: seq,
+      kind: 'doc',
+      page: 'main',
+      text: 'draft',
+      byName: 'A'
+    })
+    const events = [message(), ...Array.from({ length: 300 }, doc), message()]
+    const trimmed = trimEvents(events, 3)
+    expect(trimmed.filter(e => e.kind === 'message')).toHaveLength(2)
+    expect(trimmed.some(e => e.kind === 'doc')).toBe(false)
+  })
 })
