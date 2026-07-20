@@ -158,6 +158,10 @@ export class TestUi {
     ;(this.ws as unknown as { _socket: { pause: () => void } })._socket.pause()
   }
 
+  resumeTransport(): void {
+    ;(this.ws as unknown as { _socket: { resume: () => void } })._socket.resume()
+  }
+
   waitForClose(timeoutMs = 10000): Promise<void> {
     if (this.ws.readyState === WebSocket.CLOSED) return Promise.resolve()
     return new Promise((resolve, reject) => {
