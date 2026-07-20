@@ -1,0 +1,75 @@
+import { spawnSync } from 'node:child_process'
+import { accessSync, constants, readdirSync, statSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { delimiter, join } from 'node:path'
+
+const MARKER = '__CREW_PATH__'
+
+const HOME_DIRS = [
+  '.local/bin',
+  '.claude/local',
+  '.kimi-code/bin',
+  '.codex/bin',
+  '.bun/bin',
+  '.deno/bin',
+  '.cargo/bin',
+  '.volta/bin',
+  '.npm-global/bin',
+  'bin'
+]
+
+const SYSTEM_DIRS = ['/opt/homebrew/bin', '/opt/homebrew/sbin', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin']
+
+function nodeVersionDirs(): string[] {
+  const root = join(homedir(), '.nvm/versions/node')
+  try {
+    return readdirSync(root).map(entry => join(root, entry, 'bin'))
+  } catch {
+    return []
+  }
+}
+
+let shellDirs: string[] | null = null
+
+function loginShellDirs(): string[] {
+  if (shellDirs) return shellDirs
+  shellDirs = []
+  const shell = process.env.SHELL
+  if (shell && process.platform !== 'win32') {
+    const result = spawnSync(shell, ['-ilc', `echo ${MARKER}$PATH`], { encoding: 'utf8', timeout: 5000 })
+    const line = (result.stdout ?? '').split('\n').find(l => l.includes(MARKER))
+    if (line) shellDirs = line.slice(line.indexOf(MARKER) + MARKER.length).trim().split(delimiter)
+  }
+  return shellDirs
+}
+
+export function searchDirs(): string[] {
+  const home = homedir()
+  const all = [
+    ...(process.env.PATH ?? '').split(delimiter),
+    ...loginShellDirs(),
+    ...HOME_DIRS.map(dir => join(home, dir)),
+    ...nodeVersionDirs(),
+    ...SYSTEM_DIRS
+  ]
+  return [...new Set(all.filter(Boolean))]
+}
+
+export function crewPath(): string {
+  return searchDirs().join(delimiter)
+}
+
+export function resolveCommand(command: string): string | null {
+  if (command.includes('/')) return command
+  for (const dir of searchDirs()) {
+    const candidate = join(dir, command)
+    try {
+      if (!statSync(candidate).isFile()) continue
+      accessSync(candidate, constants.X_OK)
+      return candidate
+    } catch {
+      continue
+    }
+  }
+  return null
+}
