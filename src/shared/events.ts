@@ -1,7 +1,18 @@
+import type { Attachment } from './attachments'
 import type { AgentSettings, AgentStep } from './llm'
 
 export type SessionEvent =
-  | { id: string; ts: number; kind: 'message'; authorId: string; authorName: string; text: string; mentions: string[]; threadId?: string }
+  | {
+      id: string
+      ts: number
+      kind: 'message'
+      authorId: string
+      authorName: string
+      text: string
+      mentions: string[]
+      threadId?: string
+      attachments?: Attachment[]
+    }
   | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string }
   | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string; threadId?: string }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
