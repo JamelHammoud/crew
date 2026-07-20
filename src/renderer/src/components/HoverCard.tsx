@@ -5,6 +5,10 @@ const CARD_WIDTH = 240
 
 let closeActive: (() => void) | null = null
 
+export function hoverCardOpen(): boolean {
+  return closeActive !== null
+}
+
 function within(rect: DOMRect | undefined, x: number, y: number, pad: number): boolean {
   if (!rect) return false
   return x >= rect.left - pad && x <= rect.right + pad && y >= rect.top - pad && y <= rect.bottom + pad
