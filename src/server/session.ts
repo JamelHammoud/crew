@@ -49,9 +49,11 @@ interface QueuedPrompt {
   promptId: string
   text: string
   byName: string
+  authorId: string
   threadId: string
   attachments: Attachment[]
   messageId: string
+  emitted: boolean
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -271,21 +273,9 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
-      const messageId = randomUUID()
-      this.emit({
-        id: messageId,
-        ts: Date.now(),
-        kind: 'message',
-        authorId: member.id,
-        authorName: member.name,
-        text: trimmed,
-        mentions: [thread.agentId],
-        threadId,
-        attachments
-      })
       const agent = this.agents.get(thread.agentId)
       if (!agent) return
-      this.enqueuePrompt(agent, trimmed, member.name, threadId, attachments, messageId)
+      this.enqueuePrompt(agent, member, trimmed, threadId, attachments)
       return
     }
     const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
@@ -325,20 +315,24 @@ export class CrewSession {
         title: thread.title,
         byName: member.name
       })
-      const messageId = randomUUID()
-      this.emit({
-        id: messageId,
-        ts: Date.now(),
-        kind: 'message',
-        authorId: member.id,
-        authorName: member.name,
-        text: trimmed,
-        mentions: [id],
-        threadId: newThreadId,
-        attachments
-      })
-      this.enqueuePrompt(agent, trimmed, member.name, newThreadId, attachments, messageId)
+      this.enqueuePrompt(agent, member, trimmed, newThreadId, attachments)
     }
+  }
+
+  private emitThreadMessage(entry: QueuedPrompt, agentId: string): void {
+    if (entry.emitted) return
+    entry.emitted = true
+    this.emit({
+      id: entry.messageId,
+      ts: Date.now(),
+      kind: 'message',
+      authorId: entry.authorId,
+      authorName: entry.byName,
+      text: entry.text,
+      mentions: [agentId],
+      threadId: entry.threadId,
+      attachments: entry.attachments
+    })
   }
 
   private handleDeleteMessage(member: Member, messageId: string): void {
@@ -547,30 +541,53 @@ export class CrewSession {
     return agent
   }
 
-  private enqueuePrompt(
-    agent: AgentState,
-    text: string,
-    byName: string,
-    threadId: string,
-    attachments: Attachment[],
-    messageId: string
-  ): void {
+  private enqueuePrompt(agent: AgentState, member: Member, text: string, threadId: string, attachments: Attachment[]): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
+    const entry: QueuedPrompt = {
+      promptId: randomUUID(),
+      text,
+      byName: member.name,
+      authorId: member.id,
+      threadId,
+      attachments,
+      messageId: randomUUID(),
+      emitted: false
+    }
     if (!agent.runner) {
+      this.emitThreadMessage(entry, agent.id)
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
     // A message that arrives mid-run goes straight into the run when the agent
     // can take it, so it steers the work in progress instead of waiting.
     if (thread.running && agent.steerable) {
-      this.sendSteer(agent, thread.running, { messageId, text, byName, threadId, attachments })
+      this.emitThreadMessage(entry, agent.id)
+      this.sendSteer(agent, thread.running, {
+        messageId: entry.messageId,
+        text,
+        byName: member.name,
+        threadId,
+        attachments
+      })
       return
     }
-    const promptId = randomUUID()
-    thread.queue.push({ promptId, text, byName, threadId, attachments, messageId })
-    this.routed(messageId, threadId, promptId, 'queued')
+    thread.queue.push(entry)
+    this.broadcastQueue(thread)
     this.runThread(thread)
+  }
+
+  private broadcastQueue(thread: Thread): void {
+    this.broadcast({
+      type: 'queue.state',
+      threadId: thread.id,
+      items: thread.queue.map(({ promptId, authorId, byName, text }) => ({
+        promptId,
+        authorId,
+        authorName: byName,
+        text
+      }))
+    })
   }
 
   private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {

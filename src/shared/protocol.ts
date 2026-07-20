@@ -17,12 +17,20 @@ export interface MemberInfo {
   connected: boolean
 }
 
+export interface QueuedItem {
+  promptId: string
+  authorId: string
+  authorName: string
+  text: string
+}
+
 export interface SessionSnapshot {
   code: string
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
   docs: Record<string, string>
+  queues: Record<string, QueuedItem[]>
 }
 
 export type ClientMessage =
@@ -48,6 +56,7 @@ export type ClientMessage =
 export type ServerMessage =
   | { type: 'welcome'; selfId: string; snapshot: SessionSnapshot }
   | { type: 'event'; event: SessionEvent }
+  | { type: 'queue.state'; threadId: string; items: QueuedItem[] }
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
