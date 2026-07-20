@@ -176,7 +176,7 @@ export class Runner {
         this.onStatus?.('online')
         break
       case 'prompt':
-        this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings)
+        this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
         break
       case 'cancel':
         this.running.get(msg.promptId)?.kill()
