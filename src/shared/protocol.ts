@@ -32,6 +32,7 @@ export type ClientMessage =
   | { type: 'chat.delete'; messageId: string }
   | { type: 'doc.update'; page: string; text: string }
   | { type: 'doc.rename'; from: string; to: string }
+  | { type: 'doc.delete'; page: string }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
   | { type: 'agent.register'; llm: RegisteredLlm }
