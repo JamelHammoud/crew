@@ -217,9 +217,16 @@ export class CrewSession {
     }
   }
 
-  private handleChat(member: Member, text: string, mentions: string[], threadId?: string): void {
+  private handleChat(
+    member: Member,
+    text: string,
+    mentions: string[],
+    threadId?: string,
+    incoming?: OutgoingAttachment[]
+  ): void {
     const trimmed = text.trim()
-    if (!trimmed) return
+    const attachments = this.saveAttachments(incoming)
+    if (!trimmed && attachments.length === 0) return
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
@@ -231,11 +238,12 @@ export class CrewSession {
         authorName: member.name,
         text: trimmed,
         mentions: [thread.agentId],
-        threadId
+        threadId,
+        attachments
       })
       const agent = this.agents.get(thread.agentId)
       if (!agent) return
-      this.enqueuePrompt(agent, trimmed, member.name, threadId)
+      this.enqueuePrompt(agent, trimmed, member.name, threadId, attachments)
       return
     }
     const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
@@ -247,7 +255,8 @@ export class CrewSession {
         authorId: member.id,
         authorName: member.name,
         text: trimmed,
-        mentions
+        mentions,
+        attachments
       })
       return
     }
@@ -258,7 +267,7 @@ export class CrewSession {
         id: newThreadId,
         agentId: id,
         agentLabel: agent.label,
-        title: this.titleFrom(trimmed),
+        title: this.titleFrom(trimmed || attachments.map(a => a.name).join(', ')),
         createdBy: member.name,
         queue: [],
         running: null
@@ -282,10 +291,38 @@ export class CrewSession {
         authorName: member.name,
         text: trimmed,
         mentions: [id],
-        threadId: newThreadId
+        threadId: newThreadId,
+        attachments
       })
-      this.enqueuePrompt(agent, trimmed, member.name, newThreadId)
+      this.enqueuePrompt(agent, trimmed, member.name, newThreadId, attachments)
     }
+  }
+
+  private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
+    const saved: Attachment[] = []
+    for (const item of (incoming ?? []).slice(0, MAX_ATTACHMENTS)) {
+      if (!isImageType(item.mime)) continue
+      const data = Buffer.from(item.data, 'base64')
+      if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) continue
+      const id = randomUUID()
+      const file = `${id}.${extensionFor(item.mime)}`
+      try {
+        this.store.saveAttachment(file, data)
+      } catch {
+        continue
+      }
+      saved.push({ id, name: this.safeName(item.name), mime: item.mime, size: data.length, file })
+    }
+    return saved
+  }
+
+  private safeName(name: string): string {
+    const flat = name.replace(/[\r\n]+/g, ' ').trim()
+    return flat.slice(0, 120) || 'image'
+  }
+
+  attachmentPath(file: string): string | null {
+    return this.store.attachmentPath(file)
   }
 
   private handleDoc(member: Member, page: string, text: string): void {
