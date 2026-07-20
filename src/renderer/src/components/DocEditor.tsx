@@ -7,6 +7,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 export interface DocEditorHandle {
   focusStart: () => void
   flush: () => void
+  discard: () => void
 }
 
 export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(

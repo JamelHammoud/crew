@@ -177,6 +177,10 @@ export default function Docs() {
             setDropTarget(null)
           }}
           {...dropProps(node.slug)}
+          onContextMenu={e => {
+            e.preventDefault()
+            setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
+          }}
           className={`group/row flex items-center rounded-full transition-all duration-150 ${
             dropTarget === node.slug ? 'bg-white/[0.08] ring-1 ring-white/25' : ''
           } ${active ? 'bg-ink-800' : 'hover:bg-white/[0.04]'}`}
@@ -242,6 +246,27 @@ export default function Docs() {
             <PlusIcon className="w-4 h-4 shrink-0" />
             New page
           </button>
+          <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
+            <MenuItem
+              icon={<PlusIcon />}
+              label="New sub-page"
+              onClick={() => {
+                if (menu) createPage(menu.slug)
+                setMenu(null)
+              }}
+            />
+            {menu?.slug !== 'main' && (
+              <MenuItem
+                icon={<TrashIcon />}
+                label="Delete page"
+                danger
+                onClick={() => {
+                  if (menu) deleteDoc(menu.slug)
+                  setMenu(null)
+                }}
+              />
+            )}
+          </Popover>
       </aside>
       <div className="flex-1 min-w-0 overflow-y-auto px-6">
         <div className="max-w-[760px] mx-auto pt-24">
