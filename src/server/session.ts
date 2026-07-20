@@ -507,9 +507,12 @@ export class CrewSession {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
       agent.runner = null
-      agent.queue.length = 0
+      const dropped = agent.queue.splice(0)
       agent.activities.clear()
       this.broadcastWaiting(agent)
+      for (const prompt of dropped) {
+        this.systemMessage(`${agent.label} went offline before getting to this.`, prompt.threadId)
+      }
       const inFlight = [...this.prompts.entries()].find(([, ref]) => ref.agentId === id)
       if (inFlight) {
         this.finishPrompt(agent, inFlight[0], { ok: false, error: `${agent.label} disconnected.` })

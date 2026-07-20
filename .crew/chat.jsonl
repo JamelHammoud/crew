@@ -344,3 +344,6 @@
 {"id":"6c8dd517-69ec-44e5-9715-819a7c3a17ff","ts":1784515216627,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
 {"id":"f6ac2828-23d5-4de4-b0a2-e2842d9ec27a","ts":1784515216628,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"15f36c08-85a7-4431-984c-f1eb8e278bb9","ts":1784515238132,"kind":"agent.online","agentId":"ali/8314e859-3247-4b95-9508-57f9b005502a","label":"Timmy"}
+{"id":"5d2f3715-ae76-4c65-b7f6-c675d1741709","ts":1784515262714,"kind":"thread.started","threadId":"0b490451-6f4a-4426-b0bb-46a31ea285c7","agentId":"ali/8314e859-3247-4b95-9508-57f9b005502a","agentLabel":"Timmy","title":"@Timmy hello!","byName":"Jamel"}
+{"id":"f6291b38-aca1-4364-b848-483e501d0151","ts":1784515262717,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"@Timmy hello!","mentions":["ali/8314e859-3247-4b95-9508-57f9b005502a"],"threadId":"0b490451-6f4a-4426-b0bb-46a31ea285c7"}
+{"id":"d070a393-f55e-462c-b7fb-8fd507fa5d1e","ts":1784515262717,"kind":"agent.start","promptId":"8286aca6-1635-4ccd-a39a-2df1681aa79d","agentId":"ali/8314e859-3247-4b95-9508-57f9b005502a","agentLabel":"Timmy","promptText":"@Timmy hello!","byName":"Jamel","threadId":"0b490451-6f4a-4426-b0bb-46a31ea285c7"}
