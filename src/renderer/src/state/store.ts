@@ -244,6 +244,7 @@ export const useCrew = create<CrewState>((set, get) => {
           agents: msg.snapshot.agents,
           events: trimEvents(msg.snapshot.events, EVENT_LIMIT),
           docs: msg.snapshot.docs,
+          queues: msg.snapshot.queues ?? {},
           steps,
           tokens,
           activePrompts,
@@ -253,6 +254,9 @@ export const useCrew = create<CrewState>((set, get) => {
         })
         break
       }
+      case 'queue.state':
+        set(state => ({ queues: { ...state.queues, [msg.threadId]: msg.items } }))
+        break
       case 'event':
         applyEvent(msg.event)
         break
