@@ -259,6 +259,53 @@ describe('cli detection outside the app PATH', () => {
   })
 })
 
+describe('idle timeout', () => {
+  const repo = tmpDir('idle')
+  const nodeProvider = (script: string, idleTimeoutMs: number) =>
+    makeCliProvider({
+      name: 'hang',
+      label: 'Hang',
+      command: process.execPath,
+      args: () => ['-e', script],
+      idleTimeoutMs
+    })
+
+  it('kills a process that never emits output', async () => {
+    const provider = nodeProvider('setTimeout(() => {}, 60000)', 200)
+    const run = provider.start('hi', repo, { onStep: () => {} })
+    await expect(run.done).rejects.toThrow(/no output for/)
+  })
+
+  it('does not kill a slow process that keeps streaming', async () => {
+    // Runs 5x longer than the idle window: only a resetting clock lets it finish.
+    const script = 'let n = 0; const t = setInterval(() => { console.log("tick"); if (++n === 10) { clearInterval(t) } }, 60)'
+    const provider = nodeProvider(script, 300)
+    const run = provider.start('hi', repo, { onStep: () => {} })
+    const { text } = await run.done
+    expect(text.split('\n').filter(Boolean)).toHaveLength(10)
+  })
+
+  it('reports a parsed error over the generic timeout message', async () => {
+    const provider = makeCliProvider({
+      name: 'hang2',
+      label: 'Hang2',
+      command: process.execPath,
+      args: () => ['-e', 'console.log(JSON.stringify({ error: "usage limit" })); setTimeout(() => {}, 60000)'],
+      parser: line => [JSON.parse(line)],
+      idleTimeoutMs: 200
+    })
+    const run = provider.start('hi', repo, { onStep: () => {} })
+    await expect(run.done).rejects.toThrow(/usage limit/)
+  })
+
+  it('still reports a user stop as Stopped, not a timeout', async () => {
+    const provider = nodeProvider('setTimeout(() => {}, 60000)', 60000)
+    const run = provider.start('hi', repo, { onStep: () => {} })
+    run.kill()
+    await expect(run.done).rejects.toThrow('Stopped')
+  })
+})
+
 describe('fake cli is on disk for spawned tests', () => {
   it('exists', () => {
     expect(fakeCliPath.endsWith('fake-cli.mjs')).toBe(true)
