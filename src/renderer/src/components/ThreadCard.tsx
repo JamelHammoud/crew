@@ -2,8 +2,9 @@ import { CheckIcon, ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useCrew, type ThreadMeta } from '../state/store'
 import Avatar from './Avatar'
 import { AgentMention, MemberName } from './Mention'
+import { usePresence } from './presence'
 import Spinner from './Spinner'
-import { formatTime } from './time'
+import { formatFullTime, formatTime } from './time'
 
 export default function ThreadCard({
   thread,
@@ -20,10 +21,11 @@ export default function ThreadCard({
 }) {
   const agent = useCrew(s => s.agents.find(a => a.id === thread.agentId))
   const owner = agent?.ownerName
+  const presence = usePresence(thread.createdBy)
 
   return (
     <div className="flex gap-4 animate-rise">
-      <Avatar name={thread.createdBy} />
+      <Avatar name={thread.createdBy} presence={presence} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
           <MemberName name={thread.createdBy}>
@@ -31,7 +33,9 @@ export default function ThreadCard({
               {thread.createdBy}
             </span>
           </MemberName>
-          <span className="text-sm text-fg-faint">{formatTime(ts)}</span>
+          <span className="text-sm text-fg-faint cursor-default" title={formatFullTime(ts)}>
+            {formatTime(ts)}
+          </span>
         </div>
         <button
           onClick={onOpen}

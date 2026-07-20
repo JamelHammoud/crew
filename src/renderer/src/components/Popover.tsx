@@ -1,4 +1,5 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 export function Popover({
   open,
@@ -15,35 +16,61 @@ export function Popover({
   className?: string
   children: ReactNode
 }) {
-  const ref = useRef<HTMLDivElement>(null)
+  const holderRef = useRef<HTMLSpanElement>(null)
+  const popRef = useRef<HTMLDivElement>(null)
+  const [style, setStyle] = useState<CSSProperties | null>(null)
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setStyle(null)
+      return
+    }
+    const anchor = holderRef.current?.parentElement
+    if (!anchor) return
+    const rect = anchor.getBoundingClientRect()
+    const next: CSSProperties = {}
+    if (side === 'bottom') next.top = rect.bottom + 8
+    else next.bottom = window.innerHeight - rect.top + 8
+    if (align === 'start') next.left = rect.left
+    else next.right = window.innerWidth - rect.right
+    setStyle(next)
+  }, [open, align, side])
 
   useEffect(() => {
     if (!open) return
+    const anchor = holderRef.current?.parentElement
     const onPointerDown = (event: PointerEvent) => {
-      if (!ref.current?.parentElement?.contains(event.target as Node)) onClose()
+      const target = event.target as Node
+      if (!anchor?.contains(target) && !popRef.current?.contains(target)) onClose()
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
+    const onScroll = (event: Event) => {
+      if (!popRef.current?.contains(event.target as Node)) onClose()
+    }
     window.addEventListener('pointerdown', onPointerDown)
     window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => {
       window.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('scroll', onScroll, { capture: true })
     }
   }, [open, onClose])
 
-  if (!open) return null
-
-  const position = [
-    side === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2',
-    align === 'end' ? 'right-0' : 'left-0'
-  ].join(' ')
-
   return (
-    <div ref={ref} className={`glass absolute z-50 rounded-2xl p-1.5 animate-pop ${position} ${className}`}>
-      {children}
-    </div>
+    <>
+      <span ref={holderRef} className="hidden" />
+      {open &&
+        style &&
+        createPortal(
+          <div ref={popRef} style={style} className={`glass fixed z-50 rounded-2xl p-1.5 animate-pop ${className}`}>
+            {children}
+          </div>,
+          document.body
+        )}
+    </>
   )
 }
 

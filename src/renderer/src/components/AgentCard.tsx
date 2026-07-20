@@ -6,12 +6,6 @@ import Pill from './Pill'
 import Select from './Select'
 import Spinner from './Spinner'
 
-const STATUS_LABEL: Record<PooledAgent['status'], string> = {
-  idle: 'Ready',
-  busy: 'Working',
-  offline: 'Away'
-}
-
 function ActivityRow({ activity }: { activity: AgentStep }) {
   const [open, setOpen] = useState(false)
   const expandable = Boolean(activity.detail)
@@ -68,7 +62,7 @@ export default function AgentCard({
     <div className="group border-2 border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
-          <Avatar name={agent.label} />
+          <Avatar name={agent.label} presence={agent.status === 'offline' ? 'offline' : 'online'} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
@@ -120,17 +114,13 @@ export default function AgentCard({
           </div>
         )}
       </div>
-      <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[18px]">
-        {status === 'busy' ? (
+      {status === 'busy' && (
+        <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[18px]">
           <Spinner size={14} className="text-fg" />
-        ) : (
-          <span
-            className={`w-2 h-2 rounded-full shrink-0 ${status === 'idle' ? 'bg-positive' : 'bg-ink-500'}`}
-          />
-        )}
-        <span className="text-sm font-semibold text-fg">{STATUS_LABEL[status]}</span>
-        {threadCount > 1 && <span className="text-sm text-fg-muted">on {threadCount} threads</span>}
-      </div>
+          <span className="text-sm font-semibold text-fg">Working</span>
+          {threadCount > 1 && <span className="text-sm text-fg-muted">on {threadCount} threads</span>}
+        </div>
+      )}
     </div>
   )
 }

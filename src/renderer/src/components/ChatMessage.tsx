@@ -4,9 +4,10 @@ import Avatar from './Avatar'
 import Markdown from './Markdown'
 import { AgentMention, MemberName } from './Mention'
 import Pill from './Pill'
+import { usePresence } from './presence'
 import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
-import { formatTime } from './time'
+import { formatFullTime, formatTime } from './time'
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -42,12 +43,13 @@ function MentionText({ text }: { text: string }) {
 }
 
 export default function ChatMessage({ item }: { item: ThreadItem }) {
+  const presence = usePresence(item.author)
   if (item.kind === 'note') {
     return <p className="text-xs text-fg-muted text-center animate-rise">{item.text}</p>
   }
   return (
     <div className="flex gap-4 animate-rise">
-      <Avatar name={item.author} />
+      <Avatar name={item.author} presence={presence} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
           <MemberName name={item.author}>
@@ -56,7 +58,9 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
             </span>
           </MemberName>
           {item.self && <Pill>You</Pill>}
-          <span className="text-sm text-fg-faint">{formatTime(item.ts)}</span>
+          <span className="text-sm text-fg-faint cursor-default" title={formatFullTime(item.ts)}>
+            {formatTime(item.ts)}
+          </span>
         </div>
         {item.kind === 'reply' ? (
           <div className={item.error ? 'text-base text-danger mt-1.5' : 'mt-1.5'}>

@@ -2,6 +2,7 @@ import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import Avatar from '../components/Avatar'
 import Composer from '../components/Composer'
+import { usePresence } from '../components/presence'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
 import ThreadItems from '../components/ThreadItems'
@@ -25,6 +26,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useAutoResize(text)
+  const agentPresence = usePresence(thread?.agentLabel ?? '')
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
@@ -82,7 +84,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               >
                 <ChevronLeftIcon className="w-5 h-5" />
               </button>
-              <Avatar name={thread.agentLabel} />
+              <Avatar name={thread.agentLabel} presence={agentPresence} />
               <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
               <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
                 {activePromptId ? (
