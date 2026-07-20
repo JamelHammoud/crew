@@ -74,7 +74,7 @@ export default function Chat() {
       return
     }
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
-    if (nearBottom) el.scrollTop = el.scrollHeight
+    if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
   }, [feed, steps, threadPrompts])
 
   const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
