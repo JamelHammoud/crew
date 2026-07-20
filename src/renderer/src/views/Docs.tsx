@@ -269,7 +269,6 @@ export default function Docs() {
               onChange={markdown => updateDoc(current, markdown)}
             />
             <div className="h-40" />
-          </div>
         </div>
       </div>
     </div>
