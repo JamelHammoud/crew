@@ -198,6 +198,54 @@ describe('threads', () => {
     expect(texts).toContain(']')
   })
 
+  it('keeps what the agent wrote before it was stopped', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '250', FAKE_CLI_THINK: '1' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('long job @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
+    await ui.waitFor(m => m.type === 'agent.step' && m.promptId === start.promptId && m.step.kind === 'text')
+    ui.cancel(start.promptId)
+
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Ended
+    expect(end.ok).toBe(false)
+    expect(end.error).toBe('Stopped')
+
+    const kept = host.store
+      .loadEvents()
+      .filter(
+        (e): e is Extract<SessionEvent, { kind: 'agent.step' }> =>
+          e.kind === 'agent.step' && e.promptId === start.promptId
+      )
+    expect(kept.some(e => e.step.kind === 'text' && e.step.text === 'fake[')).toBe(true)
+    expect(kept.every(e => e.step.status === 'done')).toBe(true)
+    expect(kept.every(e => e.threadId === started.threadId)).toBe(true)
+  })
+
+  it('reports tokens while a prompt runs', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel')
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('count me @Fake', [fake])
+    const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
+    const tokens = (await ui.waitFor(
+      m => m.type === 'agent.tokens' && m.promptId === start.promptId
+    )) as Extract<ServerMessage, { type: 'agent.tokens' }>
+    expect(tokens.tokens).toBeGreaterThan(0)
+    expect(tokens.agentId).toBe(fake)
+  })
+
   it('stops one thread without touching another', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)

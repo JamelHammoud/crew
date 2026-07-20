@@ -17,6 +17,14 @@ export interface ThreadItem {
   subagent?: boolean
 }
 
+export function describeStep(step: AgentStep | undefined): string {
+  if (!step) return 'Starting'
+  if (step.kind === 'thinking') return 'Thinking'
+  if (step.kind === 'text') return 'Writing'
+  if (step.status === 'running') return step.kind === 'subagent' ? `${step.name} (agent)` : (step.name ?? 'Working')
+  return 'Thinking'
+}
+
 const stepItem = (step: AgentStep, author: string, promptId: string, live: boolean): ThreadItem | null => {
   const streaming = live && step.status === 'running'
   if (step.kind === 'tool' || step.kind === 'subagent') {
