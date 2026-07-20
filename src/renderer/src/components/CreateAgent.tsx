@@ -1,6 +1,9 @@
+import { PlusIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings } from '../../../shared/llm'
+import Select from './Select'
+import Spinner from './Spinner'
 
 function titleCase(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value
@@ -67,7 +70,7 @@ export default function CreateAgent() {
   }
 
   if (caps && caps.length === 0) {
-    return <p className="text-xs text-zinc-500">No LLM CLIs found on this machine.</p>
+    return <p className="text-sm text-fg-muted">No LLM CLIs found on this machine.</p>
   }
 
   if (!open) {
@@ -75,48 +78,36 @@ export default function CreateAgent() {
       <button
         onClick={start}
         disabled={!caps}
-        className="text-xs px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:border-zinc-500 disabled:opacity-50"
+        className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 disabled:opacity-50"
       >
+        <PlusIcon className="w-4 h-4" />
         Add agent
       </button>
     )
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
-      <div className="flex flex-wrap gap-3">
-        <label className="flex items-center gap-1.5 text-xs text-zinc-500">
-          Provider
-          <select
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+      <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
+      <div className="glass relative w-full max-w-md rounded-card p-6 space-y-5 animate-pop">
+        <h3 className="text-base font-semibold text-fg">Add an agent</h3>
+        <div className="flex flex-wrap gap-2">
+          <Select
+            label="Provider"
             value={provider}
-            onChange={e => selectProvider(e.target.value)}
-            className="bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-zinc-300 outline-none focus:border-zinc-700"
-          >
-            {caps?.map(c => (
-              <option key={c.provider} value={c.provider}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        {cap?.fields.map(field => (
-          <label key={field.key} className="flex items-center gap-1.5 text-xs text-zinc-500">
-            {field.label}
-            <select
+            options={(caps ?? []).map(c => ({ value: c.provider, label: c.label }))}
+            onChange={selectProvider}
+          />
+          {cap?.fields.map(field => (
+            <Select
+              key={field.key}
+              label={field.label}
               value={settings[field.key] ?? field.default}
-              onChange={e => setSetting(field.key, e.target.value)}
-              className="bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-zinc-300 outline-none focus:border-zinc-700"
-            >
-              {field.options.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        ))}
-      </div>
-      <div className="flex gap-2 items-center">
+              options={field.options}
+              onChange={value => setSetting(field.key, value)}
+            />
+          ))}
+        </div>
         <input
           value={name}
           onChange={e => {
@@ -124,20 +115,26 @@ export default function CreateAgent() {
             setNameEdited(true)
           }}
           placeholder="Agent name"
-          className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500"
+          className="w-full bg-ink-850 border border-ink-700 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg-muted outline-none transition-colors focus:border-ink-500"
         />
-        <button
-          onClick={create}
-          disabled={busy || !name.trim()}
-          className="bg-white text-black rounded-lg px-4 py-2 text-sm font-medium hover:bg-zinc-200 disabled:opacity-50 shrink-0"
-        >
-          Create
-        </button>
-        <button onClick={() => setOpen(false)} className="text-xs text-zinc-400 hover:text-zinc-200 shrink-0">
-          Cancel
-        </button>
+        {error && <p className="text-sm text-danger">{error}</p>}
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => setOpen(false)}
+            className="h-10 px-4 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={create}
+            disabled={busy || !name.trim()}
+            className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+          >
+            {busy && <Spinner size={14} />}
+            Create
+          </button>
+        </div>
       </div>
-      {error && <p className="text-sm text-red-400">{error}</p>}
     </div>
   )
 }

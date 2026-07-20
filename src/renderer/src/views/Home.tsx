@@ -1,10 +1,15 @@
+import { FolderIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import { parseLink } from '../../../shared/link'
+import Spinner from '../components/Spinner'
 import { useCrew } from '../state/store'
 
 function cleanError(err: unknown): string {
   return String(err instanceof Error ? err.message : err).replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
 }
+
+const FIELD =
+  'w-full bg-ink-800 rounded-2xl px-4 py-3 text-base text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)]'
 
 export default function Home() {
   const connect = useCrew(s => s.connect)
@@ -62,68 +67,65 @@ export default function Home() {
   }
 
   return (
-    <div className="h-full flex items-center justify-center px-6">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="relative h-full flex items-center justify-center px-6">
+      <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
+      <div className="w-full max-w-sm space-y-8 animate-rise">
         <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">crew</h1>
-          <p className="text-sm text-zinc-400 mt-1">Pool your LLMs with friends and build together.</p>
+          <h1 className="font-mono font-semibold text-3xl text-fg select-none">crew</h1>
+          <p className="text-base text-fg-muted mt-2">Pool your LLMs with friends and build together.</p>
         </div>
 
         <div>
-          <label className="block text-xs text-zinc-400 mb-1.5">Your name</label>
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Bobert"
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500"
-          />
+          <label className="block text-sm text-fg-muted mb-2">Your name</label>
+          <input value={name} onChange={e => setName(e.target.value)} placeholder="Bobert" className={FIELD} />
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-zinc-400 mb-1.5">Project folder</label>
-            <button
-              onClick={pickFolder}
-              className="w-full text-left bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 hover:border-zinc-500 truncate"
-            >
-              {folder ?? 'Choose a folder tracked with git'}
+            <label className="block text-sm text-fg-muted mb-2">Project folder</label>
+            <button onClick={pickFolder} className={`${FIELD} flex items-center gap-2.5 text-left hover:bg-ink-700`}>
+              <FolderIcon className="w-5 h-5 text-fg-muted shrink-0" />
+              <span className={`truncate ${folder ? 'text-fg' : 'text-fg-muted'}`}>
+                {folder ?? 'Choose a folder tracked with git'}
+              </span>
             </button>
           </div>
           <button
             onClick={start}
             disabled={busy}
-            className="w-full bg-white text-black rounded-lg px-3 py-2 text-sm font-medium hover:bg-zinc-200 disabled:opacity-50"
+            className="w-full h-12 rounded-full bg-fg text-ink-900 text-base font-semibold flex items-center justify-center gap-2 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
           >
+            {busy && <Spinner size={16} />}
             Start a session
           </button>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-zinc-600">
-          <div className="h-px bg-zinc-800 flex-1" />
+        <div className="flex items-center gap-3 text-sm text-fg-faint">
+          <div className="h-px bg-ink-700 flex-1" />
           or
-          <div className="h-px bg-zinc-800 flex-1" />
+          <div className="h-px bg-ink-700 flex-1" />
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-zinc-400 mb-1.5">Invite link</label>
+            <label className="block text-sm text-fg-muted mb-2">Invite link</label>
             <input
               value={link}
               onChange={e => setLink(e.target.value)}
               placeholder="crew://100.64.1.2:2739/a1b2c3"
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500"
+              className={FIELD}
             />
           </div>
           <button
             onClick={join}
             disabled={busy}
-            className="w-full bg-transparent border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm font-medium hover:border-zinc-400 disabled:opacity-50"
+            className="w-full h-12 rounded-full border-2 border-ink-600 text-fg text-base font-semibold transition-all duration-150 hover:border-ink-500 hover:bg-white/[0.03] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
           >
             Join a session
           </button>
         </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-danger animate-pop">{error}</p>}
       </div>
     </div>
   )

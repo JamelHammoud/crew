@@ -1,6 +1,9 @@
+import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { useLayoutEffect, useMemo, useRef } from 'react'
-import { AttachButton, AttachmentTray } from '../components/Attachments'
+import Avatar from '../components/Avatar'
+import Composer from '../components/Composer'
 import RunStatus from '../components/RunStatus'
+import Spinner from '../components/Spinner'
 import ThreadItems from '../components/ThreadItems'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
@@ -18,7 +21,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const closeThread = useCrew(s => s.closeThread)
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
-  const attach = useCrew(s => s.attach)
   const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -28,9 +30,16 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
 
+  const didInitialScroll = useRef(false)
+
   useLayoutEffect(() => {
     const el = scrollRef.current
     if (!el) return
+    if (!didInitialScroll.current) {
+      didInitialScroll.current = true
+      el.scrollTop = el.scrollHeight
+      return
+    }
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
     if (nearBottom) el.scrollTop = el.scrollHeight
   }, [items])
@@ -50,66 +59,57 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   if (!thread) return null
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center gap-3 px-6 h-12 border-b border-zinc-800 shrink-0">
-        <button onClick={closeThread} className="text-sm text-zinc-400 hover:text-white">
-          ← Threads
-        </button>
-        <div className="min-w-0">
-          <span className="text-sm text-zinc-200 truncate">{thread.title}</span>
-        </div>
-        <div className="ml-auto flex items-center gap-3">
-          <span className="text-xs text-zinc-500">{thread.agentLabel}</span>
-          {activePromptId && (
-            <button onClick={() => cancelPrompt(activePromptId)} className="text-xs text-zinc-400 hover:text-white">
-              Stop
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-4">
-        <div className="max-w-3xl mx-auto space-y-4">
+    <div className="h-full relative">
+      <div ref={scrollRef} className="h-full overflow-y-auto px-6">
+        <div className="max-w-[660px] mx-auto pt-28 pb-64 space-y-5">
           <ThreadItems items={items} />
           {activePromptId && startedAt && (
-            <RunStatus
-              startedAt={startedAt}
-              tokens={tokens}
-              steps={steps[activePromptId] ?? []}
-              onStop={() => cancelPrompt(activePromptId)}
-            />
+            <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
           )}
         </div>
       </div>
 
-      <div className="border-t border-zinc-800 px-6 py-4 shrink-0">
-        <div className="max-w-3xl mx-auto">
-          <AttachmentTray attachmentKey={threadId} />
-          <div
-            className="flex gap-3 items-end"
-            onDragOver={e => e.preventDefault()}
-            onDrop={e => {
-              e.preventDefault()
-              void attach(threadId, e.dataTransfer.files)
-            }}
-          >
-            <textarea
-              ref={inputRef}
+      <div className="absolute inset-x-0 bottom-0 pointer-events-none">
+        <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
+        <div className="bg-ink-900 px-6 pb-6">
+          <div className="max-w-[660px] mx-auto pointer-events-auto animate-rise">
+            <div className="bg-ink-900 border-2 border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
+              <button
+                onClick={closeThread}
+                aria-label="Back to chat"
+                title="Back to chat"
+                className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
+              >
+                <ChevronLeftIcon className="w-5 h-5" />
+              </button>
+              <Avatar name={thread.agentLabel} />
+              <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+              <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                {activePromptId ? (
+                  <>
+                    <Spinner size={16} className="text-fg" />
+                    <span className="text-base font-semibold text-fg">Working</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckIcon className="w-5 h-5 text-fg" />
+                    <span className="text-base font-semibold text-fg">Done</span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="relative">
+              <Composer
+              attachmentKey={threadId}
               value={text}
-              onChange={e => setThreadDraft(threadId, e.target.value)}
+              placeholder="Send a message"
+              inputRef={inputRef}
+              onChange={value => setThreadDraft(threadId, value)}
               onKeyDown={onKeyDown}
-              onPaste={e => void attach(threadId, e.clipboardData.files)}
-              rows={2}
-              placeholder={`Reply in this thread with ${thread.agentLabel}.`}
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500 resize-none"
-            />
-            <AttachButton attachmentKey={threadId} />
-            <button
-              onClick={send}
-              className="bg-white text-black rounded-lg px-4 py-2 text-sm font-medium hover:bg-zinc-200 shrink-0"
-            >
-              Send
-            </button>
+              onSend={send}
+                onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -1,36 +1,70 @@
+import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
+import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
 
-function Dot({ running }: { running: boolean }) {
-  return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${running ? 'bg-white animate-pulse' : 'bg-zinc-600'}`} />
+function Marker({ running }: { running: boolean }) {
+  if (running) return <Spinner size={12} className="text-fg-secondary" />
+  return <span className="w-1.5 h-1.5 mx-[3px] rounded-full bg-ink-500 shrink-0" />
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <ChevronRightIcon
+      className={`w-3.5 h-3.5 shrink-0 text-fg-faint group-hover:text-fg-muted transition-transform duration-200 ${
+        open ? 'rotate-90' : ''
+      }`}
+    />
+  )
 }
 
 export default function StepRow({ item }: { item: ThreadItem }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState<boolean | null>(null)
 
   if (item.kind === 'tool') {
+    const expanded = open ?? false
+    const expandable = Boolean(item.detail)
     return (
-      <div className="flex items-center gap-2 text-xs pl-10">
-        <Dot running={item.streaming} />
-        <span className="text-zinc-300">{item.subagent ? `${item.name} (agent)` : item.name}</span>
-        {item.detail && <span className="text-zinc-600 truncate">{item.detail}</span>}
+      <div className="pl-14 animate-rise">
+        <button
+          onClick={() => expandable && setOpen(!expanded)}
+          className={`group flex items-center gap-2.5 text-sm max-w-full text-left ${
+            expandable ? '' : 'cursor-default'
+          }`}
+        >
+          <Marker running={item.streaming} />
+          <span className={`shrink-0 ${item.streaming ? 'text-fg-secondary' : 'text-fg-muted'}`}>
+            {item.subagent ? `${item.name} (agent)` : item.name}
+          </span>
+          {item.detail && !expanded && (
+            <span className="text-fg-faint truncate font-mono text-xs">{item.detail}</span>
+          )}
+          {expandable && <Chevron open={expanded} />}
+        </button>
+        {expanded && item.detail && (
+          <p className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-4 animate-pop">
+            {item.detail}
+          </p>
+        )}
       </div>
     )
   }
 
-  const text = item.text.trim()
+  const expanded = open ?? item.streaming
   return (
-    <div className="pl-10">
+    <div className="pl-14 animate-rise">
       <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300"
+        onClick={() => setOpen(!expanded)}
+        className="group flex items-center gap-2.5 text-sm text-fg-muted hover:text-fg-secondary transition-colors"
       >
-        <Dot running={item.streaming} />
+        <Marker running={item.streaming} />
         <span>Thinking</span>
-        <span className="text-zinc-600">{open ? 'hide' : 'show'}</span>
+        <Chevron open={expanded} />
       </button>
-      {open && (
-        <p className="text-xs text-zinc-500 mt-1 whitespace-pre-wrap border-l border-zinc-800 pl-3">{text}</p>
+      {expanded && (
+        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l-2 border-ink-700 pl-4 animate-pop">
+          {item.text.trim()}
+        </p>
       )}
     </div>
   )

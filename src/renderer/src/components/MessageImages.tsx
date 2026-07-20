@@ -17,7 +17,7 @@ export default function MessageImages({ attachments }: { attachments: Attachment
           <img
             src={attachmentUrl(httpBase, attachment)}
             alt={attachment.name}
-            className="max-h-64 rounded-lg border border-zinc-800"
+            className="max-h-64 rounded-xl border border-white/10 transition-opacity hover:opacity-90"
           />
         </a>
       ))}

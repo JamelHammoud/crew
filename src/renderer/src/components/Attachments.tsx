@@ -53,7 +53,7 @@ export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
         disabled={full}
         title={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}
         aria-label="Add an image"
-        className="w-10 h-10 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-white/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"
+        className="w-10 h-10 rounded-full border border-ink-600 flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:border-ink-500 hover:bg-white/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:border-ink-600 shrink-0"
       >
         <PlusIcon className="w-5 h-5" />
       </button>

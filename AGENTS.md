@@ -25,10 +25,16 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 ## Design
 
-- Dark mode. Background zinc-950, panels zinc-900, borders zinc-800.
-- White is the single action color. Everything else is zinc grays.
-- Mobbin-style: simple, generous spacing, minimal borders, system sans.
-- No logo or branding beyond the word "crew". No gradients. No emoji in the UI.
+- Dark mode. Tokens live in `src/renderer/src/styles.css` (Tailwind `@theme`): ink scale for surfaces (`ink-900` background, `ink-800` raised, `ink-700` borders and sunken bars), fg scale for text (`fg`, `fg-secondary`, `fg-muted`, `fg-faint`).
+- White is the single action color. `positive` and `danger` appear only for status.
+- Type ramp: xs 11, sm 13, base 14, lg 16. System sans. The word "crew" is set in mono.
+- Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
+- Icons come from `@heroicons/react`. Never hand-roll SVG icons.
+- Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin.
+- Reusable primitives in `src/renderer/src/components`: `Avatar`, `Pill`, `Spinner`, `Popover`/`MenuItem`, `Select`, `Composer`, `TopBar`. Use them before writing new ones.
+- Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
+- Labels like "You" go in a `Pill`, never in parentheses.
+- No logo or branding beyond the word "crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
 
 ## Layout
 

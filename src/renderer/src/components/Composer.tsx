@@ -33,7 +33,7 @@ export default function Composer({
     <div className="relative">
       {children}
       <div
-        className="bg-ink-800 rounded-shell px-5 pt-4 pb-3 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] cursor-text"
+        className="bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] cursor-text"
         onClick={() => inputRef.current?.focus()}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
@@ -52,9 +52,9 @@ export default function Composer({
           placeholder={placeholder}
           className="w-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
         />
-        <div className="flex items-center justify-between mt-1">
+        <div className="flex items-center justify-between mt-2">
           <AttachButton attachmentKey={attachmentKey} />
-          {onStop ? (
+          {onStop && !canSend ? (
             <button
               onClick={onStop}
               aria-label="Stop"

@@ -15,8 +15,10 @@ function createWindow(): void {
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    backgroundColor: '#09090b',
+    backgroundColor: '#141414',
     title: 'crew',
+    titleBarStyle: 'hiddenInset',
+    trafficLightPosition: { x: 20, y: 27 },
     webPreferences: {
       preload: path.join(dirname, '../preload/preload.mjs'),
       contextIsolation: true,

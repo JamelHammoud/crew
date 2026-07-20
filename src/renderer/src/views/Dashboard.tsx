@@ -1,6 +1,7 @@
 import AgentCard from '../components/AgentCard'
 import Avatar from '../components/Avatar'
 import CreateAgent from '../components/CreateAgent'
+import Pill from '../components/Pill'
 import { useCrew } from '../state/store'
 
 function instanceOf(agentId: string): string {
@@ -18,35 +19,41 @@ export default function Dashboard() {
   const updateAgentSetting = useCrew(s => s.updateAgentSetting)
 
   return (
-    <div className="h-full overflow-y-auto px-6 py-6">
-      <div className="max-w-3xl mx-auto space-y-8">
+    <div className="h-full overflow-y-auto px-6">
+      <div className="max-w-[660px] mx-auto pt-28 pb-16 space-y-10">
         <section>
-          <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-3">People</h2>
-          <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-fg-muted mb-4">People</h2>
+          <div className="space-y-1">
             {members.map(member => (
-              <div key={member.id} className="flex items-center gap-3">
+              <div
+                key={member.id}
+                className="flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-white/[0.03]"
+              >
                 <Avatar name={member.name} />
-                <span className="text-sm text-zinc-200">
-                  {member.name}
-                  {member.id === selfId && <span className="text-zinc-500"> (you)</span>}
-                </span>
-                <span className={`w-2 h-2 rounded-full ${member.connected ? 'bg-emerald-400' : 'bg-zinc-700'}`} />
+                <span className="text-base font-semibold text-fg">{member.name}</span>
+                {member.id === selfId && <Pill>You</Pill>}
+                <span
+                  className={`ml-auto w-2 h-2 rounded-full transition-colors ${
+                    member.connected ? 'bg-positive' : 'bg-ink-500'
+                  }`}
+                  title={member.connected ? 'Online' : 'Offline'}
+                />
               </div>
             ))}
           </div>
         </section>
 
         <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Agents</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-fg-muted">Agents</h2>
             <CreateAgent />
           </div>
           {agents.length === 0 ? (
-            <p className="text-sm text-zinc-500">
+            <p className="text-base text-fg-muted">
               No agents yet. Add one from your machine's LLMs, or wait for someone to bring theirs.
             </p>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               {agents.map(agent => {
                 const mine = agent.ownerId === selfId
                 const running = activePrompts[agent.id] ?? []
