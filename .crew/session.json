@@ -225,14 +225,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784571387475,
+        "fetchedAt": 1784571447485,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1784584800249,
+            "resetsAt": 1784584800355,
             "active": true
           },
           {
@@ -240,7 +240,7 @@
             "label": "Weekly (all models)",
             "percent": 14,
             "severity": "normal",
-            "resetsAt": 1784894400249,
+            "resetsAt": 1784894400355,
             "active": false
           },
           {
@@ -248,7 +248,7 @@
             "label": "Weekly (Fable)",
             "percent": 26,
             "severity": "normal",
-            "resetsAt": 1784894400249,
+            "resetsAt": 1784894400355,
             "active": false
           }
         ],
@@ -330,12 +330,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784571388044,
-        "windows": [],
+        "fetchedAt": 1784571448074,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "730-hour limit",
+            "percent": 11
+          }
+        ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "error": "No usage recorded yet — appears after this Codex runs once."
+        "asOf": 1784571398000
       }
     },
     {
@@ -411,12 +417,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784571388044,
-        "windows": [],
+        "fetchedAt": 1784571448074,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "730-hour limit",
+            "percent": 11
+          }
+        ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "error": "No usage recorded yet — appears after this Codex runs once."
+        "asOf": 1784571398000
       }
     },
     {
@@ -583,6 +595,78 @@
             }
           ],
           "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "ali/a17df6e1-77e7-4a7e-9b5d-8dc1b76cde5f",
+      "label": "Codex Gpt-5.6-sol 2",
+      "provider": "codex",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "gpt-5.6-sol",
+        "effort": "medium"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
         }
       ],
       "steerable": false
