@@ -26,6 +26,9 @@ interface CliProviderOptions {
   parser?: OutputParser
   env?: NodeJS.ProcessEnv
   idleTimeoutMs?: number
+  // When set, the prompt is written to stdin as a JSON message instead of being
+  // passed in argv, and stdin stays open so later messages can steer the run.
+  streamInput?: boolean
 }
 
 // A run is killed only after this long with no output at all. Reasoning models

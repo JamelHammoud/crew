@@ -60,7 +60,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
         deletable
           ? event => {
               event.preventDefault()
-              setMenuOpen(true)
+              setMenuAt({ x: event.clientX, y: event.clientY })
             }
           : undefined
       }
@@ -93,13 +93,13 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
         {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
       </div>
       {deletable && (
-        <Popover open={menuOpen} onClose={() => setMenuOpen(false)} align="start">
+        <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
           <MenuItem
             icon={<TrashIcon />}
             label="Delete message"
             danger
             onClick={() => {
-              setMenuOpen(false)
+              setMenuAt(null)
               deleteMessage(item.key)
             }}
           />
