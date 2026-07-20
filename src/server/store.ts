@@ -88,6 +88,15 @@ export class Store {
     this.writeAtomic(path.join(this.root, 'docs', `${page}.md`), text)
   }
 
+  renameDoc(from: string, to: string): void {
+    if (!PAGE_NAME.test(from)) throw new Error(`Bad page name: ${from}`)
+    if (!PAGE_NAME.test(to)) throw new Error(`Bad page name: ${to}`)
+    const source = path.join(this.root, 'docs', `${from}.md`)
+    const target = path.join(this.root, 'docs', `${to}.md`)
+    if (fs.existsSync(target)) throw new Error(`Page exists: ${to}`)
+    fs.renameSync(source, target)
+  }
+
   private sessionPath(): string {
     return path.join(this.root, 'session.json')
   }

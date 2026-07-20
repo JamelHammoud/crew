@@ -195,6 +195,9 @@ export class CrewSession {
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
         break
+      case 'doc.rename':
+        if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to)
+        break
       case 'prompt.cancel':
         if (meta.role === 'ui') this.handleCancel(msg.promptId)
         break
@@ -351,6 +354,21 @@ export class CrewSession {
     this.docs.set(page, text)
     this.emit(
       { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, byName: member.name },
+      { persist: false }
+    )
+  }
+
+  private handleDocRename(member: Member, from: string, to: string): void {
+    if (from === to || from === 'main' || !this.docs.has(from)) return
+    try {
+      this.store.renameDoc(from, to)
+    } catch {
+      return
+    }
+    this.docs.set(to, this.docs.get(from) ?? '')
+    this.docs.delete(from)
+    this.emit(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, byName: member.name },
       { persist: false }
     )
   }
