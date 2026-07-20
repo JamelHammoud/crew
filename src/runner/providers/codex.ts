@@ -1,11 +1,15 @@
 import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
+import { codexModels } from './codex-models'
 import type { Provider } from './types'
 
-export const codexFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', 'gpt-5.1-codex', 'gpt-5.1-codex-max']), default: '' },
-  { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high']), default: 'high' }
-]
+export const codexFields = (): AgentSettingField[] => {
+  const { models, efforts } = codexModels()
+  return [
+    { key: 'model', label: 'Model', options: choices(['', ...models]), default: '' },
+    { key: 'effort', label: 'Thinking', options: choices(efforts), default: 'high' }
+  ]
+}
 
 export const codexArgs = (prompt: string, get: SettingReader): string[] => [
   'exec',
