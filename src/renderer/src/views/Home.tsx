@@ -107,7 +107,7 @@ export default function Home() {
             <input
               value={link}
               onChange={e => setLink(e.target.value)}
-              placeholder="crew://100.64.1.2:4767/a1b2c3"
+              placeholder="crew://100.64.1.2:2739/a1b2c3"
               className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500"
             />
           </div>

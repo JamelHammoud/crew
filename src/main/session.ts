@@ -32,7 +32,7 @@ function lanAddress(): string {
   return '127.0.0.1'
 }
 
-const PREFERRED_PORT = 4767
+const PREFERRED_PORT = 2739
 
 export class AppSession {
   private server: CrewServer | null = null
