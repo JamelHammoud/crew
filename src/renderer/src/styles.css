@@ -216,14 +216,14 @@ body {
 @keyframes tab-icon-orbit {
   from {
     opacity: 0;
-    offset-distance: 88%;
+    offset-distance: 78%;
   }
   40% {
     opacity: 1;
   }
   to {
     opacity: 1;
-    offset-distance: 100%;
+    offset-distance: 92%;
   }
 }
 
