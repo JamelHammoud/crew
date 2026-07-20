@@ -44,4 +44,7 @@ export interface Provider {
   fields(): AgentSettingField[]
   detect(): Promise<boolean>
   start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings): RunningPrompt
+  // Reads the account's rate-limit state from this machine (credentials,
+  // session logs). null means the provider has no usage data to offer.
+  usage?(): Promise<AgentUsage | null>
 }
