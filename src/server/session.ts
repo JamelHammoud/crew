@@ -143,9 +143,14 @@ export class CrewSession {
           agentLabel: event.agentLabel,
           title: event.title,
           createdBy: event.byName,
+          archived: false,
           queue: [],
           running: null
         })
+      }
+      if (event.kind === 'thread.archived') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.archived = true
       }
     }
     for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
@@ -229,6 +234,9 @@ export class CrewSession {
         break
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
+        break
+      case 'thread.archive':
+        if (meta.role === 'ui') this.handleArchiveThread(member, msg.threadId)
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
@@ -316,6 +324,7 @@ export class CrewSession {
         agentLabel: agent.label,
         title: this.titleFrom(trimmed || attachments.map(a => a.name).join(', ')),
         createdBy: member.name,
+        archived: false,
         queue: [],
         running: null
       }
