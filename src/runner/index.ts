@@ -211,10 +211,12 @@ export class Runner {
     provider: Provider,
     promptId: string,
     text: string,
-    settings: AgentSettings
+    settings: AgentSettings,
+    attachments: Attachment[]
   ): Promise<void> {
     await this.puller?.pullNow()
-    const run = provider.start(text, this.opts.repoPath, {
+    const local = await this.attachments.ensure(attachments, this.httpBase)
+    const run = provider.start(promptWithAttachments(text, local), this.opts.repoPath, {
       onStep: step => this.send({ type: 'agent.step', promptId, step }),
       onTokens: tokens => this.send({ type: 'agent.tokens', promptId, tokens })
     }, settings)
