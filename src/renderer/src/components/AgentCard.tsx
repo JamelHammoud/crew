@@ -19,7 +19,7 @@ function ActivityRow({ activity }: { activity: AgentStep }) {
     <div>
       <button
         onClick={() => expandable && setOpen(!open)}
-        className={`flex items-center gap-2.5 text-sm max-w-full text-left ${expandable ? '' : 'cursor-default'}`}
+        className={`flex items-center gap-2.5 text-sm w-full text-left ${expandable ? '' : 'cursor-default'}`}
       >
         {activity.status === 'running' ? (
           <Spinner size={12} className="text-fg-secondary" />
@@ -32,7 +32,10 @@ function ActivityRow({ activity }: { activity: AgentStep }) {
         {activity.detail && !open && <span className="text-fg-faint truncate font-mono text-xs">{activity.detail}</span>}
       </button>
       {open && activity.detail && (
-        <p className="text-xs font-mono text-fg-muted leading-5 mt-1.5 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-3 animate-pop">
+        <p
+          onClick={() => setOpen(false)}
+          className="text-xs font-mono text-fg-muted leading-5 mt-1.5 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-3 cursor-pointer"
+        >
           {activity.detail}
         </p>
       )}
