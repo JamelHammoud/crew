@@ -70,7 +70,7 @@ body {
 
 #root {
   @apply bg-ink-900;
-  border-radius: 26px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
 }

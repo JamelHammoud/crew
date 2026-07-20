@@ -690,3 +690,15 @@
 {"id":"c0029fb2-712e-4ad3-89ec-48247995dca4","ts":1784519808449,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
 {"id":"5f7c444a-533b-4c69-a38d-b7e0e335c442","ts":1784519808449,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"2ae94c68-d2f3-41d7-9149-83c717fe614f","ts":1784519808450,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"cd399767-b084-421c-a972-f23c7b603e1e","ts":1784519875232,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"4101ace3-b759-4bb9-8f99-e278c53be3ff","ts":1784519875233,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"32a5e1e8-9494-489c-bd84-fee3dfe54911","ts":1784519875233,"kind":"agent.offline","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"7c339f3a-9cf6-402f-a76f-43475a392a64","ts":1784519875233,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"d4ab9d22-a5c1-4b11-bacf-9d53b3e619c1","ts":1784519875233,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"b822275e-a848-41b7-9e20-a0babbb833f9","ts":1784519875233,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"2a90bc1a-b3e2-42cc-83d4-636db534d440","ts":1784519875233,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"8275d847-e5b7-4da4-abbf-63d7b2d906ca","ts":1784519875233,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"6b7de0fb-c4ce-4703-b804-834004e3da32","ts":1784519891169,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"7d2867f2-5458-43a8-8769-d6eb0ddd73fc","ts":1784519891170,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"5a8f43c6-96b4-491c-a0ea-71ea47f4ec72","ts":1784519891170,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"0a812e1b-24de-4310-b463-5fb0fba5922a","ts":1784519891170,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
