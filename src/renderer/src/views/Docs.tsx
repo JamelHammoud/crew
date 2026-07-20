@@ -71,7 +71,6 @@ export default function Docs() {
       ref={titleRef}
       value={title}
       readOnly={current === 'main'}
-      title={current === 'main' ? undefined : undefined}
       onChange={e => setTitle(e.target.value)}
       onBlur={commitTitle}
       onKeyDown={e => {

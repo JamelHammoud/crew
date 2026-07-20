@@ -45,6 +45,13 @@ export function Popover({
   const style = ((): CSSProperties | null => {
     if (!rect) return null
     if (!size) return { left: 0, top: 0, visibility: 'hidden' }
+    if (at) {
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - size.w - 8))
+      let top = rect.top
+      if (top + size.h > window.innerHeight - 8) top = rect.top - size.h
+      top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
+      return { left, top }
+    }
     let left = align === 'start' ? rect.left : rect.right - size.w
     left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
     let top = side === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
