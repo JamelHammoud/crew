@@ -2,6 +2,7 @@ import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import Avatar from '../components/Avatar'
 import Composer from '../components/Composer'
+import { MemberName } from '../components/Mention'
 import { usePresence } from '../components/presence'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
@@ -75,7 +76,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       <div className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
-          <div className="max-w-[660px] mx-auto pointer-events-auto animate-rise">
+          <div className="max-w-[660px] mx-auto pointer-events-auto">
             <div className="bg-ink-900 border-2 border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
               <Tooltip label="Back to chat">
                 <button
@@ -86,8 +87,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   <ChevronLeftIcon className="w-5 h-5" />
                 </button>
               </Tooltip>
-              <Avatar name={thread.agentLabel} presence={agentPresence} />
-              <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+              <MemberName name={thread.agentLabel}>
+                <span className="flex items-center gap-3 min-w-0 cursor-default">
+                  <Avatar name={thread.agentLabel} presence={agentPresence} />
+                  <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+                </span>
+              </MemberName>
               <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
                 {activePromptId ? (
                   <>
