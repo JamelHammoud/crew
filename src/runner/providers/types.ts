@@ -31,11 +31,16 @@ export interface RunHooks {
 export interface RunningPrompt {
   done: Promise<{ text: string }>
   kill: () => void
+  // Push a message into the run that is already in flight. Returns false when
+  // the run can no longer take one, so the caller can fall back to queueing.
+  steer?: (text: string) => boolean
 }
 
 export interface Provider {
   name: string
   label: string
+  // Whether start() returns a run that accepts steer().
+  steerable?: boolean
   fields(): AgentSettingField[]
   detect(): Promise<boolean>
   start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings): RunningPrompt
