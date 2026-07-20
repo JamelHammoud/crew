@@ -53,6 +53,33 @@ export function resolveSettings(fields: AgentSettingField[], settings: AgentSett
   return out
 }
 
+// One rate-limit window as the provider reports it: "5-hour limit" at 63%,
+// "Weekly (Fable)" at 21%, and so on.
+export interface UsageWindow {
+  key: string
+  label: string
+  percent: number
+  severity?: string
+  resetsAt?: number
+  active?: boolean
+}
+
+// Usage limits for the account an agent runs on, read on the owner's machine.
+// Agents on the same account carry the same accountId, which is what lets the
+// UI say "these share one set of limits".
+export interface AgentUsage {
+  provider: string
+  fetchedAt: number
+  // When the data itself was recorded, if older than the fetch (codex only
+  // writes limits when it runs).
+  asOf?: number
+  accountId?: string
+  accountLabel?: string
+  plan?: string
+  windows: UsageWindow[]
+  error?: string
+}
+
 export interface PooledAgent {
   id: string
   label: string
@@ -64,6 +91,7 @@ export interface PooledAgent {
   settings: AgentSettings
   fields: AgentSettingField[]
   steerable?: boolean
+  usage?: AgentUsage
 }
 
 export interface AgentDef {
