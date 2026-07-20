@@ -18,6 +18,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const closeThread = useCrew(s => s.closeThread)
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
+  const attach = useCrew(s => s.attach)
+  const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useAutoResize(text)
@@ -34,7 +36,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   }, [items])
 
   const send = () => {
-    if (!text.trim()) return
+    if (!text.trim() && pendingCount === 0) return
     sendChat(text, threadId)
   }
 
