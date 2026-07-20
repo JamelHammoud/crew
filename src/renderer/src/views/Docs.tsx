@@ -1,6 +1,6 @@
 import { ChevronRightIcon, DocumentTextIcon, PlusIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
-import DocEditor from '../components/DocEditor'
+import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import Tooltip from '../components/Tooltip'
 import { useCrew } from '../state/store'
 
@@ -63,7 +63,12 @@ export default function Docs() {
   const [dragged, setDragged] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
   const titleRef = useRef<HTMLInputElement>(null)
+  const editorRef = useRef<DocEditorHandle>(null)
   const pendingFocus = useRef(false)
+
+  const focusBody = () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => editorRef.current?.focusStart()))
+  }
 
   const tree = buildTree(Object.keys(docs))
 
@@ -244,9 +249,14 @@ export default function Docs() {
                 onChange={e => setTitle(e.target.value)}
                 onBlur={commitTitle}
                 onKeyDown={e => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' || (e.key === 'ArrowDown' && current !== 'main')) {
                     e.preventDefault()
                     titleRef.current?.blur()
+                    focusBody()
+                  }
+                  if (e.key === 'ArrowDown' && current === 'main') {
+                    e.preventDefault()
+                    focusBody()
                   }
                   if (e.key === 'Escape') {
                     setTitle(prettify(current))
@@ -257,7 +267,12 @@ export default function Docs() {
                 className="w-full bg-transparent text-3xl font-bold text-fg placeholder:text-fg-faint outline-none"
               />
             </div>
-            <DocEditor key={current} text={docs[current] ?? ''} onChange={markdown => updateDoc(current, markdown)} />
+            <DocEditor
+              key={current}
+              ref={editorRef}
+              text={docs[current] ?? ''}
+              onChange={markdown => updateDoc(current, markdown)}
+            />
             <div className="h-40" />
           </div>
         </div>
