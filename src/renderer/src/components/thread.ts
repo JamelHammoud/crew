@@ -1,6 +1,6 @@
 import type { Attachment } from '../../../shared/attachments'
 import type { SessionEvent } from '../../../shared/events'
-import type { AgentStep } from '../../../shared/llm'
+import type { AgentStep, FileChange } from '../../../shared/llm'
 
 export interface ThreadItem {
   key: string
@@ -16,6 +16,7 @@ export interface ThreadItem {
   name?: string
   detail?: string
   subagent?: boolean
+  files?: FileChange[]
   attachments?: Attachment[]
 }
 
@@ -41,6 +42,7 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
       promptId,
       name: step.name || 'Working',
       detail: step.detail,
+      files: step.files,
       subagent: step.kind === 'subagent'
     }
   }

@@ -360,6 +360,7 @@ export class CrewSession {
       status: step.status,
       name: step.name || existing?.name,
       detail: step.detail ?? existing?.detail,
+      files: step.files ?? existing?.files,
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
     run.steps.set(step.id, { step: merged, persisted: false })
