@@ -2005,3 +2005,4 @@
 {"id":"0e7e4d26-1ed7-439b-86f2-06f3468da660","ts":1784526191275,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Testing 123","mentions":["ali/20890e3a-ce3f-4240-95da-1509a65df80a"],"threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","attachments":[]}
 {"id":"0633bfb3-17e5-4154-9b1c-9148704d1f2b","ts":1784526191275,"kind":"message.route","messageId":"0e7e4d26-1ed7-439b-86f2-06f3468da660","threadId":"cc3ae776-2da8-4a6b-b5f5-cfc76318122a","promptId":"a408f140-43a8-4ebc-9843-3521e5205bbf","mode":"queued"}
 {"id":"57aaa530-1b54-4bd9-ad85-9e854af13f43","ts":1784526200129,"kind":"message.edited","messageId":"0e7e4d26-1ed7-439b-86f2-06f3468da660","text":"Bob's your uncle"}
+{"id":"722947b0-1a96-455c-a0f1-58ef59b7e9d6","ts":1784526273894,"kind":"message.deleted","messageId":"0e7e4d26-1ed7-439b-86f2-06f3468da660"}
