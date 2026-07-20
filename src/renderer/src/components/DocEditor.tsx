@@ -31,6 +31,18 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
     }
   }, [])
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      focusStart: () => {
+        const first = editor.document[0]
+        if (first) editor.setTextCursorPosition(first, 'start')
+        editor.focus()
+      }
+    }),
+    [editor]
+  )
+
   const save = () => {
     const markdown = editor.blocksToMarkdownLossy(editor.document)
     if (markdown === lastMarkdown.current) return
