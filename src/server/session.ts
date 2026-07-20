@@ -592,9 +592,6 @@ export class CrewSession {
     timer.unref?.()
   }
 
-  // A UI can hold a run this process no longer tracks (started before a
-  // restart, say). There is nothing left to kill, but the dangling
-  // 'agent.start' still needs its 'agent.end' or the thread never clears.
   private closeOrphanRun(promptId: string): void {
     let start: Extract<SessionEvent, { kind: 'agent.start' }> | null = null
     for (const event of this.events) {
