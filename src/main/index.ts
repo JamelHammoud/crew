@@ -32,6 +32,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  powerSaveBlocker.start('prevent-app-suspension')
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]

@@ -32,10 +32,10 @@ export interface TestHost {
   close: () => Promise<void>
 }
 
-export async function startHost(repoPath: string = tmpDir('host')): Promise<TestHost> {
+export async function startHost(repoPath: string = tmpDir('host'), opts: { heartbeatMs?: number } = {}): Promise<TestHost> {
   const store = new Store(repoPath)
   const session = new CrewSession(store)
-  const server = await createCrewServer(session, { port: 0, host: '127.0.0.1' })
+  const server = await createCrewServer(session, { port: 0, host: '127.0.0.1', heartbeatMs: opts.heartbeatMs })
   return {
     server,
     session,
@@ -149,5 +149,20 @@ export class TestUi {
 
   close(): void {
     this.ws.close()
+  }
+
+  pauseTransport(): void {
+    ;(this.ws as unknown as { _socket: { pause: () => void } })._socket.pause()
+  }
+
+  waitForClose(timeoutMs = 10000): Promise<void> {
+    if (this.ws.readyState === WebSocket.CLOSED) return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('waitForClose timed out')), timeoutMs)
+      this.ws.once('close', () => {
+        clearTimeout(timer)
+        resolve()
+      })
+    })
   }
 }
