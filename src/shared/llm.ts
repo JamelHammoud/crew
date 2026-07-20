@@ -68,6 +68,22 @@ export function agentId(ownerName: string, instanceId: string): string {
   return `${ownerName.trim().toLowerCase()}/${instanceId}`
 }
 
+export function mentionCandidates<T extends Pick<PooledAgent, 'label' | 'status'>>(
+  agents: T[],
+  query: string | null
+): T[] {
+  if (query === null) return []
+  const q = query.toLowerCase()
+  const online = agents.filter(a => a.status !== 'offline')
+  const prefix = online.filter(a => a.label.toLowerCase().startsWith(q))
+  if (!q || q.includes(' ')) return prefix
+  const within = online.filter(a => {
+    const label = a.label.toLowerCase()
+    return !label.startsWith(q) && label.includes(q)
+  })
+  return [...prefix, ...within]
+}
+
 export function mentionsIn(
   text: string,
   agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>

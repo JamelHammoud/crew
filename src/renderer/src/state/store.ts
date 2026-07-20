@@ -31,8 +31,12 @@ interface CrewState {
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
   openThreadId: string | null
+  chatDraft: string
+  threadDrafts: Record<string, string>
   connect: (wsUrl: string, name: string, code: string, joinLink?: string) => void
   leave: () => void
+  setChatDraft: (text: string) => void
+  setThreadDraft: (threadId: string, text: string) => void
   sendChat: (text: string, threadId?: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
@@ -52,7 +56,9 @@ const EMPTY = {
   activePrompts: {},
   threads: {},
   threadPrompts: {},
-  openThreadId: null
+  openThreadId: null,
+  chatDraft: '',
+  threadDrafts: {}
 }
 
 const upsertStep = (steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
@@ -241,13 +247,18 @@ export const useCrew = create<CrewState>((set, get) => {
       void window.crew.leave()
       set({ connection: 'home', joinLink: null, selfId: '', code: '', ...EMPTY })
     },
+    setChatDraft: text => set({ chatDraft: text }),
+    setThreadDraft: (threadId, text) =>
+      set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } })),
     sendChat: (text, threadId) => {
       if (threadId) {
         socket.send({ type: 'chat.send', text, mentions: [], threadId })
+        set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: '' } }))
         return
       }
       const mentions = mentionsIn(text, get().agents)
       socket.send({ type: 'chat.send', text, mentions })
+      set({ chatDraft: '' })
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
