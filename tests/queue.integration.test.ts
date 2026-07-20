@@ -1,12 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
+import type { SessionEvent } from '../src/shared/events'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
-import { startHost, TestUi, type TestHost } from './helpers/session'
+import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
-type Routed = Extract<SessionEvent, { kind: 'message.route' }>
 
 describe('queued messages', () => {
   let host: TestHost
@@ -43,49 +42,52 @@ describe('queued messages', () => {
     return runner
   }
 
+  function queueOf(threadId: string) {
+    return host.session.snapshot().queues[threadId] ?? []
+  }
+
   async function queuedFollowUp(ui: TestUi, text: string) {
     const fake = agentId('jamel', 'fake')
     ui.chat('start @Fake', [fake])
     const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
-    const first = (await ui.waitForEvent(
-      e => e.kind === 'agent.start' && e.threadId === started.threadId
-    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+    await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === started.threadId)
     ui.chat(text, [], started.threadId)
-    const routed = (await ui.waitForEvent(
-      e => e.kind === 'message.route' && e.mode === 'queued' && e.promptId !== first.promptId
-    )) as Routed
-    return { started, routed }
+    await waitUntil(() => queueOf(started.threadId).some(item => item.text === text))
+    const item = queueOf(started.threadId).find(q => q.text === text)!
+    return { started, item }
   }
 
-  it('edits a queued message before it runs', async () => {
+  it('keeps a queued message out of the thread until it runs, and applies edits', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '600' })
     await ui.waitForEvent(e => e.kind === 'agent.online')
 
-    const { routed } = await queuedFollowUp(ui, 'first draft')
-    ui.send({ type: 'queue.edit', promptId: routed.promptId, text: 'final version' })
-    await ui.waitForEvent(e => e.kind === 'message.edited' && e.messageId === routed.messageId)
+    const { item } = await queuedFollowUp(ui, 'first draft')
+    expect(ui.events.some(e => e.kind === 'message' && e.text === 'first draft')).toBe(false)
 
+    ui.send({ type: 'queue.edit', promptId: item.promptId, text: 'final version' })
     const start = (await ui.waitForEvent(
-      e => e.kind === 'agent.start' && e.promptId === routed.promptId
+      e => e.kind === 'agent.start' && e.promptId === item.promptId
     )) as Extract<SessionEvent, { kind: 'agent.start' }>
     expect(start.promptText).toBe('final version')
+    await ui.waitForEvent(e => e.kind === 'message' && e.text === 'final version')
+    expect(ui.events.some(e => e.kind === 'message' && e.text === 'first draft')).toBe(false)
   })
 
-  it('removes a queued message so it never runs', async () => {
+  it('removes a queued message so it never runs or appears', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '600' })
     await ui.waitForEvent(e => e.kind === 'agent.online')
 
-    const { started, routed } = await queuedFollowUp(ui, 'never mind')
-    ui.send({ type: 'queue.remove', promptId: routed.promptId })
-    await ui.waitForEvent(e => e.kind === 'message.deleted' && e.messageId === routed.messageId)
+    const { started, item } = await queuedFollowUp(ui, 'never mind')
+    ui.send({ type: 'queue.remove', promptId: item.promptId })
+    await waitUntil(() => queueOf(started.threadId).length === 0)
 
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
     await new Promise(r => setTimeout(r, 300))
-    const startedRemoved = uis[0].events.some(e => e.kind === 'agent.start' && e.promptId === routed.promptId)
-    expect(startedRemoved).toBe(false)
+    expect(ui.events.some(e => e.kind === 'agent.start' && e.promptId === item.promptId)).toBe(false)
+    expect(ui.events.some(e => e.kind === 'message' && e.text === 'never mind')).toBe(false)
   })
 })
