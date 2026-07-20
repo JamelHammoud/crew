@@ -185,7 +185,7 @@ export class CrewSession {
     if (!member) return
     switch (msg.type) {
       case 'chat.send':
-        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId)
+        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId, msg.attachments)
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
