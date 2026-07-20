@@ -1,6 +1,7 @@
 import { DocumentTextIcon, PlusIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import DocEditor from '../components/DocEditor'
+import Tooltip from '../components/Tooltip'
 import { useCrew } from '../state/store'
 
 function slugify(name: string): string {
@@ -21,21 +22,72 @@ function prettify(slug: string): string {
 export default function Docs() {
   const docs = useCrew(s => s.docs)
   const updateDoc = useCrew(s => s.updateDoc)
+  const renameDoc = useCrew(s => s.renameDoc)
   const [page, setPage] = useState('main')
-  const [creating, setCreating] = useState(false)
-  const [newName, setNewName] = useState('')
+  const current = docs[page] !== undefined ? page : 'main'
+  const [title, setTitle] = useState(() => prettify(current))
+  const titleRef = useRef<HTMLInputElement>(null)
+  const pendingFocus = useRef(false)
 
   const pages = Object.keys(docs).sort((a, b) => (a === 'main' ? -1 : b === 'main' ? 1 : a.localeCompare(b)))
-  const current = docs[page] !== undefined ? page : 'main'
 
-  const createPage = () => {
-    const slug = slugify(newName)
-    if (!slug) return
-    if (docs[slug] === undefined) updateDoc(slug, '')
-    setPage(slug)
-    setCreating(false)
-    setNewName('')
+  useEffect(() => {
+    setTitle(prettify(current))
+    if (pendingFocus.current) {
+      pendingFocus.current = false
+      requestAnimationFrame(() => {
+        titleRef.current?.focus()
+        titleRef.current?.select()
+      })
+    }
+  }, [current])
+
+  const freeSlug = (base: string): string => {
+    let slug = base
+    let n = 2
+    while (docs[slug] !== undefined) slug = `${base}-${n++}`
+    return slug
   }
+
+  const newPage = () => {
+    const slug = freeSlug('untitled')
+    updateDoc(slug, '')
+    pendingFocus.current = true
+    setPage(slug)
+  }
+
+  const commitTitle = () => {
+    const slug = slugify(title)
+    if (!slug || slug === current || current === 'main') {
+      setTitle(prettify(current))
+      return
+    }
+    const target = docs[slug] !== undefined ? freeSlug(slug) : slug
+    renameDoc(current, target)
+    setPage(target)
+  }
+
+  const titleInput = (
+    <input
+      ref={titleRef}
+      value={title}
+      readOnly={current === 'main'}
+      onChange={e => setTitle(e.target.value)}
+      onBlur={commitTitle}
+      onKeyDown={e => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          titleRef.current?.blur()
+        }
+        if (e.key === 'Escape') {
+          setTitle(prettify(current))
+          titleRef.current?.blur()
+        }
+      }}
+      placeholder="Untitled"
+      className="w-full bg-transparent text-3xl font-bold text-fg placeholder:text-fg-faint outline-none"
+    />
+  )
 
   return (
     <div className="h-full flex px-6">
@@ -56,38 +108,23 @@ export default function Docs() {
               </button>
             ))}
           </div>
-          {creating ? (
-            <input
-              autoFocus
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') createPage()
-                if (e.key === 'Escape') {
-                  setCreating(false)
-                  setNewName('')
-                }
-              }}
-              onBlur={() => {
-                setCreating(false)
-                setNewName('')
-              }}
-              placeholder="Page name"
-              className="mt-1 w-full bg-ink-800 rounded-full px-3.5 py-2 text-sm text-fg placeholder:text-fg-muted outline-none"
-            />
-          ) : (
-            <button
-              onClick={() => setCreating(true)}
-              className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-white/[0.04]"
-            >
-              <PlusIcon className="w-4 h-4 shrink-0" />
-              New page
-            </button>
-          )}
+          <button
+            onClick={newPage}
+            className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-white/[0.04]"
+          >
+            <PlusIcon className="w-4 h-4 shrink-0" />
+            New page
+          </button>
         </aside>
         <div className="flex-1 min-w-0 overflow-y-auto">
           <div className="max-w-[760px]">
-            <h1 className="text-3xl font-bold text-fg px-[54px] pb-2">{prettify(current)}</h1>
+            <div className="px-[54px] pb-2">
+              {current === 'main' ? (
+                <Tooltip label="The main page can't be renamed">{titleInput}</Tooltip>
+              ) : (
+                titleInput
+              )}
+            </div>
             <DocEditor key={current} text={docs[current] ?? ''} onChange={markdown => updateDoc(current, markdown)} />
             <div className="h-40" />
           </div>
