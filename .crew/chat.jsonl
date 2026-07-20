@@ -254,3 +254,5 @@
 {"id":"e8227900-7818-4c84-b21f-c6cb7827f771","ts":1784512525144,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"772d0f17-f7bd-40ec-8093-b85f61cc3b9d","ts":1784512525144,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"d3860f13-8b69-4615-90c6-14b81318824a","ts":1784512535084,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"dc87c270-1a5f-4906-bb37-24a47d821a17","ts":1784512546016,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"@Kimi hello","mentions":["jamel/kimi"]}
+{"id":"a7ba966a-99a2-4eaf-945a-dd18656b38f1","ts":1784512546016,"kind":"agent.start","promptId":"94724020-f01b-4d10-96e6-8fe4f5de3855","agentId":"jamel/kimi","agentLabel":"Kimi","promptText":"@Kimi hello","byName":"ALI"}
