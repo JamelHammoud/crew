@@ -1,3 +1,5 @@
+import type { AgentSettings } from './llm'
+
 export type SessionEvent =
   | { id: string; ts: number; kind: 'message'; authorId: string; authorName: string; text: string; mentions: string[] }
   | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string }

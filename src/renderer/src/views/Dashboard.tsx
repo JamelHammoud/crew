@@ -8,6 +8,7 @@ export default function Dashboard() {
   const activePrompts = useCrew(s => s.activePrompts)
   const selfId = useCrew(s => s.selfId)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
+  const updateAgentSetting = useCrew(s => s.updateAgentSetting)
 
   return (
     <div className="h-full overflow-y-auto px-6 py-6">
@@ -45,6 +46,7 @@ export default function Dashboard() {
                       ? () => cancelPrompt(activePrompts[agent.id])
                       : undefined
                   }
+                  onSetting={(key, value) => updateAgentSetting(agent.id, key, value)}
                 />
               ))}
             </div>

@@ -1,5 +1,5 @@
 import WebSocket from 'ws'
-import { agentId } from '../shared/llm'
+import { agentId, type AgentSettings } from '../shared/llm'
 import type { ClientMessage, ServerMessage } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 
@@ -52,7 +52,7 @@ export class Runner {
         role: 'runner',
         name: this.opts.name,
         code: this.opts.code,
-        llms: [...this.providers.values()].map(p => ({ provider: p.name, label: p.label }))
+        llms: [...this.providers.values()].map(p => ({ provider: p.name, label: p.label, fields: p.fields() }))
       })
     })
     ws.on('message', raw => {
@@ -122,7 +122,7 @@ export class Runner {
         this.onStatus?.('online')
         break
       case 'prompt':
-        this.runPrompt(msg.promptId, msg.agentId, msg.text)
+        this.runPrompt(msg.promptId, msg.agentId, msg.text, msg.settings)
         break
       case 'cancel':
         this.running.get(msg.promptId)?.kill()
@@ -130,18 +130,23 @@ export class Runner {
     }
   }
 
-  private runPrompt(promptId: string, forAgentId: string, text: string): void {
+  private runPrompt(promptId: string, forAgentId: string, text: string, settings: AgentSettings): void {
     const provider = this.providers.get(forAgentId)
     if (!provider) {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
     const tail = this.tails.get(provider.name) ?? Promise.resolve()
-    const next = tail.then(() => this.execute(provider, promptId, text))
+    const next = tail.then(() => this.execute(provider, promptId, text, settings))
     this.tails.set(provider.name, next.catch(() => {}))
   }
 
-  private async execute(provider: Provider, promptId: string, text: string): Promise<void> {
+  private async execute(
+    provider: Provider,
+    promptId: string,
+    text: string,
+    settings: AgentSettings
+  ): Promise<void> {
     const run = provider.start(text, this.opts.repoPath, {
       onChunk: chunk => this.send({ type: 'agent.chunk', promptId, text: chunk }),
       onActivity: activity =>
@@ -156,7 +161,7 @@ export class Runner {
             detail: activity.detail
           }
         })
-    })
+    }, settings)
     this.running.set(promptId, run)
     try {
       const { text: reply } = await run.done

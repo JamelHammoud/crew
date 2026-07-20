@@ -1,8 +1,8 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
 import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, type SessionEvent } from '../shared/events'
-import { agentId, type AgentActivity, type PooledAgent } from '../shared/llm'
-import type { ClientMessage, ServerMessage, SessionSnapshot } from '../shared/protocol'
+import { agentId, resolveSettings, type AgentActivity, type AgentSettings, type PooledAgent } from '../shared/llm'
+import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import { Store } from './store'
 
 interface Member {
@@ -51,7 +51,15 @@ export class CrewSession {
       this.members.set(m.name.toLowerCase(), { id: m.id, name: m.name, connections: new Set() })
     }
     for (const a of persisted?.agents ?? []) {
-      this.agents.set(a.id, { ...a, status: 'offline', runner: null, queue: [], activities: new Map() })
+      this.agents.set(a.id, {
+        ...a,
+        settings: a.settings ?? {},
+        fields: a.fields ?? [],
+        status: 'offline',
+        runner: null,
+        queue: [],
+        activities: new Map()
+      })
     }
     this.events = store.loadEvents()
     for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
@@ -106,7 +114,7 @@ export class CrewSession {
     this.meta.set(ws, { role: msg.role, memberKey: member.name.toLowerCase(), agentIds: [] })
     this.send(ws, { type: 'welcome', selfId: member.id, snapshot: this.snapshot() })
     if (msg.role === 'runner') {
-      for (const llm of msg.llms) this.registerAgent(ws, member, llm.provider, llm.label)
+      for (const llm of msg.llms) this.registerAgent(ws, member, llm)
     }
     if (wasOffline) {
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.joined', memberId: member.id, name: member.name })
@@ -128,6 +136,9 @@ export class CrewSession {
         break
       case 'prompt.cancel':
         if (meta.role === 'ui') this.handleCancel(msg.promptId)
+        break
+      case 'agent.settings':
+        if (meta.role === 'ui') this.handleSettings(msg.agentId, msg.settings)
         break
       case 'agent.chunk':
         this.handleChunk(meta, msg.promptId, msg.text)
@@ -246,7 +257,13 @@ export class CrewSession {
       promptText: next.text,
       byName: next.byName
     })
-    this.send(agent.runner, { type: 'prompt', promptId: next.promptId, agentId: agent.id, text: this.buildPrompt(agent, next) })
+    this.send(agent.runner, {
+      type: 'prompt',
+      promptId: next.promptId,
+      agentId: agent.id,
+      text: this.buildPrompt(agent, next),
+      settings: agent.settings
+    })
   }
 
   private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
@@ -289,13 +306,24 @@ export class CrewSession {
     ].join('\n')
   }
 
-  private registerAgent(ws: WebSocket, member: Member, provider: string, baseLabel: string): void {
+  private handleSettings(id: string, settings: AgentSettings): void {
+    const agent = this.agents.get(id)
+    if (!agent) return
+    agent.settings = resolveSettings(agent.fields, { ...agent.settings, ...settings })
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.updated', agentId: id, settings: agent.settings })
+    this.persistMeta()
+  }
+
+  private registerAgent(ws: WebSocket, member: Member, llm: RegisteredLlm): void {
+    const { provider, label: baseLabel, fields } = llm
     const id = agentId(member.name, provider)
     const meta = this.meta.get(ws)
     const existing = this.agents.get(id)
     if (existing) {
       existing.runner = ws
       existing.status = 'idle'
+      existing.fields = fields
+      existing.settings = resolveSettings(fields, existing.settings)
       meta?.agentIds.push(id)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label: existing.label })
       this.runNext(existing)
@@ -309,6 +337,8 @@ export class CrewSession {
       ownerId: member.id,
       ownerName: member.name,
       status: 'idle',
+      settings: resolveSettings(fields, {}),
+      fields,
       runner: ws,
       queue: [],
       activities: new Map()

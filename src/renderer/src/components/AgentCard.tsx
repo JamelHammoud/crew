@@ -9,10 +9,12 @@ const STATUS_LABEL: Record<PooledAgent['status'], string> = {
 
 export default function AgentCard({
   agent,
-  onStop
+  onStop,
+  onSetting
 }: {
   agent: PooledAgent
   onStop?: () => void
+  onSetting?: (key: string, value: string) => void
 }) {
   const activities = agent.activities.slice(-8).reverse()
   return (
@@ -30,6 +32,26 @@ export default function AgentCard({
           <Pill solid={agent.status === 'busy'}>{STATUS_LABEL[agent.status]}</Pill>
         </div>
       </div>
+      {onSetting && agent.fields.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {agent.fields.map(field => (
+            <label key={field.key} className="flex items-center gap-1.5 text-xs text-zinc-500">
+              {field.label}
+              <select
+                value={agent.settings[field.key] ?? field.default}
+                onChange={event => onSetting(field.key, event.target.value)}
+                className="bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-zinc-300 outline-none focus:border-zinc-700"
+              >
+                {field.options.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      )}
       {activities.length > 0 && (
         <div className="space-y-1.5">
           {activities.map(activity => (

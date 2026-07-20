@@ -25,6 +25,7 @@ interface CrewState {
   sendChat: (text: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
+  updateAgentSetting: (agentId: string, key: string, value: string) => void
 }
 
 const socket = new CrewSocket()
@@ -53,6 +54,11 @@ export const useCrew = create<CrewState>((set, get) => {
           const agent = agents.find(a => a.id === event.agentId)
           if (agent) agent.status = 'idle'
           else agents.push(agentFromId(event.agentId, event.label))
+          break
+        }
+        case 'agent.updated': {
+          const agent = agents.find(a => a.id === event.agentId)
+          if (agent) agent.settings = event.settings
           break
         }
         case 'agent.offline': {
@@ -164,6 +170,14 @@ export const useCrew = create<CrewState>((set, get) => {
     updateDoc: (page, text) => {
       set(state => ({ docs: { ...state.docs, [page]: text } }))
       socket.send({ type: 'doc.update', page, text })
+    },
+    updateAgentSetting: (agentId, key, value) => {
+      set(state => ({
+        agents: state.agents.map(agent =>
+          agent.id === agentId ? { ...agent, settings: { ...agent.settings, [key]: value } } : agent
+        )
+      }))
+      socket.send({ type: 'agent.settings', agentId, settings: { [key]: value } })
     }
   }
 })
@@ -177,6 +191,8 @@ function agentFromId(id: string, label: string): PooledAgent {
     ownerId: '',
     ownerName: slash === -1 ? '' : id.slice(0, slash),
     status: 'idle',
-    activities: [] as AgentActivity[]
+    activities: [] as AgentActivity[],
+    settings: {},
+    fields: []
   }
 }
