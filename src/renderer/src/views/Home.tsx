@@ -50,6 +50,8 @@ export default function Home() {
     setError('')
     try {
       localStorage.setItem('crew.name', name.trim())
+      localStorage.setItem('crew.folder', folder!)
+      localStorage.setItem('crew.link', link.trim())
       const info = await window.crew.join(link.trim(), folder!, name.trim())
       connect(info.wsUrl, name.trim(), parseLink(link.trim()).code)
     } catch (err) {
