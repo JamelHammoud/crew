@@ -1,6 +1,6 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
 import type { SessionEvent } from './events'
-import type { AgentSettingField, AgentSettings, AgentStep, PooledAgent, RunStep } from './llm'
+import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 
 export interface RegisteredLlm {
   instanceId: string
@@ -49,6 +49,7 @@ export type ClientMessage =
   | { type: 'agent.register'; llm: RegisteredLlm }
   | { type: 'agent.deregister'; instanceId: string }
   | { type: 'agent.step'; promptId: string; step: RunStep }
+  | { type: 'agent.usage'; instanceId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; tokens: number }
   | { type: 'agent.steered'; promptId: string; ok: boolean }
   | { type: 'agent.done'; promptId: string; text: string }
