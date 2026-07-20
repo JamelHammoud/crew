@@ -44,6 +44,24 @@ describe('doc pages', () => {
     await host.close()
   })
 
+  it('schedules a git sync when docs are saved or renamed', async () => {
+    const repoPath = tmpDir('docs-sync')
+    const host = await startHost(repoPath)
+    let syncs = 0
+    host.session.onSyncNeeded = () => syncs++
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    ui.send({ type: 'doc.update', page: 'notes', text: 'hi' })
+    await waitUntil(() => new Store(repoPath).loadDocs()['notes'] === 'hi')
+    const afterSave = syncs
+    ui.send({ type: 'doc.rename', from: 'notes', to: 'journal' })
+    await ui.waitForEvent(e => e.kind === 'doc.renamed')
+    expect(afterSave).toBeGreaterThan(0)
+    expect(syncs).toBeGreaterThan(afterSave)
+
+    ui.close()
+    await host.close()
+  })
+
   it('refuses to rename main or clobber an existing page', async () => {
     const repoPath = tmpDir('docs-rename-guard')
     const host = await startHost(repoPath)
