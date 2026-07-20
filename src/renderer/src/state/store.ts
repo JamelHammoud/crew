@@ -48,6 +48,7 @@ interface CrewState {
   deleteMessage: (messageId: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
+  renameDoc: (from: string, to: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
@@ -158,6 +159,11 @@ export const useCrew = create<CrewState>((set, get) => {
         }
         case 'doc': {
           return { events, docs: { ...state.docs, [event.page]: event.text } }
+        }
+        case 'doc.renamed': {
+          const docs = { ...state.docs, [event.to]: state.docs[event.from] ?? '' }
+          delete docs[event.from]
+          return { events, docs }
         }
       }
       return {
@@ -306,6 +312,15 @@ export const useCrew = create<CrewState>((set, get) => {
     updateDoc: (page, text) => {
       set(state => ({ docs: { ...state.docs, [page]: text } }))
       socket.send({ type: 'doc.update', page, text })
+    },
+    renameDoc: (from, to) => {
+      set(state => {
+        if (state.docs[from] === undefined || state.docs[to] !== undefined) return state
+        const docs = { ...state.docs, [to]: state.docs[from] }
+        delete docs[from]
+        return { docs }
+      })
+      socket.send({ type: 'doc.rename', from, to })
     },
     updateAgentSetting: (agentId, key, value) => {
       set(state => ({
