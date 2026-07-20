@@ -268,15 +268,29 @@ export const useCrew = create<CrewState>((set, get) => {
     setChatDraft: text => set({ chatDraft: text }),
     setThreadDraft: (threadId, text) =>
       set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } })),
+    attach: async (key, files) => {
+      const picked = imagesFrom(files)
+      if (picked.length === 0) return
+      const added = await readImages(picked, (get().pending[key] ?? []).length)
+      if (added.length === 0) return
+      set(state => ({ pending: { ...state.pending, [key]: [...(state.pending[key] ?? []), ...added] } }))
+    },
+    detach: (key, id) =>
+      set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
     sendChat: (text, threadId) => {
+      const key = threadId ?? CHAT_KEY
+      const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
       if (threadId) {
-        socket.send({ type: 'chat.send', text, mentions: [], threadId })
-        set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: '' } }))
+        socket.send({ type: 'chat.send', text, mentions: [], threadId, attachments })
+        set(state => ({
+          threadDrafts: { ...state.threadDrafts, [threadId]: '' },
+          pending: { ...state.pending, [key]: [] }
+        }))
         return
       }
       const mentions = mentionsIn(text, get().agents)
-      socket.send({ type: 'chat.send', text, mentions })
-      set({ chatDraft: '' })
+      socket.send({ type: 'chat.send', text, mentions, attachments })
+      set(state => ({ chatDraft: '', pending: { ...state.pending, [key]: [] } }))
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
