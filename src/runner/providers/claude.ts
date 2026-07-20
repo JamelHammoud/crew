@@ -87,7 +87,8 @@ export const parseClaudeLine: OutputParser = line => {
             kind: SUBAGENT_TOOLS.has(block.name) ? ('subagent' as const) : ('tool' as const),
             name: block.name,
             status: 'started' as const,
-            detail: activityDetail(block.input)
+            detail: activityDetail(block.input),
+            files: fileChanges(block.name, block.input)
           }
         })
       }
