@@ -47,6 +47,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let blocks = 0
       let rawOpen = false
       let killed = false
+      let parsedError = ''
       let written = 0
       let reported = 0
       let sent = 0
