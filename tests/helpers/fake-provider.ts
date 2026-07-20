@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
-import { makeCliProvider } from '../../src/runner/providers/cli'
+import type { AgentSettingField } from '../../src/shared/llm'
+import { choices, flag, makeCliProvider } from '../../src/runner/providers/cli'
 import type { OutputParser, Provider } from '../../src/runner/providers/types'
 
 export const fakeCliPath = fileURLToPath(new URL('./fake-cli.mjs', import.meta.url))
@@ -26,12 +27,17 @@ export const parseFakeLine: OutputParser = line => {
   return []
 }
 
+export const fakeFields = (): AgentSettingField[] => [
+  { key: 'model', label: 'Model', options: choices(['', 'small', 'large']), default: '' }
+]
+
 export function makeFakeProvider(env: NodeJS.ProcessEnv = {}, name = 'fake', label = 'Fake'): Provider {
   return makeCliProvider({
     name,
     label,
     command: process.execPath,
-    args: prompt => [fakeCliPath, prompt],
+    fields: fakeFields,
+    args: (prompt, get) => [fakeCliPath, prompt, ...flag('--model', get('model'))],
     parser: parseFakeLine,
     env
   })
