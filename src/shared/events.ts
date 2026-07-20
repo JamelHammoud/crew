@@ -26,3 +26,18 @@ export type SessionEvent =
 
 export const SYSTEM_AUTHOR_ID = 'crew'
 export const SYSTEM_AUTHOR_NAME = 'crew'
+
+export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
+  let count = 0
+  let start = events.length
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (events[i].kind !== 'agent.step') {
+      if (count === limit) break
+      count++
+    }
+    start = i
+  }
+  const kept = events.slice(start)
+  const prompts = new Set(kept.filter(e => e.kind === 'agent.start').map(e => e.promptId))
+  return kept.filter(e => e.kind !== 'agent.step' || prompts.has(e.promptId))
+}

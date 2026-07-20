@@ -158,7 +158,7 @@ export class CrewSession {
         connected: m.connections.size > 0
       })),
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
-      events: this.events.slice(-SNAPSHOT_EVENT_LIMIT),
+      events: trimEvents(this.events, SNAPSHOT_EVENT_LIMIT),
       docs: Object.fromEntries(this.docs)
     }
   }
