@@ -1,10 +1,18 @@
 import { create } from 'zustand'
 import type { SessionEvent } from '../../../shared/events'
-import type { AgentActivity, PooledAgent } from '../../../shared/llm'
+import { mentionsIn, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
 
 export type Connection = 'home' | 'connecting' | 'online' | 'reconnecting'
+
+export interface ThreadMeta {
+  id: string
+  agentId: string
+  agentLabel: string
+  title: string
+  createdBy: string
+}
 
 const EVENT_LIMIT = 500
 
@@ -20,15 +28,34 @@ interface CrewState {
   docs: Record<string, string>
   streams: Record<string, string>
   activePrompts: Record<string, string>
+  threads: Record<string, ThreadMeta>
+  threadPrompts: Record<string, string>
+  threadActivities: Record<string, PooledAgent['activities']>
+  openThreadId: string | null
   connect: (wsUrl: string, name: string, code: string, joinLink?: string) => void
   leave: () => void
-  sendChat: (text: string) => void
+  sendChat: (text: string, threadId?: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
+  openThread: (threadId: string) => void
+  closeThread: () => void
 }
 
 const socket = new CrewSocket()
+
+const EMPTY = {
+  members: [],
+  agents: [],
+  events: [],
+  docs: {},
+  streams: {},
+  activePrompts: {},
+  threads: {},
+  threadPrompts: {},
+  threadActivities: {},
+  openThreadId: null
+}
 
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
@@ -38,6 +65,9 @@ export const useCrew = create<CrewState>((set, get) => {
       const agents = [...state.agents]
       const activePrompts = { ...state.activePrompts }
       const streams = { ...state.streams }
+      const threads = { ...state.threads }
+      const threadPrompts = { ...state.threadPrompts }
+      const threadActivities = { ...state.threadActivities }
       switch (event.kind) {
         case 'person.joined': {
           const member = members.find(m => m.id === event.memberId)
@@ -53,7 +83,6 @@ export const useCrew = create<CrewState>((set, get) => {
         case 'agent.online': {
           const agent = agents.find(a => a.id === event.agentId)
           if (agent) agent.status = 'idle'
-          else agents.push(agentFromId(event.agentId, event.label))
           break
         }
         case 'agent.updated': {
@@ -66,26 +95,56 @@ export const useCrew = create<CrewState>((set, get) => {
           if (agent) agent.status = 'offline'
           break
         }
+        case 'thread.started': {
+          threads[event.threadId] = {
+            id: event.threadId,
+            agentId: event.agentId,
+            agentLabel: event.agentLabel,
+            title: event.title,
+            createdBy: event.byName
+          }
+          break
+        }
         case 'agent.start': {
           activePrompts[event.agentId] = event.promptId
+          if (event.threadId) {
+            threadPrompts[event.threadId] = event.promptId
+            threadActivities[event.threadId] = []
+          }
           break
         }
         case 'agent.end': {
           delete activePrompts[event.agentId]
           delete streams[event.promptId]
+          if (event.threadId) delete threadPrompts[event.threadId]
           break
         }
         case 'doc': {
-          return { events, members, agents, activePrompts, streams, docs: { ...state.docs, [event.page]: event.text } }
+          return { events, docs: { ...state.docs, [event.page]: event.text } }
         }
       }
-      return { events, members, agents, activePrompts, streams }
+      return { events, members, agents, activePrompts, streams, threads, threadPrompts, threadActivities }
     })
   }
 
   const handleMessage = (msg: ServerMessage) => {
     switch (msg.type) {
-      case 'welcome':
+      case 'welcome': {
+        const threads: Record<string, ThreadMeta> = {}
+        const threadPrompts: Record<string, string> = {}
+        for (const event of msg.snapshot.events) {
+          if (event.kind === 'thread.started') {
+            threads[event.threadId] = {
+              id: event.threadId,
+              agentId: event.agentId,
+              agentLabel: event.agentLabel,
+              title: event.title,
+              createdBy: event.byName
+            }
+          }
+          if (event.kind === 'agent.start' && event.threadId) threadPrompts[event.threadId] = event.promptId
+          if (event.kind === 'agent.end' && event.threadId) delete threadPrompts[event.threadId]
+        }
         set({
           connection: 'online',
           selfId: msg.selfId,
@@ -95,11 +154,26 @@ export const useCrew = create<CrewState>((set, get) => {
           events: msg.snapshot.events.slice(-EVENT_LIMIT),
           docs: msg.snapshot.docs,
           streams: {},
-          activePrompts: {}
+          activePrompts: {},
+          threads,
+          threadPrompts,
+          threadActivities: {},
+          openThreadId: null
         })
         break
+      }
       case 'event':
         applyEvent(msg.event)
+        break
+      case 'agent.added':
+        set(state =>
+          state.agents.some(a => a.id === msg.agent.id)
+            ? { agents: state.agents.map(a => (a.id === msg.agent.id ? msg.agent : a)) }
+            : { agents: [...state.agents, msg.agent] }
+        )
+        break
+      case 'agent.removed':
+        set(state => ({ agents: state.agents.filter(a => a.id !== msg.agentId) }))
         break
       case 'agent.chunk':
         set(state => ({
@@ -107,13 +181,17 @@ export const useCrew = create<CrewState>((set, get) => {
         }))
         break
       case 'agent.activity':
-        set(state => ({
-          agents: state.agents.map(agent => {
+        set(state => {
+          const agents = state.agents.map(agent => {
             if (agent.id !== msg.agentId) return agent
             const rest = agent.activities.filter(a => a.id !== msg.activity.id)
             return { ...agent, activities: [...rest, msg.activity] }
           })
-        }))
+          if (!msg.threadId) return { agents }
+          const current = state.threadActivities[msg.threadId] ?? []
+          const rest = current.filter(a => a.id !== msg.activity.id)
+          return { agents, threadActivities: { ...state.threadActivities, [msg.threadId]: [...rest, msg.activity] } }
+        })
         break
     }
   }
@@ -131,12 +209,7 @@ export const useCrew = create<CrewState>((set, get) => {
     selfId: '',
     selfName: '',
     code: '',
-    members: [],
-    agents: [],
-    events: [],
-    docs: {},
-    streams: {},
-    activePrompts: {},
+    ...EMPTY,
     connect: (wsUrl, name, code, joinLink) => {
       set({ connection: 'connecting', selfName: name, joinLink: joinLink ?? null })
       const hello: ClientMessage = { type: 'hello', role: 'ui', name, code }
@@ -145,23 +218,14 @@ export const useCrew = create<CrewState>((set, get) => {
     leave: () => {
       socket.close()
       void window.crew.leave()
-      set({
-        connection: 'home',
-        joinLink: null,
-        selfId: '',
-        code: '',
-        members: [],
-        agents: [],
-        events: [],
-        docs: {},
-        streams: {},
-        activePrompts: {}
-      })
+      set({ connection: 'home', joinLink: null, selfId: '', code: '', ...EMPTY })
     },
-    sendChat: text => {
-      const mentions = get()
-        .agents.filter(agent => text.toLowerCase().includes(`@${agent.label.toLowerCase()}`))
-        .map(agent => agent.id)
+    sendChat: (text, threadId) => {
+      if (threadId) {
+        socket.send({ type: 'chat.send', text, mentions: [], threadId })
+        return
+      }
+      const mentions = mentionsIn(text, get().agents)
       socket.send({ type: 'chat.send', text, mentions })
     },
     cancelPrompt: promptId => {
@@ -178,21 +242,8 @@ export const useCrew = create<CrewState>((set, get) => {
         )
       }))
       socket.send({ type: 'agent.settings', agentId, settings: { [key]: value } })
-    }
+    },
+    openThread: threadId => set({ openThreadId: threadId }),
+    closeThread: () => set({ openThreadId: null })
   }
 })
-
-function agentFromId(id: string, label: string): PooledAgent {
-  const slash = id.indexOf('/')
-  return {
-    id,
-    label,
-    provider: slash === -1 ? '' : id.slice(slash + 1),
-    ownerId: '',
-    ownerName: slash === -1 ? '' : id.slice(0, slash),
-    status: 'idle',
-    activities: [] as AgentActivity[],
-    settings: {},
-    fields: []
-  }
-}

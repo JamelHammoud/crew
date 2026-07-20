@@ -4,6 +4,7 @@ import Chat from './views/Chat'
 import Dashboard from './views/Dashboard'
 import Docs from './views/Docs'
 import Home from './views/Home'
+import ThreadView from './views/ThreadView'
 
 type Tab = 'chat' | 'agents' | 'docs'
 
@@ -24,6 +25,7 @@ function Session() {
   const joinLink = useCrew(s => s.joinLink)
   const connection = useCrew(s => s.connection)
   const leave = useCrew(s => s.leave)
+  const openThreadId = useCrew(s => s.openThreadId)
   const [copied, setCopied] = useState(false)
 
   const copyLink = async () => {
@@ -66,7 +68,7 @@ function Session() {
         </div>
       </header>
       <main className="flex-1 min-h-0">
-        {tab === 'chat' && <Chat />}
+        {tab === 'chat' && (openThreadId ? <ThreadView threadId={openThreadId} /> : <Chat />)}
         {tab === 'agents' && <Dashboard />}
         {tab === 'docs' && <Docs />}
       </main>

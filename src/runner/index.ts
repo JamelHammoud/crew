@@ -1,15 +1,25 @@
 import WebSocket from 'ws'
-import { agentId, type AgentSettings } from '../shared/llm'
-import type { ClientMessage, ServerMessage } from '../shared/protocol'
+import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
+import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
+import { GitPuller } from './pull'
 
 export interface RunnerOptions {
   name: string
   code: string
   repoPath: string
   providers: Provider[]
+  agents?: AgentDef[]
   reconnectDelayMs?: number
   silenceTimeoutMs?: number
+  autoPullMs?: number
+}
+
+interface RunnerAgent {
+  instanceId: string
+  provider: Provider
+  name: string
+  settings: AgentSettings
 }
 
 export type RunnerStatus = 'connecting' | 'online' | 'offline'
@@ -19,7 +29,8 @@ const SILENCE_TIMEOUT_MS = 45000
 
 export class Runner {
   private ws: WebSocket | null = null
-  private providers = new Map<string, Provider>()
+  private providersByName = new Map<string, Provider>()
+  private agents = new Map<string, RunnerAgent>()
   private running = new Map<string, RunningPrompt>()
   private tails = new Map<string, Promise<void>>()
   private stopped = false
@@ -32,11 +43,41 @@ export class Runner {
   onStatus: ((status: RunnerStatus) => void) | null = null
 
   constructor(private opts: RunnerOptions) {
-    for (const provider of opts.providers) {
-      this.providers.set(agentId(opts.name, provider.name), provider)
-    }
+    for (const provider of opts.providers) this.providersByName.set(provider.name, provider)
+    const defs = opts.agents ?? opts.providers.map(p => ({ instanceId: p.name, provider: p.name, name: p.label, settings: {} }))
+    for (const def of defs) this.define(def)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
+  }
+
+  addAgent(def: AgentDef): void {
+    const key = this.define(def)
+    if (!key) return
+    this.send({ type: 'agent.register', llm: this.registered(this.agents.get(key)!) })
+  }
+
+  removeAgent(instanceId: string): void {
+    const key = agentId(this.opts.name, instanceId)
+    if (!this.agents.delete(key)) return
+    this.send({ type: 'agent.deregister', instanceId })
+  }
+
+  private define(def: AgentDef): string | null {
+    const provider = this.providersByName.get(def.provider)
+    if (!provider) return null
+    const key = agentId(this.opts.name, def.instanceId)
+    this.agents.set(key, { instanceId: def.instanceId, provider, name: def.name, settings: def.settings ?? {} })
+    return key
+  }
+
+  private registered(agent: RunnerAgent): RegisteredLlm {
+    return {
+      instanceId: agent.instanceId,
+      provider: agent.provider.name,
+      label: agent.name,
+      fields: agent.provider.fields(),
+      settings: agent.settings
+    }
   }
 
   connect(url: string): void {
@@ -52,7 +93,7 @@ export class Runner {
         role: 'runner',
         name: this.opts.name,
         code: this.opts.code,
-        llms: [...this.providers.values()].map(p => ({ provider: p.name, label: p.label, fields: p.fields() }))
+        llms: [...this.agents.values()].map(agent => this.registered(agent))
       })
     })
     ws.on('message', raw => {
@@ -131,14 +172,14 @@ export class Runner {
   }
 
   private runPrompt(promptId: string, forAgentId: string, text: string, settings: AgentSettings): void {
-    const provider = this.providers.get(forAgentId)
-    if (!provider) {
+    const agent = this.agents.get(forAgentId)
+    if (!agent) {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
-    const tail = this.tails.get(provider.name) ?? Promise.resolve()
-    const next = tail.then(() => this.execute(provider, promptId, text, settings))
-    this.tails.set(provider.name, next.catch(() => {}))
+    const tail = this.tails.get(forAgentId) ?? Promise.resolve()
+    const next = tail.then(() => this.execute(agent.provider, promptId, text, settings))
+    this.tails.set(forAgentId, next.catch(() => {}))
   }
 
   private async execute(

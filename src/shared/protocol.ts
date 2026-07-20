@@ -1,6 +1,14 @@
 import type { SessionEvent } from './events'
 import type { AgentActivity, AgentSettingField, AgentSettings, PooledAgent } from './llm'
 
+export interface RegisteredLlm {
+  instanceId: string
+  provider: string
+  label: string
+  fields: AgentSettingField[]
+  settings: AgentSettings
+}
+
 export interface MemberInfo {
   id: string
   name: string
@@ -15,19 +23,15 @@ export interface SessionSnapshot {
   docs: Record<string, string>
 }
 
-export interface RegisteredLlm {
-  provider: string
-  label: string
-  fields: AgentSettingField[]
-}
-
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
   | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[] }
-  | { type: 'chat.send'; text: string; mentions: string[] }
+  | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string }
   | { type: 'doc.update'; page: string; text: string }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
+  | { type: 'agent.register'; llm: RegisteredLlm }
+  | { type: 'agent.deregister'; instanceId: string }
   | { type: 'agent.chunk'; promptId: string; text: string }
   | { type: 'agent.done'; promptId: string; text: string }
   | { type: 'agent.error'; promptId: string; message: string }
@@ -36,8 +40,10 @@ export type ClientMessage =
 export type ServerMessage =
   | { type: 'welcome'; selfId: string; snapshot: SessionSnapshot }
   | { type: 'event'; event: SessionEvent }
-  | { type: 'agent.chunk'; promptId: string; agentId: string; text: string }
-  | { type: 'agent.activity'; promptId: string; agentId: string; activity: AgentActivity }
+  | { type: 'agent.added'; agent: PooledAgent }
+  | { type: 'agent.removed'; agentId: string }
+  | { type: 'agent.chunk'; promptId: string; agentId: string; threadId?: string; text: string }
+  | { type: 'agent.activity'; promptId: string; agentId: string; threadId?: string; activity: AgentActivity }
   | { type: 'prompt'; promptId: string; agentId: string; text: string; settings: AgentSettings }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }

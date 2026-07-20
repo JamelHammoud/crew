@@ -1,12 +1,19 @@
 /// <reference types="vite/client" />
 
-interface CrewBridge {
-  pickFolder(): Promise<string | null>
-  start(folder: string, name: string): Promise<{ link: string; wsUrl: string }>
-  join(link: string, folder: string, name: string): Promise<{ wsUrl: string }>
-  leave(): Promise<void>
-}
+import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 
-interface Window {
-  crew: CrewBridge
+declare global {
+  interface CrewBridge {
+    pickFolder(): Promise<string | null>
+    start(folder: string, name: string): Promise<{ link: string; wsUrl: string }>
+    join(link: string, folder: string, name: string): Promise<{ wsUrl: string }>
+    leave(): Promise<void>
+    agentCapabilities(): Promise<ProviderCapability[]>
+    createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
+    removeAgent(instanceId: string): Promise<void>
+  }
+
+  interface Window {
+    crew: CrewBridge
+  }
 }
