@@ -1,4 +1,5 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { mentionCandidates } from '../../../shared/llm'
 import ChatMessage from '../components/ChatMessage'
 import ThreadCard from '../components/ThreadCard'
 import type { ThreadItem } from '../components/thread'
@@ -18,11 +19,14 @@ export default function Chat() {
   const steps = useCrew(s => s.steps)
   const sendChat = useCrew(s => s.sendChat)
   const openThread = useCrew(s => s.openThread)
+  const text = useCrew(s => s.chatDraft)
+  const setChatDraft = useCrew(s => s.setChatDraft)
 
-  const [text, setText] = useState('')
   const [mentionQuery, setMentionQuery] = useState<string | null>(null)
+  const [activeMention, setActiveMention] = useState(0)
   const inputRef = useAutoResize(text)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const didInitialScroll = useRef(false)
 
   const feed = useMemo<Feed[]>(() => {
@@ -85,23 +89,25 @@ export default function Chat() {
     return { working: false, status: 'Done' }
   }
 
-  const mentionMatches = useMemo(() => {
-    if (mentionQuery === null) return []
-    const query = mentionQuery.toLowerCase()
-    return agents.filter(a => a.status !== 'offline' && a.label.toLowerCase().startsWith(query)).slice(0, 5)
-  }, [agents, mentionQuery])
+  const mentionMatches = useMemo(() => mentionCandidates(agents, mentionQuery), [agents, mentionQuery])
+  const activeIndex = Math.min(activeMention, Math.max(mentionMatches.length - 1, 0))
+
+  useEffect(() => {
+    listRef.current?.children[activeIndex]?.scrollIntoView({ block: 'nearest' })
+  }, [activeIndex])
 
   const onChange = (value: string) => {
-    setText(value)
+    setChatDraft(value)
     const caret = inputRef.current?.selectionStart ?? value.length
-    const match = /(?:^|\s)@([^\s@]*)$/.exec(value.slice(0, caret))
+    const match = /(?:^|\s)@([^@]*)$/.exec(value.slice(0, caret))
     setMentionQuery(match ? match[1] : null)
+    setActiveMention(0)
   }
 
   const pickMention = (label: string) => {
     const caret = inputRef.current?.selectionStart ?? text.length
-    const before = text.slice(0, caret).replace(/@[^\s@]*$/, `@${label} `)
-    setText(before + text.slice(caret))
+    const before = text.slice(0, caret).replace(/@[^@]*$/, `@${label} `)
+    setChatDraft(before + text.slice(caret))
     setMentionQuery(null)
     inputRef.current?.focus()
   }
@@ -109,15 +115,31 @@ export default function Chat() {
   const send = () => {
     if (!text.trim()) return
     sendChat(text)
-    setText('')
     setMentionQuery(null)
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (mentionMatches.length > 0) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        const delta = e.key === 'ArrowDown' ? 1 : -1
+        setActiveMention((activeIndex + delta + mentionMatches.length) % mentionMatches.length)
+        return
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setMentionQuery(null)
+        return
+      }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        pickMention(mentionMatches[activeIndex].label)
+        return
+      }
+    }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (mentionMatches.length > 0) pickMention(mentionMatches[0].label)
-      else send()
+      send()
     }
   }
 
@@ -148,12 +170,18 @@ export default function Chat() {
       <div className="border-t border-zinc-800 px-6 py-4 shrink-0">
         <div className="max-w-3xl mx-auto relative">
           {mentionMatches.length > 0 && (
-            <div className="absolute bottom-full mb-2 left-0 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden min-w-48">
-              {mentionMatches.map(agent => (
+            <div
+              ref={listRef}
+              className="absolute bottom-full mb-2 left-0 bg-zinc-900 border border-zinc-800 rounded-lg min-w-48 max-h-56 overflow-y-auto"
+            >
+              {mentionMatches.map((agent, index) => (
                 <button
                   key={agent.id}
                   onClick={() => pickMention(agent.label)}
-                  className="w-full text-left px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800 flex items-center justify-between gap-4"
+                  onMouseEnter={() => setActiveMention(index)}
+                  className={`w-full text-left px-3 py-2 text-sm text-zinc-200 flex items-center justify-between gap-4 ${
+                    index === activeIndex ? 'bg-zinc-800' : ''
+                  }`}
                 >
                   <span>@{agent.label}</span>
                   <span className="text-xs text-zinc-500">{agent.ownerName}</span>
