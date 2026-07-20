@@ -186,6 +186,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           }
           if (typeof out.tokens === 'number') reported = Math.max(reported, out.tokens)
           if (out.error) parsedError = out.error
+          if (out.turnEnd && opts.streamInput) onTurnEnd()
         }
         reportTokens()
       }
@@ -234,6 +235,14 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         })
       })
 
+      if (opts.streamInput) {
+        writeMessage(prompt)
+      } else {
+        // Codex reads stdin to EOF even when the prompt is an argument, so an
+        // open pipe hangs the process before it ever contacts the model.
+        child.stdin?.end()
+      }
+
       // Start the clock at spawn: a process that hangs before its first byte
       // (as codex did on stdin) is the case this exists for.
       bump()
@@ -242,10 +251,10 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         done,
         kill: () => {
           killed = true
-          if (idleTimer) clearTimeout(idleTimer)
-          idleTimer = null
+          clearTimers()
           terminate()
-        }
+        },
+        steer: opts.streamInput ? (body: string) => writeMessage(body) : undefined
       }
     }
   }
