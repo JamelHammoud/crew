@@ -39,6 +39,7 @@ export class Runner {
   private silenceTimeout: number
   private reconnectTimer: NodeJS.Timeout | null = null
   private watchdog: NodeJS.Timeout | null = null
+  private puller: GitPuller | null = null
   private lastSeen = 0
   onStatus: ((status: RunnerStatus) => void) | null = null
 
@@ -48,6 +49,11 @@ export class Runner {
     for (const def of defs) this.define(def)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
+    if (opts.autoPullMs) {
+      this.puller = new GitPuller(opts.repoPath)
+      this.puller.onLog = line => console.warn('[git]', line)
+      this.puller.start(opts.autoPullMs)
+    }
   }
 
   addAgent(def: AgentDef): void {
