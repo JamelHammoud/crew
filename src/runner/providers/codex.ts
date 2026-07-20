@@ -2,6 +2,7 @@ import type { AgentSettingField, FileChange } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { codexModels } from './codex-models'
 import { activityDetail } from './detail'
+import { codexUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const TOOL_LABELS: Record<string, string> = {
@@ -138,5 +139,6 @@ export const codexProvider: Provider = makeCliProvider({
   command: 'codex',
   fields: codexFields,
   args: codexArgs,
-  parser: parseCodexLine
+  parser: parseCodexLine,
+  usage: codexUsage
 })
