@@ -78,6 +78,16 @@ export default function ThreadCard({
           </div>
         </button>
       </div>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+        <MenuItem
+          icon={<ArchiveBoxIcon />}
+          label="Archive thread"
+          onClick={() => {
+            setMenuAt(null)
+            archiveThread(thread.id)
+          }}
+        />
+      </Popover>
     </div>
   )
 }
