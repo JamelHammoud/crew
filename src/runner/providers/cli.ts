@@ -65,6 +65,35 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const thinkingBlocks = new Map<number, string>()
       let streamedThinking = false
 
+      const idleMs = opts.idleTimeoutMs ?? IDLE_TIMEOUT_MS
+      let idleTimer: NodeJS.Timeout | null = null
+      let killTimer: NodeJS.Timeout | null = null
+
+      const clearTimers = () => {
+        if (idleTimer) clearTimeout(idleTimer)
+        if (killTimer) clearTimeout(killTimer)
+        idleTimer = killTimer = null
+      }
+
+      // SIGTERM first, but a wedged process can ignore it and leave the thread
+      // queue blocked forever, so escalate to SIGKILL.
+      const terminate = () => {
+        child.kill('SIGTERM')
+        killTimer = setTimeout(() => child.kill('SIGKILL'), KILL_GRACE_MS)
+        killTimer.unref()
+      }
+
+      // Any byte of output means the process is alive; restart the clock.
+      const bump = () => {
+        if (idleTimer) clearTimeout(idleTimer)
+        if (killed || timedOut) return
+        idleTimer = setTimeout(() => {
+          timedOut = true
+          terminate()
+        }, idleMs)
+        idleTimer.unref()
+      }
+
       const reportTokens = () => {
         if (!hooks.onTokens) return
         const tokens = Math.max(reported, Math.ceil(written / 4))
