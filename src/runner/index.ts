@@ -149,6 +149,7 @@ export class Runner {
     this.stopped = true
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
     this.stopWatchdog()
+    this.stopUsagePolling()
     this.puller?.stop()
     this.killRunning()
     this.ws?.close()
@@ -181,6 +182,7 @@ export class Runner {
       case 'welcome':
         this.attempts = 0
         this.onStatus?.('online')
+        this.startUsagePolling()
         break
       case 'prompt':
         this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
