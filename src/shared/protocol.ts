@@ -1,3 +1,4 @@
+import type { Attachment, OutgoingAttachment } from './attachments'
 import type { SessionEvent } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, PooledAgent, RunStep } from './llm'
 
@@ -26,7 +27,7 @@ export interface SessionSnapshot {
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
   | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[] }
-  | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string }
+  | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'doc.update'; page: string; text: string }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
@@ -44,7 +45,15 @@ export type ServerMessage =
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
-  | { type: 'prompt'; promptId: string; agentId: string; threadId: string; text: string; settings: AgentSettings }
+  | {
+      type: 'prompt'
+      promptId: string
+      agentId: string
+      threadId: string
+      text: string
+      settings: AgentSettings
+      attachments?: Attachment[]
+    }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
   | { type: 'error'; message: string }
