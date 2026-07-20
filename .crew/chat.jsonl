@@ -235,3 +235,4 @@
 {"id":"649e82f2-9566-4c88-a450-862a0a8e85ee","ts":1784512347844,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
 {"id":"9a4fa600-3a66-44f2-9283-146517a5cc37","ts":1784512347845,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"720ee0ba-b9f7-4342-88be-2983b432dc4a","ts":1784512347845,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"ebd02905-616b-4df0-b1d1-20f04276ed54","ts":1784512358392,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}

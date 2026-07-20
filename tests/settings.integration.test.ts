@@ -20,10 +20,11 @@ describe('provider settings map to command line flags', () => {
     expect(args.join(' ')).toContain('--effort max')
   })
 
-  it('kimi approves every action and passes the model alias', () => {
+  it('kimi passes the model alias and stays free of approval flags', () => {
     const args = kimiArgs('hi', reader({ model: 'kimi-code/k3' }))
-    expect(args).toContain('--yolo')
     expect(args.join(' ')).toContain('--model kimi-code/k3')
+    expect(args).not.toContain('--yolo')
+    expect(args).not.toContain('--auto')
   })
 
   it('codex bypasses approvals and sets reasoning effort', () => {
