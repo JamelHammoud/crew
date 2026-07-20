@@ -535,6 +535,30 @@
         }
       ],
       "steerable": false
+    },
+    {
+      "id": "ali/f001e68a-48d4-4b1a-b922-e947b5141134",
+      "label": "Kimi (ALI)",
+      "provider": "kimi",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ]
 }
