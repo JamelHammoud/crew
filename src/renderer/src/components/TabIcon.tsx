@@ -38,40 +38,45 @@ function ChatIcon() {
   )
 }
 
-/** Core pops, two orbits swing open from opposite tilts, a satellite slides along the ring. */
+/**
+ * Planet draws itself, its ring swings level as the two lobes sweep out behind it,
+ * then a sparkle twists in. Lobe endpoints sit exactly where the ring meets the
+ * planet's silhouette, so the ring reads as passing behind it.
+ */
 function SpaceIcon() {
   return (
     <svg {...SVG}>
-      <circle className="tab-icon-pop" cx={10} cy={10} r={1.75} fill="currentColor" stroke="none" />
+      <circle
+        className="tab-icon-draw"
+        pathLength={1}
+        cx={9.2}
+        cy={10.6}
+        r={5}
+        style={{ '--draw-dur': '330ms' } as React.CSSProperties}
+      />
       <g
         className="tab-icon-sweep"
-        style={{ '--sweep-from': '-26deg', '--sweep-delay': '70ms' } as React.CSSProperties}
+        style={{ '--sweep-from': '-16deg', '--sweep-delay': '170ms' } as React.CSSProperties}
       >
         <path
           className="tab-icon-draw"
           pathLength={1}
-          d={ORBIT}
-          style={{ '--draw-dur': '340ms', '--draw-delay': '70ms' } as React.CSSProperties}
+          d="M6.04 14.47A8.2 3 -20 0 1 4.29 9.67"
+          style={{ '--draw-dur': '230ms', '--draw-delay': '170ms' } as React.CSSProperties}
         />
-        <circle
-          className="tab-icon-orbit"
-          r={1.2}
-          fill="currentColor"
-          stroke="none"
-          style={{ offsetPath: `path("${ORBIT}")` } as React.CSSProperties}
-        />
-      </g>
-      <g
-        className="tab-icon-sweep"
-        style={{ '--sweep-from': '26deg', '--sweep-delay': '150ms' } as React.CSSProperties}
-      >
         <path
           className="tab-icon-draw"
           pathLength={1}
-          d={ORBIT_MIRROR}
-          style={{ '--draw-dur': '340ms', '--draw-delay': '150ms' } as React.CSSProperties}
+          d="M14.11 11.53A8.2 3 -20 0 0 12.37 6.73"
+          style={{ '--draw-dur': '230ms', '--draw-delay': '240ms' } as React.CSSProperties}
         />
       </g>
+      <path
+        className="tab-icon-spark"
+        d="M16.8 2.6C16.96 3.7 17.3 4.04 18.4 4.2C17.3 4.36 16.96 4.7 16.8 5.8C16.64 4.7 16.3 4.36 15.2 4.2C16.3 4.04 16.64 3.7 16.8 2.6Z"
+        fill="currentColor"
+        stroke="none"
+      />
     </svg>
   )
 }
