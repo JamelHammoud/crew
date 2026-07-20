@@ -97,6 +97,7 @@ export class CrewSession {
   private threads = new Map<string, Thread>()
   private events: SessionEvent[] = []
   private docs = new Map<string, string>()
+  private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
   private steers = new Map<string, PendingSteer[]>()
@@ -209,6 +210,9 @@ export class CrewSession {
         break
       case 'doc.rename':
         if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to)
+        break
+      case 'doc.delete':
+        if (meta.role === 'ui') this.handleDocDelete(member, msg.page)
         break
       case 'prompt.cancel':
         if (meta.role === 'ui') this.handleCancel(msg.promptId)
@@ -362,7 +366,20 @@ export class CrewSession {
     return this.store.attachmentPath(file)
   }
 
+  private followRenames(page: string): string {
+    for (let hops = 0; hops < 5; hops++) {
+      if (this.docs.has(page)) return page
+      const hit = [...this.docRenames.entries()].find(
+        ([from, move]) => Date.now() - move.ts <= 10000 && (page === from || page.startsWith(`${from}/`))
+      )
+      if (!hit) return page
+      page = hit[1].to + page.slice(hit[0].length)
+    }
+    return page
+  }
+
   private handleDoc(member: Member, page: string, text: string): void {
+    page = this.followRenames(page)
     try {
       this.store.saveDoc(page, text)
     } catch {
@@ -371,6 +388,23 @@ export class CrewSession {
     this.docs.set(page, text)
     this.emit(
       { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, byName: member.name },
+      { persist: false }
+    )
+    this.onSyncNeeded?.()
+  }
+
+  private handleDocDelete(member: Member, page: string): void {
+    if (page === 'main' || !this.docs.has(page)) return
+    try {
+      this.store.deleteDoc(page)
+    } catch {
+      return
+    }
+    for (const key of [...this.docs.keys()]) {
+      if (key === page || key.startsWith(`${page}/`)) this.docs.delete(key)
+    }
+    this.emit(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc.deleted', page, byName: member.name },
       { persist: false }
     )
     this.onSyncNeeded?.()
@@ -388,6 +422,10 @@ export class CrewSession {
       if (page !== from && !page.startsWith(`${from}/`)) continue
       this.docs.delete(page)
       this.docs.set(to + page.slice(from.length), text)
+    }
+    this.docRenames.set(from, { to, ts: Date.now() })
+    for (const [key, move] of this.docRenames) {
+      if (Date.now() - move.ts > 10000) this.docRenames.delete(key)
     }
     this.emit(
       { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, byName: member.name },

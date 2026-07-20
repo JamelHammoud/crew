@@ -97,6 +97,13 @@ export class Store {
     this.writeAtomic(file, text)
   }
 
+  deleteDoc(page: string): void {
+    if (!PAGE_NAME.test(page)) throw new Error(`Bad page name: ${page}`)
+    const docsDir = path.join(this.root, 'docs')
+    fs.rmSync(path.join(docsDir, `${page}.md`), { force: true })
+    fs.rmSync(path.join(docsDir, page), { recursive: true, force: true })
+  }
+
   renameDoc(from: string, to: string): void {
     if (!PAGE_NAME.test(from)) throw new Error(`Bad page name: ${from}`)
     if (!PAGE_NAME.test(to)) throw new Error(`Bad page name: ${to}`)

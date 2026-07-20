@@ -1,6 +1,7 @@
-import { ChevronRightIcon, DocumentTextIcon, PlusIcon } from '@heroicons/react/16/solid'
+import { ChevronRightIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
+import { MenuItem, Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
 import { useCrew } from '../state/store'
 
@@ -56,12 +57,14 @@ export default function Docs() {
   const docs = useCrew(s => s.docs)
   const updateDoc = useCrew(s => s.updateDoc)
   const renameDoc = useCrew(s => s.renameDoc)
+  const deleteDoc = useCrew(s => s.deleteDoc)
   const [page, setPage] = useState('main')
   const current = docs[page] !== undefined ? page : 'main'
   const [title, setTitle] = useState(() => prettify(current))
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [dragged, setDragged] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
+  const [menu, setMenu] = useState<{ slug: string; x: number; y: number } | null>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const editorRef = useRef<DocEditorHandle>(null)
   const pendingFocus = useRef(false)
@@ -117,6 +120,7 @@ export default function Docs() {
     if (!dragged || !canDrop(target)) return
     const base = target ? `${target}/${lastSegment(dragged)}` : lastSegment(dragged)
     const to = docs[base] !== undefined ? freeSlug(base) : base
+    editorRef.current?.flush()
     renameDoc(dragged, to)
     if (target) setExpanded(prev => new Set(prev).add(target))
     if (current === dragged || current.startsWith(`${dragged}/`)) setPage(to + current.slice(dragged.length))
@@ -152,6 +156,7 @@ export default function Docs() {
       return
     }
     const target = docs[slug] !== undefined ? freeSlug(slug) : slug
+    editorRef.current?.flush()
     renameDoc(current, target)
     setPage(target)
   }
