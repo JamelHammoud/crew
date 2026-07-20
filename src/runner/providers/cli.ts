@@ -36,6 +36,10 @@ interface CliProviderOptions {
 const IDLE_TIMEOUT_MS = 10 * 60 * 1000
 // Grace period before escalating to SIGKILL for a process ignoring SIGTERM.
 const KILL_GRACE_MS = 5000
+// In streaming-input mode the CLI ends a turn but keeps running, waiting for
+// more stdin. We wait this long after a turn ends before closing stdin, so a
+// steer already in flight over the socket still lands in the same run.
+const TURN_END_GRACE_MS = 750
 
 export function makeCliProvider(opts: CliProviderOptions): Provider {
   const fields = () => opts.fields?.() ?? []
