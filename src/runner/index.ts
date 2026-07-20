@@ -195,6 +195,7 @@ export class Runner {
     text: string,
     settings: AgentSettings
   ): Promise<void> {
+    await this.puller?.pullNow()
     const run = provider.start(text, this.opts.repoPath, {
       onChunk: chunk => this.send({ type: 'agent.chunk', promptId, text: chunk }),
       onActivity: activity =>
