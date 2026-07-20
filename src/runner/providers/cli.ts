@@ -73,11 +73,42 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const idleMs = opts.idleTimeoutMs ?? IDLE_TIMEOUT_MS
       let idleTimer: NodeJS.Timeout | null = null
       let killTimer: NodeJS.Timeout | null = null
+      let turnTimer: NodeJS.Timeout | null = null
+      let inputClosed = false
 
       const clearTimers = () => {
         if (idleTimer) clearTimeout(idleTimer)
         if (killTimer) clearTimeout(killTimer)
-        idleTimer = killTimer = null
+        if (turnTimer) clearTimeout(turnTimer)
+        idleTimer = killTimer = turnTimer = null
+      }
+
+      // Closing stdin is what tells a streaming-input CLI the conversation is
+      // over; it exits and `close` resolves the run.
+      const endInput = () => {
+        if (inputClosed) return
+        inputClosed = true
+        child.stdin?.end()
+      }
+
+      const writeMessage = (body: string): boolean => {
+        if (inputClosed || killed || timedOut || !child.stdin?.writable) return false
+        if (turnTimer) {
+          clearTimeout(turnTimer)
+          turnTimer = null
+        }
+        child.stdin.write(
+          JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text: body }] } }) + '\n'
+        )
+        return true
+      }
+
+      // A turn ended with nothing more queued, so let the process wind down —
+      // unless a steer arrives inside the grace window and reopens the run.
+      const onTurnEnd = () => {
+        if (turnTimer) clearTimeout(turnTimer)
+        turnTimer = setTimeout(endInput, TURN_END_GRACE_MS)
+        turnTimer.unref()
       }
 
       // SIGTERM first, but a wedged process can ignore it and leave the thread
