@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
 import { buildThread } from '../components/thread'
+import { useAutoResize } from '../components/useAutoResize'
 import { useCrew } from '../state/store'
 
 export default function ThreadView({ threadId }: { threadId: string }) {
@@ -16,6 +17,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const [text, setText] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const inputRef = useAutoResize(text)
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, streams, selfId), [threadEvents, streams, selfId])
@@ -90,6 +92,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       <div className="border-t border-zinc-800 px-6 py-4 shrink-0">
         <div className="max-w-3xl mx-auto flex gap-3 items-end">
           <textarea
+            ref={inputRef}
             value={text}
             onChange={e => setText(e.target.value)}
             onKeyDown={onKeyDown}

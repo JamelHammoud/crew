@@ -2,6 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
 import ThreadCard from '../components/ThreadCard'
 import type { ThreadItem } from '../components/thread'
+import { useAutoResize } from '../components/useAutoResize'
 import { useCrew, type ThreadMeta } from '../state/store'
 
 type Feed =
@@ -20,7 +21,7 @@ export default function Chat() {
 
   const [text, setText] = useState('')
   const [mentionQuery, setMentionQuery] = useState<string | null>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useAutoResize(text)
   const scrollRef = useRef<HTMLDivElement>(null)
   const didInitialScroll = useRef(false)
 
