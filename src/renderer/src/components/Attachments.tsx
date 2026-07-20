@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
-import { previewSrc } from './attachments'
+import { previewSrc } from './images'
 
 export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   const pending = useCrew(s => s.pending[attachmentKey])

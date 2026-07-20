@@ -4,7 +4,7 @@ import type { SessionEvent } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
-import { imagesFrom, readImages, type PendingAttachment } from '../components/attachments'
+import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 
 export type Connection = 'home' | 'connecting' | 'online' | 'reconnecting'
 
