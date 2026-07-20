@@ -2,6 +2,13 @@ export type AgentStatus = 'idle' | 'busy' | 'offline'
 
 export type StepKind = 'text' | 'thinking' | 'tool' | 'subagent'
 
+export interface FileChange {
+  path: string
+  added: number
+  removed: number
+  diff?: string
+}
+
 export interface RunStep {
   id: string
   kind: StepKind
@@ -9,6 +16,7 @@ export interface RunStep {
   text?: string
   name?: string
   detail?: string
+  files?: FileChange[]
 }
 
 export interface AgentStep extends RunStep {
