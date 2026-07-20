@@ -107,7 +107,9 @@ export class CrewSession {
         runs: new Map()
       })
     }
-    this.events = store.loadEvents()
+    const loaded = store.loadEvents()
+    const deleted = new Set(loaded.filter(e => e.kind === 'message.deleted').map(e => e.messageId))
+    this.events = loaded.filter(e => e.kind !== 'message.deleted' && !(e.kind === 'message' && deleted.has(e.id)))
     for (const event of this.events) {
       if (event.kind === 'thread.started') {
         this.threads.set(event.threadId, {
@@ -186,6 +188,9 @@ export class CrewSession {
     switch (msg.type) {
       case 'chat.send':
         if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId, msg.attachments)
+        break
+      case 'chat.delete':
+        if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
@@ -296,6 +301,18 @@ export class CrewSession {
       })
       this.enqueuePrompt(agent, trimmed, member.name, newThreadId, attachments)
     }
+  }
+
+  private handleDeleteMessage(member: Member, messageId: string): void {
+    const index = this.events.findIndex(e => e.kind === 'message' && e.id === messageId)
+    if (index === -1) return
+    const event = this.events[index]
+    if (event.kind !== 'message' || event.authorId !== member.id) return
+    this.events.splice(index, 1)
+    const tombstone: SessionEvent = { id: randomUUID(), ts: Date.now(), kind: 'message.deleted', messageId }
+    this.store.appendEvent(tombstone)
+    this.broadcast({ type: 'event', event: tombstone })
+    this.onSyncNeeded?.()
   }
 
   private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {

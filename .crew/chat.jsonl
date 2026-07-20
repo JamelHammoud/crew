@@ -1346,3 +1346,21 @@
 {"id":"ecd624ae-2816-4bd8-8bfe-cb00edb6ca2c","ts":1784523040529,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"16801faa-de03-45de-b561-a1c680ee011f","ts":1784523041628,"kind":"agent.step","promptId":"3d69a7d6-5281-4f5e-9b50-ab91f0ca9e4f","agentId":"jamel/claude","agentLabel":"Claude","threadId":"ad8446d2-4ca8-44cb-a041-eeaba4565332","step":{"id":"b13","ts":1784523027150,"kind":"thinking","status":"done"}}
 {"id":"2470a4dc-60fe-4696-bc2d-78f7bc492692","ts":1784523042097,"kind":"agent.step","promptId":"3d69a7d6-5281-4f5e-9b50-ab91f0ca9e4f","agentId":"jamel/claude","agentLabel":"Claude","threadId":"ad8446d2-4ca8-44cb-a041-eeaba4565332","step":{"id":"b14","ts":1784523042097,"kind":"text","status":"done","text":"The probe is decisive — mid-turn stdin messages *are* delivered into the live session. Let me confirm whether they actually interrupt in-flight work:"}}
+{"id":"e0cc4c96-afdb-49b2-8ec4-8929ca460514","ts":1784523075436,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"f084ae0c-eb0c-4783-8017-dd38d16fdaa8","ts":1784523075436,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"24edcab0-e469-4245-9a89-9f0156fcbbcc","ts":1784523075436,"kind":"agent.offline","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"674ef32e-2e93-430a-82d0-09d25b7b3a58","ts":1784523075436,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"81b5d33d-cdaa-4204-aa79-40fc1e0d801d","ts":1784523075437,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"c1ba0914-38bd-408e-b262-c67623d69bc8","ts":1784523075437,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"0e22fcae-a23c-4edd-b582-2c4bd1e43c55","ts":1784523075437,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"5a9eb764-2b99-4d80-9657-04b6d3844a2b","ts":1784523075437,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"ea984ff7-c2aa-4d18-bfaf-6842608933b4","ts":1784523075437,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"7fd31c65-c042-496c-b5c1-0f2fb9e6fa7c","ts":1784523075456,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"007dd558-2733-4b54-82f4-4c4f916d13cd","ts":1784523075456,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"ddc145ef-3de4-48e4-9bc9-d53f1fc0f43b","ts":1784523075456,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"2a01df81-1ff2-4955-be80-b4c301b2e4dd","ts":1784523075456,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"ff85cbf9-5614-4e63-856c-f805a287e31d","ts":1784523075456,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"bb38e3c0-1d55-4dcd-973a-1f6abad4e9d3","ts":1784523076749,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"abfae4ab-a379-417b-b3ee-e294663c8ed7","ts":1784523076749,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"3408db6a-8404-4789-9b49-aa1a776746cd","ts":1784523076749,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"fc1a3810-d564-495e-b018-c568c5441837","ts":1784523076749,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
