@@ -290,6 +290,77 @@
           "default": "high"
         }
       ]
+    },
+    {
+      "id": "ali/20890e3a-ce3f-4240-95da-1509a65df80a",
+      "label": "Codex Gpt-5.6-sol",
+      "provider": "codex",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "gpt-5.6-sol",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ]
     }
   ]
 }
