@@ -38,4 +38,5 @@ export type ServerMessage =
   | { type: 'agent.activity'; promptId: string; agentId: string; activity: AgentActivity }
   | { type: 'prompt'; promptId: string; agentId: string; text: string }
   | { type: 'cancel'; promptId: string }
+  | { type: 'ping' }
   | { type: 'error'; message: string }
