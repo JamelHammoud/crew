@@ -16,7 +16,8 @@ export interface PersistedSession {
   agents: Array<Omit<PooledAgent, 'status' | 'runs'>>
 }
 
-const PAGE_NAME = /^[a-z0-9][a-z0-9-]*$/
+const PAGE_SEGMENT = '[a-z0-9][a-z0-9-]*'
+const PAGE_NAME = new RegExp(`^${PAGE_SEGMENT}(/${PAGE_SEGMENT})*$`)
 
 export class Store {
   readonly root: string
