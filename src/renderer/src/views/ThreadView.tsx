@@ -136,9 +136,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   </>
                 )}
                 {(diffTotals.added > 0 || diffTotals.removed > 0) && (
-                  <Pill>
-                    <Counts added={diffTotals.added} removed={diffTotals.removed} />
-                  </Pill>
+                  <span className="ml-2">
+                    <Pill lg>
+                      <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
+                    </Pill>
+                  </span>
                 )}
               </div>
             </div>
