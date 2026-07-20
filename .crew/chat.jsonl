@@ -280,3 +280,4 @@
 {"id":"711b4130-ff01-4495-9417-bd709f1883ee","ts":1784513264740,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"5c367374-0a3b-4a18-aaeb-f9496d31f53f","ts":1784513264740,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"a1f10384-9d25-42b6-a4fd-ee8a2f61af1d","ts":1784513265446,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"032cb638-c689-4263-be59-a302357fea3f","ts":1784513282443,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
