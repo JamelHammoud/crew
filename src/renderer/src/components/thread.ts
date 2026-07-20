@@ -71,9 +71,16 @@ export function buildThread(
   selfId: string
 ): ThreadItem[] {
   const ended = new Set(events.filter(e => e.kind === 'agent.end').map(e => e.promptId))
+  const started = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
+  // The last route wins: a steer the agent turned down is re-emitted as queued.
+  const routes = new Map<string, Extract<SessionEvent, { kind: 'message.route' }>>()
+  for (const event of events) {
+    if (event.kind === 'message.route') routes.set(event.messageId, event)
+  }
   const items: ThreadItem[] = []
   for (const event of events) {
     if (event.kind === 'message') {
+      const route = routes.get(event.id)
       items.push({
         key: event.id,
         ts: event.ts,
@@ -82,7 +89,8 @@ export function buildThread(
         self: event.authorId === selfId,
         text: event.text,
         streaming: false,
-        attachments: event.attachments
+        attachments: event.attachments,
+        route: routeBadge(route, started, ended)
       })
     }
     if (event.kind === 'agent.start') {
