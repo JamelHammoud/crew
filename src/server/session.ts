@@ -108,9 +108,11 @@ export class CrewSession {
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
   private steers = new Map<string, PendingSteer[]>()
+  private cancelTimeoutMs: number
   onSyncNeeded: (() => void) | null = null
 
-  constructor(private store: Store) {
+  constructor(private store: Store, opts: { cancelTimeoutMs?: number } = {}) {
+    this.cancelTimeoutMs = opts.cancelTimeoutMs ?? CANCEL_REPORT_TIMEOUT_MS
     const persisted = store.loadSession()
     this.code = persisted?.code ?? randomBytes(3).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
