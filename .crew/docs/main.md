@@ -4,7 +4,7 @@
 * [ ] If you've already scrolled in a thread upwards, don't auto-scroll the user back down (there's a threshold, if the user is actively scrolling up to go read/find something). Keep the user where they scrolled and instead show a "Jump to bottom" centered button
 * [ ] Spellcheck doesn't work in docs because a right-click is hijacked
 * [ ] A thread can get stuck on "Working" for hours, the stop button does nothing
-* [ ] A steered message to Claude works, but in the UI it's still sticking at the bottom, even as the responses from Claude start to come in, they push the message downwards (which doesn't make sense, the message was sent ealier). THe timestamp for the steered message is correct, but it's positioning in the chat 
+* [ ] A steered message to Claude works, but in the UI it's still sticking at the bottom, even as the responses from Claude start to come in, they push the message downwards (which doesn't make sense, the message was sent earlier). The timestamp for the steered message is correct, but it's positioning in the thread chat makes it look like it was sent later than other messages
 
 ## In progress
 
