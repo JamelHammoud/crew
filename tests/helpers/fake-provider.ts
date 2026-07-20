@@ -26,6 +26,7 @@ export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('END ')) {
     return [{ activity: { id: line.slice(4), kind: 'tool' as const, name: '', status: 'finished' as const } }]
   }
+  if (line === 'RESULT') return [{ turnEnd: true }]
   return []
 }
 
