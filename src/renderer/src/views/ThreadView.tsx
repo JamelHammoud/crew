@@ -85,14 +85,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
-  // While a run is live the composer says where the message will land, so
-  // nobody has to guess whether it was picked up.
-  const canSteer = Boolean(activePromptId) && steerable
-  const placeholder = !activePromptId
-    ? 'Send a message'
-    : canSteer
-      ? `Steer ${thread.agentLabel} — this goes in mid-run`
-      : `${thread.agentLabel} is working — this goes in the queue`
+  const placeholder = 'Send a message'
 
   return (
     <div className="h-full relative">
