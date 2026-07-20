@@ -1,5 +1,13 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
+import {
+  extensionFor,
+  isImageType,
+  MAX_ATTACHMENTS,
+  MAX_ATTACHMENT_BYTES,
+  type Attachment,
+  type OutgoingAttachment
+} from '../shared/attachments'
 import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, type SessionEvent } from '../shared/events'
 import {
   agentId,
@@ -42,6 +50,7 @@ interface QueuedPrompt {
   text: string
   byName: string
   threadId: string
+  attachments: Attachment[]
 }
 
 interface Thread {
