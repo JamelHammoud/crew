@@ -44,6 +44,38 @@ export interface PooledAgent {
   fields: AgentSettingField[]
 }
 
-export function agentId(ownerName: string, provider: string): string {
-  return `${ownerName.trim().toLowerCase()}/${provider}`
+export interface AgentDef {
+  instanceId: string
+  provider: string
+  name: string
+  settings: AgentSettings
+}
+
+export interface ProviderCapability {
+  provider: string
+  label: string
+  fields: AgentSettingField[]
+}
+
+export function agentId(ownerName: string, instanceId: string): string {
+  return `${ownerName.trim().toLowerCase()}/${instanceId}`
+}
+
+export function mentionsIn(
+  text: string,
+  agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>
+): string[] {
+  let work = ` ${text.toLowerCase()} `
+  const ids: string[] = []
+  const ordered = [...agents].sort((a, b) => b.label.length - a.label.length)
+  for (const agent of ordered) {
+    if (agent.status === 'offline') continue
+    const needle = `@${agent.label.toLowerCase()}`
+    const at = work.indexOf(needle)
+    if (at === -1) continue
+    if (/[\w-]/.test(work[at + needle.length])) continue
+    ids.push(agent.id)
+    work = work.slice(0, at) + ' '.repeat(needle.length) + work.slice(at + needle.length)
+  }
+  return ids
 }

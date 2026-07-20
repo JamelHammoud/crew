@@ -1,6 +1,12 @@
 import AgentCard from '../components/AgentCard'
 import Avatar from '../components/Avatar'
+import CreateAgent from '../components/CreateAgent'
 import { useCrew } from '../state/store'
+
+function instanceOf(agentId: string): string {
+  const slash = agentId.indexOf('/')
+  return slash === -1 ? agentId : agentId.slice(slash + 1)
+}
 
 export default function Dashboard() {
   const members = useCrew(s => s.members)
@@ -30,25 +36,28 @@ export default function Dashboard() {
         </section>
 
         <section>
-          <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-3">Agents</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Agents</h2>
+            <CreateAgent />
+          </div>
           {agents.length === 0 ? (
             <p className="text-sm text-zinc-500">
-              No agents yet. When someone joins with LLMs on their machine, they show up here.
+              No agents yet. Add one from your machine's LLMs, or wait for someone to bring theirs.
             </p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
-              {agents.map(agent => (
-                <AgentCard
-                  key={agent.id}
-                  agent={agent}
-                  onStop={
-                    activePrompts[agent.id]
-                      ? () => cancelPrompt(activePrompts[agent.id])
-                      : undefined
-                  }
-                  onSetting={(key, value) => updateAgentSetting(agent.id, key, value)}
-                />
-              ))}
+              {agents.map(agent => {
+                const mine = agent.ownerId === selfId
+                return (
+                  <AgentCard
+                    key={agent.id}
+                    agent={agent}
+                    onStop={activePrompts[agent.id] ? () => cancelPrompt(activePrompts[agent.id]) : undefined}
+                    onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
+                    onRemove={mine ? () => void window.crew.removeAgent(instanceOf(agent.id)) : undefined}
+                  />
+                )
+              })}
             </div>
           )}
         </section>

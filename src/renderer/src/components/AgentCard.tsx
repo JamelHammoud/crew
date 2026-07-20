@@ -10,11 +10,13 @@ const STATUS_LABEL: Record<PooledAgent['status'], string> = {
 export default function AgentCard({
   agent,
   onStop,
-  onSetting
+  onSetting,
+  onRemove
 }: {
   agent: PooledAgent
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
+  onRemove?: () => void
 }) {
   const activities = agent.activities.slice(-8).reverse()
   return (
@@ -27,6 +29,11 @@ export default function AgentCard({
           {agent.status === 'busy' && onStop && (
             <button onClick={onStop} className="text-[11px] text-zinc-400 hover:text-white">
               Stop
+            </button>
+          )}
+          {onRemove && agent.status !== 'busy' && (
+            <button onClick={onRemove} className="text-[11px] text-zinc-500 hover:text-red-400">
+              Remove
             </button>
           )}
           <Pill solid={agent.status === 'busy'}>{STATUS_LABEL[agent.status]}</Pill>

@@ -21,6 +21,20 @@ interface QueuedPrompt {
   promptId: string
   text: string
   byName: string
+  threadId: string
+}
+
+interface Thread {
+  id: string
+  agentId: string
+  agentLabel: string
+  title: string
+  createdBy: string
+}
+
+interface PromptRef {
+  agentId: string
+  threadId: string
 }
 
 interface ConnMeta {
@@ -31,16 +45,18 @@ interface ConnMeta {
 
 const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
+const TITLE_LIMIT = 80
 
 export class CrewSession {
   readonly code: string
   private createdAt: number
   private members = new Map<string, Member>()
   private agents = new Map<string, AgentState>()
+  private threads = new Map<string, Thread>()
   private events: SessionEvent[] = []
   private docs = new Map<string, string>()
   private meta = new Map<WebSocket, ConnMeta>()
-  private prompts = new Map<string, string>()
+  private prompts = new Map<string, PromptRef>()
   onSyncNeeded: (() => void) | null = null
 
   constructor(private store: Store) {
@@ -62,6 +78,17 @@ export class CrewSession {
       })
     }
     this.events = store.loadEvents()
+    for (const event of this.events) {
+      if (event.kind === 'thread.started') {
+        this.threads.set(event.threadId, {
+          id: event.threadId,
+          agentId: event.agentId,
+          agentLabel: event.agentLabel,
+          title: event.title,
+          createdBy: event.byName
+        })
+      }
+    }
     for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
     this.persistMeta()
   }
@@ -98,10 +125,7 @@ export class CrewSession {
         name: m.name,
         connected: m.connections.size > 0
       })),
-      agents: [...this.agents.values()].map(({ runner, queue, activities, ...agent }) => ({
-        ...agent,
-        activities: [...activities.values()]
-      })),
+      agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: this.events.slice(-SNAPSHOT_EVENT_LIMIT),
       docs: Object.fromEntries(this.docs)
     }
@@ -129,7 +153,7 @@ export class CrewSession {
     if (!member) return
     switch (msg.type) {
       case 'chat.send':
-        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions)
+        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId)
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
@@ -139,6 +163,12 @@ export class CrewSession {
         break
       case 'agent.settings':
         if (meta.role === 'ui') this.handleSettings(msg.agentId, msg.settings)
+        break
+      case 'agent.register':
+        if (meta.role === 'runner') this.registerAgent(ws, member, msg.llm)
+        break
+      case 'agent.deregister':
+        if (meta.role === 'runner') this.deregisterAgent(ws, member, msg.instanceId)
         break
       case 'agent.chunk':
         this.handleChunk(meta, msg.promptId, msg.text)
@@ -155,22 +185,72 @@ export class CrewSession {
     }
   }
 
-  private handleChat(member: Member, text: string, mentions: string[]): void {
+  private handleChat(member: Member, text: string, mentions: string[], threadId?: string): void {
     const trimmed = text.trim()
     if (!trimmed) return
-    this.emit({
-      id: randomUUID(),
-      ts: Date.now(),
-      kind: 'message',
-      authorId: member.id,
-      authorName: member.name,
-      text: trimmed,
-      mentions
-    })
-    for (const id of new Set(mentions)) {
-      const agent = this.agents.get(id)
-      if (!agent) continue
-      this.enqueuePrompt(agent, trimmed, member.name)
+    if (threadId) {
+      const thread = this.threads.get(threadId)
+      if (!thread) return
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'message',
+        authorId: member.id,
+        authorName: member.name,
+        text: trimmed,
+        mentions: [thread.agentId],
+        threadId
+      })
+      const agent = this.agents.get(thread.agentId)
+      if (!agent) return
+      this.enqueuePrompt(agent, trimmed, member.name, threadId)
+      return
+    }
+    const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
+    if (ids.length === 0) {
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'message',
+        authorId: member.id,
+        authorName: member.name,
+        text: trimmed,
+        mentions
+      })
+      return
+    }
+    for (const id of ids) {
+      const agent = this.agents.get(id)!
+      const newThreadId = randomUUID()
+      const thread: Thread = {
+        id: newThreadId,
+        agentId: id,
+        agentLabel: agent.label,
+        title: this.titleFrom(trimmed),
+        createdBy: member.name
+      }
+      this.threads.set(newThreadId, thread)
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'thread.started',
+        threadId: newThreadId,
+        agentId: id,
+        agentLabel: agent.label,
+        title: thread.title,
+        byName: member.name
+      })
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'message',
+        authorId: member.id,
+        authorName: member.name,
+        text: trimmed,
+        mentions: [id],
+        threadId: newThreadId
+      })
+      this.enqueuePrompt(agent, trimmed, member.name, newThreadId)
     }
   }
 
@@ -190,7 +270,7 @@ export class CrewSession {
   private handleChunk(meta: ConnMeta, promptId: string, text: string): void {
     const agent = this.ownedAgent(meta, promptId)
     if (!agent) return
-    this.broadcast({ type: 'agent.chunk', promptId, agentId: agent.id, text })
+    this.broadcast({ type: 'agent.chunk', promptId, agentId: agent.id, threadId: this.prompts.get(promptId)?.threadId, text })
   }
 
   private handleActivity(meta: ConnMeta, promptId: string, activity: AgentActivity): void {
@@ -201,13 +281,19 @@ export class CrewSession {
       ? activity
       : { ...(existing ?? { kind: 'tool' as const, name: '' }), id: activity.id, status: activity.status }
     agent.activities.set(activity.id, merged)
-    this.broadcast({ type: 'agent.activity', promptId, agentId: agent.id, activity: merged })
+    this.broadcast({
+      type: 'agent.activity',
+      promptId,
+      agentId: agent.id,
+      threadId: this.prompts.get(promptId)?.threadId,
+      activity: merged
+    })
   }
 
   private handleCancel(promptId: string): void {
-    const agentIdForPrompt = this.prompts.get(promptId)
-    if (!agentIdForPrompt) return
-    const agent = this.agents.get(agentIdForPrompt)
+    const ref = this.prompts.get(promptId)
+    if (!ref) return
+    const agent = this.agents.get(ref.agentId)
     if (agent?.runner) this.send(agent.runner, { type: 'cancel', promptId })
   }
 
@@ -224,19 +310,19 @@ export class CrewSession {
   }
 
   private ownedAgent(meta: ConnMeta, promptId: string): AgentState | null {
-    const agentIdForPrompt = this.prompts.get(promptId)
-    if (!agentIdForPrompt) return null
-    const agent = this.agents.get(agentIdForPrompt)
+    const ref = this.prompts.get(promptId)
+    if (!ref) return null
+    const agent = this.agents.get(ref.agentId)
     if (!agent || !meta.agentIds.includes(agent.id)) return null
     return agent
   }
 
-  private enqueuePrompt(agent: AgentState, text: string, byName: string): void {
+  private enqueuePrompt(agent: AgentState, text: string, byName: string, threadId: string): void {
     if (!agent.runner || agent.status === 'offline') {
-      this.systemMessage(`${agent.label} is not here right now.`)
+      this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
-    agent.queue.push({ promptId: randomUUID(), text, byName })
+    agent.queue.push({ promptId: randomUUID(), text, byName, threadId })
     this.runNext(agent)
   }
 
@@ -246,7 +332,7 @@ export class CrewSession {
     if (!next) return
     agent.status = 'busy'
     agent.activities.clear()
-    this.prompts.set(next.promptId, agent.id)
+    this.prompts.set(next.promptId, { agentId: agent.id, threadId: next.threadId })
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -255,7 +341,8 @@ export class CrewSession {
       agentId: agent.id,
       agentLabel: agent.label,
       promptText: next.text,
-      byName: next.byName
+      byName: next.byName,
+      threadId: next.threadId
     })
     this.send(agent.runner, {
       type: 'prompt',
@@ -267,6 +354,7 @@ export class CrewSession {
   }
 
   private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
+    const threadId = this.prompts.get(promptId)?.threadId
     this.prompts.delete(promptId)
     agent.status = agent.runner ? 'idle' : 'offline'
     for (const activity of agent.activities.values()) activity.status = 'done'
@@ -277,6 +365,7 @@ export class CrewSession {
       promptId,
       agentId: agent.id,
       agentLabel: agent.label,
+      threadId,
       ...result
     })
     this.runNext(agent)
@@ -284,8 +373,11 @@ export class CrewSession {
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt): string {
     const people = [...this.members.values()].map(m => m.name).join(', ')
-    const recent = this.events
-      .filter(e => e.kind === 'message' || e.kind === 'agent.end')
+    const transcript = this.events
+      .filter(
+        (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
+          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === prompt.threadId
+      )
       .slice(-CONTEXT_EVENT_LIMIT)
       .map(e => {
         if (e.kind === 'message') return `${e.authorName}: ${e.text}`
@@ -297,12 +389,12 @@ export class CrewSession {
     return [
       `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
       `You share a project folder and can read and edit files in it.`,
+      `You are in a focused thread. Only this thread's messages are shown here.`,
       ``,
-      `Recent chat:`,
-      recent || '(nothing yet)',
+      `Thread so far:`,
+      transcript || '(nothing yet)',
       ``,
-      `Reply to this message from ${prompt.byName}:`,
-      prompt.text
+      `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
     ].join('\n')
   }
 
@@ -315,37 +407,50 @@ export class CrewSession {
   }
 
   private registerAgent(ws: WebSocket, member: Member, llm: RegisteredLlm): void {
-    const { provider, label: baseLabel, fields } = llm
-    const id = agentId(member.name, provider)
+    const id = agentId(member.name, llm.instanceId)
     const meta = this.meta.get(ws)
     const existing = this.agents.get(id)
     if (existing) {
       existing.runner = ws
       existing.status = 'idle'
-      existing.fields = fields
-      existing.settings = resolveSettings(fields, existing.settings)
+      existing.fields = llm.fields
+      existing.settings = resolveSettings(llm.fields, existing.settings)
       meta?.agentIds.push(id)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label: existing.label })
       this.runNext(existing)
       return
     }
-    const label = this.uniqueLabel(baseLabel)
+    const label = this.uniqueLabel(llm.label)
     const agent: AgentState = {
       id,
       label,
-      provider,
+      provider: llm.provider,
       ownerId: member.id,
       ownerName: member.name,
       status: 'idle',
-      settings: resolveSettings(fields, {}),
-      fields,
+      settings: resolveSettings(llm.fields, llm.settings ?? {}),
+      fields: llm.fields,
       runner: ws,
       queue: [],
       activities: new Map()
     }
     this.agents.set(id, agent)
     meta?.agentIds.push(id)
+    this.broadcast({ type: 'agent.added', agent: this.pooled(agent) })
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label })
+    this.persistMeta()
+  }
+
+  private deregisterAgent(ws: WebSocket, member: Member, instanceId: string): void {
+    const id = agentId(member.name, instanceId)
+    const agent = this.agents.get(id)
+    if (!agent) return
+    const inFlight = [...this.prompts.entries()].find(([, ref]) => ref.agentId === id)
+    if (inFlight) this.finishPrompt(agent, inFlight[0], { ok: false, error: `${agent.label} was removed.` })
+    this.agents.delete(id)
+    const meta = this.meta.get(ws)
+    if (meta) meta.agentIds = meta.agentIds.filter(a => a !== id)
+    this.broadcast({ type: 'agent.removed', agentId: id })
     this.persistMeta()
   }
 
@@ -355,6 +460,16 @@ export class CrewSession {
     let i = 2
     while (taken.has(`${base} ${i}`.toLowerCase())) i++
     return `${base} ${i}`
+  }
+
+  private titleFrom(text: string): string {
+    const flat = text.replace(/\s+/g, ' ').trim()
+    return flat.length > TITLE_LIMIT ? flat.slice(0, TITLE_LIMIT) + '…' : flat
+  }
+
+  private pooled(agent: AgentState): PooledAgent {
+    const { runner, queue, activities, ...rest } = agent
+    return { ...rest, activities: [...activities.values()] }
   }
 
   private memberFor(name: string): Member {
@@ -384,7 +499,7 @@ export class CrewSession {
       agent.runner = null
       agent.queue.length = 0
       agent.activities.clear()
-      const inFlight = [...this.prompts.entries()].find(([, agentId]) => agentId === id)
+      const inFlight = [...this.prompts.entries()].find(([, ref]) => ref.agentId === id)
       if (inFlight) {
         this.finishPrompt(agent, inFlight[0], { ok: false, error: `${agent.label} disconnected.` })
       }
@@ -394,7 +509,7 @@ export class CrewSession {
     this.persistMeta()
   }
 
-  private systemMessage(text: string): void {
+  private systemMessage(text: string, threadId?: string): void {
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -402,7 +517,8 @@ export class CrewSession {
       authorId: SYSTEM_AUTHOR_ID,
       authorName: SYSTEM_AUTHOR_NAME,
       text,
-      mentions: []
+      mentions: [],
+      threadId
     })
   }
 
