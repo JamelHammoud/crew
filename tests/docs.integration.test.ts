@@ -22,6 +22,28 @@ describe('doc pages', () => {
     await host.close()
   })
 
+  it('moves a page with its sub-pages when nested', async () => {
+    const repoPath = tmpDir('docs-subpages')
+    const host = await startHost(repoPath)
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+
+    ui.send({ type: 'doc.update', page: 'guides', text: 'Guides' })
+    ui.send({ type: 'doc.update', page: 'guides/setup', text: 'Setup' })
+    const store = new Store(repoPath)
+    await waitUntil(() => store.loadDocs()['guides/setup'] === 'Setup')
+
+    ui.send({ type: 'doc.rename', from: 'guides', to: 'handbook/guides' })
+    await ui.waitForEvent(e => e.kind === 'doc.renamed' && e.to === 'handbook/guides')
+    await waitUntil(() => store.loadDocs()['handbook/guides/setup'] === 'Setup')
+    const docs = store.loadDocs()
+    expect(docs['handbook/guides']).toBe('Guides')
+    expect(docs['guides']).toBeUndefined()
+    expect(docs['guides/setup']).toBeUndefined()
+
+    ui.close()
+    await host.close()
+  })
+
   it('refuses to rename main or clobber an existing page', async () => {
     const repoPath = tmpDir('docs-rename-guard')
     const host = await startHost(repoPath)

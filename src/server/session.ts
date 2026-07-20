@@ -469,7 +469,8 @@ export class CrewSession {
     text: string,
     byName: string,
     threadId: string,
-    attachments: Attachment[]
+    attachments: Attachment[],
+    messageId: string
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -477,8 +478,61 @@ export class CrewSession {
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
-    thread.queue.push({ promptId: randomUUID(), text, byName, threadId, attachments })
+    // A message that arrives mid-run goes straight into the run when the agent
+    // can take it, so it steers the work in progress instead of waiting.
+    if (thread.running && agent.steerable) {
+      this.sendSteer(agent, thread.running, { messageId, text, byName, threadId, attachments })
+      return
+    }
+    const promptId = randomUUID()
+    thread.queue.push({ promptId, text, byName, threadId, attachments, messageId })
+    this.routed(messageId, threadId, promptId, 'queued')
     this.runThread(thread)
+  }
+
+  private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {
+    const waiting = this.steers.get(promptId) ?? []
+    waiting.push(steer)
+    this.steers.set(promptId, waiting)
+    this.routed(steer.messageId, steer.threadId, promptId, 'steered')
+    this.send(agent.runner!, {
+      type: 'steer',
+      promptId,
+      text: steer.text,
+      byName: steer.byName,
+      attachments: steer.attachments
+    })
+  }
+
+  // Acks arrive in the order the steers were sent over the same socket, so the
+  // oldest outstanding one is the one being answered.
+  private handleSteered(meta: ConnMeta, promptId: string, ok: boolean): void {
+    const agent = this.ownedAgent(meta, promptId)
+    if (!agent) return
+    const waiting = this.steers.get(promptId)
+    const steer = waiting?.shift()
+    if (waiting?.length === 0) this.steers.delete(promptId)
+    if (!steer || ok) return
+    this.requeue(agent, steer)
+  }
+
+  // The run would not take the message, so fall back to a normal prompt. The
+  // fresh route event supersedes the optimistic 'steered' one in the UI.
+  private requeue(agent: AgentState, steer: PendingSteer): void {
+    this.enqueuePromptAfterSteer(agent, steer)
+  }
+
+  private enqueuePromptAfterSteer(agent: AgentState, steer: PendingSteer): void {
+    const thread = this.threads.get(steer.threadId)
+    if (!thread || !agent.runner) return
+    const promptId = randomUUID()
+    thread.queue.push({ promptId, ...steer })
+    this.routed(steer.messageId, steer.threadId, promptId, 'queued')
+    this.runThread(thread)
+  }
+
+  private routed(messageId: string, threadId: string, promptId: string, mode: 'queued' | 'steered'): void {
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.route', messageId, threadId, promptId, mode })
   }
 
   private runThread(thread: Thread): void {
