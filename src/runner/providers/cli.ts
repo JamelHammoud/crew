@@ -55,9 +55,12 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     detect: async () => commandExists(opts.command),
     start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
+      // Detached so the CLI leads its own process group and a kill can take
+      // out the helpers it spawned along with it.
       const child = spawn(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, key => resolved[key] ?? ''), {
         cwd,
-        env: { ...process.env, PATH: crewPath(), ...opts.env }
+        env: { ...process.env, PATH: crewPath(), ...opts.env },
+        detached: true
       })
       let text = ''
       let errText = ''
