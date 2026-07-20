@@ -8,18 +8,7 @@ import HoverCard from './HoverCard'
 import Pill from './Pill'
 import Spinner from './Spinner'
 
-function StatusRow({ working }: { working: boolean }) {
-  if (!working) return null
-  return (
-    <span className="flex items-center gap-1.5 text-xs text-fg-secondary shrink-0">
-      <Spinner size={11} />
-      Working
-    </span>
-  )
-}
-
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
-  const working = useCrew(s => (s.activePrompts[agent.id] ?? []).length > 0)
   const settings = agent.fields
     .map(field => ({
       label: field.label,
@@ -34,7 +23,6 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
           <span className="text-sm font-semibold text-fg truncate">{agent.label}</span>
           <Pill>{agent.provider}</Pill>
         </span>
-        <StatusRow working={working} />
       </span>
       <span className="flex items-center gap-2 mt-2.5 text-xs text-fg-muted">
         <ComputerDesktopIcon className="w-3.5 h-3.5 shrink-0" />
