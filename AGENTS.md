@@ -34,7 +34,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 - `src/shared` — protocol and event types, git exec helper, no dependencies
 - `src/server` — host: ws server, session state, `.crew/` persistence, git sync
-- `src/runner` — agent runner: CLI provider adapters, executes prompts, streams back
+- `src/runner` — agent runner: CLI provider adapters, executes prompts, streams back, auto-pulls the repo while joined
 - `src/main` — Electron main and preload, wires server and runner to the app
 - `src/renderer` — React app
 - `tests` — integration suites
