@@ -494,7 +494,10 @@ export class CrewSession {
       )
       .slice(-CONTEXT_EVENT_LIMIT)
       .map(e => {
-        if (e.kind === 'message') return `${e.authorName}: ${e.text}`
+        if (e.kind === 'message') {
+          const images = (e.attachments ?? []).map(a => `[image: ${a.name}]`).join(' ')
+          return `${e.authorName}: ${[e.text, images].filter(Boolean).join(' ')}`
+        }
         if (e.ok && e.text) return `${e.agentLabel}: ${e.text}`
         return null
       })
