@@ -93,23 +93,24 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               void attach(threadId, e.dataTransfer.files)
             }}
           >
-          <textarea
-            ref={inputRef}
-            value={text}
-            onChange={e => setThreadDraft(threadId, e.target.value)}
-            onKeyDown={onKeyDown}
-            onPaste={e => void attach(threadId, e.clipboardData.files)}
-            rows={2}
-            placeholder={`Reply in this thread with ${thread.agentLabel}.`}
-            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500 resize-none"
-          />
-          <AttachButton attachmentKey={threadId} />
-          <button
-            onClick={send}
-            className="bg-white text-black rounded-lg px-4 py-2 text-sm font-medium hover:bg-zinc-200 shrink-0"
-          >
-            Send
-          </button>
+            <textarea
+              ref={inputRef}
+              value={text}
+              onChange={e => setThreadDraft(threadId, e.target.value)}
+              onKeyDown={onKeyDown}
+              onPaste={e => void attach(threadId, e.clipboardData.files)}
+              rows={2}
+              placeholder={`Reply in this thread with ${thread.agentLabel}.`}
+              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-zinc-500 resize-none"
+            />
+            <AttachButton attachmentKey={threadId} />
+            <button
+              onClick={send}
+              className="bg-white text-black rounded-lg px-4 py-2 text-sm font-medium hover:bg-zinc-200 shrink-0"
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>
