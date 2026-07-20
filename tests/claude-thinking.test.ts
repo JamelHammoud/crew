@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseClaudeLine } from '../src/runner/providers/claude'
+import { fileChanges, parseClaudeLine } from '../src/runner/providers/claude'
 
 const streamEvent = (event: unknown): string => JSON.stringify({ type: 'stream_event', event })
 
@@ -31,5 +31,56 @@ describe('claude thinking stream', () => {
       message: { content: [{ type: 'thinking', thinking: 'full reasoning' }] }
     })
     expect(parseClaudeLine(line)).toEqual([{ thinking: 'full reasoning' }])
+  })
+})
+
+describe('claude file changes', () => {
+  it('computes counts and a diff for Edit', () => {
+    const [change] = fileChanges('Edit', {
+      file_path: '/repo/src/a.ts',
+      old_string: 'one\ntwo',
+      new_string: 'one\ntwo\nthree'
+    })!
+    expect(change.path).toBe('/repo/src/a.ts')
+    expect(change.added).toBe(3)
+    expect(change.removed).toBe(2)
+    expect(change.diff).toBe('- one\n- two\n+ one\n+ two\n+ three')
+  })
+
+  it('counts Write content as added lines', () => {
+    const [change] = fileChanges('Write', { file_path: '/repo/b.ts', content: 'a\nb\nc' })!
+    expect(change.added).toBe(3)
+    expect(change.removed).toBe(0)
+    expect(change.diff).toBe('+ a\n+ b\n+ c')
+  })
+
+  it('sums MultiEdit edits', () => {
+    const [change] = fileChanges('MultiEdit', {
+      file_path: '/repo/c.ts',
+      edits: [
+        { old_string: 'x', new_string: 'y\nz' },
+        { old_string: 'p\nq', new_string: 'r' }
+      ]
+    })!
+    expect(change.added).toBe(3)
+    expect(change.removed).toBe(3)
+  })
+
+  it('returns nothing for read-only tools', () => {
+    expect(fileChanges('Read', { file_path: '/repo/a.ts' })).toBeUndefined()
+    expect(fileChanges('Bash', { command: 'ls' })).toBeUndefined()
+  })
+
+  it('attaches files to Edit tool activities', () => {
+    const line = JSON.stringify({
+      type: 'assistant',
+      message: {
+        content: [
+          { type: 'tool_use', id: 't1', name: 'Edit', input: { file_path: '/r/a.ts', old_string: 'a', new_string: 'b' } }
+        ]
+      }
+    })
+    const [out] = parseClaudeLine(line)
+    expect(out.activity?.files).toEqual([{ path: '/r/a.ts', added: 1, removed: 1, diff: '- a\n+ b' }])
   })
 })

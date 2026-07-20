@@ -1,5 +1,6 @@
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
+import type { FileChange } from '../../../shared/llm'
 import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
 
@@ -18,12 +19,65 @@ function Chevron({ open }: { open: boolean }) {
   )
 }
 
+export function Counts({ added, removed }: { added: number; removed: number }) {
+  if (!added && !removed) return null
+  return (
+    <span className="shrink-0 font-mono text-xs">
+      {added > 0 && <span className="text-positive">+{added}</span>}
+      {added > 0 && removed > 0 && ' '}
+      {removed > 0 && <span className="text-danger">−{removed}</span>}
+    </span>
+  )
+}
+
+function Diff({ diff }: { diff: string }) {
+  return (
+    <p className="text-xs font-mono leading-5 whitespace-pre-wrap break-all">
+      {diff.split('\n').map((line, index) => (
+        <span
+          key={index}
+          className={`block ${
+            line.startsWith('+') ? 'text-positive' : line.startsWith('-') ? 'text-danger' : 'text-fg-muted'
+          }`}
+        >
+          {line}
+        </span>
+      ))}
+    </p>
+  )
+}
+
+function FileRows({ files }: { files: FileChange[] }) {
+  return (
+    <div className="mt-2 ml-[5px] border-l-2 border-ink-700 pl-4 space-y-3">
+      {files.map(file => (
+        <div key={file.path}>
+          <span className="flex items-center gap-2 text-xs font-mono">
+            <span className="text-fg-secondary truncate">{file.path}</span>
+            <Counts added={file.added} removed={file.removed} />
+          </span>
+          {file.diff && (
+            <div className="mt-1.5">
+              <Diff diff={file.diff} />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function StepRow({ item }: { item: ThreadItem }) {
   const [open, setOpen] = useState<boolean | null>(null)
 
   if (item.kind === 'tool') {
+    const files = item.files ?? []
+    const totals = files.reduce(
+      (acc, file) => ({ added: acc.added + file.added, removed: acc.removed + file.removed }),
+      { added: 0, removed: 0 }
+    )
     const expanded = open ?? false
-    const expandable = Boolean(item.detail)
+    const expandable = files.length > 0 || Boolean(item.detail)
     return (
       <div className="pl-14 animate-rise">
         <button
@@ -36,18 +90,30 @@ export default function StepRow({ item }: { item: ThreadItem }) {
           <span className={`shrink-0 ${item.streaming ? 'text-fg-secondary' : 'text-fg-muted'}`}>
             {item.subagent ? `${item.name} (agent)` : item.name}
           </span>
-          {item.detail && !expanded && (
-            <span className="text-fg-faint truncate font-mono text-xs">{item.detail}</span>
+          {files.length > 0 ? (
+            <>
+              <span className="text-fg-faint truncate font-mono text-xs">
+                {files.length === 1 ? files[0].path : `${files.length} files`}
+              </span>
+              <Counts added={totals.added} removed={totals.removed} />
+            </>
+          ) : (
+            item.detail && !expanded && <span className="text-fg-faint truncate font-mono text-xs">{item.detail}</span>
           )}
         </button>
-        {expanded && item.detail && (
-          <p
-            onClick={() => setOpen(false)}
-            className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-4 cursor-pointer"
-          >
-            {item.detail}
-          </p>
-        )}
+        {expanded &&
+          (files.length > 0 ? (
+            <FileRows files={files} />
+          ) : (
+            item.detail && (
+              <p
+                onClick={() => setOpen(false)}
+                className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l-2 border-ink-700 pl-4 cursor-pointer"
+              >
+                {item.detail}
+              </p>
+            )
+          ))}
       </div>
     )
   }
@@ -64,7 +130,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
         <Chevron open={expanded} />
       </button>
       {expanded && (
-        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l-2 border-ink-700 pl-4 animate-pop">
+        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l-2 border-ink-700 pl-4">
           {item.text.trim()}
         </p>
       )}
