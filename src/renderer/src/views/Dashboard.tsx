@@ -29,15 +29,9 @@ export default function Dashboard() {
                 key={member.id}
                 className="flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-white/[0.03]"
               >
-                <Avatar name={member.name} />
+                <Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />
                 <span className="text-base font-semibold text-fg">{member.name}</span>
                 {member.id === selfId && <Pill>You</Pill>}
-                <span
-                  className={`ml-auto w-2 h-2 rounded-full transition-colors ${
-                    member.connected ? 'bg-positive' : 'bg-ink-500'
-                  }`}
-                  title={member.connected ? 'Online' : 'Offline'}
-                />
               </div>
             ))}
           </div>
@@ -53,7 +47,7 @@ export default function Dashboard() {
               No agents yet. Add one from your machine's LLMs, or wait for someone to bring theirs.
             </p>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-4">
               {agents.map(agent => {
                 const mine = agent.ownerId === selfId
                 const running = activePrompts[agent.id] ?? []

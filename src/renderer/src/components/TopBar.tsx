@@ -60,7 +60,7 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
               menuOpen ? 'ring-2 ring-white/25' : ''
             }`}
           >
-            <Avatar name={selfName || '?'} />
+            <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
           <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-44">
             <div className="px-3 pt-2 pb-1.5">

@@ -8,20 +8,12 @@ import HoverCard from './HoverCard'
 import Pill from './Pill'
 import Spinner from './Spinner'
 
-function StatusRow({ working, status }: { working: boolean; status: PooledAgent['status'] }) {
-  if (working) {
-    return (
-      <span className="flex items-center gap-1.5 text-xs text-fg-secondary shrink-0">
-        <Spinner size={11} />
-        Working
-      </span>
-    )
-  }
-  const away = status === 'offline'
+function StatusRow({ working }: { working: boolean }) {
+  if (!working) return null
   return (
-    <span className="flex items-center gap-1.5 text-xs text-fg-muted shrink-0">
-      <span className={`w-1.5 h-1.5 rounded-full ${away ? 'bg-ink-500' : 'bg-positive'}`} />
-      {away ? 'Away' : 'Ready'}
+    <span className="flex items-center gap-1.5 text-xs text-fg-secondary shrink-0">
+      <Spinner size={11} />
+      Working
     </span>
   )
 }
@@ -37,12 +29,12 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   return (
     <>
       <span className="flex items-center gap-2.5">
-        <Avatar name={agent.label} size="sm" />
+        <Avatar name={agent.label} size="sm" presence={agent.status === 'offline' ? 'offline' : 'online'} />
         <span className="min-w-0 flex-1 flex items-center gap-2">
           <span className="text-sm font-semibold text-fg truncate">{agent.label}</span>
           <Pill>{agent.provider}</Pill>
         </span>
-        <StatusRow working={working} status={agent.status} />
+        <StatusRow working={working} />
       </span>
       <span className="flex items-center gap-2 mt-2.5 text-xs text-fg-muted">
         <ComputerDesktopIcon className="w-3.5 h-3.5 shrink-0" />
@@ -75,14 +67,10 @@ export function AgentMention({ agent, children }: { agent: PooledAgent; children
 function MemberCardContent({ member, self }: { member: MemberInfo; self: boolean }) {
   return (
     <span className="flex items-center gap-2.5">
-      <Avatar name={member.name} size="sm" />
+      <Avatar name={member.name} size="sm" presence={member.connected ? 'online' : 'offline'} />
       <span className="min-w-0 flex-1 flex items-center gap-2">
         <span className="text-sm font-semibold text-fg truncate">{member.name}</span>
         {self && <Pill>You</Pill>}
-      </span>
-      <span className="flex items-center gap-1.5 text-xs text-fg-muted shrink-0">
-        <span className={`w-1.5 h-1.5 rounded-full ${member.connected ? 'bg-positive' : 'bg-ink-500'}`} />
-        {member.connected ? 'Online' : 'Offline'}
       </span>
     </span>
   )
@@ -90,7 +78,13 @@ function MemberCardContent({ member, self }: { member: MemberInfo; self: boolean
 
 export function MemberName({ name, children }: { name: string; children: ReactNode }) {
   const member = useCrew(s => s.members.find(m => m.name === name))
+  const agent = useCrew(s => s.agents.find(a => a.label === name))
   const selfId = useCrew(s => s.selfId)
-  if (!member) return <>{children}</>
-  return <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />}>{children}</HoverCard>
+  if (member) {
+    return <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />}>{children}</HoverCard>
+  }
+  if (agent) {
+    return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+  }
+  return <>{children}</>
 }

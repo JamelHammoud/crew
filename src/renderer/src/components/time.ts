@@ -15,3 +15,10 @@ export function formatTime(ts: number): string {
   const date = new Date(ts)
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
 }
+
+export function formatFullTime(ts: number): string {
+  const date = new Date(ts)
+  const day = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+  const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
+  return `${day}, ${time}`
+}
