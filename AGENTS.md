@@ -31,7 +31,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
 - Icons come from `@heroicons/react`. Never hand-roll SVG icons.
 - Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin.
-- Reusable primitives in `src/renderer/src/components`: `Avatar`, `Pill`, `Spinner`, `Popover`/`MenuItem`, `Select`, `Composer`, `TopBar`. Use them before writing new ones.
+- Reusable primitives in `src/renderer/src/components`: `Avatar`, `Pill`, `Spinner`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`.
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
 - No logo or branding beyond the word "crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.

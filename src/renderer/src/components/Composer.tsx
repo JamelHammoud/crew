@@ -3,6 +3,7 @@ import { StopIcon } from '@heroicons/react/16/solid'
 import type { ReactNode, RefObject } from 'react'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
+import Tooltip from './Tooltip'
 
 export default function Composer({
   attachmentKey,
@@ -55,24 +56,26 @@ export default function Composer({
         <div className="flex items-center justify-between mt-2">
           <AttachButton attachmentKey={attachmentKey} />
           {onStop && !canSend ? (
-            <button
-              onClick={onStop}
-              aria-label="Stop"
-              title="Stop"
-              className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95"
-            >
-              <StopIcon className="w-4 h-4" />
-            </button>
+            <Tooltip label="Stop">
+              <button
+                onClick={onStop}
+                aria-label="Stop"
+                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95"
+              >
+                <StopIcon className="w-4 h-4" />
+              </button>
+            </Tooltip>
           ) : (
-            <button
-              onClick={onSend}
-              disabled={!canSend}
-              aria-label="Send"
-              title="Send"
-              className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
-            >
-              <ArrowUpIcon className="w-5 h-5" />
-            </button>
+            <Tooltip label="Send">
+              <button
+                onClick={onSend}
+                disabled={!canSend}
+                aria-label="Send"
+                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+              >
+                <ArrowUpIcon className="w-5 h-5" />
+              </button>
+            </Tooltip>
           )}
         </div>
       </div>

@@ -18,23 +18,39 @@ export function Popover({
 }) {
   const holderRef = useRef<HTMLSpanElement>(null)
   const popRef = useRef<HTMLDivElement>(null)
-  const [style, setStyle] = useState<CSSProperties | null>(null)
+  const [rect, setRect] = useState<DOMRect | null>(null)
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null)
 
   useLayoutEffect(() => {
     if (!open) {
-      setStyle(null)
+      setRect(null)
+      setSize(null)
       return
     }
     const anchor = holderRef.current?.parentElement
-    if (!anchor) return
-    const rect = anchor.getBoundingClientRect()
-    const next: CSSProperties = {}
-    if (side === 'bottom') next.top = rect.bottom + 8
-    else next.bottom = window.innerHeight - rect.top + 8
-    if (align === 'start') next.left = rect.left
-    else next.right = window.innerWidth - rect.right
-    setStyle(next)
-  }, [open, align, side])
+    if (anchor) setRect(anchor.getBoundingClientRect())
+  }, [open])
+
+  useLayoutEffect(() => {
+    const el = popRef.current
+    if (rect && el) setSize({ w: el.offsetWidth, h: el.offsetHeight })
+  }, [rect])
+
+  const style = ((): CSSProperties | null => {
+    if (!rect) return null
+    if (!size) return { left: 0, top: 0, visibility: 'hidden' }
+    let left = align === 'start' ? rect.left : rect.right - size.w
+    left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
+    let top = side === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
+    if (side === 'bottom' && top + size.h > window.innerHeight - 8 && rect.top - 8 - size.h >= 8) {
+      top = rect.top - 8 - size.h
+    }
+    if (side === 'top' && top < 8 && rect.bottom + 8 + size.h <= window.innerHeight - 8) {
+      top = rect.bottom + 8
+    }
+    top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
+    return { left, top }
+  })()
 
   useEffect(() => {
     if (!open) return

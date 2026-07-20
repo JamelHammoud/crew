@@ -116,8 +116,7 @@ body {
   border: 1px solid rgb(255 255 255 / 0.08);
   box-shadow:
     0 16px 48px rgb(0 0 0 / 0.55),
-    0 2px 8px rgb(0 0 0 / 0.35),
-    inset 0 1px 0 rgb(255 255 255 / 0.06);
+    0 2px 8px rgb(0 0 0 / 0.35);
 }
 
 .md {

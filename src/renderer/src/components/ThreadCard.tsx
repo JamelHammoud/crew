@@ -4,6 +4,7 @@ import Avatar from './Avatar'
 import { AgentMention, MemberName } from './Mention'
 import { usePresence } from './presence'
 import Spinner from './Spinner'
+import Tooltip from './Tooltip'
 import { formatFullTime, formatTime } from './time'
 
 export default function ThreadCard({
@@ -33,9 +34,9 @@ export default function ThreadCard({
               {thread.createdBy}
             </span>
           </MemberName>
-          <span className="text-sm text-fg-faint cursor-default" title={formatFullTime(ts)}>
-            {formatTime(ts)}
-          </span>
+          <Tooltip label={formatFullTime(ts)}>
+            <span className="text-sm text-fg-faint cursor-default">{formatTime(ts)}</span>
+          </Tooltip>
         </div>
         <button
           onClick={onOpen}
