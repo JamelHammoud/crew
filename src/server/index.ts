@@ -20,6 +20,20 @@ type LiveSocket = WebSocket & { isAlive: boolean }
 
 const HEARTBEAT_MS = 20000
 
+function serveAttachment(session: CrewSession, file: string, res: http.ServerResponse): void {
+  const full = session.attachmentPath(file)
+  const mime = mimeForFile(file)
+  if (!full || !mime) {
+    res.writeHead(404)
+    res.end()
+    return
+  }
+  res.writeHead(200, { 'content-type': mime, 'cache-control': 'public, max-age=31536000, immutable' })
+  fs.createReadStream(full)
+    .on('error', () => res.end())
+    .pipe(res)
+}
+
 export function createCrewServer(session: CrewSession, opts: CrewServerOptions = {}): Promise<CrewServer> {
   const httpServer = http.createServer((req, res) => {
     if (req.url === '/') {
