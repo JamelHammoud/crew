@@ -357,6 +357,43 @@ export class CrewSession {
       case 'todo.do':
         if (meta.role === 'ui') this.handleTodoDo(member, msg.todoId, msg.agentId)
         break
+      case 'studio.create':
+        if (meta.role === 'ui') this.studios.create(member.id, member.name, msg.name, msg.nodes)
+        break
+      case 'studio.rename':
+        if (meta.role === 'ui') this.studios.rename(msg.studioId, msg.name)
+        break
+      case 'studio.favorite':
+        if (meta.role === 'ui') this.studios.favorite(msg.studioId, msg.favorite)
+        break
+      case 'studio.duplicate':
+        if (meta.role === 'ui') this.studios.duplicate(msg.studioId, member.id)
+        break
+      case 'studio.delete':
+        if (meta.role === 'ui') this.studios.delete(msg.studioId)
+        break
+      case 'studio.open':
+        if (meta.role === 'ui') this.studios.open(ws, member.id, member.name, msg.studioId)
+        break
+      case 'studio.close':
+        if (meta.role === 'ui') this.studios.close(ws)
+        break
+      case 'studio.op':
+        if (meta.role === 'ui') this.studios.clientOps(ws, msg.studioId, msg.ops)
+        break
+      case 'studio.presence':
+        if (meta.role === 'ui') {
+          this.studios.presence(ws, msg.studioId, msg.pageId, msg.cursor, Array.isArray(msg.selection) ? msg.selection : [])
+        }
+        break
+      case 'studio.chat':
+        if (meta.role === 'ui') this.handleStudioChat(member, msg)
+        break
+      case 'studio.agents':
+        if (meta.role === 'ui') {
+          this.studios.assignAgents(msg.studioId, (Array.isArray(msg.agents) ? msg.agents : []).filter(id => this.agents.has(id)))
+        }
+        break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
         break
