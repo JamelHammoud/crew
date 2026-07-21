@@ -6,7 +6,7 @@ import { hoverCardOpen } from '../components/HoverCard'
 import JumpToBottom from '../components/JumpToBottom'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import ThreadCard from '../components/ThreadCard'
-import { describeStep, type ThreadItem } from '../components/thread'
+import { describeStep, endPreview, lastEnd, threadState, type ThreadItem, type ThreadState } from '../components/thread'
 import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
@@ -57,7 +57,7 @@ export default function Chat() {
           }
         })
       }
-      if (e.kind === 'thread.started' && threads[e.threadId] && !threads[e.threadId].archived) {
+      if (e.kind === 'thread.started' && threads[e.threadId] && threads[e.threadId].status !== 'archived') {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
     }
