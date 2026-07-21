@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "Everything I've added"
 ---
 
 (It doesn't let me put an apostrophe for 'I've for some reason for the title and no symbols work for title too)
