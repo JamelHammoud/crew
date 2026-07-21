@@ -60,7 +60,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       })),
     [queueItems, selfId]
   )
-  const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)?.ts
+  const startedAt = runningStart?.ts
   const diffTotals = useMemo(() => {
     let added = 0
     let removed = 0
