@@ -96,6 +96,8 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   '--dangerously-skip-permissions'
 ]
 
+const INSTALL_SH = 'curl -fsSL https://claude.ai/install.sh | bash'
+
 export const claudeProvider: Provider = makeCliProvider({
   name: 'claude',
   label: 'Claude',
@@ -104,5 +106,6 @@ export const claudeProvider: Provider = makeCliProvider({
   args: claudeArgs,
   parser: parseClaudeLine,
   streamInput: true,
-  usage: claudeUsage
+  usage: claudeUsage,
+  install: { darwin: INSTALL_SH, linux: INSTALL_SH, win32: 'irm https://claude.ai/install.ps1 | iex' }
 })
