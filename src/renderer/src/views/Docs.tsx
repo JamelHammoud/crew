@@ -26,7 +26,7 @@ function buildTree(slugs: string[]): PageNode[] {
   const ensure = (slug: string): PageNode => {
     const found = byPath.get(slug)
     if (found) return found
-    const node: PageNode = { slug, name: lastSegment(slug), children: [] }
+    const node: PageNode = { slug, children: [] }
     byPath.set(slug, node)
     const parent = parentOf(slug)
     if (parent) ensure(parent).children.push(node)
