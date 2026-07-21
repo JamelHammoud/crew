@@ -233,16 +233,15 @@ export default function Docs() {
 
   return (
     <div className="h-full flex">
-      <aside className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
+      <aside {...dropProps('')} className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
           <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
-          <div className="flex-1 min-h-0 overflow-y-auto space-y-0.5">
+          <div
+            className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-all duration-150 ${
+              dragged && dropTarget === '' ? 'bg-white/[0.06] ring-1 ring-white/20' : ''
+            }`}
+          >
             {tree.map(node => renderNode(node, 0))}
-            <div
-              {...dropProps('')}
-              className={`h-10 rounded-2xl transition-all duration-150 ${
-                dragged && dropTarget === '' ? 'bg-white/[0.06] ring-1 ring-white/20' : ''
-              }`}
-            />
+            <div className="h-10" />
           </div>
           <button
             onClick={() => createPage('')}
