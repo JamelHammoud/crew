@@ -460,6 +460,10 @@ export class CrewSession {
     const trimmed = text.trim()
     const attachments = this.saveAttachments(incoming)
     if (!trimmed && attachments.length === 0) return
+    if (!threadId && /^\/studio\b/i.test(trimmed)) {
+      this.handleStudioCommand(member, trimmed, mentions, attachments)
+      return
+    }
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
