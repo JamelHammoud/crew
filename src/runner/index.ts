@@ -30,6 +30,9 @@ export type RunnerStatus = 'connecting' | 'online' | 'offline'
 const MAX_DELAY_MS = 10000
 const SILENCE_TIMEOUT_MS = 45000
 const USAGE_POLL_MS = 60000
+const OUTBOX_LIMIT = 5000
+
+const OUTBOX_TYPES = new Set(['agent.step', 'agent.tokens', 'agent.done', 'agent.error', 'agent.steered'])
 
 export class Runner {
   private ws: WebSocket | null = null
@@ -50,6 +53,7 @@ export class Runner {
   private attachments: AttachmentCache
   private httpBase = ''
   private lastSeen = 0
+  private outbox: ClientMessage[] = []
   onStatus: ((status: RunnerStatus) => void) | null = null
 
   constructor(private opts: RunnerOptions) {
@@ -134,7 +138,6 @@ export class Runner {
     ws.on('close', () => {
       this.stopWatchdog()
       this.stopUsagePolling()
-      this.killRunning()
       this.onStatus?.('offline')
       if (this.stopped) return
       const wait = Math.min(this.baseDelay * 2 ** this.attempts, MAX_DELAY_MS)
@@ -162,8 +165,31 @@ export class Runner {
   private startWatchdog(ws: WebSocket): void {
     this.stopWatchdog()
     const interval = Math.max(50, Math.floor(this.silenceTimeout / 3))
+    let lastTick = Date.now()
+    let probed = false
     this.watchdog = setInterval(() => {
-      if (Date.now() - this.lastSeen > this.silenceTimeout) ws.terminate()
+      const now = Date.now()
+      const stalled = now - lastTick > interval * 3
+      lastTick = now
+      if (stalled) {
+        this.lastSeen = now
+        probed = false
+        return
+      }
+      if (now - this.lastSeen <= this.silenceTimeout) {
+        probed = false
+        return
+      }
+      if (!probed) {
+        probed = true
+        try {
+          ws.ping()
+        } catch {
+          ws.terminate()
+        }
+        return
+      }
+      ws.terminate()
     }, interval)
     this.watchdog.unref?.()
   }
@@ -220,11 +246,15 @@ export class Runner {
 
   private handle(msg: ServerMessage): void {
     switch (msg.type) {
-      case 'welcome':
+      case 'welcome': {
         this.attempts = 0
         this.onStatus?.('online')
+        const queued = this.outbox
+        this.outbox = []
+        for (const buffered of queued) this.send(buffered)
         this.startUsagePolling()
         break
+      }
       case 'prompt':
         this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
         break
@@ -315,6 +345,15 @@ export class Runner {
   }
 
   private send(msg: ClientMessage): void {
-    if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(msg))
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(msg))
+      return
+    }
+    if (!OUTBOX_TYPES.has(msg.type)) return
+    this.outbox.push(msg)
+    if (this.outbox.length > OUTBOX_LIMIT) {
+      const drop = this.outbox.findIndex(m => m.type === 'agent.step' || m.type === 'agent.tokens')
+      this.outbox.splice(drop === -1 ? 0 : drop, 1)
+    }
   }
 }
