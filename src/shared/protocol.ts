@@ -115,5 +115,13 @@ export type ServerMessage =
     }
   | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[] }
   | { type: 'cancel'; promptId: string }
+  | { type: 'studio.index'; studios: StudioMeta[] }
+  | { type: 'studio.created'; studioId: string; name: string; byId: string }
+  | { type: 'studio.doc'; doc: StudioDoc }
+  | { type: 'studio.op'; studioId: string; ops: StudioOp[]; rev: number }
+  | { type: 'studio.chat'; studioId: string; entry: StudioChatEntry }
+  | { type: 'studio.presence'; studioId: string; peers: StudioPresence[] }
+  | { type: 'studio.meta'; studioId: string; name: string; favorite: boolean; agents: string[] }
+  | { type: 'studio.deleted'; studioId: string }
   | { type: 'ping' }
   | { type: 'error'; message: string }
