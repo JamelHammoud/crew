@@ -3,6 +3,8 @@ import type { PartialBlock } from '@blocknote/core'
 import { BlockNoteView } from '@blocknote/mantine'
 import { useCreateBlockNote } from '@blocknote/react'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { localizeDoc, relativizeDoc, uploadImage } from './images'
+import { useCrew } from '../state/store'
 
 export interface DocEditorHandle {
   focusStart: () => void
