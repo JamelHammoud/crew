@@ -42,6 +42,7 @@ interface CrewState {
   threadDrafts: Record<string, string>
   httpBase: string
   pending: Record<string, PendingAttachment[]>
+  boot: () => Promise<void>
   connect: (wsUrl: string, name: string, code: string, joinLink?: string) => void
   leave: () => void
   setChatDraft: (text: string) => void
