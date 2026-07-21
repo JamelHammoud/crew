@@ -273,10 +273,13 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleArchiveThread(member, msg.threadId)
         break
       case 'doc.update':
-        if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
+        if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
+        break
+      case 'doc.retitle':
+        if (meta.role === 'ui') this.handleDocRetitle(member, msg.page, msg.title)
         break
       case 'doc.rename':
-        if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to)
+        if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to, msg.title)
         break
       case 'doc.delete':
         if (meta.role === 'ui') this.handleDocDelete(member, msg.page)
