@@ -20,7 +20,7 @@ import {
   type PooledAgent,
   type RunStep
 } from '../shared/llm'
-import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
+import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import { Store } from './store'
 
 interface Member {
