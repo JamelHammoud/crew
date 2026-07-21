@@ -30,7 +30,10 @@ export type SessionEvent =
       mode: 'queued' | 'steered'
     }
   | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string }
+  // Superseded by thread.status; still emitted-compatible and replayed so old
+  // event logs and old peers keep working.
   | { id: string; ts: number; kind: 'thread.archived'; threadId: string; byName: string }
+  | { id: string; ts: number; kind: 'thread.status'; threadId: string; status: ThreadStatus; byName: string }
   | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string; threadId?: string }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
   | { id: string; ts: number; kind: 'agent.end'; promptId: string; agentId: string; agentLabel: string; ok: boolean; text?: string; error?: string; threadId?: string }
