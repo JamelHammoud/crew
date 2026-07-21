@@ -197,12 +197,49 @@ export default function TasksPanel({
     return list.reverse()
   }, [events, threads, threadPrompts, queues, steps])
 
-  const inProgress = rows.filter(r => r.state === 'working' && r.thread.status !== 'archived')
-  const needsReview = rows.filter(r => r.state === 'ready' || r.state === 'failed')
-  const done = rows.filter(r => r.state === 'done')
-  const archived = rows.filter(r => r.thread.status === 'archived')
-  const pendingTodos = todos.filter(t => !t.checked)
-  const checkedTodos = todos.filter(t => t.checked)
+  // When a thread last spoke: its start counts as the first message, then any
+  // chat message or agent activity in it moves it up, like a chat history.
+  const lastMessageAt = useMemo(() => {
+    const at: Record<string, number> = {}
+    for (const e of events) {
+      if (e.kind === 'thread.started') at[e.threadId] = e.ts
+      if (
+        (e.kind === 'message' || e.kind === 'agent.start' || e.kind === 'agent.step' || e.kind === 'agent.end') &&
+        e.threadId
+      )
+        at[e.threadId] = e.ts
+    }
+    return at
+  }, [events])
+
+  const checkedAt = useMemo(() => {
+    const at: Record<string, number> = {}
+    for (const e of events) {
+      if (e.kind === 'todo.checked' && e.checked) at[e.todoId] = e.ts
+    }
+    return at
+  }, [events])
+
+  const q = query.trim().toLowerCase()
+  const rowMatches = (row: Row) =>
+    row.thread.title.toLowerCase().includes(q) || row.thread.agentLabel.toLowerCase().includes(q)
+  const todoMatches = (todo: Todo) =>
+    todo.text.toLowerCase().includes(q) ||
+    (agents.find(a => a.id === todo.agentId)?.label.toLowerCase().includes(q) ?? false)
+
+  const visible = q ? rows.filter(rowMatches) : rows
+  const byRecency = (a: Row, b: Row) =>
+    (lastMessageAt[b.thread.id] ?? 0) - (lastMessageAt[a.thread.id] ?? 0)
+  const inProgress = visible.filter(r => r.state === 'working' && r.thread.status !== 'archived')
+  const needsReview = visible.filter(r => r.state === 'ready' || r.state === 'failed')
+  const done = visible.filter(r => r.state === 'done').sort(byRecency)
+  const archived = visible.filter(r => r.thread.status === 'archived').sort(byRecency)
+  const pendingTodos = todos.filter(t => !t.checked && (!q || todoMatches(t)))
+  const checkedTodos = todos.filter(t => t.checked && (!q || todoMatches(t)))
+  const noMatches =
+    q !== '' &&
+    inProgress.length + needsReview.length + done.length + archived.length === 0 &&
+    pendingTodos.length + checkedTodos.length === 0
 
   const item = (row: Row, action?: RowAction) => {
     const agent = agents.find(a => a.id === row.thread.agentId)
