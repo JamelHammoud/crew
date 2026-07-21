@@ -3,6 +3,7 @@ import type { PartialBlock } from '@blocknote/core'
 import { BlockNoteView } from '@blocknote/mantine'
 import { useCreateBlockNote } from '@blocknote/react'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { useTheme } from '../state/theme'
 
 export interface DocEditorHandle {
   focusStart: () => void
