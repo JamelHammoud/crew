@@ -183,21 +183,37 @@ export const useCrew = create<CrewState>((set, get) => {
         case 'doc': {
           return { events, docs: { ...state.docs, [event.page]: event.text } }
         }
+        case 'doc.titled': {
+          const docTitles = { ...state.docTitles }
+          if (event.title) docTitles[event.page] = event.title
+          else delete docTitles[event.page]
+          return { events, docTitles }
+        }
         case 'doc.renamed': {
           const docs = { ...state.docs }
+          const docTitles = { ...state.docTitles }
           for (const page of Object.keys(docs)) {
             if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
             docs[event.to + page.slice(event.from.length)] = docs[page]
             delete docs[page]
           }
-          return { events, docs }
+          for (const page of Object.keys(docTitles)) {
+            if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
+            docTitles[event.to + page.slice(event.from.length)] = docTitles[page]
+            delete docTitles[page]
+          }
+          return { events, docs, docTitles }
         }
         case 'doc.deleted': {
           const docs = { ...state.docs }
+          const docTitles = { ...state.docTitles }
           for (const page of Object.keys(docs)) {
             if (page === event.page || page.startsWith(`${event.page}/`)) delete docs[page]
           }
-          return { events, docs }
+          for (const page of Object.keys(docTitles)) {
+            if (page === event.page || page.startsWith(`${event.page}/`)) delete docTitles[page]
+          }
+          return { events, docs, docTitles }
         }
       }
       return {
