@@ -337,9 +337,29 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
-      const agent = this.agents.get(thread.agentId)
-      if (!agent) return
-      this.enqueuePrompt(agent, member, trimmed, threadId, attachments)
+      const targets = [...new Set(mentions)].filter(id => this.agents.has(id))
+      if (targets.length === 0) {
+        const agent = this.agents.get(thread.agentId)
+        if (!agent) return
+        this.enqueuePrompt(agent, member, trimmed, threadId, attachments)
+        return
+      }
+      const messageId = randomUUID()
+      this.emit({
+        id: messageId,
+        ts: Date.now(),
+        kind: 'message',
+        authorId: member.id,
+        authorName: member.name,
+        text: trimmed,
+        mentions: targets,
+        threadId,
+        attachments
+      })
+      if (!targets.includes(thread.agentId)) this.switchThreadAgent(thread, targets[0], member)
+      for (const id of targets) {
+        this.enqueuePrompt(this.agents.get(id)!, member, trimmed, threadId, attachments, messageId)
+      }
       return
     }
     const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
