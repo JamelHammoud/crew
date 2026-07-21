@@ -48,13 +48,14 @@ interface StepEntry {
 
 interface QueuedPrompt {
   promptId: string
+  agentId: string
   text: string
   byName: string
   authorId: string
   threadId: string
+  mentions: string[]
   attachments: Attachment[]
   messageId: string
-  emitted: boolean
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -82,6 +83,7 @@ interface Thread {
 interface PromptRef {
   agentId: string
   threadId: string
+  messageId: string
 }
 
 interface ConnMeta {
