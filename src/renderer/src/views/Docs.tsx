@@ -1,5 +1,6 @@
 import { ChevronRightIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { fallbackTitle, pageCode, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import { MenuItem, Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
@@ -7,23 +8,7 @@ import { useCrew } from '../state/store'
 
 interface PageNode {
   slug: string
-  name: string
   children: PageNode[]
-}
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/^-+/, '')
-}
-
-function prettify(slug: string): string {
-  const words = slug.split('/').pop()!.replace(/-/g, ' ')
-  return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
 function parentOf(slug: string): string {
