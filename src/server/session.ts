@@ -694,6 +694,31 @@ export class CrewSession {
     this.finishPrompt(agent, promptId, { ok: false, error: message })
   }
 
+  private reconcileRuns(agentIds: string[], running: Set<string>): void {
+    for (const id of agentIds) {
+      const agent = this.agents.get(id)
+      if (!agent) continue
+      for (const promptId of [...agent.running]) {
+        if (running.has(promptId)) continue
+        const ref = this.prompts.get(promptId)
+        const entry = agent.runs.get(promptId)?.entry
+        if (!ref || !entry || !agent.runner) {
+          this.finishPrompt(agent, promptId, { ok: false, error: `${agent.label} lost this prompt.` })
+          continue
+        }
+        this.send(agent.runner, {
+          type: 'prompt',
+          promptId,
+          agentId: agent.id,
+          threadId: ref.threadId,
+          text: this.buildPrompt(agent, entry),
+          settings: agent.settings,
+          attachments: entry.attachments
+        })
+      }
+    }
+  }
+
   private promptGone(ws: WebSocket, meta: ConnMeta, promptId: string): boolean {
     if (meta.role !== 'runner' || this.prompts.has(promptId)) return false
     this.send(ws, { type: 'cancel', promptId })
