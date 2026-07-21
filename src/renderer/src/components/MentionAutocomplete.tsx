@@ -60,12 +60,14 @@ export function MentionMenu({
   matches,
   activeIndex,
   onPick,
-  onHover
+  onHover,
+  side = 'top'
 }: {
   matches: PooledAgent[]
   activeIndex: number
   onPick: (label: string) => void
   onHover: (index: number) => void
+  side?: 'top' | 'bottom'
 }) {
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -77,7 +79,7 @@ export function MentionMenu({
   return (
     <div
       ref={listRef}
-      className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
+      className={`glass absolute ${side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50`}
     >
       {matches.map((agent, index) => (
         <button
