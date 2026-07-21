@@ -2,8 +2,8 @@ import AgentCard from '../components/AgentCard'
 import Avatar from '../components/Avatar'
 import CreateAgent from '../components/CreateAgent'
 import Pill from '../components/Pill'
-import UsageLimits from '../components/UsageLimits'
 import { useCrew } from '../state/store'
+import type { PooledAgent } from '../../../shared/llm'
 
 function instanceOf(agentId: string): string {
   const slash = agentId.indexOf('/')
