@@ -5,6 +5,7 @@ import AgentIcon from '../components/AgentIcon'
 import Composer from '../components/Composer'
 import FilesChanged from '../components/FilesChanged'
 import { hoverCardOpen } from '../components/HoverCard'
+import JumpToBottom from '../components/JumpToBottom'
 import { MemberName } from '../components/Mention'
 import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import Pill from '../components/Pill'
@@ -16,6 +17,7 @@ import ThreadItems from '../components/ThreadItems'
 import Tooltip from '../components/Tooltip'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
+import { useStickToBottom } from '../components/useStickToBottom'
 import { useCrew } from '../state/store'
 
 export default function ThreadView({ threadId }: { threadId: string }) {
@@ -36,6 +38,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const steerable = useCrew(s => s.agents.find(a => a.id === s.threads[threadId]?.agentId)?.steerable === true)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const inputRef = useAutoResize(text)
   const agentPresence = usePresence(thread?.agentLabel ?? '')
 
