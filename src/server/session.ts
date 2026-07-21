@@ -166,14 +166,18 @@ export class CrewSession {
           agentLabel: event.agentLabel,
           title: event.title,
           createdBy: event.byName,
-          archived: false,
+          status: 'open',
           queue: [],
           running: null
         })
       }
       if (event.kind === 'thread.archived') {
         const thread = this.threads.get(event.threadId)
-        if (thread) thread.archived = true
+        if (thread) thread.status = 'archived'
+      }
+      if (event.kind === 'thread.status') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.status = event.status
       }
     }
     const ended = new Set<string>()
@@ -272,7 +276,10 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
       case 'thread.archive':
-        if (meta.role === 'ui') this.handleArchiveThread(member, msg.threadId)
+        if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, 'archived')
+        break
+      case 'thread.status':
+        if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, msg.status)
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
