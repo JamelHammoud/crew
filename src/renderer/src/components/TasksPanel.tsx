@@ -456,15 +456,19 @@ export default function TasksPanel({
           )}
         </div>
       </aside>
-      <Popover open={picker !== null} onClose={() => setPicker(null)} at={picker?.at}>
+      <Popover
+        open={picker !== null}
+        onClose={() => setPicker(null)}
+        at={picker?.at}
+        className="w-64 max-h-56 overflow-y-auto"
+      >
         {online.length === 0 ? (
           <p className="px-3 py-2 text-sm text-fg-muted whitespace-nowrap">No agents online</p>
         ) : (
           online.map(a => (
-            <MenuItem
+            <AgentRow
               key={a.id}
-              label={`@${a.label}`}
-              hint={a.ownerName}
+              agent={a}
               onClick={() => {
                 if (picker) doTodo(picker.todoId, a.id)
                 setPicker(null)
