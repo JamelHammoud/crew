@@ -52,6 +52,7 @@ interface CrewState {
   archiveThread: (threadId: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string) => void
+  setDocTitle: (page: string, title: string) => void
   renameDoc: (from: string, to: string) => void
   deleteDoc: (page: string) => void
   editQueued: (promptId: string, text: string) => void
@@ -68,6 +69,7 @@ const EMPTY = {
   agents: [],
   events: [],
   docs: {},
+  docTitles: {},
   queues: {},
   steps: {},
   tokens: {},
