@@ -112,8 +112,9 @@ body {
 
 .glass {
   background: rgb(28 28 28 / 0.78);
+  /* No -webkit- fallback: Electron's Chromium only honors the standard property,
+     and Lightning CSS collapses an alias pair down to the prefixed one at build. */
   backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgb(255 255 255 / 0.08);
   box-shadow:
     0 16px 48px rgb(0 0 0 / 0.55),
