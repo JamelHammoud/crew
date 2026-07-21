@@ -97,6 +97,28 @@ export class Store {
     this.writeAtomic(file, text)
   }
 
+  loadTitles(): Record<string, string> {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(this.titlesPath(), 'utf8'))
+      const titles: Record<string, string> = {}
+      for (const [page, title] of Object.entries(parsed)) {
+        if (typeof title === 'string' && title) titles[page] = title
+      }
+      return titles
+    } catch {
+      return {}
+    }
+  }
+
+  saveTitles(titles: Record<string, string>): void {
+    const entries = Object.entries(titles).filter(([, title]) => title)
+    if (entries.length === 0) {
+      fs.rmSync(this.titlesPath(), { force: true })
+      return
+    }
+    this.writeAtomic(this.titlesPath(), JSON.stringify(Object.fromEntries(entries), null, 2))
+  }
+
   deleteDoc(page: string): void {
     if (!PAGE_NAME.test(page)) throw new Error(`Bad page name: ${page}`)
     const docsDir = path.join(this.root, 'docs')
