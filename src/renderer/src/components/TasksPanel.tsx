@@ -527,21 +527,34 @@ export default function TasksPanel({
           )}
           {(done.length > 0 || checkedTodos.length > 0) && (
             <section>
-              {toggleHeading('Done', done.length + checkedTodos.length, showDone, () => setShowDone(v => !v))}
-              {showDone && (
-                <>
-                  {done.map(row =>
-                    item(row, { icon: <ArrowUturnLeftIcon className="w-4 h-4" />, label: 'Reopen', status: 'open' })
-                  )}
-                  {checkedTodos.map(checkedItem)}
-                </>
+              {toggleHeading('Done', done.length + checkedTodos.length, showDone || q !== '', () =>
+                setShowDone(v => !v)
               )}
+              {(showDone || q !== '') &&
+                [
+                  ...done.map(row => ({
+                    ts: lastMessageAt[row.thread.id] ?? 0,
+                    node: item(row, {
+                      icon: <ArrowUturnLeftIcon className="w-4 h-4" />,
+                      label: 'Reopen',
+                      status: 'open' as const
+                    })
+                  })),
+                  ...checkedTodos.map(todo => ({
+                    ts: checkedAt[todo.id] ?? todo.ts,
+                    node: checkedItem(todo)
+                  }))
+                ]
+                  .sort((a, b) => b.ts - a.ts)
+                  .map(entry => entry.node)}
             </section>
           )}
           {archived.length > 0 && (
             <section>
-              {toggleHeading('Archived', archived.length, showArchived, () => setShowArchived(v => !v))}
-              {showArchived &&
+              {toggleHeading('Archived', archived.length, showArchived || q !== '', () =>
+                setShowArchived(v => !v)
+              )}
+              {(showArchived || q !== '') &&
                 archived.map(row =>
                   item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
                 )}
