@@ -2,7 +2,6 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
 import {
   extensionFor,
-  isAttachmentType,
   isImageType,
   MAX_ATTACHMENTS,
   MAX_ATTACHMENT_BYTES,
@@ -31,7 +30,6 @@ import {
 } from '../shared/llm'
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import { Store } from './store'
-import { StudioManager, type StudioPromptRef } from './studio'
 
 interface Member {
   id: string
@@ -68,8 +66,6 @@ interface QueuedPrompt {
   mentions: string[]
   attachments: Attachment[]
   messageId: string
-  silent?: boolean
-  studio?: StudioPromptRef
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -81,8 +77,6 @@ interface PendingSteer {
   authorId?: string
   threadId: string
   attachments: Attachment[]
-  silent?: boolean
-  studio?: StudioPromptRef
 }
 
 interface Thread {
@@ -94,7 +88,6 @@ interface Thread {
   status: ThreadStatus
   queue: QueuedPrompt[]
   running: string | null
-  studioId?: string
 }
 
 const THREAD_STATUSES = new Set<ThreadStatus>(['open', 'done', 'archived'])
@@ -137,7 +130,6 @@ export class CrewSession {
   private resumeGraceMs: number
   private stepFlushMs: number
   private stepFlushes = new Map<string, { timer: NodeJS.Timeout; dirty: boolean }>()
-  readonly studios: StudioManager
   onSyncNeeded: (() => void) | null = null
 
   constructor(
@@ -147,11 +139,6 @@ export class CrewSession {
     this.cancelTimeoutMs = opts.cancelTimeoutMs ?? CANCEL_REPORT_TIMEOUT_MS
     this.resumeGraceMs = opts.resumeGraceMs ?? RESUME_GRACE_MS
     this.stepFlushMs = opts.stepFlushMs ?? STEP_FLUSH_MS
-    this.studios = new StudioManager(store, {
-      send: (ws, msg) => this.send(ws, msg),
-      broadcast: msg => this.broadcast(msg),
-      syncNeeded: () => this.onSyncNeeded?.()
-    })
     const persisted = store.loadSession()
     this.code = persisted?.code ?? randomBytes(3).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
@@ -190,10 +177,8 @@ export class CrewSession {
           createdBy: event.byName,
           status: 'open',
           queue: [],
-          running: null,
-          studioId: event.studioId
+          running: null
         })
-        if (event.studioId) this.studios.registerThread(event.studioId, event.agentId, event.threadId)
       }
       if (event.kind === 'thread.archived') {
         const thread = this.threads.get(event.threadId)
@@ -304,8 +289,7 @@ export class CrewSession {
           .filter(thread => thread.queue.length > 0)
           .map(thread => [thread.id, this.queueItems(thread)])
       ),
-      todos: [...this.todos.values()],
-      studios: this.studios.index()
+      todos: [...this.todos.values()]
     }
   }
 
@@ -357,43 +341,6 @@ export class CrewSession {
         break
       case 'todo.do':
         if (meta.role === 'ui') this.handleTodoDo(member, msg.todoId, msg.agentId)
-        break
-      case 'studio.create':
-        if (meta.role === 'ui') this.studios.create(member.id, member.name, msg.name, msg.nodes)
-        break
-      case 'studio.rename':
-        if (meta.role === 'ui') this.studios.rename(msg.studioId, msg.name)
-        break
-      case 'studio.favorite':
-        if (meta.role === 'ui') this.studios.favorite(msg.studioId, msg.favorite)
-        break
-      case 'studio.duplicate':
-        if (meta.role === 'ui') this.studios.duplicate(msg.studioId, member.id)
-        break
-      case 'studio.delete':
-        if (meta.role === 'ui') this.studios.delete(msg.studioId)
-        break
-      case 'studio.open':
-        if (meta.role === 'ui') this.studios.open(ws, member.id, member.name, msg.studioId)
-        break
-      case 'studio.close':
-        if (meta.role === 'ui') this.studios.close(ws)
-        break
-      case 'studio.op':
-        if (meta.role === 'ui') this.studios.clientOps(ws, msg.studioId, msg.ops)
-        break
-      case 'studio.presence':
-        if (meta.role === 'ui') {
-          this.studios.presence(ws, msg.studioId, msg.pageId, msg.cursor, Array.isArray(msg.selection) ? msg.selection : [])
-        }
-        break
-      case 'studio.chat':
-        if (meta.role === 'ui') this.handleStudioChat(member, msg)
-        break
-      case 'studio.agents':
-        if (meta.role === 'ui') {
-          this.studios.assignAgents(msg.studioId, (Array.isArray(msg.agents) ? msg.agents : []).filter(id => this.agents.has(id)))
-        }
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
@@ -459,13 +406,8 @@ export class CrewSession {
     incoming?: OutgoingAttachment[]
   ): void {
     const trimmed = text.trim()
-    const studioCommand = !threadId && /(?:^|\s)\/studio\b/i.test(trimmed)
-    const attachments = this.saveAttachments(incoming, studioCommand)
+    const attachments = this.saveAttachments(incoming)
     if (!trimmed && attachments.length === 0) return
-    if (studioCommand) {
-      this.handleStudioCommand(member, trimmed, mentions, attachments)
-      return
-    }
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
@@ -477,9 +419,7 @@ export class CrewSession {
       for (const id of targets) {
         const agent = this.agents.get(id)
         if (!agent) continue
-        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, {
-          route: { messageId, mentions: targets }
-        })
+        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, { messageId, mentions: targets })
       }
       return
     }
@@ -498,100 +438,6 @@ export class CrewSession {
       return
     }
     for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments)
-  }
-
-  private handleStudioCommand(member: Member, text: string, mentions: string[], attachments: Attachment[]): void {
-    const request = text.replace(/(?:^|\s)\/studio\b\s*/i, ' ').trim()
-    const name = this.titleFrom(this.stripMentions(request)) || 'Untitled'
-    const doc = this.studios.create(member.id, member.name, name)
-    this.emit({
-      id: randomUUID(),
-      ts: Date.now(),
-      kind: 'message',
-      authorId: member.id,
-      authorName: member.name,
-      text,
-      mentions
-    })
-    if (request) {
-      this.handleStudioChat(member, { studioId: doc.id, text: request, mentions }, attachments)
-    }
-  }
-
-  private stripMentions(text: string): string {
-    let out = text
-    for (const agent of this.agents.values()) {
-      const needle = `@${agent.label.toLowerCase()}`
-      let at = out.toLowerCase().indexOf(needle)
-      while (at !== -1) {
-        out = out.slice(0, at) + out.slice(at + needle.length)
-        at = out.toLowerCase().indexOf(needle)
-      }
-    }
-    return out.replace(/\s+/g, ' ').trim()
-  }
-
-  private handleStudioChat(
-    member: Member,
-    msg: {
-      studioId: string
-      text: string
-      mentions: string[]
-      pageId?: string
-      build?: boolean
-      attachments?: OutgoingAttachment[]
-    },
-    presaved: Attachment[] = []
-  ): void {
-    const doc = this.studios.doc(msg.studioId)
-    if (!doc) return
-    const trimmed = msg.text.trim()
-    const attachments = [...presaved, ...this.saveAttachments(msg.attachments, true)]
-    if (!trimmed && attachments.length === 0) return
-    const mentioned = [...new Set(msg.mentions)].filter(id => this.agents.has(id))
-    const assigned = doc.agents.filter(id => this.agents.has(id))
-    const targets = mentioned.length > 0 ? mentioned : assigned
-    this.studios.userChat({ id: member.id, name: member.name }, msg.studioId, trimmed, targets, msg.build === true, attachments)
-    if (mentioned.length > 0) this.studios.assignAgents(msg.studioId, [...doc.agents, ...mentioned])
-    for (const id of targets) {
-      const agent = this.agents.get(id)
-      if (!agent) continue
-      let threadId = this.studios.threadFor(msg.studioId, id)
-      if (!threadId || !this.threads.has(threadId)) threadId = this.startStudioThread(member, agent, doc.id, doc.name)
-      this.studios.notePage(threadId, msg.pageId)
-      this.enqueuePrompt(agent, member, trimmed, threadId, attachments, {
-        silent: true,
-        studio: { studioId: msg.studioId, pageId: msg.pageId, build: msg.build === true }
-      })
-    }
-  }
-
-  private startStudioThread(member: Member, agent: AgentState, studioId: string, studioName: string): string {
-    const threadId = randomUUID()
-    this.threads.set(threadId, {
-      id: threadId,
-      agentId: agent.id,
-      agentLabel: agent.label,
-      title: studioName,
-      createdBy: member.name,
-      status: 'open',
-      queue: [],
-      running: null,
-      studioId
-    })
-    this.studios.registerThread(studioId, agent.id, threadId)
-    this.emit({
-      id: randomUUID(),
-      ts: Date.now(),
-      kind: 'thread.started',
-      threadId,
-      agentId: agent.id,
-      agentLabel: agent.label,
-      title: studioName,
-      byName: member.name,
-      studioId
-    })
-    return threadId
   }
 
   private switchThreadAgent(thread: Thread, id: string, member: Member): void {
@@ -697,7 +543,6 @@ export class CrewSession {
   // Two prompts can share one message when it mentioned several agents, so
   // emission is tracked by message, not by queue entry.
   private emitThreadMessage(entry: QueuedPrompt): void {
-    if (entry.silent) return
     if (this.emittedMessages.has(entry.messageId)) return
     this.emittedMessages.add(entry.messageId)
     this.emit({
@@ -732,21 +577,17 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.status', threadId, status, byName: member.name })
   }
 
-  private saveAttachments(incoming?: OutgoingAttachment[], files = false): Attachment[] {
+  private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
     const saved: Attachment[] = []
     for (const item of (incoming ?? []).slice(0, MAX_ATTACHMENTS)) {
-      const one = this.saveAttachmentData(item.mime, item.name, Buffer.from(item.data, 'base64'), files)
+      const one = this.saveAttachment(item.mime, item.name, Buffer.from(item.data, 'base64'))
       if (one) saved.push(one)
     }
     return saved
   }
 
   saveAttachment(mime: string, name: string, data: Buffer): Attachment | null {
-    return this.saveAttachmentData(mime, name, data, false)
-  }
-
-  private saveAttachmentData(mime: string, name: string, data: Buffer, files: boolean): Attachment | null {
-    if (!(files ? isAttachmentType(mime) : isImageType(mime))) return null
+    if (!isImageType(mime)) return null
     if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
     const id = randomUUID()
     const file = `${id}.${extensionFor(mime)}`
@@ -760,7 +601,7 @@ export class CrewSession {
 
   private safeName(name: string): string {
     const flat = name.replace(/[\r\n]+/g, ' ').trim()
-    return flat.slice(0, 120) || 'attachment'
+    return flat.slice(0, 120) || 'image'
   }
 
   attachmentPath(file: string): string | null {
@@ -1128,7 +969,7 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    opts: { route?: { messageId: string; mentions: string[] }; silent?: boolean; studio?: StudioPromptRef } = {}
+    route?: { messageId: string; mentions: string[] }
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -1139,15 +980,13 @@ export class CrewSession {
       byName: member.name,
       authorId: member.id,
       threadId,
-      mentions: opts.route?.mentions ?? [agent.id],
+      mentions: route?.mentions ?? [agent.id],
       attachments,
-      messageId: opts.route?.messageId ?? randomUUID(),
-      silent: opts.silent,
-      studio: opts.studio
+      messageId: route?.messageId ?? randomUUID()
     }
     if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
-      this.threadNotice(entry, `${agent.label} is not here right now.`)
+      this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
     // A message that arrives mid-run goes straight into the run when it is for
@@ -1162,9 +1001,7 @@ export class CrewSession {
         byName: member.name,
         authorId: member.id,
         threadId,
-        attachments,
-        silent: entry.silent,
-        studio: entry.studio
+        attachments
       })
       return
     }
@@ -1189,16 +1026,11 @@ export class CrewSession {
     this.broadcast({ type: 'queue.state', threadId: thread.id, items: this.queueItems(thread) })
   }
 
-  private threadNotice(entry: { studio?: StudioPromptRef; threadId: string }, text: string): void {
-    if (entry.studio) this.studios.systemChat(entry.studio.studioId, text)
-    else this.systemMessage(text, entry.threadId)
-  }
-
   private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {
     const waiting = this.steers.get(promptId) ?? []
     waiting.push(steer)
     this.steers.set(promptId, waiting)
-    if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'steered')
+    this.routed(steer.messageId, steer.threadId, promptId, 'steered')
     this.send(agent.runner!, {
       type: 'steer',
       promptId,
@@ -1226,7 +1058,7 @@ export class CrewSession {
     const thread = this.threads.get(steer.threadId)
     if (!thread) return
     if (!agent.runner && !agent.dropTimer) {
-      this.threadNotice(steer, `${agent.label} went offline before getting to this.`)
+      this.systemMessage(`${agent.label} went offline before getting to this.`, steer.threadId)
       return
     }
     const promptId = randomUUID()
@@ -1239,11 +1071,9 @@ export class CrewSession {
       threadId: steer.threadId,
       mentions: [agent.id],
       attachments: steer.attachments,
-      messageId: steer.messageId,
-      silent: steer.silent,
-      studio: steer.studio
+      messageId: steer.messageId
     })
-    if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'queued')
+    this.routed(steer.messageId, steer.threadId, promptId, 'queued')
     this.broadcastQueue(thread)
     this.runThread(thread)
   }
@@ -1289,17 +1119,6 @@ export class CrewSession {
 
   private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
     const threadId = this.prompts.get(promptId)?.threadId
-    const entry = agent.runs.get(promptId)?.entry
-    if (entry?.studio) {
-      if (result.ok) {
-        result = {
-          ok: true,
-          text: this.studios.agentReply({ id: agent.id, label: agent.label }, entry.studio, result.text ?? '')
-        }
-      } else if (result.error) {
-        this.studios.agentFailed(entry.studio.studioId, agent.label, result.error)
-      }
-    }
     this.prompts.delete(promptId)
     agent.running.delete(promptId)
     const thread = threadId ? this.threads.get(threadId) : undefined
@@ -1330,11 +1149,7 @@ export class CrewSession {
   }
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt): string {
-    const people = [...this.members.values()].map(m => m.name)
-    const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
-    if (prompt.studio) {
-      return this.studios.prompt(agent, prompt.studio, prompt.text, prompt.byName, people, others)
-    }
+    const people = [...this.members.values()].map(m => m.name).join(', ')
     const transcript = this.events
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
@@ -1351,8 +1166,9 @@ export class CrewSession {
       })
       .filter(Boolean)
       .join('\n')
+    const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
     const lines = [
-      `You are ${agent.label}, one of several agents in a crew session with ${people.join(', ')}.`,
+      `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
       `You share a project folder and can read and edit files in it.`,
       `You are in a focused thread. Only this thread's messages are shown here.`
     ]
@@ -1460,7 +1276,7 @@ export class CrewSession {
       const dropped = thread.queue.filter(q => q.agentId === agent.id)
       if (dropped.length === 0) continue
       thread.queue = thread.queue.filter(q => q.agentId !== agent.id)
-      for (const prompt of dropped) this.threadNotice(prompt, reason)
+      for (const prompt of dropped) this.systemMessage(reason, prompt.threadId)
       this.broadcastQueue(thread)
       // Clearing the head can unblock messages for agents still here.
       this.runThread(thread)
@@ -1468,7 +1284,7 @@ export class CrewSession {
     // Steers still waiting on an ack go the same way as the queue: there is no
     // run left to fold them into, and nothing to re-queue them onto.
     for (const promptId of agent.running) {
-      for (const steer of this.steers.get(promptId) ?? []) this.threadNotice(steer, reason)
+      for (const steer of this.steers.get(promptId) ?? []) this.systemMessage(reason, steer.threadId)
       this.steers.delete(promptId)
     }
   }
