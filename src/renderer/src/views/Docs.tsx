@@ -276,7 +276,6 @@ export default function Docs() {
               <input
                 ref={titleRef}
                 value={title}
-                readOnly={current === 'main'}
                 onChange={e => setTitle(e.target.value)}
                 onBlur={commitTitle}
                 onKeyDown={e => {
@@ -286,7 +285,7 @@ export default function Docs() {
                     focusBody()
                   }
                   if (e.key === 'Escape') {
-                    setTitle(prettify(current))
+                    setTitle(titleOf(current))
                     titleRef.current?.blur()
                   }
                 }}
@@ -297,7 +296,7 @@ export default function Docs() {
             <DocEditor
               key={current}
               ref={editorRef}
-              text={docs[current] ?? ''}
+              text={docs[current]?.text ?? ''}
               onChange={markdown => updateDoc(current, markdown)}
             />
             <div className="h-40" />
