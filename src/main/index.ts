@@ -83,7 +83,8 @@ function createWindow(): void {
     webPreferences: {
       preload: path.join(dirname, '../preload/preload.mjs'),
       contextIsolation: true,
-      sandbox: false
+      sandbox: false,
+      spellcheck: true
     }
   })
   win.on('enter-full-screen', () => win.webContents.send('window:fullscreen', true))
