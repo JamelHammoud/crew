@@ -19,7 +19,7 @@ export function slugify(name: string): string {
 }
 
 export function fallbackTitle(page: string): string {
-  const words = page.split('/').pop()!.replace(/-/g, ' ')
+  const words = splitPageCode(page.split('/').pop()!).base.replace(/-/g, ' ')
   return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
