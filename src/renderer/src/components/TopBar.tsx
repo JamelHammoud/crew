@@ -81,7 +81,7 @@ export default function TopBar({
               tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
             }`}
           >
-            <QueueListIcon className="w-5 h-5" />
+            <CheckCircleIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
             {reviewCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-fg text-ink-900 text-xs font-bold flex items-center justify-center">
                 {reviewCount > 9 ? '9+' : reviewCount}
