@@ -119,13 +119,11 @@ describe('thread status', () => {
     sam.send({ type: 'thread.status', threadId: started.threadId, status: 'done' })
     await sam.waitForEvent(e => e.kind === 'thread.status' && e.status === 'done')
 
-    // The revived session replays to done, so marking done again changes nothing.
+    // A restarted session replays every transition and lands on done.
     const revived = new CrewSession(host.store)
     const events = revived.snapshot().events
     expect(events.filter(e => e.kind === 'thread.status').length).toBe(3)
-    const before = revived.snapshot().events.length
-    ;(revived as unknown as { handleThreadStatus: (m: { name: string }, t: string, s: string) => void })
-    expect(revived.snapshot().events.length).toBe(before)
+    expect((events.filter(e => e.kind === 'thread.status').at(-1) as Status).status).toBe('done')
   })
 
   it('reopens a done thread when a new message lands in it', async () => {
