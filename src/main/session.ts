@@ -111,6 +111,17 @@ export class AppSession {
     return this.agentsPath ? new AgentStore(this.agentsPath) : null
   }
 
+  // An adopted agent came back from the server's memory; persist it so the
+  // next launch registers it directly instead of re-adopting.
+  private saveAdopted(def: AgentDef): void {
+    const store = this.agentStore()
+    if (!store) return
+    const defs = store.load()
+    if (defs.some(d => d.instanceId === def.instanceId)) return
+    defs.push(def)
+    store.save(defs)
+  }
+
   private agentDefs(providers: Provider[]): AgentDef[] {
     const store = this.agentStore()
     let defs = store ? store.load() : []
@@ -147,7 +158,8 @@ export class AppSession {
       code: session.code,
       repoPath,
       providers: builtinProviders,
-      agents: this.agentDefs(detected)
+      agents: this.agentDefs(detected),
+      onAdopt: def => this.saveAdopted(def)
     })
     this.runner.connect(`ws://127.0.0.1:${server.port()}/ws`)
     return {
@@ -166,7 +178,8 @@ export class AppSession {
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected),
-      autoPullMs: AUTO_PULL_MS
+      autoPullMs: AUTO_PULL_MS,
+      onAdopt: def => this.saveAdopted(def)
     })
     this.runner.connect(wsUrl(target))
     return { wsUrl: wsUrl(target) }
