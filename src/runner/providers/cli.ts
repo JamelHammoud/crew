@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
 import { crewPath, resolveCommand } from './path'
 import type { OutputParser, Provider, RunningPrompt } from './types'
@@ -11,6 +13,27 @@ export type SettingReader = (key: string) => string
 
 export function flag(name: string, value: string): string[] {
   return value ? [name, value] : []
+}
+
+export interface CommandInvocation {
+  command: string
+  args: string[]
+}
+
+export function commandInvocation(
+  command: string,
+  args: string[],
+  platform = process.platform,
+  hasFile: (path: string) => boolean = existsSync
+): CommandInvocation {
+  if (platform !== 'win32' || !/\.(cmd|bat)$/i.test(command)) return { command, args }
+  const script = command.replace(/\.(cmd|bat)$/i, '.ps1')
+  if (!hasFile(script)) return { command, args }
+  const root = process.env.SystemRoot ?? 'C:\\Windows'
+  return {
+    command: join(root, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe'),
+    args: ['-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', script, ...args]
+  }
 }
 
 export function choices(values: string[]): AgentSettingOption[] {
@@ -54,7 +77,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     usage: opts.usage,
     start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
-      const child = spawn(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, key => resolved[key] ?? ''), {
+      const invocation = commandInvocation(
+        resolveCommand(opts.command) ?? opts.command,
+        opts.args(prompt, key => resolved[key] ?? '')
+      )
+      const child = spawn(invocation.command, invocation.args, {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env },
         detached: true
