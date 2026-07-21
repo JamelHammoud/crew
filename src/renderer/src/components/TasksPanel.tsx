@@ -251,9 +251,14 @@ export default function TasksPanel({
         />
       )
     }
+    const focused = picker?.todoId === todo.id
     return (
       <div key={todo.id} className="group relative">
-        <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-ink-hover">
+        <div
+          className={`px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover ${
+            focused ? 'bg-ink-hover' : ''
+          }`}
+        >
           <span className="h-[22px] shrink-0 flex items-center">
             <Tooltip label="Check off">
               <button
@@ -267,10 +272,22 @@ export default function TasksPanel({
           </span>
           <span className="min-w-0 flex-1 cursor-text" onClick={() => setEditingId(todo.id)}>
             <span className="block text-base text-fg whitespace-pre-wrap break-words">{todo.text}</span>
-            {agent && <span className="block text-sm text-fg-muted truncate">@{agent.label}</span>}
+            {agent && (
+              <span className="block text-sm text-fg-muted truncate">
+                <AgentName agent={agent}>
+                  <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
+                    @{agent.label}
+                  </span>
+                </AgentName>
+              </span>
+            )}
           </span>
         </div>
-        <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <span
+          className={`absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center gap-1.5 transition-opacity duration-150 ${
+            focused ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
+        >
           <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-hover to-transparent pointer-events-none" />
           <Tooltip label="Delete">
             <button
