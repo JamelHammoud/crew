@@ -14,6 +14,7 @@ export interface DocEditorHandle {
 export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(
   function DocEditor({ text, onChange }, ref) {
   const editor = useCreateBlockNote()
+  const theme = useTheme()
   const containerRef = useRef<HTMLDivElement>(null)
   const lastMarkdown = useRef('')
   const loaded = useRef(false)
@@ -79,7 +80,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
 
   return (
     <div ref={containerRef} className="doc flex-1 min-h-0">
-      <BlockNoteView editor={editor} theme="dark" onChange={handleChange} filePanel={false} />
+      <BlockNoteView editor={editor} theme={theme} onChange={handleChange} filePanel={false} />
     </div>
   )
 })
