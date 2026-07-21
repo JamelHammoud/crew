@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { httpBaseFrom } from '../../../shared/attachments'
 import { fallbackTitle, type DocPage } from '../../../shared/docs'
-import { trimEvents, type SessionEvent, type ThreadStatus } from '../../../shared/events'
+import { trimEvents, type SessionEvent, type ThreadStatus, type Todo } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
