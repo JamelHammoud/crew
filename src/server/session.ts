@@ -548,6 +548,14 @@ export class CrewSession {
       this.docs.delete(page)
       this.docs.set(to + page.slice(from.length), text)
     }
+    let titlesChanged = false
+    for (const [page, title] of [...this.docTitles.entries()]) {
+      if (page !== from && !page.startsWith(`${from}/`)) continue
+      this.docTitles.delete(page)
+      this.docTitles.set(to + page.slice(from.length), title)
+      titlesChanged = true
+    }
+    if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
     this.docRenames.set(from, { to, ts: Date.now() })
     for (const [key, move] of this.docRenames) {
       if (Date.now() - move.ts > 10000) this.docRenames.delete(key)
