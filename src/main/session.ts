@@ -64,13 +64,37 @@ export class AppSession {
   private runner: Runner | null = null
   private git: GitSync | null = null
   private agentsPath: string | null = null
+  private sessionPath: string | null = null
+  private live: CurrentSession | null = null
 
-  constructor(agentsPath?: string) {
-    this.agentsPath = agentsPath ?? null
+  constructor(paths: { agents?: string; session?: string } = {}) {
+    this.agentsPath = paths.agents ?? null
+    this.sessionPath = paths.session ?? null
   }
 
   setAgentsPath(path: string): void {
     this.agentsPath = path
+  }
+
+  setSessionPath(path: string): void {
+    this.sessionPath = path
+  }
+
+  current(): CurrentSession | null {
+    return this.live
+  }
+
+  async resume(): Promise<CurrentSession | null> {
+    if (this.live) return this.live
+    const saved = this.savedStore()?.load()
+    if (!saved) return null
+    try {
+      if (saved.mode === 'host') await this.startHost(saved.folder, saved.name)
+      else await this.startJoin(saved.link, saved.folder, saved.name)
+    } catch {
+      return null
+    }
+    return this.live
   }
 
   // Every builtin provider is listed, installed or not, so the UI can offer a
