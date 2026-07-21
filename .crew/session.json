@@ -125,14 +125,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784609714983,
+        "fetchedAt": 1784609848988,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 36,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1784620200228,
+            "resetsAt": 1784620200291,
             "active": true
           },
           {
@@ -140,7 +140,7 @@
             "label": "Weekly (all models)",
             "percent": 11,
             "severity": "normal",
-            "resetsAt": 1784930400228,
+            "resetsAt": 1784930400291,
             "active": false
           },
           {
@@ -148,7 +148,7 @@
             "label": "Weekly (Fable)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784930400228,
+            "resetsAt": 1784930400291,
             "active": false
           }
         ],
@@ -690,7 +690,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784609834987,
+        "fetchedAt": 1784609848980,
         "windows": [
           {
             "key": "primary",

@@ -3537,3 +3537,11 @@
 {"id":"410f507c-0c6f-46fc-a17f-e57eb73235a8","ts":1784609838572,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
 {"id":"bafa1e49-b396-4187-9ad1-f036835293f0","ts":1784609838572,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
 {"id":"8cd38c11-f590-4481-bd89-df2dbf349052","ts":1784609838572,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
+{"id":"51e4ed22-17b7-4f8c-984f-011354203801","ts":1784609848976,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"1bbde5d1-7897-4269-8368-46a37063b523","ts":1784609848976,"kind":"agent.online","agentId":"jamel/codex","label":"Codex"}
+{"id":"fa230960-6987-407d-a68c-9ebf27f6b3a1","ts":1784609848976,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"7e3642e2-d427-490e-8def-264dd4e94342","ts":1784609848976,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
+{"id":"ec2898ba-646c-4dfa-b6ba-5999e006c9fa","ts":1784609848976,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"de77c236-b0fb-4f08-882b-d8b38d8c926d","ts":1784609848993,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"09eed8b7-9284-476e-9220-b9fc8ef3bd4c","ts":1784609848993,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"3ef6f10d-c791-4e8f-882a-71a3cbde2a56","ts":1784609848993,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
