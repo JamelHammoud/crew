@@ -10,6 +10,7 @@
 ## In progress
 
 * [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
+* [ ] Better at finding what CLIs are available on your computer
 
 ## Blocked
 
