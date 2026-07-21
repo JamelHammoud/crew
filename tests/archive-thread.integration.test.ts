@@ -7,7 +7,7 @@ import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
-type Archived = Extract<SessionEvent, { kind: 'thread.archived' }>
+type Status = Extract<SessionEvent, { kind: 'thread.status' }>
 
 describe('archiving threads', () => {
   let host: TestHost
