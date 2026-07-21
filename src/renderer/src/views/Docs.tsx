@@ -86,16 +86,15 @@ export default function Docs() {
     }
   }, [current])
 
-  const freeSlug = (base: string): string => {
-    let slug = base
-    let n = 2
-    while (docs[slug] !== undefined) slug = `${base}-${n++}`
+  const freshSlug = (parent: string, base: string): string => {
+    let slug = pageSlug(parent, base, pageCode())
+    while (docs[slug] !== undefined) slug = pageSlug(parent, base, pageCode())
     return slug
   }
 
   const createPage = (parent: string) => {
-    const slug = freeSlug(parent ? `${parent}/untitled` : 'untitled')
-    updateDoc(slug, '')
+    const slug = freshSlug(parent, 'untitled')
+    updateDoc(slug, '', '')
     if (parent) setExpanded(prev => new Set(prev).add(parent))
     pendingFocus.current = true
     setPage(slug)
