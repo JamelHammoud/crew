@@ -3487,3 +3487,8 @@
 {"id":"98110efa-2025-474e-9337-8a98ba641b4b","ts":1784608817756,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
 {"id":"12eb3ef7-69d3-4dba-bc06-51ba373aed75","ts":1784608841955,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Continue","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"threadId":"7cecb3ab-8a57-418e-ae4e-5be55532d1bd","attachments":[]}
 {"id":"981eda0e-4cba-4e4d-9dd5-66c1dd7b706d","ts":1784608841956,"kind":"message","authorId":"crew","authorName":"crew","text":"Claude Fable is not here right now.","mentions":[],"threadId":"7cecb3ab-8a57-418e-ae4e-5be55532d1bd"}
+{"id":"14136eb9-2034-4f02-bc14-c539fc7fefac","ts":1784609054126,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"ea6283cc-ce4b-4adf-8f00-454f59edb3e1","ts":1784609054128,"kind":"agent.offline","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"a4401cf6-cc24-4d5d-9c5c-b7df5db0a2be","ts":1784609054128,"kind":"agent.offline","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"d83a9c6f-2d56-492d-94eb-9c241d5c7353","ts":1784609054128,"kind":"agent.offline","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"6dd05823-5723-4940-bf57-2947f3862322","ts":1784609054128,"kind":"agent.offline","agentId":"jamel (dev)/grok","label":"Grok 2"}
