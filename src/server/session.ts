@@ -1281,6 +1281,17 @@ export class CrewSession {
 
   private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
     const threadId = this.prompts.get(promptId)?.threadId
+    const entry = agent.runs.get(promptId)?.entry
+    if (entry?.studio) {
+      if (result.ok) {
+        result = {
+          ok: true,
+          text: this.studios.agentReply({ id: agent.id, label: agent.label }, entry.studio, result.text ?? '')
+        }
+      } else if (result.error) {
+        this.studios.agentFailed(entry.studio.studioId, agent.label, result.error)
+      }
+    }
     this.prompts.delete(promptId)
     agent.running.delete(promptId)
     const thread = threadId ? this.threads.get(threadId) : undefined
