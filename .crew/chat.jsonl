@@ -3096,3 +3096,15 @@
 {"id":"fa08de35-cb4a-494c-9c5a-55ef230afc53","ts":1784606039165,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"d55ac81c-c1d8-4f50-b71e-a8e5785c8d25","ts":1784606039165,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"9c6777b5-e475-4f6e-a203-c01ff74dfd6f","ts":1784606039165,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"ae58c6d1-7efa-4b99-8a89-2107bfa6d875","ts":1784606052198,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"b0cb498d-4668-40cc-ae9a-0b7c2f9a8048","ts":1784606052198,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"2491cc90-527c-49e6-b8b3-d907102ded35","ts":1784606052199,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"5c73a101-d4cf-4bca-8506-19f975ffe6cc","ts":1784606052199,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"92416533-b487-4fa2-98ad-d2e64c3623cf","ts":1784606052199,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"e5df2ab6-8e5f-43c3-932c-daff69ad4e18","ts":1784606052199,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"560a6446-b881-4f5b-a58a-c41be93185a1","ts":1784606063348,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"c0e587ea-67e0-41d8-8e87-f5b286733b09","ts":1784606063349,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"6f3b9181-0ab7-4535-bd03-0ceb80b5dee2","ts":1784606063349,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"6b349d78-b4c3-4b09-89b3-2f4e0a392864","ts":1784606063349,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"d7b564cb-5b06-4c22-bf43-c647fa598bf6","ts":1784606063349,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"8b6f80b6-c852-4b2a-a212-14ee15689163","ts":1784606063349,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
