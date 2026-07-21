@@ -104,6 +104,33 @@ describe('doc pages', () => {
     await host.close()
   })
 
+  it('keeps a title with symbols and carries it through a rename', async () => {
+    const repoPath = tmpDir('docs-title-symbols')
+    const host = await startHost(repoPath)
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    const watcher = await TestUi.connect(host.url, 'ana', host.code)
+
+    ui.send({ type: 'doc.update', page: 'untitled', text: 'body' })
+    ui.send({ type: 'doc.title', page: 'untitled', title: 'Q3 Roadmap 🚀 (draft!)' })
+    await watcher.waitForEvent(e => e.kind === 'doc.titled' && e.title === 'Q3 Roadmap 🚀 (draft!)')
+
+    const store = new Store(repoPath)
+    await waitUntil(() => store.loadTitles()['untitled'] === 'Q3 Roadmap 🚀 (draft!)')
+
+    ui.send({ type: 'doc.rename', from: 'untitled', to: 'roadmap' })
+    await watcher.waitForEvent(e => e.kind === 'doc.renamed' && e.to === 'roadmap')
+    await waitUntil(() => store.loadTitles()['roadmap'] === 'Q3 Roadmap 🚀 (draft!)')
+    expect(store.loadTitles()['untitled']).toBeUndefined()
+
+    ui.send({ type: 'doc.delete', page: 'roadmap' })
+    await watcher.waitForEvent(e => e.kind === 'doc.deleted' && e.page === 'roadmap')
+    await waitUntil(() => store.loadTitles()['roadmap'] === undefined)
+
+    ui.close()
+    watcher.close()
+    await host.close()
+  })
+
   it('refuses to rename main or clobber an existing page', async () => {
     const repoPath = tmpDir('docs-rename-guard')
     const host = await startHost(repoPath)
