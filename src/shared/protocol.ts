@@ -1,6 +1,6 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
 import type { DocPage } from './docs'
-import type { SessionEvent } from './events'
+import type { SessionEvent, ThreadStatus } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 
 export interface RegisteredLlm {
@@ -42,6 +42,7 @@ export type ClientMessage =
   | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
+  | { type: 'thread.status'; threadId: string; status: ThreadStatus }
   | { type: 'doc.update'; page: string; text: string; title?: string }
   | { type: 'doc.retitle'; page: string; title: string }
   | { type: 'doc.rename'; from: string; to: string; title?: string }
