@@ -125,14 +125,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784607833034,
+        "fetchedAt": 1784608170564,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 29,
             "severity": "normal",
-            "resetsAt": 1784620200279,
+            "resetsAt": 1784620199846,
             "active": true
           },
           {
@@ -140,7 +140,7 @@
             "label": "Weekly (all models)",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1784930400279,
+            "resetsAt": 1784930399846,
             "active": false
           },
           {
@@ -148,7 +148,7 @@
             "label": "Weekly (Fable)",
             "percent": 18,
             "severity": "normal",
-            "resetsAt": 1784930400279,
+            "resetsAt": 1784930399846,
             "active": false
           }
         ],
@@ -490,7 +490,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784608110561,
+        "fetchedAt": 1784608290566,
         "windows": [
           {
             "key": "primary",
@@ -573,14 +573,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784607833034,
+        "fetchedAt": 1784608170564,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 29,
             "severity": "normal",
-            "resetsAt": 1784620200279,
+            "resetsAt": 1784620199846,
             "active": true
           },
           {
@@ -588,7 +588,7 @@
             "label": "Weekly (all models)",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1784930400279,
+            "resetsAt": 1784930399846,
             "active": false
           },
           {
@@ -596,7 +596,7 @@
             "label": "Weekly (Fable)",
             "percent": 18,
             "severity": "normal",
-            "resetsAt": 1784930400279,
+            "resetsAt": 1784930399846,
             "active": false
           }
         ],
