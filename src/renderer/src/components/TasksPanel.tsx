@@ -428,15 +428,50 @@ export default function TasksPanel({
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <header className="h-[70px] px-5 flex items-center justify-between shrink-0">
-          <h2 className="text-lg font-bold text-fg">Tasks</h2>
-          <button
-            onClick={onClose}
-            aria-label="Close tasks"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-          >
-            <XMarkIcon className="w-4 h-4" />
-          </button>
+        <header className="h-[70px] px-5 flex items-center shrink-0">
+          {searching ? (
+            <>
+              <MagnifyingGlassIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+              <input
+                autoFocus
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Escape') {
+                    e.stopPropagation()
+                    closeSearch()
+                  }
+                }}
+                placeholder="Search tasks"
+                className="flex-1 min-w-0 mx-2.5 bg-transparent text-base text-fg placeholder:text-fg-faint outline-none"
+              />
+              <button
+                onClick={closeSearch}
+                aria-label="Close search"
+                className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <h2 className="flex-1 text-lg font-bold text-fg">Tasks</h2>
+              <button
+                onClick={() => setSearching(true)}
+                aria-label="Search tasks"
+                className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onClose}
+                aria-label="Close tasks"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </header>
         <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
           <section>
