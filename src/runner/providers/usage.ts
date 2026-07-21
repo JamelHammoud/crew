@@ -124,14 +124,26 @@ export function claudeWindowsFrom(body: any): UsageWindow[] {
   return windows
 }
 
+// The OAuth usage endpoint rate-limits aggressively (it also serves Claude
+// Code's own /usage screen, possibly for several machines on one account), so
+// network reads are spaced out and the last good snapshot is served in
+// between — a stale bar with an honest "updated Xm ago" beats an HTTP 429.
+const CLAUDE_FETCH_GAP_MS = 5 * 60 * 1000
+const CLAUDE_429_BACKOFF_MS = 15 * 60 * 1000
+
+let claudeLastGood: AgentUsage | null = null
+let claudeNextFetchAt = 0
+
 export async function claudeUsage(): Promise<AgentUsage | null> {
-  const base: AgentUsage = { provider: 'claude', fetchedAt: Date.now(), windows: [], ...claudeAccount() }
+  const now = Date.now()
+  if (now < claudeNextFetchAt && claudeLastGood) return claudeLastGood
+  const base: AgentUsage = { provider: 'claude', fetchedAt: now, windows: [], ...claudeAccount() }
   const creds = await claudeCredentials()
   if (!creds?.accessToken) {
     return { ...base, error: 'Not signed in to Claude Code on this machine.' }
   }
   base.plan = typeof creds.subscriptionType === 'string' ? creds.subscriptionType : undefined
-  if (typeof creds.expiresAt === 'number' && creds.expiresAt < Date.now()) {
+  if (typeof creds.expiresAt === 'number' && creds.expiresAt < now) {
     return { ...base, error: 'Claude sign-in expired — run claude once to refresh it.' }
   }
   let body: any
@@ -145,17 +157,26 @@ export async function claudeUsage(): Promise<AgentUsage | null> {
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS)
     })
     if (!res.ok) {
-      return { ...base, error: `Could not read usage from Anthropic (HTTP ${res.status}).` }
+      const retryAfter = Number(res.headers.get('retry-after')) * 1000
+      claudeNextFetchAt =
+        now +
+        (res.status === 429
+          ? Math.max(CLAUDE_429_BACKOFF_MS, Number.isFinite(retryAfter) ? retryAfter : 0)
+          : CLAUDE_FETCH_GAP_MS)
+      return claudeLastGood ?? { ...base, error: `Could not read usage from Anthropic (HTTP ${res.status}).` }
     }
     body = await res.json()
   } catch {
-    return { ...base, error: 'Could not reach Anthropic to read usage.' }
+    claudeNextFetchAt = now + CLAUDE_FETCH_GAP_MS
+    return claudeLastGood ?? { ...base, error: 'Could not reach Anthropic to read usage.' }
   }
+  claudeNextFetchAt = now + CLAUDE_FETCH_GAP_MS
   const windows = claudeWindowsFrom(body)
   if (windows.length === 0) {
-    return { ...base, error: 'Anthropic returned no usage limits for this account.' }
+    return claudeLastGood ?? { ...base, error: 'Anthropic returned no usage limits for this account.' }
   }
-  return { ...base, windows }
+  claudeLastGood = { ...base, windows }
+  return claudeLastGood
 }
 
 // ---------------------------------------------------------------------------
