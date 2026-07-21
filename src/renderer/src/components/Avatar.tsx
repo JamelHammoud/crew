@@ -1,3 +1,5 @@
+import { useTheme } from '../state/theme'
+
 const SIZES = {
   sm: 'w-7 h-7 text-xs',
   md: 'w-10 h-10 text-sm',
