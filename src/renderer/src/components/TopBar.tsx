@@ -1,9 +1,11 @@
 import { ArrowRightStartOnRectangleIcon, CheckIcon, LinkIcon } from '@heroicons/react/16/solid'
+import { QueueListIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import { useCrew } from '../state/store'
 import Avatar from './Avatar'
 import Pill from './Pill'
 import TabIcon from './TabIcon'
+import Tooltip from './Tooltip'
 import { MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'agents' | 'docs'
