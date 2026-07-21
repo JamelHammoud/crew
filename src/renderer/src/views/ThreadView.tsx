@@ -129,6 +129,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const canSteer =
     Boolean(activePromptId) && runningAgent?.steerable === true && targets.includes(runningAgent.id)
   const placeholder = 'Send a message or @ another agent'
+  const state = threadState(thread, threadEvents, Boolean(activePromptId))
+  const statusAction =
+    thread.status === 'open'
+      ? { label: 'Mark done', to: 'done' as const }
+      : { label: thread.status === 'done' ? 'Reopen' : 'Unarchive', to: 'open' as const }
 
   return (
     <div className="h-full relative">
