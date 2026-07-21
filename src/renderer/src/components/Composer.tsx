@@ -36,7 +36,7 @@ export default function Composer({
     <div className="relative">
       {children}
       <div
-        className="bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] cursor-text"
+        className="bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"
         onClick={() => inputRef.current?.focus()}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
