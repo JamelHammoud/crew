@@ -364,18 +364,27 @@ export const useCrew = create<CrewState>((set, get) => {
   socket.onMessage = handleMessage
   socket.onStatus = status => {
     const current = get().connection
-    if (status === 'connecting' && current !== 'home') set({ connection: 'connecting' })
-    if (status === 'closed' && current !== 'home') set({ connection: 'reconnecting' })
+    if (current === 'home' || current === 'booting') return
+    if (status === 'connecting') set({ connection: 'connecting' })
+    if (status === 'closed') set({ connection: 'reconnecting' })
   }
 
   return {
-    connection: 'home',
+    connection: 'booting',
     joinLink: null,
     selfId: '',
     selfName: '',
     code: '',
     httpBase: '',
     ...EMPTY,
+    boot: async () => {
+      const info = await window.crew.current().catch(() => null)
+      if (info) {
+        get().connect(info.wsUrl, info.name, info.code, info.link ?? undefined)
+        return
+      }
+      if (get().connection === 'booting') set({ connection: 'home' })
+    },
     connect: (wsUrl, name, code, joinLink) => {
       set({ connection: 'connecting', selfName: name, joinLink: joinLink ?? null, httpBase: httpBaseFrom(wsUrl) })
       const hello: ClientMessage = { type: 'hello', role: 'ui', name, code }
