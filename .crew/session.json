@@ -258,7 +258,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784641441449,
+        "fetchedAt": 1784642953336,
         "windows": [
           {
             "key": "session",
@@ -272,7 +272,7 @@
             "label": "Weekly (all models)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784894400313,
+            "resetsAt": 1784894400203,
             "active": true
           }
         ],
@@ -550,7 +550,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784641441449,
+        "fetchedAt": 1784642953336,
         "windows": [
           {
             "key": "session",
@@ -564,7 +564,7 @@
             "label": "Weekly (all models)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784894400313,
+            "resetsAt": 1784894400203,
             "active": true
           }
         ],
@@ -654,18 +654,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784641441836,
+        "fetchedAt": 1784642954024,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 22
+            "percent": 34
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784603239162
+        "asOf": 1784642885107
       }
     }
   ]

@@ -5491,3 +5491,7 @@
 {"id":"5e8ae588-8344-4715-a20d-9c4351612894","ts":1784615120012,"kind":"todo.added","todoId":"77006a31-5863-4692-9f1b-08abadda8e71","text":"What if we turned repos into \"join links\", everybody is a host/joiner, the repo itself is the \"chat room\", opening crew in there auto joins you to that repo","byName":"Jamel (dev)"}
 {"id":"1d03f37c-a7dc-493f-a71f-7a67f4941d92","ts":1784615178394,"kind":"thread.status","threadId":"7af6082c-0236-443a-9637-60819e7eb16b","status":"done","byName":"Jamel (dev)"}
 {"id":"c8ed1099-2f04-4c71-a5ef-abc614b83e03","ts":1784615179963,"kind":"thread.status","threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303","status":"done","byName":"Jamel (dev)"}
+{"id":"40956a7b-5108-4f0f-8cc6-5ecce6284615","ts":1784642953305,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"66186ee9-3b1c-409b-b7cd-7e1b75962848","ts":1784642953306,"kind":"agent.online","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
+{"id":"45632e52-ab93-49fe-bdbf-4dae6c413c54","ts":1784642953307,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
+{"id":"5c4305d1-d43e-4ddf-a6ff-6669d8429ed8","ts":1784642953307,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
