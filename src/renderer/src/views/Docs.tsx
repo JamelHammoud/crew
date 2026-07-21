@@ -208,7 +208,7 @@ export default function Docs() {
             }`}
           >
             <DocumentTextIcon className="w-4 h-4 shrink-0 opacity-60" />
-            <span className="truncate">{prettify(node.slug)}</span>
+            <span className="truncate">{titleOf(node.slug) || 'Untitled'}</span>
           </button>
           <Tooltip label="Add sub-page">
             <button
