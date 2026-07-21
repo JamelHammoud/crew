@@ -51,6 +51,11 @@ interface CrewState {
   sendChat: (text: string, threadId?: string) => void
   deleteMessage: (messageId: string) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
+  addTodo: (text: string, agentId?: string) => void
+  editTodo: (todoId: string, text: string, agentId?: string) => void
+  removeTodo: (todoId: string) => void
+  checkTodo: (todoId: string, checked: boolean) => void
+  doTodo: (todoId: string, agentId?: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string, title?: string) => void
   retitleDoc: (page: string, title: string) => void
