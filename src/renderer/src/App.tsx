@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import TasksPanel from './components/TasksPanel'
 import TopBar, { type Tab } from './components/TopBar'
 import { useCrew } from './state/store'
 import Chat from './views/Chat'
