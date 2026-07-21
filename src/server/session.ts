@@ -40,6 +40,7 @@ interface RunState {
   steps: Map<string, StepEntry>
   tokens: number
   startedAt: number
+  entry?: QueuedPrompt
 }
 
 interface StepEntry {
