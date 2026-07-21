@@ -10,6 +10,7 @@ const HOME_DIRS = [
   '.claude/local',
   '.kimi-code/bin',
   '.codex/bin',
+  '.grok/bin',
   '.bun/bin',
   '.deno/bin',
   '.cargo/bin',
