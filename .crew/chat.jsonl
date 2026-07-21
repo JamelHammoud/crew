@@ -3116,3 +3116,14 @@
 {"id":"93e7e0ed-daac-440c-915f-0cb1f52d5b57","ts":1784606208606,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
 {"id":"53c64813-2d90-4d5e-83d6-3998672f8210","ts":1784606208606,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"44b81300-0768-487f-aade-44b61762bfae","ts":1784606208606,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"e180e00c-f7b7-40bb-8fae-97bcf37c535c","ts":1784606214348,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"661e0249-9aee-4cf7-8d45-49c3fc46d069","ts":1784606214348,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"8384a7b3-d186-4622-b14b-04018949f09a","ts":1784606214348,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"807d4a0b-c7dd-4464-988e-2550a5712ecc","ts":1784606214348,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"c6d4c93b-cc7d-40d5-9738-59d6a4cb456c","ts":1784606214349,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"5230d0d2-1b53-4d15-99c6-d103b3810db4","ts":1784606215837,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"64b02d75-6bf0-4cc9-b61d-d0a27d95448c","ts":1784606215837,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"ea08f779-d65e-41c2-b474-aacdcd870417","ts":1784606215837,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"bb017d95-eed2-4478-94b5-8096c05f38dd","ts":1784606215838,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"cdb82c98-c7ef-4ba0-a48b-316d97c2b364","ts":1784606215838,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"3bea6517-fb47-4355-97ab-8104a85fee09","ts":1784606215838,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
