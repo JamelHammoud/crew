@@ -2,6 +2,8 @@ import type { Attachment, OutgoingAttachment } from './attachments'
 import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
+import type { StudioChatEntry, StudioDoc, StudioMeta, StudioNode, StudioPresence } from './studio'
+import type { StudioOp } from './studio-ops'
 
 export interface RegisteredLlm {
   instanceId: string
@@ -35,6 +37,7 @@ export interface SessionSnapshot {
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   todos: Todo[]
+  studios?: StudioMeta[]
 }
 
 export type ClientMessage =
