@@ -2,8 +2,6 @@
 title: "Docs"
 ---
 
-## Queue
-
 ## In progress
 
 * [ ] crtl-f doesn't work in docs
