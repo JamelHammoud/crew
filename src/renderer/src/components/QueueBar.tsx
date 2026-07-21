@@ -68,6 +68,11 @@ function QueueRow({
     <div className="group flex items-center gap-2 py-0.5">
       <span className="text-sm font-semibold text-fg-muted shrink-0">{item.author}</span>
       <span className="text-sm text-fg-secondary truncate flex-1">{item.text}</span>
+      {item.agentLabel && (
+        <span className="shrink-0">
+          <Pill>{item.agentLabel}</Pill>
+        </span>
+      )}
       {item.self && (
         <span className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
           <Tooltip label="Edit">
