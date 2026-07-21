@@ -147,21 +147,28 @@ export default function Docs() {
   })
 
   const commitTitle = () => {
+    if (current === 'main') {
+      setTitle(displayTitle(current))
+      return
+    }
+    const clean = title.replace(/\s+/g, ' ').trim()
     const name = slugify(title)
-    if (!name || current === 'main') {
-      setTitle(prettify(current))
-      return
-    }
     const parent = parentOf(current)
-    const slug = parent ? `${parent}/${name}` : name
-    if (slug === current) {
-      setTitle(prettify(current))
-      return
+    let target = current
+    if (name) {
+      const slug = parent ? `${parent}/${name}` : name
+      if (slug !== current) {
+        target = docs[slug] !== undefined ? freeSlug(slug) : slug
+        editorRef.current?.flush()
+        renameDoc(current, target)
+        setPage(target)
+      }
     }
-    const target = docs[slug] !== undefined ? freeSlug(slug) : slug
-    editorRef.current?.flush()
-    renameDoc(current, target)
-    setPage(target)
+    // Keep the verbatim title (symbols and all); fall back to the slug-derived
+    // name when it adds nothing, so titles.json only holds genuine titles.
+    const desired = clean === prettify(target) ? '' : clean
+    if (target !== current || desired !== (docTitles[current] ?? '')) setDocTitle(target, desired)
+    setTitle(clean || prettify(target))
   }
 
   const renderNode = (node: PageNode, depth: number) => {
