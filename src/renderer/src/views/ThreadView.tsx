@@ -18,6 +18,7 @@ import Tooltip from '../components/Tooltip'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
 import { useCrew } from '../state/store'
+import { mentionsIn } from '../../../shared/llm'
 
 export default function ThreadView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)

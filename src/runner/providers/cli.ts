@@ -20,6 +20,10 @@ export interface CommandInvocation {
   args: string[]
 }
 
+export function detachCliProcess(platform = process.platform): boolean {
+  return platform !== 'win32'
+}
+
 export function commandInvocation(
   command: string,
   args: string[],
@@ -84,8 +88,12 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const child = spawn(invocation.command, invocation.args, {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env },
-        detached: true
+        detached: detachCliProcess(),
+        stdio: [opts.streamInput ? 'pipe' : 'ignore', 'pipe', 'pipe']
       })
+      const stdout = child.stdout
+      const stderr = child.stderr
+      if (!stdout || !stderr) throw new Error(`${opts.label} could not open its output streams.`)
       let text = ''
       let errText = ''
       let buffer = ''
@@ -237,7 +245,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         reportTokens()
       }
 
-      child.stdout.on('data', data => {
+      stdout.on('data', data => {
         bump()
         const chunk = data.toString()
         if (!opts.parser) {
@@ -254,7 +262,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         buffer = lines.pop() ?? ''
         for (const line of lines) handleLine(line)
       })
-      child.stderr.on('data', data => {
+      stderr.on('data', data => {
         bump()
         errText += data.toString()
       })
@@ -276,7 +284,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             const mins = Math.round(idleMs / 60000)
             reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} sent no output for ${mins}m and was stopped.`))
           } else if (code === 0) {
-            resolve({ text: text.trim() || raw.trim() })
+            const result = text.trim() || raw.trim()
+            if (!result && errText.trim()) reject(new Error(errText.trim()))
+            else resolve({ text: result })
           } else {
             reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} exited with code ${code}`))
           }
@@ -297,10 +307,6 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
 
       if (opts.streamInput) {
         writeMessage(prompt)
-      } else {
-        // Codex reads stdin to EOF even when the prompt is an argument, so an
-        // open pipe hangs the process before it ever contacts the model.
-        child.stdin?.end()
       }
 
       // Start the clock at spawn: a process that hangs before its first byte
