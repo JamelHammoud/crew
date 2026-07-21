@@ -2,12 +2,16 @@ import AgentCard from '../components/AgentCard'
 import Avatar from '../components/Avatar'
 import CreateAgent from '../components/CreateAgent'
 import Pill from '../components/Pill'
-import UsageLimits from '../components/UsageLimits'
 import { useCrew } from '../state/store'
 
 function instanceOf(agentId: string): string {
   const slash = agentId.indexOf('/')
   return slash === -1 ? agentId : agentId.slice(slash + 1)
+}
+
+function usageAccountOf(agent: { usage?: { provider: string; accountId?: string } }): string | null {
+  if (!agent.usage?.accountId) return null
+  return `${agent.usage.provider}:${agent.usage.accountId}`
 }
 
 export default function Dashboard() {
@@ -52,6 +56,10 @@ export default function Dashboard() {
               {sortedAgents.map(agent => {
                 const mine = agent.ownerId === selfId
                 const running = activePrompts[agent.id] ?? []
+                const usageAccount = usageAccountOf(agent)
+                const sharesUsageAccount = Boolean(
+                  usageAccount && sortedAgents.some(other => other.id !== agent.id && usageAccountOf(other) === usageAccount)
+                )
                 return (
                   <AgentCard
                     key={agent.id}
@@ -60,14 +68,13 @@ export default function Dashboard() {
                     onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
                     onRemove={mine ? () => void window.crew.removeAgent(instanceOf(agent.id)) : undefined}
+                    sharesUsageAccount={sharesUsageAccount}
                   />
                 )
               })}
             </div>
           )}
         </section>
-
-        <UsageLimits agents={sortedAgents} />
       </div>
     </div>
   )
