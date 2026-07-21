@@ -729,18 +729,26 @@ export class CrewSession {
     return agent
   }
 
-  private enqueuePrompt(agent: AgentState, member: Member, text: string, threadId: string, attachments: Attachment[]): void {
+  private enqueuePrompt(
+    agent: AgentState,
+    member: Member,
+    text: string,
+    threadId: string,
+    attachments: Attachment[],
+    sharedMessageId?: string
+  ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
     const entry: QueuedPrompt = {
       promptId: randomUUID(),
+      agentId: agent.id,
       text,
       byName: member.name,
       authorId: member.id,
       threadId,
       attachments,
-      messageId: randomUUID(),
-      emitted: false
+      messageId: sharedMessageId ?? randomUUID(),
+      emitted: sharedMessageId !== undefined
     }
     if (!agent.runner) {
       this.emitThreadMessage(entry, agent.id)
@@ -749,7 +757,7 @@ export class CrewSession {
     }
     // A message that arrives mid-run goes straight into the run when the agent
     // can take it, so it steers the work in progress instead of waiting.
-    if (thread.running && agent.steerable) {
+    if (thread.running && this.prompts.get(thread.running)?.agentId === agent.id && agent.steerable) {
       this.emitThreadMessage(entry, agent.id)
       this.sendSteer(agent, thread.running, {
         messageId: entry.messageId,
@@ -762,6 +770,7 @@ export class CrewSession {
       return
     }
     thread.queue.push(entry)
+    if (entry.emitted) this.routed(entry.messageId, threadId, entry.promptId, 'queued')
     this.broadcastQueue(thread)
     this.runThread(thread)
   }
