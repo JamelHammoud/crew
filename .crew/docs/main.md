@@ -16,6 +16,7 @@
 
 ## Completed
 
+* [x] Better at finding what CLIs are available on your computer
 * [x] Ability to mention a different agent while in a thread
 * [x] Add the ability to "archive" a thread (most likely the same right-click context menu as message deleting). Don't delete the info, just don't show it in chat. We'll come up with a place for them to be in a later project
 * [x] Deleting messages
