@@ -141,6 +141,18 @@ body {
   background-clip: padding-box;
 }
 
+.light ::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.14);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgb(0 0 0 / 0.24);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
 .app-drag {
   -webkit-app-region: drag;
 }
