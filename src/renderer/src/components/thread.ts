@@ -106,6 +106,17 @@ export function buildThread(
         route: routeBadge(route, started, ended)
       })
     }
+    if (event.kind === 'thread.agent') {
+      items.push({
+        key: event.id,
+        ts: event.ts,
+        kind: 'note',
+        author: 'crew',
+        self: false,
+        text: `${event.byName} handed this thread to ${event.agentLabel}`,
+        streaming: false
+      })
+    }
     if (event.kind === 'agent.start') {
       const live = !ended.has(event.promptId)
       const runSteps = steps[event.promptId] ?? []
