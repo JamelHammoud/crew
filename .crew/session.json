@@ -225,36 +225,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784600888119,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 72,
-            "severity": "normal",
-            "resetsAt": 1784616600124,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 19,
-            "severity": "normal",
-            "resetsAt": 1784894400124,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 31,
-            "severity": "normal",
-            "resetsAt": 1784894400124,
-            "active": false
-          }
-        ],
+        "fetchedAt": 1784600948121,
+        "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
+        "plan": "pro",
+        "error": "Could not read usage from Anthropic (HTTP 429)."
       }
     },
     {
@@ -470,36 +446,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784600888119,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 72,
-            "severity": "normal",
-            "resetsAt": 1784616600124,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 19,
-            "severity": "normal",
-            "resetsAt": 1784894400124,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 31,
-            "severity": "normal",
-            "resetsAt": 1784894400124,
-            "active": false
-          }
-        ],
+        "fetchedAt": 1784600948121,
+        "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
+        "plan": "pro",
+        "error": "Could not read usage from Anthropic (HTTP 429)."
       }
     }
   ]
