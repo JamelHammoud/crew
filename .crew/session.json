@@ -229,12 +229,36 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784598571243,
-        "windows": [],
+        "fetchedAt": 1784571507486,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 100,
+            "severity": "critical",
+            "resetsAt": 1784584800053,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 14,
+            "severity": "normal",
+            "resetsAt": 1784894400053,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 26,
+            "severity": "normal",
+            "resetsAt": 1784894400053,
+            "active": false
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Could not read usage from Anthropic (HTTP 429)."
+        "plan": "pro"
       }
     },
     {
@@ -310,7 +334,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784598571301,
+        "fetchedAt": 1784571507764,
         "windows": [
           {
             "key": "primary",
@@ -397,7 +421,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784598571301,
+        "fetchedAt": 1784571507764,
         "windows": [
           {
             "key": "primary",
@@ -652,7 +676,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784598571301,
+        "fetchedAt": 1784571507764,
         "windows": [
           {
             "key": "primary",
@@ -735,14 +759,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784598613592,
+        "fetchedAt": 1784598673593,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 4,
             "severity": "normal",
-            "resetsAt": 1784612999641,
+            "resetsAt": 1784612999883,
             "active": false
           },
           {
@@ -750,7 +774,7 @@
             "label": "Weekly (all models)",
             "percent": 7,
             "severity": "normal",
-            "resetsAt": 1785049199641,
+            "resetsAt": 1785049199883,
             "active": false
           },
           {
@@ -758,7 +782,7 @@
             "label": "Weekly (Fable)",
             "percent": 13,
             "severity": "normal",
-            "resetsAt": 1785049199641,
+            "resetsAt": 1785049199883,
             "active": true
           }
         ],
