@@ -1041,6 +1041,7 @@ export class CrewSession {
   private emit(event: SessionEvent, opts: { persist?: boolean } = {}): void {
     const ephemeral =
       event.kind === 'doc' ||
+      event.kind === 'doc.titled' ||
       event.kind === 'doc.renamed' ||
       event.kind === 'doc.deleted' ||
       event.kind === 'message.edited'
