@@ -34,11 +34,51 @@ function serveAttachment(session: CrewSession, file: string, res: http.ServerRes
     .pipe(res)
 }
 
+function receiveAttachment(session: CrewSession, req: http.IncomingMessage, res: http.ServerResponse): void {
+  const mime = (req.headers['content-type'] ?? '').split(';')[0].trim()
+  let name = 'image'
+  try {
+    const header = req.headers['x-attachment-name']
+    if (typeof header === 'string') name = decodeURIComponent(header)
+  } catch {
+    name = 'image'
+  }
+  const chunks: Buffer[] = []
+  let size = 0
+  req.on('data', chunk => {
+    size += chunk.length
+    if (size <= MAX_ATTACHMENT_BYTES) chunks.push(chunk as Buffer)
+  })
+  req.on('end', () => {
+    if (size > MAX_ATTACHMENT_BYTES) {
+      res.writeHead(413)
+      res.end()
+      return
+    }
+    const saved = session.saveAttachment(mime, name, Buffer.concat(chunks))
+    if (!saved) {
+      res.writeHead(400)
+      res.end()
+      return
+    }
+    res.writeHead(200, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(saved))
+  })
+  req.on('error', () => {
+    res.writeHead(400)
+    res.end()
+  })
+}
+
 export function createCrewServer(session: CrewSession, opts: CrewServerOptions = {}): Promise<CrewServer> {
   const httpServer = http.createServer((req, res) => {
     if (req.url === '/') {
       res.writeHead(200, { 'content-type': 'text/plain' })
       res.end('crew')
+      return
+    }
+    if (req.method === 'POST' && req.url === '/attachments') {
+      receiveAttachment(session, req, res)
       return
     }
     const attachment = /^\/attachments\/([^/?#]+)$/.exec(req.url ?? '')
