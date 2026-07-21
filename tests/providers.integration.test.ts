@@ -3,11 +3,16 @@ import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
 import { parseCodexLine } from '../src/runner/providers/codex'
+import { parseGrokLine } from '../src/runner/providers/grok'
 import { parseKimiLine } from '../src/runner/providers/kimi'
 import { tmpDir } from './helpers/session'
 import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
 import { commandExists, makeCliProvider } from '../src/runner/providers/cli'
+import { builtinProviders } from '../src/runner/providers/detect'
+import { installCommand, runInstall } from '../src/runner/providers/install'
 import { crewPath, resolveCommand } from '../src/runner/providers/path'
+import type { Provider } from '../src/runner/providers/types'
+import { AppSession } from '../src/main/session'
 
 describe('fake provider contract', () => {
   const repo = tmpDir('providers')
@@ -189,6 +194,93 @@ describe('codex parser matches the real CLI format', () => {
       { error: "You've hit your usage limit." }
     ])
     expect(parse({ type: 'turn.failed', error: { message: 'boom' } })).toEqual([{ error: 'boom' }])
+  })
+})
+
+describe('grok parser matches the documented streaming-json format', () => {
+  const parse = (event: unknown) => parseGrokLine(JSON.stringify(event))
+
+  it('ignores noise and unparseable lines', () => {
+    expect(parseGrokLine('not json')).toEqual([])
+    expect(parse({ type: 'session.start', session_id: 'x' })).toEqual([])
+    expect(parse({ type: 'tool.call' })).toEqual([])
+  })
+
+  it('parses messages and thinking under either field name', () => {
+    expect(parse({ type: 'model.message', text: 'ok' })).toEqual([{ text: 'ok' }])
+    expect(parse({ type: 'model.message', content: 'ok' })).toEqual([{ text: 'ok' }])
+    expect(parse({ type: 'model.thinking', text: 'let me check' })).toEqual([{ thinking: 'let me check' }])
+  })
+
+  it('tracks tool calls and results, spotting subagents', () => {
+    const call = parse({ type: 'tool.call', id: 'c1', name: 'Bash', arguments: '{"command":"ls -la"}' })
+    expect(call).toEqual([{ activity: { id: 'c1', kind: 'tool', name: 'Bash', status: 'started', detail: 'ls -la' } }])
+
+    const sub = parse({ type: 'tool.call', id: 'c2', name: 'Task', arguments: { description: 'explore' } })
+    expect(sub[0].activity?.kind).toBe('subagent')
+    expect(sub[0].activity?.detail).toBe('explore')
+
+    expect(parse({ type: 'tool.result', id: 'c1', output: 'done' })).toEqual([
+      { activity: { id: 'c1', kind: 'tool', name: '', status: 'finished' } }
+    ])
+  })
+
+  it('reports tokens and errors', () => {
+    expect(parse({ type: 'session.end', usage: { output_tokens: 7 } })).toEqual([{ tokens: 7 }])
+    expect(parse({ type: 'error', message: 'Not signed in.' })).toEqual([{ error: 'Not signed in.' }])
+  })
+})
+
+describe('provider install', () => {
+  const installProvider = (command: string): Provider => ({
+    name: 'fakeinstall',
+    label: 'FakeInstall',
+    fields: () => [],
+    detect: async () => false,
+    start: () => ({ done: Promise.reject(new Error('not runnable')), kill: () => {} }),
+    install: { darwin: command, linux: command }
+  })
+
+  it('every builtin provider has an installer for the desktop platforms', () => {
+    expect(builtinProviders.map(p => p.name)).toEqual(['kimi', 'codex', 'claude', 'grok'])
+    for (const provider of builtinProviders) {
+      for (const platform of ['darwin', 'linux', 'win32']) {
+        expect(installCommand(provider, platform), `${provider.name} on ${platform}`).toBeTruthy()
+      }
+      expect(installCommand(provider, 'freebsd')).toBeNull()
+    }
+  })
+
+  it('runs the platform command and resolves on success', async () => {
+    const dir = tmpDir('install')
+    const marker = path.join(dir, 'installed')
+    await runInstall(installProvider(`printf ok > "${marker}"`))
+    expect(fs.readFileSync(marker, 'utf8')).toBe('ok')
+  })
+
+  it('rejects with the installer output on failure', async () => {
+    await expect(runInstall(installProvider('echo boom >&2; exit 3'))).rejects.toThrow(/boom/)
+  })
+
+  it('rejects when the platform has no installer', async () => {
+    await expect(runInstall(installProvider('true'), 'freebsd')).rejects.toThrow(/does not know how to install/)
+  })
+})
+
+describe('capabilities list every builtin provider', () => {
+  it('marks each one installed or not instead of hiding it', async () => {
+    const caps = await new AppSession().capabilities()
+    expect(caps.map(c => c.provider)).toEqual(['kimi', 'codex', 'claude', 'grok'])
+    expect(caps.map(c => c.label)).toEqual(['Kimi', 'Codex', 'Claude', 'Grok'])
+    for (const cap of caps) {
+      expect(typeof cap.installed).toBe('boolean')
+      expect(cap.installable).toBe(true)
+      expect(Array.isArray(cap.fields)).toBe(true)
+    }
+  })
+
+  it('refuses to install a provider it does not know', async () => {
+    await expect(new AppSession().installProvider('nope')).rejects.toThrow(/Unknown provider/)
   })
 })
 
