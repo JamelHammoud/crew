@@ -225,12 +225,27 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784603310498,
-        "windows": [],
+        "fetchedAt": 1784641441449,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 21,
+            "severity": "normal",
+            "resetsAt": 1784894400313,
+            "active": true
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Could not read usage from Anthropic (HTTP 429)."
+        "plan": "pro"
       }
     },
     {
@@ -446,12 +461,27 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784603310498,
-        "windows": [],
+        "fetchedAt": 1784641441449,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 21,
+            "severity": "normal",
+            "resetsAt": 1784894400313,
+            "active": true
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Could not read usage from Anthropic (HTTP 429)."
+        "plan": "pro"
       }
     },
     {
@@ -488,6 +518,14 @@
             {
               "value": "gpt-5.5",
               "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
             }
           ],
           "default": ""
@@ -527,7 +565,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784603310626,
+        "fetchedAt": 1784641441836,
         "windows": [
           {
             "key": "primary",

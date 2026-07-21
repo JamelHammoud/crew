@@ -3203,3 +3203,11 @@
 {"id":"337cc17a-0267-4d74-8910-5b1538c2ff47","ts":1784603310484,"kind":"agent.online","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
 {"id":"a5d446ba-8915-40f7-b41b-4a6d71bcd87f","ts":1784603310484,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
 {"id":"5b62ee06-9695-4b2e-a9b8-4c75bf2a2d6f","ts":1784603310485,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"01886955-204f-4a3c-b724-57e38a9ce448","ts":1784641404063,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"3a9855b2-57d8-41a4-ad49-cb6c1e877e61","ts":1784641404064,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"8ad96068-eabc-4fc3-bb6a-d5ac2361789c","ts":1784641404064,"kind":"agent.offline","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
+{"id":"a582c34e-81e9-44e9-9647-e5de3ca7d8dc","ts":1784641404064,"kind":"agent.offline","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
+{"id":"46f01d6b-7c70-41a6-8240-a667f443a8ab","ts":1784641441434,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"b06bbd1c-248b-491e-91fd-8e1b23afc681","ts":1784641441435,"kind":"agent.online","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
+{"id":"35e234bf-7a6e-4f54-8efd-ece66a70e097","ts":1784641441435,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
+{"id":"53628692-aa13-48e3-b285-5bba2fb4cf8f","ts":1784641441436,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
