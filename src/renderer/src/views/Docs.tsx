@@ -135,20 +135,28 @@ export default function Docs() {
   })
 
   const commitTitle = () => {
-    const name = slugify(title)
-    if (!name || current === 'main') {
-      setTitle(prettify(current))
+    const trimmed = title.trim()
+    setTitle(trimmed)
+    if (trimmed === titleOf(current)) return
+    if (docs[current] === undefined) {
+      updateDoc(current, '', trimmed)
+      return
+    }
+    if (current === 'main') {
+      retitleDoc(current, trimmed)
       return
     }
     const parent = parentOf(current)
-    const slug = parent ? `${parent}/${name}` : name
-    if (slug === current) {
-      setTitle(prettify(current))
+    const { base: oldBase, code } = splitPageCode(lastSegment(current))
+    const base = slugify(trimmed) || 'untitled'
+    if (base === oldBase) {
+      retitleDoc(current, trimmed)
       return
     }
-    const target = docs[slug] !== undefined ? freeSlug(slug) : slug
+    const kept = code ? pageSlug(parent, base, code) : null
+    const target = kept && docs[kept] === undefined ? kept : freshSlug(parent, base)
     editorRef.current?.flush()
-    renameDoc(current, target)
+    renameDoc(current, target, trimmed)
     setPage(target)
   }
 
