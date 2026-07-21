@@ -35,6 +35,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
+  const agents = useCrew(s => s.agents)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useAutoResize(text)
@@ -45,7 +46,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
   const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
-  const draftMentions = useCrew(s => mentionsIn(text, s.agents))
+  const draftMentions = useMemo(() => mentionsIn(text, agents), [text, agents])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
   const threadSteps = useMemo(() => {
     const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
