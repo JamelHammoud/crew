@@ -246,6 +246,96 @@ describe('threads', () => {
     expect(tokens.agentId).toBe(fake)
   })
 
+  async function connectPair(env: NodeJS.ProcessEnv = {}) {
+    const runner = new Runner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider(env)],
+      agents: [
+        { instanceId: 'a', provider: 'fake', name: 'Fake A', settings: {} },
+        { instanceId: 'b', provider: 'fake', name: 'Fake B', settings: {} }
+      ],
+      reconnectDelayMs: 100
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    return runner
+  }
+
+  it('a mention in a thread hands it to that agent', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectPair()
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake A')
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake B')
+    const idA = agentId('jamel', 'a')
+    const idB = agentId('jamel', 'b')
+
+    ui.chat('start here @Fake A', [idA])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    expect(started.agentId).toBe(idA)
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
+
+    ui.chat('over to you @Fake B', [idB], started.threadId)
+    const handed = (await ui.waitForEvent(
+      e => e.kind === 'thread.agent' && e.threadId === started.threadId
+    )) as Extract<SessionEvent, { kind: 'thread.agent' }>
+    expect(handed.agentId).toBe(idB)
+    expect(handed.agentLabel).toBe('Fake B')
+
+    const reply = (await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === started.threadId && e.agentId === idB
+    )) as Ended
+    expect(reply.ok).toBe(true)
+    expect(reply.text).toContain('over to you')
+    expect(reply.text).toContain('start here')
+
+    ui.chat('keep going', [], started.threadId)
+    const followUp = (await ui.waitForEvent(
+      e => e.kind === 'agent.start' && e.threadId === started.threadId && e.promptText === 'keep going'
+    )) as Extract<SessionEvent, { kind: 'agent.start' }>
+    expect(followUp.agentId).toBe(idB)
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === followUp.promptId)) as Ended
+    expect(end.ok).toBe(true)
+  })
+
+  it('mentioning two agents in a thread runs both on one message', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectPair()
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake A')
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake B')
+    const idA = agentId('jamel', 'a')
+    const idB = agentId('jamel', 'b')
+
+    ui.chat('start here @Fake A', [idA])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
+
+    ui.chat('both of you look at this @Fake A @Fake B', [idA, idB], started.threadId)
+    const ends: Ended[] = []
+    for (let i = 0; i < 2; i++) {
+      const end = (await ui.waitForEvent(
+        e =>
+          e.kind === 'agent.end' &&
+          e.threadId === started.threadId &&
+          e.promptText !== undefined === false &&
+          !ends.some(seen => seen.promptId === e.promptId) &&
+          Boolean(e.text?.includes('both of you'))
+      )) as Ended
+      ends.push(end)
+    }
+    expect(new Set(ends.map(e => e.agentId))).toEqual(new Set([idA, idB]))
+    expect(ends.every(e => e.ok)).toBe(true)
+
+    const copies = ui.events.filter(
+      e => e.kind === 'message' && e.threadId === started.threadId && e.text.includes('both of you')
+    )
+    expect(copies.length).toBe(1)
+    expect(ui.events.some(e => e.kind === 'thread.agent')).toBe(false)
+  })
+
   it('stops one thread without touching another', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
