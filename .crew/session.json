@@ -604,6 +604,133 @@
         "accountLabel": "devjamel@gmail.com",
         "plan": "max"
       }
+    },
+    {
+      "id": "jamel/codex",
+      "label": "Codex",
+      "provider": "codex",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            },
+            {
+              "value": "gpt-5.3-codex-spark",
+              "label": "gpt-5.3-codex-spark"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784608769705,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "Weekly limit",
+            "percent": 79
+          }
+        ],
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
+      }
+    },
+    {
+      "id": "jamel/grok",
+      "label": "Grok",
+      "provider": "grok",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "grok-4.5",
+              "label": "grok-4.5"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ]
 }
