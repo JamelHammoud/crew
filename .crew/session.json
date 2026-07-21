@@ -759,7 +759,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784595313130,
+        "fetchedAt": 1784595373133,
         "windows": [
           {
             "key": "session",
@@ -773,7 +773,7 @@
             "label": "Weekly (all models)",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785049199577,
+            "resetsAt": 1785049200400,
             "active": false
           },
           {
@@ -781,7 +781,7 @@
             "label": "Weekly (Fable)",
             "percent": 12,
             "severity": "normal",
-            "resetsAt": 1785049199578,
+            "resetsAt": 1785049200400,
             "active": true
           }
         ],
@@ -789,6 +789,74 @@
         "accountLabel": "jamel@envoy.co",
         "plan": "team"
       }
+    },
+    {
+      "id": "jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56",
+      "label": "Bob",
+      "provider": "claude",
+      "ownerId": "dc050f93-2ad8-433c-8bf8-0f329417ea55",
+      "ownerName": "Jamel (Envoy)",
+      "settings": {
+        "model": "opus",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true
     }
   ]
 }
