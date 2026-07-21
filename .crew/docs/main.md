@@ -9,7 +9,7 @@ title: "Docs"
 * [ ] Have the app running in the background
 * [ ] Keep the computer awake/alive while crew is open
 * [ ] Auto-archive threads
-* [ ] 
+* [ ] crtl-f doesn't work in docs
 
 ## In progress
 
