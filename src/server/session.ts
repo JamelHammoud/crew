@@ -222,15 +222,7 @@ export class CrewSession {
       queues: Object.fromEntries(
         [...this.threads.values()]
           .filter(thread => thread.queue.length > 0)
-          .map(thread => [
-            thread.id,
-            thread.queue.map(({ promptId, authorId, byName, text }) => ({
-              promptId,
-              authorId,
-              authorName: byName,
-              text
-            }))
-          ])
+          .map(thread => [thread.id, this.queueItems(thread)])
       )
     }
   }
