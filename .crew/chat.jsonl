@@ -2747,3 +2747,15 @@
 {"id":"c6434513-581c-4bfe-a0b7-d8fa87b7e17d","ts":1784598929208,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"83960dec-4a84-4858-bb2e-c198785a295a","ts":1784598929208,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"b535abd8-97c8-4c1f-8019-609c62d6756b","ts":1784598929208,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"90d09aef-bde0-44d7-9560-9d65b5f2d0c8","ts":1784600946705,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"378c8e60-03ac-410a-b63f-7e0193d1d3ad","ts":1784600946706,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"55b7fe5a-32fd-4b8b-b0aa-af87a5ddb3a4","ts":1784600946706,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"2eb12d1f-ac3c-40f1-b45a-bde4425daced","ts":1784600946706,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"0fbf02d2-6cc0-41c5-9e93-b9ec238ce3e3","ts":1784600946706,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"3f0e1fb9-236e-4acf-b886-67f7f55ae69f","ts":1784600946707,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"08e7ebaa-7169-4f52-909f-94039aad2093","ts":1784600947717,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"d64facc9-a081-45bf-aa0b-9df7e91046e4","ts":1784600947727,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"7da2d51d-8763-4a55-afe7-ee74867dbcc9","ts":1784600947727,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"55c11201-c49c-4261-ac34-1974d1802ec8","ts":1784600947727,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"45a99ae0-aff1-4a6c-8f69-e60a12ce873a","ts":1784600947727,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"53653aca-0434-4cde-9725-f723f103a7dd","ts":1784600947727,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
