@@ -113,6 +113,62 @@ function createWindow(): void {
   }
 }
 
+function openWindow(): void {
+  const win = BrowserWindow.getAllWindows()[0]
+  if (!win) {
+    createWindow()
+    return
+  }
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.focus()
+}
+
+// The app ships no icon asset, so the tray dot is drawn in memory. It follows
+// the system theme: light dot on a dark taskbar, dark dot on a light one.
+function trayIcon(): NativeImage {
+  const size = 32
+  const shade = nativeTheme.shouldUseDarkColors ? 255 : 0
+  const center = (size - 1) / 2
+  const radius = size * 0.34
+  const buffer = Buffer.alloc(size * size * 4)
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const alpha = Math.max(0, Math.min(1, radius + 0.5 - Math.hypot(x - center, y - center)))
+      const i = (y * size + x) * 4
+      buffer[i] = shade
+      buffer[i + 1] = shade
+      buffer[i + 2] = shade
+      buffer[i + 3] = Math.round(alpha * 255)
+    }
+  }
+  return nativeImage.createFromBitmap(buffer, { width: size, height: size, scaleFactor: 2 })
+}
+
+function refreshTray(): void {
+  if (!tray) return
+  const active = session.current() !== null
+  tray.setToolTip(active ? 'crew is sharing your agents' : 'crew')
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      { label: active ? 'Sharing your agents' : 'Not in a session', enabled: false },
+      { type: 'separator' },
+      { label: 'Open crew', click: openWindow },
+      { label: 'Quit crew', click: () => app.quit() }
+    ])
+  )
+}
+
+// On mac the dock already keeps the app alive without a window; everywhere
+// else the tray is the handle back to a session running in the background.
+function installTray(): void {
+  if (process.platform === 'darwin') return
+  tray = new Tray(trayIcon())
+  tray.on('click', openWindow)
+  nativeTheme.on('updated', () => tray?.setImage(trayIcon()))
+  refreshTray()
+}
+
 app.whenReady().then(() => {
   powerSaveBlocker.start('prevent-app-suspension')
   installMenu()
