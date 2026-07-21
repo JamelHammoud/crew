@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
 import TopBar, { type Tab } from './components/TopBar'
 import { useCrew } from './state/store'
@@ -10,8 +11,18 @@ import ThreadView from './views/ThreadView'
 
 export default function App() {
   const connection = useCrew(s => s.connection)
+  if (connection === 'booting') return <Boot />
   if (connection === 'home') return <Home />
   return <Session />
+}
+
+function Boot() {
+  return (
+    <div className="relative h-full flex items-center justify-center">
+      <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
+      <Spinner size={20} />
+    </div>
+  )
 }
 
 function Session() {
