@@ -25,6 +25,32 @@ export function imagesFrom(items: FileList | File[] | null | undefined): File[] 
   return [...(items ?? [])].filter(file => isImageType(file.type) && file.size <= MAX_ATTACHMENT_BYTES)
 }
 
+export async function uploadImage(httpBase: string, file: File): Promise<string> {
+  const res = await fetch(`${httpBase}/attachments`, {
+    method: 'POST',
+    headers: {
+      'content-type': file.type,
+      'x-attachment-name': encodeURIComponent(file.name || 'image')
+    },
+    body: file
+  })
+  if (!res.ok) throw new Error(`Upload failed (${res.status})`)
+  const saved = (await res.json()) as { file: string }
+  return `${httpBase}/attachments/${saved.file}`
+}
+
+const ATTACH_MARK = '](attachments/'
+
+export function localizeDoc(markdown: string, httpBase: string): string {
+  if (!httpBase) return markdown
+  return markdown.replaceAll(ATTACH_MARK, `](${httpBase}/attachments/`)
+}
+
+export function relativizeDoc(markdown: string, httpBase: string): string {
+  if (!httpBase) return markdown
+  return markdown.replaceAll(`](${httpBase}/attachments/`, ATTACH_MARK)
+}
+
 export async function readImages(files: File[], taken: number): Promise<PendingAttachment[]> {
   const room = Math.max(0, MAX_ATTACHMENTS - taken)
   const read = await Promise.all(

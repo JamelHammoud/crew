@@ -18,7 +18,6 @@ type Feed =
 export default function Chat() {
   const events = useCrew(s => s.events)
   const selfId = useCrew(s => s.selfId)
-  const agents = useCrew(s => s.agents)
   const threads = useCrew(s => s.threads)
   const threadPrompts = useCrew(s => s.threadPrompts)
   const steps = useCrew(s => s.steps)
@@ -29,11 +28,9 @@ export default function Chat() {
   const setChatDraft = useCrew(s => s.setChatDraft)
   const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
 
-  const [mentionQuery, setMentionQuery] = useState<string | null>(null)
-  const [activeMention, setActiveMention] = useState(0)
   const inputRef = useAutoResize(text)
+  const mention = useMentionPicker(text, setChatDraft, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
   const didInitialScroll = useRef(false)
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
