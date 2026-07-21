@@ -1120,7 +1120,7 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    route?: { messageId: string; mentions: string[] }
+    opts: { route?: { messageId: string; mentions: string[] }; silent?: boolean; studio?: StudioPromptRef } = {}
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -1131,13 +1131,15 @@ export class CrewSession {
       byName: member.name,
       authorId: member.id,
       threadId,
-      mentions: route?.mentions ?? [agent.id],
+      mentions: opts.route?.mentions ?? [agent.id],
       attachments,
-      messageId: route?.messageId ?? randomUUID()
+      messageId: opts.route?.messageId ?? randomUUID(),
+      silent: opts.silent,
+      studio: opts.studio
     }
     if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
-      this.systemMessage(`${agent.label} is not here right now.`, threadId)
+      this.threadNotice(entry, `${agent.label} is not here right now.`)
       return
     }
     // A message that arrives mid-run goes straight into the run when it is for
@@ -1152,7 +1154,9 @@ export class CrewSession {
         byName: member.name,
         authorId: member.id,
         threadId,
-        attachments
+        attachments,
+        silent: entry.silent,
+        studio: entry.studio
       })
       return
     }
