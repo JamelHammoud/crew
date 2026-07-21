@@ -51,8 +51,9 @@ interface CrewState {
   deleteMessage: (messageId: string) => void
   archiveThread: (threadId: string) => void
   cancelPrompt: (promptId: string) => void
-  updateDoc: (page: string, text: string) => void
-  renameDoc: (from: string, to: string) => void
+  updateDoc: (page: string, text: string, title?: string) => void
+  retitleDoc: (page: string, title: string) => void
+  renameDoc: (from: string, to: string, title?: string) => void
   deleteDoc: (page: string) => void
   editQueued: (promptId: string, text: string) => void
   removeQueued: (promptId: string) => void
