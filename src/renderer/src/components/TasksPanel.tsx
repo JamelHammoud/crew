@@ -314,7 +314,7 @@ export default function TasksPanel({
 
   const checkedItem = (todo: Todo) => (
     <div key={todo.id} className="group relative">
-      <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-ink-hover">
+      <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover">
         <span className="h-[22px] shrink-0 flex items-center">
           <Tooltip label="Reopen">
             <button
