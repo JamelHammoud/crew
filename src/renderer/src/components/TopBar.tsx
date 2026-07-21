@@ -60,7 +60,7 @@ export default function TopBar({
             key={t.id}
             onClick={() => onTab(t.id)}
             className={`flex items-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
-              tab === t.id ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
+              tab === t.id ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
             }`}
           >
             {tab === t.id && <TabIcon tab={t.id} />}
@@ -78,7 +78,7 @@ export default function TopBar({
             onClick={onToggleTasks}
             aria-label="Tasks"
             className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-              tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-white/[0.04]'
+              tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
             }`}
           >
             <CheckCircleIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
@@ -93,8 +93,8 @@ export default function TopBar({
           <button
             onClick={() => setMenuOpen(open => !open)}
             aria-label="Profile menu"
-            className={`block rounded-full transition-all duration-150 hover:ring-2 hover:ring-white/15 active:scale-95 ${
-              menuOpen ? 'ring-2 ring-white/25' : ''
+            className={`block rounded-full transition-all duration-150 hover:ring-2 hover:ring-fg/15 active:scale-95 ${
+              menuOpen ? 'ring-2 ring-fg/25' : ''
             }`}
           >
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
@@ -109,7 +109,7 @@ export default function TopBar({
                 </div>
               )}
             </div>
-            <div className="h-px bg-white/[0.06] my-1" />
+            <div className="h-px bg-fg/[0.06] my-1" />
             {joinLink && (
               <MenuItem
                 icon={copied ? <CheckIcon /> : <LinkIcon />}

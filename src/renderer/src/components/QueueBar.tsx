@@ -46,7 +46,7 @@ function QueueRow({
           <button
             onClick={commit}
             aria-label="Save"
-            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
           >
             <CheckIcon className="w-3.5 h-3.5" />
           </button>
@@ -55,7 +55,7 @@ function QueueRow({
           <button
             onClick={() => setEditing(false)}
             aria-label="Cancel"
-            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
           >
             <XMarkIcon className="w-3.5 h-3.5" />
           </button>
@@ -82,7 +82,7 @@ function QueueRow({
                 setEditing(true)
               }}
               aria-label="Edit queued message"
-              className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors"
+              className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors"
             >
               <PencilIcon className="w-3.5 h-3.5" />
             </button>

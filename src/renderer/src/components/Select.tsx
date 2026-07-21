@@ -43,7 +43,7 @@ export default function Select({
                 setOpen(false)
               }}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors ${
-                selected ? 'text-fg' : 'text-fg-secondary hover:text-fg hover:bg-white/5'
+                selected ? 'text-fg' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
               }`}
             >
               <span className="flex-1">{option.label}</span>

@@ -40,7 +40,7 @@ export default function AgentCard({
                 <button
                   onClick={onStop}
                   aria-label="Stop"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.06] transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
                 >
                   <StopIcon className="w-4 h-4" />
                 </button>

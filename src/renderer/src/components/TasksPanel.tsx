@@ -207,7 +207,7 @@ export default function TasksPanel({
           <span className="block text-sm text-fg-muted truncate">
             {agent ? (
               <AgentName agent={agent}>
-                <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
+                <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
                   {row.thread.agentLabel}
                 </span>
               </AgentName>
@@ -275,7 +275,7 @@ export default function TasksPanel({
             {agent && (
               <span className="block text-sm text-fg-muted truncate">
                 <AgentName agent={agent}>
-                  <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
+                  <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
                     @{agent.label}
                   </span>
                 </AgentName>
@@ -381,7 +381,7 @@ export default function TasksPanel({
           <button
             onClick={onClose}
             aria-label="Close tasks"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-white/[0.06] active:scale-95"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
           >
             <XMarkIcon className="w-4 h-4" />
           </button>

@@ -163,7 +163,7 @@ export default function CreateAgent() {
               <button
                 onClick={create}
                 disabled={busy || !name.trim() || !cap?.installed}
-                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
               >
                 {busy && <Spinner size={14} />}
                 Create

@@ -73,7 +73,7 @@ export default function Composer({
                 onClick={onSend}
                 disabled={!canSend}
                 aria-label={sendLabel}
-                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
               >
                 <ArrowUpIcon className="w-5 h-5" />
               </button>
