@@ -125,14 +125,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784612258070,
+        "fetchedAt": 1784612372795,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 56,
             "severity": "normal",
-            "resetsAt": 1784620200321,
+            "resetsAt": 1784620200104,
             "active": true
           },
           {
@@ -140,7 +140,7 @@
             "label": "Weekly (all models)",
             "percent": 14,
             "severity": "normal",
-            "resetsAt": 1784930400321,
+            "resetsAt": 1784930400104,
             "active": false
           },
           {
@@ -148,7 +148,7 @@
             "label": "Weekly (Fable)",
             "percent": 27,
             "severity": "normal",
-            "resetsAt": 1784930400321,
+            "resetsAt": 1784930400104,
             "active": false
           }
         ],
@@ -490,7 +490,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784612318074,
+        "fetchedAt": 1784612372787,
         "windows": [
           {
             "key": "primary",
@@ -573,14 +573,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784612258070,
+        "fetchedAt": 1784612372795,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 56,
             "severity": "normal",
-            "resetsAt": 1784620200321,
+            "resetsAt": 1784620200104,
             "active": true
           },
           {
@@ -588,7 +588,7 @@
             "label": "Weekly (all models)",
             "percent": 14,
             "severity": "normal",
-            "resetsAt": 1784930400321,
+            "resetsAt": 1784930400104,
             "active": false
           },
           {
@@ -596,7 +596,7 @@
             "label": "Weekly (Fable)",
             "percent": 27,
             "severity": "normal",
-            "resetsAt": 1784930400321,
+            "resetsAt": 1784930400104,
             "active": false
           }
         ],
@@ -690,7 +690,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784612318074,
+        "fetchedAt": 1784612372787,
         "windows": [
           {
             "key": "primary",
