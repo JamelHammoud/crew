@@ -136,6 +136,7 @@ export class CrewSession {
   private resumeGraceMs: number
   private stepFlushMs: number
   private stepFlushes = new Map<string, { timer: NodeJS.Timeout; dirty: boolean }>()
+  readonly studios: StudioManager
   onSyncNeeded: (() => void) | null = null
 
   constructor(
@@ -145,6 +146,11 @@ export class CrewSession {
     this.cancelTimeoutMs = opts.cancelTimeoutMs ?? CANCEL_REPORT_TIMEOUT_MS
     this.resumeGraceMs = opts.resumeGraceMs ?? RESUME_GRACE_MS
     this.stepFlushMs = opts.stepFlushMs ?? STEP_FLUSH_MS
+    this.studios = new StudioManager(store, {
+      send: (ws, msg) => this.send(ws, msg),
+      broadcast: msg => this.broadcast(msg),
+      syncNeeded: () => this.onSyncNeeded?.()
+    })
     const persisted = store.loadSession()
     this.code = persisted?.code ?? randomBytes(3).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
