@@ -853,7 +853,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784612040899,
+        "fetchedAt": 1784612076174,
         "windows": [
           {
             "key": "primary",
@@ -936,7 +936,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784611975163,
+        "fetchedAt": 1784612076183,
         "windows": [
           {
             "key": "session",
@@ -959,7 +959,7 @@
             "label": "Weekly (Fable)",
             "percent": 26,
             "severity": "normal",
-            "resetsAt": 1784930400467,
+            "resetsAt": 1784930400468,
             "active": false
           }
         ],
@@ -1117,7 +1117,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784612040899,
+        "fetchedAt": 1784612076174,
         "windows": [
           {
             "key": "primary",
@@ -1200,7 +1200,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784611975163,
+        "fetchedAt": 1784612076183,
         "windows": [
           {
             "key": "session",
@@ -1223,7 +1223,7 @@
             "label": "Weekly (Fable)",
             "percent": 26,
             "severity": "normal",
-            "resetsAt": 1784930400467,
+            "resetsAt": 1784930400468,
             "active": false
           }
         ],
