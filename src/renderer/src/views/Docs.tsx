@@ -79,7 +79,7 @@ export default function Docs() {
   const tree = buildTree(Object.keys(docs))
 
   useEffect(() => {
-    setTitle(prettify(current))
+    setTitle(displayTitle(current))
     setExpanded(prev => {
       const next = new Set(prev)
       let parent = parentOf(current)
