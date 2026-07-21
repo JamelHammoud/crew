@@ -13,10 +13,6 @@
     {
       "id": "60b55620-a113-478c-9935-77bd360c6f40",
       "name": "ALI"
-    },
-    {
-      "id": "dc050f93-2ad8-433c-8bf8-0f329417ea55",
-      "name": "Jamel (Envoy)"
     }
   ],
   "agents": [
@@ -168,7 +164,7 @@
       "ownerName": "ALI",
       "settings": {
         "model": "fable",
-        "effort": "high"
+        "effort": "max"
       },
       "fields": [
         {
@@ -226,40 +222,7 @@
           "default": "high"
         }
       ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784571507486,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 100,
-            "severity": "critical",
-            "resetsAt": 1784584800053,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 14,
-            "severity": "normal",
-            "resetsAt": 1784894400053,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 26,
-            "severity": "normal",
-            "resetsAt": 1784894400053,
-            "active": false
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
+      "steerable": false
     },
     {
       "id": "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
@@ -331,22 +294,7 @@
           "default": "high"
         }
       ],
-      "steerable": false,
-      "usage": {
-        "provider": "codex",
-        "fetchedAt": 1784571507764,
-        "windows": [
-          {
-            "key": "primary",
-            "label": "730-hour limit",
-            "percent": 11
-          }
-        ],
-        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "team",
-        "asOf": 1784571398000
-      }
+      "steerable": false
     },
     {
       "id": "ali/20890e3a-ce3f-4240-95da-1509a65df80a",
@@ -418,22 +366,7 @@
           "default": "high"
         }
       ],
-      "steerable": false,
-      "usage": {
-        "provider": "codex",
-        "fetchedAt": 1784571507764,
-        "windows": [
-          {
-            "key": "primary",
-            "label": "730-hour limit",
-            "percent": 11
-          }
-        ],
-        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "team",
-        "asOf": 1784571398000
-      }
+      "steerable": false
     },
     {
       "id": "jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
@@ -578,218 +511,6 @@
         }
       ],
       "steerable": true
-    },
-    {
-      "id": "ali/f001e68a-48d4-4b1a-b922-e947b5141134",
-      "label": "Kimi (ALI)",
-      "provider": "kimi",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": ""
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            }
-          ],
-          "default": ""
-        }
-      ],
-      "steerable": false
-    },
-    {
-      "id": "ali/a17df6e1-77e7-4a7e-9b5d-8dc1b76cde5f",
-      "label": "Codex Gpt-5.6-sol 2",
-      "provider": "codex",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "gpt-5.6-sol",
-        "effort": "medium"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "gpt-5.6-sol",
-              "label": "gpt-5.6-sol"
-            },
-            {
-              "value": "gpt-5.6-terra",
-              "label": "gpt-5.6-terra"
-            },
-            {
-              "value": "gpt-5.6-luna",
-              "label": "gpt-5.6-luna"
-            },
-            {
-              "value": "gpt-5.5",
-              "label": "gpt-5.5"
-            }
-          ],
-          "default": ""
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            },
-            {
-              "value": "ultra",
-              "label": "ultra"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": false,
-      "usage": {
-        "provider": "codex",
-        "fetchedAt": 1784571507764,
-        "windows": [
-          {
-            "key": "primary",
-            "label": "730-hour limit",
-            "percent": 11
-          }
-        ],
-        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "team",
-        "asOf": 1784571398000
-      }
-    },
-    {
-      "id": "jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56",
-      "label": "Bob",
-      "provider": "claude",
-      "ownerId": "dc050f93-2ad8-433c-8bf8-0f329417ea55",
-      "ownerName": "Jamel (Envoy)",
-      "settings": {
-        "model": "fable",
-        "effort": "max"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "haiku"
-            },
-            {
-              "value": "fable",
-              "label": "fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784598493586,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 3,
-            "severity": "normal",
-            "resetsAt": 1784612999868,
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 7,
-            "severity": "normal",
-            "resetsAt": 1785049199868,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 13,
-            "severity": "normal",
-            "resetsAt": 1785049199868,
-            "active": true
-          }
-        ],
-        "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
-        "accountLabel": "jamel@envoy.co",
-        "plan": "team"
-      }
     }
   ]
 }
