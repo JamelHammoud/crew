@@ -759,36 +759,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784596627318,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1784612999568,
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 6,
-            "severity": "normal",
-            "resetsAt": 1785049199568,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 12,
-            "severity": "normal",
-            "resetsAt": 1785049199569,
-            "active": true
-          }
-        ],
+        "fetchedAt": 1784596800255,
+        "windows": [],
         "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
         "accountLabel": "jamel@envoy.co",
-        "plan": "team"
+        "plan": "team",
+        "error": "Could not reach Anthropic to read usage."
       }
     },
     {
@@ -860,36 +836,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784596627318,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1784612999568,
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 6,
-            "severity": "normal",
-            "resetsAt": 1785049199568,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 12,
-            "severity": "normal",
-            "resetsAt": 1785049199569,
-            "active": true
-          }
-        ],
+        "fetchedAt": 1784596800255,
+        "windows": [],
         "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
         "accountLabel": "jamel@envoy.co",
-        "plan": "team"
+        "plan": "team",
+        "error": "Could not reach Anthropic to read usage."
       }
     }
   ]
