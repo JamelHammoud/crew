@@ -7,7 +7,6 @@
 * [ ] Better at finding what CLIs are available on your computer
 * [ ] Keep the computer awake/alive while crew is open
 * [ ] A thread can get stuck on "Working" for hours, the stop button does nothing
-* [ ] A steered message to Claude works, but in the UI it's still sticking at the bottom, even as the responses from Claude start to come in, they push the message downwards (which doesn't make sense, the message was sent earlier). The timestamp for the steered message is correct, but it's positioning in the thread chat makes it look like it was sent later than other messages
 
 ## In progress
 
