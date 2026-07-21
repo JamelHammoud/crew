@@ -32,10 +32,18 @@ export interface TestHost {
   close: () => Promise<void>
 }
 
-export async function startHost(repoPath: string = tmpDir('host'), opts: { heartbeatMs?: number } = {}): Promise<TestHost> {
+export async function startHost(
+  repoPath: string = tmpDir('host'),
+  opts: { heartbeatMs?: number; autoPong?: boolean; resumeGraceMs?: number; stepFlushMs?: number } = {}
+): Promise<TestHost> {
   const store = new Store(repoPath)
-  const session = new CrewSession(store)
-  const server = await createCrewServer(session, { port: 0, host: '127.0.0.1', heartbeatMs: opts.heartbeatMs })
+  const session = new CrewSession(store, { resumeGraceMs: opts.resumeGraceMs, stepFlushMs: opts.stepFlushMs })
+  const server = await createCrewServer(session, {
+    port: 0,
+    host: '127.0.0.1',
+    heartbeatMs: opts.heartbeatMs,
+    autoPong: opts.autoPong
+  })
   return {
     server,
     session,
