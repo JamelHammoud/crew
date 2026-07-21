@@ -3414,3 +3414,7 @@
 {"id":"2eb87dcb-4d41-4cd4-aae5-8754bb5f733b","ts":1784608077584,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
 {"id":"ab45dda2-1871-480c-895a-fe4a64c4f710","ts":1784608077584,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
 {"id":"eb04e532-f303-4819-b0c7-abce219a77aa","ts":1784608077585,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"0b1d5fb6-73bb-45f8-9d7a-af3ede96f5a0","ts":1784608105065,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"2bf1f4e0-d086-4896-87d7-a5cc7789b62c","ts":1784608105066,"kind":"agent.offline","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"4c7d3bd5-36f0-4a4a-aa6e-41b7b5eeb5f0","ts":1784608105075,"kind":"agent.online","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"2aa6bee2-4d83-424a-af6d-82cf46d1ccc5","ts":1784608105076,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
