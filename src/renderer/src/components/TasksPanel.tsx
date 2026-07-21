@@ -4,7 +4,7 @@ import {
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  PencilIcon,
+  PlusIcon,
   TrashIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
