@@ -421,32 +421,91 @@ export class CrewSession {
       })
       return
     }
-    for (const id of ids) {
-      const agent = this.agents.get(id)!
-      const newThreadId = randomUUID()
-      const thread: Thread = {
-        id: newThreadId,
-        agentId: id,
-        agentLabel: agent.label,
-        title: this.titleFrom(trimmed || attachments.map(a => a.name).join(', ')),
-        createdBy: member.name,
-        status: 'open',
-        queue: [],
-        running: null
-      }
-      this.threads.set(newThreadId, thread)
-      this.emit({
-        id: randomUUID(),
-        ts: Date.now(),
-        kind: 'thread.started',
-        threadId: newThreadId,
-        agentId: id,
-        agentLabel: agent.label,
-        title: thread.title,
-        byName: member.name
-      })
-      this.enqueuePrompt(agent, member, trimmed, newThreadId, attachments)
+    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments)
+  }
+
+  private startThread(member: Member, agent: AgentState, text: string, attachments: Attachment[]): string {
+    const threadId = randomUUID()
+    const thread: Thread = {
+      id: threadId,
+      agentId: agent.id,
+      agentLabel: agent.label,
+      title: this.titleFrom(text || attachments.map(a => a.name).join(', ')),
+      createdBy: member.name,
+      status: 'open',
+      queue: [],
+      running: null
     }
+    this.threads.set(threadId, thread)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'thread.started',
+      threadId,
+      agentId: agent.id,
+      agentLabel: agent.label,
+      title: thread.title,
+      byName: member.name
+    })
+    this.enqueuePrompt(agent, member, text, threadId, attachments)
+    return threadId
+  }
+
+  private handleTodoAdd(member: Member, text: string, agentId?: string): void {
+    const trimmed = text.trim()
+    if (!trimmed) return
+    const todo: Todo = {
+      id: randomUUID(),
+      text: trimmed,
+      agentId,
+      createdBy: member.name,
+      ts: Date.now(),
+      checked: false
+    }
+    this.todos.set(todo.id, todo)
+    this.emit({
+      id: randomUUID(),
+      ts: todo.ts,
+      kind: 'todo.added',
+      todoId: todo.id,
+      text: todo.text,
+      agentId,
+      byName: member.name
+    })
+  }
+
+  private handleTodoEdit(member: Member, todoId: string, text: string, agentId?: string): void {
+    const todo = this.todos.get(todoId)
+    const trimmed = text.trim()
+    if (!todo || !trimmed) return
+    if (todo.text === trimmed && todo.agentId === agentId) return
+    todo.text = trimmed
+    todo.agentId = agentId
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.edited', todoId, text: trimmed, agentId, byName: member.name })
+  }
+
+  private handleTodoRemove(member: Member, todoId: string): void {
+    if (!this.todos.delete(todoId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.removed', todoId, byName: member.name })
+  }
+
+  private handleTodoCheck(member: Member, todoId: string, checked: boolean): void {
+    const todo = this.todos.get(todoId)
+    if (!todo || todo.checked === checked) return
+    todo.checked = checked
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.checked', todoId, checked, byName: member.name })
+  }
+
+  // 'Do' is the moment a todo becomes real work: a thread starts with the
+  // todo's text as its first prompt, and the todo itself is gone.
+  private handleTodoDo(member: Member, todoId: string, agentId?: string): void {
+    const todo = this.todos.get(todoId)
+    if (!todo || todo.checked) return
+    const agent = this.agents.get(agentId ?? todo.agentId ?? '')
+    if (!agent) return
+    this.todos.delete(todoId)
+    const threadId = this.startThread(member, agent, todo.text, [])
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.started', todoId, threadId, byName: member.name })
   }
 
   // Two prompts can share one message when it mentioned several agents, so
