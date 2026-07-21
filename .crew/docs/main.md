@@ -1,3 +1,7 @@
+---
+title: "Docs"
+---
+
 ## Queue
 
 * [ ] We need a "Files" tab, this is the file explorer for the repo, that's synced across computers, searchable, and allows manual editing (Just like VS code)
