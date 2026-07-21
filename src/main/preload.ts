@@ -9,6 +9,7 @@ const bridge = {
     ipcRenderer.invoke('session:join', link, folder, name),
   leave: (): Promise<void> => ipcRenderer.invoke('session:leave'),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
+  installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
     ipcRenderer.invoke('agents:create', input),
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
