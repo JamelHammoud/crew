@@ -4,10 +4,16 @@ import {
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  PencilIcon,
+  TrashIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import type { Todo } from '../../../shared/events'
+import { mentionsIn, type PooledAgent } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
+import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
+import { MenuItem, Popover } from './Popover'
 import { StateIcon } from './ThreadCard'
 import { describeStep, endPreview, lastEnd, threadState, type ThreadState } from './thread'
 import Tooltip from './Tooltip'
@@ -24,6 +30,89 @@ interface RowAction {
   status: ThreadMeta['status']
 }
 
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+// The first @mention in the text becomes the assignment and leaves the text;
+// a todo that is nothing but a mention keeps it so the text stays non-empty.
+function parseTodoInput(text: string, agents: PooledAgent[]): { text: string; agentId?: string } {
+  const agentId = mentionsIn(text, agents)[0]
+  const label = agents.find(a => a.id === agentId)?.label
+  if (!agentId || !label) return { text: text.trim() }
+  const cleaned = text
+    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return cleaned ? { text: cleaned, agentId } : { text: text.trim(), agentId }
+}
+
+function TodoInput({
+  initial = '',
+  placeholder,
+  autoFocus,
+  onSubmit,
+  onCancel
+}: {
+  initial?: string
+  placeholder?: string
+  autoFocus?: boolean
+  onSubmit: (raw: string) => void
+  onCancel?: () => void
+}) {
+  const [value, setValue] = useState(initial)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const mention = useMentionAutocomplete(value, setValue, inputRef)
+
+  const submit = () => {
+    const trimmed = value.trim()
+    if (!trimmed) {
+      onCancel?.()
+      return
+    }
+    onSubmit(trimmed)
+    setValue('')
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && (mention.matches.length > 0 || value.trim() || onCancel)) {
+      // The panel itself closes on Escape; one meant for the input stops here.
+      e.stopPropagation()
+      if (mention.onKeyDown(e)) return
+      setValue(initial)
+      onCancel?.()
+      return
+    }
+    if (mention.onKeyDown(e)) return
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      submit()
+    }
+  }
+
+  return (
+    <div className="relative">
+      <div className="bg-ink-800 rounded-xl px-3.5 py-2.5 cursor-text" onClick={() => inputRef.current?.focus()}>
+        <textarea
+          ref={inputRef}
+          value={value}
+          onChange={e => mention.onChange(e.target.value)}
+          onKeyDown={onKeyDown}
+          rows={1}
+          autoFocus={autoFocus}
+          placeholder={placeholder}
+          className="w-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none leading-snug"
+        />
+      </div>
+      <MentionMenu
+        matches={mention.matches}
+        activeIndex={mention.activeIndex}
+        onPick={mention.pick}
+        onHover={mention.setActive}
+        side="bottom"
+      />
+    </div>
+  )
+}
+
 export default function TasksPanel({
   open,
   onClose,
@@ -38,9 +127,18 @@ export default function TasksPanel({
   const threadPrompts = useCrew(s => s.threadPrompts)
   const queues = useCrew(s => s.queues)
   const steps = useCrew(s => s.steps)
+  const agents = useCrew(s => s.agents)
+  const todos = useCrew(s => s.todos)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
+  const addTodo = useCrew(s => s.addTodo)
+  const editTodo = useCrew(s => s.editTodo)
+  const removeTodo = useCrew(s => s.removeTodo)
+  const checkTodo = useCrew(s => s.checkTodo)
+  const doTodo = useCrew(s => s.doTodo)
   const [showDone, setShowDone] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [picker, setPicker] = useState<{ todoId: string; at: { x: number; y: number } } | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -70,6 +168,8 @@ export default function TasksPanel({
   const needsReview = rows.filter(r => r.state === 'ready' || r.state === 'failed')
   const done = rows.filter(r => r.state === 'done')
   const archived = rows.filter(r => r.thread.status === 'archived')
+  const pendingTodos = todos.filter(t => !t.checked)
+  const checkedTodos = todos.filter(t => t.checked)
 
   const item = (row: Row, action?: RowAction) => (
     <div key={row.thread.id} className="group relative">
@@ -104,9 +204,112 @@ export default function TasksPanel({
     </div>
   )
 
+  const todoItem = (todo: Todo) => {
+    const agent = agents.find(a => a.id === todo.agentId)
+    if (editingId === todo.id) {
+      return (
+        <div key={todo.id} className="px-3 py-1">
+          <TodoInput
+            initial={agent ? `@${agent.label} ${todo.text}` : todo.text}
+            autoFocus
+            onSubmit={raw => {
+              const parsed = parseTodoInput(raw, agents)
+              editTodo(todo.id, parsed.text, parsed.agentId)
+              setEditingId(null)
+            }}
+            onCancel={() => setEditingId(null)}
+          />
+        </div>
+      )
+    }
+    return (
+      <div key={todo.id} className="group relative">
+        <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]">
+          <span className="mt-1 shrink-0">
+            <Tooltip label="Check off">
+              <button
+                onClick={() => checkTodo(todo.id, true)}
+                aria-label="Check off"
+                className="w-4 h-4 rounded-full border-[1.5px] border-fg-muted text-transparent flex items-center justify-center transition-colors duration-150 hover:border-fg hover:text-fg"
+              >
+                <CheckIcon className="w-3 h-3" />
+              </button>
+            </Tooltip>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-base text-fg truncate">{todo.text}</span>
+            <span className="block text-sm text-fg-muted truncate">{agent ? `@${agent.label}` : 'Unassigned'}</span>
+          </span>
+        </div>
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+          <Tooltip label="Edit">
+            <button
+              onClick={() => setEditingId(todo.id)}
+              aria-label="Edit"
+              className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+            >
+              <PencilIcon className="w-3.5 h-3.5" />
+            </button>
+          </Tooltip>
+          <Tooltip label="Delete">
+            <button
+              onClick={() => removeTodo(todo.id)}
+              aria-label="Delete"
+              className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-danger active:scale-95"
+            >
+              <TrashIcon className="w-3.5 h-3.5" />
+            </button>
+          </Tooltip>
+          <button
+            onClick={e => {
+              if (agent) doTodo(todo.id)
+              else setPicker({ todoId: todo.id, at: { x: e.clientX, y: e.clientY } })
+            }}
+            className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 hover:scale-105 active:scale-95"
+          >
+            Do
+          </button>
+        </span>
+      </div>
+    )
+  }
+
+  const checkedItem = (todo: Todo) => (
+    <div key={todo.id} className="group relative">
+      <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]">
+        <span className="mt-1 shrink-0">
+          <Tooltip label="Reopen">
+            <button
+              onClick={() => checkTodo(todo.id, false)}
+              aria-label="Reopen"
+              className="w-4 h-4 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 active:scale-90"
+            >
+              <CheckIcon className="w-3 h-3" />
+            </button>
+          </Tooltip>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-base text-fg-muted line-through truncate">{todo.text}</span>
+          <span className="block text-sm text-fg-faint truncate">Done by hand</span>
+        </span>
+      </div>
+      <span className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <Tooltip label="Delete">
+          <button
+            onClick={() => removeTodo(todo.id)}
+            aria-label="Delete"
+            className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-danger active:scale-95"
+          >
+            <TrashIcon className="w-3.5 h-3.5" />
+          </button>
+        </Tooltip>
+      </span>
+    </div>
+  )
+
   const heading = (title: string, count: number) => (
     <h3 className="px-3 mb-1 text-sm font-semibold text-fg-muted">
-      {title} <span className="text-fg-faint">{count}</span>
+      {title} {count > 0 && <span className="text-fg-faint">{count}</span>}
     </h3>
   )
 
@@ -123,6 +326,8 @@ export default function TasksPanel({
       {title} <span className="text-fg-faint">{count}</span>
     </button>
   )
+
+  const online = agents.filter(a => a.status !== 'offline')
 
   return (
     <>
@@ -143,7 +348,20 @@ export default function TasksPanel({
           </button>
         </header>
         <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
-          {rows.length === 0 && (
+          <section>
+            {heading('Todo', pendingTodos.length)}
+            <div className="px-3 py-1">
+              <TodoInput
+                placeholder="Add a task — @ to assign"
+                onSubmit={raw => {
+                  const parsed = parseTodoInput(raw, agents)
+                  addTodo(parsed.text, parsed.agentId)
+                }}
+              />
+            </div>
+            {pendingTodos.map(todoItem)}
+          </section>
+          {rows.length === 0 && todos.length === 0 && (
             <p className="text-base text-fg-muted text-center mt-16 px-6">
               Threads you start with an agent will show up here.
             </p>
@@ -162,13 +380,17 @@ export default function TasksPanel({
               )}
             </section>
           )}
-          {done.length > 0 && (
+          {(done.length > 0 || checkedTodos.length > 0) && (
             <section>
-              {toggleHeading('Done', done.length, showDone, () => setShowDone(v => !v))}
-              {showDone &&
-                done.map(row =>
-                  item(row, { icon: <ArrowUturnLeftIcon className="w-4 h-4" />, label: 'Reopen', status: 'open' })
-                )}
+              {toggleHeading('Done', done.length + checkedTodos.length, showDone, () => setShowDone(v => !v))}
+              {showDone && (
+                <>
+                  {done.map(row =>
+                    item(row, { icon: <ArrowUturnLeftIcon className="w-4 h-4" />, label: 'Reopen', status: 'open' })
+                  )}
+                  {checkedTodos.map(checkedItem)}
+                </>
+              )}
             </section>
           )}
           {archived.length > 0 && (
@@ -182,6 +404,23 @@ export default function TasksPanel({
           )}
         </div>
       </aside>
+      <Popover open={picker !== null} onClose={() => setPicker(null)} at={picker?.at}>
+        {online.length === 0 ? (
+          <p className="px-3 py-2 text-sm text-fg-muted whitespace-nowrap">No agents online</p>
+        ) : (
+          online.map(a => (
+            <MenuItem
+              key={a.id}
+              label={`@${a.label}`}
+              hint={a.ownerName}
+              onClick={() => {
+                if (picker) doTodo(picker.todoId, a.id)
+                setPicker(null)
+              }}
+            />
+          ))
+        )}
+      </Popover>
     </>
   )
 }
