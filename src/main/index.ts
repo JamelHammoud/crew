@@ -172,14 +172,32 @@ function installTray(): void {
 app.whenReady().then(() => {
   powerSaveBlocker.start('prevent-app-suspension')
   installMenu()
+  installTray()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
+  session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
+  resumed = session.resume().then(() => refreshTray())
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]
   })
-  ipcMain.handle('session:start', (_event, folder: string, name: string) => session.startHost(folder, name))
-  ipcMain.handle('session:join', (_event, link: string, folder: string, name: string) => session.startJoin(link, folder, name))
-  ipcMain.handle('session:leave', () => session.leave())
+  ipcMain.handle('session:start', async (_event, folder: string, name: string) => {
+    const info = await session.startHost(folder, name)
+    refreshTray()
+    return info
+  })
+  ipcMain.handle('session:join', async (_event, link: string, folder: string, name: string) => {
+    const info = await session.startJoin(link, folder, name)
+    refreshTray()
+    return info
+  })
+  ipcMain.handle('session:leave', async () => {
+    await session.leave()
+    refreshTray()
+  })
+  ipcMain.handle('session:current', async () => {
+    await resumed
+    return session.current()
+  })
   ipcMain.handle('agents:capabilities', () => session.capabilities())
   ipcMain.handle('agents:install', (_event, provider: string) => session.installProvider(provider))
   ipcMain.handle('agents:create', (_event, input: NewAgent) => session.createAgent(input))
@@ -190,10 +208,24 @@ app.whenReady().then(() => {
   })
 })
 
+// Closing the window while in a session keeps the app alive so the crew can
+// keep using this machine's agents. Quitting still shuts everything down.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+  if (process.platform === 'darwin') return
+  if (!session.current()) {
+    app.quit()
+    return
+  }
+  refreshTray()
+  if (process.platform === 'win32' && tray && !balloonShown) {
+    balloonShown = true
+    tray.displayBalloon({
+      title: 'crew is still running',
+      content: 'Your agents stay shared with your crew. Quit from this icon to stop.'
+    })
+  }
 })
 
 app.on('before-quit', () => {
-  void session.leave()
+  void session.shutdown()
 })
