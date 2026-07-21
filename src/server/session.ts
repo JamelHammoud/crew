@@ -9,7 +9,7 @@ import {
   type OutgoingAttachment
 } from '../shared/attachments'
 import { fallbackTitle, type DocPage } from '../shared/docs'
-import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, trimEvents, type SessionEvent } from '../shared/events'
+import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, trimEvents, type SessionEvent, type ThreadStatus } from '../shared/events'
 import {
   agentId,
   resolveSettings,
@@ -78,10 +78,12 @@ interface Thread {
   agentLabel: string
   title: string
   createdBy: string
-  archived: boolean
+  status: ThreadStatus
   queue: QueuedPrompt[]
   running: string | null
 }
+
+const THREAD_STATUSES = new Set<ThreadStatus>(['open', 'done', 'archived'])
 
 interface PromptRef {
   agentId: string
