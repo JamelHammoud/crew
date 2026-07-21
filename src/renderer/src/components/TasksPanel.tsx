@@ -189,19 +189,31 @@ export default function TasksPanel({
   const pendingTodos = todos.filter(t => !t.checked)
   const checkedTodos = todos.filter(t => t.checked)
 
-  const item = (row: Row, action?: RowAction) => (
+  const item = (row: Row, action?: RowAction) => {
+    const agent = agents.find(a => a.id === row.thread.agentId)
+    return (
     <div key={row.thread.id} className="group relative">
       <button
         onClick={() => onOpenThread(row.thread.id)}
-        className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-ink-hover"
+        className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover"
       >
         <span className="h-[22px] shrink-0 flex items-center">
           <StateIcon state={row.state} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-base text-fg truncate">{row.thread.title}</span>
+          <span className="block text-base text-fg truncate">
+            {stripMention(row.thread.title, row.thread.agentLabel) || row.thread.title}
+          </span>
           <span className="block text-sm text-fg-muted truncate">
-            {row.thread.agentLabel}
+            {agent ? (
+              <AgentName agent={agent}>
+                <span className="cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
+                  {row.thread.agentLabel}
+                </span>
+              </AgentName>
+            ) : (
+              row.thread.agentLabel
+            )}
             {row.detail ? ` · ${row.detail}` : ''}
           </span>
         </span>
@@ -221,7 +233,8 @@ export default function TasksPanel({
         </span>
       )}
     </div>
-  )
+    )
+  }
 
   const todoItem = (todo: Todo) => {
     const agent = agents.find(a => a.id === todo.agentId)
