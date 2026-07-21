@@ -2,7 +2,7 @@
 title: "Ideas"
 ---
 
-* I wonder if there's a 
+* Is there a better way to fix that every time you @ ment
 
 ## In progress
 
