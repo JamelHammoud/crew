@@ -759,13 +759,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784595373133,
+        "fetchedAt": 1784595810218,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 0,
             "severity": "normal",
+            "resetsAt": 1784612999720,
             "active": false
           },
           {
@@ -773,7 +774,7 @@
             "label": "Weekly (all models)",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785049200400,
+            "resetsAt": 1785049199720,
             "active": false
           },
           {
@@ -781,7 +782,7 @@
             "label": "Weekly (Fable)",
             "percent": 12,
             "severity": "normal",
-            "resetsAt": 1785049200400,
+            "resetsAt": 1785049199720,
             "active": true
           }
         ],
@@ -856,7 +857,40 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784595810218,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 0,
+            "severity": "normal",
+            "resetsAt": 1784612999720,
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 6,
+            "severity": "normal",
+            "resetsAt": 1785049199720,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 12,
+            "severity": "normal",
+            "resetsAt": 1785049199720,
+            "active": true
+          }
+        ],
+        "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
+        "accountLabel": "jamel@envoy.co",
+        "plan": "team"
+      }
     }
   ]
 }
