@@ -860,16 +860,25 @@ export class CrewSession {
       })
       .filter(Boolean)
       .join('\n')
-    return [
+    const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
+    const lines = [
       `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
       `You share a project folder and can read and edit files in it.`,
-      `You are in a focused thread. Only this thread's messages are shown here.`,
+      `You are in a focused thread. Only this thread's messages are shown here.`
+    ]
+    if (others.length > 0) {
+      lines.push(
+        `Other agents in the session: ${others.join(', ')}. A mention like @name in a thread hands that message to the named agent, so replies from several agents can appear here.`
+      )
+    }
+    lines.push(
       ``,
       `Thread so far:`,
       transcript || '(nothing yet)',
       ``,
       `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
-    ].join('\n')
+    )
+    return lines.join('\n')
   }
 
   private handleSettings(id: string, settings: AgentSettings): void {
