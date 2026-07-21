@@ -97,6 +97,46 @@ describe('image attachments', () => {
     expect((await fetch(`${base}/attachments/..%2F..%2Fsession.json`)).status).toBe(404)
   })
 
+  it('takes a pasted image over http and serves it back for docs', async () => {
+    const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
+
+    const res = await fetch(`${base}/attachments`, {
+      method: 'POST',
+      headers: { 'content-type': 'image/png', 'x-attachment-name': encodeURIComponent('pasted shot.png') },
+      body: PNG
+    })
+    expect(res.status).toBe(200)
+    const saved = (await res.json()) as { id: string; name: string; mime: string; size: number; file: string }
+    expect(saved.file).toBe(`${saved.id}.png`)
+    expect(saved.name).toBe('pasted shot.png')
+    expect(saved.size).toBe(PNG.length)
+
+    const onDisk = path.join(host.repoPath, '.crew', 'attachments', saved.file)
+    expect(fs.readFileSync(onDisk).equals(PNG)).toBe(true)
+
+    const back = await fetch(`${base}/attachments/${saved.file}`)
+    expect(back.status).toBe(200)
+    expect(Buffer.from(await back.arrayBuffer()).equals(PNG)).toBe(true)
+  })
+
+  it('turns away a pasted upload that is not an image or is too big', async () => {
+    const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
+
+    const notImage = await fetch(`${base}/attachments`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/pdf' },
+      body: PNG
+    })
+    expect(notImage.status).toBe(400)
+
+    const tooBig = await fetch(`${base}/attachments`, {
+      method: 'POST',
+      headers: { 'content-type': 'image/png' },
+      body: Buffer.alloc(11 * 1024 * 1024)
+    })
+    expect(tooBig.status).toBe(413)
+  })
+
   it('sends a message with only an image', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
