@@ -9,10 +9,10 @@ title: "Docs"
 * [ ] Have the app running in the background
 * [ ] Keep the computer awake/alive while crew is open
 * [ ] Auto-archive threads
-* [ ] crtl-f doesn't work in docs
 
 ## In progress
 
+* [ ] crtl-f doesn't work in docs
 * [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
 
 ## Blocked
