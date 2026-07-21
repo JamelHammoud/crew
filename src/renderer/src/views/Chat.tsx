@@ -28,11 +28,9 @@ export default function Chat() {
   const setChatDraft = useCrew(s => s.setChatDraft)
   const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
 
-  const [mentionQuery, setMentionQuery] = useState<string | null>(null)
-  const [activeMention, setActiveMention] = useState(0)
   const inputRef = useAutoResize(text)
+  const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
   const didInitialScroll = useRef(false)
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
