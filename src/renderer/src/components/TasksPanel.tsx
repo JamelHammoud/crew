@@ -474,36 +474,42 @@ export default function TasksPanel({
           )}
         </header>
         <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
-          <section>
-            {heading('Todo', pendingTodos.length)}
-            {pendingTodos.map(todoItem)}
-            {adding ? (
-              <TodoEditor
-                keepOpen
-                onCommit={raw => {
-                  const parsed = parseTodoInput(raw, agents)
-                  addTodo(parsed.text, parsed.agentId)
-                }}
-                onDone={() => setAdding(false)}
-              />
-            ) : (
-              <button
-                onClick={() => setAdding(true)}
-                className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
-              >
-                <span className="h-[22px] shrink-0 flex items-center">
-                  <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
-                    <PlusIcon className="w-3 h-3" />
-                  </span>
-                </span>
-                <span className="text-base">Add a task</span>
-              </button>
-            )}
-          </section>
-          {rows.length === 0 && todos.length === 0 && (
+          {(pendingTodos.length > 0 || !q) && (
+            <section>
+              {heading('Todo', pendingTodos.length)}
+              {pendingTodos.map(todoItem)}
+              {!q &&
+                (adding ? (
+                  <TodoEditor
+                    keepOpen
+                    onCommit={raw => {
+                      const parsed = parseTodoInput(raw, agents)
+                      addTodo(parsed.text, parsed.agentId)
+                    }}
+                    onDone={() => setAdding(false)}
+                  />
+                ) : (
+                  <button
+                    onClick={() => setAdding(true)}
+                    className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
+                  >
+                    <span className="h-[22px] shrink-0 flex items-center">
+                      <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
+                        <PlusIcon className="w-3 h-3" />
+                      </span>
+                    </span>
+                    <span className="text-base">Add a task</span>
+                  </button>
+                ))}
+            </section>
+          )}
+          {!q && rows.length === 0 && todos.length === 0 && (
             <p className="text-base text-fg-muted text-center mt-16 px-6">
               Threads you start with an agent will show up here.
             </p>
+          )}
+          {noMatches && (
+            <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>
           )}
           {inProgress.length > 0 && (
             <section>
