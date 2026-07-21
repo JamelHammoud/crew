@@ -6,7 +6,7 @@
 * [ ] Ability to mention a different agent while in a thread
 * [ ] Have the app running in the background
 * [ ] Better at finding what CLIs are available on your computer
-* [ ] What if we turned repos into join links, 
+* [ ] What if we turned repos into "join links", 
 
 ## In progress
 
