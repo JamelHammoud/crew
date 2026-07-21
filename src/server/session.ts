@@ -347,6 +347,8 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
+      // New work reopens a done or archived thread, so nothing runs hidden.
+      if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
       const targets = [...new Set(mentions)].filter(id => this.agents.has(id))
       if (targets.length === 0) targets.push(thread.agentId)
       const messageId = randomUUID()
