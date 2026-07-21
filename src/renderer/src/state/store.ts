@@ -407,6 +407,21 @@ export const useCrew = create<CrewState>((set, get) => {
       // older host; the other transitions only exist on hosts that know them.
       socket.send(status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status })
     },
+    addTodo: (text, agentId) => {
+      socket.send({ type: 'todo.add', text, agentId })
+    },
+    editTodo: (todoId, text, agentId) => {
+      socket.send({ type: 'todo.edit', todoId, text, agentId })
+    },
+    removeTodo: todoId => {
+      socket.send({ type: 'todo.remove', todoId })
+    },
+    checkTodo: (todoId, checked) => {
+      socket.send({ type: 'todo.check', todoId, checked })
+    },
+    doTodo: (todoId, agentId) => {
+      socket.send({ type: 'todo.do', todoId, agentId })
+    },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
     },
