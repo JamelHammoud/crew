@@ -156,13 +156,19 @@ export const useCrew = create<CrewState>((set, get) => {
             agentId: event.agentId,
             agentLabel: event.agentLabel,
             title: event.title,
-            createdBy: event.byName
+            createdBy: event.byName,
+            status: 'open'
           }
           break
         }
         case 'thread.archived': {
           const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, archived: true }
+          if (thread) threads[event.threadId] = { ...thread, status: 'archived' }
+          break
+        }
+        case 'thread.status': {
+          const thread = threads[event.threadId]
+          if (thread) threads[event.threadId] = { ...thread, status: event.status }
           break
         }
         case 'agent.start': {
