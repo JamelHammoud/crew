@@ -179,6 +179,7 @@ export class CrewSession {
       store.appendEvent(close)
     }
     for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
+    for (const [page, title] of Object.entries(store.loadTitles())) this.docTitles.set(page, title)
     this.persistMeta()
   }
 
