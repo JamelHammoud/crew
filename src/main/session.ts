@@ -14,6 +14,7 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import { AgentStore } from './agents-store'
+import { SavedSessionStore } from './saved-session'
 
 export interface HostInfo {
   link: string
@@ -22,6 +23,13 @@ export interface HostInfo {
 
 export interface JoinInfo {
   wsUrl: string
+}
+
+export interface CurrentSession {
+  wsUrl: string
+  name: string
+  code: string
+  link: string | null
 }
 
 export interface NewAgent {
