@@ -9,7 +9,14 @@ import {
   type OutgoingAttachment
 } from '../shared/attachments'
 import { fallbackTitle, type DocPage } from '../shared/docs'
-import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, trimEvents, type SessionEvent, type ThreadStatus } from '../shared/events'
+import {
+  SYSTEM_AUTHOR_ID,
+  SYSTEM_AUTHOR_NAME,
+  trimEvents,
+  type SessionEvent,
+  type ThreadStatus,
+  type Todo
+} from '../shared/events'
 import {
   agentId,
   resolveSettings,
