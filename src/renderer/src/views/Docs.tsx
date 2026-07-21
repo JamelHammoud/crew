@@ -62,8 +62,12 @@ export default function Docs() {
 
   const tree = buildTree(Object.keys(docs))
 
+  const currentTitle = docs[current]?.title ?? fallbackTitle(current)
   useEffect(() => {
-    setTitle(prettify(current))
+    if (document.activeElement !== titleRef.current) setTitle(currentTitle)
+  }, [current, currentTitle])
+
+  useEffect(() => {
     setExpanded(prev => {
       const next = new Set(prev)
       let parent = parentOf(current)
