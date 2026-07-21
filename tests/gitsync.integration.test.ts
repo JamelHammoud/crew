@@ -91,10 +91,10 @@ describe('git sync', () => {
     const syncA = new GitSync(a)
     const syncB = new GitSync(b)
 
-    storeA.saveSession({ members: [{ id: 'u1', name: 'sam' }], agents: [] } as never)
+    storeA.saveSession({ code: 'c', createdAt: 1, members: [{ id: 'u1', name: 'sam' }], agents: [] })
     await syncA.syncNow()
 
-    storeB.saveSession({ members: [{ id: 'u2', name: 'jamel' }], agents: [] } as never)
+    storeB.saveSession({ code: 'c', createdAt: 1, members: [{ id: 'u2', name: 'jamel' }], agents: [] })
     await syncB.syncNow()
 
     const sessionB = new Store(b).loadSession()
