@@ -170,15 +170,26 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 </span>
               </MemberName>
               <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
-                {activePromptId ? (
+                {state === 'working' ? (
                   <>
                     <Spinner size={16} className="text-fg" />
                     <span className="text-base font-semibold text-fg">Working</span>
                   </>
                 ) : (
                   <>
-                    <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />
-                    <span className="text-base font-semibold text-fg">Done</span>
+                    {state === 'done' && <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
+                    {state === 'ready' && <EyeIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
+                    {state === 'failed' && <ExclamationTriangleIcon strokeWidth={2} className="w-5 h-5 text-danger" />}
+                    {state === 'archived' && <ArchiveBoxIcon strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
+                    <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
+                      {THREAD_STATE_LABELS[state]}
+                    </span>
+                    <button
+                      onClick={() => setThreadStatus(threadId, statusAction.to)}
+                      className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                    >
+                      {statusAction.label}
+                    </button>
                   </>
                 )}
                 {(diffTotals.added > 0 || diffTotals.removed > 0) && (
