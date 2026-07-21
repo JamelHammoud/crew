@@ -4,7 +4,7 @@ export default function Pill({ children, solid, lg }: { children: ReactNode; sol
   return (
     <span
       className={`font-medium rounded-full transition-colors ${lg ? 'text-xs px-2.5 py-1.5' : 'text-[11px] px-2 py-0.5'} ${
-        solid ? 'bg-fg text-ink-900' : 'bg-white/[0.06] text-fg-muted'
+        solid ? 'bg-fg text-ink-900' : 'bg-fg/[0.06] text-fg-muted'
       }`}
     >
       {children}

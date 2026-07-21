@@ -9,6 +9,7 @@ declare global {
     join(link: string, folder: string, name: string): Promise<{ wsUrl: string }>
     leave(): Promise<void>
     agentCapabilities(): Promise<ProviderCapability[]>
+    installProvider(provider: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>
     onFullScreen(listener: (full: boolean) => void): void

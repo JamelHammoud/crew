@@ -29,7 +29,7 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
         {agent.ownerName}'s PC
       </span>
       {settings.length > 0 && (
-        <span className="block mt-2.5 pt-2.5 border-t border-white/[0.06] space-y-1.5">
+        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] space-y-1.5">
           {settings.map(row => (
             <span key={row.label} className="flex items-center justify-between text-xs">
               <span className="text-fg-muted">{row.label}</span>
@@ -42,13 +42,17 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   )
 }
 
+export function AgentName({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
+  return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+}
+
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
   return (
-    <HoverCard content={<AgentCardContent agent={agent} />}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
+    <AgentName agent={agent}>
+      <strong className="font-semibold text-fg cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
         {children}
       </strong>
-    </HoverCard>
+    </AgentName>
   )
 }
 
@@ -72,7 +76,7 @@ export function MemberName({ name, children }: { name: string; children: ReactNo
     return <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />}>{children}</HoverCard>
   }
   if (agent) {
-    return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+    return <AgentName agent={agent}>{children}</AgentName>
   }
   return <>{children}</>
 }

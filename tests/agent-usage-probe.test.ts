@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import AgentCard from '../src/renderer/src/components/AgentCard'
@@ -35,13 +35,13 @@ describe('agent usage limits', () => {
     const cardQueries = within(card)
 
     expect(cardQueries.getByText('Codex')).toBeTruthy()
-    expect(cardQueries.getByText('Usage limits')).toBeTruthy()
+    fireEvent.click(cardQueries.getByText('Usage'))
     expect(cardQueries.getByText('Same account')).toBeTruthy()
     expect(cardQueries.getByText('ali@example.com · Pro plan')).toBeTruthy()
     expect(cardQueries.getByText('5-hour limit')).toBeTruthy()
     expect(cardQueries.getByText('63%')).toBeTruthy()
     expect(cardQueries.getByText('Weekly limit')).toBeTruthy()
     expect(cardQueries.getByText('21%')).toBeTruthy()
-    expect(screen.getAllByText('Usage limits')).toHaveLength(1)
+    expect(screen.getAllByText('Usage')).toHaveLength(1)
   })
 })

@@ -7,7 +7,7 @@ import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
-type Archived = Extract<SessionEvent, { kind: 'thread.archived' }>
+type Status = Extract<SessionEvent, { kind: 'thread.status' }>
 
 describe('archiving threads', () => {
   let host: TestHost
@@ -58,18 +58,21 @@ describe('archiving threads', () => {
     await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
 
     pat.send({ type: 'thread.archive', threadId: started.threadId })
-    const archived = (await sam.waitForEvent(e => e.kind === 'thread.archived')) as Archived
+    const archived = (await sam.waitForEvent(e => e.kind === 'thread.status')) as Status
     expect(archived.threadId).toBe(started.threadId)
+    expect(archived.status).toBe('archived')
     expect(archived.byName).toBe('pat')
 
     pat.send({ type: 'thread.archive', threadId: started.threadId })
     await new Promise(r => setTimeout(r, 200))
-    expect(sam.events.filter(e => e.kind === 'thread.archived').length).toBe(1)
+    expect(sam.events.filter(e => e.kind === 'thread.status').length).toBe(1)
 
     const revived = new CrewSession(host.store)
     const events = revived.snapshot().events
     expect(events.some(e => e.kind === 'thread.started' && e.threadId === started.threadId)).toBe(true)
-    expect(events.some(e => e.kind === 'thread.archived' && e.threadId === started.threadId)).toBe(true)
+    expect(
+      events.some(e => e.kind === 'thread.status' && e.threadId === started.threadId && e.status === 'archived')
+    ).toBe(true)
     expect(events.some(e => e.kind === 'message' && e.threadId === started.threadId)).toBe(true)
   })
 
@@ -79,6 +82,6 @@ describe('archiving threads', () => {
 
     sam.send({ type: 'thread.archive', threadId: 'nope' })
     await new Promise(r => setTimeout(r, 200))
-    expect(sam.events.some(e => e.kind === 'thread.archived')).toBe(false)
+    expect(sam.events.some(e => e.kind === 'thread.status')).toBe(false)
   })
 })

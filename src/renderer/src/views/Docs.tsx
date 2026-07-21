@@ -1,29 +1,15 @@
 import { ChevronRightIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { fallbackTitle, pageCode, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
+import FindBar from '../components/FindBar'
 import { MenuItem, Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
 import { useCrew } from '../state/store'
 
 interface PageNode {
   slug: string
-  name: string
   children: PageNode[]
-}
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/^-+/, '')
-}
-
-function prettify(slug: string): string {
-  const words = slug.split('/').pop()!.replace(/-/g, ' ')
-  return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
 function parentOf(slug: string): string {
@@ -41,7 +27,7 @@ function buildTree(slugs: string[]): PageNode[] {
   const ensure = (slug: string): PageNode => {
     const found = byPath.get(slug)
     if (found) return found
-    const node: PageNode = { slug, name: lastSegment(slug), children: [] }
+    const node: PageNode = { slug, children: [] }
     byPath.set(slug, node)
     const parent = parentOf(slug)
     if (parent) ensure(parent).children.push(node)
@@ -55,21 +41,22 @@ function buildTree(slugs: string[]): PageNode[] {
 
 export default function Docs() {
   const docs = useCrew(s => s.docs)
-  const docTitles = useCrew(s => s.docTitles)
   const updateDoc = useCrew(s => s.updateDoc)
-  const setDocTitle = useCrew(s => s.setDocTitle)
+  const retitleDoc = useCrew(s => s.retitleDoc)
   const renameDoc = useCrew(s => s.renameDoc)
   const deleteDoc = useCrew(s => s.deleteDoc)
   const [page, setPage] = useState('main')
   const current = docs[page] !== undefined ? page : 'main'
-  const displayTitle = (slug: string) => docTitles[slug] ?? prettify(slug)
-  const [title, setTitle] = useState(() => displayTitle(current))
+  const titleOf = (slug: string): string => docs[slug]?.title ?? fallbackTitle(slug)
+  const [title, setTitle] = useState(() => titleOf(current))
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [dragged, setDragged] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
   const [menu, setMenu] = useState<{ slug: string; x: number; y: number } | null>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const editorRef = useRef<DocEditorHandle>(null)
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const pendingFocus = useRef(false)
 
   const focusBody = () => {
@@ -78,8 +65,12 @@ export default function Docs() {
 
   const tree = buildTree(Object.keys(docs))
 
+  const currentTitle = docs[current]?.title ?? fallbackTitle(current)
   useEffect(() => {
-    setTitle(displayTitle(current))
+    if (document.activeElement !== titleRef.current) setTitle(currentTitle)
+  }, [current, currentTitle])
+
+  useEffect(() => {
     setExpanded(prev => {
       const next = new Set(prev)
       let parent = parentOf(current)
@@ -98,16 +89,15 @@ export default function Docs() {
     }
   }, [current])
 
-  const freeSlug = (base: string): string => {
-    let slug = base
-    let n = 2
-    while (docs[slug] !== undefined) slug = `${base}-${n++}`
+  const freshSlug = (parent: string, base: string): string => {
+    let slug = pageSlug(parent, base, pageCode())
+    while (docs[slug] !== undefined) slug = pageSlug(parent, base, pageCode())
     return slug
   }
 
   const createPage = (parent: string) => {
-    const slug = freeSlug(parent ? `${parent}/untitled` : 'untitled')
-    updateDoc(slug, '')
+    const slug = freshSlug(parent, 'untitled')
+    updateDoc(slug, '', '')
     if (parent) setExpanded(prev => new Set(prev).add(parent))
     pendingFocus.current = true
     setPage(slug)
@@ -121,8 +111,9 @@ export default function Docs() {
 
   const movePage = (target: string) => {
     if (!dragged || !canDrop(target)) return
-    const base = target ? `${target}/${lastSegment(dragged)}` : lastSegment(dragged)
-    const to = docs[base] !== undefined ? freeSlug(base) : base
+    const segment = lastSegment(dragged)
+    const kept = target ? `${target}/${segment}` : segment
+    const to = docs[kept] !== undefined ? freshSlug(target, splitPageCode(segment).base) : kept
     editorRef.current?.flush()
     renameDoc(dragged, to)
     if (target) setExpanded(prev => new Set(prev).add(target))
@@ -131,12 +122,18 @@ export default function Docs() {
 
   const dropProps = (target: string) => ({
     onDragOver: (e: DragEvent) => {
-      if (!canDrop(target)) return
-      e.preventDefault()
       e.stopPropagation()
+      if (!canDrop(target)) {
+        setDropTarget(t => (t === null ? t : null))
+        return
+      }
+      e.preventDefault()
       setDropTarget(target)
     },
-    onDragLeave: () => setDropTarget(t => (t === target ? null : t)),
+    onDragLeave: (e: DragEvent) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+      setDropTarget(t => (t === target ? null : t))
+    },
     onDrop: (e: DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
@@ -147,28 +144,29 @@ export default function Docs() {
   })
 
   const commitTitle = () => {
-    if (current === 'main') {
-      setTitle(displayTitle(current))
+    const trimmed = title.trim()
+    setTitle(trimmed)
+    if (trimmed === titleOf(current)) return
+    if (docs[current] === undefined) {
+      updateDoc(current, '', trimmed)
       return
     }
-    const clean = title.replace(/\s+/g, ' ').trim()
-    const name = slugify(title)
-    const parent = parentOf(current)
-    let target = current
-    if (name) {
-      const slug = parent ? `${parent}/${name}` : name
-      if (slug !== current) {
-        target = docs[slug] !== undefined ? freeSlug(slug) : slug
-        editorRef.current?.flush()
-        renameDoc(current, target)
-        setPage(target)
-      }
+    if (current === 'main') {
+      retitleDoc(current, trimmed)
+      return
     }
-    // Keep the verbatim title (symbols and all); fall back to the slug-derived
-    // name when it adds nothing, so titles.json only holds genuine titles.
-    const desired = clean === prettify(target) ? '' : clean
-    if (target !== current || desired !== (docTitles[current] ?? '')) setDocTitle(target, desired)
-    setTitle(clean || prettify(target))
+    const parent = parentOf(current)
+    const { base: oldBase, code } = splitPageCode(lastSegment(current))
+    const base = slugify(trimmed) || 'untitled'
+    if (base === oldBase) {
+      retitleDoc(current, trimmed)
+      return
+    }
+    const kept = code ? pageSlug(parent, base, code) : null
+    const target = kept && docs[kept] === undefined ? kept : freshSlug(parent, base)
+    editorRef.current?.flush()
+    renameDoc(current, target, trimmed)
+    setPage(target)
   }
 
   const renderNode = (node: PageNode, depth: number) => {
@@ -192,8 +190,8 @@ export default function Docs() {
             setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
           }}
           className={`group/row flex items-center rounded-full transition-all duration-150 ${
-            dropTarget === node.slug ? 'bg-white/[0.08] ring-1 ring-white/25' : ''
-          } ${active ? 'bg-ink-800' : 'hover:bg-white/[0.04]'}`}
+            dropTarget === node.slug ? 'bg-fg/[0.08] ring-1 ring-fg/25' : ''
+          } ${active ? 'bg-ink-800' : 'hover:bg-fg/[0.04]'}`}
           style={{ paddingLeft: depth * 14 }}
         >
           <button
@@ -219,13 +217,13 @@ export default function Docs() {
             }`}
           >
             <DocumentTextIcon className="w-4 h-4 shrink-0 opacity-60" />
-            <span className="truncate">{displayTitle(node.slug)}</span>
+            <span className="truncate">{titleOf(node.slug) || 'Untitled'}</span>
           </button>
           <Tooltip label="Add sub-page">
             <button
               onClick={() => createPage(node.slug)}
               aria-label="Add sub-page"
-              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-white/[0.08] transition-all shrink-0"
+              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.08] transition-all shrink-0"
             >
               <PlusIcon className="w-3.5 h-3.5" />
             </button>
@@ -238,20 +236,19 @@ export default function Docs() {
 
   return (
     <div className="h-full flex">
-      <aside className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
+      <aside {...dropProps('')} className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
           <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
-          <div className="flex-1 min-h-0 overflow-y-auto space-y-0.5">
+          <div
+            className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-all duration-150 ${
+              dragged && dropTarget === '' ? 'bg-fg/[0.06] ring-1 ring-fg/20' : ''
+            }`}
+          >
             {tree.map(node => renderNode(node, 0))}
-            <div
-              {...dropProps('')}
-              className={`h-10 rounded-2xl transition-all duration-150 ${
-                dragged && dropTarget === '' ? 'bg-white/[0.06] ring-1 ring-white/20' : ''
-              }`}
-            />
+            <div className="h-10" />
           </div>
           <button
             onClick={() => createPage('')}
-            className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-white/[0.04]"
+            className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]"
           >
             <PlusIcon className="w-4 h-4 shrink-0" />
             New page
@@ -281,13 +278,13 @@ export default function Docs() {
             )}
           </Popover>
       </aside>
-      <div className="flex-1 min-w-0 overflow-y-auto px-6">
-        <div className="max-w-[760px] mx-auto pt-24">
+      <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
+      <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto px-6">
+        <div ref={contentRef} className="max-w-[760px] mx-auto pt-24">
             <div className="px-[54px] pb-2">
               <input
                 ref={titleRef}
                 value={title}
-                readOnly={current === 'main'}
                 onChange={e => setTitle(e.target.value)}
                 onBlur={commitTitle}
                 onKeyDown={e => {
@@ -297,7 +294,7 @@ export default function Docs() {
                     focusBody()
                   }
                   if (e.key === 'Escape') {
-                    setTitle(prettify(current))
+                    setTitle(titleOf(current))
                     titleRef.current?.blur()
                   }
                 }}
@@ -308,7 +305,7 @@ export default function Docs() {
             <DocEditor
               key={current}
               ref={editorRef}
-              text={docs[current] ?? ''}
+              text={docs[current]?.text ?? ''}
               onChange={markdown => updateDoc(current, markdown)}
             />
             <div className="h-40" />

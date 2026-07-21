@@ -110,6 +110,7 @@ app.whenReady().then(() => {
   ipcMain.handle('session:join', (_event, link: string, folder: string, name: string) => session.startJoin(link, folder, name))
   ipcMain.handle('session:leave', () => session.leave())
   ipcMain.handle('agents:capabilities', () => session.capabilities())
+  ipcMain.handle('agents:install', (_event, provider: string) => session.installProvider(provider))
   ipcMain.handle('agents:create', (_event, input: NewAgent) => session.createAgent(input))
   ipcMain.handle('agents:remove', (_event, instanceId: string) => session.removeAgent(instanceId))
   createWindow()

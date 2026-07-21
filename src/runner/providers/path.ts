@@ -10,6 +10,7 @@ const HOME_DIRS = [
   '.claude/local',
   '.kimi-code/bin',
   '.codex/bin',
+  '.grok/bin',
   '.bun/bin',
   '.deno/bin',
   '.cargo/bin',
@@ -20,8 +21,8 @@ const HOME_DIRS = [
 
 const SYSTEM_DIRS = ['/opt/homebrew/bin', '/opt/homebrew/sbin', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin']
 
-function nodeVersionDirs(): string[] {
-  const root = join(homedir(), '.nvm/versions/node')
+function nodeVersionDirs(home: string): string[] {
+  const root = join(home, '.nvm/versions/node')
   try {
     return readdirSync(root).map(entry => join(root, entry, 'bin'))
   } catch {
@@ -43,20 +44,22 @@ function loginShellDirs(): string[] {
   return shellDirs
 }
 
-export function searchDirs(): string[] {
-  const home = homedir()
+export function searchDirs(
+  options: { home?: string; path?: string; loginShell?: boolean } = {}
+): string[] {
+  const home = options.home ?? process.env.HOME ?? homedir()
   const all = [
-    ...(process.env.PATH ?? '').split(delimiter),
-    ...loginShellDirs(),
+    ...(options.path ?? process.env.PATH ?? '').split(delimiter),
+    ...(options.loginShell === false ? [] : loginShellDirs()),
     ...HOME_DIRS.map(dir => join(home, dir)),
-    ...nodeVersionDirs(),
+    ...nodeVersionDirs(home),
     ...SYSTEM_DIRS
   ]
   return [...new Set(all.filter(Boolean))]
 }
 
-export function crewPath(): string {
-  return searchDirs().join(delimiter)
+export function crewPath(dirs: string[] = searchDirs()): string {
+  return dirs.join(delimiter)
 }
 
 function commandCandidates(command: string): string[] {
@@ -67,10 +70,10 @@ function commandCandidates(command: string): string[] {
   return [...exts.map(ext => command + ext.toLowerCase()), command]
 }
 
-export function resolveCommand(command: string): string | null {
+export function resolveCommand(command: string, dirs: string[] = searchDirs()): string | null {
   if (command.includes('/') || command.includes('\\')) return command
   const candidates = commandCandidates(command)
-  for (const dir of searchDirs()) {
+  for (const dir of dirs) {
     for (const name of candidates) {
       const candidate = join(dir, name)
       try {

@@ -64,11 +64,18 @@ export const kimiArgs = (prompt: string, get: SettingReader): string[] => [
   ...flag('--model', get('model'))
 ]
 
+const INSTALL_SH = 'curl -LsSf https://code.kimi.com/install.sh | bash'
+
 export const kimiProvider: Provider = makeCliProvider({
   name: 'kimi',
   label: 'Kimi',
   command: 'kimi',
   fields: kimiFields,
   args: kimiArgs,
-  parser: parseKimiLine
+  parser: parseKimiLine,
+  install: {
+    darwin: INSTALL_SH,
+    linux: INSTALL_SH,
+    win32: 'Invoke-RestMethod https://code.kimi.com/install.ps1 | Invoke-Expression'
+  }
 })

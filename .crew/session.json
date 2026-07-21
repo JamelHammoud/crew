@@ -118,7 +118,40 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784614927738,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 81,
+            "severity": "warning",
+            "resetsAt": 1784620200052,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 18,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 34,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          }
+        ],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max"
+      }
     },
     {
       "id": "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
@@ -164,7 +197,7 @@
       "ownerName": "ALI",
       "settings": {
         "model": "fable",
-        "effort": "high"
+        "effort": "max"
       },
       "fields": [
         {
@@ -284,6 +317,14 @@
               "label": "gpt-5.5"
             },
             {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            },
+            {
               "value": "gpt-5.3-codex-spark",
               "label": "gpt-5.3-codex-spark"
             }
@@ -322,7 +363,22 @@
           "default": "high"
         }
       ],
-      "steerable": false
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784615167748,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "Weekly limit",
+            "percent": 79
+          }
+        ],
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
+      }
     },
     {
       "id": "jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
@@ -390,7 +446,40 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784614927738,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 81,
+            "severity": "warning",
+            "resetsAt": 1784620200052,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 18,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 34,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          }
+        ],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max"
+      }
     },
     {
       "id": "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",

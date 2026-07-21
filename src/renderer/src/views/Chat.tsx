@@ -3,12 +3,14 @@ import ChatMessage from '../components/ChatMessage'
 import Composer from '../components/Composer'
 import DayDivider from '../components/DayDivider'
 import { hoverCardOpen } from '../components/HoverCard'
-import { useMentionPicker } from '../components/MentionPicker'
+import JumpToBottom from '../components/JumpToBottom'
+import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import ThreadCard from '../components/ThreadCard'
-import { describeStep, type ThreadItem } from '../components/thread'
+import { describeStep, endPreview, lastEnd, threadState, type ThreadItem, type ThreadState } from '../components/thread'
 import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
+import { useStickToBottom } from '../components/useStickToBottom'
 import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
 
 type Feed =
@@ -29,8 +31,9 @@ export default function Chat() {
   const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
 
   const inputRef = useAutoResize(text)
-  const mention = useMentionPicker(text, setChatDraft, inputRef)
+  const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const didInitialScroll = useRef(false)
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
@@ -54,7 +57,7 @@ export default function Chat() {
           }
         })
       }
-      if (e.kind === 'thread.started' && threads[e.threadId] && !threads[e.threadId].archived) {
+      if (e.kind === 'thread.started' && threads[e.threadId]?.status === 'open') {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
     }
@@ -70,11 +73,10 @@ export default function Chat() {
       el.scrollTop = el.scrollHeight
       return
     }
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
-    if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [feed, steps, threadPrompts])
+    if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
+  }, [feed, steps, threadPrompts, pinnedRef])
 
-  const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
+  const threadStatus = (thread: ThreadMeta): { state: ThreadState; detail: string } => {
     const promptId = threadPrompts[thread.id]
     if (promptId) {
       const start = events.find(e => e.kind === 'agent.start' && e.promptId === promptId)
@@ -82,17 +84,9 @@ export default function Chat() {
       if (start) parts.push(formatElapsed(now - start.ts))
       const count = tokens[promptId] ?? 0
       if (count > 0) parts.push(`${formatTokens(count)} tokens`)
-      return { working: true, status: parts.join(' · ') }
+      return { state: 'working', detail: parts.join(' · ') }
     }
-    for (let i = events.length - 1; i >= 0; i--) {
-      const e = events[i]
-      if (e.kind === 'agent.end' && e.threadId === thread.id) {
-        const reply = e.ok ? (e.text ?? '') : (e.error ?? '')
-        const preview = reply.replace(/\s+/g, ' ').trim().slice(0, 70)
-        return { working: false, status: preview || 'Done' }
-      }
-    }
-    return { working: false, status: 'Done' }
+    return { state: threadState(thread, events, false), detail: endPreview(lastEnd(thread.id, events)) }
   }
 
   const send = () => {
@@ -111,7 +105,7 @@ export default function Chat() {
 
   return (
     <div className="h-full relative">
-      <div ref={scrollRef} className="h-full overflow-y-auto px-6">
+      <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
         <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
           {feed.length === 0 && (
             <p className="text-base text-fg-muted mt-16 text-center">
@@ -144,7 +138,8 @@ export default function Chat() {
       <div className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
-          <div className="max-w-[660px] mx-auto pointer-events-auto">
+          <div className="relative max-w-[660px] mx-auto pointer-events-auto">
+            {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
@@ -154,7 +149,12 @@ export default function Chat() {
               onKeyDown={onKeyDown}
               onSend={send}
             >
-              {mention.menu}
+              <MentionMenu
+                matches={mention.matches}
+                activeIndex={mention.activeIndex}
+                onPick={mention.pick}
+                onHover={mention.setActive}
+              />
             </Composer>
           </div>
         </div>

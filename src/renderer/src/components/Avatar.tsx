@@ -1,3 +1,5 @@
+import { useTheme } from '../state/theme'
+
 const SIZES = {
   sm: 'w-7 h-7 text-xs',
   md: 'w-10 h-10 text-sm',
@@ -26,13 +28,14 @@ export default function Avatar({
   presence?: 'online' | 'offline'
 }) {
   const hue = hueOf(name.trim().toLowerCase())
+  const light = useTheme() === 'light'
   return (
     <span className={`${SIZES[size]} relative inline-block shrink-0 self-start`}>
       <span
         className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
         style={{
-          backgroundColor: `oklch(0.32 0.045 ${hue})`,
-          color: `oklch(0.87 0.06 ${hue})`
+          backgroundColor: light ? `oklch(0.91 0.045 ${hue})` : `oklch(0.32 0.045 ${hue})`,
+          color: light ? `oklch(0.45 0.09 ${hue})` : `oklch(0.87 0.06 ${hue})`
         }}
       >
         {name.trim().charAt(0).toUpperCase() || '?'}

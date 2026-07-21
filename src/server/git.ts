@@ -39,12 +39,41 @@ export class GitSync {
     if (!this.hasRemote) return
     const pull = await runGit(['pull', '--rebase'], this.repoPath)
     if (pull.code !== 0) {
-      await runGit(['rebase', '--abort'], this.repoPath)
-      this.onLog(`pull failed, left as is: ${pull.stderr.trim()}`)
+      const resolved = await this.resolveRebaseConflicts()
+      if (!resolved) {
+        await runGit(['rebase', '--abort'], this.repoPath)
+        this.onLog(`pull failed, left as is: ${pull.stderr.trim()}`)
+      }
     }
     const push = await runGit(['push'], this.repoPath)
     if (push.code !== 0) {
       this.onLog(`push failed, will retry: ${push.stderr.trim()}`)
     }
+  }
+
+  // session.json is a state snapshot this machine rewrites on every poll, so a
+  // conflicted hunk carries no information worth merging — keep the local copy.
+  // While a rebase replays our commits onto origin, the local side is `--theirs`.
+  private async resolveRebaseConflicts(): Promise<boolean> {
+    for (let i = 0; i < 50; i++) {
+      const conflicts = await runGit(['diff', '--name-only', '--diff-filter=U'], this.repoPath)
+      const files = conflicts.stdout.trim().split('\n').filter(Boolean)
+      if (files.length === 0) {
+        // rebase stopped without conflicts (e.g. a commit became empty), or the
+        // pull failed for a non-rebase reason and there is nothing to continue
+        const skip = await runGit(['rebase', '--skip'], this.repoPath)
+        if (skip.code === 0) return true
+        const recheck = await runGit(['diff', '--name-only', '--diff-filter=U'], this.repoPath)
+        if (!recheck.stdout.trim()) return false
+        continue
+      }
+      if (files.some(f => !f.endsWith('session.json'))) return false
+      const take = await runGit(['checkout', '--theirs', '--', ...files], this.repoPath)
+      if (take.code !== 0) return false
+      await runGit(['add', '--', ...files], this.repoPath)
+      const cont = await runGit(['-c', 'core.editor=true', 'rebase', '--continue'], this.repoPath)
+      if (cont.code === 0) return true
+    }
+    return false
   }
 }
