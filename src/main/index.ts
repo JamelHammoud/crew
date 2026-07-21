@@ -1,4 +1,16 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, powerSaveBlocker, type MenuItemConstructorOptions } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  nativeImage,
+  nativeTheme,
+  powerSaveBlocker,
+  Tray,
+  type MenuItemConstructorOptions,
+  type NativeImage
+} from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { AppSession, type NewAgent } from './session'
@@ -8,6 +20,9 @@ app.commandLine.appendSwitch('disable-renderer-backgrounding')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
+let tray: Tray | null = null
+let balloonShown = false
+let resumed: Promise<unknown> = Promise.resolve()
 
 // Without an application menu the standard clipboard accelerators (copy, cut,
 // paste, select-all, undo, redo) are never registered, so they do nothing
