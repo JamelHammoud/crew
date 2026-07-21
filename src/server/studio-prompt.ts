@@ -45,22 +45,24 @@ function compactNode(node: StudioNode): Record<string, unknown> {
   return out
 }
 
+function pageNodes(doc: StudioDoc, page: StudioPage): Array<Record<string, unknown>> {
+  return page.order
+    .map(id => doc.nodes[id])
+    .filter((n): n is StudioNode => n !== undefined)
+    .map(compactNode)
+}
+
 export function serializePage(doc: StudioDoc, page: StudioPage): string {
-  const nodes = page.order.map(id => doc.nodes[id]).filter((n): n is StudioNode => n !== undefined)
-  let json = JSON.stringify(nodes.map(compactNode))
-  if (json.length > PAGE_JSON_LIMIT) {
-    json = JSON.stringify(nodes.slice(0, 250).map(compactNode)) + ` (${nodes.length - 250} more nodes not shown)`
-  }
-  return json
+  const nodes = pageNodes(doc, page)
+  const json = JSON.stringify(nodes)
+  if (json.length <= PAGE_JSON_LIMIT) return json
+  return JSON.stringify(nodes.slice(0, 250)) + ` (${nodes.length - 250} more nodes not shown)`
 }
 
 export function serializeDoc(doc: StudioDoc): string {
-  const pages = doc.pages.map(page => ({
-    id: page.id,
-    name: page.name,
-    nodes: JSON.parse(serializePage(doc, page).replace(/ \(\d+ more nodes not shown\)$/, ''))
-  }))
-  return JSON.stringify(pages)
+  return JSON.stringify(
+    doc.pages.map(page => ({ id: page.id, name: page.name, nodes: pageNodes(doc, page).slice(0, 400) }))
+  )
 }
 
 function chatTail(doc: StudioDoc): string {
