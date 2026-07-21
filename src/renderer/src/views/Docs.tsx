@@ -119,12 +119,18 @@ export default function Docs() {
 
   const dropProps = (target: string) => ({
     onDragOver: (e: DragEvent) => {
-      if (!canDrop(target)) return
-      e.preventDefault()
       e.stopPropagation()
+      if (!canDrop(target)) {
+        setDropTarget(t => (t === null ? t : null))
+        return
+      }
+      e.preventDefault()
       setDropTarget(target)
     },
-    onDragLeave: () => setDropTarget(t => (t === target ? null : t)),
+    onDragLeave: (e: DragEvent) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+      setDropTarget(t => (t === target ? null : t))
+    },
     onDrop: (e: DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
