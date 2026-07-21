@@ -39,6 +39,7 @@ export default function TasksPanel({
   const queues = useCrew(s => s.queues)
   const steps = useCrew(s => s.steps)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
+  const [showDone, setShowDone] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
 
   useEffect(() => {
