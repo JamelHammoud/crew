@@ -189,7 +189,7 @@ export default function TasksPanel({
     <div key={row.thread.id} className="group relative">
       <button
         onClick={() => onOpenThread(row.thread.id)}
-        className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]"
+        className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-ink-hover"
       >
         <span className="h-[22px] shrink-0 flex items-center">
           <StateIcon state={row.state} />
@@ -235,7 +235,7 @@ export default function TasksPanel({
     }
     return (
       <div key={todo.id} className="group relative">
-        <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]">
+        <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-ink-hover">
           <span className="h-[22px] shrink-0 flex items-center">
             <Tooltip label="Check off">
               <button
@@ -278,7 +278,7 @@ export default function TasksPanel({
 
   const checkedItem = (todo: Todo) => (
     <div key={todo.id} className="group relative">
-      <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]">
+      <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-ink-hover">
         <span className="h-[22px] shrink-0 flex items-center">
           <Tooltip label="Reopen">
             <button
@@ -365,7 +365,7 @@ export default function TasksPanel({
             ) : (
               <button
                 onClick={() => setAdding(true)}
-                className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-white/[0.04] hover:text-fg"
+                className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
               >
                 <span className="h-[22px] shrink-0 flex items-center">
                   <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
