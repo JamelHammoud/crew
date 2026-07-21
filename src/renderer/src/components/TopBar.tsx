@@ -68,6 +68,11 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
             <div className="px-3 pt-2 pb-1.5">
               <p className="text-sm font-semibold text-fg">{selfName}</p>
               <p className="text-xs text-fg-muted">{joinLink ? 'Hosting' : 'Joined'}</p>
+              {import.meta.env.DEV && (
+                <div className="mt-1.5">
+                  <Pill>DEV mode</Pill>
+                </div>
+              )}
             </div>
             <div className="h-px bg-white/[0.06] my-1" />
             {joinLink && (
