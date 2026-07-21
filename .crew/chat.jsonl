@@ -2695,3 +2695,5 @@
 {"id":"ac8cfee2-3782-4e04-a72b-33196bc0f240","ts":1784598013554,"kind":"agent.online","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","label":"Bob"}
 {"id":"c00280bd-756a-4191-b611-f1f0472ee419","ts":1784598013554,"kind":"person.joined","memberId":"dc050f93-2ad8-433c-8bf8-0f329417ea55","name":"Jamel (Envoy)"}
 {"id":"38df0c73-6a54-4171-bf3a-90d7a348318d","ts":1784598019160,"kind":"thread.archived","threadId":"e2c76b82-88fb-47ce-b8d2-0af148236276","byName":"Jamel (Envoy)"}
+{"id":"199ae66d-5d69-471c-80ca-3f4f1bfc770f","ts":1784598137894,"kind":"agent.updated","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","settings":{"model":"opus","effort":"max"}}
+{"id":"d10549db-7cab-417d-8bc9-24f8b7d49624","ts":1784598139683,"kind":"agent.updated","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","settings":{"model":"fable","effort":"max"}}
