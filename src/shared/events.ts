@@ -1,6 +1,11 @@
 import type { Attachment } from './attachments'
 import type { AgentSettings, AgentStep } from './llm'
 
+// 'open' means the thread still wants attention: either an agent is working or
+// the result is waiting for someone to look at it. 'done' is an explicit human
+// (or agent) sign-off; 'archived' hides the thread without losing it.
+export type ThreadStatus = 'open' | 'done' | 'archived'
+
 export type SessionEvent =
   | {
       id: string
