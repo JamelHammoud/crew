@@ -236,11 +236,15 @@ export const useCrew = create<CrewState>((set, get) => {
               agentId: event.agentId,
               agentLabel: event.agentLabel,
               title: event.title,
-              createdBy: event.byName
+              createdBy: event.byName,
+              status: 'open'
             }
           }
           if (event.kind === 'thread.archived' && threads[event.threadId]) {
-            threads[event.threadId].archived = true
+            threads[event.threadId].status = 'archived'
+          }
+          if (event.kind === 'thread.status' && threads[event.threadId]) {
+            threads[event.threadId].status = event.status
           }
           if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
           if (event.kind === 'agent.start') {
