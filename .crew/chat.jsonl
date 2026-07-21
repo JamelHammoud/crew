@@ -3110,3 +3110,9 @@
 {"id":"8b6f80b6-c852-4b2a-a212-14ee15689163","ts":1784606063349,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"8c5cb132-861f-4707-ba51-693d2b59fd88","ts":1784606178697,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Continue","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"threadId":"7c50a899-149b-46ad-9f9d-322ccaac3853","attachments":[]}
 {"id":"ef6aee64-4794-4080-889b-b07e21588900","ts":1784606178700,"kind":"message","authorId":"crew","authorName":"crew","text":"Claude Fable is not here right now.","mentions":[],"threadId":"7c50a899-149b-46ad-9f9d-322ccaac3853"}
+{"id":"0f57ad5e-f4cf-4a73-8065-9045bfd33e5a","ts":1784606202904,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"0a65fbf5-dbf1-4e81-8be0-eabf91acb1bd","ts":1784606208606,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"7646ce84-6dd6-4f16-892a-d8d1f7423bb3","ts":1784606208606,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"93e7e0ed-daac-440c-915f-0cb1f52d5b57","ts":1784606208606,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"53c64813-2d90-4d5e-83d6-3998672f8210","ts":1784606208606,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"44b81300-0768-487f-aade-44b61762bfae","ts":1784606208606,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
