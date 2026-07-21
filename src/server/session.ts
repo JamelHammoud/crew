@@ -466,16 +466,35 @@ export class CrewSession {
     return page
   }
 
-  private handleDoc(member: Member, page: string, text: string): void {
+  private handleDoc(member: Member, page: string, text: string, title?: string): void {
     page = this.followRenames(page)
+    const doc: DocPage = { title: title ?? this.docs.get(page)?.title ?? fallbackTitle(page), text }
     try {
-      this.store.saveDoc(page, text)
+      this.store.saveDoc(page, doc)
     } catch {
       return
     }
-    this.docs.set(page, text)
+    this.docs.set(page, doc)
     this.emit(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, byName: member.name },
+      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, title: doc.title, byName: member.name },
+      { persist: false }
+    )
+    this.onSyncNeeded?.()
+  }
+
+  private handleDocRetitle(member: Member, page: string, title: string): void {
+    page = this.followRenames(page)
+    const existing = this.docs.get(page)
+    if (!existing || existing.title === title) return
+    const doc: DocPage = { title, text: existing.text }
+    try {
+      this.store.saveDoc(page, doc)
+    } catch {
+      return
+    }
+    this.docs.set(page, doc)
+    this.emit(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text: doc.text, title, byName: member.name },
       { persist: false }
     )
     this.onSyncNeeded?.()
