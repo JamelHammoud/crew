@@ -121,7 +121,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784605861305,
+        "fetchedAt": 1784605914303,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
@@ -454,7 +454,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784605861424,
+        "fetchedAt": 1784605914393,
         "windows": [
           {
             "key": "primary",
@@ -537,7 +537,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784605861305,
+        "fetchedAt": 1784605914303,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
