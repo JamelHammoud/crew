@@ -1,6 +1,44 @@
 import type { Attachment } from '../../../shared/attachments'
 import type { SessionEvent } from '../../../shared/events'
 import type { AgentStep, FileChange } from '../../../shared/llm'
+import type { ThreadMeta } from '../state/store'
+
+// A thread's standing as a task. 'done' and 'archived' record explicit calls a
+// person made; 'working', 'ready', and 'failed' are read off the run history.
+// 'ready' is finished work waiting for someone to look at it.
+export type ThreadState = 'working' | 'ready' | 'failed' | 'done' | 'archived'
+
+export const THREAD_STATE_LABELS: Record<ThreadState, string> = {
+  working: 'Working',
+  ready: 'Ready for review',
+  failed: 'Failed',
+  done: 'Done',
+  archived: 'Archived'
+}
+
+export function threadState(thread: ThreadMeta, events: SessionEvent[], running: boolean): ThreadState {
+  if (running) return 'working'
+  if (thread.status !== 'open') return thread.status
+  const end = lastEnd(thread.id, events)
+  return end && !end.ok ? 'failed' : 'ready'
+}
+
+export function lastEnd(
+  threadId: string,
+  events: SessionEvent[]
+): Extract<SessionEvent, { kind: 'agent.end' }> | undefined {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i]
+    if (e.kind === 'agent.end' && e.threadId === threadId) return e
+  }
+  return undefined
+}
+
+export function endPreview(end: Extract<SessionEvent, { kind: 'agent.end' }> | undefined): string {
+  if (!end) return ''
+  const reply = end.ok ? (end.text ?? '') : (end.error ?? '')
+  return reply.replace(/\s+/g, ' ').trim().slice(0, 70)
+}
 
 export interface ThreadItem {
   key: string
