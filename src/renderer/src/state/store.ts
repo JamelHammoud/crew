@@ -379,27 +379,46 @@ export const useCrew = create<CrewState>((set, get) => {
       set(state => ({ docs: { ...state.docs, [page]: text } }))
       socket.send({ type: 'doc.update', page, text })
     },
+    setDocTitle: (page, title) => {
+      set(state => {
+        const docTitles = { ...state.docTitles }
+        if (title) docTitles[page] = title
+        else delete docTitles[page]
+        return { docTitles }
+      })
+      socket.send({ type: 'doc.title', page, title })
+    },
     renameDoc: (from, to) => {
       set(state => {
         if (state.docs[from] === undefined || state.docs[to] !== undefined) return state
         if (to === from || to.startsWith(`${from}/`)) return state
         const docs = { ...state.docs }
+        const docTitles = { ...state.docTitles }
         for (const page of Object.keys(docs)) {
           if (page !== from && !page.startsWith(`${from}/`)) continue
           docs[to + page.slice(from.length)] = docs[page]
           delete docs[page]
         }
-        return { docs }
+        for (const page of Object.keys(docTitles)) {
+          if (page !== from && !page.startsWith(`${from}/`)) continue
+          docTitles[to + page.slice(from.length)] = docTitles[page]
+          delete docTitles[page]
+        }
+        return { docs, docTitles }
       })
       socket.send({ type: 'doc.rename', from, to })
     },
     deleteDoc: page => {
       set(state => {
         const docs = { ...state.docs }
+        const docTitles = { ...state.docTitles }
         for (const key of Object.keys(docs)) {
           if (key === page || key.startsWith(`${page}/`)) delete docs[key]
         }
-        return { docs }
+        for (const key of Object.keys(docTitles)) {
+          if (key === page || key.startsWith(`${page}/`)) delete docTitles[key]
+        }
+        return { docs, docTitles }
       })
       socket.send({ type: 'doc.delete', page })
     },
