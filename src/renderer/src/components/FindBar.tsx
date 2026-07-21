@@ -146,7 +146,7 @@ export default function FindBar({
 
   if (!open) return null
   return (
-    <div className="glass fixed top-[78px] right-8 z-40 flex items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
+    <div className="glass fixed top-[78px] right-8 z-40 flex w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
       <MagnifyingGlassIcon className="w-4 h-4 text-fg-muted shrink-0 mr-1.5" />
       <input
         ref={inputRef}
@@ -160,7 +160,7 @@ export default function FindBar({
           }
         }}
         placeholder="Find in page"
-        className="w-44 bg-transparent text-sm text-fg placeholder:text-fg-faint outline-none"
+        className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg-faint outline-none"
       />
       {query && (
         <span className="text-xs tabular-nums text-fg-muted px-1 shrink-0">
