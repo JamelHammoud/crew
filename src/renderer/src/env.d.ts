@@ -8,6 +8,7 @@ declare global {
     start(folder: string, name: string): Promise<{ link: string; wsUrl: string }>
     join(link: string, folder: string, name: string): Promise<{ wsUrl: string }>
     leave(): Promise<void>
+    current(): Promise<{ wsUrl: string; name: string; code: string; link: string | null } | null>
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
