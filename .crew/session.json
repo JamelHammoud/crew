@@ -225,14 +225,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784602372642,
+        "fetchedAt": 1784602433938,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1784616599780,
+            "resetsAt": 1784616600078,
             "active": true
           },
           {
@@ -240,7 +240,7 @@
             "label": "Weekly (all models)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784894399780,
+            "resetsAt": 1784894400078,
             "active": false
           },
           {
@@ -248,7 +248,7 @@
             "label": "Weekly (Fable)",
             "percent": 34,
             "severity": "normal",
-            "resetsAt": 1784894399780,
+            "resetsAt": 1784894400078,
             "active": false
           }
         ],
@@ -470,14 +470,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784602372642,
+        "fetchedAt": 1784602433938,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1784616599780,
+            "resetsAt": 1784616600078,
             "active": true
           },
           {
@@ -485,7 +485,7 @@
             "label": "Weekly (all models)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784894399780,
+            "resetsAt": 1784894400078,
             "active": false
           },
           {
@@ -493,7 +493,7 @@
             "label": "Weekly (Fable)",
             "percent": 34,
             "severity": "normal",
-            "resetsAt": 1784894399780,
+            "resetsAt": 1784894400078,
             "active": false
           }
         ],
@@ -575,7 +575,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784602373049,
+        "fetchedAt": 1784602434348,
         "windows": [
           {
             "key": "primary",
