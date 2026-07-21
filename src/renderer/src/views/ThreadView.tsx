@@ -94,13 +94,13 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       el.scrollTop = el.scrollHeight
       return
     }
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240 + overlayHeight
-    if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [items, overlayHeight])
+    if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
+  }, [items, overlayHeight, pinnedRef])
 
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
     sendChat(text, threadId)
+    jumpToBottom()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -117,7 +117,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   return (
     <div className="h-full relative">
-      <div ref={scrollRef} className="h-full overflow-y-auto px-6">
+      <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
         <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
           <ThreadItems items={items} />
           {activePromptId && startedAt && (
