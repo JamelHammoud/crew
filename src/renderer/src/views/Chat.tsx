@@ -76,7 +76,7 @@ export default function Chat() {
     if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
   }, [feed, steps, threadPrompts, pinnedRef])
 
-  const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
+  const threadStatus = (thread: ThreadMeta): { state: ThreadState; detail: string } => {
     const promptId = threadPrompts[thread.id]
     if (promptId) {
       const start = events.find(e => e.kind === 'agent.start' && e.promptId === promptId)
@@ -84,17 +84,9 @@ export default function Chat() {
       if (start) parts.push(formatElapsed(now - start.ts))
       const count = tokens[promptId] ?? 0
       if (count > 0) parts.push(`${formatTokens(count)} tokens`)
-      return { working: true, status: parts.join(' · ') }
+      return { state: 'working', detail: parts.join(' · ') }
     }
-    for (let i = events.length - 1; i >= 0; i--) {
-      const e = events[i]
-      if (e.kind === 'agent.end' && e.threadId === thread.id) {
-        const reply = e.ok ? (e.text ?? '') : (e.error ?? '')
-        const preview = reply.replace(/\s+/g, ' ').trim().slice(0, 70)
-        return { working: false, status: preview || 'Done' }
-      }
-    }
-    return { working: false, status: 'Done' }
+    return { state: threadState(thread, events, false), detail: endPreview(lastEnd(thread.id, events)) }
   }
 
   const send = () => {
