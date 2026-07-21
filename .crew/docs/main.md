@@ -6,10 +6,10 @@
 * [ ] Ability to mention a different agent while in a thread
 * [ ] Have the app running in the background
 * [ ] Better at finding what CLIs are available on your computer
-* [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
 
 ## In progress
 
+* [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
 * [ ] A thread can get stuck on "Working" for hours, the stop button does nothing
 * [ ] A steered message to Claude works, but in the UI it's still sticking at the bottom, even as the responses from Claude start to come in, they push the message downwards (which doesn't make sense, the message was sent earlier). The timestamp for the steered message is correct, but it's positioning in the thread chat makes it look like it was sent later than other messages
 
