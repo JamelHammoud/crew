@@ -2759,3 +2759,13 @@
 {"id":"55c11201-c49c-4261-ac34-1974d1802ec8","ts":1784600947727,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
 {"id":"45a99ae0-aff1-4a6c-8f69-e60a12ce873a","ts":1784600947727,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"53653aca-0434-4cde-9725-f723f103a7dd","ts":1784600947727,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"bb38732f-70d2-45e4-967a-ab1320d8dbf6","ts":1784601552091,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"dfad4527-3978-4f1e-b70c-57fce61af5d5","ts":1784601552091,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"f45e8556-d6d9-4e8f-bc0d-bf4a513f0039","ts":1784601552092,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"10b98ee0-53a3-4a29-8c67-daf0fbe5dce4","ts":1784601552092,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"a28fc173-f05b-4b79-98b7-d3326338f7e0","ts":1784601552092,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"381d546d-77be-469e-a651-5e8691afbfbb","ts":1784601553109,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"b238ba68-2246-48ec-9cc2-ba8740cc4891","ts":1784601553110,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"bffe8982-6116-449d-983b-97f6f0eaeb4b","ts":1784601553110,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"db38ac05-9d09-4527-a12b-bb3f989ea38e","ts":1784601553110,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"8ac9a0a4-53db-4804-9d94-d36ba504a99e","ts":1784601553110,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}

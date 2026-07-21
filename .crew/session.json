@@ -121,7 +121,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784600947731,
+        "fetchedAt": 1784601553114,
         "windows": [
           {
             "key": "session",
@@ -135,7 +135,7 @@
             "label": "Weekly (all models)",
             "percent": 5,
             "severity": "normal",
-            "resetsAt": 1784930399985,
+            "resetsAt": 1784930400450,
             "active": false
           },
           {
@@ -143,7 +143,7 @@
             "label": "Weekly (Fable)",
             "percent": 9,
             "severity": "normal",
-            "resetsAt": 1784930399985,
+            "resetsAt": 1784930400451,
             "active": true
           }
         ],
@@ -477,18 +477,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784600948079,
+        "fetchedAt": 1784601553471,
         "windows": [
           {
             "key": "primary",
             "label": "Weekly limit",
-            "percent": 100
+            "percent": 79
           }
         ],
         "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
         "accountLabel": "devjamel@gmail.com",
         "plan": "prolite",
-        "asOf": 1784450478319
+        "asOf": 1784429101870
       }
     },
     {
@@ -560,7 +560,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784600947731,
+        "fetchedAt": 1784601553114,
         "windows": [
           {
             "key": "session",
@@ -574,7 +574,7 @@
             "label": "Weekly (all models)",
             "percent": 5,
             "severity": "normal",
-            "resetsAt": 1784930399985,
+            "resetsAt": 1784930400450,
             "active": false
           },
           {
@@ -582,7 +582,7 @@
             "label": "Weekly (Fable)",
             "percent": 9,
             "severity": "normal",
-            "resetsAt": 1784930399985,
+            "resetsAt": 1784930400451,
             "active": true
           }
         ],
