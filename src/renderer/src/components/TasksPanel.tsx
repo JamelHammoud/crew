@@ -13,6 +13,7 @@ import type { Todo } from '../../../shared/events'
 import { mentionsIn, type PooledAgent } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
+import { useAutoResize } from './useAutoResize'
 import { MenuItem, Popover } from './Popover'
 import { StateIcon } from './ThreadCard'
 import { describeStep, endPreview, lastEnd, threadState, type ThreadState } from './thread'
@@ -60,7 +61,7 @@ function TodoEditor({
   onDone: () => void
 }) {
   const [value, setValue] = useState(initial)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useAutoResize(value)
   const wrapRef = useRef<HTMLDivElement>(null)
   const mention = useMentionAutocomplete(value, setValue, inputRef)
 
