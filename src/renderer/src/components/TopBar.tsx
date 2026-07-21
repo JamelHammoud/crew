@@ -2,6 +2,7 @@ import { ArrowRightStartOnRectangleIcon, CheckIcon, LinkIcon } from '@heroicons/
 import { useState } from 'react'
 import { useCrew } from '../state/store'
 import Avatar from './Avatar'
+import Pill from './Pill'
 import TabIcon from './TabIcon'
 import { MenuItem, Popover } from './Popover'
 
