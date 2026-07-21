@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { httpBaseFrom } from '../../../shared/attachments'
+import { fallbackTitle, type DocPage } from '../../../shared/docs'
 import { trimEvents, type SessionEvent } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
@@ -28,7 +29,7 @@ interface CrewState {
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
-  docs: Record<string, string>
+  docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   steps: Record<string, AgentStep[]>
   tokens: Record<string, number>
