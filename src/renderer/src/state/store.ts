@@ -166,6 +166,11 @@ export const useCrew = create<CrewState>((set, get) => {
           if (thread) threads[event.threadId] = { ...thread, archived: true }
           break
         }
+        case 'thread.agent': {
+          const thread = threads[event.threadId]
+          if (thread) threads[event.threadId] = { ...thread, agentId: event.agentId, agentLabel: event.agentLabel }
+          break
+        }
         case 'agent.start': {
           activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
           if (event.threadId) threadPrompts[event.threadId] = event.promptId
