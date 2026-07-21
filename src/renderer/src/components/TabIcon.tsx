@@ -111,8 +111,29 @@ function DocsIcon() {
   )
 }
 
+function StudioIcon() {
+  return (
+    <svg {...SVG}>
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        d="M3.2 5.3A2.1 2.1 0 0 1 5.3 3.2h9.4a2.1 2.1 0 0 1 2.1 2.1v9.4a2.1 2.1 0 0 1-2.1 2.1H5.3a2.1 2.1 0 0 1-2.1-2.1Z"
+        style={{ '--draw-dur': '320ms' } as React.CSSProperties}
+      />
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        d="m6 13.8 2.65-6.9 1.75 3.95 1.3-2.1 2.3 5.05"
+        style={{ '--draw-dur': '360ms', '--draw-delay': '170ms' } as React.CSSProperties}
+      />
+      <circle className="tab-icon-pop" cx="13.75" cy="6.15" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
 const ICONS: Record<Tab, () => React.ReactElement> = {
   chat: ChatIcon,
+  studio: StudioIcon,
   agents: SpaceIcon,
   docs: DocsIcon
 }

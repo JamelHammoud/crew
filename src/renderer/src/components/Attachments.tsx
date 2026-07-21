@@ -1,6 +1,6 @@
-import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { DocumentIcon, PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useRef } from 'react'
-import { MAX_ATTACHMENTS } from '../../../shared/attachments'
+import { isImageType, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { useCrew } from '../state/store'
 import { previewSrc } from './images'
 import Tooltip from './Tooltip'
@@ -13,11 +13,14 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
     <div className="flex flex-wrap gap-2 mb-2">
       {pending.map(item => (
         <div key={item.id} className="relative group animate-pop">
-          <img
-            src={previewSrc(item)}
-            alt={item.name}
-            className="h-16 w-16 object-cover rounded-xl border border-fg/10"
-          />
+          {isImageType(item.mime) ? (
+            <img src={previewSrc(item)} alt={item.name} className="h-16 w-16 object-cover rounded-xl border border-fg/10" />
+          ) : (
+            <div className="h-16 w-28 px-2 flex flex-col items-center justify-center gap-1 rounded-xl border border-fg/10 bg-fg/[0.04] text-fg-muted">
+              <DocumentIcon className="w-5 h-5" />
+              <span className="w-full truncate text-center text-[9px]">{item.name}</span>
+            </div>
+          )}
           <Tooltip label={`Remove ${item.name}`}>
             <button
               onClick={() => detach(attachmentKey, item.id)}

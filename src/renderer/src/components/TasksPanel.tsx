@@ -185,7 +185,7 @@ export default function TasksPanel({
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = []
     for (const e of events) {
-      if (e.kind !== 'thread.started' || !threads[e.threadId]) continue
+      if (e.kind !== 'thread.started' || !threads[e.threadId] || threads[e.threadId].studioId) continue
       const thread = threads[e.threadId]
       const promptId = threadPrompts[thread.id]
       const working = Boolean(promptId) || (queues[thread.id]?.length ?? 0) > 0

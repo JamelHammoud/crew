@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
+import type { Attachment } from '../shared/attachments'
 import type { ServerMessage } from '../shared/protocol'
 import {
   emptyStudioDoc,
@@ -59,6 +60,7 @@ export class StudioManager {
         assets: doc.assets ?? [],
         chat: doc.chat ?? [],
         agents: doc.agents ?? [],
+        variables: doc.variables ?? {},
         rev: doc.rev ?? 0
       })
     }
@@ -219,7 +221,8 @@ export class StudioManager {
     studioId: string,
     text: string,
     mentions: string[],
-    build: boolean
+    build: boolean,
+    attachments: Attachment[] = []
   ): void {
     const doc = this.docs.get(studioId)
     if (!doc) return
@@ -229,7 +232,8 @@ export class StudioManager {
       authorName: member.name,
       text,
       mentions: mentions.length > 0 ? mentions : undefined,
-      build: build || undefined
+      build: build || undefined,
+      attachments: attachments.length > 0 ? attachments : undefined
     })
   }
 

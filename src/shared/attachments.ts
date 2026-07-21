@@ -16,25 +16,39 @@ export const IMAGE_TYPES: Record<string, string> = {
   'image/png': 'png',
   'image/jpeg': 'jpg',
   'image/gif': 'gif',
-  'image/webp': 'webp'
+  'image/webp': 'webp',
+  'image/svg+xml': 'svg'
+}
+
+export const ATTACHMENT_TYPES: Record<string, string> = {
+  ...IMAGE_TYPES,
+  'application/pdf': 'pdf',
+  'text/plain': 'txt',
+  'text/markdown': 'md',
+  'application/json': 'json',
+  'text/csv': 'csv'
 }
 
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
 export const MAX_ATTACHMENTS = 6
 
-const FILE_NAME = /^[a-z0-9-]+\.(png|jpg|gif|webp)$/
+const FILE_NAME = /^[a-z0-9-]+\.(png|jpg|gif|webp|svg|pdf|txt|md|json|csv)$/
 
 export function isImageType(mime: string): boolean {
   return mime in IMAGE_TYPES
 }
 
+export function isAttachmentType(mime: string): boolean {
+  return mime in ATTACHMENT_TYPES
+}
+
 export function extensionFor(mime: string): string {
-  return IMAGE_TYPES[mime]
+  return ATTACHMENT_TYPES[mime]
 }
 
 export function mimeForFile(file: string): string | null {
   const ext = file.split('.').pop()
-  const found = Object.entries(IMAGE_TYPES).find(([, value]) => value === ext)
+  const found = Object.entries(ATTACHMENT_TYPES).find(([, value]) => value === ext)
   return found ? found[0] : null
 }
 

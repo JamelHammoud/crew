@@ -21,6 +21,8 @@ export type StudioOp =
   | { kind: 'page.remove'; pageId: string }
   | { kind: 'asset.add'; asset: StudioAsset }
   | { kind: 'asset.remove'; assetId: string }
+  | { kind: 'variable.set'; name: string; value: string }
+  | { kind: 'variable.remove'; name: string }
 
 const MAX_OPS = 400
 const MAX_NODES_PER_OP = 1500
@@ -92,6 +94,17 @@ function sanitizeOp(value: unknown): StudioOp | null {
       if (!isStudioId(raw.assetId)) return null
       return { kind: 'asset.remove', assetId: raw.assetId }
     }
+    case 'variable.set': {
+      if (typeof raw.name !== 'string' || typeof raw.value !== 'string') return null
+      const name = raw.name.trim().slice(0, 60)
+      if (!name) return null
+      return { kind: 'variable.set', name, value: raw.value.slice(0, 200) }
+    }
+    case 'variable.remove': {
+      if (typeof raw.name !== 'string') return null
+      const name = raw.name.trim().slice(0, 60)
+      return name ? { kind: 'variable.remove', name } : null
+    }
     default:
       return null
   }
@@ -104,7 +117,8 @@ export function cloneDoc(doc: StudioDoc): StudioDoc {
     nodes: { ...doc.nodes },
     assets: [...doc.assets],
     chat: [...doc.chat],
-    agents: [...doc.agents]
+    agents: [...doc.agents],
+    variables: { ...(doc.variables ?? {}) }
   }
 }
 
@@ -197,6 +211,16 @@ function applyOp(doc: StudioDoc, op: StudioOp): boolean {
       doc.assets = doc.assets.filter(a => a.id !== op.assetId)
       return doc.assets.length !== before
     }
+    case 'variable.set':
+      doc.variables = { ...(doc.variables ?? {}), [op.name]: op.value }
+      return true
+    case 'variable.remove': {
+      if (!(op.name in (doc.variables ?? {}))) return false
+      const variables = { ...doc.variables }
+      delete variables[op.name]
+      doc.variables = variables
+      return true
+    }
   }
 }
 
@@ -269,6 +293,14 @@ function invertOp(doc: StudioDoc, op: StudioOp): StudioOp[] | null {
       const asset = doc.assets.find(a => a.id === op.assetId)
       return asset ? [{ kind: 'asset.add', asset }] : null
     }
+    case 'variable.set':
+      return op.name in (doc.variables ?? {})
+        ? [{ kind: 'variable.set', name: op.name, value: doc.variables[op.name] }]
+        : [{ kind: 'variable.remove', name: op.name }]
+    case 'variable.remove':
+      return op.name in (doc.variables ?? {})
+        ? [{ kind: 'variable.set', name: op.name, value: doc.variables[op.name] }]
+        : null
   }
 }
 

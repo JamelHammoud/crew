@@ -3,9 +3,10 @@ import { commandInvocation, detachCliProcess } from '../src/runner/providers/cli
 
 describe('commandInvocation', () => {
   it('runs Windows npm command shims through their PowerShell companion', () => {
+    const prompt = 'You are a design agent.\nBuild a polished Studio canvas and reply when complete.'
     const invocation = commandInvocation(
       'C:\\Users\\Ali Hammoud\\AppData\\Roaming\\npm\\codex.cmd',
-      ['exec', '--json'],
+      ['exec', '--json', '-c', 'model_reasoning_effort="max"', prompt],
       'win32',
       () => true
     )
@@ -20,7 +21,10 @@ describe('commandInvocation', () => {
       '-File',
       'C:\\Users\\Ali Hammoud\\AppData\\Roaming\\npm\\codex.ps1',
       'exec',
-      '--json'
+      '--json',
+      '-c',
+      'model_reasoning_effort="max"',
+      prompt
     ])
   })
 
