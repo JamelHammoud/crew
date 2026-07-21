@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import http from 'node:http'
 import { WebSocketServer, WebSocket } from 'ws'
-import { mimeForFile } from '../shared/attachments'
+import { MAX_ATTACHMENT_BYTES, mimeForFile } from '../shared/attachments'
 import type { CrewSession } from './session'
 
 export interface CrewServer {

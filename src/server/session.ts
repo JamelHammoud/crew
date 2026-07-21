@@ -460,19 +460,23 @@ export class CrewSession {
   private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
     const saved: Attachment[] = []
     for (const item of (incoming ?? []).slice(0, MAX_ATTACHMENTS)) {
-      if (!isImageType(item.mime)) continue
-      const data = Buffer.from(item.data, 'base64')
-      if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) continue
-      const id = randomUUID()
-      const file = `${id}.${extensionFor(item.mime)}`
-      try {
-        this.store.saveAttachment(file, data)
-      } catch {
-        continue
-      }
-      saved.push({ id, name: this.safeName(item.name), mime: item.mime, size: data.length, file })
+      const one = this.saveAttachment(item.mime, item.name, Buffer.from(item.data, 'base64'))
+      if (one) saved.push(one)
     }
     return saved
+  }
+
+  saveAttachment(mime: string, name: string, data: Buffer): Attachment | null {
+    if (!isImageType(mime)) return null
+    if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
+    const id = randomUUID()
+    const file = `${id}.${extensionFor(mime)}`
+    try {
+      this.store.saveAttachment(file, data)
+    } catch {
+      return null
+    }
+    return { id, name: this.safeName(name), mime, size: data.length, file }
   }
 
   private safeName(name: string): string {
