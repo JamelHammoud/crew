@@ -4,6 +4,7 @@
 * [ ] Spellcheck doesn't work in docs because a right-click is hijacked
 * [ ] Have the app running in the background
 * [ ] Keep the computer awake/alive while crew is open
+* [ ] Testing
 
 ## In progress
 

@@ -217,7 +217,7 @@ export class CrewSession {
       }
       this.handleMessage(ws, msg)
     })
-    ws.on('close', () => this.detach(ws))
+    ws.on('close', code => this.detach(ws, code))
   }
 
   snapshot(): SessionSnapshot {
@@ -1063,7 +1063,7 @@ export class CrewSession {
     return member
   }
 
-  private detach(ws: WebSocket): void {
+  private detach(ws: WebSocket, code = 1006): void {
     const meta = this.meta.get(ws)
     if (!meta) return
     this.meta.delete(ws)
@@ -1074,17 +1074,23 @@ export class CrewSession {
         this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.left', memberId: member.id, name: member.name })
       }
     }
+    const left = code === 1000 || code === 1001
     for (const id of meta.agentIds) {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
       agent.runner = null
-      agent.dropTimer = setTimeout(() => {
-        agent.dropTimer = null
-        if (agent.runner) return
+      if (left) {
         this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
         this.dropRunning(agent, `${agent.label} disconnected.`)
-      }, this.resumeGraceMs)
-      agent.dropTimer.unref?.()
+      } else {
+        agent.dropTimer = setTimeout(() => {
+          agent.dropTimer = null
+          if (agent.runner) return
+          this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
+          this.dropRunning(agent, `${agent.label} disconnected.`)
+        }, this.resumeGraceMs)
+        agent.dropTimer.unref?.()
+      }
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.offline', agentId: id, label: agent.label })
     }
     this.persistMeta()
