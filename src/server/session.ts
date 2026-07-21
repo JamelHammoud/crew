@@ -1218,7 +1218,7 @@ export class CrewSession {
     const thread = this.threads.get(steer.threadId)
     if (!thread) return
     if (!agent.runner && !agent.dropTimer) {
-      this.systemMessage(`${agent.label} went offline before getting to this.`, steer.threadId)
+      this.threadNotice(steer, `${agent.label} went offline before getting to this.`)
       return
     }
     const promptId = randomUUID()
@@ -1231,9 +1231,11 @@ export class CrewSession {
       threadId: steer.threadId,
       mentions: [agent.id],
       attachments: steer.attachments,
-      messageId: steer.messageId
+      messageId: steer.messageId,
+      silent: steer.silent,
+      studio: steer.studio
     })
-    this.routed(steer.messageId, steer.threadId, promptId, 'queued')
+    if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'queued')
     this.broadcastQueue(thread)
     this.runThread(thread)
   }
