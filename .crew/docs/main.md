@@ -6,7 +6,7 @@
 * [ ] Ability to mention a different agent while in a thread
 * [ ] Have the app running in the background
 * [ ] Better at finding what CLIs are available on your computer
-* [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room" 
+* [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew 
 
 ## In progress
 
