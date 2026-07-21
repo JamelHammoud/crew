@@ -71,9 +71,8 @@ export default function Chat() {
       el.scrollTop = el.scrollHeight
       return
     }
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240
-    if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [feed, steps, threadPrompts])
+    if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
+  }, [feed, steps, threadPrompts, pinnedRef])
 
   const threadStatus = (thread: ThreadMeta): { working: boolean; status: string } => {
     const promptId = threadPrompts[thread.id]
@@ -112,7 +111,7 @@ export default function Chat() {
 
   return (
     <div className="h-full relative">
-      <div ref={scrollRef} className="h-full overflow-y-auto px-6">
+      <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
         <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
           {feed.length === 0 && (
             <p className="text-base text-fg-muted mt-16 text-center">
@@ -151,34 +150,16 @@ export default function Chat() {
               value={text}
               placeholder="Send a message or @ an agent to start a thread"
               inputRef={inputRef}
-              onChange={onChange}
+              onChange={mention.onChange}
               onKeyDown={onKeyDown}
               onSend={send}
             >
-              {mentionMatches.length > 0 && (
-                <div
-                  ref={listRef}
-                  className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
-                >
-                  {mentionMatches.map((agent, index) => {
-                    const status = agents.find(a => a.id === agent.id)?.status
-                    return (
-                      <button
-                        key={agent.id}
-                        onClick={() => pickMention(agent.label)}
-                        onMouseEnter={() => setActiveMention(index)}
-                        className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
-                          index === activeIndex ? 'bg-white/[0.08] text-fg' : 'text-fg-secondary'
-                        }`}
-                      >
-                        <AgentIcon seed={agent.id} size="sm" presence={status === 'offline' ? 'offline' : 'online'} />
-                        <span className="flex-1 truncate">@{agent.label}</span>
-                        <span className="text-xs text-fg-muted shrink-0">{agent.ownerName}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
+              <MentionMenu
+                matches={mention.matches}
+                activeIndex={mention.activeIndex}
+                onPick={mention.pick}
+                onHover={mention.setActive}
+              />
             </Composer>
           </div>
         </div>
