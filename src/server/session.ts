@@ -218,6 +218,7 @@ export class CrewSession {
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: trimEvents(this.events, SNAPSHOT_EVENT_LIMIT),
       docs: Object.fromEntries(this.docs),
+      docTitles: Object.fromEntries(this.docTitles),
       queues: Object.fromEntries(
         [...this.threads.values()]
           .filter(thread => thread.queue.length > 0)
@@ -266,6 +267,9 @@ export class CrewSession {
         break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
+        break
+      case 'doc.title':
+        if (meta.role === 'ui') this.handleDocTitle(member, msg.page, msg.title)
         break
       case 'doc.rename':
         if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to)
