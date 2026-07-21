@@ -125,30 +125,30 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784609848988,
+        "fetchedAt": 1784610149010,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 37,
+            "percent": 39,
             "severity": "normal",
-            "resetsAt": 1784620200291,
+            "resetsAt": 1784620200256,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 11,
+            "percent": 12,
             "severity": "normal",
-            "resetsAt": 1784930400291,
+            "resetsAt": 1784930400256,
             "active": false
           },
           {
             "key": "weekly_scoped:Fable",
             "label": "Weekly (Fable)",
-            "percent": 21,
+            "percent": 22,
             "severity": "normal",
-            "resetsAt": 1784930400291,
+            "resetsAt": 1784930400256,
             "active": false
           }
         ],
@@ -490,7 +490,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784610089002,
+        "fetchedAt": 1784610149002,
         "windows": [
           {
             "key": "primary",
@@ -573,30 +573,30 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784609848988,
+        "fetchedAt": 1784610149010,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 37,
+            "percent": 39,
             "severity": "normal",
-            "resetsAt": 1784620200291,
+            "resetsAt": 1784620200256,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 11,
+            "percent": 12,
             "severity": "normal",
-            "resetsAt": 1784930400291,
+            "resetsAt": 1784930400256,
             "active": false
           },
           {
             "key": "weekly_scoped:Fable",
             "label": "Weekly (Fable)",
-            "percent": 21,
+            "percent": 22,
             "severity": "normal",
-            "resetsAt": 1784930400291,
+            "resetsAt": 1784930400256,
             "active": false
           }
         ],
@@ -690,7 +690,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784610089002,
+        "fetchedAt": 1784610149002,
         "windows": [
           {
             "key": "primary",
