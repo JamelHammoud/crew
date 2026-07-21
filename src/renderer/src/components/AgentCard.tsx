@@ -10,14 +10,12 @@ import UsageFooter from './UsageFooter'
 export default function AgentCard({
   agent,
   threadCount,
-  usageSharedWith = [],
   onStop,
   onSetting,
   onRemove
 }: {
   agent: PooledAgent
   threadCount: number
-  usageSharedWith?: string[]
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
   onRemove?: () => void
@@ -75,7 +73,7 @@ export default function AgentCard({
           </div>
         )}
       </div>
-      {agent.usage && <UsageFooter usage={agent.usage} sharedWith={usageSharedWith} />}
+      {agent.usage && <UsageFooter usage={agent.usage} />}
       {status === 'busy' && (
         <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
           <Spinner size={14} className="text-fg" />
