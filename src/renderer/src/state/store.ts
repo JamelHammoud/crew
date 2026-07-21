@@ -254,6 +254,10 @@ export const useCrew = create<CrewState>((set, get) => {
           if (event.kind === 'thread.archived' && threads[event.threadId]) {
             threads[event.threadId].archived = true
           }
+          if (event.kind === 'thread.agent' && threads[event.threadId]) {
+            threads[event.threadId].agentId = event.agentId
+            threads[event.threadId].agentLabel = event.agentLabel
+          }
           if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
           if (event.kind === 'agent.start') {
             activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
