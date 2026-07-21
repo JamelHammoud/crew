@@ -27,23 +27,33 @@ export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
 
   return (
     <div className="ml-14 border border-ink-700 rounded-card overflow-hidden animate-rise">
-      <div className="flex items-center gap-2.5 px-4 h-11 bg-ink-700/50">
+      <button
+        onClick={() => setOpen(!open)}
+        className="group flex items-center gap-2.5 px-4 h-11 w-full text-left bg-ink-700/50"
+      >
         <DocumentTextIcon className="w-4 h-4 text-fg-muted shrink-0" />
         <span className="text-sm font-semibold text-fg">
           {files.length} {files.length === 1 ? 'file' : 'files'} changed
         </span>
-        <span className="ml-auto">
+        <span className="ml-auto flex items-center gap-2.5">
           <Counts added={totals.added} removed={totals.removed} />
+          <ChevronRightIcon
+            className={`w-3.5 h-3.5 shrink-0 text-fg-faint group-hover:text-fg-muted transition-transform duration-200 ${
+              open ? 'rotate-90' : ''
+            }`}
+          />
         </span>
-      </div>
-      <div className="px-4 py-2.5 space-y-1.5">
-        {files.map(([path, file]) => (
-          <div key={path} className="flex items-center gap-3 text-xs font-mono">
-            <span className="text-fg-secondary truncate flex-1">{path}</span>
-            <Counts added={file.added} removed={file.removed} />
-          </div>
-        ))}
-      </div>
+      </button>
+      {open && (
+        <div className="px-4 py-2.5 space-y-1.5">
+          {files.map(([path, file]) => (
+            <div key={path} className="flex items-center gap-3 text-xs font-mono">
+              <span className="text-fg-secondary truncate flex-1">{path}</span>
+              <Counts added={file.added} removed={file.removed} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
