@@ -1,5 +1,5 @@
 import { ArrowRightStartOnRectangleIcon, CheckIcon, LinkIcon } from '@heroicons/react/16/solid'
-import { QueueListIcon } from '@heroicons/react/20/solid'
+import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import { useCrew } from '../state/store'
 import Avatar from './Avatar'
