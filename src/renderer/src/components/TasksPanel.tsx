@@ -349,16 +349,27 @@ export default function TasksPanel({
         <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
           <section>
             {heading('Todo', pendingTodos.length)}
-            <div className="px-3 py-1">
-              <TodoInput
-                placeholder="Add a task — @ to assign"
-                onSubmit={raw => {
+            {pendingTodos.map(todoItem)}
+            {adding ? (
+              <TodoEditor
+                keepOpen
+                onCommit={raw => {
                   const parsed = parseTodoInput(raw, agents)
                   addTodo(parsed.text, parsed.agentId)
                 }}
+                onDone={() => setAdding(false)}
               />
-            </div>
-            {pendingTodos.map(todoItem)}
+            ) : (
+              <button
+                onClick={() => setAdding(true)}
+                className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-white/[0.04] hover:text-fg"
+              >
+                <span className="mt-1 w-4 h-4 shrink-0 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
+                  <PlusIcon className="w-3 h-3" />
+                </span>
+                <span className="text-base">Add a task</span>
+              </button>
+            )}
           </section>
           {rows.length === 0 && todos.length === 0 && (
             <p className="text-base text-fg-muted text-center mt-16 px-6">
