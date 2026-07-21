@@ -3,6 +3,7 @@ import ChatMessage from '../components/ChatMessage'
 import Composer from '../components/Composer'
 import DayDivider from '../components/DayDivider'
 import { hoverCardOpen } from '../components/HoverCard'
+import JumpToBottom from '../components/JumpToBottom'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import ThreadCard from '../components/ThreadCard'
 import { describeStep, type ThreadItem } from '../components/thread'
@@ -32,6 +33,7 @@ export default function Chat() {
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const didInitialScroll = useRef(false)
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
@@ -144,7 +146,8 @@ export default function Chat() {
       <div className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
-          <div className="max-w-[660px] mx-auto pointer-events-auto">
+          <div className="relative max-w-[660px] mx-auto pointer-events-auto">
+            {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
