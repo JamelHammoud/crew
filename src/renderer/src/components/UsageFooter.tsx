@@ -47,7 +47,7 @@ function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
 
 // Expandable usage footer on an agent card. Collapsed, it shows the hottest
 // window at a glance; expanded, every rate-limit window the provider reports.
-export default function UsageFooter({ usage, sharedWith }: { usage: AgentUsage; sharedWith: string[] }) {
+export default function UsageFooter({ usage }: { usage: AgentUsage }) {
   const [open, setOpen] = useState(false)
   const now = useNow(open, 30000)
   const hottest = usage.windows.reduce<UsageWindow | null>(
@@ -90,9 +90,6 @@ export default function UsageFooter({ usage, sharedWith }: { usage: AgentUsage; 
               <span className="text-xs text-fg-muted truncate">{detail}</span>
               <span className="ml-auto shrink-0 text-xs text-fg-muted">{stamp}</span>
             </div>
-          )}
-          {sharedWith.length > 0 && (
-            <p className="text-xs text-fg-muted pb-1">Limits shared with {sharedWith.join(', ')}</p>
           )}
           {usage.error && <p className="text-sm text-fg-muted">{usage.error}</p>}
           {!usage.error && usage.windows.length === 0 && (
