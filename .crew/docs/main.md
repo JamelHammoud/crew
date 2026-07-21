@@ -9,7 +9,6 @@ title: "Docs"
 * [ ] Have the app running in the background
 * [ ] Keep the computer awake/alive while crew is open
 * [ ] Auto-archive threads
-* [ ] A sidebar to see archived threads
 
 ## In progress
 
