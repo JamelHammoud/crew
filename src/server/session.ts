@@ -93,6 +93,7 @@ interface Thread {
   status: ThreadStatus
   queue: QueuedPrompt[]
   running: string | null
+  studioId?: string
 }
 
 const THREAD_STATUSES = new Set<ThreadStatus>(['open', 'done', 'archived'])
