@@ -189,8 +189,10 @@ export class CrewSession {
           createdBy: event.byName,
           status: 'open',
           queue: [],
-          running: null
+          running: null,
+          studioId: event.studioId
         })
+        if (event.studioId) this.studios.registerThread(event.studioId, event.agentId, event.threadId)
       }
       if (event.kind === 'thread.archived') {
         const thread = this.threads.get(event.threadId)
@@ -301,7 +303,8 @@ export class CrewSession {
           .filter(thread => thread.queue.length > 0)
           .map(thread => [thread.id, this.queueItems(thread)])
       ),
-      todos: [...this.todos.values()]
+      todos: [...this.todos.values()],
+      studios: this.studios.index()
     }
   }
 
