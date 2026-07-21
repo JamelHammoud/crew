@@ -33,6 +33,7 @@ interface AgentState extends Omit<PooledAgent, 'runs' | 'status'> {
   runner: WebSocket | null
   running: Set<string>
   runs: Map<string, RunState>
+  dropTimer: NodeJS.Timeout | null
 }
 
 interface RunState {
@@ -96,6 +97,8 @@ const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
 const TITLE_LIMIT = 80
 const CANCEL_REPORT_TIMEOUT_MS = 15000
+const RESUME_GRACE_MS = 60000
+const STEP_FLUSH_MS = 80
 
 export class CrewSession {
   readonly code: string
@@ -111,10 +114,18 @@ export class CrewSession {
   private steers = new Map<string, PendingSteer[]>()
   private emittedMessages = new Set<string>()
   private cancelTimeoutMs: number
+  private resumeGraceMs: number
+  private stepFlushMs: number
+  private stepFlushes = new Map<string, { timer: NodeJS.Timeout; dirty: boolean }>()
   onSyncNeeded: (() => void) | null = null
 
-  constructor(private store: Store, opts: { cancelTimeoutMs?: number } = {}) {
+  constructor(
+    private store: Store,
+    opts: { cancelTimeoutMs?: number; resumeGraceMs?: number; stepFlushMs?: number } = {}
+  ) {
     this.cancelTimeoutMs = opts.cancelTimeoutMs ?? CANCEL_REPORT_TIMEOUT_MS
+    this.resumeGraceMs = opts.resumeGraceMs ?? RESUME_GRACE_MS
+    this.stepFlushMs = opts.stepFlushMs ?? STEP_FLUSH_MS
     const persisted = store.loadSession()
     this.code = persisted?.code ?? randomBytes(3).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
@@ -128,7 +139,8 @@ export class CrewSession {
         fields: a.fields ?? [],
         runner: null,
         running: new Set(),
-        runs: new Map()
+        runs: new Map(),
+        dropTimer: null
       })
     }
     const loaded = store.loadEvents()
@@ -285,12 +297,14 @@ export class CrewSession {
         if (meta.role === 'runner') this.deregisterAgent(ws, member, msg.instanceId)
         break
       case 'agent.step':
+        if (this.promptGone(ws, meta, msg.promptId)) break
         this.handleStep(meta, msg.promptId, msg.step)
         break
       case 'agent.usage':
         if (meta.role === 'runner') this.handleUsage(meta, member, msg.instanceId, msg.usage)
         break
       case 'agent.tokens':
+        if (this.promptGone(ws, meta, msg.promptId)) break
         this.handleTokens(meta, msg.promptId, msg.tokens)
         break
       case 'agent.steered':
@@ -579,8 +593,36 @@ export class CrewSession {
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
     run.steps.set(step.id, { step: merged, persisted: false })
-    this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
-    if (merged.status === 'done') this.persistStep(agent, promptId, ref.threadId, step.id)
+    if (merged.status === 'done') {
+      const pending = this.stepFlushes.get(`${promptId}:${step.id}`)
+      if (pending) {
+        clearTimeout(pending.timer)
+        this.stepFlushes.delete(`${promptId}:${step.id}`)
+      }
+      this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
+      this.persistStep(agent, promptId, ref.threadId, step.id)
+      return
+    }
+    this.broadcastStep(agent, promptId, ref.threadId, step.id, merged)
+  }
+
+  private broadcastStep(agent: AgentState, promptId: string, threadId: string, stepId: string, step: AgentStep): void {
+    const key = `${promptId}:${stepId}`
+    const pending = this.stepFlushes.get(key)
+    if (pending) {
+      pending.dirty = true
+      return
+    }
+    this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId, step })
+    const timer = setTimeout(() => {
+      const entry = this.stepFlushes.get(key)
+      this.stepFlushes.delete(key)
+      const latest = agent.runs.get(promptId)?.steps.get(stepId)?.step
+      if (!entry?.dirty || !latest || latest.status === 'done') return
+      this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId, step: latest })
+    }, this.stepFlushMs)
+    timer.unref?.()
+    this.stepFlushes.set(key, { timer, dirty: false })
   }
 
   private persistStep(agent: AgentState, promptId: string, threadId: string, stepId: string): void {
@@ -650,6 +692,12 @@ export class CrewSession {
     this.finishPrompt(agent, promptId, { ok: false, error: message })
   }
 
+  private promptGone(ws: WebSocket, meta: ConnMeta, promptId: string): boolean {
+    if (meta.role !== 'runner' || this.prompts.has(promptId)) return false
+    this.send(ws, { type: 'cancel', promptId })
+    return true
+  }
+
   private ownedAgent(meta: ConnMeta, promptId: string): AgentState | null {
     const ref = this.prompts.get(promptId)
     if (!ref) return null
@@ -679,7 +727,7 @@ export class CrewSession {
       attachments,
       messageId: route?.messageId ?? randomUUID()
     }
-    if (!agent.runner) {
+    if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
@@ -688,7 +736,7 @@ export class CrewSession {
     // the agent doing the running and that agent can take it, so it steers the
     // work in progress instead of waiting.
     const runningAgentId = thread.running ? this.prompts.get(thread.running)?.agentId : undefined
-    if (thread.running && runningAgentId === agent.id && agent.steerable) {
+    if (agent.runner && thread.running && runningAgentId === agent.id && agent.steerable) {
       this.emitThreadMessage(entry)
       this.sendSteer(agent, thread.running, {
         messageId: entry.messageId,
@@ -751,7 +799,7 @@ export class CrewSession {
   private requeueSteer(agent: AgentState, steer: PendingSteer): void {
     const thread = this.threads.get(steer.threadId)
     if (!thread) return
-    if (!agent.runner) {
+    if (!agent.runner && !agent.dropTimer) {
       this.systemMessage(`${agent.label} went offline before getting to this.`, steer.threadId)
       return
     }
@@ -894,6 +942,10 @@ export class CrewSession {
     const meta = this.meta.get(ws)
     const existing = this.agents.get(id)
     if (existing) {
+      if (existing.dropTimer) {
+        clearTimeout(existing.dropTimer)
+        existing.dropTimer = null
+      }
       existing.runner = ws
       existing.fields = llm.fields
       existing.steerable = llm.steerable === true
@@ -915,7 +967,8 @@ export class CrewSession {
       steerable: llm.steerable === true,
       runner: ws,
       running: new Set(),
-      runs: new Map()
+      runs: new Map(),
+      dropTimer: null
     }
     this.agents.set(id, agent)
     meta?.agentIds.push(id)
@@ -928,6 +981,10 @@ export class CrewSession {
     const id = agentId(member.name, instanceId)
     const agent = this.agents.get(id)
     if (!agent) return
+    if (agent.dropTimer) {
+      clearTimeout(agent.dropTimer)
+      agent.dropTimer = null
+    }
     this.clearQueues(agent, `${agent.label} was removed before getting to this.`)
     this.dropRunning(agent, `${agent.label} was removed.`)
     this.agents.delete(id)
@@ -984,7 +1041,7 @@ export class CrewSession {
   }
 
   private pooled(agent: AgentState): PooledAgent {
-    const { runner, running, runs, ...rest } = agent
+    const { runner, running, runs, dropTimer, ...rest } = agent
     const live: Record<string, LiveRun> = {}
     for (const [promptId, run] of runs) {
       live[promptId] = {
@@ -1021,8 +1078,13 @@ export class CrewSession {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
       agent.runner = null
-      this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
-      this.dropRunning(agent, `${agent.label} disconnected.`)
+      agent.dropTimer = setTimeout(() => {
+        agent.dropTimer = null
+        if (agent.runner) return
+        this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
+        this.dropRunning(agent, `${agent.label} disconnected.`)
+      }, this.resumeGraceMs)
+      agent.dropTimer.unref?.()
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.offline', agentId: id, label: agent.label })
     }
     this.persistMeta()
@@ -1068,7 +1130,7 @@ export class CrewSession {
       code: this.code,
       createdAt: this.createdAt,
       members: [...this.members.values()].map(m => ({ id: m.id, name: m.name })),
-      agents: [...this.agents.values()].map(({ runner, running, runs, ...agent }) => agent)
+      agents: [...this.agents.values()].map(({ runner, running, runs, dropTimer, ...agent }) => agent)
     })
   }
 }

@@ -14,6 +14,7 @@ interface CrewServerOptions {
   port?: number
   host?: string
   heartbeatMs?: number
+  autoPong?: boolean
 }
 
 type LiveSocket = WebSocket & { isAlive: boolean }
@@ -50,7 +51,7 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
     res.end()
   })
 
-  const wss = new WebSocketServer({ noServer: true })
+  const wss = new WebSocketServer({ noServer: true, autoPong: opts.autoPong ?? true })
   const clients = new Set<LiveSocket>()
 
   httpServer.on('upgrade', (req, socket, head) => {
@@ -64,15 +65,26 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
       ws.on('pong', () => {
         live.isAlive = true
       })
+      ws.on('ping', () => {
+        live.isAlive = true
+      })
+      ws.on('message', () => {
+        live.isAlive = true
+      })
       ws.on('close', () => clients.delete(live))
       clients.add(live)
       session.attach(ws)
     })
   })
 
+  const intervalMs = opts.heartbeatMs ?? HEARTBEAT_MS
+  let lastBeat = Date.now()
   const heartbeat = setInterval(() => {
+    const now = Date.now()
+    const stalled = now - lastBeat > intervalMs * 3
+    lastBeat = now
     for (const ws of clients) {
-      if (!ws.isAlive) {
+      if (!ws.isAlive && !stalled) {
         ws.terminate()
         continue
       }
