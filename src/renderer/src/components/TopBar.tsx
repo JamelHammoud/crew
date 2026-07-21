@@ -16,11 +16,27 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'docs', label: 'Docs' }
 ]
 
-export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => void }) {
+export default function TopBar({
+  tab,
+  onTab,
+  tasksOpen,
+  onToggleTasks
+}: {
+  tab: Tab
+  onTab: (tab: Tab) => void
+  tasksOpen: boolean
+  onToggleTasks: () => void
+}) {
   const connection = useCrew(s => s.connection)
   const joinLink = useCrew(s => s.joinLink)
   const selfName = useCrew(s => s.selfName)
   const leave = useCrew(s => s.leave)
+  const reviewCount = useCrew(
+    s =>
+      Object.values(s.threads).filter(
+        t => t.status === 'open' && !s.threadPrompts[t.id] && (s.queues[t.id]?.length ?? 0) === 0
+      ).length
+  )
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
