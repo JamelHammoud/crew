@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { httpBaseFrom, type Attachment } from '../shared/attachments'
 import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../shared/llm'
-import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
+import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
 import { GitPuller } from './pull'
@@ -16,6 +16,9 @@ export interface RunnerOptions {
   silenceTimeoutMs?: number
   autoPullMs?: number
   usagePollMs?: number
+  // Called when this runner adopts one of its own agents remembered by the
+  // server but missing locally, so the owner can persist the definition.
+  onAdopt?: (def: AgentDef) => void
 }
 
 interface RunnerAgent {
@@ -79,7 +82,9 @@ export class Runner {
 
   removeAgent(instanceId: string): void {
     const key = agentId(this.opts.name, instanceId)
-    if (!this.agents.delete(key)) return
+    this.agents.delete(key)
+    // Deregister even when the agent is unknown locally: the server may still
+    // remember it (an offline ghost), and this is the only way to clear one.
     this.send({ type: 'agent.deregister', instanceId })
   }
 
@@ -259,6 +264,7 @@ export class Runner {
         this.outbox = []
         for (const buffered of queued) this.send(buffered)
         this.startUsagePolling()
+        void this.adoptOwnAgents(msg.snapshot)
         break
       }
       case 'prompt':
@@ -273,6 +279,30 @@ export class Runner {
         else this.cancelled.add(msg.promptId)
         break
       }
+    }
+  }
+
+  // The server remembers agents across restarts; if one of ours is offline in
+  // the snapshot and its CLI is on this machine, the local definition was lost
+  // (wiped store, fresh install), not the agent. Re-register it instead of
+  // leaving a ghost the owner can see but never run.
+  private async adoptOwnAgents(snapshot: SessionSnapshot): Promise<void> {
+    const prefix = `${this.opts.name.trim().toLowerCase()}/`
+    for (const agent of snapshot.agents) {
+      if (!agent.id.startsWith(prefix) || agent.status !== 'offline') continue
+      if (this.agents.has(agent.id)) continue
+      const provider = this.providersByName.get(agent.provider)
+      if (!provider || !(await provider.detect())) continue
+      const def: AgentDef = {
+        instanceId: agent.id.slice(prefix.length),
+        provider: agent.provider,
+        name: agent.label,
+        settings: agent.settings ?? {}
+      }
+      const key = this.define(def)
+      if (!key) continue
+      this.send({ type: 'agent.register', llm: this.registered(this.agents.get(key)!) })
+      this.opts.onAdopt?.(def)
     }
   }
 
