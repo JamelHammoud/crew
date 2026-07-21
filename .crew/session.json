@@ -225,14 +225,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784600408075,
+        "fetchedAt": 1784600528082,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 32,
             "severity": "normal",
-            "resetsAt": 1784616600091,
+            "resetsAt": 1784616600101,
             "active": true
           },
           {
@@ -240,7 +240,7 @@
             "label": "Weekly (all models)",
             "percent": 16,
             "severity": "normal",
-            "resetsAt": 1784894400091,
+            "resetsAt": 1784894400101,
             "active": false
           },
           {
@@ -248,7 +248,7 @@
             "label": "Weekly (Fable)",
             "percent": 26,
             "severity": "normal",
-            "resetsAt": 1784894400092,
+            "resetsAt": 1784894400102,
             "active": false
           }
         ],
@@ -470,14 +470,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784600408075,
+        "fetchedAt": 1784600528082,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 32,
             "severity": "normal",
-            "resetsAt": 1784616600091,
+            "resetsAt": 1784616600101,
             "active": true
           },
           {
@@ -485,7 +485,7 @@
             "label": "Weekly (all models)",
             "percent": 16,
             "severity": "normal",
-            "resetsAt": 1784894400091,
+            "resetsAt": 1784894400101,
             "active": false
           },
           {
@@ -493,7 +493,7 @@
             "label": "Weekly (Fable)",
             "percent": 26,
             "severity": "normal",
-            "resetsAt": 1784894400092,
+            "resetsAt": 1784894400102,
             "active": false
           }
         ],
