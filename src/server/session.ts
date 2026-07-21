@@ -314,6 +314,21 @@ export class CrewSession {
       case 'thread.status':
         if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, msg.status)
         break
+      case 'todo.add':
+        if (meta.role === 'ui') this.handleTodoAdd(member, msg.text, msg.agentId)
+        break
+      case 'todo.edit':
+        if (meta.role === 'ui') this.handleTodoEdit(member, msg.todoId, msg.text, msg.agentId)
+        break
+      case 'todo.remove':
+        if (meta.role === 'ui') this.handleTodoRemove(member, msg.todoId)
+        break
+      case 'todo.check':
+        if (meta.role === 'ui') this.handleTodoCheck(member, msg.todoId, msg.checked)
+        break
+      case 'todo.do':
+        if (meta.role === 'ui') this.handleTodoDo(member, msg.todoId, msg.agentId)
+        break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
         break
