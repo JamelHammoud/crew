@@ -109,7 +109,7 @@ function TodoEditor({
         onBlur={onBlur}
         rows={1}
         autoFocus
-        placeholder="Type the task — @ to assign an agent"
+        placeholder="Type the task, @ to assign an agent"
         className="flex-1 min-w-0 bg-transparent text-base text-fg placeholder:text-fg-faint outline-none resize-none leading-snug p-0"
       />
       <MentionMenu
