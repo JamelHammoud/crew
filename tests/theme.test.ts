@@ -1,10 +1,18 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { applyTheme, storedTheme } from '../src/renderer/src/state/theme'
+
+const store = new Map<string, string>()
+vi.stubGlobal('localStorage', {
+  getItem: (key: string) => store.get(key) ?? null,
+  setItem: (key: string, value: string) => void store.set(key, value),
+  removeItem: (key: string) => void store.delete(key),
+  clear: () => store.clear()
+})
 
 describe('theme', () => {
   beforeEach(() => {
-    localStorage.clear()
+    store.clear()
     document.documentElement.classList.remove('light')
   })
 
@@ -26,7 +34,7 @@ describe('theme', () => {
   })
 
   it('treats unknown stored values as dark', () => {
-    localStorage.setItem('crew.theme', 'zebra')
+    store.set('crew.theme', 'zebra')
     expect(storedTheme()).toBe('dark')
     applyTheme(storedTheme())
     expect(document.documentElement.classList.contains('light')).toBe(false)
