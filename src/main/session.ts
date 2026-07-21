@@ -148,6 +148,10 @@ export class AppSession {
     return this.agentsPath ? new AgentStore(this.agentsPath) : null
   }
 
+  private savedStore(): SavedSessionStore | null {
+    return this.sessionPath ? new SavedSessionStore(this.sessionPath) : null
+  }
+
   // An adopted agent came back from the server's memory; persist it so the
   // next launch registers it directly instead of re-adopting.
   private saveAdopted(def: AgentDef): void {
@@ -170,7 +174,7 @@ export class AppSession {
   }
 
   async startHost(repoPath: string, name: string): Promise<HostInfo> {
-    await this.leave()
+    await this.stop()
     if (!(await isGitRepo(repoPath))) {
       throw new Error('That folder is not a git repository. Pick a folder that is tracked with git.')
     }
