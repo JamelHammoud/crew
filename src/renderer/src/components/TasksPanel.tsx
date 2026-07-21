@@ -248,7 +248,7 @@ export default function TasksPanel({
             </Tooltip>
           </span>
           <span className="min-w-0 flex-1 cursor-text" onClick={() => setEditingId(todo.id)}>
-            <span className="block text-base text-fg truncate">{todo.text}</span>
+            <span className="block text-base text-fg whitespace-pre-wrap break-words">{todo.text}</span>
             {agent && <span className="block text-sm text-fg-muted truncate">@{agent.label}</span>}
           </span>
         </div>
@@ -279,7 +279,7 @@ export default function TasksPanel({
   const checkedItem = (todo: Todo) => (
     <div key={todo.id} className="group relative">
       <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]">
-        <span className="mt-1 shrink-0">
+        <span className="h-[22px] shrink-0 flex items-center">
           <Tooltip label="Reopen">
             <button
               onClick={() => checkTodo(todo.id, false)}
@@ -291,7 +291,7 @@ export default function TasksPanel({
           </Tooltip>
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-base text-fg-muted line-through truncate">{todo.text}</span>
+          <span className="block text-base text-fg-muted line-through whitespace-pre-wrap break-words">{todo.text}</span>
           <span className="block text-sm text-fg-faint truncate">Done by hand</span>
         </span>
       </div>
