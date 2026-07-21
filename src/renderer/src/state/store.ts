@@ -355,7 +355,7 @@ export const useCrew = create<CrewState>((set, get) => {
       const key = threadId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
       if (threadId) {
-        socket.send({ type: 'chat.send', text, mentions: [], threadId, attachments })
+        socket.send({ type: 'chat.send', text, mentions: mentionsIn(text, get().agents), threadId, attachments })
         set(state => ({
           threadDrafts: { ...state.threadDrafts, [threadId]: '' },
           pending: { ...state.pending, [key]: [] }
