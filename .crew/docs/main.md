@@ -5,7 +5,7 @@
 * [ ] Spellcheck doesn't work in docs because a right-click is hijacked
 * [ ] Ability to mention a different agent while in a thread
 * [ ] Have the app running in the background
-* [ ] Better at finding what CLIs are availble on your computer
+* [ ] Better at finding what CLIs are available on your computer
 
 ## In progress
 
