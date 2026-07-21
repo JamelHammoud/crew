@@ -1,5 +1,5 @@
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Popover } from './Popover'
 
 export default function Select({
@@ -11,7 +11,7 @@ export default function Select({
 }: {
   label?: string
   value: string
-  options: Array<{ value: string; label: string }>
+  options: Array<{ value: string; label: string; hint?: ReactNode }>
   onChange: (value: string) => void
   side?: 'top' | 'bottom'
 }) {
@@ -47,6 +47,7 @@ export default function Select({
               }`}
             >
               <span className="flex-1">{option.label}</span>
+              {option.hint != null && <span className="text-xs text-fg-muted">{option.hint}</span>}
               {selected && <CheckIcon className="w-4 h-4 shrink-0" />}
             </button>
           )
