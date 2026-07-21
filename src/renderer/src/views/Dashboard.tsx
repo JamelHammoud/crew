@@ -10,6 +10,13 @@ function instanceOf(agentId: string): string {
   return slash === -1 ? agentId : agentId.slice(slash + 1)
 }
 
+// Agents whose usage carries the same provider + account id share one set of
+// limits; each card names the others it shares with.
+function accountKey(agent: PooledAgent): string | null {
+  const account = agent.usage?.accountId
+  return account ? `${agent.usage!.provider}:${account}` : null
+}
+
 export default function Dashboard() {
   const members = useCrew(s => s.members)
   const agents = useCrew(s => s.agents)
