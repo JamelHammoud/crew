@@ -943,14 +943,17 @@ export class CrewSession {
 
   private runThreadsOf(agent: AgentState): void {
     for (const thread of this.threads.values()) {
-      if (thread.agentId === agent.id) this.runThread(thread)
+      if (thread.queue[0]?.agentId === agent.id) this.runThread(thread)
     }
   }
 
   private clearQueues(agent: AgentState, reason: string): void {
     for (const thread of this.threads.values()) {
-      if (thread.agentId !== agent.id) continue
-      for (const prompt of thread.queue.splice(0)) this.systemMessage(reason, prompt.threadId)
+      const dropped = thread.queue.filter(q => q.agentId === agent.id)
+      if (dropped.length === 0) continue
+      thread.queue = thread.queue.filter(q => q.agentId !== agent.id)
+      for (const prompt of dropped) this.systemMessage(reason, prompt.threadId)
+      this.broadcastQueue(thread)
     }
     // Steers still waiting on an ack go the same way as the queue: there is no
     // run left to fold them into, and nothing to re-queue them onto.
