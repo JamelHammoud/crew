@@ -36,6 +36,7 @@ interface CrewState {
   activePrompts: Record<string, string[]>
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
+  todos: Todo[]
   openThreadId: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
