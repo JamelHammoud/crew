@@ -320,7 +320,6 @@ describe('threads', () => {
         e =>
           e.kind === 'agent.end' &&
           e.threadId === started.threadId &&
-          e.promptText !== undefined === false &&
           !ends.some(seen => seen.promptId === e.promptId) &&
           Boolean(e.text?.includes('both of you'))
       )) as Ended
