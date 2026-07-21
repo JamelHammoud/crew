@@ -758,13 +758,14 @@ export class CrewSession {
     const promptId = randomUUID()
     thread.queue.push({
       promptId,
+      agentId: agent.id,
       text: steer.text,
       byName: steer.byName,
       authorId: steer.authorId ?? '',
       threadId: steer.threadId,
+      mentions: [agent.id],
       attachments: steer.attachments,
-      messageId: steer.messageId,
-      emitted: true
+      messageId: steer.messageId
     })
     this.routed(steer.messageId, steer.threadId, promptId, 'queued')
     this.broadcastQueue(thread)
