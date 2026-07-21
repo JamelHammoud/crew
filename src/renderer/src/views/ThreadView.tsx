@@ -44,6 +44,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
   const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
+  const draftMentions = useCrew(s => mentionsIn(text, s.agents))
   const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
   const threadSteps = useMemo(() => {
     const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
@@ -115,7 +116,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
-  const canSteer = Boolean(activePromptId) && steerable
+  const canSteer =
+    Boolean(activePromptId) &&
+    steerable &&
+    (draftMentions.length === 0 || (draftMentions.length === 1 && draftMentions[0] === runningAgentId))
   const placeholder = 'Send a message or @ another agent'
 
   return (
