@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { httpBaseFrom, type Attachment } from '../shared/attachments'
 import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../shared/llm'
-import type { ClientMessage, RegisteredLlm, ServerMessage } from '../shared/protocol'
+import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
 import { GitPuller } from './pull'
@@ -16,6 +16,9 @@ export interface RunnerOptions {
   silenceTimeoutMs?: number
   autoPullMs?: number
   usagePollMs?: number
+  // Called when this runner adopts one of its own agents remembered by the
+  // server but missing locally, so the owner can persist the definition.
+  onAdopt?: (def: AgentDef) => void
 }
 
 interface RunnerAgent {
@@ -30,12 +33,16 @@ export type RunnerStatus = 'connecting' | 'online' | 'offline'
 const MAX_DELAY_MS = 10000
 const SILENCE_TIMEOUT_MS = 45000
 const USAGE_POLL_MS = 60000
+const OUTBOX_LIMIT = 5000
+
+const OUTBOX_TYPES = new Set(['agent.step', 'agent.tokens', 'agent.done', 'agent.error', 'agent.steered'])
 
 export class Runner {
   private ws: WebSocket | null = null
   private providersByName = new Map<string, Provider>()
   private agents = new Map<string, RunnerAgent>()
   private running = new Map<string, RunningPrompt>()
+  private accepted = new Set<string>()
   private cancelled = new Set<string>()
   private tails = new Map<string, Promise<void>>()
   private stopped = false
@@ -50,6 +57,7 @@ export class Runner {
   private attachments: AttachmentCache
   private httpBase = ''
   private lastSeen = 0
+  private outbox: ClientMessage[] = []
   onStatus: ((status: RunnerStatus) => void) | null = null
 
   constructor(private opts: RunnerOptions) {
@@ -74,7 +82,9 @@ export class Runner {
 
   removeAgent(instanceId: string): void {
     const key = agentId(this.opts.name, instanceId)
-    if (!this.agents.delete(key)) return
+    this.agents.delete(key)
+    // Deregister even when the agent is unknown locally: the server may still
+    // remember it (an offline ghost), and this is the only way to clear one.
     this.send({ type: 'agent.deregister', instanceId })
   }
 
@@ -106,12 +116,17 @@ export class Runner {
     this.lastSeen = Date.now()
     ws.on('open', () => {
       this.lastSeen = Date.now()
+      const pending = new Set(this.accepted)
+      for (const msg of this.outbox) {
+        if (msg.type === 'agent.done' || msg.type === 'agent.error') pending.add(msg.promptId)
+      }
       this.send({
         type: 'hello',
         role: 'runner',
         name: this.opts.name,
         code: this.opts.code,
-        llms: [...this.agents.values()].map(agent => this.registered(agent))
+        llms: [...this.agents.values()].map(agent => this.registered(agent)),
+        running: [...pending]
       })
     })
     ws.on('message', raw => {
@@ -134,7 +149,6 @@ export class Runner {
     ws.on('close', () => {
       this.stopWatchdog()
       this.stopUsagePolling()
-      this.killRunning()
       this.onStatus?.('offline')
       if (this.stopped) return
       const wait = Math.min(this.baseDelay * 2 ** this.attempts, MAX_DELAY_MS)
@@ -152,7 +166,7 @@ export class Runner {
     this.stopUsagePolling()
     this.puller?.stop()
     this.killRunning()
-    this.ws?.close()
+    this.ws?.close(1000)
   }
 
   dropConnection(): void {
@@ -162,8 +176,31 @@ export class Runner {
   private startWatchdog(ws: WebSocket): void {
     this.stopWatchdog()
     const interval = Math.max(50, Math.floor(this.silenceTimeout / 3))
+    let lastTick = Date.now()
+    let probed = false
     this.watchdog = setInterval(() => {
-      if (Date.now() - this.lastSeen > this.silenceTimeout) ws.terminate()
+      const now = Date.now()
+      const stalled = now - lastTick > interval * 3
+      lastTick = now
+      if (stalled) {
+        this.lastSeen = now
+        probed = false
+        return
+      }
+      if (now - this.lastSeen <= this.silenceTimeout) {
+        probed = false
+        return
+      }
+      if (!probed) {
+        probed = true
+        try {
+          ws.ping()
+        } catch {
+          ws.terminate()
+        }
+        return
+      }
+      ws.terminate()
     }, interval)
     this.watchdog.unref?.()
   }
@@ -220,11 +257,16 @@ export class Runner {
 
   private handle(msg: ServerMessage): void {
     switch (msg.type) {
-      case 'welcome':
+      case 'welcome': {
         this.attempts = 0
         this.onStatus?.('online')
+        const queued = this.outbox
+        this.outbox = []
+        for (const buffered of queued) this.send(buffered)
         this.startUsagePolling()
+        void this.adoptOwnAgents(msg.snapshot)
         break
+      }
       case 'prompt':
         this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
         break
@@ -237,6 +279,30 @@ export class Runner {
         else this.cancelled.add(msg.promptId)
         break
       }
+    }
+  }
+
+  // The server remembers agents across restarts; if one of ours is offline in
+  // the snapshot and its CLI is on this machine, the local definition was lost
+  // (wiped store, fresh install), not the agent. Re-register it instead of
+  // leaving a ghost the owner can see but never run.
+  private async adoptOwnAgents(snapshot: SessionSnapshot): Promise<void> {
+    const prefix = `${this.opts.name.trim().toLowerCase()}/`
+    for (const agent of snapshot.agents) {
+      if (!agent.id.startsWith(prefix) || agent.status !== 'offline') continue
+      if (this.agents.has(agent.id)) continue
+      const provider = this.providersByName.get(agent.provider)
+      if (!provider || !(await provider.detect())) continue
+      const def: AgentDef = {
+        instanceId: agent.id.slice(prefix.length),
+        provider: agent.provider,
+        name: agent.label,
+        settings: agent.settings ?? {}
+      }
+      const key = this.define(def)
+      if (!key) continue
+      this.send({ type: 'agent.register', llm: this.registered(this.agents.get(key)!) })
+      this.opts.onAdopt?.(def)
     }
   }
 
@@ -272,12 +338,15 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
+    if (this.accepted.has(promptId)) return
+    this.accepted.add(promptId)
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
       .then(() => this.execute(agent.provider, promptId, text, settings, attachments))
       .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
+      this.accepted.delete(promptId)
       if (this.tails.get(threadId) === next) this.tails.delete(threadId)
     })
   }
@@ -315,6 +384,15 @@ export class Runner {
   }
 
   private send(msg: ClientMessage): void {
-    if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(msg))
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(msg))
+      return
+    }
+    if (!OUTBOX_TYPES.has(msg.type)) return
+    this.outbox.push(msg)
+    if (this.outbox.length > OUTBOX_LIMIT) {
+      const drop = this.outbox.findIndex(m => m.type === 'agent.step' || m.type === 'agent.tokens')
+      this.outbox.splice(drop === -1 ? 0 : drop, 1)
+    }
   }
 }

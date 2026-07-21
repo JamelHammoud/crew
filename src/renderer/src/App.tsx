@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import TasksPanel from './components/TasksPanel'
 import TopBar, { type Tab } from './components/TopBar'
 import { useCrew } from './state/store'
 import Chat from './views/Chat'
@@ -15,12 +16,20 @@ export default function App() {
 
 function Session() {
   const [tab, setTab] = useState<Tab>('chat')
+  const [tasksOpen, setTasksOpen] = useState(false)
   const openThreadId = useCrew(s => s.openThreadId)
   const closeThread = useCrew(s => s.closeThread)
+  const openThread = useCrew(s => s.openThread)
 
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThread()
     setTab(next)
+  }
+
+  const openFromTasks = (threadId: string) => {
+    setTab('chat')
+    openThread(threadId)
+    setTasksOpen(false)
   }
 
   return (
@@ -32,10 +41,11 @@ function Session() {
       </main>
       <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
         <div className="pointer-events-auto bg-ink-900">
-          <TopBar tab={tab} onTab={switchTab} />
+          <TopBar tab={tab} onTab={switchTab} tasksOpen={tasksOpen} onToggleTasks={() => setTasksOpen(v => !v)} />
         </div>
         <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
       </div>
+      <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
     </div>
   )
 }

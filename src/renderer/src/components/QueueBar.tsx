@@ -1,6 +1,7 @@
 import { CheckIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/16/solid'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+import Pill from './Pill'
 import Tooltip from './Tooltip'
 
 export interface QueuedMessage {
@@ -8,6 +9,7 @@ export interface QueuedMessage {
   author: string
   self: boolean
   text: string
+  agentLabel?: string
 }
 
 function QueueRow({
@@ -44,7 +46,7 @@ function QueueRow({
           <button
             onClick={commit}
             aria-label="Save"
-            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
           >
             <CheckIcon className="w-3.5 h-3.5" />
           </button>
@@ -53,7 +55,7 @@ function QueueRow({
           <button
             onClick={() => setEditing(false)}
             aria-label="Cancel"
-            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
           >
             <XMarkIcon className="w-3.5 h-3.5" />
           </button>
@@ -66,6 +68,11 @@ function QueueRow({
     <div className="group flex items-center gap-2 py-0.5">
       <span className="text-sm font-semibold text-fg-muted shrink-0">{item.author}</span>
       <span className="text-sm text-fg-secondary truncate flex-1">{item.text}</span>
+      {item.agentLabel && (
+        <span className="shrink-0">
+          <Pill>{item.agentLabel}</Pill>
+        </span>
+      )}
       {item.self && (
         <span className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
           <Tooltip label="Edit">
@@ -75,7 +82,7 @@ function QueueRow({
                 setEditing(true)
               }}
               aria-label="Edit queued message"
-              className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors"
+              className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors"
             >
               <PencilIcon className="w-3.5 h-3.5" />
             </button>

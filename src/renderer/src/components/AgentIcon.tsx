@@ -1,3 +1,5 @@
+import { useTheme } from '../state/theme'
+
 const SIZES = {
   sm: 'w-7 h-7',
   md: 'w-10 h-10',
@@ -93,8 +95,9 @@ export default function AgentIcon({
   presence?: 'online' | 'offline'
 }) {
   const pet = petOf(seed)
-  const bg = `oklch(0.3 0.055 ${pet.hue})`
-  const body = `oklch(0.76 0.15 ${pet.hue})`
+  const light = useTheme() === 'light'
+  const bg = light ? `oklch(0.93 0.05 ${pet.hue})` : `oklch(0.3 0.055 ${pet.hue})`
+  const body = light ? `oklch(0.62 0.16 ${pet.hue})` : `oklch(0.76 0.15 ${pet.hue})`
   return (
     <span className={`${SIZES[size]} relative inline-block shrink-0 self-start`}>
       <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>

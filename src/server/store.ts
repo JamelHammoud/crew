@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { isAttachmentFile } from '../shared/attachments'
+import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
 import type { PooledAgent } from '../shared/llm'
 
@@ -74,15 +75,16 @@ export class Store {
     return events
   }
 
-  loadDocs(): Record<string, string> {
-    const docs: Record<string, string> = {}
+  loadDocs(): Record<string, DocPage> {
+    const docs: Record<string, DocPage> = {}
     const walk = (dir: string, prefix: string) => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const full = path.join(dir, entry.name)
         if (entry.isDirectory()) {
           walk(full, `${prefix}${entry.name}/`)
         } else if (entry.name.endsWith('.md')) {
-          docs[`${prefix}${entry.name.slice(0, -3)}`] = fs.readFileSync(full, 'utf8')
+          const page = `${prefix}${entry.name.slice(0, -3)}`
+          docs[page] = parseDocFile(fs.readFileSync(full, 'utf8'), page)
         }
       }
     }
@@ -90,11 +92,11 @@ export class Store {
     return docs
   }
 
-  saveDoc(page: string, text: string): void {
+  saveDoc(page: string, doc: DocPage): void {
     if (!PAGE_NAME.test(page)) throw new Error(`Bad page name: ${page}`)
     const file = path.join(this.root, 'docs', `${page}.md`)
     fs.mkdirSync(path.dirname(file), { recursive: true })
-    this.writeAtomic(file, text)
+    this.writeAtomic(file, serializeDocFile(doc))
   }
 
   loadTitles(): Record<string, string> {

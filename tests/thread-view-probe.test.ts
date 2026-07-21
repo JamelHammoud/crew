@@ -87,7 +87,8 @@ describe('thread navigation', () => {
           agentId: agent.id,
           agentLabel: agent.label,
           title: '@Claude 2 I want to follow up with another agent',
-          createdBy: 'ALI'
+          createdBy: 'ALI',
+          status: 'open'
         }
       },
       threadPrompts: {},
@@ -100,7 +101,7 @@ describe('thread navigation', () => {
     })
 
     render(createElement(App))
-    fireEvent.click(screen.getByText('I want to follow up with another agent').closest('button')!)
+    fireEvent.click(screen.getAllByText('I want to follow up with another agent')[0].closest('button')!)
 
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ another agent')).toBeTruthy()

@@ -1,8 +1,11 @@
 import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
+import { existsSync } from 'node:fs'
 import os from 'node:os'
+import path from 'node:path'
 import { Runner } from '../runner'
-import { detectProviders } from '../runner/providers/detect'
+import { builtinProviders, detectProviders } from '../runner/providers/detect'
+import { installCommand, runInstall } from '../runner/providers/install'
 import type { Provider } from '../runner/providers/types'
 import { createCrewServer, type CrewServer } from '../server/index'
 import { GitSync } from '../server/git'
@@ -28,8 +31,11 @@ export interface NewAgent {
 }
 
 function isGitRepo(repoPath: string): Promise<boolean> {
+  if (!existsSync(path.join(repoPath, '.git'))) return Promise.resolve(false)
   return new Promise(resolve => {
-    execFile('git', ['rev-parse', '--git-dir'], { cwd: repoPath }, error => resolve(!error))
+    execFile('git', ['rev-parse', '--is-inside-work-tree'], { cwd: repoPath }, (error, stdout) => {
+      resolve(!error && stdout.trim() === 'true')
+    })
   })
 }
 
@@ -59,9 +65,28 @@ export class AppSession {
     this.agentsPath = path
   }
 
+  // Every builtin provider is listed, installed or not, so the UI can offer a
+  // one-click install for the ones that are missing.
   async capabilities(): Promise<ProviderCapability[]> {
-    const providers = await detectProviders()
-    return providers.map(p => ({ provider: p.name, label: p.label, fields: p.fields() }))
+    return Promise.all(
+      builtinProviders.map(async p => ({
+        provider: p.name,
+        label: p.label,
+        fields: p.fields(),
+        installed: await p.detect(),
+        installable: installCommand(p) !== null
+      }))
+    )
+  }
+
+  async installProvider(name: string): Promise<ProviderCapability[]> {
+    const provider = builtinProviders.find(p => p.name === name)
+    if (!provider) throw new Error(`Unknown provider: ${name}`)
+    await runInstall(provider)
+    if (!(await provider.detect())) {
+      throw new Error(`The ${provider.label} installer finished, but its CLI still was not found.`)
+    }
+    return this.capabilities()
   }
 
   createAgent(input: NewAgent): AgentDef {
@@ -89,6 +114,17 @@ export class AppSession {
 
   private agentStore(): AgentStore | null {
     return this.agentsPath ? new AgentStore(this.agentsPath) : null
+  }
+
+  // An adopted agent came back from the server's memory; persist it so the
+  // next launch registers it directly instead of re-adopting.
+  private saveAdopted(def: AgentDef): void {
+    const store = this.agentStore()
+    if (!store) return
+    const defs = store.load()
+    if (defs.some(d => d.instanceId === def.instanceId)) return
+    defs.push(def)
+    store.save(defs)
   }
 
   private agentDefs(providers: Provider[]): AgentDef[] {
@@ -119,13 +155,16 @@ export class AppSession {
     }
     this.server = server
     this.git = git
-    const providers = await detectProviders()
+    const detected = await detectProviders()
+    // The runner knows every builtin provider so an agent created right after a
+    // mid-session CLI install can run; defaults are only seeded for detected CLIs.
     this.runner = new Runner({
       name,
       code: session.code,
       repoPath,
-      providers,
-      agents: this.agentDefs(providers)
+      providers: builtinProviders,
+      agents: this.agentDefs(detected),
+      onAdopt: def => this.saveAdopted(def)
     })
     this.runner.connect(`ws://127.0.0.1:${server.port()}/ws`)
     return {
@@ -137,14 +176,15 @@ export class AppSession {
   async startJoin(linkRaw: string, repoPath: string, name: string): Promise<JoinInfo> {
     await this.leave()
     const target = parseLink(linkRaw)
-    const providers = await detectProviders()
+    const detected = await detectProviders()
     this.runner = new Runner({
       name,
       code: target.code,
       repoPath,
-      providers,
-      agents: this.agentDefs(providers),
-      autoPullMs: AUTO_PULL_MS
+      providers: builtinProviders,
+      agents: this.agentDefs(detected),
+      autoPullMs: AUTO_PULL_MS,
+      onAdopt: def => this.saveAdopted(def)
     })
     this.runner.connect(wsUrl(target))
     return { wsUrl: wsUrl(target) }

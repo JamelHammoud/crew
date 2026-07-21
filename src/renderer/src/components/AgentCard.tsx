@@ -5,7 +5,7 @@ import Pill from './Pill'
 import Select from './Select'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
-import UsageLimits from './UsageLimits'
+import UsageFooter from './UsageFooter'
 
 export default function AgentCard({
   agent,
@@ -42,7 +42,7 @@ export default function AgentCard({
                 <button
                   onClick={onStop}
                   aria-label="Stop"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.06] transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
                 >
                   <StopIcon className="w-4 h-4" />
                 </button>
@@ -74,8 +74,8 @@ export default function AgentCard({
             ))}
           </div>
         )}
-        <UsageLimits usage={agent.usage} sharesAccount={sharesUsageAccount} />
       </div>
+      {agent.usage && <UsageFooter usage={agent.usage} sharesAccount={sharesUsageAccount} />}
       {status === 'busy' && (
         <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
           <Spinner size={14} className="text-fg" />

@@ -3,10 +3,10 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
 import { crewPath, resolveCommand } from './path'
-import type { OutputParser, Provider, RunningPrompt } from './types'
+import type { InstallCommands, OutputParser, Provider, RunningPrompt } from './types'
 
-export function commandExists(command: string): boolean {
-  return resolveCommand(command) !== null
+export function commandExists(command: string, dirs?: string[]): boolean {
+  return resolveCommand(command, dirs) !== null
 }
 
 export type SettingReader = (key: string) => string
@@ -48,6 +48,7 @@ interface CliProviderOptions {
   name: string
   label: string
   command: string
+  install?: InstallCommands
   fields?: () => AgentSettingField[]
   args: (prompt: string, get: SettingReader) => string[]
   parser?: OutputParser
@@ -75,6 +76,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
   return {
     name: opts.name,
     label: opts.label,
+    install: opts.install,
     steerable: opts.streamInput === true,
     fields,
     detect: async () => commandExists(opts.command),

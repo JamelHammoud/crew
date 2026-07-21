@@ -36,7 +36,7 @@ export default function Composer({
     <div className="relative">
       {children}
       <div
-        className="bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] cursor-text"
+        className="bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"
         onClick={() => inputRef.current?.focus()}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
@@ -73,7 +73,7 @@ export default function Composer({
                 onClick={onSend}
                 disabled={!canSend}
                 aria-label={sendLabel}
-                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
               >
                 <ArrowUpIcon className="w-5 h-5" />
               </button>

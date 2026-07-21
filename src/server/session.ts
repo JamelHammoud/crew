@@ -8,7 +8,15 @@ import {
   type Attachment,
   type OutgoingAttachment
 } from '../shared/attachments'
-import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, trimEvents, type SessionEvent } from '../shared/events'
+import { fallbackTitle, type DocPage } from '../shared/docs'
+import {
+  SYSTEM_AUTHOR_ID,
+  SYSTEM_AUTHOR_NAME,
+  trimEvents,
+  type SessionEvent,
+  type ThreadStatus,
+  type Todo
+} from '../shared/events'
 import {
   agentId,
   resolveSettings,
@@ -20,7 +28,7 @@ import {
   type PooledAgent,
   type RunStep
 } from '../shared/llm'
-import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
+import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import { Store } from './store'
 
 interface Member {
@@ -33,12 +41,14 @@ interface AgentState extends Omit<PooledAgent, 'runs' | 'status'> {
   runner: WebSocket | null
   running: Set<string>
   runs: Map<string, RunState>
+  dropTimer: NodeJS.Timeout | null
 }
 
 interface RunState {
   steps: Map<string, StepEntry>
   tokens: number
   startedAt: number
+  entry?: QueuedPrompt
 }
 
 interface StepEntry {
@@ -53,9 +63,9 @@ interface QueuedPrompt {
   byName: string
   authorId: string
   threadId: string
+  mentions: string[]
   attachments: Attachment[]
   messageId: string
-  emitted: boolean
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -75,14 +85,17 @@ interface Thread {
   agentLabel: string
   title: string
   createdBy: string
-  archived: boolean
+  status: ThreadStatus
   queue: QueuedPrompt[]
   running: string | null
 }
 
+const THREAD_STATUSES = new Set<ThreadStatus>(['open', 'done', 'archived'])
+
 interface PromptRef {
   agentId: string
   threadId: string
+  messageId: string
 }
 
 interface ConnMeta {
@@ -95,6 +108,8 @@ const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
 const TITLE_LIMIT = 80
 const CANCEL_REPORT_TIMEOUT_MS = 15000
+const RESUME_GRACE_MS = 60000
+const STEP_FLUSH_MS = 80
 
 export class CrewSession {
   readonly code: string
@@ -102,18 +117,28 @@ export class CrewSession {
   private members = new Map<string, Member>()
   private agents = new Map<string, AgentState>()
   private threads = new Map<string, Thread>()
+  private todos = new Map<string, Todo>()
   private events: SessionEvent[] = []
-  private docs = new Map<string, string>()
+  private docs = new Map<string, DocPage>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
   private steers = new Map<string, PendingSteer[]>()
+  private emittedMessages = new Set<string>()
   private cancelTimeoutMs: number
+  private resumeGraceMs: number
+  private stepFlushMs: number
+  private stepFlushes = new Map<string, { timer: NodeJS.Timeout; dirty: boolean }>()
   onSyncNeeded: (() => void) | null = null
 
-  constructor(private store: Store, opts: { cancelTimeoutMs?: number } = {}) {
+  constructor(
+    private store: Store,
+    opts: { cancelTimeoutMs?: number; resumeGraceMs?: number; stepFlushMs?: number } = {}
+  ) {
     this.cancelTimeoutMs = opts.cancelTimeoutMs ?? CANCEL_REPORT_TIMEOUT_MS
+    this.resumeGraceMs = opts.resumeGraceMs ?? RESUME_GRACE_MS
+    this.stepFlushMs = opts.stepFlushMs ?? STEP_FLUSH_MS
     const persisted = store.loadSession()
     this.code = persisted?.code ?? randomBytes(3).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
@@ -127,7 +152,8 @@ export class CrewSession {
         fields: a.fields ?? [],
         runner: null,
         running: new Set(),
-        runs: new Map()
+        runs: new Map(),
+        dropTimer: null
       })
     }
     const loaded = store.loadEvents()
@@ -149,14 +175,42 @@ export class CrewSession {
           agentLabel: event.agentLabel,
           title: event.title,
           createdBy: event.byName,
-          archived: false,
+          status: 'open',
           queue: [],
           running: null
         })
       }
       if (event.kind === 'thread.archived') {
         const thread = this.threads.get(event.threadId)
-        if (thread) thread.archived = true
+        if (thread) thread.status = 'archived'
+      }
+      if (event.kind === 'thread.status') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.status = event.status
+      }
+      if (event.kind === 'todo.added') {
+        this.todos.set(event.todoId, {
+          id: event.todoId,
+          text: event.text,
+          agentId: event.agentId,
+          createdBy: event.byName,
+          ts: event.ts,
+          checked: false
+        })
+      }
+      if (event.kind === 'todo.edited') {
+        const todo = this.todos.get(event.todoId)
+        if (todo) {
+          todo.text = event.text
+          todo.agentId = event.agentId
+        }
+      }
+      if (event.kind === 'todo.checked') {
+        const todo = this.todos.get(event.todoId)
+        if (todo) todo.checked = event.checked
+      }
+      if (event.kind === 'todo.removed' || event.kind === 'todo.started') {
+        this.todos.delete(event.todoId)
       }
       if (event.kind === 'thread.agent') {
         const thread = this.threads.get(event.threadId)
@@ -186,8 +240,12 @@ export class CrewSession {
       this.events.push(close)
       store.appendEvent(close)
     }
-    for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
-    for (const [page, title] of Object.entries(store.loadTitles())) this.docTitles.set(page, title)
+    for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
+    for (const [page, title] of Object.entries(store.loadTitles())) {
+      this.docTitles.set(page, title)
+      const doc = this.docs.get(page)
+      if (doc) this.docs.set(page, { title, text: doc.text })
+    }
     this.persistMeta()
   }
 
@@ -212,7 +270,7 @@ export class CrewSession {
       }
       this.handleMessage(ws, msg)
     })
-    ws.on('close', () => this.detach(ws))
+    ws.on('close', code => this.detach(ws, code))
   }
 
   snapshot(): SessionSnapshot {
@@ -226,20 +284,12 @@ export class CrewSession {
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: trimEvents(this.events, SNAPSHOT_EVENT_LIMIT),
       docs: Object.fromEntries(this.docs),
-      docTitles: Object.fromEntries(this.docTitles),
       queues: Object.fromEntries(
         [...this.threads.values()]
           .filter(thread => thread.queue.length > 0)
-          .map(thread => [
-            thread.id,
-            thread.queue.map(({ promptId, authorId, byName, text }) => ({
-              promptId,
-              authorId,
-              authorName: byName,
-              text
-            }))
-          ])
-      )
+          .map(thread => [thread.id, this.queueItems(thread)])
+      ),
+      todos: [...this.todos.values()]
     }
   }
 
@@ -251,6 +301,7 @@ export class CrewSession {
     this.send(ws, { type: 'welcome', selfId: member.id, snapshot: this.snapshot() })
     if (msg.role === 'runner') {
       for (const llm of msg.llms) this.registerAgent(ws, member, llm)
+      this.reconcileRuns(this.meta.get(ws)?.agentIds ?? [], new Set(msg.running ?? []))
     }
     if (wasOffline) {
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.joined', memberId: member.id, name: member.name })
@@ -271,16 +322,37 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
       case 'thread.archive':
-        if (meta.role === 'ui') this.handleArchiveThread(member, msg.threadId)
+        if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, 'archived')
+        break
+      case 'thread.status':
+        if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, msg.status)
+        break
+      case 'todo.add':
+        if (meta.role === 'ui') this.handleTodoAdd(member, msg.text, msg.agentId)
+        break
+      case 'todo.edit':
+        if (meta.role === 'ui') this.handleTodoEdit(member, msg.todoId, msg.text, msg.agentId)
+        break
+      case 'todo.remove':
+        if (meta.role === 'ui') this.handleTodoRemove(member, msg.todoId)
+        break
+      case 'todo.check':
+        if (meta.role === 'ui') this.handleTodoCheck(member, msg.todoId, msg.checked)
+        break
+      case 'todo.do':
+        if (meta.role === 'ui') this.handleTodoDo(member, msg.todoId, msg.agentId)
         break
       case 'doc.update':
-        if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text)
+        if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
+        break
+      case 'doc.retitle':
+        if (meta.role === 'ui') this.handleDocRetitle(member, msg.page, msg.title)
         break
       case 'doc.title':
         if (meta.role === 'ui') this.handleDocTitle(member, msg.page, msg.title)
         break
       case 'doc.rename':
-        if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to)
+        if (meta.role === 'ui') this.handleDocRename(member, msg.from, msg.to, msg.title)
         break
       case 'doc.delete':
         if (meta.role === 'ui') this.handleDocDelete(member, msg.page)
@@ -304,12 +376,14 @@ export class CrewSession {
         if (meta.role === 'runner') this.deregisterAgent(ws, member, msg.instanceId)
         break
       case 'agent.step':
+        if (this.promptGone(ws, meta, msg.promptId)) break
         this.handleStep(meta, msg.promptId, msg.step)
         break
       case 'agent.usage':
         if (meta.role === 'runner') this.handleUsage(meta, member, msg.instanceId, msg.usage)
         break
       case 'agent.tokens':
+        if (this.promptGone(ws, meta, msg.promptId)) break
         this.handleTokens(meta, msg.promptId, msg.tokens)
         break
       case 'agent.steered':
@@ -337,28 +411,15 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
+      if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
       const targets = [...new Set(mentions)].filter(id => this.agents.has(id))
-      if (targets.length === 0) {
-        const agent = this.agents.get(thread.agentId)
-        if (!agent) return
-        this.enqueuePrompt(agent, member, trimmed, threadId, attachments)
-        return
-      }
+      if (targets.length === 0) targets.push(thread.agentId)
       const messageId = randomUUID()
-      this.emit({
-        id: messageId,
-        ts: Date.now(),
-        kind: 'message',
-        authorId: member.id,
-        authorName: member.name,
-        text: trimmed,
-        mentions: targets,
-        threadId,
-        attachments
-      })
       if (!targets.includes(thread.agentId)) this.switchThreadAgent(thread, targets[0], member)
       for (const id of targets) {
-        this.enqueuePrompt(this.agents.get(id)!, member, trimmed, threadId, attachments, messageId)
+        const agent = this.agents.get(id)
+        if (!agent) continue
+        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, { messageId, mentions: targets })
       }
       return
     }
@@ -376,36 +437,9 @@ export class CrewSession {
       })
       return
     }
-    for (const id of ids) {
-      const agent = this.agents.get(id)!
-      const newThreadId = randomUUID()
-      const thread: Thread = {
-        id: newThreadId,
-        agentId: id,
-        agentLabel: agent.label,
-        title: this.titleFrom(trimmed || attachments.map(a => a.name).join(', ')),
-        createdBy: member.name,
-        archived: false,
-        queue: [],
-        running: null
-      }
-      this.threads.set(newThreadId, thread)
-      this.emit({
-        id: randomUUID(),
-        ts: Date.now(),
-        kind: 'thread.started',
-        threadId: newThreadId,
-        agentId: id,
-        agentLabel: agent.label,
-        title: thread.title,
-        byName: member.name
-      })
-      this.enqueuePrompt(agent, member, trimmed, newThreadId, attachments)
-    }
+    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments)
   }
 
-  // Mentioning another agent hands the thread to it: the mentioned agents get
-  // this message, and plain follow-ups go to the new agent from here on.
   private switchThreadAgent(thread: Thread, id: string, member: Member): void {
     const agent = this.agents.get(id)
     if (!agent) return
@@ -422,9 +456,95 @@ export class CrewSession {
     })
   }
 
-  private emitThreadMessage(entry: QueuedPrompt, agentId: string): void {
-    if (entry.emitted) return
-    entry.emitted = true
+  private startThread(member: Member, agent: AgentState, text: string, attachments: Attachment[]): string {
+    const threadId = randomUUID()
+    const thread: Thread = {
+      id: threadId,
+      agentId: agent.id,
+      agentLabel: agent.label,
+      title: this.titleFrom(text || attachments.map(a => a.name).join(', ')),
+      createdBy: member.name,
+      status: 'open',
+      queue: [],
+      running: null
+    }
+    this.threads.set(threadId, thread)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'thread.started',
+      threadId,
+      agentId: agent.id,
+      agentLabel: agent.label,
+      title: thread.title,
+      byName: member.name
+    })
+    this.enqueuePrompt(agent, member, text, threadId, attachments)
+    return threadId
+  }
+
+  private handleTodoAdd(member: Member, text: string, agentId?: string): void {
+    const trimmed = text.trim()
+    if (!trimmed) return
+    const todo: Todo = {
+      id: randomUUID(),
+      text: trimmed,
+      agentId,
+      createdBy: member.name,
+      ts: Date.now(),
+      checked: false
+    }
+    this.todos.set(todo.id, todo)
+    this.emit({
+      id: randomUUID(),
+      ts: todo.ts,
+      kind: 'todo.added',
+      todoId: todo.id,
+      text: todo.text,
+      agentId,
+      byName: member.name
+    })
+  }
+
+  private handleTodoEdit(member: Member, todoId: string, text: string, agentId?: string): void {
+    const todo = this.todos.get(todoId)
+    const trimmed = text.trim()
+    if (!todo || !trimmed) return
+    if (todo.text === trimmed && todo.agentId === agentId) return
+    todo.text = trimmed
+    todo.agentId = agentId
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.edited', todoId, text: trimmed, agentId, byName: member.name })
+  }
+
+  private handleTodoRemove(member: Member, todoId: string): void {
+    if (!this.todos.delete(todoId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.removed', todoId, byName: member.name })
+  }
+
+  private handleTodoCheck(member: Member, todoId: string, checked: boolean): void {
+    const todo = this.todos.get(todoId)
+    if (!todo || todo.checked === checked) return
+    todo.checked = checked
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.checked', todoId, checked, byName: member.name })
+  }
+
+  // 'Do' is the moment a todo becomes real work: a thread starts with the
+  // todo's text as its first prompt, and the todo itself is gone.
+  private handleTodoDo(member: Member, todoId: string, agentId?: string): void {
+    const todo = this.todos.get(todoId)
+    if (!todo || todo.checked) return
+    const agent = this.agents.get(agentId ?? todo.agentId ?? '')
+    if (!agent) return
+    this.todos.delete(todoId)
+    const threadId = this.startThread(member, agent, todo.text, [])
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.started', todoId, threadId, byName: member.name })
+  }
+
+  // Two prompts can share one message when it mentioned several agents, so
+  // emission is tracked by message, not by queue entry.
+  private emitThreadMessage(entry: QueuedPrompt): void {
+    if (this.emittedMessages.has(entry.messageId)) return
+    this.emittedMessages.add(entry.messageId)
     this.emit({
       id: entry.messageId,
       ts: Date.now(),
@@ -432,7 +552,7 @@ export class CrewSession {
       authorId: entry.authorId,
       authorName: entry.byName,
       text: entry.text,
-      mentions: [agentId],
+      mentions: entry.mentions,
       threadId: entry.threadId,
       attachments: entry.attachments
     })
@@ -450,11 +570,11 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
-  private handleArchiveThread(member: Member, threadId: string): void {
+  private handleThreadStatus(member: Member, threadId: string, status: ThreadStatus): void {
     const thread = this.threads.get(threadId)
-    if (!thread || thread.archived) return
-    thread.archived = true
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.archived', threadId, byName: member.name })
+    if (!thread || !THREAD_STATUSES.has(status) || thread.status === status) return
+    thread.status = status
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.status', threadId, status, byName: member.name })
   }
 
   private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
@@ -500,16 +620,39 @@ export class CrewSession {
     return page
   }
 
-  private handleDoc(member: Member, page: string, text: string): void {
+  private handleDoc(member: Member, page: string, text: string, title?: string): void {
     page = this.followRenames(page)
+    const doc: DocPage = { title: title ?? this.docs.get(page)?.title ?? fallbackTitle(page), text }
     try {
-      this.store.saveDoc(page, text)
+      this.store.saveDoc(page, doc)
     } catch {
       return
     }
-    this.docs.set(page, text)
+    this.docs.set(page, doc)
+    if (title !== undefined && this.docTitles.delete(page)) {
+      this.store.saveTitles(Object.fromEntries(this.docTitles))
+    }
     this.emit(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, byName: member.name },
+      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text, title: doc.title, byName: member.name },
+      { persist: false }
+    )
+    this.onSyncNeeded?.()
+  }
+
+  private handleDocRetitle(member: Member, page: string, title: string): void {
+    page = this.followRenames(page)
+    const existing = this.docs.get(page)
+    if (!existing || existing.title === title) return
+    const doc: DocPage = { title, text: existing.text }
+    try {
+      this.store.saveDoc(page, doc)
+    } catch {
+      return
+    }
+    this.docs.set(page, doc)
+    if (this.docTitles.delete(page)) this.store.saveTitles(Object.fromEntries(this.docTitles))
+    this.emit(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc', page, text: doc.text, title, byName: member.name },
       { persist: false }
     )
     this.onSyncNeeded?.()
@@ -517,8 +660,16 @@ export class CrewSession {
 
   private handleDocTitle(member: Member, page: string, title: string): void {
     page = this.followRenames(page)
-    if (!this.docs.has(page)) return
+    const existing = this.docs.get(page)
+    if (!existing) return
     const clean = title.replace(/\s+/g, ' ').trim().slice(0, TITLE_LIMIT)
+    const doc: DocPage = { title: clean || fallbackTitle(page), text: existing.text }
+    try {
+      this.store.saveDoc(page, doc)
+    } catch {
+      return
+    }
+    this.docs.set(page, doc)
     if (clean) this.docTitles.set(page, clean)
     else this.docTitles.delete(page)
     this.store.saveTitles(Object.fromEntries(this.docTitles))
@@ -536,10 +687,10 @@ export class CrewSession {
     } catch {
       return
     }
-    let titlesChanged = false
     for (const key of [...this.docs.keys()]) {
       if (key === page || key.startsWith(`${page}/`)) this.docs.delete(key)
     }
+    let titlesChanged = false
     for (const key of [...this.docTitles.keys()]) {
       if (key === page || key.startsWith(`${page}/`)) {
         this.docTitles.delete(key)
@@ -569,7 +720,7 @@ export class CrewSession {
     for (const entry of found.thread.queue) {
       if (entry.messageId === found.entry.messageId) entry.text = trimmed
     }
-    if (found.entry.emitted) {
+    if (this.emittedMessages.has(found.entry.messageId)) {
       const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
       if (message && message.kind === 'message') {
         message.text = trimmed
@@ -583,12 +734,18 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     if (!found || found.entry.authorId !== member.id) return
     found.thread.queue = found.thread.queue.filter(q => q.promptId !== promptId)
-    const stillQueued = found.thread.queue.some(q => q.messageId === found.entry.messageId)
-    if (found.entry.emitted && !stillQueued) this.handleDeleteMessage(member, found.entry.messageId)
+    // The message stays if a sibling prompt for another mentioned agent is
+    // still queued or already running off it.
+    const shared =
+      found.thread.queue.some(q => q.messageId === found.entry.messageId) ||
+      [...this.prompts.values()].some(ref => ref.messageId === found.entry.messageId)
+    if (this.emittedMessages.has(found.entry.messageId) && !shared) {
+      this.handleDeleteMessage(member, found.entry.messageId)
+    }
     this.broadcastQueue(found.thread)
   }
 
-  private handleDocRename(member: Member, from: string, to: string): void {
+  private handleDocRename(member: Member, from: string, to: string, title?: string): void {
     if (from === to || from === 'main' || !this.docs.has(from)) return
     if (to === from || to.startsWith(`${from}/`)) return
     try {
@@ -596,25 +753,36 @@ export class CrewSession {
     } catch {
       return
     }
-    for (const [page, text] of [...this.docs.entries()]) {
+    for (const [page, doc] of [...this.docs.entries()]) {
       if (page !== from && !page.startsWith(`${from}/`)) continue
       this.docs.delete(page)
-      this.docs.set(to + page.slice(from.length), text)
+      this.docs.set(to + page.slice(from.length), doc)
+    }
+    const moved = this.docs.get(to)
+    if (title !== undefined && moved && moved.title !== title) {
+      const doc: DocPage = { title, text: moved.text }
+      try {
+        this.store.saveDoc(to, doc)
+        this.docs.set(to, doc)
+      } catch {
+        title = moved.title
+      }
     }
     let titlesChanged = false
-    for (const [page, title] of [...this.docTitles.entries()]) {
+    for (const [page, legacyTitle] of [...this.docTitles.entries()]) {
       if (page !== from && !page.startsWith(`${from}/`)) continue
       this.docTitles.delete(page)
-      this.docTitles.set(to + page.slice(from.length), title)
+      this.docTitles.set(to + page.slice(from.length), legacyTitle)
       titlesChanged = true
     }
+    if (title !== undefined && this.docTitles.delete(to)) titlesChanged = true
     if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
     this.docRenames.set(from, { to, ts: Date.now() })
     for (const [key, move] of this.docRenames) {
       if (Date.now() - move.ts > 10000) this.docRenames.delete(key)
     }
     this.emit(
-      { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, byName: member.name },
+      { id: randomUUID(), ts: Date.now(), kind: 'doc.renamed', from, to, title, byName: member.name },
       { persist: false }
     )
     this.onSyncNeeded?.()
@@ -657,8 +825,36 @@ export class CrewSession {
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
     run.steps.set(step.id, { step: merged, persisted: false })
-    this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
-    if (merged.status === 'done') this.persistStep(agent, promptId, ref.threadId, step.id)
+    if (merged.status === 'done') {
+      const pending = this.stepFlushes.get(`${promptId}:${step.id}`)
+      if (pending) {
+        clearTimeout(pending.timer)
+        this.stepFlushes.delete(`${promptId}:${step.id}`)
+      }
+      this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
+      this.persistStep(agent, promptId, ref.threadId, step.id)
+      return
+    }
+    this.broadcastStep(agent, promptId, ref.threadId, step.id, merged)
+  }
+
+  private broadcastStep(agent: AgentState, promptId: string, threadId: string, stepId: string, step: AgentStep): void {
+    const key = `${promptId}:${stepId}`
+    const pending = this.stepFlushes.get(key)
+    if (pending) {
+      pending.dirty = true
+      return
+    }
+    this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId, step })
+    const timer = setTimeout(() => {
+      const entry = this.stepFlushes.get(key)
+      this.stepFlushes.delete(key)
+      const latest = agent.runs.get(promptId)?.steps.get(stepId)?.step
+      if (!entry?.dirty || !latest || latest.status === 'done') return
+      this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId, step: latest })
+    }, this.stepFlushMs)
+    timer.unref?.()
+    this.stepFlushes.set(key, { timer, dirty: false })
   }
 
   private persistStep(agent: AgentState, promptId: string, threadId: string, stepId: string): void {
@@ -728,6 +924,37 @@ export class CrewSession {
     this.finishPrompt(agent, promptId, { ok: false, error: message })
   }
 
+  private reconcileRuns(agentIds: string[], running: Set<string>): void {
+    for (const id of agentIds) {
+      const agent = this.agents.get(id)
+      if (!agent) continue
+      for (const promptId of [...agent.running]) {
+        if (running.has(promptId)) continue
+        const ref = this.prompts.get(promptId)
+        const entry = agent.runs.get(promptId)?.entry
+        if (!ref || !entry || !agent.runner) {
+          this.finishPrompt(agent, promptId, { ok: false, error: `${agent.label} lost this prompt.` })
+          continue
+        }
+        this.send(agent.runner, {
+          type: 'prompt',
+          promptId,
+          agentId: agent.id,
+          threadId: ref.threadId,
+          text: this.buildPrompt(agent, entry),
+          settings: agent.settings,
+          attachments: entry.attachments
+        })
+      }
+    }
+  }
+
+  private promptGone(ws: WebSocket, meta: ConnMeta, promptId: string): boolean {
+    if (meta.role !== 'runner' || this.prompts.has(promptId)) return false
+    this.send(ws, { type: 'cancel', promptId })
+    return true
+  }
+
   private ownedAgent(meta: ConnMeta, promptId: string): AgentState | null {
     const ref = this.prompts.get(promptId)
     if (!ref) return null
@@ -742,7 +969,7 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    sharedMessageId?: string
+    route?: { messageId: string; mentions: string[] }
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -753,19 +980,21 @@ export class CrewSession {
       byName: member.name,
       authorId: member.id,
       threadId,
+      mentions: route?.mentions ?? [agent.id],
       attachments,
-      messageId: sharedMessageId ?? randomUUID(),
-      emitted: sharedMessageId !== undefined
+      messageId: route?.messageId ?? randomUUID()
     }
-    if (!agent.runner) {
-      this.emitThreadMessage(entry, agent.id)
+    if (!agent.runner && !agent.dropTimer) {
+      this.emitThreadMessage(entry)
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
-    // A message that arrives mid-run goes straight into the run when the agent
-    // can take it, so it steers the work in progress instead of waiting.
-    if (thread.running && this.prompts.get(thread.running)?.agentId === agent.id && agent.steerable) {
-      this.emitThreadMessage(entry, agent.id)
+    // A message that arrives mid-run goes straight into the run when it is for
+    // the agent doing the running and that agent can take it, so it steers the
+    // work in progress instead of waiting.
+    const runningAgentId = thread.running ? this.prompts.get(thread.running)?.agentId : undefined
+    if (agent.runner && thread.running && runningAgentId === agent.id && agent.steerable) {
+      this.emitThreadMessage(entry)
       this.sendSteer(agent, thread.running, {
         messageId: entry.messageId,
         text,
@@ -777,22 +1006,24 @@ export class CrewSession {
       return
     }
     thread.queue.push(entry)
-    if (entry.emitted) this.routed(entry.messageId, threadId, entry.promptId, 'queued')
+    if (this.emittedMessages.has(entry.messageId)) this.routed(entry.messageId, threadId, entry.promptId, 'queued')
     this.broadcastQueue(thread)
     this.runThread(thread)
   }
 
+  private queueItems(thread: Thread): QueuedItem[] {
+    return thread.queue.map(({ promptId, authorId, byName, text, agentId }) => ({
+      promptId,
+      authorId,
+      authorName: byName,
+      text,
+      agentId,
+      agentLabel: this.agents.get(agentId)?.label ?? ''
+    }))
+  }
+
   private broadcastQueue(thread: Thread): void {
-    this.broadcast({
-      type: 'queue.state',
-      threadId: thread.id,
-      items: thread.queue.map(({ promptId, authorId, byName, text }) => ({
-        promptId,
-        authorId,
-        authorName: byName,
-        text
-      }))
-    })
+    this.broadcast({ type: 'queue.state', threadId: thread.id, items: this.queueItems(thread) })
   }
 
   private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {
@@ -826,7 +1057,7 @@ export class CrewSession {
   private requeueSteer(agent: AgentState, steer: PendingSteer): void {
     const thread = this.threads.get(steer.threadId)
     if (!thread) return
-    if (!agent.runner) {
+    if (!agent.runner && !agent.dropTimer) {
       this.systemMessage(`${agent.label} went offline before getting to this.`, steer.threadId)
       return
     }
@@ -838,9 +1069,9 @@ export class CrewSession {
       byName: steer.byName,
       authorId: steer.authorId ?? '',
       threadId: steer.threadId,
+      mentions: [agent.id],
       attachments: steer.attachments,
-      messageId: steer.messageId,
-      emitted: true
+      messageId: steer.messageId
     })
     this.routed(steer.messageId, steer.threadId, promptId, 'queued')
     this.broadcastQueue(thread)
@@ -859,11 +1090,11 @@ export class CrewSession {
     if (!agent?.runner) return
     thread.queue.shift()
     this.broadcastQueue(thread)
-    this.emitThreadMessage(next, agent.id)
+    this.emitThreadMessage(next)
     thread.running = next.promptId
     agent.running.add(next.promptId)
-    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now() })
-    this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id })
+    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now(), entry: next })
+    this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id, messageId: next.messageId })
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -935,16 +1166,25 @@ export class CrewSession {
       })
       .filter(Boolean)
       .join('\n')
-    return [
+    const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
+    const lines = [
       `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
       `You share a project folder and can read and edit files in it.`,
-      `You are in a focused thread. Only this thread's messages are shown here.`,
+      `You are in a focused thread. Only this thread's messages are shown here.`
+    ]
+    if (others.length > 0) {
+      lines.push(
+        `Other agents in the session: ${others.join(', ')}. A mention like @name in a thread hands that message to the named agent, so replies from several agents can appear here.`
+      )
+    }
+    lines.push(
       ``,
       `Thread so far:`,
       transcript || '(nothing yet)',
       ``,
       `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
-    ].join('\n')
+    )
+    return lines.join('\n')
   }
 
   private handleSettings(id: string, settings: AgentSettings): void {
@@ -960,6 +1200,10 @@ export class CrewSession {
     const meta = this.meta.get(ws)
     const existing = this.agents.get(id)
     if (existing) {
+      if (existing.dropTimer) {
+        clearTimeout(existing.dropTimer)
+        existing.dropTimer = null
+      }
       existing.runner = ws
       existing.fields = llm.fields
       existing.steerable = llm.steerable === true
@@ -981,7 +1225,8 @@ export class CrewSession {
       steerable: llm.steerable === true,
       runner: ws,
       running: new Set(),
-      runs: new Map()
+      runs: new Map(),
+      dropTimer: null
     }
     this.agents.set(id, agent)
     meta?.agentIds.push(id)
@@ -994,6 +1239,10 @@ export class CrewSession {
     const id = agentId(member.name, instanceId)
     const agent = this.agents.get(id)
     if (!agent) return
+    if (agent.dropTimer) {
+      clearTimeout(agent.dropTimer)
+      agent.dropTimer = null
+    }
     this.clearQueues(agent, `${agent.label} was removed before getting to this.`)
     this.dropRunning(agent, `${agent.label} was removed.`)
     this.agents.delete(id)
@@ -1018,7 +1267,7 @@ export class CrewSession {
 
   private runThreadsOf(agent: AgentState): void {
     for (const thread of this.threads.values()) {
-      if (thread.agentId === agent.id || thread.queue.some(q => q.agentId === agent.id)) this.runThread(thread)
+      if (thread.queue[0]?.agentId === agent.id) this.runThread(thread)
     }
   }
 
@@ -1029,6 +1278,8 @@ export class CrewSession {
       thread.queue = thread.queue.filter(q => q.agentId !== agent.id)
       for (const prompt of dropped) this.systemMessage(reason, prompt.threadId)
       this.broadcastQueue(thread)
+      // Clearing the head can unblock messages for agents still here.
+      this.runThread(thread)
     }
     // Steers still waiting on an ack go the same way as the queue: there is no
     // run left to fold them into, and nothing to re-queue them onto.
@@ -1048,7 +1299,7 @@ export class CrewSession {
   }
 
   private pooled(agent: AgentState): PooledAgent {
-    const { runner, running, runs, ...rest } = agent
+    const { runner, running, runs, dropTimer, ...rest } = agent
     const live: Record<string, LiveRun> = {}
     for (const [promptId, run] of runs) {
       live[promptId] = {
@@ -1070,7 +1321,7 @@ export class CrewSession {
     return member
   }
 
-  private detach(ws: WebSocket): void {
+  private detach(ws: WebSocket, code = 1006): void {
     const meta = this.meta.get(ws)
     if (!meta) return
     this.meta.delete(ws)
@@ -1081,12 +1332,23 @@ export class CrewSession {
         this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.left', memberId: member.id, name: member.name })
       }
     }
+    const left = code === 1000 || code === 1001 || code === 1005
     for (const id of meta.agentIds) {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
       agent.runner = null
-      this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
-      this.dropRunning(agent, `${agent.label} disconnected.`)
+      if (left) {
+        this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
+        this.dropRunning(agent, `${agent.label} disconnected.`)
+      } else {
+        agent.dropTimer = setTimeout(() => {
+          agent.dropTimer = null
+          if (agent.runner) return
+          this.clearQueues(agent, `${agent.label} went offline before getting to this.`)
+          this.dropRunning(agent, `${agent.label} disconnected.`)
+        }, this.resumeGraceMs)
+        agent.dropTimer.unref?.()
+      }
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.offline', agentId: id, label: agent.label })
     }
     this.persistMeta()
@@ -1133,7 +1395,7 @@ export class CrewSession {
       code: this.code,
       createdAt: this.createdAt,
       members: [...this.members.values()].map(m => ({ id: m.id, name: m.name })),
-      agents: [...this.agents.values()].map(({ runner, running, runs, ...agent }) => agent)
+      agents: [...this.agents.values()].map(({ runner, running, runs, dropTimer, ...agent }) => agent)
     })
   }
 }

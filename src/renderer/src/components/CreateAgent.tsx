@@ -1,5 +1,5 @@
 import { PlusIcon } from '@heroicons/react/16/solid'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings } from '../../../shared/llm'
 import Select from './Select'
@@ -25,7 +25,9 @@ export default function CreateAgent() {
   const [name, setName] = useState('')
   const [nameEdited, setNameEdited] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [installing, setInstalling] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const providerRef = useRef('')
 
   useEffect(() => {
     void window.crew.agentCapabilities().then(setCaps)
@@ -36,16 +38,40 @@ export default function CreateAgent() {
   const selectProvider = (next: string, list = caps) => {
     const chosen = list?.find(c => c.provider === next) ?? null
     setProvider(next)
+    providerRef.current = next
     const resolved = chosen ? resolveSettings(chosen.fields, {}) : {}
     setSettings(resolved)
     setNameEdited(false)
     setName(chosen ? defaultName(chosen, resolved) : '')
   }
 
+  const install = async (target: ProviderCapability) => {
+    setInstalling(target.provider)
+    setError('')
+    try {
+      const fresh = await window.crew.installProvider(target.provider)
+      setCaps(fresh)
+      // Fields can change once the CLI is on disk (model lists come from its
+      // local config), so re-resolve if this provider is still the one shown.
+      if (providerRef.current === target.provider) selectProvider(target.provider, fresh)
+    } catch (err) {
+      setError(String(err instanceof Error ? err.message : err))
+    } finally {
+      setInstalling(null)
+    }
+  }
+
+  // Picking a provider that is missing its CLI is what kicks off the install.
+  const pick = (next: string) => {
+    selectProvider(next)
+    const chosen = caps?.find(c => c.provider === next)
+    if (chosen && !chosen.installed && chosen.installable && installing !== next) void install(chosen)
+  }
+
   const start = () => {
     if (!caps || caps.length === 0) return
     setError('')
-    selectProvider(caps[0].provider)
+    selectProvider((caps.find(c => c.installed) ?? caps[0]).provider)
     setOpen(true)
   }
 
@@ -69,6 +95,12 @@ export default function CreateAgent() {
     }
   }
 
+  const hintFor = (c: ProviderCapability) => {
+    if (c.installed) return undefined
+    if (installing === c.provider) return <Spinner size={12} />
+    return c.installable ? 'Install' : 'Not installed'
+  }
+
   if (caps && caps.length === 0) {
     return <p className="text-sm text-fg-muted">No LLM CLIs found on this machine.</p>
   }
@@ -85,15 +117,15 @@ export default function CreateAgent() {
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
+          <div className="absolute inset-0 bg-black/50 light:bg-black/25" onClick={() => setOpen(false)} />
           <div className="glass relative w-full max-w-md rounded-card p-6 space-y-5 animate-pop">
             <h3 className="text-base font-semibold text-fg">Add an agent</h3>
             <div className="flex flex-wrap gap-2">
               <Select
                 label="Provider"
                 value={provider}
-                options={(caps ?? []).map(c => ({ value: c.provider, label: c.label }))}
-                onChange={selectProvider}
+                options={(caps ?? []).map(c => ({ value: c.provider, label: c.label, hint: hintFor(c) }))}
+                onChange={pick}
               />
               {cap?.fields.map(field => (
                 <Select
@@ -114,6 +146,12 @@ export default function CreateAgent() {
               placeholder="Agent name"
               className="w-full bg-ink-850 border border-ink-700 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg-muted outline-none transition-colors focus:border-ink-500"
             />
+            {installing && (
+              <p className="flex items-center gap-2 text-sm text-fg-muted">
+                <Spinner size={14} />
+                Installing the {caps?.find(c => c.provider === installing)?.label ?? installing} CLI…
+              </p>
+            )}
             {error && <p className="text-sm text-danger">{error}</p>}
             <div className="flex items-center justify-end gap-2">
               <button
@@ -124,8 +162,8 @@ export default function CreateAgent() {
               </button>
               <button
                 onClick={create}
-                disabled={busy || !name.trim()}
-                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-white/10 disabled:text-fg-muted disabled:scale-100"
+                disabled={busy || !name.trim() || !cap?.installed}
+                className="h-10 px-5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-2 transition-all duration-150 hover:scale-[1.03] active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
               >
                 {busy && <Spinner size={14} />}
                 Create

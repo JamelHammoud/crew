@@ -5,6 +5,7 @@ import { useCreateBlockNote } from '@blocknote/react'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { localizeDoc, relativizeDoc, uploadImage } from './images'
 import { useCrew } from '../state/store'
+import { useTheme } from '../state/theme'
 
 export interface DocEditorHandle {
   focusStart: () => void
@@ -14,16 +15,17 @@ export interface DocEditorHandle {
 
 export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(
   function DocEditor({ text, onChange }, ref) {
-  const httpBase = useCrew(s => s.httpBase)
-  const httpBaseRef = useRef(httpBase)
-  httpBaseRef.current = httpBase
-  const editor = useCreateBlockNote({
-    uploadFile: (file: File) => uploadImage(httpBaseRef.current, file)
-  })
-  const containerRef = useRef<HTMLDivElement>(null)
-  const lastMarkdown = useRef('')
-  const loaded = useRef(false)
-  const timer = useRef<number | null>(null)
+    const httpBase = useCrew(s => s.httpBase)
+    const httpBaseRef = useRef(httpBase)
+    httpBaseRef.current = httpBase
+    const editor = useCreateBlockNote({
+      uploadFile: (file: File) => uploadImage(httpBaseRef.current, file)
+    })
+    const theme = useTheme()
+    const containerRef = useRef<HTMLDivElement>(null)
+    const lastMarkdown = useRef('')
+    const loaded = useRef(false)
+    const timer = useRef<number | null>(null)
 
   useEffect(() => {
     const focused = containerRef.current?.contains(document.activeElement) ?? false
@@ -85,7 +87,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
 
   return (
     <div ref={containerRef} className="doc flex-1 min-h-0">
-      <BlockNoteView editor={editor} theme="dark" onChange={handleChange} filePanel={false} />
+      <BlockNoteView editor={editor} theme={theme} onChange={handleChange} filePanel={false} />
     </div>
   )
 })

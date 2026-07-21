@@ -1,5 +1,6 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
-import type { SessionEvent } from './events'
+import type { DocPage } from './docs'
+import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 
 export interface RegisteredLlm {
@@ -22,6 +23,8 @@ export interface QueuedItem {
   authorId: string
   authorName: string
   text: string
+  agentId: string
+  agentLabel: string
 }
 
 export interface SessionSnapshot {
@@ -29,20 +32,27 @@ export interface SessionSnapshot {
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
-  docs: Record<string, string>
-  docTitles: Record<string, string>
+  docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
+  todos: Todo[]
 }
 
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
-  | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[] }
+  | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[]; running?: string[] }
   | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
-  | { type: 'doc.update'; page: string; text: string }
+  | { type: 'thread.status'; threadId: string; status: ThreadStatus }
+  | { type: 'todo.add'; text: string; agentId?: string }
+  | { type: 'todo.edit'; todoId: string; text: string; agentId?: string }
+  | { type: 'todo.remove'; todoId: string }
+  | { type: 'todo.check'; todoId: string; checked: boolean }
+  | { type: 'todo.do'; todoId: string; agentId?: string }
+  | { type: 'doc.update'; page: string; text: string; title?: string }
   | { type: 'doc.title'; page: string; title: string }
-  | { type: 'doc.rename'; from: string; to: string }
+  | { type: 'doc.retitle'; page: string; title: string }
+  | { type: 'doc.rename'; from: string; to: string; title?: string }
   | { type: 'doc.delete'; page: string }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }

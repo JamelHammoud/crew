@@ -9,7 +9,7 @@ function cleanError(err: unknown): string {
 }
 
 const FIELD =
-  'w-full bg-ink-800 rounded-2xl px-4 py-3 text-base text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)]'
+  'w-full bg-ink-800 rounded-2xl px-4 py-3 text-base text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
 
 export default function Home() {
   const connect = useCrew(s => s.connect)
@@ -119,7 +119,7 @@ export default function Home() {
           <button
             onClick={join}
             disabled={busy}
-            className="w-full h-12 rounded-full border border-ink-600 text-fg text-base font-semibold transition-all duration-150 hover:border-ink-500 hover:bg-white/[0.03] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
+            className="w-full h-12 rounded-full border border-ink-600 text-fg text-base font-semibold transition-all duration-150 hover:border-ink-500 hover:bg-fg/[0.03] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
           >
             Join a session
           </button>

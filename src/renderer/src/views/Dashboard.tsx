@@ -32,7 +32,7 @@ export default function Dashboard() {
             {members.map(member => (
               <div
                 key={member.id}
-                className="flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-white/[0.03]"
+                className="flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-fg/[0.03]"
               >
                 <Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />
                 <span className="text-base font-semibold text-fg">{member.name}</span>

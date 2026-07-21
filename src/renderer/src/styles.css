@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant light (&:where(.light, .light *));
+
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
   --font-mono: "Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -11,6 +13,7 @@
   --color-ink-700: #272727;
   --color-ink-600: #333333;
   --color-ink-500: #454545;
+  --color-ink-hover: #1d1d1d;
 
   --color-fg: #ffffff;
   --color-fg-secondary: #b3b3b3;
@@ -58,6 +61,25 @@
   }
 }
 
+.light {
+  --color-ink-950: #ececec;
+  --color-ink-900: #ffffff;
+  --color-ink-850: #f8f8f8;
+  --color-ink-800: #f2f2f2;
+  --color-ink-700: #e5e5e5;
+  --color-ink-600: #d6d6d6;
+  --color-ink-500: #b8b8b8;
+  --color-ink-hover: #f5f5f5;
+
+  --color-fg: #141414;
+  --color-fg-secondary: #555555;
+  --color-fg-muted: #767676;
+  --color-fg-faint: #ababab;
+
+  --color-positive: #16a34a;
+  --color-danger: #dc2626;
+}
+
 html,
 body,
 #root {
@@ -76,6 +98,10 @@ body {
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
 }
 
+.light #root {
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+
 #root.square {
   border-radius: 0;
   box-shadow: none;
@@ -83,6 +109,19 @@ body {
 
 ::selection {
   background: rgb(255 255 255 / 0.16);
+}
+
+.light ::selection {
+  background: rgb(0 0 0 / 0.12);
+}
+
+::highlight(find-match) {
+  background-color: rgb(250 204 21 / 0.25);
+}
+
+::highlight(find-match-active) {
+  background-color: #fbbf24;
+  color: #141414;
 }
 
 ::-webkit-scrollbar {
@@ -102,6 +141,18 @@ body {
   background-clip: padding-box;
 }
 
+.light ::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.14);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgb(0 0 0 / 0.24);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
 .app-drag {
   -webkit-app-region: drag;
 }
@@ -112,12 +163,21 @@ body {
 
 .glass {
   background: rgb(28 28 28 / 0.78);
+  /* No -webkit- fallback: Electron's Chromium only honors the standard property,
+     and Lightning CSS collapses an alias pair down to the prefixed one at build. */
   backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgb(255 255 255 / 0.08);
   box-shadow:
     0 16px 48px rgb(0 0 0 / 0.55),
     0 2px 8px rgb(0 0 0 / 0.35);
+}
+
+.light .glass {
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow:
+    0 16px 48px rgb(0 0 0 / 0.14),
+    0 2px 8px rgb(0 0 0 / 0.08);
 }
 
 /* Tab icons: the wrapper opens up a slot for the icon, the icon draws itself inside it. */
@@ -237,6 +297,23 @@ body {
   --bn-colors-highlights-gray-background: #333333;
   --bn-font-family: var(--font-sans);
   --bn-border-radius: 12px;
+}
+
+.light .doc .bn-container {
+  --bn-colors-editor-text: #141414;
+  --bn-colors-menu-background: #ffffff;
+  --bn-colors-menu-text: #555555;
+  --bn-colors-hovered-background: rgb(0 0 0 / 0.05);
+  --bn-colors-hovered-text: #141414;
+  --bn-colors-selected-background: rgb(0 0 0 / 0.08);
+  --bn-colors-selected-text: #141414;
+  --bn-colors-disabled-text: #ababab;
+  --bn-colors-side-menu: #ababab;
+  --bn-colors-tooltip-background: #ffffff;
+  --bn-colors-tooltip-text: #555555;
+  --bn-colors-border: rgb(0 0 0 / 0.08);
+  --bn-colors-shadow: rgb(0 0 0 / 0.15);
+  --bn-colors-highlights-gray-background: #e5e5e5;
 }
 
 .doc .bn-editor {

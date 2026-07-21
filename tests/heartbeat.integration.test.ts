@@ -50,7 +50,7 @@ describe('connection health', () => {
   })
 
   it('runner heals itself when the host goes silent', async () => {
-    host = await startHost(undefined, { heartbeatMs: 60000 })
+    host = await startHost(undefined, { heartbeatMs: 60000, autoPong: false })
     const statuses: string[] = []
     const runner = new Runner({
       name: 'jamel',

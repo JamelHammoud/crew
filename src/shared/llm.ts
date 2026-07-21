@@ -105,6 +105,9 @@ export interface ProviderCapability {
   provider: string
   label: string
   fields: AgentSettingField[]
+  installed: boolean
+  // Whether crew knows how to install this CLI on this machine's platform.
+  installable: boolean
 }
 
 export function agentId(ownerName: string, instanceId: string): string {

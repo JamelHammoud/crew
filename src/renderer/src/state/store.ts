@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { httpBaseFrom } from '../../../shared/attachments'
-import { trimEvents, type SessionEvent } from '../../../shared/events'
+import { fallbackTitle, type DocPage } from '../../../shared/docs'
+import { trimEvents, type SessionEvent, type ThreadStatus, type Todo } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
@@ -14,7 +15,7 @@ export interface ThreadMeta {
   agentLabel: string
   title: string
   createdBy: string
-  archived?: boolean
+  status: ThreadStatus
 }
 
 const EVENT_LIMIT = 500
@@ -28,14 +29,14 @@ interface CrewState {
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
-  docs: Record<string, string>
-  docTitles: Record<string, string>
+  docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   steps: Record<string, AgentStep[]>
   tokens: Record<string, number>
   activePrompts: Record<string, string[]>
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
+  todos: Todo[]
   openThreadId: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
@@ -49,11 +50,16 @@ interface CrewState {
   detach: (key: string, id: string) => void
   sendChat: (text: string, threadId?: string) => void
   deleteMessage: (messageId: string) => void
-  archiveThread: (threadId: string) => void
+  setThreadStatus: (threadId: string, status: ThreadStatus) => void
+  addTodo: (text: string, agentId?: string) => void
+  editTodo: (todoId: string, text: string, agentId?: string) => void
+  removeTodo: (todoId: string) => void
+  checkTodo: (todoId: string, checked: boolean) => void
+  doTodo: (todoId: string, agentId?: string) => void
   cancelPrompt: (promptId: string) => void
-  updateDoc: (page: string, text: string) => void
-  setDocTitle: (page: string, title: string) => void
-  renameDoc: (from: string, to: string) => void
+  updateDoc: (page: string, text: string, title?: string) => void
+  retitleDoc: (page: string, title: string) => void
+  renameDoc: (from: string, to: string, title?: string) => void
   deleteDoc: (page: string) => void
   editQueued: (promptId: string, text: string) => void
   removeQueued: (promptId: string) => void
@@ -69,13 +75,13 @@ const EMPTY = {
   agents: [],
   events: [],
   docs: {},
-  docTitles: {},
   queues: {},
   steps: {},
   tokens: {},
   activePrompts: {},
   threads: {},
   threadPrompts: {},
+  todos: [],
   openThreadId: null,
   chatDraft: '',
   threadDrafts: {},
@@ -157,13 +163,19 @@ export const useCrew = create<CrewState>((set, get) => {
             agentId: event.agentId,
             agentLabel: event.agentLabel,
             title: event.title,
-            createdBy: event.byName
+            createdBy: event.byName,
+            status: 'open'
           }
           break
         }
         case 'thread.archived': {
           const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, archived: true }
+          if (thread) threads[event.threadId] = { ...thread, status: 'archived' }
+          break
+        }
+        case 'thread.status': {
+          const thread = threads[event.threadId]
+          if (thread) threads[event.threadId] = { ...thread, status: event.status }
           break
         }
         case 'thread.agent': {
@@ -186,40 +198,61 @@ export const useCrew = create<CrewState>((set, get) => {
           break
         }
         case 'doc': {
-          return { events, docs: { ...state.docs, [event.page]: event.text } }
+          const title = event.title ?? state.docs[event.page]?.title ?? fallbackTitle(event.page)
+          return { events, docs: { ...state.docs, [event.page]: { title, text: event.text } } }
         }
         case 'doc.titled': {
-          const docTitles = { ...state.docTitles }
-          if (event.title) docTitles[event.page] = event.title
-          else delete docTitles[event.page]
-          return { events, docTitles }
+          const doc = state.docs[event.page]
+          return doc ? { events, docs: { ...state.docs, [event.page]: { ...doc, title: event.title } } } : { events }
         }
         case 'doc.renamed': {
           const docs = { ...state.docs }
-          const docTitles = { ...state.docTitles }
           for (const page of Object.keys(docs)) {
             if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
             docs[event.to + page.slice(event.from.length)] = docs[page]
             delete docs[page]
           }
-          for (const page of Object.keys(docTitles)) {
-            if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
-            docTitles[event.to + page.slice(event.from.length)] = docTitles[page]
-            delete docTitles[page]
+          if (event.title !== undefined && docs[event.to]) {
+            docs[event.to] = { ...docs[event.to], title: event.title }
           }
-          return { events, docs, docTitles }
+          return { events, docs }
         }
         case 'doc.deleted': {
           const docs = { ...state.docs }
-          const docTitles = { ...state.docTitles }
           for (const page of Object.keys(docs)) {
             if (page === event.page || page.startsWith(`${event.page}/`)) delete docs[page]
           }
-          for (const page of Object.keys(docTitles)) {
-            if (page === event.page || page.startsWith(`${event.page}/`)) delete docTitles[page]
-          }
-          return { events, docs, docTitles }
+          return { events, docs }
         }
+        case 'todo.added': {
+          if (state.todos.some(t => t.id === event.todoId)) return { events }
+          const todo: Todo = {
+            id: event.todoId,
+            text: event.text,
+            agentId: event.agentId,
+            createdBy: event.byName,
+            ts: event.ts,
+            checked: false
+          }
+          return { events, todos: [...state.todos, todo] }
+        }
+        case 'todo.edited':
+          return {
+            events,
+            todos: state.todos.map(t =>
+              t.id === event.todoId ? { ...t, text: event.text, agentId: event.agentId } : t
+            )
+          }
+        case 'todo.checked':
+          return {
+            events,
+            todos: state.todos.map(t => (t.id === event.todoId ? { ...t, checked: event.checked } : t))
+          }
+        // A started todo lives on as its thread; the thread.started event
+        // arrives on its own just before this one.
+        case 'todo.removed':
+        case 'todo.started':
+          return { events, todos: state.todos.filter(t => t.id !== event.todoId) }
       }
       return {
         events,
@@ -248,11 +281,15 @@ export const useCrew = create<CrewState>((set, get) => {
               agentId: event.agentId,
               agentLabel: event.agentLabel,
               title: event.title,
-              createdBy: event.byName
+              createdBy: event.byName,
+              status: 'open'
             }
           }
           if (event.kind === 'thread.archived' && threads[event.threadId]) {
-            threads[event.threadId].archived = true
+            threads[event.threadId].status = 'archived'
+          }
+          if (event.kind === 'thread.status' && threads[event.threadId]) {
+            threads[event.threadId].status = event.status
           }
           if (event.kind === 'thread.agent' && threads[event.threadId]) {
             threads[event.threadId].agentId = event.agentId
@@ -282,8 +319,8 @@ export const useCrew = create<CrewState>((set, get) => {
           agents: msg.snapshot.agents,
           events: trimEvents(msg.snapshot.events, EVENT_LIMIT),
           docs: msg.snapshot.docs,
-          docTitles: msg.snapshot.docTitles ?? {},
           queues: msg.snapshot.queues ?? {},
+          todos: msg.snapshot.todos ?? [],
           steps,
           tokens,
           activePrompts,
@@ -363,71 +400,79 @@ export const useCrew = create<CrewState>((set, get) => {
     sendChat: (text, threadId) => {
       const key = threadId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
+      const mentions = mentionsIn(text, get().agents)
       if (threadId) {
-        socket.send({ type: 'chat.send', text, mentions: mentionsIn(text, get().agents), threadId, attachments })
+        socket.send({ type: 'chat.send', text, mentions, threadId, attachments })
         set(state => ({
           threadDrafts: { ...state.threadDrafts, [threadId]: '' },
           pending: { ...state.pending, [key]: [] }
         }))
         return
       }
-      const mentions = mentionsIn(text, get().agents)
       socket.send({ type: 'chat.send', text, mentions, attachments })
       set(state => ({ chatDraft: '', pending: { ...state.pending, [key]: [] } }))
     },
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
     },
-    archiveThread: threadId => {
-      socket.send({ type: 'thread.archive', threadId })
+    setThreadStatus: (threadId, status) => {
+      // Archiving keeps the old message so a newer UI can still archive on an
+      // older host; the other transitions only exist on hosts that know them.
+      socket.send(status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status })
+    },
+    addTodo: (text, agentId) => {
+      socket.send({ type: 'todo.add', text, agentId })
+    },
+    editTodo: (todoId, text, agentId) => {
+      socket.send({ type: 'todo.edit', todoId, text, agentId })
+    },
+    removeTodo: todoId => {
+      socket.send({ type: 'todo.remove', todoId })
+    },
+    checkTodo: (todoId, checked) => {
+      socket.send({ type: 'todo.check', todoId, checked })
+    },
+    doTodo: (todoId, agentId) => {
+      socket.send({ type: 'todo.do', todoId, agentId })
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
     },
-    updateDoc: (page, text) => {
-      set(state => ({ docs: { ...state.docs, [page]: text } }))
-      socket.send({ type: 'doc.update', page, text })
-    },
-    setDocTitle: (page, title) => {
+    updateDoc: (page, text, title) => {
       set(state => {
-        const docTitles = { ...state.docTitles }
-        if (title) docTitles[page] = title
-        else delete docTitles[page]
-        return { docTitles }
+        const kept = title ?? state.docs[page]?.title ?? fallbackTitle(page)
+        return { docs: { ...state.docs, [page]: { title: kept, text } } }
       })
-      socket.send({ type: 'doc.title', page, title })
+      socket.send({ type: 'doc.update', page, text, title })
     },
-    renameDoc: (from, to) => {
+    retitleDoc: (page, title) => {
+      set(state =>
+        state.docs[page] === undefined ? state : { docs: { ...state.docs, [page]: { ...state.docs[page], title } } }
+      )
+      socket.send({ type: 'doc.retitle', page, title })
+    },
+    renameDoc: (from, to, title) => {
       set(state => {
         if (state.docs[from] === undefined || state.docs[to] !== undefined) return state
         if (to === from || to.startsWith(`${from}/`)) return state
         const docs = { ...state.docs }
-        const docTitles = { ...state.docTitles }
         for (const page of Object.keys(docs)) {
           if (page !== from && !page.startsWith(`${from}/`)) continue
           docs[to + page.slice(from.length)] = docs[page]
           delete docs[page]
         }
-        for (const page of Object.keys(docTitles)) {
-          if (page !== from && !page.startsWith(`${from}/`)) continue
-          docTitles[to + page.slice(from.length)] = docTitles[page]
-          delete docTitles[page]
-        }
-        return { docs, docTitles }
+        if (title !== undefined && docs[to]) docs[to] = { ...docs[to], title }
+        return { docs }
       })
-      socket.send({ type: 'doc.rename', from, to })
+      socket.send({ type: 'doc.rename', from, to, title })
     },
     deleteDoc: page => {
       set(state => {
         const docs = { ...state.docs }
-        const docTitles = { ...state.docTitles }
         for (const key of Object.keys(docs)) {
           if (key === page || key.startsWith(`${page}/`)) delete docs[key]
         }
-        for (const key of Object.keys(docTitles)) {
-          if (key === page || key.startsWith(`${page}/`)) delete docTitles[key]
-        }
-        return { docs, docTitles }
+        return { docs }
       })
       socket.send({ type: 'doc.delete', page })
     },

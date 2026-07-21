@@ -1,6 +1,22 @@
 import type { Attachment } from './attachments'
 import type { AgentSettings, AgentStep } from './llm'
 
+// 'open' means the thread still wants attention: either an agent is working or
+// the result is waiting for someone to look at it. 'done' is an explicit human
+// (or agent) sign-off; 'archived' hides the thread without losing it.
+export type ThreadStatus = 'open' | 'done' | 'archived'
+
+// A todo is a pre-thread: one line of intended work, no run behind it. 'Do'
+// turns it into a real thread; checking it off records work done by hand.
+export interface Todo {
+  id: string
+  text: string
+  agentId?: string
+  createdBy: string
+  ts: number
+  checked: boolean
+}
+
 export type SessionEvent =
   | {
       id: string
@@ -25,8 +41,16 @@ export type SessionEvent =
       mode: 'queued' | 'steered'
     }
   | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string }
+  // Superseded by thread.status; still emitted-compatible and replayed so old
+  // event logs and old peers keep working.
   | { id: string; ts: number; kind: 'thread.archived'; threadId: string; byName: string }
   | { id: string; ts: number; kind: 'thread.agent'; threadId: string; agentId: string; agentLabel: string; byName: string }
+  | { id: string; ts: number; kind: 'thread.status'; threadId: string; status: ThreadStatus; byName: string }
+  | { id: string; ts: number; kind: 'todo.added'; todoId: string; text: string; agentId?: string; byName: string }
+  | { id: string; ts: number; kind: 'todo.edited'; todoId: string; text: string; agentId?: string; byName: string }
+  | { id: string; ts: number; kind: 'todo.removed'; todoId: string; byName: string }
+  | { id: string; ts: number; kind: 'todo.checked'; todoId: string; checked: boolean; byName: string }
+  | { id: string; ts: number; kind: 'todo.started'; todoId: string; threadId: string; byName: string }
   | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string; threadId?: string }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
   | { id: string; ts: number; kind: 'agent.end'; promptId: string; agentId: string; agentLabel: string; ok: boolean; text?: string; error?: string; threadId?: string }
@@ -35,9 +59,9 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'agent.online'; agentId: string; label: string }
   | { id: string; ts: number; kind: 'agent.offline'; agentId: string; label: string }
   | { id: string; ts: number; kind: 'agent.updated'; agentId: string; settings: AgentSettings }
-  | { id: string; ts: number; kind: 'doc'; page: string; text: string; byName: string }
+  | { id: string; ts: number; kind: 'doc'; page: string; text: string; title?: string; byName: string }
   | { id: string; ts: number; kind: 'doc.titled'; page: string; title: string; byName: string }
-  | { id: string; ts: number; kind: 'doc.renamed'; from: string; to: string; byName: string }
+  | { id: string; ts: number; kind: 'doc.renamed'; from: string; to: string; title?: string; byName: string }
   | { id: string; ts: number; kind: 'doc.deleted'; page: string; byName: string }
 
 export const SYSTEM_AUTHOR_ID = 'crew'
@@ -53,7 +77,15 @@ const EPHEMERAL_KINDS = new Set([
   'person.left',
   'agent.online',
   'agent.offline',
-  'agent.updated'
+  'agent.updated',
+  // Todos ride in the snapshot as first-class state (like docs and queues), so
+  // their events only matter live; keeping them out of the window also stops a
+  // weeks-old pending todo from falling off the end of the trim.
+  'todo.added',
+  'todo.edited',
+  'todo.removed',
+  'todo.checked',
+  'todo.started'
 ])
 
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {

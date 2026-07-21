@@ -36,9 +36,13 @@ export interface RunningPrompt {
   steer?: (text: string) => boolean
 }
 
+export type InstallCommands = Partial<Record<'darwin' | 'linux' | 'win32', string>>
+
 export interface Provider {
   name: string
   label: string
+  // Shell command that installs the CLI, keyed by process.platform.
+  install?: InstallCommands
   // Whether start() returns a run that accepts steer().
   steerable?: boolean
   fields(): AgentSettingField[]

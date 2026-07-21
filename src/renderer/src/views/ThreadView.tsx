@@ -1,12 +1,13 @@
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
-import { CheckIcon } from '@heroicons/react/24/outline'
+import { ArchiveBoxIcon, CheckIcon, ExclamationTriangleIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import AgentIcon from '../components/AgentIcon'
 import Composer from '../components/Composer'
 import FilesChanged from '../components/FilesChanged'
 import { hoverCardOpen } from '../components/HoverCard'
+import JumpToBottom from '../components/JumpToBottom'
 import { MemberName } from '../components/Mention'
-import { useMentionPicker } from '../components/MentionPicker'
+import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import Pill from '../components/Pill'
 import { usePresence } from '../components/presence'
@@ -15,10 +16,11 @@ import Spinner from '../components/Spinner'
 import { Counts } from '../components/StepRow'
 import ThreadItems from '../components/ThreadItems'
 import Tooltip from '../components/Tooltip'
-import { buildThread } from '../components/thread'
+import { buildThread, THREAD_STATE_LABELS, threadState } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
-import { useCrew } from '../state/store'
+import { useStickToBottom } from '../components/useStickToBottom'
 import { mentionsIn } from '../../../shared/llm'
+import { useCrew } from '../state/store'
 
 export default function ThreadView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)
@@ -29,6 +31,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
+  const setThreadStatus = useCrew(s => s.setThreadStatus)
   const editQueued = useCrew(s => s.editQueued)
   const removeQueued = useCrew(s => s.removeQueued)
   const closeThread = useCrew(s => s.closeThread)
@@ -38,8 +41,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const agents = useCrew(s => s.agents)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const inputRef = useAutoResize(text)
-  const mention = useMentionPicker(text, value => setThreadDraft(threadId, value), inputRef)
+  const mention = useMentionAutocomplete(text, value => setThreadDraft(threadId, value), inputRef)
   const agentPresence = usePresence(thread?.agentLabel ?? '')
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
@@ -59,9 +63,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
         promptId: item.promptId,
         author: item.authorName,
         self: item.authorId === selfId,
-        text: item.text
+        text: item.text,
+        agentLabel: item.agentLabel !== thread?.agentLabel ? item.agentLabel : undefined
       })),
-    [queueItems, selfId]
+    [queueItems, selfId, thread?.agentLabel]
   )
   const startedAt = runningStart?.ts
   const diffTotals = useMemo(() => {
@@ -98,14 +103,14 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       el.scrollTop = el.scrollHeight
       return
     }
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 240 + overlayHeight
-    if (nearBottom && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [items, overlayHeight])
+    if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
+  }, [items, overlayHeight, pinnedRef])
 
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
     sendChat(text, threadId)
     mention.close()
+    jumpToBottom()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -118,15 +123,19 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
+  const targets = draftMentions.length > 0 ? draftMentions : [thread.agentId]
   const canSteer =
-    Boolean(activePromptId) &&
-    steerable &&
-    (draftMentions.length === 0 || (draftMentions.length === 1 && draftMentions[0] === runningAgentId))
+    Boolean(activePromptId) && steerable && runningAgentId !== undefined && targets.includes(runningAgentId)
   const placeholder = 'Send a message or @ another agent'
+  const state = threadState(thread, threadEvents, Boolean(activePromptId))
+  const statusAction =
+    thread.status === 'open'
+      ? { label: 'Mark done', to: 'done' as const }
+      : { label: thread.status === 'done' ? 'Reopen' : 'Unarchive', to: 'open' as const }
 
   return (
     <div className="h-full relative">
-      <div ref={scrollRef} className="h-full overflow-y-auto px-6">
+      <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
         <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
           <ThreadItems items={items} />
           {activePromptId && startedAt && (
@@ -139,7 +148,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
-          <div className="max-w-[660px] mx-auto pointer-events-auto">
+          <div className="relative max-w-[660px] mx-auto pointer-events-auto">
+            {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
             <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
             <div className="relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
               <Tooltip label="Back to chat">
@@ -158,15 +168,26 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 </span>
               </MemberName>
               <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
-                {activePromptId ? (
+                {state === 'working' ? (
                   <>
                     <Spinner size={16} className="text-fg" />
                     <span className="text-base font-semibold text-fg">Working</span>
                   </>
                 ) : (
                   <>
-                    <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />
-                    <span className="text-base font-semibold text-fg">Done</span>
+                    {state === 'done' && <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
+                    {state === 'ready' && <EyeIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
+                    {state === 'failed' && <ExclamationTriangleIcon strokeWidth={2} className="w-5 h-5 text-danger" />}
+                    {state === 'archived' && <ArchiveBoxIcon strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
+                    <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
+                      {THREAD_STATE_LABELS[state]}
+                    </span>
+                    <button
+                      onClick={() => setThreadStatus(threadId, statusAction.to)}
+                      className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                    >
+                      {statusAction.label}
+                    </button>
                   </>
                 )}
                 {(diffTotals.added > 0 || diffTotals.removed > 0) && (
@@ -194,7 +215,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
                 sendLabel={canSteer ? 'Steer' : 'Send'}
               >
-                {mention.menu}
+                <MentionMenu
+                  matches={mention.matches}
+                  activeIndex={mention.activeIndex}
+                  onPick={mention.pick}
+                  onHover={mention.setActive}
+                />
               </Composer>
             </div>
           </div>
