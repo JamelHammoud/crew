@@ -465,6 +465,20 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
+  private handleDocTitle(member: Member, page: string, title: string): void {
+    page = this.followRenames(page)
+    if (!this.docs.has(page)) return
+    const clean = title.replace(/\s+/g, ' ').trim().slice(0, TITLE_LIMIT)
+    if (clean) this.docTitles.set(page, clean)
+    else this.docTitles.delete(page)
+    this.store.saveTitles(Object.fromEntries(this.docTitles))
+    this.emit(
+      { id: randomUUID(), ts: Date.now(), kind: 'doc.titled', page, title: clean, byName: member.name },
+      { persist: false }
+    )
+    this.onSyncNeeded?.()
+  }
+
   private handleDocDelete(member: Member, page: string): void {
     if (page === 'main' || !this.docs.has(page)) return
     try {
@@ -472,9 +486,17 @@ export class CrewSession {
     } catch {
       return
     }
+    let titlesChanged = false
     for (const key of [...this.docs.keys()]) {
       if (key === page || key.startsWith(`${page}/`)) this.docs.delete(key)
     }
+    for (const key of [...this.docTitles.keys()]) {
+      if (key === page || key.startsWith(`${page}/`)) {
+        this.docTitles.delete(key)
+        titlesChanged = true
+      }
+    }
+    if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
     this.emit(
       { id: randomUUID(), ts: Date.now(), kind: 'doc.deleted', page, byName: member.name },
       { persist: false }
