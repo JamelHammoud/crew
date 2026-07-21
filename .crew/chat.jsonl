@@ -3475,3 +3475,8 @@
 {"id":"e45fa877-2fae-4050-af02-3df18f225488","ts":1784608783047,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
 {"id":"cd13084f-f752-454b-b586-f2ec24503d79","ts":1784608783047,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
 {"id":"80da826a-a802-4a77-b659-c2768ec6e6b0","ts":1784608783047,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
+{"id":"298dce74-33f8-412f-ba0b-d7e8b333ec8e","ts":1784608812939,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"3c60ad54-e5a3-4487-961e-2296ec1560da","ts":1784608812939,"kind":"agent.online","agentId":"jamel/codex","label":"Codex"}
+{"id":"1e25dc59-e8b6-4c28-baed-b64848a97fdc","ts":1784608812939,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"934216ad-7831-434d-8f01-8bc72b4e404d","ts":1784608812939,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
+{"id":"2f31220f-7a98-4b64-a60a-88796b03712e","ts":1784608812939,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
