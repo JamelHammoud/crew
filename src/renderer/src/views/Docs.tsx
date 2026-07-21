@@ -55,12 +55,15 @@ function buildTree(slugs: string[]): PageNode[] {
 
 export default function Docs() {
   const docs = useCrew(s => s.docs)
+  const docTitles = useCrew(s => s.docTitles)
   const updateDoc = useCrew(s => s.updateDoc)
+  const setDocTitle = useCrew(s => s.setDocTitle)
   const renameDoc = useCrew(s => s.renameDoc)
   const deleteDoc = useCrew(s => s.deleteDoc)
   const [page, setPage] = useState('main')
   const current = docs[page] !== undefined ? page : 'main'
-  const [title, setTitle] = useState(() => prettify(current))
+  const displayTitle = (slug: string) => docTitles[slug] ?? prettify(slug)
+  const [title, setTitle] = useState(() => displayTitle(current))
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [dragged, setDragged] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
