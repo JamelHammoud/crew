@@ -845,10 +845,11 @@ export class CrewSession {
 
   private runThread(thread: Thread): void {
     if (thread.running) return
-    const agent = this.agents.get(thread.agentId)
-    if (!agent?.runner) return
-    const next = thread.queue.shift()
+    const next = thread.queue[0]
     if (!next) return
+    const agent = this.agents.get(next.agentId)
+    if (!agent?.runner) return
+    thread.queue.shift()
     this.broadcastQueue(thread)
     this.emitThreadMessage(next, agent.id)
     thread.running = next.promptId
