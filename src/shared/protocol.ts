@@ -22,6 +22,8 @@ export interface QueuedItem {
   authorId: string
   authorName: string
   text: string
+  agentId: string
+  agentLabel: string
 }
 
 export interface SessionSnapshot {
