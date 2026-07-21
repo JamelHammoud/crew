@@ -3,7 +3,9 @@
 * [ ] We need a "Files" tab, this is the file explorer for the repo, that's synced across computers, searchable, and allows manual editing (Just like VS code)
 * [ ] If you've already scrolled in a thread upwards, don't auto-scroll the user back down (there's a threshold, if the user is actively scrolling up to go read/find something). Keep the user where they scrolled and instead show a "Jump to bottom" centered button
 * [x] Spellcheck doesn't work in docs because a right-click is hijacked
-* [ ] 
+
+
+
 * [ ] Ability to mention a different agent while in a thread
 * [ ] Have the app running in the background
 * [ ] Better at finding what CLIs are available on your computer
