@@ -219,18 +219,15 @@ export default function TasksPanel({
     const agent = agents.find(a => a.id === todo.agentId)
     if (editingId === todo.id) {
       return (
-        <div key={todo.id} className="px-3 py-1">
-          <TodoInput
-            initial={agent ? `@${agent.label} ${todo.text}` : todo.text}
-            autoFocus
-            onSubmit={raw => {
-              const parsed = parseTodoInput(raw, agents)
-              editTodo(todo.id, parsed.text, parsed.agentId)
-              setEditingId(null)
-            }}
-            onCancel={() => setEditingId(null)}
-          />
-        </div>
+        <TodoEditor
+          key={todo.id}
+          initial={agent ? `@${agent.label} ${todo.text}` : todo.text}
+          onCommit={raw => {
+            const parsed = parseTodoInput(raw, agents)
+            editTodo(todo.id, parsed.text, parsed.agentId)
+          }}
+          onDone={() => setEditingId(null)}
+        />
       )
     }
     return (
@@ -247,21 +244,12 @@ export default function TasksPanel({
               </button>
             </Tooltip>
           </span>
-          <span className="min-w-0 flex-1">
+          <span className="min-w-0 flex-1 cursor-text" onClick={() => setEditingId(todo.id)}>
             <span className="block text-base text-fg truncate">{todo.text}</span>
-            <span className="block text-sm text-fg-muted truncate">{agent ? `@${agent.label}` : 'Unassigned'}</span>
+            {agent && <span className="block text-sm text-fg-muted truncate">@{agent.label}</span>}
           </span>
         </div>
         <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-          <Tooltip label="Edit">
-            <button
-              onClick={() => setEditingId(todo.id)}
-              aria-label="Edit"
-              className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
-            >
-              <PencilIcon className="w-3.5 h-3.5" />
-            </button>
-          </Tooltip>
           <Tooltip label="Delete">
             <button
               onClick={() => removeTodo(todo.id)}
