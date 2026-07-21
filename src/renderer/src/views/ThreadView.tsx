@@ -31,6 +31,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
+  const setThreadStatus = useCrew(s => s.setThreadStatus)
   const editQueued = useCrew(s => s.editQueued)
   const removeQueued = useCrew(s => s.removeQueued)
   const closeThread = useCrew(s => s.closeThread)
