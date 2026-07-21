@@ -130,7 +130,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
         <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
         <div className="bg-ink-900 px-6 pb-6">
-          <div className="max-w-[660px] mx-auto pointer-events-auto">
+          <div className="relative max-w-[660px] mx-auto pointer-events-auto">
+            {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
             <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
             <div className="relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
               <Tooltip label="Back to chat">
