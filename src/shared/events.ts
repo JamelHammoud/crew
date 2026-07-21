@@ -26,6 +26,7 @@ export type SessionEvent =
     }
   | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string }
   | { id: string; ts: number; kind: 'thread.archived'; threadId: string; byName: string }
+  | { id: string; ts: number; kind: 'thread.agent'; threadId: string; agentId: string; agentLabel: string; byName: string }
   | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string; threadId?: string }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
   | { id: string; ts: number; kind: 'agent.end'; promptId: string; agentId: string; agentLabel: string; ok: boolean; text?: string; error?: string; threadId?: string }
