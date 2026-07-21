@@ -108,8 +108,9 @@ export default function Docs() {
 
   const movePage = (target: string) => {
     if (!dragged || !canDrop(target)) return
-    const base = target ? `${target}/${lastSegment(dragged)}` : lastSegment(dragged)
-    const to = docs[base] !== undefined ? freeSlug(base) : base
+    const segment = lastSegment(dragged)
+    const kept = target ? `${target}/${segment}` : segment
+    const to = docs[kept] !== undefined ? freshSlug(target, splitPageCode(segment).base) : kept
     editorRef.current?.flush()
     renameDoc(dragged, to)
     if (target) setExpanded(prev => new Set(prev).add(target))
