@@ -39,6 +39,7 @@ export class Runner {
   private providersByName = new Map<string, Provider>()
   private agents = new Map<string, RunnerAgent>()
   private running = new Map<string, RunningPrompt>()
+  private accepted = new Set<string>()
   private cancelled = new Set<string>()
   private tails = new Map<string, Promise<void>>()
   private stopped = false

@@ -37,7 +37,7 @@ export interface SessionSnapshot {
 
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
-  | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[] }
+  | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[]; running?: string[] }
   | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
