@@ -202,15 +202,16 @@ export class AppSession {
       agents: this.agentDefs(detected),
       onAdopt: def => this.saveAdopted(def)
     })
-    this.runner.connect(`ws://127.0.0.1:${server.port()}/ws`)
-    return {
-      link: makeLink(lanAddress(), server.port(), session.code),
-      wsUrl: `ws://127.0.0.1:${server.port()}/ws`
-    }
+    const url = `ws://127.0.0.1:${server.port()}/ws`
+    this.runner.connect(url)
+    const link = makeLink(lanAddress(), server.port(), session.code)
+    this.live = { wsUrl: url, name, code: session.code, link }
+    this.savedStore()?.save({ mode: 'host', folder: repoPath, name })
+    return { link, wsUrl: url }
   }
 
   async startJoin(linkRaw: string, repoPath: string, name: string): Promise<JoinInfo> {
-    await this.leave()
+    await this.stop()
     const target = parseLink(linkRaw)
     const detected = await detectProviders()
     this.runner = new Runner({
