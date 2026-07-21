@@ -8,6 +8,7 @@ import {
   type Attachment,
   type OutgoingAttachment
 } from '../shared/attachments'
+import { fallbackTitle, type DocPage } from '../shared/docs'
 import { SYSTEM_AUTHOR_ID, SYSTEM_AUTHOR_NAME, trimEvents, type SessionEvent } from '../shared/events'
 import {
   agentId,
@@ -108,7 +109,7 @@ export class CrewSession {
   private agents = new Map<string, AgentState>()
   private threads = new Map<string, Thread>()
   private events: SessionEvent[] = []
-  private docs = new Map<string, string>()
+  private docs = new Map<string, DocPage>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
@@ -193,7 +194,7 @@ export class CrewSession {
       this.events.push(close)
       store.appendEvent(close)
     }
-    for (const [page, text] of Object.entries(store.loadDocs())) this.docs.set(page, text)
+    for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
     this.persistMeta()
   }
 
