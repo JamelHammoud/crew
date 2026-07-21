@@ -42,13 +42,17 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   )
 }
 
+export function AgentName({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
+  return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+}
+
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
   return (
-    <HoverCard content={<AgentCardContent agent={agent} />}>
+    <AgentName agent={agent}>
       <strong className="font-semibold text-fg cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
         {children}
       </strong>
-    </HoverCard>
+    </AgentName>
   )
 }
 
@@ -72,7 +76,7 @@ export function MemberName({ name, children }: { name: string; children: ReactNo
     return <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />}>{children}</HoverCard>
   }
   if (agent) {
-    return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+    return <AgentName agent={agent}>{children}</AgentName>
   }
   return <>{children}</>
 }
