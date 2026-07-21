@@ -57,6 +57,31 @@ export type ClientMessage =
   | { type: 'doc.retitle'; page: string; title: string }
   | { type: 'doc.rename'; from: string; to: string; title?: string }
   | { type: 'doc.delete'; page: string }
+  | { type: 'studio.create'; name: string; nodes?: StudioNode[] }
+  | { type: 'studio.rename'; studioId: string; name: string }
+  | { type: 'studio.favorite'; studioId: string; favorite: boolean }
+  | { type: 'studio.duplicate'; studioId: string }
+  | { type: 'studio.delete'; studioId: string }
+  | { type: 'studio.open'; studioId: string }
+  | { type: 'studio.close'; studioId: string }
+  | { type: 'studio.op'; studioId: string; ops: StudioOp[] }
+  | {
+      type: 'studio.presence'
+      studioId: string
+      pageId: string
+      cursor: { x: number; y: number } | null
+      selection: string[]
+    }
+  | {
+      type: 'studio.chat'
+      studioId: string
+      text: string
+      mentions: string[]
+      pageId?: string
+      build?: boolean
+      attachments?: OutgoingAttachment[]
+    }
+  | { type: 'studio.agents'; studioId: string; agents: string[] }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
