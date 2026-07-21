@@ -109,6 +109,7 @@ export class CrewSession {
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
   private steers = new Map<string, PendingSteer[]>()
+  private emittedMessages = new Set<string>()
   private cancelTimeoutMs: number
   onSyncNeeded: (() => void) | null = null
 
