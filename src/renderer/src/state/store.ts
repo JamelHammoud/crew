@@ -7,7 +7,7 @@ import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../..
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 
-export type Connection = 'home' | 'connecting' | 'online' | 'reconnecting'
+export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
 export interface ThreadMeta {
   id: string
