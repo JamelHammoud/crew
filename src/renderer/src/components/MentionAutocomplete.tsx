@@ -108,18 +108,13 @@ export function MentionMenu({
       className={`glass absolute ${side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50`}
     >
       {matches.map((agent, index) => (
-        <button
+        <AgentRow
           key={agent.id}
+          agent={agent}
+          active={index === activeIndex}
           onClick={() => onPick(agent.label)}
           onMouseEnter={() => onHover(index)}
-          className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
-            index === activeIndex ? 'bg-white/[0.08] text-fg' : 'text-fg-secondary'
-          }`}
-        >
-          <AgentIcon seed={agent.id} size="sm" presence={agent.status === 'offline' ? 'offline' : 'online'} />
-          <span className="flex-1 truncate">@{agent.label}</span>
-          <span className="text-xs text-fg-muted shrink-0">{agent.ownerName}</span>
-        </button>
+        />
       ))}
     </div>
   )
