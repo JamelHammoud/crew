@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant light (&:where(.light, .light *));
+
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
   --font-mono: "Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace;
