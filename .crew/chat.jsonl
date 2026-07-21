@@ -3480,3 +3480,8 @@
 {"id":"1e25dc59-e8b6-4c28-baed-b64848a97fdc","ts":1784608812939,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
 {"id":"934216ad-7831-434d-8f01-8bc72b4e404d","ts":1784608812939,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
 {"id":"2f31220f-7a98-4b64-a60a-88796b03712e","ts":1784608812939,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"74e5c087-61b1-4ca1-8729-6059b4412115","ts":1784608817755,"kind":"agent.online","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"119fbd10-12fe-466d-b6c0-26d956687ecc","ts":1784608817755,"kind":"agent.online","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"d2294e3e-2f6a-4573-9611-65e35c409043","ts":1784608817755,"kind":"agent.online","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"3944662a-ac8b-4588-b353-41abab1c4dbd","ts":1784608817756,"kind":"agent.online","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"98110efa-2025-474e-9337-8a98ba641b4b","ts":1784608817756,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}

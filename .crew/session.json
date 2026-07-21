@@ -731,6 +731,270 @@
         }
       ],
       "steerable": false
+    },
+    {
+      "id": "jamel (dev)/kimi",
+      "label": "Kimi 2",
+      "provider": "kimi",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "jamel (dev)/codex",
+      "label": "Codex 2",
+      "provider": "codex",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": "",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            },
+            {
+              "value": "gpt-5.3-codex-spark",
+              "label": "gpt-5.3-codex-spark"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784608817760,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "Weekly limit",
+            "percent": 79
+          }
+        ],
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
+      }
+    },
+    {
+      "id": "jamel (dev)/claude",
+      "label": "Claude 3",
+      "provider": "claude",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": "opus",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784608817768,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 34,
+            "severity": "normal",
+            "resetsAt": 1784620200105,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 11,
+            "severity": "normal",
+            "resetsAt": 1784930400105,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 20,
+            "severity": "normal",
+            "resetsAt": 1784930400105,
+            "active": false
+          }
+        ],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max"
+      }
+    },
+    {
+      "id": "jamel (dev)/grok",
+      "label": "Grok 2",
+      "provider": "grok",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "grok-4.5",
+              "label": "grok-4.5"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ]
 }
