@@ -1,4 +1,11 @@
-export type StudioNodeType = 'frame' | 'group' | 'rect' | 'ellipse' | 'line' | 'arrow' | 'text' | 'image'
+import type { Attachment } from './attachments'
+
+export type StudioNodeType = 'frame' | 'group' | 'rect' | 'ellipse' | 'line' | 'arrow' | 'text' | 'image' | 'svg' | 'icon'
+
+export interface StudioConstraints {
+  horizontal: 'left' | 'right' | 'center' | 'stretch' | 'scale'
+  vertical: 'top' | 'bottom' | 'center' | 'stretch' | 'scale'
+}
 
 export interface StudioShadow {
   x: number
@@ -41,6 +48,9 @@ export interface StudioNode {
   gap?: number
   padding?: number
   clip?: boolean
+  constraints?: StudioConstraints
+  componentId?: string | null
+  componentProps?: Record<string, string>
 }
 
 export interface StudioPage {
@@ -59,6 +69,7 @@ export interface StudioChatEntry {
   mentions?: string[]
   opsApplied?: number
   build?: boolean
+  attachments?: Attachment[]
 }
 
 export interface StudioAsset {
@@ -77,6 +88,7 @@ export interface StudioDoc {
   assets: StudioAsset[]
   chat: StudioChatEntry[]
   agents: string[]
+  variables: Record<string, string>
   favorite: boolean
   createdBy: string
   createdAt: number
@@ -139,6 +151,7 @@ export function emptyStudioDoc(id: string, name: string, createdBy: string): Stu
     assets: [],
     chat: [],
     agents: [],
+    variables: {},
     favorite: false,
     createdBy,
     createdAt: now,
@@ -146,7 +159,18 @@ export function emptyStudioDoc(id: string, name: string, createdBy: string): Stu
   }
 }
 
-const NODE_TYPES = new Set<StudioNodeType>(['frame', 'group', 'rect', 'ellipse', 'line', 'arrow', 'text', 'image'])
+const NODE_TYPES = new Set<StudioNodeType>([
+  'frame',
+  'group',
+  'rect',
+  'ellipse',
+  'line',
+  'arrow',
+  'text',
+  'image',
+  'svg',
+  'icon'
+])
 
 function num(value: unknown, min: number, max: number, fallback: number): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return fallback
@@ -239,6 +263,25 @@ export function sanitizePatch(raw: Record<string, unknown>): Partial<StudioNode>
   if ('gap' in raw) patch.gap = num(raw.gap, 0, 1000, 0)
   if ('padding' in raw) patch.padding = num(raw.padding, 0, 1000, 0)
   if ('clip' in raw) patch.clip = raw.clip === true
+  if ('constraints' in raw && typeof raw.constraints === 'object' && raw.constraints !== null) {
+    const value = raw.constraints as Record<string, unknown>
+    const horizontal = ['left', 'right', 'center', 'stretch', 'scale'].includes(String(value.horizontal))
+      ? (value.horizontal as StudioConstraints['horizontal'])
+      : 'left'
+    const vertical = ['top', 'bottom', 'center', 'stretch', 'scale'].includes(String(value.vertical))
+      ? (value.vertical as StudioConstraints['vertical'])
+      : 'top'
+    patch.constraints = { horizontal, vertical }
+  }
+  if ('componentId' in raw) patch.componentId = raw.componentId === null ? null : isStudioId(raw.componentId) ? raw.componentId : null
+  if ('componentProps' in raw && typeof raw.componentProps === 'object' && raw.componentProps !== null) {
+    patch.componentProps = Object.fromEntries(
+      Object.entries(raw.componentProps as Record<string, unknown>)
+        .filter(([key, value]) => key.length <= 40 && typeof value === 'string')
+        .slice(0, 40)
+        .map(([key, value]) => [key, (value as string).slice(0, 500)])
+    )
+  }
   return patch
 }
 

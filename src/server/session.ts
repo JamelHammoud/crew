@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
 import {
   extensionFor,
+  isAttachmentType,
   isImageType,
   MAX_ATTACHMENTS,
   MAX_ATTACHMENT_BYTES,
@@ -458,9 +459,10 @@ export class CrewSession {
     incoming?: OutgoingAttachment[]
   ): void {
     const trimmed = text.trim()
-    const attachments = this.saveAttachments(incoming)
+    const studioCommand = !threadId && /(?:^|\s)\/studio\b/i.test(trimmed)
+    const attachments = this.saveAttachments(incoming, studioCommand)
     if (!trimmed && attachments.length === 0) return
-    if (!threadId && /^\/studio\b/i.test(trimmed)) {
+    if (studioCommand) {
       this.handleStudioCommand(member, trimmed, mentions, attachments)
       return
     }
@@ -475,7 +477,9 @@ export class CrewSession {
       for (const id of targets) {
         const agent = this.agents.get(id)
         if (!agent) continue
-        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, { messageId, mentions: targets })
+        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, {
+          route: { messageId, mentions: targets }
+        })
       }
       return
     }
@@ -497,7 +501,7 @@ export class CrewSession {
   }
 
   private handleStudioCommand(member: Member, text: string, mentions: string[], attachments: Attachment[]): void {
-    const request = text.replace(/^\/studio\b\s*/i, '').trim()
+    const request = text.replace(/(?:^|\s)\/studio\b\s*/i, ' ').trim()
     const name = this.titleFrom(this.stripMentions(request)) || 'Untitled'
     const doc = this.studios.create(member.id, member.name, name)
     this.emit({
@@ -507,7 +511,7 @@ export class CrewSession {
       authorId: member.id,
       authorName: member.name,
       text,
-      mentions: []
+      mentions
     })
     if (request) {
       this.handleStudioChat(member, { studioId: doc.id, text: request, mentions }, attachments)
@@ -542,12 +546,12 @@ export class CrewSession {
     const doc = this.studios.doc(msg.studioId)
     if (!doc) return
     const trimmed = msg.text.trim()
-    const attachments = [...presaved, ...this.saveAttachments(msg.attachments)]
+    const attachments = [...presaved, ...this.saveAttachments(msg.attachments, true)]
     if (!trimmed && attachments.length === 0) return
     const mentioned = [...new Set(msg.mentions)].filter(id => this.agents.has(id))
     const assigned = doc.agents.filter(id => this.agents.has(id))
     const targets = mentioned.length > 0 ? mentioned : assigned
-    this.studios.userChat({ id: member.id, name: member.name }, msg.studioId, trimmed, targets, msg.build === true)
+    this.studios.userChat({ id: member.id, name: member.name }, msg.studioId, trimmed, targets, msg.build === true, attachments)
     if (mentioned.length > 0) this.studios.assignAgents(msg.studioId, [...doc.agents, ...mentioned])
     for (const id of targets) {
       const agent = this.agents.get(id)
@@ -728,17 +732,21 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.status', threadId, status, byName: member.name })
   }
 
-  private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
+  private saveAttachments(incoming?: OutgoingAttachment[], files = false): Attachment[] {
     const saved: Attachment[] = []
     for (const item of (incoming ?? []).slice(0, MAX_ATTACHMENTS)) {
-      const one = this.saveAttachment(item.mime, item.name, Buffer.from(item.data, 'base64'))
+      const one = this.saveAttachmentData(item.mime, item.name, Buffer.from(item.data, 'base64'), files)
       if (one) saved.push(one)
     }
     return saved
   }
 
   saveAttachment(mime: string, name: string, data: Buffer): Attachment | null {
-    if (!isImageType(mime)) return null
+    return this.saveAttachmentData(mime, name, data, false)
+  }
+
+  private saveAttachmentData(mime: string, name: string, data: Buffer, files: boolean): Attachment | null {
+    if (!(files ? isAttachmentType(mime) : isImageType(mime))) return null
     if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
     const id = randomUUID()
     const file = `${id}.${extensionFor(mime)}`
@@ -752,7 +760,7 @@ export class CrewSession {
 
   private safeName(name: string): string {
     const flat = name.replace(/[\r\n]+/g, ' ').trim()
-    return flat.slice(0, 120) || 'image'
+    return flat.slice(0, 120) || 'attachment'
   }
 
   attachmentPath(file: string): string | null {
@@ -1322,7 +1330,11 @@ export class CrewSession {
   }
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt): string {
-    const people = [...this.members.values()].map(m => m.name).join(', ')
+    const people = [...this.members.values()].map(m => m.name)
+    const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
+    if (prompt.studio) {
+      return this.studios.prompt(agent, prompt.studio, prompt.text, prompt.byName, people, others)
+    }
     const transcript = this.events
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
@@ -1339,9 +1351,8 @@ export class CrewSession {
       })
       .filter(Boolean)
       .join('\n')
-    const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
     const lines = [
-      `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
+      `You are ${agent.label}, one of several agents in a crew session with ${people.join(', ')}.`,
       `You share a project folder and can read and edit files in it.`,
       `You are in a focused thread. Only this thread's messages are shown here.`
     ]

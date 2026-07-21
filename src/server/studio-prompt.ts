@@ -82,7 +82,7 @@ export interface StudioPromptInput {
 }
 
 export function designPrompt(input: StudioPromptInput): string {
-  const { agentLabel, doc, page, text, byName, people, others } = input
+  const { agentLabel, doc, page, people, others } = input
   const lines = [
     `You are ${agentLabel}, a design agent working in "${doc.name}", a shared studio canvas in a crew session with ${people.join(', ')}.`,
     `You design directly on the canvas by emitting edit operations. Humans and other agents see your changes live.`
@@ -95,7 +95,7 @@ export function designPrompt(input: StudioPromptInput): string {
   lines.push(
     ``,
     `The canvas holds pages of nodes. Node fields:`,
-    `id, type (frame | group | rect | ellipse | line | arrow | text | image), name, parentId, x, y, w, h, rotation, opacity (0..1), hidden, locked, fill (hex or null), fill2 (second gradient stop, makes a linear gradient with fill), gradientAngle, stroke, strokeWidth, radius (corner radius), shadow ({x, y, blur, color} or null), blur, text, fontSize, fontWeight (100..900), font (sans | mono), align (left | center | right), lineHeight, letterSpacing, src (image url or data url), layout (none | row | column), gap, padding, clip.`,
+    `id, type (frame | group | rect | ellipse | line | arrow | text | image | svg | icon), name, parentId, x, y, w, h, rotation, opacity (0..1), hidden, locked, fill (hex or null), fill2 (second gradient stop, makes a linear gradient with fill), gradientAngle, stroke, strokeWidth, radius (corner radius), shadow ({x, y, blur, color} or null), blur, text, fontSize, fontWeight (100..900), font (sans | mono), align (left | center | right), lineHeight, letterSpacing, src (image url or data url), layout (none | row | column), gap, padding, clip, constraints, componentId, componentProps.`,
     `A child's x and y are relative to its parent frame or group. Text nodes use fill as the text color. Lines and arrows run across their box from corner to corner.`,
     ``,
     `Current page "${page.name}" (pageId "${page.id}") nodes in paint order:`,
@@ -109,7 +109,7 @@ export function designPrompt(input: StudioPromptInput): string {
     `  { "kind": "remove", "ids": ["old-node-id"] }`,
     `]`,
     '```',
-    `Op kinds: upsert (create or fully replace nodes), update (patch fields on one node), remove, order (full z order list for a page), page.add, page.rename, page.remove.`,
+    `Op kinds: upsert (create or fully replace nodes), update (patch fields on one node), remove, order (full z order list for a page), page.add, page.rename, page.remove, asset.add, asset.remove, variable.set, variable.remove.`,
     ``,
     `Design rules:`,
     `- Put each screen inside one frame named after the screen. Desktop screens are 1440x900, mobile screens are 390x844.`,
@@ -122,15 +122,13 @@ export function designPrompt(input: StudioPromptInput): string {
     `Reply with one or two short sentences about what you did, plus the studio-ops block. Use no other fenced code blocks.`,
     ``,
     `Studio chat so far:`,
-    chatTail(doc),
-    ``,
-    `${byName}: ${text}`
+    chatTail(doc)
   )
   return lines.join('\n')
 }
 
 export function buildCodePrompt(input: StudioPromptInput): string {
-  const { agentLabel, doc, text, byName, people, others } = input
+  const { agentLabel, doc, byName, people, others } = input
   const lines = [
     `You are ${agentLabel}, an agent in a crew session with ${people.join(', ')}.`,
     `${byName} finished a design in the studio "${doc.name}" and asked for it to be built as real code.`
@@ -151,8 +149,6 @@ export function buildCodePrompt(input: StudioPromptInput): string {
     ``,
     `Studio chat so far:`,
     chatTail(doc),
-    ``,
-    `${byName}: ${text || 'Build this design.'}`,
     ``,
     `When you are done, reply with a short summary of what you changed. Do not include a studio-ops block.`
   )

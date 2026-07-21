@@ -258,14 +258,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784649854257,
+        "fetchedAt": 1784651749323,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1784665799943,
+            "resetsAt": 1784665800031,
             "active": false
           },
           {
@@ -273,7 +273,7 @@
             "label": "Weekly (all models)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784894399943,
+            "resetsAt": 1784894400031,
             "active": true
           }
         ],
@@ -551,14 +551,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784649854257,
+        "fetchedAt": 1784651749323,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1784665799943,
+            "resetsAt": 1784665800031,
             "active": false
           },
           {
@@ -566,7 +566,7 @@
             "label": "Weekly (all models)",
             "percent": 21,
             "severity": "normal",
-            "resetsAt": 1784894399943,
+            "resetsAt": 1784894400031,
             "active": true
           }
         ],
@@ -656,18 +656,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784650094280,
+        "fetchedAt": 1784651749672,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 34
+            "percent": 47
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784642885107
+        "asOf": 1784651743064
       }
     },
     {
@@ -751,18 +751,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784650094280,
+        "fetchedAt": 1784651749672,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 34
+            "percent": 47
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784642885107
+        "asOf": 1784651743064
       }
     }
   ]

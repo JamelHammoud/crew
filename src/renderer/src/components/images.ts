@@ -1,4 +1,5 @@
 import {
+  isAttachmentType,
   isImageType,
   MAX_ATTACHMENTS,
   MAX_ATTACHMENT_BYTES,
@@ -23,6 +24,10 @@ const readAsBase64 = (file: File): Promise<string> =>
 
 export function imagesFrom(items: FileList | File[] | null | undefined): File[] {
   return [...(items ?? [])].filter(file => isImageType(file.type) && file.size <= MAX_ATTACHMENT_BYTES)
+}
+
+export function attachmentsFrom(items: FileList | File[] | null | undefined): File[] {
+  return [...(items ?? [])].filter(file => isAttachmentType(file.type) && file.size <= MAX_ATTACHMENT_BYTES)
 }
 
 export async function uploadImage(httpBase: string, file: File): Promise<string> {
@@ -64,3 +69,5 @@ export async function readImages(files: File[], taken: number): Promise<PendingA
   )
   return read.filter(item => item.data.length > 0)
 }
+
+export const readAttachments = readImages

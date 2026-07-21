@@ -9,10 +9,11 @@ import TabIcon from './TabIcon'
 import Tooltip from './Tooltip'
 import { MenuItem, Popover } from './Popover'
 
-export type Tab = 'chat' | 'agents' | 'docs'
+export type Tab = 'chat' | 'studio' | 'agents' | 'docs'
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'chat', label: 'Chat' },
+  { id: 'studio', label: 'Studio' },
   { id: 'agents', label: 'Space' },
   { id: 'docs', label: 'Docs' }
 ]
@@ -35,7 +36,7 @@ export default function TopBar({
   const reviewCount = useCrew(
     s =>
       Object.values(s.threads).filter(
-        t => t.status === 'open' && !s.threadPrompts[t.id] && (s.queues[t.id]?.length ?? 0) === 0
+        t => !t.studioId && t.status === 'open' && !s.threadPrompts[t.id] && (s.queues[t.id]?.length ?? 0) === 0
       ).length
   )
   const [menuOpen, setMenuOpen] = useState(false)
