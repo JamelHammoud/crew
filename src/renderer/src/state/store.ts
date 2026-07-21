@@ -273,6 +273,7 @@ export const useCrew = create<CrewState>((set, get) => {
           agents: msg.snapshot.agents,
           events: trimEvents(msg.snapshot.events, EVENT_LIMIT),
           docs: msg.snapshot.docs,
+          docTitles: msg.snapshot.docTitles ?? {},
           queues: msg.snapshot.queues ?? {},
           steps,
           tokens,
