@@ -85,6 +85,6 @@ describe('handoff', () => {
     await hostA.close()
 
     const storeB = new Store(repoPath)
-    expect(storeB.loadDocs().main).toBe('# Plan\n\nBuild crew.')
+    expect(storeB.loadDocs().main?.text).toBe('# Plan\n\nBuild crew.')
   })
 })
