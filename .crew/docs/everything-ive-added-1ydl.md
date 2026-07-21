@@ -1,5 +1,5 @@
 ---
-title: "Everything i've added"
+title: "Everything I've added"
 ---
 
 ***
