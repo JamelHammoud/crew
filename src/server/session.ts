@@ -117,6 +117,7 @@ export class CrewSession {
   private members = new Map<string, Member>()
   private agents = new Map<string, AgentState>()
   private threads = new Map<string, Thread>()
+  private todos = new Map<string, Todo>()
   private events: SessionEvent[] = []
   private docs = new Map<string, DocPage>()
   private docRenames = new Map<string, { to: string; ts: number }>()
