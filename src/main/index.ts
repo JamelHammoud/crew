@@ -68,6 +68,7 @@ function createWindow(): void {
   })
   win.on('enter-full-screen', () => win.webContents.send('window:fullscreen', true))
   win.on('leave-full-screen', () => win.webContents.send('window:fullscreen', false))
+  installContextMenu(win)
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   if (devUrl) {
     win.loadURL(devUrl)
@@ -78,6 +79,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   powerSaveBlocker.start('prevent-app-suspension')
+  installMenu()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
