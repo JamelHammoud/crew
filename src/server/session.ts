@@ -778,16 +778,17 @@ export class CrewSession {
 
   private runThread(thread: Thread): void {
     if (thread.running) return
-    const agent = this.agents.get(thread.agentId)
-    if (!agent?.runner) return
-    const next = thread.queue.shift()
+    const next = thread.queue[0]
     if (!next) return
+    const agent = this.agents.get(next.agentId)
+    if (!agent?.runner) return
+    thread.queue.shift()
     this.broadcastQueue(thread)
-    this.emitThreadMessage(next, agent.id)
+    this.emitThreadMessage(next)
     thread.running = next.promptId
     agent.running.add(next.promptId)
     agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now() })
-    this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id })
+    this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id, messageId: next.messageId })
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
