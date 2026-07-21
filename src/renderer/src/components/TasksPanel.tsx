@@ -45,63 +45,73 @@ function parseTodoInput(text: string, agents: PooledAgent[]): { text: string; ag
   return cleaned ? { text: cleaned, agentId } : { text: text.trim(), agentId }
 }
 
-function TodoInput({
+// Not a composer: an in-place list row that happens to be editable. It looks
+// exactly like a todo row (circle, bare text), commits on Enter or blur, and
+// in add-mode stays open so several tasks can be typed in a run.
+function TodoEditor({
   initial = '',
-  placeholder,
-  autoFocus,
-  onSubmit,
-  onCancel
+  keepOpen = false,
+  onCommit,
+  onDone
 }: {
   initial?: string
-  placeholder?: string
-  autoFocus?: boolean
-  onSubmit: (raw: string) => void
-  onCancel?: () => void
+  keepOpen?: boolean
+  onCommit: (raw: string) => void
+  onDone: () => void
 }) {
   const [value, setValue] = useState(initial)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
   const mention = useMentionAutocomplete(value, setValue, inputRef)
 
-  const submit = () => {
+  const commit = () => {
     const trimmed = value.trim()
-    if (!trimmed) {
-      onCancel?.()
+    if (trimmed) onCommit(trimmed)
+    if (keepOpen && trimmed) {
+      setValue('')
       return
     }
-    onSubmit(trimmed)
-    setValue('')
+    onDone()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && (mention.matches.length > 0 || value.trim() || onCancel)) {
-      // The panel itself closes on Escape; one meant for the input stops here.
+    if (e.key === 'Escape') {
+      // The panel itself closes on Escape; one meant for the editor stops here.
       e.stopPropagation()
       if (mention.onKeyDown(e)) return
-      setValue(initial)
-      onCancel?.()
+      onDone()
       return
     }
     if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      submit()
+      commit()
     }
   }
 
+  // Focus moving inside the row (the mention menu) is not leaving; anywhere
+  // else commits what's typed rather than losing it.
+  const onBlur = (e: React.FocusEvent) => {
+    if (wrapRef.current?.contains(e.relatedTarget as Node)) return
+    const trimmed = value.trim()
+    if (trimmed) onCommit(trimmed)
+    onDone()
+  }
+
   return (
-    <div className="relative">
-      <div className="bg-ink-800 rounded-xl px-3.5 py-2.5 cursor-text" onClick={() => inputRef.current?.focus()}>
-        <textarea
-          ref={inputRef}
-          value={value}
-          onChange={e => mention.onChange(e.target.value)}
-          onKeyDown={onKeyDown}
-          rows={1}
-          autoFocus={autoFocus}
-          placeholder={placeholder}
-          className="w-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none leading-snug"
-        />
-      </div>
+    <div ref={wrapRef} className="relative px-3 py-2.5 flex items-start gap-3">
+      <span className="mt-1 w-4 h-4 shrink-0 rounded-full border-[1.5px] border-fg-faint" />
+      <textarea
+        ref={inputRef}
+        value={value}
+        onChange={e => mention.onChange(e.target.value)}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+        rows={1}
+        autoFocus
+        placeholder="Type the task — @ to assign an agent"
+        className="flex-1 min-w-0 bg-transparent text-base text-fg placeholder:text-fg-faint outline-none resize-none leading-snug p-0"
+      />
       <MentionMenu
         matches={mention.matches}
         activeIndex={mention.activeIndex}
