@@ -103,6 +103,7 @@ export class CrewSession {
   private threads = new Map<string, Thread>()
   private events: SessionEvent[] = []
   private docs = new Map<string, string>()
+  private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
   private prompts = new Map<string, PromptRef>()
