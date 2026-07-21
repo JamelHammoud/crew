@@ -150,34 +150,11 @@ export default function Chat() {
               value={text}
               placeholder="Send a message or @ an agent to start a thread"
               inputRef={inputRef}
-              onChange={onChange}
+              onChange={mention.onChange}
               onKeyDown={onKeyDown}
               onSend={send}
             >
-              {mentionMatches.length > 0 && (
-                <div
-                  ref={listRef}
-                  className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
-                >
-                  {mentionMatches.map((agent, index) => {
-                    const status = agents.find(a => a.id === agent.id)?.status
-                    return (
-                      <button
-                        key={agent.id}
-                        onClick={() => pickMention(agent.label)}
-                        onMouseEnter={() => setActiveMention(index)}
-                        className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
-                          index === activeIndex ? 'bg-white/[0.08] text-fg' : 'text-fg-secondary'
-                        }`}
-                      >
-                        <AgentIcon seed={agent.id} size="sm" presence={status === 'offline' ? 'offline' : 'online'} />
-                        <span className="flex-1 truncate">@{agent.label}</span>
-                        <span className="text-xs text-fg-muted shrink-0">{agent.ownerName}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
+              {mention.menu}
             </Composer>
           </div>
         </div>

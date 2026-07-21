@@ -14,7 +14,12 @@ export interface DocEditorHandle {
 
 export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(
   function DocEditor({ text, onChange }, ref) {
-  const editor = useCreateBlockNote()
+  const httpBase = useCrew(s => s.httpBase)
+  const httpBaseRef = useRef(httpBase)
+  httpBaseRef.current = httpBase
+  const editor = useCreateBlockNote({
+    uploadFile: (file: File) => uploadImage(httpBaseRef.current, file)
+  })
   const containerRef = useRef<HTMLDivElement>(null)
   const lastMarkdown = useRef('')
   const loaded = useRef(false)
@@ -23,14 +28,14 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
   useEffect(() => {
     const focused = containerRef.current?.contains(document.activeElement) ?? false
     if (loaded.current && (focused || text === lastMarkdown.current)) return
-    const blocks: PartialBlock[] = editor.tryParseMarkdownToBlocks(text || '')
+    const blocks: PartialBlock[] = editor.tryParseMarkdownToBlocks(localizeDoc(text || '', httpBaseRef.current))
     editor.replaceBlocks(editor.document, blocks.length ? blocks : [{ type: 'paragraph', content: [] }])
     lastMarkdown.current = text
     loaded.current = true
   }, [editor, text])
 
   const save = () => {
-    const markdown = editor.blocksToMarkdownLossy(editor.document)
+    const markdown = relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current)
     if (markdown === lastMarkdown.current) return
     lastMarkdown.current = markdown
     onChange(markdown)
@@ -66,7 +71,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
           window.clearTimeout(timer.current)
           timer.current = null
         }
-        lastMarkdown.current = editor.blocksToMarkdownLossy(editor.document)
+        lastMarkdown.current = relativizeDoc(editor.blocksToMarkdownLossy(editor.document), httpBaseRef.current)
       }
     }),
     [editor]
