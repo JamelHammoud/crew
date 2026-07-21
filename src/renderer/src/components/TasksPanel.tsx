@@ -253,7 +253,8 @@ export default function TasksPanel({
             {agent && <span className="block text-sm text-fg-muted truncate">@{agent.label}</span>}
           </span>
         </div>
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+          <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-hover to-transparent pointer-events-none" />
           <Tooltip label="Delete">
             <button
               onClick={() => removeTodo(todo.id)}
