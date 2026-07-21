@@ -57,7 +57,7 @@ export default function Chat() {
           }
         })
       }
-      if (e.kind === 'thread.started' && !threads[e.threadId]?.studioId && threads[e.threadId]?.status === 'open') {
+      if (e.kind === 'thread.started' && threads[e.threadId]?.status === 'open') {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
     }

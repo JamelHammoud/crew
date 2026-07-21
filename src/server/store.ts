@@ -4,7 +4,6 @@ import { isAttachmentFile } from '../shared/attachments'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
 import type { PooledAgent } from '../shared/llm'
-import { isStudioId, type StudioDoc } from '../shared/studio'
 
 export interface PersistedMember {
   id: string
@@ -28,38 +27,6 @@ export class Store {
     this.root = path.join(repoPath, '.crew')
     fs.mkdirSync(path.join(this.root, 'docs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
-    fs.mkdirSync(path.join(this.root, 'studio'), { recursive: true })
-  }
-
-  loadStudios(): StudioDoc[] {
-    const dir = path.join(this.root, 'studio')
-    let entries: string[]
-    try {
-      entries = fs.readdirSync(dir)
-    } catch {
-      return []
-    }
-    const docs: StudioDoc[] = []
-    for (const name of entries) {
-      if (!name.endsWith('.json')) continue
-      try {
-        const doc = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'))
-        if (doc && isStudioId(doc.id) && Array.isArray(doc.pages)) docs.push(doc)
-      } catch {
-        continue
-      }
-    }
-    return docs
-  }
-
-  saveStudio(doc: StudioDoc): void {
-    if (!isStudioId(doc.id)) throw new Error(`Bad studio id: ${doc.id}`)
-    this.writeAtomic(path.join(this.root, 'studio', `${doc.id}.json`), JSON.stringify(doc))
-  }
-
-  deleteStudio(id: string): void {
-    if (!isStudioId(id)) throw new Error(`Bad studio id: ${id}`)
-    fs.rmSync(path.join(this.root, 'studio', `${id}.json`), { force: true })
   }
 
   saveAttachment(file: string, data: Buffer): void {

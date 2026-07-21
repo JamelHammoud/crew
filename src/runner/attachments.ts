@@ -42,5 +42,5 @@ export class AttachmentCache {
 export function promptWithAttachments(text: string, attachments: LocalAttachment[]): string {
   if (attachments.length === 0) return text
   const list = attachments.map(a => `- ${a.path} (${a.name})`).join('\n')
-  return [text, '', 'Files shared with this message, read them from disk:', list].join('\n')
+  return [text, '', 'Images shared with this message, read them from disk:', list].join('\n')
 }

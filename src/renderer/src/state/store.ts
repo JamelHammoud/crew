@@ -4,10 +4,8 @@ import { fallbackTitle, type DocPage } from '../../../shared/docs'
 import { trimEvents, type SessionEvent, type ThreadStatus, type Todo } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
-import { applyOps, cloneDoc, type StudioOp } from '../../../shared/studio-ops'
-import type { StudioDoc, StudioMeta, StudioPresence } from '../../../shared/studio'
 import { CrewSocket } from '../api/ws'
-import { attachmentsFrom, imagesFrom, readAttachments, readImages, type PendingAttachment } from '../components/images'
+import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
@@ -18,7 +16,6 @@ export interface ThreadMeta {
   title: string
   createdBy: string
   status: ThreadStatus
-  studioId?: string
 }
 
 const EVENT_LIMIT = 500
@@ -40,11 +37,6 @@ interface CrewState {
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
   todos: Todo[]
-  studios: StudioMeta[]
-  activeStudioId: string | null
-  studioDoc: StudioDoc | null
-  studioPresence: StudioPresence[]
-  studioDraft: string
   openThreadId: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
@@ -70,18 +62,6 @@ interface CrewState {
   retitleDoc: (page: string, title: string) => void
   renameDoc: (from: string, to: string, title?: string) => void
   deleteDoc: (page: string) => void
-  createStudio: (name: string, nodes?: StudioDoc['nodes'][string][]) => void
-  openStudio: (studioId: string) => void
-  closeStudio: () => void
-  renameStudio: (studioId: string, name: string) => void
-  favoriteStudio: (studioId: string, favorite: boolean) => void
-  duplicateStudio: (studioId: string) => void
-  deleteStudio: (studioId: string) => void
-  applyStudioOps: (ops: StudioOp[]) => void
-  updateStudioPresence: (pageId: string, cursor: { x: number; y: number } | null, selection: string[]) => void
-  setStudioDraft: (text: string) => void
-  sendStudioChat: (text: string, pageId?: string, build?: boolean) => void
-  assignStudioAgents: (agents: string[]) => void
   editQueued: (promptId: string, text: string) => void
   removeQueued: (promptId: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
@@ -103,11 +83,6 @@ const EMPTY = {
   threads: {},
   threadPrompts: {},
   todos: [],
-  studios: [],
-  activeStudioId: null,
-  studioDoc: null,
-  studioPresence: [],
-  studioDraft: '',
   openThreadId: null,
   chatDraft: '',
   threadDrafts: {},
@@ -190,8 +165,7 @@ export const useCrew = create<CrewState>((set, get) => {
             agentLabel: event.agentLabel,
             title: event.title,
             createdBy: event.byName,
-            status: 'open',
-            studioId: event.studioId
+            status: 'open'
           }
           break
         }
@@ -309,8 +283,7 @@ export const useCrew = create<CrewState>((set, get) => {
               agentLabel: event.agentLabel,
               title: event.title,
               createdBy: event.byName,
-              status: 'open',
-              studioId: event.studioId
+              status: 'open'
             }
           }
           if (event.kind === 'thread.archived' && threads[event.threadId]) {
@@ -349,10 +322,6 @@ export const useCrew = create<CrewState>((set, get) => {
           docs: msg.snapshot.docs,
           queues: msg.snapshot.queues ?? {},
           todos: msg.snapshot.todos ?? [],
-          studios: msg.snapshot.studios ?? [],
-          activeStudioId: null,
-          studioDoc: null,
-          studioPresence: [],
           steps,
           tokens,
           activePrompts,
@@ -388,59 +357,6 @@ export const useCrew = create<CrewState>((set, get) => {
         break
       case 'agent.tokens':
         set(state => ({ tokens: { ...state.tokens, [msg.promptId]: msg.tokens } }))
-        break
-      case 'studio.index':
-        set({ studios: msg.studios })
-        break
-      case 'studio.created':
-        if (msg.byId === get().selfId) {
-          set({ activeStudioId: msg.studioId, studioDoc: null, studioPresence: [] })
-          socket.send({ type: 'studio.open', studioId: msg.studioId })
-        }
-        break
-      case 'studio.doc':
-        set({ activeStudioId: msg.doc.id, studioDoc: msg.doc, studioPresence: [] })
-        break
-      case 'studio.op':
-        set(state => {
-          if (!state.studioDoc || state.studioDoc.id !== msg.studioId || msg.rev <= state.studioDoc.rev) return state
-          const studioDoc = cloneDoc(state.studioDoc)
-          applyOps(studioDoc, msg.ops)
-          studioDoc.rev = msg.rev
-          studioDoc.updatedAt = Date.now()
-          return { studioDoc }
-        })
-        break
-      case 'studio.chat':
-        set(state => {
-          if (!state.studioDoc || state.studioDoc.id !== msg.studioId) return state
-          if (state.studioDoc.chat.some(entry => entry.id === msg.entry.id)) return state
-          return { studioDoc: { ...state.studioDoc, chat: [...state.studioDoc.chat, msg.entry] } }
-        })
-        break
-      case 'studio.presence':
-        if (msg.studioId === get().activeStudioId) set({ studioPresence: msg.peers })
-        break
-      case 'studio.meta':
-        set(state => ({
-          studios: state.studios.map(studio =>
-            studio.id === msg.studioId
-              ? { ...studio, name: msg.name, favorite: msg.favorite, agents: msg.agents, updatedAt: Date.now() }
-              : studio
-          ),
-          studioDoc:
-            state.studioDoc?.id === msg.studioId
-              ? { ...state.studioDoc, name: msg.name, favorite: msg.favorite, agents: msg.agents }
-              : state.studioDoc
-        }))
-        break
-      case 'studio.deleted':
-        set(state => ({
-          studios: state.studios.filter(studio => studio.id !== msg.studioId),
-          activeStudioId: state.activeStudioId === msg.studioId ? null : state.activeStudioId,
-          studioDoc: state.studioDoc?.id === msg.studioId ? null : state.studioDoc,
-          studioPresence: state.activeStudioId === msg.studioId ? [] : state.studioPresence
-        }))
         break
     }
   }
@@ -483,10 +399,9 @@ export const useCrew = create<CrewState>((set, get) => {
     setThreadDraft: (threadId, text) =>
       set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } })),
     attach: async (key, files) => {
-      const studio = key.startsWith('studio:')
-      const picked = studio ? attachmentsFrom(files) : imagesFrom(files)
+      const picked = imagesFrom(files)
       if (picked.length === 0) return
-      const added = await (studio ? readAttachments : readImages)(picked, (get().pending[key] ?? []).length)
+      const added = await readImages(picked, (get().pending[key] ?? []).length)
       if (added.length === 0) return
       set(state => ({ pending: { ...state.pending, [key]: [...(state.pending[key] ?? []), ...added] } }))
     },
@@ -570,57 +485,6 @@ export const useCrew = create<CrewState>((set, get) => {
         return { docs }
       })
       socket.send({ type: 'doc.delete', page })
-    },
-    createStudio: (name, nodes) => socket.send({ type: 'studio.create', name, nodes }),
-    openStudio: studioId => {
-      const current = get().activeStudioId
-      if (current && current !== studioId) socket.send({ type: 'studio.close', studioId: current })
-      set({ activeStudioId: studioId, studioDoc: null, studioPresence: [] })
-      socket.send({ type: 'studio.open', studioId })
-    },
-    closeStudio: () => {
-      const studioId = get().activeStudioId
-      if (studioId) socket.send({ type: 'studio.close', studioId })
-      set({ activeStudioId: null, studioDoc: null, studioPresence: [], studioDraft: '' })
-    },
-    renameStudio: (studioId, name) => socket.send({ type: 'studio.rename', studioId, name }),
-    favoriteStudio: (studioId, favorite) => socket.send({ type: 'studio.favorite', studioId, favorite }),
-    duplicateStudio: studioId => socket.send({ type: 'studio.duplicate', studioId }),
-    deleteStudio: studioId => socket.send({ type: 'studio.delete', studioId }),
-    applyStudioOps: ops => {
-      const current = get().studioDoc
-      if (!current || ops.length === 0) return
-      const studioDoc = cloneDoc(current)
-      applyOps(studioDoc, ops)
-      studioDoc.rev += 1
-      studioDoc.updatedAt = Date.now()
-      set({ studioDoc })
-      socket.send({ type: 'studio.op', studioId: current.id, ops })
-    },
-    updateStudioPresence: (pageId, cursor, selection) => {
-      const studioId = get().activeStudioId
-      if (studioId) socket.send({ type: 'studio.presence', studioId, pageId, cursor, selection })
-    },
-    setStudioDraft: text => set({ studioDraft: text }),
-    sendStudioChat: (text, pageId, build = false) => {
-      const studioId = get().activeStudioId
-      if (!studioId) return
-      const key = `studio:${studioId}`
-      const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
-      socket.send({
-        type: 'studio.chat',
-        studioId,
-        text,
-        mentions: mentionsIn(text, get().agents),
-        pageId,
-        build,
-        attachments
-      })
-      set(state => ({ studioDraft: '', pending: { ...state.pending, [key]: [] } }))
-    },
-    assignStudioAgents: agents => {
-      const studioId = get().activeStudioId
-      if (studioId) socket.send({ type: 'studio.agents', studioId, agents })
     },
     editQueued: (promptId, text) => {
       socket.send({ type: 'queue.edit', promptId, text })
