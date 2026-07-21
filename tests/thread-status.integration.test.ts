@@ -1,10 +1,12 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
 import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
-import { startHost, TestUi, type TestHost } from './helpers/session'
+import { startHost, TestUi, tmpDir, type TestHost } from './helpers/session'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Status = Extract<SessionEvent, { kind: 'thread.status' }>
