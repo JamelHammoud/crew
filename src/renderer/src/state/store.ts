@@ -361,11 +361,20 @@ export const useCrew = create<CrewState>((set, get) => {
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
     },
-    updateDoc: (page, text) => {
-      set(state => ({ docs: { ...state.docs, [page]: text } }))
-      socket.send({ type: 'doc.update', page, text })
+    updateDoc: (page, text, title) => {
+      set(state => {
+        const kept = title ?? state.docs[page]?.title ?? fallbackTitle(page)
+        return { docs: { ...state.docs, [page]: { title: kept, text } } }
+      })
+      socket.send({ type: 'doc.update', page, text, title })
     },
-    renameDoc: (from, to) => {
+    retitleDoc: (page, title) => {
+      set(state =>
+        state.docs[page] === undefined ? state : { docs: { ...state.docs, [page]: { ...state.docs[page], title } } }
+      )
+      socket.send({ type: 'doc.retitle', page, title })
+    },
+    renameDoc: (from, to, title) => {
       set(state => {
         if (state.docs[from] === undefined || state.docs[to] !== undefined) return state
         if (to === from || to.startsWith(`${from}/`)) return state
@@ -375,9 +384,10 @@ export const useCrew = create<CrewState>((set, get) => {
           docs[to + page.slice(from.length)] = docs[page]
           delete docs[page]
         }
+        if (title !== undefined && docs[to]) docs[to] = { ...docs[to], title }
         return { docs }
       })
-      socket.send({ type: 'doc.rename', from, to })
+      socket.send({ type: 'doc.rename', from, to, title })
     },
     deleteDoc: page => {
       set(state => {
