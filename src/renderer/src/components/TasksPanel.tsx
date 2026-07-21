@@ -34,16 +34,19 @@ interface RowAction {
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
+const stripMention = (text: string, label: string) =>
+  text
+    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
 // The first @mention in the text becomes the assignment and leaves the text;
 // a todo that is nothing but a mention keeps it so the text stays non-empty.
 function parseTodoInput(text: string, agents: PooledAgent[]): { text: string; agentId?: string } {
   const agentId = mentionsIn(text, agents)[0]
   const label = agents.find(a => a.id === agentId)?.label
   if (!agentId || !label) return { text: text.trim() }
-  const cleaned = text
-    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  const cleaned = stripMention(text, label)
   return cleaned ? { text: cleaned, agentId } : { text: text.trim(), agentId }
 }
 
