@@ -8,5 +8,3 @@ So far I've added the ability to view usage limits because I've been getting kin
 * Ability to copy and paste by right clicking with options coming up
 * Paste images to doces
 * mention agents inside of a already started chat (Forget what its called)
-
-![image.png](attachments/62d00bbe-2741-4a1d-a7ae-f505c61485fb.png)
