@@ -1,9 +1,10 @@
-import { DocumentTextIcon } from '@heroicons/react/16/solid'
-import { useMemo } from 'react'
+import { ChevronRightIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
+import { useMemo, useState } from 'react'
 import type { AgentStep } from '../../../shared/llm'
 import { Counts } from './StepRow'
 
 export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
+  const [open, setOpen] = useState(false)
   const files = useMemo(() => {
     const map = new Map<string, { added: number; removed: number }>()
     for (const step of steps) {
