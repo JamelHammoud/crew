@@ -178,16 +178,18 @@ export default function ThreadView({ threadId }: { threadId: string }) {
             </div>
             <div className="relative">
               <Composer
-              attachmentKey={threadId}
-              value={text}
-              placeholder={placeholder}
-              inputRef={inputRef}
-              onChange={value => setThreadDraft(threadId, value)}
-              onKeyDown={onKeyDown}
-              onSend={send}
+                attachmentKey={threadId}
+                value={text}
+                placeholder={placeholder}
+                inputRef={inputRef}
+                onChange={mention.onChange}
+                onKeyDown={onKeyDown}
+                onSend={send}
                 onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
                 sendLabel={canSteer ? 'Steer' : 'Send'}
-              />
+              >
+                {mention.menu}
+              </Composer>
             </div>
           </div>
         </div>
