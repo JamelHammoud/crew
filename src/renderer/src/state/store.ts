@@ -180,7 +180,8 @@ export const useCrew = create<CrewState>((set, get) => {
           break
         }
         case 'doc': {
-          return { events, docs: { ...state.docs, [event.page]: event.text } }
+          const title = event.title ?? state.docs[event.page]?.title ?? fallbackTitle(event.page)
+          return { events, docs: { ...state.docs, [event.page]: { title, text: event.text } } }
         }
         case 'doc.renamed': {
           const docs = { ...state.docs }
@@ -188,6 +189,9 @@ export const useCrew = create<CrewState>((set, get) => {
             if (page !== event.from && !page.startsWith(`${event.from}/`)) continue
             docs[event.to + page.slice(event.from.length)] = docs[page]
             delete docs[page]
+          }
+          if (event.title !== undefined && docs[event.to]) {
+            docs[event.to] = { ...docs[event.to], title: event.title }
           }
           return { events, docs }
         }
