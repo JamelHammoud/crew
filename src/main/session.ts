@@ -223,11 +223,31 @@ export class AppSession {
       autoPullMs: AUTO_PULL_MS,
       onAdopt: def => this.saveAdopted(def)
     })
-    this.runner.connect(wsUrl(target))
-    return { wsUrl: wsUrl(target) }
+    const url = wsUrl(target)
+    this.runner.connect(url)
+    this.live = { wsUrl: url, name, code: target.code, link: null }
+    this.savedStore()?.save({
+      mode: 'join',
+      folder: repoPath,
+      name,
+      link: makeLink(target.host, target.port, target.code)
+    })
+    return { wsUrl: url }
   }
 
+  // Quitting the app keeps the saved session so the next launch rejoins it.
+  // Only an explicit leave forgets it.
   async leave(): Promise<void> {
+    await this.stop()
+    this.savedStore()?.clear()
+  }
+
+  async shutdown(): Promise<void> {
+    await this.stop()
+  }
+
+  private async stop(): Promise<void> {
+    this.live = null
     this.runner?.close()
     this.runner = null
     this.git?.stop()
