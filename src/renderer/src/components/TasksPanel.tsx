@@ -147,6 +147,7 @@ export default function TasksPanel({
   const doTodo = useCrew(s => s.doTodo)
   const [showDone, setShowDone] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
+  const [adding, setAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [picker, setPicker] = useState<{ todoId: string; at: { x: number; y: number } } | null>(null)
 
