@@ -14,7 +14,7 @@ import {
   type StudioPresence,
   type StudioPreviewNode
 } from '../shared/studio'
-import { applyOps, sanitizeOps, type StudioOp } from '../shared/studio-ops'
+import { applyOps, parseStudioOps, sanitizeOps, type StudioOp } from '../shared/studio-ops'
 import { agentChatEntry, buildCodePrompt, designPrompt } from './studio-prompt'
 import type { Store } from './store'
 
@@ -298,7 +298,7 @@ export class StudioManager {
     if (ref.build) return { ops: [], cleaned: text.trim() }
     const doc = this.docs.get(ref.studioId)
     const fallbackPage = ref.pageId && doc?.pages.some(p => p.id === ref.pageId) ? ref.pageId : doc?.pages[0]?.id
-    const parsed = parseOpsFromReply(text)
+    const parsed = parseStudioOps(text)
     const ops = parsed.ops.map(op =>
       op.kind === 'upsert' && !op.pageId && fallbackPage ? { ...op, pageId: fallbackPage } : op
     )
@@ -462,9 +462,4 @@ function countNodesTouched(ops: StudioOp[], applied: number): number {
     else count += 1
   }
   return count
-}
-
-function parseOpsFromReply(text: string): { ops: StudioOp[]; cleaned: string } {
-  const { parseStudioOps } = require('../shared/studio-ops') as typeof import('../shared/studio-ops')
-  return parseStudioOps(text)
 }
