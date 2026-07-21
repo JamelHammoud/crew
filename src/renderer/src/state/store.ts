@@ -81,6 +81,7 @@ const EMPTY = {
   activePrompts: {},
   threads: {},
   threadPrompts: {},
+  todos: [],
   openThreadId: null,
   chatDraft: '',
   threadDrafts: {},
