@@ -429,11 +429,11 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
-  private handleArchiveThread(member: Member, threadId: string): void {
+  private handleThreadStatus(member: Member, threadId: string, status: ThreadStatus): void {
     const thread = this.threads.get(threadId)
-    if (!thread || thread.archived) return
-    thread.archived = true
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.archived', threadId, byName: member.name })
+    if (!thread || !THREAD_STATUSES.has(status) || thread.status === status) return
+    thread.status = status
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.status', threadId, status, byName: member.name })
   }
 
   private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
