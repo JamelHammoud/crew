@@ -1,6 +1,7 @@
 import { CheckIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/16/solid'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+import Pill from './Pill'
 import Tooltip from './Tooltip'
 
 export interface QueuedMessage {
@@ -8,6 +9,7 @@ export interface QueuedMessage {
   author: string
   self: boolean
   text: string
+  agentLabel?: string
 }
 
 function QueueRow({
