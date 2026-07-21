@@ -2,7 +2,7 @@
 title: "Ideas"
 ---
 
-I wonder if there's a 
+* I wonder if there's a 
 
 ## In progress
 
