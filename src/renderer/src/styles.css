@@ -299,6 +299,23 @@ body {
   --bn-border-radius: 12px;
 }
 
+.light .doc .bn-container {
+  --bn-colors-editor-text: #141414;
+  --bn-colors-menu-background: #ffffff;
+  --bn-colors-menu-text: #555555;
+  --bn-colors-hovered-background: rgb(0 0 0 / 0.05);
+  --bn-colors-hovered-text: #141414;
+  --bn-colors-selected-background: rgb(0 0 0 / 0.08);
+  --bn-colors-selected-text: #141414;
+  --bn-colors-disabled-text: #ababab;
+  --bn-colors-side-menu: #ababab;
+  --bn-colors-tooltip-background: #ffffff;
+  --bn-colors-tooltip-text: #555555;
+  --bn-colors-border: rgb(0 0 0 / 0.08);
+  --bn-colors-shadow: rgb(0 0 0 / 0.15);
+  --bn-colors-highlights-gray-background: #e5e5e5;
+}
+
 .doc .bn-editor {
   @apply text-base;
 }
