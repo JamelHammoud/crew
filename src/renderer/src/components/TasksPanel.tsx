@@ -367,8 +367,10 @@ export default function TasksPanel({
                 onClick={() => setAdding(true)}
                 className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-white/[0.04] hover:text-fg"
               >
-                <span className="mt-1 w-4 h-4 shrink-0 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
-                  <PlusIcon className="w-3 h-3" />
+                <span className="h-[22px] shrink-0 flex items-center">
+                  <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
+                    <PlusIcon className="w-3 h-3" />
+                  </span>
                 </span>
                 <span className="text-base">Add a task</span>
               </button>
