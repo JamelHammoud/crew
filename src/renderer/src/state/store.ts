@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { httpBaseFrom } from '../../../shared/attachments'
 import { fallbackTitle, type DocPage } from '../../../shared/docs'
-import { trimEvents, type SessionEvent } from '../../../shared/events'
+import { trimEvents, type SessionEvent, type ThreadStatus } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { CrewSocket } from '../api/ws'
@@ -15,7 +15,7 @@ export interface ThreadMeta {
   agentLabel: string
   title: string
   createdBy: string
-  archived?: boolean
+  status: ThreadStatus
 }
 
 const EVENT_LIMIT = 500
@@ -49,7 +49,7 @@ interface CrewState {
   detach: (key: string, id: string) => void
   sendChat: (text: string, threadId?: string) => void
   deleteMessage: (messageId: string) => void
-  archiveThread: (threadId: string) => void
+  setThreadStatus: (threadId: string, status: ThreadStatus) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string, title?: string) => void
   retitleDoc: (page: string, title: string) => void
