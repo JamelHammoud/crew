@@ -164,25 +164,16 @@ export default function TasksPanel({
           )}
           {done.length > 0 && (
             <section>
-              {heading('Done', done.length)}
-              {done.map(row =>
-                item(row, { icon: <ArrowUturnLeftIcon className="w-4 h-4" />, label: 'Reopen', status: 'open' })
-              )}
+              {toggleHeading('Done', done.length, showDone, () => setShowDone(v => !v))}
+              {showDone &&
+                done.map(row =>
+                  item(row, { icon: <ArrowUturnLeftIcon className="w-4 h-4" />, label: 'Reopen', status: 'open' })
+                )}
             </section>
           )}
           {archived.length > 0 && (
             <section>
-              <button
-                onClick={() => setShowArchived(v => !v)}
-                className="px-3 mb-1 flex items-center gap-1.5 text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary"
-              >
-                {showArchived ? (
-                  <ChevronDownIcon className="w-3.5 h-3.5" />
-                ) : (
-                  <ChevronRightIcon className="w-3.5 h-3.5" />
-                )}
-                Archived <span className="text-fg-faint">{archived.length}</span>
-              </button>
+              {toggleHeading('Archived', archived.length, showArchived, () => setShowArchived(v => !v))}
               {showArchived &&
                 archived.map(row =>
                   item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
