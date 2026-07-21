@@ -84,6 +84,30 @@ describe('git sync', () => {
     expect(rawA).not.toContain('<<<<<<<')
   })
 
+  it('resolves session.json conflicts by keeping local state', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    const storeA = new Store(a)
+    const storeB = new Store(b)
+    const syncA = new GitSync(a)
+    const syncB = new GitSync(b)
+
+    storeA.saveSession({ members: [{ id: 'u1', name: 'sam' }], agents: [] } as never)
+    await syncA.syncNow()
+
+    storeB.saveSession({ members: [{ id: 'u2', name: 'jamel' }], agents: [] } as never)
+    await syncB.syncNow()
+
+    const sessionB = new Store(b).loadSession()
+    expect(sessionB?.members.map(m => m.id)).toEqual(['u2'])
+    const rawB = fs.readFileSync(path.join(b, '.crew', 'session.json'), 'utf8')
+    expect(rawB).not.toContain('<<<<<<<')
+
+    const status = await git(b, ['status', '--porcelain'])
+    expect(status.trim()).toBe('')
+    await git(a, ['pull'])
+    expect(new Store(a).loadSession()?.members.map(m => m.id)).toEqual(['u2'])
+  })
+
   it('keeps working with no remote configured', async () => {
     const dir = tmpDir('git-local')
     await initRepo(dir)
