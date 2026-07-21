@@ -372,7 +372,7 @@ export default function TasksPanel({
     <>
       {open && <div className="absolute inset-0 z-40" onClick={onClose} />}
       <aside
-        className={`app-no-drag absolute inset-y-0 right-0 z-50 w-[380px] bg-ink-900 border-l border-ink-700 shadow-2xl shadow-black/40 flex flex-col transition-transform duration-200 ${
+        className={`app-no-drag absolute inset-y-0 right-0 z-50 w-[380px] bg-ink-900 border-l border-ink-700 shadow-2xl shadow-black/40 light:shadow-black/10 flex flex-col transition-transform duration-200 ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
