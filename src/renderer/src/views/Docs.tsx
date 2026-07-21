@@ -2,6 +2,7 @@ import { ChevronRightIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroic
 import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { fallbackTitle, pageCode, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
+import FindBar from '../components/FindBar'
 import { MenuItem, Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
 import { useCrew } from '../state/store'
@@ -54,6 +55,8 @@ export default function Docs() {
   const [menu, setMenu] = useState<{ slug: string; x: number; y: number } | null>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const editorRef = useRef<DocEditorHandle>(null)
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const pendingFocus = useRef(false)
 
   const focusBody = () => {
@@ -275,8 +278,9 @@ export default function Docs() {
             )}
           </Popover>
       </aside>
-      <div className="flex-1 min-w-0 overflow-y-auto px-6">
-        <div className="max-w-[760px] mx-auto pt-24">
+      <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
+      <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto px-6">
+        <div ref={contentRef} className="max-w-[760px] mx-auto pt-24">
             <div className="px-[54px] pb-2">
               <input
                 ref={titleRef}
