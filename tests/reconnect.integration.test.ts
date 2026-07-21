@@ -25,13 +25,13 @@ describe('reconnect', () => {
     await host.close()
   })
 
-  async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}) {
+  async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}, reconnectDelayMs = 100) {
     const runner = new Runner({
       name,
       code: host.code,
       repoPath: host.repoPath,
       providers: [makeFakeProvider(env)],
-      reconnectDelayMs: 100
+      reconnectDelayMs
     })
     runners.push(runner)
     runner.connect(host.url)
@@ -43,7 +43,7 @@ describe('reconnect', () => {
     return runner
   }
 
-  it('fails an in-flight prompt when the runner drops', async () => {
+  it('keeps an in-flight prompt alive across a dropped connection', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     const runner = await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '500' })
@@ -55,6 +55,97 @@ describe('reconnect', () => {
       { kind: 'agent.start' }
     >
     runner.dropConnection()
+    await ui.waitForEvent(e => e.kind === 'agent.offline')
+
+    const end = (await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.promptId === start.promptId
+    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+    expect(end.ok).toBe(true)
+    expect(end.text).toContain('slow @Fake')
+  })
+
+  it('delivers a result that finished while the runner was disconnected', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const runner = await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '50' }, 700)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('buffered @Fake', [agentId('jamel', 'fake')])
+    const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
+    runner.dropConnection()
+
+    const end = (await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.promptId === start.promptId
+    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+    expect(end.ok).toBe(true)
+    expect(end.text).toContain('buffered @Fake')
+  })
+
+  it('queues a prompt sent during a blip and runs it on reconnect', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const runner = await connectRunner('jamel', {}, 500)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    runner.dropConnection()
+    await ui.waitForEvent(e => e.kind === 'agent.offline')
+    ui.chat('while away @Fake', [agentId('jamel', 'fake')])
+
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.ok)) as Extract<
+      SessionEvent,
+      { kind: 'agent.end' }
+    >
+    expect(end.text).toContain('while away @Fake')
+  })
+
+  it('fails the run when the runner stays gone past the grace window', async () => {
+    const short = await startHost(undefined, { resumeGraceMs: 300 })
+    const ui = await TestUi.connect(short.url, 'sam', short.code)
+    const runner = new Runner({
+      name: 'jamel',
+      code: short.code,
+      repoPath: short.repoPath,
+      providers: [makeFakeProvider({ FAKE_CLI_DELAY_MS: '2000' })],
+      reconnectDelayMs: 100
+    })
+    try {
+      runner.connect(short.url)
+      await ui.waitForEvent(e => e.kind === 'agent.online')
+      ui.chat('slow @Fake', [agentId('jamel', 'fake')])
+      const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+        SessionEvent,
+        { kind: 'agent.start' }
+      >
+      runner.dropConnection()
+      runner.close()
+
+      const end = (await ui.waitForEvent(
+        e => e.kind === 'agent.end' && e.promptId === start.promptId
+      )) as Extract<SessionEvent, { kind: 'agent.end' }>
+      expect(end.ok).toBe(false)
+      expect(end.error).toContain('disconnected')
+    } finally {
+      ui.close()
+      runner.close()
+      await short.close()
+    }
+  })
+
+  it('takes an agent down immediately when its runner leaves on purpose', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const runner = await connectRunner('jamel', { FAKE_CLI_DELAY_MS: '500' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('slow @Fake', [agentId('jamel', 'fake')])
+    const start = (await ui.waitForEvent(e => e.kind === 'agent.start')) as Extract<
+      SessionEvent,
+      { kind: 'agent.start' }
+    >
+    runner.close()
 
     const end = (await ui.waitForEvent(
       e => e.kind === 'agent.end' && e.promptId === start.promptId

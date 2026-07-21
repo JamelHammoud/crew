@@ -155,7 +155,7 @@ export class Runner {
     this.stopUsagePolling()
     this.puller?.stop()
     this.killRunning()
-    this.ws?.close()
+    this.ws?.close(1000)
   }
 
   dropConnection(): void {
