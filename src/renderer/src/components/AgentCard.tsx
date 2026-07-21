@@ -5,19 +5,22 @@ import Pill from './Pill'
 import Select from './Select'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
+import UsageLimits from './UsageLimits'
 
 export default function AgentCard({
   agent,
   threadCount,
   onStop,
   onSetting,
-  onRemove
+  onRemove,
+  sharesUsageAccount = false
 }: {
   agent: PooledAgent
   threadCount: number
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
   onRemove?: () => void
+  sharesUsageAccount?: boolean
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
 
@@ -71,6 +74,7 @@ export default function AgentCard({
             ))}
           </div>
         )}
+        <UsageLimits usage={agent.usage} sharesAccount={sharesUsageAccount} />
       </div>
       {status === 'busy' && (
         <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
