@@ -5,12 +5,12 @@
 * [ ] Spellcheck doesn't work in docs because a right-click is hijacked
 * [ ] Have the app running in the background
 * [ ] Keep the computer awake/alive while crew is open
-* [ ] A thread can get stuck on "Working" for hours, the stop button does nothing
 
 ## In progress
 
 * [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
 * [ ] Better at finding what CLIs are available on your computer
+* [ ] A thread can get stuck on "Working" for hours, the stop button does nothing
 
 ## Blocked
 
