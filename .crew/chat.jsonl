@@ -3402,3 +3402,9 @@
 {"id":"25803be6-5f80-4fbe-b3ba-286b29f14c86","ts":1784608038897,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"7aeef788-8b58-43ae-8bee-0b8fdca44851","ts":1784608038897,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"b32539f9-84e6-42c0-9689-6120cec5e681","ts":1784608038898,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"d9a89039-3d75-4452-9f4b-c3c38d5cee9b","ts":1784608050555,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"23cc600f-962f-4d4d-b9b2-53cb93af53c0","ts":1784608050555,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"19f7ae8d-baf7-401f-b996-7b85deb8dc39","ts":1784608050555,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"823ec1d6-1104-4895-bec1-7730c0428ef4","ts":1784608050555,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"03e67699-ab84-41ad-8e76-5c7f70dd4661","ts":1784608050555,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"8c1397b0-35ae-40ce-825a-5d4e534e019a","ts":1784608050555,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
