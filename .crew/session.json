@@ -583,7 +583,7 @@
       "ownerName": "ALI",
       "settings": {
         "model": "gpt-5.6-sol",
-        "effort": "high"
+        "effort": "max"
       },
       "fields": [
         {
@@ -656,7 +656,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784648234053,
+        "fetchedAt": 1784648294055,
         "windows": [
           {
             "key": "primary",
@@ -751,7 +751,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784648234053,
+        "fetchedAt": 1784648294055,
         "windows": [
           {
             "key": "primary",
