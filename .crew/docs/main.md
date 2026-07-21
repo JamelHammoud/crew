@@ -11,7 +11,6 @@
 ## In progress
 
 * [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
-* [ ] Ability to mention a different agent while in a thread
 
 ## Blocked
 
@@ -19,6 +18,7 @@
 
 ## Completed
 
+* [x] Ability to mention a different agent while in a thread
 * [x] Add the ability to "archive" a thread (most likely the same right-click context menu as message deleting). Don't delete the info, just don't show it in chat. We'll come up with a place for them to be in a later project
 * [x] Deleting messages
 * [x] "Docs" should be like Google Docs, a much better editing experience, and you can create other pages
