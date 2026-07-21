@@ -562,7 +562,9 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
-    found.entry.text = trimmed
+    for (const entry of found.thread.queue) {
+      if (entry.messageId === found.entry.messageId) entry.text = trimmed
+    }
     if (found.entry.emitted) {
       const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
       if (message && message.kind === 'message') {
