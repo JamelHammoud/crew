@@ -35,13 +35,33 @@ function installMenu(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
 }
 
-// Right-click clipboard actions for text fields and the doc editor.
+// Right-click clipboard actions for text fields and the doc editor,
+// plus spellcheck suggestions (which Electron only exposes through the
+// context menu — a custom menu must add them back itself).
 function installContextMenu(win: BrowserWindow): void {
   win.webContents.on('context-menu', (_event, params) => {
     const editable = params.isEditable
     const hasSelection = params.selectionText.trim().length > 0
+    const misspelled = editable && params.misspelledWord.length > 0
     if (!editable && !hasSelection) return
     const items: MenuItemConstructorOptions[] = []
+    if (misspelled) {
+      for (const suggestion of params.dictionarySuggestions) {
+        items.push({
+          label: suggestion,
+          click: () => win.webContents.replaceMisspelling(suggestion)
+        })
+      }
+      if (params.dictionarySuggestions.length === 0) {
+        items.push({ label: 'No spelling suggestions', enabled: false })
+      }
+      items.push({
+        label: 'Add to Dictionary',
+        click: () =>
+          win.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord)
+      })
+      items.push({ type: 'separator' })
+    }
     if (editable) items.push({ role: 'cut', enabled: hasSelection })
     if (editable || hasSelection) items.push({ role: 'copy', enabled: hasSelection })
     if (editable) items.push({ role: 'paste' }, { type: 'separator' }, { role: 'selectAll' })
