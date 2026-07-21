@@ -215,6 +215,35 @@ export const useCrew = create<CrewState>((set, get) => {
           }
           return { events, docs }
         }
+        case 'todo.added': {
+          if (state.todos.some(t => t.id === event.todoId)) return { events }
+          const todo: Todo = {
+            id: event.todoId,
+            text: event.text,
+            agentId: event.agentId,
+            createdBy: event.byName,
+            ts: event.ts,
+            checked: false
+          }
+          return { events, todos: [...state.todos, todo] }
+        }
+        case 'todo.edited':
+          return {
+            events,
+            todos: state.todos.map(t =>
+              t.id === event.todoId ? { ...t, text: event.text, agentId: event.agentId } : t
+            )
+          }
+        case 'todo.checked':
+          return {
+            events,
+            todos: state.todos.map(t => (t.id === event.todoId ? { ...t, checked: event.checked } : t))
+          }
+        // A started todo lives on as its thread; the thread.started event
+        // arrives on its own just before this one.
+        case 'todo.removed':
+        case 'todo.started':
+          return { events, todos: state.todos.filter(t => t.id !== event.todoId) }
       }
       return {
         events,
@@ -278,6 +307,7 @@ export const useCrew = create<CrewState>((set, get) => {
           events: trimEvents(msg.snapshot.events, EVENT_LIMIT),
           docs: msg.snapshot.docs,
           queues: msg.snapshot.queues ?? {},
+          todos: msg.snapshot.todos ?? [],
           steps,
           tokens,
           activePrompts,
