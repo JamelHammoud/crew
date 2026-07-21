@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process'
 import { describe, expect, it } from 'vitest'
 import { AppSession } from '../src/main/session'
+import { codexProvider } from '../src/runner/providers/codex'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
 import { parseLink } from '../src/shared/link'
@@ -26,6 +27,22 @@ async function gitLog(repo: string): Promise<string> {
 }
 
 describe.skipIf(!RUN)('real end to end (CREW_REAL_CLI=1)', () => {
+  it(
+    'runs GPT-5.6 Sol through the real Codex provider',
+    async () => {
+      const run = codexProvider.start(
+        'Reply with exactly: crew-sol-ok',
+        process.cwd(),
+        { onStep: () => {} },
+        { model: 'gpt-5.6-sol', effort: 'low' }
+      )
+
+      const result = await run.done
+      expect(result.text).toContain('crew-sol-ok')
+    },
+    120000
+  )
+
   it(
     'hosts a session, chats with a real agent, and syncs state with git',
     async () => {
