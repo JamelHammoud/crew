@@ -101,7 +101,9 @@ function TodoEditor({
 
   return (
     <div ref={wrapRef} className="relative px-3 py-2.5 flex items-start gap-3">
-      <span className="mt-1 w-4 h-4 shrink-0 rounded-full border-[1.5px] border-fg-faint" />
+      <span className="h-[22px] shrink-0 flex items-center">
+        <span className="w-4 h-4 rounded-full border-[1.5px] border-fg-faint" />
+      </span>
       <textarea
         ref={inputRef}
         value={value}
@@ -189,7 +191,7 @@ export default function TasksPanel({
         onClick={() => onOpenThread(row.thread.id)}
         className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]"
       >
-        <span className="mt-1 shrink-0">
+        <span className="h-[22px] shrink-0 flex items-center">
           <StateIcon state={row.state} />
         </span>
         <span className="min-w-0 flex-1">
@@ -234,7 +236,7 @@ export default function TasksPanel({
     return (
       <div key={todo.id} className="group relative">
         <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 hover:bg-white/[0.04]">
-          <span className="mt-1 shrink-0">
+          <span className="h-[22px] shrink-0 flex items-center">
             <Tooltip label="Check off">
               <button
                 onClick={() => checkTodo(todo.id, true)}
