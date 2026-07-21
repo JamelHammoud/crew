@@ -8,7 +8,6 @@
 ## In progress
 
 * [ ] What if we turned repos into "join links", everybody is a host/joiner, the repo itself is the "chat room", opening crew in there auto joins you to that repo
-* [ ] A thread can get stuck on "Working" for hours, the stop button does nothing
 
 ## Blocked
 
@@ -16,6 +15,7 @@
 
 ## Completed
 
+* [x] A thread can get stuck on "Working" for hours, the stop button does nothing
 * [x] Better at finding what CLIs are available on your computer
 * [x] Ability to mention a different agent while in a thread
 * [x] Add the ability to "archive" a thread (most likely the same right-click context menu as message deleting). Don't delete the info, just don't show it in chat. We'll come up with a place for them to be in a later project
