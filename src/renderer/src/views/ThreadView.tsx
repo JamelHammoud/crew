@@ -19,7 +19,7 @@ import Tooltip from '../components/Tooltip'
 import { buildThread } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
-import { mentionsIn } from '../../../../shared/llm'
+import { mentionsIn } from '../../../shared/llm'
 import { useCrew } from '../state/store'
 
 export default function ThreadView({ threadId }: { threadId: string }) {
