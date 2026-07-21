@@ -111,12 +111,17 @@ export class Runner {
     this.lastSeen = Date.now()
     ws.on('open', () => {
       this.lastSeen = Date.now()
+      const pending = new Set(this.accepted)
+      for (const msg of this.outbox) {
+        if (msg.type === 'agent.done' || msg.type === 'agent.error') pending.add(msg.promptId)
+      }
       this.send({
         type: 'hello',
         role: 'runner',
         name: this.opts.name,
         code: this.opts.code,
-        llms: [...this.agents.values()].map(agent => this.registered(agent))
+        llms: [...this.agents.values()].map(agent => this.registered(agent)),
+        running: [...pending]
       })
     })
     ws.on('message', raw => {
@@ -303,12 +308,14 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
+    this.accepted.add(promptId)
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
       .then(() => this.execute(agent.provider, promptId, text, settings, attachments))
       .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
+      this.accepted.delete(promptId)
       if (this.tails.get(threadId) === next) this.tails.delete(threadId)
     })
   }
