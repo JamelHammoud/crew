@@ -85,6 +85,15 @@ body {
   background: rgb(255 255 255 / 0.16);
 }
 
+::highlight(find-match) {
+  background-color: rgb(250 204 21 / 0.25);
+}
+
+::highlight(find-match-active) {
+  background-color: #fbbf24;
+  color: #141414;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
