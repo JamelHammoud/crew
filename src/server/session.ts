@@ -1181,11 +1181,16 @@ export class CrewSession {
     this.broadcast({ type: 'queue.state', threadId: thread.id, items: this.queueItems(thread) })
   }
 
+  private threadNotice(entry: { studio?: StudioPromptRef; threadId: string }, text: string): void {
+    if (entry.studio) this.studios.systemChat(entry.studio.studioId, text)
+    else this.systemMessage(text, entry.threadId)
+  }
+
   private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {
     const waiting = this.steers.get(promptId) ?? []
     waiting.push(steer)
     this.steers.set(promptId, waiting)
-    this.routed(steer.messageId, steer.threadId, promptId, 'steered')
+    if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'steered')
     this.send(agent.runner!, {
       type: 'steer',
       promptId,
