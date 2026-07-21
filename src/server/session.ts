@@ -404,6 +404,24 @@ export class CrewSession {
     }
   }
 
+  // Mentioning another agent hands the thread to it: the mentioned agents get
+  // this message, and plain follow-ups go to the new agent from here on.
+  private switchThreadAgent(thread: Thread, id: string, member: Member): void {
+    const agent = this.agents.get(id)
+    if (!agent) return
+    thread.agentId = id
+    thread.agentLabel = agent.label
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'thread.agent',
+      threadId: thread.id,
+      agentId: id,
+      agentLabel: agent.label,
+      byName: member.name
+    })
+  }
+
   private emitThreadMessage(entry: QueuedPrompt, agentId: string): void {
     if (entry.emitted) return
     entry.emitted = true
