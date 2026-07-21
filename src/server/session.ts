@@ -579,7 +579,8 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     if (!found || found.entry.authorId !== member.id) return
     found.thread.queue = found.thread.queue.filter(q => q.promptId !== promptId)
-    if (found.entry.emitted) this.handleDeleteMessage(member, found.entry.messageId)
+    const stillQueued = found.thread.queue.some(q => q.messageId === found.entry.messageId)
+    if (found.entry.emitted && !stillQueued) this.handleDeleteMessage(member, found.entry.messageId)
     this.broadcastQueue(found.thread)
   }
 
