@@ -30,6 +30,7 @@ import {
 } from '../shared/llm'
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import { Store } from './store'
+import { StudioManager, type StudioPromptRef } from './studio'
 
 interface Member {
   id: string
@@ -66,6 +67,8 @@ interface QueuedPrompt {
   mentions: string[]
   attachments: Attachment[]
   messageId: string
+  silent?: boolean
+  studio?: StudioPromptRef
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -77,6 +80,8 @@ interface PendingSteer {
   authorId?: string
   threadId: string
   attachments: Attachment[]
+  silent?: boolean
+  studio?: StudioPromptRef
 }
 
 interface Thread {
