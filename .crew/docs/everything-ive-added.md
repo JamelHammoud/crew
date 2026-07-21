@@ -7,4 +7,4 @@ So far I've added the ability to view usage limits because I've been getting kin
 * Ability to add symbols to heading in docs
 * Ability to copy and paste by right clicking with options coming up
 * Paste images to doces
-* menton agents inside of a already started chat
+* menton agents inside of a already started chat (For
