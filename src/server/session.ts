@@ -1074,7 +1074,7 @@ export class CrewSession {
         this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.left', memberId: member.id, name: member.name })
       }
     }
-    const left = code === 1000 || code === 1001
+    const left = code === 1000 || code === 1001 || code === 1005
     for (const id of meta.agentIds) {
       const agent = this.agents.get(id)
       if (!agent || agent.runner !== ws) continue
