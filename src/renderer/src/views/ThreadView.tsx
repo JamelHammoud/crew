@@ -37,11 +37,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
-  const steerable = useCrew(s => s.agents.find(a => a.id === s.threads[threadId]?.agentId)?.steerable === true)
+  const agents = useCrew(s => s.agents)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const inputRef = useAutoResize(text)
+  const mention = useMentionAutocomplete(text, value => setThreadDraft(threadId, value), inputRef)
   const agentPresence = usePresence(thread?.agentLabel ?? '')
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
