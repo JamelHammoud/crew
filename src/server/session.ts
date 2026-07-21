@@ -666,28 +666,38 @@ export class CrewSession {
     return agent
   }
 
-  private enqueuePrompt(agent: AgentState, member: Member, text: string, threadId: string, attachments: Attachment[]): void {
+  private enqueuePrompt(
+    agent: AgentState,
+    member: Member,
+    text: string,
+    threadId: string,
+    attachments: Attachment[],
+    route?: { messageId: string; mentions: string[] }
+  ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
     const entry: QueuedPrompt = {
       promptId: randomUUID(),
+      agentId: agent.id,
       text,
       byName: member.name,
       authorId: member.id,
       threadId,
+      mentions: route?.mentions ?? [agent.id],
       attachments,
-      messageId: randomUUID(),
-      emitted: false
+      messageId: route?.messageId ?? randomUUID()
     }
     if (!agent.runner) {
-      this.emitThreadMessage(entry, agent.id)
+      this.emitThreadMessage(entry)
       this.systemMessage(`${agent.label} is not here right now.`, threadId)
       return
     }
-    // A message that arrives mid-run goes straight into the run when the agent
-    // can take it, so it steers the work in progress instead of waiting.
-    if (thread.running && agent.steerable) {
-      this.emitThreadMessage(entry, agent.id)
+    // A message that arrives mid-run goes straight into the run when it is for
+    // the agent doing the running and that agent can take it, so it steers the
+    // work in progress instead of waiting.
+    const runningAgentId = thread.running ? this.prompts.get(thread.running)?.agentId : undefined
+    if (thread.running && runningAgentId === agent.id && agent.steerable) {
+      this.emitThreadMessage(entry)
       this.sendSteer(agent, thread.running, {
         messageId: entry.messageId,
         text,
