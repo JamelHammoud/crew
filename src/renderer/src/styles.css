@@ -172,6 +172,14 @@ body {
     0 2px 8px rgb(0 0 0 / 0.35);
 }
 
+.light .glass {
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow:
+    0 16px 48px rgb(0 0 0 / 0.14),
+    0 2px 8px rgb(0 0 0 / 0.08);
+}
+
 /* Tab icons: the wrapper opens up a slot for the icon, the icon draws itself inside it. */
 .tab-icon {
   display: grid;
