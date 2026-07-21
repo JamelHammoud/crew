@@ -29,6 +29,7 @@ interface CrewState {
   agents: PooledAgent[]
   events: SessionEvent[]
   docs: Record<string, string>
+  docTitles: Record<string, string>
   queues: Record<string, QueuedItem[]>
   steps: Record<string, AgentStep[]>
   tokens: Record<string, number>
