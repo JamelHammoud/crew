@@ -30,6 +30,7 @@ export interface SessionSnapshot {
   agents: PooledAgent[]
   events: SessionEvent[]
   docs: Record<string, string>
+  docTitles: Record<string, string>
   queues: Record<string, QueuedItem[]>
 }
 
@@ -40,6 +41,7 @@ export type ClientMessage =
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
   | { type: 'doc.update'; page: string; text: string }
+  | { type: 'doc.title'; page: string; title: string }
   | { type: 'doc.rename'; from: string; to: string }
   | { type: 'doc.delete'; page: string }
   | { type: 'queue.edit'; promptId: string; text: string }
