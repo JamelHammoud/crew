@@ -4007,3 +4007,11 @@
 {"id":"12f520a5-0200-4413-a5dd-9b20257ec463","ts":1784612037459,"kind":"agent.step","promptId":"75674639-5637-426a-87b5-35dd117fe5bc","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","agentLabel":"Claude Fable","threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303","step":{"id":"ttoolu_01RrMDuhcd6j6yoqwV8GZ3Yw","ts":1784612037415,"kind":"tool","status":"done","name":"Bash","detail":"List components and find agents state shape"}}
 {"id":"21582537-c5c9-4544-aabd-75a0b45e7ee2","ts":1784612038306,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Mark done in the tasks sidebar or in a thread doesn't do anything","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303","attachments":[]}
 {"id":"7e6fe6d9-d46c-492a-a65e-6a68e106a3d5","ts":1784612038306,"kind":"message.route","messageId":"21582537-c5c9-4544-aabd-75a0b45e7ee2","threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303","promptId":"75674639-5637-426a-87b5-35dd117fe5bc","mode":"steered"}
+{"id":"be85f7cb-9cf1-4494-8b4b-020e66331b92","ts":1784612058454,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"ad291cb3-626b-4a0e-840f-a2eb67db9241","ts":1784612058454,"kind":"agent.offline","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"c59f5299-5b03-4c44-824b-8939adc85e20","ts":1784612058455,"kind":"agent.offline","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"75d88817-46a5-424e-8a30-5f1fdcc6b354","ts":1784612058455,"kind":"agent.offline","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"b4f75a02-09a6-46d1-a29f-fbc3524bdc78","ts":1784612058455,"kind":"agent.offline","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"7301502b-0487-435e-8a36-d3488245a888","ts":1784612058455,"kind":"agent.offline","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"73945827-bf48-4d1b-98ae-236de6b5fea0","ts":1784612058455,"kind":"agent.offline","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"17b83b0e-dc40-445b-8f1b-8bd50641d42c","ts":1784612058455,"kind":"agent.offline","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
