@@ -829,6 +829,7 @@ export class CrewSession {
     const promptId = randomUUID()
     thread.queue.push({
       promptId,
+      agentId: agent.id,
       text: steer.text,
       byName: steer.byName,
       authorId: steer.authorId ?? '',
