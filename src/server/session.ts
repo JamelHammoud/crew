@@ -713,17 +713,19 @@ export class CrewSession {
     this.runThread(thread)
   }
 
+  private queueItems(thread: Thread): QueuedItem[] {
+    return thread.queue.map(({ promptId, authorId, byName, text, agentId }) => ({
+      promptId,
+      authorId,
+      authorName: byName,
+      text,
+      agentId,
+      agentLabel: this.agents.get(agentId)?.label ?? ''
+    }))
+  }
+
   private broadcastQueue(thread: Thread): void {
-    this.broadcast({
-      type: 'queue.state',
-      threadId: thread.id,
-      items: thread.queue.map(({ promptId, authorId, byName, text }) => ({
-        promptId,
-        authorId,
-        authorName: byName,
-        text
-      }))
-    })
+    this.broadcast({ type: 'queue.state', threadId: thread.id, items: this.queueItems(thread) })
   }
 
   private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {
