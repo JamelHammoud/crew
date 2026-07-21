@@ -693,6 +693,7 @@ export class CrewSession {
   // Two prompts can share one message when it mentioned several agents, so
   // emission is tracked by message, not by queue entry.
   private emitThreadMessage(entry: QueuedPrompt): void {
+    if (entry.silent) return
     if (this.emittedMessages.has(entry.messageId)) return
     this.emittedMessages.add(entry.messageId)
     this.emit({
