@@ -187,6 +187,30 @@ export class CrewSession {
         const thread = this.threads.get(event.threadId)
         if (thread) thread.status = event.status
       }
+      if (event.kind === 'todo.added') {
+        this.todos.set(event.todoId, {
+          id: event.todoId,
+          text: event.text,
+          agentId: event.agentId,
+          createdBy: event.byName,
+          ts: event.ts,
+          checked: false
+        })
+      }
+      if (event.kind === 'todo.edited') {
+        const todo = this.todos.get(event.todoId)
+        if (todo) {
+          todo.text = event.text
+          todo.agentId = event.agentId
+        }
+      }
+      if (event.kind === 'todo.checked') {
+        const todo = this.todos.get(event.todoId)
+        if (todo) todo.checked = event.checked
+      }
+      if (event.kind === 'todo.removed' || event.kind === 'todo.started') {
+        this.todos.delete(event.todoId)
+      }
     }
     const ended = new Set<string>()
     for (const event of this.events) {
