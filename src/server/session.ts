@@ -275,7 +275,8 @@ export class CrewSession {
         [...this.threads.values()]
           .filter(thread => thread.queue.length > 0)
           .map(thread => [thread.id, this.queueItems(thread)])
-      )
+      ),
+      todos: [...this.todos.values()]
     }
   }
 
