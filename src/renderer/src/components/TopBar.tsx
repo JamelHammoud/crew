@@ -40,6 +40,7 @@ export default function TopBar({
   )
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const theme = useTheme()
 
   const copyLink = async () => {
     if (!joinLink) return
@@ -118,6 +119,11 @@ export default function TopBar({
                 onClick={() => void copyLink()}
               />
             )}
+            <MenuItem
+              icon={theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+              label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              onClick={() => applyTheme(theme === 'dark' ? 'light' : 'dark')}
+            />
             <MenuItem
               icon={<ArrowRightStartOnRectangleIcon />}
               label="Leave"
