@@ -9,6 +9,7 @@ import { describeStep, type ThreadItem } from '../components/thread'
 import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
+import { useStickToBottom } from '../components/useStickToBottom'
 import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
 
 type Feed =
@@ -95,54 +96,14 @@ export default function Chat() {
     return { working: false, status: 'Done' }
   }
 
-  const mentionMatches = useMemo(() => mentionCandidates(agents, mentionQuery), [agents, mentionQuery])
-  const activeIndex = Math.min(activeMention, Math.max(mentionMatches.length - 1, 0))
-
-  useEffect(() => {
-    listRef.current?.children[activeIndex]?.scrollIntoView({ block: 'nearest' })
-  }, [activeIndex])
-
-  const onChange = (value: string) => {
-    setChatDraft(value)
-    const caret = inputRef.current?.selectionStart ?? value.length
-    const match = /(?:^|\s)@([^@]*)$/.exec(value.slice(0, caret))
-    setMentionQuery(match ? match[1] : null)
-    setActiveMention(0)
-  }
-
-  const pickMention = (label: string) => {
-    const caret = inputRef.current?.selectionStart ?? text.length
-    const before = text.slice(0, caret).replace(/@[^@]*$/, `@${label} `)
-    setChatDraft(before + text.slice(caret))
-    setMentionQuery(null)
-    inputRef.current?.focus()
-  }
-
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
     sendChat(text)
-    setMentionQuery(null)
+    mention.close()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (mentionMatches.length > 0) {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault()
-        const delta = e.key === 'ArrowDown' ? 1 : -1
-        setActiveMention((activeIndex + delta + mentionMatches.length) % mentionMatches.length)
-        return
-      }
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        setMentionQuery(null)
-        return
-      }
-      if ((e.key === 'Enter' && !e.shiftKey) || e.key === 'Tab') {
-        e.preventDefault()
-        pickMention(mentionMatches[activeIndex].label)
-        return
-      }
-    }
+    if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       send()
