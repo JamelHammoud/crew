@@ -380,7 +380,7 @@ export class CrewSession {
         agentLabel: agent.label,
         title: this.titleFrom(trimmed || attachments.map(a => a.name).join(', ')),
         createdBy: member.name,
-        archived: false,
+        status: 'open',
         queue: [],
         running: null
       }
