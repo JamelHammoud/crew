@@ -1,4 +1,5 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
+import type { DocPage } from './docs'
 import type { SessionEvent } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 
@@ -31,7 +32,7 @@ export interface SessionSnapshot {
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
-  docs: Record<string, string>
+  docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
 }
 
@@ -41,8 +42,9 @@ export type ClientMessage =
   | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
-  | { type: 'doc.update'; page: string; text: string }
-  | { type: 'doc.rename'; from: string; to: string }
+  | { type: 'doc.update'; page: string; text: string; title?: string }
+  | { type: 'doc.retitle'; page: string; title: string }
+  | { type: 'doc.rename'; from: string; to: string; title?: string }
   | { type: 'doc.delete'; page: string }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }

@@ -308,6 +308,7 @@ export class Runner {
       this.send({ type: 'agent.error', promptId, message: 'That agent is not on this machine.' })
       return
     }
+    if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
