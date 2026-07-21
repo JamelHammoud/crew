@@ -3,18 +3,10 @@ import Avatar from '../components/Avatar'
 import CreateAgent from '../components/CreateAgent'
 import Pill from '../components/Pill'
 import { useCrew } from '../state/store'
-import type { PooledAgent } from '../../../shared/llm'
 
 function instanceOf(agentId: string): string {
   const slash = agentId.indexOf('/')
   return slash === -1 ? agentId : agentId.slice(slash + 1)
-}
-
-// Agents whose usage carries the same provider + account id share one set of
-// limits; each card names the others it shares with.
-function accountKey(agent: PooledAgent): string | null {
-  const account = agent.usage?.accountId
-  return account ? `${agent.usage!.provider}:${account}` : null
 }
 
 export default function Dashboard() {
