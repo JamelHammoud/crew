@@ -48,6 +48,7 @@ interface StepEntry {
 
 interface QueuedPrompt {
   promptId: string
+  agentId: string
   text: string
   byName: string
   authorId: string
@@ -156,6 +157,13 @@ export class CrewSession {
       if (event.kind === 'thread.archived') {
         const thread = this.threads.get(event.threadId)
         if (thread) thread.archived = true
+      }
+      if (event.kind === 'thread.agent') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) {
+          thread.agentId = event.agentId
+          thread.agentLabel = event.agentLabel
+        }
       }
     }
     const ended = new Set<string>()
