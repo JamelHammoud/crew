@@ -5757,3 +5757,5 @@
 {"id":"13cf02e6-8c05-48fd-ae43-d8a3b7fcc868","ts":1784652136419,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
 {"id":"0cd83e42-17fb-4532-9c92-6daa955c6a6f","ts":1784652136419,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
 {"id":"f83b0a28-132e-4fdb-aa8c-df5060482a80","ts":1784652136419,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"6006c60a-2c63-49a5-90bc-f2cb218de833","ts":1784665903831,"kind":"agent.online","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","label":"Bob"}
+{"id":"3cedf6da-14b8-4625-95ad-26c355269979","ts":1784665903831,"kind":"person.joined","memberId":"10ce0043-7aa7-4c20-9e51-899477973158","name":"Jamel (Envoy)"}
