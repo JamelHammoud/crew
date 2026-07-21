@@ -5004,3 +5004,4 @@
 {"id":"5675b79c-ac39-4fa7-811a-de59d3a627a7","ts":1784615083306,"kind":"todo.added","todoId":"078faa9d-9c08-4b40-bbeb-2f62e56ff9ea","text":"Spellcheck doesn't work in docs because a right-click is hijacked","byName":"Jamel (dev)"}
 {"id":"bcc2a102-fbbb-4ad5-9ac9-1332c52214d4","ts":1784615099820,"kind":"todo.removed","todoId":"fc513ffe-c38e-48ce-956a-3efca12b155b","byName":"Jamel (dev)"}
 {"id":"5fbf4a71-2fc0-4afc-bbd3-9e49db4dd6ca","ts":1784615106979,"kind":"todo.added","todoId":"a09c9ca9-e7d2-4a70-b184-f7aa28589cb3","text":"Have the app running in the background","byName":"Jamel (dev)"}
+{"id":"5e8ae588-8344-4715-a20d-9c4351612894","ts":1784615120012,"kind":"todo.added","todoId":"77006a31-5863-4692-9f1b-08abadda8e71","text":"What if we turned repos into \"join links\", everybody is a host/joiner, the repo itself is the \"chat room\", opening crew in there auto joins you to that repo","byName":"Jamel (dev)"}
