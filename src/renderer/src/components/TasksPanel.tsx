@@ -158,6 +158,13 @@ export default function TasksPanel({
   const [adding, setAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [picker, setPicker] = useState<{ todoId: string; at: { x: number; y: number } } | null>(null)
+  const [searching, setSearching] = useState(false)
+  const [query, setQuery] = useState('')
+
+  const closeSearch = () => {
+    setSearching(false)
+    setQuery('')
+  }
 
   useEffect(() => {
     if (!open) return
@@ -167,6 +174,13 @@ export default function TasksPanel({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
+
+  useEffect(() => {
+    if (!open) {
+      setSearching(false)
+      setQuery('')
+    }
+  }, [open])
 
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = []
