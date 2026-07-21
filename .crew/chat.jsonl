@@ -4114,3 +4114,6 @@
 {"id":"002db15c-abf2-432b-8766-9216a9b440a1","ts":1784612279865,"kind":"thread.status","threadId":"05b80d6f-505e-4132-a906-334208feeb09","status":"done","byName":"Jamel"}
 {"id":"dad99ae4-1ed2-4eb9-add5-ca31ac58ab1b","ts":1784612280165,"kind":"thread.status","threadId":"4e90c749-1fe9-4a4b-9816-c61f001bce8b","status":"done","byName":"Jamel"}
 {"id":"a84c3a46-deb2-4014-a2dd-6e78a3de2523","ts":1784612280746,"kind":"thread.status","threadId":"2b49b799-cfba-48e0-b741-159d858afc36","status":"done","byName":"Jamel"}
+{"id":"dcaa9629-f91c-4669-bb7a-c824714726f3","ts":1784612294281,"kind":"thread.status","threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303","status":"open","byName":"Jamel"}
+{"id":"5d39d1e4-fc51-4c51-8cf1-8cc23dd97c6d","ts":1784612294281,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Done should also be auto collapsed like archived","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303","attachments":[]}
+{"id":"894a3296-216d-49dd-a140-8f2c200177b9","ts":1784612294282,"kind":"agent.start","promptId":"63a1d305-646d-43fc-8c64-c223929bf1d5","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","agentLabel":"Claude Fable","promptText":"Done should also be auto collapsed like archived","byName":"Jamel","threadId":"e4d64dcf-7a5a-4618-b830-e94e97803303"}
