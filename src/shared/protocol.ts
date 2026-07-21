@@ -1,6 +1,6 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
 import type { DocPage } from './docs'
-import type { SessionEvent, ThreadStatus } from './events'
+import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 
 export interface RegisteredLlm {
@@ -34,6 +34,7 @@ export interface SessionSnapshot {
   events: SessionEvent[]
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
+  todos: Todo[]
 }
 
 export type ClientMessage =
@@ -43,6 +44,11 @@ export type ClientMessage =
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
   | { type: 'thread.status'; threadId: string; status: ThreadStatus }
+  | { type: 'todo.add'; text: string; agentId?: string }
+  | { type: 'todo.edit'; todoId: string; text: string; agentId?: string }
+  | { type: 'todo.remove'; todoId: string }
+  | { type: 'todo.check'; todoId: string; checked: boolean }
+  | { type: 'todo.do'; todoId: string; agentId?: string }
   | { type: 'doc.update'; page: string; text: string; title?: string }
   | { type: 'doc.retitle'; page: string; title: string }
   | { type: 'doc.rename'; from: string; to: string; title?: string }
