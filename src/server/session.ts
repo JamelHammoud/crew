@@ -496,6 +496,100 @@ export class CrewSession {
     for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments)
   }
 
+  private handleStudioCommand(member: Member, text: string, mentions: string[], attachments: Attachment[]): void {
+    const request = text.replace(/^\/studio\b\s*/i, '').trim()
+    const name = this.titleFrom(this.stripMentions(request)) || 'Untitled'
+    const doc = this.studios.create(member.id, member.name, name)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'message',
+      authorId: member.id,
+      authorName: member.name,
+      text,
+      mentions: []
+    })
+    if (request) {
+      this.handleStudioChat(member, { studioId: doc.id, text: request, mentions }, attachments)
+    }
+  }
+
+  private stripMentions(text: string): string {
+    let out = text
+    for (const agent of this.agents.values()) {
+      const needle = `@${agent.label.toLowerCase()}`
+      let at = out.toLowerCase().indexOf(needle)
+      while (at !== -1) {
+        out = out.slice(0, at) + out.slice(at + needle.length)
+        at = out.toLowerCase().indexOf(needle)
+      }
+    }
+    return out.replace(/\s+/g, ' ').trim()
+  }
+
+  private handleStudioChat(
+    member: Member,
+    msg: {
+      studioId: string
+      text: string
+      mentions: string[]
+      pageId?: string
+      build?: boolean
+      attachments?: OutgoingAttachment[]
+    },
+    presaved: Attachment[] = []
+  ): void {
+    const doc = this.studios.doc(msg.studioId)
+    if (!doc) return
+    const trimmed = msg.text.trim()
+    const attachments = [...presaved, ...this.saveAttachments(msg.attachments)]
+    if (!trimmed && attachments.length === 0) return
+    const mentioned = [...new Set(msg.mentions)].filter(id => this.agents.has(id))
+    const assigned = doc.agents.filter(id => this.agents.has(id))
+    const targets = mentioned.length > 0 ? mentioned : assigned
+    this.studios.userChat({ id: member.id, name: member.name }, msg.studioId, trimmed, targets, msg.build === true)
+    if (mentioned.length > 0) this.studios.assignAgents(msg.studioId, [...doc.agents, ...mentioned])
+    for (const id of targets) {
+      const agent = this.agents.get(id)
+      if (!agent) continue
+      let threadId = this.studios.threadFor(msg.studioId, id)
+      if (!threadId || !this.threads.has(threadId)) threadId = this.startStudioThread(member, agent, doc.id, doc.name)
+      this.studios.notePage(threadId, msg.pageId)
+      this.enqueuePrompt(agent, member, trimmed, threadId, attachments, {
+        silent: true,
+        studio: { studioId: msg.studioId, pageId: msg.pageId, build: msg.build === true }
+      })
+    }
+  }
+
+  private startStudioThread(member: Member, agent: AgentState, studioId: string, studioName: string): string {
+    const threadId = randomUUID()
+    this.threads.set(threadId, {
+      id: threadId,
+      agentId: agent.id,
+      agentLabel: agent.label,
+      title: studioName,
+      createdBy: member.name,
+      status: 'open',
+      queue: [],
+      running: null,
+      studioId
+    })
+    this.studios.registerThread(studioId, agent.id, threadId)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'thread.started',
+      threadId,
+      agentId: agent.id,
+      agentLabel: agent.label,
+      title: studioName,
+      byName: member.name,
+      studioId
+    })
+    return threadId
+  }
+
   private switchThreadAgent(thread: Thread, id: string, member: Member): void {
     const agent = this.agents.get(id)
     if (!agent) return
