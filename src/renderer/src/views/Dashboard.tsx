@@ -51,16 +51,11 @@ export default function Dashboard() {
               {sortedAgents.map(agent => {
                 const mine = agent.ownerId === selfId
                 const running = activePrompts[agent.id] ?? []
-                const key = accountKey(agent)
-                const sharedWith = key
-                  ? sortedAgents.filter(a => a.id !== agent.id && accountKey(a) === key).map(a => a.label)
-                  : []
                 return (
                   <AgentCard
                     key={agent.id}
                     agent={agent}
                     threadCount={running.length}
-                    usageSharedWith={sharedWith}
                     onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
                     onRemove={mine ? () => void window.crew.removeAgent(instanceOf(agent.id)) : undefined}
