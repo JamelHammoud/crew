@@ -248,6 +248,7 @@ export class CrewSession {
     this.send(ws, { type: 'welcome', selfId: member.id, snapshot: this.snapshot() })
     if (msg.role === 'runner') {
       for (const llm of msg.llms) this.registerAgent(ws, member, llm)
+      this.reconcileRuns(this.meta.get(ws)?.agentIds ?? [], new Set(msg.running ?? []))
     }
     if (wasOffline) {
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.joined', memberId: member.id, name: member.name })
@@ -836,7 +837,7 @@ export class CrewSession {
     this.emitThreadMessage(next)
     thread.running = next.promptId
     agent.running.add(next.promptId)
-    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now() })
+    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now(), entry: next })
     this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id, messageId: next.messageId })
     this.emit({
       id: randomUUID(),
