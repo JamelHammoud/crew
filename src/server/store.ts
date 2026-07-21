@@ -145,6 +145,10 @@ export class Store {
     return path.join(this.root, 'session.json')
   }
 
+  private titlesPath(): string {
+    return path.join(this.root, 'docs', '.titles.json')
+  }
+
   private writeAtomic(file: string, contents: string | Buffer): void {
     const tmp = `${file}.tmp`
     fs.writeFileSync(tmp, contents)
