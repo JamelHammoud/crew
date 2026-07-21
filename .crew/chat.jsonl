@@ -4613,3 +4613,4 @@
 {"id":"d848c75c-9ad3-4ec1-a7a1-8543d9190036","ts":1784613667692,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"0e105e24-de23-490c-8053-f348530935ee","ts":1784613667692,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"09c7935b-448a-4807-b161-b72526076de1","ts":1784613671395,"kind":"todo.added","todoId":"fc513ffe-c38e-48ce-956a-3efca12b155b","text":"Test todo","byName":"Jamel"}
+{"id":"d8a539c5-6f21-46aa-9676-59197a7905b4","ts":1784613695140,"kind":"todo.added","todoId":"0c067a97-41fb-48d1-bf8a-a49dc618caa2","text":"We need a \"Files\" tab, this is the file explorer for the repo, that's synced across computers, searchable, and allows manual editing (Just like VS code)","byName":"Jamel"}
