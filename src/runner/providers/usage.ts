@@ -144,7 +144,7 @@ export async function claudeUsage(): Promise<AgentUsage | null> {
   }
   base.plan = typeof creds.subscriptionType === 'string' ? creds.subscriptionType : undefined
   if (typeof creds.expiresAt === 'number' && creds.expiresAt < now) {
-    return { ...base, error: 'Claude sign-in expired — run claude once to refresh it.' }
+    return { ...base, error: 'Claude sign-in expired. Run claude once to refresh it.' }
   }
   let body: any
   try {
@@ -297,5 +297,5 @@ export async function codexUsage(): Promise<AgentUsage | null> {
       return { ...base, asOf: recordedAt, windows }
     }
   }
-  return { ...base, error: 'No usage recorded yet — appears after this Codex runs once.' }
+  return { ...base, error: 'No usage recorded yet. Appears after this Codex runs once.' }
 }
