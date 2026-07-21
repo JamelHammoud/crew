@@ -190,8 +190,8 @@ export default function Docs() {
             setMenu({ slug: node.slug, x: e.clientX, y: e.clientY })
           }}
           className={`group/row flex items-center rounded-full transition-all duration-150 ${
-            dropTarget === node.slug ? 'bg-white/[0.08] ring-1 ring-white/25' : ''
-          } ${active ? 'bg-ink-800' : 'hover:bg-white/[0.04]'}`}
+            dropTarget === node.slug ? 'bg-fg/[0.08] ring-1 ring-fg/25' : ''
+          } ${active ? 'bg-ink-800' : 'hover:bg-fg/[0.04]'}`}
           style={{ paddingLeft: depth * 14 }}
         >
           <button
@@ -223,7 +223,7 @@ export default function Docs() {
             <button
               onClick={() => createPage(node.slug)}
               aria-label="Add sub-page"
-              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-white/[0.08] transition-all shrink-0"
+              className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.08] transition-all shrink-0"
             >
               <PlusIcon className="w-3.5 h-3.5" />
             </button>
@@ -240,7 +240,7 @@ export default function Docs() {
           <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
           <div
             className={`flex-1 min-h-0 overflow-y-auto space-y-0.5 rounded-card transition-all duration-150 ${
-              dragged && dropTarget === '' ? 'bg-white/[0.06] ring-1 ring-white/20' : ''
+              dragged && dropTarget === '' ? 'bg-fg/[0.06] ring-1 ring-fg/20' : ''
             }`}
           >
             {tree.map(node => renderNode(node, 0))}
@@ -248,7 +248,7 @@ export default function Docs() {
           </div>
           <button
             onClick={() => createPage('')}
-            className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-white/[0.04]"
+            className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]"
           >
             <PlusIcon className="w-4 h-4 shrink-0" />
             New page

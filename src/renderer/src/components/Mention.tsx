@@ -29,7 +29,7 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
         {agent.ownerName}'s PC
       </span>
       {settings.length > 0 && (
-        <span className="block mt-2.5 pt-2.5 border-t border-white/[0.06] space-y-1.5">
+        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] space-y-1.5">
           {settings.map(row => (
             <span key={row.label} className="flex items-center justify-between text-xs">
               <span className="text-fg-muted">{row.label}</span>
@@ -49,7 +49,7 @@ export function AgentName({ agent, children }: { agent: PooledAgent; children: R
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
   return (
     <AgentName agent={agent}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-white/10">
+      <strong className="font-semibold text-fg cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
         {children}
       </strong>
     </AgentName>

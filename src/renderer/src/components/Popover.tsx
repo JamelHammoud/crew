@@ -121,7 +121,7 @@ export function MenuItem({
     <button
       onClick={onClick}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors ${
-        danger ? 'text-danger hover:bg-danger/10' : 'text-fg-secondary hover:text-fg hover:bg-white/5'
+        danger ? 'text-danger hover:bg-danger/10' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
       }`}
     >
       {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}

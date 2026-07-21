@@ -172,7 +172,7 @@ export default function FindBar({
         onMouseDown={e => e.preventDefault()}
         disabled={matches.length === 0}
         aria-label="Previous match"
-        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
+        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
       >
         <ChevronUpIcon className="w-3.5 h-3.5" />
       </button>
@@ -181,14 +181,14 @@ export default function FindBar({
         onMouseDown={e => e.preventDefault()}
         disabled={matches.length === 0}
         aria-label="Next match"
-        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
+        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
       >
         <ChevronDownIcon className="w-3.5 h-3.5" />
       </button>
       <button
         onClick={() => setOpen(false)}
         aria-label="Close find"
-        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-white/[0.08] transition-colors shrink-0"
+        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
       >
         <XMarkIcon className="w-3.5 h-3.5" />
       </button>

@@ -16,7 +16,7 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
           <img
             src={previewSrc(item)}
             alt={item.name}
-            className="h-16 w-16 object-cover rounded-xl border border-white/10"
+            className="h-16 w-16 object-cover rounded-xl border border-fg/10"
           />
           <Tooltip label={`Remove ${item.name}`}>
             <button
@@ -56,7 +56,7 @@ export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
           onClick={() => inputRef.current?.click()}
           disabled={full}
           aria-label="Add an image"
-          className="w-10 h-10 rounded-full border border-ink-600 flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:border-ink-500 hover:bg-white/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:border-ink-600 shrink-0"
+          className="w-10 h-10 rounded-full border border-ink-600 flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:border-ink-500 hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:border-ink-600 shrink-0"
         >
           <PlusIcon className="w-5 h-5" />
         </button>
