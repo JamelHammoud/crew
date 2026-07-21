@@ -365,8 +365,10 @@ export const useCrew = create<CrewState>((set, get) => {
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
     },
-    archiveThread: threadId => {
-      socket.send({ type: 'thread.archive', threadId })
+    setThreadStatus: (threadId, status) => {
+      // Archiving keeps the old message so a newer UI can still archive on an
+      // older host; the other transitions only exist on hosts that know them.
+      socket.send(status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status })
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
