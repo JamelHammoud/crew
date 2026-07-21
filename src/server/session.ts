@@ -498,8 +498,10 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
-    found.entry.text = trimmed
-    if (found.entry.emitted) {
+    for (const entry of found.thread.queue) {
+      if (entry.messageId === found.entry.messageId) entry.text = trimmed
+    }
+    if (this.emittedMessages.has(found.entry.messageId)) {
       const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
       if (message && message.kind === 'message') {
         message.text = trimmed
@@ -513,7 +515,14 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     if (!found || found.entry.authorId !== member.id) return
     found.thread.queue = found.thread.queue.filter(q => q.promptId !== promptId)
-    if (found.entry.emitted) this.handleDeleteMessage(member, found.entry.messageId)
+    // The message stays if a sibling prompt for another mentioned agent is
+    // still queued or already running off it.
+    const shared =
+      found.thread.queue.some(q => q.messageId === found.entry.messageId) ||
+      [...this.prompts.values()].some(ref => ref.messageId === found.entry.messageId)
+    if (this.emittedMessages.has(found.entry.messageId) && !shared) {
+      this.handleDeleteMessage(member, found.entry.messageId)
+    }
     this.broadcastQueue(found.thread)
   }
 
