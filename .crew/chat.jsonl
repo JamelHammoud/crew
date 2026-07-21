@@ -2664,3 +2664,9 @@
 {"id":"4f60f313-4ab0-4de8-b457-f9e20f259981","ts":1784596627312,"kind":"agent.online","agentId":"jamel (envoy)/claude","label":"Claude 3"}
 {"id":"9583f7b8-5ea6-4eb0-8ea2-c520afb39866","ts":1784596627312,"kind":"agent.online","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","label":"Bob"}
 {"id":"7dc25a1c-2e61-43e5-a969-2a0e72add9aa","ts":1784596627313,"kind":"person.joined","memberId":"dc050f93-2ad8-433c-8bf8-0f329417ea55","name":"Jamel (Envoy)"}
+{"id":"9d65b323-b73e-46d8-8627-17844413b99d","ts":1784596739230,"kind":"person.left","memberId":"dc050f93-2ad8-433c-8bf8-0f329417ea55","name":"Jamel (Envoy)"}
+{"id":"6e4d7217-96d9-48e7-906d-739377e08995","ts":1784596739230,"kind":"agent.offline","agentId":"jamel (envoy)/claude","label":"Claude 3"}
+{"id":"93373419-2193-4d8d-aa9d-d953393bdfd5","ts":1784596739230,"kind":"agent.offline","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","label":"Bob"}
+{"id":"b7554752-f274-46b1-aac1-5ec55ccedc5d","ts":1784596740241,"kind":"agent.online","agentId":"jamel (envoy)/claude","label":"Claude 3"}
+{"id":"adc55f75-fc5d-48e4-942c-e1bef748b8f6","ts":1784596740241,"kind":"agent.online","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","label":"Bob"}
+{"id":"59decd41-597a-4ba9-af24-ea8c75fcbe13","ts":1784596740241,"kind":"person.joined","memberId":"dc050f93-2ad8-433c-8bf8-0f329417ea55","name":"Jamel (Envoy)"}
