@@ -110,6 +110,20 @@ export default function TasksPanel({
     </h3>
   )
 
+  const toggleHeading = (title: string, count: number, shown: boolean, onToggle: () => void) => (
+    <button
+      onClick={onToggle}
+      className="px-3 mb-1 flex items-center gap-1.5 text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary"
+    >
+      {shown ? (
+        <ChevronDownIcon className="w-3.5 h-3.5" />
+      ) : (
+        <ChevronRightIcon className="w-3.5 h-3.5" />
+      )}
+      {title} <span className="text-fg-faint">{count}</span>
+    </button>
+  )
+
   return (
     <>
       {open && <div className="absolute inset-0 z-40" onClick={onClose} />}
