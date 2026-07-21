@@ -103,10 +103,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
     sendChat(text, threadId)
+    mention.close()
     jumpToBottom()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       send()
@@ -115,8 +117,16 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
-  const canSteer = Boolean(activePromptId) && steerable
-  const placeholder = 'Send a message'
+  const runningAgentId = threadEvents.find(
+    (e): e is Extract<(typeof threadEvents)[number], { kind: 'agent.start' }> =>
+      e.kind === 'agent.start' && e.promptId === activePromptId
+  )?.agentId
+  const runningAgent = agents.find(a => a.id === runningAgentId)
+  const mentioned = mentionsIn(text, agents)
+  const targets = mentioned.length > 0 ? mentioned : [thread.agentId]
+  const canSteer =
+    Boolean(activePromptId) && runningAgent?.steerable === true && targets.includes(runningAgent.id)
+  const placeholder = 'Send a message or @ another agent'
 
   return (
     <div className="h-full relative">
