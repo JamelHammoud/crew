@@ -1449,7 +1449,7 @@ export class CrewSession {
       const dropped = thread.queue.filter(q => q.agentId === agent.id)
       if (dropped.length === 0) continue
       thread.queue = thread.queue.filter(q => q.agentId !== agent.id)
-      for (const prompt of dropped) this.systemMessage(reason, prompt.threadId)
+      for (const prompt of dropped) this.threadNotice(prompt, reason)
       this.broadcastQueue(thread)
       // Clearing the head can unblock messages for agents still here.
       this.runThread(thread)
@@ -1457,7 +1457,7 @@ export class CrewSession {
     // Steers still waiting on an ack go the same way as the queue: there is no
     // run left to fold them into, and nothing to re-queue them onto.
     for (const promptId of agent.running) {
-      for (const steer of this.steers.get(promptId) ?? []) this.systemMessage(reason, steer.threadId)
+      for (const steer of this.steers.get(promptId) ?? []) this.threadNotice(steer, reason)
       this.steers.delete(promptId)
     }
   }
