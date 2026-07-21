@@ -1,6 +1,8 @@
 ---
-title: "Docs"
+title: "Ideas"
 ---
+
+I wonder if there's a 
 
 ## In progress
 
