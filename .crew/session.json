@@ -15,8 +15,8 @@
       "name": "ALI"
     },
     {
-      "id": "10ce0043-7aa7-4c20-9e51-899477973158",
-      "name": "Jamel (Envoy)"
+      "id": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "name": "Jamel (dev)"
     }
   ],
   "agents": [
@@ -125,22 +125,21 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784614927738,
+        "fetchedAt": 1784651273036,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 81,
-            "severity": "warning",
-            "resetsAt": 1784620200052,
-            "active": true
+            "percent": 0,
+            "severity": "normal",
+            "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 18,
             "severity": "normal",
-            "resetsAt": 1784930400052,
+            "resetsAt": 1784930400463,
             "active": false
           },
           {
@@ -148,8 +147,8 @@
             "label": "Weekly (Fable)",
             "percent": 34,
             "severity": "normal",
-            "resetsAt": 1784930400052,
-            "active": false
+            "resetsAt": 1784930400463,
+            "active": true
           }
         ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
@@ -259,32 +258,151 @@
           "default": "high"
         }
       ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784652136445,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1784665800318,
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 21,
-            "severity": "normal",
-            "resetsAt": 1784894400318,
-            "active": true
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
+      "steerable": false
+    },
+    {
+      "id": "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
+      "label": "Codex Gpt-5.5",
+      "provider": "codex",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "ali/20890e3a-ce3f-4240-95da-1509a65df80a",
+      "label": "Codex Gpt-5.6-sol",
+      "provider": "codex",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "gpt-5.6-sol",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false
     },
     {
       "id": "jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
@@ -371,7 +489,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784615167748,
+        "fetchedAt": 1784652292098,
         "windows": [
           {
             "key": "primary",
@@ -454,22 +572,21 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784614927738,
+        "fetchedAt": 1784651273036,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 81,
-            "severity": "warning",
-            "resetsAt": 1784620200052,
-            "active": true
+            "percent": 0,
+            "severity": "normal",
+            "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 18,
             "severity": "normal",
-            "resetsAt": 1784930400052,
+            "resetsAt": 1784930400463,
             "active": false
           },
           {
@@ -477,8 +594,8 @@
             "label": "Weekly (Fable)",
             "percent": 34,
             "severity": "normal",
-            "resetsAt": 1784930400052,
-            "active": false
+            "resetsAt": 1784930400463,
+            "active": true
           }
         ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
@@ -487,11 +604,273 @@
       }
     },
     {
-      "id": "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
-      "label": "Claude Opus",
+      "id": "jamel/codex",
+      "label": "Codex",
+      "provider": "codex",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            },
+            {
+              "value": "gpt-5.3-codex-spark",
+              "label": "gpt-5.3-codex-spark"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784652292098,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "Weekly limit",
+            "percent": 79
+          }
+        ],
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
+      }
+    },
+    {
+      "id": "jamel/grok",
+      "label": "Grok",
+      "provider": "grok",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "grok-4.5",
+              "label": "grok-4.5"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "jamel (dev)/kimi",
+      "label": "Kimi 2",
+      "provider": "kimi",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "jamel (dev)/codex",
+      "label": "Codex 2",
+      "provider": "codex",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": "",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            },
+            {
+              "value": "gpt-5.3-codex-spark",
+              "label": "gpt-5.3-codex-spark"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784773522761,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "Weekly limit",
+            "percent": 79
+          }
+        ],
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
+      }
+    },
+    {
+      "id": "jamel (dev)/claude",
+      "label": "Claude 3",
       "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
       "settings": {
         "model": "opus",
         "effort": "high"
@@ -555,39 +934,87 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784652136445,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1784665800318,
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 21,
-            "severity": "normal",
-            "resetsAt": 1784894400318,
-            "active": true
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
+        "fetchedAt": 1784773522768,
+        "windows": [],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       }
     },
     {
-      "id": "ali/0d392594-6df2-4b6e-b809-57b71598960d",
-      "label": "Codex Gpt-5.6-sol",
+      "id": "jamel (dev)/grok",
+      "label": "Grok 2",
+      "provider": "grok",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "grok-4.5",
+              "label": "grok-4.5"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8",
+      "label": "Bob (Kimi K3) 2",
+      "provider": "kimi",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": "kimi-code/k3"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
+      "label": "UsageKiller 2",
       "provider": "codex",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
       "settings": {
         "model": "gpt-5.6-sol",
-        "effort": "max"
+        "effort": "xhigh"
       },
       "fields": [
         {
@@ -621,6 +1048,10 @@
             {
               "value": "gpt-5.4-mini",
               "label": "gpt-5.4-mini"
+            },
+            {
+              "value": "gpt-5.3-codex-spark",
+              "label": "gpt-5.3-codex-spark"
             }
           ],
           "default": ""
@@ -660,124 +1091,29 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784652137157,
+        "fetchedAt": 1784773522761,
         "windows": [
           {
             "key": "primary",
-            "label": "730-hour limit",
-            "percent": 52
+            "label": "Weekly limit",
+            "percent": 79
           }
         ],
-        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "team",
-        "asOf": 1784652134309
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
       }
     },
     {
-      "id": "ali/ce92104d-1a63-43b7-b470-ed723e8e2e66",
-      "label": "Codex Gpt-5.6-terra",
-      "provider": "codex",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "gpt-5.6-terra",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "gpt-5.6-sol",
-              "label": "gpt-5.6-sol"
-            },
-            {
-              "value": "gpt-5.6-terra",
-              "label": "gpt-5.6-terra"
-            },
-            {
-              "value": "gpt-5.6-luna",
-              "label": "gpt-5.6-luna"
-            },
-            {
-              "value": "gpt-5.5",
-              "label": "gpt-5.5"
-            },
-            {
-              "value": "gpt-5.4",
-              "label": "gpt-5.4"
-            },
-            {
-              "value": "gpt-5.4-mini",
-              "label": "gpt-5.4-mini"
-            }
-          ],
-          "default": ""
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            },
-            {
-              "value": "ultra",
-              "label": "ultra"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": false,
-      "usage": {
-        "provider": "codex",
-        "fetchedAt": 1784652137157,
-        "windows": [
-          {
-            "key": "primary",
-            "label": "730-hour limit",
-            "percent": 52
-          }
-        ],
-        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "team",
-        "asOf": 1784652134309
-      }
-    },
-    {
-      "id": "jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56",
-      "label": "Bob",
+      "id": "jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
+      "label": "Claude Fable 2",
       "provider": "claude",
-      "ownerId": "10ce0043-7aa7-4c20-9e51-899477973158",
-      "ownerName": "Jamel (Envoy)",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
       "settings": {
-        "model": "opus",
-        "effort": "high"
+        "model": "fable",
+        "effort": "xhigh"
       },
       "fields": [
         {
@@ -838,35 +1174,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784768905189,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 21,
-            "severity": "normal",
-            "resetsAt": 1785049199606,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 39,
-            "severity": "normal",
-            "resetsAt": 1785049199606,
-            "active": true
-          }
-        ],
-        "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
-        "accountLabel": "jamel@envoy.co",
-        "plan": "team"
+        "fetchedAt": 1784773522768,
+        "windows": [],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       }
     }
   ]
