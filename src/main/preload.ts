@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { RepoFile } from '../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { CurrentSession } from './session'
 
@@ -16,6 +17,8 @@ const bridge = {
     ipcRenderer.invoke('agents:create', input),
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
   openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
+  readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
+  revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
   onFullScreen: (listener: (full: boolean) => void): void => {
     ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
   },
