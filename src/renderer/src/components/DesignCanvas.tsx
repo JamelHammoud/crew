@@ -1,8 +1,9 @@
-import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   createTLStore,
   defaultBindingUtils,
+  DefaultDashStyle,
+  DefaultFontStyle,
   defaultShapeUtils,
   getSnapshot,
   InstancePresenceRecordType,
@@ -10,6 +11,8 @@ import {
   Tldraw,
   useValue,
   type Editor,
+  type TLComponents,
+  type TldrawOptions,
   type TLPageId,
   type TLRecord,
   type TLShapeId,
@@ -21,15 +24,18 @@ import type { DesignPresence } from '../../../shared/design'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
+import { designAssetUrls } from './designIcons'
+import { DesignNavigation, DesignStylePanel } from './DesignPanels'
 import Spinner from './Spinner'
 
-const assetUrls = (() => {
-  try {
-    return getAssetUrlsByImport()
-  } catch {
-    return undefined
-  }
-})()
+const assetUrls = designAssetUrls()
+
+const components: TLComponents = {
+  NavigationPanel: DesignNavigation,
+  StylePanel: DesignStylePanel
+}
+
+const tldrawOptions: Partial<TldrawOptions> = { actionShortcutsLocation: 'menu' }
 
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
