@@ -1,6 +1,5 @@
 /// <reference types="vite/client" />
 
-import type { DetailedHTMLProps, HTMLAttributes } from 'react'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 
 declare global {
@@ -29,15 +28,6 @@ declare global {
     goForward(): void
     canGoBack(): boolean
     canGoForward(): boolean
-  }
-
-  namespace JSX {
-    interface IntrinsicElements {
-      webview: DetailedHTMLProps<
-        HTMLAttributes<WebviewElement> & { src?: string; allowpopups?: string },
-        WebviewElement
-      >
-    }
   }
 
   interface Window {
