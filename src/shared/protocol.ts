@@ -63,6 +63,19 @@ export type ClientMessage =
   | { type: 'doc.retitle'; page: string; title: string }
   | { type: 'doc.rename'; from: string; to: string; title?: string }
   | { type: 'doc.delete'; page: string }
+  | { type: 'design.create'; boardId: string; name: string }
+  | { type: 'design.rename'; boardId: string; name: string }
+  | { type: 'design.delete'; boardId: string }
+  | { type: 'design.open'; boardId: string }
+  | { type: 'design.init'; boardId: string; document: DesignDocument }
+  | { type: 'design.apply'; boardId: string; put?: unknown[]; remove?: string[] }
+  | {
+      type: 'design.presence'
+      boardId: string
+      cursor: { x: number; y: number } | null
+      selection: string[]
+      pageId: string | null
+    }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
