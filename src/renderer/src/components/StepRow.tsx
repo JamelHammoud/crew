@@ -107,9 +107,11 @@ export default function StepRow({ item }: { item: ThreadItem }) {
           </span>
           {files.length > 0 ? (
             <>
-              <span className="text-fg-faint truncate font-mono text-xs">
-                {files.length === 1 ? files[0].path : `${files.length} files`}
-              </span>
+              {files.length === 1 ? (
+                <FilePathLink path={files[0].path} className="text-fg-faint truncate font-mono text-xs" />
+              ) : (
+                <span className="text-fg-faint truncate font-mono text-xs">{`${files.length} files`}</span>
+              )}
               <Counts added={totals.added} removed={totals.removed} />
             </>
           ) : (
