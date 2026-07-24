@@ -202,7 +202,9 @@ describe('file editing', () => {
     fireEvent.change(editor, { target: { value: 'scrapped' } })
     await waitFor(() => expect(document.querySelector('[data-line="1"]')?.textContent).toContain('scrapped'))
     fireEvent.keyDown(editor, { key: 'Escape' })
-    await screen.findByText('const one = 1')
+    await waitFor(() =>
+      expect(document.querySelector('[data-line="1"]')?.textContent).toContain('const one = 1')
+    )
     expect(editor.value).toBe('const one = 1\nconst two = 2\nconst three = 3')
     expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
   })
