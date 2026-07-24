@@ -332,10 +332,7 @@ body {
 .design .tlui-main-toolbar__overflow-content,
 .design .tlui-dialog__content,
 .design .tlui-toast__container,
-.design .tlui-menu-zone,
-.design .tlui-navigation-panel,
 .design .tlui-main-toolbar__tools,
-.design .tlui-style-panel__wrapper,
 .design .tlui-tooltip {
   background: rgb(28 28 28 / 0.78);
   backdrop-filter: blur(24px) saturate(180%);
