@@ -75,14 +75,14 @@ function DocCardContent({ page }: { page: string }) {
   )
 }
 
-export function DocMention({ page, children }: { page: string; children: ReactNode }) {
-  return (
-    <HoverCard content={<DocCardContent page={page} />}>
-      <span className="font-medium cursor-default rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20">
-        {children}
-      </span>
-    </HoverCard>
+export function DocMention({ page, children }: { page: string | null; children: ReactNode }) {
+  const pill = (
+    <span className="font-medium cursor-default rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20">
+      {children}
+    </span>
   )
+  if (!page) return pill
+  return <HoverCard content={<DocCardContent page={page} />}>{pill}</HoverCard>
 }
 
 function MemberCardContent({ member, self }: { member: MemberInfo; self: boolean }) {
