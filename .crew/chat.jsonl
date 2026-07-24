@@ -7237,3 +7237,5 @@
 {"id":"e1f27592-f8b9-4374-b047-2951b2a4e2b3","ts":1784866511379,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
 {"id":"957c11e2-0e82-432f-aa80-7db901ea8e75","ts":1784866511379,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
 {"id":"6a50ec02-f9df-43c6-9860-239fec7c721e","ts":1784866511379,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"11fb910f-14af-479b-8b84-8c26c3a81e5f","ts":1784866522241,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Continue:\n\nRemove the \"Get a license for production\", this is just for us","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"threadId":"e5bdea50-792f-48e4-8e62-293b30de61f8","attachments":[]}
+{"id":"aa0a826f-ca48-4887-af6f-803ed5caa9fb","ts":1784866522241,"kind":"message","authorId":"crew","authorName":"crew","text":"Claude Fable is not here right now.","mentions":[],"threadId":"e5bdea50-792f-48e4-8e62-293b30de61f8"}
