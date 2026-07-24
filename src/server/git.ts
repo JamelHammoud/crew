@@ -19,8 +19,28 @@ export class GitSync {
   }
 
   syncNow(message = 'crew sync'): Promise<void> {
-    this.chain = this.chain.then(() => this.sync(message)).catch(() => {})
-    return this.chain
+    return this.enqueue(() => this.sync(message)).catch(() => {})
+  }
+
+  status(): Promise<RepoStatus> {
+    return this.enqueue(() => this.readStatus())
+  }
+
+  pullNow(): Promise<RepoActionResult> {
+    return this.enqueue(() => this.pullAction())
+  }
+
+  pushNow(message = 'crew sync'): Promise<RepoActionResult> {
+    return this.enqueue(() => this.pushAction(message))
+  }
+
+  private enqueue<T>(action: () => Promise<T>): Promise<T> {
+    const result = this.chain.then(action, action)
+    this.chain = result.then(
+      () => undefined,
+      () => undefined
+    )
+    return result
   }
 
   private async sync(message: string): Promise<void> {
