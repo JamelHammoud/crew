@@ -45,7 +45,15 @@ export default function Docs() {
   const retitleDoc = useCrew(s => s.retitleDoc)
   const renameDoc = useCrew(s => s.renameDoc)
   const deleteDoc = useCrew(s => s.deleteDoc)
-  const [page, setPage] = useState('main')
+  const docsTarget = useCrew(s => s.docsTarget)
+  const clearDocsTarget = useCrew(s => s.clearDocsTarget)
+  const [page, setPage] = useState(docsTarget ?? 'main')
+
+  useEffect(() => {
+    if (!docsTarget) return
+    setPage(docsTarget)
+    clearDocsTarget()
+  }, [docsTarget, clearDocsTarget])
   const current = docs[page] !== undefined ? page : 'main'
   const titleOf = (slug: string): string => docs[slug]?.title ?? fallbackTitle(slug)
   const [title, setTitle] = useState(() => titleOf(current))
