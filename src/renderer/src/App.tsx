@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
 import TopBar, { type Tab } from './components/TopBar'
@@ -44,19 +45,22 @@ function Session() {
   }
 
   return (
-    <div className="h-full relative">
-      <main className="absolute inset-0">
-        {tab === 'chat' && (openThreadId ? <ThreadView threadId={openThreadId} /> : <Chat />)}
-        {tab === 'agents' && <Dashboard />}
-        {tab === 'docs' && <Docs />}
-      </main>
-      <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
-        <div className="pointer-events-auto bg-ink-900">
-          <TopBar tab={tab} onTab={switchTab} tasksOpen={tasksOpen} onToggleTasks={() => setTasksOpen(v => !v)} />
+    <div className="h-full flex">
+      <div className="flex-1 min-w-0 relative">
+        <main className="absolute inset-0">
+          {tab === 'chat' && (openThreadId ? <ThreadView threadId={openThreadId} /> : <Chat />)}
+          {tab === 'agents' && <Dashboard />}
+          {tab === 'docs' && <Docs />}
+        </main>
+        <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
+          <div className="pointer-events-auto bg-ink-900">
+            <TopBar tab={tab} onTab={switchTab} tasksOpen={tasksOpen} onToggleTasks={() => setTasksOpen(v => !v)} />
+          </div>
+          <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
         </div>
-        <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
+        <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
       </div>
-      <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
+      <SidePanel />
     </div>
   )
 }
