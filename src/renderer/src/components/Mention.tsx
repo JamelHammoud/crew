@@ -6,6 +6,7 @@ import type { MemberInfo } from '../../../shared/protocol'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
+import { TextWithFileLinks } from './fileLinks'
 import HoverCard from './HoverCard'
 import { tokenizeMentions } from './mentionTokens'
 import Pill from './Pill'
@@ -121,7 +122,7 @@ export function MentionText({ text, docMentions }: { text: string; docMentions?:
             </DocMention>
           )
         }
-        return token.text
+        return <TextWithFileLinks key={index} text={token.text} />
       })}
     </>
   )
