@@ -435,6 +435,7 @@ export class CrewSession {
         authorName: member.name,
         text: trimmed,
         mentions,
+        docMentions: this.docMentionRefs(trimmed),
         attachments
       })
       return
@@ -555,9 +556,14 @@ export class CrewSession {
       authorName: entry.byName,
       text: entry.text,
       mentions: entry.mentions,
+      docMentions: entry.docMentions,
       threadId: entry.threadId,
       attachments: entry.attachments
     })
+  }
+
+  private docMentionRefs(text: string): DocMentionRef[] {
+    return docMentionRefsIn(text, Object.fromEntries(this.docs))
   }
 
   private handleDeleteMessage(member: Member, messageId: string): void {
