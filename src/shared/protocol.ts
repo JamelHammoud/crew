@@ -3,6 +3,7 @@ import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
 import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
+import type { ReactionEmoji } from './reactions'
 
 export interface RegisteredLlm {
   instanceId: string
@@ -51,6 +52,7 @@ export type ClientMessage =
       boardId?: string
     }
   | { type: 'chat.delete'; messageId: string }
+  | { type: 'chat.react'; targetId: string; emoji: ReactionEmoji }
   | { type: 'thread.archive'; threadId: string }
   | { type: 'thread.status'; threadId: string; status: ThreadStatus }
   | { type: 'todo.add'; text: string; agentId?: string }

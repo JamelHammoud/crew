@@ -1,6 +1,7 @@
 import type { Attachment } from './attachments'
 import type { DocMentionRef } from './docs'
 import type { AgentSettings, AgentStep } from './llm'
+import type { ReactionEmoji } from './reactions'
 
 // 'open' means the thread still wants attention: either an agent is working or
 // the result is waiting for someone to look at it. 'done' is an explicit human
@@ -36,6 +37,19 @@ export type SessionEvent =
   | {
       id: string
       ts: number
+      kind: 'message.reaction'
+      targetId: string
+      targetAuthorId: string
+      targetAuthorName: string
+      memberId: string
+      memberName: string
+      emoji: ReactionEmoji
+      active: boolean
+      threadId?: string
+    }
+  | {
+      id: string
+      ts: number
       kind: 'message.route'
       messageId: string
       threadId: string
@@ -53,7 +67,18 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'todo.removed'; todoId: string; byName: string }
   | { id: string; ts: number; kind: 'todo.checked'; todoId: string; checked: boolean; byName: string }
   | { id: string; ts: number; kind: 'todo.started'; todoId: string; threadId: string; byName: string }
-  | { id: string; ts: number; kind: 'agent.start'; promptId: string; agentId: string; agentLabel: string; promptText: string; byName: string; threadId?: string }
+  | {
+      id: string
+      ts: number
+      kind: 'agent.start'
+      promptId: string
+      agentId: string
+      agentLabel: string
+      promptText: string
+      byName: string
+      threadId?: string
+      reactionIds?: string[]
+    }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
   | { id: string; ts: number; kind: 'agent.end'; promptId: string; agentId: string; agentLabel: string; ok: boolean; text?: string; error?: string; threadId?: string }
   | { id: string; ts: number; kind: 'person.joined'; memberId: string; name: string }
