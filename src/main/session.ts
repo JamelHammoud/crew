@@ -14,7 +14,9 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import { AgentStore } from './agents-store'
+import { readRepoFile, resolveRepoPath } from './files'
 import { SavedSessionStore } from './saved-session'
+import type { RepoFile } from '../shared/files'
 
 export interface HostInfo {
   link: string
@@ -66,6 +68,7 @@ export class AppSession {
   private agentsPath: string | null = null
   private sessionPath: string | null = null
   private live: CurrentSession | null = null
+  private folder: string | null = null
 
   constructor(paths: { agents?: string; session?: string } = {}) {
     this.agentsPath = paths.agents ?? null
@@ -82,6 +85,16 @@ export class AppSession {
 
   current(): CurrentSession | null {
     return this.live
+  }
+
+  async readFile(target: string): Promise<RepoFile | null> {
+    if (!this.folder) return null
+    return readRepoFile(this.folder, target)
+  }
+
+  resolveFile(target: string): string | null {
+    if (!this.folder) return null
+    return resolveRepoPath(this.folder, target)
   }
 
   async resume(): Promise<CurrentSession | null> {
