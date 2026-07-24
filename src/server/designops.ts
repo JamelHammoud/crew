@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import {
   DESIGN_COLORS,
+  plainTextOf,
   richTextOf,
   type DesignDocument,
   type DesignOp,
@@ -303,7 +304,7 @@ export function boardSummary(id: string, name: string, document: DesignDocument 
           shape.type === 'frame'
             ? props.name
             : 'richText' in props
-              ? plainText(props.richText)
+              ? plainTextOf(props.richText)
               : undefined,
         color: props.color,
         fill: props.fill,
@@ -312,10 +313,4 @@ export function boardSummary(id: string, name: string, document: DesignDocument 
     }
   }
   return { id, name, shapes }
-}
-
-function plainText(richText: unknown): string {
-  const doc = richText as { content?: Array<{ content?: Array<{ text?: string }> }> } | undefined
-  if (!doc?.content) return ''
-  return doc.content.map(p => (p.content ?? []).map(s => s.text ?? '').join('')).join('\n')
 }
