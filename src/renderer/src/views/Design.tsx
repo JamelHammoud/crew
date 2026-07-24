@@ -126,7 +126,11 @@ export default function Design() {
       </aside>
       <div className="flex-1 min-w-0 relative">
         {current ? (
-          <div className="absolute inset-x-0 bottom-0 top-[70px]">
+          <div
+            className={`absolute left-2 top-20 bottom-6 rounded-card overflow-hidden ${
+              chatOpen ? 'right-4' : 'right-6'
+            }`}
+          >
             <DesignCanvas key={current} boardId={current} />
           </div>
         ) : (
