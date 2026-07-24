@@ -130,25 +130,29 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
           ))}
         </div>
       )}
-      <div ref={scrollRef} onScroll={onScroll} className="flex-1 min-h-0 overflow-y-auto px-4">
-        {threadId ? (
-          <div className="space-y-4 py-4">
-            <ThreadItems items={items} />
-            {activePromptId && runningStart && (
-              <RunStatus
-                startedAt={runningStart.ts}
-                tokens={tokens[activePromptId] ?? 0}
-                steps={steps[activePromptId] ?? []}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="h-full flex items-center justify-center text-center px-6">
-            <p className="text-sm text-fg-muted">
-              Mention an agent like @{example} and it will design on this board with you.
-            </p>
-          </div>
-        )}
+      <div className="relative flex-1 min-h-0">
+        <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-4">
+          {threadId ? (
+            <div className="space-y-4 py-4">
+              <ThreadItems items={items} />
+              {activePromptId && runningStart && (
+                <RunStatus
+                  startedAt={runningStart.ts}
+                  tokens={tokens[activePromptId] ?? 0}
+                  steps={steps[activePromptId] ?? []}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center text-center px-6">
+              <p className="text-sm text-fg-muted">
+                Mention an agent like @{example} and it will design on this board with you.
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-ink-900 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none" />
       </div>
       <div className="px-4 pb-6 shrink-0">
         <Composer
