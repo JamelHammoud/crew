@@ -278,13 +278,154 @@ body {
   }
 }
 
-/* The canvas sits flush with the app shell; tldraw's own dark theme does the rest. */
+/* tldraw remapped onto crew tokens so the canvas chrome reads as the rest of the app. */
 .design .tl-container {
   background: var(--color-ink-950);
 }
 
 .design .tl-background {
   background: var(--color-ink-950);
+}
+
+.design .tl-theme__dark,
+.design .tl-theme__light {
+  --tl-color-background: var(--color-ink-950);
+  --tl-color-low: var(--color-ink-850);
+  --tl-color-low-border: var(--color-ink-700);
+  --tl-color-divider: var(--color-ink-700);
+  --tl-color-panel: var(--color-ink-800);
+  --tl-color-panel-contrast: var(--color-ink-700);
+  --tl-color-panel-transparent: transparent;
+  --tl-color-selected: var(--color-fg);
+  --tl-color-selected-contrast: var(--color-ink-900);
+  --tl-color-selection-stroke: var(--color-fg);
+  --tl-color-focus: var(--color-fg);
+  --tl-color-primary: var(--color-fg);
+  --tl-color-text: var(--color-fg);
+  --tl-color-text-0: var(--color-fg);
+  --tl-color-text-1: var(--color-fg-secondary);
+  --tl-color-text-3: var(--color-fg-muted);
+  --tl-color-text-disabled: var(--color-fg-faint);
+  --tl-color-success: var(--color-positive);
+  --tl-color-danger: var(--color-danger);
+  --tl-font-draw: var(--font-sans);
+  --tl-font-sans: var(--font-sans);
+  --tl-font-mono: var(--font-mono);
+  --tl-radius-1: 8px;
+  --tl-radius-2: 12px;
+  --tl-radius-3: 16px;
+  --tl-radius-4: 20px;
+}
+
+.design .tl-theme__dark {
+  --tl-color-selection-fill: rgb(255 255 255 / 0.08);
+  --tl-color-panel-overlay: rgb(34 34 34 / 0.82);
+}
+
+.design .tl-theme__light {
+  --tl-color-selection-fill: rgb(0 0 0 / 0.08);
+  --tl-color-panel-overlay: rgb(255 255 255 / 0.82);
+}
+
+.design .tlui-menu,
+.design .tlui-popover__content,
+.design .tlui-main-toolbar__overflow-content,
+.design .tlui-dialog__content,
+.design .tlui-toast__container,
+.design .tlui-menu-zone,
+.design .tlui-navigation-panel,
+.design .tlui-main-toolbar__tools,
+.design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls,
+.design .tlui-tooltip {
+  background: rgb(28 28 28 / 0.78);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow:
+    0 16px 48px rgb(0 0 0 / 0.55),
+    0 2px 8px rgb(0 0 0 / 0.35);
+}
+
+.light .design .tlui-menu,
+.light .design .tlui-popover__content,
+.light .design .tlui-main-toolbar__overflow-content,
+.light .design .tlui-dialog__content,
+.light .design .tlui-toast__container,
+.light .design .tlui-menu-zone,
+.light .design .tlui-navigation-panel,
+.light .design .tlui-main-toolbar__tools,
+.light .design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls,
+.light .design .tlui-tooltip {
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow:
+    0 16px 48px rgb(0 0 0 / 0.14),
+    0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+.design .tlui-menu,
+.design .tlui-popover__content {
+  animation: var(--animate-pop);
+}
+
+.design .tlui-menu {
+  padding: 6px;
+}
+
+.design .tlui-button {
+  font-size: 13px;
+}
+
+.design .tlui-main-toolbar__tools,
+.design .tlui-menu-zone,
+.design .tlui-navigation-panel,
+.design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls {
+  border-radius: 999px;
+}
+
+.design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls {
+  margin-bottom: 6px;
+}
+
+.design .tlui-menu-zone {
+  margin: 10px;
+}
+
+.design .tlui-navigation-panel {
+  margin: 8px;
+  overflow: hidden;
+}
+
+.design .tlui-navigation-panel::before {
+  display: none;
+}
+
+.design .tlui-button__tool::after {
+  border-radius: 999px;
+}
+
+.design .tlui-dialog__content {
+  border-radius: var(--radius-card);
+  font-size: 13px;
+}
+
+.design .tlui-dialog__body {
+  font-size: 13px;
+}
+
+.design .tlui-tooltip {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-fg-secondary);
+}
+
+.design .tlui-tooltip__arrow {
+  display: none;
+}
+
+.design .tl-watermark_SEE-LICENSE {
+  display: none;
 }
 
 .doc .bn-container {
