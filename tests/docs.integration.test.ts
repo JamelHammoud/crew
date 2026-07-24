@@ -221,7 +221,9 @@ describe('doc pages', () => {
     const host = await startHost(repoPath)
 
     const docs = host.session.snapshot().docs
-    expect(docs['old-page']).toEqual({ title: 'Old page', text: '# Old\n\nStill here.' })
+    const page = Object.keys(docs).find(p => /^old-page-\d[a-z0-9]{3}$/.test(p))
+    expect(page).toBeDefined()
+    expect(docs[page!]).toEqual({ title: 'Old page', text: '# Old\n\nStill here.' })
 
     await host.close()
   })
