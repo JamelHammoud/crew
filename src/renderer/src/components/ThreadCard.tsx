@@ -9,7 +9,7 @@ import {
 import { useState } from 'react'
 import { useCrew, type ThreadMeta } from '../state/store'
 import Avatar from './Avatar'
-import { AgentMention, MemberName } from './Mention'
+import { MemberName, MentionText } from './Mention'
 import { MenuItem, Popover } from './Popover'
 import { usePresence } from './presence'
 import Spinner from './Spinner'
@@ -74,12 +74,7 @@ export default function ThreadCard({
           className="group w-full text-left mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 hover:border-ink-600"
         >
           <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">
-            {agent ? (
-              <AgentMention agent={agent}>@{thread.agentLabel}</AgentMention>
-            ) : (
-              <strong className="font-semibold">@{thread.agentLabel}</strong>
-            )}{' '}
-            {thread.title.replace(new RegExp(`^@${thread.agentLabel}\\s*`), '')}
+            <MentionText text={title} />
           </p>
           <div className="relative bg-ink-700 px-5 h-[52px] flex items-center gap-3">
             <StateIcon state={state} />
