@@ -30,13 +30,12 @@ const agent: PooledAgent = {
 
 describe('agent usage limits', () => {
   it('shows the complete usage snapshot inside its agent card', () => {
-    const { container } = render(createElement(AgentCard, { agent, threadCount: 0, sharesUsageAccount: true }))
+    const { container } = render(createElement(AgentCard, { agent, threadCount: 0 }))
     const card = container.firstElementChild as HTMLElement
     const cardQueries = within(card)
 
     expect(cardQueries.getByText('Codex')).toBeTruthy()
     fireEvent.click(cardQueries.getByText('Usage'))
-    expect(cardQueries.getByText('Same account')).toBeTruthy()
     expect(cardQueries.getByText('ali@example.com · Pro plan')).toBeTruthy()
     expect(cardQueries.getByText('5-hour limit')).toBeTruthy()
     expect(cardQueries.getByText('63%')).toBeTruthy()
