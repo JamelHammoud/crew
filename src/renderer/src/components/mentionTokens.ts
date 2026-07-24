@@ -1,10 +1,10 @@
-import { docRefs, type DocPage } from '../../../shared/docs'
+import { docRefs, resolveDocRef, type DocMentionRef, type DocPage } from '../../../shared/docs'
 import type { PooledAgent } from '../../../shared/llm'
 
 export type MentionToken =
   | { kind: 'text'; text: string }
   | { kind: 'agent'; text: string; agent: PooledAgent }
-  | { kind: 'doc'; text: string; page: string }
+  | { kind: 'doc'; text: string; page: string | null }
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -13,9 +13,14 @@ function escapeRegex(value: string): string {
 export function tokenizeMentions(
   text: string,
   agents: PooledAgent[],
-  docs: Record<string, DocPage>
+  docs: Record<string, DocPage>,
+  docMentions?: DocMentionRef[]
 ): MentionToken[] {
-  const refs = docRefs(docs)
+  const refs = docMentions
+    ? docMentions
+        .filter(ref => ref.title.trim().length > 0)
+        .map(ref => ({ title: ref.title, page: resolveDocRef(docs, ref) }))
+    : docRefs(docs).map(ref => ({ title: ref.title, page: ref.page as string | null }))
   const names = [...agents.map(a => `@${a.label}`), ...refs.map(ref => `#${ref.title}`)]
     .sort((a, b) => b.length - a.length)
     .map(escapeRegex)
