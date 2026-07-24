@@ -452,20 +452,53 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     detach: (key, id) =>
       set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
-    sendChat: (text, threadId) => {
-      const key = threadId ?? CHAT_KEY
+    sendChat: (text, threadId, boardId) => {
+      const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
       const mentions = mentionsIn(text, get().agents)
-      if (threadId) {
-        socket.send({ type: 'chat.send', text, mentions, threadId, attachments })
+      if (threadId || boardId) {
+        socket.send({
+          type: 'chat.send',
+          text,
+          mentions,
+          threadId,
+          attachments,
+          boardId: threadId ? undefined : boardId
+        })
         set(state => ({
-          threadDrafts: { ...state.threadDrafts, [threadId]: '' },
+          threadDrafts: { ...state.threadDrafts, [key]: '' },
           pending: { ...state.pending, [key]: [] }
         }))
         return
       }
       socket.send({ type: 'chat.send', text, mentions, attachments })
       set(state => ({ chatDraft: '', pending: { ...state.pending, [key]: [] } }))
+    },
+    createBoard: name => {
+      const boardId = `${slugify(name) || 'board'}-${boardCode()}`
+      set(state => ({ boards: [...state.boards, { id: boardId, name }] }))
+      socket.send({ type: 'design.create', boardId, name })
+      return boardId
+    },
+    renameBoard: (boardId, name) => {
+      set(state => ({ boards: state.boards.map(b => (b.id === boardId ? { ...b, name } : b)) }))
+      socket.send({ type: 'design.rename', boardId, name })
+    },
+    deleteBoard: boardId => {
+      set(state => ({ boards: state.boards.filter(b => b.id !== boardId) }))
+      socket.send({ type: 'design.delete', boardId })
+    },
+    openDesign: boardId => {
+      socket.send({ type: 'design.open', boardId })
+    },
+    initDesign: (boardId, document) => {
+      socket.send({ type: 'design.init', boardId, document })
+    },
+    applyDesign: (boardId, put, remove) => {
+      socket.send({ type: 'design.apply', boardId, put, remove })
+    },
+    sendDesignPresence: (boardId, cursor, selection, pageId) => {
+      socket.send({ type: 'design.presence', boardId, cursor, selection, pageId })
     },
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
