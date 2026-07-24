@@ -369,32 +369,25 @@ body {
   font-size: 13px;
 }
 
-.design .tlui-main-toolbar__tools,
-.design .tlui-menu-zone,
-.design .tlui-navigation-panel {
+.design .tlui-main-toolbar__tools {
   border-radius: 999px;
 }
 
-.design .tlui-style-panel__wrapper {
-  margin: 0;
-  border-radius: 16px;
-  animation: var(--animate-pop);
-}
-
-.design .tlui-menu-zone {
-  margin: 10px;
-}
-
-.design .tlui-navigation-panel {
-  margin: 8px;
-  overflow: hidden;
-}
-
-.design .tlui-navigation-panel::before {
-  display: none;
+.design .tlui-button__tool {
+  width: 40px;
+  padding: 0;
 }
 
 .design .tlui-button__tool::after {
+  border-radius: 999px;
+}
+
+.design .design-menu .tlui-button {
+  width: 40px;
+  padding: 0;
+}
+
+.design .design-menu .tlui-button::after {
   border-radius: 999px;
 }
 
