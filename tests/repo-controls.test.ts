@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import RepoControls from '../src/renderer/src/components/RepoControls'
 import type { RepoStatus } from '../src/shared/repository'
@@ -41,7 +42,7 @@ describe('project sync controls', () => {
       } as unknown as CrewBridge
     })
 
-    render(<RepoControls />)
+    render(createElement(RepoControls))
     const pull = screen.getByLabelText('Pull changes') as HTMLButtonElement
     await waitFor(() => expect(pull.disabled).toBe(false))
     fireEvent.click(screen.getByLabelText('Pull changes'))
@@ -60,7 +61,7 @@ describe('project sync controls', () => {
       } as unknown as CrewBridge
     })
 
-    render(<RepoControls />)
+    render(createElement(RepoControls))
 
     await waitFor(() => expect((screen.getByLabelText('Pull changes') as HTMLButtonElement).disabled).toBe(true))
     expect((screen.getByLabelText('Push changes') as HTMLButtonElement).disabled).toBe(true)
