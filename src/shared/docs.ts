@@ -8,6 +8,11 @@ export interface DocRef {
   title: string
 }
 
+export interface DocMentionRef {
+  page: string
+  title: string
+}
+
 export function docRefs(docs: Record<string, DocPage>): DocRef[] {
   return Object.entries(docs)
     .map(([page, doc]) => ({ page, title: doc.title }))
