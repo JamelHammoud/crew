@@ -1,7 +1,6 @@
 import { ArrowRightStartOnRectangleIcon, CheckIcon, LinkIcon, MoonIcon, SunIcon } from '@heroicons/react/16/solid'
-import { CheckCircleIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
+import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
-import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { applyTheme, useTheme } from '../state/theme'
 import Avatar from './Avatar'
@@ -42,7 +41,6 @@ export default function TopBar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
-  const browserOpen = useBrowser(s => s.open)
 
   const copyLink = async () => {
     if (!joinLink) return
