@@ -46,7 +46,7 @@ import {
   type DesignOpResult,
   type DesignPresence
 } from '../shared/design'
-import { applyDesignOps, boardSummary } from './designops'
+import { applyDesignOps, boardSummary, type AppliedOps } from './designops'
 import { Store } from './store'
 
 interface Member {
@@ -153,6 +153,7 @@ export class CrewSession {
   private events: SessionEvent[] = []
   private docs = new Map<string, DocPage>()
   private designs = new Map<string, DesignBoard>()
+  private designCursorTimers = new Map<string, NodeJS.Timeout[]>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
