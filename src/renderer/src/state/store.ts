@@ -38,6 +38,7 @@ interface CrewState {
   threadPrompts: Record<string, string>
   todos: Todo[]
   openThreadId: string | null
+  docsTarget: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
   httpBase: string
@@ -67,6 +68,8 @@ interface CrewState {
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
+  openDoc: (page: string) => void
+  clearDocsTarget: () => void
 }
 
 const socket = new CrewSocket()
@@ -84,6 +87,7 @@ const EMPTY = {
   threadPrompts: {},
   todos: [],
   openThreadId: null,
+  docsTarget: null,
   chatDraft: '',
   threadDrafts: {},
   pending: {}
@@ -503,6 +507,8 @@ export const useCrew = create<CrewState>((set, get) => {
       socket.send({ type: 'agent.settings', agentId, settings: { [key]: value } })
     },
     openThread: threadId => set({ openThreadId: threadId }),
-    closeThread: () => set({ openThreadId: null })
+    closeThread: () => set({ openThreadId: null }),
+    openDoc: page => set({ docsTarget: page }),
+    clearDocsTarget: () => set({ docsTarget: null })
   }
 })
