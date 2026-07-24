@@ -225,6 +225,11 @@ app.whenReady().then(() => {
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
+  ipcMain.handle('file:read', (_event, target: string) => session.readFile(target))
+  ipcMain.handle('file:reveal', (_event, target: string) => {
+    const absolute = session.resolveFile(target)
+    if (absolute) shell.showItemInFolder(absolute)
+  })
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
