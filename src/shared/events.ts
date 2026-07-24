@@ -1,4 +1,5 @@
 import type { Attachment } from './attachments'
+import type { DocMentionRef } from './docs'
 import type { AgentSettings, AgentStep } from './llm'
 
 // 'open' means the thread still wants attention: either an agent is working or
