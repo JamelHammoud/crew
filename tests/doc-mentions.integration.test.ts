@@ -37,6 +37,30 @@ describe('resolveDocRef', () => {
   })
 })
 
+describe('page code migration', () => {
+  it('gives code-less pages an id at startup and leaves main alone', async () => {
+    const repoPath = tmpDir('doc-codes')
+    const docsDir = path.join(repoPath, '.crew', 'docs')
+    fs.mkdirSync(path.join(docsDir, 'guides'), { recursive: true })
+    fs.writeFileSync(path.join(docsDir, 'main.md'), 'home')
+    fs.writeFileSync(path.join(docsDir, 'guides.md'), 'G')
+    fs.writeFileSync(path.join(docsDir, 'guides', 'setup.md'), 'S')
+    fs.writeFileSync(path.join(docsDir, 'plan-1abc.md'), 'P')
+
+    const host = await startHost(repoPath)
+    const pages = Object.keys(host.store.loadDocs()).sort()
+    await host.close()
+
+    expect(pages).toContain('main')
+    expect(pages).toContain('plan-1abc')
+    const guides = pages.find(p => /^guides-\d[a-z0-9]{3}$/.test(p))
+    expect(guides).toBeDefined()
+    const setup = pages.find(p => p.startsWith(`${guides}/`))
+    expect(setup).toMatch(new RegExp(`^${guides}/setup-\\d[a-z0-9]{3}$`))
+    expect(pageCodeOf(setup!)).not.toBe(pageCodeOf(guides!))
+  })
+})
+
 describe('doc mentions in messages', () => {
   let host: TestHost
   let runners: Runner[] = []
