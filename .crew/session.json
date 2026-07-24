@@ -806,22 +806,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784923850619,
+        "fetchedAt": 1784923970348,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 48,
+            "percent": 50,
             "severity": "normal",
-            "resetsAt": 1784928600955,
-            "active": false
+            "resetsAt": 1784928600723,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 27,
             "severity": "normal",
-            "resetsAt": 1785049200955,
+            "resetsAt": 1785049200723,
             "active": false
           },
           {
@@ -829,8 +829,8 @@
             "label": "Weekly (Fable)",
             "percent": 50,
             "severity": "normal",
-            "resetsAt": 1785049200956,
-            "active": true
+            "resetsAt": 1785049200723,
+            "active": false
           }
         ],
         "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
