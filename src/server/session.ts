@@ -1205,10 +1205,7 @@ export class CrewSession {
       )
     }
     lines.push(``, `Thread so far:`, transcript || '(nothing yet)')
-    const referenced = docMentionsIn(
-      [...context.map(e => e.text ?? ''), prompt.text].join('\n'),
-      Object.fromEntries(this.docs)
-    )
+    const referenced = this.referencedPages(context, prompt)
     for (const page of referenced) {
       const doc = this.docs.get(page)
       if (!doc) continue
