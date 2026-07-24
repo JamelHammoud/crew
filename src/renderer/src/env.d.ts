@@ -16,6 +16,7 @@ declare global {
     removeAgent(instanceId: string): Promise<void>
     openExternal(url: string): Promise<void>
     readFile(path: string): Promise<RepoFile | null>
+    writeFile(path: string, text: string): Promise<RepoFile | null>
     revealFile(path: string): Promise<void>
     onFullScreen(listener: (full: boolean) => void): void
     onOpenUrl(listener: (url: string) => void): void
