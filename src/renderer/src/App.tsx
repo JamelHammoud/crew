@@ -32,6 +32,11 @@ function Session() {
   const openThreadId = useCrew(s => s.openThreadId)
   const closeThread = useCrew(s => s.closeThread)
   const openThread = useCrew(s => s.openThread)
+  const docsTarget = useCrew(s => s.docsTarget)
+
+  useEffect(() => {
+    if (docsTarget) setTab('docs')
+  }, [docsTarget])
 
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThread()
