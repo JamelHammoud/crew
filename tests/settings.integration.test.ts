@@ -5,7 +5,7 @@ import { codexArgs } from '../src/runner/providers/codex'
 import { kimiArgs } from '../src/runner/providers/kimi'
 import { kimiModels } from '../src/runner/providers/kimi-models'
 import type { SessionEvent } from '../src/shared/events'
-import { agentId, resolveSettings } from '../src/shared/llm'
+import { agentId, resolveSettings, visibleSettingFields } from '../src/shared/llm'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 
@@ -18,6 +18,17 @@ describe('provider settings map to command line flags', () => {
     expect(args.join(' ')).toContain('--permission-mode bypassPermissions')
     expect(args.join(' ')).toContain('--model sonnet')
     expect(args.join(' ')).toContain('--effort max')
+  })
+
+  it('claude sends the exact selected opus model', () => {
+    const args = claudeArgs('hi', reader({ model: 'opus', opusModel: 'claude-opus-4-8', effort: 'high' }))
+    expect(args.join(' ')).toContain('--model claude-opus-4-8')
+  })
+
+  it('claude ignores the opus version for another model family', () => {
+    const args = claudeArgs('hi', reader({ model: 'sonnet', opusModel: 'claude-opus-4-8', effort: 'high' }))
+    expect(args.join(' ')).toContain('--model sonnet')
+    expect(args).not.toContain('claude-opus-4-8')
   })
 
   it('kimi passes the model alias and stays free of approval flags', () => {
@@ -40,7 +51,16 @@ describe('provider settings map to command line flags', () => {
 
   it('falls back to the default when a value is not one of the options', () => {
     const resolved = resolveSettings(claudeFields(), { model: 'gpt-4', effort: 'medium' })
-    expect(resolved).toEqual({ model: 'opus', effort: 'medium' })
+    expect(resolved).toEqual({ model: 'opus', opusModel: 'claude-opus-5', effort: 'medium' })
+  })
+
+  it('shows the opus version only while opus is selected', () => {
+    const fields = claudeFields()
+    const opus = resolveSettings(fields, { model: 'opus' })
+    const sonnet = resolveSettings(fields, { model: 'sonnet' })
+
+    expect(visibleSettingFields(fields, opus).map(field => field.key)).toEqual(['model', 'opusModel', 'effort'])
+    expect(visibleSettingFields(fields, sonnet).map(field => field.key)).toEqual(['model', 'effort'])
   })
 
   it('reads kimi model aliases from the config file', () => {
