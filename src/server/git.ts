@@ -1,4 +1,5 @@
-import { runGit } from '../shared/git'
+import { runGit, type GitResult } from '../shared/git'
+import type { RepoActionResult, RepoStatus } from '../shared/repository'
 
 export class GitSync {
   private chain: Promise<void> = Promise.resolve()
