@@ -2,6 +2,7 @@
 
 import type { RepoFile, RepoPathKind } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
+import type { RepoActionResult, RepoStatus } from '../../shared/repository'
 
 declare global {
   interface CrewBridge {
@@ -14,6 +15,9 @@ declare global {
     installProvider(provider: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>
+    repoStatus(): Promise<RepoStatus>
+    pullRepo(): Promise<RepoActionResult>
+    pushRepo(): Promise<RepoActionResult>
     openExternal(url: string): Promise<void>
     readFile(path: string): Promise<RepoFile | null>
     writeFile(path: string, text: string): Promise<RepoFile | null>

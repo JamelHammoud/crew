@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { RepoFile, RepoPathKind } from '../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
+import type { RepoActionResult, RepoStatus } from '../shared/repository'
 import type { CurrentSession } from './session'
 
 const bridge = {
@@ -16,6 +17,9 @@ const bridge = {
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
     ipcRenderer.invoke('agents:create', input),
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
+  repoStatus: (): Promise<RepoStatus> => ipcRenderer.invoke('repo:status'),
+  pullRepo: (): Promise<RepoActionResult> => ipcRenderer.invoke('repo:pull'),
+  pushRepo: (): Promise<RepoActionResult> => ipcRenderer.invoke('repo:push'),
   openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   writeFile: (path: string, text: string): Promise<RepoFile | null> =>
