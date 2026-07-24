@@ -220,3 +220,8 @@ export class GitSync {
     return false
   }
 }
+
+function gitDetail(result: GitResult): string {
+  const text = result.stderr.trim() || result.stdout.trim() || 'Git did not finish.'
+  return text.replace(/^fatal:\s*/i, '').split(/\r?\n/)[0]
+}
