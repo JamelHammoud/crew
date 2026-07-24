@@ -160,15 +160,18 @@ export class CrewSession {
     }
     const loaded = store.loadEvents()
     const deleted = new Set(loaded.filter(e => e.kind === 'message.deleted').map(e => e.messageId))
-    const edits = new Map<string, string>()
+    const edits = new Map<string, Extract<SessionEvent, { kind: 'message.edited' }>>()
     for (const event of loaded) {
-      if (event.kind === 'message.edited') edits.set(event.messageId, event.text)
+      if (event.kind === 'message.edited') edits.set(event.messageId, event)
     }
     this.events = loaded
       .filter(
         e => e.kind !== 'message.deleted' && e.kind !== 'message.edited' && !(e.kind === 'message' && deleted.has(e.id))
       )
-      .map(e => (e.kind === 'message' && edits.has(e.id) ? { ...e, text: edits.get(e.id)! } : e))
+      .map(e => {
+        const edit = e.kind === 'message' ? edits.get(e.id) : undefined
+        return edit ? { ...e, text: edit.text, docMentions: edit.docMentions } : e
+      })
     for (const event of this.events) {
       if (event.kind === 'thread.started') {
         this.threads.set(event.threadId, {
