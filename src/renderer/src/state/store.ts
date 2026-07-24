@@ -65,7 +65,19 @@ interface CrewState {
   setThreadDraft: (threadId: string, text: string) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
-  sendChat: (text: string, threadId?: string) => void
+  sendChat: (text: string, threadId?: string, boardId?: string) => void
+  createBoard: (name: string) => string
+  renameBoard: (boardId: string, name: string) => void
+  deleteBoard: (boardId: string) => void
+  openDesign: (boardId: string) => void
+  initDesign: (boardId: string, document: DesignDocument) => void
+  applyDesign: (boardId: string, put: unknown[], remove: string[]) => void
+  sendDesignPresence: (
+    boardId: string,
+    cursor: { x: number; y: number } | null,
+    selection: string[],
+    pageId: string | null
+  ) => void
   deleteMessage: (messageId: string) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
   addTodo: (text: string, agentId?: string) => void
@@ -101,6 +113,7 @@ const EMPTY = {
   threads: {},
   threadPrompts: {},
   todos: [],
+  boards: [],
   openThreadId: null,
   docsTarget: null,
   chatDraft: '',
