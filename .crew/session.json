@@ -196,8 +196,8 @@
       "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
       "ownerName": "ALI",
       "settings": {
-        "model": "fable",
-        "effort": "max"
+        "model": "sonnet",
+        "effort": "high"
       },
       "fields": [
         {
@@ -258,14 +258,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784925979327,
+        "fetchedAt": 1784925985358,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000066,
+            "resetsAt": 1784931000104,
             "active": true
           },
           {
@@ -273,7 +273,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200066,
+            "resetsAt": 1785499200104,
             "active": false
           }
         ],
@@ -483,99 +483,6 @@
       }
     },
     {
-      "id": "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
-      "label": "Claude Opus",
-      "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "opus",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "haiku"
-            },
-            {
-              "value": "fable",
-              "label": "fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784925979327,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 6,
-            "severity": "normal",
-            "resetsAt": 1784931000066,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1785499200066,
-            "active": false
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
-    },
-    {
       "id": "ali/0d392594-6df2-4b6e-b809-57b71598960d",
       "label": "Codex Gpt-5.6-sol",
       "provider": "codex",
@@ -656,7 +563,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784926099329,
+        "fetchedAt": 1784926105369,
         "windows": [
           {
             "key": "primary",
@@ -667,7 +574,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784926094646
+        "asOf": 1784926100014
       }
     },
     {
@@ -751,7 +658,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784926099329,
+        "fetchedAt": 1784926105369,
         "windows": [
           {
             "key": "primary",
@@ -762,7 +669,100 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784926094646
+        "asOf": 1784926100014
+      }
+    },
+    {
+      "id": "ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6",
+      "label": "Claude Opus 2",
+      "provider": "claude",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "opus",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784925985358,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 6,
+            "severity": "normal",
+            "resetsAt": 1784931000104,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 0,
+            "severity": "normal",
+            "resetsAt": 1785499200104,
+            "active": false
+          }
+        ],
+        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "pro"
       }
     }
   ]
