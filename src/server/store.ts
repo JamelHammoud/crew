@@ -150,6 +150,32 @@ export class Store {
     if (fs.existsSync(sourceDir)) fs.renameSync(sourceDir, targetDir)
   }
 
+  loadDesigns(): Record<string, PersistedDesign> {
+    const designs: Record<string, PersistedDesign> = {}
+    for (const entry of fs.readdirSync(path.join(this.root, 'designs'))) {
+      if (!entry.endsWith('.json')) continue
+      const id = entry.slice(0, -5)
+      if (!BOARD_ID.test(id)) continue
+      try {
+        const parsed = JSON.parse(fs.readFileSync(path.join(this.root, 'designs', entry), 'utf8'))
+        designs[id] = { name: typeof parsed.name === 'string' ? parsed.name : id, document: parsed.document ?? null }
+      } catch {
+        continue
+      }
+    }
+    return designs
+  }
+
+  saveDesign(id: string, design: PersistedDesign): void {
+    if (!BOARD_ID.test(id)) throw new Error(`Bad board id: ${id}`)
+    this.writeAtomic(path.join(this.root, 'designs', `${id}.json`), JSON.stringify(design))
+  }
+
+  deleteDesign(id: string): void {
+    if (!BOARD_ID.test(id)) throw new Error(`Bad board id: ${id}`)
+    fs.rmSync(path.join(this.root, 'designs', `${id}.json`), { force: true })
+  }
+
   private sessionPath(): string {
     return path.join(this.root, 'session.json')
   }

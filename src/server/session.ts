@@ -621,6 +621,37 @@ export class CrewSession {
     return this.store.attachmentPath(file)
   }
 
+  private assignPageCodes(): void {
+    const taken = new Set([...this.docs.keys()].map(pageCodeOf))
+    const pending = [...this.docs.keys()]
+      .filter(page => page !== 'main' && !pageCodeOf(page))
+      .sort((a, b) => b.split('/').length - a.split('/').length)
+    let titlesChanged = false
+    for (const from of pending) {
+      let code = pageCode()
+      while (taken.has(code)) code = pageCode()
+      taken.add(code)
+      const to = `${from}-${code}`
+      try {
+        this.store.renameDoc(from, to)
+      } catch {
+        continue
+      }
+      for (const [page, doc] of [...this.docs.entries()]) {
+        if (page !== from && !page.startsWith(`${from}/`)) continue
+        this.docs.delete(page)
+        this.docs.set(to + page.slice(from.length), doc)
+      }
+      for (const [page, title] of [...this.docTitles.entries()]) {
+        if (page !== from && !page.startsWith(`${from}/`)) continue
+        this.docTitles.delete(page)
+        this.docTitles.set(to + page.slice(from.length), title)
+        titlesChanged = true
+      }
+    }
+    if (titlesChanged) this.store.saveTitles(Object.fromEntries(this.docTitles))
+  }
+
   private followRenames(page: string): string {
     for (let hops = 0; hops < 5; hops++) {
       if (this.docs.has(page)) return page
