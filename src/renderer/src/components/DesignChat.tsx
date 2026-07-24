@@ -86,7 +86,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
   const example = agents.find(a => a.status !== 'offline')?.label ?? agents[0]?.label ?? 'an agent'
 
   return (
-    <aside className="w-[360px] shrink-0 border-l border-ink-700 flex flex-col min-h-0 pt-[70px]">
+    <aside className="w-[360px] shrink-0 flex flex-col min-h-0 pt-[70px]">
       <div className="flex items-center gap-2 pl-5 pr-3 h-12 shrink-0">
         <span className="text-sm font-semibold text-fg">Board chat</span>
         <div className="ml-auto flex items-center gap-1">
@@ -150,7 +150,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
           </div>
         )}
       </div>
-      <div className="px-4 pb-4 shrink-0">
+      <div className="px-4 pb-6 shrink-0">
         <Composer
           attachmentKey={key}
           value={text}
