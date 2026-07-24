@@ -15,6 +15,7 @@ import {
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { AppSession, type NewAgent } from './session'
+import { createWindowOptions } from './window-options'
 
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
 app.commandLine.appendSwitch('disable-renderer-backgrounding')
@@ -95,24 +96,9 @@ app.on('web-contents-created', (_event, contents) => {
 
 function createWindow(): void {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
-  const win = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
-    transparent: true,
-    backgroundColor: '#00000000',
-    title: 'crew',
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 20, y: 27 },
-    webPreferences: {
-      preload: path.join(dirname, '../preload/preload.mjs'),
-      contextIsolation: true,
-      sandbox: false,
-      spellcheck: true,
-      webviewTag: true
-    }
-  })
+  const win = new BrowserWindow(
+    createWindowOptions(process.platform, path.join(dirname, '../preload/preload.mjs'))
+  )
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
   win.webContents.on('will-navigate', (event, url) => {
     if (isAppUrl(url)) return
@@ -123,8 +109,12 @@ function createWindow(): void {
     if (/^https?:/i.test(url)) win.webContents.send('browser:open', url)
     return { action: 'deny' }
   })
-  win.on('enter-full-screen', () => win.webContents.send('window:fullscreen', true))
-  win.on('leave-full-screen', () => win.webContents.send('window:fullscreen', false))
+  const syncWindowShape = () =>
+    win.webContents.send('window:fullscreen', win.isFullScreen() || win.isMaximized())
+  win.on('maximize', syncWindowShape)
+  win.on('unmaximize', syncWindowShape)
+  win.on('enter-full-screen', syncWindowShape)
+  win.on('leave-full-screen', syncWindowShape)
   installContextMenu(win)
   if (devUrl) {
     win.loadURL(devUrl)
