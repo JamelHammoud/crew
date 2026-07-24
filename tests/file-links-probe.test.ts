@@ -34,6 +34,7 @@ beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
+    writeFile: async () => null,
     revealFile: async () => undefined,
     openExternal: async () => undefined
   } as unknown as CrewBridge
