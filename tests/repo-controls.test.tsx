@@ -14,6 +14,11 @@ const ready: RepoStatus = {
   behind: 0
 }
 
+Object.defineProperty(Element.prototype, 'getAnimations', {
+  configurable: true,
+  value: () => []
+})
+
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
@@ -27,30 +32,37 @@ describe('project sync controls', () => {
       message: 'Pulled the latest changes.',
       status: { ...ready, changed: 0 }
     }))
-    window.crew = {
-      repoStatus: vi.fn(async () => ready),
-      pullRepo,
-      pushRepo: vi.fn()
-    } as unknown as CrewBridge
+    Object.defineProperty(window, 'crew', {
+      configurable: true,
+      value: {
+        repoStatus: vi.fn(async () => ready),
+        pullRepo,
+        pushRepo: vi.fn()
+      } as unknown as CrewBridge
+    })
 
     render(<RepoControls />)
-    await waitFor(() => expect(screen.getByLabelText('Pull changes')).not.toBeDisabled())
+    const pull = screen.getByLabelText('Pull changes') as HTMLButtonElement
+    await waitFor(() => expect(pull.disabled).toBe(false))
     fireEvent.click(screen.getByLabelText('Pull changes'))
 
-    await waitFor(() => expect(pullRepo).toHaveBeenCalledOnce())
+    await waitFor(() => expect(pullRepo).toHaveBeenCalledTimes(1))
     expect(screen.getAllByText('Pulled the latest changes.').length).toBeGreaterThan(0)
   })
 
   it('keeps pull and push unavailable when there is no remote', async () => {
-    window.crew = {
-      repoStatus: vi.fn(async () => ({ ...ready, remote: false })),
-      pullRepo: vi.fn(),
-      pushRepo: vi.fn()
-    } as unknown as CrewBridge
+    Object.defineProperty(window, 'crew', {
+      configurable: true,
+      value: {
+        repoStatus: vi.fn(async () => ({ ...ready, remote: false })),
+        pullRepo: vi.fn(),
+        pushRepo: vi.fn()
+      } as unknown as CrewBridge
+    })
 
     render(<RepoControls />)
 
-    await waitFor(() => expect(screen.getByLabelText('Pull changes')).toBeDisabled())
-    expect(screen.getByLabelText('Push changes')).toBeDisabled()
+    await waitFor(() => expect((screen.getByLabelText('Pull changes') as HTMLButtonElement).disabled).toBe(true))
+    expect((screen.getByLabelText('Push changes') as HTMLButtonElement).disabled).toBe(true)
   })
 })
