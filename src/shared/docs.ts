@@ -47,6 +47,21 @@ export function docMentionsIn(text: string, docs: Record<string, DocPage>): stri
   return pages
 }
 
+export function docMentionRefsIn(text: string, docs: Record<string, DocPage>): DocMentionRef[] {
+  return docMentionsIn(text, docs).map(page => ({ page, title: docs[page].title }))
+}
+
+export function pageCodeOf(page: string): string | null {
+  return splitPageCode(page.split('/').pop()!).code
+}
+
+export function resolveDocRef(docs: Record<string, DocPage>, ref: DocMentionRef): string | null {
+  if (docs[ref.page] !== undefined) return ref.page
+  const code = pageCodeOf(ref.page)
+  if (!code) return null
+  return Object.keys(docs).find(page => pageCodeOf(page) === code) ?? null
+}
+
 const FRONTMATTER = /^---\n([\s\S]*?)\n---\n?/
 const CODED_SEGMENT = /^(.*)-(\d[a-z0-9]{3})$/
 
