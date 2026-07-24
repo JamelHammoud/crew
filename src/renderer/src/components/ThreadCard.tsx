@@ -49,6 +49,11 @@ export default function ThreadCard({
     setThreadStatus(thread.id, status)
   }
 
+  const prefix = `@${thread.agentLabel}`
+  const title = thread.title.toLowerCase().startsWith(prefix.toLowerCase())
+    ? thread.title
+    : `${prefix} ${thread.title}`
+
   return (
     <div
       className="flex gap-4 animate-rise"
