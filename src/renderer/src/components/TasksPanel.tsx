@@ -561,8 +561,9 @@ export default function TasksPanel({
                 )}
             </section>
           )}
-        </div>
-      </aside>
+          </div>
+        </aside>
+      </div>
       <Popover
         open={picker !== null}
         onClose={() => setPicker(null)}
