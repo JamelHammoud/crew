@@ -5777,3 +5777,11 @@
 {"id":"d1fbe692-4c19-4763-94f1-8194efc31d9c","ts":1784862288113,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
 {"id":"83f9a26a-5f3a-47ad-be02-e2ba2013e51b","ts":1784862288113,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
 {"id":"041ef77d-3261-4159-aba4-7f7d95796884","ts":1784862288113,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"4fc4e661-2e2f-41f9-8f29-1e4b0b14079a","ts":1784862295112,"kind":"agent.online","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"3b7889b2-38a7-4179-be7e-02de2777dac6","ts":1784862295112,"kind":"agent.online","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"7bb226e9-c14e-4220-a32a-f007869f0f24","ts":1784862295113,"kind":"agent.online","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"d912e7c0-7ef3-42b7-890d-35156d352ccd","ts":1784862295113,"kind":"agent.online","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"80418598-800a-45ce-b190-b721b5760131","ts":1784862295113,"kind":"agent.online","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"28694ef6-0f81-40e3-80f0-9f7a75679aeb","ts":1784862295113,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"90758c08-0bc3-4014-ad30-8b1906451e3a","ts":1784862295113,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"eebfe9b1-6f97-49f6-8c7b-88adc7486b23","ts":1784862295113,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
