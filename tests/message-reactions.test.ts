@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
 import { reactionGroups } from '../src/renderer/src/components/reactionGroups'
@@ -13,14 +14,16 @@ describe('message reaction controls', () => {
     const reactToMessage = vi.fn()
     useCrew.setState({ reactToMessage })
     render(
-      <div className="group/message">
-        <MessageReactions
-          targetId="message:m1"
-          reactions={[{ emoji: '❤️', count: 2, names: ['Ali', 'Jamel'], self: true }]}
-          deletable={false}
-          onDelete={() => {}}
-        />
-      </div>
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [{ emoji: '❤️', count: 2, names: ['Ali', 'Jamel'], self: true }],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
     )
 
     fireEvent.click(screen.getByLabelText('React with 🎉'))
