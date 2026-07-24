@@ -1151,12 +1151,13 @@ export class CrewSession {
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt): string {
     const people = [...this.members.values()].map(m => m.name).join(', ')
-    const transcript = this.events
+    const context = this.events
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
           (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === prompt.threadId
       )
       .slice(-CONTEXT_EVENT_LIMIT)
+    const transcript = context
       .map(e => {
         if (e.kind === 'message') {
           const images = (e.attachments ?? []).map(a => `[image: ${a.name}]`).join(' ')
