@@ -17,6 +17,19 @@ export interface ThreadMeta {
   title: string
   createdBy: string
   status: ThreadStatus
+  boardId?: string
+}
+
+export type DesignServerMessage = Extract<
+  ServerMessage,
+  { type: 'design.snapshot' | 'design.changes' | 'design.presence' }
+>
+
+const designListeners = new Set<(msg: DesignServerMessage) => void>()
+
+export function onDesign(listener: (msg: DesignServerMessage) => void): () => void {
+  designListeners.add(listener)
+  return () => designListeners.delete(listener)
 }
 
 const EVENT_LIMIT = 500
@@ -38,6 +51,7 @@ interface CrewState {
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
   todos: Todo[]
+  boards: DesignBoardMeta[]
   openThreadId: string | null
   docsTarget: string | null
   chatDraft: string
