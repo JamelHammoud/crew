@@ -1,4 +1,4 @@
-import { ComputerDesktopIcon } from '@heroicons/react/16/solid'
+import { ComputerDesktopIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import type { ReactNode } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
