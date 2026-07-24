@@ -53,7 +53,8 @@ export default function Chat() {
             self: e.authorId === selfId,
             text: e.text,
             streaming: false,
-            attachments: e.attachments
+            attachments: e.attachments,
+            docMentions: e.docMentions
           }
         })
       }

@@ -1,4 +1,5 @@
 import type { Attachment } from '../../../shared/attachments'
+import type { DocMentionRef } from '../../../shared/docs'
 import type { SessionEvent } from '../../../shared/events'
 import type { AgentStep, FileChange } from '../../../shared/llm'
 import type { ThreadMeta } from '../state/store'
@@ -56,6 +57,7 @@ export interface ThreadItem {
   subagent?: boolean
   files?: FileChange[]
   attachments?: Attachment[]
+  docMentions?: DocMentionRef[]
   route?: MessageRoute
 }
 
@@ -141,6 +143,7 @@ export function buildThread(
         text: event.text,
         streaming: false,
         attachments: event.attachments,
+        docMentions: event.docMentions,
         route: routeBadge(route, started, ended)
       })
     }
