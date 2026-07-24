@@ -8,7 +8,7 @@ import {
   type Attachment,
   type OutgoingAttachment
 } from '../shared/attachments'
-import { docMentionsIn, fallbackTitle, type DocPage } from '../shared/docs'
+import { docMentionRefsIn, docMentionsIn, fallbackTitle, resolveDocRef, type DocMentionRef, type DocPage } from '../shared/docs'
 import {
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
@@ -64,6 +64,7 @@ interface QueuedPrompt {
   authorId: string
   threadId: string
   mentions: string[]
+  docMentions: DocMentionRef[]
   attachments: Attachment[]
   messageId: string
 }
