@@ -5,6 +5,14 @@ import { claudeUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
+const OPUS_MODELS = [
+  { value: 'claude-opus-5', label: 'Opus 5' },
+  { value: 'claude-opus-4-8', label: 'Opus 4.8' },
+  { value: 'claude-opus-4-7', label: 'Opus 4.7' },
+  { value: 'claude-opus-4-6', label: 'Opus 4.6' },
+  { value: 'claude-opus-4-5-20251101', label: 'Opus 4.5' },
+  { value: 'opus', label: 'Latest' }
+]
 
 export const parseClaudeLine: OutputParser = line => {
   let msg: any
@@ -76,8 +84,20 @@ export const parseClaudeLine: OutputParser = line => {
 
 export const claudeFields = (): AgentSettingField[] => [
   { key: 'model', label: 'Model', options: choices(['', 'opus', 'sonnet', 'haiku', 'fable']), default: 'opus' },
+  {
+    key: 'opusModel',
+    label: 'Version',
+    options: OPUS_MODELS,
+    default: 'claude-opus-5',
+    visibleWhen: { key: 'model', value: 'opus' }
+  },
   { key: 'effort', label: 'Thinking', options: choices(['low', 'medium', 'high', 'xhigh', 'max']), default: 'high' }
 ]
+
+function claudeModel(get: SettingReader): string {
+  const model = get('model')
+  return model === 'opus' ? get('opusModel') || model : model
+}
 
 // The prompt is not passed in argv: with --input-format stream-json it goes in
 // over stdin, which is also the channel later messages use to steer the run.
@@ -89,7 +109,7 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   'stream-json',
   '--verbose',
   '--include-partial-messages',
-  ...flag('--model', get('model')),
+  ...flag('--model', claudeModel(get)),
   ...flag('--effort', get('effort')),
   '--permission-mode',
   'bypassPermissions',

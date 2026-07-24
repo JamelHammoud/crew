@@ -2,6 +2,7 @@ import { ComputerDesktopIcon, DocumentTextIcon } from '@heroicons/react/16/solid
 import { useMemo, type ReactNode } from 'react'
 import type { DocMentionRef } from '../../../shared/docs'
 import type { PooledAgent } from '../../../shared/llm'
+import { visibleSettingFields } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
@@ -12,7 +13,7 @@ import { tokenizeMentions } from './mentionTokens'
 import Pill from './Pill'
 
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
-  const settings = agent.fields
+  const settings = visibleSettingFields(agent.fields, agent.settings)
     .map(field => ({
       label: field.label,
       value: field.options.find(o => o.value === (agent.settings[field.key] ?? field.default))?.label

@@ -1,5 +1,6 @@
 import { StopIcon, TrashIcon } from '@heroicons/react/16/solid'
 import type { PooledAgent } from '../../../shared/llm'
+import { visibleSettingFields } from '../../../shared/llm'
 import AgentIcon from './AgentIcon'
 import Pill from './Pill'
 import Select from './Select'
@@ -21,6 +22,7 @@ export default function AgentCard({
   onRemove?: () => void
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
+  const fields = visibleSettingFields(agent.fields, agent.settings)
 
   return (
     <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
@@ -59,9 +61,9 @@ export default function AgentCard({
             )}
           </div>
         </div>
-        {onSetting && agent.fields.length > 0 && (
+        {onSetting && fields.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {agent.fields.map(field => (
+            {fields.map(field => (
               <Select
                 key={field.key}
                 label={field.label}

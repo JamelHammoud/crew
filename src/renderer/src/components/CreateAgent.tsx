@@ -1,7 +1,7 @@
 import { PlusIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
-import { resolveSettings } from '../../../shared/llm'
+import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
 import Select from './Select'
 import Spinner from './Spinner'
 
@@ -14,6 +14,11 @@ function defaultName(cap: ProviderCapability, settings: AgentSettings): string {
   if (!model) return cap.label
   const field = cap.fields.find(f => f.key === 'model')
   const label = field?.options.find(o => o.value === model)?.label ?? model
+  const variantField = visibleSettingFields(cap.fields, settings).find(
+    candidate => candidate.visibleWhen?.key === 'model' && candidate.visibleWhen.value === model
+  )
+  const variant = variantField?.options.find(option => option.value === settings[variantField.key])?.label
+  if (variant) return `${cap.label} ${variant}`
   return `${cap.label} ${titleCase(label)}`
 }
 
@@ -34,6 +39,7 @@ export default function CreateAgent() {
   }, [])
 
   const cap = useMemo(() => caps?.find(c => c.provider === provider) ?? null, [caps, provider])
+  const fields = useMemo(() => (cap ? visibleSettingFields(cap.fields, settings) : []), [cap, settings])
 
   const selectProvider = (next: string, list = caps) => {
     const chosen = list?.find(c => c.provider === next) ?? null
@@ -127,7 +133,7 @@ export default function CreateAgent() {
                 options={(caps ?? []).map(c => ({ value: c.provider, label: c.label, hint: hintFor(c) }))}
                 onChange={pick}
               />
-              {cap?.fields.map(field => (
+              {fields.map(field => (
                 <Select
                   key={field.key}
                   label={field.label}

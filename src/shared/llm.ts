@@ -41,6 +41,10 @@ export interface AgentSettingField {
   label: string
   options: AgentSettingOption[]
   default: string
+  visibleWhen?: {
+    key: string
+    value: string
+  }
 }
 
 export function resolveSettings(fields: AgentSettingField[], settings: AgentSettings): AgentSettings {
@@ -51,6 +55,13 @@ export function resolveSettings(fields: AgentSettingField[], settings: AgentSett
     out[field.key] = valid ? chosen : field.default
   }
   return out
+}
+
+export function visibleSettingFields(fields: AgentSettingField[], settings: AgentSettings): AgentSettingField[] {
+  return fields.filter(field => {
+    if (!field.visibleWhen) return true
+    return settings[field.visibleWhen.key] === field.visibleWhen.value
+  })
 }
 
 // One rate-limit window as the provider reports it: "5-hour limit" at 63%,
