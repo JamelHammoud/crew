@@ -725,14 +725,26 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
+    const docMentions = this.docMentionRefs(trimmed)
     for (const entry of found.thread.queue) {
-      if (entry.messageId === found.entry.messageId) entry.text = trimmed
+      if (entry.messageId === found.entry.messageId) {
+        entry.text = trimmed
+        entry.docMentions = docMentions
+      }
     }
     if (this.emittedMessages.has(found.entry.messageId)) {
       const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
       if (message && message.kind === 'message') {
         message.text = trimmed
-        this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.edited', messageId: message.id, text: trimmed })
+        message.docMentions = docMentions
+        this.emit({
+          id: randomUUID(),
+          ts: Date.now(),
+          kind: 'message.edited',
+          messageId: message.id,
+          text: trimmed,
+          docMentions
+        })
       }
     }
     this.broadcastQueue(found.thread)
