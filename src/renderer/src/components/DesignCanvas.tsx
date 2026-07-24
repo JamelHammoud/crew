@@ -13,7 +13,8 @@ import {
   type TLPageId,
   type TLRecord,
   type TLShapeId,
-  type TLStoreSnapshot
+  type TLStoreSnapshot,
+  type TLUserId
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
@@ -112,7 +113,7 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
           store.put([
             InstancePresenceRecordType.create({
               id,
-              userId: presence.userId,
+              userId: presence.userId as TLUserId,
               userName: presence.name,
               color: humanColor(presence.name),
               cursor: { x: presence.cursor.x, y: presence.cursor.y, type: 'default', rotation: 0 },
