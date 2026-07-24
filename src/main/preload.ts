@@ -15,8 +15,12 @@ const bridge = {
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
     ipcRenderer.invoke('agents:create', input),
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
+  openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
   onFullScreen: (listener: (full: boolean) => void): void => {
     ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
+  },
+  onOpenUrl: (listener: (url: string) => void): void => {
+    ipcRenderer.on('browser:open', (_event, url: string) => listener(url))
   }
 }
 
