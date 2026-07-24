@@ -3,6 +3,45 @@ export interface DocPage {
   text: string
 }
 
+export interface DocRef {
+  page: string
+  title: string
+}
+
+export function docRefs(docs: Record<string, DocPage>): DocRef[] {
+  return Object.entries(docs)
+    .map(([page, doc]) => ({ page, title: doc.title }))
+    .filter(ref => ref.title.trim().length > 0)
+}
+
+export function docCandidates(docs: Record<string, DocPage>, query: string | null): DocRef[] {
+  if (query === null) return []
+  const q = query.toLowerCase()
+  const refs = docRefs(docs).sort((a, b) => a.title.localeCompare(b.title))
+  const prefix = refs.filter(ref => ref.title.toLowerCase().startsWith(q))
+  if (!q) return prefix
+  const within = refs.filter(ref => {
+    const title = ref.title.toLowerCase()
+    return !title.startsWith(q) && title.includes(q)
+  })
+  return [...prefix, ...within]
+}
+
+export function docMentionsIn(text: string, docs: Record<string, DocPage>): string[] {
+  let work = ` ${text.toLowerCase()} `
+  const pages: string[] = []
+  const ordered = docRefs(docs).sort((a, b) => b.title.length - a.title.length)
+  for (const ref of ordered) {
+    const needle = `$${ref.title.toLowerCase()}`
+    const at = work.indexOf(needle)
+    if (at === -1) continue
+    if (/[\w-]/.test(work[at + needle.length])) continue
+    pages.push(ref.page)
+    work = work.slice(0, at) + ' '.repeat(needle.length) + work.slice(at + needle.length)
+  }
+  return pages
+}
+
 const FRONTMATTER = /^---\n([\s\S]*?)\n---\n?/
 const CODED_SEGMENT = /^(.*)-(\d[a-z0-9]{3})$/
 
