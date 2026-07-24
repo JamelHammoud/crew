@@ -32,7 +32,7 @@ function MentionHighlights({ value }: { value: string }) {
         }
         return token.text
       })}
-      {'​'}
+      {'\u200b'}
     </>
   )
 }
