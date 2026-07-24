@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
