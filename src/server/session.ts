@@ -1399,7 +1399,7 @@ export class CrewSession {
           promptId,
           agentId: agent.id,
           threadId: ref.threadId,
-          text: this.buildPrompt(agent, entry),
+          text: this.buildPrompt(agent, entry, this.assignedReactions(promptId)),
           settings: agent.settings,
           attachments: entry.attachments,
           designBoard: this.boardOf(this.threads.get(ref.threadId))
@@ -1630,6 +1630,17 @@ export class CrewSession {
       latest.set(JSON.stringify([event.targetId, event.memberId, event.emoji]), event)
     }
     return [...latest.values()].filter(event => event.active && !delivered.has(event.id))
+  }
+
+  private assignedReactions(promptId: string): ReactionEvent[] {
+    const start = this.events.find(
+      (event): event is Extract<SessionEvent, { kind: 'agent.start' }> =>
+        event.kind === 'agent.start' && event.promptId === promptId
+    )
+    const ids = new Set(start?.reactionIds ?? [])
+    return this.events.filter(
+      (event): event is ReactionEvent => event.kind === 'message.reaction' && ids.has(event.id)
+    )
   }
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
