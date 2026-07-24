@@ -412,8 +412,38 @@ body {
   display: none;
 }
 
-.design .tl-watermark_SEE-LICENSE {
-  display: none;
+.light .design .tl-container,
+.light .design .tl-background {
+  background: var(--color-ink-800);
+}
+
+.light .design .tl-theme__light {
+  --tl-color-background: var(--color-ink-800);
+}
+
+.design .tl-watermark_SEE-LICENSE,
+.design [class*='tl-watermark'] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.design-style-panel input[type='range'] {
+  appearance: none;
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-fg) 18%, transparent);
+  outline: none;
+}
+
+.design-style-panel input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-fg);
+  cursor: pointer;
 }
 
 .doc .bn-container {
