@@ -27,7 +27,8 @@ const repo: Record<string, RepoFile> = {
     path: 'src/app.ts',
     text: 'const one = 1\nconst two = 2\nconst three = 3',
     truncated: false
-  }
+  },
+  'big.log': { kind: 'file', path: 'big.log', text: 'line one\nline two', truncated: true }
 }
 
 beforeEach(() => {
@@ -35,6 +36,7 @@ beforeEach(() => {
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     writeFile: async () => null,
+    statFile: async (path: string) => (repo[path] ? (repo[path].kind === 'dir' ? 'dir' : 'file') : 'missing'),
     revealFile: async () => undefined,
     openExternal: async () => undefined
   } as unknown as CrewBridge
@@ -53,7 +55,7 @@ describe('file refs', () => {
     expect(parseFileRef('hello world')).toBeNull()
   })
 
-  it('finds paths in plain text but skips versions, domains, and urls', () => {
+  it('finds candidates in plain text but skips versions, domains, and urls', () => {
     const tokens = fileTokens('fixed src/app.ts:3 and AGENTS.md, not 0.51.4, e.g. example.com or https://a.dev/x/y')
     const files = tokens.filter(t => t.kind === 'file')
     expect(files.map(t => (t.kind === 'file' ? t.path : ''))).toEqual(['src/app.ts', 'AGENTS.md'])
@@ -61,15 +63,24 @@ describe('file refs', () => {
 })
 
 describe('markdown file links', () => {
-  it('turns file mentions into links and opens them in the panel', () => {
+  it('links mentions of real files and leaves unknown paths as text', async () => {
     render(createElement(Markdown, { text: 'Edited `src/app.ts:2` and touched src/other.ts today' }))
-    const links = document.querySelectorAll('a.file-link')
-    expect(links.length).toBe(2)
-    fireEvent.click(links[0])
+    await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
+    const link = document.querySelector('a.file-link') as HTMLAnchorElement
+    expect(link.dataset.path).toBe('src/app.ts')
+    fireEvent.click(link)
     const tab = useBrowser.getState().tabs[0]
     expect(tab.kind).toBe('file')
     expect(tab.path).toBe('src/app.ts')
     expect(tab.line).toBe(2)
+  })
+
+  it('does not link prose slashes like Undo/redo', async () => {
+    render(createElement(Markdown, { text: 'Undo/redo moved and either/or stays, see src/app.ts' }))
+    await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
+    const link = document.querySelector('a.file-link') as HTMLAnchorElement
+    expect(link.dataset.path).toBe('src/app.ts')
+    expect(link.textContent).toBe('src/app.ts')
   })
 
   it('opens relative markdown links as files and leaves web links alone', () => {
@@ -89,9 +100,11 @@ describe('markdown file links', () => {
 })
 
 describe('plain text file links', () => {
-  it('renders chips that open the file', () => {
-    render(createElement(TextWithFileLinks, { text: 'please check src/app.ts:2 soon' }))
-    fireEvent.click(screen.getByText('src/app.ts:2'))
+  it('renders chips for real files that open them', async () => {
+    render(createElement(TextWithFileLinks, { text: 'undo/redo aside, please check src/app.ts:2 soon' }))
+    const chip = await screen.findByText('src/app.ts:2')
+    expect(document.querySelectorAll('code').length).toBe(1)
+    fireEvent.click(chip)
     const tab = useBrowser.getState().tabs[0]
     expect(tab.path).toBe('src/app.ts')
     expect(tab.line).toBe(2)
@@ -141,7 +154,7 @@ describe('file view', () => {
 })
 
 describe('file editing', () => {
-  it('edits a file and saves it through the bridge', async () => {
+  it('edits in place and saves through the bridge', async () => {
     const writes: Array<{ path: string; text: string }> = []
     const crew = window.crew as unknown as { writeFile(path: string, text: string): Promise<RepoFile> }
     crew.writeFile = async (path: string, text: string) => {
@@ -151,35 +164,82 @@ describe('file editing', () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))
     await screen.findByText('const one = 1')
-    fireEvent.click(screen.getByRole('button', { name: 'Edit file' }))
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
     expect(editor.value).toContain('const one = 1')
-    fireEvent.change(editor, { target: { value: 'const four = 4' } })
+    fireEvent.change(editor, { target: { value: 'const four = 4\nconst five = 5' } })
+    await screen.findByText('const five = 5')
+    expect(document.querySelectorAll('[data-line]').length).toBe(2)
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await screen.findByText('const four = 4')
-    expect(writes).toEqual([{ path: 'src/app.ts', text: 'const four = 4' }])
-    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
+    await waitFor(() =>
+      expect(writes).toEqual([{ path: 'src/app.ts', text: 'const four = 4\nconst five = 5' }])
+    )
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Save' })).toBeNull())
+    expect((screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement).value).toBe(
+      'const four = 4\nconst five = 5'
+    )
   })
 
-  it('escape discards the edit', async () => {
+  it('keeps line numbers and colors while editing', async () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))
     await screen.findByText('const one = 1')
-    fireEvent.click(screen.getByRole('button', { name: 'Edit file' }))
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: 'const one = 1\nconst two = 2\nconst three = 3\nconst four = 4' } })
+    await screen.findByText('const four = 4')
+    expect(document.querySelectorAll('[data-line]').length).toBe(4)
+    await waitFor(() => {
+      const last = document.querySelector('[data-line="4"]')
+      const colored = [...(last?.querySelectorAll('span[style]') ?? [])] as HTMLElement[]
+      expect(colored.some(span => span.textContent === 'const' && span.style.color !== '')).toBe(true)
+    })
+  })
+
+  it('escape discards unsaved changes', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
     fireEvent.change(editor, { target: { value: 'scrapped' } })
+    await screen.findByText('scrapped')
     fireEvent.keyDown(editor, { key: 'Escape' })
     await screen.findByText('const one = 1')
-    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
+    expect(editor.value).toBe('const one = 1\nconst two = 2\nconst three = 3')
+    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
   })
 
-  it('stays in the editor when saving fails', async () => {
+  it('saves with cmd+s', async () => {
+    const writes: string[] = []
+    const crew = window.crew as unknown as { writeFile(path: string, text: string): Promise<RepoFile> }
+    crew.writeFile = async (path: string, text: string) => {
+      writes.push(text)
+      return { kind: 'file', path, text, truncated: false }
+    }
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))
     await screen.findByText('const one = 1')
-    fireEvent.click(screen.getByRole('button', { name: 'Edit file' }))
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: 'const four = 4' } })
+    fireEvent.keyDown(editor, { key: 's', metaKey: true })
+    await waitFor(() => expect(writes).toEqual(['const four = 4']))
+  })
+
+  it('stays dirty and shows a note when saving fails', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: 'const four = 4' } })
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await screen.findByText('Could not save')
-    expect(screen.getByRole('textbox', { name: 'File contents' })).not.toBeNull()
+    expect(editor.value).toBe('const four = 4')
+    expect(screen.getByRole('button', { name: 'Save' })).not.toBeNull()
+  })
+
+  it('leaves truncated files read only', async () => {
+    useBrowser.getState().openFile('big.log')
+    render(createElement(BrowserPanel))
+    await screen.findByText('line one')
+    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
+    await screen.findByText('Showing the beginning of this file')
   })
 })
