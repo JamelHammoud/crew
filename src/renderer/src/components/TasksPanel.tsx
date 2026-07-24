@@ -429,138 +429,138 @@ export default function TasksPanel({
             open ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-        <header className="h-[70px] px-5 flex items-center shrink-0">
-          {searching ? (
-            <>
-              <MagnifyingGlassIcon className="w-4 h-4 shrink-0 text-fg-muted" />
-              <input
-                autoFocus
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Escape') {
-                    e.stopPropagation()
-                    closeSearch()
-                  }
-                }}
-                placeholder="Search tasks"
-                className="flex-1 min-w-0 mx-2.5 bg-transparent text-base text-fg placeholder:text-fg-faint outline-none"
-              />
-              <button
-                onClick={closeSearch}
-                aria-label="Close search"
-                className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-              >
-                <XMarkIcon className="w-4 h-4" />
-              </button>
-            </>
-          ) : (
-            <>
-              <h2 className="flex-1 text-lg font-bold text-fg">Tasks</h2>
-              <button
-                onClick={() => setSearching(true)}
-                aria-label="Search tasks"
-                className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-              >
-                <MagnifyingGlassIcon className="w-4 h-4" />
-              </button>
-              <button
-                onClick={onClose}
-                aria-label="Close tasks"
-                className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-              >
-                <XMarkIcon className="w-4 h-4" />
-              </button>
-            </>
-          )}
-        </header>
-        <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
-          {(pendingTodos.length > 0 || !q) && (
-            <section>
-              {heading('Todo', pendingTodos.length)}
-              {pendingTodos.map(todoItem)}
-              {!q &&
-                (adding ? (
-                  <TodoEditor
-                    keepOpen
-                    onCommit={raw => {
-                      const parsed = parseTodoInput(raw, agents)
-                      addTodo(parsed.text, parsed.agentId)
-                    }}
-                    onDone={() => setAdding(false)}
-                  />
-                ) : (
-                  <button
-                    onClick={() => setAdding(true)}
-                    className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
-                  >
-                    <span className="h-[22px] shrink-0 flex items-center">
-                      <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
-                        <PlusIcon className="w-3 h-3" />
+          <header className="h-[70px] px-5 flex items-center shrink-0">
+            {searching ? (
+              <>
+                <MagnifyingGlassIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Escape') {
+                      e.stopPropagation()
+                      closeSearch()
+                    }
+                  }}
+                  placeholder="Search tasks"
+                  className="flex-1 min-w-0 mx-2.5 bg-transparent text-base text-fg placeholder:text-fg-faint outline-none"
+                />
+                <button
+                  onClick={closeSearch}
+                  aria-label="Close search"
+                  className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="flex-1 text-lg font-bold text-fg">Tasks</h2>
+                <button
+                  onClick={() => setSearching(true)}
+                  aria-label="Search tasks"
+                  className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={onClose}
+                  aria-label="Close tasks"
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </header>
+          <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
+            {(pendingTodos.length > 0 || !q) && (
+              <section>
+                {heading('Todo', pendingTodos.length)}
+                {pendingTodos.map(todoItem)}
+                {!q &&
+                  (adding ? (
+                    <TodoEditor
+                      keepOpen
+                      onCommit={raw => {
+                        const parsed = parseTodoInput(raw, agents)
+                        addTodo(parsed.text, parsed.agentId)
+                      }}
+                      onDone={() => setAdding(false)}
+                    />
+                  ) : (
+                    <button
+                      onClick={() => setAdding(true)}
+                      className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
+                    >
+                      <span className="h-[22px] shrink-0 flex items-center">
+                        <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
+                          <PlusIcon className="w-3 h-3" />
+                        </span>
                       </span>
-                    </span>
-                    <span className="text-base">Add a task</span>
-                  </button>
-                ))}
-            </section>
-          )}
-          {!q && rows.length === 0 && todos.length === 0 && (
-            <p className="text-base text-fg-muted text-center mt-16 px-6">
-              Threads you start with an agent will show up here.
-            </p>
-          )}
-          {noMatches && (
-            <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>
-          )}
-          {inProgress.length > 0 && (
-            <section>
-              {heading('In progress', inProgress.length)}
-              {inProgress.map(row => item(row))}
-            </section>
-          )}
-          {needsReview.length > 0 && (
-            <section>
-              {heading('Needs review', needsReview.length)}
-              {needsReview.map(row =>
-                item(row, { icon: <CheckIcon className="w-4 h-4" />, label: 'Mark done', status: 'done' })
-              )}
-            </section>
-          )}
-          {(done.length > 0 || checkedTodos.length > 0) && (
-            <section>
-              {toggleHeading('Done', done.length + checkedTodos.length, showDone || q !== '', () =>
-                setShowDone(v => !v)
-              )}
-              {(showDone || q !== '') &&
-                [
-                  ...done.map(row => ({
-                    ts: lastMessageAt[row.thread.id] ?? 0,
-                    node: item(row, {
-                      icon: <ArrowUturnLeftIcon className="w-4 h-4" />,
-                      label: 'Reopen',
-                      status: 'open' as const
-                    })
-                  })),
-                  ...checkedTodos.map(todo => ({
-                    ts: checkedAt[todo.id] ?? todo.ts,
-                    node: checkedItem(todo)
-                  }))
-                ]
-                  .sort((a, b) => b.ts - a.ts)
-                  .map(entry => entry.node)}
-            </section>
-          )}
-          {archived.length > 0 && (
-            <section>
-              {toggleHeading('Archived', archived.length, showArchived || q !== '', () =>
-                setShowArchived(v => !v)
-              )}
-              {(showArchived || q !== '') &&
-                archived.map(row =>
-                  item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
+                      <span className="text-base">Add a task</span>
+                    </button>
+                  ))}
+              </section>
+            )}
+            {!q && rows.length === 0 && todos.length === 0 && (
+              <p className="text-base text-fg-muted text-center mt-16 px-6">
+                Threads you start with an agent will show up here.
+              </p>
+            )}
+            {noMatches && (
+              <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>
+            )}
+            {inProgress.length > 0 && (
+              <section>
+                {heading('In progress', inProgress.length)}
+                {inProgress.map(row => item(row))}
+              </section>
+            )}
+            {needsReview.length > 0 && (
+              <section>
+                {heading('Needs review', needsReview.length)}
+                {needsReview.map(row =>
+                  item(row, { icon: <CheckIcon className="w-4 h-4" />, label: 'Mark done', status: 'done' })
                 )}
-            </section>
-          )}
+              </section>
+            )}
+            {(done.length > 0 || checkedTodos.length > 0) && (
+              <section>
+                {toggleHeading('Done', done.length + checkedTodos.length, showDone || q !== '', () =>
+                  setShowDone(v => !v)
+                )}
+                {(showDone || q !== '') &&
+                  [
+                    ...done.map(row => ({
+                      ts: lastMessageAt[row.thread.id] ?? 0,
+                      node: item(row, {
+                        icon: <ArrowUturnLeftIcon className="w-4 h-4" />,
+                        label: 'Reopen',
+                        status: 'open' as const
+                      })
+                    })),
+                    ...checkedTodos.map(todo => ({
+                      ts: checkedAt[todo.id] ?? todo.ts,
+                      node: checkedItem(todo)
+                    }))
+                  ]
+                    .sort((a, b) => b.ts - a.ts)
+                    .map(entry => entry.node)}
+              </section>
+            )}
+            {archived.length > 0 && (
+              <section>
+                {toggleHeading('Archived', archived.length, showArchived || q !== '', () =>
+                  setShowArchived(v => !v)
+                )}
+                {(showArchived || q !== '') &&
+                  archived.map(row =>
+                    item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
+                  )}
+              </section>
+            )}
           </div>
         </aside>
       </div>
