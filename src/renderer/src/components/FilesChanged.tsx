@@ -1,7 +1,7 @@
 import { ChevronRightIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 import type { AgentStep } from '../../../shared/llm'
-import { Counts } from './StepRow'
+import { Counts, FilePathLink } from './StepRow'
 
 export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
   const [open, setOpen] = useState(false)
@@ -48,7 +48,7 @@ export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
         <div className="px-4 py-2.5 space-y-1.5">
           {files.map(([path, file]) => (
             <div key={path} className="flex items-center gap-3 text-xs font-mono">
-              <span className="text-fg-secondary truncate flex-1">{path}</span>
+              <FilePathLink path={path} className="text-fg-secondary truncate flex-1" />
               <Counts added={file.added} removed={file.removed} />
             </div>
           ))}
