@@ -214,7 +214,8 @@ export class CrewSession {
           createdBy: event.byName,
           status: 'open',
           queue: [],
-          running: null
+          running: null,
+          boardId: event.boardId
         })
       }
       if (event.kind === 'thread.archived') {
@@ -330,7 +331,8 @@ export class CrewSession {
           .filter(thread => thread.queue.length > 0)
           .map(thread => [thread.id, this.queueItems(thread)])
       ),
-      todos: [...this.todos.values()]
+      todos: [...this.todos.values()],
+      boards: this.boardList()
     }
   }
 
@@ -357,7 +359,7 @@ export class CrewSession {
     if (!member) return
     switch (msg.type) {
       case 'chat.send':
-        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId, msg.attachments)
+        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId, msg.attachments, msg.boardId)
         break
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
