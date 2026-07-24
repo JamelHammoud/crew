@@ -128,7 +128,7 @@ export default function Design() {
         {current ? (
           <div
             className={`absolute left-2 top-20 bottom-6 rounded-card overflow-hidden ${
-              chatOpen ? 'right-4' : 'right-6'
+              chatOpen ? 'right-0' : 'right-6'
             }`}
           >
             <DesignCanvas key={current} boardId={current} />
