@@ -41,10 +41,10 @@ describe('claude model picker', () => {
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
 
-    expect(screen.getByRole('button', { name: 'Version Opus 5' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /VersionOpus 5/ })).toBeTruthy()
     expect((screen.getByPlaceholderText('Agent name') as HTMLInputElement).value).toBe('Claude Opus 5')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Version Opus 5' }))
+    fireEvent.click(screen.getByRole('button', { name: /VersionOpus 5/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Opus 4.8' }))
 
     expect((screen.getByPlaceholderText('Agent name') as HTMLInputElement).value).toBe('Claude Opus 4.8')
@@ -76,8 +76,8 @@ describe('claude model picker', () => {
     const add = screen.getByRole('button', { name: 'Add agent' }) as HTMLButtonElement
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
-    fireEvent.click(screen.getByRole('button', { name: 'Model Opus' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Sonnet' }))
+    fireEvent.click(screen.getByRole('button', { name: /Modelopus/ }))
+    fireEvent.click(screen.getByRole('button', { name: /sonnet/i }))
 
     expect(screen.queryByText('Version')).toBeNull()
     expect((screen.getByPlaceholderText('Agent name') as HTMLInputElement).value).toBe('Claude Sonnet')
