@@ -53,10 +53,10 @@ export default function BrowserPanel() {
             <PlusIcon className="w-4 h-4" />
           </button>
         </Tooltip>
-        <Tooltip label="Close panel">
+        <Tooltip label="Close">
           <button
-            onClick={() => useBrowser.getState().closePanel()}
-            aria-label="Close panel"
+            onClick={() => useBrowser.getState().closeAll()}
+            aria-label="Close"
             className={`app-no-drag ${iconButton}`}
           >
             <XMarkIcon className="w-4 h-4" />
