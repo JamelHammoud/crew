@@ -38,6 +38,15 @@ import {
   type RunStep
 } from '../shared/llm'
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
+import {
+  BOARD_ID,
+  type DesignBoardMeta,
+  type DesignDocument,
+  type DesignOp,
+  type DesignOpResult,
+  type DesignPresence
+} from '../shared/design'
+import { applyDesignOps, boardSummary } from './designops'
 import { Store } from './store'
 
 interface Member {
