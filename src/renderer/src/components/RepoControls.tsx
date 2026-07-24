@@ -37,8 +37,14 @@ export default function RepoControls() {
   useEffect(() => {
     let active = true
     const refresh = () => {
-      void window.crew
-        .repoStatus()
+      const repoStatus = window.crew?.repoStatus
+      if (!repoStatus) {
+        if (active) {
+          setStatus({ available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0 })
+        }
+        return
+      }
+      void repoStatus()
         .then(next => {
           if (active) setStatus(next)
         })
@@ -58,7 +64,9 @@ export default function RepoControls() {
     setAction(next)
     setNotice(null)
     try {
-      const result = await (next === 'pull' ? window.crew.pullRepo() : window.crew.pushRepo())
+      const command = next === 'pull' ? window.crew?.pullRepo : window.crew?.pushRepo
+      if (!command) throw new Error('Project sync is unavailable')
+      const result = await command()
       setStatus(result.status)
       setNotice(result)
       if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current)
@@ -73,7 +81,7 @@ export default function RepoControls() {
   const text = notice?.message ?? statusText(status)
   const detail = notice?.message ?? statusDetail(status)
   const tone = notice ? (notice.ok ? 'text-positive' : 'text-danger') : 'text-fg-muted'
-  const disabled = action !== null || status?.available === false || status?.remote === false
+  const disabled = action !== null || !status || !status.available || !status.remote
 
   return (
     <div
