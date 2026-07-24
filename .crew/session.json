@@ -196,8 +196,9 @@
       "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
       "ownerName": "ALI",
       "settings": {
-        "model": "sonnet",
-        "effort": "high"
+        "model": "fable",
+        "opusModel": "claude-opus-5",
+        "effort": "max"
       },
       "fields": [
         {
@@ -210,22 +211,57 @@
             },
             {
               "value": "opus",
-              "label": "opus"
+              "label": "Opus"
             },
             {
               "value": "sonnet",
-              "label": "sonnet"
+              "label": "Sonnet"
             },
             {
               "value": "haiku",
-              "label": "haiku"
+              "label": "Haiku"
             },
             {
               "value": "fable",
-              "label": "fable"
+              "label": "Fable"
             }
           ],
           "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
         },
         {
           "key": "effort",
@@ -258,14 +294,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784926885444,
+        "fetchedAt": 1784927180011,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000181,
+            "resetsAt": 1784930999771,
             "active": true
           },
           {
@@ -273,7 +309,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200181,
+            "resetsAt": 1785499199771,
             "active": false
           }
         ],
@@ -483,6 +519,135 @@
       }
     },
     {
+      "id": "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
+      "label": "Claude Opus",
+      "provider": "claude",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "opus",
+        "opusModel": "claude-opus-5",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "Opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "Sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "Haiku"
+            },
+            {
+              "value": "fable",
+              "label": "Fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784927179455,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 6,
+            "severity": "normal",
+            "resetsAt": 1784931000196,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 0,
+            "severity": "normal",
+            "resetsAt": 1785499200196,
+            "active": false
+          }
+        ],
+        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "pro"
+      }
+    },
+    {
       "id": "ali/0d392594-6df2-4b6e-b809-57b71598960d",
       "label": "Codex Gpt-5.6-sol",
       "provider": "codex",
@@ -563,7 +728,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784926885695,
+        "fetchedAt": 1784927180297,
         "windows": [
           {
             "key": "primary",
@@ -574,7 +739,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784926879597
+        "asOf": 1784926931775
       }
     },
     {
@@ -658,7 +823,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784926885695,
+        "fetchedAt": 1784927180297,
         "windows": [
           {
             "key": "primary",
@@ -669,7 +834,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784926879597
+        "asOf": 1784926931775
       }
     },
     {
@@ -680,6 +845,7 @@
       "ownerName": "ALI",
       "settings": {
         "model": "opus",
+        "opusModel": "claude-opus-5",
         "effort": "high"
       },
       "fields": [
@@ -693,22 +859,57 @@
             },
             {
               "value": "opus",
-              "label": "opus"
+              "label": "Opus"
             },
             {
               "value": "sonnet",
-              "label": "sonnet"
+              "label": "Sonnet"
             },
             {
               "value": "haiku",
-              "label": "haiku"
+              "label": "Haiku"
             },
             {
               "value": "fable",
-              "label": "fable"
+              "label": "Fable"
             }
           ],
           "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
         },
         {
           "key": "effort",
@@ -741,14 +942,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784926885444,
+        "fetchedAt": 1784927180011,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000181,
+            "resetsAt": 1784930999771,
             "active": true
           },
           {
@@ -756,7 +957,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200181,
+            "resetsAt": 1785499199771,
             "active": false
           }
         ],
