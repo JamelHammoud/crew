@@ -85,6 +85,10 @@ function petOf(seed: string): Pet {
   return pet
 }
 
+export function petHue(seed: string): number {
+  return petOf(seed).hue
+}
+
 export default function AgentIcon({
   seed,
   size = 'md',
