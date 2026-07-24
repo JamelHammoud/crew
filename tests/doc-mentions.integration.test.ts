@@ -59,6 +59,10 @@ describe('page code migration', () => {
     const setup = pages.find(p => p.startsWith(`${guides}/`))
     expect(setup).toMatch(new RegExp(`^${guides}/setup-\\d[a-z0-9]{3}$`))
     expect(pageCodeOf(setup!)).not.toBe(pageCodeOf(guides!))
+    expect(pageCodeOf('report-2024')).toBeNull()
+    const report = pages.find(p => /^report-2024-\d[a-z0-9]{3}$/.test(p))
+    expect(report).toBeDefined()
+    expect(pageCodeOf(report!)).toMatch(/[a-z]/)
   })
 })
 
