@@ -126,4 +126,35 @@ describe('git sync', () => {
     const log = await git(dir, ['log', '--oneline'])
     expect(log).toContain('crew sync')
   })
+
+  it('pulls remote changes and keeps local work in place', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(a, 'remote.ts'), 'export const remote = true\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'remote change'])
+    await git(a, ['push'])
+    fs.writeFileSync(path.join(b, 'local.ts'), 'export const local = true\n')
+
+    const result = await new GitSync(b).pullNow()
+
+    expect(result.ok).toBe(true)
+    expect(result.updated).toBe(true)
+    expect(result.status.behind).toBe(0)
+    expect(fs.readFileSync(path.join(b, 'remote.ts'), 'utf8')).toContain('remote = true')
+    expect(fs.readFileSync(path.join(b, 'local.ts'), 'utf8')).toContain('local = true')
+  })
+
+  it('commits and pushes local work from the project control', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(b, 'pushed.ts'), 'export const pushed = true\n')
+
+    const result = await new GitSync(b).pushNow()
+
+    expect(result.ok).toBe(true)
+    expect(result.updated).toBe(true)
+    expect(result.status.changed).toBe(0)
+    expect(result.status.ahead).toBe(0)
+    await git(a, ['pull'])
+    expect(fs.readFileSync(path.join(a, 'pushed.ts'), 'utf8')).toContain('pushed = true')
+  })
 })
