@@ -8,7 +8,7 @@ import {
   type Attachment,
   type OutgoingAttachment
 } from '../shared/attachments'
-import { fallbackTitle, type DocPage } from '../shared/docs'
+import { docMentionsIn, fallbackTitle, type DocPage } from '../shared/docs'
 import {
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
@@ -106,6 +106,7 @@ interface ConnMeta {
 
 const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
+const MAX_DOC_PROMPT_CHARS = 8000
 const TITLE_LIMIT = 80
 const CANCEL_REPORT_TIMEOUT_MS = 15000
 const RESUME_GRACE_MS = 60000
