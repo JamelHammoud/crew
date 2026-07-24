@@ -1,8 +1,11 @@
-import { DocumentIcon, DocumentTextIcon, FolderIcon } from '@heroicons/react/16/solid'
-import { useEffect, useRef, useState } from 'react'
+import { DocumentIcon, DocumentTextIcon, FolderIcon, PencilIcon } from '@heroicons/react/16/solid'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import type { FileEntry, RepoFile } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
+import { useTheme } from '../state/theme'
+import { highlightLines, type ThemedToken } from './highlight'
 import Spinner from './Spinner'
+import Tooltip from './Tooltip'
 
 const MAX_LINES = 5000
 
@@ -64,10 +67,37 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
   )
 }
 
-function FileLines({ text, truncated, line }: { text: string; truncated: boolean; line: number | null }) {
+function LineText({ content, tokens }: { content: string; tokens: ThemedToken[] | undefined }) {
+  if (!tokens?.length) return <>{content}</>
+  return (
+    <>
+      {tokens.map((token, index) => (
+        <span key={index} style={token.color ? { color: token.color } : undefined}>
+          {token.content}
+        </span>
+      ))}
+    </>
+  )
+}
+
+function FileLines({ path, text, truncated, line }: { path: string; text: string; truncated: boolean; line: number | null }) {
+  const theme = useTheme()
   const all = text.split('\n')
   const lines = all.slice(0, MAX_LINES)
+  const [tokens, setTokens] = useState<ThemedToken[][] | null>(null)
   const gutter = `${Math.max(String(lines.length).length, 2)}ch`
+
+  useEffect(() => {
+    let alive = true
+    setTokens(null)
+    void highlightLines(path, text.split('\n').slice(0, MAX_LINES).join('\n'), theme).then(
+      result => alive && setTokens(result)
+    )
+    return () => {
+      alive = false
+    }
+  }, [path, text, theme])
+
   return (
     <div className="py-3 min-w-max font-mono text-xs leading-5">
       {lines.map((content, index) => {
@@ -81,7 +111,9 @@ function FileLines({ text, truncated, line }: { text: string; truncated: boolean
             >
               {number}
             </span>
-            <span className="whitespace-pre text-fg-secondary pr-4">{content}</span>
+            <span className="whitespace-pre text-fg-secondary pr-4">
+              <LineText content={content} tokens={tokens?.[index]} />
+            </span>
           </div>
         )
       })}
@@ -104,10 +136,16 @@ function Empty({ icon, label, detail }: { icon: React.ReactNode; label: string; 
 
 export default function FileView({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const [data, setData] = useState<RepoFile | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveFailed, setSaveFailed] = useState(false)
+  const draftRef = useRef('')
   const bodyRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let alive = true
+    setEditing(false)
+    setSaveFailed(false)
     window.crew
       .readFile(tab.path)
       .then(result => alive && setData(result ?? { kind: 'missing', path: tab.path }))
@@ -118,40 +156,131 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   }, [tab.path, tab.generation])
 
   useEffect(() => {
-    if (!data) return
+    if (!data || editing) return
     if (data.kind === 'file' && tab.line) {
       bodyRef.current?.querySelector(`[data-line="${tab.line}"]`)?.scrollIntoView?.({ block: 'center' })
       return
     }
     if (bodyRef.current) bodyRef.current.scrollTop = 0
-  }, [data, tab.line])
+  }, [data, tab.line, editing])
+
+  const startEdit = () => {
+    if (data?.kind !== 'file') return
+    draftRef.current = data.text
+    setSaveFailed(false)
+    setEditing(true)
+  }
+
+  const save = async () => {
+    if (saving) return
+    setSaving(true)
+    const fresh = await window.crew.writeFile(tab.path, draftRef.current).catch(() => null)
+    setSaving(false)
+    if (fresh?.kind === 'file') {
+      setData(fresh)
+      setEditing(false)
+    } else {
+      setSaveFailed(true)
+    }
+  }
+
+  const onEditorKeys = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+      event.preventDefault()
+      void save()
+      return
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      setEditing(false)
+      return
+    }
+    if (event.key === 'Tab') {
+      event.preventDefault()
+      const target = event.currentTarget
+      const { selectionStart, selectionEnd, value } = target
+      target.value = `${value.slice(0, selectionStart)}  ${value.slice(selectionEnd)}`
+      target.setSelectionRange(selectionStart + 2, selectionStart + 2)
+      draftRef.current = target.value
+    }
+  }
+
+  const editable = data?.kind === 'file' && !data.truncated
 
   return (
-    <div
-      ref={bodyRef}
-      className="absolute inset-0 overflow-auto bg-ink-900"
-      style={{ visibility: active ? 'visible' : 'hidden' }}
-    >
-      {!data && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Spinner size={20} className="text-fg-muted" />
+    <div className="absolute inset-0 bg-ink-900" style={{ visibility: active ? 'visible' : 'hidden' }}>
+      {editing && data?.kind === 'file' ? (
+        <textarea
+          defaultValue={data.text}
+          onChange={event => {
+            draftRef.current = event.target.value
+          }}
+          onKeyDown={onEditorKeys}
+          aria-label="File contents"
+          spellCheck={false}
+          wrap="off"
+          autoFocus
+          className="absolute inset-0 w-full h-full resize-none bg-transparent px-4 py-3 font-mono text-xs leading-5 text-fg-secondary outline-none"
+        />
+      ) : (
+        <div ref={bodyRef} className="absolute inset-0 overflow-auto">
+          {!data && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Spinner size={20} className="text-fg-muted" />
+            </div>
+          )}
+          {data?.kind === 'dir' && <DirRows tab={tab} path={data.path} entries={data.entries} />}
+          {data?.kind === 'file' && (
+            <FileLines path={tab.path} text={data.text} truncated={data.truncated} line={tab.line} />
+          )}
+          {data?.kind === 'missing' && (
+            <Empty
+              icon={<DocumentIcon className="w-8 h-8 text-fg-faint" />}
+              label="This file is not in the project"
+              detail={data.path}
+            />
+          )}
+          {data?.kind === 'binary' && (
+            <Empty
+              icon={<DocumentTextIcon className="w-8 h-8 text-fg-faint" />}
+              label="No preview for this file"
+              detail={`${data.path} · ${Math.max(1, Math.round(data.size / 1024))} KB`}
+            />
+          )}
         </div>
       )}
-      {data?.kind === 'dir' && <DirRows tab={tab} path={data.path} entries={data.entries} />}
-      {data?.kind === 'file' && <FileLines text={data.text} truncated={data.truncated} line={tab.line} />}
-      {data?.kind === 'missing' && (
-        <Empty
-          icon={<DocumentIcon className="w-8 h-8 text-fg-faint" />}
-          label="This file is not in the project"
-          detail={data.path}
-        />
-      )}
-      {data?.kind === 'binary' && (
-        <Empty
-          icon={<DocumentTextIcon className="w-8 h-8 text-fg-faint" />}
-          label="No preview for this file"
-          detail={`${data.path} · ${Math.max(1, Math.round(data.size / 1024))} KB`}
-        />
+      {editable && (
+        <div className="absolute top-2.5 right-4 flex items-center gap-1.5">
+          {editing ? (
+            <>
+              {saveFailed && <span className="text-xs text-danger mr-1">Could not save</span>}
+              <button
+                onClick={() => setEditing(false)}
+                className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void save()}
+                disabled={saving}
+                className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:scale-100"
+              >
+                {saving && <Spinner size={12} className="text-ink-900" />}
+                Save
+              </button>
+            </>
+          ) : (
+            <Tooltip label="Edit file">
+              <button
+                onClick={startEdit}
+                aria-label="Edit file"
+                className="glass w-8 h-8 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg active:scale-95"
+              >
+                <PencilIcon className="w-3.5 h-3.5" />
+              </button>
+            </Tooltip>
+          )}
+        </div>
       )}
     </div>
   )
