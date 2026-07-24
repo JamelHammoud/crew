@@ -5,6 +5,7 @@ import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
 import Markdown from './Markdown'
 import { MemberName, MentionText } from './Mention'
+import MessageReactions from './MessageReactions'
 import Pill from './Pill'
 import { MenuItem, Popover } from './Popover'
 import { usePresence } from './presence'
@@ -24,7 +25,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
   }
   return (
     <div
-      className="flex gap-4 animate-rise"
+      className="group/message relative flex gap-4 animate-rise"
       onContextMenu={
         deletable
           ? event => {
@@ -60,6 +61,14 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
         )}
         {item.attachments && <MessageImages attachments={item.attachments} />}
         {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
+        {item.reactionTargetId && (
+          <MessageReactions
+            targetId={item.reactionTargetId}
+            reactions={item.reactions}
+            deletable={deletable}
+            onDelete={() => deleteMessage(item.key)}
+          />
+        )}
       </div>
       {deletable && (
         <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
