@@ -258,14 +258,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784926285397,
+        "fetchedAt": 1784926585433,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000143,
+            "resetsAt": 1784931000164,
             "active": true
           },
           {
@@ -273,7 +273,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200143,
+            "resetsAt": 1785499200164,
             "active": false
           }
         ],
@@ -563,7 +563,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784926525427,
+        "fetchedAt": 1784926585665,
         "windows": [
           {
             "key": "primary",
@@ -574,7 +574,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784926517193
+        "asOf": 1784926568187
       }
     },
     {
@@ -658,7 +658,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784926525427,
+        "fetchedAt": 1784926585665,
         "windows": [
           {
             "key": "primary",
@@ -669,7 +669,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1784926517193
+        "asOf": 1784926568187
       }
     },
     {
@@ -741,14 +741,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784926285397,
+        "fetchedAt": 1784926585433,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000143,
+            "resetsAt": 1784931000164,
             "active": true
           },
           {
@@ -756,7 +756,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200143,
+            "resetsAt": 1785499200164,
             "active": false
           }
         ],
