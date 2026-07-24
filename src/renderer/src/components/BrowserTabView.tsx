@@ -50,7 +50,6 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     <webview
       ref={ref}
       src={tab.initialUrl}
-      allowpopups="true"
       className="absolute inset-0 w-full h-full"
       style={{ visibility: active ? 'visible' : 'hidden' }}
     />
