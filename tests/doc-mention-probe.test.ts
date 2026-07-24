@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+
+afterEach(cleanup)
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
 
