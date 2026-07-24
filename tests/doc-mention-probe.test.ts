@@ -108,10 +108,14 @@ describe('doc mentions in the thread preview', () => {
   })
 
   it('opens the doc page when its pill is clicked, without opening the thread', () => {
-    boot()
+    const { unmount } = boot()
     fireEvent.click(screen.getByText('#Plan'))
-    expect(screen.getByDisplayValue('Plan')).toBeTruthy()
+    expect(useCrew.getState().docsTarget).toBe('plan-1abc')
     expect(useCrew.getState().openThreadId).toBeNull()
+
+    unmount()
+    render(createElement(Docs))
+    expect(screen.getByDisplayValue('Plan')).toBeTruthy()
     expect(useCrew.getState().docsTarget).toBeNull()
   })
 })
