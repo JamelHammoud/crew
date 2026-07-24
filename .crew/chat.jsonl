@@ -8247,3 +8247,4 @@
 {"id":"c0d52455-360b-4185-8099-ba7cfb271448","ts":1784923850609,"kind":"person.joined","memberId":"1738a5b9-cc8a-4f7c-b36d-7810f5f06867","name":"Jamel (Envoy)"}
 {"id":"d032721a-05ff-465f-9150-c55a610af80e","ts":1784923970328,"kind":"agent.online","agentId":"jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56","label":"Bob"}
 {"id":"18c72dbd-ac51-4d0e-b8cb-b3b2eeec4ffe","ts":1784923970333,"kind":"person.joined","memberId":"1738a5b9-cc8a-4f7c-b36d-7810f5f06867","name":"Jamel (Envoy)"}
+{"id":"f5097f15-679d-400c-9f2d-e6deea9f9df2","ts":1784924066048,"kind":"message.reaction","targetId":"message:95285aee-05e1-4b52-b97a-5321d716c235","targetAuthorId":"60b55620-a113-478c-9935-77bd360c6f40","targetAuthorName":"ALI","memberId":"1738a5b9-cc8a-4f7c-b36d-7810f5f06867","memberName":"Jamel (Envoy)","emoji":"😂","active":true}
