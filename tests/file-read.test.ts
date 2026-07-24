@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { readRepoFile, resolveRepoPath, writeRepoFile } from '../src/main/files'
+import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from '../src/main/files'
 import { tmpDir } from './helpers/session'
 
 function makeRepo(): string {
@@ -71,6 +71,16 @@ describe('readRepoFile', () => {
     if (result.kind !== 'file') return
     expect(result.truncated).toBe(true)
     expect(result.text.length).toBe(512 * 1024)
+  })
+})
+
+describe('statRepoFile', () => {
+  it('tells files, folders, and missing paths apart', async () => {
+    const root = makeRepo()
+    expect(await statRepoFile(root, './readme.md')).toBe('file')
+    expect(await statRepoFile(root, 'src/app/')).toBe('dir')
+    expect(await statRepoFile(root, 'Undo/redo')).toBe('missing')
+    expect(await statRepoFile(root, '../outside.txt')).toBe('missing')
   })
 })
 
