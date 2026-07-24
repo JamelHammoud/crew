@@ -25,6 +25,7 @@ function normalizeUrl(input: string): string {
 }
 
 function tabLabel(tab: BrowserTab): string {
+  if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (tab.title) return tab.title
   if (!tab.url) return 'New tab'
   try {
