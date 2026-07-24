@@ -25,6 +25,9 @@ window.matchMedia = ((query: string) => ({
   dispatchEvent: () => false
 })) as typeof window.matchMedia
 Element.prototype.scrollIntoView = () => {}
+if (typeof globalThis.CSS === 'undefined') {
+  ;(globalThis as { CSS?: unknown }).CSS = {}
+}
 
 const { default: Chat } = await import('../src/renderer/src/views/Chat')
 const { default: Docs } = await import('../src/renderer/src/views/Docs')
