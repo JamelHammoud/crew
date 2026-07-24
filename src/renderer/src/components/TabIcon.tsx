@@ -111,10 +111,44 @@ function DocsIcon() {
   )
 }
 
+/** Artboard outlines itself, a shape pops onto it, then a cursor sweeps in from the corner. */
+function DesignIcon() {
+  return (
+    <svg {...SVG}>
+      <rect
+        className="tab-icon-draw"
+        pathLength={1}
+        x={3.2}
+        y={3.2}
+        width={13.6}
+        height={13.6}
+        rx={3}
+        style={{ '--draw-dur': '340ms' } as React.CSSProperties}
+      />
+      <circle
+        className="tab-icon-pop"
+        cx={8}
+        cy={8}
+        r={2}
+        fill="currentColor"
+        stroke="none"
+        style={{ '--pop-delay': '230ms' } as React.CSSProperties}
+      />
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        d="M10.9 10.9L14.6 14.6M14.6 14.6V12M14.6 14.6H12"
+        style={{ '--draw-dur': '200ms', '--draw-delay': '320ms' } as React.CSSProperties}
+      />
+    </svg>
+  )
+}
+
 const ICONS: Record<Tab, () => React.ReactElement> = {
   chat: ChatIcon,
   agents: SpaceIcon,
-  docs: DocsIcon
+  docs: DocsIcon,
+  design: DesignIcon
 }
 
 export default function TabIcon({ tab }: { tab: Tab }) {
