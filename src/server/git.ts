@@ -44,27 +44,17 @@ export class GitSync {
   }
 
   private async sync(message: string): Promise<void> {
-    await runGit(['add', '-A'], this.repoPath)
-    const staged = await runGit(['diff', '--cached', '--quiet'], this.repoPath)
-    if (staged.code !== 0) {
-      const commit = await runGit(['commit', '-m', message], this.repoPath)
-      if (commit.code !== 0) {
-        this.onLog(`commit failed: ${commit.stderr.trim()}`)
-        return
-      }
+    const commit = await this.commitWorkingTree(message)
+    if (!commit.ok) {
+      this.onLog(`commit failed: ${commit.detail}`)
+      return
     }
-    if (this.hasRemote === null) {
-      const remotes = await runGit(['remote'], this.repoPath)
-      this.hasRemote = remotes.stdout.trim().length > 0
-    }
+    await this.refreshRemote()
     if (!this.hasRemote) return
-    const pull = await runGit(['pull', '--rebase'], this.repoPath)
-    if (pull.code !== 0) {
-      const resolved = await this.resolveRebaseConflicts()
-      if (!resolved) {
-        await runGit(['rebase', '--abort'], this.repoPath)
-        this.onLog(`pull failed, left as is: ${pull.stderr.trim()}`)
-      }
+    const pull = await this.pullRemote(false)
+    if (!pull.ok) {
+      this.onLog(`pull failed, left as is: ${pull.detail}`)
+      return
     }
     const push = await runGit(['push'], this.repoPath)
     if (push.code !== 0) {
