@@ -147,11 +147,16 @@ export default function BrowserPanel() {
 
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
         {tabs
-          .filter(tab => tab.initialUrl)
+          .filter(tab => tab.kind === 'web' && tab.initialUrl)
           .map(tab => (
             <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
-        {active && !active.initialUrl && (
+        {tabs
+          .filter(tab => tab.kind === 'file')
+          .map(tab => (
+            <FileView key={tab.id} tab={tab} active={tab.id === activeTabId} />
+          ))}
+        {active && active.kind === 'web' && !active.initialUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <GlobeAltIcon className="w-8 h-8 text-fg-faint" />
             <p className="text-sm text-fg-muted">Search or enter a web address above</p>
