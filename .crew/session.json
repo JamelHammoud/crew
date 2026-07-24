@@ -294,14 +294,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784928755725,
+        "fetchedAt": 1784928949519,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000434,
+            "resetsAt": 1784930999983,
             "active": true
           },
           {
@@ -309,7 +309,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200434,
+            "resetsAt": 1785499199983,
             "active": false
           }
         ],
@@ -623,14 +623,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784928755725,
+        "fetchedAt": 1784928949519,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000434,
+            "resetsAt": 1784930999983,
             "active": true
           },
           {
@@ -638,7 +638,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200434,
+            "resetsAt": 1785499199983,
             "active": false
           }
         ],
@@ -728,7 +728,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784928755979,
+        "fetchedAt": 1784928949814,
         "windows": [
           {
             "key": "primary",
@@ -823,7 +823,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784928755979,
+        "fetchedAt": 1784928949814,
         "windows": [
           {
             "key": "primary",
@@ -942,14 +942,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784928755725,
+        "fetchedAt": 1784928949519,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1784931000434,
+            "resetsAt": 1784930999983,
             "active": true
           },
           {
@@ -957,7 +957,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785499200434,
+            "resetsAt": 1785499199983,
             "active": false
           }
         ],
