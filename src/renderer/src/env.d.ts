@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import type { RepoFile } from '../../shared/files'
+import type { RepoFile, RepoPathKind } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 
 declare global {
@@ -17,6 +17,7 @@ declare global {
     openExternal(url: string): Promise<void>
     readFile(path: string): Promise<RepoFile | null>
     writeFile(path: string, text: string): Promise<RepoFile | null>
+    statFile(path: string): Promise<RepoPathKind>
     revealFile(path: string): Promise<void>
     onFullScreen(listener: (full: boolean) => void): void
     onOpenUrl(listener: (url: string) => void): void
