@@ -98,6 +98,16 @@ export type ServerMessage =
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
+  | { type: 'design.boards'; boards: DesignBoardMeta[] }
+  | {
+      type: 'design.snapshot'
+      boardId: string
+      name: string
+      document: DesignDocument | null
+      presence: DesignPresence[]
+    }
+  | { type: 'design.changes'; boardId: string; put?: unknown[]; remove?: string[] }
+  | { type: 'design.presence'; boardId: string; presence: DesignPresence }
   | {
       type: 'prompt'
       promptId: string
@@ -106,6 +116,7 @@ export type ServerMessage =
       text: string
       settings: AgentSettings
       attachments?: Attachment[]
+      designBoard?: DesignBoardMeta
     }
   | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[] }
   | { type: 'cancel'; promptId: string }
