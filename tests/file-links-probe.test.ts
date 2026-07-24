@@ -200,7 +200,7 @@ describe('file editing', () => {
     await screen.findByText('const one = 1')
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
     fireEvent.change(editor, { target: { value: 'scrapped' } })
-    await screen.findByText('scrapped')
+    await waitFor(() => expect(document.querySelector('[data-line="1"]')?.textContent).toContain('scrapped'))
     fireEvent.keyDown(editor, { key: 'Escape' })
     await screen.findByText('const one = 1')
     expect(editor.value).toBe('const one = 1\nconst two = 2\nconst three = 3')
