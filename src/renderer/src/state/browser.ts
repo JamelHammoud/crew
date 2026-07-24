@@ -12,17 +12,15 @@ export type BrowserTab = {
 }
 
 type BrowserState = {
-  open: boolean
   width: number
   tabs: BrowserTab[]
   activeTabId: string | null
-  openPanel(): void
-  closePanel(): void
   setWidth(width: number): void
   openUrl(url: string): void
   addTab(): void
   selectTab(id: string): void
   closeTab(id: string): void
+  closeAll(): void
   navigateTab(id: string, url: string): void
   updateTab(id: string, patch: Partial<BrowserTab>): void
 }

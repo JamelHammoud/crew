@@ -1863,6 +1863,13 @@
     "@tiptap/extensions" "^3.28.0"
     "@tiptap/pm" "^3.28.0"
 
+"@tldraw/assets@^5.2.5":
+  version "5.2.5"
+  resolved "https://registry.yarnpkg.com/@tldraw/assets/-/assets-5.2.5.tgz#77c1db33f4252dc29f2e223be0990ee923a02fa8"
+  integrity sha512-dnwCWb9x/ZVUqRcKGEtgyvzwuaK4ZMcHl5WUA0u99Updr7F39dUDCorqjq7Lye3NrFyj0ztxSCy289s6hUm1gg==
+  dependencies:
+    "@tldraw/utils" "5.2.5"
+
 "@tldraw/driver@5.2.5":
   version "5.2.5"
   resolved "https://registry.yarnpkg.com/@tldraw/driver/-/driver-5.2.5.tgz#b455ca4956f0e0708837a48eb3a0487eb4c7e0a8"
