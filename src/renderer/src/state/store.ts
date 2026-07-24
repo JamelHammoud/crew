@@ -5,6 +5,7 @@ import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import { trimEvents, type SessionEvent, type ThreadStatus, type Todo } from '../../../shared/events'
 import { mentionsIn, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
+import type { ReactionEmoji } from '../../../shared/reactions'
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 
@@ -79,6 +80,7 @@ interface CrewState {
     pageId: string | null
   ) => void
   deleteMessage: (messageId: string) => void
+  reactToMessage: (targetId: string, emoji: ReactionEmoji) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
   addTodo: (text: string, agentId?: string) => void
   editTodo: (todoId: string, text: string, agentId?: string) => void
@@ -502,6 +504,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
+    },
+    reactToMessage: (targetId, emoji) => {
+      socket.send({ type: 'chat.react', targetId, emoji })
     },
     setThreadStatus: (threadId, status) => {
       // Archiving keeps the old message so a newer UI can still archive on an
