@@ -35,6 +35,7 @@ import {
   useEditor,
   useRelevantStyles,
   useValue,
+  type SharedStyle,
   type StyleProp
 } from 'tldraw'
 import { useCrew } from '../state/store'
@@ -333,8 +334,8 @@ export function DesignStylePanel() {
   const font = styles.get(DefaultFontStyle)
   const align = styles.get(DefaultTextAlignStyle)
   const opacityValue = opacity.type === 'shared' ? opacity.value : 1
-  const shared = (style?: { type: string; value?: string } | { type: 'mixed' }) =>
-    style && style.type === 'shared' ? (style as { value: string }).value : null
+  const shared = <T extends string>(style?: SharedStyle<T>) =>
+    style && style.type === 'shared' ? style.value : null
 
   const setOpacity = (value: number) => {
     editor.run(() => {
