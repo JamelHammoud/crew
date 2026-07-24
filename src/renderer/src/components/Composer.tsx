@@ -62,6 +62,7 @@ export default function Composer({
 }) {
   const attach = useCrew(s => s.attach)
   const pendingCount = useCrew(s => (s.pending[attachmentKey] ?? []).length)
+  const highlightRef = useRef<HTMLDivElement>(null)
   const canSend = value.trim().length > 0 || pendingCount > 0
 
   return (
