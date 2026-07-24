@@ -24,7 +24,8 @@ window.matchMedia = ((query: string) => ({
 })) as typeof window.matchMedia
 Element.prototype.scrollIntoView = () => {}
 
-const { default: App } = await import('../src/renderer/src/App')
+const { default: Chat } = await import('../src/renderer/src/views/Chat')
+const { default: Docs } = await import('../src/renderer/src/views/Docs')
 const { useCrew } = await import('../src/renderer/src/state/store')
 
 const agent: PooledAgent = {
@@ -93,7 +94,7 @@ function boot() {
     openThreadId: null,
     docsTarget: null
   })
-  return render(createElement(App))
+  return render(createElement(Chat))
 }
 
 describe('doc mentions in the thread preview', () => {
