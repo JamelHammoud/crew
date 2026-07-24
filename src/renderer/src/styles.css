@@ -380,6 +380,18 @@ body {
   @apply text-fg underline underline-offset-2 decoration-fg-muted hover:decoration-fg transition-colors;
 }
 
+.md a.file-link {
+  @apply no-underline;
+}
+
+.md a.file-link code {
+  @apply cursor-pointer transition-colors;
+}
+
+.md a.file-link:hover code {
+  @apply bg-ink-700 text-fg;
+}
+
 .md blockquote {
   @apply border-l border-ink-600 pl-3 text-fg-muted my-2;
 }
