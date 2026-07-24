@@ -51,10 +51,6 @@ export default function Dashboard() {
               {sortedAgents.map(agent => {
                 const mine = agent.ownerId === selfId
                 const running = activePrompts[agent.id] ?? []
-                const usageAccount = usageAccountOf(agent)
-                const sharesUsageAccount = Boolean(
-                  usageAccount && sortedAgents.some(other => other.id !== agent.id && usageAccountOf(other) === usageAccount)
-                )
                 return (
                   <AgentCard
                     key={agent.id}
@@ -63,7 +59,6 @@ export default function Dashboard() {
                     onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
                     onRemove={mine ? () => void window.crew.removeAgent(instanceOf(agent.id)) : undefined}
-                    sharesUsageAccount={sharesUsageAccount}
                   />
                 )
               })}
