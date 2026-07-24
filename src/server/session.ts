@@ -130,6 +130,9 @@ const TITLE_LIMIT = 80
 const CANCEL_REPORT_TIMEOUT_MS = 15000
 const RESUME_GRACE_MS = 60000
 const STEP_FLUSH_MS = 80
+const DESIGN_SAVE_MS = 500
+const DESIGN_CURSOR_STEP_MS = 140
+const DESIGN_CURSOR_STEPS_MAX = 25
 
 export class CrewSession {
   readonly code: string
