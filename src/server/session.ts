@@ -1215,6 +1215,26 @@ export class CrewSession {
     return lines.join('\n')
   }
 
+  private referencedPages(
+    context: Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>>,
+    prompt: QueuedPrompt
+  ): string[] {
+    const docs = Object.fromEntries(this.docs)
+    const pages: string[] = []
+    const add = (page: string | null) => {
+      if (page && !pages.includes(page)) pages.push(page)
+    }
+    for (const event of context) {
+      if (event.kind === 'message' && event.docMentions) {
+        for (const ref of event.docMentions) add(resolveDocRef(docs, ref))
+      } else {
+        for (const page of docMentionsIn(event.text ?? '', docs)) add(page)
+      }
+    }
+    for (const ref of prompt.docMentions) add(resolveDocRef(docs, ref))
+    return pages
+  }
+
   private docExcerpt(text: string): string {
     if (text.length <= MAX_DOC_PROMPT_CHARS) return text
     return `${text.slice(0, MAX_DOC_PROMPT_CHARS)}\n[doc cut off here]`
