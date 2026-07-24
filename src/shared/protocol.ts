@@ -1,4 +1,5 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
+import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
 import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
@@ -35,12 +36,20 @@ export interface SessionSnapshot {
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   todos: Todo[]
+  boards?: DesignBoardMeta[]
 }
 
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
   | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[]; running?: string[] }
-  | { type: 'chat.send'; text: string; mentions: string[]; threadId?: string; attachments?: OutgoingAttachment[] }
+  | {
+      type: 'chat.send'
+      text: string
+      mentions: string[]
+      threadId?: string
+      attachments?: OutgoingAttachment[]
+      boardId?: string
+    }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'thread.archive'; threadId: string }
   | { type: 'thread.status'; threadId: string; status: ThreadStatus }
