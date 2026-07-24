@@ -1,6 +1,6 @@
 import { ChevronRightIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
-import { fallbackTitle, pageCode, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
+import { fallbackTitle, pageCode, pageCodeOf, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
 import { MenuItem, Popover } from '../components/Popover'
