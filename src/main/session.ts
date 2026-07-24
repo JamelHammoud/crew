@@ -14,9 +14,9 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import { AgentStore } from './agents-store'
-import { readRepoFile, resolveRepoPath, writeRepoFile } from './files'
+import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from './files'
 import { SavedSessionStore } from './saved-session'
-import type { RepoFile } from '../shared/files'
+import type { RepoFile, RepoPathKind } from '../shared/files'
 
 export interface HostInfo {
   link: string
