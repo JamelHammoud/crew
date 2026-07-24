@@ -25,17 +25,18 @@ import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
 import { designAssetUrls } from './designIcons'
-import { DesignNavigation, DesignStylePanel } from './DesignPanels'
+import { DesignMenu, DesignNavigation, DesignStylePanel } from './DesignPanels'
 import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
 
 const components: TLComponents = {
+  MenuPanel: DesignMenu,
   NavigationPanel: DesignNavigation,
   StylePanel: DesignStylePanel
 }
 
-const tldrawOptions: Partial<TldrawOptions> = { actionShortcutsLocation: 'menu' }
+const tldrawOptions: Partial<TldrawOptions> = { maxPages: 1 }
 
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
@@ -228,7 +229,7 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
       <Tldraw store={store} assetUrls={assetUrls} components={components} options={tldrawOptions} onMount={onMount} />
       <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
       {!ready && (
-        <div className="absolute inset-0 bg-ink-950 flex items-center justify-center">
+        <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">
           <Spinner size={20} />
         </div>
       )}
