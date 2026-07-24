@@ -13,6 +13,10 @@
     {
       "id": "60b55620-a113-478c-9935-77bd360c6f40",
       "name": "ALI"
+    },
+    {
+      "id": "1738a5b9-cc8a-4f7c-b36d-7810f5f06867",
+      "name": "Jamel (Envoy)"
     }
   ],
   "agents": [
@@ -731,6 +735,107 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
         "asOf": 1784910132003
+      }
+    },
+    {
+      "id": "jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56",
+      "label": "Bob",
+      "provider": "claude",
+      "ownerId": "1738a5b9-cc8a-4f7c-b36d-7810f5f06867",
+      "ownerName": "Jamel (Envoy)",
+      "settings": {
+        "model": "opus",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784923850619,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 48,
+            "severity": "normal",
+            "resetsAt": 1784928600955,
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 27,
+            "severity": "normal",
+            "resetsAt": 1785049200955,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 50,
+            "severity": "normal",
+            "resetsAt": 1785049200956,
+            "active": true
+          }
+        ],
+        "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
+        "accountLabel": "jamel@envoy.co",
+        "plan": "team"
       }
     }
   ]
