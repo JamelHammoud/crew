@@ -1470,7 +1470,8 @@ export class CrewSession {
       threadId: thread.id,
       text: this.buildPrompt(agent, next),
       settings: agent.settings,
-      attachments: next.attachments
+      attachments: next.attachments,
+      designBoard: this.boardOf(thread)
     })
   }
 
@@ -1715,6 +1716,7 @@ export class CrewSession {
       if (member.connections.size === 0) {
         this.emit({ id: randomUUID(), ts: Date.now(), kind: 'person.left', memberId: member.id, name: member.name })
       }
+      if (meta.role === 'ui') this.dropDesignPresence(member)
     }
     const left = code === 1000 || code === 1001 || code === 1005
     for (const id of meta.agentIds) {
