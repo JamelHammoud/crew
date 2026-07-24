@@ -47,37 +47,26 @@ function clampWidth(width: number): number {
 }
 
 export const useBrowser = create<BrowserState>((set, get) => ({
-  open: false,
   width: 480,
   tabs: [],
   activeTabId: null,
-  openPanel: () => {
-    if (get().tabs.length === 0) {
-      const tab = makeTab()
-      set({ open: true, tabs: [tab], activeTabId: tab.id })
-      return
-    }
-    set({ open: true })
-  },
-  closePanel: () => set({ open: false }),
   setWidth: width => set({ width: clampWidth(width) }),
   openUrl: url => {
     const { tabs, activeTabId } = get()
     const existing = tabs.find(t => t.url === url)
     if (existing) {
-      set({ open: true, activeTabId: existing.id })
+      set({ activeTabId: existing.id })
       return
     }
     const active = tabs.find(t => t.id === activeTabId)
     if (active && !active.initialUrl) {
       set(s => ({
-        open: true,
         tabs: s.tabs.map(t => (t.id === active.id ? { ...t, initialUrl: url, url } : t))
       }))
       return
     }
     const tab = makeTab(url)
-    set(s => ({ open: true, tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
   addTab: () => {
     const tab = makeTab()
@@ -90,8 +79,9 @@ export const useBrowser = create<BrowserState>((set, get) => ({
       const tabs = s.tabs.filter(t => t.id !== id)
       const activeTabId =
         s.activeTabId === id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
-      return { tabs, activeTabId, open: tabs.length === 0 ? false : s.open }
+      return { tabs, activeTabId }
     }),
+  closeAll: () => set({ tabs: [], activeTabId: null }),
   navigateTab: (id, url) =>
     set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
   updateTab: (id, patch) =>
