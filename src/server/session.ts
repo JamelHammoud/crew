@@ -1770,6 +1770,12 @@ export class CrewSession {
     }
   }
 
+  private broadcastExcept(skip: WebSocket, msg: ServerMessage): void {
+    for (const [ws, meta] of this.meta) {
+      if (meta.role === 'ui' && ws !== skip) this.send(ws, msg)
+    }
+  }
+
   private send(ws: WebSocket, msg: ServerMessage): void {
     if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(msg))
   }
