@@ -21,7 +21,8 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
-    "start": "electron-vite preview",
+    "start": "electron-vite dev",
+    "preview": "electron-vite preview",
     "test": "vitest run",
     "dist": "electron-vite build && electron-builder",
     "postinstall": "node scripts/ensure-electron.mjs"
