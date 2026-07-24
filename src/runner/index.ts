@@ -1,5 +1,6 @@
 import WebSocket from 'ws'
 import { httpBaseFrom, type Attachment } from '../shared/attachments'
+import { designPreamble, type DesignBoardMeta } from '../shared/design'
 import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../shared/llm'
 import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
