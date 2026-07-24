@@ -69,7 +69,7 @@ function Session() {
           <div className="pointer-events-auto bg-ink-900">
             <TopBar tab={tab} onTab={switchTab} tasksOpen={tasksOpen} onToggleTasks={() => setTasksOpen(v => !v)} />
           </div>
-          <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />
+          {tab !== 'design' && <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />}
         </div>
         <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
       </div>
