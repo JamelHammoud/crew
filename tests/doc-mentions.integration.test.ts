@@ -46,6 +46,7 @@ describe('page code migration', () => {
     fs.writeFileSync(path.join(docsDir, 'guides.md'), 'G')
     fs.writeFileSync(path.join(docsDir, 'guides', 'setup.md'), 'S')
     fs.writeFileSync(path.join(docsDir, 'plan-1abc.md'), 'P')
+    fs.writeFileSync(path.join(docsDir, 'report-2024.md'), 'R')
 
     const host = await startHost(repoPath)
     const pages = Object.keys(host.store.loadDocs()).sort()
