@@ -9,12 +9,13 @@ import TabIcon from './TabIcon'
 import Tooltip from './Tooltip'
 import { MenuItem, Popover } from './Popover'
 
-export type Tab = 'chat' | 'agents' | 'docs'
+export type Tab = 'chat' | 'agents' | 'docs' | 'design'
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'chat', label: 'Chat' },
   { id: 'agents', label: 'Space' },
-  { id: 'docs', label: 'Docs' }
+  { id: 'docs', label: 'Docs' },
+  { id: 'design', label: 'Design' }
 ]
 
 export default function TopBar({
