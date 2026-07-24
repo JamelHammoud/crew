@@ -98,6 +98,15 @@ interface Thread {
   status: ThreadStatus
   queue: QueuedPrompt[]
   running: string | null
+  boardId?: string
+}
+
+interface DesignBoard {
+  id: string
+  name: string
+  document: DesignDocument | null
+  presence: Map<string, DesignPresence>
+  saveTimer: NodeJS.Timeout | null
 }
 
 const THREAD_STATUSES = new Set<ThreadStatus>(['open', 'done', 'archived'])
