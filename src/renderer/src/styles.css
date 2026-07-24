@@ -335,7 +335,7 @@ body {
 .design .tlui-menu-zone,
 .design .tlui-navigation-panel,
 .design .tlui-main-toolbar__tools,
-.design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls,
+.design .tlui-style-panel__wrapper,
 .design .tlui-tooltip {
   background: rgb(28 28 28 / 0.78);
   backdrop-filter: blur(24px) saturate(180%);
