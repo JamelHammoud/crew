@@ -1,7 +1,7 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { readRepoFile, resolveRepoPath } from '../src/main/files'
+import { readRepoFile, resolveRepoPath, writeRepoFile } from '../src/main/files'
 import { tmpDir } from './helpers/session'
 
 function makeRepo(): string {
