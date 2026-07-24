@@ -14,34 +14,28 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
-function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
 function MentionText({ text }: { text: string }) {
   const agents = useCrew(s => s.agents)
-  const parts = useMemo(() => {
-    const labels = agents.map(a => escapeRegex(a.label)).sort((a, b) => b.length - a.length)
-    if (labels.length === 0) return [text]
-    return text.split(new RegExp(`(@(?:${labels.join('|')}))`, 'g'))
-  }, [agents, text])
+  const docs = useCrew(s => s.docs)
+  const tokens = useMemo(() => tokenizeMentions(text, agents, docs), [agents, docs, text])
   return (
     <>
-      {parts.map((part, index) => {
-        if (index % 2 === 0) return part
-        const agent = agents.find(a => `@${a.label}` === part)
-        if (!agent) {
+      {tokens.map((token, index) => {
+        if (token.kind === 'agent') {
           return (
-            <strong key={index} className="font-semibold text-fg">
-              {part}
-            </strong>
+            <AgentMention key={index} agent={token.agent}>
+              {token.text}
+            </AgentMention>
           )
         }
-        return (
-          <AgentMention key={index} agent={agent}>
-            {part}
-          </AgentMention>
-        )
+        if (token.kind === 'doc') {
+          return (
+            <DocMention key={index} page={token.page}>
+              {token.text}
+            </DocMention>
+          )
+        }
+        return token.text
       })}
     </>
   )
