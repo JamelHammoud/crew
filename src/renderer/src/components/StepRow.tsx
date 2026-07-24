@@ -68,7 +68,7 @@ function FileRows({ files }: { files: FileChange[] }) {
       {files.map(file => (
         <div key={file.path}>
           <span className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-fg-secondary truncate">{file.path}</span>
+            <FilePathLink path={file.path} className="text-fg-secondary truncate" />
             <Counts added={file.added} removed={file.removed} />
           </span>
           {file.diff && (
