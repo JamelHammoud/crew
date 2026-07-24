@@ -1,8 +1,23 @@
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { FileChange } from '../../../shared/llm'
+import { useBrowser } from '../state/browser'
 import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
+
+export function FilePathLink({ path, className }: { path: string; className?: string }) {
+  return (
+    <span
+      onClick={event => {
+        event.stopPropagation()
+        useBrowser.getState().openFile(path)
+      }}
+      className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
+    >
+      {path}
+    </span>
+  )
+}
 
 function Marker({ running }: { running: boolean }) {
   if (running) return <Spinner size={12} className="text-fg-secondary" />
