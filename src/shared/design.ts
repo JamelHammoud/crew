@@ -139,7 +139,7 @@ export function designPreamble(apiBase: string, board: DesignBoardMeta, agentId:
     `Colors: ${DESIGN_COLORS.join(', ')}. Fills: none, semi, solid, pattern.`,
     `Coordinates are page pixels, y grows downward. Set "parent" to a frame id to place a shape inside that frame, using coordinates relative to the frame.`,
     `The response lists a result per op, with the new shape id for creates and an error string for anything invalid. Fix and retry only the failed ops.`,
-    `Replace AGENT_ID in the agent field with your own agent id given below, so your cursor is attributed to you.`,
+    `Keep the agent field set to "${agentId}" so your cursor is attributed to you.`,
     `Work in small batches of a few ops so people can watch the design come together. Read the board again after big changes to see real positions.`
   ].join('\n')
 }
