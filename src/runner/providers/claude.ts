@@ -5,6 +5,13 @@ import { claudeUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
+const CLAUDE_MODELS = [
+  { value: '', label: 'Default' },
+  { value: 'opus', label: 'Opus' },
+  { value: 'sonnet', label: 'Sonnet' },
+  { value: 'haiku', label: 'Haiku' },
+  { value: 'fable', label: 'Fable' }
+]
 const OPUS_MODELS = [
   { value: 'claude-opus-5', label: 'Opus 5' },
   { value: 'claude-opus-4-8', label: 'Opus 4.8' },
@@ -83,7 +90,7 @@ export const parseClaudeLine: OutputParser = line => {
 }
 
 export const claudeFields = (): AgentSettingField[] => [
-  { key: 'model', label: 'Model', options: choices(['', 'opus', 'sonnet', 'haiku', 'fable']), default: 'opus' },
+  { key: 'model', label: 'Model', options: CLAUDE_MODELS, default: 'opus' },
   {
     key: 'opusModel',
     label: 'Version',

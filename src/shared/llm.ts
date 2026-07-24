@@ -60,7 +60,8 @@ export function resolveSettings(fields: AgentSettingField[], settings: AgentSett
 export function visibleSettingFields(fields: AgentSettingField[], settings: AgentSettings): AgentSettingField[] {
   return fields.filter(field => {
     if (!field.visibleWhen) return true
-    return settings[field.visibleWhen.key] === field.visibleWhen.value
+    const controllingField = fields.find(candidate => candidate.key === field.visibleWhen?.key)
+    return (settings[field.visibleWhen.key] ?? controllingField?.default) === field.visibleWhen.value
   })
 }
 
