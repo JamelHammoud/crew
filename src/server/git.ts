@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 import { runGit, type GitResult } from '../shared/git'
 import type { RepoActionResult, RepoStatus } from '../shared/repository'
 
@@ -130,10 +132,14 @@ export class GitSync {
 
   private async pullRemote(autostash: boolean): Promise<{ ok: boolean; updated: boolean; detail: string }> {
     const before = await runGit(['rev-parse', 'HEAD'], this.repoPath)
+    const rebaseBefore = await this.rebaseActive()
     const args = ['pull', '--rebase']
     if (autostash) args.push('--autostash')
     const pull = await runGit(args, this.repoPath)
     if (pull.code !== 0) {
+      if (rebaseBefore || !(await this.rebaseActive())) {
+        return { ok: false, updated: false, detail: gitDetail(pull) }
+      }
       const resolved = await this.resolveRebaseConflicts()
       if (!resolved) {
         await runGit(['rebase', '--abort'], this.repoPath)
@@ -146,6 +152,17 @@ export class GitSync {
       updated: before.code === 0 && after.code === 0 && before.stdout.trim() !== after.stdout.trim(),
       detail: ''
     }
+  }
+
+  private async rebaseActive(): Promise<boolean> {
+    const paths = await Promise.all([
+      runGit(['rev-parse', '--git-path', 'rebase-merge'], this.repoPath),
+      runGit(['rev-parse', '--git-path', 'rebase-apply'], this.repoPath)
+    ])
+    return paths.some(result => {
+      if (result.code !== 0 || !result.stdout.trim()) return false
+      return existsSync(path.resolve(this.repoPath, result.stdout.trim()))
+    })
   }
 
   private async readStatus(): Promise<RepoStatus> {
