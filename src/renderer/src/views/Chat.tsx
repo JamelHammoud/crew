@@ -7,11 +7,13 @@ import JumpToBottom from '../components/JumpToBottom'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import ThreadCard from '../components/ThreadCard'
 import { describeStep, endPreview, lastEnd, threadState, type ThreadItem, type ThreadState } from '../components/thread'
+import { reactionGroups } from '../components/reactionGroups'
 import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
+import { messageReactionTarget } from '../../../shared/reactions'
 
 type Feed =
   | { kind: 'msg'; key: string; item: ThreadItem }
@@ -40,8 +42,10 @@ export default function Chat() {
 
   const feed = useMemo<Feed[]>(() => {
     const list: Feed[] = []
+    const reactions = reactionGroups(events, selfId)
     for (const e of events) {
       if (e.kind === 'message' && !e.threadId) {
+        const targetId = messageReactionTarget(e.id)
         list.push({
           kind: 'msg',
           key: e.id,
@@ -54,7 +58,9 @@ export default function Chat() {
             text: e.text,
             streaming: false,
             attachments: e.attachments,
-            docMentions: e.docMentions
+            docMentions: e.docMentions,
+            reactionTargetId: e.authorId === 'crew' ? undefined : targetId,
+            reactions: e.authorId === 'crew' ? undefined : reactions.get(targetId)
           }
         })
       }
