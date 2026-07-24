@@ -49,10 +49,39 @@ export function AgentName({ agent, children }: { agent: PooledAgent; children: R
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
   return (
     <AgentName agent={agent}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-0.5 -mx-0.5 transition-colors hover:bg-fg/10">
+      <strong className="font-semibold text-fg cursor-default rounded-md px-1 py-0.5 bg-fg/10 transition-colors hover:bg-fg/[0.16]">
         {children}
       </strong>
     </AgentName>
+  )
+}
+
+function DocCardContent({ page }: { page: string }) {
+  const doc = useCrew(s => s.docs[page])
+  if (!doc) return null
+  const snippet = doc.text.trim().slice(0, 280)
+  return (
+    <>
+      <span className="flex items-center gap-2">
+        <DocumentTextIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+        <span className="text-sm font-semibold text-fg truncate">{doc.title}</span>
+      </span>
+      {snippet && (
+        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] text-xs text-fg-muted whitespace-pre-wrap line-clamp-4">
+          {snippet}
+        </span>
+      )}
+    </>
+  )
+}
+
+export function DocMention({ page, children }: { page: string; children: ReactNode }) {
+  return (
+    <HoverCard content={<DocCardContent page={page} />}>
+      <span className="font-medium cursor-default rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20">
+        {children}
+      </span>
+    </HoverCard>
   )
 }
 
