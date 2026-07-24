@@ -8,6 +8,10 @@ import Markdown from '../src/renderer/src/components/Markdown'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { RepoFile } from '../src/shared/files'
 
+if (!Element.prototype.getAnimations) {
+  Element.prototype.getAnimations = () => []
+}
+
 const repo: Record<string, RepoFile> = {
   '': {
     kind: 'dir',
