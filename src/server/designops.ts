@@ -82,7 +82,7 @@ function topIndexOn(document: DesignDocument, parentId: string): string | null {
 
 function baseProps(color: string, fill: string, text: string): Record<string, unknown> {
   return {
-    dash: 'draw',
+    dash: 'solid',
     url: '',
     growY: 0,
     scale: 1,
@@ -90,7 +90,7 @@ function baseProps(color: string, fill: string, text: string): Record<string, un
     color,
     fill,
     size: 'm',
-    font: 'draw',
+    font: 'sans',
     align: 'middle',
     verticalAlign: 'middle',
     richText: richTextOf(text)
@@ -109,7 +109,7 @@ function propsFor(kind: DesignShapeKind, op: Extract<DesignOp, { op: 'create' }>
       return {
         color,
         size: 'm',
-        font: 'draw',
+        font: 'sans',
         textAlign: 'start',
         w: op.w && op.w > 0 ? op.w : 300,
         richText: richTextOf(text),
@@ -121,7 +121,7 @@ function propsFor(kind: DesignShapeKind, op: Extract<DesignOp, { op: 'create' }>
         color: op.color && COLORS.has(op.color) ? op.color : 'yellow',
         labelColor: 'black',
         size: 'm',
-        font: 'draw',
+        font: 'sans',
         fontSizeAdjustment: null,
         align: 'middle',
         verticalAlign: 'middle',
@@ -139,11 +139,11 @@ function propsFor(kind: DesignShapeKind, op: Extract<DesignOp, { op: 'create' }>
         labelColor: 'black',
         color,
         fill,
-        dash: 'draw',
+        dash: 'solid',
         size: 'm',
         arrowheadStart: 'none',
         arrowheadEnd: 'arrow',
-        font: 'draw',
+        font: 'sans',
         start: { x: 0, y: 0 },
         end: { x: (op.endX ?? op.x + 200) - op.x, y: (op.endY ?? op.y) - op.y },
         bend: 0,
@@ -155,7 +155,7 @@ function propsFor(kind: DesignShapeKind, op: Extract<DesignOp, { op: 'create' }>
     case 'line':
       return {
         color,
-        dash: 'draw',
+        dash: 'solid',
         size: 'm',
         spline: 'line',
         points: {
