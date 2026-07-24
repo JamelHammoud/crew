@@ -23,7 +23,13 @@ import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
 import Spinner from './Spinner'
 
-const assetUrls = getAssetUrlsByImport()
+const assetUrls = (() => {
+  try {
+    return getAssetUrlsByImport()
+  } catch {
+    return undefined
+  }
+})()
 
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
