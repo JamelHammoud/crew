@@ -169,8 +169,9 @@ export class CrewSession {
         e => e.kind !== 'message.deleted' && e.kind !== 'message.edited' && !(e.kind === 'message' && deleted.has(e.id))
       )
       .map(e => {
-        const edit = e.kind === 'message' ? edits.get(e.id) : undefined
-        return edit ? { ...e, text: edit.text, docMentions: edit.docMentions } : e
+        if (e.kind !== 'message') return e
+        const edit = edits.get(e.id)
+        return edit ? { ...e, text: edit.text, docMentions: edit.docMentions ?? e.docMentions } : e
       })
     for (const event of this.events) {
       if (event.kind === 'thread.started') {
