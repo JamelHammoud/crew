@@ -258,7 +258,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784924959172,
+        "fetchedAt": 1784924965196,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -467,83 +467,6 @@
       }
     },
     {
-      "id": "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
-      "label": "Claude Opus",
-      "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "opus",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "haiku"
-            },
-            {
-              "value": "fable",
-              "label": "fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784924959172,
-        "windows": [],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
-      }
-    },
-    {
       "id": "ali/0d392594-6df2-4b6e-b809-57b71598960d",
       "label": "Codex Gpt-5.6-sol",
       "provider": "codex",
@@ -624,7 +547,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784924959173,
+        "fetchedAt": 1784924965197,
         "windows": [
           {
             "key": "primary",
@@ -719,7 +642,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784924959173,
+        "fetchedAt": 1784924965197,
         "windows": [
           {
             "key": "primary",
@@ -731,6 +654,83 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
         "asOf": 1784924958579
+      }
+    },
+    {
+      "id": "ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6",
+      "label": "Claude Opus 2",
+      "provider": "claude",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "opus",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784924965196,
+        "windows": [],
+        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "pro",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       }
     }
   ]
