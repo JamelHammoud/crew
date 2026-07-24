@@ -18,6 +18,8 @@ const bridge = {
   removeAgent: (instanceId: string): Promise<void> => ipcRenderer.invoke('agents:remove', instanceId),
   openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
+  writeFile: (path: string, text: string): Promise<RepoFile | null> =>
+    ipcRenderer.invoke('file:write', path, text),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
   onFullScreen: (listener: (full: boolean) => void): void => {
     ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
