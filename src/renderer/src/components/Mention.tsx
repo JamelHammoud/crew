@@ -1,11 +1,13 @@
 import { ComputerDesktopIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
+import type { DocMentionRef } from '../../../shared/docs'
 import type { PooledAgent } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
 import HoverCard from './HoverCard'
+import { tokenizeMentions } from './mentionTokens'
 import Pill from './Pill'
 
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
