@@ -92,7 +92,7 @@ function dataUrl(svg: string): string {
 export function designAssetUrls(): ReturnType<typeof getAssetUrlsByImport> | undefined {
   try {
     const base = getAssetUrlsByImport()
-    const icons = { ...base.icons }
+    const icons: Record<string, string> = { ...base.icons }
     for (const [name, svg] of Object.entries(ICONS)) icons[name] = dataUrl(svg)
     return { ...base, icons }
   } catch {
