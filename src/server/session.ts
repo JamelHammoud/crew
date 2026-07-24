@@ -143,6 +143,7 @@ export class CrewSession {
   private todos = new Map<string, Todo>()
   private events: SessionEvent[] = []
   private docs = new Map<string, DocPage>()
+  private designs = new Map<string, DesignBoard>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
@@ -268,6 +269,9 @@ export class CrewSession {
       store.appendEvent(close)
     }
     for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
+    for (const [id, design] of Object.entries(store.loadDesigns())) {
+      this.designs.set(id, { id, name: design.name, document: design.document, presence: new Map(), saveTimer: null })
+    }
     for (const [page, title] of Object.entries(store.loadTitles())) {
       this.docTitles.set(page, title)
       const doc = this.docs.get(page)
