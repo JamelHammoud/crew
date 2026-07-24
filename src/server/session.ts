@@ -1179,14 +1179,23 @@ export class CrewSession {
         `Other agents in the session: ${others.join(', ')}. A mention like @name in a thread hands that message to the named agent, so replies from several agents can appear here.`
       )
     }
-    lines.push(
-      ``,
-      `Thread so far:`,
-      transcript || '(nothing yet)',
-      ``,
-      `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
+    lines.push(``, `Thread so far:`, transcript || '(nothing yet)')
+    const referenced = docMentionsIn(
+      [...context.map(e => e.text ?? ''), prompt.text].join('\n'),
+      Object.fromEntries(this.docs)
     )
+    for (const page of referenced) {
+      const doc = this.docs.get(page)
+      if (!doc) continue
+      lines.push(``, `Doc page "${doc.title}", referenced above as #${doc.title}:`, this.docExcerpt(doc.text))
+    }
+    lines.push(``, `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`)
     return lines.join('\n')
+  }
+
+  private docExcerpt(text: string): string {
+    if (text.length <= MAX_DOC_PROMPT_CHARS) return text
+    return `${text.slice(0, MAX_DOC_PROMPT_CHARS)}\n[doc cut off here]`
   }
 
   private handleSettings(id: string, settings: AgentSettings): void {
