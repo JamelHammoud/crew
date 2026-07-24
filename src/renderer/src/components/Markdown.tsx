@@ -1,16 +1,26 @@
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
-import { useMemo, type MouseEvent } from 'react'
+import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { useBrowser } from '../state/browser'
-import { linkifyFiles, parseFileRef } from './fileLinks'
+import { linkifyFiles, parseFileRef, statPaths } from './fileLinks'
 
 export default function Markdown({ text }: { text: string }) {
-  const html = useMemo(() => {
+  const [resolved, setResolved] = useState(0)
+  const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false }) as string)
-    linkifyFiles(container)
-    return container.innerHTML
-  }, [text])
+    const unknown = linkifyFiles(container)
+    return { html: container.innerHTML, unknown }
+  }, [text, resolved])
+
+  useEffect(() => {
+    if (unknown.length === 0) return
+    let alive = true
+    void statPaths(unknown).then(found => alive && found && setResolved(count => count + 1))
+    return () => {
+      alive = false
+    }
+  }, [unknown])
 
   const onClick = (event: MouseEvent<HTMLDivElement>) => {
     const link = (event.target as HTMLElement).closest('a')
