@@ -217,9 +217,15 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
     editor?.user.updateUserPreferences({ colorScheme: theme === 'light' ? 'light' : 'dark' })
   }, [editor, theme])
 
+  const onMount = useCallback((mounted: Editor) => {
+    mounted.setStyleForNextShapes(DefaultFontStyle, 'sans')
+    mounted.setStyleForNextShapes(DefaultDashStyle, 'solid')
+    setEditor(mounted)
+  }, [])
+
   return (
     <div className="absolute inset-0 design">
-      <Tldraw store={store} assetUrls={assetUrls} onMount={setEditor} />
+      <Tldraw store={store} assetUrls={assetUrls} components={components} options={tldrawOptions} onMount={onMount} />
       <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 flex items-center justify-center">
