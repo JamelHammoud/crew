@@ -226,6 +226,7 @@ app.whenReady().then(() => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
   ipcMain.handle('file:read', (_event, target: string) => session.readFile(target))
+  ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
   ipcMain.handle('file:reveal', (_event, target: string) => {
     const absolute = session.resolveFile(target)
     if (absolute) shell.showItemInFolder(absolute)

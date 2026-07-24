@@ -14,7 +14,7 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import { AgentStore } from './agents-store'
-import { readRepoFile, resolveRepoPath } from './files'
+import { readRepoFile, resolveRepoPath, writeRepoFile } from './files'
 import { SavedSessionStore } from './saved-session'
 import type { RepoFile } from '../shared/files'
 
@@ -90,6 +90,11 @@ export class AppSession {
   async readFile(target: string): Promise<RepoFile | null> {
     if (!this.folder) return null
     return readRepoFile(this.folder, target)
+  }
+
+  async writeFile(target: string, text: string): Promise<RepoFile | null> {
+    if (!this.folder) return null
+    return writeRepoFile(this.folder, target, text)
   }
 
   resolveFile(target: string): string | null {
