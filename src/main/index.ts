@@ -7,6 +7,7 @@ import {
   nativeImage,
   nativeTheme,
   powerSaveBlocker,
+  shell,
   Tray,
   type MenuItemConstructorOptions,
   type NativeImage
