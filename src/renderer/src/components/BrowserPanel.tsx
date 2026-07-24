@@ -67,7 +67,45 @@ export default function BrowserPanel() {
         </Tooltip>
       </header>
 
-      {active && (
+      {active && active.kind === 'file' && (
+        <div className="app-no-drag px-4 pb-3 flex items-center gap-1 shrink-0">
+          <button
+            onClick={() => useBrowser.getState().fileBack(active.id)}
+            disabled={active.back.length === 0}
+            aria-label="Back"
+            className={iconButton}
+          >
+            <ArrowLeftIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => useBrowser.getState().fileForward(active.id)}
+            disabled={active.forward.length === 0}
+            aria-label="Forward"
+            className={iconButton}
+          >
+            <ArrowRightIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => useBrowser.getState().reloadFile(active.id)}
+            aria-label="Reload"
+            className={iconButton}
+          >
+            <ArrowPathIcon className="w-4 h-4" />
+          </button>
+          <FileCrumbs tab={active} />
+          <Tooltip label="Show in folder">
+            <button
+              onClick={() => void window.crew.revealFile(active.path)}
+              aria-label="Show in folder"
+              className={iconButton}
+            >
+              <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+            </button>
+          </Tooltip>
+        </div>
+      )}
+
+      {active && active.kind === 'web' && (
         <div className="app-no-drag px-4 pb-3 flex items-center gap-1 shrink-0">
           <button
             onClick={() => viewFor(active.id)?.goBack()}
