@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { isAttachmentFile } from '../shared/attachments'
+import { BOARD_ID, type DesignDocument } from '../shared/design'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
 import type { PooledAgent } from '../shared/llm'
@@ -20,6 +21,11 @@ export interface PersistedSession {
 const PAGE_SEGMENT = '[a-z0-9][a-z0-9-]*'
 const PAGE_NAME = new RegExp(`^${PAGE_SEGMENT}(/${PAGE_SEGMENT})*$`)
 
+export interface PersistedDesign {
+  name: string
+  document: DesignDocument | null
+}
+
 export class Store {
   readonly root: string
 
@@ -27,6 +33,7 @@ export class Store {
     this.root = path.join(repoPath, '.crew')
     fs.mkdirSync(path.join(this.root, 'docs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
+    fs.mkdirSync(path.join(this.root, 'designs'), { recursive: true })
   }
 
   saveAttachment(file: string, data: Buffer): void {

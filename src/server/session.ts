@@ -252,6 +252,7 @@ export class CrewSession {
       const doc = this.docs.get(page)
       if (doc) this.docs.set(page, { title, text: doc.text })
     }
+    this.assignPageCodes()
     this.persistMeta()
   }
 
