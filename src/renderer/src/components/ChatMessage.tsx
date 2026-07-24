@@ -14,10 +14,10 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
-function MentionText({ text }: { text: string }) {
+function MentionText({ text, docMentions }: { text: string; docMentions?: DocMentionRef[] }) {
   const agents = useCrew(s => s.agents)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(() => tokenizeMentions(text, agents, docs), [agents, docs, text])
+  const tokens = useMemo(() => tokenizeMentions(text, agents, docs, docMentions), [agents, docs, docMentions, text])
   return (
     <>
       {tokens.map((token, index) => {
