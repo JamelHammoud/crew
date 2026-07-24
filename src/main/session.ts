@@ -13,6 +13,7 @@ import { CrewSession } from '../server/session'
 import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
+import type { RepoActionResult, RepoStatus } from '../shared/repository'
 import { AgentStore } from './agents-store'
 import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from './files'
 import { SavedSessionStore } from './saved-session'
@@ -85,6 +86,33 @@ export class AppSession {
 
   current(): CurrentSession | null {
     return this.live
+  }
+
+  async repoStatus(): Promise<RepoStatus> {
+    if (!this.git) {
+      return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0 }
+    }
+    return this.git.status()
+  }
+
+  async pullRepo(): Promise<RepoActionResult> {
+    if (this.git) return this.git.pullNow()
+    return {
+      ok: false,
+      updated: false,
+      message: 'Open a project first.',
+      status: await this.repoStatus()
+    }
+  }
+
+  async pushRepo(): Promise<RepoActionResult> {
+    if (this.git) return this.git.pushNow()
+    return {
+      ok: false,
+      updated: false,
+      message: 'Open a project first.',
+      status: await this.repoStatus()
+    }
   }
 
   async readFile(target: string): Promise<RepoFile | null> {
@@ -238,6 +266,9 @@ export class AppSession {
     await this.stop()
     const target = parseLink(linkRaw)
     const detected = await detectProviders()
+    const git = new GitSync(repoPath)
+    git.onLog = line => console.warn('[git]', line)
+    this.git = git
     this.runner = new Runner({
       name,
       code: target.code,
