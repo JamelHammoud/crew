@@ -97,7 +97,7 @@ export default function Composer({
             }}
             rows={2}
             placeholder={placeholder}
-            className="relative w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
+            className="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
           />
         </div>
         <div className="flex items-center justify-between mt-2">
