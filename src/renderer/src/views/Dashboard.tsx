@@ -9,11 +9,6 @@ function instanceOf(agentId: string): string {
   return slash === -1 ? agentId : agentId.slice(slash + 1)
 }
 
-function usageAccountOf(agent: { usage?: { provider: string; accountId?: string } }): string | null {
-  if (!agent.usage?.accountId) return null
-  return `${agent.usage.provider}:${agent.usage.accountId}`
-}
-
 export default function Dashboard() {
   const members = useCrew(s => s.members)
   const agents = useCrew(s => s.agents)

@@ -12,15 +12,13 @@ export default function AgentCard({
   threadCount,
   onStop,
   onSetting,
-  onRemove,
-  sharesUsageAccount = false
+  onRemove
 }: {
   agent: PooledAgent
   threadCount: number
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
   onRemove?: () => void
-  sharesUsageAccount?: boolean
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
 
@@ -75,7 +73,7 @@ export default function AgentCard({
           </div>
         )}
       </div>
-      {agent.usage && <UsageFooter usage={agent.usage} sharesAccount={sharesUsageAccount} />}
+      {agent.usage && <UsageFooter usage={agent.usage} />}
       {status === 'busy' && (
         <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
           <Spinner size={14} className="text-fg" />
