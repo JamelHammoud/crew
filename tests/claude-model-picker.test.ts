@@ -81,7 +81,7 @@ describe('claude model picker', () => {
     const add = screen.getByRole('button', { name: 'Add agent' }) as HTMLButtonElement
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
-    fireEvent.click(screen.getByRole('button', { name: /Modelopus/ }))
+    fireEvent.click(screen.getByRole('button', { name: /ModelOpus/i }))
     fireEvent.click(screen.getByRole('button', { name: /sonnet/i }))
 
     expect(screen.queryByText('Version')).toBeNull()
