@@ -127,4 +127,59 @@ describe('file view', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('This file is not in the project')
   })
+
+  it('highlights code once the grammar loads', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    await waitFor(() => {
+      const first = document.querySelector('[data-line="1"]')
+      const colored = [...(first?.querySelectorAll('span[style]') ?? [])] as HTMLElement[]
+      expect(colored.some(span => span.textContent === 'const' && span.style.color !== '')).toBe(true)
+    })
+  })
+})
+
+describe('file editing', () => {
+  it('edits a file and saves it through the bridge', async () => {
+    const writes: Array<{ path: string; text: string }> = []
+    const crew = window.crew as unknown as { writeFile(path: string, text: string): Promise<RepoFile> }
+    crew.writeFile = async (path: string, text: string) => {
+      writes.push({ path, text })
+      return { kind: 'file', path, text, truncated: false }
+    }
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit file' }))
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    expect(editor.value).toContain('const one = 1')
+    fireEvent.change(editor, { target: { value: 'const four = 4' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await screen.findByText('const four = 4')
+    expect(writes).toEqual([{ path: 'src/app.ts', text: 'const four = 4' }])
+    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
+  })
+
+  it('escape discards the edit', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit file' }))
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    fireEvent.change(editor, { target: { value: 'scrapped' } })
+    fireEvent.keyDown(editor, { key: 'Escape' })
+    await screen.findByText('const one = 1')
+    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
+  })
+
+  it('stays in the editor when saving fails', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    await screen.findByText('const one = 1')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit file' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await screen.findByText('Could not save')
+    expect(screen.getByRole('textbox', { name: 'File contents' })).not.toBeNull()
+  })
 })
