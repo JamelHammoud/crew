@@ -1,7 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { AgentUsage, UsageWindow } from '../../../shared/llm'
-import Pill from './Pill'
 import { useNow } from './useNow'
 
 function formatAgo(ms: number): string {
@@ -48,7 +47,7 @@ function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
 
 // Expandable usage footer on an agent card. Collapsed, it shows the hottest
 // window at a glance; expanded, every rate-limit window the provider reports.
-export default function UsageFooter({ usage, sharesAccount = false }: { usage: AgentUsage; sharesAccount?: boolean }) {
+export default function UsageFooter({ usage }: { usage: AgentUsage }) {
   const [open, setOpen] = useState(false)
   const now = useNow(open, 30000)
   const hottest = usage.windows.reduce<UsageWindow | null>(
@@ -66,7 +65,6 @@ export default function UsageFooter({ usage, sharesAccount = false }: { usage: A
         className="w-full flex items-center px-5 h-11 text-sm font-semibold text-fg-muted hover:text-fg-secondary transition-colors"
       >
         Usage
-        {sharesAccount && <span className="ml-2"><Pill>Same account</Pill></span>}
         <span className="ml-auto flex items-center gap-3">
           {!open && usage.error && <span className="font-normal">unavailable</span>}
           {!open && !usage.error && hottest && (
