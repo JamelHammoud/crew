@@ -72,6 +72,57 @@ function receiveAttachment(session: CrewSession, req: http.IncomingMessage, res:
   })
 }
 
+const MAX_DESIGN_BODY = 4 * 1024 * 1024
+const MAX_DESIGN_OPS = 200
+const JSON_HEADERS = { 'content-type': 'application/json' }
+
+function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
+  res.writeHead(status, JSON_HEADERS)
+  res.end(JSON.stringify(body))
+}
+
+function receiveDesignOps(session: CrewSession, boardId: string, req: http.IncomingMessage, res: http.ServerResponse): void {
+  const chunks: Buffer[] = []
+  let size = 0
+  req.on('data', chunk => {
+    size += chunk.length
+    if (size <= MAX_DESIGN_BODY) chunks.push(chunk as Buffer)
+  })
+  req.on('end', () => {
+    if (size > MAX_DESIGN_BODY) {
+      sendJson(res, 413, { error: 'Body too large' })
+      return
+    }
+    let parsed: { agent?: unknown; ops?: unknown }
+    try {
+      parsed = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+    } catch {
+      sendJson(res, 400, { error: 'Body must be JSON like {"agent":"...","ops":[...]}' })
+      return
+    }
+    const ops = Array.isArray(parsed.ops) ? (parsed.ops as DesignOp[]) : null
+    if (!ops || ops.length === 0) {
+      sendJson(res, 400, { error: 'ops must be a non-empty array' })
+      return
+    }
+    if (ops.length > MAX_DESIGN_OPS) {
+      sendJson(res, 400, { error: `Send at most ${MAX_DESIGN_OPS} ops per batch` })
+      return
+    }
+    const agent = typeof parsed.agent === 'string' && parsed.agent ? parsed.agent.slice(0, 120) : 'agent'
+    const results = session.runDesignOps(boardId, agent, ops)
+    if (!results) {
+      sendJson(res, 404, { error: 'No board with that id' })
+      return
+    }
+    sendJson(res, 200, { results })
+  })
+  req.on('error', () => {
+    res.writeHead(400)
+    res.end()
+  })
+}
+
 export function createCrewServer(session: CrewSession, opts: CrewServerOptions = {}): Promise<CrewServer> {
   const httpServer = http.createServer((req, res) => {
     if (req.url === '/') {
@@ -86,6 +137,21 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
     const attachment = /^\/attachments\/([^/?#]+)$/.exec(req.url ?? '')
     if (attachment) {
       serveAttachment(session, decodeURIComponent(attachment[1]), res)
+      return
+    }
+    const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(req.url ?? '')
+    if (req.method === 'POST' && designOps) {
+      receiveDesignOps(session, designOps[1], req, res)
+      return
+    }
+    const designRead = /^\/design\/([a-z0-9][a-z0-9-]*)$/.exec(req.url ?? '')
+    if (req.method === 'GET' && designRead) {
+      const summary = session.designBoardSummary(designRead[1])
+      if (!summary) {
+        sendJson(res, 404, { error: 'No board with that id' })
+        return
+      }
+      sendJson(res, 200, summary)
       return
     }
     res.writeHead(404)
