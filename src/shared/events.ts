@@ -27,11 +27,12 @@ export type SessionEvent =
       authorName: string
       text: string
       mentions: string[]
+      docMentions?: DocMentionRef[]
       threadId?: string
       attachments?: Attachment[]
     }
   | { id: string; ts: number; kind: 'message.deleted'; messageId: string }
-  | { id: string; ts: number; kind: 'message.edited'; messageId: string; text: string }
+  | { id: string; ts: number; kind: 'message.edited'; messageId: string; text: string; docMentions?: DocMentionRef[] }
   | {
       id: string
       ts: number

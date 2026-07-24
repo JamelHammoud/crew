@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 
+import type { DetailedHTMLProps, HTMLAttributes } from 'react'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 
 declare global {
@@ -13,7 +14,30 @@ declare global {
     installProvider(provider: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>
+    openExternal(url: string): Promise<void>
     onFullScreen(listener: (full: boolean) => void): void
+    onOpenUrl(listener: (url: string) => void): void
+  }
+
+  interface WebviewElement extends HTMLElement {
+    src: string
+    getURL(): string
+    loadURL(url: string): Promise<void>
+    reload(): void
+    stop(): void
+    goBack(): void
+    goForward(): void
+    canGoBack(): boolean
+    canGoForward(): boolean
+  }
+
+  namespace JSX {
+    interface IntrinsicElements {
+      webview: DetailedHTMLProps<
+        HTMLAttributes<WebviewElement> & { src?: string; allowpopups?: string },
+        WebviewElement
+      >
+    }
   }
 
   interface Window {
