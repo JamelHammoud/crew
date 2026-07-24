@@ -37,6 +37,12 @@ import {
   type PooledAgent,
   type RunStep
 } from '../shared/llm'
+import {
+  agentEndReactionTarget,
+  agentStepReactionTarget,
+  isReactionEmoji,
+  messageReactionTarget
+} from '../shared/reactions'
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import {
   BOARD_ID,
@@ -132,6 +138,15 @@ interface ConnMeta {
   agentIds: string[]
 }
 
+interface ReactionTarget {
+  authorId: string
+  authorName: string
+  text: string
+  threadId?: string
+}
+
+type ReactionEvent = Extract<SessionEvent, { kind: 'message.reaction' }>
+
 const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
 const MAX_DOC_PROMPT_CHARS = 8000
@@ -192,13 +207,18 @@ export class CrewSession {
     }
     const loaded = store.loadEvents()
     const deleted = new Set(loaded.filter(e => e.kind === 'message.deleted').map(e => e.messageId))
+    const deletedTargets = new Set([...deleted].map(messageReactionTarget))
     const edits = new Map<string, Extract<SessionEvent, { kind: 'message.edited' }>>()
     for (const event of loaded) {
       if (event.kind === 'message.edited') edits.set(event.messageId, event)
     }
     this.events = loaded
       .filter(
-        e => e.kind !== 'message.deleted' && e.kind !== 'message.edited' && !(e.kind === 'message' && deleted.has(e.id))
+        e =>
+          e.kind !== 'message.deleted' &&
+          e.kind !== 'message.edited' &&
+          !(e.kind === 'message' && deleted.has(e.id)) &&
+          !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId))
       )
       .map(e => {
         if (e.kind !== 'message') return e
@@ -364,6 +384,9 @@ export class CrewSession {
         break
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
+        break
+      case 'chat.react':
+        if (meta.role === 'ui') this.handleReaction(member, msg.targetId, msg.emoji)
         break
       case 'thread.archive':
         if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, 'archived')
@@ -646,10 +669,97 @@ export class CrewSession {
     const event = this.events[index]
     if (event.kind !== 'message' || event.authorId !== member.id) return
     this.events.splice(index, 1)
+    const targetId = messageReactionTarget(messageId)
+    this.events = this.events.filter(e => e.kind !== 'message.reaction' || e.targetId !== targetId)
     const tombstone: SessionEvent = { id: randomUUID(), ts: Date.now(), kind: 'message.deleted', messageId }
     this.store.appendEvent(tombstone)
     this.broadcast({ type: 'event', event: tombstone })
     this.onSyncNeeded?.()
+  }
+
+  private handleReaction(member: Member, targetId: string, emoji: string): void {
+    if (!isReactionEmoji(emoji)) return
+    const target = this.reactionTarget(targetId)
+    if (!target) return
+    let previous: ReactionEvent | undefined
+    for (let i = this.events.length - 1; i >= 0; i--) {
+      const event = this.events[i]
+      if (
+        event.kind === 'message.reaction' &&
+        event.targetId === targetId &&
+        event.memberId === member.id &&
+        event.emoji === emoji
+      ) {
+        previous = event
+        break
+      }
+    }
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'message.reaction',
+      targetId,
+      targetAuthorId: target.authorId,
+      targetAuthorName: target.authorName,
+      memberId: member.id,
+      memberName: member.name,
+      emoji,
+      active: !previous?.active,
+      threadId: target.threadId
+    })
+  }
+
+  private reactionTarget(targetId: string): ReactionTarget | null {
+    for (let i = this.events.length - 1; i >= 0; i--) {
+      const event = this.events[i]
+      if (event.kind === 'message' && messageReactionTarget(event.id) === targetId) {
+        return {
+          authorId: event.authorId,
+          authorName: event.authorName,
+          text: event.text,
+          threadId: event.threadId
+        }
+      }
+      if (
+        event.kind === 'agent.step' &&
+        event.step.kind === 'text' &&
+        agentStepReactionTarget(event.promptId, event.step.id) === targetId
+      ) {
+        return {
+          authorId: event.agentId,
+          authorName: event.agentLabel,
+          text: event.step.text ?? '',
+          threadId: event.threadId
+        }
+      }
+      if (event.kind === 'agent.end' && agentEndReactionTarget(event.promptId) === targetId) {
+        return {
+          authorId: event.agentId,
+          authorName: event.agentLabel,
+          text: event.ok ? (event.text ?? '') : (event.error ?? ''),
+          threadId: event.threadId
+        }
+      }
+    }
+    for (const agent of this.agents.values()) {
+      for (const [promptId, run] of agent.runs) {
+        for (const entry of run.steps.values()) {
+          if (
+            entry.step.kind !== 'text' ||
+            agentStepReactionTarget(promptId, entry.step.id) !== targetId
+          ) {
+            continue
+          }
+          return {
+            authorId: agent.id,
+            authorName: agent.label,
+            text: entry.step.text ?? '',
+            threadId: this.prompts.get(promptId)?.threadId ?? run.entry?.threadId
+          }
+        }
+      }
+    }
+    return null
   }
 
   private handleThreadStatus(member: Member, threadId: string, status: ThreadStatus): void {
