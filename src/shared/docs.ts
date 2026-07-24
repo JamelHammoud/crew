@@ -32,7 +32,7 @@ export function docMentionsIn(text: string, docs: Record<string, DocPage>): stri
   const pages: string[] = []
   const ordered = docRefs(docs).sort((a, b) => b.title.length - a.title.length)
   for (const ref of ordered) {
-    const needle = `$${ref.title.toLowerCase()}`
+    const needle = `#${ref.title.toLowerCase()}`
     const at = work.indexOf(needle)
     if (at === -1) continue
     if (/[\w-]/.test(work[at + needle.length])) continue
