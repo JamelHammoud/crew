@@ -3,12 +3,15 @@ import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
 import TopBar, { type Tab } from './components/TopBar'
+import { lazy, Suspense } from 'react'
 import { useCrew } from './state/store'
 import Chat from './views/Chat'
 import Dashboard from './views/Dashboard'
 import Docs from './views/Docs'
 import Home from './views/Home'
 import ThreadView from './views/ThreadView'
+
+const Design = lazy(() => import('./views/Design'))
 
 export default function App() {
   const connection = useCrew(s => s.connection)
@@ -56,6 +59,11 @@ function Session() {
           {tab === 'chat' && (openThreadId ? <ThreadView threadId={openThreadId} /> : <Chat />)}
           {tab === 'agents' && <Dashboard />}
           {tab === 'docs' && <Docs />}
+          {tab === 'design' && (
+            <Suspense fallback={<Boot />}>
+              <Design />
+            </Suspense>
+          )}
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
           <div className="pointer-events-auto bg-ink-900">
