@@ -42,6 +42,7 @@ export default function TopBar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
+  const browserOpen = useBrowser(s => s.open)
 
   const copyLink = async () => {
     if (!joinLink) return
@@ -76,6 +77,17 @@ export default function TopBar({
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse">Connection lost. Trying again…</span>
         )}
+        <Tooltip label="Browser">
+          <button
+            onClick={() => (browserOpen ? useBrowser.getState().closePanel() : useBrowser.getState().openPanel())}
+            aria-label="Browser"
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+              browserOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+            }`}
+          >
+            <GlobeAltIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
+          </button>
+        </Tooltip>
         <Tooltip label="Tasks">
           <button
             onClick={onToggleTasks}
