@@ -167,7 +167,9 @@ describe('file editing', () => {
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
     expect(editor.value).toContain('const one = 1')
     fireEvent.change(editor, { target: { value: 'const four = 4\nconst five = 5' } })
-    await screen.findByText('const five = 5')
+    await waitFor(() =>
+      expect(document.querySelector('[data-line="2"]')?.textContent).toContain('const five = 5')
+    )
     expect(document.querySelectorAll('[data-line]').length).toBe(2)
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
