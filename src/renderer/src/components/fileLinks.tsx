@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import type { RepoPathKind } from '../../../shared/files'
 import { useBrowser } from '../state/browser'
 
 export interface FileRef {
@@ -15,6 +17,51 @@ const PROSE_RE = new RegExp(
   String.raw`(?<![\w/.@:-])(${SLASH_PATH}|${BARE_FILE})(${LINE_SUFFIX})?(?![\w/])`,
   'g'
 )
+
+const MISSING_TTL = 15_000
+
+const statuses = new Map<string, { kind: RepoPathKind; at: number }>()
+const pending = new Map<string, Promise<RepoPathKind>>()
+
+function knownStatus(path: string): RepoPathKind | null {
+  const entry = statuses.get(path)
+  if (!entry) return null
+  if (entry.kind === 'missing' && Date.now() - entry.at > MISSING_TTL) {
+    statuses.delete(path)
+    return null
+  }
+  return entry.kind
+}
+
+export function pathConfirmed(path: string): boolean {
+  const kind = knownStatus(path)
+  return kind === 'file' || kind === 'dir'
+}
+
+function statPath(path: string): Promise<RepoPathKind> {
+  const known = knownStatus(path)
+  if (known) return Promise.resolve(known)
+  let promise = pending.get(path)
+  if (!promise) {
+    const stat = window.crew?.statFile
+    promise = (stat ? stat(path) : Promise.resolve<RepoPathKind>('missing'))
+      .catch((): RepoPathKind => 'missing')
+      .then(kind => {
+        statuses.set(path, { kind, at: Date.now() })
+        pending.delete(path)
+        return kind
+      })
+    pending.set(path, promise)
+  }
+  return promise
+}
+
+export async function statPaths(paths: string[]): Promise<boolean> {
+  const unknown = [...new Set(paths)].filter(path => knownStatus(path) === null)
+  if (unknown.length === 0) return false
+  const results = await Promise.all(unknown.map(statPath))
+  return results.some(kind => kind !== 'missing')
+}
 
 function toRef(rawPath: string, suffix: string | undefined): FileRef | null {
   const path = rawPath.replace(/^\.\//, '')
@@ -59,12 +106,18 @@ function makeAnchor(doc: Document, ref: FileRef): HTMLAnchorElement {
   return anchor
 }
 
-export function linkifyFiles(root: HTMLElement): void {
+export function linkifyFiles(root: HTMLElement): string[] {
   const doc = root.ownerDocument
+  const unknown = new Set<string>()
+  const confirmed = (path: string): boolean => {
+    if (pathConfirmed(path)) return true
+    if (knownStatus(path) === null) unknown.add(path)
+    return false
+  }
   for (const code of [...root.querySelectorAll('code')]) {
     if (code.closest('pre, a')) continue
     const ref = parseFileRef(code.textContent ?? '')
-    if (!ref) continue
+    if (!ref || !confirmed(ref.path)) continue
     const anchor = makeAnchor(doc, ref)
     code.replaceWith(anchor)
     anchor.appendChild(code)
@@ -77,10 +130,11 @@ export function linkifyFiles(root: HTMLElement): void {
   }
   for (const text of texts) {
     const tokens = fileTokens(text.textContent ?? '')
-    if (!tokens.some(t => t.kind === 'file')) continue
+    const linkable = tokens.filter(t => t.kind === 'file' && confirmed(t.path))
+    if (linkable.length === 0) continue
     const fragment = doc.createDocumentFragment()
     for (const token of tokens) {
-      if (token.kind === 'text') {
+      if (token.kind === 'text' || !linkable.includes(token)) {
         fragment.appendChild(doc.createTextNode(token.text))
         continue
       }
@@ -92,6 +146,7 @@ export function linkifyFiles(root: HTMLElement): void {
     }
     text.replaceWith(fragment)
   }
+  return [...unknown]
 }
 
 export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
@@ -109,11 +164,23 @@ export function FileChip({ path, line, text }: { path: string; line: number | nu
 }
 
 export function TextWithFileLinks({ text }: { text: string }) {
+  const [, setResolved] = useState(0)
   const tokens = fileTokens(text)
+
+  useEffect(() => {
+    const paths = tokens.flatMap(token => (token.kind === 'file' ? [token.path] : []))
+    if (paths.length === 0) return
+    let alive = true
+    void statPaths(paths).then(found => alive && found && setResolved(count => count + 1))
+    return () => {
+      alive = false
+    }
+  }, [text])
+
   return (
     <>
       {tokens.map((token, index) =>
-        token.kind === 'file' ? (
+        token.kind === 'file' && pathConfirmed(token.path) ? (
           <FileChip key={index} path={token.path} line={token.line} text={token.text} />
         ) : (
           token.text
