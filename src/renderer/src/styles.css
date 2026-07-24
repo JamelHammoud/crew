@@ -347,10 +347,7 @@ body {
 .light .design .tlui-main-toolbar__overflow-content,
 .light .design .tlui-dialog__content,
 .light .design .tlui-toast__container,
-.light .design .tlui-menu-zone,
-.light .design .tlui-navigation-panel,
 .light .design .tlui-main-toolbar__tools,
-.light .design .tlui-style-panel__wrapper,
 .light .design .tlui-tooltip {
   background: rgb(255 255 255 / 0.85);
   border: 1px solid rgb(0 0 0 / 0.08);
