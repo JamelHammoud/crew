@@ -114,7 +114,7 @@ export function plainTextOf(richText: unknown): string {
   return doc.content.map(p => (p.content ?? []).map(s => s.text ?? '').join('')).join('\n')
 }
 
-export function designPreamble(apiBase: string, board: DesignBoardMeta): string {
+export function designPreamble(apiBase: string, board: DesignBoardMeta, agentId: string): string {
   return [
     `This thread is attached to the design board "${board.name}". You can see and edit the board through a small HTTP API. Everyone watching the board sees your edits live, with your cursor moving as you work.`,
     ``,
@@ -123,7 +123,7 @@ export function designPreamble(apiBase: string, board: DesignBoardMeta): string 
     `That returns every shape with its id, kind, position, size, text, and color.`,
     ``,
     `Edit the board by posting a batch of ops:`,
-    `  curl -s -X POST ${apiBase}/design/${board.id}/ops -H 'content-type: application/json' -d '{"agent":"AGENT_ID","ops":[...]}'`,
+    `  curl -s -X POST ${apiBase}/design/${board.id}/ops -H 'content-type: application/json' -d '{"agent":"${agentId}","ops":[...]}'`,
     ``,
     `Ops:`,
     `  {"op":"create","kind":"rectangle","x":0,"y":0,"w":200,"h":120,"text":"Label","color":"blue","fill":"semi"}`,
