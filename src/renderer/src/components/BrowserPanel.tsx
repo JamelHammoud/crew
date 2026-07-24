@@ -3,6 +3,7 @@ import {
   ArrowPathIcon,
   ArrowRightIcon,
   ArrowTopRightOnSquareIcon,
+  DocumentTextIcon,
   GlobeAltIcon,
   PlusIcon,
   XMarkIcon
@@ -10,6 +11,7 @@ import {
 import { useEffect, useState, type KeyboardEvent } from 'react'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
+import FileView, { FileCrumbs } from './FileView'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 
