@@ -39,6 +39,19 @@ async function readTextFile(root: string, absolute: string, size: number): Promi
   }
 }
 
+export async function writeRepoFile(root: string, target: string, text: string): Promise<RepoFile | null> {
+  const absolute = resolveRepoPath(root, target)
+  if (!absolute) return null
+  try {
+    const stat = await fs.stat(absolute)
+    if (!stat.isFile() || stat.size > MAX_BYTES) return null
+    await fs.writeFile(absolute, text, 'utf8')
+    return await readRepoFile(root, target)
+  } catch {
+    return null
+  }
+}
+
 export async function readRepoFile(root: string, target: string): Promise<RepoFile> {
   const relative = target.replace(/^\.?\//, '').replace(/\/+$/, '')
   const absolute = resolveRepoPath(root, target)
