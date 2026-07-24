@@ -1,5 +1,6 @@
 import { TrashIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
+import type { DocMentionRef } from '../../../shared/docs'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -82,7 +83,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
         ) : (
           item.text && (
             <p className="text-base text-fg leading-[22px] whitespace-pre-wrap mt-1">
-              <MentionText text={item.text} />
+              <MentionText text={item.text} docMentions={item.docMentions} />
             </p>
           )
         )}
