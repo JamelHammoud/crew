@@ -85,7 +85,16 @@ function installContextMenu(win: BrowserWindow): void {
   })
 }
 
+app.on('web-contents-created', (_event, contents) => {
+  if (contents.getType() !== 'webview') return
+  contents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:/i.test(url)) void contents.loadURL(url)
+    return { action: 'deny' }
+  })
+})
+
 function createWindow(): void {
+  const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -100,13 +109,23 @@ function createWindow(): void {
       preload: path.join(dirname, '../preload/preload.mjs'),
       contextIsolation: true,
       sandbox: false,
-      spellcheck: true
+      spellcheck: true,
+      webviewTag: true
     }
+  })
+  const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
+  win.webContents.on('will-navigate', (event, url) => {
+    if (isAppUrl(url)) return
+    event.preventDefault()
+    if (/^https?:/i.test(url)) win.webContents.send('browser:open', url)
+  })
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:/i.test(url)) win.webContents.send('browser:open', url)
+    return { action: 'deny' }
   })
   win.on('enter-full-screen', () => win.webContents.send('window:fullscreen', true))
   win.on('leave-full-screen', () => win.webContents.send('window:fullscreen', false))
   installContextMenu(win)
-  const devUrl = process.env['ELECTRON_RENDERER_URL']
   if (devUrl) {
     win.loadURL(devUrl)
   } else {
