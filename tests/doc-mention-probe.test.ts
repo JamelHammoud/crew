@@ -1,9 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('../src/renderer/src/views/Design', () => ({ default: () => null }))
+import { describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
 
