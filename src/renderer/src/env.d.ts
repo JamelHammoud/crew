@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 
+import type { RepoFile } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 
 declare global {
@@ -14,6 +15,8 @@ declare global {
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
     removeAgent(instanceId: string): Promise<void>
     openExternal(url: string): Promise<void>
+    readFile(path: string): Promise<RepoFile | null>
+    revealFile(path: string): Promise<void>
     onFullScreen(listener: (full: boolean) => void): void
     onOpenUrl(listener: (url: string) => void): void
   }
