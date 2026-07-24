@@ -278,6 +278,15 @@ body {
   }
 }
 
+/* The canvas sits flush with the app shell; tldraw's own dark theme does the rest. */
+.design .tl-container {
+  background: var(--color-ink-950);
+}
+
+.design .tl-background {
+  background: var(--color-ink-950);
+}
+
 .doc .bn-container {
   --bn-colors-editor-background: transparent;
   --bn-colors-editor-text: #ffffff;
