@@ -395,6 +395,14 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'agent.tokens':
         set(state => ({ tokens: { ...state.tokens, [msg.promptId]: msg.tokens } }))
         break
+      case 'design.boards':
+        set({ boards: msg.boards })
+        break
+      case 'design.snapshot':
+      case 'design.changes':
+      case 'design.presence':
+        for (const listener of designListeners) listener(msg)
+        break
     }
   }
 
