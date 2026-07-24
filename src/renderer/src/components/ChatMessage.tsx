@@ -13,33 +13,6 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
-function MentionText({ text, docMentions }: { text: string; docMentions?: DocMentionRef[] }) {
-  const agents = useCrew(s => s.agents)
-  const docs = useCrew(s => s.docs)
-  const tokens = useMemo(() => tokenizeMentions(text, agents, docs, docMentions), [agents, docs, docMentions, text])
-  return (
-    <>
-      {tokens.map((token, index) => {
-        if (token.kind === 'agent') {
-          return (
-            <AgentMention key={index} agent={token.agent}>
-              {token.text}
-            </AgentMention>
-          )
-        }
-        if (token.kind === 'doc') {
-          return (
-            <DocMention key={index} page={token.page}>
-              {token.text}
-            </DocMention>
-          )
-        }
-        return token.text
-      })}
-    </>
-  )
-}
-
 export default function ChatMessage({ item }: { item: ThreadItem }) {
   const presence = usePresence(item.author)
   const agentSeed = useCrew(s => (item.self ? undefined : s.agents.find(a => a.label === item.author)?.id))
