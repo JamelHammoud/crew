@@ -318,7 +318,8 @@ export const useCrew = create<CrewState>((set, get) => {
               agentLabel: event.agentLabel,
               title: event.title,
               createdBy: event.byName,
-              status: 'open'
+              status: 'open',
+              boardId: event.boardId
             }
           }
           if (event.kind === 'thread.archived' && threads[event.threadId]) {
@@ -357,6 +358,7 @@ export const useCrew = create<CrewState>((set, get) => {
           docs: msg.snapshot.docs,
           queues: msg.snapshot.queues ?? {},
           todos: msg.snapshot.todos ?? [],
+          boards: msg.snapshot.boards ?? [],
           steps,
           tokens,
           activePrompts,
