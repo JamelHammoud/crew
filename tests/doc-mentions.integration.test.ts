@@ -1,10 +1,12 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { resolveDocRef, type DocPage } from '../src/shared/docs'
+import { pageCodeOf, resolveDocRef, type DocPage } from '../src/shared/docs'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
-import { startHost, TestUi, type TestHost } from './helpers/session'
+import { startHost, tmpDir, TestUi, type TestHost } from './helpers/session'
 
 type Message = Extract<SessionEvent, { kind: 'message' }>
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
