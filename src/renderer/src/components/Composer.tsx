@@ -82,7 +82,7 @@ export default function Composer({
           <div
             ref={highlightRef}
             aria-hidden
-            className="absolute inset-0 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none"
+            className="absolute inset-y-0 -inset-x-1 px-1 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none"
           >
             <MentionHighlights value={value} />
           </div>
