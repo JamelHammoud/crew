@@ -125,22 +125,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784866243456,
+        "fetchedAt": 1784866563390,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 58,
+            "percent": 60,
             "severity": "normal",
-            "resetsAt": 1784876999786,
-            "active": false
+            "resetsAt": 1784877000737,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 31,
+            "percent": 32,
             "severity": "normal",
-            "resetsAt": 1784930399786,
+            "resetsAt": 1784930400737,
             "active": false
           },
           {
@@ -148,8 +148,8 @@
             "label": "Weekly (Fable)",
             "percent": 59,
             "severity": "normal",
-            "resetsAt": 1784930399786,
-            "active": true
+            "resetsAt": 1784930400737,
+            "active": false
           }
         ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
@@ -490,7 +490,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784866483461,
+        "fetchedAt": 1784866563380,
         "windows": [
           {
             "key": "primary",
@@ -573,22 +573,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784866243456,
+        "fetchedAt": 1784866563390,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 58,
+            "percent": 60,
             "severity": "normal",
-            "resetsAt": 1784876999786,
-            "active": false
+            "resetsAt": 1784877000737,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 31,
+            "percent": 32,
             "severity": "normal",
-            "resetsAt": 1784930399786,
+            "resetsAt": 1784930400737,
             "active": false
           },
           {
@@ -596,8 +596,8 @@
             "label": "Weekly (Fable)",
             "percent": 59,
             "severity": "normal",
-            "resetsAt": 1784930399786,
-            "active": true
+            "resetsAt": 1784930400737,
+            "active": false
           }
         ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
@@ -690,7 +690,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784866483461,
+        "fetchedAt": 1784866563380,
         "windows": [
           {
             "key": "primary",
