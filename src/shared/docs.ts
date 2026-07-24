@@ -86,7 +86,7 @@ export function pageCode(): string {
   const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
   let code = alphabet[Math.floor(Math.random() * 10)]
   for (let i = 0; i < 3; i++) code += alphabet[Math.floor(Math.random() * alphabet.length)]
-  return code
+  return /[a-z]/.test(code) ? code : pageCode()
 }
 
 export function splitPageCode(segment: string): { base: string; code: string | null } {
