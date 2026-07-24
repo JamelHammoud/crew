@@ -52,6 +52,18 @@ export async function writeRepoFile(root: string, target: string, text: string):
   }
 }
 
+export async function statRepoFile(root: string, target: string): Promise<RepoPathKind> {
+  const absolute = resolveRepoPath(root, target)
+  if (!absolute) return 'missing'
+  try {
+    const stat = await fs.stat(absolute)
+    if (stat.isDirectory()) return 'dir'
+    return stat.isFile() ? 'file' : 'missing'
+  } catch {
+    return 'missing'
+  }
+}
+
 export async function readRepoFile(root: string, target: string): Promise<RepoFile> {
   const relative = target.replace(/^\.?\//, '').replace(/\/+$/, '')
   const absolute = resolveRepoPath(root, target)
