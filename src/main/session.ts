@@ -219,6 +219,7 @@ export class AppSession {
     this.runner.connect(url)
     const link = makeLink(lanAddress(), server.port(), session.code)
     this.live = { wsUrl: url, name, code: session.code, link }
+    this.folder = repoPath
     this.savedStore()?.save({ mode: 'host', folder: repoPath, name })
     return { link, wsUrl: url }
   }
@@ -239,6 +240,7 @@ export class AppSession {
     const url = wsUrl(target)
     this.runner.connect(url)
     this.live = { wsUrl: url, name, code: target.code, link: null }
+    this.folder = repoPath
     this.savedStore()?.save({
       mode: 'join',
       folder: repoPath,
@@ -261,6 +263,7 @@ export class AppSession {
 
   private async stop(): Promise<void> {
     this.live = null
+    this.folder = null
     this.runner?.close()
     this.runner = null
     this.git?.stop()
