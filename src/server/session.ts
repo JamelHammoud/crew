@@ -989,6 +989,7 @@ export class CrewSession {
       authorId: member.id,
       threadId,
       mentions: route?.mentions ?? [agent.id],
+      docMentions: this.docMentionRefs(text),
       attachments,
       messageId: route?.messageId ?? randomUUID()
     }
