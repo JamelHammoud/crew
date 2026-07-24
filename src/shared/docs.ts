@@ -63,7 +63,7 @@ export function resolveDocRef(docs: Record<string, DocPage>, ref: DocMentionRef)
 }
 
 const FRONTMATTER = /^---\n([\s\S]*?)\n---\n?/
-const CODED_SEGMENT = /^(.*)-(\d[a-z0-9]{3})$/
+const CODED_SEGMENT = /^(.*)-(\d(?=[a-z0-9]*[a-z])[a-z0-9]{3})$/
 
 export function slugify(name: string): string {
   return name
