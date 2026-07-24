@@ -1562,6 +1562,7 @@ export class CrewSession {
     agent.running.add(next.promptId)
     agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now(), entry: next })
     this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id, messageId: next.messageId })
+    const reactions = this.pendingReactions(agent.id)
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -1571,14 +1572,15 @@ export class CrewSession {
       agentLabel: agent.label,
       promptText: next.text,
       byName: next.byName,
-      threadId: thread.id
+      threadId: thread.id,
+      reactionIds: reactions.length > 0 ? reactions.map(reaction => reaction.id) : undefined
     })
     this.send(agent.runner, {
       type: 'prompt',
       promptId: next.promptId,
       agentId: agent.id,
       threadId: thread.id,
-      text: this.buildPrompt(agent, next),
+      text: this.buildPrompt(agent, next, reactions),
       settings: agent.settings,
       attachments: next.attachments,
       designBoard: this.boardOf(thread)
@@ -1616,7 +1618,21 @@ export class CrewSession {
     if (thread) this.runThread(thread)
   }
 
-  private buildPrompt(agent: AgentState, prompt: QueuedPrompt): string {
+  private pendingReactions(agentId: string): ReactionEvent[] {
+    const delivered = new Set(
+      this.events
+        .filter((event): event is Extract<SessionEvent, { kind: 'agent.start' }> => event.kind === 'agent.start')
+        .flatMap(event => event.reactionIds ?? [])
+    )
+    const latest = new Map<string, ReactionEvent>()
+    for (const event of this.events) {
+      if (event.kind !== 'message.reaction' || event.targetAuthorId !== agentId) continue
+      latest.set(JSON.stringify([event.targetId, event.memberId, event.emoji]), event)
+    }
+    return [...latest.values()].filter(event => event.active && !delivered.has(event.id))
+  }
+
+  private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
     const people = [...this.members.values()].map(m => m.name).join(', ')
     const context = this.events
       .filter(
@@ -1652,6 +1668,17 @@ export class CrewSession {
       const doc = this.docs.get(page)
       if (!doc) continue
       lines.push(``, `Doc page "${doc.title}", referenced above as #${doc.title}:`, this.docExcerpt(doc.text))
+    }
+    if (reactions.length > 0) {
+      lines.push(``, `Reactions to your earlier messages since your last turn:`)
+      for (const reaction of reactions) {
+        const text = this.reactionTarget(reaction.targetId)?.text.replace(/\s+/g, ' ').trim().slice(0, 180)
+        lines.push(
+          text
+            ? `- ${reaction.memberName} reacted ${reaction.emoji} to your message: ${JSON.stringify(text)}`
+            : `- ${reaction.memberName} reacted ${reaction.emoji} to one of your earlier messages.`
+        )
+      }
     }
     lines.push(``, `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`)
     return lines.join('\n')
