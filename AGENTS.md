@@ -15,6 +15,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - No em dashes, and no semicolons used in their place. Write plain sentences.
 - Plain words. No over-selling, no narration. State things simply.
 - UI copy is for everyone, not just engineers. Avoid engineering jargon.
+- Copy never echoes the request that produced it. Placeholders and empty states describe what the user can do in general terms, never the specifics of what was asked for or how it was built.
 
 ## Code
 
