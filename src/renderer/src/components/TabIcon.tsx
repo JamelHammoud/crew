@@ -111,34 +111,33 @@ function DocsIcon() {
   )
 }
 
-/** Artboard outlines itself, a shape pops onto it, then a cursor sweeps in from the corner. */
+/** Frame crop marks: the two rules draw across, then the two posts drop through them. */
 function DesignIcon() {
   return (
     <svg {...SVG}>
-      <rect
+      <path
         className="tab-icon-draw"
         pathLength={1}
-        x={3.2}
-        y={3.2}
-        width={13.6}
-        height={13.6}
-        rx={3}
-        style={{ '--draw-dur': '340ms' } as React.CSSProperties}
-      />
-      <circle
-        className="tab-icon-pop"
-        cx={8}
-        cy={8}
-        r={2}
-        fill="currentColor"
-        stroke="none"
-        style={{ '--pop-delay': '230ms' } as React.CSSProperties}
+        d="M3.4 7.3H16.6"
+        style={{ '--draw-dur': '200ms' } as React.CSSProperties}
       />
       <path
         className="tab-icon-draw"
         pathLength={1}
-        d="M10.9 10.9L14.6 14.6M14.6 14.6V12M14.6 14.6H12"
-        style={{ '--draw-dur': '200ms', '--draw-delay': '320ms' } as React.CSSProperties}
+        d="M16.6 12.7H3.4"
+        style={{ '--draw-dur': '200ms', '--draw-delay': '90ms' } as React.CSSProperties}
+      />
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        d="M7.3 3.4V16.6"
+        style={{ '--draw-dur': '200ms', '--draw-delay': '200ms' } as React.CSSProperties}
+      />
+      <path
+        className="tab-icon-draw"
+        pathLength={1}
+        d="M12.7 16.6V3.4"
+        style={{ '--draw-dur': '200ms', '--draw-delay': '290ms' } as React.CSSProperties}
       />
     </svg>
   )
