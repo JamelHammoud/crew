@@ -212,6 +212,9 @@ app.whenReady().then(() => {
   ipcMain.handle('agents:install', (_event, provider: string) => session.installProvider(provider))
   ipcMain.handle('agents:create', (_event, input: NewAgent) => session.createAgent(input))
   ipcMain.handle('agents:remove', (_event, instanceId: string) => session.removeAgent(instanceId))
+  ipcMain.handle('repo:status', () => session.repoStatus())
+  ipcMain.handle('repo:pull', () => session.pullRepo())
+  ipcMain.handle('repo:push', () => session.pushRepo())
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
