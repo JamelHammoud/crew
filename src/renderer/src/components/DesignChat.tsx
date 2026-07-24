@@ -145,7 +145,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
         ) : (
           <div className="h-full flex items-center justify-center text-center px-6">
             <p className="text-sm text-fg-muted">
-              Mention an agent like @{example} and it will design on this board with you, cursor and all.
+              Mention an agent like @{example} and it will design on this board with you.
             </p>
           </div>
         )}
