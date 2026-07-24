@@ -490,7 +490,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784867343421,
+        "fetchedAt": 1784867463459,
         "windows": [
           {
             "key": "primary",
@@ -690,7 +690,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784867343421,
+        "fetchedAt": 1784867463459,
         "windows": [
           {
             "key": "primary",
@@ -853,7 +853,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784867351619,
+        "fetchedAt": 1784867471662,
         "windows": [
           {
             "key": "primary",
@@ -936,30 +936,30 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784867111619,
+        "fetchedAt": 1784867411666,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 68,
+            "percent": 73,
             "severity": "normal",
-            "resetsAt": 1784876999917,
+            "resetsAt": 1784877000919,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 33,
+            "percent": 34,
             "severity": "normal",
-            "resetsAt": 1784930399917,
+            "resetsAt": 1784930399919,
             "active": false
           },
           {
             "key": "weekly_scoped:Fable",
             "label": "Weekly (Fable)",
-            "percent": 62,
+            "percent": 63,
             "severity": "normal",
-            "resetsAt": 1784930399917,
+            "resetsAt": 1784930399920,
             "active": false
           }
         ],
@@ -1117,7 +1117,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784867351619,
+        "fetchedAt": 1784867471662,
         "windows": [
           {
             "key": "primary",
@@ -1200,30 +1200,30 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784867111619,
+        "fetchedAt": 1784867411666,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 68,
+            "percent": 73,
             "severity": "normal",
-            "resetsAt": 1784876999917,
+            "resetsAt": 1784877000919,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 33,
+            "percent": 34,
             "severity": "normal",
-            "resetsAt": 1784930399917,
+            "resetsAt": 1784930399919,
             "active": false
           },
           {
             "key": "weekly_scoped:Fable",
             "label": "Weekly (Fable)",
-            "percent": 62,
+            "percent": 63,
             "severity": "normal",
-            "resetsAt": 1784930399917,
+            "resetsAt": 1784930399920,
             "active": false
           }
         ],
