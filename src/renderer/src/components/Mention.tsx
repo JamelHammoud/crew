@@ -78,13 +78,53 @@ function DocCardContent({ page }: { page: string }) {
 }
 
 export function DocMention({ page, children }: { page: string | null; children: ReactNode }) {
+  const openDoc = useCrew(s => s.openDoc)
   const pill = (
-    <span className="font-medium cursor-default rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20">
+    <span
+      onClick={
+        page
+          ? event => {
+              event.stopPropagation()
+              openDoc(page)
+            }
+          : undefined
+      }
+      className={`font-medium rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
+        page ? 'cursor-pointer' : 'cursor-default'
+      }`}
+    >
       {children}
     </span>
   )
   if (!page) return pill
   return <HoverCard content={<DocCardContent page={page} />}>{pill}</HoverCard>
+}
+
+export function MentionText({ text, docMentions }: { text: string; docMentions?: DocMentionRef[] }) {
+  const agents = useCrew(s => s.agents)
+  const docs = useCrew(s => s.docs)
+  const tokens = useMemo(() => tokenizeMentions(text, agents, docs, docMentions), [agents, docs, docMentions, text])
+  return (
+    <>
+      {tokens.map((token, index) => {
+        if (token.kind === 'agent') {
+          return (
+            <AgentMention key={index} agent={token.agent}>
+              {token.text}
+            </AgentMention>
+          )
+        }
+        if (token.kind === 'doc') {
+          return (
+            <DocMention key={index} page={token.page}>
+              {token.text}
+            </DocMention>
+          )
+        }
+        return token.text
+      })}
+    </>
+  )
 }
 
 function MemberCardContent({ member, self }: { member: MemberInfo; self: boolean }) {
