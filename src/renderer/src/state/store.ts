@@ -117,7 +117,9 @@ export const useCrew = create<CrewState>((set, get) => {
     if (event.kind === 'message.edited') {
       set(state => ({
         events: state.events.map(e =>
-          e.kind === 'message' && e.id === event.messageId ? { ...e, text: event.text } : e
+          e.kind === 'message' && e.id === event.messageId
+            ? { ...e, text: event.text, docMentions: event.docMentions ?? e.docMentions }
+            : e
         )
       }))
       return
