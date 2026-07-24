@@ -2,7 +2,9 @@ import type { Attachment } from '../../../shared/attachments'
 import type { DocMentionRef } from '../../../shared/docs'
 import type { SessionEvent } from '../../../shared/events'
 import type { AgentStep, FileChange } from '../../../shared/llm'
+import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
+import { reactionGroups, type ReactionGroup } from './reactionGroups'
 
 // A thread's standing as a task. 'done' and 'archived' record explicit calls a
 // person made; 'working', 'ready', and 'failed' are read off the run history.
@@ -59,6 +61,8 @@ export interface ThreadItem {
   attachments?: Attachment[]
   docMentions?: DocMentionRef[]
   route?: MessageRoute
+  reactionTargetId?: string
+  reactions?: ReactionGroup[]
 }
 
 // How a message reached the agent, shown on the message itself: it was folded
@@ -101,7 +105,8 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
     self: false,
     text: step.text,
     streaming,
-    promptId
+    promptId,
+    reactionTargetId: agentStepReactionTarget(promptId, step.id)
   }
 }
 
@@ -130,6 +135,7 @@ export function buildThread(
   for (const event of events) {
     if (event.kind === 'message.route') routes.set(event.messageId, event)
   }
+  const reactions = reactionGroups(events, selfId)
   const items: ThreadItem[] = []
   for (const event of events) {
     if (event.kind === 'message') {
@@ -144,7 +150,9 @@ export function buildThread(
         streaming: false,
         attachments: event.attachments,
         docMentions: event.docMentions,
-        route: routeBadge(route, started, ended)
+        route: routeBadge(route, started, ended),
+        reactionTargetId: event.authorId === 'crew' ? undefined : messageReactionTarget(event.id),
+        reactions: event.authorId === 'crew' ? undefined : reactions.get(messageReactionTarget(event.id))
       })
     }
     if (event.kind === 'thread.agent') {
@@ -177,9 +185,16 @@ export function buildThread(
           self: false,
           text: event.ok ? (event.text ?? '') : (event.error ?? 'Something went wrong.'),
           streaming: false,
-          error: event.ok ? undefined : (event.error ?? 'error')
+          error: event.ok ? undefined : (event.error ?? 'error'),
+          reactionTargetId: agentEndReactionTarget(event.promptId),
+          reactions: reactions.get(agentEndReactionTarget(event.promptId))
         })
       }
+    }
+  }
+  for (const item of items) {
+    if (item.reactionTargetId && item.reactions === undefined) {
+      item.reactions = reactions.get(item.reactionTargetId)
     }
   }
   // Steps render under their run's agent.start event, so a message steered
