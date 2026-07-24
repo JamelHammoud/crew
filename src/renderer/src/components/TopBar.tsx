@@ -5,6 +5,7 @@ import { useCrew } from '../state/store'
 import { applyTheme, useTheme } from '../state/theme'
 import Avatar from './Avatar'
 import Pill from './Pill'
+import RepoControls from './RepoControls'
 import TabIcon from './TabIcon'
 import Tooltip from './Tooltip'
 import { MenuItem, Popover } from './Popover'
@@ -76,6 +77,7 @@ export default function TopBar({
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse">Connection lost. Trying again…</span>
         )}
+        <RepoControls />
         <Tooltip label="Tasks">
           <button
             onClick={onToggleTasks}
