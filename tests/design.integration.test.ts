@@ -95,7 +95,6 @@ describe('design boards', () => {
     ui.send({ type: 'design.create', boardId: 'wire-1abc', name: 'Wireframe' })
     initBoard(ui, 'wire-1abc')
     const store = new Store(repoPath)
-    const eventsBefore = store.loadEvents().length
 
     ui.send({
       type: 'design.presence',
@@ -122,8 +121,7 @@ describe('design boards', () => {
     await watcher.waitFor(
       m => m.type === 'design.presence' && m.presence.userId === presence.userId && m.presence.pageId === null
     )
-    await waitUntil(() => store.loadEvents().length >= eventsBefore)
-    expect(store.loadEvents().length).toBe(eventsBefore)
+    expect(store.loadEvents().some(e => e.kind.startsWith('design'))).toBe(false)
 
     watcher.close()
     open.close()
