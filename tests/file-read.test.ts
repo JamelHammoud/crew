@@ -73,3 +73,32 @@ describe('readRepoFile', () => {
     expect(result.text.length).toBe(512 * 1024)
   })
 })
+
+describe('writeRepoFile', () => {
+  it('writes a text file and returns the fresh contents', async () => {
+    const root = makeRepo()
+    const result = await writeRepoFile(root, 'readme.md', 'updated\n')
+    expect(result).toEqual({ kind: 'file', path: 'readme.md', text: 'updated\n', truncated: false })
+    expect(readFileSync(path.join(root, 'readme.md'), 'utf8')).toBe('updated\n')
+  })
+
+  it('does not create files that are not already in the folder', async () => {
+    const root = makeRepo()
+    expect(await writeRepoFile(root, 'brand-new.txt', 'x')).toBeNull()
+    expect(existsSync(path.join(root, 'brand-new.txt'))).toBe(false)
+  })
+
+  it('refuses folders and paths that escape the folder', async () => {
+    const root = makeRepo()
+    expect(await writeRepoFile(root, 'src', 'x')).toBeNull()
+    expect(await writeRepoFile(root, '../outside.txt', 'x')).toBeNull()
+    expect(existsSync(path.join(root, '..', 'outside.txt'))).toBe(false)
+  })
+
+  it('refuses files too large to have been fully loaded', async () => {
+    const root = makeRepo()
+    writeFileSync(path.join(root, 'big.txt'), 'a'.repeat(600 * 1024))
+    expect(await writeRepoFile(root, 'big.txt', 'tiny')).toBeNull()
+    expect(readFileSync(path.join(root, 'big.txt'), 'utf8').length).toBe(600 * 1024)
+  })
+})
