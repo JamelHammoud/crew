@@ -6,6 +6,11 @@ import CreateAgent from '../src/renderer/src/components/CreateAgent'
 import { claudeFields } from '../src/runner/providers/claude'
 import type { AgentDef, ProviderCapability } from '../src/shared/llm'
 
+Object.defineProperty(Element.prototype, 'getAnimations', {
+  configurable: true,
+  value: () => []
+})
+
 const capability: ProviderCapability = {
   provider: 'claude',
   label: 'Claude',
