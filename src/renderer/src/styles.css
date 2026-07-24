@@ -377,13 +377,14 @@ body {
 
 .design .tlui-main-toolbar__tools,
 .design .tlui-menu-zone,
-.design .tlui-navigation-panel,
-.design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls {
+.design .tlui-navigation-panel {
   border-radius: 999px;
 }
 
-.design .tlui-main-toolbar--horizontal .tlui-main-toolbar__extras__controls {
-  margin-bottom: 6px;
+.design .tlui-style-panel__wrapper {
+  margin: 0;
+  border-radius: 16px;
+  animation: var(--animate-pop);
 }
 
 .design .tlui-menu-zone {
