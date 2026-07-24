@@ -1,9 +1,41 @@
 import { ArrowUpIcon } from '@heroicons/react/20/solid'
 import { StopIcon } from '@heroicons/react/16/solid'
-import type { ReactNode, RefObject } from 'react'
+import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
+import { tokenizeMentions } from './mentionTokens'
 import Tooltip from './Tooltip'
+
+function MentionHighlights({ value }: { value: string }) {
+  const agents = useCrew(s => s.agents)
+  const docs = useCrew(s => s.docs)
+  const tokens = useMemo(() => tokenizeMentions(value, agents, docs), [agents, docs, value])
+  return (
+    <>
+      {tokens.map((token, index) => {
+        if (token.kind === 'agent') {
+          return (
+            <span key={index} className="rounded-md px-0.5 -mx-0.5 py-0.5 bg-fg/10">
+              {token.text}
+            </span>
+          )
+        }
+        if (token.kind === 'doc') {
+          return (
+            <span
+              key={index}
+              className="rounded-md px-0.5 -mx-0.5 py-0.5 text-sky-300 bg-sky-400/15 light:text-sky-700 light:bg-sky-500/10"
+            >
+              {token.text}
+            </span>
+          )
+        }
+        return token.text
+      })}
+      {'​'}
+    </>
+  )
+}
 
 export default function Composer({
   attachmentKey,
