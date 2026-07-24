@@ -152,7 +152,7 @@ export default function Design() {
             <button
               onClick={() => setChatOpen(true)}
               aria-label="Board chat"
-              className="absolute bottom-6 right-6 w-11 h-11 rounded-full glass text-fg flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95"
+              className="absolute bottom-12 right-12 w-11 h-11 rounded-full glass text-fg flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95"
             >
               <ChatBubbleLeftRightIcon className="w-5 h-5" strokeWidth={1.8} />
             </button>
