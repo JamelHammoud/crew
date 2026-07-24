@@ -4,10 +4,17 @@ import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
 import { reactionGroups } from '../src/renderer/src/components/reactionGroups'
+import { buildThread } from '../src/renderer/src/components/thread'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
+import { agentStepReactionTarget } from '../src/shared/reactions'
 
-afterEach(() => cleanup())
+const defaultReactToMessage = useCrew.getState().reactToMessage
+
+afterEach(() => {
+  cleanup()
+  useCrew.setState({ reactToMessage: defaultReactToMessage })
+})
 
 describe('message reaction controls', () => {
   it('sends a quick reaction and lets someone remove their reaction from the count', () => {
@@ -75,6 +82,50 @@ describe('message reaction controls', () => {
 
     expect(reactionGroups(events, 'ali').get('message:m1')).toEqual([
       { emoji: '👍', count: 1, names: ['Ali'], self: true }
+    ])
+  })
+
+  it('keeps a reaction on the exact agent reply block it targets', () => {
+    const events: SessionEvent[] = [
+      {
+        id: 'start',
+        ts: 1,
+        kind: 'agent.start',
+        promptId: 'p1',
+        agentId: 'agent-a',
+        agentLabel: 'Agent A',
+        promptText: 'go',
+        byName: 'Ali',
+        threadId: 't1'
+      },
+      {
+        id: 'reaction',
+        ts: 4,
+        kind: 'message.reaction',
+        targetId: agentStepReactionTarget('p1', 'second'),
+        targetAuthorId: 'agent-a',
+        targetAuthorName: 'Agent A',
+        memberId: 'ali',
+        memberName: 'Ali',
+        emoji: '🎉',
+        active: true,
+        threadId: 't1'
+      }
+    ]
+    const items = buildThread(
+      events,
+      {
+        p1: [
+          { id: 'first', ts: 2, kind: 'text', text: 'First block', status: 'done' },
+          { id: 'second', ts: 3, kind: 'text', text: 'Second block', status: 'done' }
+        ]
+      },
+      'ali'
+    )
+
+    expect(items.find(item => item.text === 'First block')?.reactions).toBeUndefined()
+    expect(items.find(item => item.text === 'Second block')?.reactions).toEqual([
+      { emoji: '🎉', count: 1, names: ['Ali'], self: true }
     ])
   })
 })
