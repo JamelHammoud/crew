@@ -62,9 +62,6 @@ export class GitSync {
     }
   }
 
-  // session.json is a state snapshot this machine rewrites on every poll, so a
-  // conflicted hunk carries no information worth merging — keep the local copy.
-  // While a rebase replays our commits onto origin, the local side is `--theirs`.
   private async pullAction(): Promise<RepoActionResult> {
     const before = await this.readStatus()
     if (!before.available) {
