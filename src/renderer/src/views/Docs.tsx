@@ -90,9 +90,10 @@ export default function Docs() {
   }, [current])
 
   const freshSlug = (parent: string, base: string): string => {
-    let slug = pageSlug(parent, base, pageCode())
-    while (docs[slug] !== undefined) slug = pageSlug(parent, base, pageCode())
-    return slug
+    const taken = new Set(Object.keys(docs).map(pageCodeOf))
+    let code = pageCode()
+    while (taken.has(code)) code = pageCode()
+    return pageSlug(parent, base, code)
   }
 
   const createPage = (parent: string) => {
