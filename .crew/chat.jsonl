@@ -8283,3 +8283,4 @@
 {"id":"ebe99f71-bfc8-4e30-ae64-fbb41437c3a8","ts":1784924605125,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
 {"id":"16fd0280-a280-40e2-afd6-1ab184ea5bf1","ts":1784924605125,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
 {"id":"0db87711-03d0-4be3-bbc8-9369f9393b3c","ts":1784924605125,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"e93e4622-5d8a-48ba-aa0c-5383b8cc990c","ts":1784924610214,"kind":"todo.added","todoId":"24148db9-2985-4bd4-a88c-2fffaf418bcf","text":"Reactions shouldn't have a border, unless you did it too. The reactions shouldn't move up when hovered\n\nThe reaction menu should be slightly smaller / less in your way","byName":"Jamel (Envoy)"}
