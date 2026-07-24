@@ -423,11 +423,12 @@ export default function TasksPanel({
   return (
     <>
       {open && <div className="absolute inset-0 z-40" onClick={onClose} />}
-      <aside
-        className={`app-no-drag absolute inset-y-0 right-0 z-50 w-[380px] bg-ink-900 border-l border-ink-700 shadow-2xl shadow-black/40 light:shadow-black/10 flex flex-col transition-transform duration-200 ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
+      <div className="absolute inset-0 z-50 overflow-hidden pointer-events-none">
+        <aside
+          className={`app-no-drag pointer-events-auto absolute inset-y-0 right-0 w-[380px] bg-ink-900 border-l border-ink-700 shadow-2xl shadow-black/40 light:shadow-black/10 flex flex-col transition-transform duration-200 ${
+            open ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
         <header className="h-[70px] px-5 flex items-center shrink-0">
           {searching ? (
             <>
