@@ -77,16 +77,28 @@ export default function Composer({
         }}
       >
         <AttachmentTray attachmentKey={attachmentKey} />
-        <textarea
-          ref={inputRef}
-          value={value}
-          onChange={event => onChange(event.target.value)}
-          onKeyDown={onKeyDown}
-          onPaste={event => void attach(attachmentKey, event.clipboardData.files)}
-          rows={2}
-          placeholder={placeholder}
-          className="w-full bg-transparent text-base text-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
-        />
+        <div className="relative">
+          <div
+            ref={highlightRef}
+            aria-hidden
+            className="absolute inset-0 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none"
+          >
+            <MentionHighlights value={value} />
+          </div>
+          <textarea
+            ref={inputRef}
+            value={value}
+            onChange={event => onChange(event.target.value)}
+            onKeyDown={onKeyDown}
+            onPaste={event => void attach(attachmentKey, event.clipboardData.files)}
+            onScroll={event => {
+              if (highlightRef.current) highlightRef.current.scrollTop = event.currentTarget.scrollTop
+            }}
+            rows={2}
+            placeholder={placeholder}
+            className="relative w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
+          />
+        </div>
         <div className="flex items-center justify-between mt-2">
           <AttachButton attachmentKey={attachmentKey} />
           {onStop && !canSend ? (
