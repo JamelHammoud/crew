@@ -3,7 +3,6 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import CreateAgent from '../src/renderer/src/components/CreateAgent'
-import { claudeFields } from '../src/runner/providers/claude'
 import type { AgentDef, ProviderCapability } from '../src/shared/llm'
 
 Object.defineProperty(Element.prototype, 'getAnimations', {
@@ -14,7 +13,33 @@ Object.defineProperty(Element.prototype, 'getAnimations', {
 const capability: ProviderCapability = {
   provider: 'claude',
   label: 'Claude',
-  fields: claudeFields(),
+  fields: [
+    {
+      key: 'model',
+      label: 'Model',
+      options: [
+        { value: 'opus', label: 'Opus' },
+        { value: 'sonnet', label: 'Sonnet' }
+      ],
+      default: 'opus'
+    },
+    {
+      key: 'opusModel',
+      label: 'Version',
+      options: [
+        { value: 'claude-opus-5', label: 'Opus 5' },
+        { value: 'claude-opus-4-8', label: 'Opus 4.8' }
+      ],
+      default: 'claude-opus-5',
+      visibleWhen: { key: 'model', value: 'opus' }
+    },
+    {
+      key: 'effort',
+      label: 'Thinking',
+      options: [{ value: 'high', label: 'High' }],
+      default: 'high'
+    }
+  ],
   installed: true,
   installable: true
 }
