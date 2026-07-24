@@ -227,6 +227,7 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('file:read', (_event, target: string) => session.readFile(target))
   ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
+  ipcMain.handle('file:stat', (_event, target: string) => session.statFile(target))
   ipcMain.handle('file:reveal', (_event, target: string) => {
     const absolute = session.resolveFile(target)
     if (absolute) shell.showItemInFolder(absolute)

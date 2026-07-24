@@ -97,6 +97,11 @@ export class AppSession {
     return writeRepoFile(this.folder, target, text)
   }
 
+  async statFile(target: string): Promise<RepoPathKind> {
+    if (!this.folder) return 'missing'
+    return statRepoFile(this.folder, target)
+  }
+
   resolveFile(target: string): string | null {
     if (!this.folder) return null
     return resolveRepoPath(this.folder, target)
