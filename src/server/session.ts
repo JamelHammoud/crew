@@ -400,6 +400,29 @@ export class CrewSession {
       case 'doc.delete':
         if (meta.role === 'ui') this.handleDocDelete(member, msg.page)
         break
+      case 'design.create':
+        if (meta.role === 'ui') this.handleDesignCreate(msg.boardId, msg.name)
+        break
+      case 'design.rename':
+        if (meta.role === 'ui') this.handleDesignRename(msg.boardId, msg.name)
+        break
+      case 'design.delete':
+        if (meta.role === 'ui') this.handleDesignDelete(msg.boardId)
+        break
+      case 'design.open':
+        if (meta.role === 'ui') this.handleDesignOpen(ws, msg.boardId)
+        break
+      case 'design.init':
+        if (meta.role === 'ui') this.handleDesignInit(msg.boardId, msg.document)
+        break
+      case 'design.apply':
+        if (meta.role === 'ui') this.handleDesignApply(ws, msg.boardId, msg.put, msg.remove)
+        break
+      case 'design.presence':
+        if (meta.role === 'ui') {
+          this.handleDesignPresence(ws, member, msg.boardId, msg.cursor, msg.selection, msg.pageId)
+        }
+        break
       case 'queue.edit':
         if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
         break
@@ -446,7 +469,8 @@ export class CrewSession {
     text: string,
     mentions: string[],
     threadId?: string,
-    incoming?: OutgoingAttachment[]
+    incoming?: OutgoingAttachment[],
+    boardId?: string
   ): void {
     const trimmed = text.trim()
     const attachments = this.saveAttachments(incoming)
@@ -481,7 +505,7 @@ export class CrewSession {
       })
       return
     }
-    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments)
+    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments, boardId)
   }
 
   private switchThreadAgent(thread: Thread, id: string, member: Member): void {
@@ -500,7 +524,13 @@ export class CrewSession {
     })
   }
 
-  private startThread(member: Member, agent: AgentState, text: string, attachments: Attachment[]): string {
+  private startThread(
+    member: Member,
+    agent: AgentState,
+    text: string,
+    attachments: Attachment[],
+    boardId?: string
+  ): string {
     const threadId = randomUUID()
     const thread: Thread = {
       id: threadId,
@@ -510,7 +540,8 @@ export class CrewSession {
       createdBy: member.name,
       status: 'open',
       queue: [],
-      running: null
+      running: null,
+      boardId: boardId && this.designs.has(boardId) ? boardId : undefined
     }
     this.threads.set(threadId, thread)
     this.emit({
@@ -521,7 +552,8 @@ export class CrewSession {
       agentId: agent.id,
       agentLabel: agent.label,
       title: thread.title,
-      byName: member.name
+      byName: member.name,
+      boardId: thread.boardId
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments)
     return threadId
@@ -1035,10 +1067,17 @@ export class CrewSession {
           threadId: ref.threadId,
           text: this.buildPrompt(agent, entry),
           settings: agent.settings,
-          attachments: entry.attachments
+          attachments: entry.attachments,
+          designBoard: this.boardOf(this.threads.get(ref.threadId))
         })
       }
     }
+  }
+
+  private boardOf(thread: Thread | undefined): DesignBoardMeta | undefined {
+    if (!thread?.boardId) return undefined
+    const board = this.designs.get(thread.boardId)
+    return board ? { id: board.id, name: board.name } : undefined
   }
 
   private promptGone(ws: WebSocket, meta: ConnMeta, promptId: string): boolean {
