@@ -818,6 +818,229 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
+  private boardList(): DesignBoardMeta[] {
+    return [...this.designs.values()]
+      .map(board => ({ id: board.id, name: board.name }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  private broadcastBoards(): void {
+    this.broadcast({ type: 'design.boards', boards: this.boardList() })
+  }
+
+  private handleDesignCreate(boardId: string, name: string): void {
+    if (!BOARD_ID.test(boardId) || this.designs.has(boardId)) return
+    const clean = this.titleFrom(name) || 'Untitled'
+    try {
+      this.store.saveDesign(boardId, { name: clean, document: null })
+    } catch {
+      return
+    }
+    this.designs.set(boardId, { id: boardId, name: clean, document: null, presence: new Map(), saveTimer: null })
+    this.broadcastBoards()
+    this.onSyncNeeded?.()
+  }
+
+  private handleDesignRename(boardId: string, name: string): void {
+    const board = this.designs.get(boardId)
+    const clean = this.titleFrom(name)
+    if (!board || !clean || board.name === clean) return
+    board.name = clean
+    this.scheduleDesignSave(board)
+    this.broadcastBoards()
+  }
+
+  private handleDesignDelete(boardId: string): void {
+    const board = this.designs.get(boardId)
+    if (!board) return
+    if (board.saveTimer) clearTimeout(board.saveTimer)
+    this.designs.delete(boardId)
+    try {
+      this.store.deleteDesign(boardId)
+    } catch {
+      // The board is gone from the session either way.
+    }
+    this.broadcastBoards()
+    this.onSyncNeeded?.()
+  }
+
+  private handleDesignOpen(ws: WebSocket, boardId: string): void {
+    const board = this.designs.get(boardId)
+    if (!board) return
+    this.send(ws, {
+      type: 'design.snapshot',
+      boardId,
+      name: board.name,
+      document: board.document,
+      presence: [...board.presence.values()]
+    })
+  }
+
+  // The first person to open a fresh board sends the starting document, so the
+  // server never has to know how to build one. Everyone else loads it from the
+  // snapshot broadcast here.
+  private handleDesignInit(boardId: string, document: DesignDocument): void {
+    const board = this.designs.get(boardId)
+    if (!board || board.document !== null) return
+    if (!document || typeof document !== 'object') return
+    if (typeof document.store !== 'object' || document.store === null || Array.isArray(document.store)) return
+    board.document = { store: { ...document.store }, schema: document.schema ?? null }
+    this.scheduleDesignSave(board)
+    this.broadcast({
+      type: 'design.snapshot',
+      boardId,
+      name: board.name,
+      document: board.document,
+      presence: [...board.presence.values()]
+    })
+  }
+
+  private handleDesignApply(ws: WebSocket, boardId: string, put?: unknown[], remove?: string[]): void {
+    const board = this.designs.get(boardId)
+    if (!board?.document) return
+    const putRecords = (Array.isArray(put) ? put : []).filter(
+      (record): record is { id: string } =>
+        typeof record === 'object' && record !== null && typeof (record as { id?: unknown }).id === 'string'
+    )
+    const removeIds = (Array.isArray(remove) ? remove : []).filter((id): id is string => typeof id === 'string')
+    if (putRecords.length === 0 && removeIds.length === 0) return
+    for (const record of putRecords) board.document.store[record.id] = record
+    for (const id of removeIds) delete board.document.store[id]
+    this.scheduleDesignSave(board)
+    this.broadcastExcept(ws, { type: 'design.changes', boardId, put: putRecords, remove: removeIds })
+  }
+
+  private handleDesignPresence(
+    ws: WebSocket,
+    member: Member,
+    boardId: string,
+    cursor: { x: number; y: number } | null,
+    selection: string[],
+    pageId: string | null
+  ): void {
+    const board = this.designs.get(boardId)
+    if (!board) return
+    const valid =
+      cursor !== null &&
+      typeof cursor === 'object' &&
+      typeof cursor.x === 'number' &&
+      typeof cursor.y === 'number' &&
+      isFinite(cursor.x) &&
+      isFinite(cursor.y)
+    const presence: DesignPresence = {
+      userId: member.id,
+      name: member.name,
+      kind: 'human',
+      cursor: valid ? { x: cursor.x, y: cursor.y } : null,
+      selection: (Array.isArray(selection) ? selection : []).filter(id => typeof id === 'string').slice(0, 100),
+      pageId: typeof pageId === 'string' ? pageId : null,
+      ts: Date.now()
+    }
+    if (presence.pageId === null) board.presence.delete(member.id)
+    else board.presence.set(member.id, presence)
+    this.broadcastExcept(ws, { type: 'design.presence', boardId, presence })
+  }
+
+  private dropDesignPresence(member: Member): void {
+    const stillHere = [...this.meta.values()].some(
+      m => m.role === 'ui' && m.memberKey === member.name.toLowerCase()
+    )
+    if (stillHere) return
+    for (const board of this.designs.values()) {
+      if (!board.presence.delete(member.id)) continue
+      this.broadcast({
+        type: 'design.presence',
+        boardId: board.id,
+        presence: {
+          userId: member.id,
+          name: member.name,
+          kind: 'human',
+          cursor: null,
+          selection: [],
+          pageId: null,
+          ts: Date.now()
+        }
+      })
+    }
+  }
+
+  private scheduleDesignSave(board: DesignBoard): void {
+    if (board.saveTimer) return
+    board.saveTimer = setTimeout(() => {
+      board.saveTimer = null
+      try {
+        this.store.saveDesign(board.id, { name: board.name, document: board.document })
+      } catch {
+        return
+      }
+      this.onSyncNeeded?.()
+    }, DESIGN_SAVE_MS)
+    board.saveTimer.unref?.()
+  }
+
+  designBoardSummary(boardId: string): unknown | null {
+    const board = this.designs.get(boardId)
+    if (!board) return null
+    return boardSummary(board.id, board.name, board.document)
+  }
+
+  runDesignOps(boardId: string, byAgent: string, ops: DesignOp[]): DesignOpResult[] | null {
+    const board = this.designs.get(boardId)
+    if (!board) return null
+    if (!board.document) {
+      return ops.map(() => ({ error: 'This board has never been opened in the app, so it has no page yet.' }))
+    }
+    const applied = applyDesignOps(board.document, ops)
+    if (applied.put.length > 0 || applied.remove.length > 0) {
+      this.broadcast({ type: 'design.changes', boardId, put: applied.put, remove: applied.remove })
+      this.scheduleDesignSave(board)
+    }
+    this.walkAgentCursor(board, byAgent, applied)
+    return applied.results
+  }
+
+  // The agent's cursor hops from shape to shape a beat behind the edits, so
+  // people watching the board see the work land where it happened.
+  private walkAgentCursor(board: DesignBoard, agentKey: string, applied: AppliedOps): void {
+    const key = `${board.id}:${agentKey}`
+    for (const timer of this.designCursorTimers.get(key) ?? []) clearTimeout(timer)
+    const steps = applied.cursors.slice(0, DESIGN_CURSOR_STEPS_MAX)
+    if (steps.length === 0) return
+    const label = this.agents.get(agentKey)?.label ?? agentKey
+    const pageId = Object.keys(board.document?.store ?? {}).find(id => id.startsWith('page:')) ?? null
+    const touched = applied.results.flatMap(result => (result.id ? [result.id] : [])).slice(0, 50)
+    const timers: NodeJS.Timeout[] = []
+    steps.forEach((cursor, i) => {
+      const timer = setTimeout(() => {
+        const presence: DesignPresence = {
+          userId: agentKey,
+          name: label,
+          kind: 'agent',
+          cursor,
+          selection: touched,
+          pageId,
+          ts: Date.now()
+        }
+        board.presence.set(agentKey, presence)
+        this.broadcast({ type: 'design.presence', boardId: board.id, presence })
+      }, i * DESIGN_CURSOR_STEP_MS)
+      timer.unref?.()
+      timers.push(timer)
+    })
+    const done = setTimeout(() => {
+      board.presence.delete(agentKey)
+      this.designCursorTimers.delete(key)
+      this.broadcast({
+        type: 'design.presence',
+        boardId: board.id,
+        presence: { userId: agentKey, name: label, kind: 'agent', cursor: null, selection: [], pageId: null, ts: Date.now() }
+      })
+    }, steps.length * DESIGN_CURSOR_STEP_MS + 6000)
+    done.unref?.()
+    timers.push(done)
+    this.designCursorTimers.set(key, timers)
+  }
+
   private queuedEntry(promptId: string): { thread: Thread; entry: QueuedPrompt } | null {
     for (const thread of this.threads.values()) {
       const entry = thread.queue.find(q => q.promptId === promptId)
