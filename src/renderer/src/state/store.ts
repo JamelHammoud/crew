@@ -199,7 +199,8 @@ export const useCrew = create<CrewState>((set, get) => {
             agentLabel: event.agentLabel,
             title: event.title,
             createdBy: event.byName,
-            status: 'open'
+            status: 'open',
+            boardId: event.boardId
           }
           break
         }
