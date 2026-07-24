@@ -92,8 +92,8 @@ function dataUrl(svg: string): string {
 export function designAssetUrls(): ReturnType<typeof getAssetUrlsByImport> | undefined {
   try {
     const base = getAssetUrlsByImport()
-    const icons: Record<string, string> = { ...base.icons }
-    for (const [name, svg] of Object.entries(ICONS)) icons[name] = dataUrl(svg)
+    const icons = { ...base.icons }
+    for (const [name, svg] of Object.entries(ICONS)) icons[name as keyof typeof icons] = dataUrl(svg)
     return { ...base, icons }
   } catch {
     return undefined
