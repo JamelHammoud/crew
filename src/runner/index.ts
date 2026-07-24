@@ -269,7 +269,7 @@ export class Runner {
         break
       }
       case 'prompt':
-        this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [])
+        this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [], msg.designBoard)
         break
       case 'steer':
         void this.steer(msg.promptId, msg.text, msg.byName, msg.attachments ?? [])
