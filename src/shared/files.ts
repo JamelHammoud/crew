@@ -3,6 +3,8 @@ export interface FileEntry {
   dir: boolean
 }
 
+export type RepoPathKind = 'file' | 'dir' | 'missing'
+
 export type RepoFile =
   | { kind: 'file'; path: string; text: string; truncated: boolean }
   | { kind: 'dir'; path: string; entries: FileEntry[] }

@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import type { FileEntry, RepoFile } from '../shared/files'
+import type { FileEntry, RepoFile, RepoPathKind } from '../shared/files'
 
 const MAX_BYTES = 512 * 1024
 
