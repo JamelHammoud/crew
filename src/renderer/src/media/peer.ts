@@ -217,6 +217,8 @@ export class PeerLink {
     this.settingAnswer = false
     await this.drain()
     if (description.type !== 'offer') return
+    this.bind(this.pc.getTransceivers())
+    await this.apply()
     await this.pc.setLocalDescription()
     this.send({ kind: 'description', description: this.pc.localDescription?.toJSON() })
   }
@@ -237,8 +239,8 @@ export class PeerLink {
 
   private tune(slot: Slot): void {
     const limit = LIMITS[slot]
-    const sender = this.senders[slot]
-    if (!limit) return
+    const sender = this.slots?.[slot].sender
+    if (!limit || !sender) return
     const params = sender.getParameters()
     if (params.encodings.length === 0) params.encodings = [{}]
     for (const encoding of params.encodings) encoding.maxBitrate = limit.maxBitrate
