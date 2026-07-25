@@ -101,11 +101,10 @@ const round = value => Number(value.toFixed(3))
 const cutMasks = () =>
   BACK_TO_FRONT.map((_, index) => {
     const infront = BACK_TO_FRONT.slice(index + 1).map(
-      x => `      <circle cx="${x}" cy="${CENTRE}" r="${RADIUS + GAP}" fill="#000000" />`
+      x => `\n      <circle cx="${x}" cy="${CENTRE}" r="${RADIUS + GAP}" fill="#000000" />`
     )
     return `    <mask id="cut-${index}" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
-      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="#ffffff" />
-${infront.join('\n')}
+      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="#ffffff" />${infront.join('')}
     </mask>`
   }).join('\n')
 
