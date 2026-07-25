@@ -64,7 +64,8 @@ export default function Tooltip({
   return (
     <span className="inline-block" ref={anchorRef} onMouseEnter={enter} onMouseLeave={hide}>
       {children}
-      {style &&
+      {!disabled &&
+        style &&
         createPortal(
           <span
             ref={tipRef}
