@@ -2,6 +2,7 @@ import { ComputerDesktopIcon, WindowIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState } from 'react'
 import type { ScreenSource } from '../../../../shared/media'
 import { useHuddle } from '../../state/huddle'
+import InsetRing from '../InsetRing'
 import Spinner from '../Spinner'
 
 type Kind = 'screen' | 'window'
