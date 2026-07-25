@@ -213,6 +213,7 @@ export const useCrew = create<CrewState>((set, get) => {
             agentId: event.agentId,
             agentLabel: event.agentLabel,
             title: event.title,
+            titleRefs: event.titleRefs,
             createdBy: event.byName,
             status: 'open',
             mode: event.mode ?? 'build',
