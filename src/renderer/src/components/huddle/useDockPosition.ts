@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useBox } from './useBox'
 
 export interface Spot {
   x: number
@@ -7,6 +8,10 @@ export interface Spot {
 
 const KEY = 'crew.huddle.dock'
 const MARGIN = 16
+// Only used for the first frame, before the dock has been measured. It is on
+// the small side on purpose: too small corrects itself once the real size
+// arrives, too large leaves the dock floating short of the corner.
+const FALLBACK = { w: 320, h: 160 }
 
 function clamp(spot: Spot, size: { w: number; h: number }): Spot {
   return {
