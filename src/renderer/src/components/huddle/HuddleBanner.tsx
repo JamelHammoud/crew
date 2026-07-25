@@ -29,12 +29,8 @@ export default function HuddleBanner() {
   return (
     <div className="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 animate-rise">
       <div className="glass rounded-full pl-4 pr-2 py-2 flex items-center gap-3">
-        <SignalIcon className="w-4 h-4 text-positive shrink-0" />
-        <span className="flex -space-x-1.5">
-          {room.peers.slice(0, 3).map(peer => (
-            <Avatar key={peer.peerId} name={peer.name} size="sm" />
-          ))}
-        </span>
+        <Live />
+        <AvatarStack names={room.peers.map(peer => peer.name)} />
         <span className="text-sm font-medium text-fg whitespace-nowrap">{names(room)}</span>
         <button
           onClick={() => void join()}

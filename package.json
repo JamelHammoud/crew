@@ -6,7 +6,7 @@
   "main": "out/main/index.js",
   "build": {
     "appId": "app.crew",
-    "productName": "crew",
+    "productName": "Crew",
     "directories": {
       "output": "dist"
     },
