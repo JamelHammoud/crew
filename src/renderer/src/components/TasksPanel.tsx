@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Todo } from '../../../shared/events'
-import { mentionsIn, type PooledAgent } from '../../../shared/llm'
+import { mentionsIn, relabelMentions, type PooledAgent } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { AgentName } from './Mention'
 import { AgentRow, MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
