@@ -56,18 +56,35 @@ describe('naming a call', () => {
 })
 
 describe('laying out the stage', () => {
-  it('keeps tiles as square as the count allows', () => {
-    expect(gridColumns(0)).toBe(1)
-    expect(gridColumns(1)).toBe(1)
-    expect(gridColumns(2)).toBe(2)
-    expect(gridColumns(4)).toBe(2)
-    expect(gridColumns(5)).toBe(3)
-    expect(gridColumns(9)).toBe(3)
-    expect(gridColumns(12)).toBe(4)
+  const wide = { width: 1440, height: 720 }
+
+  it('spreads people across a wide room and stacks them in a narrow one', () => {
+    expect(fitTiles(2, wide.width, wide.height, 12).columns).toBe(2)
+    expect(fitTiles(2, 600, 900, 12).columns).toBe(1)
+    expect(fitTiles(4, wide.width, wide.height, 12).columns).toBe(2)
   })
 
-  it('stops widening past four across', () => {
-    expect(gridColumns(30)).toBe(4)
+  it('picks the arrangement that makes every tile biggest', () => {
+    for (const count of [1, 2, 3, 4, 5, 6, 9, 12]) {
+      const best = fitTiles(count, wide.width, wide.height, 12)
+      for (let columns = 1; columns <= count; columns++) {
+        const rows = Math.ceil(count / columns)
+        const across = (wide.width - 12 * (columns - 1)) / columns
+        const down = ((wide.height - 12 * (rows - 1)) / rows) * (16 / 9)
+        expect(best.width).toBeGreaterThanOrEqual(Math.min(across, down) - 0.001)
+      }
+    }
+  })
+
+  it('keeps every tile inside the room it was given', () => {
+    const grid = fitTiles(5, wide.width, wide.height, 12)
+    const rows = Math.ceil(5 / grid.columns)
+    expect(grid.width * grid.columns + 12 * (grid.columns - 1)).toBeLessThanOrEqual(wide.width + 0.001)
+    expect((grid.width / (16 / 9)) * rows + 12 * (rows - 1)).toBeLessThanOrEqual(wide.height + 0.001)
+  })
+
+  it('falls back to a column per person before it has been measured', () => {
+    expect(fitTiles(3, 0, 0, 12)).toEqual({ columns: 3, width: 0 })
   })
 })
 
