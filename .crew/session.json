@@ -294,12 +294,28 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784997673468,
-        "windows": [],
+        "fetchedAt": 1784997733479,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 3,
+            "severity": "normal",
+            "resetsAt": 1785015600387,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 1,
+            "severity": "normal",
+            "resetsAt": 1785499200387,
+            "active": false
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "pro"
       }
     },
     {
@@ -607,12 +623,28 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784997673468,
-        "windows": [],
+        "fetchedAt": 1784997733479,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 3,
+            "severity": "normal",
+            "resetsAt": 1785015600387,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 1,
+            "severity": "normal",
+            "resetsAt": 1785499200387,
+            "active": false
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "pro"
       }
     },
     {
@@ -696,7 +728,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784997673469,
+        "fetchedAt": 1784997733825,
         "windows": [
           {
             "key": "primary",
@@ -791,7 +823,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784997673469,
+        "fetchedAt": 1784997733825,
         "windows": [
           {
             "key": "primary",
@@ -910,12 +942,28 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784997673468,
-        "windows": [],
+        "fetchedAt": 1784997733479,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 3,
+            "severity": "normal",
+            "resetsAt": 1785015600387,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 1,
+            "severity": "normal",
+            "resetsAt": 1785499200387,
+            "active": false
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "pro"
       }
     },
     {
@@ -1023,12 +1071,28 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784997673468,
-        "windows": [],
+        "fetchedAt": 1784997733479,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 3,
+            "severity": "normal",
+            "resetsAt": 1785015600387,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 1,
+            "severity": "normal",
+            "resetsAt": 1785499200387,
+            "active": false
+          }
+        ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "pro"
       }
     }
   ]
