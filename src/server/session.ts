@@ -588,9 +588,10 @@ export class CrewSession {
     agent: AgentState,
     text: string,
     attachments: Attachment[],
-    boardId?: string
+    opts: { boardId?: string; mode?: ThreadMode } = {}
   ): string {
     const threadId = randomUUID()
+    const boardId = opts.boardId
     const thread: Thread = {
       id: threadId,
       agentId: agent.id,
@@ -598,6 +599,7 @@ export class CrewSession {
       title: this.titleFrom(text || attachments.map(a => a.name).join(', ')),
       createdBy: member.name,
       status: 'open',
+      mode: opts.mode ?? 'build',
       queue: [],
       running: null,
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined
@@ -612,7 +614,8 @@ export class CrewSession {
       agentLabel: agent.label,
       title: thread.title,
       byName: member.name,
-      boardId: thread.boardId
+      boardId: thread.boardId,
+      mode: thread.mode === 'plan' ? 'plan' : undefined
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments)
     return threadId
