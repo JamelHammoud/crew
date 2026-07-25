@@ -233,7 +233,13 @@ export class CrewSession {
       .map(e => {
         if (e.kind !== 'message') return e
         const edit = edits.get(e.id)
-        return edit ? { ...e, text: edit.text, docMentions: edit.docMentions ?? e.docMentions } : e
+        if (!edit) return e
+        return {
+          ...e,
+          text: edit.text,
+          mentionRefs: edit.mentionRefs ?? e.mentionRefs,
+          docMentions: edit.docMentions ?? e.docMentions
+        }
       })
     for (const event of this.events) {
       if (event.kind === 'thread.started') {
