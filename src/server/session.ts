@@ -629,6 +629,7 @@ export class CrewSession {
       agentId: agent.id,
       agentLabel: agent.label,
       title: thread.title,
+      titleRefs: this.agentRefs(opts.mentions ?? [agent.id]),
       byName: member.name,
       boardId: thread.boardId,
       mode: thread.mode === 'plan' ? 'plan' : undefined
