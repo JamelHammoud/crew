@@ -51,7 +51,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
   const draftMentions = useMemo(() => mentionsIn(text, agents), [text, agents])
-  const items = useMemo(() => buildThread(threadEvents, steps, selfId), [threadEvents, steps, selfId])
+  const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const threadSteps = useMemo(() => {
     const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
     return promptIds.flatMap(promptId => steps[promptId] ?? [])
@@ -59,14 +59,17 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const queueItems = useCrew(s => s.queues[threadId])
   const queuedMessages = useMemo<QueuedMessage[]>(
     () =>
-      (queueItems ?? []).map(item => ({
-        promptId: item.promptId,
-        author: item.authorName,
-        self: item.authorId === selfId,
-        text: item.text,
-        agentLabel: item.agentLabel !== thread?.agentLabel ? item.agentLabel : undefined
-      })),
-    [queueItems, selfId, thread?.agentLabel]
+      (queueItems ?? []).map(item => {
+        const label = agents.find(a => a.id === item.agentId)?.label ?? item.agentLabel
+        return {
+          promptId: item.promptId,
+          author: item.authorName,
+          self: item.authorId === selfId,
+          text: item.text,
+          agentLabel: item.agentId !== thread?.agentId ? label : undefined
+        }
+      }),
+    [agents, queueItems, selfId, thread?.agentId]
   )
   const startedAt = runningStart?.ts
   const diffTotals = useMemo(() => {
@@ -162,7 +165,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     <ChevronLeftIcon className="w-5 h-5" />
                   </button>
                 </Tooltip>
-                <MemberName name={thread.agentLabel}>
+                <MemberName id={thread.agentId} name={thread.agentLabel}>
                   <span className="flex items-center gap-3 min-w-0 cursor-default">
                     <AgentIcon seed={thread.agentId} presence={agentPresence} />
                     <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
