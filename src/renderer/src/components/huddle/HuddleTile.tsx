@@ -94,6 +94,14 @@ export default function HuddleTile({
         </span>
         {self && size !== 'sm' && <Pill>You</Pill>}
       </div>
+
+      <InsetRing
+        className={`transition-all duration-200 ${
+          speaking
+            ? 'border-2 border-fg shadow-[inset_0_0_24px_-4px_rgb(255_255_255/0.45)]'
+            : 'border border-fg/[0.07]'
+        }`}
+      />
     </div>
   )
 }
