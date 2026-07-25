@@ -104,6 +104,9 @@ export interface PooledAgent {
   fields: AgentSettingField[]
   steerable?: boolean
   usage?: AgentUsage
+  // An uploaded photo, stored as an attachment file name. With none, the icon
+  // is the one generated from the agent id.
+  avatar?: string
 }
 
 export interface AgentDef {
