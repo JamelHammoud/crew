@@ -107,4 +107,15 @@ describe('chat scroll position', () => {
     expect(second.feed.scrollTop).toBe(3000)
     scrollHeight = 2000
   })
+
+  it('fades the messages above the composer only while there is more below', () => {
+    const { feed, fade } = boot()
+    feed.scrollTop = 300
+    fireEvent.scroll(feed)
+    expect(fade().className).toContain('opacity-100')
+
+    feed.scrollTop = scrollHeight - clientHeight
+    fireEvent.scroll(feed)
+    expect(fade().className).toContain('opacity-0')
+  })
 })
