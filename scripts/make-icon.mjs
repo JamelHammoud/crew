@@ -92,6 +92,26 @@ ${stack}
 `
 }
 
+const MARK = { width: 2 * (STEP + RADIUS), height: 2 * RADIUS }
+const MARK_DISCS = [STEP + RADIUS + STEP, STEP + RADIUS, RADIUS]
+
+function mark() {
+  const cuts = MARK_DISCS.flatMap((x, index) => [
+    ...(index === 0
+      ? []
+      : [`    <circle cx="${x}" cy="${RADIUS}" r="${RADIUS + GAP}" fill="#000000" />`]),
+    `    <circle cx="${x}" cy="${RADIUS}" r="${RADIUS}" fill="#ffffff" />`
+  ])
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${MARK.width} ${MARK.height}" width="${MARK.width}" height="${MARK.height}">
+  <mask id="crew-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="${MARK.width}" height="${MARK.height}">
+    <rect x="0" y="0" width="${MARK.width}" height="${MARK.height}" fill="#000000" />
+${cuts.join('\n')}
+  </mask>
+  <rect x="0" y="0" width="${MARK.width}" height="${MARK.height}" fill="currentColor" mask="url(#crew-mark)" />
+</svg>
+`
+}
+
 const CHROME = [
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/Applications/Chromium.app/Contents/MacOS/Chromium',
