@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import PlanPanel from './components/PlanPanel'
 import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
