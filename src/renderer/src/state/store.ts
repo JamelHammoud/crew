@@ -3,6 +3,7 @@ import { httpBaseFrom } from '../../../shared/attachments'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import { trimEvents, type SessionEvent, type ThreadMode, type ThreadStatus, type Todo } from '../../../shared/events'
+import { emptyRoom } from '../../../shared/huddle'
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import type { ReactionEmoji } from '../../../shared/reactions'
@@ -34,6 +35,24 @@ const designListeners = new Set<(msg: DesignServerMessage) => void>()
 export function onDesign(listener: (msg: DesignServerMessage) => void): () => void {
   designListeners.add(listener)
   return () => designListeners.delete(listener)
+}
+
+export type HuddleServerMessage = Extract<ServerMessage, { type: 'huddle.room' | 'huddle.signal' }>
+
+export type HuddleClientMessage = Extract<
+  ClientMessage,
+  { type: 'huddle.join' | 'huddle.leave' | 'huddle.update' | 'huddle.signal' }
+>
+
+const huddleListeners = new Set<(msg: HuddleServerMessage) => void>()
+
+export function onHuddle(listener: (msg: HuddleServerMessage) => void): () => void {
+  huddleListeners.add(listener)
+  return () => huddleListeners.delete(listener)
+}
+
+export function sendHuddle(msg: HuddleClientMessage): void {
+  socket.send(msg)
 }
 
 const EVENT_LIMIT = 500
