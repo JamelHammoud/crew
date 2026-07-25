@@ -34,9 +34,13 @@ function pair(opts: { hold?: boolean } = {}): {
   return {
     a,
     b,
+    // Each delivery can produce the next one a microtask later, so the queue is
+    // drained until the two ends stop answering each other.
     flush: async () => {
-      while (held.length > 0) held.shift()?.()
-      await settle()
+      for (let round = 0; round < 8; round++) {
+        while (held.length > 0) held.shift()?.()
+        await settle()
+      }
     },
     close: () => {
       a.close()
