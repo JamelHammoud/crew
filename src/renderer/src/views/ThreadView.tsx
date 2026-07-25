@@ -40,7 +40,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const agents = useCrew(s => s.agents)
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { scrolledUp, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
+  const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, value => setThreadDraft(threadId, value), inputRef)
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
@@ -141,7 +141,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
         </div>
 
         <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
-          <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
+          <div
+            className={`h-14 bg-gradient-to-t from-ink-900 to-transparent transition-opacity duration-200 ${atBottom ? 'opacity-0' : 'opacity-100'}`}
+          />
           <div className="bg-ink-900 px-6 pb-6">
             <div className="relative max-w-[660px] mx-auto pointer-events-auto">
               {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
