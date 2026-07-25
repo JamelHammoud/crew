@@ -10356,3 +10356,10 @@
 {"id":"c11256e7-7274-490b-83e9-6804a41c159d","ts":1785012064572,"kind":"agent.online","agentId":"jamel/codex","label":"Codex"}
 {"id":"97e1f20f-2ad2-4422-8ea6-2201e6cc45e9","ts":1785012064572,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
 {"id":"1fc80d89-efeb-4b09-a7c8-b5a1e8971806","ts":1785012064572,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"657aaebb-0758-4607-bff5-2cd73e116421","ts":1785012074453,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"804197d3-42f9-4ba1-a396-2bd75dbf6a83","ts":1785012074453,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"9f730876-981a-4daf-a361-724940e90825","ts":1785012074454,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"d2ddf0c7-5778-4ce1-b5ff-65fece8ce698","ts":1785012074454,"kind":"agent.online","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
+{"id":"e7c8d326-37c1-4c23-bf62-592a22124454","ts":1785012074454,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"de4c0d62-a990-40aa-8650-91cc75ad4942","ts":1785012074454,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"cccf17fa-3165-4d3c-9a20-c8346e023d79","ts":1785012074454,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
