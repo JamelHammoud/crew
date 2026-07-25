@@ -35,10 +35,14 @@ export function HeaderButton({
 
 export function PanelButton({
   label,
+  active,
+  disabled,
   onClick,
   children
 }: {
   label: string
+  active?: boolean
+  disabled?: boolean
   onClick: () => void
   children: ReactNode
 }) {
@@ -46,8 +50,12 @@ export function PanelButton({
     <Tooltip label={label}>
       <button
         onClick={onClick}
+        disabled={disabled}
         aria-label={label}
-        className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+        aria-pressed={active}
+        className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all enabled:active:scale-95 disabled:opacity-25 ${
+          active ? 'bg-fg text-ink-900' : 'text-fg-muted enabled:hover:text-fg enabled:hover:bg-fg/[0.06]'
+        }`}
       >
         {children}
       </button>
