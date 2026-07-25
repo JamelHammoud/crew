@@ -6,7 +6,12 @@ import { DARK_ICON, LIGHT_ICON } from '../src/main/icon-png'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const svg = (name: string) => readFileSync(path.join(root, 'resources', name), 'utf8')
-const paths = (source: string) => [...source.matchAll(/ d="([^"]+)"/g)].map(match => match[1])
+const discs = (source: string) =>
+  [...source.matchAll(/<circle cx="(\d+)" cy="(\d+)" r="(\d+)"/g)].map(match => ({
+    x: Number(match[1]),
+    y: Number(match[2]),
+    r: Number(match[3])
+  }))
 
 function png(base64: string) {
   const buffer = Buffer.from(base64, 'base64')
