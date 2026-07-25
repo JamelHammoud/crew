@@ -24,23 +24,37 @@ function png(base64: string) {
 }
 
 describe('app icon', () => {
-  it('draws a prompt followed by three cursors', () => {
-    const marks = paths(svg('icon.svg'))
+  it('stacks three of the same disc on one line', () => {
+    const stack = discs(svg('icon.svg')).sort((a, b) => a.x - b.x)
 
-    expect(marks).toHaveLength(4)
-    expect(marks[0]).toMatch(/^M[\d.]+ [\d.]+ L[\d.]+ [\d.]+ L[\d.]+ [\d.]+$/)
-    for (const bar of marks.slice(1)) expect(bar).toMatch(/^M[\d.]+ [\d.]+ h[\d.]+$/)
+    expect(stack).toHaveLength(3)
+    expect(new Set(stack.map(disc => disc.r)).size).toBe(1)
+    expect(new Set(stack.map(disc => disc.y)).size).toBe(1)
+    expect(stack[1].x - stack[0].x).toBe(stack[2].x - stack[1].x)
+    expect(stack[1].x - stack[0].x).toBeLessThan(2 * stack[0].r)
+  })
+
+  it('keeps a gap around each disc so the stack never merges', () => {
+    const source = svg('icon.svg')
+    const rings = [...source.matchAll(/stroke="([^"]+)" stroke-width="(\d+)"/g)]
+
+    expect(rings).toHaveLength(2)
+    for (const [, colour, width] of rings) {
+      expect(colour).toBe('#0d0d0d')
+      expect(Number(width)).toBeGreaterThan(0)
+    }
   })
 
   it('inverts for light mode without moving anything', () => {
     const dark = svg('icon.svg')
     const light = svg('icon-light.svg')
 
-    expect(paths(light)).toEqual(paths(dark))
+    expect(discs(light)).toEqual(discs(dark))
     expect(dark).toContain('fill="#0d0d0d"')
-    expect(dark).toContain('stroke="#ffffff"')
+    expect(dark).toContain('fill="#ffffff"')
     expect(light).toContain('fill="#ffffff"')
-    expect(light).toContain('stroke="#0d0d0d"')
+    expect(light).toContain('fill="#0d0d0d"')
+    expect(light).not.toContain('stroke="#ffffff"'.replace('#ffffff', '#0d0d0d'))
   })
 
   it('ships both themes as square images the dock can use', () => {
