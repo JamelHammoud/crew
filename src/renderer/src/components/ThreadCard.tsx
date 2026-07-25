@@ -2,7 +2,6 @@ import {
   ArchiveBoxIcon,
   ArrowUturnLeftIcon,
   CheckIcon,
-  ChevronRightIcon,
   ExclamationTriangleIcon,
   EyeIcon
 } from '@heroicons/react/16/solid'
@@ -12,6 +11,7 @@ import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
 import ThreadCardShell from './ThreadCardShell'
+import ThreadStatusBar from './ThreadStatusBar'
 
 export function StateIcon({ state }: { state: ThreadState }) {
   if (state === 'working') return <Spinner size={16} className="text-fg" />
