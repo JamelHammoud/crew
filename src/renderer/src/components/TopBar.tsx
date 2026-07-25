@@ -80,7 +80,8 @@ export default function TopBar({
   return (
     <header
       ref={headerRef}
-      className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0"
+      style={{ height: TOP_BAR_H }}
+      className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
     >
       <span className="pl-[64px]">
         <CrewMark className="h-[18px] w-auto text-fg" />
