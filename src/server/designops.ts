@@ -8,6 +8,8 @@ import {
   type DesignOpResult,
   type DesignShapeKind
 } from '../shared/design'
+import type { DesignNodeProps } from '../shared/designNode'
+import { nodeErrors, nodePropsFrom } from './nodeops'
 
 const GEO_KINDS = new Set([
   'rectangle',
@@ -339,6 +341,8 @@ export function applyDesignOps(document: DesignDocument, ops: DesignOp[]): Appli
       continue
     }
     if (op.op === 'create') applyCreate(document, op, applied)
+    else if (op.op === 'node') applyNode(document, op, applied)
+    else if (op.op === 'set') applySet(document, op, applied)
     else if (op.op === 'update') applyUpdate(document, op, applied)
     else if (op.op === 'delete') applyDelete(document, op, applied)
     else if (op.op === 'point' && typeof op.x === 'number' && typeof op.y === 'number') {
