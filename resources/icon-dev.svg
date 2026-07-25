@@ -1,18 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="tile" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#17427a" stop-opacity="1" />
-      <stop offset="0.5" stop-color="#0b2750" stop-opacity="1" />
-      <stop offset="1" stop-color="#04122c" stop-opacity="1" />
+      <stop offset="0" stop-color="#15181f" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#0a0c12" stop-opacity="1" />
+      <stop offset="1" stop-color="#040508" stop-opacity="1" />
     </linearGradient>
     <linearGradient id="sheen" x1="0" y1="100" x2="0" y2="553.2" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.12" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.07" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
     <linearGradient id="rim" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#bcd8ff" stop-opacity="0.5" />
-      <stop offset="0.5" stop-color="#bcd8ff" stop-opacity="0.06" />
-      <stop offset="1" stop-color="#bcd8ff" stop-opacity="0.26" />
+      <stop offset="0" stop-color="#9ac8f5" stop-opacity="0.42" />
+      <stop offset="0.5" stop-color="#9ac8f5" stop-opacity="0.05" />
+      <stop offset="1" stop-color="#9ac8f5" stop-opacity="0.22" />
+    </linearGradient>
+    <radialGradient id="glow" cx="512" cy="462.56" r="379.04" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1d4d84" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#1d4d84" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="mark" x1="0" y1="382" x2="0" y2="642" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8ad4ff" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#3897ee" stop-opacity="1" />
+      <stop offset="1" stop-color="#1666cc" stop-opacity="1" />
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="382" x2="0" y2="525" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
     <clipPath id="tile-clip">
       <rect x="100" y="100" width="824" height="824" rx="185" />
@@ -31,43 +44,27 @@
     </mask>
   </defs>
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" />
+  <g clip-path="url(#tile-clip)">
+    <rect x="100" y="100" width="824" height="824" fill="url(#glow)" />
+    <g fill="none" stroke="#4d94db" stroke-opacity="0.3" stroke-width="3">
+    <line x1="264.8" y1="100" x2="264.8" y2="924" />
+    <line x1="100" y1="264.8" x2="924" y2="264.8" />
+    <line x1="429.6" y1="100" x2="429.6" y2="924" />
+    <line x1="100" y1="429.6" x2="924" y2="429.6" />
+    <line x1="594.4" y1="100" x2="594.4" y2="924" />
+    <line x1="100" y1="594.4" x2="924" y2="594.4" />
+    <line x1="759.2" y1="100" x2="759.2" y2="924" />
+    <line x1="100" y1="759.2" x2="924" y2="759.2" />
+    </g>
+  </g>
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)" />
   <rect x="102" y="102" width="820" height="820" rx="183" fill="none" stroke="url(#rim)" stroke-width="4" />
-  <g clip-path="url(#tile-clip)" stroke="#eaf2ff" stroke-width="2" stroke-opacity="0.2">
-    <line x1="100" y1="100" x2="100" y2="924" />
-    <line x1="100" y1="100" x2="924" y2="100" />
-    <line x1="168.667" y1="100" x2="168.667" y2="924" />
-    <line x1="100" y1="168.667" x2="924" y2="168.667" />
-    <line x1="237.333" y1="100" x2="237.333" y2="924" />
-    <line x1="100" y1="237.333" x2="924" y2="237.333" />
-    <line x1="306" y1="100" x2="306" y2="924" />
-    <line x1="100" y1="306" x2="924" y2="306" />
-    <line x1="374.667" y1="100" x2="374.667" y2="924" />
-    <line x1="100" y1="374.667" x2="924" y2="374.667" />
-    <line x1="443.333" y1="100" x2="443.333" y2="924" />
-    <line x1="100" y1="443.333" x2="924" y2="443.333" />
-    <line x1="512" y1="100" x2="512" y2="924" />
-    <line x1="100" y1="512" x2="924" y2="512" />
-    <line x1="580.667" y1="100" x2="580.667" y2="924" />
-    <line x1="100" y1="580.667" x2="924" y2="580.667" />
-    <line x1="649.333" y1="100" x2="649.333" y2="924" />
-    <line x1="100" y1="649.333" x2="924" y2="649.333" />
-    <line x1="718" y1="100" x2="718" y2="924" />
-    <line x1="100" y1="718" x2="924" y2="718" />
-    <line x1="786.667" y1="100" x2="786.667" y2="924" />
-    <line x1="100" y1="786.667" x2="924" y2="786.667" />
-    <line x1="855.333" y1="100" x2="855.333" y2="924" />
-    <line x1="100" y1="855.333" x2="924" y2="855.333" />
-    <line x1="924" y1="100" x2="924" y2="924" />
-    <line x1="100" y1="924" x2="924" y2="924" />
+  <g fill="url(#mark)">
+    <circle cx="698" cy="512" r="130" mask="url(#cut-0)" />
+    <circle cx="512" cy="512" r="130" mask="url(#cut-1)" />
+    <circle cx="326" cy="512" r="130" mask="url(#cut-2)" />
   </g>
-  <g stroke="#eaf2ff" stroke-width="3" stroke-opacity="0.45" stroke-dasharray="26 20" stroke-linecap="round">
-    <line x1="168.66666666666669" y1="512" x2="855.3333333333334" y2="512" />
-    <line x1="698" y1="347.6666666666667" x2="698" y2="676.3333333333334" />
-    <line x1="512" y1="347.6666666666667" x2="512" y2="676.3333333333334" />
-    <line x1="326" y1="347.6666666666667" x2="326" y2="676.3333333333334" />
-  </g>
-  <g fill="none" stroke="#eaf2ff" stroke-width="12">
+  <g fill="url(#gloss)">
     <circle cx="698" cy="512" r="130" mask="url(#cut-0)" />
     <circle cx="512" cy="512" r="130" mask="url(#cut-1)" />
     <circle cx="326" cy="512" r="130" mask="url(#cut-2)" />
