@@ -9267,3 +9267,19 @@
 {"id":"d722968c-e72b-4bbf-8dab-4fed02b73678","ts":1785007714720,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
 {"id":"bf09b55d-5447-46e8-a69e-62ba8611e7f3","ts":1785007714720,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"3cec0dca-4248-4bde-b121-3a08ff2b7f28","ts":1785007714720,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"2c83ad95-18e9-4fe2-a1be-23e244a24e30","ts":1785007811575,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"d983b05f-c011-4c83-aff1-d9fdeef88852","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"d85d2d91-f869-4bef-8c85-cd47cf3e75a5","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
+{"id":"97eac914-0069-4773-871f-7ff05139aa38","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"7cdb09bf-ebeb-4cde-a144-4cd23fabb2b0","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
+{"id":"bf56d916-fdac-41d3-8848-45a8b135844f","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"86697c45-7bcd-4c8d-9239-85bc9f1cc40b","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"e602ddca-a6c9-454a-885e-7a428d516115","ts":1785007811576,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"210a78ab-a4a4-4c9f-a47a-7e3fe1044e52","ts":1785007812504,"kind":"agent.online","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"455d37c8-5119-4d12-8f66-0ac6e4c5c73a","ts":1785007812505,"kind":"agent.online","agentId":"jamel/codex","label":"Codex"}
+{"id":"51f93e9d-34bb-40a9-9e8d-1209f012a6f2","ts":1785007812505,"kind":"agent.online","agentId":"jamel/claude","label":"Claude"}
+{"id":"a79b649b-3a52-4a6a-84ba-c39360f1e4e1","ts":1785007812505,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
+{"id":"bf45c2cc-52ce-415b-9612-b1c968c54579","ts":1785007812505,"kind":"agent.online","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"722abfb2-3456-439c-a54d-9c4cd26f9c9a","ts":1785007812505,"kind":"agent.online","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"03f0160a-e210-4894-8b83-e916bd281639","ts":1785007812505,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"27dd328c-71ce-4206-9364-a62083f8150d","ts":1785007812505,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
