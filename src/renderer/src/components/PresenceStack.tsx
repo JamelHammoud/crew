@@ -26,8 +26,8 @@ export function presentNow(members: MemberInfo[], agents: PooledAgent[], selfId:
   ]
 }
 
-function Face({ who }: { who: Present }): ReactElement {
-  return who.agent ? <AgentIcon seed={who.id} size="sm" /> : <Avatar name={who.name} size="sm" />
+function Face({ who, size = 'md' }: { who: Present; size?: 'sm' | 'md' }): ReactElement {
+  return who.agent ? <AgentIcon seed={who.id} size={size} /> : <Avatar name={who.name} size={size} />
 }
 
 function Group({ label, who }: { label: string; who: Present[] }): ReactElement | null {
