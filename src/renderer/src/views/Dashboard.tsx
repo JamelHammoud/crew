@@ -58,6 +58,7 @@ export default function Dashboard() {
                     onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
                     onRename={mine ? label => renameAgent(agent.id, label) : undefined}
+                    onAvatar={mine ? file => setAgentAvatar(agent.id, file) : undefined}
                     onRemove={() => removeAgent(agent.id)}
                   />
                 )
