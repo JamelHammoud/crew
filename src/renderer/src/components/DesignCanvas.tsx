@@ -235,20 +235,28 @@ export default function DesignCanvas({
     editor?.user.updateUserPreferences({ colorScheme: theme === 'light' ? 'light' : 'dark' })
   }, [editor, theme])
 
-  const onMount = useCallback((mounted: Editor) => {
-    mounted.setStyleForNextShapes(DefaultFontStyle, 'sans')
-    mounted.setStyleForNextShapes(DefaultDashStyle, 'solid')
-    setEditor(mounted)
-  }, [])
+  const onMount = useCallback(
+    (mounted: Editor) => {
+      mounted.setStyleForNextShapes(DefaultFontStyle, 'sans')
+      mounted.setStyleForNextShapes(DefaultDashStyle, 'solid')
+      mounted.user.updateUserPreferences({ isSnapMode: true })
+      setEditor(mounted)
+      onEditor?.(mounted)
+      return () => onEditor?.(null)
+    },
+    [onEditor]
+  )
 
   return (
     <div className="absolute inset-0 design">
       <Tldraw
         store={store}
         shapeUtils={shapeUtils}
+        tools={tools}
         assetUrls={assetUrls}
         components={components}
         options={tldrawOptions}
+        getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
       <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
