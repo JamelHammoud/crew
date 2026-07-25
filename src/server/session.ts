@@ -499,7 +499,7 @@ export class CrewSession {
         this.handleStep(meta, msg.promptId, msg.step)
         break
       case 'agent.usage':
-        if (meta.role === 'runner') this.handleUsage(meta, member, msg.instanceId, msg.usage)
+        if (meta.role === 'runner') this.handleUsage(meta, msg.agentId, msg.usage)
         break
       case 'agent.tokens':
         if (this.promptGone(ws, meta, msg.promptId)) break
