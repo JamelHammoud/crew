@@ -12,6 +12,7 @@ export function storedTheme(): Theme {
 export function applyTheme(theme: Theme): void {
   document.documentElement.classList.toggle('light', theme === 'light')
   globalThis.localStorage?.setItem(KEY, theme)
+  void window.crew?.setTheme(theme)
   for (const listener of listeners) listener()
 }
 
