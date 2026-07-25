@@ -130,7 +130,7 @@ export default function RepoControls() {
       className="flex h-9 items-center rounded-full bg-ink-800 p-1 ring-1 ring-fg/[0.04]"
     >
       <div className="relative flex min-w-0 items-center">
-        <Tooltip label={reviewable ? `${detail}. Click to review.` : detail}>
+        <Tooltip label={reviewable ? `${detail}. Click to review.` : detail} disabled={reviewOpen}>
           {reviewable ? (
             <button
               type="button"
