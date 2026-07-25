@@ -104,6 +104,10 @@ export function Popover({
   )
 }
 
+export function MenuDivider() {
+  return <div className="h-px bg-fg/[0.06] my-1 -mx-1.5" />
+}
+
 export function MenuItem({
   icon,
   label,
