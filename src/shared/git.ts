@@ -1,4 +1,6 @@
 import { execFile } from 'node:child_process'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
 
 export interface GitResult {
   code: number
@@ -7,6 +9,7 @@ export interface GitResult {
 }
 
 const GIT_TIMEOUT_MS = 120000
+const LOCK_STALE_MS = 60000
 
 export function runGit(args: string[], cwd: string): Promise<GitResult> {
   return new Promise(resolve => {
