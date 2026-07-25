@@ -509,6 +509,20 @@ function diffPreview(diff: string): { diff: string; truncated: boolean } {
   }
 }
 
+// An event log only ever grows, so putting one back means keeping every line
+// either side has rather than picking a winner.
+async function mergedLines(target: string, kept: Buffer): Promise<string> {
+  const current = await fs.readFile(target, 'utf8').catch(() => '')
+  const lines = current.split('\n').filter(Boolean)
+  const seen = new Set(lines)
+  for (const line of kept.toString('utf8').split('\n')) {
+    if (!line || seen.has(line)) continue
+    seen.add(line)
+    lines.push(line)
+  }
+  return `${lines.join('\n')}\n`
+}
+
 function describePaths(paths: string[]): string {
   if (paths.length === 1) return paths[0]
   if (paths.length === 2) return `${paths[0]} and ${paths[1]}`
