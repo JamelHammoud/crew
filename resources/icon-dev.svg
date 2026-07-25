@@ -86,7 +86,7 @@
   <g clip-path="url(#tile-clip)">
     <rect x="100" y="100" width="824" height="824" fill="url(#glow)" />
     <rect x="100" y="100" width="824" height="824" filter="url(#grain)" opacity="0.05" />
-    <g fill="none" stroke="#ffffff" stroke-opacity="0.36" stroke-width="3">
+    <g fill="none" stroke="#ffffff" stroke-opacity="0.36" stroke-width="5">
     <line x1="306" y1="100" x2="306" y2="924" />
     <line x1="100" y1="306" x2="924" y2="306" />
     <line x1="512" y1="100" x2="512" y2="924" />
