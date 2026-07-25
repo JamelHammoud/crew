@@ -18,6 +18,7 @@ export function useMentionAutocomplete(
   const docs = useCrew(s => s.docs)
   const [query, setQuery] = useState<Query | null>(null)
   const [active, setActive] = useState(0)
+  const caretTarget = useRef<number | null>(null)
   const matches = useMemo<MentionItem[]>(() => {
     if (query?.trigger === '@') return mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent', agent }))
     if (query?.trigger === '#') return docCandidates(docs, query.text).map(doc => ({ kind: 'doc', doc }))
