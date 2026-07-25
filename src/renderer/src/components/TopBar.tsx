@@ -49,6 +49,8 @@ export default function TopBar({
         t => t.status === 'open' && !s.threadPrompts[t.id] && (s.queues[t.id]?.length ?? 0) === 0
       ).length
   )
+  const huddleJoined = useHuddle(s => s.joined)
+  const huddleSize = useHuddle(s => s.room.peers.length)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
