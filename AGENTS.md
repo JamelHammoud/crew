@@ -37,6 +37,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
 - No logo or branding beyond the word "crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
+- The app icon is a prompt and three cursors on one line, black and white, and it flips with the theme picked in the app. `yarn icon` redraws it from `scripts/make-icon.mjs` into `resources/` and `src/main/icon-png.ts`. Nothing else is committed by hand.
 
 ## Layout
 
