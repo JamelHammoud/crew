@@ -180,7 +180,7 @@ export function designPreamble(apiBase: string, board: DesignBoardMeta, agentId:
     `  {"op":"point","x":150,"y":90}  (just moves your cursor)`,
     ``,
     `Shape kinds: rectangle, ellipse, triangle, diamond, star, cloud, hexagon, oval, x-box, check-box, text, note, frame, arrow, line.`,
-    `Colors: ${DESIGN_COLORS.join(', ')}. Fills: none, semi, solid, pattern.`,
+    `Colors: ${DESIGN_COLOR_CHOICES.join(', ')}. Fills: none, semi, solid, pattern.`,
     `Coordinates are page pixels, y grows downward. Set "parent" to a frame id to place a shape inside that frame, using coordinates relative to the frame.`,
     `The response lists a result per op, with the new shape id for creates and an error string for anything invalid. Fix and retry only the failed ops.`,
     `Keep the agent field set to "${agentId}" so your cursor is attributed to you.`,
