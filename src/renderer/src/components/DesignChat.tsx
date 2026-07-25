@@ -6,10 +6,12 @@ import { useCrew } from '../state/store'
 import Composer from './Composer'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import RunStatus from './RunStatus'
+import ScrollFade from './ScrollFade'
 import ThreadItems from './ThreadItems'
 import Tooltip from './Tooltip'
 import { buildThread } from './thread'
 import { useAutoResize } from './useAutoResize'
+import useScrollEdges from './useScrollEdges'
 import { useStickToBottom } from './useStickToBottom'
 
 export default function DesignChat({ boardId, onClose }: { boardId: string; onClose: () => void }) {
@@ -156,12 +158,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
             </div>
           )}
         </div>
-        <div
-          className={`absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-ink-900 to-transparent pointer-events-none transition-opacity duration-200 ${edges.top ? 'opacity-0' : 'opacity-100'}`}
-        />
-        <div
-          className={`absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none transition-opacity duration-200 ${edges.bottom ? 'opacity-0' : 'opacity-100'}`}
-        />
+        <ScrollFade edges={edges} />
       </div>
       <div className="px-4 pb-6 shrink-0">
         <Composer
