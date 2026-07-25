@@ -604,7 +604,7 @@ export class CrewSession {
     agent: AgentState,
     text: string,
     attachments: Attachment[],
-    opts: { boardId?: string; mode?: ThreadMode } = {}
+    opts: { boardId?: string; mode?: ThreadMode; mentions?: string[] } = {}
   ): string {
     const threadId = randomUUID()
     const boardId = opts.boardId
