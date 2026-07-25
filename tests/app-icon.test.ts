@@ -100,7 +100,7 @@ describe('app icon', () => {
     }
   })
 
-  it('keeps the shipping mark flat and gives the blueprint one a lit body', () => {
+  it('keeps the shipping mark flat and lights the blueprint one', () => {
     for (const name of SHIPPING) {
       expect(svg(name)).toMatch(/<g fill="#[0-9a-f]{6}">/)
       expect(svg(name)).not.toContain('<line ')
@@ -108,12 +108,30 @@ describe('app icon', () => {
     }
     for (const name of BLUEPRINT) {
       const source = svg(name)
-      for (const id of ['mark', 'bounce', 'gloss']) {
+      for (const id of ['body', 'shade', 'bounce', 'edge']) {
         expect(source).toContain(`<radialGradient id="${id}"`)
-        expect(source).toContain(`<g fill="url(#${id})"`)
-        expect(stack(source.match(new RegExp(`<g fill="url\\(#${id}\\)"[^]*?</g>`))?.[0] ?? '')).toHaveLength(3)
+        expect(stack(layer(source, id))).toHaveLength(3)
       }
       expect(source).toContain('feDropShadow')
+    }
+  })
+
+  it('holds the two light edges to the sides the light comes from and goes to', () => {
+    for (const name of BLUEPRINT) {
+      const source = svg(name)
+
+      expect(layer(source, 'bounce')).toContain('mask="url(#under)"')
+      expect(layer(source, 'edge')).toContain('mask="url(#over)"')
+    }
+  })
+
+  it('keeps every specular inside the disc it shines on', () => {
+    for (const name of BLUEPRINT) {
+      const shines = [
+        ...layer(svg(name), 'gloss').matchAll(/<ellipse [^>]*mask="url\(#cut-(\d)\)"/g)
+      ]
+
+      expect(shines.map(shine => shine[1])).toEqual(['0', '1', '2'])
     }
   })
 
