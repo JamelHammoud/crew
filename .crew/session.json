@@ -161,22 +161,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785008214046,
+        "fetchedAt": 1785009314867,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 1,
+            "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785014999327,
+            "resetsAt": 1785015000136,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 0,
+            "percent": 1,
             "severity": "normal",
-            "resetsAt": 1785535199327,
+            "resetsAt": 1785535200136,
             "active": false
           },
           {
@@ -525,7 +525,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785009234130,
+        "fetchedAt": 1785009315180,
         "windows": [
           {
             "key": "primary",
@@ -541,7 +541,7 @@
     },
     {
       "id": "jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
-      "label": "Claude Fable",
+      "label": "Claude Opus 5",
       "provider": "claude",
       "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
       "ownerName": "Jamel",
@@ -644,22 +644,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785008214046,
+        "fetchedAt": 1785009314867,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 1,
+            "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785014999327,
+            "resetsAt": 1785015000136,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 0,
+            "percent": 1,
             "severity": "normal",
-            "resetsAt": 1785535199327,
+            "resetsAt": 1785535200136,
             "active": false
           },
           {
@@ -760,7 +760,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785009234130,
+        "fetchedAt": 1785009315180,
         "windows": [
           {
             "key": "primary",
