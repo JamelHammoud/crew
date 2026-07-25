@@ -269,6 +269,36 @@ describe('a huddle you are in', () => {
     expect(container.querySelectorAll('.aspect-video')).toHaveLength(2)
   })
 
+  // The mark for who is talking has to be painted inside the tile. Drawn around
+  // the outside it is cropped by the dock, by the rail beside a shared screen,
+  // and by anything else that clips what it holds.
+  it('marks who is talking inside the tile, where nothing can crop it', () => {
+    const { container } = render(createElement(App))
+    const tiles = [...container.querySelectorAll('.aspect-video')]
+
+    expect(tiles).toHaveLength(2)
+    for (const tile of tiles) expect(tile.className).not.toMatch(/(^|\s)(ring|shadow)-/)
+    expect(container.querySelectorAll('.aspect-video > .inset-0.border-2')).toHaveLength(1)
+    expect(container.querySelectorAll('.aspect-video > .inset-0.border')).toHaveLength(1)
+  })
+
+  it('marks the screen you picked inside its own thumbnail', async () => {
+    const sources = bridge.screenSources
+    bridge.screenSources = () =>
+      Promise.resolve([
+        { id: 'screen:1', name: 'Screen 1', kind: 'screen' as const, thumbnail: 'data:,', icon: null }
+      ])
+    const { container } = render(createElement(App))
+    fireEvent.click(screen.getByLabelText('Share screen'))
+
+    await waitFor(() => expect(screen.getByText('Screen 1')).toBeTruthy())
+    const source = screen.getByText('Screen 1').closest('button')
+
+    expect(source?.className).not.toMatch(/(^|\s)ring-/)
+    expect(source?.querySelector(':scope > .inset-0.border-2')).toBeTruthy()
+    bridge.screenSources = sources
+  })
+
   // A camera that has been turned on is not the same as pictures having turned
   // up. Swapping the face out too early leaves a black rectangle.
   it('keeps the face up until the pictures actually arrive', async () => {
