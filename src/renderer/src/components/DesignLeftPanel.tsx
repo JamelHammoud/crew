@@ -217,37 +217,3 @@ function RowButton({
     </Tooltip>
   )
 }
-
-function Assets({ editor }: { editor: Editor }) {
-  const components = useValue(
-    'design components',
-    () =>
-      editor
-        .getCurrentPageShapesSorted()
-        .filter(shape => shape.type === 'design-node' && (shape.props as { component?: string }).component),
-    [editor]
-  )
-
-  if (components.length === 0) {
-    return (
-      <p className="px-4 py-6 text-xs text-fg-muted text-center">
-        Save a layer as a component and it collects here, ready to drop back on the canvas.
-      </p>
-    )
-  }
-
-  return (
-    <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
-      {components.map(shape => (
-        <button
-          key={shape.id}
-          onClick={() => editor.select(shape.id)}
-          className="w-full h-7 flex items-center gap-2 px-2 rounded-lg text-xs text-left text-fg-secondary transition-colors hover:text-fg hover:bg-fg/[0.06]"
-        >
-          <RectangleGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
-          <span className="flex-1 truncate">{(shape.props as { component: string }).component}</span>
-        </button>
-      ))}
-    </div>
-  )
-}
