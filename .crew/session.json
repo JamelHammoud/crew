@@ -125,23 +125,23 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017211153,
+        "fetchedAt": 1785017313083,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 6,
+            "percent": 11,
             "severity": "normal",
-            "resetsAt": 1785034800240,
-            "active": false
+            "resetsAt": 1785034800136,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200240,
-            "active": true
+            "resetsAt": 1785499200136,
+            "active": false
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
@@ -230,7 +230,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785017271165,
+        "fetchedAt": 1785017313289,
         "windows": [
           {
             "key": "primary",
@@ -325,7 +325,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785017271165,
+        "fetchedAt": 1785017313289,
         "windows": [
           {
             "key": "primary",
@@ -444,23 +444,23 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017211153,
+        "fetchedAt": 1785017313083,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 6,
+            "percent": 11,
             "severity": "normal",
-            "resetsAt": 1785034800240,
-            "active": false
+            "resetsAt": 1785034800136,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200240,
-            "active": true
+            "resetsAt": 1785499200136,
+            "active": false
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
@@ -573,23 +573,23 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017211153,
+        "fetchedAt": 1785017313083,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 6,
+            "percent": 11,
             "severity": "normal",
-            "resetsAt": 1785034800240,
-            "active": false
+            "resetsAt": 1785034800136,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200240,
-            "active": true
+            "resetsAt": 1785499200136,
+            "active": false
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
