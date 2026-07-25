@@ -193,42 +193,6 @@
       }
     },
     {
-      "id": "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
-      "label": "Bob (Kimi K3)",
-      "provider": "kimi",
-      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
-      "ownerName": "Jamel",
-      "settings": {
-        "model": "kimi-code/k3"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "kimi-code/kimi-for-coding",
-              "label": "kimi-code/kimi-for-coding"
-            },
-            {
-              "value": "kimi-code/kimi-for-coding-highspeed",
-              "label": "kimi-code/kimi-for-coding-highspeed"
-            },
-            {
-              "value": "kimi-code/k3",
-              "label": "kimi-code/k3"
-            }
-          ],
-          "default": ""
-        }
-      ],
-      "steerable": false
-    },
-    {
       "id": "ali/claude",
       "label": "Claude 2",
       "provider": "claude",
@@ -1568,105 +1532,6 @@
       }
     },
     {
-      "id": "jamel (dev)/codex",
-      "label": "Codex 2",
-      "provider": "codex",
-      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
-      "ownerName": "Jamel (dev)",
-      "settings": {
-        "model": "",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "gpt-5.6-sol",
-              "label": "gpt-5.6-sol"
-            },
-            {
-              "value": "gpt-5.6-terra",
-              "label": "gpt-5.6-terra"
-            },
-            {
-              "value": "gpt-5.6-luna",
-              "label": "gpt-5.6-luna"
-            },
-            {
-              "value": "gpt-5.5",
-              "label": "gpt-5.5"
-            },
-            {
-              "value": "gpt-5.4",
-              "label": "gpt-5.4"
-            },
-            {
-              "value": "gpt-5.4-mini",
-              "label": "gpt-5.4-mini"
-            },
-            {
-              "value": "gpt-5.3-codex-spark",
-              "label": "gpt-5.3-codex-spark"
-            }
-          ],
-          "default": ""
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            },
-            {
-              "value": "ultra",
-              "label": "ultra"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": false,
-      "usage": {
-        "provider": "codex",
-        "fetchedAt": 1785012855432,
-        "windows": [
-          {
-            "key": "primary",
-            "label": "Weekly limit",
-            "percent": 0
-          }
-        ],
-        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
-        "accountLabel": "devjamel@gmail.com",
-        "plan": "prolite",
-        "asOf": 1784818106446
-      }
-    },
-    {
       "id": "jamel (dev)/grok",
       "label": "Grok 2",
       "provider": "grok",
@@ -1701,6 +1566,8 @@
     "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
     "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
     "jamel (dev)/claude",
-    "jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8"
+    "jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8",
+    "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
+    "jamel (dev)/codex"
   ]
 }
