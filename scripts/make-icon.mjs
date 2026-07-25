@@ -143,7 +143,7 @@ function svg({ ink, tile, rim, sheen, grid, glow, mark, gloss }, blueprint = fal
     <linearGradient id="mark" x1="0" y1="${CENTRE - RADIUS}" x2="0" y2="${CENTRE + RADIUS}" gradientUnits="userSpaceOnUse">
 ${stops(mark)}
     </linearGradient>
-    <linearGradient id="gloss" x1="0" y1="${CENTRE - RADIUS}" x2="0" y2="${round(CENTRE + RADIUS * 0.1)}" gradientUnits="userSpaceOnUse">
+    <linearGradient id="gloss" x1="0" y1="${CENTRE - RADIUS}" x2="0" y2="${round(CENTRE - RADIUS * 0.15)}" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ffffff" stop-opacity="${gloss}" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
