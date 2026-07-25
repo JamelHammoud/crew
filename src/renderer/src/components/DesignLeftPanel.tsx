@@ -5,103 +5,25 @@ import {
   LockClosedIcon,
   LockOpenIcon,
   MagnifyingGlassIcon,
-  PlusIcon,
-  TrashIcon
+  XMarkIcon
 } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useEditor, useValue, type Editor, type TLPageId, type TLShape, type TLShapeId } from 'tldraw'
-import { glyphForShape, RectangleGlyph } from '../design/glyphs'
+import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
+import { glyphForShape } from '../design/glyphs'
 import { canRename, renameShape } from '../design/tools'
-import { PanelTabs } from './DesignControls'
+import { PanelButton } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
 
-type PanelTab = 'pages' | 'layers' | 'assets'
-
-const TABS: ReadonlyArray<{ id: PanelTab; label: string }> = [
-  { id: 'pages', label: 'Pages' },
-  { id: 'layers', label: 'Layers' },
-  { id: 'assets', label: 'Assets' }
-]
-
 export default function DesignLeftPanel() {
   const editor = useEditor()
-  const [tab, setTab] = useState<PanelTab>('layers')
   return (
     <aside
-      aria-label="Design panel"
+      aria-label="Layers"
       className="w-60 shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
     >
-      <div className="h-12 shrink-0 flex items-center px-3">
-        <PanelTabs tabs={TABS} current={tab} onPick={setTab} />
-      </div>
-      {tab === 'pages' && <Pages editor={editor} />}
-      {tab === 'layers' && <Layers editor={editor} />}
-      {tab === 'assets' && <Assets editor={editor} />}
+      <Layers editor={editor} />
     </aside>
-  )
-}
-
-function Pages({ editor }: { editor: Editor }) {
-  const pages = useValue('design pages', () => editor.getPages(), [editor])
-  const currentId = useValue('design page', () => editor.getCurrentPageId(), [editor])
-  const [renaming, setRenaming] = useState<string | null>(null)
-
-  return (
-    <div className="flex-1 min-h-0 flex flex-col">
-      <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
-        {pages.map(page => (
-          <div key={page.id} className="group flex items-center gap-0.5 pr-1 rounded-lg hover:bg-fg/[0.06]">
-            {renaming === page.id ? (
-              <input
-                autoFocus
-                defaultValue={page.name}
-                onBlur={event => {
-                  const name = event.target.value.trim()
-                  if (name) editor.renamePage(page.id, name)
-                  setRenaming(null)
-                }}
-                onKeyDown={event => {
-                  if (event.key === 'Enter') event.currentTarget.blur()
-                  if (event.key === 'Escape') setRenaming(null)
-                }}
-                className="flex-1 min-w-0 h-7 bg-transparent px-2 text-sm text-fg outline-none"
-              />
-            ) : (
-              <button
-                onClick={() => editor.setCurrentPage(page.id)}
-                onDoubleClick={() => setRenaming(page.id)}
-                className={`flex-1 min-w-0 h-7 px-2 text-sm text-left truncate ${
-                  page.id === currentId ? 'text-fg font-semibold' : 'text-fg-secondary'
-                }`}
-              >
-                {page.name}
-              </button>
-            )}
-            {pages.length > 1 && (
-              <button
-                onClick={() => editor.deletePage(page.id as TLPageId)}
-                aria-label={`Delete ${page.name}`}
-                className="w-6 h-6 shrink-0 rounded-full grid place-items-center text-fg-muted opacity-0 transition-opacity group-hover:opacity-100 hover:text-danger hover:bg-danger/10"
-              >
-                <TrashIcon className="w-3 h-3" />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      <button
-        onClick={() => {
-          editor.createPage({ name: `Page ${editor.getPages().length + 1}` })
-          const pages = editor.getPages()
-          editor.setCurrentPage(pages[pages.length - 1].id)
-        }}
-        className="m-2 h-8 rounded-full flex items-center justify-center gap-1.5 text-sm text-fg-secondary transition-colors hover:text-fg hover:bg-fg/[0.06]"
-      >
-        <PlusIcon className="w-4 h-4" />
-        New page
-      </button>
-    </div>
   )
 }
 
