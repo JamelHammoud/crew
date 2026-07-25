@@ -160,7 +160,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
         </div>
         <ScrollFade edges={edges} />
       </div>
-      <div className="px-4 pb-6 shrink-0">
+      <div className="px-3 pb-4 shrink-0">
         <Composer
           attachmentKey={key}
           value={text}
