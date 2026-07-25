@@ -1,21 +1,23 @@
 import { ClipboardDocumentListIcon } from '@heroicons/react/16/solid'
-import { useCrew, type ThreadMeta } from '../state/store'
+import { useCrew } from '../state/store'
 import Markdown from './Markdown'
 import Pill from './Pill'
 
-export default function PlanPanel({ thread }: { thread: ThreadMeta }) {
+export default function PlanPanel({ threadId }: { threadId: string }) {
+  const thread = useCrew(s => s.threads[threadId])
   const implementPlan = useCrew(s => s.implementPlan)
-  const running = useCrew(s => Boolean(s.threadPrompts[thread.id]))
-  if (!thread.plan) return null
+  const running = useCrew(s => Boolean(s.threadPrompts[threadId]))
+  if (!thread?.plan) return null
 
   return (
-    <aside className="w-[340px] shrink-0 border-l border-ink-700 flex flex-col pt-[70px]">
+    <aside className="w-[340px] shrink-0 border-l border-ink-700 flex flex-col bg-ink-900">
+      <div className="app-drag h-[70px] shrink-0" />
       <div className="px-5 pb-4 flex items-center gap-2.5">
         <ClipboardDocumentListIcon className="w-4 h-4 text-fg-muted shrink-0" />
         <span className="text-base font-semibold text-fg">Plan</span>
         <Pill>{thread.mode === 'plan' ? 'Not started' : 'Building'}</Pill>
       </div>
-      <div className="flex-1 overflow-y-auto px-5 pb-4">
+      <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden px-5 pb-4">
         <Markdown text={thread.plan} />
       </div>
       {thread.mode === 'plan' && (
