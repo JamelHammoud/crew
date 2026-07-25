@@ -10347,3 +10347,4 @@
 {"id":"247747f9-bef9-43a9-a3ac-861f50187213","ts":1785011047106,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Opus 5"}
 {"id":"1d632ac1-724d-413f-8997-8d16b81cbc95","ts":1785011047106,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
 {"id":"850d63a8-7cb1-4d10-be66-abbe1470e49e","ts":1785011047106,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
+{"id":"3a4f2364-b24d-4c08-b597-2a805503a442","ts":1785012064529,"kind":"agent.end","promptId":"5a9fb775-d132-4fc7-a838-18fa595a0ae1","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","agentLabel":"Claude Opus 5","threadId":"21cd5179-a0e1-4c0b-96aa-2d44e92755ed","ok":false,"error":"Interrupted by a restart"}
