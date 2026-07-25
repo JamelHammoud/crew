@@ -10135,3 +10135,12 @@
 {"id":"995269d4-57ba-461d-8f22-70ff1bb38e92","ts":1785009690043,"kind":"agent.online","agentId":"jamel/codex","label":"Codex"}
 {"id":"0dbfcad6-e29d-479d-af72-f7a510cbcc8f","ts":1785009690043,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
 {"id":"e942c0c4-e321-4fd0-8100-c323183d1d10","ts":1785009690043,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"7da44b24-4b70-443a-905c-973d4ddaa407","ts":1785010230262,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"4cac9924-2c0c-4b99-8d04-46c25381b8f5","ts":1785010230263,"kind":"agent.offline","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
+{"id":"23c35e30-37cc-4311-80b8-169f7c9d858b","ts":1785010230263,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"b145b6b4-67ca-4de7-b7fd-b78ccc2e88e8","ts":1785010230263,"kind":"agent.offline","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus 2"}
+{"id":"31caa925-3927-4ee5-a6a1-dacf09e24b1b","ts":1785010230263,"kind":"agent.offline","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
+{"id":"d9c95d6b-0b3c-4006-b317-c609a5eac578","ts":1785010230263,"kind":"agent.offline","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5"}
+{"id":"37677a03-f2fe-46af-bb19-41ff27502731","ts":1785010230264,"kind":"agent.offline","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable 2"}
+{"id":"97bce798-59ab-471a-b948-05c5ede792d9","ts":1785010230264,"kind":"agent.offline","agentId":"ali/7ad44611-9f35-435c-ae15-094179a86e49","label":"Codex Gpt-5.6-sol 2"}
+{"id":"db3be729-cef1-4d99-8091-bc5d5b8b8730","ts":1785010230265,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
