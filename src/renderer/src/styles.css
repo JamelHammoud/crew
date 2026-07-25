@@ -487,15 +487,6 @@ body {
   display: none;
 }
 
-.light .design .tl-container,
-.light .design .tl-background {
-  background: var(--color-ink-800);
-}
-
-.light .design .tl-theme__light {
-  --tl-color-background: var(--color-ink-800);
-}
-
 .design .tl-watermark_SEE-LICENSE,
 .design [class*='tl-watermark'] {
   display: none !important;
