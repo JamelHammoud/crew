@@ -25,6 +25,7 @@ export interface RunnerOptions {
 }
 
 interface RunnerAgent {
+  id: string
   instanceId: string
   provider: Provider
   name: string
