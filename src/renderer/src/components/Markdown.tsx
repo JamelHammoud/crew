@@ -9,6 +9,7 @@ export default function Markdown({ text }: { text: string }) {
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false }) as string)
+    wrapTables(container)
     const unknown = linkifyFiles(container)
     return { html: container.innerHTML, unknown }
   }, [text, resolved])

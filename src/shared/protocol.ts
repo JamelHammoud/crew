@@ -118,6 +118,8 @@ export type ServerMessage =
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
+  | { type: 'huddle.room'; room: HuddleRoom }
+  | { type: 'huddle.signal'; from: string; signal: HuddleSignal }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
       type: 'design.snapshot'
