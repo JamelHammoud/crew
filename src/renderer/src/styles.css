@@ -381,8 +381,8 @@ body {
   --tl-color-text-1: var(--color-fg-secondary);
   --tl-color-text-3: var(--color-fg-muted);
   --tl-color-text-disabled: var(--color-fg-faint);
-  --tl-color-success: var(--color-positive);
-  --tl-color-danger: var(--color-danger);
+  --tl-color-success: var(--design-active);
+  --tl-color-danger: var(--design-conflict);
   --tl-font-draw: var(--font-sans);
   --tl-font-sans: var(--font-sans);
   --tl-font-mono: var(--font-mono);
