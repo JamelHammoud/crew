@@ -1,7 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
-export default function Tooltip({ label, children }: { label: string; children: ReactNode }) {
+export default function Tooltip({
+  label,
+  disabled,
+  children
+}: {
+  label: string
+  disabled?: boolean
+  children: ReactNode
+}) {
   const anchorRef = useRef<HTMLSpanElement>(null)
   const tipRef = useRef<HTMLSpanElement>(null)
   const timer = useRef<number | null>(null)
