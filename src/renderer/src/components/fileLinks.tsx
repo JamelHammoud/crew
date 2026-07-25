@@ -265,6 +265,22 @@ export function PrivateChip() {
   return <span className={PRIVATE_CLASS}>{PRIVATE_LABEL}</span>
 }
 
+export function UrlLink({ url }: { url: string }) {
+  return (
+    <a
+      onClick={event => {
+        event.stopPropagation()
+        event.preventDefault()
+        useBrowser.getState().openUrl(url)
+      }}
+      href={url}
+      className="text-fg underline underline-offset-2 decoration-fg-muted transition-colors hover:decoration-fg cursor-pointer break-words"
+    >
+      {url}
+    </a>
+  )
+}
+
 export function TextWithFileLinks({ text, plain }: { text: string; plain?: boolean }) {
   const tokens = fileTokens(text)
   useLocated(tokens.flatMap(token => (token.kind === 'file' ? [token.path] : [])))
@@ -272,6 +288,7 @@ export function TextWithFileLinks({ text, plain }: { text: string; plain?: boole
   return (
     <>
       {tokens.map((token, index) => {
+        if (token.kind === 'url') return plain ? token.text : <UrlLink key={index} url={token.text} />
         if (token.kind !== 'file') return token.text
         if (isPrivate(token.path)) return <PrivateChip key={index} />
         const label = labelFor(token.path, token.suffix, token.text)

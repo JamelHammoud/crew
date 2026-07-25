@@ -268,7 +268,6 @@ export class Runner {
         this.outbox = []
         for (const buffered of queued) this.send(buffered)
         this.startUsagePolling()
-        void this.adoptOwnAgents(msg.snapshot)
         break
       }
       case 'prompt':
