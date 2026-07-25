@@ -12,10 +12,31 @@ import { useLive } from './useLive'
 
 type Size = 'sm' | 'md' | 'lg'
 
-const LOOK: Record<Size, { corner: string; avatar: 'sm' | 'md' | 'lg'; label: string; pad: string }> = {
-  sm: { corner: 'rounded-xl', avatar: 'sm', label: 'text-[10px]', pad: 'p-1.5' },
-  md: { corner: 'rounded-2xl', avatar: 'md', label: 'text-xs', pad: 'p-2' },
-  lg: { corner: 'rounded-card', avatar: 'lg', label: 'text-sm', pad: 'p-3' }
+const LOOK: Record<
+  Size,
+  { corner: string; avatar: 'sm' | 'md' | 'lg'; label: string; pad: string; bloom: string }
+> = {
+  sm: {
+    corner: 'rounded-xl',
+    avatar: 'sm',
+    label: 'text-[10px]',
+    pad: 'p-1.5',
+    bloom: 'shadow-[inset_0_0_12px_-4px_rgb(255_255_255/0.4)]'
+  },
+  md: {
+    corner: 'rounded-2xl',
+    avatar: 'md',
+    label: 'text-xs',
+    pad: 'p-2',
+    bloom: 'shadow-[inset_0_0_20px_-7px_rgb(255_255_255/0.4)]'
+  },
+  lg: {
+    corner: 'rounded-card',
+    avatar: 'lg',
+    label: 'text-sm',
+    pad: 'p-3',
+    bloom: 'shadow-[inset_0_0_32px_-12px_rgb(255_255_255/0.4)]'
+  }
 }
 
 function Badge({ tone, children }: { tone: 'quiet' | 'danger'; children: ReactNode }) {
