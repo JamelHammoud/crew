@@ -41,6 +41,18 @@ const session = new AppSession()
 let tray: Tray | null = null
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()
+let iconTheme: IconTheme = 'dark'
+
+// The icon is a white mark on black, or the inverse, so it follows the theme
+// chosen inside the app rather than the one the system is wearing.
+function applyIcon(theme: IconTheme): void {
+  iconTheme = theme
+  if (process.platform === 'darwin') {
+    app.dock?.setIcon(appIcon(theme))
+    return
+  }
+  for (const win of BrowserWindow.getAllWindows()) win.setIcon(appIcon(theme))
+}
 
 // Without an application menu the standard clipboard accelerators (copy, cut,
 // paste, select-all, undo, redo) are never registered, so they do nothing
