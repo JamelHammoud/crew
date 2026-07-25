@@ -21,14 +21,16 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
+import { DesignNodeUtil } from '../design/DesignNodeUtil'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
 import { designAssetUrls } from './designIcons'
 import { DesignMenu, DesignNavigation, DesignStylePanel } from './DesignPanels'
-import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
+
+const shapeUtils = [...defaultShapeUtils, DesignNodeUtil]
 
 const components: TLComponents = {
   MenuPanel: DesignMenu,
@@ -62,10 +64,7 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
   const selfIdRef = useRef(selfId)
   selfIdRef.current = selfId
 
-  const store = useMemo(
-    () => createTLStore({ shapeUtils: defaultShapeUtils, bindingUtils: defaultBindingUtils }),
-    [boardId]
-  )
+  const store = useMemo(() => createTLStore({ shapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
 
   useEffect(() => {
     setReady(false)
