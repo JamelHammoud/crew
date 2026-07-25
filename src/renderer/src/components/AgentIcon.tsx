@@ -102,18 +102,29 @@ export default function AgentIcon({
 }) {
   const pet = petOf(seed)
   const light = useTheme() === 'light'
+  const photo = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
+  const httpBase = useCrew(state => state.httpBase)
   const bg = light ? `oklch(0.93 0.05 ${pet.hue})` : `oklch(0.3 0.055 ${pet.hue})`
   const body = light ? `oklch(0.62 0.16 ${pet.hue})` : `oklch(0.76 0.15 ${pet.hue})`
   return (
     <span className={`${SIZES[size]} relative inline-block shrink-0 self-start`}>
-      <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>
-        <rect width="100" height="100" fill={bg} />
-        <g transform={`rotate(${pet.tilt} 50 54)`}>
-          <path d={pet.body} fill={body} stroke={body} strokeWidth={7} strokeLinejoin="round" />
-          <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
-          <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
-        </g>
-      </svg>
+      {photo && httpBase ? (
+        <img
+          src={attachmentFileUrl(httpBase, photo)}
+          alt=""
+          draggable={false}
+          className="w-full h-full rounded-full object-cover select-none"
+        />
+      ) : (
+        <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>
+          <rect width="100" height="100" fill={bg} />
+          <g transform={`rotate(${pet.tilt} 50 54)`}>
+            <path d={pet.body} fill={body} stroke={body} strokeWidth={7} strokeLinejoin="round" />
+            <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
+            <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill={bg} />
+          </g>
+        </svg>
+      )}
       {presence && (
         <span
           className={`${DOTS[size]} absolute bottom-0 right-0 rounded-full ring-ink-900 transition-colors ${
