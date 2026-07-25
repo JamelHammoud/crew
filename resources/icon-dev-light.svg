@@ -23,7 +23,7 @@
       <stop offset="0.5" stop-color="#f4faff" stop-opacity="1" />
       <stop offset="1" stop-color="#cfe6fa" stop-opacity="1" />
     </linearGradient>
-    <linearGradient id="gloss" x1="0" y1="382" x2="0" y2="525" gradientUnits="userSpaceOnUse">
+    <linearGradient id="gloss" x1="0" y1="382" x2="0" y2="492.5" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.55" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>

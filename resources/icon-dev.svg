@@ -19,12 +19,12 @@
       <stop offset="1" stop-color="#1d4d84" stop-opacity="0" />
     </radialGradient>
     <linearGradient id="mark" x1="0" y1="382" x2="0" y2="642" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8ad4ff" stop-opacity="1" />
-      <stop offset="0.5" stop-color="#3897ee" stop-opacity="1" />
-      <stop offset="1" stop-color="#1666cc" stop-opacity="1" />
+      <stop offset="0" stop-color="#5cbcff" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#2287e8" stop-opacity="1" />
+      <stop offset="1" stop-color="#0d51b4" stop-opacity="1" />
     </linearGradient>
-    <linearGradient id="gloss" x1="0" y1="382" x2="0" y2="525" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+    <linearGradient id="gloss" x1="0" y1="382" x2="0" y2="492.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.4" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
     <clipPath id="tile-clip">
