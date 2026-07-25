@@ -1,7 +1,7 @@
 import { problemText, useHuddle } from '../../state/huddle'
 import AudioStream from './AudioStream'
 import HuddleBanner from './HuddleBanner'
-import HuddleDock, { DOCK_SIZE } from './HuddleDock'
+import HuddleDock from './HuddleDock'
 import HuddleStage from './HuddleStage'
 import ScreenPicker from './ScreenPicker'
 import { useDockPosition } from './useDockPosition'
