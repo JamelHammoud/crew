@@ -122,7 +122,7 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
               id,
               userId: presence.userId as TLUserId,
               userName: presence.name,
-              color: humanColor(presence.name),
+              color: avatarColors(presence.name, lightRef.current).color,
               cursor: { x: presence.cursor.x, y: presence.cursor.y, type: 'default', rotation: 0 },
               selectedShapeIds: presence.selection as TLShapeId[],
               currentPageId: presence.pageId as TLPageId,
