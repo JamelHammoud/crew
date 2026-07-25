@@ -79,7 +79,8 @@ function boot() {
   })
   const view = render(createElement(Chat))
   const feed = view.container.querySelector('.overflow-y-auto') as HTMLElement
-  return { view, feed }
+  const fade = () => view.container.querySelector('.bottom-0 > .bg-gradient-to-t') as HTMLElement
+  return { view, feed, fade }
 }
 
 describe('chat scroll position', () => {
