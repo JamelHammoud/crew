@@ -1,3 +1,5 @@
+import { attachmentFileUrl } from '../../../shared/attachments'
+import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 
 const SIZES = {
