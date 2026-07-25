@@ -601,8 +601,8 @@
       "id": "jamel/ad836538-f482-4a88-b70a-adc257551883",
       "label": "Claude Opus 5",
       "provider": "claude",
-      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
-      "ownerName": "Jamel",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
       "settings": {
         "model": "opus",
         "opusModel": "claude-opus-5",
@@ -702,14 +702,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785013794893,
+        "fetchedAt": 1785013833215,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 13,
             "severity": "normal",
-            "resetsAt": 1785014999173,
+            "resetsAt": 1785014999446,
             "active": true
           },
           {
@@ -717,7 +717,7 @@
             "label": "Weekly (all models)",
             "percent": 3,
             "severity": "normal",
-            "resetsAt": 1785535199173,
+            "resetsAt": 1785535199446,
             "active": false
           },
           {
