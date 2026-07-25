@@ -125,6 +125,28 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
+  it('gives every tab its own noise', () => {
+    const heard = new Map<string, number[]>()
+    for (const tab of ['tab.chat', 'tab.agents', 'tab.docs', 'tab.design'] as const) {
+      started.length = 0
+      clock += 500
+      playSound(tab)
+      expect(started.length).toBeGreaterThan(0)
+      heard.set(tab, [...started])
+    }
+    const shapes = [...heard.values()].map(notes => notes.join(','))
+    expect(new Set(shapes).size).toBe(4)
+  })
+
+  it('lets you cross the whole row without a note being swallowed', () => {
+    playSound('tab.chat')
+    const first = started.length
+    playSound('tab.agents')
+    playSound('tab.docs')
+    playSound('tab.design')
+    expect(started.length).toBeGreaterThan(first)
+  })
+
   it('says nothing when sounds are muted', () => {
     setSounds(false)
     playSound('send')

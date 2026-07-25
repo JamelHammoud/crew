@@ -25,7 +25,7 @@
     "preview": "electron-vite preview",
     "test": "vitest run",
     "dist": "electron-vite build && electron-builder",
-    "postinstall": "node scripts/ensure-electron.mjs"
+    "postinstall": "node scripts/ensure-electron.mjs && node scripts/name-electron.mjs"
   },
   "dependencies": {
     "@blocknote/core": "^0.51.4",
