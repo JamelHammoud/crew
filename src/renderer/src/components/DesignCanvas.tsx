@@ -56,6 +56,8 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
   const [agentCursors, setAgentCursors] = useState<Record<string, DesignPresence>>({})
   const selfIdRef = useRef(selfId)
   selfIdRef.current = selfId
+  const lightRef = useRef(theme === 'light')
+  lightRef.current = theme === 'light'
 
   const store = useMemo(() => createTLStore({ shapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
 
