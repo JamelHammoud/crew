@@ -1,15 +1,5 @@
 import { desktopCapturer, shell, systemPreferences, type Session } from 'electron'
-
-export type MediaKind = 'microphone' | 'camera' | 'screen'
-export type MediaAccess = 'granted' | 'denied' | 'restricted' | 'unknown'
-
-export interface ScreenSource {
-  id: string
-  name: string
-  kind: 'screen' | 'window'
-  thumbnail: string
-  icon: string | null
-}
+import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 
 const THUMBNAIL = { width: 640, height: 400 }
 const ICON = { width: 32, height: 32 }
