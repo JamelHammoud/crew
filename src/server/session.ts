@@ -493,6 +493,18 @@ export class CrewSession {
           this.handleDesignPresence(ws, member, msg.boardId, msg.cursor, msg.selection, msg.pageId)
         }
         break
+      case 'huddle.join':
+        if (meta.role === 'ui') this.handleHuddleJoin(ws, member, msg.peerId, msg.muted, msg.camera)
+        break
+      case 'huddle.leave':
+        if (meta.role === 'ui') this.handleHuddleLeave(ws)
+        break
+      case 'huddle.update':
+        if (meta.role === 'ui') this.handleHuddleUpdate(ws, msg)
+        break
+      case 'huddle.signal':
+        if (meta.role === 'ui') this.handleHuddleSignal(ws, msg.to, msg.signal)
+        break
       case 'queue.edit':
         if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
         break
