@@ -126,32 +126,42 @@ const discs = () =>
       `    <circle cx="${x}" cy="${CENTRE}" r="${RADIUS}" mask="url(#cut-${index})" />`
   ).join('\n')
 
+// Ruled paper: one square grid over the whole tile, centred on the middle cell
+// so the stack sits in the middle of a square rather than on a line.
 const gridLines = () =>
-  Array.from({ length: 13 }, (_, index) => round(CENTRE + (index - 6) * GRID))
+  RULES.map(step => round(CENTRE + step * GRID))
     .flatMap(at => [
       `    <line x1="${at}" y1="${TILE.y}" x2="${at}" y2="${TILE.y + TILE.size}" />`,
       `    <line x1="${TILE.x}" y1="${at}" x2="${TILE.x + TILE.size}" y2="${at}" />`
     ])
     .join('\n')
 
-const guides = () =>
-  [
-    `    <line x1="${TILE.x + GRID}" y1="${CENTRE}" x2="${TILE.x + TILE.size - GRID}" y2="${CENTRE}" />`,
-    ...BACK_TO_FRONT.map(
-      x =>
-        `    <line x1="${x}" y1="${CENTRE - RADIUS - GRID / 2}" x2="${x}" y2="${CENTRE + RADIUS + GRID / 2}" />`
-    )
-  ].join('\n')
-
-function svg({ ink, tile, rim, sheen, grid, guide }, blueprint = false) {
+function svg({ ink, tile, rim, sheen, grid, glow, mark, gloss }, blueprint = false) {
+  const paper = blueprint
+    ? `    <radialGradient id="glow" cx="${CENTRE}" cy="${round(CENTRE - GRID * 0.3)}" r="${round(TILE.size * 0.46)}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="${glow[0]}" stop-opacity="${glow[1]}" />
+      <stop offset="1" stop-color="${glow[0]}" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="mark" x1="0" y1="${CENTRE - RADIUS}" x2="0" y2="${CENTRE + RADIUS}" gradientUnits="userSpaceOnUse">
+${stops(mark)}
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="${CENTRE - RADIUS}" x2="0" y2="${round(CENTRE + RADIUS * 0.1)}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="${gloss}" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+`
+    : ''
   const drawing = blueprint
-    ? `  <g clip-path="url(#tile-clip)" stroke="${ink}" stroke-width="2" stroke-opacity="${grid}">
+    ? `  <g clip-path="url(#tile-clip)">
+    <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" fill="url(#glow)" />
+    <g fill="none" stroke="${grid[0]}" stroke-opacity="${grid[1]}" stroke-width="3">
 ${gridLines()}
+    </g>
   </g>
-  <g stroke="${ink}" stroke-width="3" stroke-opacity="${guide}" stroke-dasharray="26 20" stroke-linecap="round">
-${guides()}
+  <g fill="url(#mark)">
+${discs()}
   </g>
-  <g fill="none" stroke="${ink}" stroke-width="${LINE}">
+  <g fill="url(#gloss)">
 ${discs()}
   </g>`
     : `  <g fill="${ink}">
@@ -169,7 +179,7 @@ ${stops(tile)}
     <linearGradient id="rim" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
 ${stops(rim)}
     </linearGradient>
-    <clipPath id="tile-clip">
+${paper}    <clipPath id="tile-clip">
       <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" />
     </clipPath>
 ${cutMasks()}
