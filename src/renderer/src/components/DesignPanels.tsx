@@ -313,6 +313,12 @@ const FONT_OPTIONS = [
 ] as const
 
 export function DesignStylePanel() {
+  const node = useSelectedNode()
+  if (node) return <Inspector shape={node} />
+  return <ShapeStylePanel />
+}
+
+function ShapeStylePanel() {
   const editor = useEditor()
   const styles = useRelevantStyles()
   const apply = useApplyStyle()
