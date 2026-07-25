@@ -243,7 +243,7 @@ function Layers({ editor }: { editor: Editor }) {
                   defaultValue={layerName(row.shape)}
                   onBlur={event => {
                     const name = event.target.value.trim()
-                    if (name) editor.updateShape({ id: id as TLShapeId, type: row.shape.type, props: { name } })
+                    if (name) renameShape(editor, row.shape, name)
                     setRenaming(null)
                   }}
                   onKeyDown={event => {
