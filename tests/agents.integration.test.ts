@@ -297,7 +297,7 @@ describe('agent instances', () => {
     expect(host.session.snapshot().agents).toEqual([])
   })
 
-  it('does not adopt agents owned by someone else', async () => {
+  it('does not bring back agents owned by someone else', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     const alis = testRunner({
