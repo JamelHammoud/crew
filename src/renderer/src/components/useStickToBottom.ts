@@ -5,6 +5,7 @@ import { hoverCardOpen } from './HoverCard'
 // upward scroll must never have to outrun the streaming auto-scroll.
 const UNPIN_SLOP = 12
 const REPIN_DISTANCE = 60
+const AT_BOTTOM_SLOP = 2
 
 type Remembered = { top: number; pinned: boolean }
 
