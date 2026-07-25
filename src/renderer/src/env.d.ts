@@ -34,6 +34,7 @@ declare global {
     locatePath(path: string): Promise<PathLocation>
     revealFile(path: string): Promise<void>
     setBadge(count: number): Promise<void>
+    setTheme(theme: 'dark' | 'light'): Promise<void>
     notify(alert: AgentAlert): Promise<void>
     onNotificationOpen(listener: (threadId: string) => void): () => void
     onFullScreen(listener: (full: boolean) => void): void
