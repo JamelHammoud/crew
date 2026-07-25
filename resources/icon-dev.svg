@@ -14,7 +14,7 @@
       <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.06" />
       <stop offset="1" stop-color="#9adcff" stop-opacity="0.34" />
     </linearGradient>
-    <radialGradient id="glow" cx="512" cy="462.56" r="379.04" gradientUnits="userSpaceOnUse">
+    <radialGradient id="glow" cx="512" cy="450.2" r="379.04" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#8ceaff" stop-opacity="0.4" />
       <stop offset="1" stop-color="#8ceaff" stop-opacity="0" />
     </radialGradient>
@@ -87,14 +87,12 @@
     <rect x="100" y="100" width="824" height="824" fill="url(#glow)" />
     <rect x="100" y="100" width="824" height="824" filter="url(#grain)" opacity="0.05" />
     <g fill="none" stroke="#ffffff" stroke-opacity="0.36" stroke-width="3">
-    <line x1="264.8" y1="100" x2="264.8" y2="924" />
-    <line x1="100" y1="264.8" x2="924" y2="264.8" />
-    <line x1="429.6" y1="100" x2="429.6" y2="924" />
-    <line x1="100" y1="429.6" x2="924" y2="429.6" />
-    <line x1="594.4" y1="100" x2="594.4" y2="924" />
-    <line x1="100" y1="594.4" x2="924" y2="594.4" />
-    <line x1="759.2" y1="100" x2="759.2" y2="924" />
-    <line x1="100" y1="759.2" x2="924" y2="759.2" />
+    <line x1="306" y1="100" x2="306" y2="924" />
+    <line x1="100" y1="306" x2="924" y2="306" />
+    <line x1="512" y1="100" x2="512" y2="924" />
+    <line x1="100" y1="512" x2="924" y2="512" />
+    <line x1="718" y1="100" x2="718" y2="924" />
+    <line x1="100" y1="718" x2="924" y2="718" />
     </g>
   </g>
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)" />
