@@ -216,21 +216,23 @@ export class GitSync {
     }
   }
 
+  // Merging, not rebasing. A rebase replays every local commit, rewriting the
+  // working tree once per commit, and each rewrite can land on top of a file an
+  // agent is writing right now. A merge leaves local commits alone and touches
+  // only what actually came in.
   private async pullRemote(autostash: boolean): Promise<{ ok: boolean; updated: boolean; detail: string }> {
     const before = await runGit(['rev-parse', 'HEAD'], this.repoPath)
-    const rebaseBefore = await this.rebaseActive()
     const stashes = await stashCount(this.repoPath)
-    const args = ['pull', '--rebase']
+    const args = ['pull', '--no-rebase', '--no-edit']
     if (autostash) args.push('--autostash')
     const pull = await runGit(args, this.repoPath)
     if (pull.code !== 0) {
-      if (rebaseBefore || !(await this.rebaseActive())) {
+      if (!(await this.mergeActive())) {
         await restoreAutostash(this.repoPath, stashes)
         return { ok: false, updated: false, detail: gitDetail(pull) }
       }
-      const resolved = await this.resolveRebaseConflicts()
-      if (!resolved) {
-        await this.abortKeepingWork(['rebase', '--abort'])
+      if (!(await this.resolveMergeConflicts())) {
+        await this.abortKeepingWork(['merge', '--abort'])
         await restoreAutostash(this.repoPath, stashes)
         return { ok: false, updated: false, detail: gitDetail(pull) }
       }
@@ -241,6 +243,24 @@ export class GitSync {
       updated: before.code === 0 && after.code === 0 && before.stdout.trim() !== after.stdout.trim(),
       detail: ''
     }
+  }
+
+  private async mergeActive(): Promise<boolean> {
+    return (await interruptedStates(this.repoPath)).some(state => state.label === 'merge')
+  }
+
+  // session.json is a snapshot this machine rewrites on every poll, so a
+  // conflicted hunk carries nothing worth merging. Everything else is real work
+  // and a person has to look at it.
+  private async resolveMergeConflicts(): Promise<boolean> {
+    const conflicts = await runGit(['diff', '--name-only', '--diff-filter=U'], this.repoPath)
+    const files = conflicts.stdout.trim().split('\n').filter(Boolean)
+    if (files.length === 0 || files.some(file => !file.endsWith('session.json'))) return false
+    const take = await runGit(['checkout', '--ours', '--', ...files], this.repoPath)
+    if (take.code !== 0) return false
+    await runGit(['add', '--', ...files], this.repoPath)
+    const commit = await runGit(['-c', 'core.editor=true', 'commit', '--no-edit'], this.repoPath)
+    return commit.code === 0
   }
 
   private async blockedPaths(): Promise<string[]> {
