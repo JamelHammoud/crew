@@ -10744,3 +10744,10 @@
 {"id":"bf053232-454d-4753-8105-0f65ee7ac6b9","ts":1785013653958,"kind":"agent.online","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
 {"id":"0cd89ff5-825e-414e-8930-8d4060c63120","ts":1785013653959,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
 {"id":"5738e2c9-3e72-4160-b001-79ec41266181","ts":1785013653959,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"7ef744c5-03b0-450e-9c55-aa5988e939ab","ts":1785013654046,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"30f6f0de-3140-4f60-b118-87a9b3f58378","ts":1785013654047,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"af3de76d-736c-4bcd-859f-5422e79c72b0","ts":1785013654047,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"a2bb195a-023f-411d-a799-13033fcabf47","ts":1785013654047,"kind":"agent.online","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
+{"id":"7a550c23-cbb7-4f63-a6f4-7861de027971","ts":1785013654047,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"bbb0209b-5a34-4258-b01c-869412600a55","ts":1785013654047,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"38cd04bc-6c76-4568-9ed6-0ff6d3ad18ce","ts":1785013654964,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
