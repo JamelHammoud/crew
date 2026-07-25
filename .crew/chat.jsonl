@@ -11014,3 +11014,4 @@
 {"id":"d6bb9ca3-5246-42c4-84fe-9f32498dc7fa","ts":1785013556648,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Opus 5"}
 {"id":"680ad639-3a3d-4f6a-8227-fce6b4af9ba3","ts":1785013556648,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
 {"id":"aa3c3206-e20a-4372-a73f-c945cfd367ec","ts":1785013556648,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
+{"id":"6bf3fc88-bdfc-4b9c-8033-0e3014b199be","ts":1785013769537,"kind":"agent.online","agentId":"jamel/ad836538-f482-4a88-b70a-adc257551883","label":"Claude Opus 5"}
