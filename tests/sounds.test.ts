@@ -97,6 +97,7 @@ describe('playing a sound', () => {
 
   beforeEach(() => {
     started.length = 0
+    pitched.length = 0
     store.clear()
     clock += 10_000
   })
