@@ -38,7 +38,7 @@ export default function MessageReactions({
   return (
     <>
       <div
-        className={`absolute right-0 -top-5 z-10 flex items-center gap-0.5 rounded-full border border-ink-700 bg-ink-800 p-1 shadow-[0_10px_30px_rgb(0_0_0/0.28)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`absolute right-0 -top-4 z-10 flex items-center gap-px rounded-full border border-ink-700 bg-ink-800 p-0.5 shadow-[0_8px_24px_rgb(0_0_0/0.24)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           menuOpen
             ? 'translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-1 opacity-0 group-hover/message:pointer-events-auto group-hover/message:translate-y-0 group-hover/message:opacity-100 focus-within:pointer-events-auto focus-within:translate-y-0 focus-within:opacity-100'
@@ -51,14 +51,14 @@ export default function MessageReactions({
             aria-label={`React with ${emoji}`}
             aria-pressed={selected.has(emoji)}
             onClick={() => react(emoji)}
-            className={`flex h-8 w-8 items-center justify-center rounded-full text-[17px] leading-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
+            className={`flex h-7 w-7 items-center justify-center rounded-full text-[15px] leading-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
               selected.has(emoji) ? 'bg-fg/12' : 'hover:bg-fg/8'
             }`}
           >
             {emoji}
           </button>
         ))}
-        <span className="mx-0.5 h-5 w-px bg-ink-600" />
+        <span className="mx-0.5 h-4 w-px bg-ink-600" />
         <span className="relative">
           <Tooltip label="More reactions">
             <button
@@ -69,9 +69,9 @@ export default function MessageReactions({
                 setActionsOpen(false)
                 setPickerOpen(open => !open)
               }}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
             >
-              <FaceSmileIcon className="h-[18px] w-[18px]" />
+              <FaceSmileIcon className="h-4 w-4" />
             </button>
           </Tooltip>
           <Popover open={pickerOpen} onClose={() => setPickerOpen(false)} side="top" className="flex !rounded-full !p-1">
@@ -82,7 +82,7 @@ export default function MessageReactions({
                 aria-label={`React with ${emoji}`}
                 aria-pressed={selected.has(emoji)}
                 onClick={() => react(emoji)}
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-[18px] leading-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-[16px] leading-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
                   selected.has(emoji) ? 'bg-fg/12' : 'hover:bg-fg/8'
                 }`}
               >
@@ -102,9 +102,9 @@ export default function MessageReactions({
                   setPickerOpen(false)
                   setActionsOpen(open => !open)
                 }}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
               >
-                <EllipsisHorizontalIcon className="h-5 w-5" />
+                <EllipsisHorizontalIcon className="h-4 w-4" />
               </button>
             </Tooltip>
             <Popover open={actionsOpen} onClose={() => setActionsOpen(false)} side="top">
@@ -130,10 +130,10 @@ export default function MessageReactions({
                 aria-label={`${reaction.emoji}, ${reaction.count} ${reaction.count === 1 ? 'reaction' : 'reactions'}`}
                 aria-pressed={reaction.self}
                 onClick={() => react(reaction.emoji)}
-                className={`flex h-7 items-center gap-1.5 rounded-full border px-2 text-sm transition-[transform,background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:scale-95 ${
+                className={`flex h-7 items-center gap-1.5 rounded-full px-2 text-sm transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
                   reaction.self
-                    ? 'border-fg/35 bg-fg/10 text-fg'
-                    : 'border-ink-700 bg-ink-800 text-fg-secondary hover:border-ink-600 hover:text-fg'
+                    ? 'bg-fg/15 text-fg hover:bg-fg/20'
+                    : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
                 }`}
               >
                 <span className="text-[15px] leading-none">{reaction.emoji}</span>

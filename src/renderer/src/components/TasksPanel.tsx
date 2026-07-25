@@ -160,6 +160,20 @@ export default function TasksPanel({
   const [picker, setPicker] = useState<{ todoId: string; at: { x: number; y: number } } | null>(null)
   const [searching, setSearching] = useState(false)
   const [query, setQuery] = useState('')
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [edges, setEdges] = useState({ top: true, bottom: true })
+
+  const updateEdges = () => {
+    const el = scrollRef.current
+    if (!el) return
+    const top = el.scrollTop < 2
+    const bottom = el.scrollTop + el.clientHeight > el.scrollHeight - 2
+    setEdges(prev => (prev.top === top && prev.bottom === bottom ? prev : { top, bottom }))
+  }
+
+  useEffect(() => {
+    updateEdges()
+  })
 
   const closeSearch = () => {
     setSearching(false)
@@ -474,93 +488,105 @@ export default function TasksPanel({
               </>
             )}
           </header>
-          <div className="flex-1 overflow-y-auto px-3 pb-6 space-y-6">
-            {(pendingTodos.length > 0 || !q) && (
-              <section>
-                {heading('Todo', pendingTodos.length)}
-                {pendingTodos.map(todoItem)}
-                {!q &&
-                  (adding ? (
-                    <TodoEditor
-                      keepOpen
-                      onCommit={raw => {
-                        const parsed = parseTodoInput(raw, agents)
-                        addTodo(parsed.text, parsed.agentId)
-                      }}
-                      onDone={() => setAdding(false)}
-                    />
-                  ) : (
-                    <button
-                      onClick={() => setAdding(true)}
-                      className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
-                    >
-                      <span className="h-[22px] shrink-0 flex items-center">
-                        <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
-                          <PlusIcon className="w-3 h-3" />
+          <div className="relative flex-1 min-h-0">
+            <div
+              ref={scrollRef}
+              onScroll={updateEdges}
+              className="h-full overflow-y-auto px-3 pb-6 space-y-6"
+            >
+              {(pendingTodos.length > 0 || !q) && (
+                <section>
+                  {heading('Todo', pendingTodos.length)}
+                  {pendingTodos.map(todoItem)}
+                  {!q &&
+                    (adding ? (
+                      <TodoEditor
+                        keepOpen
+                        onCommit={raw => {
+                          const parsed = parseTodoInput(raw, agents)
+                          addTodo(parsed.text, parsed.agentId)
+                        }}
+                        onDone={() => setAdding(false)}
+                      />
+                    ) : (
+                      <button
+                        onClick={() => setAdding(true)}
+                        className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 text-fg-muted transition-colors duration-150 hover:bg-ink-hover hover:text-fg"
+                      >
+                        <span className="h-[22px] shrink-0 flex items-center">
+                          <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
+                            <PlusIcon className="w-3 h-3" />
+                          </span>
                         </span>
-                      </span>
-                      <span className="text-base">Add a task</span>
-                    </button>
-                  ))}
-              </section>
-            )}
-            {!q && rows.length === 0 && todos.length === 0 && (
-              <p className="text-base text-fg-muted text-center mt-16 px-6">
-                Threads you start with an agent will show up here.
-              </p>
-            )}
-            {noMatches && (
-              <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>
-            )}
-            {inProgress.length > 0 && (
-              <section>
-                {heading('In progress', inProgress.length)}
-                {inProgress.map(row => item(row))}
-              </section>
-            )}
-            {needsReview.length > 0 && (
-              <section>
-                {heading('Needs review', needsReview.length)}
-                {needsReview.map(row =>
-                  item(row, { icon: <CheckIcon className="w-4 h-4" />, label: 'Mark done', status: 'done' })
-                )}
-              </section>
-            )}
-            {(done.length > 0 || checkedTodos.length > 0) && (
-              <section>
-                {toggleHeading('Done', done.length + checkedTodos.length, showDone || q !== '', () =>
-                  setShowDone(v => !v)
-                )}
-                {(showDone || q !== '') &&
-                  [
-                    ...done.map(row => ({
-                      ts: lastMessageAt[row.thread.id] ?? 0,
-                      node: item(row, {
-                        icon: <ArrowUturnLeftIcon className="w-4 h-4" />,
-                        label: 'Reopen',
-                        status: 'open' as const
-                      })
-                    })),
-                    ...checkedTodos.map(todo => ({
-                      ts: checkedAt[todo.id] ?? todo.ts,
-                      node: checkedItem(todo)
-                    }))
-                  ]
-                    .sort((a, b) => b.ts - a.ts)
-                    .map(entry => entry.node)}
-              </section>
-            )}
-            {archived.length > 0 && (
-              <section>
-                {toggleHeading('Archived', archived.length, showArchived || q !== '', () =>
-                  setShowArchived(v => !v)
-                )}
-                {(showArchived || q !== '') &&
-                  archived.map(row =>
-                    item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
+                        <span className="text-base">Add a task</span>
+                      </button>
+                    ))}
+                </section>
+              )}
+              {!q && rows.length === 0 && todos.length === 0 && (
+                <p className="text-base text-fg-muted text-center mt-16 px-6">
+                  Threads you start with an agent will show up here.
+                </p>
+              )}
+              {noMatches && (
+                <p className="text-base text-fg-muted text-center mt-16 px-6">No tasks match.</p>
+              )}
+              {inProgress.length > 0 && (
+                <section>
+                  {heading('In progress', inProgress.length)}
+                  {inProgress.map(row => item(row))}
+                </section>
+              )}
+              {needsReview.length > 0 && (
+                <section>
+                  {heading('Needs review', needsReview.length)}
+                  {needsReview.map(row =>
+                    item(row, { icon: <CheckIcon className="w-4 h-4" />, label: 'Mark done', status: 'done' })
                   )}
-              </section>
-            )}
+                </section>
+              )}
+              {(done.length > 0 || checkedTodos.length > 0) && (
+                <section>
+                  {toggleHeading('Done', done.length + checkedTodos.length, showDone || q !== '', () =>
+                    setShowDone(v => !v)
+                  )}
+                  {(showDone || q !== '') &&
+                    [
+                      ...done.map(row => ({
+                        ts: lastMessageAt[row.thread.id] ?? 0,
+                        node: item(row, {
+                          icon: <ArrowUturnLeftIcon className="w-4 h-4" />,
+                          label: 'Reopen',
+                          status: 'open' as const
+                        })
+                      })),
+                      ...checkedTodos.map(todo => ({
+                        ts: checkedAt[todo.id] ?? todo.ts,
+                        node: checkedItem(todo)
+                      }))
+                    ]
+                      .sort((a, b) => b.ts - a.ts)
+                      .map(entry => entry.node)}
+                </section>
+              )}
+              {archived.length > 0 && (
+                <section>
+                  {toggleHeading('Archived', archived.length, showArchived || q !== '', () =>
+                    setShowArchived(v => !v)
+                  )}
+                  {(showArchived || q !== '') &&
+                    archived.map(row =>
+                      item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
+                    )}
+                </section>
+              )}
+            </div>
+            <div
+              className={`absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-ink-900 to-transparent pointer-events-none transition-opacity duration-200 ${edges.top ? 'opacity-0' : 'opacity-100'}`}
+            />
+            <div
+              className={`absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-ink-900 to-transparent pointer-events-none transition-opacity duration-200 ${edges.bottom ? 'opacity-0' : 'opacity-100'}`}
+            />
           </div>
         </aside>
       </div>

@@ -1,6 +1,6 @@
 import { existsSync, promises as fs } from 'node:fs'
 import path from 'node:path'
-import { runGit, type GitResult } from '../shared/git'
+import { overwrittenPaths, restoreAutostash, runGit, stashCount, type GitResult } from '../shared/git'
 import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '../shared/repository'
 
 const CREW_PATHS = ['.crew']
@@ -68,6 +68,11 @@ export class GitSync {
     }
     await this.refreshRemote()
     if (!this.hasRemote) return
+    const blocked = await this.blockedPaths()
+    if (blocked.length > 0) {
+      this.onLog(`sync paused, ${describePaths(blocked)} changed here and on the remote`)
+      return
+    }
     const pull = await this.pullRemote(true)
     if (!pull.ok) {
       this.onLog(`pull failed, left as is: ${pull.detail}`)
@@ -86,6 +91,15 @@ export class GitSync {
     }
     if (!before.remote) {
       return this.result(false, false, 'No remote is set up for this project.', before)
+    }
+    const blocked = await this.blockedPaths()
+    if (blocked.length > 0) {
+      return this.result(
+        false,
+        false,
+        `Push your changes to ${describePaths(blocked)} first, a pull would replace them.`,
+        before
+      )
     }
     const pull = await this.pullRemote(true)
     const status = await this.readStatus()
@@ -150,16 +164,19 @@ export class GitSync {
   private async pullRemote(autostash: boolean): Promise<{ ok: boolean; updated: boolean; detail: string }> {
     const before = await runGit(['rev-parse', 'HEAD'], this.repoPath)
     const rebaseBefore = await this.rebaseActive()
+    const stashes = await stashCount(this.repoPath)
     const args = ['pull', '--rebase']
     if (autostash) args.push('--autostash')
     const pull = await runGit(args, this.repoPath)
     if (pull.code !== 0) {
       if (rebaseBefore || !(await this.rebaseActive())) {
+        await restoreAutostash(this.repoPath, stashes)
         return { ok: false, updated: false, detail: gitDetail(pull) }
       }
       const resolved = await this.resolveRebaseConflicts()
       if (!resolved) {
         await runGit(['rebase', '--abort'], this.repoPath)
+        await restoreAutostash(this.repoPath, stashes)
         return { ok: false, updated: false, detail: gitDetail(pull) }
       }
     }
@@ -169,6 +186,12 @@ export class GitSync {
       updated: before.code === 0 && after.code === 0 && before.stdout.trim() !== after.stdout.trim(),
       detail: ''
     }
+  }
+
+  private async blockedPaths(): Promise<string[]> {
+    const fetch = await runGit(['fetch', '--quiet'], this.repoPath)
+    if (fetch.code !== 0) return []
+    return overwrittenPaths(this.repoPath)
   }
 
   private async rebaseActive(): Promise<boolean> {
@@ -389,6 +412,12 @@ function diffPreview(diff: string): { diff: string; truncated: boolean } {
     diff: preview.slice(0, DIFF_LIMIT),
     truncated: lines.length > DIFF_LINE_LIMIT || preview.length > DIFF_LIMIT
   }
+}
+
+function describePaths(paths: string[]): string {
+  if (paths.length === 1) return paths[0]
+  if (paths.length === 2) return `${paths[0]} and ${paths[1]}`
+  return `${paths[0]} and ${paths.length - 1} other files`
 }
 
 function gitDetail(result: GitResult): string {

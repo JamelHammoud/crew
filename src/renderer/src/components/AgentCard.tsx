@@ -1,4 +1,5 @@
-import { StopIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { PencilIcon, StopIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { useEffect, useRef, useState } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
 import { visibleSettingFields } from '../../../shared/llm'
 import AgentIcon from './AgentIcon'
@@ -13,16 +14,31 @@ export default function AgentCard({
   threadCount,
   onStop,
   onSetting,
+  onRename,
   onRemove
 }: {
   agent: PooledAgent
   threadCount: number
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
+  onRename?: (label: string) => void
   onRemove?: () => void
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
   const fields = visibleSettingFields(agent.fields, agent.settings)
+  const [draft, setDraft] = useState<string | null>(null)
+  const editing = draft !== null
+  const input = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (editing) input.current?.select()
+  }, [editing])
+
+  const commit = () => {
+    const label = (draft ?? '').trim()
+    if (label && label !== agent.label) onRename?.(label)
+    setDraft(null)
+  }
 
   return (
     <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
@@ -31,12 +47,37 @@ export default function AgentCard({
           <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
+              {editing ? (
+                <input
+                  ref={input}
+                  value={draft ?? ''}
+                  onChange={e => setDraft(e.target.value)}
+                  onBlur={commit}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') commit()
+                    if (e.key === 'Escape') setDraft(null)
+                  }}
+                  className="w-44 h-8 bg-ink-850 border border-ink-700 rounded-full px-3.5 text-base font-semibold text-fg outline-none transition-colors focus:border-ink-500"
+                />
+              ) : (
+                <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
+              )}
               <Pill>{agent.provider}</Pill>
             </div>
             <span className="text-sm text-fg-muted">{agent.ownerName}</span>
           </div>
           <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+            {onRename && !editing && (
+              <Tooltip label="Rename">
+                <button
+                  onClick={() => setDraft(agent.label)}
+                  aria-label="Rename agent"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
+                >
+                  <PencilIcon className="w-4 h-4" />
+                </button>
+              </Tooltip>
+            )}
             {threadCount > 0 && onStop && (
               <Tooltip label={threadCount > 1 ? 'Stop all threads' : 'Stop'}>
                 <button

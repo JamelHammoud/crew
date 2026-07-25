@@ -2,19 +2,22 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { FileChange } from '../../../shared/llm'
 import { useBrowser } from '../state/browser'
+import { isPrivate, labelFor, PrivateChip, targetFor, TextWithFileLinks, useLocated } from './fileLinks'
 import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
 
 export function FilePathLink({ path, className }: { path: string; className?: string }) {
+  useLocated([path])
+  if (isPrivate(path)) return <PrivateChip />
   return (
     <span
       onClick={event => {
         event.stopPropagation()
-        useBrowser.getState().openFile(path)
+        useBrowser.getState().openFile(targetFor(path))
       }}
       className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
     >
-      {path}
+      {labelFor(path, '', path)}
     </span>
   )
 }
@@ -115,7 +118,11 @@ export default function StepRow({ item }: { item: ThreadItem }) {
               <Counts added={totals.added} removed={totals.removed} />
             </>
           ) : (
-            item.detail && !expanded && <span className="text-fg-faint truncate font-mono text-xs">{item.detail}</span>
+            item.detail && !expanded && (
+              <span className="text-fg-faint truncate font-mono text-xs">
+                <TextWithFileLinks text={item.detail} plain />
+              </span>
+            )
           )}
         </button>
         {expanded &&
@@ -127,7 +134,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
                 onClick={() => setOpen(false)}
                 className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-4 cursor-pointer"
               >
-                {item.detail}
+                <TextWithFileLinks text={item.detail} plain />
               </p>
             )
           ))}

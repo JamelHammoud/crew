@@ -8,6 +8,7 @@ import type { SessionEvent } from '../src/shared/events'
 import { agentId, resolveSettings, visibleSettingFields } from '../src/shared/llm'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 const reader = (settings: Record<string, string>) => (key: string) => settings[key] ?? ''
 
@@ -88,7 +89,7 @@ describe('settings across the session', () => {
   })
 
   async function connectRunner(name: string) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

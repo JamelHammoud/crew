@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { RepoFile, RepoPathKind } from '../shared/files'
+import type { PathLocation, RepoFile } from '../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { CurrentSession } from './session'
@@ -25,7 +25,7 @@ const bridge = {
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   writeFile: (path: string, text: string): Promise<RepoFile | null> =>
     ipcRenderer.invoke('file:write', path, text),
-  statFile: (path: string): Promise<RepoPathKind> => ipcRenderer.invoke('file:stat', path),
+  locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
   onFullScreen: (listener: (full: boolean) => void): void => {
     ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))

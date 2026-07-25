@@ -17,7 +17,7 @@ describe('app session', () => {
     await expect(app.startHost(tmpDir('not-git'), 'sam')).rejects.toThrow('not a git repository')
   })
 
-  it('hosts a session, shares a join link, and pools detected agents', async () => {
+  it('hosts a session, shares a join link, and pools nobody until an agent is made', async () => {
     const repo = tmpDir('app-host')
     await initRepo(repo)
     const host = new AppSession()
@@ -28,12 +28,10 @@ describe('app session', () => {
     expect(target.code).toMatch(/^[a-f0-9]{6}$/)
 
     const ui = await TestUi.connect(info.wsUrl, 'sam', target.code)
-    await waitUntil(
-      () => welcomeOf(ui).snapshot.agents.length > 0 || ui.events.some(e => e.kind === 'agent.online'),
-      15000
-    )
-    const agents = welcomeOf(ui).snapshot.agents
-    if (agents.length > 0) expect(agents.every(a => a.ownerName === 'sam')).toBe(true)
+    // An installed CLI is not an agent. Nothing joins the pool on its own.
+    await new Promise(r => setTimeout(r, 1000))
+    expect(welcomeOf(ui).snapshot.agents).toEqual([])
+    expect(ui.events.some(e => e.kind === 'agent.online')).toBe(false)
 
     ui.close()
     await host.leave()

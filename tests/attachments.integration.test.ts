@@ -6,6 +6,7 @@ import type { SessionEvent } from '../src/shared/events'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, tmpDir, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Message = Extract<SessionEvent, { kind: 'message' }>
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
@@ -40,7 +41,7 @@ describe('image attachments', () => {
   })
 
   async function connectRunner(name: string, repoPath = host.repoPath) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath,

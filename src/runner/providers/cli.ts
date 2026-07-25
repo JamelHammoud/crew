@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { stripRoot, stripRootFromText } from '../../shared/files'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
 import { crewPath, resolveCommand } from './path'
 import type { InstallCommands, OutputParser, Provider, RunningPrompt } from './types'
@@ -233,11 +234,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
               id: `t${out.activity.id}`,
               kind: out.activity.kind,
               name: out.activity.name,
-              detail: out.activity.detail,
-              files: out.activity.files?.map(file => ({
-                ...file,
-                path: file.path.startsWith(`${cwd}/`) ? file.path.slice(cwd.length + 1) : file.path
-              })),
+              detail: out.activity.detail ? stripRootFromText(cwd, out.activity.detail) : undefined,
+              files: out.activity.files?.map(file => ({ ...file, path: stripRoot(cwd, file.path) })),
               status: out.activity.status === 'started' ? 'running' : 'done'
             })
           }

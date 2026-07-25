@@ -19,7 +19,7 @@
     }
   },
   "scripts": {
-    "dev": "electron-vite dev --watch",
+    "dev": "electron-vite dev",
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "preview": "electron-vite preview",

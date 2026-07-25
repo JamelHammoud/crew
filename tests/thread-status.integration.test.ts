@@ -7,6 +7,7 @@ import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, tmpDir, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Status = Extract<SessionEvent, { kind: 'thread.status' }>
@@ -29,7 +30,7 @@ describe('thread status', () => {
   })
 
   async function connectRunner(name: string) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

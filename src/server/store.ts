@@ -16,6 +16,9 @@ export interface PersistedSession {
   createdAt: number
   members: PersistedMember[]
   agents: Array<Omit<PooledAgent, 'status' | 'runs'>>
+  // Agents someone removed. Kept so an owner reconnecting with a stale local
+  // definition does not bring the same agent back.
+  removedAgents?: string[]
 }
 
 const PAGE_SEGMENT = '[a-z0-9][a-z0-9-]*'

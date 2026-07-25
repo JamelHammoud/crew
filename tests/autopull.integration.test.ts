@@ -6,6 +6,7 @@ import { agentId } from '../src/shared/llm'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { clone, git, initBare, initRepo } from './helpers/git'
 import { startHost, TestUi, tmpDir, waitUntil, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 async function originWithClones() {
   const base = tmpDir('autopull')
@@ -35,7 +36,7 @@ describe('auto pull', () => {
   let uis: TestUi[] = []
 
   function connectRunner(repoPath: string, autoPullMs: number): Runner {
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host!.code,
       repoPath,

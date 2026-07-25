@@ -5,6 +5,7 @@ import type { ServerMessage } from '../src/shared/protocol'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 describe('agent instances', () => {
   let host: TestHost
@@ -26,7 +27,7 @@ describe('agent instances', () => {
   it('runs two instances of one provider concurrently', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
@@ -61,7 +62,7 @@ describe('agent instances', () => {
   it('adds an agent at runtime and makes it mentionable, then removes it', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
@@ -104,7 +105,7 @@ describe('agent instances', () => {
   it('re-adopts its own offline agent when the local definition was lost', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const first = new Runner({
+    const first = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
@@ -119,7 +120,7 @@ describe('agent instances', () => {
     await ui.waitForEvent(e => e.kind === 'agent.offline' && e.label === 'Fake Fable')
 
     const adopted: Array<{ instanceId: string; provider: string; name: string }> = []
-    const second = new Runner({
+    const second = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
@@ -148,10 +149,121 @@ describe('agent instances', () => {
     expect(end.ok).toBe(true)
   })
 
+  // An installed CLI is not an agent: a runner brings only what it was given.
+  it('enrolls nothing on its own', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const runner = new Runner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      reconnectDelayMs: 100
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    await waitUntil(() => ui.events.some(e => e.kind === 'person.joined' && e.name === 'jamel'))
+    await new Promise(r => setTimeout(r, 300))
+    expect(host.session.snapshot().agents).toEqual([])
+    expect(ui.events.some(e => e.kind === 'agent.online')).toBe(false)
+  })
+
+  it('renames your own agent and tells your machine about it', async () => {
+    const ui = await TestUi.connect(host.url, 'jamel', host.code)
+    uis.push(ui)
+    const renames: Array<[string, string]> = []
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [{ instanceId: 'uuid-1', provider: 'fake', name: 'Fake', settings: {} }],
+      reconnectDelayMs: 100,
+      onRename: (instanceId, label) => renames.push([instanceId, label])
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
+
+    const id = agentId('jamel', 'uuid-1')
+    ui.send({ type: 'agent.rename', agentId: id, label: 'Trolls' })
+    const renamed = (await ui.waitFor(m => m.type === 'agent.renamed')) as Extract<
+      ServerMessage,
+      { type: 'agent.renamed' }
+    >
+    expect(renamed.agentId).toBe(id)
+    expect(renamed.label).toBe('Trolls')
+    await waitUntil(() => renames.length === 1)
+    expect(renames[0]).toEqual(['uuid-1', 'Trolls'])
+    expect(host.session.snapshot().agents.find(a => a.id === id)?.label).toBe('Trolls')
+  })
+
+  it('refuses a rename from someone who does not own the agent', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [{ instanceId: 'uuid-1', provider: 'fake', name: 'Fake', settings: {} }],
+      reconnectDelayMs: 100
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    await sam.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
+
+    sam.send({ type: 'agent.rename', agentId: agentId('jamel', 'uuid-1'), label: 'Not yours' })
+    await new Promise(r => setTimeout(r, 300))
+    expect(sam.messages.some(m => m.type === 'agent.renamed')).toBe(false)
+    expect(host.session.snapshot().agents[0].label).toBe('Fake')
+  })
+
+  it('lets anyone remove an agent they do not own, and it stays gone', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+    const forgotten: string[] = []
+    const def = { instanceId: 'uuid-1', provider: 'fake', name: 'Fake', settings: {} }
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [def],
+      reconnectDelayMs: 100,
+      onForget: instanceId => forgotten.push(instanceId)
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    await sam.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
+
+    const id = agentId('jamel', 'uuid-1')
+    sam.send({ type: 'agent.remove', agentId: id })
+    await sam.waitFor(m => m.type === 'agent.removed' && m.agentId === id)
+    await waitUntil(() => forgotten.length === 1)
+    expect(forgotten).toEqual(['uuid-1'])
+    expect(host.session.snapshot().agents).toEqual([])
+
+    // A machine still holding the old definition must not bring it back.
+    const stale = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [def],
+      reconnectDelayMs: 100
+    })
+    runners.push(stale)
+    stale.connect(host.url)
+    await new Promise(r => setTimeout(r, 500))
+    expect(sam.messages.filter(m => m.type === 'agent.added' && m.agent.id === id)).toHaveLength(1)
+    expect(host.session.snapshot().agents).toEqual([])
+  })
+
   it('does not adopt agents owned by someone else', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const alis = new Runner({
+    const alis = testRunner({
       name: 'ali',
       code: host.code,
       repoPath: host.repoPath,
@@ -166,7 +278,7 @@ describe('agent instances', () => {
     await ui.waitForEvent(e => e.kind === 'agent.offline' && e.label === 'Alis Fake')
 
     const adopted: string[] = []
-    const jamels = new Runner({
+    const jamels = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
