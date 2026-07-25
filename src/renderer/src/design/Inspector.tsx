@@ -173,7 +173,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
 
       <Section
         label="Fill"
-        action={<AddButton label="Add fill" onClick={() => patch({ fills: [...props.fills, { type: 'solid', color: '#3b82f6', opacity: 1 }] })} />}
+        action={<AddButton label="Add fill" onClick={() => patch({ fills: [...props.fills, { type: 'solid', color: NEW_FILL, opacity: 1 }] })} />}
       >
         {props.fills.map((fill, at) => (
           <div key={at} className="flex items-center gap-1.5">
@@ -194,7 +194,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
         action={
           <AddButton
             label="Add stroke"
-            onClick={() => patch({ strokes: [...props.strokes, { color: '#ffffff26', weight: 1, align: 'inside', style: 'solid' }] })}
+            onClick={() => patch({ strokes: [...props.strokes, { color: NEW_STROKE, weight: 1, align: 'inside', style: 'solid' }] })}
           />
         }
       >
