@@ -63,6 +63,22 @@ describe('fake provider contract', () => {
     await expect(run.done).rejects.toThrow('fake cli failed')
   })
 
+  it('sends a literal one-shot prompt through stdin', async () => {
+    const provider = makeCliProvider({
+      name: 'stdin',
+      label: 'Stdin',
+      command: process.execPath,
+      args: () => [
+        '-e',
+        'let body = ""; process.stdin.setEncoding("utf8"); process.stdin.on("data", chunk => body += chunk); process.stdin.on("end", () => process.stdout.write(body))'
+      ],
+      stdinPrompt: true
+    })
+    const prompt = 'Build this on the design board "Untitled Board".\n{"kind":"note","text":"Hero section"}'
+    const run = provider.start(prompt, repo, { onStep: () => {} })
+    await expect(run.done).resolves.toEqual({ text: prompt })
+  })
+
   it('kill stops the run and rejects with Stopped', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_DELAY_MS: '300' })
     const run = provider.start('slow', repo, { onStep: () => {} })
