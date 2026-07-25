@@ -9426,3 +9426,36 @@
 {"id":"cb2346f4-482f-46f6-9b7a-4fd87c14297b","ts":1785008325522,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
 {"id":"08f20282-bab8-411b-b2e9-d47ccecf8b35","ts":1785008326795,"kind":"agent.step","promptId":"e404ed9b-82a4-4a17-bc62-4b3cb993ddb2","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","agentLabel":"Claude Fable","threadId":"ea349be7-6be2-4a69-9378-5ca749e4e52d","step":{"id":"b19","ts":1785008326795,"kind":"text","status":"done","text":"Now the server session:"}}
 {"id":"1e036cbb-7a56-4359-9869-5f80bdd1c758","ts":1785008328824,"kind":"agent.step","promptId":"e404ed9b-82a4-4a17-bc62-4b3cb993ddb2","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","agentLabel":"Claude Fable","threadId":"ea349be7-6be2-4a69-9378-5ca749e4e52d","step":{"id":"ttoolu_01W1JbHrLXrR6CsAJ1tTqCBG","ts":1785008328815,"kind":"tool","status":"done","name":"Edit","detail":"/Users/jamel/Documents/Repositories/crew/src/server/session.ts","files":[{"path":"src/server/session.ts","added":4,"removed":2,"diff":"-     for (const a of persisted?.agents ?? []) {\n-       this.agents.set(a.id, {\n+     for (const id of persisted?.removedAgents ?? []) this.removedAgents.add(id)\n+     for (const a of persisted?.agents ?? []) {\n+       if (this.removedAgents.has(a.id)) continue\n+       this.agents.set(a.id, {"}]}}
+{"id":"1bb0b764-c342-47fe-837f-df10eb16db47","ts":1785008329005,"kind":"agent.offline","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"cc5f3383-f9ae-4c97-b9b9-956f89fa4540","ts":1785008329006,"kind":"agent.offline","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"a4e46424-824f-46a8-a828-83e357ac6a91","ts":1785008329006,"kind":"agent.offline","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"1f3750f1-9dbe-452b-bf54-6be7488359d6","ts":1785008329006,"kind":"agent.offline","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"06dc8941-b66d-421d-a27f-0179269a1f29","ts":1785008329006,"kind":"agent.offline","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"8a4642de-4568-4c75-94ff-c13e64b8071b","ts":1785008329006,"kind":"agent.offline","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"97f451d0-52d9-4fcc-b92a-eb3b55155d8a","ts":1785008329006,"kind":"agent.offline","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"9d1c0d10-bc0a-4311-851a-b0137a665ac1","ts":1785008329014,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"5c990ba7-8ffa-4444-a883-cf423b8a1530","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"938869cf-f70e-4bb7-ab77-4e1ff6355da7","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"b88264c7-27f9-4a10-bd30-6c3e7cd295a0","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"349936e3-3d42-4eef-a7e7-5f054b60bf17","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"c2b31eca-f833-40e5-8201-311486f88797","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"c7b77f18-32c6-40b5-8373-8dfd6e3a6544","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"7a17d50e-f094-4e00-87b8-d12cf63faf23","ts":1785008329882,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"adb56fd3-b0a2-4751-bf90-1673e517de5c","ts":1785008329883,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"e30a1ad4-5a2b-4a62-89e6-f85f797c23c9","ts":1785008330031,"kind":"agent.step","promptId":"e404ed9b-82a4-4a17-bc62-4b3cb993ddb2","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","agentLabel":"Claude Fable","threadId":"ea349be7-6be2-4a69-9378-5ca749e4e52d","step":{"id":"ttoolu_01HQT2z8s29vZq1jEMDcpq9H","ts":1785008330025,"kind":"tool","status":"done","name":"Edit","detail":"/Users/jamel/Documents/Repositories/crew/src/server/session.ts","files":[{"path":"src/server/session.ts","added":2,"removed":1,"diff":"-   private meta = new Map<WebSocket, ConnMeta>()\n+   private meta = new Map<WebSocket, ConnMeta>()\n+   private removedAgents = new Set<string>()"}]}}
+{"id":"28c4f6a4-703b-42e8-aa23-8998460377a6","ts":1785008330125,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"2cf2ccd0-3a5f-41e6-b07f-23f15add26e3","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"a3af799e-6e94-4459-9cbc-7ff115f64b32","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"500e4e6e-401a-435f-a6c5-2e23e5b96da1","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"400ad035-fe0f-43dc-b6e0-3ecf1e5172fe","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"a7204475-bee6-4f1a-aec9-039075812820","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"690102d9-8afc-4671-b0c9-6be1d4766273","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"1e2fc2e0-5644-4b83-bfc2-4fb104988539","ts":1785008330125,"kind":"agent.offline","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"61fd85e3-a404-4da0-a372-50c56b9e6c8f","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"a8e6c228-438b-4e0c-92bf-e77585c3dbc3","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"ca915b9b-41cf-4794-a993-b6434a02622e","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"aeb3f136-46c6-4542-aced-5a8491061d95","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"fd0688cc-aa45-4a9c-944c-0355268aa58a","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"1a502134-522e-4c58-9477-477af698525a","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"f6001263-3dd3-4ae2-bd6d-e2dc9d4f657e","ts":1785008330995,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"aaf0da81-6991-4a41-b82a-15d62fcc1f2b","ts":1785008330995,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
