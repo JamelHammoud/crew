@@ -50,19 +50,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { pinnedRef, onScroll } = useStickToBottom(scrollRef)
-  const [edges, setEdges] = useState({ top: true, bottom: true })
-
-  const updateEdges = () => {
-    const el = scrollRef.current
-    if (!el) return
-    const top = el.scrollTop < 2
-    const bottom = el.scrollTop + el.clientHeight > el.scrollHeight - 2
-    setEdges(prev => (prev.top === top && prev.bottom === bottom ? prev : { top, bottom }))
-  }
-
-  useEffect(() => {
-    updateEdges()
-  })
+  const { edges } = useScrollEdges(scrollRef)
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, value => setThreadDraft(key, value), inputRef)
 
