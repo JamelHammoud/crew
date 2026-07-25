@@ -1,0 +1,111 @@
+// @vitest-environment jsdom
+import { fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import { describe, expect, it } from 'vitest'
+import App from '../src/renderer/src/App'
+import { useCrew } from '../src/renderer/src/state/store'
+import type { SessionEvent } from '../src/shared/events'
+import type { PooledAgent } from '../src/shared/llm'
+
+class TestResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+
+const agent: PooledAgent = {
+  id: 'ali/claude',
+  label: 'Claude',
+  provider: 'claude',
+  ownerId: 'ali',
+  ownerName: 'ALI',
+  status: 'idle',
+  runs: {},
+  settings: {},
+  fields: []
+}
+
+const PLAN = '## Steps\n\n1. Rename the tabs\n2. Ship it'
+
+const events: SessionEvent[] = [
+  {
+    id: 'thread-start',
+    ts: 1,
+    kind: 'thread.started',
+    threadId: 'thread-1',
+    agentId: agent.id,
+    agentLabel: agent.label,
+    title: '@Claude rename the tabs',
+    byName: 'ALI',
+    mode: 'plan'
+  },
+  {
+    id: 'plan-1',
+    ts: 2,
+    kind: 'thread.plan',
+    threadId: 'thread-1',
+    text: PLAN,
+    agentId: agent.id,
+    agentLabel: agent.label
+  }
+]
+
+const online = {
+  connection: 'online' as const,
+  selfId: 'ali',
+  selfName: 'ALI',
+  members: [{ id: 'ali', name: 'ALI', connected: true }],
+  agents: [agent],
+  threadPrompts: {},
+  threadDrafts: {},
+  queues: {},
+  steps: {},
+  tokens: {},
+  pending: {},
+  openThreadId: null
+}
+
+describe('plans in the app', () => {
+  it('shows a finished plan with a way to implement it, and keeps it beside the thread', () => {
+    useCrew.setState({
+      ...online,
+      events,
+      threads: {
+        'thread-1': {
+          id: 'thread-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          title: '@Claude rename the tabs',
+          createdBy: 'ALI',
+          status: 'open',
+          mode: 'plan',
+          plan: PLAN
+        }
+      }
+    })
+
+    render(createElement(App))
+    expect(screen.getByText('Implement plan')).toBeTruthy()
+    expect(screen.getAllByText('Rename the tabs').length).toBeGreaterThan(0)
+
+    fireEvent.click(screen.getByText('Open'))
+    expect(screen.getByLabelText('Back to chat')).toBeTruthy()
+    expect(screen.getByText('Plan')).toBeTruthy()
+    expect(screen.getByText('Not started')).toBeTruthy()
+    expect(screen.getAllByText('Ship it').length).toBeGreaterThan(0)
+  })
+
+  it('offers /plan from the composer', () => {
+    useCrew.setState({ ...online, events: [], threads: {}, chatDraft: '' })
+
+    render(createElement(App))
+    const composer = screen.getByPlaceholderText('Send a message, @ an agent to start a thread, or / for a command')
+    fireEvent.change(composer, { target: { value: '/' } })
+
+    const command = screen.getByText('/plan')
+    fireEvent.click(command)
+    expect(useCrew.getState().chatDraft).toBe('/plan ')
+  })
+})
