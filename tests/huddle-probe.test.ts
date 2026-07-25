@@ -201,7 +201,7 @@ describe('a huddle you are not in', () => {
     // The mark in the top left is drawn out of masked discs too, so the row of
     // faces is looked for inside the bar rather than anywhere on the screen.
     const bar = screen.getByText('Ali and Kim are in a huddle').parentElement
-    const faces = bar?.querySelector('svg')
+    const faces = [...(bar?.querySelectorAll('svg') ?? [])].find(svg => svg.querySelector('mask'))
 
     expect(faces).toBeTruthy()
     const cut = faces?.querySelector('mask circle')
