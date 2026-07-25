@@ -218,7 +218,7 @@ ${ramp(body)}
     ? `  <g clip-path="url(#tile-clip)">
     <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" fill="url(#glow)" />
     <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" filter="url(#grain)" opacity="${grain}" />
-    <g fill="none" stroke="${grid[0]}" stroke-opacity="${grid[1]}" stroke-width="3">
+    <g fill="none" stroke="${grid[0]}" stroke-opacity="${grid[1]}" stroke-width="${RULE}">
 ${gridLines()}
     </g>
   </g>
