@@ -275,8 +275,15 @@ export class GitSync {
   private async settle(): Promise<boolean> {
     const states = await interruptedStates(this.repoPath)
     if (states.length === 0) return true
-    if (states.some(state => state.label === 'rebase') && (await this.resolveRebaseConflicts())) {
+    const labels = states.map(state => state.label)
+    // A rebase only ever gets here from outside crew now, but a machine that was
+    // closed part way through one still has to be dug out.
+    if (labels.includes('rebase') && (await this.resolveRebaseConflicts())) {
       this.onLog('picked up an interrupted rebase and finished it')
+      return true
+    }
+    if (labels.includes('merge') && (await this.resolveMergeConflicts())) {
+      this.onLog('picked up an interrupted merge and finished it')
       return true
     }
     for (const state of states) await this.abortKeepingWork(state.abort)
