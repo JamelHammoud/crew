@@ -159,7 +159,7 @@ export default function Chat() {
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
-              placeholder="Send a message or @ an agent to start a thread"
+              placeholder="Send a message, @ an agent to start a thread, or / for a command"
               inputRef={inputRef}
               onChange={mention.onChange}
               onKeyDown={onKeyDown}
@@ -170,6 +170,12 @@ export default function Chat() {
                 activeIndex={mention.activeIndex}
                 onPick={mention.pick}
                 onHover={mention.setActive}
+              />
+              <SlashMenu
+                matches={slash.matches}
+                activeIndex={slash.activeIndex}
+                onPick={slash.pick}
+                onHover={slash.setActive}
               />
             </Composer>
           </div>
