@@ -37,45 +37,47 @@ export const TOOL_GROUPS: DesignToolGroup[] = [
     id: 'pointer',
     label: 'Pointer',
     tools: [
-      { id: 'select', label: 'Move', shortcut: 'V', Icon: CursorArrowRaysIcon },
-      { id: 'hand', label: 'Hand', shortcut: 'H', Icon: HandRaisedIcon }
+      { id: 'select', label: 'Move', shortcut: 'V', Icon: CursorGlyph },
+      { id: 'hand', label: 'Hand', shortcut: 'H', Icon: HandGlyph }
     ]
   },
   {
     id: 'frame',
     label: 'Frame',
-    tools: [{ id: 'frame', label: 'Frame', shortcut: 'F', Icon: Squares2X2Icon }]
+    tools: [{ id: 'frame', label: 'Frame', shortcut: 'F', Icon: FrameGlyph }]
   },
   {
     id: 'shape',
     label: 'Shape',
     tools: [
-      { id: 'design-node', label: 'Rectangle', shortcut: 'R', Icon: glyph('geo-rectangle') },
-      { id: 'geo:ellipse', label: 'Ellipse', shortcut: 'O', Icon: glyph('geo-ellipse') },
-      { id: 'line', label: 'Line', shortcut: 'L', Icon: glyph('tool-line') },
-      { id: 'arrow', label: 'Arrow', shortcut: 'Shift L', Icon: ArrowLongRightIcon },
-      { id: 'geo:triangle', label: 'Polygon', shortcut: '', Icon: glyph('geo-triangle') },
-      { id: 'geo:star', label: 'Star', shortcut: '', Icon: glyph('geo-star') }
+      { id: 'design-node', label: 'Rectangle', shortcut: 'R', Icon: RectangleGlyph },
+      { id: 'geo:ellipse', label: 'Ellipse', shortcut: 'O', Icon: EllipseGlyph },
+      { id: 'line', label: 'Line', shortcut: 'L', Icon: LineGlyph },
+      { id: 'arrow', label: 'Arrow', shortcut: 'Shift L', Icon: ArrowGlyph },
+      { id: 'geo:triangle', label: 'Triangle', shortcut: '', Icon: TriangleGlyph },
+      { id: 'geo:diamond', label: 'Diamond', shortcut: '', Icon: DiamondGlyph },
+      { id: 'geo:hexagon', label: 'Hexagon', shortcut: '', Icon: HexagonGlyph },
+      { id: 'geo:star', label: 'Star', shortcut: '', Icon: StarGlyph }
     ]
   },
   {
     id: 'pen',
     label: 'Pen',
     tools: [
-      { id: 'draw', label: 'Pencil', shortcut: 'Shift P', Icon: PencilIcon },
-      { id: 'highlight', label: 'Highlighter', shortcut: 'Shift H', Icon: glyph('tool-highlight') },
-      { id: 'eraser', label: 'Eraser', shortcut: 'E', Icon: glyph('tool-eraser') }
+      { id: 'draw', label: 'Pencil', shortcut: 'Shift P', Icon: PencilGlyph },
+      { id: 'highlight', label: 'Highlighter', shortcut: 'Shift H', Icon: HighlighterGlyph },
+      { id: 'eraser', label: 'Eraser', shortcut: 'E', Icon: EraserGlyph }
     ]
   },
   {
     id: 'text',
     label: 'Text',
-    tools: [{ id: 'text', label: 'Text', shortcut: 'T', Icon: glyph('tool-text') }]
+    tools: [{ id: 'text', label: 'Text', shortcut: 'T', Icon: TextGlyph }]
   },
   {
     id: 'note',
     label: 'Note',
-    tools: [{ id: 'note', label: 'Note', shortcut: 'N', Icon: glyph('tool-note') }]
+    tools: [{ id: 'note', label: 'Note', shortcut: 'N', Icon: NoteGlyph }]
   }
 ]
 
