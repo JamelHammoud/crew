@@ -213,6 +213,7 @@ app.whenReady().then(() => {
   ipcMain.handle('agents:create', (_event, input: NewAgent) => session.createAgent(input))
   ipcMain.handle('agents:remove', (_event, instanceId: string) => session.removeAgent(instanceId))
   ipcMain.handle('repo:status', () => session.repoStatus())
+  ipcMain.handle('repo:changes', () => session.repoChanges())
   ipcMain.handle('repo:pull', () => session.pullRepo())
   ipcMain.handle('repo:push', () => session.pushRepo())
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
