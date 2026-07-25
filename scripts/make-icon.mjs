@@ -16,6 +16,25 @@ const GAP = 28
 const GRID = TILE.size / 5
 const RULES = [-1.5, -0.5, 0.5, 1.5]
 
+// Both dev icons stand on the same blue paper. Only the mark flips with the
+// theme, the way the shipping pair does.
+const PAPER = {
+  tile: [
+    ['#0fc0fa', 1],
+    ['#1ea6fc', 1],
+    ['#1c72f8', 1]
+  ],
+  rim: [
+    ['#ffffff', 0.72],
+    ['#ffffff', 0.06],
+    ['#9adcff', 0.34]
+  ],
+  sheen: 0.18,
+  grid: ['#ffffff', 0.36],
+  glow: ['#8ceaff', 0.4],
+  grain: 0.05
+}
+
 const THEMES = {
   dark: {
     ink: '#ffffff',

@@ -43,7 +43,8 @@ export class PeerLink {
   readonly remote: SlotStreams
   state: RTCPeerConnectionState = 'new'
   private pc: RTCPeerConnection
-  private senders: Record<Slot, RTCRtpSender>
+  private slots: Record<Slot, RTCRtpTransceiver> | null = null
+  private wanted: SlotTracks = { mic: null, camera: null, screen: null }
   private polite: boolean
   private caller: boolean
   private send: (signal: HuddleSignal) => void
