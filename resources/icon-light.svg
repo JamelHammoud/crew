@@ -28,7 +28,6 @@
     </mask>
     <mask id="cut-2" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
       <rect x="0" y="0" width="1024" height="1024" fill="#ffffff" />
-
     </mask>
   </defs>
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" />
