@@ -235,8 +235,9 @@ export default function TasksPanel({
   }, [events])
 
   const q = query.trim().toLowerCase()
+  const titleOf = (thread: ThreadMeta) => relabelMentions(thread.title, thread.titleRefs, agents)
   const rowMatches = (row: Row) =>
-    row.thread.title.toLowerCase().includes(q) || row.thread.agentLabel.toLowerCase().includes(q)
+    titleOf(row.thread).toLowerCase().includes(q) || row.thread.agentLabel.toLowerCase().includes(q)
   const todoMatches = (todo: Todo) =>
     todo.text.toLowerCase().includes(q) ||
     (agents.find(a => a.id === todo.agentId)?.label.toLowerCase().includes(q) ?? false)
