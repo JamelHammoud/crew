@@ -59,6 +59,7 @@ Voice, video and screen share, started from the user popover menu. The host rela
 - A handshake that goes quiet is said again, a few times, until it lands. Only that first exchange ever repeats. Once the two ends agree, nothing renegotiates.
 - Joining never waits on a device. Someone with no microphone still gets into the call, muted, and is told what to fix.
 - Tiles are widescreen everywhere, and a tile owns its own shape. Wrapping one in something that sets the shape from outside is how they ended up as slivers.
+- Marks like the ring on whoever is talking are painted inside the box they mark, with `InsetRing`. Anything drawn around the outside is cropped the moment the box lands in a scroller or a card that clips, which is where the dock, the rail beside a shared screen, and the screen picker all put it.
 
 ## Syncing
 
