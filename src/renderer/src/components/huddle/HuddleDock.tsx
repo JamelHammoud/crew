@@ -1,4 +1,5 @@
 import { SignalIcon } from '@heroicons/react/16/solid'
+import type { PointerEvent } from 'react'
 import { huddleTitle } from '../../../../shared/huddle'
 import { useHuddle } from '../../state/huddle'
 import { formatClock } from '../time'

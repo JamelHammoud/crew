@@ -46,7 +46,7 @@ export default function HuddlePanel() {
         Object.entries(remote).map(([peerId, streams]) => (
           <AudioStream key={peerId} stream={streams.mic} />
         ))}
-      {joined && (expanded ? <HuddleStage /> : <HuddleDock {...dock} onGrab={dock.onGrab} />)}
+      {joined && (expanded ? <HuddleStage /> : <HuddleDock {...dock} />)}
       {!joined && <HuddleBanner />}
       {picking && <ScreenPicker />}
       <Problem />
