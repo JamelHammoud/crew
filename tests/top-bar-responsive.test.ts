@@ -28,7 +28,11 @@ afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
   vi.useRealTimers()
+  useCrew.setState({ members: [], agents: [], activePrompts: {} })
 })
+
+const follows = (first: Element, second: Element) =>
+  Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING)
 
 const setHeaderWidth = (width: number) => {
   const header = document.querySelector('header')!
