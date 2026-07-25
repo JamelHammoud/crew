@@ -152,6 +152,7 @@ export const useHuddle = create<HuddleState>((set, get) => {
     }
     if (connection === 'online' && get().joined) {
       const { peerId, micOn, cameraOn } = get()
+      set({ confirmed: false })
       sendHuddle({ type: 'huddle.join', peerId, muted: !micOn, camera: cameraOn })
       announce()
     }
