@@ -23,9 +23,8 @@ const TABS: Array<{ id: PanelTab; label: string }> = [
 ]
 
 export default function DesignLeftPanel() {
-  const editor = useDesignEditor()
+  const editor = useEditor()
   const [tab, setTab] = useState<PanelTab>('layers')
-  if (!editor) return null
   return (
     <aside
       aria-label="Design panel"
