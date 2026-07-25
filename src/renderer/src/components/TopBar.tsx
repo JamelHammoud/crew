@@ -11,6 +11,8 @@ import { MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'agents' | 'docs' | 'design'
 
+const COMPACT_WIDTH = 760
+
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'chat', label: 'Chat' },
   { id: 'agents', label: 'Crew' },
