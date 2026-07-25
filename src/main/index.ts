@@ -128,6 +128,7 @@ function createWindow(): void {
   win.on('enter-full-screen', syncWindowShape)
   win.on('leave-full-screen', syncWindowShape)
   installContextMenu(win)
+  installDisplayMedia(win.webContents.session)
   if (devUrl) {
     win.loadURL(devUrl)
   } else {

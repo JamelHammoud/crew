@@ -77,16 +77,8 @@ export default function Chat() {
   }, [agents, events, threads, selfId])
 
   useLayoutEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    if (!didInitialScroll.current) {
-      if (feed.length === 0) return
-      didInitialScroll.current = true
-      el.scrollTop = el.scrollHeight
-      return
-    }
-    if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [feed, steps, threadPrompts, pinnedRef])
+    follow(feed.length > 0)
+  }, [feed, steps, threadPrompts, follow])
 
   const threadStatus = (thread: ThreadMeta): { state: ThreadState; detail: string } => {
     const promptId = threadPrompts[thread.id]
