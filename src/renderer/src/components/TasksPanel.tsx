@@ -20,7 +20,7 @@ import { useAutoResize } from './useAutoResize'
 import useScrollEdges from './useScrollEdges'
 import { Popover } from './Popover'
 import { StateIcon } from './ThreadCard'
-import { describeStep, endPreview, lastEnd, threadState, type ThreadState } from './thread'
+import { describeStep, endPreview, lastEnd, stripMention, threadState, type ThreadState } from './thread'
 import Tooltip from './Tooltip'
 
 interface Row {
