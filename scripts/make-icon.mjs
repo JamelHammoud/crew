@@ -151,14 +151,17 @@ ${stops(mark)}
     </linearGradient>
 `
     : ''
-  const drawing = blueprint
+  const ruled = blueprint
     ? `  <g clip-path="url(#tile-clip)">
     <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" fill="url(#glow)" />
     <g fill="none" stroke="${grid[0]}" stroke-opacity="${grid[1]}" stroke-width="3">
 ${gridLines()}
     </g>
   </g>
-  <g fill="url(#mark)">
+`
+    : ''
+  const drawing = blueprint
+    ? `  <g fill="url(#mark)">
 ${discs()}
   </g>
   <g fill="url(#gloss)">
