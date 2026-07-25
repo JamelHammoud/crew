@@ -14,6 +14,7 @@ const RADIUS = 130
 const STEP = 186
 const GAP = 28
 const GRID = TILE.size / 4
+const RULE = 5
 const RULES = [-1, 0, 1]
 
 // Both dev icons stand on the same blue paper. Only the mark flips with the
