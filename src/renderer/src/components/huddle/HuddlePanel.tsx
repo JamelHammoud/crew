@@ -38,7 +38,7 @@ export default function HuddlePanel() {
   const expanded = useHuddle(s => s.expanded)
   const picking = useHuddle(s => s.picking)
   const remote = useHuddle(s => s.remote)
-  const dock = useDockPosition(DOCK_SIZE)
+  const dock = useDockPosition()
 
   return (
     <>
