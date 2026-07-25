@@ -1279,6 +1279,13 @@ export class CrewSession {
     if (typeof change.muted === 'boolean') peer.muted = change.muted
     if (typeof change.camera === 'boolean') peer.camera = change.camera
     if (typeof change.sharing === 'boolean') peer.sharing = change.sharing
+    // Only one screen at a time, and the newest one wins, so nobody has to ask
+    // the last person to stop before they can start.
+    if (peer.sharing) {
+      for (const other of this.huddle.values()) {
+        if (other !== peer) other.sharing = false
+      }
+    }
     this.broadcastHuddle()
   }
 
