@@ -1,9 +1,10 @@
-import { PencilIcon, StopIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { PencilIcon, PhotoIcon, StopIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
 import { visibleSettingFields } from '../../../shared/llm'
 import AgentIcon from './AgentIcon'
 import Pill from './Pill'
+import { MenuItem, Popover } from './Popover'
 import Select from './Select'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
@@ -15,6 +16,7 @@ export default function AgentCard({
   onStop,
   onSetting,
   onRename,
+  onAvatar,
   onRemove
 }: {
   agent: PooledAgent
@@ -22,6 +24,7 @@ export default function AgentCard({
   onStop?: () => void
   onSetting?: (key: string, value: string) => void
   onRename?: (label: string) => void
+  onAvatar?: (file: File | null) => void
   onRemove?: () => void
 }) {
   const status = threadCount > 0 ? 'busy' : agent.status
