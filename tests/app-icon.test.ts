@@ -180,14 +180,15 @@ describe('dev blueprint', () => {
     }
   })
 
-  it('leaves the middle disc in the middle of a square, never on a rule', () => {
-    const centre = 100 + 824 / 2
-
+  it('divides the tile into four squares each way, one rule through the middle', () => {
     for (const name of BLUEPRINT) {
       const vertical = [...svg(name).matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match =>
         Number(match[1])
       )
-      expect(vertical).not.toContain(centre)
+
+      expect(vertical).toHaveLength(3)
+      expect(vertical[1]).toBe(100 + 824 / 2)
+      for (const [index, at] of vertical.entries()) expect(at).toBe(100 + (824 / 4) * (index + 1))
     }
   })
 
