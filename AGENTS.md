@@ -54,7 +54,10 @@ Voice, video and screen share, started from the user popover menu. The host rela
 - A call is never written down. It rides in the session snapshot and in `huddle.*` messages, never in the event log, so nothing about it is committed or replayed. `src/server/session.ts` holds it in memory, keyed by connection, because two windows on one folder are one member but two people in the call.
 - Every connection has the same three slots, negotiated once at the start and in the same order: microphone, camera, screen. Turning a camera on swaps a track into a slot that already exists. Renegotiating mid-call is what makes calls drop, so nothing after the first offer does it.
 - Glare is settled by comparing peer ids, the standard polite and impolite pair. Exactly one side of every pair gives way, and only the impolite side restarts a connection that failed.
+- Signals are handled one at a time, in order, and an address that turns up before the description it belongs to is held rather than handed over. Two of them in flight together, or one offered early, is how a connection ends up with nowhere to send anything and sits there ringing forever. `tests/helpers/fake-rtc.ts` is strict about this so the mistake cannot come back.
+- A handshake that goes quiet is said again, a few times, until it lands. Only that first exchange ever repeats. Once the two ends agree, nothing renegotiates.
 - Joining never waits on a device. Someone with no microphone still gets into the call, muted, and is told what to fix.
+- Tiles are widescreen everywhere, and a tile owns its own shape. Wrapping one in something that sets the shape from outside is how they ended up as slivers.
 
 ## Syncing
 
