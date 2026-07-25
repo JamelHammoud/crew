@@ -21,6 +21,7 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
+import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import { DesignNodeUtil } from '../design/DesignNodeUtil'
 import { DesignFrameUtil } from '../design/FrameUtil'
