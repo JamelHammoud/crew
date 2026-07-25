@@ -699,7 +699,39 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1785013794893,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 13,
+            "severity": "normal",
+            "resetsAt": 1785014999173,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 3,
+            "severity": "normal",
+            "resetsAt": 1785535199173,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          }
+        ],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max"
+      }
     }
   ],
   "removedAgents": [
