@@ -183,15 +183,23 @@ describe('playing a sound', () => {
 
   const TABS = ['tab.chat', 'tab.agents', 'tab.docs', 'tab.design'] as const
 
-  const eachTab = (): Map<string, { at: number[]; hz: number[] }> => {
-    const heard = new Map<string, { at: number[]; hz: number[] }>()
+  type Heard = { at: number[]; hz: number[]; scrapes: number[]; root: number }
+
+  const eachTab = (): Map<string, Heard> => {
+    const heard = new Map<string, Heard>()
     for (const tab of TABS) {
       started.length = 0
-      pitched.length = 0
+      landed.length = 0
+      filters = []
       clock += 500
       playSound(tab)
       expect(started.length).toBeGreaterThan(0)
-      heard.set(tab, { at: [...started], hz: pitched.filter((_, i) => i % 3 === 0) })
+      heard.set(tab, {
+        at: [...started],
+        hz: [...landed],
+        scrapes: filters.filter(f => f.type === 'bandpass').map(f => f.hz[0]),
+        root: Math.min(...landed)
+      })
     }
     return heard
   }
@@ -202,17 +210,20 @@ describe('playing a sound', () => {
   })
 
   it('keeps the tabs level with each other, none higher up the row than the rest', () => {
-    for (const sound of eachTab().values()) expect(sound.hz).toContain(1760)
+    const roots = [...eachTab().values()].map(sound => sound.root)
+    expect(Math.max(...roots) / Math.min(...roots)).toBeLessThan(1.3)
   })
 
-  it('tells the tabs apart by their shape, not by their pitch', () => {
-    const contours = [...eachTab().values()].map(sound =>
-      sound.hz
-        .slice(1)
-        .map((hz, i) => Math.sign(hz - sound.hz[i]))
-        .join(',')
-    )
-    expect(new Set(contours).size).toBe(4)
+  it('strikes something on every tab rather than sounding a bare tone', () => {
+    for (const sound of eachTab().values()) expect(sound.scrapes.length).toBeGreaterThan(0)
+  })
+
+  it('makes each tab its own material, not one note replayed', () => {
+    const heard = [...eachTab().values()]
+    const grain = heard.map(sound => sound.scrapes.join(','))
+    const bodies = heard.map(sound => sound.hz.map(hz => (hz / sound.root).toFixed(2)).join(','))
+    expect(new Set(grain).size).toBe(4)
+    expect(new Set(bodies).size).toBe(4)
   })
 
   it('lets you cross the whole row without a note being swallowed', () => {
