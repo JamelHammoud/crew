@@ -34,6 +34,9 @@ const stack = (source: string) => {
   )
 }
 
+const layer = (source: string, id: string) =>
+  source.match(new RegExp(`<g fill="url\\(#${id}\\)"[^]*?</g>`))?.[0] ?? ''
+
 const cuts = (source: string, depth: number) => {
   const mask = source.match(new RegExp(`<mask id="cut-${depth}"[^]*?</mask>`))?.[0] ?? ''
   return [...mask.matchAll(/<circle cx="(\d+)" cy="\d+" r="(\d+)" fill="#000000"/g)].map(match => ({
