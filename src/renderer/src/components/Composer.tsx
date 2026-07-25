@@ -96,6 +96,7 @@ export default function Composer({
               if (highlightRef.current) highlightRef.current.scrollTop = event.currentTarget.scrollTop
             }}
             rows={2}
+            spellCheck={false}
             placeholder={placeholder}
             className="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
           />
