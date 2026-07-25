@@ -46,12 +46,7 @@ export default function TopBar({
   const joinLink = useCrew(s => s.joinLink)
   const selfName = useCrew(s => s.selfName)
   const leave = useCrew(s => s.leave)
-  const reviewCount = useCrew(
-    s =>
-      Object.values(s.threads).filter(
-        t => t.status === 'open' && !s.threadPrompts[t.id] && (s.queues[t.id]?.length ?? 0) === 0
-      ).length
-  )
+  const waiting = useCrew(reviewCount)
   const huddleJoined = useHuddle(s => s.joined)
   const huddleSize = useHuddle(s => s.room.peers.length)
   const [menuOpen, setMenuOpen] = useState(false)
