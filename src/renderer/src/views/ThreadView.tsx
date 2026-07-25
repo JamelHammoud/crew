@@ -10,6 +10,7 @@ import { MemberName } from '../components/Mention'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import Pill from '../components/Pill'
+import PlanPanel from '../components/PlanPanel'
 import { usePresence } from '../components/presence'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
@@ -134,7 +135,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       : { label: thread.status === 'done' ? 'Reopen' : 'Unarchive', to: 'open' as const }
 
   return (
-    <div className="h-full relative">
+    <div className="h-full flex">
+      <div className="flex-1 min-w-0 relative">
       <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
         <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
           <ThreadItems items={items} />
