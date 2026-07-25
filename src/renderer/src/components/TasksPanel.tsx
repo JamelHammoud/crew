@@ -269,7 +269,7 @@ export default function TasksPanel({
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-base text-fg truncate">
-            {stripMention(row.thread.title, row.thread.agentLabel) || row.thread.title}
+            {stripMention(titleOf(row.thread), row.thread.agentLabel) || titleOf(row.thread)}
           </span>
           <span className="block text-sm text-fg-muted truncate">
             {agent ? (
