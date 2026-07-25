@@ -166,3 +166,53 @@ export function mentionsIn(
   }
   return ids
 }
+
+// What a written mention pointed at: the agent's id, plus the name it went out
+// under. The id is what the mention means, the name is only how it was spelled.
+export interface AgentMentionRef {
+  id: string
+  label: string
+}
+
+export function agentMentionRefsIn(
+  text: string,
+  agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>
+): AgentMentionRef[] {
+  const labels = new Map(agents.map(agent => [agent.id, agent.label]))
+  return mentionsIn(text, agents).map(id => ({ id, label: labels.get(id)! }))
+}
+
+function replaceMention(text: string, from: string, to: string): string {
+  const needle = from.toLowerCase()
+  let out = ''
+  let rest = text
+  for (;;) {
+    const at = rest.toLowerCase().indexOf(`@${needle}`)
+    if (at === -1) return out + rest
+    const end = at + needle.length + 1
+    if (/[\w-]/.test(rest[end] ?? '')) {
+      out += rest.slice(0, end)
+      rest = rest.slice(end)
+      continue
+    }
+    out += `${rest.slice(0, at)}@${to}`
+    rest = rest.slice(end)
+  }
+}
+
+// Brings written mentions up to date. A mention still means the agent it was
+// aimed at, so a rename rewrites every "@old name" that pointed there.
+export function relabelMentions(
+  text: string,
+  refs: AgentMentionRef[] | undefined,
+  agents: Array<Pick<PooledAgent, 'id' | 'label'>>
+): string {
+  if (!refs?.length) return text
+  let out = text
+  for (const ref of refs) {
+    const agent = agents.find(a => a.id === ref.id)
+    if (!agent || agent.label === ref.label) continue
+    out = replaceMention(out, ref.label, agent.label)
+  }
+  return out
+}
