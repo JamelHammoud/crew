@@ -186,6 +186,10 @@ export class CrewSession {
   private docs = new Map<string, DocPage>()
   private designs = new Map<string, DesignBoard>()
   private designCursorTimers = new Map<string, NodeJS.Timeout[]>()
+  // One huddle per session, keyed by the connection in it: two windows on the
+  // same folder are the same member but two separate people in the call.
+  private huddle = new Map<WebSocket, HuddlePeer>()
+  private huddleStartedAt: number | null = null
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
@@ -388,7 +392,8 @@ export class CrewSession {
           .map(thread => [thread.id, this.queueItems(thread)])
       ),
       todos: [...this.todos.values()],
-      boards: this.boardList()
+      boards: this.boardList(),
+      huddle: this.huddleRoom()
     }
   }
 
