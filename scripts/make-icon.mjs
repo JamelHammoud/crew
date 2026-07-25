@@ -191,10 +191,14 @@ function raster(source, size, out) {
 
 const dark = svg(THEMES.dark)
 const light = svg(THEMES.light)
+const devDark = svg(THEMES.dark, true)
+const devLight = svg(THEMES.light, true)
 
 mkdirSync(resources, { recursive: true })
 writeFileSync(path.join(resources, 'icon.svg'), dark)
 writeFileSync(path.join(resources, 'icon-light.svg'), light)
+writeFileSync(path.join(resources, 'icon-dev.svg'), devDark)
+writeFileSync(path.join(resources, 'icon-dev-light.svg'), devLight)
 writeFileSync(path.join(resources, 'crew-logo.svg'), mark())
 
 writeFileSync(
