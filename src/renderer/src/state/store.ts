@@ -16,6 +16,7 @@ export interface ThreadMeta {
   agentId: string
   agentLabel: string
   title: string
+  titleRefs?: AgentMentionRef[]
   createdBy: string
   status: ThreadStatus
   mode: ThreadMode
