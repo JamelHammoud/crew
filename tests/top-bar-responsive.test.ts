@@ -1,11 +1,44 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
 
-afterEach(cleanup)
+let notify: (() => void) | null = null
+
+beforeEach(() => {
+  notify = null
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      constructor(callback: () => void) {
+        notify = callback
+      }
+      observe() {}
+      disconnect() {
+        notify = null
+      }
+    }
+  )
+})
+
+afterEach(() => {
+  cleanup()
+  vi.unstubAllGlobals()
+  vi.useRealTimers()
+})
+
+const setHeaderWidth = (width: number) => {
+  const header = document.querySelector('header')!
+  Object.defineProperty(header, 'clientWidth', { value: width, configurable: true })
+  act(() => notify?.())
+}
+
+const hover = (element: Element) => {
+  fireEvent.mouseEnter(element.parentElement!)
+  act(() => vi.advanceTimersByTime(400))
+}
 
 describe('responsive top bar', () => {
   it('keeps every tab icon available when labels collapse', () => {
