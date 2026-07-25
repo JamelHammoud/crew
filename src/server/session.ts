@@ -1857,6 +1857,10 @@ export class CrewSession {
       existing.fields = llm.fields
       existing.steerable = llm.steerable === true
       existing.settings = resolveSettings(llm.fields, existing.settings)
+      // The owner is whoever is running it now: the same person can rejoin
+      // under a different name, and the agent goes with them.
+      existing.ownerId = member.id
+      existing.ownerName = member.name
       meta?.agentIds.push(id)
       this.emit({ id: randomUUID(), ts: Date.now(), kind: 'agent.online', agentId: id, label: existing.label })
       this.runThreadsOf(existing)
