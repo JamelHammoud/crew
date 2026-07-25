@@ -1,0 +1,85 @@
+import type { Editor } from 'tldraw'
+import {
+  activateTool,
+  addFrame,
+  FRAME_PRESETS,
+  type DesignTool,
+  type DesignToolGroup
+} from '../design/tools'
+import { Popover } from './Popover'
+
+function Row({
+  tool,
+  active,
+  onPick
+}: {
+  tool: DesignTool
+  active: boolean
+  onPick: () => void
+}) {
+  return (
+    <button
+      onClick={onPick}
+      aria-pressed={active}
+      className={`w-full flex items-center gap-2.5 pl-3 pr-2.5 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors ${
+        active ? 'text-fg bg-fg/[0.08]' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
+      }`}
+    >
+      <tool.Icon className="w-4 h-4 shrink-0" />
+      <span className="flex-1">{tool.label}</span>
+      {tool.shortcut && <span className="text-xs text-fg-faint">{tool.shortcut}</span>}
+    </button>
+  )
+}
+
+export default function DesignToolMenu({
+  group,
+  editor,
+  open,
+  current,
+  onClose,
+  onPick
+}: {
+  group: DesignToolGroup
+  editor: Editor
+  open: boolean
+  current: string
+  onClose: () => void
+  onPick: (toolId: string) => void
+}) {
+  const pick = (tool: DesignTool) => {
+    activateTool(editor, tool.id)
+    onPick(tool.id)
+    onClose()
+  }
+
+  return (
+    <Popover open={open} onClose={onClose} side="top" align="start" className="min-w-48">
+      <div role="menu" aria-label={group.label}>
+        {group.tools.map(tool => (
+          <Row key={tool.id} tool={tool} active={tool.id === current} onPick={() => pick(tool)} />
+        ))}
+        {group.id === 'frame' && (
+          <>
+            <div className="h-px bg-fg/10 my-1 mx-2" />
+            {FRAME_PRESETS.map(preset => (
+              <button
+                key={preset.label}
+                onClick={() => {
+                  addFrame(editor, preset)
+                  onClose()
+                }}
+                className="w-full flex items-center gap-2.5 pl-3 pr-2.5 py-2 rounded-xl text-sm text-left whitespace-nowrap text-fg-secondary transition-colors hover:text-fg hover:bg-fg/5"
+              >
+                <span className="flex-1">{preset.label}</span>
+                <span className="text-xs text-fg-faint tabular-nums">
+                  {preset.w} × {preset.h}
+                </span>
+              </button>
+            ))}
+          </>
+        )}
+      </div>
+    </Popover>
+  )
+}
