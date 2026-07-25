@@ -13,7 +13,7 @@ export type Tab = 'chat' | 'agents' | 'docs' | 'design'
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'chat', label: 'Chat' },
-  { id: 'agents', label: 'Space' },
+  { id: 'agents', label: 'Crew' },
   { id: 'docs', label: 'Docs' },
   { id: 'design', label: 'Design' }
 ]
