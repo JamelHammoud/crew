@@ -22,7 +22,7 @@ import Pill from './Pill'
 import PresenceStack from './PresenceStack'
 import TabIcon from './TabIcon'
 import Tooltip from './Tooltip'
-import { MenuItem, Popover } from './Popover'
+import { MenuDivider, MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'agents' | 'docs' | 'design'
 
