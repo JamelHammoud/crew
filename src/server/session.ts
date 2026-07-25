@@ -575,7 +575,9 @@ export class CrewSession {
       })
       return
     }
-    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments, { boardId, mode })
+    for (const id of ids) {
+      this.startThread(member, this.agents.get(id)!, trimmed, attachments, { boardId, mode, mentions: ids })
+    }
   }
 
   private soloAgent(): AgentState | null {
