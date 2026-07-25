@@ -81,7 +81,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
   const uniform = props.radius.every(part => part === props.radius[0])
 
   return (
-    <div className="design-style-panel glass rounded-2xl w-64 m-3 p-3 pointer-events-auto animate-pop flex flex-col gap-4 max-h-[74vh] overflow-y-auto">
+    <div className="design-style-panel flex flex-col gap-4 p-3">
       <input
         value={props.name}
         onChange={e => patch({ name: e.target.value })}
