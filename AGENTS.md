@@ -32,7 +32,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
 - Icons come from `@heroicons/react`. Never hand-roll SVG icons.
 - Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin.
-- Reusable primitives in `src/renderer/src/components`: `Avatar`, `AgentIcon`, `Pill`, `Spinner`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`.
+- Reusable primitives in `src/renderer/src/components`: `Avatar`, `AvatarStack`, `AgentIcon`, `Pill`, `Spinner`, `InsetRing`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`.
 - Agents always render `AgentIcon` (a deterministic generated pet seeded by the agent id), never an initial `Avatar`. Humans keep `Avatar`.
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
@@ -59,6 +59,7 @@ Voice, video and screen share, started from the user popover menu. The host rela
 - A handshake that goes quiet is said again, a few times, until it lands. Only that first exchange ever repeats. Once the two ends agree, nothing renegotiates.
 - Joining never waits on a device. Someone with no microphone still gets into the call, muted, and is told what to fix.
 - Tiles are widescreen everywhere, and a tile owns its own shape. Wrapping one in something that sets the shape from outside is how they ended up as slivers.
+- Marks like the ring on whoever is talking are painted inside the box they mark, with `InsetRing`. Anything drawn around the outside is cropped the moment the box lands in a scroller or a card that clips, which is where the dock, the rail beside a shared screen, and the screen picker all put it.
 
 ## Syncing
 
