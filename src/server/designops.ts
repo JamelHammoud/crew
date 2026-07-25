@@ -360,6 +360,11 @@ export function boardSummary(id: string, name: string, document: DesignDocument 
       const shape = record as Partial<ShapeRecord>
       if (shape.typeName !== 'shape') continue
       const props = (shape.props ?? {}) as Record<string, unknown>
+      const parent = shape.parentId?.startsWith('shape:') ? shape.parentId : undefined
+      if (shape.type === 'design-node') {
+        shapes.push({ id: shape.id, kind: 'node', x: shape.x, y: shape.y, parentId: parent, ...props })
+        continue
+      }
       shapes.push({
         id: shape.id,
         kind: shape.type === 'geo' ? props.geo : shape.type,
