@@ -55,6 +55,7 @@ export type ClientMessage =
   | { type: 'chat.react'; targetId: string; emoji: ReactionEmoji }
   | { type: 'thread.archive'; threadId: string }
   | { type: 'thread.status'; threadId: string; status: ThreadStatus }
+  | { type: 'plan.implement'; threadId: string }
   | { type: 'todo.add'; text: string; agentId?: string }
   | { type: 'todo.edit'; todoId: string; text: string; agentId?: string }
   | { type: 'todo.remove'; todoId: string }
