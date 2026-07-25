@@ -216,7 +216,7 @@ export function linkifyFiles(root: HTMLElement): string[] {
     if (changed.length === 0) continue
     const fragment = doc.createDocumentFragment()
     for (const token of tokens) {
-      if (token.kind === 'text' || !changed.includes(token)) {
+      if (token.kind !== 'file' || !changed.includes(token)) {
         fragment.appendChild(doc.createTextNode(token.text))
         continue
       }
