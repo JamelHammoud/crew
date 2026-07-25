@@ -10412,3 +10412,9 @@
 {"id":"4df74519-48dd-463d-bd9b-5424d375af55","ts":1785012249659,"kind":"agent.online","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
 {"id":"a83f9ff2-1033-4897-a85a-cbc173635bf7","ts":1785012249659,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
 {"id":"c5a47c7d-5bee-4cb6-a0f2-8d5dbc4858e3","ts":1785012249659,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"efa7c7c6-13cb-49b1-b845-d0384e7749f7","ts":1785012281062,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"627ef98d-50c1-44f0-b9d6-d803a68fb3eb","ts":1785012281062,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"37182c4a-ff38-4816-bb81-fa70a41cf309","ts":1785012281062,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"a59748c1-a8ad-475f-a440-4572f7d69ff0","ts":1785012281063,"kind":"agent.online","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
+{"id":"d136b02a-7fc6-4841-b36a-894da60a1ca7","ts":1785012281063,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"a25e1638-752b-4f2d-92be-c00511070f04","ts":1785012281063,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
