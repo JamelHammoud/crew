@@ -1,6 +1,6 @@
 import { ArrowRightStartOnRectangleIcon, CheckIcon, LinkIcon, MoonIcon, SunIcon } from '@heroicons/react/16/solid'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useCrew } from '../state/store'
 import { applyTheme, useTheme } from '../state/theme'
 import Avatar from './Avatar'
