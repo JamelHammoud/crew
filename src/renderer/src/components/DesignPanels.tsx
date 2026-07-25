@@ -11,7 +11,7 @@ import {
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useCanRedo, useCanUndo, useEditor, useValue } from 'tldraw'
 import { useCrew } from '../state/store'
-import { Popover } from './Popover'
+import { MenuDivider, Popover } from './Popover'
 import Tooltip from './Tooltip'
 
 export const DesignBoardContext = createContext<{ current: string; select: (id: string) => void }>({

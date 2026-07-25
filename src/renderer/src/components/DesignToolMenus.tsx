@@ -6,7 +6,7 @@ import {
   type DesignTool,
   type DesignToolGroup
 } from '../design/tools'
-import { Popover } from './Popover'
+import { MenuDivider, Popover } from './Popover'
 
 function Row({
   tool,

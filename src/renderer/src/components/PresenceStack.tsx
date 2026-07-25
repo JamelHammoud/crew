@@ -5,7 +5,7 @@ import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
 import FaceStack from './FaceStack'
-import { Popover } from './Popover'
+import { MenuDivider, Popover } from './Popover'
 import Tooltip from './Tooltip'
 
 const FACE = 40
