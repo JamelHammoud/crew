@@ -77,6 +77,20 @@ export class GitSync {
   // when the code everyone is looking at is the same code.
   private async sync(message: string): Promise<void> {
     if (!(await this.usable())) return
+    const release = await takeSyncLock(this.repoPath)
+    if (!release) return
+    try {
+      await this.syncLocked(message)
+    } finally {
+      await release()
+    }
+  }
+
+  private async syncLocked(message: string): Promise<void> {
+    if (!(await this.settle())) {
+      this.onLog('this folder is stuck part way through a git operation, will retry')
+      return
+    }
     const commit = await this.commitWorkingTree(message)
     if (!commit.ok) {
       this.onLog(`commit failed: ${commit.detail}`)
