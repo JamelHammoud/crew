@@ -439,8 +439,13 @@ export class GitSync {
       const conflicts = await runGit(['diff', '--name-only', '--diff-filter=U'], this.repoPath)
       const files = conflicts.stdout.trim().split('\n').filter(Boolean)
       if (files.length === 0) {
-        // rebase stopped without conflicts (e.g. a commit became empty), or the
-        // pull failed for a non-rebase reason and there is nothing to continue
+        // A rebase stopped with nothing conflicting still has commits left to
+        // replay. Carry on with them; skipping here would throw one away.
+        const cont = await runGit(['-c', 'core.editor=true', 'rebase', '--continue'], this.repoPath)
+        if (cont.code === 0) return true
+        const output = `${cont.stderr}${cont.stdout}`
+        if (!/no changes|did you forget|nothing to commit/i.test(output)) return false
+        // the commit became empty once replayed, so there is nothing to keep
         const skip = await runGit(['rebase', '--skip'], this.repoPath)
         if (skip.code === 0) return true
         const recheck = await runGit(['diff', '--name-only', '--diff-filter=U'], this.repoPath)
