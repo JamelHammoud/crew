@@ -1872,6 +1872,23 @@ export class CrewSession {
     this.persistMeta()
   }
 
+  // Only the owner sets a photo on their own agent. Taking the photo off puts
+  // back the generated icon, which comes from the agent id and never changes.
+  private handleAvatar(member: Member, id: string, image: OutgoingAttachment | null): void {
+    const agent = this.agents.get(id)
+    if (!agent || agent.ownerId !== member.id) return
+    if (image) {
+      const saved = this.saveAttachment(image.mime, image.name, Buffer.from(image.data, 'base64'))
+      if (!saved) return
+      agent.avatar = saved.file
+    } else {
+      if (!agent.avatar) return
+      delete agent.avatar
+    }
+    this.broadcast({ type: 'agent.avatar', agentId: id, file: agent.avatar ?? null })
+    this.persistMeta()
+  }
+
   // Anyone can remove any agent: the pool is shared, and a stale agent in it is
   // everyone's problem.
   private handleRemove(id: string): void {
