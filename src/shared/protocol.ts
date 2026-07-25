@@ -2,6 +2,7 @@ import type { Attachment, OutgoingAttachment } from './attachments'
 import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
 import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
+import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 import type { ReactionEmoji } from './reactions'
 
