@@ -15,8 +15,12 @@ import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
 export default function ChatMessage({ item, editable = false }: { item: ThreadItem; editable?: boolean }) {
-  const presence = usePresence(item.author)
-  const agentSeed = useCrew(s => (item.self ? undefined : s.agents.find(a => a.label === item.author)?.id))
+  const presence = usePresence(item.author, item.authorId)
+  const agentSeed = useCrew(s => {
+    if (item.self) return undefined
+    const agent = s.agents.find(a => (item.authorId ? a.id === item.authorId : a.label === item.author))
+    return agent?.id
+  })
   const deleteMessage = useCrew(s => s.deleteMessage)
   const editMessage = useCrew(s => s.editMessage)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
@@ -57,7 +61,7 @@ export default function ChatMessage({ item, editable = false }: { item: ThreadIt
       {agentSeed ? <AgentIcon seed={agentSeed} presence={presence} /> : <Avatar name={item.author} presence={presence} />}
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
-          <MemberName name={item.author}>
+          <MemberName id={item.authorId} name={item.author}>
             <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
               {item.author}
             </span>
