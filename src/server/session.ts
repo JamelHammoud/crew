@@ -23,9 +23,11 @@ import {
   SYSTEM_AUTHOR_NAME,
   trimEvents,
   type SessionEvent,
+  type ThreadMode,
   type ThreadStatus,
   type Todo
 } from '../shared/events'
+import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
 import {
   agentId,
   resolveSettings,
@@ -111,6 +113,8 @@ interface Thread {
   title: string
   createdBy: string
   status: ThreadStatus
+  mode: ThreadMode
+  plan?: string
   queue: QueuedPrompt[]
   running: string | null
   boardId?: string
@@ -234,10 +238,19 @@ export class CrewSession {
           title: event.title,
           createdBy: event.byName,
           status: 'open',
+          mode: event.mode ?? 'build',
           queue: [],
           running: null,
           boardId: event.boardId
         })
+      }
+      if (event.kind === 'thread.plan') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.plan = event.text
+      }
+      if (event.kind === 'thread.implement') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.mode = 'build'
       }
       if (event.kind === 'thread.archived') {
         const thread = this.threads.get(event.threadId)
