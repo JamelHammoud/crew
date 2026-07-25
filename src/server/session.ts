@@ -568,6 +568,7 @@ export class CrewSession {
         authorName: member.name,
         text: trimmed,
         mentions,
+        mentionRefs: this.agentRefs(mentions),
         docMentions: this.docMentionRefs(trimmed),
         attachments
       })
