@@ -1841,7 +1841,7 @@ export class CrewSession {
   }
 
   private registerAgent(ws: WebSocket, member: Member, llm: RegisteredLlm): void {
-    const id = agentId(member.name, llm.instanceId)
+    const id = llm.id ?? agentId(member.name, llm.instanceId)
     if (this.removedAgents.has(id)) {
       this.send(ws, { type: 'agent.removed', agentId: id })
       return
