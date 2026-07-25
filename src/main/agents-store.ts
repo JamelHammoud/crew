@@ -26,6 +26,18 @@ export class AgentStore {
     return []
   }
 
+  // Definitions saved before agents carried an id get one now, minted from the
+  // name in use. After this the id is fixed, so hosting under a different name
+  // brings the same agents back instead of a second set of them.
+  identify(ownerName: string): AgentDef[] {
+    const defs = this.load()
+    const missing = defs.filter(def => !def.id)
+    if (!missing.length) return defs
+    for (const def of missing) def.id = agentId(ownerName, def.instanceId)
+    this.save(defs)
+    return defs
+  }
+
   private quarantine(): void {
     try {
       fs.renameSync(this.file, `${this.file}.corrupt-${Date.now()}`)
