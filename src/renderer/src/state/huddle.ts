@@ -93,6 +93,7 @@ export const useHuddle = create<HuddleState>((set, get) => {
     set({
       joined: false,
       joining: false,
+      confirmed: false,
       micOn: false,
       cameraOn: false,
       sharing: false,
