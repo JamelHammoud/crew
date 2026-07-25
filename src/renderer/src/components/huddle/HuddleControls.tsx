@@ -57,10 +57,16 @@ export default function HuddleControls() {
   const setPicking = useHuddle(s => s.setPicking)
   const setExpanded = useHuddle(s => s.setExpanded)
   const leave = useHuddle(s => s.leave)
+  const talking = useHuddle(s => s.speaking.includes(s.peerId))
 
   return (
     <div className="flex items-center gap-1.5">
-      <Control label={micOn ? 'Mute' : 'Unmute'} active={micOn} onClick={() => void toggleMic()}>
+      <Control
+        label={micOn ? 'Mute' : 'Unmute'}
+        active={micOn}
+        lit={micOn && talking}
+        onClick={() => void toggleMic()}
+      >
         <MicrophoneIcon className="w-[18px] h-[18px]" />
       </Control>
       <Control
