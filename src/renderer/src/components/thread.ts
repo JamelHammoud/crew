@@ -1,7 +1,7 @@
 import type { Attachment } from '../../../shared/attachments'
 import type { DocMentionRef } from '../../../shared/docs'
 import type { SessionEvent } from '../../../shared/events'
-import type { AgentStep, FileChange } from '../../../shared/llm'
+import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../../shared/llm'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
@@ -48,6 +48,7 @@ export interface ThreadItem {
   ts: number
   kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool'
   author: string
+  authorId?: string
   self: boolean
   text: string
   streaming: boolean
