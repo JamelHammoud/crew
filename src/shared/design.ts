@@ -222,7 +222,7 @@ export const DESIGN_NODE_GUIDE = [
   `1. Space on a scale of 4. Use 4, 8, 12, 16, 20, 24, 32, 48, 64. Never invent 13 or 27.`,
   `2. Pick one type ramp and stay in it. For example 32/600 display, 20/600 title, 14/400 body, 12/500 label, 11/500 caption. Body text is never bold. Long text sits at lineHeight 1.5, headings at 1.2.`,
   `3. Build depth with value, not with borders. Layer a slightly lighter surface on a darker one. Use one hairline border at most, around #ffffff14 on dark and #00000014 on light.`,
-  `4. One accent color. Everything else is a neutral. If you use accent on a fill, do not also use it on text next to it.`,
+  `4. Use crew's palette. Surfaces ${CREW_SWATCHES.slice(0, 4).map(s => s.hex).join(', ')}. Text #ffffff, #b3b3b3, #707070, #4a4a4a. Hairlines #ffffff14. White is the only action color, so a primary button is a white fill with #141414 text. #4ade80 and #f87171 are status only. No purple, no pink, no invented hue.`,
   `5. Body text needs real contrast against its background. Secondary text is dimmer, never smaller than 12.`,
   `6. Corner radius is consistent across a screen. Nested radius is smaller than its parent, roughly parent radius minus the padding.`,
   `7. Shadows are soft, low opacity, and pushed down. y is positive, blur is large, spread is negative or zero. No hard black shadows.`,
