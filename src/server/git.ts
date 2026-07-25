@@ -301,15 +301,8 @@ export class GitSync {
     return kept
   }
 
-  private async rebaseActive(): Promise<boolean> {
-    const paths = await Promise.all([
-      runGit(['rev-parse', '--git-path', 'rebase-merge'], this.repoPath),
-      runGit(['rev-parse', '--git-path', 'rebase-apply'], this.repoPath)
-    ])
-    return paths.some(result => {
-      if (result.code !== 0 || !result.stdout.trim()) return false
-      return existsSync(path.resolve(this.repoPath, result.stdout.trim()))
-    })
+  private rebaseActive(): Promise<boolean> {
+    return rebaseActive(this.repoPath)
   }
 
   private async readStatus(): Promise<RepoStatus> {
