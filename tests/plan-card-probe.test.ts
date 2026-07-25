@@ -101,6 +101,39 @@ describe('plans in the app', () => {
     expect(screen.getAllByText('Ship it').length).toBeGreaterThan(0)
   })
 
+  it('fades the plan text only once it is scrolled', () => {
+    useCrew.setState({
+      ...online,
+      events,
+      openThreadId: 'thread-1',
+      threads: {
+        'thread-1': {
+          id: 'thread-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          title: '@Claude rename the tabs',
+          createdBy: 'ALI',
+          status: 'open',
+          mode: 'plan',
+          plan: PLAN
+        }
+      }
+    })
+
+    const { container } = render(createElement(App))
+    const scroller = screen.getByText('Ship it').closest('.overflow-y-auto') as HTMLElement
+    const fade = scroller.parentElement?.querySelector('.bg-gradient-to-b') as HTMLElement
+    expect(fade.className).toContain('opacity-0')
+
+    Object.defineProperty(scroller, 'scrollHeight', { value: 600, configurable: true })
+    Object.defineProperty(scroller, 'clientHeight', { value: 200, configurable: true })
+    scroller.scrollTop = 120
+    fireEvent.scroll(scroller)
+
+    expect(fade.className).toContain('opacity-100')
+    expect(container.querySelector('.bg-gradient-to-t')?.className).toContain('opacity-100')
+  })
+
   it('offers /plan from the composer', () => {
     useCrew.setState({ ...online, events: [], threads: {}, chatDraft: '' })
 
