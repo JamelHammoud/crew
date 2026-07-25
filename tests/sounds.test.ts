@@ -12,24 +12,41 @@ vi.stubGlobal('localStorage', {
 
 const started: number[] = []
 const pitched: number[] = []
+const landed: number[] = []
+let filters: { type: string; hz: number[] }[] = []
 
 class FakeParam {
-  constructor(private readonly heard?: number[]) {}
+  #held = 0
+  constructor(
+    private readonly set?: number[],
+    private readonly ramp?: number[]
+  ) {}
+  get value(): number {
+    return this.#held
+  }
+  set value(next: number) {
+    this.#held = next
+    this.set?.push(next)
+  }
   setValueAtTime(value: number): void {
-    this.heard?.push(value)
+    this.set?.push(value)
   }
   linearRampToValueAtTime(): void {}
-  exponentialRampToValueAtTime(): void {}
+  exponentialRampToValueAtTime(value: number): void {
+    this.ramp?.push(value)
+  }
 }
 
 class FakeAudioContext {
   currentTime = 0
+  sampleRate = 48000
   state = 'running'
   destination = {}
   createOscillator(): unknown {
     return {
       type: 'sine',
-      frequency: new FakeParam(pitched),
+      frequency: new FakeParam(pitched, landed),
+      detune: new FakeParam(),
       connect: () => {},
       start: (at: number) => void started.push(at),
       stop: () => {}
@@ -37,6 +54,38 @@ class FakeAudioContext {
   }
   createGain(): unknown {
     return { gain: new FakeParam(), connect: () => {} }
+  }
+  createBiquadFilter(): unknown {
+    const entry = { type: 'lowpass', hz: [] as number[] }
+    filters.push(entry)
+    return {
+      get type() {
+        return entry.type
+      },
+      set type(next: string) {
+        entry.type = next
+      },
+      frequency: new FakeParam(entry.hz, entry.hz),
+      Q: new FakeParam(),
+      connect: () => {}
+    }
+  }
+  createBufferSource(): unknown {
+    return {
+      buffer: null,
+      connect: () => {},
+      start: (at: number) => void started.push(at),
+      stop: () => {}
+    }
+  }
+  createBuffer(_channels: number, frames: number): unknown {
+    return { getChannelData: () => new Float32Array(frames) }
+  }
+  createConvolver(): unknown {
+    return { buffer: null, connect: () => {} }
+  }
+  createStereoPanner(): unknown {
+    return { pan: new FakeParam(), connect: () => {} }
   }
   resume(): Promise<void> {
     return Promise.resolve()
