@@ -61,7 +61,13 @@ const shapeVisibility = (shape: { meta: Record<string, unknown> }) =>
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
 
-export default function DesignCanvas({ boardId }: { boardId: string }) {
+export default function DesignCanvas({
+  boardId,
+  onEditor
+}: {
+  boardId: string
+  onEditor?: (editor: Editor | null) => void
+}) {
   const openDesign = useCrew(s => s.openDesign)
   const initDesign = useCrew(s => s.initDesign)
   const applyDesign = useCrew(s => s.applyDesign)
