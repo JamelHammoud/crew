@@ -1,7 +1,6 @@
 import { ChevronUpIcon } from '@heroicons/react/16/solid'
 import { useCallback, useEffect, useState } from 'react'
-import { useValue, type Editor } from 'tldraw'
-import { useDesignEditor } from '../design/editorContext'
+import { useEditor, useValue, type Editor } from 'tldraw'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
 import DesignToolMenu from './DesignToolMenus'
 import Tooltip from './Tooltip'
@@ -15,10 +14,10 @@ function combo(shortcut: string): { key: string; shift: boolean } | null {
 }
 
 export default function DesignToolbar() {
-  const editor = useDesignEditor()
+  const editor = useEditor()
   const [defaults, setDefaults] = useState<Record<string, string>>(FIRST)
   const [menu, setMenu] = useState<string | null>(null)
-  const current = useValue('design tool', () => (editor ? currentToolId(editor) : 'select'), [editor])
+  const current = useValue('design tool', () => currentToolId(editor), [editor])
 
   const remember = useCallback((groupId: string, toolId: string) => {
     setDefaults(prev => (prev[groupId] === toolId ? prev : { ...prev, [groupId]: toolId }))
