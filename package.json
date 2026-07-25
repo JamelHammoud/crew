@@ -19,7 +19,7 @@
     }
   },
   "scripts": {
-    "dev": "electron-vite dev",
+    "dev": "node scripts/name-electron.mjs && electron-vite dev",
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "preview": "electron-vite preview",
