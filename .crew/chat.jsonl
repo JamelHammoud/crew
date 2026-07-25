@@ -10144,3 +10144,14 @@
 {"id":"37677a03-f2fe-46af-bb19-41ff27502731","ts":1785010230264,"kind":"agent.offline","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable 2"}
 {"id":"97bce798-59ab-471a-b948-05c5ede792d9","ts":1785010230264,"kind":"agent.offline","agentId":"ali/7ad44611-9f35-435c-ae15-094179a86e49","label":"Codex Gpt-5.6-sol 2"}
 {"id":"db3be729-cef1-4d99-8091-bc5d5b8b8730","ts":1785010230265,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"26bcd15e-3c80-43c3-b0c9-f596e158bf25","ts":1785010266798,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"75ecf656-ec9d-467c-a2bc-1b294657f521","ts":1785010266801,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol 2"}
+{"id":"11ab233c-caeb-48a2-9673-3a4b324101c8","ts":1785010266801,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"0201fc42-e32f-4c8e-9535-07c2f37ed7d0","ts":1785010266802,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"2ad28a4b-f694-459c-b94d-4881204c6a66","ts":1785010266802,"kind":"agent.online","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus 2"}
+{"id":"7f5a91f3-8725-4b1d-9034-f893b389acce","ts":1785010266803,"kind":"agent.online","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
+{"id":"74682dd5-03f0-4965-a0b6-49a4af31e3ed","ts":1785010266803,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"bbcf4d34-ba8d-4380-b4cc-5b6063101313","ts":1785010266803,"kind":"agent.online","agentId":"ali/7ad44611-9f35-435c-ae15-094179a86e49","label":"Codex Gpt-5.6-sol 3"}
+{"id":"67901c8e-533e-48af-89cb-82b75b99287b","ts":1785010266804,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"35c48ac2-b2a1-49fe-9244-2b407b6ff2e7","ts":1785010268764,"kind":"agent.online","agentId":"ali/c6764931-2898-4a49-899d-4a6cabf2dd54","label":"Codex Gpt-5.5"}
+{"id":"a9a36ae4-82c4-49fe-ad68-b0fea1272fa9","ts":1785010268769,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
