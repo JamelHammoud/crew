@@ -193,6 +193,7 @@ describe('git sync', () => {
     await git(b, ['pull'])
 
     for (let round = 2; round <= 6; round++) {
+      await git(b, ['pull', '--no-rebase', '--no-edit'])
       fs.writeFileSync(path.join(b, `from-b-${round}.ts`), `export const b = ${round}\n`)
       await git(b, ['add', '-A'])
       await git(b, ['commit', '-m', `b work ${round}`])
