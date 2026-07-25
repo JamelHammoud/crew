@@ -85,6 +85,24 @@ export type DesignOp =
     }
   | { op: 'delete'; id: string }
   | { op: 'point'; x: number; y: number }
+  | ({ op: 'node'; x: number; y: number; parent?: string } & DesignNodeInput)
+  | ({ op: 'set'; id: string; x?: number; y?: number } & DesignNodeInput)
+
+export interface DesignNodeInput {
+  w?: number
+  h?: number
+  name?: string
+  text?: string
+  radius?: number | number[]
+  fills?: unknown[]
+  strokes?: unknown[]
+  effects?: unknown[]
+  layout?: unknown
+  type?: unknown
+  clip?: boolean
+  mask?: boolean
+  blend?: string
+}
 
 export interface DesignOpResult {
   id?: string
