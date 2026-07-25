@@ -66,7 +66,10 @@ export default function TopBar({
   }
 
   return (
-    <header className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0">
+    <header
+      ref={headerRef}
+      className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0"
+    >
       <span className="font-mono font-semibold text-xl text-fg select-none pl-[64px]">crew</span>
 
       <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">

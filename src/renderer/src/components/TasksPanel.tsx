@@ -478,11 +478,7 @@ export default function TasksPanel({
             )}
           </header>
           <div className="relative flex-1 min-h-0">
-            <div
-              ref={scrollRef}
-              onScroll={updateEdges}
-              className="h-full overflow-y-auto px-3 pb-6 space-y-6"
-            >
+            <div ref={scrollRef} className="h-full overflow-y-auto px-3 pb-6 space-y-6">
               {(pendingTodos.length > 0 || !q) && (
                 <section>
                   {heading('Todo', pendingTodos.length)}
