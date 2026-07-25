@@ -2154,6 +2154,7 @@ export class CrewSession {
       }
       if (meta.role === 'ui') this.dropDesignPresence(member)
     }
+    if (meta.role === 'ui') this.handleHuddleLeave(ws)
     const left = code === 1000 || code === 1001 || code === 1005
     for (const id of meta.agentIds) {
       const agent = this.agents.get(id)
