@@ -50,7 +50,6 @@ export class PeerLink {
   private send: (signal: HuddleSignal) => void
   private onChange: () => void
   private makingOffer = false
-  private ignoringOffer = false
   private settingAnswer = false
   private waiting: RTCIceCandidateInit[] = []
   private turn: Promise<void> = Promise.resolve()
@@ -217,8 +216,7 @@ export class PeerLink {
     const stable = this.pc.signalingState === 'stable'
     const ready = !this.makingOffer && (stable || this.settingAnswer)
     const collision = description.type === 'offer' && !ready
-    this.ignoringOffer = !this.polite && collision
-    if (this.ignoringOffer) return
+    if (!this.polite && collision) return
     this.settingAnswer = description.type === 'answer'
     await this.pc.setRemoteDescription(description)
     this.settingAnswer = false
