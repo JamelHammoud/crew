@@ -34,9 +34,7 @@ export default function ThreadCard({
   detail: string
   onOpen: () => void
 }) {
-  const agent = useCrew(s => s.agents.find(a => a.id === thread.agentId))
   const setThreadStatus = useCrew(s => s.setThreadStatus)
-  const owner = agent?.ownerName
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   const setStatus = (status: ThreadMeta['status']) => {

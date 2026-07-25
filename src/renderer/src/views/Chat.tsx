@@ -33,6 +33,7 @@ export default function Chat() {
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
   const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
+  const agents = useCrew(s => s.agents)
 
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
@@ -74,7 +75,7 @@ export default function Chat() {
       }
     }
     return list
-  }, [events, threads, selfId])
+  }, [agents, events, threads, selfId])
 
   useLayoutEffect(() => {
     const el = scrollRef.current
