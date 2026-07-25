@@ -44,14 +44,6 @@ const tldrawOptions: Partial<TldrawOptions> = { maxPages: 1 }
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
 
-const HUMAN_COLORS = ['#38bdf8', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#fb923c', '#f87171', '#4ade80']
-
-function humanColor(name: string): string {
-  let hash = 0
-  for (const char of name) hash = (hash * 31 + char.charCodeAt(0)) >>> 0
-  return HUMAN_COLORS[hash % HUMAN_COLORS.length]
-}
-
 export default function DesignCanvas({ boardId }: { boardId: string }) {
   const openDesign = useCrew(s => s.openDesign)
   const initDesign = useCrew(s => s.initDesign)
