@@ -88,15 +88,15 @@ const THEMES = {
     glow: ['#ffffff', 0.28],
     body: [
       [0, '#ffffff', 1],
-      [0.3, '#f6fbff', 1],
-      [0.62, '#dbedfc', 1],
-      [0.86, '#adcfef', 1],
-      [1, '#7fa9d4', 1]
+      [0.3, '#f8fcff', 1],
+      [0.62, '#e3f1fd', 1],
+      [0.86, '#c2dcf3', 1],
+      [1, '#a3c6e6', 1]
     ],
-    shade: ['#1a5590', 0.32],
-    bounce: ['#ffffff', 0.95],
-    edge: ['#ffffff', 0.9],
-    gloss: 0.95,
+    shade: ['#1a5590', 0.2],
+    bounce: ['#ffffff', 0.6],
+    edge: ['#ffffff', 0.5],
+    gloss: 0.55,
     grain: 0.04
   }
 }
