@@ -137,97 +137,97 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   return (
     <div className="h-full flex">
       <div className="flex-1 min-w-0 relative">
-      <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
-        <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
-          <ThreadItems items={items} />
-          {activePromptId && startedAt && (
-            <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
-          )}
-          <FilesChanged steps={threadSteps} />
+        <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
+          <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
+            <ThreadItems items={items} />
+            {activePromptId && startedAt && (
+              <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
+            )}
+            <FilesChanged steps={threadSteps} />
+          </div>
         </div>
-      </div>
-
-      <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
-        <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
-        <div className="bg-ink-900 px-6 pb-6">
-          <div className="relative max-w-[660px] mx-auto pointer-events-auto">
-            {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
-            <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
-            <div className="relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
-              <Tooltip label="Back to chat">
-                <button
-                  onClick={closeThread}
-                  aria-label="Back to chat"
-                  className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
-                >
-                  <ChevronLeftIcon className="w-5 h-5" />
-                </button>
-              </Tooltip>
-              <MemberName name={thread.agentLabel}>
-                <span className="flex items-center gap-3 min-w-0 cursor-default">
-                  <AgentIcon seed={thread.agentId} presence={agentPresence} />
-                  <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
-                </span>
-              </MemberName>
-              <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
-                {state === 'working' ? (
-                  <>
-                    <Spinner size={16} className="text-fg" />
-                    <span className="text-base font-semibold text-fg">Working</span>
-                  </>
-                ) : (
-                  <>
-                    {state === 'done' && <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
-                    {state === 'ready' && <EyeIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
-                    {state === 'failed' && <ExclamationTriangleIcon strokeWidth={2} className="w-5 h-5 text-danger" />}
-                    {state === 'archived' && <ArchiveBoxIcon strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
-                    <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
-                      {THREAD_STATE_LABELS[state]}
-                    </span>
-                    <button
-                      onClick={() => setThreadStatus(threadId, statusAction.to)}
-                      className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
-                    >
-                      {statusAction.label}
-                    </button>
-                  </>
-                )}
-                {(diffTotals.added > 0 || diffTotals.removed > 0) && (
-                  <Tooltip
-                    label={`${diffTotals.added} ${diffTotals.added === 1 ? 'addition' : 'additions'} and ${diffTotals.removed} ${diffTotals.removed === 1 ? 'deletion' : 'deletions'}`}
+  
+        <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
+          <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
+          <div className="bg-ink-900 px-6 pb-6">
+            <div className="relative max-w-[660px] mx-auto pointer-events-auto">
+              {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
+              <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
+              <div className="relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
+                <Tooltip label="Back to chat">
+                  <button
+                    onClick={closeThread}
+                    aria-label="Back to chat"
+                    className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
                   >
-                    <span className="ml-2 cursor-default">
-                      <Pill lg>
-                        <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
-                      </Pill>
-                    </span>
-                  </Tooltip>
-                )}
+                    <ChevronLeftIcon className="w-5 h-5" />
+                  </button>
+                </Tooltip>
+                <MemberName name={thread.agentLabel}>
+                  <span className="flex items-center gap-3 min-w-0 cursor-default">
+                    <AgentIcon seed={thread.agentId} presence={agentPresence} />
+                    <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+                  </span>
+                </MemberName>
+                <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                  {state === 'working' ? (
+                    <>
+                      <Spinner size={16} className="text-fg" />
+                      <span className="text-base font-semibold text-fg">Working</span>
+                    </>
+                  ) : (
+                    <>
+                      {state === 'done' && <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
+                      {state === 'ready' && <EyeIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
+                      {state === 'failed' && <ExclamationTriangleIcon strokeWidth={2} className="w-5 h-5 text-danger" />}
+                      {state === 'archived' && <ArchiveBoxIcon strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
+                      <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
+                        {THREAD_STATE_LABELS[state]}
+                      </span>
+                      <button
+                        onClick={() => setThreadStatus(threadId, statusAction.to)}
+                        className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                      >
+                        {statusAction.label}
+                      </button>
+                    </>
+                  )}
+                  {(diffTotals.added > 0 || diffTotals.removed > 0) && (
+                    <Tooltip
+                      label={`${diffTotals.added} ${diffTotals.added === 1 ? 'addition' : 'additions'} and ${diffTotals.removed} ${diffTotals.removed === 1 ? 'deletion' : 'deletions'}`}
+                    >
+                      <span className="ml-2 cursor-default">
+                        <Pill lg>
+                          <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
+                        </Pill>
+                      </span>
+                    </Tooltip>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="relative">
-              <Composer
-                attachmentKey={threadId}
-                value={text}
-                placeholder={placeholder}
-                inputRef={inputRef}
-                onChange={mention.onChange}
-                onKeyDown={onKeyDown}
-                onSend={send}
-                onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
-                sendLabel={canSteer ? 'Steer' : 'Send'}
-              >
-                <MentionMenu
-                  matches={mention.matches}
-                  activeIndex={mention.activeIndex}
-                  onPick={mention.pick}
-                  onHover={mention.setActive}
-                />
-              </Composer>
+              <div className="relative">
+                <Composer
+                  attachmentKey={threadId}
+                  value={text}
+                  placeholder={placeholder}
+                  inputRef={inputRef}
+                  onChange={mention.onChange}
+                  onKeyDown={onKeyDown}
+                  onSend={send}
+                  onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
+                  sendLabel={canSteer ? 'Steer' : 'Send'}
+                >
+                  <MentionMenu
+                    matches={mention.matches}
+                    activeIndex={mention.activeIndex}
+                    onPick={mention.pick}
+                    onHover={mention.setActive}
+                  />
+                </Composer>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
       <PlanPanel thread={thread} />
     </div>
