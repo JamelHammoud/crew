@@ -32,12 +32,23 @@ export type SessionEvent =
       authorName: string
       text: string
       mentions: string[]
+      // Absent on messages written before mentions carried ids; those fall back
+      // to matching on the name as written.
+      mentionRefs?: AgentMentionRef[]
       docMentions?: DocMentionRef[]
       threadId?: string
       attachments?: Attachment[]
     }
   | { id: string; ts: number; kind: 'message.deleted'; messageId: string }
-  | { id: string; ts: number; kind: 'message.edited'; messageId: string; text: string; docMentions?: DocMentionRef[] }
+  | {
+      id: string
+      ts: number
+      kind: 'message.edited'
+      messageId: string
+      text: string
+      mentionRefs?: AgentMentionRef[]
+      docMentions?: DocMentionRef[]
+    }
   | {
       id: string
       ts: number
