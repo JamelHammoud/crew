@@ -30,7 +30,6 @@ function paintLayer(paint: Paint): string | null {
   if (paint.type === 'solid') return `linear-gradient(${withOpacity(paint.color, paint.opacity)}, ${withOpacity(paint.color, paint.opacity)})`
   if (paint.type === 'linear') return `linear-gradient(${paint.angle}deg, ${stopList(paint.stops)})`
   if (paint.type === 'radial') return `radial-gradient(circle at 50% 50%, ${stopList(paint.stops)})`
-  if (paint.type === 'glass') return `linear-gradient(${withOpacity(paint.tint, paint.opacity)}, ${withOpacity(paint.tint, paint.opacity)})`
   return null
 }
 
@@ -99,8 +98,6 @@ export function textStyle(type: TypeStyle): CSSProperties {
 export function nodeStyle(props: DesignNodeProps): CSSProperties {
   const layers = props.fills.map(paintLayer).filter((layer): layer is string => layer !== null)
   const { shadows, filter, backdrop } = effectStyle(props.effects)
-  const glass = props.fills.find(paint => paint.type === 'glass')
-  if (glass && glass.type === 'glass') backdrop.push(`blur(${glass.blur}px)`, 'saturate(1.6)')
   const [tl, tr, br, bl] = props.radius
   const boxShadow = [...strokeShadows(props.strokes), ...shadows]
   return {
