@@ -14331,3 +14331,9 @@
 {"id":"593a7452-da6e-4041-9e90-5ebc11b625d0","ts":1785021374049,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"5cc9d23a-642a-456e-8929-00768fe44a92","ts":1785021374049,"kind":"agent.offline","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
 {"id":"f506adee-7bb6-49bb-8205-0167a45ea734","ts":1785021374049,"kind":"agent.offline","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
+{"id":"2e43d8b4-707a-404b-9ba3-cac1f3670166","ts":1785021376598,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"2c213ffc-38cc-4676-8314-d504d6b038dc","ts":1785021379845,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"510ae86d-9e99-4857-b485-b950465fc978","ts":1785021379846,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"904970b0-199f-4a93-a1ed-b66f59d5953c","ts":1785021379846,"kind":"agent.offline","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"57c56b15-bd35-4790-8d7a-f7d112f436fc","ts":1785021379846,"kind":"agent.offline","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"c919e3d5-f791-4fd8-a83b-75477711045e","ts":1785021379846,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
