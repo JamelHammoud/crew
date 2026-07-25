@@ -34,9 +34,8 @@ describe('app icon', () => {
     expect(stack[1].x - stack[0].x).toBeLessThan(2 * stack[0].r)
   })
 
-  it('keeps a gap around each disc so the stack never merges', () => {
-    const source = svg('icon.svg')
-    const rings = [...source.matchAll(/stroke="([^"]+)" stroke-width="(\d+)"/g)]
+  it('cuts each disc out of the one behind it', () => {
+    const rings = [...svg('icon.svg').matchAll(/stroke="([^"]+)" stroke-width="(\d+)"/g)]
 
     expect(rings).toHaveLength(2)
     for (const [, colour, width] of rings) {
@@ -50,11 +49,11 @@ describe('app icon', () => {
     const light = svg('icon-light.svg')
 
     expect(discs(light)).toEqual(discs(dark))
-    expect(dark).toContain('fill="#0d0d0d"')
-    expect(dark).toContain('fill="#ffffff"')
-    expect(light).toContain('fill="#ffffff"')
-    expect(light).toContain('fill="#0d0d0d"')
-    expect(light).not.toContain('stroke="#ffffff"'.replace('#ffffff', '#0d0d0d'))
+    expect(dark).toContain('<rect x="100" y="100" width="824" height="824" rx="185" fill="#0d0d0d"')
+    expect(dark).toContain('<g fill="#ffffff">')
+    expect(light).toContain('<rect x="100" y="100" width="824" height="824" rx="185" fill="#ffffff"')
+    expect(light).toContain('<g fill="#0d0d0d">')
+    expect(light).not.toContain('stroke="#0d0d0d"')
   })
 
   it('ships both themes as square images the dock can use', () => {
