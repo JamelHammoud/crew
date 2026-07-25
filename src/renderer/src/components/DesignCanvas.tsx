@@ -21,26 +21,42 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
+import { DesignNodeTool } from '../design/DesignNodeTool'
 import { DesignNodeUtil } from '../design/DesignNodeUtil'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
 import { avatarColors } from './avatarColor'
 import { designAssetUrls } from './designIcons'
-import { DesignMenu, DesignNavigation, DesignStylePanel } from './DesignPanels'
 import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
 
 const shapeUtils = [...defaultShapeUtils, DesignNodeUtil]
 
+const tools = [DesignNodeTool]
+
+// crew owns every panel now, so tldraw's own chrome stays out of the way.
 const components: TLComponents = {
-  MenuPanel: DesignMenu,
-  NavigationPanel: DesignNavigation,
-  StylePanel: DesignStylePanel
+  MenuPanel: null,
+  NavigationPanel: null,
+  StylePanel: null,
+  Toolbar: null,
+  PageMenu: null,
+  QuickActions: null,
+  ActionsMenu: null,
+  HelpMenu: null,
+  ZoomMenu: null,
+  MainMenu: null,
+  DebugPanel: null,
+  DebugMenu: null,
+  SharePanel: null
 }
 
-const tldrawOptions: Partial<TldrawOptions> = { maxPages: 1 }
+const tldrawOptions: Partial<TldrawOptions> = { maxPages: 40 }
+
+const shapeVisibility = (shape: { meta: Record<string, unknown> }) =>
+  shape.meta.hidden === true ? ('hidden' as const) : ('inherit' as const)
 
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
