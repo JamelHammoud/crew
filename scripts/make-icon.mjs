@@ -166,7 +166,10 @@ const gridLines = () =>
 // shade drawn in all round it, one bounce of light along the lower edge where
 // the tile throws it back, and a specular where the light lands. Every gradient
 // is in bounding box units, so one definition shades all three the same way.
-function svg({ ink, tile, rim, sheen, grid, glow, body, shade, bounce, gloss }, blueprint = false) {
+function svg(
+  { ink, tile, rim, sheen, grid, glow, body, shade, bounce, edge, gloss, grain },
+  blueprint = false
+) {
   const paper = blueprint
     ? `    <radialGradient id="glow" cx="${CENTRE}" cy="${round(CENTRE - GRID * 0.3)}" r="${round(TILE.size * 0.46)}" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${glow[0]}" stop-opacity="${glow[1]}" />
