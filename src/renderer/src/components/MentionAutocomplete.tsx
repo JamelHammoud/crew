@@ -49,7 +49,7 @@ export function useMentionAutocomplete(
     const before = value.slice(0, caret).replace(/[@#][^@#]*$/, token)
     const after = value.slice(caret)
     const gap = after.startsWith(' ') ? '' : ' '
-    caretTarget.current = before.length + gap.length + 1
+    caretTarget.current = before.length + 1
     setValue(before + gap + after)
     setQuery(null)
     inputRef.current?.focus()
