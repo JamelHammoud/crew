@@ -1,20 +1,14 @@
 import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../../../shared/events'
 import { soundsOn } from '../state/sound'
+import { playStrikes, type Strike } from './strike'
 import { playNotes, type Note } from './tone'
 
-export type SoundName =
-  | 'send'
-  | 'receive'
-  | 'done'
-  | 'failed'
-  | 'join'
-  | 'leave'
-  | 'tab.chat'
-  | 'tab.agents'
-  | 'tab.docs'
-  | 'tab.design'
+type ChimeName = 'send' | 'receive' | 'done' | 'failed' | 'join' | 'leave'
+type StrikeName = 'tab.chat' | 'tab.agents' | 'tab.docs' | 'tab.design'
 
-const VOICES: Record<SoundName, Note[]> = {
+export type SoundName = ChimeName | StrikeName
+
+const CHIMES: Record<ChimeName, Note[]> = {
   send: [
     { hz: 1174.66, at: 0, length: 0.09, gain: 0.55 },
     { hz: 1760, at: 0.05, length: 0.13, gain: 0.45 }
