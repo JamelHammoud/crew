@@ -178,8 +178,8 @@ export function buildThread(
       const live = !ended.has(event.promptId)
       const runSteps = steps[event.promptId] ?? []
       for (const step of runSteps) {
-        const item = stepItem(step, event.agentLabel, event.promptId, live)
-        if (item) items.push({ ...item, agentId: event.agentId })
+        const item = stepItem(step, labelOf(event.agentId, event.agentLabel), event.promptId, live)
+        if (item) items.push({ ...item, agentId: event.agentId, authorId: event.agentId })
       }
     }
     if (event.kind === 'agent.end') {
@@ -189,7 +189,9 @@ export function buildThread(
           key: event.id,
           ts: event.ts,
           kind: 'reply',
-          author: event.agentLabel,
+          author: labelOf(event.agentId, event.agentLabel),
+          authorId: event.agentId,
+          agentId: event.agentId,
           self: false,
           text: event.ok ? (event.text ?? '') : (event.error ?? 'Something went wrong.'),
           streaming: false,
