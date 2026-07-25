@@ -100,12 +100,11 @@ describe('one connection to one person', () => {
   it('keeps them through a collision it chose to ignore', async () => {
     const link = pair({ hold: true })
     await settle()
-    const [, impolite] = connections()
-    // The side that ignores an offer still has the other end's addresses on the
-    // way, and they are the only ones it will ever be given.
-    await impolite.onicecandidate
     await link.flush()
 
+    // The side that ignores an offer is still sent the other end's addresses
+    // while it is ignoring, and those are the only ones it will ever get.
+    const [, impolite] = connections()
     expect(impolite.candidates.length).toBeGreaterThan(0)
     link.close()
   })
