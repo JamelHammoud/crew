@@ -1241,9 +1241,6 @@ export class CrewSession {
   ): void {
     if (typeof rawPeerId !== 'string' || rawPeerId.trim().length === 0) return
     const peerId = rawPeerId.trim().slice(0, PEER_ID_CHARS)
-    for (const [other, peer] of [...this.huddle]) {
-      if (peer.peerId === peerId && other !== ws) this.huddle.delete(other)
-    }
     let existing = this.huddle.get(ws)
     for (const [other, peer] of [...this.huddle]) {
       if (peer.peerId !== peerId || other === ws) continue
