@@ -8,7 +8,7 @@ export default function AudioStream({ stream }: { stream: MediaStream }) {
     const el = ref.current
     if (!el || el.srcObject === stream) return
     el.srcObject = stream
-    void el.play().catch(() => {})
+    void el.play()?.catch(() => {})
   }, [stream])
 
   return <audio ref={ref} autoPlay className="hidden" />
