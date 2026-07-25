@@ -1,12 +1,17 @@
 import { ClipboardDocumentListIcon } from '@heroicons/react/16/solid'
+import { useRef } from 'react'
 import { useCrew } from '../state/store'
 import Markdown from './Markdown'
 import Pill from './Pill'
+import ScrollFade from './ScrollFade'
+import useScrollEdges from './useScrollEdges'
 
 export default function PlanPanel({ threadId }: { threadId: string }) {
   const thread = useCrew(s => s.threads[threadId])
   const implementPlan = useCrew(s => s.implementPlan)
   const running = useCrew(s => Boolean(s.threadPrompts[threadId]))
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const { edges } = useScrollEdges(scrollRef)
   if (!thread?.plan) return null
 
   return (
