@@ -65,11 +65,23 @@ export class GitSync {
   }
 
   pullNow(): Promise<RepoActionResult> {
-    return this.enqueue(() => this.pullAction())
+    return this.enqueue(() => this.exclusive(() => this.pullAction()))
   }
 
   pushNow(message = 'crew sync'): Promise<RepoActionResult> {
-    return this.enqueue(() => this.pushAction(message))
+    return this.enqueue(() => this.exclusive(() => this.pushAction(message)))
+  }
+
+  private async exclusive(action: () => Promise<RepoActionResult>): Promise<RepoActionResult> {
+    const release = await takeSyncLock(this.repoPath)
+    if (!release) {
+      return this.result(false, false, 'This project is syncing right now. Try again in a moment.', await this.readStatus())
+    }
+    try {
+      return await action()
+    } finally {
+      await release()
+    }
   }
 
   private enqueue<T>(action: () => Promise<T>): Promise<T> {
