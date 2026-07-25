@@ -24,7 +24,7 @@ export default function PlanPanel({ threadId }: { threadId: string }) {
           <button
             onClick={() => implementPlan(threadId)}
             disabled={running}
-            className="w-full h-11 rounded-full bg-fg text-ink-900 text-base font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
+            className="w-full h-11 rounded-full bg-fg text-ink-900 text-base font-semibold transition-all duration-150 hover:opacity-90 active:scale-[0.99] disabled:bg-fg/10 disabled:text-fg-muted disabled:opacity-100"
           >
             Implement plan
           </button>
