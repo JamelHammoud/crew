@@ -67,7 +67,6 @@ const THEMES = {
     gloss: 0.5
   },
   devLight: {
-    ink: '#ffffff',
     tile: [
       ['#a9e2fb', 1],
       ['#6dbdf3', 1],
