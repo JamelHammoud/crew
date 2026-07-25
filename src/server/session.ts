@@ -732,13 +732,17 @@ export class CrewSession {
 
   // Pairs the agents a piece of text pointed at with the names they carried
   // when it was written, so the text can be read back under their names today.
-  private agentRefs(ids: string[]): AgentMentionRef[] {
-    const refs: AgentMentionRef[] = []
-    for (const id of new Set(ids)) {
+  // Every name written in it counts, not only the agents it was routed to: one
+  // that was away still gets its mention brought along when it is renamed.
+  private agentRefs(ids: string[], text = ''): AgentMentionRef[] {
+    const refs = new Map<string, AgentMentionRef>()
+    const written = agentMentionRefsIn(text, [...this.agents.values()].map(agent => this.pooled(agent)))
+    for (const ref of written) refs.set(ref.id, ref)
+    for (const id of ids) {
       const agent = this.agents.get(id)
-      if (agent) refs.push({ id: agent.id, label: agent.label })
+      if (agent) refs.set(agent.id, { id: agent.id, label: agent.label })
     }
-    return refs
+    return [...refs.values()]
   }
 
   private handleDeleteMessage(member: Member, messageId: string): void {
