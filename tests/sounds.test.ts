@@ -78,8 +78,9 @@ class FakeAudioContext {
       stop: () => {}
     }
   }
-  createBuffer(_channels: number, frames: number): unknown {
-    return { getChannelData: () => new Float32Array(frames) }
+  createBuffer(channels: number, frames: number): unknown {
+    const data = Array.from({ length: channels }, () => new Float32Array(frames))
+    return { getChannelData: (channel: number) => data[channel] }
   }
   createConvolver(): unknown {
     return { buffer: null, connect: () => {} }
