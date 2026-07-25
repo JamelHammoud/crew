@@ -1,44 +1,29 @@
-import {
-  ArrowLongRightIcon,
-  CursorArrowRaysIcon,
-  HandRaisedIcon,
-  PencilIcon,
-  Squares2X2Icon
-} from '@heroicons/react/24/outline'
-import type { ComponentType } from 'react'
 import { GeoShapeGeoStyle, type Editor, type TLShape } from 'tldraw'
-import { designAssetUrls } from '../components/designIcons'
-
-const assets = designAssetUrls()
-
-export function CanvasGlyph({ name, className = 'w-4 h-4' }: { name: string; className?: string }) {
-  const url = assets?.icons?.[name as keyof NonNullable<typeof assets>['icons']]
-  if (!url) return <span className={className} />
-  return (
-    <span
-      aria-hidden
-      className={className}
-      style={{
-        display: 'block',
-        background: 'currentColor',
-        maskImage: `url("${url}")`,
-        maskSize: 'contain',
-        maskRepeat: 'no-repeat',
-        maskPosition: 'center'
-      }}
-    />
-  )
-}
-
-function glyph(name: string): ComponentType<{ className?: string }> {
-  return ({ className }) => <CanvasGlyph name={name} className={className} />
-}
+import {
+  ArrowGlyph,
+  CursorGlyph,
+  DiamondGlyph,
+  EllipseGlyph,
+  EraserGlyph,
+  FrameGlyph,
+  HandGlyph,
+  HexagonGlyph,
+  HighlighterGlyph,
+  LineGlyph,
+  NoteGlyph,
+  PencilGlyph,
+  RectangleGlyph,
+  StarGlyph,
+  TextGlyph,
+  TriangleGlyph,
+  type Glyph
+} from './glyphs'
 
 export interface DesignTool {
   id: string
   label: string
   shortcut: string
-  Icon: ComponentType<{ className?: string }>
+  Icon: Glyph
 }
 
 export interface DesignToolGroup {
