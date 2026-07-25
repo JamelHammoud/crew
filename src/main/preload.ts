@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { PathLocation, RepoFile } from '../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
+import type { RecentJoin } from '../shared/recent'
 import type { CurrentSession } from './session'
 
 const bridge = {
@@ -12,6 +13,7 @@ const bridge = {
     ipcRenderer.invoke('session:join', link, folder, name),
   leave: (): Promise<void> => ipcRenderer.invoke('session:leave'),
   current: (): Promise<CurrentSession | null> => ipcRenderer.invoke('session:current'),
+  recentJoins: (): Promise<RecentJoin[]> => ipcRenderer.invoke('session:recent'),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>

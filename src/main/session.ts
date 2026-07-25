@@ -14,6 +14,7 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
+import type { RecentJoin } from '../shared/recent'
 import { AgentStore } from './agents-store'
 import { readRepoFile, resolveRepoPath, writeRepoFile } from './files'
 import { locatePath } from './locate'
@@ -87,6 +88,10 @@ export class AppSession {
 
   current(): CurrentSession | null {
     return this.live
+  }
+
+  recentJoins(): RecentJoin[] {
+    return this.savedStore()?.recentJoins() ?? []
   }
 
   async repoStatus(): Promise<RepoStatus> {

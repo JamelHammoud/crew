@@ -5,12 +5,14 @@ import { SavedSessionStore } from '../src/main/saved-session'
 import { tmpDir } from './helpers/session'
 
 describe('saved session store', () => {
-  it('round-trips host and join sessions and clears them', () => {
+  it('round-trips the active session and keeps joined sessions after leaving', () => {
     const store = new SavedSessionStore(path.join(tmpDir('saved'), 'session.json'))
     expect(store.load()).toBeNull()
+    expect(store.recentJoins()).toEqual([])
 
     store.save({ mode: 'host', folder: '/tmp/repo', name: 'sam' })
     expect(store.load()).toEqual({ mode: 'host', folder: '/tmp/repo', name: 'sam' })
+    expect(store.recentJoins()).toEqual([])
 
     store.save({ mode: 'join', folder: '/tmp/repo', name: 'jamel', link: 'crew://1.2.3.4:2739/abc123' })
     expect(store.load()).toEqual({
@@ -19,9 +21,17 @@ describe('saved session store', () => {
       name: 'jamel',
       link: 'crew://1.2.3.4:2739/abc123'
     })
+    expect(store.recentJoins()).toEqual([
+      expect.objectContaining({
+        folder: '/tmp/repo',
+        name: 'jamel',
+        link: 'crew://1.2.3.4:2739/abc123'
+      })
+    ])
 
     store.clear()
     expect(store.load()).toBeNull()
+    expect(store.recentJoins()).toHaveLength(1)
     store.clear()
   })
 
@@ -35,5 +45,28 @@ describe('saved session store', () => {
 
     fs.writeFileSync(file, JSON.stringify({ mode: 'weird', folder: '/tmp/repo', name: 'jamel' }))
     expect(new SavedSessionStore(file).load()).toBeNull()
+  })
+
+  it('deduplicates joined sessions by link and keeps the five newest', () => {
+    const store = new SavedSessionStore(path.join(tmpDir('saved-recents'), 'session.json'))
+    for (let index = 0; index < 6; index++) {
+      store.save({
+        mode: 'join',
+        folder: `/tmp/repo-${index}`,
+        name: 'jamel',
+        link: `crew://1.2.3.4:2739/abc12${index}`
+      })
+    }
+    store.save({
+      mode: 'join',
+      folder: '/tmp/moved',
+      name: 'ali',
+      link: 'crew://1.2.3.4:2739/abc123'
+    })
+
+    const recent = store.recentJoins()
+    expect(recent).toHaveLength(5)
+    expect(recent[0]).toEqual(expect.objectContaining({ folder: '/tmp/moved', name: 'ali' }))
+    expect(recent.filter(item => item.link === 'crew://1.2.3.4:2739/abc123')).toHaveLength(1)
   })
 })
