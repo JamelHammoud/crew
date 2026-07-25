@@ -1,8 +1,9 @@
-import { SignalIcon, XMarkIcon } from '@heroicons/react/16/solid'
+import { XMarkIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState } from 'react'
 import type { HuddleRoom } from '../../../../shared/huddle'
 import { useHuddle } from '../../state/huddle'
-import Avatar from '../Avatar'
+import AvatarStack from '../AvatarStack'
+import Live from './Live'
 
 function names(room: HuddleRoom): string {
   const all = room.peers.map(peer => peer.name)
