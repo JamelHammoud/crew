@@ -125,14 +125,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017819651,
+        "fetchedAt": 1785017945311,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 31,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785034799713,
+            "resetsAt": 1785034799435,
             "active": true
           },
           {
@@ -140,7 +140,7 @@
             "label": "Weekly (all models)",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1785499200713,
+            "resetsAt": 1785499200435,
             "active": false
           }
         ],
@@ -230,7 +230,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785017879654,
+        "fetchedAt": 1785017945619,
         "windows": [
           {
             "key": "primary",
@@ -325,7 +325,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785017879654,
+        "fetchedAt": 1785017945619,
         "windows": [
           {
             "key": "primary",
@@ -444,14 +444,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017819651,
+        "fetchedAt": 1785017945311,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 31,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785034799713,
+            "resetsAt": 1785034799435,
             "active": true
           },
           {
@@ -459,7 +459,7 @@
             "label": "Weekly (all models)",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1785499200713,
+            "resetsAt": 1785499200435,
             "active": false
           }
         ],
@@ -573,14 +573,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017819651,
+        "fetchedAt": 1785017945311,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 31,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785034799713,
+            "resetsAt": 1785034799435,
             "active": true
           },
           {
@@ -588,7 +588,7 @@
             "label": "Weekly (all models)",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1785499200713,
+            "resetsAt": 1785499200435,
             "active": false
           }
         ],
@@ -702,14 +702,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785017795835,
+        "fetchedAt": 1785017939449,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1785033000157,
+            "resetsAt": 1785033000693,
             "active": true
           },
           {
@@ -717,7 +717,7 @@
             "label": "Weekly (all models)",
             "percent": 5,
             "severity": "normal",
-            "resetsAt": 1785535200157,
+            "resetsAt": 1785535200693,
             "active": false
           },
           {
@@ -737,8 +737,8 @@
       "id": "jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35",
       "label": "Kimi",
       "provider": "kimi",
-      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
-      "ownerName": "Jamel (dev)",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
       "settings": {
         "model": ""
       },
