@@ -39,7 +39,12 @@ export default function Tooltip({
     if (rect && el) setSize({ w: el.offsetWidth, h: el.offsetHeight })
   }, [rect])
 
+  useEffect(() => {
+    if (disabled) hide()
+  }, [disabled])
+
   const enter = () => {
+    if (disabled) return
     if (timer.current !== null) window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => {
       const next = anchorRef.current?.getBoundingClientRect()
