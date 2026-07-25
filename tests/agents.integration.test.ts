@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
-import { agentId } from '../src/shared/llm'
+import { agentId, relabelMentions } from '../src/shared/llm'
 import type { ServerMessage } from '../src/shared/protocol'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
