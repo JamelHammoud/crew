@@ -30,6 +30,7 @@ import {
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
 import {
   agentId,
+  agentMentionRefsIn,
   mentionsIn,
   resolveSettings,
   type AgentMentionRef,
@@ -578,7 +579,7 @@ export class CrewSession {
         authorName: member.name,
         text: trimmed,
         mentions,
-        mentionRefs: this.agentRefs(mentions),
+        mentionRefs: this.agentRefs(mentions, trimmed),
         docMentions: this.docMentionRefs(trimmed),
         attachments
       })
