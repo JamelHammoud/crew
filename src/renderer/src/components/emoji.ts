@@ -90,7 +90,6 @@ export function searchEmoji(query: string, limit = 108): EmojiEntry[] {
       else if (term.includes(needle)) rank = Math.min(rank, 3)
     }
     if (rank < 4) ranked.push({ entry, rank })
-    if (ranked.length > limit * 6) break
   }
   return ranked
     .sort((a, b) => a.rank - b.rank)
