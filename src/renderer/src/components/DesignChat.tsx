@@ -1,20 +1,30 @@
-import { PlusIcon } from '@heroicons/react/16/solid'
-import { XMarkIcon } from '@heroicons/react/20/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { mentionsIn } from '../../../shared/llm'
-import { useCrew } from '../state/store'
+import { useCrew, type ThreadMeta } from '../state/store'
 import Composer from './Composer'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import RunStatus from './RunStatus'
 import ScrollFade from './ScrollFade'
 import ThreadItems from './ThreadItems'
-import Tooltip from './Tooltip'
 import { buildThread } from './thread'
 import { useAutoResize } from './useAutoResize'
 import useScrollEdges from './useScrollEdges'
 import { useStickToBottom } from './useStickToBottom'
 
-export default function DesignChat({ boardId, onClose }: { boardId: string; onClose: () => void }) {
+export function useBoardThreads(boardId: string): ThreadMeta[] {
+  const threads = useCrew(s => s.threads)
+  return useMemo(() => Object.values(threads).filter(thread => thread.boardId === boardId), [threads, boardId])
+}
+
+export default function DesignChat({
+  boardId,
+  composeNew,
+  onComposeNew
+}: {
+  boardId: string
+  composeNew: boolean
+  onComposeNew: (value: boolean) => void
+}) {
   const events = useCrew(s => s.events)
   const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
@@ -27,12 +37,8 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
   const threadDrafts = useCrew(s => s.threadDrafts)
   const setThreadDraft = useCrew(s => s.setThreadDraft)
 
-  const boardThreads = useMemo(
-    () => Object.values(threads).filter(thread => thread.boardId === boardId),
-    [threads, boardId]
-  )
+  const boardThreads = useBoardThreads(boardId)
   const [picked, setPicked] = useState<string | null>(null)
-  const [composeNew, setComposeNew] = useState(false)
   const known = useRef(new Set<string>())
 
   useEffect(() => {
@@ -40,9 +46,9 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
     for (const thread of fresh) known.current.add(thread.id)
     if (fresh.length > 0) {
       setPicked(fresh[fresh.length - 1].id)
-      setComposeNew(false)
+      onComposeNew(false)
     }
-  }, [boardThreads])
+  }, [boardThreads, onComposeNew])
 
   const fallback = boardThreads.length > 0 ? boardThreads[boardThreads.length - 1].id : null
   const threadId = composeNew ? null : picked && threads[picked] ? picked : fallback
@@ -89,43 +95,18 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
   const example = agents.find(a => a.status !== 'offline')?.label ?? agents[0]?.label ?? 'an agent'
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col">
-      <div className="flex items-center gap-2 pl-4 pr-2 h-9 shrink-0">
-        <span className="text-xs font-semibold text-fg-muted">Board chat</span>
-        <div className="ml-auto flex items-center gap-1">
-          {boardThreads.length > 0 && (
-            <Tooltip label="New thread">
-              <button
-                onClick={() => setComposeNew(true)}
-                aria-label="New thread"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-all active:scale-95"
-              >
-                <PlusIcon className="w-4 h-4" />
-              </button>
-            </Tooltip>
-          )}
-          <Tooltip label="Hide chat">
-            <button
-              onClick={onClose}
-              aria-label="Hide chat"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-all active:scale-95"
-            >
-              <XMarkIcon className="w-4 h-4" />
-            </button>
-          </Tooltip>
-        </div>
-      </div>
+    <div className="flex-1 min-w-0 min-h-0 flex flex-col">
       {boardThreads.length > 1 && (
-        <div className="flex gap-1.5 px-4 pb-2 overflow-x-auto shrink-0">
+        <div className="flex flex-wrap gap-1.5 px-3 pb-2 shrink-0">
           {boardThreads.map(thread => (
             <button
               key={thread.id}
               onClick={() => {
                 setPicked(thread.id)
-                setComposeNew(false)
+                onComposeNew(false)
               }}
-              className={`h-7 px-3 rounded-full text-xs font-semibold whitespace-nowrap max-w-[160px] truncate transition-colors ${
-                thread.id === threadId ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-muted hover:text-fg-secondary'
+              className={`h-7 px-3 rounded-full text-xs font-semibold max-w-full truncate transition-colors ${
+                thread.id === threadId ? 'bg-fg text-ink-900' : 'bg-fg/[0.06] text-fg-muted hover:text-fg'
               }`}
             >
               {thread.title || 'Untitled'}
@@ -133,12 +114,8 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
           ))}
         </div>
       )}
-      <div className="relative flex-1 min-h-0">
-        <div
-          ref={scrollRef}
-          onScroll={onScroll}
-          className="h-full overflow-y-auto px-4"
-        >
+      <div className="relative flex-1 min-w-0 min-h-0">
+        <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
           {threadId ? (
             <div className="space-y-4 py-4">
               <ThreadItems items={items} />
@@ -151,7 +128,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
               )}
             </div>
           ) : (
-            <div className="h-full flex items-center justify-center text-center px-6">
+            <div className="h-full flex items-center justify-center text-center px-4">
               <p className="text-sm text-fg-muted">
                 Mention an agent like @{example} and it will design on this board with you.
               </p>
