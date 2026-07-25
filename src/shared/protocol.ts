@@ -42,6 +42,9 @@ export interface SessionSnapshot {
   queues: Record<string, QueuedItem[]>
   todos: Todo[]
   boards?: DesignBoardMeta[]
+  // A call lives only as long as the people in it, so it rides in the snapshot
+  // and never in the event log.
+  huddle?: HuddleRoom
 }
 
 export type ClientMessage =
