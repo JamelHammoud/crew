@@ -10377,3 +10377,17 @@
 {"id":"6b1647d1-77b2-4f83-88db-997b91392bd4","ts":1785012114823,"kind":"agent.online","agentId":"jamel/codex","label":"Codex"}
 {"id":"da50ace7-b2cf-41a7-80c4-f6a3d4dfec6c","ts":1785012114823,"kind":"agent.online","agentId":"jamel/grok","label":"Grok"}
 {"id":"9181a260-102a-478c-ba8c-4159156f7fba","ts":1785012114823,"kind":"person.joined","memberId":"d66df5e1-eaf7-436d-97a8-2368cb8e4738","name":"Jamel"}
+{"id":"939d547d-d960-4c2d-a4e3-0d699d46726e","ts":1785012126588,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"c500a21f-5234-4c91-b1c5-026764340963","ts":1785012126589,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"a0cc0132-4f51-444f-b0e6-e9a3722930ce","ts":1785012126589,"kind":"agent.offline","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"207571ec-9776-4178-9699-a8a06fbd336d","ts":1785012126589,"kind":"agent.offline","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
+{"id":"69ac2864-58d4-4577-b966-7665de2a38ae","ts":1785012126589,"kind":"agent.offline","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"4a59d041-f8de-4355-b949-71ef04fcbca8","ts":1785012126589,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"a88386d2-caa7-43f2-abcf-e48ac094e26c","ts":1785012126708,"kind":"person.left","memberId":"d66df5e1-eaf7-436d-97a8-2368cb8e4738","name":"Jamel"}
+{"id":"7bd180b4-5531-4762-8ad8-af359e0c23bf","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"4f40e265-eb9f-4bf4-9bfd-41730589261c","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"bebaefb7-d784-4a4d-bb77-f1b6f362f6d8","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"ddd6b2e0-a1b3-43ed-bb2d-7e4b5de30a22","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"8304623e-d25f-4f67-8a86-fdda143ce158","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Opus 5"}
+{"id":"d3b91f27-d2c6-4568-a11a-be7c2525a744","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
+{"id":"e3275cf2-8679-463f-8f09-1241acd1abc0","ts":1785012126708,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
