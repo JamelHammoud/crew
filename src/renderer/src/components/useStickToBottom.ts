@@ -54,7 +54,10 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
       const el = scrollRef.current
       if (!el) return
       if (restored.current) {
-        if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
+        if (pinnedRef.current && !hoverCardOpen()) {
+          el.scrollTop = el.scrollHeight
+          lastScrollTop.current = el.scrollTop
+        }
         return
       }
       if (!ready) return
@@ -67,6 +70,7 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
         return
       }
       el.scrollTop = el.scrollHeight
+      lastScrollTop.current = el.scrollTop
     },
     [memoryKey, scrollRef, setPinned]
   )
