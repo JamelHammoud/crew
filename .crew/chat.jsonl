@@ -14304,3 +14304,24 @@
 {"id":"ed014730-f783-45c2-930f-0d4e7d0b8b82","ts":1785021361942,"kind":"agent.online","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
 {"id":"23c5a0fe-bb40-407b-85b4-0ea5f5a23839","ts":1785021361942,"kind":"agent.online","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
 {"id":"a98a8182-fcee-4b92-baee-f3acc79a2c3d","ts":1785021361942,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"61382c95-44b5-4d12-ae24-045c5f8cef97","ts":1785021362532,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"fc1dc775-d5af-4ab2-b51f-38b243743d94","ts":1785021362532,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"be3c00e3-9f9f-4057-81ee-71dc2f9dea9a","ts":1785021362532,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"7db79d59-e323-49b1-a6dd-f5e3887b2f6d","ts":1785021362533,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"f1ca7a90-de0d-4728-ab20-64832d7b2065","ts":1785021362533,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"57c1c9b4-f926-44b0-9eb1-6109877d43e7","ts":1785021362533,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"94a8d81a-f84c-4dae-9dd8-0c7d48c20098","ts":1785021362547,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"71600611-e34e-410a-a378-86818a277b7f","ts":1785021362548,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"7c54dbcf-b48a-418b-8eb9-78a33fb4cbd8","ts":1785021362548,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"385e259b-9ab4-4cad-bb3b-b0059de5da9f","ts":1785021362548,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"77f54118-c80e-4a85-96b8-18e0728af9b8","ts":1785021362548,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"72b75cfc-cafd-4a4c-bada-b965323b8556","ts":1785021362564,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"bfe70fcd-8fbf-4208-a6f8-1e05defecf63","ts":1785021362564,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"7fd721ae-0ee5-4ff2-a12f-1f4df953c9f3","ts":1785021362564,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"ba6e273c-90ab-4575-83cf-2ee6ab0f2f3c","ts":1785021362564,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"b2b3f5bf-a49e-4be8-b4a8-5aae89a908cd","ts":1785021362564,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"7df63132-2bc3-43dd-ae46-967fdf838732","ts":1785021362585,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"691709df-cc13-4d97-9356-2d21b444b6d4","ts":1785021362585,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"ec181328-f81a-41b6-b6ff-89592fb2b44b","ts":1785021362585,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"8822af1e-a968-456d-9665-c6c180b8f5e5","ts":1785021362585,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"789491e9-d011-4923-8217-73481c3a70a4","ts":1785021362585,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
