@@ -172,7 +172,10 @@ ${gridLines()}
 `
     : ''
   const drawing = blueprint
-    ? `  <g fill="url(#mark)">
+    ? `  <g fill="url(#mark)" filter="url(#cast)">
+${discs()}
+  </g>
+  <g fill="url(#bounce)">
 ${discs()}
   </g>
   <g fill="url(#gloss)">
