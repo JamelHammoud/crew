@@ -112,11 +112,10 @@ export default function TopBar({
         ))}
       </nav>
 
-      <div className="app-no-drag flex items-center justify-end gap-3">
+      <div className="app-no-drag flex items-center justify-end gap-2">
         {connection === 'reconnecting' && (
-          <span className="text-xs text-fg-muted animate-pulse">Connection lost. Trying again…</span>
+          <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
-        <PresenceStack />
         <Tooltip label="Tasks">
           <button
             onClick={onToggleTasks}
@@ -127,12 +126,14 @@ export default function TopBar({
           >
             <CheckCircleIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
             {waiting > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-fg text-ink-900 text-xs font-bold flex items-center justify-center">
+              <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 rounded-full bg-fg text-ink-900 text-xs font-bold flex items-center justify-center ring-2 ring-ink-900">
                 {waiting > 9 ? '9+' : waiting}
               </span>
             )}
           </button>
         </Tooltip>
+        <span className="w-px h-5 bg-fg/[0.07]" />
+        <PresenceStack />
         <div className="relative">
           <button
             onClick={() => setMenuOpen(open => !open)}
