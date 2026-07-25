@@ -84,13 +84,16 @@ const THEMES = {
     sheen: 0.24,
     grid: ['#ffffff', 0.42],
     glow: ['#ffffff', 0.28],
-    mark: [
-      ['#ffffff', 1],
-      ['#eaf5ff', 1],
-      ['#a8cdee', 1]
+    body: [
+      [0, '#ffffff', 1],
+      [0.3, '#f6fbff', 1],
+      [0.62, '#dbedfc', 1],
+      [0.86, '#adcfef', 1],
+      [1, '#7fa9d4', 1]
     ],
-    bounce: ['#ffffff', 0.7],
-    gloss: 0.85
+    shade: ['#14406e', 0.35],
+    bounce: ['#ffffff', 0.95],
+    gloss: 0.95
   }
 }
 
