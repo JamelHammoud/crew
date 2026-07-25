@@ -274,4 +274,7 @@ function AgentCursors({ editor, cursors }: { editor: Editor | null; cursors: Des
               </span>
             </div>
           )
-      
+        })}
+    </div>
+  )
+}
