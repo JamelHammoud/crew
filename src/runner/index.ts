@@ -241,10 +241,10 @@ export class Runner {
       for (const agent of this.agents.values()) {
         if (!agent.provider.usage) continue
         const list = byProvider.get(agent.provider) ?? []
-        list.push(agent.instanceId)
+        list.push(agent.id)
         byProvider.set(agent.provider, list)
       }
-      for (const [provider, instanceIds] of byProvider) {
+      for (const [provider, ids] of byProvider) {
         let usage: AgentUsage | null = null
         try {
           usage = await provider.usage!()
@@ -252,7 +252,7 @@ export class Runner {
           usage = null
         }
         if (!usage) continue
-        for (const instanceId of instanceIds) this.send({ type: 'agent.usage', instanceId, usage })
+        for (const agentId of ids) this.send({ type: 'agent.usage', agentId, usage })
       }
     } finally {
       this.pollingUsage = false
