@@ -112,16 +112,18 @@ export const useHuddle = create<HuddleState>((set, get) => {
     const before = get().room
     const wasHere = new Set(before.peers.map(peer => peer.peerId))
     const self = get().peerId
-    // A room that turned over while this client was away leaves it out of the
-    // roster, which is the server saying the call moved on without it.
-    const stillIn = peerIn(msg.room, self) !== undefined
-    set({ room: msg.room })
-    if (get().joined && !stillIn) {
+    const mine = peerIn(msg.room, self)
+    set({ room: msg.room, confirmed: get().confirmed || mine !== undefined })
+    // Once the server has shown this client in the room, a roster without it is
+    // the call saying it moved on. Before that, it is only a roster that has not
+    // caught up with the join yet.
+    if (get().joined && get().confirmed && !mine) {
       teardown()
       set({ room: msg.room })
       return
     }
     if (get().joined) {
+      if (get().sharing && mine && !mine.sharing) get().stopSharing()
       for (const peer of msg.room.peers) {
         if (peer.peerId !== self && !wasHere.has(peer.peerId)) chimeJoin()
       }
