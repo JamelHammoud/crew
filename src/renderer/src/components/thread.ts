@@ -26,6 +26,14 @@ export function threadState(thread: ThreadMeta, events: SessionEvent[], running:
   return end && !end.ok ? 'failed' : 'ready'
 }
 
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+export const stripMention = (text: string, label: string): string =>
+  text
+    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
 export function lastEnd(
   threadId: string,
   events: SessionEvent[]
