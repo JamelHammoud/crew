@@ -252,7 +252,7 @@ export class Runner {
           usage = null
         }
         if (!usage) continue
-        for (const agentId of ids) this.send({ type: 'agent.usage', agentId, usage })
+        for (const id of ids) this.send({ type: 'agent.usage', agentId: id, usage })
       }
     } finally {
       this.pollingUsage = false
