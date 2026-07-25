@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   createTLStore,
   defaultBindingUtils,
-  DefaultDashStyle,
-  DefaultFontStyle,
   defaultShapeUtils,
   getSnapshot,
   InstancePresenceRecordType,
