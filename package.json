@@ -31,6 +31,7 @@
     "start": "electron-vite preview",
     "preview": "electron-vite preview",
     "test": "vitest run",
+    "media-check": "node scripts/media-check.mjs",
     "dist": "electron-vite build && electron-builder",
     "icon": "node scripts/make-icon.mjs",
     "postinstall": "node scripts/ensure-electron.mjs && node scripts/name-electron.mjs"
