@@ -20,6 +20,9 @@ const PROSE_RE = new RegExp(
   'g'
 )
 
+const URL_RE = /https?:\/\/[^\s<>"'`]+/gi
+const URL_TAIL_RE = /[.,;:!?'"]+$/
+
 const PRIVATE_LABEL = 'Private file'
 const PRIVATE_CLASS = 'private-file'
 const UNSETTLED_TTL = 15_000
