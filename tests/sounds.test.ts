@@ -11,9 +11,13 @@ vi.stubGlobal('localStorage', {
 })
 
 const started: number[] = []
+const pitched: number[] = []
 
 class FakeParam {
-  setValueAtTime(): void {}
+  constructor(private readonly heard?: number[]) {}
+  setValueAtTime(value: number): void {
+    this.heard?.push(value)
+  }
   linearRampToValueAtTime(): void {}
   exponentialRampToValueAtTime(): void {}
 }
@@ -25,7 +29,7 @@ class FakeAudioContext {
   createOscillator(): unknown {
     return {
       type: 'sine',
-      frequency: new FakeParam(),
+      frequency: new FakeParam(pitched),
       connect: () => {},
       start: (at: number) => void started.push(at),
       stop: () => {}
