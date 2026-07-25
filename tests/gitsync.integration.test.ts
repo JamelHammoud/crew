@@ -170,6 +170,79 @@ describe('git sync', () => {
     expect(fs.readFileSync(path.join(b, 'from-a.ts'), 'utf8')).toContain('a = 1')
   })
 
+  it('lets two crew windows share one folder without tripping over each other', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    const windowOne = new GitSync(a)
+    const windowTwo = new GitSync(a)
+    fs.writeFileSync(path.join(a, 'shared.ts'), 'export const shared = true\n')
+
+    await Promise.all([windowOne.syncNow(), windowTwo.syncNow(), windowOne.syncNow()])
+    await windowTwo.syncNow()
+
+    expect(fs.existsSync(path.join(a, '.git', 'rebase-merge'))).toBe(false)
+    expect((await git(a, ['status', '--porcelain'])).trim()).toBe('')
+    expect((await git(a, ['branch', '--show-current'])).trim()).toBe('main')
+    await git(b, ['pull'])
+    expect(fs.readFileSync(path.join(b, 'shared.ts'), 'utf8')).toContain('shared = true')
+  })
+
+  it('digs itself out of a rebase left half finished', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(a, 'app.ts'), 'const value = 1\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'seed'])
+    await git(a, ['push'])
+    await git(b, ['pull'])
+
+    fs.writeFileSync(path.join(b, 'app.ts'), 'const value = 2\n')
+    await git(b, ['add', '-A'])
+    await git(b, ['commit', '-m', 'from b'])
+    await git(b, ['push'])
+    fs.writeFileSync(path.join(a, 'app.ts'), 'const value = 3\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'from a'])
+    await git(a, ['fetch'])
+    await git(a, ['pull', '--rebase']).catch(() => {})
+    expect(fs.existsSync(path.join(a, '.git', 'rebase-merge'))).toBe(true)
+
+    await new GitSync(a).syncNow()
+
+    expect(fs.existsSync(path.join(a, '.git', 'rebase-merge'))).toBe(false)
+    expect((await git(a, ['branch', '--show-current'])).trim()).toBe('main')
+    expect(await git(a, ['log', '--oneline'])).toContain('from a')
+  })
+
+  it('keeps what was written while a rebase was stuck', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(a, 'app.ts'), 'const value = 1\n')
+    fs.writeFileSync(path.join(a, 'log.jsonl'), '{"id":"first"}\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'seed'])
+    await git(a, ['push'])
+    await git(b, ['pull'])
+
+    fs.writeFileSync(path.join(b, 'app.ts'), 'const value = 2\n')
+    await git(b, ['add', '-A'])
+    await git(b, ['commit', '-m', 'from b'])
+    await git(b, ['push'])
+    fs.writeFileSync(path.join(a, 'app.ts'), 'const value = 3\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'from a'])
+    await git(a, ['fetch'])
+    await git(a, ['pull', '--rebase']).catch(() => {})
+
+    fs.writeFileSync(path.join(a, 'agent-wrote-this.ts'), 'export const written = true\n')
+    fs.appendFileSync(path.join(a, 'log.jsonl'), '{"id":"second"}\n')
+
+    await new GitSync(a).syncNow()
+
+    expect(fs.readFileSync(path.join(a, 'agent-wrote-this.ts'), 'utf8')).toContain('written = true')
+    const log = fs.readFileSync(path.join(a, 'log.jsonl'), 'utf8')
+    expect(log).toContain('"first"')
+    expect(log).toContain('"second"')
+    expect(await git(a, ['stash', 'list'])).toBe('')
+  })
+
   it('leaves stale stashes out of automatic syncing', async () => {
     const { a, b } = await setupOriginWithTwoClones()
     fs.writeFileSync(path.join(b, 'remote.ts'), 'export const remote = true\n')
