@@ -64,11 +64,13 @@ export class FakePeerConnection {
     if (this.signalingState === 'have-remote-offer') {
       this.localDescription = description('answer', `answer-${(this.offers += 1)}`)
       this.signalingState = 'stable'
+      this.gather()
       return
     }
     if (this.signalingState !== 'stable') throw new Error('cannot offer from this state')
     this.localDescription = description('offer', `offer-${(this.offers += 1)}`)
     this.signalingState = 'have-local-offer'
+    this.gather()
   }
 
   async setRemoteDescription(input: { type: string; sdp: string }): Promise<void> {
