@@ -21,9 +21,13 @@ export class SpeakingMonitor {
 
   constructor(private onChange: (speaking: string[]) => void) {}
 
+  // A voice can arrive after the tile does, and it arrives as a new stream, so
+  // watching follows the stream rather than settling on the first one seen.
   watch(peerId: string, stream: MediaStream): void {
-    if (this.watched.has(peerId)) return
+    const already = this.watched.get(peerId)
+    if (already?.stream === stream) return
     if (stream.getAudioTracks().length === 0) return
+    if (already) this.unwatch(peerId)
     const context = this.open()
     if (!context) return
     try {
@@ -33,6 +37,7 @@ export class SpeakingMonitor {
       analyser.smoothingTimeConstant = 0.4
       source.connect(analyser)
       this.watched.set(peerId, {
+        stream,
         analyser,
         source,
         buffer: new Float32Array(analyser.fftSize),
