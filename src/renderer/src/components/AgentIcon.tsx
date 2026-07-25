@@ -94,11 +94,13 @@ export function petHue(seed: string): number {
 export default function AgentIcon({
   seed,
   size = 'md',
-  presence
+  presence,
+  className = ''
 }: {
   seed: string
   size?: keyof typeof SIZES
   presence?: 'online' | 'offline'
+  className?: string
 }) {
   const pet = petOf(seed)
   const light = useTheme() === 'light'
