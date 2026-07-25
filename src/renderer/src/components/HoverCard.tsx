@@ -14,7 +14,15 @@ function within(rect: DOMRect | undefined, x: number, y: number, pad: number): b
   return x >= rect.left - pad && x <= rect.right + pad && y >= rect.top - pad && y <= rect.bottom + pad
 }
 
-export default function HoverCard({ content, children }: { content: ReactNode; children: ReactNode }) {
+export default function HoverCard({
+  content,
+  className = '',
+  children
+}: {
+  content: ReactNode
+  className?: string
+  children: ReactNode
+}) {
   const anchorRef = useRef<HTMLSpanElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const enterTimer = useRef<number | null>(null)
@@ -85,7 +93,7 @@ export default function HoverCard({ content, children }: { content: ReactNode; c
   })()
 
   return (
-    <span className="inline-block" ref={anchorRef} onMouseEnter={enter} onMouseLeave={cancel}>
+    <span className={`inline-block ${className}`} ref={anchorRef} onMouseEnter={enter} onMouseLeave={cancel}>
       {children}
       {style &&
         createPortal(
