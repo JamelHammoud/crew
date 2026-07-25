@@ -24,10 +24,11 @@ function loop() {
   canvas.width = 320
   canvas.height = 180
   const paint = canvas.getContext('2d')
-  let step = 0
   setInterval(() => {
-    paint.fillStyle = ['#f00', '#0f0', '#00f'][step++ % 3]
-    paint.fillRect(0, 0, canvas.width, canvas.height)
+    for (let box = 0; box < 60; box++) {
+      paint.fillStyle = 'rgb(' + [0, 0, 0].map(() => Math.floor(Math.random() * 256)).join(',') + ')'
+      paint.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 40, 40)
+    }
   }, 66)
   return canvas.captureStream(15).getVideoTracks()[0]
 }
