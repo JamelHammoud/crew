@@ -314,22 +314,20 @@ describe('agent instances', () => {
     alis.close()
     await ui.waitForEvent(e => e.kind === 'agent.offline' && e.label === 'Alis Fake')
 
-    const adopted: string[] = []
     const jamels = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
       providers: [makeFakeProvider()],
       agents: [{ instanceId: 'own', provider: 'fake', name: 'Own Fake', settings: {} }],
-      reconnectDelayMs: 100,
-      onAdopt: def => adopted.push(def.instanceId)
+      reconnectDelayMs: 100
     })
     runners.push(jamels)
     jamels.connect(host.url)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Own Fake')
-    // A wrong adoption would surface as a second "Alis Fake" online; give it room.
+    // Picking someone else's agent up would surface as a second "Alis Fake"
+    // online; give it room.
     await new Promise(r => setTimeout(r, 300))
     expect(ui.events.filter(e => e.kind === 'agent.online' && e.label === 'Alis Fake')).toHaveLength(1)
-    expect(adopted).toEqual([])
   })
 })
