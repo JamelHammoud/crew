@@ -89,9 +89,19 @@ export class PeerLink {
 
   async publish(tracks: SlotTracks): Promise<void> {
     if (this.closed) return
+    this.wanted = { ...tracks }
+    await this.apply()
+  }
+
+  // The side that answers has no slots until the offer arrives and makes them,
+  // so what to send is remembered and put in place the moment there is
+  // somewhere to put it.
+  private async apply(): Promise<void> {
+    const slots = this.slots
+    if (this.closed || !slots) return
     for (const slot of SLOTS) {
-      const sender = this.senders[slot]
-      const next = tracks[slot]
+      const sender = slots[slot].sender
+      const next = this.wanted[slot]
       if (sender.track === next) continue
       try {
         await sender.replaceTrack(next)
@@ -100,6 +110,25 @@ export class PeerLink {
       }
       if (next) this.tune(slot)
     }
+  }
+
+  // Which slot is which is the order the three lines come in, and that order is
+  // the same on both ends because only one end writes it. The side that answers
+  // must never make its own: a transceiver added by hand is not one the browser
+  // will use for a line it was offered, so making them here leaves this side
+  // listening to three that nothing is ever sent on.
+  private bind(found: RTCRtpTransceiver[]): void {
+    if (this.slots || found.length < SLOTS.length) return
+    const slots = {} as Record<Slot, RTCRtpTransceiver>
+    SLOTS.forEach((slot, index) => {
+      slots[slot] = found[index]
+    })
+    this.slots = slots
+    for (const slot of SLOTS) {
+      slots[slot].direction = 'sendrecv'
+      this.remote[slot] = new MediaStream([slots[slot].receiver.track])
+    }
+    this.onChange()
   }
 
   // Signals are taken strictly one at a time. Two of them in flight together is

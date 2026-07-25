@@ -1,43 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="tile" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#a9e2fb" stop-opacity="1" />
-      <stop offset="0.5" stop-color="#6dbdf3" stop-opacity="1" />
-      <stop offset="1" stop-color="#3b95e9" stop-opacity="1" />
+      <stop offset="0" stop-color="#0fc0fa" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#1ea6fc" stop-opacity="1" />
+      <stop offset="1" stop-color="#1c72f8" stop-opacity="1" />
     </linearGradient>
     <linearGradient id="sheen" x1="0" y1="100" x2="0" y2="553.2" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.24" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
     <linearGradient id="rim" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85" />
-      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.08" />
-      <stop offset="1" stop-color="#0b3d70" stop-opacity="0.16" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.72" />
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.06" />
+      <stop offset="1" stop-color="#9adcff" stop-opacity="0.34" />
     </linearGradient>
     <radialGradient id="glow" cx="512" cy="462.56" r="379.04" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28" />
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="0" stop-color="#8ceaff" stop-opacity="0.4" />
+      <stop offset="1" stop-color="#8ceaff" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="body" cx="0.34" cy="0.27" r="0.94">
       <stop offset="0" stop-color="#ffffff" stop-opacity="1" />
-      <stop offset="0.3" stop-color="#f8fcff" stop-opacity="1" />
-      <stop offset="0.62" stop-color="#e3f1fd" stop-opacity="1" />
-      <stop offset="0.86" stop-color="#c2dcf3" stop-opacity="1" />
-      <stop offset="1" stop-color="#a3c6e6" stop-opacity="1" />
+      <stop offset="0.3" stop-color="#fbfdff" stop-opacity="1" />
+      <stop offset="0.62" stop-color="#e9f4fe" stop-opacity="1" />
+      <stop offset="0.86" stop-color="#cbe4f8" stop-opacity="1" />
+      <stop offset="1" stop-color="#b1d4f1" stop-opacity="1" />
     </radialGradient>
     <radialGradient id="shade" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0.72" stop-color="#1a5590" stop-opacity="0" />
-      <stop offset="0.93" stop-color="#1a5590" stop-opacity="0.07" />
-      <stop offset="1" stop-color="#1a5590" stop-opacity="0.2" />
+      <stop offset="0.72" stop-color="#0b5aa0" stop-opacity="0" />
+      <stop offset="0.93" stop-color="#0b5aa0" stop-opacity="0.063" />
+      <stop offset="1" stop-color="#0b5aa0" stop-opacity="0.18" />
     </radialGradient>
     <radialGradient id="bounce" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0.8" stop-color="#ffffff" stop-opacity="0" />
-      <stop offset="0.95" stop-color="#ffffff" stop-opacity="0.6" />
+      <stop offset="0.95" stop-color="#ffffff" stop-opacity="0.55" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="edge" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0.84" stop-color="#ffffff" stop-opacity="0" />
-      <stop offset="0.97" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="0.97" stop-color="#ffffff" stop-opacity="0.55" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <linearGradient id="lower" x1="0" y1="525" x2="0" y2="642" gradientUnits="userSpaceOnUse">
@@ -59,8 +59,8 @@
       <feColorMatrix type="saturate" values="0" />
     </filter>
     <radialGradient id="gloss" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.55" />
-      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.275" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.25" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <filter id="cast" x="-25%" y="-25%" width="150%" height="150%">
@@ -85,8 +85,8 @@
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" />
   <g clip-path="url(#tile-clip)">
     <rect x="100" y="100" width="824" height="824" fill="url(#glow)" />
-    <rect x="100" y="100" width="824" height="824" filter="url(#grain)" opacity="0.04" />
-    <g fill="none" stroke="#ffffff" stroke-opacity="0.42" stroke-width="3">
+    <rect x="100" y="100" width="824" height="824" filter="url(#grain)" opacity="0.05" />
+    <g fill="none" stroke="#ffffff" stroke-opacity="0.36" stroke-width="3">
     <line x1="264.8" y1="100" x2="264.8" y2="924" />
     <line x1="100" y1="264.8" x2="924" y2="264.8" />
     <line x1="429.6" y1="100" x2="429.6" y2="924" />
