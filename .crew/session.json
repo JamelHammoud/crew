@@ -1223,6 +1223,86 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
       }
+    },
+    {
+      "id": "ali/7ad44611-9f35-435c-ae15-094179a86e49",
+      "label": "Codex Gpt-5.6-sol 2",
+      "provider": "codex",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "gpt-5.6-sol",
+        "effort": "xhigh"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false
     }
   ]
 }
