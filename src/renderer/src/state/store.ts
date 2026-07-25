@@ -416,6 +416,11 @@ export const useCrew = create<CrewState>((set, get) => {
           agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, label: msg.label } : a))
         }))
         break
+      case 'agent.avatar':
+        set(state => ({
+          agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, avatar: msg.file ?? undefined } : a))
+        }))
+        break
       case 'agent.step':
         set(state => ({ steps: { ...state.steps, [msg.promptId]: upsertStep(state.steps[msg.promptId], msg.step) } }))
         break
