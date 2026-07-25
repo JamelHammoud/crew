@@ -8,7 +8,7 @@ import FaceStack from './FaceStack'
 import { Popover } from './Popover'
 import Tooltip from './Tooltip'
 
-const FACE = 28
+const FACE = 40
 const FACES = 2
 
 export interface Present {
