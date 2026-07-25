@@ -150,29 +150,43 @@ const gridLines = () =>
     ])
     .join('\n')
 
-// A disc is lit from the upper left, catches the light again along the bottom
-// edge, and carries one specular near the top. Every gradient is in bounding
-// box units, so one definition shades all three the same way.
-function svg({ ink, tile, rim, sheen, grid, glow, mark, bounce, gloss }, blueprint = false) {
+// A disc is lit from the upper left: a body that falls away to the far edge, a
+// shade drawn in all round it, one bounce of light along the lower edge where
+// the tile throws it back, and a specular where the light lands. Every gradient
+// is in bounding box units, so one definition shades all three the same way.
+function svg({ ink, tile, rim, sheen, grid, glow, body, shade, bounce, gloss }, blueprint = false) {
   const paper = blueprint
     ? `    <radialGradient id="glow" cx="${CENTRE}" cy="${round(CENTRE - GRID * 0.3)}" r="${round(TILE.size * 0.46)}" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${glow[0]}" stop-opacity="${glow[1]}" />
       <stop offset="1" stop-color="${glow[0]}" stop-opacity="0" />
     </radialGradient>
-    <radialGradient id="mark" cx="0.36" cy="0.28" r="0.84">
-${stops(mark)}
+    <radialGradient id="body" cx="0.34" cy="0.27" r="0.94">
+${ramp(body)}
     </radialGradient>
-    <radialGradient id="bounce" cx="0.5" cy="0.94" r="0.6">
-      <stop offset="0" stop-color="${bounce[0]}" stop-opacity="${bounce[1]}" />
+    <radialGradient id="shade" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.72" stop-color="${shade[0]}" stop-opacity="0" />
+      <stop offset="0.93" stop-color="${shade[0]}" stop-opacity="${round(shade[1] * 0.35)}" />
+      <stop offset="1" stop-color="${shade[0]}" stop-opacity="${shade[1]}" />
+    </radialGradient>
+    <radialGradient id="bounce" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.8" stop-color="${bounce[0]}" stop-opacity="0" />
+      <stop offset="0.95" stop-color="${bounce[0]}" stop-opacity="${bounce[1]}" />
       <stop offset="1" stop-color="${bounce[0]}" stop-opacity="0" />
     </radialGradient>
-    <radialGradient id="gloss" cx="0.4" cy="0.17" r="0.46">
+    <linearGradient id="lower" x1="0" y1="${round(CENTRE + RADIUS * 0.1)}" x2="0" y2="${CENTRE + RADIUS}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000000" />
+      <stop offset="1" stop-color="#ffffff" />
+    </linearGradient>
+    <mask id="under" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
+      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="url(#lower)" />
+    </mask>
+    <radialGradient id="gloss" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0" stop-color="#ffffff" stop-opacity="${gloss}" />
-      <stop offset="0.6" stop-color="#ffffff" stop-opacity="${round(gloss * 0.2)}" />
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="${round(gloss * 0.5)}" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <filter id="cast" x="-25%" y="-25%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#031228" flood-opacity="0.45" />
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#02102c" flood-opacity="0.5" />
     </filter>
 `
     : ''
