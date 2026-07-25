@@ -28,7 +28,7 @@ export default function PlanPanel({ threadId }: { threadId: string }) {
         <ScrollFade edges={edges} />
       </div>
       {thread.mode === 'plan' && (
-        <div className="p-4 border-t border-ink-700">
+        <div className="p-4">
           <button
             onClick={() => implementPlan(threadId)}
             disabled={running}
