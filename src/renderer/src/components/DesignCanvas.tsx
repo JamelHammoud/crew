@@ -33,7 +33,7 @@ import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
 
-const shapeUtils = [...defaultShapeUtils, DesignNodeUtil]
+const shapeUtils = [...defaultShapeUtils.filter(util => util.type !== 'frame'), DesignFrameUtil, DesignNodeUtil]
 
 const tools = [DesignNodeTool]
 
