@@ -333,22 +333,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-<<<<<<< Updated upstream
-        "fetchedAt": 1785012075818,
-=======
-        "fetchedAt": 1785011938624,
->>>>>>> Stashed changes
+        "fetchedAt": 1785012110104,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-<<<<<<< Updated upstream
-            "resetsAt": 1785015599924,
-=======
-            "resetsAt": 1785015599749,
->>>>>>> Stashed changes
+            "resetsAt": 1785015600246,
             "active": true
           },
           {
@@ -356,11 +348,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-<<<<<<< Updated upstream
-            "resetsAt": 1785499199924,
-=======
-            "resetsAt": 1785499199749,
->>>>>>> Stashed changes
+            "resetsAt": 1785499200246,
             "active": false
           }
         ],
@@ -450,7 +438,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785012076053,
+        "fetchedAt": 1785012110384,
         "windows": [
           {
             "key": "primary",
@@ -668,24 +656,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-<<<<<<< Updated upstream
         "fetchedAt": 1785012064599,
-=======
-        "fetchedAt": 1785011938624,
->>>>>>> Stashed changes
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-<<<<<<< Updated upstream
             "percent": 9,
             "severity": "normal",
             "resetsAt": 1785014999098,
-=======
-            "percent": 92,
-            "severity": "critical",
-            "resetsAt": 1785015599749,
->>>>>>> Stashed changes
             "active": true
           },
           {
@@ -701,10 +679,6 @@
             "label": "Weekly (Fable)",
             "percent": 0,
             "severity": "normal",
-<<<<<<< Updated upstream
-=======
-            "resetsAt": 1785499199749,
->>>>>>> Stashed changes
             "active": false
           }
         ],
@@ -798,11 +772,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-<<<<<<< Updated upstream
         "fetchedAt": 1785012065151,
-=======
-        "fetchedAt": 1785012058625,
->>>>>>> Stashed changes
         "windows": [
           {
             "key": "primary",
@@ -925,11 +895,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-<<<<<<< Updated upstream
-        "fetchedAt": 1785012076053,
-=======
-        "fetchedAt": 1785012058625,
->>>>>>> Stashed changes
+        "fetchedAt": 1785012110384,
         "windows": [
           {
             "key": "primary",
@@ -1048,22 +1014,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-<<<<<<< Updated upstream
-        "fetchedAt": 1785012075818,
-=======
-        "fetchedAt": 1785011938624,
->>>>>>> Stashed changes
+        "fetchedAt": 1785012110104,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-<<<<<<< Updated upstream
-            "resetsAt": 1785015599924,
-=======
-            "resetsAt": 1785015599749,
->>>>>>> Stashed changes
+            "resetsAt": 1785015600246,
             "active": true
           },
           {
@@ -1071,11 +1029,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-<<<<<<< Updated upstream
-            "resetsAt": 1785499199924,
-=======
-            "resetsAt": 1785499199749,
->>>>>>> Stashed changes
+            "resetsAt": 1785499200246,
             "active": false
           }
         ],
@@ -1083,7 +1037,6 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
       }
-<<<<<<< Updated upstream
     },
     {
       "id": "ali/709e7abc-2bb1-4a09-9549-4cbf570bc556",
@@ -1190,14 +1143,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012075818,
+        "fetchedAt": 1785012110104,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015599924,
+            "resetsAt": 1785015600246,
             "active": true
           },
           {
@@ -1205,7 +1158,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499199924,
+            "resetsAt": 1785499200246,
             "active": false
           }
         ],
@@ -1319,14 +1272,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012075818,
+        "fetchedAt": 1785012110104,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015599924,
+            "resetsAt": 1785015600246,
             "active": true
           },
           {
@@ -1334,7 +1287,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499199924,
+            "resetsAt": 1785499200246,
             "active": false
           }
         ],
@@ -1912,8 +1865,6 @@
         }
       ],
       "steerable": false
-=======
->>>>>>> Stashed changes
     }
   ],
   "removedAgents": [
