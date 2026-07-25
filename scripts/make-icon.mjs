@@ -46,36 +46,48 @@ const THEMES = {
     sheen: 0.35
   },
   devDark: {
-    ink: '#eaf2ff',
+    ink: '#3d9bf0',
     tile: [
-      ['#17427a', 1],
-      ['#0b2750', 1],
-      ['#04122c', 1]
+      ['#15181f', 1],
+      ['#0a0c12', 1],
+      ['#040508', 1]
     ],
     rim: [
-      ['#bcd8ff', 0.5],
-      ['#bcd8ff', 0.06],
-      ['#bcd8ff', 0.26]
+      ['#9ac8f5', 0.42],
+      ['#9ac8f5', 0.05],
+      ['#9ac8f5', 0.22]
     ],
-    sheen: 0.12,
-    grid: 0.2,
-    guide: 0.45
+    sheen: 0.07,
+    grid: ['#4d94db', 0.3],
+    glow: ['#1d4d84', 0.5],
+    mark: [
+      ['#8ad4ff', 1],
+      ['#3897ee', 1],
+      ['#1666cc', 1]
+    ],
+    gloss: 0.5
   },
   devLight: {
-    ink: '#0f4c8a',
+    ink: '#ffffff',
     tile: [
-      ['#ffffff', 1],
-      ['#f1f6fd', 1],
-      ['#d9e6f8', 1]
+      ['#a9e2fb', 1],
+      ['#6dbdf3', 1],
+      ['#3b95e9', 1]
     ],
     rim: [
-      ['#ffffff', 0.95],
-      ['#0b2e5c', 0.05],
-      ['#0b2e5c', 0.18]
+      ['#ffffff', 0.85],
+      ['#ffffff', 0.08],
+      ['#0b3d70', 0.16]
     ],
-    sheen: 0.35,
-    grid: 0.22,
-    guide: 0.45
+    sheen: 0.24,
+    grid: ['#ffffff', 0.42],
+    glow: ['#ffffff', 0.28],
+    mark: [
+      ['#ffffff', 1],
+      ['#f4faff', 1],
+      ['#cfe6fa', 1]
+    ],
+    gloss: 0.55
   }
 }
 
