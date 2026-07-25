@@ -333,14 +333,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012718361,
+        "fetchedAt": 1785013395593,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015600505,
+            "resetsAt": 1785015599955,
             "active": true
           },
           {
@@ -348,7 +348,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200505,
+            "resetsAt": 1785499199955,
             "active": false
           }
         ],
@@ -438,18 +438,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785012898375,
+        "fetchedAt": 1785013622374,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 28
+            "percent": 1
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785001208437
+        "asOf": 1785013556454
       }
     },
     {
@@ -895,18 +895,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785012898375,
+        "fetchedAt": 1785013622374,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 28
+            "percent": 1
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785001208437
+        "asOf": 1785013556454
       }
     },
     {
@@ -1014,14 +1014,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012718361,
+        "fetchedAt": 1785013395593,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015600505,
+            "resetsAt": 1785015599955,
             "active": true
           },
           {
@@ -1029,7 +1029,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200505,
+            "resetsAt": 1785499199955,
             "active": false
           }
         ],
@@ -1143,14 +1143,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012718361,
+        "fetchedAt": 1785013395593,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015600505,
+            "resetsAt": 1785015599955,
             "active": true
           },
           {
@@ -1158,7 +1158,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200505,
+            "resetsAt": 1785499199955,
             "active": false
           }
         ],
@@ -1272,14 +1272,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012718361,
+        "fetchedAt": 1785013395593,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015600505,
+            "resetsAt": 1785015599955,
             "active": true
           },
           {
@@ -1287,7 +1287,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499200505,
+            "resetsAt": 1785499199955,
             "active": false
           }
         ],
