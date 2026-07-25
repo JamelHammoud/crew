@@ -168,9 +168,8 @@ export class PeerLink {
     if (!slot) return
     const stream = this.remote[slot]
     if (stream.getTracks().includes(event.track)) return
-    for (const track of stream.getTracks()) stream.removeTrack(track)
-    stream.addTrack(event.track)
-    this.onChange()
+    this.remote[slot] = new MediaStream([event.track])
+    this.notify()
   }
 
   private async handle(signal: HuddleSignal): Promise<void> {
