@@ -13,8 +13,8 @@ const RIM = 4
 const RADIUS = 130
 const STEP = 186
 const GAP = 28
-const LINE = 12
-const GRID = TILE.size / 12
+const GRID = TILE.size / 5
+const RULES = [-1.5, -0.5, 0.5, 1.5]
 
 const THEMES = {
   dark: {
