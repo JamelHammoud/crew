@@ -98,7 +98,7 @@ export default function Composer({
             rows={2}
             spellCheck={false}
             placeholder={placeholder}
-            className="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48"
+            className="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"
           />
         </div>
         <div className="flex items-center justify-between mt-2">
