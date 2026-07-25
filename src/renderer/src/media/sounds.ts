@@ -2,7 +2,17 @@ import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../../../shared/events'
 import { soundsOn } from '../state/sound'
 import { playNotes, type Note } from './tone'
 
-export type SoundName = 'send' | 'receive' | 'done' | 'failed' | 'join' | 'leave'
+export type SoundName =
+  | 'send'
+  | 'receive'
+  | 'done'
+  | 'failed'
+  | 'join'
+  | 'leave'
+  | 'tab.chat'
+  | 'tab.agents'
+  | 'tab.docs'
+  | 'tab.design'
 
 const VOICES: Record<SoundName, Note[]> = {
   send: [
