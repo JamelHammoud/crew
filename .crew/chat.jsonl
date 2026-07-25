@@ -9300,3 +9300,4 @@
 {"id":"59397f60-f3b0-4a73-b8ae-3245ed0ff5bb","ts":1785007913996,"kind":"agent.online","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
 {"id":"38afbd29-0901-47f7-90af-e79e220f8bd3","ts":1785007913996,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"bdd322ae-84bb-487e-95c3-281e60b4dae6","ts":1785007993567,"kind":"agent.updated","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","settings":{"model":"opus","opusModel":"claude-opus-5","effort":"xhigh"}}
+{"id":"ab4785bb-d59e-46fb-afef-11e515157274","ts":1785007998607,"kind":"agent.updated","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","settings":{"model":"opus","opusModel":"claude-opus-5","effort":"xhigh"}}
