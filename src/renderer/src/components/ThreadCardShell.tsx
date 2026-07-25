@@ -40,12 +40,20 @@ export default function ThreadCardShell({
             <span className="text-sm text-fg-faint cursor-default">{formatTime(ts)}</span>
           </Tooltip>
         </div>
-        <div className="group mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 hover:border-ink-600">
-          <button onClick={onOpen} className="w-full text-left">
-            <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">
-              <MentionText text={title} />
-            </p>
-          </button>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={onOpen}
+          onKeyDown={event => {
+            if (event.key !== 'Enter' && event.key !== ' ') return
+            event.preventDefault()
+            onOpen()
+          }}
+          className="group mt-2 border border-ink-700 rounded-card overflow-hidden cursor-pointer transition-colors duration-200 hover:border-ink-600"
+        >
+          <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">
+            <MentionText text={title} />
+          </p>
           {children}
         </div>
       </div>
