@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLPageId, type TLShape, type TLShapeId } from 'tldraw'
-import { CanvasGlyph } from '../design/tools'
+import { CanvasGlyph, canRename, renameShape } from '../design/tools'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
 

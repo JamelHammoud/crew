@@ -126,6 +126,15 @@ export function currentToolId(editor: Editor): string {
   return `geo:${String(editor.getStyleForNextShape(GeoShapeGeoStyle))}`
 }
 
+export function canRename(shape: TLShape): boolean {
+  return shape.type === 'frame' || shape.type === 'design-node'
+}
+
+export function renameShape(editor: Editor, shape: TLShape, name: string): void {
+  if (shape.type === 'frame') editor.updateShape({ id: shape.id, type: 'frame', props: { name } })
+  if (shape.type === 'design-node') editor.updateShape({ id: shape.id, type: 'design-node', props: { name } })
+}
+
 export function addFrame(editor: Editor, preset: FramePreset): void {
   const center = editor.getViewportPageBounds().center
   editor.run(() => {
