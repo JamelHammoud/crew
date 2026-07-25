@@ -144,7 +144,7 @@ export default function EmojiPicker({
                 <div key={section.id} style={{ height: section.height }} className="px-1">
                   {near && (
                     <>
-                      <p className="sticky top-0 z-10 flex h-7 items-center bg-ink-850/85 px-2 text-xs font-semibold uppercase tracking-wide text-fg-muted backdrop-blur-xl">
+                      <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg-faint">
                         {section.label}
                       </p>
                       <div className="grid grid-cols-9">{section.entries.map(cell)}</div>
