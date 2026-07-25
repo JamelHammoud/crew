@@ -118,8 +118,19 @@ export function parseFileRef(raw: string): FileRef | null {
 export type FileToken =
   | { kind: 'text'; text: string }
   | { kind: 'file'; text: string; path: string; suffix: string; line: number | null }
+  | { kind: 'url'; text: string }
 
-export function fileTokens(text: string): FileToken[] {
+const occurrences = (text: string, char: string): number => text.split(char).length - 1
+
+// Sentences end after links too, so trailing punctuation belongs to the prose
+// unless a bracket it opened is still waiting to close.
+function trimUrl(raw: string): string {
+  let url = raw.replace(URL_TAIL_RE, '')
+  while (url.endsWith(')') && occurrences(url, ')') > occurrences(url, '(')) url = url.slice(0, -1)
+  return url
+}
+
+function pathTokens(text: string): FileToken[] {
   const tokens: FileToken[] = []
   let cursor = 0
   for (const match of text.matchAll(PROSE_RE)) {
@@ -131,6 +142,20 @@ export function fileTokens(text: string): FileToken[] {
     cursor = start + match[0].length
   }
   if (cursor < text.length) tokens.push({ kind: 'text', text: text.slice(cursor) })
+  return tokens
+}
+
+export function fileTokens(text: string): FileToken[] {
+  const tokens: FileToken[] = []
+  let cursor = 0
+  for (const match of text.matchAll(URL_RE)) {
+    const start = match.index ?? 0
+    const url = trimUrl(match[0])
+    if (start > cursor) tokens.push(...pathTokens(text.slice(cursor, start)))
+    tokens.push({ kind: 'url', text: url })
+    cursor = start + url.length
+  }
+  if (cursor < text.length) tokens.push(...pathTokens(text.slice(cursor)))
   return tokens
 }
 
