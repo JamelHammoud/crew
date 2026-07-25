@@ -348,7 +348,7 @@
       "settings": {
         "model": "opus",
         "opusModel": "claude-opus-5",
-        "effort": "xhigh"
+        "effort": "max"
       },
       "fields": [
         {
