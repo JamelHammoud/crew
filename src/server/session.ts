@@ -1848,6 +1848,7 @@ export class CrewSession {
     const meta = this.meta.get(ws)
     const existing = this.agents.get(id)
     if (existing) {
+      if (existing.runner && existing.ownerId !== member.id) return
       if (existing.dropTimer) {
         clearTimeout(existing.dropTimer)
         existing.dropTimer = null
