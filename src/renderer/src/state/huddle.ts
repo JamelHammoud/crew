@@ -73,9 +73,18 @@ export const useHuddle = create<HuddleState>((set, get) => {
     set({ remote, link })
   }
 
+  // The same microphone stays the same stream, so watching it is not torn down
+  // and built again every time a camera or a screen goes on.
+  let own: MediaStream | null = null
+
   const publish = () => {
     mesh.publish(tracks)
-    if (tracks.mic) monitor.watch(get().peerId, new MediaStream([tracks.mic]))
+    if (!tracks.mic) {
+      own = null
+      return
+    }
+    if (own?.getAudioTracks()[0] !== tracks.mic) own = new MediaStream([tracks.mic])
+    monitor.watch(get().peerId, own)
   }
 
   const announce = () => {
