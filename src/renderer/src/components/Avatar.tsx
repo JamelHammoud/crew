@@ -1,4 +1,5 @@
 import { useTheme } from '../state/theme'
+import { avatarColors, avatarInitial } from './avatarColor'
 
 const SIZES = {
   sm: 'w-7 h-7 text-xs',
@@ -11,12 +12,6 @@ const DOTS = {
   md: 'w-2.5 h-2.5 ring-2',
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
-
-function hueOf(name: string): number {
-  let hash = 0
-  for (const char of name) hash = (hash * 31 + char.charCodeAt(0)) % 360
-  return hash
-}
 
 export default function Avatar({
   name,
