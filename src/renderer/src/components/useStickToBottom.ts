@@ -67,6 +67,7 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
           el.scrollTop = el.scrollHeight
           lastScrollTop.current = el.scrollTop
         }
+        measure()
         return
       }
       if (!ready) return
@@ -76,13 +77,15 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
         setPinned(false)
         lastScrollTop.current = saved.top
         el.scrollTop = saved.top
+        measure()
         return
       }
       el.scrollTop = el.scrollHeight
       lastScrollTop.current = el.scrollTop
+      measure()
     },
-    [memoryKey, scrollRef, setPinned]
+    [measure, memoryKey, scrollRef, setPinned]
   )
 
-  return { pinnedRef, scrolledUp, onScroll, jumpToBottom, follow }
+  return { pinnedRef, scrolledUp, atBottom, onScroll, jumpToBottom, follow }
 }
