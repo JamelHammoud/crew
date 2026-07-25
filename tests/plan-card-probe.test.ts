@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import App from '../src/renderer/src/App'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
@@ -68,6 +68,8 @@ const online = {
 }
 
 describe('plans in the app', () => {
+  afterEach(cleanup)
+
   it('shows a finished plan with a way to implement it, and keeps it beside the thread', () => {
     useCrew.setState({
       ...online,
