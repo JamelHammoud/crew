@@ -10713,3 +10713,5 @@
 {"id":"3bef6bd2-fc86-4622-ab00-99c4f93d8268","ts":1785013621469,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"c4c7f979-d853-4bb6-b4d4-c9b84d08ed1e","ts":1785013627738,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
 {"id":"f3f2732b-53c8-41a2-b2eb-6b8a73e599e3","ts":1785013636730,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"80ae484e-31b2-4dbf-8efb-5b362567eb45","ts":1785013643179,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Continue","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"docMentions":[],"threadId":"40e87152-ab93-42a6-860b-6cf6de0418cb","attachments":[]}
+{"id":"bed57395-bac5-482c-835b-b54d6e6e8c52","ts":1785013643179,"kind":"message","authorId":"crew","authorName":"crew","text":"Claude Opus 5 is not here right now.","mentions":[],"threadId":"40e87152-ab93-42a6-860b-6cf6de0418cb"}
