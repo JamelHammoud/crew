@@ -57,7 +57,9 @@ export default function HuddleTile({
         {live && camera ? (
           <VideoStream stream={camera} mirror={self} />
         ) : (
-          <Avatar name={peer.name} size={look.avatar} />
+          <span className="block">
+            <Avatar name={peer.name} size={look.avatar} />
+          </span>
         )}
       </div>
 
