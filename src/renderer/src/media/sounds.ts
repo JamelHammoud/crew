@@ -33,27 +33,83 @@ const CHIMES: Record<ChimeName, Note[]> = {
   leave: [
     { hz: 880, at: 0, length: 0.22, gain: 0.8 },
     { hz: 587.33, at: 0.09, length: 0.26, gain: 0.8 }
-  ],
-  // All four tabs sit on the same note, A6, and none is higher or lower than the
-  // rest. What tells them apart is shape: a dip, a triple tap, a paper flick, a
-  // struck bell. Nobody has to hear them side by side to know which one it is.
+  ]
+}
+
+// Four objects rather than four melodies: a bubble, a knuckle on wood, a paper
+// flick, a struck glass. All land in the same octave so no tab sits above
+// another, and each one is named by what it is made of.
+const STRIKES: Record<StrikeName, Strike[]> = {
   'tab.chat': [
-    { hz: 1760, at: 0, length: 0.06, gain: 0.44 },
-    { hz: 1318.51, at: 0.045, length: 0.05, gain: 0.32 },
-    { hz: 1760, at: 0.085, length: 0.16, gain: 0.46 }
+    {
+      hz: 560,
+      at: 0,
+      length: 0.13,
+      gain: 0.62,
+      partials: [1, 2],
+      bend: 0.5,
+      bendTime: 0.05,
+      tone: 2400,
+      wet: 0.22,
+      rasp: { hz: 1600, q: 1.2, gain: 0.16, length: 0.01 }
+    }
   ],
   'tab.agents': [
-    { hz: 1760, at: 0, length: 0.045, gain: 0.4 },
-    { hz: 1760, at: 0.05, length: 0.045, gain: 0.38 },
-    { hz: 1760, at: 0.1, length: 0.15, gain: 0.42 }
+    {
+      hz: 620,
+      at: 0,
+      length: 0.1,
+      gain: 0.6,
+      partials: [1, 2.76, 5.1],
+      bend: 1.4,
+      bendTime: 0.018,
+      tone: 3200,
+      wet: 0.14,
+      pan: -0.12,
+      rasp: { hz: 1100, q: 0.7, gain: 0.45, length: 0.02 }
+    },
+    {
+      hz: 592,
+      at: 0.063,
+      length: 0.14,
+      gain: 0.5,
+      partials: [1, 2.76, 5.1],
+      bend: 1.4,
+      bendTime: 0.018,
+      tone: 3000,
+      wet: 0.14,
+      pan: 0.12,
+      rasp: { hz: 1040, q: 0.7, gain: 0.4, length: 0.02 }
+    }
   ],
   'tab.docs': [
-    { hz: 1975.53, at: 0, length: 0.035, gain: 0.38 },
-    { hz: 1760, at: 0.03, length: 0.09, gain: 0.42 }
+    {
+      hz: 700,
+      at: 0,
+      length: 0.15,
+      gain: 0.55,
+      partials: [1, 3.1],
+      bend: 1.14,
+      bendTime: 0.012,
+      tone: 5200,
+      wet: 0.07,
+      rasp: { hz: 4200, q: 0.5, gain: 0.55, length: 0.018 }
+    }
   ],
   'tab.design': [
-    { hz: 1760, at: 0, length: 0.32, gain: 0.4 },
-    { hz: 2637.02, at: 0.012, length: 0.36, gain: 0.2 }
+    {
+      hz: 660,
+      at: 0,
+      length: 0.44,
+      gain: 0.5,
+      partials: [1, 2.76, 5.4, 8.93],
+      bend: 1.03,
+      bendTime: 0.012,
+      detune: 7,
+      tone: 8000,
+      wet: 0.5,
+      rasp: { hz: 6200, q: 1.4, gain: 0.3, length: 0.008 }
+    }
   ]
 }
 
