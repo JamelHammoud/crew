@@ -1860,6 +1860,9 @@ export class CrewSession {
     const wanted = label.replace(/\s+/g, ' ').trim().slice(0, LABEL_LIMIT)
     if (!wanted || wanted === agent.label) return
     agent.label = this.uniqueLabel(wanted, id)
+    for (const thread of this.threads.values()) {
+      if (thread.agentId === id) thread.agentLabel = agent.label
+    }
     const renamed: ServerMessage = { type: 'agent.renamed', agentId: id, label: agent.label }
     this.broadcast(renamed)
     if (agent.runner) this.send(agent.runner, renamed)
