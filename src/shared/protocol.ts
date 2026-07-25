@@ -88,6 +88,7 @@ export type ClientMessage =
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
   | { type: 'agent.rename'; agentId: string; label: string }
+  | { type: 'agent.avatar'; agentId: string; image: OutgoingAttachment | null }
   | { type: 'agent.remove'; agentId: string }
   | { type: 'agent.register'; llm: RegisteredLlm }
   | { type: 'agent.deregister'; agentId: string }
@@ -105,6 +106,7 @@ export type ServerMessage =
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
   | { type: 'agent.renamed'; agentId: string; label: string }
+  | { type: 'agent.avatar'; agentId: string; file: string | null }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
