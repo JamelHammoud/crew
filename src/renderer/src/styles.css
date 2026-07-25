@@ -541,6 +541,14 @@ body {
   @apply my-2;
 }
 
+.md > :first-child {
+  @apply mt-0;
+}
+
+.md > :last-child {
+  @apply mb-0;
+}
+
 .md ul,
 .md ol {
   @apply my-2 pl-5;
