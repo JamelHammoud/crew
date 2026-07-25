@@ -1,4 +1,4 @@
-import { ChevronUpIcon } from '@heroicons/react/16/solid'
+import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useCallback, useEffect, useState } from 'react'
 import { useEditor, useValue, type Editor } from 'tldraw'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
@@ -115,7 +115,7 @@ function Group({
             active ? 'text-ink-900/70 hover:text-ink-900' : 'text-fg-muted hover:text-fg'
           }`}
         >
-          <ChevronUpIcon className="w-3 h-3" />
+          <ChevronDownIcon className="w-3.5 h-3.5" />
         </button>
       )}
       <DesignToolMenu
