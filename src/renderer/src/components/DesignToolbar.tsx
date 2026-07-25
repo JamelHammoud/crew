@@ -1,20 +1,17 @@
 import { ChevronUpIcon } from '@heroicons/react/16/solid'
 import { useCallback, useEffect, useState } from 'react'
-import { useValue } from 'tldraw'
+import { useValue, type Editor } from 'tldraw'
 import { useDesignEditor } from '../design/editorContext'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
 import DesignToolMenu from './DesignToolMenus'
 import Tooltip from './Tooltip'
 
-const FIRST: Record<string, string> = Object.fromEntries(
-  TOOL_GROUPS.map(group => [group.id, group.tools[0].id])
-)
+const FIRST: Record<string, string> = Object.fromEntries(TOOL_GROUPS.map(group => [group.id, group.tools[0].id]))
 
-function shortcutKey(shortcut: string): { key: string; shift: boolean } | null {
+function combo(shortcut: string): { key: string; shift: boolean } | null {
   if (!shortcut) return null
   const parts = shortcut.split(' ')
-  const key = parts[parts.length - 1].toLowerCase()
-  return { key, shift: parts.includes('Shift') }
+  return { key: parts[parts.length - 1].toLowerCase(), shift: parts.includes('Shift') }
 }
 
 export default function DesignToolbar() {
@@ -34,8 +31,8 @@ export default function DesignToolbar() {
       const target = event.target as HTMLElement | null
       if (target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target?.tagName ?? '')) return
       for (const tool of ALL_TOOLS) {
-        const combo = shortcutKey(tool.shortcut)
-        if (!combo || combo.key !== event.key.toLowerCase() || combo.shift !== event.shiftKey) continue
+        const keys = combo(tool.shortcut)
+        if (!keys || keys.key !== event.key.toLowerCase() || keys.shift !== event.shiftKey) continue
         event.preventDefault()
         activateTool(editor, tool.id)
         const group = TOOL_GROUPS.find(g => g.tools.some(t => t.id === tool.id))
@@ -87,7 +84,7 @@ function Group({
   onPick
 }: {
   group: DesignToolGroup
-  editor: ReturnType<typeof useDesignEditor> & object
+  editor: Editor
   active: boolean
   current: string
   fallback: string
@@ -97,42 +94,34 @@ function Group({
 }) {
   const shown = group.tools.find(tool => tool.id === (active ? current : fallback)) ?? group.tools[0]
   const hasMenu = group.tools.length > 1 || group.id === 'frame'
+  const tone = active ? 'bg-fg text-ink-900' : 'text-fg-secondary'
 
   return (
-    <span className="relative flex items-center">
-      <Tooltip label={`${shown.label}${shown.shortcut ? `  ${shown.shortcut}` : ''}`} disabled={menuOpen}>
+    <span className={`relative flex items-center h-8 rounded-full ${tone}`}>
+      <Tooltip label={shown.shortcut ? `${shown.label}  ${shown.shortcut}` : shown.label} disabled={menuOpen}>
         <button
           onClick={() => activateTool(editor, shown.id)}
-          onContextMenu={event => {
-            if (!hasMenu) return
-            event.preventDefault()
-            onMenu(true)
-          }}
           aria-label={shown.label}
           aria-pressed={active}
           className={`h-8 rounded-full flex items-center justify-center transition-all active:scale-95 ${
-            hasMenu ? 'pl-2.5 pr-1.5 gap-0.5' : 'w-9'
-          } ${active ? 'bg-fg text-ink-900' : 'text-fg-secondary hover:text-fg hover:bg-fg/[0.06]'}`}
+            hasMenu ? 'w-8 pl-1' : 'w-9'
+          } ${active ? '' : 'hover:text-fg hover:bg-fg/[0.06]'}`}
         >
           <shown.Icon className="w-4 h-4" />
-          {hasMenu && (
-            <span
-              role="button"
-              tabIndex={-1}
-              aria-label={`${group.label} options`}
-              onClick={event => {
-                event.stopPropagation()
-                onMenu(!menuOpen)
-              }}
-              className={`grid place-items-center w-3.5 h-6 rounded-full transition-colors ${
-                active ? 'text-ink-900/50 hover:text-ink-900' : 'text-fg-faint hover:text-fg'
-              }`}
-            >
-              <ChevronUpIcon className="w-3 h-3" />
-            </span>
-          )}
         </button>
       </Tooltip>
+      {hasMenu && (
+        <button
+          onClick={() => onMenu(!menuOpen)}
+          aria-label={`${group.label} options`}
+          aria-expanded={menuOpen}
+          className={`h-8 w-4 pr-1 rounded-full grid place-items-center transition-colors ${
+            active ? 'text-ink-900/50 hover:text-ink-900' : 'text-fg-faint hover:text-fg'
+          }`}
+        >
+          <ChevronUpIcon className="w-3 h-3" />
+        </button>
+      )}
       <DesignToolMenu
         group={group}
         editor={editor}
