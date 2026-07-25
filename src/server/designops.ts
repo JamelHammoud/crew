@@ -254,6 +254,69 @@ function applyUpdate(document: DesignDocument, op: Extract<DesignOp, { op: 'upda
   applied.cursors.push({ x: next.x, y: next.y })
 }
 
+function applyNode(document: DesignDocument, op: Extract<DesignOp, { op: 'node' }>, applied: AppliedOps): void {
+  if (typeof op.x !== 'number' || typeof op.y !== 'number' || !isFinite(op.x) || !isFinite(op.y)) {
+    applied.results.push({ error: 'x and y must be numbers' })
+    return
+  }
+  const invalid = nodeErrors(op)
+  if (invalid) {
+    applied.results.push({ error: invalid })
+    return
+  }
+  const parent = op.parent ? shapeAt(document, op.parent) : null
+  const parentId = parent && (parent.type === 'frame' || parent.type === 'design-node') ? op.parent! : pageIdOf(document)
+  if (!parentId) {
+    applied.results.push({ error: 'Board has no page yet. Open it in the app first.' })
+    return
+  }
+  const record: ShapeRecord = {
+    id: newShapeId(),
+    typeName: 'shape',
+    type: 'design-node',
+    x: op.x,
+    y: op.y,
+    rotation: 0,
+    index: indexAbove(topIndexOn(document, parentId)),
+    parentId,
+    isLocked: false,
+    opacity: 1,
+    meta: {},
+    props: nodePropsFrom(op) as unknown as Record<string, unknown>
+  }
+  document.store[record.id] = record
+  applied.put.push(record)
+  applied.results.push({ id: record.id })
+  applied.cursors.push({ x: op.x, y: op.y })
+}
+
+function applySet(document: DesignDocument, op: Extract<DesignOp, { op: 'set' }>, applied: AppliedOps): void {
+  const shape = shapeAt(document, op.id)
+  if (!shape) {
+    applied.results.push({ error: `No shape ${op.id}` })
+    return
+  }
+  if (shape.type !== 'design-node') {
+    applied.results.push({ error: `${op.id} is not a design node. Use "update" for older shapes.` })
+    return
+  }
+  const invalid = nodeErrors(op)
+  if (invalid) {
+    applied.results.push({ error: invalid })
+    return
+  }
+  const next: ShapeRecord = {
+    ...shape,
+    props: nodePropsFrom(op, shape.props as unknown as DesignNodeProps) as unknown as Record<string, unknown>
+  }
+  if (typeof op.x === 'number' && isFinite(op.x)) next.x = op.x
+  if (typeof op.y === 'number' && isFinite(op.y)) next.y = op.y
+  document.store[op.id] = next
+  applied.put.push(next)
+  applied.results.push({ id: op.id })
+  applied.cursors.push({ x: next.x, y: next.y })
+}
+
 function applyDelete(document: DesignDocument, op: Extract<DesignOp, { op: 'delete' }>, applied: AppliedOps): void {
   const shape = shapeAt(document, op.id)
   if (!shape) {
