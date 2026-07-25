@@ -197,4 +197,6 @@ writeFileSync(
   `export const DARK_ICON = '${embedded.dark}'\n\nexport const LIGHT_ICON = '${embedded.light}'\n`
 )
 
-console.log('wrote resources/icon.svg, icon-light.svg, icon.icns, icon.png and src/main/icon-png.ts')
+console.log(
+  'wrote resources/icon.svg, icon-light.svg, crew-logo.svg, icon.icns, icon.png, src/main/icon-png.ts and src/renderer/src/components/crew-mark.ts'
+)
