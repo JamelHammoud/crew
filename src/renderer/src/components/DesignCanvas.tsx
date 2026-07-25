@@ -225,11 +225,18 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
 
   return (
     <div className="absolute inset-0 design">
-      <Tldraw store={store} assetUrls={assetUrls} components={components} options={tldrawOptions} onMount={onMount} />
+      <Tldraw
+        store={store}
+        shapeUtils={shapeUtils}
+        assetUrls={assetUrls}
+        components={components}
+        options={tldrawOptions}
+        onMount={onMount}
+      />
       <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">
-          <Spinner size={20} />
+          <DesignCursor />
         </div>
       )}
     </div>
