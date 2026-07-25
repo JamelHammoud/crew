@@ -13,6 +13,8 @@ const RIM = 4
 const RADIUS = 130
 const STEP = 186
 const GAP = 28
+const LINE = 12
+const GRID = TILE.size / 12
 
 const THEMES = {
   dark: {
@@ -27,7 +29,9 @@ const THEMES = {
       ['#ffffff', 0.06],
       ['#ffffff', 0.3]
     ],
-    sheen: 0.1
+    sheen: 0.1,
+    grid: 0.16,
+    guide: 0.4
   },
   light: {
     ink: '#0d0d0d',
@@ -41,7 +45,9 @@ const THEMES = {
       ['#000000', 0.05],
       ['#000000', 0.16]
     ],
-    sheen: 0.35
+    sheen: 0.35,
+    grid: 0.14,
+    guide: 0.34
   }
 }
 
