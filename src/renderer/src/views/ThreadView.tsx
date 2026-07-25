@@ -184,11 +184,13 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 </Tooltip>
                 <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0">
                   <span className="flex items-center gap-3 min-w-0 cursor-default">
-                    <AgentIcon seed={thread.agentId} presence={agentPresence} className="@max-[520px]:hidden" />
+                    {nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH && (
+                      <AgentIcon seed={thread.agentId} presence={agentPresence} />
+                    )}
                     <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
                   </span>
                 </MemberName>
-                <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 pr-2 shrink-0">
                   {state === 'working' ? (
                     <>
                       <Spinner size={16} className="text-fg" />
