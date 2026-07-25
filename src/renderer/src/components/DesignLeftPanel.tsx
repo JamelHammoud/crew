@@ -255,7 +255,7 @@ function Layers({ editor }: { editor: Editor }) {
               ) : (
                 <button
                   onClick={() => editor.select(id as TLShapeId)}
-                  onDoubleClick={() => setRenaming(id)}
+                  onDoubleClick={() => canRename(row.shape) && setRenaming(id)}
                   className={`flex-1 min-w-0 text-xs text-left truncate ${
                     hidden ? 'text-fg-faint' : active ? 'text-fg font-semibold' : 'text-fg-secondary'
                   }`}
@@ -345,7 +345,4 @@ function Assets({ editor }: { editor: Editor }) {
           <CanvasGlyph name="geo-rectangle" className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
           <span className="flex-1 truncate">{(shape.props as { component: string }).component}</span>
         </button>
-      ))}
-    </div>
-  )
-}
+      )
