@@ -26,11 +26,7 @@ export class GitSync {
   constructor(private repoPath: string) {}
 
   start(intervalMs = AUTO_SYNC_MS): void {
-<<<<<<< Updated upstream
     this.stop()
-=======
-    if (this.loop) clearInterval(this.loop)
->>>>>>> Stashed changes
     void this.syncNow()
     this.loop = setInterval(() => void this.syncNow(), intervalMs)
     this.loop.unref?.()
