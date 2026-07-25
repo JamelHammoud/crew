@@ -74,7 +74,7 @@ export default function TopBar({
 
       <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">
         {TABS.map(t => (
-          <Tooltip key={t.id} label={t.label}>
+          <Tooltip key={t.id} label={t.label} disabled={!compact}>
             <button
               onClick={() => onTab(t.id)}
               aria-label={t.label}
