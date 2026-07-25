@@ -1,6 +1,14 @@
 import { existsSync, promises as fs } from 'node:fs'
 import path from 'node:path'
-import { overwrittenPaths, restoreAutostash, runGit, stashCount, type GitResult } from '../shared/git'
+import {
+  overwrittenPaths,
+  restoreAutostash,
+  runGit,
+  stashCount,
+  takeSyncLock,
+  type GitResult
+} from '../shared/git'
+import { interruptedStates } from '../shared/gitState'
 import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '../shared/repository'
 
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
