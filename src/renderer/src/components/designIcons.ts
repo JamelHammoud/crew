@@ -1,29 +1,17 @@
 import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
 import {
-  ArrowDownIcon,
-  ArrowLeftIcon,
-  ArrowLongRightIcon,
-  ArrowRightIcon,
-  ArrowUpIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
   Bars3Icon,
-  ChatBubbleOvalLeftIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
-  CursorArrowRaysIcon,
   DocumentDuplicateIcon,
   EllipsisHorizontalIcon,
   EllipsisVerticalIcon,
-  HandRaisedIcon,
   MinusIcon,
-  PencilIcon,
-  PhotoIcon,
   PlusIcon,
-  Squares2X2Icon,
-  StarIcon,
   TrashIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline'
@@ -32,23 +20,10 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 type IconComponent = ComponentType<{ className?: string }>
 
-// tldraw draws these as CSS masks, so each Heroicon is flattened to an SVG string once.
-// Anything without a real Heroicon equivalent keeps tldraw's own glyph.
+// Chrome glyphs come from Heroicons like the rest of crew. Tool and geometry glyphs stay
+// tldraw's own, because Heroicons has no vocabulary for shapes and the toolbar draws them
+// through CanvasGlyph rather than hand-rolled SVG.
 const ICONS: Record<string, IconComponent> = {
-  'tool-pointer': CursorArrowRaysIcon,
-  'tool-hand': HandRaisedIcon,
-  'tool-pencil': PencilIcon,
-  'tool-eraser': XMarkIcon,
-  'tool-arrow': ArrowLongRightIcon,
-  'tool-text': Bars3Icon,
-  'tool-note': ChatBubbleOvalLeftIcon,
-  'tool-media': PhotoIcon,
-  'tool-frame': Squares2X2Icon,
-  'geo-star': StarIcon,
-  'geo-arrow-up': ArrowUpIcon,
-  'geo-arrow-down': ArrowDownIcon,
-  'geo-arrow-left': ArrowLeftIcon,
-  'geo-arrow-right': ArrowRightIcon,
   'chevron-up': ChevronUpIcon,
   'chevron-down': ChevronDownIcon,
   'chevron-left': ChevronLeftIcon,
@@ -70,7 +45,7 @@ function dataUrl(icon: IconComponent): string {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
 
-export function designAssetUrls(): ReturnType<typeof getAssetUrlsByImport> | undefined {
+function build(): ReturnType<typeof getAssetUrlsByImport> | undefined {
   try {
     const base = getAssetUrlsByImport()
     const icons = { ...base.icons }
@@ -79,4 +54,15 @@ export function designAssetUrls(): ReturnType<typeof getAssetUrlsByImport> | und
   } catch {
     return undefined
   }
+}
+
+let cached: ReturnType<typeof build> | undefined
+let built = false
+
+export function designAssetUrls(): ReturnType<typeof getAssetUrlsByImport> | undefined {
+  if (!built) {
+    cached = build()
+    built = true
+  }
+  return cached
 }
