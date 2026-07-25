@@ -8,6 +8,10 @@ import type { ReactionEmoji } from './reactions'
 // (or agent) sign-off; 'archived' hides the thread without losing it.
 export type ThreadStatus = 'open' | 'done' | 'archived'
 
+// A thread in 'plan' mode asks for a plan and nothing else. It becomes 'build'
+// the moment someone implements that plan, and stays there.
+export type ThreadMode = 'plan' | 'build'
+
 // A todo is a pre-thread: one line of intended work, no run behind it. 'Do'
 // turns it into a real thread; checking it off records work done by hand.
 export interface Todo {
