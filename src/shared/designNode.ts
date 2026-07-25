@@ -151,15 +151,6 @@ export function cleanPaint(value: unknown): Paint | null {
     const stops = cleanStops((paint as { stops?: unknown }).stops)
     return stops.length === 0 ? null : { type: 'radial', stops, opacity }
   }
-  if (paint.type === 'glass') {
-    const tint = (paint as { tint?: string }).tint
-    return {
-      type: 'glass',
-      tint: isHex(tint) ? tint : '#ffffff14',
-      blur: clamp((paint as { blur?: number }).blur, 0, 200, 24),
-      opacity
-    }
-  }
   return null
 }
 
