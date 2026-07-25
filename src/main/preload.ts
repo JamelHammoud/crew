@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { PathLocation, RepoFile } from '../shared/files'
+import type { MediaAccess, MediaKind, ScreenSource } from './media'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { RecentJoin } from '../shared/recent'
