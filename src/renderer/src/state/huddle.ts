@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { emptyRoom, peerIn, sharingPeer, type HuddleRoom } from '../../../shared/huddle'
 import type { MediaKind } from '../../../shared/media'
-import { chimeJoin, chimeLeave } from '../media/chime'
+import { playSound } from '../media/sounds'
 import { captureCamera, captureMic, captureScreen, stop } from '../media/capture'
 import { HuddleMesh } from '../media/mesh'
 import type { SlotStreams, SlotTracks } from '../media/peer'
