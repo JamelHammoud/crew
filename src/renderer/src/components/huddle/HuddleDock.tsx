@@ -7,17 +7,19 @@ import HuddleControls from './HuddleControls'
 import HuddleTile from './HuddleTile'
 import Live from './Live'
 
-const SIZE = { w: 320, h: 240 }
+const WIDTH = 320
 const SHOWN = 4
 
 export default function HuddleDock({
   spot,
   dragging,
-  onGrab
+  onGrab,
+  attach
 }: {
   spot: { x: number; y: number }
   dragging: boolean
   onGrab: (event: PointerEvent) => void
+  attach: (node: HTMLDivElement | null) => void
 }) {
   const room = useHuddle(s => s.room)
   const peerId = useHuddle(s => s.peerId)
