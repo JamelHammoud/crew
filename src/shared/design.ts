@@ -55,6 +55,32 @@ export const DESIGN_COLORS = [
 
 export type DesignColor = (typeof DESIGN_COLORS)[number]
 
+export const DESIGN_COLOR_CHOICES = DESIGN_COLORS.filter(
+  color => color !== 'violet' && color !== 'light-violet'
+) as readonly DesignColor[]
+
+export interface DesignSwatch {
+  name: string
+  hex: string
+}
+
+export const CREW_SWATCHES: readonly DesignSwatch[] = [
+  { name: 'Sunken', hex: '#0d0d0d' },
+  { name: 'Background', hex: '#141414' },
+  { name: 'Raised', hex: '#222222' },
+  { name: 'Border', hex: '#272727' },
+  { name: 'Hairline', hex: '#ffffff14' },
+  { name: 'White', hex: '#ffffff' },
+  { name: 'Secondary', hex: '#b3b3b3' },
+  { name: 'Muted', hex: '#707070' },
+  { name: 'Faint', hex: '#4a4a4a' },
+  { name: 'Positive', hex: '#4ade80' },
+  { name: 'Danger', hex: '#f87171' }
+]
+
+export const NEW_FILL = '#222222'
+export const NEW_STROKE = '#ffffff26'
+
 export type DesignOp =
   | {
       op: 'create'
