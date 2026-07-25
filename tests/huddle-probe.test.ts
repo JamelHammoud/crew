@@ -175,6 +175,25 @@ describe('a huddle you are not in', () => {
 
     expect(screen.queryByText('Ali and Kim are in a huddle')).toBeNull()
   })
+
+  // The faces overlap, and each one takes a bite out of the one behind it. The
+  // bite has to be a hole rather than a ring painted in the surface colour, or
+  // the blur the row sits on stops showing through.
+  it('draws the faces overlapping, with a hole rather than a ring', () => {
+    const { container } = render(createElement(App))
+    const faces = container.querySelector('svg')
+
+    expect(faces).toBeTruthy()
+    const cut = faces?.querySelector('mask circle')
+    const behind = faces?.querySelector('g[mask]')
+    const front = faces?.querySelectorAll('g')
+    expect(cut).toBeTruthy()
+    expect(behind).toBeTruthy()
+    expect(front?.length).toBe(2)
+    expect(front?.[1].getAttribute('mask')).toBeNull()
+    // The hole is wider than the face that makes it, which is what leaves a gap.
+    expect(Number(cut?.getAttribute('r'))).toBeGreaterThan(Number(behind?.querySelector('circle')?.getAttribute('r')))
+  })
 })
 
 describe('a huddle you are in', () => {
