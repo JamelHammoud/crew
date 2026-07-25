@@ -533,7 +533,19 @@ export class CrewSession {
       return
     }
     const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
+    const mode: ThreadMode = command.planning ? 'plan' : 'build'
     if (ids.length === 0) {
+      // A plan needs someone to write it. With one agent here that is not a
+      // question worth asking.
+      const solo = command.planning ? this.soloAgent() : null
+      if (solo) {
+        this.startThread(member, solo, trimmed, attachments, { boardId, mode })
+        return
+      }
+      if (command.planning) {
+        this.systemMessage('Mention an agent with @ to say who should write the plan.')
+        return
+      }
       this.emit({
         id: randomUUID(),
         ts: Date.now(),
@@ -547,7 +559,12 @@ export class CrewSession {
       })
       return
     }
-    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments, boardId)
+    for (const id of ids) this.startThread(member, this.agents.get(id)!, trimmed, attachments, { boardId, mode })
+  }
+
+  private soloAgent(): AgentState | null {
+    const here = [...this.agents.values()].filter(agent => agent.runner)
+    return here.length === 1 ? here[0] : null
   }
 
   private switchThreadAgent(thread: Thread, id: string, member: Member): void {
