@@ -16,7 +16,7 @@ interface Watched {
 export class SpeakingMonitor {
   private context: AudioContext | null = null
   private watched = new Map<string, Watched>()
-  private timer: number | null = null
+  private timer: ReturnType<typeof setInterval> | null = null
 
   constructor(private onChange: (speaking: string[]) => void) {}
 
