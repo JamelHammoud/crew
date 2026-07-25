@@ -61,7 +61,13 @@ const shapeVisibility = (shape: { meta: Record<string, unknown> }) =>
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
 
-export default function DesignCanvas({ boardId }: { boardId: string }) {
+export default function DesignCanvas({
+  boardId,
+  onEditor
+}: {
+  boardId: string
+  onEditor?: (editor: Editor | null) => void
+}) {
   const openDesign = useCrew(s => s.openDesign)
   const initDesign = useCrew(s => s.initDesign)
   const applyDesign = useCrew(s => s.applyDesign)
@@ -229,20 +235,28 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
     editor?.user.updateUserPreferences({ colorScheme: theme === 'light' ? 'light' : 'dark' })
   }, [editor, theme])
 
-  const onMount = useCallback((mounted: Editor) => {
-    mounted.setStyleForNextShapes(DefaultFontStyle, 'sans')
-    mounted.setStyleForNextShapes(DefaultDashStyle, 'solid')
-    setEditor(mounted)
-  }, [])
+  const onMount = useCallback(
+    (mounted: Editor) => {
+      mounted.setStyleForNextShapes(DefaultFontStyle, 'sans')
+      mounted.setStyleForNextShapes(DefaultDashStyle, 'solid')
+      mounted.user.updateUserPreferences({ isSnapMode: true })
+      setEditor(mounted)
+      onEditor?.(mounted)
+      return () => onEditor?.(null)
+    },
+    [onEditor]
+  )
 
   return (
     <div className="absolute inset-0 design">
       <Tldraw
         store={store}
         shapeUtils={shapeUtils}
+        tools={tools}
         assetUrls={assetUrls}
         components={components}
         options={tldrawOptions}
+        getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
       <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
