@@ -102,7 +102,7 @@ describe('thread navigation', () => {
     })
 
     render(createElement(App))
-    fireEvent.click(screen.getAllByText('I want to follow up with another agent')[0].closest('button')!)
+    fireEvent.click(screen.getAllByText('I want to follow up with another agent')[0])
 
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ another agent')).toBeTruthy()
