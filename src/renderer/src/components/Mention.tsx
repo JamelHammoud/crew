@@ -46,8 +46,20 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   )
 }
 
-export function AgentName({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
-  return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+export function AgentName({
+  agent,
+  className,
+  children
+}: {
+  agent: PooledAgent
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <HoverCard content={<AgentCardContent agent={agent} />} className={className}>
+      {children}
+    </HoverCard>
+  )
 }
 
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
