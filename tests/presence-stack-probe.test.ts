@@ -23,8 +23,8 @@ const agent = (id: string, label: string, status: AgentStatus): PooledAgent => (
   fields: []
 })
 
-function here(members: MemberInfo[], agents: PooledAgent[]): void {
-  useCrew.setState({ selfId: 'self', members, agents, httpBase: '' })
+function here(members: MemberInfo[], agents: PooledAgent[], activePrompts: Record<string, string[]> = {}): void {
+  useCrew.setState({ selfId: 'self', members, agents, activePrompts, httpBase: '' })
 }
 
 describe('presence stack', () => {
