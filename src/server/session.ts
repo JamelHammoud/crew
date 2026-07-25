@@ -641,7 +641,7 @@ export class CrewSession {
       agentId: agent.id,
       agentLabel: agent.label,
       title: thread.title,
-      titleRefs: this.agentRefs(opts.mentions ?? [agent.id]),
+      titleRefs: this.agentRefs(opts.mentions ?? [agent.id], thread.title),
       byName: member.name,
       boardId: thread.boardId,
       mode: thread.mode === 'plan' ? 'plan' : undefined
@@ -720,7 +720,7 @@ export class CrewSession {
       authorName: entry.byName,
       text: entry.text,
       mentions: entry.mentions,
-      mentionRefs: this.agentRefs(entry.mentions),
+      mentionRefs: this.agentRefs(entry.mentions, entry.text),
       docMentions: entry.docMentions,
       threadId: entry.threadId,
       attachments: entry.attachments
