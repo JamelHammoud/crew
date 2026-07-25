@@ -61,6 +61,27 @@ describe('message reactions', () => {
     expect(new CrewSession(host.store).snapshot().events).toContainEqual(removed)
   })
 
+  it('accepts any emoji and ignores anything that is not one', async () => {
+    const alice = await TestUi.connect(host.url, 'alice', host.code)
+    const bob = await TestUi.connect(host.url, 'bob', host.code)
+    uis.push(alice, bob)
+
+    alice.chat('pick anything')
+    const message = await bob.waitForEvent(event => event.kind === 'message' && event.text === 'pick anything')
+    const targetId = messageReactionTarget(message.id)
+
+    bob.send({ type: 'chat.react', targetId, emoji: 'not an emoji' })
+    bob.send({ type: 'chat.react', targetId, emoji: '🏳️‍🌈' })
+    const added = (await alice.waitForEvent(
+      event => event.kind === 'message.reaction' && event.targetId === targetId && event.active
+    )) as Reaction
+
+    expect(added.emoji).toBe('🏳️‍🌈')
+    expect(
+      host.session.snapshot().events.filter(event => event.kind === 'message.reaction')
+    ).toHaveLength(1)
+  })
+
   it('delivers feedback on an agent reply only to that agent on its next start', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
