@@ -923,7 +923,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785008375143,
+        "fetchedAt": 1785008381476,
         "windows": [
           {
             "key": "primary",
@@ -1042,35 +1042,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785008375151,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 2,
-            "severity": "normal",
-            "resetsAt": 1785014999436,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1785535199436,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785008381484,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Could not read usage from Anthropic (HTTP 429)."
       }
     },
     {
@@ -1222,7 +1199,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785008375143,
+        "fetchedAt": 1785008381476,
         "windows": [
           {
             "key": "primary",
@@ -1341,35 +1318,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785008375151,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 2,
-            "severity": "normal",
-            "resetsAt": 1785014999436,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 0,
-            "severity": "normal",
-            "resetsAt": 1785535199436,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785008381484,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Could not read usage from Anthropic (HTTP 429)."
       }
     }
   ]
