@@ -14,10 +14,10 @@ function combo(shortcut: string): { key: string; shift: boolean } | null {
 }
 
 export default function DesignToolbar() {
-  const editor = useDesignEditor()
+  const editor = useEditor()
   const [defaults, setDefaults] = useState<Record<string, string>>(FIRST)
   const [menu, setMenu] = useState<string | null>(null)
-  const current = useValue('design tool', () => (editor ? currentToolId(editor) : 'select'), [editor])
+  const current = useValue('design tool', () => currentToolId(editor), [editor])
 
   const remember = useCallback((groupId: string, toolId: string) => {
     setDefaults(prev => (prev[groupId] === toolId ? prev : { ...prev, [groupId]: toolId }))
