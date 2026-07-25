@@ -34,11 +34,14 @@ function stored(): Spot | null {
 
 // The dock stays where it was put, and follows the window back inside when the
 // window shrinks under it.
-export function useDockPosition(size: { w: number; h: number }): {
+export function useDockPosition(): {
   spot: Spot
   dragging: boolean
   onGrab: (event: ReactPointerEvent) => void
+  attach: (node: HTMLDivElement | null) => void
 } {
+  const [attach, box] = useBox()
+  const size = { w: box.width || FALLBACK.w, h: box.height || FALLBACK.h }
   const [spot, setSpot] = useState<Spot>(
     () => stored() ?? { x: MARGIN, y: Math.max(MARGIN, window.innerHeight - size.h - MARGIN) }
   )
@@ -79,5 +82,5 @@ export function useDockPosition(size: { w: number; h: number }): {
     [spot, size.w, size.h]
   )
 
-  return { spot, dragging, onGrab }
+  return { spot, dragging, onGrab, attach }
 }
