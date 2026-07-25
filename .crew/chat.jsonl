@@ -10715,3 +10715,13 @@
 {"id":"f3f2732b-53c8-41a2-b2eb-6b8a73e599e3","ts":1785013636730,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
 {"id":"80ae484e-31b2-4dbf-8efb-5b362567eb45","ts":1785013643179,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Continue","mentions":["jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357"],"docMentions":[],"threadId":"40e87152-ab93-42a6-860b-6cf6de0418cb","attachments":[]}
 {"id":"bed57395-bac5-482c-835b-b54d6e6e8c52","ts":1785013643179,"kind":"message","authorId":"crew","authorName":"crew","text":"Claude Opus 5 is not here right now.","mentions":[],"threadId":"40e87152-ab93-42a6-860b-6cf6de0418cb"}
+{"id":"d13b8c68-f8e4-45ec-9323-dc6091bd4027","ts":1785013651939,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"9ea8024f-e942-4697-8dfb-d65827815325","ts":1785013651939,"kind":"agent.offline","agentId":"ali/claude","label":"Claude 2"}
+{"id":"61a78f8a-3ef3-4ace-9bb1-da2b8bbfbbbc","ts":1785013651939,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"b55d782f-5dcb-4409-b521-d6e3807b3408","ts":1785013651939,"kind":"agent.offline","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus"}
+{"id":"e9dd27ff-e9c1-4aeb-b71b-9a350b38e700","ts":1785013651939,"kind":"agent.offline","agentId":"ali/709e7abc-2bb1-4a09-9549-4cbf570bc556","label":"Claude Opus 5 2"}
+{"id":"db1872b9-c7a0-4ccc-9fe8-8e6ebb403f43","ts":1785013651939,"kind":"agent.offline","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
+{"id":"c2324bbd-8382-4e45-b97a-5b2136a28a67","ts":1785013651939,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"64563895-079b-4282-8408-101a95db5eb9","ts":1785013651942,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"5c3d4fe0-50d9-484c-b865-f9425b34779a","ts":1785013651943,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"fdad70d3-ef0f-48fc-bc9c-4386073b69ea","ts":1785013653180,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
