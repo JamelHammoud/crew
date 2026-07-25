@@ -1,93 +1,72 @@
 import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
 import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  Circle,
-  Cloud,
-  Copy,
-  Diamond,
-  Ellipsis,
-  EllipsisVertical,
-  Eraser,
-  Frame,
-  Hand,
-  Heart,
-  Hexagon,
-  Highlighter,
-  Image,
-  Menu,
-  Minus,
-  MousePointer2,
-  MoveUpRight,
-  Octagon,
-  Pencil,
-  Pentagon,
-  Plus,
-  Redo2,
-  Slash,
-  Square,
-  SquareCheck,
-  SquareX,
-  Star,
-  StickyNote,
-  Trash2,
-  Triangle,
-  Type,
-  Undo2,
-  X
-} from 'lucide-static'
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowLongRightIcon,
+  ArrowRightIcon,
+  ArrowUpIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  Bars3Icon,
+  ChatBubbleOvalLeftIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  CursorArrowRaysIcon,
+  DocumentDuplicateIcon,
+  EllipsisHorizontalIcon,
+  EllipsisVerticalIcon,
+  HandRaisedIcon,
+  MinusIcon,
+  PencilIcon,
+  PhotoIcon,
+  PlusIcon,
+  Squares2X2Icon,
+  StarIcon,
+  TrashIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline'
+import { createElement, type ComponentType } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 
-const ICONS: Record<string, string> = {
-  'tool-pointer': MousePointer2,
-  'tool-hand': Hand,
-  'tool-pencil': Pencil,
-  'tool-eraser': Eraser,
-  'tool-arrow': MoveUpRight,
-  'tool-text': Type,
-  'tool-note': StickyNote,
-  'tool-media': Image,
-  'tool-frame': Frame,
-  'tool-highlight': Highlighter,
-  'tool-line': Slash,
-  'geo-rectangle': Square,
-  'geo-ellipse': Circle,
-  'geo-triangle': Triangle,
-  'geo-diamond': Diamond,
-  'geo-star': Star,
-  'geo-cloud': Cloud,
-  'geo-heart': Heart,
-  'geo-hexagon': Hexagon,
-  'geo-pentagon': Pentagon,
-  'geo-octagon': Octagon,
-  'geo-x-box': SquareX,
-  'geo-check-box': SquareCheck,
-  'geo-arrow-up': ArrowUp,
-  'geo-arrow-down': ArrowDown,
-  'geo-arrow-left': ArrowLeft,
-  'geo-arrow-right': ArrowRight,
-  'chevron-up': ChevronUp,
-  'chevron-down': ChevronDown,
-  'chevron-left': ChevronLeft,
-  'chevron-right': ChevronRight,
-  'dots-vertical': EllipsisVertical,
-  'dots-horizontal': Ellipsis,
-  'cross-2': X,
-  menu: Menu,
-  undo: Undo2,
-  redo: Redo2,
-  trash: Trash2,
-  duplicate: Copy,
-  plus: Plus,
-  minus: Minus
+type IconComponent = ComponentType<{ className?: string }>
+
+// tldraw draws these as CSS masks, so each Heroicon is flattened to an SVG string once.
+// Anything without a real Heroicon equivalent keeps tldraw's own glyph.
+const ICONS: Record<string, IconComponent> = {
+  'tool-pointer': CursorArrowRaysIcon,
+  'tool-hand': HandRaisedIcon,
+  'tool-pencil': PencilIcon,
+  'tool-eraser': XMarkIcon,
+  'tool-arrow': ArrowLongRightIcon,
+  'tool-text': Bars3Icon,
+  'tool-note': ChatBubbleOvalLeftIcon,
+  'tool-media': PhotoIcon,
+  'tool-frame': Squares2X2Icon,
+  'geo-star': StarIcon,
+  'geo-arrow-up': ArrowUpIcon,
+  'geo-arrow-down': ArrowDownIcon,
+  'geo-arrow-left': ArrowLeftIcon,
+  'geo-arrow-right': ArrowRightIcon,
+  'chevron-up': ChevronUpIcon,
+  'chevron-down': ChevronDownIcon,
+  'chevron-left': ChevronLeftIcon,
+  'chevron-right': ChevronRightIcon,
+  'dots-vertical': EllipsisVerticalIcon,
+  'dots-horizontal': EllipsisHorizontalIcon,
+  'cross-2': XMarkIcon,
+  menu: Bars3Icon,
+  undo: ArrowUturnLeftIcon,
+  redo: ArrowUturnRightIcon,
+  trash: TrashIcon,
+  duplicate: DocumentDuplicateIcon,
+  plus: PlusIcon,
+  minus: MinusIcon
 }
 
-function dataUrl(svg: string): string {
+function dataUrl(icon: IconComponent): string {
+  const svg = renderToStaticMarkup(createElement(icon))
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
 
@@ -95,7 +74,7 @@ export function designAssetUrls(): ReturnType<typeof getAssetUrlsByImport> | und
   try {
     const base = getAssetUrlsByImport()
     const icons = { ...base.icons }
-    for (const [name, svg] of Object.entries(ICONS)) icons[name as keyof typeof icons] = dataUrl(svg)
+    for (const [name, icon] of Object.entries(ICONS)) icons[name as keyof typeof icons] = dataUrl(icon)
     return { ...base, icons }
   } catch {
     return undefined
