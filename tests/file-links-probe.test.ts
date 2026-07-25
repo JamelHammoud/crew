@@ -174,6 +174,37 @@ describe('plain text file links', () => {
   })
 })
 
+describe('web links', () => {
+  it('opens a link written in a message', async () => {
+    render(createElement(TextWithFileLinks, { text: 'watch https://roxie.com/film/backrooms/ tonight' }))
+    const link = await screen.findByText('https://roxie.com/film/backrooms/')
+    fireEvent.click(link)
+    const tab = useBrowser.getState().tabs[0]
+    expect(tab.kind).toBe('web')
+    expect(tab.url).toBe('https://roxie.com/film/backrooms/')
+  })
+
+  it('keeps sentence punctuation out of the link', () => {
+    const tokens = fileTokens('see https://example.com/a, or https://example.com/wiki/thing_(film).')
+    expect(tokens.flatMap(t => (t.kind === 'url' ? [t.text] : []))).toEqual([
+      'https://example.com/a',
+      'https://example.com/wiki/thing_(film)'
+    ])
+  })
+
+  it('still finds files around a link', () => {
+    const tokens = fileTokens('https://example.com/x broke src/app.ts:3')
+    expect(tokens.flatMap(t => (t.kind === 'file' ? [t.path] : []))).toEqual(['src/app.ts'])
+  })
+
+  it('opens a bare link an agent sends', () => {
+    render(createElement(Markdown, { text: 'try https://example.com/watch now' }))
+    const link = screen.getByText('https://example.com/watch')
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].url).toBe('https://example.com/watch')
+  })
+})
+
 describe('changed file lists', () => {
   const step = (path: string): AgentStep => ({
     id: 't1',
