@@ -407,6 +407,9 @@ export class CrewSession {
       case 'thread.status':
         if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, msg.status)
         break
+      case 'plan.implement':
+        if (meta.role === 'ui') this.handlePlanImplement(member, msg.threadId)
+        break
       case 'todo.add':
         if (meta.role === 'ui') this.handleTodoAdd(member, msg.text, msg.agentId)
         break
@@ -509,7 +512,9 @@ export class CrewSession {
     incoming?: OutgoingAttachment[],
     boardId?: string
   ): void {
-    const trimmed = text.trim()
+    // '/plan' only opens threads, so inside one it stays plain text.
+    const command = threadId ? { planning: false, text: text.trim() } : readPlanCommand(text.trim())
+    const trimmed = command.text
     const attachments = this.saveAttachments(incoming)
     if (!trimmed && attachments.length === 0) return
     if (threadId) {
