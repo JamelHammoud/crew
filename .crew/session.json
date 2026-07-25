@@ -161,22 +161,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785009314867,
+        "fetchedAt": 1785009614883,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 6,
+            "percent": 7,
             "severity": "normal",
-            "resetsAt": 1785015000136,
+            "resetsAt": 1785014999136,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 1,
+            "percent": 2,
             "severity": "normal",
-            "resetsAt": 1785535200136,
+            "resetsAt": 1785535199136,
             "active": false
           },
           {
@@ -525,7 +525,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785009554880,
+        "fetchedAt": 1785009615269,
         "windows": [
           {
             "key": "primary",
@@ -644,22 +644,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785009314867,
+        "fetchedAt": 1785009614883,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 6,
+            "percent": 7,
             "severity": "normal",
-            "resetsAt": 1785015000136,
+            "resetsAt": 1785014999136,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 1,
+            "percent": 2,
             "severity": "normal",
-            "resetsAt": 1785535200136,
+            "resetsAt": 1785535199136,
             "active": false
           },
           {
@@ -760,7 +760,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785009554880,
+        "fetchedAt": 1785009615269,
         "windows": [
           {
             "key": "primary",
