@@ -176,7 +176,7 @@ export const useCrew = create<CrewState>((set, get) => {
     const cue = soundFor(event, get().selfId)
     if (cue) playSound(cue)
     const alert = finishedAlert(event, get(), document.hasFocus())
-    if (alert) void window.crew.notify(alert)
+    if (alert) void window.crew?.notify?.(alert)
     if (event.kind === 'message.deleted') {
       set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
       return

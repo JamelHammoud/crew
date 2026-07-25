@@ -52,7 +52,7 @@ function Session() {
 
   useEffect(
     () =>
-      window.crew.onNotificationOpen(threadId => {
+      window.crew?.onNotificationOpen?.(threadId => {
         setTab('chat')
         openThread(threadId)
       }),
