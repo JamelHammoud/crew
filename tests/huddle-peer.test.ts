@@ -67,6 +67,49 @@ describe('one connection to one person', () => {
     link.close()
   })
 
+  it('ends up holding the addresses the other end offered', async () => {
+    const link = pair()
+    await settle()
+    await link.flush()
+
+    for (const pc of connections()) expect(pc.candidates.length).toBeGreaterThan(0)
+    link.close()
+  })
+
+  it('keeps the addresses that arrive before there is anyone to attach them to', async () => {
+    const sent: HuddleSignal[] = []
+    const link = new PeerLink({
+      peerId: 'peer-b',
+      polite: true,
+      send: signal => sent.push(signal),
+      onChange: () => {}
+    })
+    const [pc] = connections()
+
+    await link.accept({ kind: 'candidate', candidate: { candidate: 'early-1' } })
+    await link.accept({ kind: 'candidate', candidate: { candidate: 'early-2' } })
+    expect(pc.candidates).toHaveLength(0)
+
+    await link.accept({ kind: 'description', description: { type: 'offer', sdp: 'theirs' } })
+    await settle()
+
+    expect(pc.candidates).toEqual([{ candidate: 'early-1' }, { candidate: 'early-2' }])
+    link.close()
+  })
+
+  it('keeps them through a collision it chose to ignore', async () => {
+    const link = pair({ hold: true })
+    await settle()
+    const [, impolite] = connections()
+    // The side that ignores an offer still has the other end's addresses on the
+    // way, and they are the only ones it will ever be given.
+    await impolite.onicecandidate
+    await link.flush()
+
+    expect(impolite.candidates.length).toBeGreaterThan(0)
+    link.close()
+  })
+
   it('gives the same three slots the same meaning on both ends', async () => {
     const link = pair()
     await settle()
