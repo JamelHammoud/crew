@@ -134,10 +134,7 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
       <div className="relative flex-1 min-h-0">
         <div
           ref={scrollRef}
-          onScroll={() => {
-            onScroll()
-            updateEdges()
-          }}
+          onScroll={onScroll}
           className="h-full overflow-y-auto px-4"
         >
           {threadId ? (
