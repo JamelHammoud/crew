@@ -32,6 +32,12 @@ export interface PeerOptions {
 // track inside a slot that already exists, so a call settles once and then
 // stops renegotiating. Which slot is which is fixed by the order the
 // transceivers are created in, and both sides create them the same way.
+//
+// Only one end of a pair ever offers. Both ends offering is a collision, and
+// the rollback that settles a collision does not give the local slots back:
+// the browser makes a second set for the offer it accepted, and the three this
+// side is listening to end up connected to nothing. The call reaches connected,
+// media flows, and nobody hears a thing.
 export class PeerLink {
   readonly peerId: string
   readonly remote: SlotStreams
@@ -39,6 +45,7 @@ export class PeerLink {
   private pc: RTCPeerConnection
   private senders: Record<Slot, RTCRtpSender>
   private polite: boolean
+  private caller: boolean
   private send: (signal: HuddleSignal) => void
   private onChange: () => void
   private makingOffer = false
