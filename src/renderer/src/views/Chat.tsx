@@ -132,12 +132,16 @@ export default function Chat() {
               <Fragment key={entry.key}>
                 {isNewDay(prev, ts) && <DayDivider ts={ts} />}
                 {entry.kind === 'card' ? (
-                  <ThreadCard
-                    thread={entry.thread}
-                    ts={entry.ts}
-                    onOpen={() => openThread(entry.thread.id)}
-                    {...threadStatus(entry.thread)}
-                  />
+                  entry.thread.mode === 'plan' && entry.thread.plan && !threadPrompts[entry.thread.id] ? (
+                    <PlanCard thread={entry.thread} ts={entry.ts} onOpen={() => openThread(entry.thread.id)} />
+                  ) : (
+                    <ThreadCard
+                      thread={entry.thread}
+                      ts={entry.ts}
+                      onOpen={() => openThread(entry.thread.id)}
+                      {...threadStatus(entry.thread)}
+                    />
+                  )
                 ) : (
                   <ChatMessage item={entry.item} />
                 )}
