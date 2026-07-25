@@ -1322,8 +1322,7 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
-  private handleUsage(meta: ConnMeta, member: Member, instanceId: string, usage: AgentUsage): void {
-    const id = agentId(member.name, instanceId)
+  private handleUsage(meta: ConnMeta, id: string, usage: AgentUsage): void {
     const agent = this.agents.get(id)
     if (!agent || !meta.agentIds.includes(id)) return
     agent.usage = usage
