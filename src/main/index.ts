@@ -127,6 +127,7 @@ function createWindow(): void {
   const win = new BrowserWindow(
     createWindowOptions(process.platform, path.join(dirname, '../preload/preload.mjs'))
   )
+  if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
   win.webContents.on('will-navigate', (event, url) => {
     if (isAppUrl(url)) return
@@ -210,6 +211,7 @@ function installTray(): void {
 
 app.whenReady().then(() => {
   powerSaveBlocker.start('prevent-app-suspension')
+  applyIcon(iconTheme)
   installMenu()
   installTray()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
