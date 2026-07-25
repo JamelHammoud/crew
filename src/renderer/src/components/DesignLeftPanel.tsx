@@ -10,13 +10,15 @@ import {
 } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLPageId, type TLShape, type TLShapeId } from 'tldraw'
-import { CanvasGlyph, canRename, renameShape } from '../design/tools'
+import { glyphForShape, RectangleGlyph } from '../design/glyphs'
+import { canRename, renameShape } from '../design/tools'
+import { PanelTabs } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
 
 type PanelTab = 'pages' | 'layers' | 'assets'
 
-const TABS: Array<{ id: PanelTab; label: string }> = [
+const TABS: ReadonlyArray<{ id: PanelTab; label: string }> = [
   { id: 'pages', label: 'Pages' },
   { id: 'layers', label: 'Layers' },
   { id: 'assets', label: 'Assets' }
@@ -28,21 +30,10 @@ export default function DesignLeftPanel() {
   return (
     <aside
       aria-label="Design panel"
-      className="w-60 shrink-0 flex flex-col min-h-0 bg-ink-900 border-r border-ink-700"
+      className="w-60 shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
     >
-      <div className="flex gap-1 p-2 shrink-0">
-        {TABS.map(item => (
-          <button
-            key={item.id}
-            onClick={() => setTab(item.id)}
-            aria-pressed={tab === item.id}
-            className={`flex-1 h-7 rounded-full text-xs font-semibold transition-colors ${
-              tab === item.id ? 'bg-fg text-ink-900' : 'text-fg-muted hover:text-fg hover:bg-fg/[0.06]'
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
+      <div className="h-12 shrink-0 flex items-center px-3">
+        <PanelTabs tabs={TABS} current={tab} onPick={setTab} />
       </div>
       {tab === 'pages' && <Pages editor={editor} />}
       {tab === 'layers' && <Layers editor={editor} />}
