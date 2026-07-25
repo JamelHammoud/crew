@@ -19,6 +19,7 @@ const agent: PooledAgent = {
 }
 
 function seed(one: PooledAgent, setAgentAvatar = vi.fn()) {
+  window.crew = { agentCapabilities: vi.fn().mockResolvedValue([]) } as unknown as typeof window.crew
   useCrew.setState({
     connection: 'online',
     selfId: 'jamel',
