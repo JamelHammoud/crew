@@ -246,4 +246,27 @@ describe('a huddle you are in', () => {
 
     expect(useHuddle.getState().picking).toBe(true)
   })
+
+  it('gives everyone the same widescreen tile', () => {
+    const { container } = render(createElement(App))
+
+    expect(container.querySelectorAll('.aspect-video')).toHaveLength(2)
+  })
+
+  // A camera that has been turned on is not the same as pictures having turned
+  // up. Swapping the face out too early leaves a black rectangle.
+  it('keeps the face up until the pictures actually arrive', async () => {
+    const camera = fakeVideo()
+    useHuddle.setState({
+      room: { peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
+      remote: { a: { mic: emptyStream(), camera: camera.stream, screen: emptyStream() } },
+      link: { a: 'connected' }
+    })
+    const { container } = render(createElement(App))
+
+    expect(container.querySelector('video')).toBeNull()
+
+    camera.arrive()
+    await waitFor(() => expect(container.querySelector('video')).toBeTruthy())
+  })
 })
