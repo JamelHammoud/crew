@@ -42,8 +42,12 @@ export function isAttachmentFile(file: string): boolean {
   return FILE_NAME.test(file)
 }
 
+export function attachmentFileUrl(httpBase: string, file: string): string {
+  return `${httpBase}/attachments/${file}`
+}
+
 export function attachmentUrl(httpBase: string, attachment: Attachment): string {
-  return `${httpBase}/attachments/${attachment.file}`
+  return attachmentFileUrl(httpBase, attachment.file)
 }
 
 export function httpBaseFrom(wsUrl: string): string {
