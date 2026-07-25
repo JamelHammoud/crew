@@ -37,6 +37,7 @@ const bridge = {
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
   setBadge: (count: number): Promise<void> => ipcRenderer.invoke('app:badge', count),
+  setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
   onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
     const handler = (_event: unknown, threadId: string) => listener(threadId)

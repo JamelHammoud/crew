@@ -254,6 +254,7 @@ app.whenReady().then(() => {
   ipcMain.handle('media:sources', () => screenSources())
   ipcMain.handle('media:pickSource', (_event, id: string | null) => pickScreenSource(id))
   ipcMain.handle('app:badge', (_event, count: number) => setBadge(count))
+  ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme))
   ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
     showAlert(alert, () => {
       openWindow()
