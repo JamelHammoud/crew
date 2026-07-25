@@ -14,6 +14,9 @@
       <stop offset="0.5" stop-color="#000000" stop-opacity="0.05" />
       <stop offset="1" stop-color="#000000" stop-opacity="0.16" />
     </linearGradient>
+    <clipPath id="tile-clip">
+      <rect x="100" y="100" width="824" height="824" rx="185" />
+    </clipPath>
     <mask id="stack" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
       <rect x="0" y="0" width="1024" height="1024" fill="#000000" />
       <circle cx="698" cy="512" r="130" fill="#ffffff" />
