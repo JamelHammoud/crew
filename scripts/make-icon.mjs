@@ -83,10 +83,11 @@ const THEMES = {
     glow: ['#ffffff', 0.28],
     mark: [
       ['#ffffff', 1],
-      ['#f4faff', 1],
-      ['#cfe6fa', 1]
+      ['#eaf5ff', 1],
+      ['#a8cdee', 1]
     ],
-    gloss: 0.55
+    bounce: ['#ffffff', 0.7],
+    gloss: 0.85
   }
 }
 

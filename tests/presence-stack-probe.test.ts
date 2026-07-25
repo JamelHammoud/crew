@@ -32,7 +32,24 @@ describe('presence stack', () => {
     here([], [])
   })
 
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    vi.useRealTimers()
+  })
+
+  it('drops the tooltip while the list is open', () => {
+    vi.useFakeTimers()
+    here([member('self', 'Jamel', true), member('m1', 'Ali', true)], [])
+    render(createElement(PresenceStack))
+    const button = screen.getByRole('button', { name: "Who's here" })
+
+    fireEvent.mouseOver(button.parentElement as HTMLElement)
+    act(() => void vi.advanceTimersByTime(400))
+    expect(screen.queryByText("Who's here")).toBeTruthy()
+
+    fireEvent.click(button)
+    expect(screen.queryByText("Who's here")).toBeNull()
+  })
 
   it('shows two faces and a count for everyone else', () => {
     here(
