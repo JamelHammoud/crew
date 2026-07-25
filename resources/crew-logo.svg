@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 632 260" width="632" height="260">
+  <mask id="crew-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="632" height="260">
+    <rect x="0" y="0" width="632" height="260" fill="#000000" />
+    <circle cx="502" cy="130" r="130" fill="#ffffff" />
+    <circle cx="316" cy="130" r="158" fill="#000000" />
+    <circle cx="316" cy="130" r="130" fill="#ffffff" />
+    <circle cx="130" cy="130" r="158" fill="#000000" />
+    <circle cx="130" cy="130" r="130" fill="#ffffff" />
+  </mask>
+  <rect x="0" y="0" width="632" height="260" fill="currentColor" mask="url(#crew-mark)" />
+</svg>
