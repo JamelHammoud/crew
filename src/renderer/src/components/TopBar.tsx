@@ -57,6 +57,7 @@ export default function TopBar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
+  const sounds = useSounds()
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
 
@@ -167,6 +168,11 @@ export default function TopBar({
               icon={theme === 'dark' ? <SunIcon /> : <MoonIcon />}
               label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
               onClick={() => applyTheme(theme === 'dark' ? 'light' : 'dark')}
+            />
+            <MenuItem
+              icon={sounds ? <SpeakerXMarkIcon /> : <SpeakerWaveIcon />}
+              label={sounds ? 'Mute sounds' : 'Unmute sounds'}
+              onClick={() => setSounds(!sounds)}
             />
             <MenuItem
               icon={<ArrowRightStartOnRectangleIcon />}

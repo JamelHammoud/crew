@@ -8,6 +8,8 @@ export interface MeshOptions {
 
 const EMPTY: SlotTracks = { mic: null, camera: null, screen: null }
 
+const EARLY_LIMIT = 64
+
 // Everyone connects to everyone. A crew is a handful of people, so a mesh beats
 // running a media server: nothing to host, nothing in the middle.
 export class HuddleMesh {
