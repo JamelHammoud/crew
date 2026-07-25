@@ -188,13 +188,29 @@ ${ramp(body)}
       <stop offset="0.95" stop-color="${bounce[0]}" stop-opacity="${bounce[1]}" />
       <stop offset="1" stop-color="${bounce[0]}" stop-opacity="0" />
     </radialGradient>
+    <radialGradient id="edge" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.84" stop-color="${edge[0]}" stop-opacity="0" />
+      <stop offset="0.97" stop-color="${edge[0]}" stop-opacity="${edge[1]}" />
+      <stop offset="1" stop-color="${edge[0]}" stop-opacity="0" />
+    </radialGradient>
     <linearGradient id="lower" x1="0" y1="${round(CENTRE + RADIUS * 0.1)}" x2="0" y2="${CENTRE + RADIUS}" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#000000" />
       <stop offset="1" stop-color="#ffffff" />
     </linearGradient>
+    <linearGradient id="upper" x1="0" y1="${CENTRE - RADIUS}" x2="0" y2="${round(CENTRE - RADIUS * 0.2)}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#000000" />
+    </linearGradient>
     <mask id="under" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
       <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="url(#lower)" />
     </mask>
+    <mask id="over" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
+      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="url(#upper)" />
+    </mask>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
     <radialGradient id="gloss" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0" stop-color="#ffffff" stop-opacity="${gloss}" />
       <stop offset="0.45" stop-color="#ffffff" stop-opacity="${round(gloss * 0.5)}" />
