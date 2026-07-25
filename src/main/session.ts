@@ -61,7 +61,7 @@ function lanAddress(): string {
 }
 
 const PREFERRED_PORT = 2739
-const AUTO_PULL_MS = 15000
+const AUTO_SYNC_MS = 5000
 
 export class AppSession {
   private server: CrewServer | null = null
@@ -245,6 +245,7 @@ export class AppSession {
     const git = new GitSync(repoPath)
     git.onLog = line => console.warn('[git]', line)
     session.onSyncNeeded = () => git.schedule()
+    git.start(AUTO_SYNC_MS)
     let server: CrewServer
     try {
       server = await createCrewServer(session, { port: PREFERRED_PORT })
@@ -262,6 +263,7 @@ export class AppSession {
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected),
+      onBeforeRun: () => git.syncNow(),
       onAdopt: def => this.saveAdopted(def),
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
@@ -282,13 +284,14 @@ export class AppSession {
     const git = new GitSync(repoPath)
     git.onLog = line => console.warn('[git]', line)
     this.git = git
+    git.start(AUTO_SYNC_MS)
     this.runner = new Runner({
       name,
       code: target.code,
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected),
-      autoPullMs: AUTO_PULL_MS,
+      onBeforeRun: () => git.syncNow(),
       onAdopt: def => this.saveAdopted(def),
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)

@@ -5,7 +5,6 @@ import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../
 import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
-import { GitPuller } from './pull'
 
 export interface RunnerOptions {
   name: string
@@ -15,8 +14,9 @@ export interface RunnerOptions {
   agents?: AgentDef[]
   reconnectDelayMs?: number
   silenceTimeoutMs?: number
-  autoPullMs?: number
   usagePollMs?: number
+  // Called before a prompt starts so the agent works from the newest code.
+  onBeforeRun?: () => Promise<void>
   // Called when this runner adopts one of its own agents remembered by the
   // server but missing locally, so the owner can persist the definition.
   onAdopt?: (def: AgentDef) => void
@@ -59,7 +59,6 @@ export class Runner {
   private watchdog: NodeJS.Timeout | null = null
   private usageTimer: NodeJS.Timeout | null = null
   private pollingUsage = false
-  private puller: GitPuller | null = null
   private attachments: AttachmentCache
   private httpBase = ''
   private lastSeen = 0
@@ -72,11 +71,6 @@ export class Runner {
     this.attachments = new AttachmentCache(opts.repoPath)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
-    if (opts.autoPullMs) {
-      this.puller = new GitPuller(opts.repoPath)
-      this.puller.onLog = line => console.warn('[git]', line)
-      this.puller.start(opts.autoPullMs)
-    }
   }
 
   addAgent(def: AgentDef): void {
@@ -169,7 +163,6 @@ export class Runner {
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
     this.stopWatchdog()
     this.stopUsagePolling()
-    this.puller?.stop()
     this.killRunning()
     this.ws?.close(1000)
   }
@@ -387,7 +380,7 @@ export class Runner {
     settings: AgentSettings,
     attachments: Attachment[]
   ): Promise<void> {
-    await this.puller?.pullNow()
+    await this.opts.onBeforeRun?.().catch(() => {})
     const local = await this.attachments.ensure(attachments, this.httpBase)
     // A cancel can land before the provider process exists (during the pull or
     // attachment fetch, or while queued behind another run in this thread), so
