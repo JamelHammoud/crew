@@ -43,6 +43,7 @@ describe('provider settings map to command line flags', () => {
     expect(args).toContain('--dangerously-bypass-approvals-and-sandbox')
     expect(args.join(' ')).toContain('model_reasoning_effort="low"')
     expect(args).not.toContain('--model')
+    expect(args.at(-1)).toBe('-')
   })
 
   it('leaves a flag off when the value is empty', () => {

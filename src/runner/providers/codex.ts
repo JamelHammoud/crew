@@ -124,13 +124,13 @@ export const codexFields = (): AgentSettingField[] => {
   ]
 }
 
-export const codexArgs = (prompt: string, get: SettingReader): string[] => [
+export const codexArgs = (_prompt: string, get: SettingReader): string[] => [
   'exec',
   '--dangerously-bypass-approvals-and-sandbox',
   '--json',
   ...flag('--model', get('model')),
   ...flag('-c', get('effort') ? `model_reasoning_effort="${get('effort')}"` : ''),
-  prompt
+  '-'
 ]
 
 // Codex has no standalone installer script; npm is its documented install path.
@@ -143,6 +143,7 @@ export const codexProvider: Provider = makeCliProvider({
   fields: codexFields,
   args: codexArgs,
   parser: parseCodexLine,
+  stdinPrompt: true,
   usage: codexUsage,
   install: { darwin: INSTALL_NPM, linux: INSTALL_NPM, win32: INSTALL_NPM }
 })

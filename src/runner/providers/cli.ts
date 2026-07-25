@@ -54,6 +54,7 @@ interface CliProviderOptions {
   parser?: OutputParser
   env?: NodeJS.ProcessEnv
   idleTimeoutMs?: number
+  stdinPrompt?: boolean
   // When set, the prompt is written to stdin as a JSON message instead of being
   // passed in argv, and stdin stays open so later messages can steer the run.
   streamInput?: boolean
@@ -91,7 +92,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env },
         detached: detachCliProcess(),
-        stdio: [opts.streamInput ? 'pipe' : 'ignore', 'pipe', 'pipe']
+        stdio: [opts.stdinPrompt || opts.streamInput ? 'pipe' : 'ignore', 'pipe', 'pipe']
       })
       const stdout = child.stdout
       const stderr = child.stderr
@@ -309,6 +310,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
 
       if (opts.streamInput) {
         writeMessage(prompt)
+      } else if (opts.stdinPrompt) {
+        child.stdin?.end(prompt)
       }
 
       // Start the clock at spawn: a process that hangs before its first byte
