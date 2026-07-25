@@ -197,7 +197,7 @@ describe('a huddle you are not in', () => {
   // the blur the row sits on stops showing through.
   it('draws the faces overlapping, with a hole rather than a ring', () => {
     const { container } = render(createElement(App))
-    const faces = container.querySelector('svg')
+    const faces = [...container.querySelectorAll('svg')].find(svg => svg.querySelector('mask'))
 
     expect(faces).toBeTruthy()
     const cut = faces?.querySelector('mask circle')
