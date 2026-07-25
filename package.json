@@ -15,7 +15,14 @@
     ],
     "mac": {
       "target": "dmg",
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "icon": "resources/icon.icns"
+    },
+    "win": {
+      "icon": "resources/icon.png"
+    },
+    "linux": {
+      "icon": "resources/icon.png"
     }
   },
   "scripts": {
@@ -25,6 +32,7 @@
     "preview": "electron-vite preview",
     "test": "vitest run",
     "dist": "electron-vite build && electron-builder",
+    "icon": "node scripts/make-icon.mjs",
     "postinstall": "node scripts/ensure-electron.mjs && node scripts/name-electron.mjs"
   },
   "dependencies": {
