@@ -749,9 +749,19 @@ export class CrewSession {
     const trimmed = text.trim()
     if (!trimmed || trimmed === event.text) return
     const docMentions = this.docMentionRefs(trimmed)
+    const mentionRefs = this.agentRefs(mentionsIn(trimmed, [...this.agents.values()].map(a => this.pooled(a))))
     event.text = trimmed
     event.docMentions = docMentions
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.edited', messageId, text: trimmed, docMentions })
+    event.mentionRefs = mentionRefs
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'message.edited',
+      messageId,
+      text: trimmed,
+      mentionRefs,
+      docMentions
+    })
   }
 
   private handleReaction(member: Member, targetId: string, emoji: string): void {
