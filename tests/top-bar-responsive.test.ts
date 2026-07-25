@@ -68,6 +68,34 @@ describe('responsive top bar', () => {
     expect(onTab).toHaveBeenCalledWith('docs')
   })
 
+  it('keeps the faces together at the end of the bar, after the tasks button', () => {
+    useCrew.setState({
+      selfId: 'self',
+      selfName: 'Jamel',
+      members: [
+        { id: 'self', name: 'Jamel', connected: true },
+        { id: 'm1', name: 'Ali', connected: true }
+      ],
+      agents: [],
+      activePrompts: {}
+    })
+    render(
+      createElement(TopBar, {
+        tab: 'chat',
+        onTab: () => {},
+        tasksOpen: false,
+        onToggleTasks: () => {}
+      })
+    )
+
+    const tasks = screen.getByRole('button', { name: 'Tasks' })
+    const faces = screen.getByRole('button', { name: "Who's here" })
+    const you = screen.getByRole('button', { name: 'Profile menu' })
+
+    expect(follows(tasks, faces)).toBe(true)
+    expect(follows(faces, you)).toBe(true)
+  })
+
   it('only shows tab tooltips once the labels collapse', () => {
     vi.useFakeTimers()
     render(
