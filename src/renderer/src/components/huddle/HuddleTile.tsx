@@ -15,7 +15,7 @@ const LOOK: Record<Size, { corner: string; avatar: 'sm' | 'md' | 'lg'; label: st
   lg: { corner: 'rounded-card', avatar: 'lg', label: 'text-sm', pad: 'p-3' }
 }
 
-function Badge({ tone, children }: { tone: 'quiet' | 'danger'; children: React.ReactNode }) {
+function Badge({ tone, children }: { tone: 'quiet' | 'danger'; children: ReactNode }) {
   return (
     <span
       className={`h-6 px-2 rounded-full flex items-center gap-1 backdrop-blur-md ${
