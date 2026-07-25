@@ -26,6 +26,47 @@ afterEach(() => {
 })
 
 describe('project sync controls', () => {
+  it('opens the local diff before pushing it', async () => {
+    const status = { ...ready, changed: 1 }
+    const repoChanges = vi.fn(async () => [
+      {
+        path: 'src/app.ts',
+        kind: 'modified' as const,
+        added: 1,
+        removed: 1,
+        diff: '@@ -1 +1 @@\n-old\n+new',
+        binary: false,
+        truncated: false
+      }
+    ])
+    const pushRepo = vi.fn(async () => ({
+      ok: true,
+      updated: true,
+      message: 'Pushed the latest changes.',
+      status: { ...status, changed: 0 }
+    }))
+    Object.defineProperty(window, 'crew', {
+      configurable: true,
+      value: {
+        repoStatus: vi.fn(async () => status),
+        repoChanges,
+        pullRepo: vi.fn(),
+        pushRepo
+      } as unknown as CrewBridge
+    })
+
+    render(createElement(RepoControls))
+    const review = await screen.findByLabelText('Review 1 change')
+    fireEvent.click(review)
+
+    await waitFor(() => expect(repoChanges).toHaveBeenCalledTimes(1))
+    expect(screen.getByText('src/app.ts')).toBeTruthy()
+    expect(screen.getByText('+new')).toBeTruthy()
+
+    fireEvent.click(screen.getByText('Push changes'))
+    await waitFor(() => expect(pushRepo).toHaveBeenCalledTimes(1))
+  })
+
   it('pulls changes and shows the result without leaving the app', async () => {
     const pullRepo = vi.fn(async () => ({
       ok: true,
