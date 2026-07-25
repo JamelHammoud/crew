@@ -10,6 +10,7 @@ import type { ReactionEmoji } from '../../../shared/reactions'
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
+import { finishedAlert } from './alerts'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
