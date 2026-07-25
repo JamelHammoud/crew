@@ -24,7 +24,6 @@ export default function DesignToolbar() {
   }, [])
 
   useEffect(() => {
-    if (!editor) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey || event.altKey) return
       const target = event.target as HTMLElement | null
