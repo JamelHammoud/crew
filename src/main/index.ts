@@ -28,6 +28,7 @@ import type { MediaKind } from '../shared/media'
 import { AppSession, type NewAgent } from './session'
 import { createWindowOptions } from './window-options'
 
+app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
 app.commandLine.appendSwitch('disable-renderer-backgrounding')
 // Huddle audio arrives without anyone clicking play, and Chromium blocks that
