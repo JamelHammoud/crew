@@ -134,6 +134,43 @@ describe('huddles', () => {
     expect(latest(sam).peers[0].muted).toBe(false)
   })
 
+  it('lets a new screen take over from the one already up', async () => {
+    const jamel = await open('jamel')
+    const sam = await open('sam')
+    const kim = await open('kim')
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    sam.send({ type: 'huddle.join', peerId: 'peer-sam', muted: false, camera: false })
+    await waitUntil(() => names(kim).length === 2)
+
+    jamel.send({ type: 'huddle.update', sharing: true })
+    await waitUntil(() => latest(kim).peers.some(peer => peer.peerId === 'peer-jamel' && peer.sharing))
+
+    sam.send({ type: 'huddle.update', sharing: true })
+    await waitUntil(() => latest(kim).peers.some(peer => peer.peerId === 'peer-sam' && peer.sharing))
+
+    expect(latest(kim).peers.filter(peer => peer.sharing).map(peer => peer.peerId)).toEqual(['peer-sam'])
+  })
+
+  it('keeps the place a returning window had in the room', async () => {
+    const jamel = await open('jamel')
+    const sam = await open('sam')
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    await waitUntil(() => names(sam).length === 1)
+    jamel.send({ type: 'huddle.update', sharing: true })
+    await waitUntil(() => latest(sam).peers[0]?.sharing === true)
+    sam.send({ type: 'huddle.join', peerId: 'peer-sam', muted: false, camera: false })
+    await waitUntil(() => names(sam).length === 2)
+
+    const back = await open('jamel')
+    back.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    await waitUntil(() => latest(sam).peers.length === 2)
+
+    expect(names(sam)).toEqual(['jamel', 'sam'])
+    expect(latest(sam).peers[0].sharing).toBe(true)
+  })
+
   it('lets a window that dropped and came back take its own place again', async () => {
     const jamel = await open('jamel')
     const sam = await open('sam')
