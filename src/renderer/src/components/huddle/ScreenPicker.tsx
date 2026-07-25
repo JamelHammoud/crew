@@ -88,9 +88,7 @@ export default function ScreenPicker() {
                 key={source.id}
                 onClick={() => setChosen(source.id)}
                 onDoubleClick={() => void share(source.id)}
-                className={`group text-left rounded-2xl overflow-hidden transition-all duration-150 active:scale-[0.98] ${
-                  chosen === source.id ? 'ring-2 ring-fg' : 'ring-1 ring-fg/[0.08] hover:ring-fg/25'
-                }`}
+                className="group relative text-left rounded-2xl overflow-hidden transition-all duration-150 active:scale-[0.98]"
               >
                 <span className="block aspect-video bg-ink-850">
                   <img src={source.thumbnail} alt="" className="w-full h-full object-contain" />
