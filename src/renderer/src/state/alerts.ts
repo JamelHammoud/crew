@@ -26,9 +26,9 @@ export const reviewCount = (state: ReviewState): number =>
 
 // Nothing is worth a banner while the person is already reading the thread it
 // came from, and a run with more waiting behind it has not finished yet.
-export function finishedAlert(event: SessionEvent, state: AlertState): AgentAlert | null {
+export function finishedAlert(event: SessionEvent, state: AlertState, watching: boolean): AgentAlert | null {
   if (event.kind !== 'agent.end') return null
-  if (state.watching && event.threadId && state.openThreadId === event.threadId) return null
+  if (watching && event.threadId && state.openThreadId === event.threadId) return null
   const thread = event.threadId ? state.threads[event.threadId] : undefined
   if (thread && thread.status !== 'open') return null
   if (event.threadId && (state.queues[event.threadId]?.length ?? 0) > 0) return null
