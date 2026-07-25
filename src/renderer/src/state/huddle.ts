@@ -19,6 +19,8 @@ export interface HuddleState {
   peerId: string
   joined: boolean
   joining: boolean
+  // Set once the server has shown this client in the room it asked to join.
+  confirmed: boolean
   micOn: boolean
   cameraOn: boolean
   sharing: boolean
