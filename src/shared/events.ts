@@ -60,7 +60,9 @@ export type SessionEvent =
       promptId: string
       mode: 'queued' | 'steered'
     }
-  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string; boardId?: string }
+  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; byName: string; boardId?: string; mode?: ThreadMode }
+  | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
+  | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }
   // Superseded by thread.status; still emitted-compatible and replayed so old
   // event logs and old peers keep working.
   | { id: string; ts: number; kind: 'thread.archived'; threadId: string; byName: string }
