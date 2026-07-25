@@ -294,14 +294,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012838717,
+        "fetchedAt": 1785014038865,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015599818,
+            "resetsAt": 1785015599991,
             "active": true
           },
           {
@@ -309,7 +309,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499199818,
+            "resetsAt": 1785499199991,
             "active": false
           }
         ],
@@ -623,14 +623,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012838717,
+        "fetchedAt": 1785014038865,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015599818,
+            "resetsAt": 1785015599991,
             "active": true
           },
           {
@@ -638,7 +638,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499199818,
+            "resetsAt": 1785499199991,
             "active": false
           }
         ],
@@ -728,7 +728,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785013978861,
+        "fetchedAt": 1785014039153,
         "windows": [
           {
             "key": "primary",
@@ -823,7 +823,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785013978861,
+        "fetchedAt": 1785014039153,
         "windows": [
           {
             "key": "primary",
@@ -942,14 +942,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785012838717,
+        "fetchedAt": 1785014038865,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 92,
             "severity": "critical",
-            "resetsAt": 1785015599818,
+            "resetsAt": 1785015599991,
             "active": true
           },
           {
@@ -957,7 +957,7 @@
             "label": "Weekly (all models)",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785499199818,
+            "resetsAt": 1785499199991,
             "active": false
           }
         ],
