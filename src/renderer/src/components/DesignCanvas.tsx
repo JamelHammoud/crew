@@ -21,15 +21,13 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
-import DesignCursor from '../design/DesignCursor'
 import { DesignNodeUtil } from '../design/DesignNodeUtil'
-import DesignToolbar from '../design/DesignToolbar'
-import { nodeTools } from '../design/nodeTools'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
 import { designAssetUrls } from './designIcons'
 import { DesignMenu, DesignNavigation, DesignStylePanel } from './DesignPanels'
+import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
 
@@ -38,8 +36,7 @@ const shapeUtils = [...defaultShapeUtils, DesignNodeUtil]
 const components: TLComponents = {
   MenuPanel: DesignMenu,
   NavigationPanel: DesignNavigation,
-  StylePanel: DesignStylePanel,
-  Toolbar: DesignToolbar
+  StylePanel: DesignStylePanel
 }
 
 const tldrawOptions: Partial<TldrawOptions> = { maxPages: 1 }
