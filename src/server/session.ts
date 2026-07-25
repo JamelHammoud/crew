@@ -1891,8 +1891,8 @@ export class CrewSession {
     this.persistMeta()
   }
 
-  private deregisterAgent(member: Member, instanceId: string): void {
-    const agent = this.agents.get(agentId(member.name, instanceId))
+  private deregisterAgent(id: string): void {
+    const agent = this.agents.get(id)
     if (agent) this.dropAgent(agent)
   }
 
