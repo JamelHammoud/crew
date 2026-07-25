@@ -42,8 +42,6 @@ export default function DesignToolbar() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [editor, remember])
 
-  if (!editor) return null
-
   const activeGroup = TOOL_GROUPS.find(group => group.tools.some(tool => tool.id === current))
 
   return (
