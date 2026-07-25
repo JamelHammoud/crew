@@ -145,8 +145,8 @@ const speculars = () =>
       `    <ellipse cx="${round(x - RADIUS * 0.26)}" cy="${round(CENTRE - RADIUS * 0.46)}" rx="${round(RADIUS * 0.46)}" ry="${round(RADIUS * 0.3)}" mask="url(#cut-${index})" />`
   ).join('\n')
 
-// Ruled paper: one square grid over the whole tile, centred on the middle cell
-// so the stack sits in the middle of a square rather than on a line.
+// Ruled paper: the tile divided into four squares each way, so a rule runs
+// through the middle in both directions.
 const gridLines = () =>
   RULES.map(step => round(CENTRE + step * GRID))
     .flatMap(at => [
