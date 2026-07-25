@@ -335,8 +335,15 @@ export const useCrew = create<CrewState>((set, get) => {
               title: event.title,
               createdBy: event.byName,
               status: 'open',
+              mode: event.mode ?? 'build',
               boardId: event.boardId
             }
+          }
+          if (event.kind === 'thread.plan' && threads[event.threadId]) {
+            threads[event.threadId].plan = event.text
+          }
+          if (event.kind === 'thread.implement' && threads[event.threadId]) {
+            threads[event.threadId].mode = 'build'
           }
           if (event.kind === 'thread.archived' && threads[event.threadId]) {
             threads[event.threadId].status = 'archived'
@@ -526,6 +533,9 @@ export const useCrew = create<CrewState>((set, get) => {
       // Archiving keeps the old message so a newer UI can still archive on an
       // older host; the other transitions only exist on hosts that know them.
       socket.send(status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status })
+    },
+    implementPlan: threadId => {
+      socket.send({ type: 'plan.implement', threadId })
     },
     addTodo: (text, agentId) => {
       socket.send({ type: 'todo.add', text, agentId })
