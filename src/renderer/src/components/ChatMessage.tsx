@@ -110,7 +110,7 @@ export default function ChatMessage({ item, editable = false }: { item: ThreadIt
         ) : (
           item.text && (
             <p className="text-base text-fg leading-[22px] whitespace-pre-wrap mt-1">
-              <MentionText text={item.text} docMentions={item.docMentions} />
+              <MentionText text={item.text} mentionRefs={item.mentionRefs} docMentions={item.docMentions} />
             </p>
           )
         )}
