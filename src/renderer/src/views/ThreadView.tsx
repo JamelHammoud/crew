@@ -160,7 +160,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 </Tooltip>
                 <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0">
                   <span className="flex items-center gap-3 min-w-0 cursor-default">
-                    <AgentIcon seed={thread.agentId} presence={agentPresence} className="@max-[480px]:hidden" />
+                    <AgentIcon seed={thread.agentId} presence={agentPresence} className="@max-[520px]:hidden" />
                     <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
                   </span>
                 </MemberName>
