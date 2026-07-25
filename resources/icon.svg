@@ -1,8 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <rect x="100" y="100" width="824" height="824" rx="185" fill="#0d0d0d" />
-  <g fill="#ffffff">
-    <circle cx="702" cy="512" r="145" />
-    <circle cx="512" cy="512" r="145" stroke="#0d0d0d" stroke-width="42" />
-    <circle cx="322" cy="512" r="145" stroke="#0d0d0d" stroke-width="42" />
-  </g>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#26262b" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#141417" stop-opacity="1" />
+      <stop offset="1" stop-color="#08080a" stop-opacity="1" />
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="100" x2="0" y2="553.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.1" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.62" />
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.06" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.3" />
+    </linearGradient>
+    <mask id="stack" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="0" y="0" width="1024" height="1024" fill="#000000" />
+      <circle cx="698" cy="512" r="130" fill="#ffffff" />
+      <circle cx="512" cy="512" r="158" fill="#000000" />
+      <circle cx="512" cy="512" r="130" fill="#ffffff" />
+      <circle cx="326" cy="512" r="158" fill="#000000" />
+      <circle cx="326" cy="512" r="130" fill="#ffffff" />
+    </mask>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" />
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)" />
+  <rect x="102" y="102" width="820" height="820" rx="183" fill="none" stroke="url(#rim)" stroke-width="4" />
+  <rect x="0" y="0" width="1024" height="1024" fill="#ffffff" mask="url(#stack)" />
 </svg>
