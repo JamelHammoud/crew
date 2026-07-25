@@ -62,6 +62,22 @@ const session = () => {
 
 const openMenu = () => fireEvent.click(screen.getByLabelText('Profile menu'))
 
+const emptyStream = (): MediaStream => ({ getVideoTracks: () => [] }) as unknown as MediaStream
+
+// A track exists from the moment the connection does and stays quiet until the
+// other end starts sending, which is what the browser reports as muted.
+const fakeVideo = (): { stream: MediaStream; arrive: () => void } => {
+  const track = Object.assign(new EventTarget(), { kind: 'video', muted: true, readyState: 'live' })
+  return {
+    stream: { getVideoTracks: () => [track] } as unknown as MediaStream,
+    arrive: () =>
+      act(() => {
+        track.muted = false
+        track.dispatchEvent(new Event('unmute'))
+      })
+  }
+}
+
 describe('starting a huddle', () => {
   beforeEach(() => {
     session()
