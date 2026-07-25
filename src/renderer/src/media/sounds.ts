@@ -55,28 +55,28 @@ const STRIKES: Record<StrikeName, Strike[]> = {
     {
       hz: 620,
       at: 0,
-      length: 0.1,
+      length: 0.2,
       gain: 0.6,
-      partials: [1, 2.76, 5.1],
-      bend: 1.4,
-      bendTime: 0.018,
-      tone: 3200,
-      wet: 0.14,
-      pan: -0.12,
-      rasp: { hz: 1100, q: 0.7, gain: 0.45, length: 0.02 }
+      partials: [1, 3.94, 10.2],
+      bend: 1.16,
+      bendTime: 0.014,
+      tone: 4200,
+      wet: 0.18,
+      pan: -0.08,
+      rasp: { hz: 900, q: 1.1, gain: 0.3, length: 0.014 }
     },
     {
-      hz: 592,
-      at: 0.063,
-      length: 0.14,
+      hz: 775,
+      at: 0.014,
+      length: 0.24,
       gain: 0.5,
-      partials: [1, 2.76, 5.1],
-      bend: 1.4,
-      bendTime: 0.018,
-      tone: 3000,
-      wet: 0.14,
-      pan: 0.12,
-      rasp: { hz: 1040, q: 0.7, gain: 0.4, length: 0.02 }
+      partials: [1, 3.94, 10.2],
+      bend: 1.16,
+      bendTime: 0.014,
+      tone: 4600,
+      wet: 0.18,
+      pan: 0.08,
+      rasp: { hz: 1150, q: 1.1, gain: 0.22, length: 0.012 }
     }
   ],
   'tab.docs': [
