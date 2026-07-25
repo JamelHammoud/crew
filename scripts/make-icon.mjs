@@ -241,6 +241,9 @@ ${discs()}
   <g fill="url(#bounce)" mask="url(#under)">
 ${discs()}
   </g>
+  <g fill="url(#edge)" mask="url(#over)">
+${discs()}
+  </g>
   <g fill="url(#gloss)">
 ${speculars()}
   </g>`
