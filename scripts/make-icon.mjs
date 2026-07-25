@@ -60,11 +60,12 @@ const THEMES = {
     grid: ['#4d94db', 0.3],
     glow: ['#1d4d84', 0.5],
     mark: [
-      ['#5cbcff', 1],
-      ['#2287e8', 1],
-      ['#0d51b4', 1]
+      ['#8ad6ff', 1],
+      ['#2b8fee', 1],
+      ['#0a3f96', 1]
     ],
-    gloss: 0.4
+    bounce: ['#6ec8ff', 0.5],
+    gloss: 0.72
   },
   devLight: {
     tile: [
