@@ -21,8 +21,11 @@ export default function PlanPanel({ threadId }: { threadId: string }) {
         <span className="text-base font-semibold text-fg">Plan</span>
         <Pill>{thread.mode === 'plan' ? 'Not started' : 'Building'}</Pill>
       </div>
-      <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden px-5 pb-4">
-        <Markdown text={thread.plan} />
+      <div className="relative flex-1 min-h-0 min-w-0">
+        <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-5 pb-4">
+          <Markdown text={thread.plan} />
+        </div>
+        <ScrollFade edges={edges} />
       </div>
       {thread.mode === 'plan' && (
         <div className="p-4 border-t border-ink-700">
