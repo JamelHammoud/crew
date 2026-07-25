@@ -767,7 +767,7 @@ export class CrewSession {
     const trimmed = text.trim()
     if (!trimmed || trimmed === event.text) return
     const docMentions = this.docMentionRefs(trimmed)
-    const mentionRefs = this.agentRefs(mentionsIn(trimmed, [...this.agents.values()].map(a => this.pooled(a))))
+    const mentionRefs = this.agentRefs([], trimmed)
     event.text = trimmed
     event.docMentions = docMentions
     event.mentionRefs = mentionRefs
