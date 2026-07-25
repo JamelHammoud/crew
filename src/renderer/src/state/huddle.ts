@@ -95,6 +95,7 @@ export const useHuddle = create<HuddleState>((set, get) => {
   const teardown = () => {
     mesh.close()
     monitor.close()
+    own = null
     for (const slot of ['mic', 'camera', 'screen'] as const) {
       stop(tracks[slot])
       tracks[slot] = null
