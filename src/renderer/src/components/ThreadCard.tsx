@@ -8,14 +8,10 @@ import {
 } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import { useCrew, type ThreadMeta } from '../state/store'
-import Avatar from './Avatar'
-import { MemberName, MentionText } from './Mention'
 import { MenuItem, Popover } from './Popover'
-import { usePresence } from './presence'
 import Spinner from './Spinner'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
-import Tooltip from './Tooltip'
-import { formatFullTime, formatTime } from './time'
+import ThreadCardShell from './ThreadCardShell'
 
 export function StateIcon({ state }: { state: ThreadState }) {
   if (state === 'working') return <Spinner size={16} className="text-fg" />
@@ -41,7 +37,6 @@ export default function ThreadCard({
   const agent = useCrew(s => s.agents.find(a => a.id === thread.agentId))
   const setThreadStatus = useCrew(s => s.setThreadStatus)
   const owner = agent?.ownerName
-  const presence = usePresence(thread.createdBy)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   const setStatus = (status: ThreadMeta['status']) => {
@@ -49,54 +44,35 @@ export default function ThreadCard({
     setThreadStatus(thread.id, status)
   }
 
-  const prefix = `@${thread.agentLabel}`
-  const title = thread.title.toLowerCase().startsWith(prefix.toLowerCase())
-    ? thread.title
-    : `${prefix} ${thread.title}`
-
   return (
-    <div
-      className="flex gap-4 animate-rise"
-      onContextMenu={event => {
-        event.preventDefault()
-        setMenuAt({ x: event.clientX, y: event.clientY })
-      }}
-    >
-      <Avatar name={thread.createdBy} presence={presence} />
-      <div className="min-w-0 flex-1 pt-0.5">
-        <div className="flex items-baseline gap-2.5">
-          <MemberName name={thread.createdBy}>
-            <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
-              {thread.createdBy}
-            </span>
-          </MemberName>
-          <Tooltip label={formatFullTime(ts)}>
-            <span className="text-sm text-fg-faint cursor-default">{formatTime(ts)}</span>
-          </Tooltip>
-        </div>
+    <>
+      <ThreadCardShell
+        thread={thread}
+        ts={ts}
+        onOpen={onOpen}
+        onContextMenu={event => {
+          event.preventDefault()
+          setMenuAt({ x: event.clientX, y: event.clientY })
+        }}
+      >
         <button
           onClick={onOpen}
-          className="group w-full text-left mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 hover:border-ink-600"
+          className="relative w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3 text-left"
         >
-          <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">
-            <MentionText text={title} />
-          </p>
-          <div className="relative bg-ink-700 px-5 h-[52px] flex items-center gap-3">
-            <StateIcon state={state} />
-            <span className={`text-base font-semibold shrink-0 ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
-              {THREAD_STATE_LABELS[state]}
+          <StateIcon state={state} />
+          <span className={`text-base font-semibold shrink-0 ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
+            {THREAD_STATE_LABELS[state]}
+          </span>
+          <span className="text-base text-fg-muted truncate flex-1">{detail}</span>
+          {owner && (
+            <span className="relative self-stretch shrink-0 flex items-center bg-ink-700 transition-transform duration-200 group-hover:-translate-x-5">
+              <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-700 to-transparent pointer-events-none" />
+              <span className="text-base font-semibold text-fg-muted">{owner}'s PC</span>
             </span>
-            <span className="text-base text-fg-muted truncate flex-1">{detail}</span>
-            {owner && (
-              <span className="relative self-stretch shrink-0 flex items-center bg-ink-700 transition-transform duration-200 group-hover:-translate-x-5">
-                <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-700 to-transparent pointer-events-none" />
-                <span className="text-base font-semibold text-fg-muted">{owner}'s PC</span>
-              </span>
-            )}
-            <ChevronRightIcon className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
-          </div>
+          )}
+          <ChevronRightIcon className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
         </button>
-      </div>
+      </ThreadCardShell>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         {thread.status === 'done' ? (
           <MenuItem icon={<ArrowUturnLeftIcon />} label="Reopen" onClick={() => setStatus('open')} />
@@ -105,6 +81,6 @@ export default function ThreadCard({
         )}
         <MenuItem icon={<ArchiveBoxIcon />} label="Archive thread" onClick={() => setStatus('archived')} />
       </Popover>
-    </div>
+    </>
   )
 }
