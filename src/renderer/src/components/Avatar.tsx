@@ -22,18 +22,14 @@ export default function Avatar({
   size?: keyof typeof SIZES
   presence?: 'online' | 'offline'
 }) {
-  const hue = hueOf(name.trim().toLowerCase())
-  const light = useTheme() === 'light'
+  const colors = avatarColors(name, useTheme() === 'light')
   return (
     <span className={`${SIZES[size]} relative inline-block shrink-0 self-start`}>
       <span
         className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
-        style={{
-          backgroundColor: light ? `oklch(0.91 0.045 ${hue})` : `oklch(0.32 0.045 ${hue})`,
-          color: light ? `oklch(0.45 0.09 ${hue})` : `oklch(0.87 0.06 ${hue})`
-        }}
+        style={{ backgroundColor: colors.background, color: colors.color }}
       >
-        {name.trim().charAt(0).toUpperCase() || '?'}
+        {avatarInitial(name)}
       </span>
       {presence && (
         <span
