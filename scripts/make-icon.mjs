@@ -109,6 +109,14 @@ const stops = ([top, middle, bottom]) =>
     )
     .join('\n')
 
+const ramp = list =>
+  list
+    .map(
+      ([offset, colour, opacity]) =>
+        `      <stop offset="${offset}" stop-color="${colour}" stop-opacity="${opacity}" />`
+    )
+    .join('\n')
+
 const CENTRE = CANVAS / 2
 const BACK_TO_FRONT = [CENTRE + STEP, CENTRE, CENTRE - STEP]
 const round = value => Number(value.toFixed(3))
@@ -200,14 +208,17 @@ ${gridLines()}
 `
     : ''
   const drawing = blueprint
-    ? `  <g fill="url(#mark)" filter="url(#cast)">
+    ? `  <g fill="url(#body)" filter="url(#cast)">
 ${discs()}
   </g>
-  <g fill="url(#bounce)">
+  <g fill="url(#shade)">
+${discs()}
+  </g>
+  <g fill="url(#bounce)" mask="url(#under)">
 ${discs()}
   </g>
   <g fill="url(#gloss)">
-${discs()}
+${speculars()}
   </g>`
     : `  <g fill="${ink}">
 ${discs()}
