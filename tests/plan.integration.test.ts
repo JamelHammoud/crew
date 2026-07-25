@@ -86,8 +86,8 @@ describe('plan mode', () => {
     await waitUntil(() => endsInThread().length === 2)
     const build = endsInThread()[1] as AgentEnd
     expect(build.text).toContain('The plan this thread agreed on')
-    // Out of plan mode the agent is no longer told to stop at a plan.
-    expect(build.text).not.toContain(PLAN_INSTRUCTIONS)
+    // Out of plan mode the reply is the work, not a new plan.
+    expect(sam.events.filter(e => e.kind === 'thread.plan').length).toBe(1)
 
     // Implementing twice does not start a second build.
     sam.send({ type: 'plan.implement', threadId: thread.threadId })
