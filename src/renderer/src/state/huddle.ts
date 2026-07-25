@@ -128,10 +128,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
     if (get().joined) {
       if (get().sharing && mine && !mine.sharing) get().stopSharing()
       for (const peer of msg.room.peers) {
-        if (peer.peerId !== self && !wasHere.has(peer.peerId)) chimeJoin()
+        if (peer.peerId !== self && !wasHere.has(peer.peerId)) playSound('join')
       }
       for (const peer of before.peers) {
-        if (peer.peerId !== self && !peerIn(msg.room, peer.peerId)) chimeLeave()
+        if (peer.peerId !== self && !peerIn(msg.room, peer.peerId)) playSound('leave')
       }
       mesh.sync(self, msg.room.peers.map(peer => peer.peerId))
       const shared = sharingPeer(msg.room)
