@@ -187,7 +187,7 @@ export const useHuddle = create<HuddleState>((set, get) => {
       const mic = await captureMic()
       tracks.mic = mic.track
       const peerId = get().peerId
-      set({ joined: true, joining: false, micOn: mic.track !== null, problem: mic.problem })
+      set({ joined: true, joining: false, confirmed: false, micOn: mic.track !== null, problem: mic.problem })
       sendHuddle({ type: 'huddle.join', peerId, muted: mic.track === null, camera: false })
       mesh.sync(peerId, get().room.peers.map(peer => peer.peerId))
       publish()
