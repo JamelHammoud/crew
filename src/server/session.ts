@@ -800,6 +800,19 @@ export class CrewSession {
     return null
   }
 
+  // Implementing is the moment the thread stops planning: the plan stays on it
+  // as the brief, and the agent gets a turn to build it.
+  private handlePlanImplement(member: Member, threadId: string): void {
+    const thread = this.threads.get(threadId)
+    if (!thread || thread.mode !== 'plan' || !thread.plan) return
+    const agent = this.agents.get(thread.agentId)
+    if (!agent) return
+    thread.mode = 'build'
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.implement', threadId, byName: member.name })
+    if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
+    this.enqueuePrompt(agent, member, IMPLEMENT_PROMPT, threadId, [])
+  }
+
   private handleThreadStatus(member: Member, threadId: string, status: ThreadStatus): void {
     const thread = this.threads.get(threadId)
     if (!thread || !THREAD_STATUSES.has(status) || thread.status === status) return
@@ -1723,6 +1736,9 @@ export class CrewSession {
         `Other agents in the session: ${others.join(', ')}. A mention like @name in a thread hands that message to the named agent, so replies from several agents can appear here.`
       )
     }
+    const thread = this.threads.get(prompt.threadId)
+    if (thread?.mode === 'plan') lines.push(``, PLAN_INSTRUCTIONS)
+    else if (thread?.plan) lines.push(``, `The plan this thread agreed on:`, thread.plan)
     lines.push(``, `Thread so far:`, transcript || '(nothing yet)')
     const referenced = this.referencedPages(context, prompt)
     for (const page of referenced) {
