@@ -65,7 +65,7 @@ export default function PresenceStack(): ReactElement | null {
         <button
           onClick={() => setOpen(was => !was)}
           aria-label="Who's here"
-          className={`flex items-center p-1 -m-1 rounded-full transition-all duration-150 active:scale-95 ${
+          className={`flex items-center rounded-full transition-all duration-150 active:scale-95 ${
             open ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
           }`}
         >
