@@ -17,9 +17,6 @@ export interface RunnerOptions {
   usagePollMs?: number
   // Called before a prompt starts so the agent works from the newest code.
   onBeforeRun?: () => Promise<void>
-  // Called when this runner adopts one of its own agents remembered by the
-  // server but missing locally, so the owner can persist the definition.
-  onAdopt?: (def: AgentDef) => void
   // Called when one of this runner's agents is removed from the session by
   // anyone, so the owner can drop the local definition too.
   onForget?: (instanceId: string) => void
