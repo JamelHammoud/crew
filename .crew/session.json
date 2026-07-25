@@ -294,14 +294,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784998633600,
+        "fetchedAt": 1784998617412,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 70,
+            "percent": 69,
             "severity": "normal",
-            "resetsAt": 1785015599389,
+            "resetsAt": 1785015599265,
             "active": true
           },
           {
@@ -309,7 +309,7 @@
             "label": "Weekly (all models)",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785499200389,
+            "resetsAt": 1785499200265,
             "active": false
           }
         ],
@@ -623,14 +623,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784998633600,
+        "fetchedAt": 1784998617412,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 70,
+            "percent": 69,
             "severity": "normal",
-            "resetsAt": 1785015599389,
+            "resetsAt": 1785015599265,
             "active": true
           },
           {
@@ -638,7 +638,7 @@
             "label": "Weekly (all models)",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785499200389,
+            "resetsAt": 1785499200265,
             "active": false
           }
         ],
@@ -728,7 +728,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784998753601,
+        "fetchedAt": 1784998797428,
         "windows": [
           {
             "key": "primary",
@@ -823,7 +823,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1784998753601,
+        "fetchedAt": 1784998797428,
         "windows": [
           {
             "key": "primary",
@@ -942,14 +942,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1784998633600,
+        "fetchedAt": 1784998617412,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 70,
+            "percent": 69,
             "severity": "normal",
-            "resetsAt": 1785015599389,
+            "resetsAt": 1785015599265,
             "active": true
           },
           {
@@ -957,366 +957,13 @@
             "label": "Weekly (all models)",
             "percent": 6,
             "severity": "normal",
-            "resetsAt": 1785499200389,
+            "resetsAt": 1785499200265,
             "active": false
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
-      }
-    },
-    {
-      "id": "ali/709e7abc-2bb1-4a09-9549-4cbf570bc556",
-      "label": "Claude Opus 5",
-      "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "opus",
-        "opusModel": "claude-opus-5",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "Opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "Sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "Haiku"
-            },
-            {
-              "value": "fable",
-              "label": "Fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "opusModel",
-          "label": "Version",
-          "options": [
-            {
-              "value": "claude-opus-5",
-              "label": "Opus 5"
-            },
-            {
-              "value": "claude-opus-4-8",
-              "label": "Opus 4.8"
-            },
-            {
-              "value": "claude-opus-4-7",
-              "label": "Opus 4.7"
-            },
-            {
-              "value": "claude-opus-4-6",
-              "label": "Opus 4.6"
-            },
-            {
-              "value": "claude-opus-4-5-20251101",
-              "label": "Opus 4.5"
-            },
-            {
-              "value": "opus",
-              "label": "Latest"
-            }
-          ],
-          "default": "claude-opus-5",
-          "visibleWhen": {
-            "key": "model",
-            "value": "opus"
-          }
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784998633600,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 70,
-            "severity": "normal",
-            "resetsAt": 1785015599389,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 6,
-            "severity": "normal",
-            "resetsAt": 1785499200389,
-            "active": false
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
-    },
-    {
-      "id": "ali/a5870501-29f9-482a-8e95-280a04acf660",
-      "label": "Claude Fable 2",
-      "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "fable",
-        "opusModel": "claude-opus-5",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "Opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "Sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "Haiku"
-            },
-            {
-              "value": "fable",
-              "label": "Fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "opusModel",
-          "label": "Version",
-          "options": [
-            {
-              "value": "claude-opus-5",
-              "label": "Opus 5"
-            },
-            {
-              "value": "claude-opus-4-8",
-              "label": "Opus 4.8"
-            },
-            {
-              "value": "claude-opus-4-7",
-              "label": "Opus 4.7"
-            },
-            {
-              "value": "claude-opus-4-6",
-              "label": "Opus 4.6"
-            },
-            {
-              "value": "claude-opus-4-5-20251101",
-              "label": "Opus 4.5"
-            },
-            {
-              "value": "opus",
-              "label": "Latest"
-            }
-          ],
-          "default": "claude-opus-5",
-          "visibleWhen": {
-            "key": "model",
-            "value": "opus"
-          }
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1784998633600,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 70,
-            "severity": "normal",
-            "resetsAt": 1785015599389,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 6,
-            "severity": "normal",
-            "resetsAt": 1785499200389,
-            "active": false
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
-    },
-    {
-      "id": "ali/7ad44611-9f35-435c-ae15-094179a86e49",
-      "label": "Codex Gpt-5.6-sol 2",
-      "provider": "codex",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "gpt-5.6-sol",
-        "effort": "xhigh"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "gpt-5.6-sol",
-              "label": "gpt-5.6-sol"
-            },
-            {
-              "value": "gpt-5.6-terra",
-              "label": "gpt-5.6-terra"
-            },
-            {
-              "value": "gpt-5.6-luna",
-              "label": "gpt-5.6-luna"
-            },
-            {
-              "value": "gpt-5.5",
-              "label": "gpt-5.5"
-            },
-            {
-              "value": "gpt-5.4",
-              "label": "gpt-5.4"
-            },
-            {
-              "value": "gpt-5.4-mini",
-              "label": "gpt-5.4-mini"
-            }
-          ],
-          "default": ""
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            },
-            {
-              "value": "ultra",
-              "label": "ultra"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": false,
-      "usage": {
-        "provider": "codex",
-        "fetchedAt": 1784998753601,
-        "windows": [
-          {
-            "key": "primary",
-            "label": "730-hour limit",
-            "percent": 27
-          }
-        ],
-        "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "team",
-        "asOf": 1784998656888
       }
     }
   ]
