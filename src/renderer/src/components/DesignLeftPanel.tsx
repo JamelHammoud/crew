@@ -345,4 +345,7 @@ function Assets({ editor }: { editor: Editor }) {
           <CanvasGlyph name="geo-rectangle" className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
           <span className="flex-1 truncate">{(shape.props as { component: string }).component}</span>
         </button>
-      )
+      ))}
+    </div>
+  )
+}
