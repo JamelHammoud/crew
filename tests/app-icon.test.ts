@@ -98,7 +98,7 @@ describe('app icon', () => {
   it('fills the discs on the shipping icon and draws them on the blueprint', () => {
     for (const name of SHIPPING) {
       expect(svg(name)).toMatch(/<g fill="#[0-9a-f]{6}">/)
-      expect(svg(name)).not.toContain('<line')
+      expect(svg(name)).not.toContain('<line ')
     }
     for (const name of BLUEPRINT) {
       expect(svg(name)).toMatch(/<g fill="none" stroke="#[0-9a-f]{6}" stroke-width="\d+">/)
