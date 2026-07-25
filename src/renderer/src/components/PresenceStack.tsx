@@ -103,7 +103,7 @@ export default function PresenceStack(): ReactElement | null {
       </Tooltip>
       <Popover open={open} onClose={() => setOpen(false)} className="min-w-52">
         <Group label="Online" who={people} />
-        {people.length > 0 && working.length > 0 && <div className="h-px bg-fg/[0.06] -mx-1.5 my-1" />}
+        {people.length > 0 && working.length > 0 && <MenuDivider />}
         <Group label="Working" who={working} />
       </Popover>
     </div>
