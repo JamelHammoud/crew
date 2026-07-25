@@ -2,10 +2,12 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { useBrowser } from './state/browser'
+import { applyPlatform } from './state/platform'
 import { useCrew } from './state/store'
 import { applyTheme, storedTheme } from './state/theme'
 import './styles.css'
 
+applyPlatform()
 applyTheme(storedTheme())
 void useCrew.getState().boot()
 
