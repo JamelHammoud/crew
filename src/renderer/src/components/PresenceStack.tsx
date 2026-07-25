@@ -83,7 +83,7 @@ export default function PresenceStack(): ReactElement | null {
           onClick={() => setOpen(was => !was)}
           aria-label="Who's here"
           className={`flex items-center rounded-full transition-all duration-150 active:scale-95 ${
-            open ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
+            open ? 'ring-2 ring-fg/25' : 'hover:ring-2 hover:ring-fg/15'
           }`}
         >
           <FaceStack face={FACE}>
