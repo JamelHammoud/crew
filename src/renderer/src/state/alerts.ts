@@ -14,7 +14,6 @@ export interface ReviewState {
 export interface AlertState extends ReviewState {
   agents: Array<Pick<PooledAgent, 'id' | 'label'>>
   openThreadId: string | null
-  watching: boolean
 }
 
 export const reviewCount = (state: ReviewState): number =>
