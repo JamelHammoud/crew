@@ -18,8 +18,10 @@ const svg = (name: string) => readFileSync(path.join(root, 'resources', name), '
 const SHIPPING = ['icon.svg', 'icon-light.svg']
 const BLUEPRINT = ['icon-dev.svg', 'icon-dev-light.svg']
 
-const stack = (source: string) =>
-  [...source.matchAll(/<circle cx="(\d+)" cy="(\d+)" r="(\d+)" mask="url\(#cut-(\d)\)"/g)]
+// The blueprint paints the same three discs once per shading layer, so the
+// stack is the set of distinct discs, not every circle drawn.
+const stack = (source: string) => {
+  const drawn = [...source.matchAll(/<circle cx="(\d+)" cy="(\d+)" r="(\d+)" mask="url\(#cut-(\d)\)"/g)]
     .map(match => ({
       x: Number(match[1]),
       y: Number(match[2]),
@@ -27,6 +29,10 @@ const stack = (source: string) =>
       depth: Number(match[4])
     }))
     .sort((a, b) => a.x - b.x)
+  return drawn.filter(
+    (disc, index) => drawn.findIndex(other => other.x === disc.x) === index
+  )
+}
 
 const cuts = (source: string, depth: number) => {
   const mask = source.match(new RegExp(`<mask id="cut-${depth}"[^]*?</mask>`))?.[0] ?? ''
