@@ -6,6 +6,7 @@ import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
 import TopBar, { type Tab } from './components/TopBar'
 import { lazy, Suspense } from 'react'
+import { reviewCount } from './state/alerts'
 import { useCrew } from './state/store'
 import Chat from './views/Chat'
 import Dashboard from './views/Dashboard'
@@ -48,6 +49,15 @@ function Session() {
   useEffect(() => {
     if (docsTarget) setTab('docs')
   }, [docsTarget])
+
+  useEffect(
+    () =>
+      window.crew.onNotificationOpen(threadId => {
+        setTab('chat')
+        openThread(threadId)
+      }),
+    [openThread]
+  )
 
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThread()
