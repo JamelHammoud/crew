@@ -235,6 +235,81 @@ describe('agent instances', () => {
     expect(host.session.snapshot().agents.find(a => a.id === id)?.label).toBe('Trolls')
   })
 
+  it('reads old mentions back under the name the agent carries now', async () => {
+    const ui = await TestUi.connect(host.url, 'jamel', host.code)
+    uis.push(ui)
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [{ instanceId: 'uuid-1', provider: 'fake', name: 'Fake', settings: {} }],
+      reconnectDelayMs: 100
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
+
+    const id = agentId('jamel', 'uuid-1')
+    ui.chat('@Fake take a look', [id])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Extract<
+      SessionEvent,
+      { kind: 'thread.started' }
+    >
+    const message = (await ui.waitForEvent(e => e.kind === 'message' && e.text === '@Fake take a look')) as Extract<
+      SessionEvent,
+      { kind: 'message' }
+    >
+    expect(message.mentionRefs).toEqual([{ id, label: 'Fake' }])
+    expect(started.titleRefs).toEqual([{ id, label: 'Fake' }])
+
+    ui.send({ type: 'agent.rename', agentId: id, label: 'Trolls' })
+    await ui.waitFor(m => m.type === 'agent.renamed')
+    const agents = host.session.snapshot().agents
+
+    expect(relabelMentions(message.text, message.mentionRefs, agents)).toBe('@Trolls take a look')
+    expect(relabelMentions(started.title, started.titleRefs, agents)).toBe('@Trolls take a look')
+  })
+
+  it('carries a mention of an agent that was not given the work', async () => {
+    const ui = await TestUi.connect(host.url, 'jamel', host.code)
+    uis.push(ui)
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [
+        { instanceId: 'a', provider: 'fake', name: 'Fake A', settings: {} },
+        { instanceId: 'b', provider: 'fake', name: 'Fake B', settings: {} }
+      ],
+      reconnectDelayMs: 100
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake A')
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake B')
+
+    const idA = agentId('jamel', 'a')
+    const idB = agentId('jamel', 'b')
+    ui.chat('@Fake A ask @Fake B about it', [idA])
+    const message = (await ui.waitForEvent(
+      e => e.kind === 'message' && e.text === '@Fake A ask @Fake B about it'
+    )) as Extract<SessionEvent, { kind: 'message' }>
+    expect(message.mentionRefs).toEqual(
+      expect.arrayContaining([
+        { id: idA, label: 'Fake A' },
+        { id: idB, label: 'Fake B' }
+      ])
+    )
+
+    ui.send({ type: 'agent.rename', agentId: idB, label: 'Trolls' })
+    await ui.waitFor(m => m.type === 'agent.renamed')
+    expect(relabelMentions(message.text, message.mentionRefs, host.session.snapshot().agents)).toBe(
+      '@Fake A ask @Trolls about it'
+    )
+  })
+
   it('refuses a rename from someone who does not own the agent', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
