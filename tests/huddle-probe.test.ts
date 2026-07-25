@@ -20,7 +20,8 @@ const bridge = {
   screenSources: () => Promise.resolve([]),
   pickScreenSource: () => Promise.resolve(),
   askForMedia: () => Promise.resolve(true),
-  openMediaSettings: () => Promise.resolve()
+  openMediaSettings: () => Promise.resolve(),
+  onNotificationOpen: () => () => {}
 }
 Object.assign(window, { crew: bridge })
 
