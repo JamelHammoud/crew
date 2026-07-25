@@ -125,11 +125,15 @@ const routeBadge = (
   return started.has(route.promptId) ? undefined : 'queued'
 }
 
+// Every name an agent wrote under is read back off its id, so a rename shows on
+// work it did before the rename instead of leaving the old name behind.
 export function buildThread(
   events: SessionEvent[],
   steps: Record<string, AgentStep[]>,
-  selfId: string
+  selfId: string,
+  agents: Array<Pick<PooledAgent, 'id' | 'label'>> = []
 ): ThreadItem[] {
+  const labelOf = (agentId: string, written: string) => agents.find(a => a.id === agentId)?.label ?? written
   const ended = new Set(events.filter(e => e.kind === 'agent.end').map(e => e.promptId))
   const started = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
   // The last route wins: a steer the agent turned down is re-emitted as queued.
