@@ -371,9 +371,9 @@ body {
   --tl-color-panel: var(--color-ink-800);
   --tl-color-panel-contrast: var(--color-ink-700);
   --tl-color-panel-transparent: transparent;
-  --tl-color-selected: var(--color-fg);
+  --tl-color-selected: var(--design-selection);
   --tl-color-selected-contrast: var(--color-ink-900);
-  --tl-color-selection-stroke: var(--color-fg);
+  --tl-color-selection-stroke: var(--design-selection);
   --tl-color-focus: var(--color-fg);
   --tl-color-primary: var(--color-fg);
   --tl-color-text: var(--color-fg);
