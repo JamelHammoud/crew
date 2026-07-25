@@ -11,8 +11,7 @@ export default function PlanPanel({ threadId }: { threadId: string }) {
 
   return (
     <aside className="w-[340px] shrink-0 border-l border-ink-700 flex flex-col bg-ink-900">
-      <div className="app-drag h-[70px] shrink-0" />
-      <div className="px-5 pb-4 flex items-center gap-2.5">
+      <div className="app-drag h-[70px] shrink-0 px-5 flex items-center gap-2.5">
         <ClipboardDocumentListIcon className="w-4 h-4 text-fg-muted shrink-0" />
         <span className="text-base font-semibold text-fg">Plan</span>
         <Pill>{thread.mode === 'plan' ? 'Not started' : 'Building'}</Pill>
