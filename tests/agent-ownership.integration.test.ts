@@ -3,7 +3,7 @@ import type { SessionEvent } from '../src/shared/events'
 import { agentId, type AgentDef } from '../src/shared/llm'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
-import { startHost, TestUi, type TestHost } from './helpers/session'
+import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
 
 const saved: AgentDef = { instanceId: 'a', provider: 'fake', name: 'Bubbles', settings: {} }
