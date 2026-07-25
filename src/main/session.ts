@@ -289,9 +289,8 @@ export class AppSession {
       code: target.code,
       repoPath,
       providers: builtinProviders,
-      agents: this.agentDefs(detected),
+      agents: this.agentDefs(detected, name),
       onBeforeRun: () => git.syncNow(),
-      onAdopt: def => this.saveAdopted(def),
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
