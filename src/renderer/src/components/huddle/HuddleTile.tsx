@@ -48,11 +48,14 @@ export default function HuddleTile({
           {self && <Pill>You</Pill>}
         </span>
         <span className="flex items-center gap-1 shrink-0">
-          {peer.sharing && <ComputerDesktopIcon className="w-3.5 h-3.5 text-fg-secondary" />}
+          {peer.sharing && (
+            <span className="w-5 h-5 rounded-full bg-fg/10 flex items-center justify-center">
+              <ComputerDesktopIcon className="w-3 h-3 text-fg-secondary" />
+            </span>
+          )}
           {peer.muted && (
-            <span className="relative w-3.5 h-3.5">
-              <MicrophoneIcon className="w-3.5 h-3.5 text-fg-muted" />
-              <span className="absolute left-1/2 top-1/2 w-[18px] h-[1.5px] bg-danger -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full" />
+            <span className="w-5 h-5 rounded-full bg-danger/15 flex items-center justify-center">
+              <MicrophoneIcon className="w-3 h-3 text-danger" />
             </span>
           )}
         </span>
