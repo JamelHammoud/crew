@@ -52,11 +52,7 @@ export default function HuddleTile({
 
   return (
     <div
-      className={`relative w-full aspect-video overflow-hidden bg-gradient-to-b from-ink-800 to-ink-850 transition-all duration-200 ${look.corner} ${
-        speaking
-          ? 'ring-2 ring-fg shadow-[0_0_20px_-8px_rgb(255_255_255/0.45)]'
-          : 'ring-1 ring-fg/[0.07]'
-      }`}
+      className={`relative w-full aspect-video overflow-hidden bg-gradient-to-b from-ink-800 to-ink-850 ${look.corner}`}
     >
       <div className={`absolute inset-0 flex items-center justify-center ${connecting ? 'opacity-30' : ''}`}>
         {live && camera ? (
