@@ -153,6 +153,32 @@ describe('markdown file links', () => {
   })
 })
 
+describe('markdown tables', () => {
+  const table = ['| Control | Click behavior |', '| --- | --- |', '| Pointer | Selects and moves |'].join('\n')
+
+  it('renders a table with header and body cells inside a scroll wrapper', () => {
+    render(createElement(Markdown, { text: table }))
+    const wrapper = document.querySelector('.md > .table-scroll')
+    expect(wrapper).not.toBeNull()
+    expect(wrapper?.firstElementChild?.tagName).toBe('TABLE')
+    expect([...document.querySelectorAll('th')].map(cell => cell.textContent)).toEqual([
+      'Control',
+      'Click behavior'
+    ])
+    expect([...document.querySelectorAll('tbody td')].map(cell => cell.textContent)).toEqual([
+      'Pointer',
+      'Selects and moves'
+    ])
+  })
+
+  it('still links files written inside a table cell', async () => {
+    render(createElement(Markdown, { text: '| File | Note |\n| --- | --- |\n| `src/app.ts:2` | fixed |' }))
+    await waitFor(() => expect(document.querySelectorAll('td a.file-link').length).toBe(1))
+    fireEvent.click(document.querySelector('td a.file-link') as HTMLAnchorElement)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
+  })
+})
+
 describe('plain text file links', () => {
   it('renders chips for real files that open them', async () => {
     render(createElement(TextWithFileLinks, { text: 'undo/redo aside, please check src/app.ts:2 soon' }))
