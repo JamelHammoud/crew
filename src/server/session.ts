@@ -705,6 +705,7 @@ export class CrewSession {
       authorName: entry.byName,
       text: entry.text,
       mentions: entry.mentions,
+      mentionRefs: this.agentRefs(entry.mentions),
       docMentions: entry.docMentions,
       threadId: entry.threadId,
       attachments: entry.attachments
