@@ -67,13 +67,25 @@ const CENTRE = CANVAS / 2
 const BACK_TO_FRONT = [CENTRE + STEP, CENTRE, CENTRE - STEP]
 const round = value => Number(value.toFixed(3))
 
-const stackMask = reach =>
-  BACK_TO_FRONT.flatMap((x, index) => [
-    ...(index === 0
-      ? []
-      : [`      <circle cx="${x}" cy="${CENTRE}" r="${RADIUS + GAP}" fill="#000000" />`]),
-    `      <circle cx="${x}" cy="${CENTRE}" r="${reach}" fill="#ffffff" />`
-  ]).join('\n')
+// Each disc is masked only by the discs standing in front of it, so a gap can
+// never be reopened by whatever is drawn next. One flat mask reopened it, and
+// the outlines crossed like rings instead of stacking.
+const cutMasks = () =>
+  BACK_TO_FRONT.map((_, index) => {
+    const infront = BACK_TO_FRONT.slice(index + 1).map(
+      x => `      <circle cx="${x}" cy="${CENTRE}" r="${RADIUS + GAP}" fill="#000000" />`
+    )
+    return `    <mask id="cut-${index}" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
+      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="#ffffff" />
+${infront.join('\n')}
+    </mask>`
+  }).join('\n')
+
+const discs = () =>
+  BACK_TO_FRONT.map(
+    (x, index) =>
+      `    <circle cx="${x}" cy="${CENTRE}" r="${RADIUS}" mask="url(#cut-${index})" />`
+  ).join('\n')
 
 const gridLines = () =>
   Array.from({ length: 13 }, (_, index) => round(CENTRE + (index - 6) * GRID))
