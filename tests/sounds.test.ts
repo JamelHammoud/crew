@@ -83,7 +83,7 @@ describe('which sound an event makes', () => {
   })
 
   it('says nothing about events with no sound', () => {
-    expect(soundFor({ id: 's', ts: 1, kind: 'agent.online', agentId: 'a1' }, 'me')).toBe(null)
+    expect(soundFor({ id: 's', ts: 1, kind: 'agent.online', agentId: 'a1', label: 'Bubbles' }, 'me')).toBe(null)
   })
 })
 
