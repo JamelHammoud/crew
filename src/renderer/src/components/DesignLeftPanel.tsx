@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
+import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
 import { canRename, renameShape } from '../design/tools'
 import { PanelButton } from './DesignControls'
@@ -17,12 +18,13 @@ import Tooltip from './Tooltip'
 
 export default function DesignLeftPanel() {
   const editor = useEditor()
+  const selection = useValue('design selection size', () => editor.getSelectedShapeIds().length, [editor])
   return (
     <aside
-      aria-label="Layers"
-      className="w-60 shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
+      aria-label={selection > 0 ? 'Design' : 'Layers'}
+      className="w-64 shrink-0 flex flex-col min-w-0 min-h-0 overflow-hidden bg-ink-900 border-r border-ink-700"
     >
-      <Layers editor={editor} />
+      {selection > 0 ? <DesignPanel /> : <Layers editor={editor} />}
     </aside>
   )
 }
