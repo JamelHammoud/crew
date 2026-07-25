@@ -100,6 +100,7 @@ interface CrewState {
   removeQueued: (promptId: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   renameAgent: (agentId: string, label: string) => void
+  setAgentAvatar: (agentId: string, file: File | null) => void
   removeAgent: (agentId: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
