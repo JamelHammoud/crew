@@ -97,38 +97,61 @@ describe('one connection to one person', () => {
     link.close()
   })
 
-  it('keeps them through a collision it chose to ignore', async () => {
+  it('keeps them through a burst that arrives all at once', async () => {
     const link = pair({ hold: true })
     await settle()
     await link.flush()
 
-    // The side that ignores an offer is still sent the other end's addresses
-    // while it is ignoring, and those are the only ones it will ever get.
-    const [, impolite] = connections()
-    expect(impolite.candidates.length).toBeGreaterThan(0)
+    for (const pc of connections()) expect(pc.candidates.length).toBeGreaterThan(0)
+    link.close()
+  })
+
+  // Both ends offering is a collision, and the rollback that settles one leaves
+  // the slots this side is listening to connected to nothing. The call reaches
+  // connected, media flows, and nobody hears a thing.
+  it('has only one end of a pair offer, so there is nothing to roll back', async () => {
+    const link = pair({ hold: true })
+    await settle()
+    await link.flush()
+
+    const [polite, impolite] = connections()
+    expect(impolite.offersMade).toBe(1)
+    expect(polite.offersMade).toBe(0)
+    expect(polite.rollbacks).toBe(0)
+    expect(impolite.rollbacks).toBe(0)
+    expect(polite.signalingState).toBe('stable')
+    expect(impolite.signalingState).toBe('stable')
     link.close()
   })
 
   it('gives the same three slots the same meaning on both ends', async () => {
     const link = pair()
     await settle()
+    await link.flush()
 
     for (const pc of connections()) {
-      expect(pc.transceivers.map(t => t.sender.kind)).toEqual(['audio', 'video', 'video'])
+      expect(pc.transceivers).toHaveLength(3)
+      expect(pc.transceivers.map(t => t.kind)).toEqual(['audio', 'video', 'video'])
+      expect(pc.transceivers.map(t => t.mid)).toEqual(['0', '1', '2'])
+      expect(pc.transceivers.map(t => t.currentDirection)).toEqual(['sendrecv', 'sendrecv', 'sendrecv'])
     }
     link.close()
   })
 
-  it('lets the impolite side keep its offer when both speak at once', async () => {
-    const link = pair({ hold: true })
+  // The slots a side listens to have to be the ones the other side is sending
+  // on. Listening to any others is a call that connects and stays silent.
+  it('listens on the slots the other end is sending on', async () => {
+    const link = pair()
     await settle()
     await link.flush()
 
-    const [polite, impolite] = connections()
-    expect(polite.rollbacks).toBe(1)
-    expect(impolite.rollbacks).toBe(0)
-    expect(polite.signalingState).toBe('stable')
-    expect(impolite.signalingState).toBe('stable')
+    for (const [at, side] of [link.a, link.b].entries()) {
+      const pc = connections()[at]
+      const negotiated = pc.transceivers.map(t => t.receiver.track)
+      expect(side.remote.mic.getTracks()).toEqual([negotiated[0]])
+      expect(side.remote.camera.getTracks()).toEqual([negotiated[1]])
+      expect(side.remote.screen.getTracks()).toEqual([negotiated[2]])
+    }
     link.close()
   })
 

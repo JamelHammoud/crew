@@ -236,6 +236,10 @@ export default function DesignCanvas({
     editor?.user.updateUserPreferences({ colorScheme: theme === 'light' ? 'light' : 'dark' })
   }, [editor, theme])
 
+  useEffect(() => {
+    if (ready && editor) applyDesignDefaults(editor)
+  }, [ready, editor])
+
   const onMount = useCallback(
     (mounted: Editor) => {
       applyDesignDefaults(mounted)
