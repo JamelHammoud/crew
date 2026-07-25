@@ -9211,3 +9211,27 @@
 {"id":"a1030998-7060-4b0d-9bf0-4596b855686c","ts":1785007681455,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
 {"id":"a30e66c8-de13-4829-8606-791a9c61d805","ts":1785007681455,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
 {"id":"d34591f3-b9ee-4dcf-9ae9-4b77b0ba4066","ts":1785007681455,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"c77a1027-67d5-41cc-acf9-1f731f1ca614","ts":1785007685848,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"1eca3c9c-5fec-4dad-a587-16b4f5b6167d","ts":1785007685848,"kind":"agent.offline","agentId":"jamel/kimi","label":"Kimi"}
+{"id":"a6e0b8e2-01a0-40ed-b0ad-a9d4713e655f","ts":1785007685848,"kind":"agent.offline","agentId":"jamel/codex","label":"Codex"}
+{"id":"168af686-8756-4fd8-9b0c-fd12e2732afd","ts":1785007685848,"kind":"agent.offline","agentId":"jamel/claude","label":"Claude"}
+{"id":"05de60d7-2c65-4c53-926b-0db8acdb3a87","ts":1785007685848,"kind":"agent.offline","agentId":"jamel/grok","label":"Grok"}
+{"id":"0b44356c-f92b-4f69-b83b-a7e4c759a05e","ts":1785007685849,"kind":"agent.offline","agentId":"jamel/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3)"}
+{"id":"5646e0ed-77df-4609-a1b6-4bea3dbd5527","ts":1785007685849,"kind":"agent.offline","agentId":"jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller"}
+{"id":"4216d801-423c-47a1-840f-a2d6f5bdb17f","ts":1785007685849,"kind":"agent.offline","agentId":"jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable"}
+{"id":"971ea886-fa2c-4c7f-82a6-be7a889d9f53","ts":1785007686882,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"0cb4b869-4a6a-46f5-a0b5-58ea472a7f8d","ts":1785007686882,"kind":"agent.offline","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"2533cd7b-55fb-4828-bc39-954d306eb857","ts":1785007686883,"kind":"agent.offline","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"3c966667-6522-4532-a634-62609f45016a","ts":1785007686883,"kind":"agent.offline","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"4184b571-f028-406f-bb00-bd2d2a394275","ts":1785007686883,"kind":"agent.offline","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"422b818a-35df-44b8-ac76-197d73c9c54c","ts":1785007686883,"kind":"agent.offline","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"e10628d8-998f-4cc3-9e9f-3717a0427d80","ts":1785007686883,"kind":"agent.offline","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"50a26c52-99fb-4fe3-8615-9c5c317d5b01","ts":1785007686883,"kind":"agent.offline","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"d06b9659-5080-43ba-bedd-7ae4d83ac077","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/kimi","label":"Kimi 2"}
+{"id":"c9ca95e4-d82d-42fd-a507-a7838d988384","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/codex","label":"Codex 2"}
+{"id":"5aaf037b-d354-462f-b9d1-89b31a3331fd","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/claude","label":"Claude 3"}
+{"id":"0fb454f5-623d-466a-bbb6-e35ee8419626","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/grok","label":"Grok 2"}
+{"id":"a4df062d-2430-4a90-9dd2-ce9d44e7198c","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8","label":"Bob (Kimi K3) 2"}
+{"id":"1567c3b0-8dcf-4c18-a3cb-660de2eb39ae","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb","label":"UsageKiller 2"}
+{"id":"8ae30bf6-a86a-4180-bab1-44a075a19343","ts":1785007691573,"kind":"agent.online","agentId":"jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357","label":"Claude Fable 2"}
+{"id":"792cf7c0-6a6d-40ba-9cd5-810d93b3c9fd","ts":1785007691573,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
