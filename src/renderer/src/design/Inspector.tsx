@@ -1,5 +1,6 @@
 import { Bars3BottomLeftIcon, Bars3BottomRightIcon, Bars3Icon, PlusIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEditor, useValue } from 'tldraw'
+import { NEW_FILL, NEW_STROKE } from '../../../shared/design'
 import type { Corner, DesignNodeProps, Effect, Layout, Paint, Stroke } from '../../../shared/designNode'
 import type { DesignNodeShape } from './DesignNodeUtil'
 import { Choice, ColorInput, Field, NumberInput, Section } from './InspectorFields'
