@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { gridColumns } from '../src/renderer/src/components/huddle/tiles'
+import { fitTiles } from '../src/renderer/src/components/huddle/tiles'
 import { formatClock } from '../src/renderer/src/components/time'
 import { emptyRoom, huddleTitle, politeToward, sharingPeer, type HuddlePeer } from '../src/shared/huddle'
 
