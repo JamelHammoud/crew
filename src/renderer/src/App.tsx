@@ -21,7 +21,7 @@ export default function App() {
   const waiting = useCrew(reviewCount)
 
   useEffect(() => {
-    void window.crew.setBadge(waiting)
+    void window.crew?.setBadge?.(waiting)
   }, [waiting])
 
   if (connection === 'booting') return <Boot />
