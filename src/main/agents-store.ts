@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { AgentDef } from '../shared/llm'
+import { agentId, type AgentDef } from '../shared/llm'
 
 export class AgentStore {
   constructor(private file: string) {}
