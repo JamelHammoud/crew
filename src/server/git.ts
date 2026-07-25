@@ -196,7 +196,7 @@ export class GitSync {
       }
       const resolved = await this.resolveRebaseConflicts()
       if (!resolved) {
-        await runGit(['rebase', '--abort'], this.repoPath)
+        await this.abortKeepingWork(['rebase', '--abort'])
         await restoreAutostash(this.repoPath, stashes)
         return { ok: false, updated: false, detail: gitDetail(pull) }
       }
