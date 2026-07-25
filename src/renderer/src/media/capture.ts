@@ -61,7 +61,8 @@ export async function captureScreen(sourceId: string): Promise<CaptureResult> {
   } catch {
     return failed('screen')
   } finally {
-    await globalThis.window?.crew?.pickScreenSource(null).catch(() => {})
+    // Nothing should be left armed if the request never reached the handler.
+    void globalThis.window?.crew?.pickScreenSource(null)?.catch(() => {})
   }
 }
 
