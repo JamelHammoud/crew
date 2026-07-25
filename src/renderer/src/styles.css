@@ -278,6 +278,35 @@ body {
   }
 }
 
+.design-cursor-drift {
+  display: inline-flex;
+  animation: cursor-drift 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes cursor-drift {
+  0% {
+    transform: translate(-10px, 6px);
+  }
+  25% {
+    transform: translate(8px, -6px);
+  }
+  50% {
+    transform: translate(12px, 8px);
+  }
+  75% {
+    transform: translate(-6px, -2px);
+  }
+  100% {
+    transform: translate(-10px, 6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .design-cursor-drift {
+    animation: none;
+  }
+}
+
 /* tldraw remapped onto crew tokens so the canvas chrome reads as the rest of the app. */
 .design .tl-container {
   background: var(--color-ink-950);
