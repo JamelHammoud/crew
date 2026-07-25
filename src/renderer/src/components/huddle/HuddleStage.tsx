@@ -16,6 +16,10 @@ import VideoStream from './VideoStream'
 const GAP = 12
 const RAIL = 232
 
+// Tiles are laid out at a worked-out width rather than in fractions, so a row
+// that is not full sits in the middle instead of hugging the left edge.
+const span = (columns: number): string => `calc((100% - ${(columns - 1) * GAP}px) / ${columns})`
+
 function Shared({ stream, name, mine }: { stream: MediaStream | null; name: string; mine: boolean }) {
   const live = useLive(stream, true)
 
