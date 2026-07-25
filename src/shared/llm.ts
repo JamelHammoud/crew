@@ -185,37 +185,39 @@ export function agentMentionRefsIn(
   return mentionsIn(text, agents).map(id => ({ id, label: labels.get(id)! }))
 }
 
-function replaceMention(text: string, from: string, to: string): string {
-  const needle = from.toLowerCase()
-  let out = ''
-  let rest = text
-  for (;;) {
-    const at = rest.toLowerCase().indexOf(`@${needle}`)
-    if (at === -1) return out + rest
-    const end = at + needle.length + 1
-    if (/[\w-]/.test(rest[end] ?? '')) {
-      out += rest.slice(0, end)
-      rest = rest.slice(end)
-      continue
-    }
-    out += `${rest.slice(0, at)}@${to}`
-    rest = rest.slice(end)
-  }
-}
-
 // Brings written mentions up to date. A mention still means the agent it was
-// aimed at, so a rename rewrites every "@old name" that pointed there.
+// aimed at, so a rename rewrites every "@old name" that pointed there. Names
+// are swapped in one pass: two agents can trade names, and a rewritten mention
+// must not be rewritten again by the next rename in the list.
 export function relabelMentions(
   text: string,
   refs: AgentMentionRef[] | undefined,
   agents: Array<Pick<PooledAgent, 'id' | 'label'>>
 ): string {
   if (!refs?.length) return text
-  let out = text
+  const renames = new Map<string, string>()
   for (const ref of refs) {
     const agent = agents.find(a => a.id === ref.id)
     if (!agent || agent.label === ref.label) continue
-    out = replaceMention(out, ref.label, agent.label)
+    renames.set(ref.label.toLowerCase(), agent.label)
   }
-  return out
+  if (renames.size === 0) return text
+  const ordered = [...renames.keys()].sort((a, b) => b.length - a.length)
+  let out = ''
+  let rest = text
+  outer: for (;;) {
+    const lower = rest.toLowerCase()
+    for (let at = 0; at < rest.length; at++) {
+      if (lower[at] !== '@') continue
+      for (const old of ordered) {
+        if (!lower.startsWith(old, at + 1)) continue
+        const end = at + old.length + 1
+        if (/[\w-]/.test(rest[end] ?? '')) continue
+        out += `${rest.slice(0, at)}@${renames.get(old)}`
+        rest = rest.slice(end)
+        continue outer
+      }
+    }
+    return out + rest
+  }
 }
