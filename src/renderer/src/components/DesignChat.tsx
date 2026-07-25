@@ -179,6 +179,6 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
           />
         </Composer>
       </div>
-    </aside>
+    </div>
   )
 }
