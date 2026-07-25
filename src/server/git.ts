@@ -215,6 +215,58 @@ export class GitSync {
     return overwrittenPaths(this.repoPath)
   }
 
+  // A machine that was closed mid-rebase comes back to a repo git will not let
+  // anyone commit to. Finish the rebase if it can be finished, otherwise back
+  // out of it, and either way keep whatever was written in the meantime.
+  private async settle(): Promise<boolean> {
+    const states = await interruptedStates(this.repoPath)
+    if (states.length === 0) return true
+    if (states.some(state => state.label === 'rebase') && (await this.resolveRebaseConflicts())) {
+      this.onLog('picked up an interrupted rebase and finished it')
+      return true
+    }
+    for (const state of states) await this.abortKeepingWork(state.abort)
+    const left = await interruptedStates(this.repoPath)
+    if (left.length > 0) return false
+    this.onLog(`backed out of an interrupted ${states.map(state => state.label).join(' and ')}`)
+    return true
+  }
+
+  // Aborting resets the working tree, which is how a half-written chat log or a
+  // file an agent just wrote used to disappear. Put those files back afterwards.
+  private async abortKeepingWork(abort: string[]): Promise<void> {
+    const kept = await this.readPending()
+    await runGit(abort, this.repoPath)
+    for (const [file, contents] of kept) {
+      const target = path.resolve(this.repoPath, file)
+      try {
+        await fs.mkdir(path.dirname(target), { recursive: true })
+        await fs.writeFile(target, file.endsWith('.jsonl') ? await mergedLines(target, contents) : contents)
+      } catch {
+        // a path that cannot be written back is one git already owns
+      }
+    }
+  }
+
+  private async readPending(): Promise<Map<string, Buffer>> {
+    const status = await runGit(
+      ['status', '--porcelain=v1', '-z', '--untracked-files=all'],
+      this.repoPath
+    )
+    if (status.code !== 0) return new Map()
+    const kept = new Map<string, Buffer>()
+    for (const entry of parseStatus(status.stdout)) {
+      // a conflicted file holds markers, not work worth restoring
+      if (entry.code.includes('U') || entry.code === 'AA' || entry.code === 'DD') continue
+      try {
+        kept.set(entry.path, await fs.readFile(path.resolve(this.repoPath, entry.path)))
+      } catch {
+        // deleted or unreadable, nothing to keep
+      }
+    }
+    return kept
+  }
+
   private async rebaseActive(): Promise<boolean> {
     const paths = await Promise.all([
       runGit(['rev-parse', '--git-path', 'rebase-merge'], this.repoPath),
