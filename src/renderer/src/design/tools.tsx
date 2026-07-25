@@ -6,7 +6,7 @@ import {
   Squares2X2Icon
 } from '@heroicons/react/24/outline'
 import type { ComponentType } from 'react'
-import { GeoShapeGeoStyle, type Editor } from 'tldraw'
+import { GeoShapeGeoStyle, type Editor, type TLShape } from 'tldraw'
 import { designAssetUrls } from '../components/designIcons'
 
 const assets = designAssetUrls()
