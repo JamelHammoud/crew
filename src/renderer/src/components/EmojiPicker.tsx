@@ -1,7 +1,7 @@
 import { ClockIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useMemo, useRef, useState } from 'react'
 import Emoji from './Emoji'
-import { EMOJI_CATEGORIES, lookupEmoji, searchEmoji, type EmojiEntry } from './emoji'
+import { EMOJI_CATEGORIES, lookupEmoji, searchEmoji, type EmojiEntry } from './emojiData'
 import { recentEmoji } from './emojiRecents'
 import Tooltip from './Tooltip'
 
