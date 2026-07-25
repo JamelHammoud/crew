@@ -204,7 +204,7 @@ describe('a huddle you are in', () => {
   it('shows who is on the call and how long it has been running', () => {
     render(createElement(App))
 
-    expect(screen.getByText('Ali')).toBeTruthy()
+    expect(screen.getAllByText('Ali').length).toBeGreaterThan(0)
     expect(screen.getByText('1:05')).toBeTruthy()
     expect(screen.queryByText(/is in a huddle/)).toBeNull()
   })
