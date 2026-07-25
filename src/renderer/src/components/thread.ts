@@ -60,6 +60,7 @@ export interface ThreadItem {
   subagent?: boolean
   files?: FileChange[]
   attachments?: Attachment[]
+  mentionRefs?: AgentMentionRef[]
   docMentions?: DocMentionRef[]
   route?: MessageRoute
   reactionTargetId?: string
