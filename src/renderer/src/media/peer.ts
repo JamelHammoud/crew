@@ -128,7 +128,15 @@ export class PeerLink {
       slots[slot].direction = 'sendrecv'
       this.remote[slot] = new MediaStream([slots[slot].receiver.track])
     }
-    this.onChange()
+    this.notify()
+  }
+
+  // The first slots are bound while the link is still being built, before
+  // anything holds it, so word of them waits until it can be looked up.
+  private notify(): void {
+    queueMicrotask(() => {
+      if (!this.closed) this.onChange()
+    })
   }
 
   // Signals are taken strictly one at a time. Two of them in flight together is
