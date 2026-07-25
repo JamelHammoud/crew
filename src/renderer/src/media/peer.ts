@@ -67,16 +67,13 @@ export class PeerLink {
     this.onChange = opts.onChange
     this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS, bundlePolicy: 'max-bundle' })
 
-    const transceivers: Record<Slot, RTCRtpTransceiver> = {
-      mic: this.pc.addTransceiver('audio', { direction: 'sendrecv' }),
-      camera: this.pc.addTransceiver('video', { direction: 'sendrecv' }),
-      screen: this.pc.addTransceiver('video', { direction: 'sendrecv' })
-    }
-    this.senders = { mic: transceivers.mic.sender, camera: transceivers.camera.sender, screen: transceivers.screen.sender }
-    this.remote = {
-      mic: new MediaStream([transceivers.mic.receiver.track]),
-      camera: new MediaStream([transceivers.camera.receiver.track]),
-      screen: new MediaStream([transceivers.screen.receiver.track])
+    this.remote = { mic: new MediaStream(), camera: new MediaStream(), screen: new MediaStream() }
+    if (this.caller) {
+      this.bind([
+        this.pc.addTransceiver('audio', { direction: 'sendrecv' }),
+        this.pc.addTransceiver('video', { direction: 'sendrecv' }),
+        this.pc.addTransceiver('video', { direction: 'sendrecv' })
+      ])
     }
 
     this.pc.onnegotiationneeded = () => {
