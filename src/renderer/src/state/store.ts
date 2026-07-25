@@ -160,7 +160,12 @@ export const useCrew = create<CrewState>((set, get) => {
       set(state => ({
         events: state.events.map(e =>
           e.kind === 'message' && e.id === event.messageId
-            ? { ...e, text: event.text, docMentions: event.docMentions ?? e.docMentions }
+            ? {
+                ...e,
+                text: event.text,
+                mentionRefs: event.mentionRefs ?? e.mentionRefs,
+                docMentions: event.docMentions ?? e.docMentions
+              }
             : e
         )
       }))
