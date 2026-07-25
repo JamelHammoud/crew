@@ -1,5 +1,5 @@
 import { QUICK_REACTIONS } from '../../../shared/reactions'
-import { lookupEmoji } from './emoji'
+import { lookupEmoji } from './emojiData'
 
 const KEY = 'crew.emoji.recent'
 const LIMIT = 27
