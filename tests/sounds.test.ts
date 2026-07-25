@@ -130,17 +130,38 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
-  it('gives every tab its own noise', () => {
-    const heard = new Map<string, number[]>()
-    for (const tab of ['tab.chat', 'tab.agents', 'tab.docs', 'tab.design'] as const) {
+  const TABS = ['tab.chat', 'tab.agents', 'tab.docs', 'tab.design'] as const
+
+  const eachTab = (): Map<string, { at: number[]; hz: number[] }> => {
+    const heard = new Map<string, { at: number[]; hz: number[] }>()
+    for (const tab of TABS) {
       started.length = 0
+      pitched.length = 0
       clock += 500
       playSound(tab)
       expect(started.length).toBeGreaterThan(0)
-      heard.set(tab, [...started])
+      heard.set(tab, { at: [...started], hz: pitched.filter((_, i) => i % 3 === 0) })
     }
-    const shapes = [...heard.values()].map(notes => notes.join(','))
+    return heard
+  }
+
+  it('gives every tab its own noise', () => {
+    const shapes = [...eachTab().values()].map(sound => `${sound.at.join(',')}|${sound.hz.join(',')}`)
     expect(new Set(shapes).size).toBe(4)
+  })
+
+  it('keeps the tabs level with each other, none higher up the row than the rest', () => {
+    for (const sound of eachTab().values()) expect(sound.hz).toContain(1760)
+  })
+
+  it('tells the tabs apart by their shape, not by their pitch', () => {
+    const contours = [...eachTab().values()].map(sound =>
+      sound.hz
+        .slice(1)
+        .map((hz, i) => Math.sign(hz - sound.hz[i]))
+        .join(',')
+    )
+    expect(new Set(contours).size).toBe(4)
   })
 
   it('lets you cross the whole row without a note being swallowed', () => {
