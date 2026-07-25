@@ -420,6 +420,9 @@ export const useCrew = create<CrewState>((set, get) => {
           threadPrompts,
           openThreadId: null
         })
+        for (const listener of huddleListeners) {
+          listener({ type: 'huddle.room', room: msg.snapshot.huddle ?? emptyRoom() })
+        }
         break
       }
       case 'queue.state':
@@ -474,6 +477,10 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'design.changes':
       case 'design.presence':
         for (const listener of designListeners) listener(msg)
+        break
+      case 'huddle.room':
+      case 'huddle.signal':
+        for (const listener of huddleListeners) listener(msg)
         break
     }
   }
