@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { AppSession } from '../src/main/session'
 import { parseLink } from '../src/shared/link'
@@ -40,13 +41,17 @@ describe('app session', () => {
   it('lets a second person join through the link', async () => {
     const repoHost = tmpDir('app-join-host')
     const repoGuest = tmpDir('app-join-guest')
+    const guestData = tmpDir('app-join-data')
     await initRepo(repoHost)
     await initRepo(repoGuest)
     const host = new AppSession()
-    const guest = new AppSession()
+    const guest = new AppSession({ session: path.join(guestData, 'session.json') })
     const info = await host.startHost(repoHost, 'sam')
 
     const joinInfo = await guest.startJoin(info.link, repoGuest, 'jamel')
+    expect(guest.recentJoins()).toEqual([
+      expect.objectContaining({ folder: repoGuest, name: 'jamel', link: info.link })
+    ])
     const target = parseLink(info.link)
     const ui = await TestUi.connect(joinInfo.wsUrl, 'jamel', target.code)
     await waitUntil(
@@ -61,6 +66,8 @@ describe('app session', () => {
 
     ui.close()
     await guest.leave()
+    expect(guest.current()).toBeNull()
+    expect(guest.recentJoins()).toHaveLength(1)
     await host.leave()
   }, 25000)
 })

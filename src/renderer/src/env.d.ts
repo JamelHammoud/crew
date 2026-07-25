@@ -3,6 +3,7 @@
 import type { PathLocation, RepoFile } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../../shared/repository'
+import type { RecentJoin } from '../../shared/recent'
 
 declare global {
   interface CrewBridge {
@@ -11,6 +12,7 @@ declare global {
     join(link: string, folder: string, name: string): Promise<{ wsUrl: string }>
     leave(): Promise<void>
     current(): Promise<{ wsUrl: string; name: string; code: string; link: string | null } | null>
+    recentJoins(): Promise<RecentJoin[]>
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>

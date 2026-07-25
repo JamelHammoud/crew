@@ -208,6 +208,7 @@ app.whenReady().then(() => {
     await resumed
     return session.current()
   })
+  ipcMain.handle('session:recent', () => session.recentJoins())
   ipcMain.handle('agents:capabilities', () => session.capabilities())
   ipcMain.handle('agents:install', (_event, provider: string) => session.installProvider(provider))
   ipcMain.handle('agents:create', (_event, input: NewAgent) => session.createAgent(input))
