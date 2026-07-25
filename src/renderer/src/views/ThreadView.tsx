@@ -21,6 +21,10 @@ import { useStickToBottom } from '../components/useStickToBottom'
 import { mentionsIn } from '../../../shared/llm'
 import { useCrew } from '../state/store'
 
+const BACK_WIDTH = 40
+const AVATAR_WIDTH = 52
+const NAME_MIN_WIDTH = 96
+
 export default function ThreadView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)
   const steps = useCrew(s => s.steps)
