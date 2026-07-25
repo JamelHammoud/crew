@@ -175,6 +175,7 @@ describe('one connection to one person', () => {
   it('gives a screen more room than a camera', async () => {
     const link = pair()
     await settle()
+    await link.flush()
 
     await link.a.publish({ mic: null, camera: fakeTrack('video', 'cam'), screen: fakeTrack('video', 'scr') })
     await settle()
