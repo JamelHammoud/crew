@@ -230,8 +230,10 @@ raster(dark, 1024, path.join(resources, 'icon.png'))
 
 const embedded = {}
 for (const [key, source] of [
-  ['dark', dark],
-  ['light', light]
+  ['DARK_ICON', dark],
+  ['LIGHT_ICON', light],
+  ['DEV_DARK_ICON', devDark],
+  ['DEV_LIGHT_ICON', devLight]
 ]) {
   const out = path.join(tmpdir(), `crew-icon-${key}.png`)
   raster(source, 512, out)
@@ -241,7 +243,9 @@ for (const [key, source] of [
 
 writeFileSync(
   path.join(root, 'src/main/icon-png.ts'),
-  `export const DARK_ICON = '${embedded.dark}'\n\nexport const LIGHT_ICON = '${embedded.light}'\n`
+  Object.entries(embedded)
+    .map(([name, data]) => `export const ${name} = '${data}'\n`)
+    .join('\n')
 )
 
 console.log(
