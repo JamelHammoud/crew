@@ -53,23 +53,13 @@ export default function ThreadCard({
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
       >
-        <button
-          onClick={onOpen}
-          className="relative w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3 text-left"
-        >
-          <StateIcon state={state} />
-          <span className={`text-base font-semibold shrink-0 ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
-            {THREAD_STATE_LABELS[state]}
-          </span>
-          <span className="text-base text-fg-muted truncate flex-1">{detail}</span>
-          {owner && (
-            <span className="relative self-stretch shrink-0 flex items-center bg-ink-700 transition-transform duration-200 group-hover:-translate-x-5">
-              <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-700 to-transparent pointer-events-none" />
-              <span className="text-base font-semibold text-fg-muted">{owner}'s PC</span>
-            </span>
-          )}
-          <ChevronRightIcon className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
-        </button>
+        <ThreadStatusBar
+          thread={thread}
+          icon={<StateIcon state={state} />}
+          label={THREAD_STATE_LABELS[state]}
+          detail={detail}
+          danger={state === 'failed'}
+        />
       </ThreadCardShell>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         {thread.status === 'done' ? (
