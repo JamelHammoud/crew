@@ -33,6 +33,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Icons come from `@heroicons/react`. Never hand-roll SVG icons.
 - Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin.
 - Reusable primitives in `src/renderer/src/components`: `Avatar`, `AvatarStack`, `AgentIcon`, `Pill`, `Spinner`, `InsetRing`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`.
+- A tooltip never shows while the popover it opens is open. Pass `disabled` to the `Tooltip` around any button that opens a `Popover`.
 - Agents always render `AgentIcon` (a deterministic generated pet seeded by the agent id), never an initial `Avatar`. Humans keep `Avatar`.
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
