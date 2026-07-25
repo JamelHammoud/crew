@@ -2,7 +2,7 @@ export const QUICK_REACTIONS = ['🎉', '❤️', '👍', '😂'] as const
 
 export type ReactionEmoji = string
 
-const SINGLE_EMOJI = /^\p{RGI_Emoji}$/v
+const SINGLE_EMOJI = new RegExp('^\\p{RGI_Emoji}$', 'v')
 
 export function isReactionEmoji(value: string): boolean {
   return value.length > 0 && value.length <= 32 && SINGLE_EMOJI.test(value)
