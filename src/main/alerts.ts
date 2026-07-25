@@ -7,7 +7,7 @@ export function setBadge(count: number): void {
 
 export function showAlert(alert: AgentAlert, onClick: () => void): void {
   if (!Notification.isSupported()) return
-  const notification = new Notification({ title: alert.title, body: alert.body })
+  const notification = new Notification({ title: alert.title, body: alert.body, silent: true })
   notification.on('click', onClick)
   notification.show()
 }
