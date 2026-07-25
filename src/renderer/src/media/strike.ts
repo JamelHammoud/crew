@@ -24,13 +24,13 @@ export function playStrikes(strikes: Strike[]): void {
   try {
     const ctx = context()
     if (!ctx) return
-    for (const strike of strikes) strike_(ctx, strike)
+    for (const strike of strikes) hit(ctx, strike)
   } catch {
     return
   }
 }
 
-function strike_(ctx: AudioContext, s: Strike): void {
+function hit(ctx: AudioContext, s: Strike): void {
   const start = ctx.currentTime + s.at
   const bus = ctx.createGain()
   bus.gain.value = (s.gain ?? 1) * GAIN
