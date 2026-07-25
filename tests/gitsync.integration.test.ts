@@ -128,11 +128,10 @@ describe('git sync', () => {
   })
 
   it('keeps project work local during automatic session sync', async () => {
-    const dir = tmpDir('git-review')
-    await initRepo(dir)
-    const store = new Store(dir)
-    const sync = new GitSync(dir)
-    fs.writeFileSync(path.join(dir, 'project.ts'), 'export const local = true\n')
+    const { a, b } = await setupOriginWithTwoClones()
+    const store = new Store(b)
+    const sync = new GitSync(b)
+    fs.writeFileSync(path.join(b, 'project.ts'), 'export const local = true\n')
     store.appendEvent({
       id: 'session-only',
       ts: 1,
@@ -145,12 +144,14 @@ describe('git sync', () => {
 
     await sync.syncNow()
 
-    const status = await git(dir, ['status', '--porcelain'])
-    const committed = await git(dir, ['show', '--pretty=format:', '--name-only', 'HEAD'])
+    const status = await git(b, ['status', '--porcelain'])
+    const committed = await git(b, ['show', '--pretty=format:', '--name-only', 'HEAD'])
     expect(status.trim()).toBe('?? project.ts')
     expect(committed).toContain('.crew/chat.jsonl')
     expect(committed).not.toContain('project.ts')
     expect((await sync.status()).changed).toBe(1)
+    await git(a, ['pull'])
+    expect(new Store(a).loadEvents().map(event => event.id)).toContain('session-only')
   })
 
   it('shows reviewable project diffs without internal session files', async () => {
