@@ -35,8 +35,6 @@ const cuts = (source: string, depth: number) => {
   }))
 }
 
-const filled = (source: string, base64: string) => ({ source, base64 })
-
 function png(base64: string) {
   const buffer = Buffer.from(base64, 'base64')
   return {
