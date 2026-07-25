@@ -161,14 +161,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785008238237,
+        "fetchedAt": 1785008214046,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 1,
             "severity": "normal",
-            "resetsAt": 1785014999540,
+            "resetsAt": 1785014999327,
             "active": true
           },
           {
@@ -176,7 +176,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785535199540,
+            "resetsAt": 1785535199327,
             "active": false
           },
           {
@@ -525,7 +525,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785008238229,
+        "fetchedAt": 1785008274033,
         "windows": [
           {
             "key": "primary",
@@ -644,14 +644,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785008238237,
+        "fetchedAt": 1785008214046,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 1,
             "severity": "normal",
-            "resetsAt": 1785014999540,
+            "resetsAt": 1785014999327,
             "active": true
           },
           {
@@ -659,7 +659,7 @@
             "label": "Weekly (all models)",
             "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785535199540,
+            "resetsAt": 1785535199327,
             "active": false
           },
           {
@@ -760,7 +760,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785008238229,
+        "fetchedAt": 1785008274033,
         "windows": [
           {
             "key": "primary",
@@ -923,7 +923,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007695167,
+        "fetchedAt": 1785008293401,
         "windows": [
           {
             "key": "primary",
@@ -1042,12 +1042,35 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785007695175,
-        "windows": [],
+        "fetchedAt": 1785008238237,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 1,
+            "severity": "normal",
+            "resetsAt": 1785014999540,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 0,
+            "severity": "normal",
+            "resetsAt": 1785535199540,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          }
+        ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "max"
       }
     },
     {
@@ -1199,7 +1222,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007695167,
+        "fetchedAt": 1785008293401,
         "windows": [
           {
             "key": "primary",
@@ -1318,12 +1341,35 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785007695175,
-        "windows": [],
+        "fetchedAt": 1785008238237,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 1,
+            "severity": "normal",
+            "resetsAt": 1785014999540,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 0,
+            "severity": "normal",
+            "resetsAt": 1785535199540,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          }
+        ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "max"
       }
     }
   ]
