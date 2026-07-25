@@ -66,7 +66,7 @@ function Session() {
           )}
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
-          <div className="pointer-events-auto bg-ink-900">
+          <div className="top-bar-container pointer-events-auto bg-ink-900">
             <TopBar tab={tab} onTab={switchTab} tasksOpen={tasksOpen} onToggleTasks={() => setTasksOpen(v => !v)} />
           </div>
           {tab !== 'design' && <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />}
