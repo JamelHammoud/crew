@@ -80,6 +80,7 @@ export class HuddleMesh {
   close(): void {
     for (const link of this.links.values()) link.close()
     this.links.clear()
+    this.early.clear()
     this.tracks = { ...EMPTY }
     this.selfPeerId = ''
   }
