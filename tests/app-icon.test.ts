@@ -142,24 +142,63 @@ describe('app icon', () => {
 })
 
 describe('dev blueprint', () => {
-  it('draws the discs on blueprint paper, ruled and dimensioned', () => {
+  it('rules the paper square and keeps it inside the tile', () => {
     for (const name of BLUEPRINT) {
       const source = svg(name)
-      const lines = [...source.matchAll(/<line /g)]
+      const vertical = [...source.matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match =>
+        Number(match[1])
+      )
+      const gaps = vertical.slice(1).map((at, index) => Math.round(at - vertical[index]))
 
       expect(source).toContain('clip-path="url(#tile-clip)"')
-      expect(source).toContain('stroke-dasharray=')
-      expect(lines.length).toBe(13 * 2 + 4)
+      expect([...source.matchAll(/<line /g)]).toHaveLength(vertical.length * 2)
+      expect(vertical.length).toBeGreaterThan(2)
+      expect(new Set(gaps).size).toBe(1)
+      expect(vertical[0]).toBeGreaterThan(100)
+      expect(vertical[vertical.length - 1]).toBeLessThan(100 + 824)
+    }
+  })
+
+  it('leaves the middle disc in the middle of a square, never on a rule', () => {
+    const centre = 100 + 824 / 2
+
+    for (const name of BLUEPRINT) {
+      const vertical = [...svg(name).matchAll(/<line x1="([\d.]+)" y1="100"/g)].map(match =>
+        Number(match[1])
+      )
+      expect(vertical).not.toContain(centre)
     }
   })
 
   it('is blue, where the shipping icon is black and white', () => {
-    for (const name of SHIPPING) {
-      expect(svg(name)).toMatch(/stop-color="#(0d0d0d|000000|ffffff|[0-9a-f])/)
-      expect(svg(name)).not.toMatch(/#0f4c8a|#17427a/)
-    }
-    expect(svg('icon-dev.svg')).toContain('#17427a')
-    expect(svg('icon-dev-light.svg')).toContain('#0f4c8a')
+    const blue = /#(?:[0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/g
+    const bluest = (source: string) =>
+      Math.max(...[...source.matchAll(blue)].map(([, g, b]) => parseInt(b, 16) - parseInt(g, 16)))
+
+    for (const name of SHIPPING) expect(bluest(svg(name))).toBeLessThan(8)
+    for (const name of BLUEPRINT) expect(bluest(svg(name))).toBeGreaterThan(40)
+  })
+})
+
+describe('picking an icon', () => {
+  it('wears the blueprint whenever the app runs from source', () => {
+    expect(fromSource('/Users/someone/Repositories/crew')).toBe(true)
+    expect(fromSource('C:\\Users\\someone\\crew')).toBe(true)
+  })
+
+  // yarn dev renames the binary to Crew, which is what app.isPackaged reads,
+  // so the dev build claimed to be packaged and wore the shipping icon.
+  it('is not fooled by a dev binary named like the shipping app', () => {
+    expect(
+      fromSource('/Users/someone/crew/node_modules/electron/dist/Crew.app/Contents/MacOS/Crew')
+    ).toBe(true)
+  })
+
+  it('wears the shipping icon once installed', () => {
+    expect(fromSource('/Applications/Crew.app/Contents/Resources/app.asar')).toBe(false)
+    expect(fromSource('/Applications/Crew.app/Contents/Resources/app')).toBe(false)
+    expect(fromSource('C:\\Program Files\\Crew\\resources\\app.asar')).toBe(false)
+    expect(fromSource('/opt/Crew/resources/app.asar')).toBe(false)
   })
 })
 
