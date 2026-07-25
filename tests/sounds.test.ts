@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../src/renderer/../shared/events'
+import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../src/shared/events'
 
 const store = new Map<string, string>()
 vi.stubGlobal('localStorage', {

@@ -45,6 +45,7 @@ export class FakePeerConnection {
   onconnectionstatechange: (() => void) | null = null
   readonly transceivers: Array<{ sender: FakeSender; receiver: { track: MediaStreamTrack } }> = []
   private offers = 0
+  private found = 0
 
   constructor(readonly config: unknown) {
     FakePeerConnection.made.push(this)
@@ -105,6 +106,13 @@ export class FakePeerConnection {
 
   emitCandidate(candidate: unknown): void {
     this.onicecandidate?.({ candidate: { toJSON: () => candidate } })
+  }
+
+  // A real connection starts naming its addresses the moment it has a local
+  // description, well before the other end has heard of it.
+  private gather(): void {
+    const at = (this.found += 1)
+    setTimeout(() => this.emitCandidate({ candidate: `candidate-${at}` }), 0)
   }
 
   setConnectionState(state: RTCPeerConnectionState): void {
