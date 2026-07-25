@@ -802,5 +802,6 @@
       ],
       "steerable": false
     }
-  ]
+  ],
+  "removedAgents": []
 }
