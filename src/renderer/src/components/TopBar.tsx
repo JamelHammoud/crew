@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/16/solid'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, useState } from 'react'
+import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
 import { useHuddle } from '../state/huddle'
 import { setSounds, useSounds } from '../state/sound'
@@ -86,7 +87,10 @@ export default function TopBar({
         {TABS.map(t => (
           <Tooltip key={t.id} label={t.label} disabled={!compact}>
             <button
-              onClick={() => onTab(t.id)}
+              onClick={() => {
+                if (t.id !== tab) playSound(`tab.${t.id}`)
+                onTab(t.id)
+              }}
               aria-label={t.label}
               className={`top-bar-tab flex items-center justify-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
                 tab === t.id
