@@ -1,10 +1,17 @@
-import { existsSync } from 'node:fs'
+import { existsSync, promises as fs } from 'node:fs'
 import path from 'node:path'
 import { runGit, type GitResult } from '../shared/git'
-import type { RepoActionResult, RepoStatus } from '../shared/repository'
+import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '../shared/repository'
 
 const CREW_PATHS = ['.crew']
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
+const DIFF_LIMIT = 200_000
+
+interface StatusEntry {
+  code: string
+  path: string
+  previousPath?: string
+}
 
 export class GitSync {
   private chain: Promise<void> = Promise.resolve()
@@ -29,6 +36,10 @@ export class GitSync {
 
   status(): Promise<RepoStatus> {
     return this.enqueue(() => this.readStatus())
+  }
+
+  changes(): Promise<RepoChange[]> {
+    return this.enqueue(() => this.readChanges())
   }
 
   pullNow(): Promise<RepoActionResult> {
@@ -201,6 +212,92 @@ export class GitSync {
     }
   }
 
+  private async readChanges(): Promise<RepoChange[]> {
+    const status = await runGit(
+      ['status', '--porcelain=v1', '-z', '--untracked-files=all', '--', ...PROJECT_PATHS],
+      this.repoPath
+    )
+    if (status.code !== 0) return []
+    const changes = await Promise.all(parseStatus(status.stdout).map(entry => this.readChange(entry)))
+    return changes.sort((a, b) => a.path.localeCompare(b.path))
+  }
+
+  private async readChange(entry: StatusEntry): Promise<RepoChange> {
+    const kind = changeKind(entry.code)
+    if (entry.code === '??') return this.readNewFile(entry, kind)
+    const result = await runGit(
+      ['diff', '--no-ext-diff', '--no-color', '--unified=3', 'HEAD', '--', entry.path],
+      this.repoPath
+    )
+    if (result.code !== 0 && kind === 'added') return this.readNewFile(entry, kind)
+    const diff = result.stdout
+    const counts = diffCounts(diff)
+    const binary = /^Binary files |^GIT binary patch/m.test(diff)
+    return {
+      path: entry.path,
+      previousPath: entry.previousPath,
+      kind,
+      added: counts.added,
+      removed: counts.removed,
+      diff: diff.slice(0, DIFF_LIMIT),
+      binary,
+      truncated: diff.length > DIFF_LIMIT
+    }
+  }
+
+  private async readNewFile(entry: StatusEntry, kind: RepoChangeKind): Promise<RepoChange> {
+    const empty = {
+      path: entry.path,
+      previousPath: entry.previousPath,
+      kind,
+      added: 0,
+      removed: 0,
+      diff: '',
+      binary: false,
+      truncated: false
+    }
+    try {
+      const target = path.resolve(this.repoPath, entry.path)
+      const stat = await fs.lstat(target)
+      if (!stat.isFile()) return { ...empty, binary: stat.isSymbolicLink() }
+      const handle = await fs.open(target, 'r')
+      const length = Math.min(stat.size, DIFF_LIMIT + 1)
+      const buffer = Buffer.alloc(length)
+      let bytesRead = 0
+      try {
+        bytesRead = (await handle.read(buffer, 0, length, 0)).bytesRead
+      } finally {
+        await handle.close()
+      }
+      const contents = buffer.subarray(0, Math.min(bytesRead, DIFF_LIMIT))
+      if (contents.includes(0)) {
+        return { ...empty, binary: true, truncated: stat.size > DIFF_LIMIT }
+      }
+      const text = contents.toString('utf8').replace(/\r\n/g, '\n')
+      const lines = text ? text.split('\n') : []
+      if (lines.at(-1) === '') lines.pop()
+      const diff =
+        lines.length === 0
+          ? ''
+          : [
+              `diff --git a/${entry.path} b/${entry.path}`,
+              'new file mode 100644',
+              '--- /dev/null',
+              `+++ b/${entry.path}`,
+              `@@ -0,0 +1,${lines.length} @@`,
+              ...lines.map(line => `+${line}`)
+            ].join('\n')
+      return {
+        ...empty,
+        added: lines.length,
+        diff,
+        truncated: stat.size > DIFF_LIMIT
+      }
+    } catch {
+      return empty
+    }
+  }
+
   private async refreshRemote(): Promise<void> {
     if (this.hasRemote !== null) return
     const remotes = await runGit(['remote'], this.repoPath)
@@ -238,6 +335,48 @@ export class GitSync {
     }
     return false
   }
+}
+
+function parseStatus(output: string): StatusEntry[] {
+  const fields = output.split('\0')
+  const entries: StatusEntry[] = []
+  for (let index = 0; index < fields.length; index++) {
+    const field = fields[index]
+    if (!field) continue
+    const code = field.slice(0, 2)
+    const entry: StatusEntry = { code, path: field.slice(3) }
+    if (/[RC]/.test(code)) entry.previousPath = fields[++index] || undefined
+    entries.push(entry)
+  }
+  return entries
+}
+
+function changeKind(code: string): RepoChangeKind {
+  if (code === '??') return 'added'
+  if (code.includes('U') || code === 'AA' || code === 'DD') return 'conflict'
+  if (code.includes('R')) return 'renamed'
+  if (code.includes('C')) return 'copied'
+  if (code.includes('D')) return 'deleted'
+  if (code.includes('A')) return 'added'
+  return 'modified'
+}
+
+function diffCounts(diff: string): { added: number; removed: number } {
+  let added = 0
+  let removed = 0
+  let hunk = false
+  for (const line of diff.split(/\r?\n/)) {
+    if (line.startsWith('diff --git ')) {
+      hunk = false
+    } else if (line.startsWith('@@')) {
+      hunk = true
+    } else if (hunk && line.startsWith('+')) {
+      added++
+    } else if (hunk && line.startsWith('-')) {
+      removed++
+    }
+  }
+  return { added, removed }
 }
 
 function gitDetail(result: GitResult): string {
