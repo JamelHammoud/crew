@@ -87,7 +87,8 @@ function boot() {
         agentLabel: agent.label,
         title,
         createdBy: 'Jamel',
-        status: 'open'
+        status: 'open',
+        mode: 'build'
       }
     },
     threadPrompts: {},

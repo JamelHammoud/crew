@@ -88,7 +88,8 @@ describe('thread navigation', () => {
           agentLabel: agent.label,
           title: '@Claude 2 I want to follow up with another agent',
           createdBy: 'ALI',
-          status: 'open'
+          status: 'open',
+          mode: 'build'
         }
       },
       threadPrompts: {},
