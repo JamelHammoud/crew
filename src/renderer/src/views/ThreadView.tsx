@@ -91,6 +91,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const overlayRef = useRef<HTMLDivElement>(null)
   const [overlayHeight, setOverlayHeight] = useState(240)
+  const [headerRow, setHeaderRow] = useState<HTMLDivElement | null>(null)
+  const [headerStatus, setHeaderStatus] = useState<HTMLDivElement | null>(null)
+  const [nameWidth, setNameWidth] = useState(Number.POSITIVE_INFINITY)
 
   useEffect(() => {
     const el = overlayRef.current
@@ -99,6 +102,20 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    if (!headerRow || !headerStatus) return
+    const measure = () => {
+      const style = getComputedStyle(headerRow)
+      const gap = parseFloat(style.columnGap) || 0
+      const inner = headerRow.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      setNameWidth(inner - BACK_WIDTH - headerStatus.offsetWidth - gap * 2)
+    }
+    const observer = new ResizeObserver(measure)
+    observer.observe(headerRow)
+    observer.observe(headerStatus)
+    return () => observer.disconnect()
+  }, [headerRow, headerStatus])
 
   useLayoutEffect(() => {
     follow()
