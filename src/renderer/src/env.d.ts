@@ -22,6 +22,11 @@ declare global {
     repoChanges(): Promise<RepoChange[]>
     pullRepo(): Promise<RepoActionResult>
     pushRepo(): Promise<RepoActionResult>
+    mediaAccess(kind: MediaKind): Promise<MediaAccess>
+    askForMedia(kind: 'microphone' | 'camera'): Promise<boolean>
+    openMediaSettings(kind: MediaKind): Promise<void>
+    screenSources(): Promise<ScreenSource[]>
+    pickScreenSource(id: string | null): Promise<void>
     openExternal(url: string): Promise<void>
     readFile(path: string): Promise<RepoFile | null>
     writeFile(path: string, text: string): Promise<RepoFile | null>

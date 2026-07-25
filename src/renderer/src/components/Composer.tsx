@@ -15,7 +15,7 @@ function MentionHighlights({ value }: { value: string }) {
       {tokens.map((token, index) => {
         if (token.kind === 'agent') {
           return (
-            <span key={index} className="rounded-md px-0.5 -mx-0.5 py-0.5 bg-fg/10">
+            <span key={index} className="rounded-md pl-0.5 -ml-0.5 py-0.5 bg-fg/10">
               {token.text}
             </span>
           )
@@ -24,7 +24,7 @@ function MentionHighlights({ value }: { value: string }) {
           return (
             <span
               key={index}
-              className="rounded-md px-0.5 -mx-0.5 py-0.5 text-sky-300 bg-sky-400/15 light:text-sky-700 light:bg-sky-500/10"
+              className="rounded-md pl-0.5 -ml-0.5 py-0.5 text-sky-300 bg-sky-400/15 light:text-sky-700 light:bg-sky-500/10"
             >
               {token.text}
             </span>
