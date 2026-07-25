@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PresenceStack from '../src/renderer/src/components/PresenceStack'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { AgentStatus, PooledAgent } from '../src/shared/llm'
