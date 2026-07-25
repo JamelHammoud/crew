@@ -14,7 +14,7 @@ const KIND_LABELS: Record<RepoChange['kind'], string> = {
 }
 
 function lineTone(line: string): string {
-  if (line.startsWith('+++') || line.startsWith('---')) return 'text-fg-faint'
+  if (line.startsWith('+++ ') || line.startsWith('--- ')) return 'text-fg-faint'
   if (line.startsWith('+')) return 'bg-positive/[0.08] text-positive'
   if (line.startsWith('-')) return 'bg-danger/[0.08] text-danger'
   if (line.startsWith('@@')) return 'text-fg-secondary'

@@ -11,21 +11,21 @@ type RepoAction = 'pull' | 'push'
 function statusText(status: RepoStatus | null): string {
   if (!status) return 'Checking'
   if (!status.available) return 'Git unavailable'
-  if (!status.remote) return 'Local only'
   if (status.behind > 0) return `${status.behind} to pull`
   if (status.ahead > 0) return `${status.ahead} to push`
   if (status.changed > 0) return `${status.changed} ${status.changed === 1 ? 'change' : 'changes'}`
+  if (!status.remote) return 'Local only'
   return 'Up to date'
 }
 
 function statusDetail(status: RepoStatus | null): string {
   if (!status) return 'Checking project'
   if (!status.available) return 'This project is not tracked with git'
-  if (!status.remote) return 'No remote is set up for this project'
   const details = [status.branch || 'Project']
   if (status.changed > 0) details.push(`${status.changed} local ${status.changed === 1 ? 'change' : 'changes'}`)
   if (status.ahead > 0) details.push(`${status.ahead} to push`)
   if (status.behind > 0) details.push(`${status.behind} to pull`)
+  if (!status.remote) details.push('No remote')
   if (details.length === 1) details.push('Up to date')
   return details.join(' · ')
 }
