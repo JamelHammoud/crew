@@ -2,7 +2,6 @@ export type Paint =
   | { type: 'solid'; color: string; opacity: number }
   | { type: 'linear'; angle: number; stops: PaintStop[]; opacity: number }
   | { type: 'radial'; stops: PaintStop[]; opacity: number }
-  | { type: 'glass'; tint: string; blur: number; opacity: number }
 
 export interface PaintStop {
   color: string
