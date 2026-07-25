@@ -419,9 +419,17 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'agent.removed':
         set(state => ({ agents: state.agents.filter(a => a.id !== msg.agentId) }))
         break
+      // A thread carries the name its agent had when it opened, so every one it
+      // belongs to is brought along and the new name shows up without a reload.
       case 'agent.renamed':
         set(state => ({
-          agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, label: msg.label } : a))
+          agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, label: msg.label } : a)),
+          threads: Object.fromEntries(
+            Object.entries(state.threads).map(([id, thread]) => [
+              id,
+              thread.agentId === msg.agentId ? { ...thread, agentLabel: msg.label } : thread
+            ])
+          )
         }))
         break
       case 'agent.avatar':
