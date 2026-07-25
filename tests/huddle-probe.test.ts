@@ -6,6 +6,7 @@ import App from '../src/renderer/src/App'
 import { useHuddle } from '../src/renderer/src/state/huddle'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { HuddlePeer } from '../src/shared/huddle'
+import type { ScreenSource } from '../src/shared/media'
 
 class TestResizeObserver {
   observe(): void {}
