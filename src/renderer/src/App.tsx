@@ -17,6 +17,12 @@ const Design = lazy(() => import('./views/Design'))
 
 export default function App() {
   const connection = useCrew(s => s.connection)
+  const waiting = useCrew(reviewCount)
+
+  useEffect(() => {
+    void window.crew.setBadge(waiting)
+  }, [waiting])
+
   if (connection === 'booting') return <Boot />
   if (connection === 'home') return <Home />
   return <Session />
