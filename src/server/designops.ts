@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import {
   DESIGN_COLORS,
+  DESIGN_STYLE_DEFAULTS,
   plainTextOf,
   richTextOf,
   type DesignDocument,
@@ -84,7 +85,7 @@ function topIndexOn(document: DesignDocument, parentId: string): string | null {
 
 function baseProps(color: string, fill: string, text: string): Record<string, unknown> {
   return {
-    dash: 'solid',
+    dash: DESIGN_STYLE_DEFAULTS.dash,
     url: '',
     growY: 0,
     scale: 1,
@@ -92,7 +93,7 @@ function baseProps(color: string, fill: string, text: string): Record<string, un
     color,
     fill,
     size: 'm',
-    font: 'sans',
+    font: DESIGN_STYLE_DEFAULTS.font,
     align: 'middle',
     verticalAlign: 'middle',
     richText: richTextOf(text)
@@ -157,9 +158,9 @@ function propsFor(kind: DesignShapeKind, op: Extract<DesignOp, { op: 'create' }>
     case 'line':
       return {
         color,
-        dash: 'solid',
+        dash: DESIGN_STYLE_DEFAULTS.dash,
         size: 'm',
-        spline: 'line',
+        spline: DESIGN_STYLE_DEFAULTS.spline,
         points: {
           a1: { id: 'a1', index: 'a1', x: 0, y: 0 },
           a2: { id: 'a2', index: 'a2', x: (op.endX ?? op.x + 200) - op.x, y: (op.endY ?? op.y) - op.y }
