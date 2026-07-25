@@ -113,7 +113,7 @@ describe('playing a sound', () => {
   it('lets the same sound through once the burst has passed', () => {
     playSound('done')
     const first = started.length
-    vi.advanceTimersByTime(500)
+    clock += 500
     playSound('done')
     expect(started.length).toBeGreaterThan(first)
   })
