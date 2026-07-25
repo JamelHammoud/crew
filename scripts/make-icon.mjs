@@ -9,36 +9,22 @@ const resources = path.join(root, 'resources')
 
 const CANVAS = 1024
 const TILE = { x: 100, y: 100, size: 824, radius: 185 }
-const STROKE = 62
-const CHEVRON_HEIGHT = 270
-const CHEVRON_WIDTH = 130
-const GAP_TO_BARS = 100
-const BAR = 48
-const GAP_BETWEEN_BARS = 78
-const RISE = 35
-
-function glyph() {
-  const span = 3 * BAR + 2 * GAP_BETWEEN_BARS
-  const width = CHEVRON_WIDTH + GAP_TO_BARS + span + STROKE
-  const left = CANVAS / 2 - width / 2 + STROKE / 2
-  const apex = left + CHEVRON_WIDTH
-  const middle = CANVAS / 2 - RISE
-  const base = middle + CHEVRON_HEIGHT / 2
-  const paths = [`M${left} ${middle - CHEVRON_HEIGHT / 2} L${apex} ${middle} L${left} ${base}`]
-  for (let i = 0; i < 3; i++) {
-    paths.push(`M${apex + GAP_TO_BARS + i * (BAR + GAP_BETWEEN_BARS)} ${base} h${BAR}`)
-  }
-  return paths
-}
+const RADIUS = 145
+const STEP = 190
+const GAP = 42
 
 function svg({ background, ink }) {
-  const paths = glyph()
-    .map(d => `    <path d="${d}" />`)
+  const centre = CANVAS / 2
+  const discs = [centre + STEP, centre, centre - STEP]
+    .map(
+      (x, index) =>
+        `    <circle cx="${x}" cy="${centre}" r="${RADIUS}"${index === 0 ? '' : ` stroke="${background}" stroke-width="${GAP}"`} />`
+    )
     .join('\n')
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}" viewBox="0 0 ${CANVAS} ${CANVAS}">
   <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="${background}" />
-  <g fill="none" stroke="${ink}" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round">
-${paths}
+  <g fill="${ink}">
+${discs}
   </g>
 </svg>
 `
