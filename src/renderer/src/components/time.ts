@@ -6,6 +6,14 @@ export function formatElapsed(ms: number): string {
   return `${Math.floor(minutes / 60)}h ${minutes % 60}m`
 }
 
+export function formatClock(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000))
+  const seconds = `${total % 60}`.padStart(2, '0')
+  const minutes = Math.floor(total / 60)
+  if (minutes < 60) return `${minutes}:${seconds}`
+  return `${Math.floor(minutes / 60)}:${`${minutes % 60}`.padStart(2, '0')}:${seconds}`
+}
+
 export function formatTokens(tokens: number): string {
   if (tokens < 1000) return `${tokens}`
   return `${(tokens / 1000).toFixed(tokens < 10000 ? 1 : 0)}k`
