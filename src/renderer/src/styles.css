@@ -446,6 +446,13 @@ body {
   animation: var(--animate-pop);
 }
 
+/* Text is edited on top of the artwork, so the highlight cannot borrow either theme's color. */
+.design .tl-text-input::selection {
+  background: rgb(128 128 128 / 0.6);
+  color: inherit;
+  text-shadow: none;
+}
+
 .design .tlui-menu {
   padding: 6px;
 }
