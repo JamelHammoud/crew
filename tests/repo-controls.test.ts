@@ -7,6 +7,14 @@ import RepoControls from '../src/renderer/src/components/RepoControls'
 import TopBar from '../src/renderer/src/components/TopBar'
 import type { RepoStatus } from '../src/shared/repository'
 
+class TestResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+
 const ready: RepoStatus = {
   available: true,
   remote: true,
