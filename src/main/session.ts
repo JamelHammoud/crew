@@ -179,8 +179,10 @@ export class AppSession {
 
   createAgent(input: NewAgent): AgentDef {
     const store = this.agentStore()
+    const instanceId = randomUUID()
     const def: AgentDef = {
-      instanceId: randomUUID(),
+      id: agentId(this.live?.name ?? '', instanceId),
+      instanceId,
       provider: input.provider,
       name: input.name.trim() || input.provider,
       settings: input.settings ?? {}
