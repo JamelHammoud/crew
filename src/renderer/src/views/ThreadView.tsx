@@ -86,7 +86,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     return { added, removed, files: paths.size }
   }, [threadSteps])
 
-  const didInitialScroll = useRef(false)
   const overlayRef = useRef<HTMLDivElement>(null)
   const [overlayHeight, setOverlayHeight] = useState(240)
 
@@ -99,15 +98,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   }, [])
 
   useLayoutEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    if (!didInitialScroll.current) {
-      didInitialScroll.current = true
-      el.scrollTop = el.scrollHeight
-      return
-    }
-    if (pinnedRef.current && !hoverCardOpen()) el.scrollTop = el.scrollHeight
-  }, [items, overlayHeight, pinnedRef])
+    follow()
+  }, [items, overlayHeight, follow])
 
   const send = () => {
     if (!text.trim() && pendingCount === 0) return

@@ -230,6 +230,11 @@ app.whenReady().then(() => {
   ipcMain.handle('repo:changes', () => session.repoChanges())
   ipcMain.handle('repo:pull', () => session.pullRepo())
   ipcMain.handle('repo:push', () => session.pushRepo())
+  ipcMain.handle('media:access', (_event, kind: MediaKind) => mediaAccess(kind))
+  ipcMain.handle('media:ask', (_event, kind: 'microphone' | 'camera') => askForMedia(kind))
+  ipcMain.handle('media:settings', (_event, kind: MediaKind) => openMediaSettings(kind))
+  ipcMain.handle('media:sources', () => screenSources())
+  ipcMain.handle('media:pickSource', (_event, id: string | null) => pickScreenSource(id))
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
