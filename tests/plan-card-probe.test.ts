@@ -120,9 +120,10 @@ describe('plans in the app', () => {
       }
     })
 
-    const { container } = render(createElement(App))
+    render(createElement(App))
     const scroller = screen.getByText('Ship it').closest('.overflow-y-auto') as HTMLElement
-    const fade = scroller.parentElement?.querySelector('.bg-gradient-to-b') as HTMLElement
+    const panel = scroller.parentElement as HTMLElement
+    const fade = panel.querySelector('.bg-gradient-to-b') as HTMLElement
     expect(fade.className).toContain('opacity-0')
 
     Object.defineProperty(scroller, 'scrollHeight', { value: 600, configurable: true })
