@@ -524,7 +524,7 @@ body {
 }
 
 .md {
-  @apply text-base leading-[1.65] text-fg;
+  @apply text-base leading-[1.65] text-fg break-words;
 }
 
 .md h1,
