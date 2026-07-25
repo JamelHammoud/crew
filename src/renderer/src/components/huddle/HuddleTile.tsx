@@ -1,4 +1,5 @@
 import { ComputerDesktopIcon, MicrophoneIcon } from '@heroicons/react/16/solid'
+import type { ReactNode } from 'react'
 import type { HuddlePeer } from '../../../../shared/huddle'
 import Avatar from '../Avatar'
 import Pill from '../Pill'
