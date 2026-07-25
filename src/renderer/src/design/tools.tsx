@@ -127,7 +127,7 @@ export function currentToolId(editor: Editor): string {
 }
 
 export function addFrame(editor: Editor, preset: FramePreset): void {
-  const center = editor.getViewportPageCenter()
+  const center = editor.getViewportPageBounds().center
   editor.run(() => {
     editor.markHistoryStoppingPoint()
     editor.createShape({
