@@ -63,19 +63,15 @@ export default function DesignToolMenu({
           <>
             <MenuDivider />
             {FRAME_PRESETS.map(preset => (
-              <button
+              <MenuItem
                 key={preset.label}
+                label={preset.label}
+                hint={`${preset.w} × ${preset.h}`}
                 onClick={() => {
                   addFrame(editor, preset)
                   onClose()
                 }}
-                className="w-full flex items-center gap-2.5 pl-3 pr-2.5 py-2 rounded-xl text-sm text-left whitespace-nowrap text-fg-secondary transition-colors hover:text-fg hover:bg-fg/5"
-              >
-                <span className="flex-1">{preset.label}</span>
-                <span className="text-xs text-fg-faint tabular-nums">
-                  {preset.w} × {preset.h}
-                </span>
-              </button>
+              />
             ))}
           </>
         )}
