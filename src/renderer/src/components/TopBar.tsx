@@ -4,6 +4,8 @@ import {
   LinkIcon,
   MoonIcon,
   SignalIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
   SunIcon
 } from '@heroicons/react/16/solid'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
