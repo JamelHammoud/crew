@@ -89,9 +89,9 @@ export default function DesignChat({ boardId, onClose }: { boardId: string; onCl
   const example = agents.find(a => a.status !== 'offline')?.label ?? agents[0]?.label ?? 'an agent'
 
   return (
-    <aside className="w-[360px] shrink-0 flex flex-col min-h-0 pt-[70px]">
-      <div className="flex items-center gap-2 pl-5 pr-3 h-12 shrink-0">
-        <span className="text-sm font-semibold text-fg">Board chat</span>
+    <div className="flex-1 min-h-0 flex flex-col">
+      <div className="flex items-center gap-2 pl-4 pr-2 h-9 shrink-0">
+        <span className="text-xs font-semibold text-fg-muted">Board chat</span>
         <div className="ml-auto flex items-center gap-1">
           {boardThreads.length > 0 && (
             <Tooltip label="New thread">
