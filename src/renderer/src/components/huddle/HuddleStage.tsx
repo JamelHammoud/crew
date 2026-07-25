@@ -75,6 +75,7 @@ export default function HuddleStage() {
       speaking={speaking.includes(peer.peerId)}
       connecting={peer.peerId !== peerId && link[peer.peerId] !== 'connected'}
       size={size}
+      face={size === 'lg' && grid.width > 0 ? Math.round(grid.width * 0.15) : undefined}
     />
   )
 
