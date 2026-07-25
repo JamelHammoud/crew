@@ -81,7 +81,7 @@ export default function HuddleStage() {
 
   return (
     <div className={`fixed inset-0 z-50 bg-ink-900 flex flex-col ${picking ? '' : 'animate-pop'}`}>
-      <header className="app-drag shrink-0 h-[70px] flex items-center gap-3 px-6 pl-[92px]">
+      <header className="app-drag shrink-0 h-[70px] flex items-center gap-3 px-6 mac:pl-[92px]">
         <Live />
         <AvatarStack names={room.peers.map(peer => peer.name)} size="md" />
         <span className="text-lg font-semibold text-fg truncate">{huddleTitle(room, peerId)}</span>
