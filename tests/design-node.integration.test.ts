@@ -128,13 +128,12 @@ describe('node styling', () => {
     expect(style.boxShadow).toBe('inset 0 0 0 1px #ffffff14, 0px 8px 24px -4px #00000059')
   })
 
-  it('gives a glass fill a real backdrop blur', () => {
+  it('gives a background blur effect a real backdrop filter', () => {
     const style = nodeStyle({
       ...nodeDefaults(),
-      fills: [{ type: 'glass', tint: '#ffffff14', blur: 24, opacity: 1 }]
+      effects: [{ type: 'background-blur', blur: 24 }]
     })
     expect(style.backdropFilter).toContain('blur(24px)')
-    expect(style.backdropFilter).toContain('saturate')
   })
 
   it('lays out a container with flexbox when it has auto layout', () => {
@@ -174,7 +173,7 @@ describe('design nodes over HTTP', () => {
             h: 180,
             name: 'Panel',
             radius: 24,
-            fills: [{ type: 'glass', tint: '#ffffff14', blur: 24, opacity: 1 }]
+            fills: [{ type: 'solid', color: '#141414', opacity: 1 }]
           }
         ]
       })
