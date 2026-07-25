@@ -5,7 +5,7 @@ import { PLAN_INSTRUCTIONS } from '../src/shared/plan'
 import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
-import { startHost, TestUi, type TestHost } from './helpers/session'
+import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
 type ThreadStarted = Extract<SessionEvent, { kind: 'thread.started' }>
 type ThreadPlan = Extract<SessionEvent, { kind: 'thread.plan' }>
@@ -82,9 +82,9 @@ describe('plan mode', () => {
     await sam.waitForEvent(e => e.kind === 'thread.implement' && e.threadId === thread.threadId)
     await sam.waitForEvent(e => e.kind === 'message' && e.threadId === thread.threadId && e.text === 'Implement the plan.')
 
-    const ends = sam.events.filter(e => e.kind === 'agent.end') as AgentEnd[]
-    await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId && ends.length < 2)
-    const build = (sam.events.filter(e => e.kind === 'agent.end') as AgentEnd[]).at(-1)!
+    const endsInThread = () => sam.events.filter(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
+    await waitUntil(() => endsInThread().length === 2)
+    const build = endsInThread()[1] as AgentEnd
     expect(build.text).toContain('The plan this thread agreed on')
     // Out of plan mode the agent is no longer told to stop at a plan.
     expect(build.text).not.toContain(PLAN_INSTRUCTIONS)
