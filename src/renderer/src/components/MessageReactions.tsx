@@ -1,12 +1,13 @@
 import { EllipsisHorizontalIcon, FaceSmileIcon, PencilIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
-import { REACTION_EMOJIS, type ReactionEmoji } from '../../../shared/reactions'
+import { QUICK_REACTIONS, type ReactionEmoji } from '../../../shared/reactions'
 import { useCrew } from '../state/store'
+import Emoji from './Emoji'
+import EmojiPicker from './EmojiPicker'
+import { rememberEmoji } from './emojiRecents'
 import { MenuItem, Popover } from './Popover'
 import type { ReactionGroup } from './reactionGroups'
 import Tooltip from './Tooltip'
-
-const QUICK_REACTIONS = REACTION_EMOJIS.slice(0, 4)
 
 const reactionLabel = (names: string[]) => {
   if (names.length === 1) return `${names[0]} reacted`
@@ -34,6 +35,7 @@ export default function MessageReactions({
 
   const react = (emoji: ReactionEmoji) => {
     reactToMessage(targetId, emoji)
+    rememberEmoji(emoji)
     setPickerOpen(false)
   }
 
@@ -53,16 +55,16 @@ export default function MessageReactions({
             aria-label={`React with ${emoji}`}
             aria-pressed={selected.has(emoji)}
             onClick={() => react(emoji)}
-            className={`flex h-7 w-7 items-center justify-center rounded-full text-[15px] leading-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
+            className={`flex h-7 w-7 items-center justify-center rounded-full transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
               selected.has(emoji) ? 'bg-fg/12' : 'hover:bg-fg/8'
             }`}
           >
-            {emoji}
+            <Emoji char={emoji} size={17} />
           </button>
         ))}
         <span className="mx-0.5 h-4 w-px bg-ink-600" />
         <span className="relative">
-          <Tooltip label="More reactions">
+          <Tooltip label="More reactions" disabled={pickerOpen}>
             <button
               type="button"
               aria-label="More reactions"
@@ -76,26 +78,18 @@ export default function MessageReactions({
               <FaceSmileIcon className="h-4 w-4" />
             </button>
           </Tooltip>
-          <Popover open={pickerOpen} onClose={() => setPickerOpen(false)} side="top" className="flex !rounded-full !p-1">
-            {REACTION_EMOJIS.map(emoji => (
-              <button
-                key={emoji}
-                type="button"
-                aria-label={`React with ${emoji}`}
-                aria-pressed={selected.has(emoji)}
-                onClick={() => react(emoji)}
-                className={`flex h-8 w-8 items-center justify-center rounded-full text-[16px] leading-none transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
-                  selected.has(emoji) ? 'bg-fg/12' : 'hover:bg-fg/8'
-                }`}
-              >
-                {emoji}
-              </button>
-            ))}
+          <Popover
+            open={pickerOpen}
+            onClose={() => setPickerOpen(false)}
+            side="top"
+            className="overflow-hidden !rounded-card !p-0"
+          >
+            <EmojiPicker selected={selected} onPick={react} />
           </Popover>
         </span>
         {deletable && (
           <span className="relative">
-            <Tooltip label="Message actions">
+            <Tooltip label="Message actions" disabled={actionsOpen}>
               <button
                 type="button"
                 aria-label="Message actions"
@@ -142,13 +136,13 @@ export default function MessageReactions({
                 aria-label={`${reaction.emoji}, ${reaction.count} ${reaction.count === 1 ? 'reaction' : 'reactions'}`}
                 aria-pressed={reaction.self}
                 onClick={() => react(reaction.emoji)}
-                className={`flex h-7 items-center gap-1.5 rounded-full px-2 text-sm transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
+                className={`flex h-7 items-center gap-1.5 rounded-full px-2 transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
                   reaction.self
                     ? 'bg-fg/15 text-fg hover:bg-fg/20'
                     : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
                 }`}
               >
-                <span className="text-[15px] leading-none">{reaction.emoji}</span>
+                <Emoji char={reaction.emoji} size={16} />
                 <span className="text-xs font-semibold tabular-nums">{reaction.count}</span>
               </button>
             </Tooltip>
