@@ -15,12 +15,14 @@ function Control({
   label,
   active,
   danger,
+  lit,
   onClick,
   children
 }: {
   label: string
   active?: boolean
   danger?: boolean
+  lit?: boolean
   onClick: () => void
   children: ReactNode
 }) {
@@ -34,7 +36,9 @@ function Control({
       <button
         onClick={onClick}
         aria-label={label}
-        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${tone}`}
+        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${tone} ${
+          lit ? 'shadow-[0_0_0_3px_rgb(255_255_255/0.22)]' : ''
+        }`}
       >
         {children}
       </button>
