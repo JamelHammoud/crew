@@ -78,7 +78,7 @@ export default function EmojiPicker({
     <button
       key={entry.char}
       type="button"
-      aria-label={`React with ${entry.char}`}
+      aria-label={`React with :${entry.shortName}:`}
       aria-pressed={selected.has(entry.char)}
       onClick={() => onPick(entry.char)}
       onMouseEnter={() => setPreview(entry)}
