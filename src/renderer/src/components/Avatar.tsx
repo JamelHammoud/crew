@@ -16,15 +16,22 @@ const DOTS = {
 export default function Avatar({
   name,
   size = 'md',
+  px,
   presence
 }: {
   name: string
   size?: keyof typeof SIZES
+  // For places that size themselves in pixels, like a tile on the call stage
+  // that grows with the window.
+  px?: number
   presence?: 'online' | 'offline'
 }) {
   const colors = avatarColors(name, useTheme() === 'light')
   return (
-    <span className={`${SIZES[size]} relative inline-block shrink-0 self-start`}>
+    <span
+      className={`${px ? '' : SIZES[size]} relative inline-block shrink-0 self-start`}
+      style={px ? { width: px, height: px, fontSize: Math.round(px * 0.36) } : undefined}
+    >
       <span
         className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
         style={{ backgroundColor: colors.background, color: colors.color }}
