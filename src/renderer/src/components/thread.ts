@@ -170,7 +170,7 @@ export function buildThread(
         kind: 'note',
         author: 'crew',
         self: false,
-        text: `${event.byName} handed this thread to ${event.agentLabel}`,
+        text: `${event.byName} handed this thread to ${labelOf(event.agentId, event.agentLabel)}`,
         streaming: false
       })
     }
