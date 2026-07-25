@@ -22,6 +22,7 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
+import DesignCursor from '../design/DesignCursor'
 import { DesignNodeUtil } from '../design/DesignNodeUtil'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
