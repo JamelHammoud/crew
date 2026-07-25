@@ -61,6 +61,7 @@ export class PeerLink {
   constructor(opts: PeerOptions) {
     this.peerId = opts.peerId
     this.polite = opts.polite
+    this.caller = !opts.polite
     this.send = opts.send
     this.onChange = opts.onChange
     this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS, bundlePolicy: 'max-bundle' })
@@ -77,12 +78,15 @@ export class PeerLink {
       screen: new MediaStream([transceivers.screen.receiver.track])
     }
 
-    this.pc.onnegotiationneeded = () => void this.offer()
+    this.pc.onnegotiationneeded = () => {
+      if (this.caller) void this.offer()
+    }
     this.pc.onicecandidate = ({ candidate }) => {
       if (candidate) this.send({ kind: 'candidate', candidate: candidate.toJSON() })
     }
+    this.pc.ontrack = event => this.adopt(event)
     this.pc.onconnectionstatechange = () => this.watch()
-    this.expect()
+    if (this.caller) this.expect()
   }
 
   async publish(tracks: SlotTracks): Promise<void> {
