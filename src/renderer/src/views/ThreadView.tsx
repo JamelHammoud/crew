@@ -146,7 +146,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
             <FilesChanged steps={threadSteps} />
           </div>
         </div>
-  
+
         <div ref={overlayRef} className="absolute inset-x-0 bottom-0 pointer-events-none">
           <div className="h-14 bg-gradient-to-t from-ink-900 to-transparent" />
           <div className="bg-ink-900 px-6 pb-6">
