@@ -35,14 +35,6 @@ interface RowAction {
   status: ThreadMeta['status']
 }
 
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-const stripMention = (text: string, label: string) =>
-  text
-    .replace(new RegExp(`@${escapeRegExp(label)}(?![\\w-])`, 'i'), ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-
 // The first @mention in the text becomes the assignment and leaves the text;
 // a todo that is nothing but a mention keeps it so the text stays non-empty.
 function parseTodoInput(text: string, agents: PooledAgent[]): { text: string; agentId?: string } {
