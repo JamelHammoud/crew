@@ -1,5 +1,5 @@
 import { DocumentTextIcon } from '@heroicons/react/16/solid'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { docCandidates, type DocRef } from '../../../shared/docs'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
 import { useCrew } from '../state/store'
