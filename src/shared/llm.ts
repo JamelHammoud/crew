@@ -177,12 +177,16 @@ export interface AgentMentionRef {
   label: string
 }
 
+// Who a piece of text names, whether or not they are here right now. Only
+// agents that are here get the work, but a name on the page points at its agent
+// either way, so it can be read back under the name they carry today.
 export function agentMentionRefsIn(
   text: string,
-  agents: Array<Pick<PooledAgent, 'id' | 'label' | 'status'>>
+  agents: Array<Pick<PooledAgent, 'id' | 'label'>>
 ): AgentMentionRef[] {
+  const here = agents.map(agent => ({ ...agent, status: 'idle' as const }))
   const labels = new Map(agents.map(agent => [agent.id, agent.label]))
-  return mentionsIn(text, agents).map(id => ({ id, label: labels.get(id)! }))
+  return mentionsIn(text, here).map(id => ({ id, label: labels.get(id)! }))
 }
 
 // Brings written mentions up to date. A mention still means the agent it was
