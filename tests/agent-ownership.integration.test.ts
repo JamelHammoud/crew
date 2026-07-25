@@ -88,7 +88,7 @@ describe('agent ownership', () => {
     await ui.waitForEvent(e => e.kind === 'agent.offline' && e.agentId === id)
 
     app('jamel (dev)', [{ ...saved, id }])
-    await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === id)
+    await waitUntil(() => ownerOf(id) === 'jamel (dev)')
 
     expect(ownerOf(id)).toBe('jamel (dev)')
   })
