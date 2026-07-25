@@ -1218,6 +1218,79 @@ export class CrewSession {
     }
   }
 
+  private huddleRoom(): HuddleRoom {
+    if (this.huddle.size === 0) return emptyRoom()
+    return {
+      peers: [...this.huddle.values()].sort((a, b) => a.joinedAt - b.joinedAt),
+      startedAt: this.huddleStartedAt
+    }
+  }
+
+  private broadcastHuddle(): void {
+    this.broadcast({ type: 'huddle.room', room: this.huddleRoom() })
+  }
+
+  // A dropped socket takes a while to close, so a client coming back with the
+  // peer id it already had takes its own place over rather than doubling up.
+  private handleHuddleJoin(
+    ws: WebSocket,
+    member: Member,
+    rawPeerId: string,
+    muted: boolean,
+    camera: boolean
+  ): void {
+    if (typeof rawPeerId !== 'string' || rawPeerId.trim().length === 0) return
+    const peerId = rawPeerId.trim().slice(0, PEER_ID_CHARS)
+    for (const [other, peer] of [...this.huddle]) {
+      if (peer.peerId === peerId && other !== ws) this.huddle.delete(other)
+    }
+    const existing = this.huddle.get(ws)
+    if (!existing && this.huddle.size >= MAX_HUDDLE_PEERS) {
+      this.send(ws, { type: 'error', message: 'This huddle is full.' })
+      return
+    }
+    this.huddle.set(ws, {
+      peerId,
+      memberId: member.id,
+      name: member.name,
+      muted: muted === true,
+      camera: camera === true,
+      sharing: existing?.sharing ?? false,
+      joinedAt: existing?.joinedAt ?? Date.now()
+    })
+    if (this.huddleStartedAt === null) this.huddleStartedAt = Date.now()
+    this.broadcastHuddle()
+  }
+
+  private handleHuddleLeave(ws: WebSocket): void {
+    if (!this.huddle.delete(ws)) return
+    if (this.huddle.size === 0) this.huddleStartedAt = null
+    this.broadcastHuddle()
+  }
+
+  private handleHuddleUpdate(
+    ws: WebSocket,
+    change: { muted?: boolean; camera?: boolean; sharing?: boolean }
+  ): void {
+    const peer = this.huddle.get(ws)
+    if (!peer) return
+    if (typeof change.muted === 'boolean') peer.muted = change.muted
+    if (typeof change.camera === 'boolean') peer.camera = change.camera
+    if (typeof change.sharing === 'boolean') peer.sharing = change.sharing
+    this.broadcastHuddle()
+  }
+
+  private handleHuddleSignal(ws: WebSocket, to: string, signal: HuddleSignal): void {
+    const from = this.huddle.get(ws)
+    if (!from || typeof to !== 'string') return
+    if (JSON.stringify(signal ?? null).length > MAX_SIGNAL_CHARS) return
+    for (const [target, peer] of this.huddle) {
+      if (peer.peerId !== to) continue
+      this.send(target, { type: 'huddle.signal', from: from.peerId, signal })
+      return
+    }
+  }
+
   private scheduleDesignSave(board: DesignBoard): void {
     if (board.saveTimer) return
     board.saveTimer = setTimeout(() => {
