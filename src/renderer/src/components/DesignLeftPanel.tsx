@@ -255,7 +255,7 @@ function Layers({ editor }: { editor: Editor }) {
               ) : (
                 <button
                   onClick={() => editor.select(id as TLShapeId)}
-                  onDoubleClick={() => setRenaming(id)}
+                  onDoubleClick={() => canRename(row.shape) && setRenaming(id)}
                   className={`flex-1 min-w-0 text-xs text-left truncate ${
                     hidden ? 'text-fg-faint' : active ? 'text-fg font-semibold' : 'text-fg-secondary'
                   }`}
