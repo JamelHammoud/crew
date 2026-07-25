@@ -53,9 +53,18 @@ export class HuddleMesh {
     for (const link of this.links.values()) void link.publish(this.tracks)
   }
 
+  // Someone can start dialing a fraction before the roster naming them lands.
+  // What they said is kept until the link exists rather than thrown away.
   accept(from: string, signal: HuddleSignal): void {
     const link = this.links.get(from)
-    if (link) void link.accept(signal)
+    if (link) {
+      void link.accept(signal)
+      return
+    }
+    const held = this.early.get(from) ?? []
+    if (held.length >= EARLY_LIMIT) held.shift()
+    held.push(signal)
+    this.early.set(from, held)
   }
 
   streamsOf(peerId: string): SlotStreams | null {
