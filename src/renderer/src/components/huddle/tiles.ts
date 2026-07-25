@@ -1,8 +1,22 @@
-const MAX_COLUMNS = 4
+export interface TileGrid {
+  columns: number
+  width: number
+}
 
-// Tiles fill the stage as close to square as they can, so nobody ends up in a
-// letterbox while there is room beside them.
-export function gridColumns(count: number): number {
-  if (count <= 1) return 1
-  return Math.min(MAX_COLUMNS, Math.ceil(Math.sqrt(count)))
+const RATIO = 16 / 9
+
+// The stage lays people out the way that makes each of them biggest, rather
+// than the way that happens to be square, so nobody ends up small while there
+// is room beside them.
+export function fitTiles(count: number, width: number, height: number, gap: number): TileGrid {
+  if (count <= 0 || width <= 0 || height <= 0) return { columns: Math.max(1, count), width: 0 }
+  let best: TileGrid = { columns: 1, width: 0 }
+  for (let columns = 1; columns <= count; columns++) {
+    const rows = Math.ceil(count / columns)
+    const across = (width - gap * (columns - 1)) / columns
+    const down = ((height - gap * (rows - 1)) / rows) * RATIO
+    const size = Math.min(across, down)
+    if (size > best.width) best = { columns, width: size }
+  }
+  return best
 }
