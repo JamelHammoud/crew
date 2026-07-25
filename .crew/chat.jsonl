@@ -8529,3 +8529,9 @@
 {"id":"3f2ac421-00e9-4153-b44d-46f80a4be6a7","ts":1784928949486,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus 2"}
 {"id":"c6839374-d022-4283-b7f7-3d0dfaca2ede","ts":1784928949486,"kind":"agent.online","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
 {"id":"46192ccd-0007-4c53-a1a6-baff24ed298f","ts":1784928949486,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"e1acb12b-2693-497f-8590-5f70236b54e7","ts":1784997133368,"kind":"agent.online","agentId":"ali/claude","label":"Claude 2"}
+{"id":"7b32ea7a-4d34-4aea-980a-89dcfff7b4e0","ts":1784997133369,"kind":"agent.online","agentId":"ali/0d392594-6df2-4b6e-b809-57b71598960d","label":"Codex Gpt-5.6-sol"}
+{"id":"c1a79159-3b37-4484-a31c-f4bc88fc6f62","ts":1784997133369,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"f63803e8-b52b-414a-9c98-cd5335727edf","ts":1784997133370,"kind":"agent.online","agentId":"ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6","label":"Claude Opus 2"}
+{"id":"db4da3d5-f386-4420-96c3-9d80b990a030","ts":1784997133370,"kind":"agent.online","agentId":"ali/61e424f9-ed0d-4f98-b612-abb09b867b23","label":"Claude Opus"}
+{"id":"b4fa4968-7e16-4066-b15c-04f4fbcd2fe0","ts":1784997133370,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
