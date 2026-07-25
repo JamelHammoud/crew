@@ -33,6 +33,9 @@ declare global {
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>
     revealFile(path: string): Promise<void>
+    setBadge(count: number): Promise<void>
+    notify(alert: AgentAlert): Promise<void>
+    onNotificationOpen(listener: (threadId: string) => void): () => void
     onFullScreen(listener: (full: boolean) => void): void
     onOpenUrl(listener: (url: string) => void): void
   }
