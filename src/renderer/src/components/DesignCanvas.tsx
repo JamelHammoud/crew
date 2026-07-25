@@ -30,8 +30,6 @@ import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
 
-const shapeUtils = designShapeUtils
-
 const tools = [DesignNodeTool]
 
 // crew owns every panel now, so tldraw's own chrome stays out of the way.
@@ -80,7 +78,7 @@ export default function DesignCanvas({
   const lightRef = useRef(theme === 'light')
   lightRef.current = theme === 'light'
 
-  const store = useMemo(() => createTLStore({ shapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
+  const store = useMemo(() => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
 
   useEffect(() => {
     setReady(false)
@@ -252,7 +250,7 @@ export default function DesignCanvas({
     <div className="absolute inset-0 design">
       <Tldraw
         store={store}
-        shapeUtils={shapeUtils}
+        shapeUtils={designShapeUtils}
         tools={tools}
         assetUrls={assetUrls}
         components={components}
