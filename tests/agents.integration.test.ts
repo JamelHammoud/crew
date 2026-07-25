@@ -99,10 +99,11 @@ describe('agent instances', () => {
     expect(removed.agentId).toBe(agentId('jamel', 'x'))
   })
 
-  // The server remembers agents across restarts. If the owner's machine lost
-  // the local definition (a wiped store), the agent must not sit offline
-  // forever on its own machine: the runner re-adopts it from the snapshot.
-  it('re-adopts its own offline agent when the local definition was lost', async () => {
+  // The server remembers agents across restarts. A machine that lost its local
+  // definition used to have the agent recreated for it from the snapshot, which
+  // quietly made copies nobody asked for. It stays offline until its definition
+  // comes back.
+  it('brings back nothing when the local definition was lost', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     const first = testRunner({
@@ -119,33 +120,69 @@ describe('agent instances', () => {
     first.close()
     await ui.waitForEvent(e => e.kind === 'agent.offline' && e.label === 'Fake Fable')
 
-    const adopted: Array<{ instanceId: string; provider: string; name: string }> = []
     const second = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
       providers: [makeFakeProvider()],
       agents: [],
-      reconnectDelayMs: 100,
-      onAdopt: def => adopted.push(def)
+      reconnectDelayMs: 100
     })
     runners.push(second)
     second.connect(host.url)
+    await waitUntil(() => ui.events.filter(e => e.kind === 'person.joined' && e.name === 'jamel').length >= 2)
+    await new Promise(r => setTimeout(r, 300))
 
-    // waitForEvent matches history, so wait for the second online — the adoption.
-    const onlines = () =>
-      ui.events.filter(e => e.kind === 'agent.online' && e.label === 'Fake Fable') as Array<
-        Extract<SessionEvent, { kind: 'agent.online' }>
-      >
-    await waitUntil(() => onlines().length >= 2)
-    expect(onlines()[1].agentId).toBe(agentId('jamel', 'uuid-1'))
-    expect(adopted).toEqual([{ instanceId: 'uuid-1', provider: 'fake', name: 'Fake Fable', settings: { model: 'large' } }])
+    expect(ui.events.filter(e => e.kind === 'agent.online' && e.label === 'Fake Fable')).toHaveLength(1)
+    const agents = host.session.snapshot().agents
+    expect(agents.map(a => a.label)).toEqual(['Fake Fable'])
+    expect(agents[0].status).toBe('offline')
+  })
 
-    // And it actually runs: the whole point of adoption.
-    ui.chat('hello again @Fake Fable', [agentId('jamel', 'uuid-1')])
-    const end = (await ui.waitForEvent(
-      e => e.kind === 'agent.end' && e.agentId === agentId('jamel', 'uuid-1')
-    )) as Extract<SessionEvent, { kind: 'agent.end' }>
+  // The id is minted once and saved with the definition, so hosting under a
+  // different name brings the same agents back instead of a second set of them
+  // labelled "Fake 2".
+  it('keeps one agent when its owner comes back under a different name', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const id = agentId('jamel', 'uuid-1')
+    const def = { id, instanceId: 'uuid-1', provider: 'fake', name: 'Fake', settings: {} }
+    const first = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [def],
+      reconnectDelayMs: 100
+    })
+    runners.push(first)
+    first.connect(host.url)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Fake')
+    first.close()
+    await ui.waitForEvent(e => e.kind === 'agent.offline' && e.label === 'Fake')
+
+    const renamed = testRunner({
+      name: 'jamel (dev)',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [def],
+      reconnectDelayMs: 100
+    })
+    runners.push(renamed)
+    renamed.connect(host.url)
+    await waitUntil(() => host.session.snapshot().agents.some(a => a.status !== 'offline'))
+
+    const agents = host.session.snapshot().agents
+    expect(agents.map(a => a.label)).toEqual(['Fake'])
+    expect(agents[0].id).toBe(id)
+    expect(agents[0].ownerName).toBe('jamel (dev)')
+
+    ui.chat('hello again @Fake', [id])
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.agentId === id)) as Extract<
+      SessionEvent,
+      { kind: 'agent.end' }
+    >
     expect(end.ok).toBe(true)
   })
 
