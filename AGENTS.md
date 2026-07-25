@@ -39,7 +39,9 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - No logo or branding beyond the word "crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
 - The app icon is three overlapping discs, the same stack of members the app draws everywhere else. All three are the same size, each cut out of the one behind it by a mask, so nothing shrinks a disc. The tile is glass like the system icons: a top-to-bottom gradient, a sheen over the top half, and a rim that catches light at the top and bottom. Black and white, and it flips with the theme picked in the app.
 - The same three discs are the mark in the top left of the app, in place of the word "crew". `CrewMark` draws them at whatever `currentColor` is.
-- `yarn icon` redraws all of it from `scripts/make-icon.mjs` into `resources/` (`icon.svg`, `icon-light.svg`, `crew-logo.svg`, `icon.icns`, `icon.png`), `src/main/icon-png.ts` and `src/renderer/src/components/crew-mark.ts`. That is the only place the geometry lives. Nothing there is edited by hand.
+- A build run from source wears a blueprint of the same three discs: ruled paper, centre lines through each disc, and the discs drawn as outlines instead of filled. It is the one place in the project that is blue, so a dev window is never mistaken for the installed app sitting beside it in the dock. `src/main/icon.ts` picks it whenever the app is not packaged.
+- Each disc is cut only by the discs standing in front of it, one mask each. A single mask for the whole stack reopens the gaps, which is invisible on the filled icon and turns the blueprint outlines into crossing rings.
+- `yarn icon` redraws all of it from `scripts/make-icon.mjs` into `resources/` (`icon.svg`, `icon-light.svg`, `icon-dev.svg`, `icon-dev-light.svg`, `crew-logo.svg`, `icon.icns`, `icon.png`), `src/main/icon-png.ts` and `src/renderer/src/components/crew-mark.ts`. That is the only place the geometry lives. Nothing there is edited by hand.
 
 ## Layout
 
