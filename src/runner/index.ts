@@ -20,6 +20,11 @@ export interface RunnerOptions {
   // Called when this runner adopts one of its own agents remembered by the
   // server but missing locally, so the owner can persist the definition.
   onAdopt?: (def: AgentDef) => void
+  // Called when one of this runner's agents is removed from the session by
+  // anyone, so the owner can drop the local definition too.
+  onForget?: (instanceId: string) => void
+  // Called when one of this runner's agents is renamed in the session.
+  onRename?: (instanceId: string, name: string) => void
 }
 
 interface RunnerAgent {
@@ -63,8 +68,7 @@ export class Runner {
 
   constructor(private opts: RunnerOptions) {
     for (const provider of opts.providers) this.providersByName.set(provider.name, provider)
-    const defs = opts.agents ?? opts.providers.map(p => ({ instanceId: p.name, provider: p.name, name: p.label, settings: {} }))
-    for (const def of defs) this.define(def)
+    for (const def of opts.agents ?? []) this.define(def)
     this.attachments = new AttachmentCache(opts.repoPath)
     this.baseDelay = opts.reconnectDelayMs ?? 1000
     this.silenceTimeout = opts.silenceTimeoutMs ?? SILENCE_TIMEOUT_MS
@@ -280,7 +284,27 @@ export class Runner {
         else this.cancelled.add(msg.promptId)
         break
       }
+      case 'agent.removed': {
+        const instanceId = this.ownInstance(msg.agentId)
+        if (!instanceId) break
+        this.agents.delete(msg.agentId)
+        this.opts.onForget?.(instanceId)
+        break
+      }
+      case 'agent.renamed': {
+        const instanceId = this.ownInstance(msg.agentId)
+        const agent = this.agents.get(msg.agentId)
+        if (!instanceId || !agent) break
+        agent.name = msg.label
+        this.opts.onRename?.(instanceId, msg.label)
+        break
+      }
     }
+  }
+
+  private ownInstance(id: string): string | null {
+    const prefix = `${this.opts.name.trim().toLowerCase()}/`
+    return id.startsWith(prefix) ? id.slice(prefix.length) : null
   }
 
   // The server remembers agents across restarts; if one of ours is offline in
@@ -288,14 +312,14 @@ export class Runner {
   // (wiped store, fresh install), not the agent. Re-register it instead of
   // leaving a ghost the owner can see but never run.
   private async adoptOwnAgents(snapshot: SessionSnapshot): Promise<void> {
-    const prefix = `${this.opts.name.trim().toLowerCase()}/`
     for (const agent of snapshot.agents) {
-      if (!agent.id.startsWith(prefix) || agent.status !== 'offline') continue
+      const instanceId = this.ownInstance(agent.id)
+      if (!instanceId || agent.status !== 'offline') continue
       if (this.agents.has(agent.id)) continue
       const provider = this.providersByName.get(agent.provider)
       if (!provider || !(await provider.detect())) continue
       const def: AgentDef = {
-        instanceId: agent.id.slice(prefix.length),
+        instanceId,
         provider: agent.provider,
         name: agent.label,
         settings: agent.settings ?? {}

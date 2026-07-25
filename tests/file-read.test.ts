@@ -1,7 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from '../src/main/files'
+import { locatePath } from '../src/main/locate'
+import { stripRoot, stripRootFromText } from '../src/shared/files'
 import { tmpDir } from './helpers/session'
 
 function makeRepo(): string {
@@ -81,6 +84,83 @@ describe('statRepoFile', () => {
     expect(await statRepoFile(root, 'src/app/')).toBe('dir')
     expect(await statRepoFile(root, 'Undo/redo')).toBe('missing')
     expect(await statRepoFile(root, '../outside.txt')).toBe('missing')
+  })
+})
+
+describe('locatePath', () => {
+  it('places project paths relative to the project', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, path.join(root, 'src/app/main.ts'))).toEqual({
+      kind: 'repo',
+      path: 'src/app/main.ts',
+      exists: true
+    })
+    expect(await locatePath(root, 'src/app/main.ts')).toEqual({ kind: 'repo', path: 'src/app/main.ts', exists: true })
+    expect(await locatePath(root, path.join(root, 'src/gone.ts'))).toEqual({
+      kind: 'repo',
+      path: 'src/gone.ts',
+      exists: false
+    })
+    expect(await locatePath(root, 'Undo/redo')).toEqual({ kind: 'repo', path: 'Undo/redo', exists: false })
+  })
+
+  it('matches the same file kept elsewhere on another computer', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, '/Users/someone/code/crew/src/app/main.ts')).toEqual({
+      kind: 'repo',
+      path: 'src/app/main.ts',
+      exists: true
+    })
+  })
+
+  it('keeps back home paths that belong to someone else', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, '/Users/someone/Desktop/notes.md')).toEqual({ kind: 'private' })
+    expect(await locatePath(root, '/home/someone/notes.md')).toEqual({ kind: 'private' })
+    expect(await locatePath(null, '/Users/someone/notes.md')).toEqual({ kind: 'private' })
+  })
+
+  it('shows paths that are on this computer', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, os.homedir())).toEqual({ kind: 'local' })
+    expect(await locatePath(root, '~/')).toEqual({ kind: 'local' })
+    expect(await locatePath(root, '/usr/bin')).toEqual({ kind: 'local' })
+  })
+
+  it('matches a windows path onto the same file here', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, 'C:\\Users\\Ali Hammoud\\crew\\src\\app\\main.ts')).toEqual({
+      kind: 'repo',
+      path: 'src/app/main.ts',
+      exists: true
+    })
+    expect(await locatePath(root, 'src\\app\\main.ts')).toEqual({
+      kind: 'repo',
+      path: 'src/app/main.ts',
+      exists: true
+    })
+  })
+
+  it('keeps back windows paths that belong to someone else', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, 'C:\\Users\\Ali Hammoud\\Desktop\\notes.md')).toEqual({ kind: 'private' })
+    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'local' })
+  })
+})
+
+describe('stripRoot', () => {
+  it('drops the working folder from paths written on either system', () => {
+    expect(stripRoot('/Users/me/crew', '/Users/me/crew/src/app.ts')).toBe('src/app.ts')
+    expect(stripRoot('C:\\Users\\Ali\\crew', 'C:\\Users\\Ali\\crew\\src\\app.ts')).toBe('src/app.ts')
+    expect(stripRoot('/Users/me/crew', '/etc/hosts')).toBe('/etc/hosts')
+  })
+
+  it('drops the working folder from step details', () => {
+    expect(stripRootFromText('C:\\Users\\Ali\\crew', 'Read C:\\Users\\Ali\\crew\\src\\app.ts (40 lines)')).toBe(
+      'Read src/app.ts (40 lines)'
+    )
+    expect(stripRootFromText('/Users/me/crew', 'Edit /Users/me/crew/src/app.ts')).toBe('Edit src/app.ts')
+    expect(stripRootFromText('/Users/me/crew', 'Nothing to strip here')).toBe('Nothing to strip here')
   })
 })
 

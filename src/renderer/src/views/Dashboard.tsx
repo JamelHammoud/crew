@@ -4,10 +4,6 @@ import CreateAgent from '../components/CreateAgent'
 import Pill from '../components/Pill'
 import { useCrew } from '../state/store'
 
-function instanceOf(agentId: string): string {
-  const slash = agentId.indexOf('/')
-  return slash === -1 ? agentId : agentId.slice(slash + 1)
-}
 
 export default function Dashboard() {
   const members = useCrew(s => s.members)
@@ -17,6 +13,8 @@ export default function Dashboard() {
   const selfId = useCrew(s => s.selfId)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const updateAgentSetting = useCrew(s => s.updateAgentSetting)
+  const renameAgent = useCrew(s => s.renameAgent)
+  const removeAgent = useCrew(s => s.removeAgent)
 
   return (
     <div className="h-full overflow-y-auto px-6">
@@ -58,7 +56,8 @@ export default function Dashboard() {
                     threadCount={running.length}
                     onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
                     onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
-                    onRemove={mine ? () => void window.crew.removeAgent(instanceOf(agent.id)) : undefined}
+                    onRename={mine ? label => renameAgent(agent.id, label) : undefined}
+                    onRemove={() => removeAgent(agent.id)}
                   />
                 )
               })}

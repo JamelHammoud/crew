@@ -4,6 +4,7 @@ import type { SessionEvent } from '../src/shared/events'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 
@@ -25,7 +26,7 @@ describe('queued messages', () => {
   })
 
   async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

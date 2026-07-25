@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { Runner } from '../src/runner'
 import { Store } from '../src/server/store'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
 import type { ServerMessage } from '../src/shared/protocol'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, tmpDir, waitUntil } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 const PAGE = { id: 'page:page', typeName: 'page', name: 'Page 1', index: 'a1', meta: {} }
 
@@ -131,7 +131,7 @@ describe('design boards', () => {
   it('starts board threads and hands the agent the board API', async () => {
     const host = await startHost(tmpDir('design-thread'))
     const ui = await TestUi.connect(host.url, 'sam', host.code)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,

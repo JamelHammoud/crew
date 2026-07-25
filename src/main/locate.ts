@@ -4,9 +4,13 @@ import path from 'node:path'
 import type { PathLocation } from '../shared/files'
 import { statRepoFile } from './files'
 
-const HOME_PATH = /^(?:~|\/Users\/[^/]+|\/home\/[^/]+)(?:\/|$)/
+const HOME_PATH = /^(?:~|\/Users\/[^/]+|\/home\/[^/]+|[A-Za-z]:\/Users\/[^/]+)(?:\/|$)/
+const WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/
 const MIRROR_SEGMENTS = 8
 const CASELESS = process.platform === 'darwin' || process.platform === 'win32'
+const ON_WINDOWS = process.platform === 'win32'
+
+const slashed = (text: string): string => text.split('\\').join('/')
 
 function insideOf(root: string, absolute: string): string | null {
   const from = CASELESS ? root.toLowerCase() : root
@@ -23,7 +27,7 @@ function insideOf(root: string, absolute: string): string | null {
 // Agents on other computers keep the project somewhere else, so the same file
 // arrives with a different prefix. The tail of the path still matches.
 async function mirroredInRepo(root: string, absolute: string): Promise<string | null> {
-  const parts = absolute.split('/').filter(Boolean)
+  const parts = slashed(absolute).split('/').filter(Boolean)
   for (let start = Math.max(0, parts.length - MIRROR_SEGMENTS); start <= parts.length - 2; start++) {
     const relative = parts.slice(start).join('/')
     if ((await statRepoFile(root, relative)) !== 'missing') return relative
@@ -44,10 +48,26 @@ async function repoLocation(root: string, relative: string): Promise<PathLocatio
   return { kind: 'repo', path: relative || '.', exists: (await statRepoFile(root, relative)) !== 'missing' }
 }
 
+// A path written for a different operating system can never resolve here, so
+// the only hope of showing it is finding the same file inside the project.
+function fromAnotherSystem(target: string): boolean {
+  if (WINDOWS_PATH.test(target)) return !ON_WINDOWS
+  return ON_WINDOWS && target.startsWith('/')
+}
+
+async function elsewhere(base: string | null, target: string): Promise<PathLocation> {
+  if (base) {
+    const mirrored = await mirroredInRepo(base, target)
+    if (mirrored) return { kind: 'repo', path: mirrored, exists: true }
+  }
+  return HOME_PATH.test(slashed(target)) ? { kind: 'private' } : { kind: 'local' }
+}
+
 export async function locatePath(root: string | null, target: string): Promise<PathLocation> {
   const home = os.homedir()
-  const raw = target.startsWith('~') ? path.join(home, target.slice(1)) : target
   const base = root ? path.resolve(root) : null
+  if (fromAnotherSystem(target)) return elsewhere(base, target)
+  const raw = target.startsWith('~') ? path.join(home, target.slice(1)) : slashed(target)
   if (!path.isAbsolute(raw)) {
     if (!base) return { kind: 'local' }
     const inside = insideOf(base, path.resolve(base, raw.replace(/^\.\//, '').replace(/\/+$/, '')))
@@ -60,7 +80,7 @@ export async function locatePath(root: string | null, target: string): Promise<P
     const mirrored = await mirroredInRepo(base, absolute)
     if (mirrored) return { kind: 'repo', path: mirrored, exists: true }
   }
-  if (!HOME_PATH.test(target)) return { kind: 'local' }
+  if (!HOME_PATH.test(slashed(target))) return { kind: 'local' }
   if (insideOf(path.resolve(home), absolute) !== null) return { kind: 'local' }
   return (await onThisMachine(absolute)) ? { kind: 'local' } : { kind: 'private' }
 }

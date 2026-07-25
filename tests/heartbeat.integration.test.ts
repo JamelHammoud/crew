@@ -3,6 +3,7 @@ import { Runner } from '../src/runner'
 import type { SessionEvent } from '../src/shared/events'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 describe('connection health', () => {
   let host: TestHost | null = null
@@ -52,7 +53,7 @@ describe('connection health', () => {
   it('runner heals itself when the host goes silent', async () => {
     host = await startHost(undefined, { heartbeatMs: 60000, autoPong: false })
     const statuses: string[] = []
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,

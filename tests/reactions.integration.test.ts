@@ -6,6 +6,7 @@ import { agentId } from '../src/shared/llm'
 import { agentStepReactionTarget, messageReactionTarget } from '../src/shared/reactions'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type AgentStart = Extract<SessionEvent, { kind: 'agent.start' }>
@@ -63,7 +64,7 @@ describe('message reactions', () => {
   it('delivers feedback on an agent reply only to that agent on its next start', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,

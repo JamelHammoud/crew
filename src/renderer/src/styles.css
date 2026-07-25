@@ -539,6 +539,10 @@ body {
   @apply text-fg underline underline-offset-2 decoration-fg-muted hover:decoration-fg transition-colors;
 }
 
+.private-file {
+  @apply font-mono text-[13px] bg-ink-800 text-fg-faint rounded-md px-1.5 py-0.5 cursor-default;
+}
+
 .md a.file-link {
   @apply no-underline;
 }

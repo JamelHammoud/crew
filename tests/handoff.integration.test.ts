@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { agentId } from '../src/shared/llm'
 import type { ServerMessage } from '../src/shared/protocol'
-import { Runner } from '../src/runner'
 import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
 import { createCrewServer } from '../src/server/index'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, tmpDir } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 describe('handoff', () => {
   it('a new host resumes the session with history and pool intact', async () => {
@@ -14,7 +14,7 @@ describe('handoff', () => {
     const hostA = await startHost(repoPath)
 
     const ui = await TestUi.connect(hostA.url, 'sam', hostA.code)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: hostA.code,
       repoPath,
@@ -54,7 +54,7 @@ describe('handoff', () => {
     expect(fake).toBeTruthy()
     expect(fake?.status).toBe('offline')
 
-    const runnerB = new Runner({
+    const runnerB = testRunner({
       name: 'jamel',
       code,
       repoPath,

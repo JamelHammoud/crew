@@ -5,6 +5,7 @@ import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Added = Extract<SessionEvent, { kind: 'todo.added' }>
 type Edited = Extract<SessionEvent, { kind: 'todo.edited' }>
@@ -30,7 +31,7 @@ describe('todos', () => {
   })
 
   async function connectRunner(name: string) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

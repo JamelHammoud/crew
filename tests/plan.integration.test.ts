@@ -6,6 +6,7 @@ import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type ThreadStarted = Extract<SessionEvent, { kind: 'thread.started' }>
 type ThreadPlan = Extract<SessionEvent, { kind: 'thread.plan' }>
@@ -29,7 +30,7 @@ describe('plan mode', () => {
   })
 
   async function connectRunner(name: string, provider = 'fake', label = 'Fake') {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

@@ -3,6 +3,7 @@ import { agentId } from '../src/shared/llm'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 describe('pooling', () => {
   let host: TestHost
@@ -22,7 +23,7 @@ describe('pooling', () => {
   })
 
   async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

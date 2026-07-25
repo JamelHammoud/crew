@@ -83,6 +83,8 @@ export type ClientMessage =
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
   | { type: 'agent.settings'; agentId: string; settings: AgentSettings }
+  | { type: 'agent.rename'; agentId: string; label: string }
+  | { type: 'agent.remove'; agentId: string }
   | { type: 'agent.register'; llm: RegisteredLlm }
   | { type: 'agent.deregister'; instanceId: string }
   | { type: 'agent.step'; promptId: string; step: RunStep }
@@ -98,6 +100,7 @@ export type ServerMessage =
   | { type: 'queue.state'; threadId: string; items: QueuedItem[] }
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
+  | { type: 'agent.renamed'; agentId: string; label: string }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }

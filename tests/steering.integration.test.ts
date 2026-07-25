@@ -4,6 +4,7 @@ import { agentId } from '../src/shared/llm'
 import { Runner } from '../src/runner'
 import { makeFakeProvider, makeSteerableProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Start = Extract<SessionEvent, { kind: 'agent.start' }>
@@ -28,7 +29,7 @@ describe('steering a run in flight', () => {
   })
 
   async function connectRunner(steerable: boolean, env: NodeJS.ProcessEnv = {}) {
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,

@@ -6,6 +6,7 @@ import type { Provider } from '../src/runner/providers/types'
 import { claudeWindowsFrom, codexWindowsFrom } from '../src/runner/providers/usage'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 const sampleUsage = (): AgentUsage => ({
   provider: 'fake',
@@ -41,7 +42,7 @@ describe('usage limits', () => {
   })
 
   async function connectRunner(name: string, provider: Provider) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,

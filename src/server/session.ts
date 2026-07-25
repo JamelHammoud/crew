@@ -155,6 +155,7 @@ const SNAPSHOT_EVENT_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
 const MAX_DOC_PROMPT_CHARS = 8000
 const TITLE_LIMIT = 80
+const LABEL_LIMIT = 40
 const CANCEL_REPORT_TIMEOUT_MS = 15000
 const RESUME_GRACE_MS = 60000
 const STEP_FLUSH_MS = 80
@@ -176,6 +177,7 @@ export class CrewSession {
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
+  private removedAgents = new Set<string>()
   private prompts = new Map<string, PromptRef>()
   private steers = new Map<string, PendingSteer[]>()
   private emittedMessages = new Set<string>()
@@ -198,7 +200,9 @@ export class CrewSession {
     for (const m of persisted?.members ?? []) {
       this.members.set(m.name.toLowerCase(), { id: m.id, name: m.name, connections: new Set() })
     }
+    for (const id of persisted?.removedAgents ?? []) this.removedAgents.add(id)
     for (const a of persisted?.agents ?? []) {
+      if (this.removedAgents.has(a.id)) continue
       this.agents.set(a.id, {
         ...a,
         settings: a.settings ?? {},
@@ -475,11 +479,17 @@ export class CrewSession {
       case 'agent.settings':
         if (meta.role === 'ui') this.handleSettings(msg.agentId, msg.settings)
         break
+      case 'agent.rename':
+        if (meta.role === 'ui') this.handleRename(member, msg.agentId, msg.label)
+        break
+      case 'agent.remove':
+        if (meta.role === 'ui') this.handleRemove(msg.agentId)
+        break
       case 'agent.register':
         if (meta.role === 'runner') this.registerAgent(ws, member, msg.llm)
         break
       case 'agent.deregister':
-        if (meta.role === 'runner') this.deregisterAgent(ws, member, msg.instanceId)
+        if (meta.role === 'runner') this.deregisterAgent(member, msg.instanceId)
         break
       case 'agent.step':
         if (this.promptGone(ws, meta, msg.promptId)) break
@@ -1794,8 +1804,33 @@ export class CrewSession {
     this.persistMeta()
   }
 
+  // Only the owner renames their own agent. Everyone sees the new name, and
+  // the owner's machine is told so the local definition keeps up.
+  private handleRename(member: Member, id: string, label: string): void {
+    const agent = this.agents.get(id)
+    if (!agent || agent.ownerId !== member.id) return
+    const wanted = label.replace(/\s+/g, ' ').trim().slice(0, LABEL_LIMIT)
+    if (!wanted || wanted === agent.label) return
+    agent.label = this.uniqueLabel(wanted, id)
+    const renamed: ServerMessage = { type: 'agent.renamed', agentId: id, label: agent.label }
+    this.broadcast(renamed)
+    if (agent.runner) this.send(agent.runner, renamed)
+    this.persistMeta()
+  }
+
+  // Anyone can remove any agent: the pool is shared, and a stale agent in it is
+  // everyone's problem.
+  private handleRemove(id: string): void {
+    const agent = this.agents.get(id)
+    if (agent) this.dropAgent(agent)
+  }
+
   private registerAgent(ws: WebSocket, member: Member, llm: RegisteredLlm): void {
     const id = agentId(member.name, llm.instanceId)
+    if (this.removedAgents.has(id)) {
+      this.send(ws, { type: 'agent.removed', agentId: id })
+      return
+    }
     const meta = this.meta.get(ws)
     const existing = this.agents.get(id)
     if (existing) {
@@ -1834,25 +1869,29 @@ export class CrewSession {
     this.persistMeta()
   }
 
-  private deregisterAgent(ws: WebSocket, member: Member, instanceId: string): void {
-    const id = agentId(member.name, instanceId)
-    const agent = this.agents.get(id)
-    if (!agent) return
+  private deregisterAgent(member: Member, instanceId: string): void {
+    const agent = this.agents.get(agentId(member.name, instanceId))
+    if (agent) this.dropAgent(agent)
+  }
+
+  private dropAgent(agent: AgentState): void {
     if (agent.dropTimer) {
       clearTimeout(agent.dropTimer)
       agent.dropTimer = null
     }
     this.clearQueues(agent, `${agent.label} was removed before getting to this.`)
     this.dropRunning(agent, `${agent.label} was removed.`)
-    this.agents.delete(id)
-    const meta = this.meta.get(ws)
-    if (meta) meta.agentIds = meta.agentIds.filter(a => a !== id)
-    this.broadcast({ type: 'agent.removed', agentId: id })
+    this.agents.delete(agent.id)
+    this.removedAgents.add(agent.id)
+    for (const meta of this.meta.values()) meta.agentIds = meta.agentIds.filter(a => a !== agent.id)
+    const removed: ServerMessage = { type: 'agent.removed', agentId: agent.id }
+    this.broadcast(removed)
+    if (agent.runner) this.send(agent.runner, removed)
     this.persistMeta()
   }
 
-  private uniqueLabel(base: string): string {
-    const taken = new Set([...this.agents.values()].map(a => a.label.toLowerCase()))
+  private uniqueLabel(base: string, exceptId?: string): string {
+    const taken = new Set([...this.agents.values()].filter(a => a.id !== exceptId).map(a => a.label.toLowerCase()))
     if (!taken.has(base.toLowerCase())) return base
     let i = 2
     while (taken.has(`${base} ${i}`.toLowerCase())) i++
@@ -2001,7 +2040,8 @@ export class CrewSession {
       code: this.code,
       createdAt: this.createdAt,
       members: [...this.members.values()].map(m => ({ id: m.id, name: m.name })),
-      agents: [...this.agents.values()].map(({ runner, running, runs, dropTimer, ...agent }) => agent)
+      agents: [...this.agents.values()].map(({ runner, running, runs, dropTimer, ...agent }) => agent),
+      removedAgents: [...this.removedAgents]
     })
   }
 }

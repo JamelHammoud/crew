@@ -7,6 +7,7 @@ import { startHost, TestUi, tmpDir, type TestHost } from './helpers/session'
 import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
 import { createCrewServer } from '../src/server/index'
+import { testRunner } from './helpers/runner'
 
 describe('reconnect', () => {
   let host: TestHost
@@ -26,7 +27,7 @@ describe('reconnect', () => {
   })
 
   async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}, reconnectDelayMs = 100) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,
@@ -104,7 +105,7 @@ describe('reconnect', () => {
   it('fails the run when the runner stays gone past the grace window', async () => {
     const short = await startHost(undefined, { resumeGraceMs: 300 })
     const ui = await TestUi.connect(short.url, 'sam', short.code)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: short.code,
       repoPath: short.repoPath,

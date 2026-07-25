@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { useBrowser } from '../state/browser'
-import { linkifyFiles, parseFileRef, statPaths } from './fileLinks'
+import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
 
 export default function Markdown({ text }: { text: string }) {
   const [resolved, setResolved] = useState(0)
@@ -16,7 +16,7 @@ export default function Markdown({ text }: { text: string }) {
   useEffect(() => {
     if (unknown.length === 0) return
     let alive = true
-    void statPaths(unknown).then(found => alive && found && setResolved(count => count + 1))
+    void locatePaths(unknown).then(moved => alive && moved && setResolved(count => count + 1))
     return () => {
       alive = false
     }
@@ -41,7 +41,7 @@ export default function Markdown({ text }: { text: string }) {
       return
     }
     const ref = parseFileRef(decodeURIComponent(href))
-    if (ref) useBrowser.getState().openFile(ref.path, ref.line)
+    if (ref) useBrowser.getState().openFile(targetFor(ref.path), ref.line)
   }
 
   return <div className="md" onClick={onClick} dangerouslySetInnerHTML={{ __html: html }} />

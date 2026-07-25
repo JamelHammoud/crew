@@ -98,6 +98,8 @@ interface CrewState {
   editQueued: (promptId: string, text: string) => void
   removeQueued: (promptId: string) => void
   updateAgentSetting: (agentId: string, key: string, value: string) => void
+  renameAgent: (agentId: string, label: string) => void
+  removeAgent: (agentId: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
   openDoc: (page: string) => void
@@ -407,6 +409,11 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'agent.removed':
         set(state => ({ agents: state.agents.filter(a => a.id !== msg.agentId) }))
         break
+      case 'agent.renamed':
+        set(state => ({
+          agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, label: msg.label } : a))
+        }))
+        break
       case 'agent.step':
         set(state => ({ steps: { ...state.steps, [msg.promptId]: upsertStep(state.steps[msg.promptId], msg.step) } }))
         break
@@ -606,6 +613,12 @@ export const useCrew = create<CrewState>((set, get) => {
         )
       }))
       socket.send({ type: 'agent.settings', agentId, settings: { [key]: value } })
+    },
+    renameAgent: (agentId, label) => {
+      socket.send({ type: 'agent.rename', agentId, label })
+    },
+    removeAgent: agentId => {
+      socket.send({ type: 'agent.remove', agentId })
     },
     openThread: threadId => set({ openThreadId: threadId }),
     closeThread: () => set({ openThreadId: null }),

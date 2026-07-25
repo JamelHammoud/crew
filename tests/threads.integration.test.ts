@@ -5,6 +5,7 @@ import { agentId } from '../src/shared/llm'
 import { Runner } from '../src/runner'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+import { testRunner } from './helpers/runner'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Ended = Extract<SessionEvent, { kind: 'agent.end' }>
@@ -27,7 +28,7 @@ describe('threads', () => {
   })
 
   async function connectRunner(name: string, env: NodeJS.ProcessEnv = {}) {
-    const runner = new Runner({
+    const runner = testRunner({
       name,
       code: host.code,
       repoPath: host.repoPath,
@@ -247,7 +248,7 @@ describe('threads', () => {
   })
 
   async function connectPair(env: NodeJS.ProcessEnv = {}) {
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,
@@ -338,7 +339,7 @@ describe('threads', () => {
   it('stops one thread without touching another', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
-    const runner = new Runner({
+    const runner = testRunner({
       name: 'jamel',
       code: host.code,
       repoPath: host.repoPath,

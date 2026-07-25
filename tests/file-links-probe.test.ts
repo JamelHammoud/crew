@@ -4,9 +4,13 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import { fileTokens, parseFileRef, TextWithFileLinks } from '../src/renderer/src/components/fileLinks'
+import FilesChanged from '../src/renderer/src/components/FilesChanged'
 import Markdown from '../src/renderer/src/components/Markdown'
+import StepRow from '../src/renderer/src/components/StepRow'
+import type { ThreadItem } from '../src/renderer/src/components/thread'
 import { useBrowser } from '../src/renderer/src/state/browser'
-import type { RepoFile } from '../src/shared/files'
+import type { PathLocation, RepoFile } from '../src/shared/files'
+import type { AgentStep } from '../src/shared/llm'
 
 if (!Element.prototype.getAnimations) {
   Element.prototype.getAnimations = () => []
@@ -31,12 +35,37 @@ const repo: Record<string, RepoFile> = {
   'big.log': { kind: 'file', path: 'big.log', text: 'line one\nline two', truncated: true }
 }
 
+const ROOT = '/Users/me/code/crew'
+
+function locate(raw: string): PathLocation {
+  const target = raw.split('\\').join('/')
+  if (/^[A-Za-z]:\//.test(target)) {
+    const parts = target.split('/').filter(Boolean)
+    for (let start = 0; start <= parts.length - 2; start++) {
+      const relative = parts.slice(start).join('/')
+      if (relative in repo) return { kind: 'repo', path: relative, exists: true }
+    }
+    return /^[A-Za-z]:\/Users\//.test(target) ? { kind: 'private' } : { kind: 'local' }
+  }
+  if (!target.startsWith('/')) return { kind: 'repo', path: target, exists: target in repo }
+  if (target.startsWith(`${ROOT}/`)) {
+    const relative = target.slice(ROOT.length + 1)
+    return { kind: 'repo', path: relative, exists: relative in repo }
+  }
+  const parts = target.split('/').filter(Boolean)
+  for (let start = 0; start <= parts.length - 2; start++) {
+    const relative = parts.slice(start).join('/')
+    if (relative in repo) return { kind: 'repo', path: relative, exists: true }
+  }
+  return /^\/(?:Users|home)\//.test(target) ? { kind: 'private' } : { kind: 'local' }
+}
+
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   window.crew = {
     readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
     writeFile: async () => null,
-    statFile: async (path: string) => (repo[path] ? (repo[path].kind === 'dir' ? 'dir' : 'file') : 'missing'),
+    locatePath: async (path: string) => locate(path),
     revealFile: async () => undefined,
     openExternal: async () => undefined
   } as unknown as CrewBridge
@@ -93,6 +122,31 @@ describe('markdown file links', () => {
     expect(tabs.some(t => t.kind === 'web' && t.url === 'https://example.com')).toBe(true)
   })
 
+  it('shows full paths from this project relative to the project', async () => {
+    render(createElement(Markdown, { text: `Edited \`${ROOT}/src/app.ts:2\` today` }))
+    await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
+    const link = document.querySelector('a.file-link') as HTMLAnchorElement
+    expect(link.textContent).toBe('src/app.ts:2')
+    expect(link.dataset.path).toBe('src/app.ts')
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].line).toBe(2)
+  })
+
+  it('maps a path from another computer onto the same file here', async () => {
+    render(createElement(Markdown, { text: 'Look at /Users/ali/projects/crew/src/app.ts for the fix' }))
+    await waitFor(() => expect(document.querySelectorAll('a.file-link').length).toBe(1))
+    const link = document.querySelector('a.file-link') as HTMLAnchorElement
+    expect(link.textContent).toBe('src/app.ts')
+    expect(link.dataset.path).toBe('src/app.ts')
+    expect(document.body.textContent).not.toContain('/Users/ali')
+  })
+
+  it('hides files that live on someone else’s computer', async () => {
+    render(createElement(Markdown, { text: 'Saved it to `/Users/ali/Desktop/notes.md` just now' }))
+    await screen.findByText('Private file')
+    expect(document.body.textContent).not.toContain('/Users/ali')
+  })
+
   it('does not link inside code blocks', () => {
     render(createElement(Markdown, { text: '```\nsrc/app.ts\n```' }))
     expect(document.querySelectorAll('a.file-link').length).toBe(0)
@@ -108,6 +162,59 @@ describe('plain text file links', () => {
     const tab = useBrowser.getState().tabs[0]
     expect(tab.path).toBe('src/app.ts')
     expect(tab.line).toBe(2)
+  })
+
+  it('shortens project paths and hides other computers', async () => {
+    render(createElement(TextWithFileLinks, { text: `wrote ${ROOT}/src/app.ts and /Users/ali/Desktop/notes.md` }))
+    const chip = await screen.findByText('src/app.ts')
+    fireEvent.click(chip)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
+    await screen.findByText('Private file')
+    expect(document.body.textContent).not.toContain('/Users/ali')
+  })
+})
+
+describe('changed file lists', () => {
+  const step = (path: string): AgentStep => ({
+    id: 't1',
+    kind: 'tool',
+    status: 'done',
+    ts: 0,
+    name: 'Edit',
+    files: [{ path, added: 3, removed: 1 }]
+  })
+
+  it('shortens a windows path from another computer and opens the file here', async () => {
+    render(createElement(FilesChanged, { steps: [step('C:\\Users\\Ali Hammoud\\crew\\src\\app.ts')] }))
+    fireEvent.click(screen.getByRole('button'))
+    const link = await screen.findByText('src/app.ts')
+    expect(document.body.textContent).not.toContain('C:\\Users')
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
+  })
+
+  it('hides a changed file that lives on someone else’s computer', async () => {
+    render(createElement(FilesChanged, { steps: [step('C:\\Users\\Ali Hammoud\\Desktop\\notes.md')] }))
+    fireEvent.click(screen.getByRole('button'))
+    await screen.findByText('Private file')
+    expect(document.body.textContent).not.toContain('Ali Hammoud')
+  })
+
+  it('shortens the path shown on a step row', async () => {
+    const item: ThreadItem = {
+      key: 'p1:t1',
+      ts: 0,
+      kind: 'tool',
+      author: 'Claude',
+      self: false,
+      text: '',
+      streaming: false,
+      name: 'Edit',
+      files: [{ path: `${ROOT}/src/app.ts`, added: 3, removed: 1 }]
+    }
+    render(createElement(StepRow, { item }))
+    await screen.findByText('src/app.ts')
+    expect(document.body.textContent).not.toContain(ROOT)
   })
 })
 

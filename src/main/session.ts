@@ -15,9 +15,10 @@ import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import { AgentStore } from './agents-store'
-import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from './files'
+import { readRepoFile, resolveRepoPath, writeRepoFile } from './files'
+import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
-import type { RepoFile, RepoPathKind } from '../shared/files'
+import type { PathLocation, RepoFile } from '../shared/files'
 
 export interface HostInfo {
   link: string
@@ -130,9 +131,8 @@ export class AppSession {
     return writeRepoFile(this.folder, target, text)
   }
 
-  async statFile(target: string): Promise<RepoPathKind> {
-    if (!this.folder) return 'missing'
-    return statRepoFile(this.folder, target)
+  async locatePath(target: string): Promise<PathLocation> {
+    return locatePath(this.folder, target)
   }
 
   resolveFile(target: string): string | null {
@@ -195,9 +195,18 @@ export class AppSession {
   }
 
   removeAgent(instanceId: string): void {
+    this.forgetAgent(instanceId)
+    this.runner?.removeAgent(instanceId)
+  }
+
+  private forgetAgent(instanceId: string): void {
     const store = this.agentStore()
     if (store) store.save(store.load().filter(d => d.instanceId !== instanceId))
-    this.runner?.removeAgent(instanceId)
+  }
+
+  private renameAgent(instanceId: string, name: string): void {
+    const store = this.agentStore()
+    if (store) store.save(store.load().map(d => (d.instanceId === instanceId ? { ...d, name } : d)))
   }
 
   private agentStore(): AgentStore | null {
@@ -219,13 +228,10 @@ export class AppSession {
     store.save(defs)
   }
 
+  // Agents are only ever the ones someone made here. Nothing is enrolled for
+  // you because a CLI happens to be installed.
   private agentDefs(providers: Provider[]): AgentDef[] {
-    const store = this.agentStore()
-    let defs = store ? store.load() : []
-    if (defs.length === 0) {
-      defs = providers.map(p => ({ instanceId: p.name, provider: p.name, name: p.label, settings: {} }))
-      store?.save(defs)
-    }
+    const defs = this.agentStore()?.load() ?? []
     return defs.filter(def => providers.some(p => p.name === def.provider))
   }
 
@@ -249,14 +255,16 @@ export class AppSession {
     this.git = git
     const detected = await detectProviders()
     // The runner knows every builtin provider so an agent created right after a
-    // mid-session CLI install can run; defaults are only seeded for detected CLIs.
+    // mid-session CLI install can run.
     this.runner = new Runner({
       name,
       code: session.code,
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected),
-      onAdopt: def => this.saveAdopted(def)
+      onAdopt: def => this.saveAdopted(def),
+      onForget: instanceId => this.forgetAgent(instanceId),
+      onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
     const url = `ws://127.0.0.1:${server.port()}/ws`
     this.runner.connect(url)
@@ -281,7 +289,9 @@ export class AppSession {
       providers: builtinProviders,
       agents: this.agentDefs(detected),
       autoPullMs: AUTO_PULL_MS,
-      onAdopt: def => this.saveAdopted(def)
+      onAdopt: def => this.saveAdopted(def),
+      onForget: instanceId => this.forgetAgent(instanceId),
+      onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
     const url = wsUrl(target)
     this.runner.connect(url)
