@@ -17,7 +17,7 @@ export default function HuddleDock({
 }: {
   spot: { x: number; y: number }
   dragging: boolean
-  onGrab: (event: React.PointerEvent) => void
+  onGrab: (event: PointerEvent) => void
 }) {
   const room = useHuddle(s => s.room)
   const peerId = useHuddle(s => s.peerId)
