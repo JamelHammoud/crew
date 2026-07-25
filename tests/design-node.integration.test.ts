@@ -186,7 +186,7 @@ describe('design nodes over HTTP', () => {
     }
     const node = summary.shapes.find(shape => shape.kind === 'node')
     expect(node?.name).toBe('Panel')
-    expect(node?.fills?.[0].type).toBe('glass')
+    expect(node?.fills?.[0].type).toBe('solid')
 
     ui.close()
     await host.close()
