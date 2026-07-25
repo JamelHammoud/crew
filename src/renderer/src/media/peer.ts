@@ -68,7 +68,7 @@ export class PeerLink {
     this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS, bundlePolicy: 'max-bundle' })
 
     this.remote = { mic: new MediaStream(), camera: new MediaStream(), screen: new MediaStream() }
-    if (true) {
+    if (this.caller) {
       this.bind([
         this.pc.addTransceiver('audio', { direction: 'sendrecv' }),
         this.pc.addTransceiver('video', { direction: 'sendrecv' }),
@@ -77,7 +77,7 @@ export class PeerLink {
     }
 
     this.pc.onnegotiationneeded = () => {
-      void this.offer()
+      if (this.caller) void this.offer()
     }
     this.pc.onicecandidate = ({ candidate }) => {
       if (candidate) this.send({ kind: 'candidate', candidate: candidate.toJSON() })
