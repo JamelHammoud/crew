@@ -93,17 +93,17 @@ function Group({
   const tone = active ? 'bg-fg text-ink-900' : 'text-fg-secondary'
 
   return (
-    <span className={`relative flex items-center h-8 rounded-full ${tone}`}>
+    <span className={`relative flex items-center h-9 rounded-full ${tone}`}>
       <Tooltip label={shown.shortcut ? `${shown.label}  ${shown.shortcut}` : shown.label} disabled={menuOpen}>
         <button
           onClick={() => activateTool(editor, shown.id)}
           aria-label={shown.label}
           aria-pressed={active}
-          className={`h-8 rounded-full flex items-center justify-center transition-all active:scale-95 ${
-            hasMenu ? 'w-8 pl-1' : 'w-9'
+          className={`h-9 rounded-full flex items-center justify-center transition-all active:scale-95 ${
+            hasMenu ? 'w-9 pl-1.5' : 'w-10'
           } ${active ? '' : 'hover:text-fg hover:bg-fg/[0.06]'}`}
         >
-          <shown.Icon className="w-4 h-4" />
+          <shown.Icon className="w-[18px] h-[18px]" />
         </button>
       </Tooltip>
       {hasMenu && (
@@ -111,7 +111,7 @@ function Group({
           onClick={() => onMenu(!menuOpen)}
           aria-label={`${group.label} options`}
           aria-expanded={menuOpen}
-          className={`h-8 w-4 pr-1 rounded-full grid place-items-center transition-colors ${
+          className={`h-9 w-4 pr-1.5 rounded-full grid place-items-center transition-colors ${
             active ? 'text-ink-900/70 hover:text-ink-900' : 'text-fg-muted hover:text-fg'
           }`}
         >
