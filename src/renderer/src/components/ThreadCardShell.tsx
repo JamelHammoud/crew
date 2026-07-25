@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import type { ThreadMeta } from '../state/store'
+import { relabelMentions } from '../../../shared/llm'
+import { useCrew, type ThreadMeta } from '../state/store'
 import Avatar from './Avatar'
 import { MemberName, MentionText } from './Mention'
 import { usePresence } from './presence'
@@ -20,11 +21,13 @@ export default function ThreadCardShell({
   children: ReactNode
 }) {
   const presence = usePresence(thread.createdBy)
+  const agents = useCrew(s => s.agents)
 
+  // The title is brought up to date before the agent's name is put in front of
+  // it, so a renamed agent is not named twice.
+  const written = relabelMentions(thread.title, thread.titleRefs, agents)
   const prefix = `@${thread.agentLabel}`
-  const title = thread.title.toLowerCase().startsWith(prefix.toLowerCase())
-    ? thread.title
-    : `${prefix} ${thread.title}`
+  const title = written.toLowerCase().startsWith(prefix.toLowerCase()) ? written : `${prefix} ${written}`
 
   return (
     <div className="flex gap-4 animate-rise" onContextMenu={onContextMenu}>
