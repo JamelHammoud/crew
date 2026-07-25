@@ -402,6 +402,9 @@ export class CrewSession {
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
+      case 'chat.edit':
+        if (meta.role === 'ui') this.handleEditMessage(member, msg.messageId, msg.text)
+        break
       case 'chat.react':
         if (meta.role === 'ui') this.handleReaction(member, msg.targetId, msg.emoji)
         break
@@ -723,6 +726,18 @@ export class CrewSession {
     this.store.appendEvent(tombstone)
     this.broadcast({ type: 'event', event: tombstone })
     this.onSyncNeeded?.()
+  }
+
+  private handleEditMessage(member: Member, messageId: string, text: string): void {
+    const event = this.events.find(e => e.kind === 'message' && e.id === messageId)
+    if (!event || event.kind !== 'message') return
+    if (event.authorId !== member.id || event.threadId) return
+    const trimmed = text.trim()
+    if (!trimmed || trimmed === event.text) return
+    const docMentions = this.docMentionRefs(trimmed)
+    event.text = trimmed
+    event.docMentions = docMentions
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'message.edited', messageId, text: trimmed, docMentions })
   }
 
   private handleReaction(member: Member, targetId: string, emoji: string): void {

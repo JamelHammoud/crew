@@ -1,5 +1,5 @@
-import { TrashIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
+import { PencilIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -14,12 +14,31 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
-export default function ChatMessage({ item }: { item: ThreadItem }) {
+export default function ChatMessage({ item, editable = false }: { item: ThreadItem; editable?: boolean }) {
   const presence = usePresence(item.author)
   const agentSeed = useCrew(s => (item.self ? undefined : s.agents.find(a => a.label === item.author)?.id))
   const deleteMessage = useCrew(s => s.deleteMessage)
+  const editMessage = useCrew(s => s.editMessage)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const [draft, setDraft] = useState<string | null>(null)
+  const input = useRef<HTMLTextAreaElement>(null)
   const deletable = item.kind === 'message' && item.self
+  const canEdit = deletable && editable
+  const editing = draft !== null
+
+  useLayoutEffect(() => {
+    const el = input.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [draft])
+
+  const commit = () => {
+    const text = (draft ?? '').trim()
+    if (text && text !== item.text) editMessage(item.key, text)
+    setDraft(null)
+  }
+
   if (item.kind === 'note') {
     return <p className="text-xs text-fg-muted text-center animate-rise">{item.text}</p>
   }
@@ -27,7 +46,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
     <div
       className="group/message relative flex gap-4 animate-rise"
       onContextMenu={
-        deletable
+        deletable && !editing
           ? event => {
               event.preventDefault()
               setMenuAt({ x: event.clientX, y: event.clientY })
@@ -47,8 +66,51 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
           <Tooltip label={formatFullTime(item.ts)}>
             <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
           </Tooltip>
+          {canEdit && !editing && (
+            <Tooltip label="Edit">
+              <button
+                onClick={() => setDraft(item.text)}
+                aria-label="Edit message"
+                className="ml-auto w-7 h-7 rounded-full flex items-center justify-center text-fg-faint opacity-0 group-hover/message:opacity-100 hover:text-fg hover:bg-fg/[0.06] transition-all active:scale-95"
+              >
+                <PencilIcon className="w-3.5 h-3.5" />
+              </button>
+            </Tooltip>
+          )}
         </div>
-        {item.kind === 'reply' ? (
+        {editing ? (
+          <div className="mt-1.5">
+            <textarea
+              ref={input}
+              value={draft ?? ''}
+              rows={1}
+              onChange={e => setDraft(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  commit()
+                }
+                if (e.key === 'Escape') setDraft(null)
+              }}
+              autoFocus
+              className="w-full resize-none bg-ink-800 border border-ink-700 rounded-card px-4 py-3 text-base text-fg leading-[22px] outline-none transition-colors focus:border-ink-500"
+            />
+            <div className="flex items-center gap-3 mt-2">
+              <button
+                onClick={commit}
+                className="h-8 px-4 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-transform active:scale-95"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setDraft(null)}
+                className="h-8 px-4 rounded-full text-sm text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors active:scale-95"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : item.kind === 'reply' ? (
           <div className={item.error ? 'text-base text-danger mt-1.5' : 'mt-1.5'}>
             {item.error ? item.text : <Markdown text={item.text || '…'} />}
           </div>
@@ -61,7 +123,7 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
         )}
         {item.attachments && <MessageImages attachments={item.attachments} />}
         {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
-        {item.reactionTargetId && (
+        {item.reactionTargetId && !editing && (
           <MessageReactions
             targetId={item.reactionTargetId}
             reactions={item.reactions}
@@ -72,6 +134,16 @@ export default function ChatMessage({ item }: { item: ThreadItem }) {
       </div>
       {deletable && (
         <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+          {canEdit && (
+            <MenuItem
+              icon={<PencilIcon />}
+              label="Edit message"
+              onClick={() => {
+                setMenuAt(null)
+                setDraft(item.text)
+              }}
+            />
+          )}
           <MenuItem
             icon={<TrashIcon />}
             label="Delete message"
