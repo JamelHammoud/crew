@@ -33,7 +33,8 @@ export default function HuddleTile({
   camera,
   speaking,
   connecting,
-  size = 'md'
+  size = 'md',
+  face
 }: {
   peer: HuddlePeer
   self: boolean
@@ -41,15 +42,17 @@ export default function HuddleTile({
   speaking: boolean
   connecting: boolean
   size?: Size
+  face?: number
 }) {
   const look = LOOK[size]
   const live = useLive(camera, peer.camera)
+  const colors = avatarColors(peer.name, useTheme() === 'light')
 
   return (
     <div
       className={`relative w-full aspect-video overflow-hidden bg-gradient-to-b from-ink-800 to-ink-850 transition-all duration-200 ${look.corner} ${
         speaking
-          ? 'ring-2 ring-fg shadow-[0_0_24px_-6px_rgb(255_255_255/0.5)]'
+          ? 'ring-2 ring-fg shadow-[0_0_20px_-8px_rgb(255_255_255/0.45)]'
           : 'ring-1 ring-fg/[0.07]'
       }`}
     >
@@ -57,9 +60,17 @@ export default function HuddleTile({
         {live && camera ? (
           <VideoStream stream={camera} mirror={self} />
         ) : (
-          <span className="block">
-            <Avatar name={peer.name} size={look.avatar} />
-          </span>
+          <>
+            <span
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(58% 78% at 50% 46%, color-mix(in oklab, ${colors.background} 55%, transparent), transparent 72%)`
+              }}
+            />
+            <span className="relative block">
+              <Avatar name={peer.name} size={look.avatar} px={face} />
+            </span>
+          </>
         )}
       </div>
 
