@@ -142,15 +142,6 @@ function layerName(shape: TLShape): string {
   return shape.type
 }
 
-function layerGlyph(shape: TLShape): string {
-  const props = shape.props as Record<string, unknown>
-  if (shape.type === 'geo' && typeof props.geo === 'string') return `geo-${props.geo}`
-  if (shape.type === 'design-node') return 'geo-rectangle'
-  if (shape.type === 'frame') return 'tool-frame'
-  if (shape.type === 'draw') return 'tool-pencil'
-  return `tool-${shape.type}`
-}
-
 function Layers({ editor }: { editor: Editor }) {
   const [query, setQuery] = useState('')
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
