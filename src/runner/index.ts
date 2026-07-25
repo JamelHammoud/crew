@@ -78,23 +78,31 @@ export class Runner {
   }
 
   removeAgent(instanceId: string): void {
-    const key = agentId(this.opts.name, instanceId)
-    this.agents.delete(key)
-    // Deregister even when the agent is unknown locally: the server may still
-    // remember it (an offline ghost), and this is the only way to clear one.
-    this.send({ type: 'agent.deregister', instanceId })
+    const agent = [...this.agents.values()].find(a => a.instanceId === instanceId)
+    if (!agent) return
+    this.agents.delete(agent.id)
+    // Deregister even when the agent is offline on the server: this is the only
+    // way to clear one it still remembers.
+    this.send({ type: 'agent.deregister', agentId: agent.id })
   }
 
   private define(def: AgentDef): string | null {
     const provider = this.providersByName.get(def.provider)
     if (!provider) return null
-    const key = agentId(this.opts.name, def.instanceId)
-    this.agents.set(key, { instanceId: def.instanceId, provider, name: def.name, settings: def.settings ?? {} })
-    return key
+    const id = def.id ?? agentId(this.opts.name, def.instanceId)
+    this.agents.set(id, {
+      id,
+      instanceId: def.instanceId,
+      provider,
+      name: def.name,
+      settings: def.settings ?? {}
+    })
+    return id
   }
 
   private registered(agent: RunnerAgent): RegisteredLlm {
     return {
+      id: agent.id,
       instanceId: agent.instanceId,
       provider: agent.provider.name,
       label: agent.name,
