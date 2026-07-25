@@ -66,12 +66,18 @@ function layerName(shape: TLShape): string {
 
 function Layers({ editor }: { editor: Editor }) {
   const [query, setQuery] = useState('')
+  const [searching, setSearching] = useState(false)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const [renaming, setRenaming] = useState<string | null>(null)
   const shapes = useValue('design shapes', () => editor.getCurrentPageShapesSorted(), [editor])
   const selected = useValue('design selection', () => editor.getSelectedShapeIds(), [editor])
   const selectedSet = useMemo(() => new Set<string>(selected), [selected])
   const listRef = useRef<HTMLDivElement>(null)
+
+  const closeSearch = () => {
+    setSearching(false)
+    setQuery('')
+  }
 
   const rows = useMemo(() => {
     const all = buildRows(shapes, collapsed)
