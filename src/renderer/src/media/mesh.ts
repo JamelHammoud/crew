@@ -12,6 +12,7 @@ const EMPTY: SlotTracks = { mic: null, camera: null, screen: null }
 // running a media server: nothing to host, nothing in the middle.
 export class HuddleMesh {
   private links = new Map<string, PeerLink>()
+  private early = new Map<string, HuddleSignal[]>()
   private tracks: SlotTracks = { ...EMPTY }
   private selfPeerId = ''
 
@@ -25,6 +26,7 @@ export class HuddleMesh {
       if (wanted.has(peerId)) continue
       link.close()
       this.links.delete(peerId)
+      this.early.delete(peerId)
       changed = true
     }
     for (const peerId of wanted) {
@@ -37,6 +39,8 @@ export class HuddleMesh {
       })
       this.links.set(peerId, link)
       void link.publish(this.tracks)
+      for (const signal of this.early.get(peerId) ?? []) void link.accept(signal)
+      this.early.delete(peerId)
       changed = true
     }
     if (changed) this.opts.onChange()
