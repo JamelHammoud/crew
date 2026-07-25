@@ -9,6 +9,7 @@ import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../..
 import type { ReactionEmoji } from '../../../shared/reactions'
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
+import { playSound, soundFor } from '../media/sounds'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
@@ -537,6 +538,7 @@ export const useCrew = create<CrewState>((set, get) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
       const mentions = mentionsIn(text, get().agents)
+      playSound('send')
       if (threadId || boardId) {
         socket.send({
           type: 'chat.send',
