@@ -86,8 +86,10 @@ export class FakePeerConnection {
     this.signalingState = 'stable'
   }
 
+  // The browser refuses a candidate until it has been told who it is talking
+  // to, and refusing it loses it. This is strict about that on purpose.
   async addIceCandidate(candidate: unknown): Promise<void> {
-    if (this.signalingState === 'stable' && !this.remoteDescription) throw new Error('no remote description')
+    if (!this.remoteDescription) throw new Error('no remote description')
     this.candidates.push(candidate)
   }
 
