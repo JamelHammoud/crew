@@ -492,7 +492,7 @@ export class CrewSession {
         if (meta.role === 'runner') this.registerAgent(ws, member, msg.llm)
         break
       case 'agent.deregister':
-        if (meta.role === 'runner') this.deregisterAgent(member, msg.instanceId)
+        if (meta.role === 'runner') this.deregisterAgent(msg.agentId)
         break
       case 'agent.step':
         if (this.promptGone(ws, meta, msg.promptId)) break
