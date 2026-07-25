@@ -351,21 +351,29 @@ body {
 }
 
 .design .tl-background {
-  background: var(--color-ink-950);
+  background: var(--design-canvas);
+}
+
+.design .tl-grid-dot {
+  fill: var(--design-dot);
+}
+
+.design .tl-frame-label {
+  color: var(--design-frame-label);
 }
 
 .design .tl-theme__dark,
 .design .tl-theme__light {
-  --tl-color-background: var(--color-ink-950);
+  --tl-color-background: var(--design-canvas);
   --tl-color-low: var(--color-ink-850);
   --tl-color-low-border: var(--color-ink-700);
   --tl-color-divider: var(--color-ink-700);
   --tl-color-panel: var(--color-ink-800);
   --tl-color-panel-contrast: var(--color-ink-700);
   --tl-color-panel-transparent: transparent;
-  --tl-color-selected: var(--color-fg);
+  --tl-color-selected: var(--design-selection);
   --tl-color-selected-contrast: var(--color-ink-900);
-  --tl-color-selection-stroke: var(--color-fg);
+  --tl-color-selection-stroke: var(--design-selection);
   --tl-color-focus: var(--color-fg);
   --tl-color-primary: var(--color-fg);
   --tl-color-text: var(--color-fg);
