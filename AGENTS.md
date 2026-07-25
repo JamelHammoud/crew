@@ -30,8 +30,8 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - White is the single action color. `positive` and `danger` appear only for status.
 - Type ramp: xs 11, sm 13, base 14, lg 16. System sans. The word "crew" is set in mono.
 - Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
-- Icons come from `@heroicons/react`. Never hand-roll SVG icons.
-- Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin.
+- Icons come from `@heroicons/react`. Never hand-roll SVG icons. The one exception is the design canvas, where Heroicons has no vocabulary for shapes: `src/renderer/src/design/glyphs.tsx` is the only place those are drawn, on the same 24 grid with the same 1.5 round stroke, so they sit beside Heroicons without looking foreign. It reaches for a Heroicon wherever one already fits, and nothing outside that file draws an icon by hand.
+- Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin. Chrome that floats over the design canvas adds `.glass-strong`, because the artwork behind it can be any color and a white frame turns plain glass into pale grey.
 - Reusable primitives in `src/renderer/src/components`: `Avatar`, `AvatarStack`, `AgentIcon`, `Pill`, `Spinner`, `InsetRing`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`.
 - A tooltip never shows while the popover it opens is open. Pass `disabled` to the `Tooltip` around any button that opens a `Popover`.
 - Agents always render `AgentIcon` (a deterministic generated pet seeded by the agent id), never an initial `Avatar`. Humans keep `Avatar`.
