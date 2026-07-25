@@ -81,6 +81,8 @@ export const CREW_SWATCHES: readonly DesignSwatch[] = [
 export const NEW_FILL = '#222222'
 export const NEW_STROKE = '#ffffff26'
 
+export const DESIGN_STYLE_DEFAULTS = { font: 'sans', dash: 'solid', spline: 'line' } as const
+
 export type DesignOp =
   | {
       op: 'create'
