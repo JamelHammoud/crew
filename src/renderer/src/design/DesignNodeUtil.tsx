@@ -4,13 +4,19 @@ import {
   resizeBox,
   ShapeUtil,
   T,
-  type TLBaseShape,
-  type TLResizeInfo
+  type TLResizeInfo,
+  type TLShape
 } from 'tldraw'
 import { nodeDefaults, type DesignNodeProps } from '../../../shared/designNode'
 import { nodeStyle, textStyle } from './nodeCss'
 
-export type DesignNodeShape = TLBaseShape<'design-node', DesignNodeProps>
+declare module '@tldraw/tlschema' {
+  interface TLGlobalShapePropsMap {
+    'design-node': DesignNodeProps
+  }
+}
+
+export type DesignNodeShape = TLShape<'design-node'>
 
 export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
   static override type = 'design-node' as const
@@ -59,14 +65,7 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
       <HTMLContainer style={{ width: props.w, height: props.h, pointerEvents: 'all' }}>
         <div style={{ width: '100%', height: '100%', position: 'relative', ...nodeStyle(props) }}>
           {props.text && (
-            <div
-              style={{
-                width: '100%',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-                ...textStyle(props.type)
-              }}
-            >
+            <div style={{ width: '100%', whiteSpace: 'pre-wrap', wordBreak: 'break-word', ...textStyle(props.type) }}>
               {props.text}
             </div>
           )}
@@ -75,9 +74,11 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
     )
   }
 
-  indicator(shape: DesignNodeShape) {
+  getIndicatorPath(shape: DesignNodeShape) {
+    const { w, h } = shape.props
     const [tl, tr, br, bl] = shape.props.radius
-    const radius = Math.max(tl, tr, br, bl)
-    return <rect width={shape.props.w} height={shape.props.h} rx={radius} ry={radius} />
+    const path = new Path2D()
+    path.roundRect(0, 0, w, h, [tl, tr, br, bl])
+    return path
   }
 }
