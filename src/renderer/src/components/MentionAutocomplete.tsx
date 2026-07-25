@@ -34,11 +34,23 @@ export function useMentionAutocomplete(
     setActive(0)
   }
 
+  useLayoutEffect(() => {
+    const target = caretTarget.current
+    const input = inputRef.current
+    if (target === null || !input) return
+    caretTarget.current = null
+    input.focus()
+    input.setSelectionRange(target, target)
+  }, [inputRef, value])
+
   const pick = (item: MentionItem) => {
     const caret = inputRef.current?.selectionStart ?? value.length
     const token = item.kind === 'agent' ? `@${item.agent.label}` : `#${item.doc.title}`
-    const before = value.slice(0, caret).replace(/[@#][^@#]*$/, `${token} `)
-    setValue(before + value.slice(caret))
+    const before = value.slice(0, caret).replace(/[@#][^@#]*$/, token)
+    const after = value.slice(caret)
+    const gap = after.startsWith(' ') ? '' : ' '
+    caretTarget.current = before.length + gap.length + 1
+    setValue(before + gap + after)
     setQuery(null)
     inputRef.current?.focus()
   }
