@@ -729,6 +729,42 @@
         "accountLabel": "devjamel@gmail.com",
         "plan": "max"
       }
+    },
+    {
+      "id": "jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35",
+      "label": "Kimi",
+      "provider": "kimi",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ],
   "removedAgents": [
