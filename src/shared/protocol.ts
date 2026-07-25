@@ -87,6 +87,10 @@ export type ClientMessage =
       selection: string[]
       pageId: string | null
     }
+  | { type: 'huddle.join'; peerId: string; muted: boolean; camera: boolean }
+  | { type: 'huddle.leave' }
+  | { type: 'huddle.update'; muted?: boolean; camera?: boolean; sharing?: boolean }
+  | { type: 'huddle.signal'; to: string; signal: HuddleSignal }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }

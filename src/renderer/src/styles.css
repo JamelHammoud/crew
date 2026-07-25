@@ -597,3 +597,32 @@ body {
 .md blockquote {
   @apply border-l border-ink-600 pl-3 text-fg-muted my-2;
 }
+
+.md .table-scroll {
+  @apply my-3 overflow-x-auto rounded-xl border border-ink-700;
+}
+
+.md table {
+  @apply w-full border-collapse text-sm;
+}
+
+.md thead {
+  @apply bg-ink-850;
+}
+
+.md th {
+  @apply text-left font-semibold text-fg px-3 py-2 align-top border-b border-ink-700;
+}
+
+.md td {
+  @apply text-fg-secondary px-3 py-2 align-top border-b border-ink-700;
+}
+
+.md th + th,
+.md td + td {
+  @apply border-l border-ink-700;
+}
+
+.md tbody tr:last-child td {
+  @apply border-b-0;
+}
