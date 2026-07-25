@@ -309,9 +309,45 @@ body {
   }
 }
 
+/* Every design surface reads from these, and each one is built from a crew token. */
+.design {
+  --design-canvas: var(--color-ink-950);
+  --design-dot: color-mix(in srgb, var(--color-fg) 6%, transparent);
+  --design-selection: var(--color-fg);
+  --design-frame-label: var(--color-fg-muted);
+  --design-connector: color-mix(in srgb, var(--color-fg) 30%, transparent);
+  --design-active: var(--color-positive);
+  --design-conflict: var(--color-danger);
+  --design-panel: var(--color-ink-900);
+  --design-hairline: color-mix(in srgb, var(--color-fg) 8%, transparent);
+}
+
+.light .design {
+  --design-canvas: var(--color-ink-800);
+}
+
+@keyframes generating {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.design-generating {
+  animation: generating 1.1s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .design-generating {
+    animation: none;
+  }
+}
+
 /* tldraw remapped onto crew tokens so the canvas chrome reads as the rest of the app. */
 .design .tl-container {
-  background: var(--color-ink-950);
+  background: var(--design-canvas);
 }
 
 .design .tl-background {
