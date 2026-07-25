@@ -49,7 +49,6 @@ export default function PlanCard({ thread, ts, onOpen }: { thread: ThreadMeta; t
             >
               Open
             </button>
-            <span className="text-base text-fg-muted truncate">Open it to ask for changes</span>
           </div>
         </div>
       </div>
