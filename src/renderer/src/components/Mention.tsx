@@ -46,8 +46,20 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
   )
 }
 
-export function AgentName({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
-  return <HoverCard content={<AgentCardContent agent={agent} />}>{children}</HoverCard>
+export function AgentName({
+  agent,
+  className,
+  children
+}: {
+  agent: PooledAgent
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <HoverCard content={<AgentCardContent agent={agent} />} className={className}>
+      {children}
+    </HoverCard>
+  )
 }
 
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
@@ -154,15 +166,33 @@ function MemberCardContent({ member, self }: { member: MemberInfo; self: boolean
 
 // An id names its author for good. The written name is only a fallback, for
 // events from before ids were carried on them.
-export function MemberName({ id, name, children }: { id?: string; name: string; children: ReactNode }) {
+export function MemberName({
+  id,
+  name,
+  className,
+  children
+}: {
+  id?: string
+  name: string
+  className?: string
+  children: ReactNode
+}) {
   const member = useCrew(s => s.members.find(m => (id ? m.id === id : m.name === name)))
   const agent = useCrew(s => s.agents.find(a => (id ? a.id === id : a.label === name)))
   const selfId = useCrew(s => s.selfId)
   if (member) {
-    return <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />}>{children}</HoverCard>
+    return (
+      <HoverCard content={<MemberCardContent member={member} self={member.id === selfId} />} className={className}>
+        {children}
+      </HoverCard>
+    )
   }
   if (agent) {
-    return <AgentName agent={agent}>{children}</AgentName>
+    return (
+      <AgentName agent={agent} className={className}>
+        {children}
+      </AgentName>
+    )
   }
   return <>{children}</>
 }
