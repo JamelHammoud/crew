@@ -9,23 +9,85 @@ const resources = path.join(root, 'resources')
 
 const CANVAS = 1024
 const TILE = { x: 100, y: 100, size: 824, radius: 185 }
-const RADIUS = 145
-const STEP = 190
-const GAP = 42
+const RIM = 4
+const RADIUS = 130
+const STEP = 186
+const GAP = 28
 
-function svg({ background, ink }) {
-  const centre = CANVAS / 2
-  const discs = [centre + STEP, centre, centre - STEP]
+const THEMES = {
+  dark: {
+    ink: '#ffffff',
+    tile: [
+      ['#26262b', 1],
+      ['#141417', 1],
+      ['#08080a', 1]
+    ],
+    rim: [
+      ['#ffffff', 0.62],
+      ['#ffffff', 0.06],
+      ['#ffffff', 0.3]
+    ],
+    sheen: 0.1
+  },
+  light: {
+    ink: '#0d0d0d',
+    tile: [
+      ['#ffffff', 1],
+      ['#f5f5f7', 1],
+      ['#e2e2e7', 1]
+    ],
+    rim: [
+      ['#ffffff', 0.95],
+      ['#000000', 0.05],
+      ['#000000', 0.16]
+    ],
+    sheen: 0.35
+  }
+}
+
+const stops = ([top, middle, bottom]) =>
+  [
+    [0, top],
+    [0.5, middle],
+    [1, bottom]
+  ]
     .map(
-      (x, index) =>
-        `    <circle cx="${x}" cy="${centre}" r="${RADIUS}"${index === 0 ? '' : ` stroke="${background}" stroke-width="${GAP}"`} />`
+      ([offset, [colour, opacity]]) =>
+        `      <stop offset="${offset}" stop-color="${colour}" stop-opacity="${opacity}" />`
     )
     .join('\n')
+
+function svg({ ink, tile, rim, sheen }) {
+  const centre = CANVAS / 2
+  const stack = [centre + STEP, centre, centre - STEP]
+    .flatMap((x, index) => [
+      ...(index === 0
+        ? []
+        : [`      <circle cx="${x}" cy="${centre}" r="${RADIUS + GAP}" fill="#000000" />`]),
+      `      <circle cx="${x}" cy="${centre}" r="${RADIUS}" fill="#ffffff" />`
+    ])
+    .join('\n')
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}" viewBox="0 0 ${CANVAS} ${CANVAS}">
-  <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="${background}" />
-  <g fill="${ink}">
-${discs}
-  </g>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
+${stops(tile)}
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size * 0.55}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="${sheen}" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
+${stops(rim)}
+    </linearGradient>
+    <mask id="stack" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
+      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="#000000" />
+${stack}
+    </mask>
+  </defs>
+  <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#tile)" />
+  <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#sheen)" />
+  <rect x="${TILE.x + RIM / 2}" y="${TILE.y + RIM / 2}" width="${TILE.size - RIM}" height="${TILE.size - RIM}" rx="${TILE.radius - RIM / 2}" fill="none" stroke="url(#rim)" stroke-width="${RIM}" />
+  <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="${ink}" mask="url(#stack)" />
 </svg>
 `
 }
@@ -64,8 +126,8 @@ function raster(source, size, out) {
   rmSync(work, { recursive: true, force: true })
 }
 
-const dark = svg({ background: '#0d0d0d', ink: '#ffffff' })
-const light = svg({ background: '#ffffff', ink: '#0d0d0d' })
+const dark = svg(THEMES.dark)
+const light = svg(THEMES.light)
 
 mkdirSync(resources, { recursive: true })
 writeFileSync(path.join(resources, 'icon.svg'), dark)
