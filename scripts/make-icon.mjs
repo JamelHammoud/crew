@@ -161,10 +161,7 @@ ${stops(rim)}
     <clipPath id="tile-clip">
       <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" />
     </clipPath>
-    <mask id="stack" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
-      <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="#000000" />
-${stackMask(blueprint ? RADIUS + LINE / 2 : RADIUS)}
-    </mask>
+${cutMasks()}
   </defs>
   <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#tile)" />
   <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#sheen)" />
