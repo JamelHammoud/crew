@@ -59,13 +59,16 @@ const THEMES = {
     sheen: 0.07,
     grid: ['#4d94db', 0.3],
     glow: ['#1d4d84', 0.5],
-    mark: [
-      ['#8ad6ff', 1],
-      ['#2b8fee', 1],
-      ['#0a3f96', 1]
+    body: [
+      [0, '#c7ecff', 1],
+      [0.26, '#63b6f8', 1],
+      [0.58, '#2078db', 1],
+      [0.84, '#0b4099', 1],
+      [1, '#05265c', 1]
     ],
-    bounce: ['#6ec8ff', 0.5],
-    gloss: 0.72
+    shade: ['#02102e', 0.55],
+    bounce: ['#a6dcff', 0.9],
+    gloss: 0.9
   },
   devLight: {
     tile: [
