@@ -152,6 +152,12 @@ const light = svg(THEMES.light)
 mkdirSync(resources, { recursive: true })
 writeFileSync(path.join(resources, 'icon.svg'), dark)
 writeFileSync(path.join(resources, 'icon-light.svg'), light)
+writeFileSync(path.join(resources, 'crew-logo.svg'), mark())
+
+writeFileSync(
+  path.join(root, 'src/renderer/src/components/crew-mark.ts'),
+  `export const MARK_WIDTH = ${MARK.width}\n\nexport const MARK_HEIGHT = ${MARK.height}\n\nexport const MARK_RADIUS = ${RADIUS}\n\nexport const MARK_CUT = ${RADIUS + GAP}\n\nexport const MARK_DISCS = [${MARK_DISCS.join(', ')}]\n`
+)
 
 const iconset = path.join(resources, 'icon.iconset')
 rmSync(iconset, { recursive: true, force: true })
