@@ -24,6 +24,39 @@ export function runGit(args: string[], cwd: string): Promise<GitResult> {
   })
 }
 
+export async function gitDir(repoPath: string): Promise<string | null> {
+  const dir = await runGit(['rev-parse', '--absolute-git-dir'], repoPath)
+  if (dir.code !== 0 || !dir.stdout.trim()) return null
+  return path.resolve(repoPath, dir.stdout.trim())
+}
+
+// Several crew windows can watch one folder, and git refuses to run two of
+// anything at once. Whoever holds this lock syncs; everyone else waits for the
+// next pass rather than interleaving a fetch into someone else's rebase.
+export async function takeSyncLock(repoPath: string): Promise<(() => Promise<void>) | null> {
+  const dir = await gitDir(repoPath)
+  if (!dir) return null
+  const file = path.join(dir, 'crew-sync.lock')
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const handle = await fs.open(file, 'wx')
+      await handle.writeFile(String(process.pid))
+      await handle.close()
+      let released = false
+      return async () => {
+        if (released) return
+        released = true
+        await fs.rm(file, { force: true }).catch(() => {})
+      }
+    } catch {
+      const stat = await fs.stat(file).catch(() => null)
+      if (!stat || Date.now() - stat.mtimeMs < LOCK_STALE_MS) return null
+      await fs.rm(file, { force: true }).catch(() => {})
+    }
+  }
+  return null
+}
+
 export async function localPaths(repoPath: string): Promise<string[]> {
   const status = await runGit(['status', '--porcelain=v1', '-z', '--untracked-files=all'], repoPath)
   if (status.code !== 0) return []
