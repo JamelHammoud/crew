@@ -188,7 +188,7 @@ ${paper}    <clipPath id="tile-clip">
 ${cutMasks()}
   </defs>
   <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#tile)" />
-  <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#sheen)" />
+${ruled}  <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#sheen)" />
   <rect x="${TILE.x + RIM / 2}" y="${TILE.y + RIM / 2}" width="${TILE.size - RIM}" height="${TILE.size - RIM}" rx="${TILE.radius - RIM / 2}" fill="none" stroke="url(#rim)" stroke-width="${RIM}" />
 ${drawing}
 </svg>
