@@ -27,7 +27,7 @@ function Row({
     >
       <tool.Icon className="w-4 h-4 shrink-0" />
       <span className="flex-1">{tool.label}</span>
-      {tool.shortcut && <span className="text-xs text-fg-faint">{tool.shortcut}</span>}
+      {tool.shortcut && <span className="text-xs text-fg-muted">{tool.shortcut}</span>}
     </button>
   )
 }
