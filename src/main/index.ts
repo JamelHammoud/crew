@@ -20,9 +20,9 @@ import {
   mediaAccess,
   openMediaSettings,
   pickScreenSource,
-  screenSources,
-  type MediaKind
+  screenSources
 } from './media'
+import type { MediaKind } from '../shared/media'
 import { AppSession, type NewAgent } from './session'
 import { createWindowOptions } from './window-options'
 
