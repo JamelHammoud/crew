@@ -20,6 +20,7 @@ function installBridge(recentJoins: RecentJoin[]) {
 describe('Home recent sessions', () => {
   beforeEach(() => {
     localStorage.clear()
+    Element.prototype.getAnimations = vi.fn().mockReturnValue([])
     useCrew.setState({ connection: 'home', connect: vi.fn() })
   })
 
