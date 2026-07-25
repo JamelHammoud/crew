@@ -27,6 +27,15 @@ import {
   type ThreadStatus,
   type Todo
 } from '../shared/events'
+import {
+  emptyRoom,
+  MAX_HUDDLE_PEERS,
+  MAX_SIGNAL_CHARS,
+  PEER_ID_CHARS,
+  type HuddlePeer,
+  type HuddleRoom,
+  type HuddleSignal
+} from '../shared/huddle'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
 import {
   agentId,

@@ -4,6 +4,16 @@ import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { useBrowser } from '../state/browser'
 import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
 
+function wrapTables(container: HTMLElement) {
+  for (const table of Array.from(container.querySelectorAll('table'))) {
+    if (table.parentElement?.classList.contains('table-scroll')) continue
+    const scroll = document.createElement('div')
+    scroll.className = 'table-scroll'
+    table.replaceWith(scroll)
+    scroll.appendChild(table)
+  }
+}
+
 export default function Markdown({ text }: { text: string }) {
   const [resolved, setResolved] = useState(0)
   const { html, unknown } = useMemo(() => {
