@@ -21,7 +21,7 @@ export default function PlanPanel({ thread }: { thread: ThreadMeta }) {
       {thread.mode === 'plan' && (
         <div className="p-4 border-t border-ink-700">
           <button
-            onClick={() => implementPlan(thread.id)}
+            onClick={() => implementPlan(threadId)}
             disabled={running}
             className="w-full h-11 rounded-full bg-fg text-ink-900 text-base font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
           >
