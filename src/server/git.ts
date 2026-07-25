@@ -8,7 +8,7 @@ import {
   takeSyncLock,
   type GitResult
 } from '../shared/git'
-import { interruptedStates } from '../shared/gitState'
+import { interruptedStates, rebaseActive } from '../shared/gitState'
 import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '../shared/repository'
 
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
