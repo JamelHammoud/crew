@@ -8,11 +8,11 @@ import {
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/16/solid'
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useCanRedo, useCanUndo, useEditor, useValue } from 'tldraw'
 import { useCrew } from '../state/store'
-import { MenuDivider, Popover } from './Popover'
-import Tooltip from './Tooltip'
+import { HeaderButton } from './DesignControls'
+import { MenuDivider, MenuItem, Popover } from './Popover'
 
 export const DesignBoardContext = createContext<{ current: string; select: (id: string) => void }>({
   current: '',
@@ -72,21 +72,21 @@ export function BoardSwitcher() {
           if (e.key === 'Escape') setRenaming(false)
         }}
         aria-label="Board name"
-        className="h-8 w-44 bg-transparent px-3 text-sm font-semibold text-fg outline-none"
+        className="app-no-drag h-9 w-52 rounded-full bg-fg/[0.06] px-3.5 text-base font-semibold text-fg outline-none"
       />
     )
   }
 
   return (
-    <span className="app-no-drag">
+    <span className="app-no-drag min-w-0">
       <button
         onClick={() => setOpen(value => !value)}
         onDoubleClick={() => startRename(board.id, board.name)}
-        className="h-8 rounded-full pl-3 pr-2.5 flex items-center gap-1.5 text-sm font-semibold text-fg transition-colors hover:bg-fg/[0.06]"
+        className="h-9 rounded-full pl-3.5 pr-2.5 flex items-center gap-1.5 text-base font-semibold text-fg transition-colors hover:bg-fg/[0.04]"
       >
-        <span className="truncate max-w-40">{board.name}</span>
+        <span className="truncate max-w-52">{board.name}</span>
         <ChevronDownIcon
-          className={`w-3.5 h-3.5 text-fg-muted transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       <Popover open={open} onClose={() => setOpen(false)} align="start">
@@ -122,41 +122,10 @@ export function BoardSwitcher() {
             </div>
           ))}
           <MenuDivider />
-          <button
-            onClick={startCreate}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-fg-secondary transition-colors hover:text-fg hover:bg-fg/5"
-          >
-            <PlusIcon className="w-4 h-4 shrink-0" />
-            New board
-          </button>
+          <MenuItem icon={<PlusIcon />} label="New board" onClick={startCreate} />
         </div>
       </Popover>
     </span>
-  )
-}
-
-function RoundButton({
-  label,
-  disabled,
-  onClick,
-  children
-}: {
-  label: string
-  disabled?: boolean
-  onClick: () => void
-  children: ReactNode
-}) {
-  return (
-    <Tooltip label={label}>
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        aria-label={label}
-        className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted transition-all enabled:hover:text-fg enabled:hover:bg-fg/[0.06] enabled:active:scale-95 disabled:opacity-30"
-      >
-        {children}
-      </button>
-    </Tooltip>
   )
 }
 
@@ -169,73 +138,47 @@ export function DesignZoom() {
   const zoom = useValue('design zoom', () => editor.getZoomLevel(), [editor])
   const [open, setOpen] = useState(false)
 
+  const jump = (run: () => void) => {
+    run()
+    setOpen(false)
+  }
+
   return (
-    <div className="flex items-center gap-0.5 app-no-drag">
-      <RoundButton label="Undo" disabled={!canUndo} onClick={() => editor.undo()}>
+    <div className="flex items-center gap-1">
+      <HeaderButton label="Undo" disabled={!canUndo} onClick={() => editor.undo()}>
         <ArrowUturnLeftIcon className="w-4 h-4" />
-      </RoundButton>
-      <RoundButton label="Redo" disabled={!canRedo} onClick={() => editor.redo()}>
+      </HeaderButton>
+      <HeaderButton label="Redo" disabled={!canRedo} onClick={() => editor.redo()}>
         <ArrowUturnRightIcon className="w-4 h-4" />
-      </RoundButton>
-      <span className="w-px h-4 bg-fg/10 mx-1 shrink-0" />
-      <RoundButton label="Zoom out" onClick={() => editor.zoomOut()}>
+      </HeaderButton>
+      <span className="w-px h-5 bg-fg/10 mx-1.5 shrink-0" />
+      <HeaderButton label="Zoom out" onClick={() => editor.zoomOut()}>
         <MinusIcon className="w-4 h-4" />
-      </RoundButton>
+      </HeaderButton>
       <button
         onClick={() => setOpen(value => !value)}
         aria-label="Zoom"
-        className="h-8 min-w-12 px-1 rounded-full text-xs font-semibold tabular-nums text-fg-secondary transition-colors hover:text-fg hover:bg-fg/[0.06]"
+        className="app-no-drag h-9 min-w-14 px-2 rounded-full text-sm font-semibold tabular-nums text-fg-secondary transition-colors hover:text-fg hover:bg-fg/[0.04]"
       >
         {Math.round(zoom * 100)}%
       </button>
       <Popover open={open} onClose={() => setOpen(false)}>
         <div className="w-48">
-          <ZoomItem label="Zoom to fit" hint="Shift 1" onClick={() => editor.zoomToFit()} onDone={() => setOpen(false)} />
-          <ZoomItem
-            label="Zoom to selection"
-            hint="Shift 2"
-            onClick={() => editor.zoomToSelection()}
-            onDone={() => setOpen(false)}
-          />
+          <MenuItem label="Zoom to fit" hint="Shift 1" onClick={() => jump(() => editor.zoomToFit())} />
+          <MenuItem label="Zoom to selection" hint="Shift 2" onClick={() => jump(() => editor.zoomToSelection())} />
           <MenuDivider />
           {ZOOM_STEPS.map(step => (
-            <ZoomItem
+            <MenuItem
               key={step}
               label={`${step * 100}%`}
-              onClick={() => editor.setCamera({ ...editor.getCamera(), z: step }, { immediate: true })}
-              onDone={() => setOpen(false)}
+              onClick={() => jump(() => editor.setCamera({ ...editor.getCamera(), z: step }, { immediate: true }))}
             />
           ))}
         </div>
       </Popover>
-      <RoundButton label="Zoom in" onClick={() => editor.zoomIn()}>
+      <HeaderButton label="Zoom in" onClick={() => editor.zoomIn()}>
         <PlusIcon className="w-4 h-4" />
-      </RoundButton>
+      </HeaderButton>
     </div>
-  )
-}
-
-function ZoomItem({
-  label,
-  hint,
-  onClick,
-  onDone
-}: {
-  label: string
-  hint?: string
-  onClick: () => void
-  onDone: () => void
-}) {
-  return (
-    <button
-      onClick={() => {
-        onClick()
-        onDone()
-      }}
-      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left text-fg-secondary transition-colors hover:text-fg hover:bg-fg/5"
-    >
-      <span className="flex-1">{label}</span>
-      {hint && <span className="text-xs text-fg-faint">{hint}</span>}
-    </button>
   )
 }
