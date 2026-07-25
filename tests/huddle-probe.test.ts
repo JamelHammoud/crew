@@ -197,8 +197,11 @@ describe('a huddle you are not in', () => {
   // bite has to be a hole rather than a ring painted in the surface colour, or
   // the blur the row sits on stops showing through.
   it('draws the faces overlapping, with a hole rather than a ring', () => {
-    const { container } = render(createElement(App))
-    const faces = [...container.querySelectorAll('svg')].find(svg => svg.querySelector('mask'))
+    render(createElement(App))
+    // The mark in the top left is drawn out of masked discs too, so the row of
+    // faces is looked for inside the bar rather than anywhere on the screen.
+    const bar = screen.getByText('Ali and Kim are in a huddle').parentElement
+    const faces = bar?.querySelector('svg')
 
     expect(faces).toBeTruthy()
     const cut = faces?.querySelector('mask circle')
