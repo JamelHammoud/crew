@@ -120,8 +120,22 @@ export class PeerLink {
     this.clear('stallTimer')
     this.pc.onnegotiationneeded = null
     this.pc.onicecandidate = null
+    this.pc.ontrack = null
     this.pc.onconnectionstatechange = null
     this.pc.close()
+  }
+
+  // A slot is the receiver it was built from, and with one offerer it stays
+  // that way. This keeps the slot pointing at whatever actually arrives, so a
+  // connection that comes back a different shape is heard rather than silent.
+  private adopt(event: RTCTrackEvent): void {
+    const slot = SLOTS[this.pc.getTransceivers().indexOf(event.transceiver)]
+    if (!slot) return
+    const stream = this.remote[slot]
+    if (stream.getTracks().includes(event.track)) return
+    for (const track of stream.getTracks()) stream.removeTrack(track)
+    stream.addTrack(event.track)
+    this.onChange()
   }
 
   private async handle(signal: HuddleSignal): Promise<void> {
@@ -243,7 +257,7 @@ export class PeerLink {
     this.onChange()
     this.clear('recoverTimer')
     if (this.state === 'connected') this.clear('stallTimer')
-    if (this.polite) return
+    if (!this.caller) return
     if (this.state === 'failed') {
       this.pc.restartIce()
       return
