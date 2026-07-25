@@ -193,6 +193,7 @@ function Layers({ editor }: { editor: Editor }) {
           const id = row.shape.id
           const hidden = row.shape.meta.hidden === true
           const active = selectedSet.has(id)
+          const Glyph = glyphForShape(row.shape)
           return (
             <div
               key={id}
