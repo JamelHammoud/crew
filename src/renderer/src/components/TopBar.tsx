@@ -142,6 +142,17 @@ export default function TopBar({
               )}
             </div>
             <div className="h-px bg-fg/[0.06] my-1" />
+            <MenuItem
+              icon={<SignalIcon />}
+              label={huddleJoined ? 'Leave huddle' : huddleSize > 0 ? 'Join huddle' : 'Huddle'}
+              hint={huddleSize > 0 ? `${huddleSize}` : undefined}
+              onClick={() => {
+                setMenuOpen(false)
+                const huddle = useHuddle.getState()
+                if (huddle.joined) huddle.leave()
+                else void huddle.join()
+              }}
+            />
             {joinLink && (
               <MenuItem
                 icon={copied ? <CheckIcon /> : <LinkIcon />}
