@@ -7,7 +7,7 @@ type Room = Extract<ServerMessage, { type: 'huddle.room' }>
 type Signal = Extract<ServerMessage, { type: 'huddle.signal' }>
 
 const rooms = (ui: TestUi): Room[] => ui.messages.filter((m): m is Room => m.type === 'huddle.room')
-const latest = (ui: TestUi): Room['room'] => rooms(ui)[rooms(ui).length - 1].room
+const latest = (ui: TestUi): Room['room'] => rooms(ui).at(-1)?.room ?? { peers: [], startedAt: null }
 const names = (ui: TestUi): string[] => latest(ui).peers.map(peer => peer.name)
 
 describe('huddles', () => {
