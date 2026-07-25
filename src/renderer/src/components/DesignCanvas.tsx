@@ -238,8 +238,7 @@ export default function DesignCanvas({
 
   const onMount = useCallback(
     (mounted: Editor) => {
-      mounted.setStyleForNextShapes(DefaultFontStyle, 'sans')
-      mounted.setStyleForNextShapes(DefaultDashStyle, 'solid')
+      applyDesignDefaults(mounted)
       mounted.user.updateUserPreferences({ isSnapMode: true })
       setEditor(mounted)
       onEditor?.(mounted)
