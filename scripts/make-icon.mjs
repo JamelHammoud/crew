@@ -29,9 +29,7 @@ const THEMES = {
       ['#ffffff', 0.06],
       ['#ffffff', 0.3]
     ],
-    sheen: 0.1,
-    grid: 0.16,
-    guide: 0.4
+    sheen: 0.1
   },
   light: {
     ink: '#0d0d0d',
@@ -45,9 +43,39 @@ const THEMES = {
       ['#000000', 0.05],
       ['#000000', 0.16]
     ],
+    sheen: 0.35
+  },
+  devDark: {
+    ink: '#eaf2ff',
+    tile: [
+      ['#17427a', 1],
+      ['#0b2750', 1],
+      ['#04122c', 1]
+    ],
+    rim: [
+      ['#bcd8ff', 0.5],
+      ['#bcd8ff', 0.06],
+      ['#bcd8ff', 0.26]
+    ],
+    sheen: 0.12,
+    grid: 0.2,
+    guide: 0.45
+  },
+  devLight: {
+    ink: '#0f4c8a',
+    tile: [
+      ['#ffffff', 1],
+      ['#f1f6fd', 1],
+      ['#d9e6f8', 1]
+    ],
+    rim: [
+      ['#ffffff', 0.95],
+      ['#0b2e5c', 0.05],
+      ['#0b2e5c', 0.18]
+    ],
     sheen: 0.35,
-    grid: 0.14,
-    guide: 0.34
+    grid: 0.22,
+    guide: 0.45
   }
 }
 
