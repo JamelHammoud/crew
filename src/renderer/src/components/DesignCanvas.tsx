@@ -24,6 +24,8 @@ import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
 import DesignCursor from '../design/DesignCursor'
 import { DesignNodeUtil } from '../design/DesignNodeUtil'
+import DesignToolbar from '../design/DesignToolbar'
+import { nodeTools } from '../design/nodeTools'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
@@ -37,7 +39,8 @@ const shapeUtils = [...defaultShapeUtils, DesignNodeUtil]
 const components: TLComponents = {
   MenuPanel: DesignMenu,
   NavigationPanel: DesignNavigation,
-  StylePanel: DesignStylePanel
+  StylePanel: DesignStylePanel,
+  Toolbar: DesignToolbar
 }
 
 const tldrawOptions: Partial<TldrawOptions> = { maxPages: 1 }
@@ -230,6 +233,7 @@ export default function DesignCanvas({ boardId }: { boardId: string }) {
       <Tldraw
         store={store}
         shapeUtils={shapeUtils}
+        tools={nodeTools}
         assetUrls={assetUrls}
         components={components}
         options={tldrawOptions}
@@ -270,7 +274,4 @@ function AgentCursors({ editor, cursors }: { editor: Editor | null; cursors: Des
               </span>
             </div>
           )
-        })}
-    </div>
-  )
-}
+      
