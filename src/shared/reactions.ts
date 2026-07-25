@@ -1,9 +1,11 @@
-export const REACTION_EMOJIS = ['🎉', '❤️', '👍', '😂', '👀', '🔥', '👏', '🤔'] as const
+export const QUICK_REACTIONS = ['🎉', '❤️', '👍', '😂'] as const
 
-export type ReactionEmoji = (typeof REACTION_EMOJIS)[number]
+export type ReactionEmoji = string
 
-export function isReactionEmoji(value: string): value is ReactionEmoji {
-  return (REACTION_EMOJIS as readonly string[]).includes(value)
+const SINGLE_EMOJI = /^\p{RGI_Emoji}$/v
+
+export function isReactionEmoji(value: string): boolean {
+  return value.length > 0 && value.length <= 32 && SINGLE_EMOJI.test(value)
 }
 
 export function messageReactionTarget(messageId: string): string {
