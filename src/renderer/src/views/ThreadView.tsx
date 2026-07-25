@@ -169,7 +169,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
             <div className="relative max-w-[660px] mx-auto pointer-events-auto">
               {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
               <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
-              <div className="@container relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9">
+              <div
+                ref={setHeaderRow}
+                className="relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9"
+              >
                 <Tooltip label="Back to chat">
                   <button
                     onClick={closeThread}
