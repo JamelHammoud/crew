@@ -154,7 +154,7 @@ export default function TopBar({
                 </div>
               )}
             </div>
-            <div className="h-px bg-fg/[0.06] my-1" />
+            <MenuDivider />
             <MenuItem
               icon={<SignalIcon />}
               label={huddleJoined ? 'Leave huddle' : huddleSize > 0 ? 'Join huddle' : 'Huddle'}
