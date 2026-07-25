@@ -36,9 +36,6 @@ const CHIMES: Record<ChimeName, Note[]> = {
   ]
 }
 
-// Four objects rather than four melodies: a bubble, a knuckle on wood, a paper
-// flick, a struck glass. All land in the same octave so no tab sits above
-// another, and each one is named by what it is made of.
 const STRIKES: Record<StrikeName, Strike[]> = {
   'tab.chat': [
     {
@@ -113,8 +110,6 @@ const STRIKES: Record<StrikeName, Strike[]> = {
   ]
 }
 
-// Six agents can land at once. The first one is heard and the rest fold into it,
-// otherwise a busy session turns into a chord.
 const APART = 140
 const last: Partial<Record<SoundName, number>> = {}
 

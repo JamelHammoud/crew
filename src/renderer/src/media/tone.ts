@@ -2,8 +2,6 @@ import { context } from './audio'
 
 export type Note = { hz: number; at: number; length?: number; gain?: number; glide?: number }
 
-// One voice for every sound crew makes: a sine with two quiet partials over it,
-// struck hard and let go fast, so it reads as a soft mallet rather than a beep.
 const PARTIALS = [
   { ratio: 1, gain: 1 },
   { ratio: 2, gain: 0.24 },
