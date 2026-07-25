@@ -132,7 +132,7 @@ describe('plans in the app', () => {
     fireEvent.scroll(scroller)
 
     expect(fade.className).toContain('opacity-100')
-    expect(container.querySelector('.bg-gradient-to-t')?.className).toContain('opacity-100')
+    expect(panel.querySelector('.bg-gradient-to-t')?.className).toContain('opacity-100')
   })
 
   it('offers /plan from the composer', () => {
