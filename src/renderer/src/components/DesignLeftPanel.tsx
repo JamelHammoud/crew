@@ -102,15 +102,30 @@ function Layers({ editor }: { editor: Editor }) {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
-      <label className="mx-2 mb-2 h-7 shrink-0 flex items-center gap-1.5 rounded-full bg-fg/[0.06] px-2.5 focus-within:bg-fg/[0.1] transition-colors">
-        <MagnifyingGlassIcon className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
-        <input
-          value={query}
-          onChange={event => setQuery(event.target.value)}
-          placeholder="Find a layer"
-          className="w-full min-w-0 bg-transparent text-xs text-fg placeholder:text-fg-muted outline-none"
-        />
-      </label>
+      <div className="h-12 shrink-0 flex items-center gap-1 pl-4 pr-2">
+        {searching ? (
+          <label className="flex-1 min-w-0 h-8 flex items-center gap-1.5 rounded-full bg-fg/[0.06] px-3">
+            <MagnifyingGlassIcon className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+            <input
+              autoFocus
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              onKeyDown={event => event.key === 'Escape' && closeSearch()}
+              onBlur={() => query.trim() === '' && setSearching(false)}
+              placeholder="Find a layer"
+              className="w-full min-w-0 bg-transparent text-xs text-fg placeholder:text-fg-muted outline-none"
+            />
+          </label>
+        ) : (
+          <span className="flex-1 text-xs font-semibold text-fg-muted">Layers</span>
+        )}
+        <PanelButton
+          label={searching ? 'Close search' : 'Find a layer'}
+          onClick={() => (searching ? closeSearch() : setSearching(true))}
+        >
+          {searching ? <XMarkIcon className="w-4 h-4" /> : <MagnifyingGlassIcon className="w-4 h-4" />}
+        </PanelButton>
+      </div>
       <div ref={listRef} className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
         {rows.length === 0 && (
           <p className="px-2 py-6 text-xs text-fg-muted text-center">
