@@ -161,7 +161,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785007602892,
+        "fetchedAt": 1785007678829,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
@@ -502,7 +502,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007602883,
+        "fetchedAt": 1785007678820,
         "windows": [
           {
             "key": "primary",
@@ -621,7 +621,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785007602892,
+        "fetchedAt": 1785007678829,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
@@ -714,7 +714,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007602883,
+        "fetchedAt": 1785007678820,
         "windows": [
           {
             "key": "primary",
@@ -877,7 +877,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007610093,
+        "fetchedAt": 1785007670107,
         "windows": [
           {
             "key": "primary",
@@ -996,7 +996,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785007610102,
+        "fetchedAt": 1785007670116,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
@@ -1153,7 +1153,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007610093,
+        "fetchedAt": 1785007670107,
         "windows": [
           {
             "key": "primary",
@@ -1272,7 +1272,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785007610102,
+        "fetchedAt": 1785007670116,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
