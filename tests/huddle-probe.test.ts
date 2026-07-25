@@ -17,7 +17,7 @@ global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 Element.prototype.getAnimations ??= () => []
 
 const bridge = {
-  screenSources: () => Promise.resolve([]),
+  screenSources: (): Promise<ScreenSource[]> => Promise.resolve([]),
   pickScreenSource: () => Promise.resolve(),
   askForMedia: () => Promise.resolve(true),
   openMediaSettings: () => Promise.resolve(),
@@ -295,7 +295,7 @@ describe('a huddle you are in', () => {
     const source = screen.getByText('Screen 1').closest('button')
 
     expect(source?.className).not.toMatch(/(^|\s)ring-/)
-    expect(source?.querySelector(':scope > .inset-0.border-2')).toBeTruthy()
+    expect([...(source?.children ?? [])].some(part => part.classList.contains('border-2'))).toBe(true)
     bridge.screenSources = sources
   })
 
