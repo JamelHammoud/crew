@@ -46,7 +46,6 @@ const THEMES = {
     sheen: 0.35
   },
   devDark: {
-    ink: '#3d9bf0',
     tile: [
       ['#15181f', 1],
       ['#0a0c12', 1],
