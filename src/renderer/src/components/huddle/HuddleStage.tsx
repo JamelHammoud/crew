@@ -96,17 +96,14 @@ export default function HuddleStage() {
         </div>
       ) : (
         <div ref={attach} className="flex-1 min-h-0 px-6 pb-2 flex items-center justify-center">
-          <div
-            className="grid"
-            style={{
-              gap: GAP,
-              gridTemplateColumns:
-                grid.width > 0
-                  ? `repeat(${grid.columns}, ${grid.width}px)`
-                  : `repeat(${grid.columns}, minmax(0, 1fr))`
-            }}
-          >
-            {room.peers.map(peer => tile(peer, 'lg'))}
+          {/* Widths are worked out rather than fractioned, so a row that is not
+              full sits in the middle instead of hugging the left edge. */}
+          <div className="flex flex-wrap justify-center content-center" style={{ gap: GAP }}>
+            {room.peers.map(peer => (
+              <div key={peer.peerId} style={{ width: grid.width > 0 ? grid.width : span(grid.columns) }}>
+                {tile(peer, 'lg')}
+              </div>
+            ))}
           </div>
         </div>
       )}
