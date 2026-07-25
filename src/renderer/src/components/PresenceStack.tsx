@@ -37,7 +37,7 @@ function Group({ label, who }: { label: string; who: Present[] }): ReactElement 
       <p className="px-3 pb-1 text-xs font-semibold text-fg-muted">{label}</p>
       {who.map(one => (
         <div key={one.id} className="flex items-center gap-2.5 px-3 py-1.5">
-          <Face who={one} />
+          <Face who={one} size="sm" />
           <span className="text-sm font-medium text-fg whitespace-nowrap">{one.name}</span>
         </div>
       ))}
@@ -76,7 +76,7 @@ export default function PresenceStack(): ReactElement | null {
             {rest > 0 && (
               <span
                 style={{ width: FACE, height: FACE }}
-                className="rounded-full bg-ink-700 text-fg-secondary text-xs font-semibold flex items-center justify-center select-none"
+                className="rounded-full bg-ink-700 text-fg-secondary text-sm font-semibold flex items-center justify-center select-none"
               >
                 +{rest}
               </span>
