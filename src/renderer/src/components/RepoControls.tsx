@@ -1,6 +1,8 @@
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
-import type { RepoActionResult, RepoStatus } from '../../../shared/repository'
+import type { RepoActionResult, RepoChange, RepoStatus } from '../../../shared/repository'
+import { Popover } from './Popover'
+import RepoReview from './RepoReview'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 
@@ -32,7 +34,12 @@ export default function RepoControls() {
   const [status, setStatus] = useState<RepoStatus | null>(null)
   const [action, setAction] = useState<RepoAction | null>(null)
   const [notice, setNotice] = useState<Pick<RepoActionResult, 'ok' | 'message'> | null>(null)
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const [changes, setChanges] = useState<RepoChange[]>([])
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewError, setReviewError] = useState<string | null>(null)
   const noticeTimer = useRef<number | null>(null)
+  const reviewRequest = useRef(0)
 
   useEffect(() => {
     let active = true
@@ -54,10 +61,38 @@ export default function RepoControls() {
     const interval = window.setInterval(refresh, 10000)
     return () => {
       active = false
+      reviewRequest.current++
       window.clearInterval(interval)
       if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current)
     }
   }, [])
+
+  const loadReview = async () => {
+    const request = ++reviewRequest.current
+    setReviewLoading(true)
+    setReviewError(null)
+    try {
+      const repoChanges = window.crew?.repoChanges
+      if (!repoChanges) throw new Error('Change review is unavailable.')
+      const [nextStatus, nextChanges] = await Promise.all([window.crew.repoStatus(), repoChanges()])
+      if (request !== reviewRequest.current) return
+      setStatus(nextStatus)
+      setChanges(nextChanges)
+    } catch {
+      if (request === reviewRequest.current) setReviewError('Could not load the project changes.')
+    } finally {
+      if (request === reviewRequest.current) setReviewLoading(false)
+    }
+  }
+
+  const toggleReview = () => {
+    if (reviewOpen) {
+      setReviewOpen(false)
+      return
+    }
+    setReviewOpen(true)
+    void loadReview()
+  }
 
   const run = async (next: RepoAction) => {
     if (action) return
@@ -69,6 +104,10 @@ export default function RepoControls() {
       const result = await command()
       setStatus(result.status)
       setNotice(result)
+      if (next === 'push' && result.ok) {
+        setChanges([])
+        setReviewOpen(false)
+      }
       if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current)
       noticeTimer.current = window.setTimeout(() => setNotice(null), 3000)
     } catch {
@@ -82,6 +121,7 @@ export default function RepoControls() {
   const detail = notice?.message ?? statusDetail(status)
   const tone = notice ? (notice.ok ? 'text-positive' : 'text-danger') : 'text-fg-muted'
   const disabled = action !== null || !status || !status.available || !status.remote
+  const reviewable = Boolean(status?.available && status.changed > 0)
 
   return (
     <div
@@ -89,12 +129,41 @@ export default function RepoControls() {
       aria-label="Project sync"
       className="flex h-9 items-center rounded-full bg-ink-800 p-1 ring-1 ring-fg/[0.04]"
     >
-      <Tooltip label={detail}>
-        <span className={`flex min-w-0 items-center gap-2 px-2 ${tone}`}>
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
-          <span className="max-w-[112px] truncate text-xs font-medium max-[1050px]:hidden">{text}</span>
-        </span>
-      </Tooltip>
+      <div className="relative flex min-w-0 items-center">
+        <Tooltip label={reviewable ? `${detail}. Click to review.` : detail}>
+          {reviewable ? (
+            <button
+              type="button"
+              aria-label={`Review ${status?.changed} ${status?.changed === 1 ? 'change' : 'changes'}`}
+              aria-expanded={reviewOpen}
+              onClick={toggleReview}
+              className={`flex h-7 min-w-0 items-center gap-2 rounded-full px-2 transition-colors duration-150 hover:bg-fg/[0.05] ${tone}`}
+            >
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+              <span className="max-w-[112px] truncate text-xs font-medium max-[1050px]:hidden">{text}</span>
+            </button>
+          ) : (
+            <span className={`flex min-w-0 items-center gap-2 px-2 ${tone}`}>
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+              <span className="max-w-[112px] truncate text-xs font-medium max-[1050px]:hidden">{text}</span>
+            </span>
+          )}
+        </Tooltip>
+        <Popover
+          open={reviewOpen}
+          onClose={() => setReviewOpen(false)}
+          className="w-[620px] max-w-[calc(100vw-24px)] overflow-hidden"
+        >
+          <RepoReview
+            changes={changes}
+            loading={reviewLoading}
+            error={reviewError}
+            pushing={action === 'push'}
+            canPush={Boolean(status?.remote)}
+            onPush={() => void run('push')}
+          />
+        </Popover>
+      </div>
       <span className="sr-only" aria-live="polite">
         {text}
       </span>
