@@ -219,21 +219,18 @@ export class AppSession {
     return this.sessionPath ? new SavedSessionStore(this.sessionPath) : null
   }
 
-  // An adopted agent came back from the server's memory; persist it so the
-  // next launch registers it directly instead of re-adopting.
-  private saveAdopted(def: AgentDef): void {
-    const store = this.agentStore()
-    if (!store) return
-    const defs = store.load()
-    if (defs.some(d => d.instanceId === def.instanceId)) return
-    defs.push(def)
-    store.save(defs)
-  }
-
   // Agents are only ever the ones someone made here. Nothing is enrolled for
   // you because a CLI happens to be installed.
-  private agentDefs(providers: Provider[]): AgentDef[] {
-    const defs = this.agentStore()?.load() ?? []
+  private agentDefs(providers: Provider[], name: string): AgentDef[] {
+    const store = this.agentStore()
+    const defs = store?.load() ?? []
+    // Definitions made before agents carried an id keep the one they have had
+    // all along, so this name is the last one that can change their identity.
+    const missing = defs.filter(def => !def.id)
+    if (store && missing.length) {
+      for (const def of missing) def.id = agentId(name, def.instanceId)
+      store.save(defs)
+    }
     return defs.filter(def => providers.some(p => p.name === def.provider))
   }
 
