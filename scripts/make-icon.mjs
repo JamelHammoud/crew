@@ -217,7 +217,7 @@ ${ramp(body)}
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <filter id="cast" x="-25%" y="-25%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#02102c" flood-opacity="0.5" />
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#02102c" flood-opacity="0.26" />
     </filter>
 `
     : ''
