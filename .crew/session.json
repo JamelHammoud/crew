@@ -13,13 +13,182 @@
     {
       "id": "60b55620-a113-478c-9935-77bd360c6f40",
       "name": "ALI"
-    },
-    {
-      "id": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
-      "name": "Jamel (dev)"
     }
   ],
   "agents": [
+    {
+      "id": "jamel/kimi",
+      "label": "Kimi",
+      "provider": "kimi",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "kimi-code/k3"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
+    {
+      "id": "jamel/claude",
+      "label": "Claude",
+      "provider": "claude",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "opus",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784614927738,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 81,
+            "severity": "warning",
+            "resetsAt": 1784620200052,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 18,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 34,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          }
+        ],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max"
+      }
+    },
+    {
+      "id": "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
+      "label": "Bob (Kimi K3)",
+      "provider": "kimi",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "kimi-code/k3"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
+    },
     {
       "id": "ali/claude",
       "label": "Claude 2",
@@ -125,14 +294,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785019072696,
+        "fetchedAt": 1785018539435,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785034800754,
+            "resetsAt": 1785034800533,
             "active": true
           },
           {
@@ -140,7 +309,7 @@
             "label": "Weekly (all models)",
             "percent": 10,
             "severity": "normal",
-            "resetsAt": 1785499199754,
+            "resetsAt": 1785499200533,
             "active": false
           }
         ],
@@ -150,14 +319,343 @@
       }
     },
     {
-      "id": "ali/20890e3a-ce3f-4240-95da-1509a65df80a",
+      "id": "jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
+      "label": "UsageKiller",
+      "provider": "codex",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "gpt-5.6-sol",
+        "effort": "xhigh"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "gpt-5.6-sol",
+              "label": "gpt-5.6-sol"
+            },
+            {
+              "value": "gpt-5.6-terra",
+              "label": "gpt-5.6-terra"
+            },
+            {
+              "value": "gpt-5.6-luna",
+              "label": "gpt-5.6-luna"
+            },
+            {
+              "value": "gpt-5.5",
+              "label": "gpt-5.5"
+            },
+            {
+              "value": "gpt-5.4",
+              "label": "gpt-5.4"
+            },
+            {
+              "value": "gpt-5.4-mini",
+              "label": "gpt-5.4-mini"
+            },
+            {
+              "value": "gpt-5.3-codex-spark",
+              "label": "gpt-5.3-codex-spark"
+            }
+          ],
+          "default": ""
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            },
+            {
+              "value": "ultra",
+              "label": "ultra"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": false,
+      "usage": {
+        "provider": "codex",
+        "fetchedAt": 1784615167748,
+        "windows": [
+          {
+            "key": "primary",
+            "label": "Weekly limit",
+            "percent": 79
+          }
+        ],
+        "accountId": "6fce75a8-9564-455a-8f29-9f239bd2a5c1",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "prolite",
+        "asOf": 1784429101870
+      }
+    },
+    {
+      "id": "jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
+      "label": "Claude Fable",
+      "provider": "claude",
+      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
+      "ownerName": "Jamel",
+      "settings": {
+        "model": "fable",
+        "effort": "xhigh"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "haiku"
+            },
+            {
+              "value": "fable",
+              "label": "fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1784614927738,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 81,
+            "severity": "warning",
+            "resetsAt": 1784620200052,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 18,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 34,
+            "severity": "normal",
+            "resetsAt": 1784930400052,
+            "active": false
+          }
+        ],
+        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
+        "accountLabel": "devjamel@gmail.com",
+        "plan": "max"
+      }
+    },
+    {
+      "id": "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
+      "label": "Claude Opus",
+      "provider": "claude",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "opus",
+        "opusModel": "claude-opus-5",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "Opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "Sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "Haiku"
+            },
+            {
+              "value": "fable",
+              "label": "Fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1785018539435,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 37,
+            "severity": "normal",
+            "resetsAt": 1785034800533,
+            "active": true
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 10,
+            "severity": "normal",
+            "resetsAt": 1785499200533,
+            "active": false
+          }
+        ],
+        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "pro"
+      }
+    },
+    {
+      "id": "ali/0d392594-6df2-4b6e-b809-57b71598960d",
       "label": "Codex Gpt-5.6-sol",
       "provider": "codex",
       "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
       "ownerName": "ALI",
       "settings": {
         "model": "gpt-5.6-sol",
-        "effort": "high"
+        "effort": "max"
       },
       "fields": [
         {
@@ -230,7 +728,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785019192706,
+        "fetchedAt": 1785019199525,
         "windows": [
           {
             "key": "primary",
@@ -325,7 +823,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785019192706,
+        "fetchedAt": 1785019199525,
         "windows": [
           {
             "key": "primary",
@@ -341,268 +839,10 @@
     },
     {
       "id": "ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6",
-      "label": "Claude Opus",
+      "label": "Claude Opus 2",
       "provider": "claude",
       "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
       "ownerName": "ALI",
-      "settings": {
-        "model": "opus",
-        "opusModel": "claude-opus-5",
-        "effort": "xhigh"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "Opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "Sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "Haiku"
-            },
-            {
-              "value": "fable",
-              "label": "Fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "opusModel",
-          "label": "Version",
-          "options": [
-            {
-              "value": "claude-opus-5",
-              "label": "Opus 5"
-            },
-            {
-              "value": "claude-opus-4-8",
-              "label": "Opus 4.8"
-            },
-            {
-              "value": "claude-opus-4-7",
-              "label": "Opus 4.7"
-            },
-            {
-              "value": "claude-opus-4-6",
-              "label": "Opus 4.6"
-            },
-            {
-              "value": "claude-opus-4-5-20251101",
-              "label": "Opus 4.5"
-            },
-            {
-              "value": "opus",
-              "label": "Latest"
-            }
-          ],
-          "default": "claude-opus-5",
-          "visibleWhen": {
-            "key": "model",
-            "value": "opus"
-          }
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1785019072696,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 37,
-            "severity": "normal",
-            "resetsAt": 1785034800754,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 10,
-            "severity": "normal",
-            "resetsAt": 1785499199754,
-            "active": false
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
-    },
-    {
-      "id": "ali/a5870501-29f9-482a-8e95-280a04acf660",
-      "label": "Claude Fable",
-      "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "fable",
-        "opusModel": "claude-opus-5",
-        "effort": "high"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "Opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "Sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "Haiku"
-            },
-            {
-              "value": "fable",
-              "label": "Fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "opusModel",
-          "label": "Version",
-          "options": [
-            {
-              "value": "claude-opus-5",
-              "label": "Opus 5"
-            },
-            {
-              "value": "claude-opus-4-8",
-              "label": "Opus 4.8"
-            },
-            {
-              "value": "claude-opus-4-7",
-              "label": "Opus 4.7"
-            },
-            {
-              "value": "claude-opus-4-6",
-              "label": "Opus 4.6"
-            },
-            {
-              "value": "claude-opus-4-5-20251101",
-              "label": "Opus 4.5"
-            },
-            {
-              "value": "opus",
-              "label": "Latest"
-            }
-          ],
-          "default": "claude-opus-5",
-          "visibleWhen": {
-            "key": "model",
-            "value": "opus"
-          }
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1785019072696,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 37,
-            "severity": "normal",
-            "resetsAt": 1785034800754,
-            "active": true
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 10,
-            "severity": "normal",
-            "resetsAt": 1785499199754,
-            "active": false
-          }
-        ],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro"
-      }
-    },
-    {
-      "id": "jamel/9064b828-b855-4056-8e24-596b93aacd8e",
-      "label": "Bubbles",
-      "provider": "claude",
-      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
-      "ownerName": "Jamel",
       "settings": {
         "model": "opus",
         "opusModel": "claude-opus-5",
@@ -702,94 +942,29 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785019199487,
+        "fetchedAt": 1785018539435,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 16,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785033000808,
+            "resetsAt": 1785034800533,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 5,
+            "percent": 10,
             "severity": "normal",
-            "resetsAt": 1785535200808,
-            "active": false
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
+            "resetsAt": 1785499200533,
             "active": false
           }
         ],
-        "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
-        "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
+        "accountLabel": "alihammoud0202@gmail.com",
+        "plan": "pro"
       }
-    },
-    {
-      "id": "jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35",
-      "label": "Kimi",
-      "provider": "kimi",
-      "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
-      "ownerName": "Jamel",
-      "settings": {
-        "model": ""
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "kimi-code/kimi-for-coding",
-              "label": "kimi-code/kimi-for-coding"
-            },
-            {
-              "value": "kimi-code/kimi-for-coding-highspeed",
-              "label": "kimi-code/kimi-for-coding-highspeed"
-            },
-            {
-              "value": "kimi-code/k3",
-              "label": "kimi-code/k3"
-            }
-          ],
-          "default": ""
-        }
-      ],
-      "steerable": false
     }
-  ],
-  "removedAgents": [
-    "ali/7ad44611-9f35-435c-ae15-094179a86e49",
-    "ali/0d392594-6df2-4b6e-b809-57b71598960d",
-    "ali/c6764931-2898-4a49-899d-4a6cabf2dd54",
-    "ali/61e424f9-ed0d-4f98-b612-abb09b867b23",
-    "jamel (dev)/claude",
-    "jamel (dev)/bdad573c-7660-487c-a8b0-97026b1d15c8",
-    "jamel/bdad573c-7660-487c-a8b0-97026b1d15c8",
-    "jamel (dev)/codex",
-    "jamel (dev)/grok",
-    "jamel (dev)/kimi",
-    "jamel (dev)/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
-    "jamel/2b7ab567-37e5-48f9-9bc2-5786f92ffceb",
-    "jamel/kimi",
-    "jamel/grok",
-    "ali/709e7abc-2bb1-4a09-9549-4cbf570bc556",
-    "jamel (dev)/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
-    "jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
-    "jamel/claude",
-    "jamel/codex",
-    "jamel/ad836538-f482-4a88-b70a-adc257551883"
   ]
 }
