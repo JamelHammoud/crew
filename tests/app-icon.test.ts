@@ -100,13 +100,20 @@ describe('app icon', () => {
     }
   })
 
-  it('fills the discs on the shipping icon and draws them on the blueprint', () => {
+  it('keeps the shipping mark flat and gives the blueprint one a lit body', () => {
     for (const name of SHIPPING) {
       expect(svg(name)).toMatch(/<g fill="#[0-9a-f]{6}">/)
       expect(svg(name)).not.toContain('<line ')
+      expect(svg(name)).not.toContain('feDropShadow')
     }
     for (const name of BLUEPRINT) {
-      expect(svg(name)).toMatch(/<g fill="none" stroke="#[0-9a-f]{6}" stroke-width="\d+">/)
+      const source = svg(name)
+      for (const id of ['mark', 'bounce', 'gloss']) {
+        expect(source).toContain(`<radialGradient id="${id}"`)
+        expect(source).toContain(`<g fill="url(#${id})"`)
+        expect(stack(source.match(new RegExp(`<g fill="url\\(#${id}\\)"[^]*?</g>`))?.[0] ?? '')).toHaveLength(3)
+      }
+      expect(source).toContain('feDropShadow')
     }
   })
 
