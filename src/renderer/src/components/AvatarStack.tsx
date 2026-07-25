@@ -11,7 +11,7 @@ export default function AvatarStack({
   names,
   size = 'sm',
   max = 3,
-  gap = 2.5
+  gap = 3
 }: {
   names: string[]
   size?: keyof typeof SIZES
