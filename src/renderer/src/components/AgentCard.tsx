@@ -47,7 +47,15 @@ export default function AgentCard({
     <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
-          <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
+          {onAvatar ? (
+            <AgentPhoto
+              agent={agent}
+              presence={agent.status === 'offline' ? 'offline' : 'online'}
+              onChange={onAvatar}
+            />
+          ) : (
+            <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
+          )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               {editing ? (
