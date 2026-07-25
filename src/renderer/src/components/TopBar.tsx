@@ -77,7 +77,7 @@ export default function TopBar({
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse">Connection lost. Trying again…</span>
         )}
-        <RepoControls />
+        {import.meta.env.DEV && <RepoControls />}
         <Tooltip label="Tasks">
           <button
             onClick={onToggleTasks}

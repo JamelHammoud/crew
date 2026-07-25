@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import RepoControls from '../src/renderer/src/components/RepoControls'
+import TopBar from '../src/renderer/src/components/TopBar'
 import type { RepoStatus } from '../src/shared/repository'
 
 const ready: RepoStatus = {
@@ -23,7 +24,11 @@ Object.defineProperty(Element.prototype, 'getAnimations', {
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  vi.unstubAllEnvs()
 })
+
+const topBar = () =>
+  createElement(TopBar, { tab: 'chat' as const, onTab: () => {}, tasksOpen: false, onToggleTasks: () => {} })
 
 describe('project sync controls', () => {
   it('opens the local diff before pushing it', async () => {
@@ -106,5 +111,24 @@ describe('project sync controls', () => {
 
     await waitFor(() => expect((screen.getByLabelText('Pull changes') as HTMLButtonElement).disabled).toBe(true))
     expect((screen.getByLabelText('Push changes') as HTMLButtonElement).disabled).toBe(true)
+  })
+
+  it('stays out of the top bar outside dev mode', async () => {
+    const repoStatus = vi.fn(async () => ready)
+    Object.defineProperty(window, 'crew', {
+      configurable: true,
+      value: { repoStatus, pullRepo: vi.fn(), pushRepo: vi.fn() } as unknown as CrewBridge
+    })
+
+    vi.stubEnv('DEV', true)
+    render(topBar())
+    expect(screen.getByLabelText('Pull changes')).toBeTruthy()
+    cleanup()
+
+    vi.stubEnv('DEV', false)
+    render(topBar())
+    expect(screen.queryByLabelText('Pull changes')).toBeNull()
+    expect(screen.queryByLabelText('Push changes')).toBeNull()
+    expect(screen.queryByRole('group', { name: 'Project sync' })).toBeNull()
   })
 })
