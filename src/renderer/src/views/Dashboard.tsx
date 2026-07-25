@@ -14,6 +14,7 @@ export default function Dashboard() {
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const updateAgentSetting = useCrew(s => s.updateAgentSetting)
   const renameAgent = useCrew(s => s.renameAgent)
+  const setAgentAvatar = useCrew(s => s.setAgentAvatar)
   const removeAgent = useCrew(s => s.removeAgent)
 
   return (
