@@ -228,6 +228,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
           </div>
         </div>
       </div>
+      </div>
+      <PlanPanel thread={thread} />
     </div>
   )
 }
