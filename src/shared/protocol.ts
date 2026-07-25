@@ -90,9 +90,9 @@ export type ClientMessage =
   | { type: 'agent.rename'; agentId: string; label: string }
   | { type: 'agent.remove'; agentId: string }
   | { type: 'agent.register'; llm: RegisteredLlm }
-  | { type: 'agent.deregister'; instanceId: string }
+  | { type: 'agent.deregister'; agentId: string }
   | { type: 'agent.step'; promptId: string; step: RunStep }
-  | { type: 'agent.usage'; instanceId: string; usage: AgentUsage }
+  | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; tokens: number }
   | { type: 'agent.steered'; promptId: string; ok: boolean }
   | { type: 'agent.done'; promptId: string; text: string }
