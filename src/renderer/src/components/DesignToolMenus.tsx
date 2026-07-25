@@ -61,7 +61,7 @@ export default function DesignToolMenu({
         ))}
         {group.id === 'frame' && (
           <>
-            <div className="h-px bg-fg/10 my-1 mx-2" />
+            <MenuDivider />
             {FRAME_PRESETS.map(preset => (
               <button
                 key={preset.label}
