@@ -171,6 +171,8 @@ const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]):
 
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
+    const cue = soundFor(event, get().selfId)
+    if (cue) playSound(cue)
     if (event.kind === 'message.deleted') {
       set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
       return

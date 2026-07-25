@@ -15,6 +15,10 @@ const LIMITS: Record<Slot, { maxBitrate: number; degradation: RTCDegradationPref
 }
 
 const RECOVER_AFTER_MS = 6000
+const STALL_AFTER_MS = 4000
+const MAX_NUDGES = 5
+
+type Timer = ReturnType<typeof setTimeout>
 
 export interface PeerOptions {
   peerId: string
@@ -40,7 +44,11 @@ export class PeerLink {
   private makingOffer = false
   private ignoringOffer = false
   private settingAnswer = false
-  private recoverTimer: number | null = null
+  private waiting: RTCIceCandidateInit[] = []
+  private turn: Promise<void> = Promise.resolve()
+  private recoverTimer: Timer | null = null
+  private stallTimer: Timer | null = null
+  private nudges = 0
   private closed = false
 
   constructor(opts: PeerOptions) {
@@ -67,6 +75,7 @@ export class PeerLink {
       if (candidate) this.send({ kind: 'candidate', candidate: candidate.toJSON() })
     }
     this.pc.onconnectionstatechange = () => this.watch()
+    this.expect()
   }
 
   async publish(tracks: SlotTracks): Promise<void> {
@@ -84,27 +93,65 @@ export class PeerLink {
     }
   }
 
-  async accept(signal: HuddleSignal): Promise<void> {
-    if (this.closed) return
-    try {
-      if (signal.kind === 'candidate') {
-        await this.pc.addIceCandidate(signal.candidate as RTCIceCandidateInit)
-        return
-      }
-      await this.describe(signal.description as RTCSessionDescriptionInit)
-    } catch {
-      // A candidate arriving for an offer we chose to ignore, or after the
-      // connection went away, is expected and not worth surfacing.
-    }
+  // Signals are taken strictly one at a time. Two of them in flight together is
+  // how a candidate ends up being offered to a connection that has not been
+  // told who it is talking to yet, and a candidate refused that way is gone for
+  // good, which leaves the call ringing forever.
+  accept(signal: HuddleSignal): Promise<void> {
+    if (this.closed) return Promise.resolve()
+    this.turn = this.turn.then(() => this.handle(signal)).catch(() => {})
+    return this.turn
   }
 
   close(): void {
     this.closed = true
-    if (this.recoverTimer !== null) window.clearTimeout(this.recoverTimer)
+    this.clear('recoverTimer')
+    this.clear('stallTimer')
     this.pc.onnegotiationneeded = null
     this.pc.onicecandidate = null
     this.pc.onconnectionstatechange = null
     this.pc.close()
+  }
+
+  private async handle(signal: HuddleSignal): Promise<void> {
+    if (this.closed) return
+    if (signal.kind === 'candidate') {
+      await this.candidate(signal.candidate as RTCIceCandidateInit)
+      return
+    }
+    try {
+      await this.describe(signal.description as RTCSessionDescriptionInit)
+    } catch {
+      // A description that no longer fits the state it arrived in is the other
+      // side having moved on, and the next one will fit.
+    }
+  }
+
+  // Candidates that arrive ahead of the description they belong to are held,
+  // not dropped, and handed over the moment there is something to attach them
+  // to. On one machine every candidate arrives in that first rush.
+  private async candidate(candidate: RTCIceCandidateInit): Promise<void> {
+    if (!this.pc.remoteDescription) {
+      this.waiting.push(candidate)
+      return
+    }
+    await this.add(candidate)
+  }
+
+  private async add(candidate: RTCIceCandidateInit): Promise<void> {
+    try {
+      await this.pc.addIceCandidate(candidate)
+    } catch {
+      // A candidate for a description we chose to ignore, or one that arrives
+      // after the connection is gone, has nowhere to go.
+    }
+  }
+
+  private async drain(): Promise<void> {
+    const held = this.waiting
+    if (held.length === 0) return
+    this.waiting = []
+    for (const candidate of held) await this.add(candidate)
   }
 
   private async describe(description: RTCSessionDescriptionInit): Promise<void> {
@@ -116,6 +163,7 @@ export class PeerLink {
     this.settingAnswer = description.type === 'answer'
     await this.pc.setRemoteDescription(description)
     this.settingAnswer = false
+    await this.drain()
     if (description.type !== 'offer') return
     await this.pc.setLocalDescription()
     this.send({ kind: 'description', description: this.pc.localDescription?.toJSON() })
@@ -146,23 +194,51 @@ export class PeerLink {
     void sender.setParameters(params).catch(() => {})
   }
 
+  // A handshake that goes quiet has lost something on the way, and the answer
+  // is to say it again rather than to sit and wait. Only the first exchange is
+  // ever repeated: once the two ends agree, nothing here speaks again.
+  private expect(): void {
+    this.clear('stallTimer')
+    this.stallTimer = setTimeout(() => {
+      this.stallTimer = null
+      if (this.closed || this.settled()) return
+      if (this.nudges >= MAX_NUDGES) return
+      this.nudges += 1
+      if (this.pc.signalingState === 'have-local-offer' && this.pc.localDescription) {
+        this.send({ kind: 'description', description: this.pc.localDescription.toJSON() })
+      } else if (this.pc.signalingState === 'stable' && !this.pc.remoteDescription) {
+        void this.offer()
+      }
+      this.expect()
+    }, STALL_AFTER_MS)
+  }
+
+  private settled(): boolean {
+    return this.pc.signalingState === 'stable' && this.pc.remoteDescription !== null
+  }
+
+  private clear(which: 'recoverTimer' | 'stallTimer'): void {
+    const timer = this[which]
+    if (timer === null) return
+    clearTimeout(timer)
+    this[which] = null
+  }
+
   // A connection that fails is retried straight away; one that only wobbles is
   // given a few seconds to come back on its own before the ICE restart, and
   // only one side restarts so the two do not fight each other.
   private watch(): void {
     this.state = this.pc.connectionState
     this.onChange()
-    if (this.recoverTimer !== null) {
-      window.clearTimeout(this.recoverTimer)
-      this.recoverTimer = null
-    }
+    this.clear('recoverTimer')
+    if (this.state === 'connected') this.clear('stallTimer')
     if (this.polite) return
     if (this.state === 'failed') {
       this.pc.restartIce()
       return
     }
     if (this.state !== 'disconnected') return
-    this.recoverTimer = window.setTimeout(() => {
+    this.recoverTimer = setTimeout(() => {
       this.recoverTimer = null
       if (this.closed || this.pc.connectionState !== 'disconnected') return
       this.pc.restartIce()
