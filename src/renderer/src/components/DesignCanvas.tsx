@@ -287,7 +287,7 @@ function AgentCursors({ editor, cursors }: { editor: Editor | null; cursors: Des
                 className="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full"
                 style={{ background: `oklch(0.76 0.15 ${petHue(presence.userId)})` }}
               />
-              <span className="absolute left-2 top-2 flex items-center gap-1.5 rounded-full glass pl-1 pr-2.5 py-0.5 whitespace-nowrap">
+              <span className="absolute left-2 top-2 flex items-center gap-1.5 rounded-full glass glass-strong pl-1 pr-2.5 py-0.5 whitespace-nowrap">
                 <AgentIcon seed={presence.userId} size="sm" />
                 <span className="text-xs font-semibold text-fg">{presence.name}</span>
               </span>

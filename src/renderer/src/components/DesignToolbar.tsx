@@ -49,7 +49,7 @@ export default function DesignToolbar() {
       <div
         role="toolbar"
         aria-label="Design tools"
-        className="glass rounded-full h-12 flex items-center gap-1 px-2 pointer-events-auto"
+        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-2 pointer-events-auto"
       >
         {TOOL_GROUPS.map(group => (
           <Group
@@ -112,7 +112,7 @@ function Group({
           aria-label={`${group.label} options`}
           aria-expanded={menuOpen}
           className={`h-8 w-4 pr-1 rounded-full grid place-items-center transition-colors ${
-            active ? 'text-ink-900/50 hover:text-ink-900' : 'text-fg-faint hover:text-fg'
+            active ? 'text-ink-900/70 hover:text-ink-900' : 'text-fg-muted hover:text-fg'
           }`}
         >
           <ChevronUpIcon className="w-3 h-3" />

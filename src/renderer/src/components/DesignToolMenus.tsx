@@ -54,7 +54,7 @@ export default function DesignToolMenu({
   }
 
   return (
-    <Popover open={open} onClose={onClose} side="top" align="start" className="min-w-48">
+    <Popover open={open} onClose={onClose} side="top" align="start" className="glass-strong min-w-48">
       <div role="menu" aria-label={group.label}>
         {group.tools.map(tool => (
           <Row key={tool.id} tool={tool} active={tool.id === current} onPick={() => pick(tool)} />
