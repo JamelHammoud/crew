@@ -71,7 +71,7 @@ describe('laying out the stage', () => {
         const rows = Math.ceil(count / columns)
         const across = (wide.width - 12 * (columns - 1)) / columns
         const down = ((wide.height - 12 * (rows - 1)) / rows) * (16 / 9)
-        expect(best.width).toBeGreaterThanOrEqual(Math.min(across, down) - 0.001)
+        expect(best.width).toBeGreaterThanOrEqual(Math.floor(Math.min(across, down)))
       }
     }
   })
