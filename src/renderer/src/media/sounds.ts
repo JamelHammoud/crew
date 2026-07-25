@@ -123,7 +123,8 @@ export function playSound(name: SoundName): void {
   const now = Date.now()
   if (now - (last[name] ?? -APART) < APART) return
   last[name] = now
-  playNotes(VOICES[name])
+  if (name in STRIKES) playStrikes(STRIKES[name as StrikeName])
+  else playNotes(CHIMES[name as ChimeName])
 }
 
 export function soundFor(event: SessionEvent, selfId: string): SoundName | null {
