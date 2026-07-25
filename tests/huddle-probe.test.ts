@@ -16,6 +16,14 @@ class TestResizeObserver {
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 Element.prototype.getAnimations ??= () => []
 
+const bridge = {
+  screenSources: () => Promise.resolve([]),
+  pickScreenSource: () => Promise.resolve(),
+  askForMedia: () => Promise.resolve(true),
+  openMediaSettings: () => Promise.resolve()
+}
+Object.assign(window, { crew: bridge })
+
 const peer = (peerId: string, name: string, extra: Partial<HuddlePeer> = {}): HuddlePeer => ({
   peerId,
   memberId: `m-${peerId}`,
