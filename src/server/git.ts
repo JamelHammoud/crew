@@ -6,6 +6,7 @@ import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '.
 const CREW_PATHS = ['.crew']
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
 const DIFF_LIMIT = 200_000
+const DIFF_LINE_LIMIT = 2_000
 
 interface StatusEntry {
   code: string
@@ -233,15 +234,16 @@ export class GitSync {
     const diff = result.stdout
     const counts = diffCounts(diff)
     const binary = /^Binary files |^GIT binary patch/m.test(diff)
+    const preview = diffPreview(diff)
     return {
       path: entry.path,
       previousPath: entry.previousPath,
       kind,
       added: counts.added,
       removed: counts.removed,
-      diff: diff.slice(0, DIFF_LIMIT),
+      diff: preview.diff,
       binary,
-      truncated: diff.length > DIFF_LIMIT
+      truncated: preview.truncated
     }
   }
 
@@ -276,8 +278,9 @@ export class GitSync {
       const text = contents.toString('utf8').replace(/\r\n/g, '\n')
       const lines = text ? text.split('\n') : []
       if (lines.at(-1) === '') lines.pop()
+      const previewLines = lines.slice(0, DIFF_LINE_LIMIT)
       const diff =
-        lines.length === 0
+        previewLines.length === 0
           ? ''
           : [
               `diff --git a/${entry.path} b/${entry.path}`,
@@ -285,13 +288,13 @@ export class GitSync {
               '--- /dev/null',
               `+++ b/${entry.path}`,
               `@@ -0,0 +1,${lines.length} @@`,
-              ...lines.map(line => `+${line}`)
+              ...previewLines.map(line => `+${line}`)
             ].join('\n')
       return {
         ...empty,
         added: lines.length,
-        diff,
-        truncated: stat.size > DIFF_LIMIT
+        diff: diff.slice(0, DIFF_LIMIT),
+        truncated: stat.size > DIFF_LIMIT || lines.length > DIFF_LINE_LIMIT || diff.length > DIFF_LIMIT
       }
     } catch {
       return empty
@@ -377,6 +380,15 @@ function diffCounts(diff: string): { added: number; removed: number } {
     }
   }
   return { added, removed }
+}
+
+function diffPreview(diff: string): { diff: string; truncated: boolean } {
+  const lines = diff.split(/\r?\n/)
+  const preview = lines.slice(0, DIFF_LINE_LIMIT).join('\n')
+  return {
+    diff: preview.slice(0, DIFF_LIMIT),
+    truncated: lines.length > DIFF_LINE_LIMIT || preview.length > DIFF_LIMIT
+  }
 }
 
 function gitDetail(result: GitResult): string {
