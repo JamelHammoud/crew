@@ -54,21 +54,25 @@ export default function TopBar({
   }
 
   return (
-    <header className="app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0">
+    <header className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 h-[70px] shrink-0">
       <span className="font-mono font-semibold text-xl text-fg select-none pl-[64px]">crew</span>
 
-      <nav className="app-no-drag flex items-center gap-2">
+      <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">
         {TABS.map(t => (
-          <button
-            key={t.id}
-            onClick={() => onTab(t.id)}
-            className={`flex items-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
-              tab === t.id ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
-            }`}
-          >
-            {tab === t.id && <TabIcon tab={t.id} />}
-            {t.label}
-          </button>
+          <Tooltip key={t.id} label={t.label}>
+            <button
+              onClick={() => onTab(t.id)}
+              aria-label={t.label}
+              className={`top-bar-tab flex items-center justify-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
+                tab === t.id
+                  ? 'is-active bg-ink-800 text-fg'
+                  : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+              }`}
+            >
+              <TabIcon tab={t.id} />
+              <span className="top-bar-tab-label">{t.label}</span>
+            </button>
+          </Tooltip>
         ))}
       </nav>
 

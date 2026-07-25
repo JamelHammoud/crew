@@ -180,6 +180,38 @@ body {
     0 2px 8px rgb(0 0 0 / 0.08);
 }
 
+.top-bar-container {
+  container-type: inline-size;
+}
+
+.top-bar-tab .tab-icon {
+  display: none;
+}
+
+.top-bar-tab.is-active {
+  gap: 7px;
+}
+
+.top-bar-tab.is-active .tab-icon {
+  display: grid;
+}
+
+@container (max-width: 760px) {
+  .top-bar .top-bar-tab {
+    width: 40px;
+    padding-inline: 0;
+    gap: 0;
+  }
+
+  .top-bar .top-bar-tab .tab-icon {
+    display: grid;
+  }
+
+  .top-bar-tab-label {
+    display: none;
+  }
+}
+
 /* Tab icons: the wrapper opens up a slot for the icon, the icon draws itself inside it. */
 .tab-icon {
   display: grid;
@@ -223,7 +255,6 @@ body {
   }
   to {
     width: 20px;
-    margin-right: 7px;
     opacity: 1;
     transform: none;
   }
