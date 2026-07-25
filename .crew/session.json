@@ -1094,6 +1094,110 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
       }
+    },
+    {
+      "id": "ali/a5870501-29f9-482a-8e95-280a04acf660",
+      "label": "Claude Fable 2",
+      "provider": "claude",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "fable",
+        "opusModel": "claude-opus-5",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "Opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "Sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "Haiku"
+            },
+            {
+              "value": "fable",
+              "label": "Fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true
     }
   ]
 }
