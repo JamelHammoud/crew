@@ -93,9 +93,11 @@ const THEMES = {
       [0.86, '#adcfef', 1],
       [1, '#7fa9d4', 1]
     ],
-    shade: ['#14406e', 0.35],
+    shade: ['#1a5590', 0.32],
     bounce: ['#ffffff', 0.95],
-    gloss: 0.95
+    edge: ['#ffffff', 0.9],
+    gloss: 0.95,
+    grain: 0.04
   }
 }
 
