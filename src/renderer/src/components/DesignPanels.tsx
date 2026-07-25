@@ -121,7 +121,7 @@ export function BoardSwitcher() {
               </button>
             </div>
           ))}
-          <div className="h-px bg-fg/10 my-1 mx-2" />
+          <MenuDivider />
           <button
             onClick={startCreate}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-fg-secondary transition-colors hover:text-fg hover:bg-fg/5"
@@ -197,7 +197,7 @@ export function DesignZoom() {
             onClick={() => editor.zoomToSelection()}
             onDone={() => setOpen(false)}
           />
-          <div className="h-px bg-fg/10 my-1 mx-2" />
+          <MenuDivider />
           {ZOOM_STEPS.map(step => (
             <ZoomItem
               key={step}
