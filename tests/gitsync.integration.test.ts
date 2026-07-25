@@ -127,6 +127,66 @@ describe('git sync', () => {
     expect(log).toContain('crew sync')
   })
 
+  it('keeps project work local during automatic session sync', async () => {
+    const dir = tmpDir('git-review')
+    await initRepo(dir)
+    const store = new Store(dir)
+    const sync = new GitSync(dir)
+    fs.writeFileSync(path.join(dir, 'project.ts'), 'export const local = true\n')
+    store.appendEvent({
+      id: 'session-only',
+      ts: 1,
+      kind: 'message',
+      authorId: 'u1',
+      authorName: 'sam',
+      text: 'keep the project local',
+      mentions: []
+    })
+
+    await sync.syncNow()
+
+    const status = await git(dir, ['status', '--porcelain'])
+    const committed = await git(dir, ['show', '--pretty=format:', '--name-only', 'HEAD'])
+    expect(status.trim()).toBe('?? project.ts')
+    expect(committed).toContain('.crew/chat.jsonl')
+    expect(committed).not.toContain('project.ts')
+    expect((await sync.status()).changed).toBe(1)
+  })
+
+  it('shows reviewable project diffs without internal session files', async () => {
+    const dir = tmpDir('git-changes')
+    await initRepo(dir)
+    const store = new Store(dir)
+    store.appendEvent({
+      id: 'internal',
+      ts: 1,
+      kind: 'message',
+      authorId: 'u1',
+      authorName: 'sam',
+      text: 'internal state',
+      mentions: []
+    })
+    fs.appendFileSync(path.join(dir, '.gitattributes'), '# local\n')
+    fs.mkdirSync(path.join(dir, 'src'))
+    fs.writeFileSync(path.join(dir, 'src', 'app.ts'), 'export const app = true\n')
+    const sync = new GitSync(dir)
+
+    const changes = await sync.changes()
+
+    expect(changes.map(change => change.path)).toEqual(['.gitattributes', 'src/app.ts'])
+    expect(changes.find(change => change.path === '.gitattributes')).toMatchObject({
+      kind: 'modified',
+      added: 1,
+      removed: 0
+    })
+    expect(changes.find(change => change.path === 'src/app.ts')).toMatchObject({
+      kind: 'added',
+      added: 1,
+      removed: 0
+    })
+    expect(changes.find(change => change.path === 'src/app.ts')?.diff).toContain('+export const app = true')
+  })
+
   it('pulls remote changes and keeps local work in place', async () => {
     const { a, b } = await setupOriginWithTwoClones()
     fs.writeFileSync(path.join(a, 'remote.ts'), 'export const remote = true\n')
