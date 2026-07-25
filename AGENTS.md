@@ -37,7 +37,9 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
 - No logo or branding beyond the word "crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
-- The app icon is three overlapping discs, the same stack of members the app draws everywhere else. Black and white, and it flips with the theme picked in the app. `yarn icon` redraws it from `scripts/make-icon.mjs` into `resources/` and `src/main/icon-png.ts`. Nothing there is edited by hand.
+- The app icon is three overlapping discs, the same stack of members the app draws everywhere else. All three are the same size, each cut out of the one behind it by a mask, so nothing shrinks a disc. The tile is glass like the system icons: a top-to-bottom gradient, a sheen over the top half, and a rim that catches light at the top and bottom. Black and white, and it flips with the theme picked in the app.
+- The same three discs are the mark in the top left of the app, in place of the word "crew". `CrewMark` draws them at whatever `currentColor` is.
+- `yarn icon` redraws all of it from `scripts/make-icon.mjs` into `resources/` (`icon.svg`, `icon-light.svg`, `crew-logo.svg`, `icon.icns`, `icon.png`), `src/main/icon-png.ts` and `src/renderer/src/components/crew-mark.ts`. That is the only place the geometry lives. Nothing there is edited by hand.
 
 ## Layout
 
