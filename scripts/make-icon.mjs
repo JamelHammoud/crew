@@ -63,16 +63,50 @@ const stops = ([top, middle, bottom]) =>
     )
     .join('\n')
 
-function svg({ ink, tile, rim, sheen }) {
-  const centre = CANVAS / 2
-  const stack = [centre + STEP, centre, centre - STEP]
-    .flatMap((x, index) => [
-      ...(index === 0
-        ? []
-        : [`      <circle cx="${x}" cy="${centre}" r="${RADIUS + GAP}" fill="#000000" />`]),
-      `      <circle cx="${x}" cy="${centre}" r="${RADIUS}" fill="#ffffff" />`
+const CENTRE = CANVAS / 2
+const BACK_TO_FRONT = [CENTRE + STEP, CENTRE, CENTRE - STEP]
+const round = value => Number(value.toFixed(3))
+
+const stackMask = reach =>
+  BACK_TO_FRONT.flatMap((x, index) => [
+    ...(index === 0
+      ? []
+      : [`      <circle cx="${x}" cy="${CENTRE}" r="${RADIUS + GAP}" fill="#000000" />`]),
+    `      <circle cx="${x}" cy="${CENTRE}" r="${reach}" fill="#ffffff" />`
+  ]).join('\n')
+
+const gridLines = () =>
+  Array.from({ length: 13 }, (_, index) => round(CENTRE + (index - 6) * GRID))
+    .flatMap(at => [
+      `    <line x1="${at}" y1="${TILE.y}" x2="${at}" y2="${TILE.y + TILE.size}" />`,
+      `    <line x1="${TILE.x}" y1="${at}" x2="${TILE.x + TILE.size}" y2="${at}" />`
     ])
     .join('\n')
+
+const guides = () =>
+  [
+    `    <line x1="${TILE.x + GRID}" y1="${CENTRE}" x2="${TILE.x + TILE.size - GRID}" y2="${CENTRE}" />`,
+    ...BACK_TO_FRONT.map(
+      x =>
+        `    <line x1="${x}" y1="${CENTRE - RADIUS - GRID / 2}" x2="${x}" y2="${CENTRE + RADIUS + GRID / 2}" />`
+    )
+  ].join('\n')
+
+const outlines = () =>
+  BACK_TO_FRONT.map(x => `    <circle cx="${x}" cy="${CENTRE}" r="${RADIUS}" />`).join('\n')
+
+function svg({ ink, tile, rim, sheen, grid, guide }, blueprint = false) {
+  const drawing = blueprint
+    ? `  <g clip-path="url(#tile-clip)" stroke="${ink}" stroke-width="2" stroke-opacity="${grid}">
+${gridLines()}
+  </g>
+  <g stroke="${ink}" stroke-width="3" stroke-opacity="${guide}" stroke-dasharray="26 20" stroke-linecap="round">
+${guides()}
+  </g>
+  <g mask="url(#stack)" fill="none" stroke="${ink}" stroke-width="${LINE}">
+${outlines()}
+  </g>`
+    : `  <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="${ink}" mask="url(#stack)" />`
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}" viewBox="0 0 ${CANVAS} ${CANVAS}">
   <defs>
     <linearGradient id="tile" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
@@ -85,15 +119,18 @@ ${stops(tile)}
     <linearGradient id="rim" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
 ${stops(rim)}
     </linearGradient>
+    <clipPath id="tile-clip">
+      <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" />
+    </clipPath>
     <mask id="stack" maskUnits="userSpaceOnUse" x="0" y="0" width="${CANVAS}" height="${CANVAS}">
       <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="#000000" />
-${stack}
+${stackMask(blueprint ? RADIUS + LINE / 2 : RADIUS)}
     </mask>
   </defs>
   <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#tile)" />
   <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" fill="url(#sheen)" />
   <rect x="${TILE.x + RIM / 2}" y="${TILE.y + RIM / 2}" width="${TILE.size - RIM}" height="${TILE.size - RIM}" rx="${TILE.radius - RIM / 2}" fill="none" stroke="url(#rim)" stroke-width="${RIM}" />
-  <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="${ink}" mask="url(#stack)" />
+${drawing}
 </svg>
 `
 }
