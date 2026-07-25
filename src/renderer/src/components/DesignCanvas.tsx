@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   createTLStore,
   defaultBindingUtils,
-  defaultShapeUtils,
   getSnapshot,
   InstancePresenceRecordType,
   loadSnapshot,
@@ -21,8 +20,7 @@ import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
-import { DesignNodeUtil } from '../design/DesignNodeUtil'
-import { DesignFrameUtil } from '../design/FrameUtil'
+import { designShapeUtils } from '../design/shapeUtils'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
@@ -32,7 +30,7 @@ import Spinner from './Spinner'
 
 const assetUrls = designAssetUrls()
 
-const shapeUtils = [...defaultShapeUtils.filter(util => util.type !== 'frame'), DesignFrameUtil, DesignNodeUtil]
+const shapeUtils = designShapeUtils
 
 const tools = [DesignNodeTool]
 
