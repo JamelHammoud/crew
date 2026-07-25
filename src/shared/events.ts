@@ -1,6 +1,6 @@
 import type { Attachment } from './attachments'
 import type { DocMentionRef } from './docs'
-import type { AgentSettings, AgentStep } from './llm'
+import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { ReactionEmoji } from './reactions'
 
 // 'open' means the thread still wants attention: either an agent is working or
