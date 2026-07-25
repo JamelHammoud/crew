@@ -129,8 +129,7 @@ export const codexArgs = (_prompt: string, get: SettingReader): string[] => [
   '--dangerously-bypass-approvals-and-sandbox',
   '--json',
   ...flag('--model', get('model')),
-  ...flag('-c', get('effort') ? `model_reasoning_effort="${get('effort')}"` : ''),
-  '-'
+  ...flag('-c', get('effort') ? `model_reasoning_effort="${get('effort')}"` : '')
 ]
 
 // Codex has no standalone installer script; npm is its documented install path.
