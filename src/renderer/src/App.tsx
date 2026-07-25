@@ -77,6 +77,7 @@ function Session() {
       </div>
       {tab === 'chat' && openThreadId && <PlanPanel threadId={openThreadId} />}
       <SidePanel visible={tab === 'chat'} />
+      <HuddlePanel />
     </div>
   )
 }
