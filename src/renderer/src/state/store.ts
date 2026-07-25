@@ -205,8 +205,19 @@ export const useCrew = create<CrewState>((set, get) => {
             title: event.title,
             createdBy: event.byName,
             status: 'open',
+            mode: event.mode ?? 'build',
             boardId: event.boardId
           }
+          break
+        }
+        case 'thread.plan': {
+          const thread = threads[event.threadId]
+          if (thread) threads[event.threadId] = { ...thread, plan: event.text }
+          break
+        }
+        case 'thread.implement': {
+          const thread = threads[event.threadId]
+          if (thread) threads[event.threadId] = { ...thread, mode: 'build' }
           break
         }
         case 'thread.archived': {
