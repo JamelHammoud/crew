@@ -161,19 +161,7 @@ export default function TasksPanel({
   const [searching, setSearching] = useState(false)
   const [query, setQuery] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [edges, setEdges] = useState({ top: true, bottom: true })
-
-  const updateEdges = () => {
-    const el = scrollRef.current
-    if (!el) return
-    const top = el.scrollTop < 2
-    const bottom = el.scrollTop + el.clientHeight > el.scrollHeight - 2
-    setEdges(prev => (prev.top === top && prev.bottom === bottom ? prev : { top, bottom }))
-  }
-
-  useEffect(() => {
-    updateEdges()
-  })
+  const { edges } = useScrollEdges(scrollRef)
 
   const closeSearch = () => {
     setSearching(false)
