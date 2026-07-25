@@ -38,6 +38,7 @@ import {
   type SharedStyle,
   type StyleProp
 } from 'tldraw'
+import Inspector, { useSelectedNode } from '../design/Inspector'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
 import Tooltip from './Tooltip'
