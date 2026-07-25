@@ -66,17 +66,6 @@ export default function ChatMessage({ item, editable = false }: { item: ThreadIt
           <Tooltip label={formatFullTime(item.ts)}>
             <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
           </Tooltip>
-          {canEdit && !editing && (
-            <Tooltip label="Edit">
-              <button
-                onClick={() => setDraft(item.text)}
-                aria-label="Edit message"
-                className="ml-auto w-7 h-7 rounded-full flex items-center justify-center text-fg-faint opacity-0 group-hover/message:opacity-100 hover:text-fg hover:bg-fg/[0.06] transition-all active:scale-95"
-              >
-                <PencilIcon className="w-3.5 h-3.5" />
-              </button>
-            </Tooltip>
-          )}
         </div>
         {editing ? (
           <div className="mt-1.5">
@@ -129,6 +118,7 @@ export default function ChatMessage({ item, editable = false }: { item: ThreadIt
             reactions={item.reactions}
             deletable={deletable}
             onDelete={() => deleteMessage(item.key)}
+            onEdit={canEdit ? () => setDraft(item.text) : undefined}
           />
         )}
       </div>

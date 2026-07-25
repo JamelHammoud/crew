@@ -1,4 +1,4 @@
-import { EllipsisHorizontalIcon, FaceSmileIcon, TrashIcon } from '@heroicons/react/20/solid'
+import { EllipsisHorizontalIcon, FaceSmileIcon, PencilIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import { REACTION_EMOJIS, type ReactionEmoji } from '../../../shared/reactions'
 import { useCrew } from '../state/store'
@@ -17,12 +17,14 @@ export default function MessageReactions({
   targetId,
   reactions = [],
   deletable,
-  onDelete
+  onDelete,
+  onEdit
 }: {
   targetId: string
   reactions?: ReactionGroup[]
   deletable: boolean
   onDelete: () => void
+  onEdit?: () => void
 }) {
   const reactToMessage = useCrew(state => state.reactToMessage)
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -108,6 +110,16 @@ export default function MessageReactions({
               </button>
             </Tooltip>
             <Popover open={actionsOpen} onClose={() => setActionsOpen(false)} side="top">
+              {onEdit && (
+                <MenuItem
+                  icon={<PencilIcon />}
+                  label="Edit message"
+                  onClick={() => {
+                    setActionsOpen(false)
+                    onEdit()
+                  }}
+                />
+              )}
               <MenuItem
                 icon={<TrashIcon />}
                 label="Delete message"

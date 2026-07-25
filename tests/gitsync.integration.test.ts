@@ -127,18 +127,18 @@ describe('git sync', () => {
     expect(log).toContain('crew sync')
   })
 
-  it('keeps project work local during automatic session sync', async () => {
+  it('sends project work out with the session on every sync', async () => {
     const { a, b } = await setupOriginWithTwoClones()
     const store = new Store(b)
     const sync = new GitSync(b)
-    fs.writeFileSync(path.join(b, 'project.ts'), 'export const local = true\n')
+    fs.writeFileSync(path.join(b, 'project.ts'), 'export const shared = true\n')
     store.appendEvent({
-      id: 'session-only',
+      id: 'with-project',
       ts: 1,
       kind: 'message',
       authorId: 'u1',
       authorName: 'sam',
-      text: 'keep the project local',
+      text: 'ship the project too',
       mentions: []
     })
 
@@ -146,12 +146,44 @@ describe('git sync', () => {
 
     const status = await git(b, ['status', '--porcelain'])
     const committed = await git(b, ['show', '--pretty=format:', '--name-only', 'HEAD'])
-    expect(status.trim()).toBe('?? project.ts')
+    expect(status.trim()).toBe('')
     expect(committed).toContain('.crew/chat.jsonl')
-    expect(committed).not.toContain('project.ts')
-    expect((await sync.status()).changed).toBe(1)
+    expect(committed).toContain('project.ts')
+    expect((await sync.status()).changed).toBe(0)
     await git(a, ['pull'])
-    expect(new Store(a).loadEvents().map(event => event.id)).toContain('session-only')
+    expect(new Store(a).loadEvents().map(event => event.id)).toContain('with-project')
+    expect(fs.readFileSync(path.join(a, 'project.ts'), 'utf8')).toContain('shared = true')
+  })
+
+  it('carries code both ways so every machine lands on the same version', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    const syncA = new GitSync(a)
+    const syncB = new GitSync(b)
+    fs.writeFileSync(path.join(a, 'from-a.ts'), 'export const a = 1\n')
+    fs.writeFileSync(path.join(b, 'from-b.ts'), 'export const b = 2\n')
+
+    await syncA.syncNow()
+    await syncB.syncNow()
+    await syncA.syncNow()
+
+    expect(fs.readFileSync(path.join(a, 'from-b.ts'), 'utf8')).toContain('b = 2')
+    expect(fs.readFileSync(path.join(b, 'from-a.ts'), 'utf8')).toContain('a = 1')
+  })
+
+  it('leaves stale stashes out of automatic syncing', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(b, 'remote.ts'), 'export const remote = true\n')
+    await git(b, ['add', '-A'])
+    await git(b, ['commit', '-m', 'remote work'])
+    await git(b, ['push'])
+    fs.writeFileSync(path.join(a, 'local.ts'), 'export const local = true\n')
+
+    await new GitSync(a).syncNow()
+
+    const stashes = await git(a, ['stash', 'list'])
+    expect(stashes.trim()).toBe('')
+    expect(fs.readFileSync(path.join(a, 'local.ts'), 'utf8')).toContain('local = true')
+    expect(fs.readFileSync(path.join(a, 'remote.ts'), 'utf8')).toContain('remote = true')
   })
 
   it('shows reviewable project diffs without internal session files', async () => {

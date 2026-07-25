@@ -113,22 +113,20 @@ describe('project sync controls', () => {
     expect((screen.getByLabelText('Push changes') as HTMLButtonElement).disabled).toBe(true)
   })
 
-  it('stays out of the top bar outside dev mode', async () => {
+  it('stays out of the top bar, dev mode or not', async () => {
     const repoStatus = vi.fn(async () => ready)
     Object.defineProperty(window, 'crew', {
       configurable: true,
       value: { repoStatus, pullRepo: vi.fn(), pushRepo: vi.fn() } as unknown as CrewBridge
     })
 
-    vi.stubEnv('DEV', true)
-    render(topBar())
-    expect(screen.getByLabelText('Pull changes')).toBeTruthy()
-    cleanup()
-
-    vi.stubEnv('DEV', false)
-    render(topBar())
-    expect(screen.queryByLabelText('Pull changes')).toBeNull()
-    expect(screen.queryByLabelText('Push changes')).toBeNull()
-    expect(screen.queryByRole('group', { name: 'Project sync' })).toBeNull()
+    for (const dev of [true, false]) {
+      vi.stubEnv('DEV', dev)
+      render(topBar())
+      expect(screen.queryByLabelText('Pull changes')).toBeNull()
+      expect(screen.queryByLabelText('Push changes')).toBeNull()
+      expect(screen.queryByRole('group', { name: 'Project sync' })).toBeNull()
+      cleanup()
+    }
   })
 })

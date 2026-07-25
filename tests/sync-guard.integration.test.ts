@@ -51,7 +51,7 @@ async function stashes(repo: string): Promise<number> {
 }
 
 describe('sync guard', () => {
-  it('leaves local edits alone when the remote changed the same file', async () => {
+  it('commits a conflicting edit instead of stashing it away', async () => {
     const { a, b } = await twoClones({ 'app.ts': 'const value = 1\n' })
     await pushEdit(b, 'app.ts', 'const value = 2\n')
     fs.writeFileSync(path.join(a, 'app.ts'), 'const value = 3\n')
@@ -61,6 +61,8 @@ describe('sync guard', () => {
 
     expect(fs.readFileSync(path.join(a, 'app.ts'), 'utf8')).toBe('const value = 3\n')
     expect(await stashes(a)).toBe(0)
+    expect((await git(a, ['status', '--porcelain'])).trim()).toBe('')
+    expect(await git(a, ['show', '--pretty=format:', '--name-only', 'HEAD'])).toContain('app.ts')
   })
 
   it('keeps session data flowing while unrelated files are being edited', async () => {

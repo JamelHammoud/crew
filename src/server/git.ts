@@ -3,10 +3,11 @@ import path from 'node:path'
 import { overwrittenPaths, restoreAutostash, runGit, stashCount, type GitResult } from '../shared/git'
 import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '../shared/repository'
 
-const CREW_PATHS = ['.crew']
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
 const DIFF_LIMIT = 200_000
 const DIFF_LINE_LIMIT = 2_000
+const AUTO_SYNC_MS = 5000
+const DEBOUNCE_MS = 2000
 
 interface StatusEntry {
   code: string
@@ -17,18 +18,30 @@ interface StatusEntry {
 export class GitSync {
   private chain: Promise<void> = Promise.resolve()
   private timer: NodeJS.Timeout | null = null
+  private loop: NodeJS.Timeout | null = null
   private hasRemote: boolean | null = null
+  private inRepo: boolean | null = null
   onLog: (line: string) => void = () => {}
 
   constructor(private repoPath: string) {}
 
+  start(intervalMs = AUTO_SYNC_MS): void {
+    this.stop()
+    void this.syncNow()
+    this.loop = setInterval(() => void this.syncNow(), intervalMs)
+    this.loop.unref?.()
+  }
+
   schedule(): void {
     if (this.timer) clearTimeout(this.timer)
-    this.timer = setTimeout(() => void this.syncNow(), 2000)
+    this.timer = setTimeout(() => void this.syncNow(), DEBOUNCE_MS)
   }
 
   stop(): void {
     if (this.timer) clearTimeout(this.timer)
+    if (this.loop) clearInterval(this.loop)
+    this.timer = null
+    this.loop = null
   }
 
   syncNow(message = 'crew sync'): Promise<void> {
@@ -60,28 +73,36 @@ export class GitSync {
     return result
   }
 
+  // The whole working tree goes out on every pass. A session is only useful
+  // when the code everyone is looking at is the same code.
   private async sync(message: string): Promise<void> {
-    const commit = await this.commitWorkingTree(message, CREW_PATHS)
+    if (!(await this.usable())) return
+    const commit = await this.commitWorkingTree(message)
     if (!commit.ok) {
       this.onLog(`commit failed: ${commit.detail}`)
       return
     }
     await this.refreshRemote()
     if (!this.hasRemote) return
-    const blocked = await this.blockedPaths()
-    if (blocked.length > 0) {
-      this.onLog(`sync paused, ${describePaths(blocked)} changed here and on the remote`)
-      return
-    }
-    const pull = await this.pullRemote(true)
+    // Everything is committed by the time we get here, so there is nothing to
+    // autostash. Stashing here is what used to strand people's work.
+    const pull = await this.pullRemote(false)
     if (!pull.ok) {
-      this.onLog(`pull failed, left as is: ${pull.detail}`)
+      this.onLog(`pull failed, will retry: ${pull.detail}`)
       return
     }
     const push = await runGit(['push'], this.repoPath)
     if (push.code !== 0) {
       this.onLog(`push failed, will retry: ${push.stderr.trim()}`)
     }
+  }
+
+  private async usable(): Promise<boolean> {
+    if (this.inRepo === null) {
+      const repo = await runGit(['rev-parse', '--is-inside-work-tree'], this.repoPath)
+      this.inRepo = repo.code === 0 && repo.stdout.trim() === 'true'
+    }
+    return this.inRepo
   }
 
   private async pullAction(): Promise<RepoActionResult> {
