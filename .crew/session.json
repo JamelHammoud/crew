@@ -606,7 +606,7 @@
       "settings": {
         "model": "opus",
         "opusModel": "claude-opus-5",
-        "effort": "high"
+        "effort": "xhigh"
       },
       "fields": [
         {
