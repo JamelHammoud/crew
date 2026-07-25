@@ -9,8 +9,7 @@ import {
   TrashIcon
 } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useValue, type Editor, type TLPageId, type TLShape, type TLShapeId } from 'tldraw'
-import { useDesignEditor } from '../design/editorContext'
+import { useEditor, useValue, type Editor, type TLPageId, type TLShape, type TLShapeId } from 'tldraw'
 import { CanvasGlyph } from '../design/tools'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
@@ -24,9 +23,8 @@ const TABS: Array<{ id: PanelTab; label: string }> = [
 ]
 
 export default function DesignLeftPanel() {
-  const editor = useDesignEditor()
+  const editor = useEditor()
   const [tab, setTab] = useState<PanelTab>('layers')
-  if (!editor) return null
   return (
     <aside
       aria-label="Design panel"
