@@ -380,7 +380,7 @@ export function boardSummary(id: string, name: string, document: DesignDocument 
               : undefined,
         color: props.color,
         fill: props.fill,
-        parentId: shape.parentId?.startsWith('shape:') ? shape.parentId : undefined
+        parentId: parent
       })
     }
   }
