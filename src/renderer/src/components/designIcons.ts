@@ -20,9 +20,9 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 type IconComponent = ComponentType<{ className?: string }>
 
-// Chrome glyphs come from Heroicons like the rest of crew. Tool and geometry glyphs stay
-// tldraw's own, because Heroicons has no vocabulary for shapes and the toolbar draws them
-// through CanvasGlyph rather than hand-rolled SVG.
+// tldraw still draws its own context menus and dialogs, so the glyphs it reaches for are
+// swapped out for the Heroicons the rest of crew uses. Everything crew draws itself comes
+// from src/renderer/src/design/glyphs.tsx.
 const ICONS: Record<string, IconComponent> = {
   'chevron-up': ChevronUpIcon,
   'chevron-down': ChevronDownIcon,
