@@ -31,7 +31,7 @@ describe.skipIf(!RUN)('real end to end (CREW_REAL_CLI=1)', () => {
     'runs GPT-5.6 Sol through the real Codex provider',
     async () => {
       const run = codexProvider.start(
-        'Reply with exactly: crew-sol-ok',
+        'Reply with exactly: crew-sol-ok\nThis thread uses the design board "Untitled Board".\n{"kind":"note","text":"Hero section"}',
         process.cwd(),
         { onStep: () => {} },
         { model: 'gpt-5.6-sol', effort: 'low' }
