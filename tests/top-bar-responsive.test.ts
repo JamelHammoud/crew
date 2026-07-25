@@ -62,4 +62,24 @@ describe('responsive top bar', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Docs' }))
     expect(onTab).toHaveBeenCalledWith('docs')
   })
+
+  it('only shows tab tooltips once the labels collapse', () => {
+    vi.useFakeTimers()
+    render(
+      createElement(TopBar, {
+        tab: 'chat',
+        onTab: () => {},
+        tasksOpen: false,
+        onToggleTasks: () => {}
+      })
+    )
+
+    setHeaderWidth(1200)
+    hover(screen.getByRole('button', { name: 'Docs' }))
+    expect(screen.queryByText('Docs', { selector: 'span.glass' })).toBeNull()
+
+    setHeaderWidth(600)
+    hover(screen.getByRole('button', { name: 'Docs' }))
+    expect(screen.queryByText('Docs', { selector: 'span.glass' })).not.toBeNull()
+  })
 })
