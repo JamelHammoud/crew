@@ -13,7 +13,7 @@ import { CrewSession } from '../server/session'
 import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
-import type { RepoActionResult, RepoStatus } from '../shared/repository'
+import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import { AgentStore } from './agents-store'
 import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from './files'
 import { SavedSessionStore } from './saved-session'
@@ -93,6 +93,11 @@ export class AppSession {
       return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0 }
     }
     return this.git.status()
+  }
+
+  async repoChanges(): Promise<RepoChange[]> {
+    if (!this.git) return []
+    return this.git.changes()
   }
 
   async pullRepo(): Promise<RepoActionResult> {
