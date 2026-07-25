@@ -131,6 +131,70 @@ export const PanelRightGlyph = glyph(
   </>
 )
 
+export const AlignLeftGlyph = glyph(
+  <>
+    <path d="M4 3.5v17" />
+    <rect x="7.5" y="6" width="12.5" height="4.5" rx="1.5" />
+    <rect x="7.5" y="13.5" width="8" height="4.5" rx="1.5" />
+  </>
+)
+
+export const AlignCenterGlyph = glyph(
+  <>
+    <path d="M12 3.5v17" />
+    <rect x="4.5" y="6" width="15" height="4.5" rx="1.5" />
+    <rect x="7.5" y="13.5" width="9" height="4.5" rx="1.5" />
+  </>
+)
+
+export const AlignRightGlyph = glyph(
+  <>
+    <path d="M20 3.5v17" />
+    <rect x="4" y="6" width="12.5" height="4.5" rx="1.5" />
+    <rect x="8.5" y="13.5" width="8" height="4.5" rx="1.5" />
+  </>
+)
+
+export const AlignTopGlyph = glyph(
+  <>
+    <path d="M3.5 4h17" />
+    <rect x="6" y="7.5" width="4.5" height="12.5" rx="1.5" />
+    <rect x="13.5" y="7.5" width="4.5" height="8" rx="1.5" />
+  </>
+)
+
+export const AlignMiddleGlyph = glyph(
+  <>
+    <path d="M3.5 12h17" />
+    <rect x="6" y="4.5" width="4.5" height="15" rx="1.5" />
+    <rect x="13.5" y="7.5" width="4.5" height="9" rx="1.5" />
+  </>
+)
+
+export const AlignBottomGlyph = glyph(
+  <>
+    <path d="M3.5 20h17" />
+    <rect x="6" y="4" width="4.5" height="12.5" rx="1.5" />
+    <rect x="13.5" y="8.5" width="4.5" height="8" rx="1.5" />
+  </>
+)
+
+export const FlipHorizontalGlyph = glyph(
+  <>
+    <path d="M12 3.5v17" strokeDasharray="2 3" />
+    <path d="M9.25 7.25 4 12l5.25 4.75Z" />
+    <path d="M14.75 7.25 20 12l-5.25 4.75Z" />
+  </>
+)
+
+export const FlipVerticalGlyph = glyph(
+  <>
+    <path d="M3.5 12h17" strokeDasharray="2 3" />
+    <path d="M7.25 9.25 12 4l4.75 5.25Z" />
+    <path d="M7.25 14.75 12 20l4.75-5.25Z" />
+  </>
+)
+
 const GEO_GLYPHS: Record<string, Glyph> = {
   rectangle: RectangleGlyph,
   ellipse: EllipseGlyph,
