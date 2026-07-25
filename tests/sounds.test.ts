@@ -88,11 +88,13 @@ describe('which sound an event makes', () => {
 })
 
 describe('playing a sound', () => {
+  let clock = 1_000_000
+  vi.spyOn(Date, 'now').mockImplementation(() => clock)
+
   beforeEach(() => {
     started.length = 0
     store.clear()
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
+    clock += 10_000
   })
 
   it('sounds every note of the voice', () => {
