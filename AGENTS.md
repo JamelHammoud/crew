@@ -47,7 +47,18 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - `src/renderer` — React app
 - `tests` — integration suites
 
+## Syncing
+
+Every machine commits its whole working tree, integrates, and pushes on a loop, host and joiner alike. Agents on different machines write to the same branch at the same time, so `GitSync` in `src/server/git.ts` has three hard rules. Each one is here because work was destroyed without it.
+
+- Never stash. Commit everything first, so nothing is sitting uncommitted when the sync integrates. Autostash stranded people's work in stashes nobody ever went back for.
+- Never rebase on the automatic path. A rebase replays every local commit and rewrites the working tree once per commit, landing on top of files an agent is writing right now. Pull with `--no-rebase`. A merge leaves local commits alone and touches only what came in.
+- Never revert. Taking back someone's edits defeats the point of pooling agents. When a conflict cannot resolve itself, back out of it, put the pending files back, and try again on the next pass.
+
+Only `.crew/session.json` resolves itself, by keeping the local copy. Logs ending in `.jsonl` union merge through `.gitattributes`. Several windows can share one folder, so a lock file in `.git` keeps them off each other, and an interrupted merge or rebase is finished or backed out at the start of every pass.
+
 ## Rules for agents working here
 
 - `src/server`, `src/runner`, and `src/shared` must never import electron. Tests import them directly.
 - Run `yarn test` and `yarn tsc --noEmit` before considering a change done.
+- People keep more than one crew window open on the same folder, and that is supported. Never kill or quit a running instance to get a quiet repo. Work with it running, and expect your edits to be committed under you while you work.

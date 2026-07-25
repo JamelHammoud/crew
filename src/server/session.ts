@@ -715,6 +715,17 @@ export class CrewSession {
     return docMentionRefsIn(text, Object.fromEntries(this.docs))
   }
 
+  // Pairs the agents a piece of text pointed at with the names they carried
+  // when it was written, so the text can be read back under their names today.
+  private agentRefs(ids: string[]): AgentMentionRef[] {
+    const refs: AgentMentionRef[] = []
+    for (const id of new Set(ids)) {
+      const agent = this.agents.get(id)
+      if (agent) refs.push({ id: agent.id, label: agent.label })
+    }
+    return refs
+  }
+
   private handleDeleteMessage(member: Member, messageId: string): void {
     const index = this.events.findIndex(e => e.kind === 'message' && e.id === messageId)
     if (index === -1) return
