@@ -3,6 +3,9 @@ import path from 'node:path'
 import { runGit, type GitResult } from '../shared/git'
 import type { RepoActionResult, RepoStatus } from '../shared/repository'
 
+const CREW_PATHS = ['.crew']
+const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
+
 export class GitSync {
   private chain: Promise<void> = Promise.resolve()
   private timer: NodeJS.Timeout | null = null
@@ -46,14 +49,14 @@ export class GitSync {
   }
 
   private async sync(message: string): Promise<void> {
-    const commit = await this.commitWorkingTree(message)
+    const commit = await this.commitWorkingTree(message, CREW_PATHS)
     if (!commit.ok) {
       this.onLog(`commit failed: ${commit.detail}`)
       return
     }
     await this.refreshRemote()
     if (!this.hasRemote) return
-    const pull = await this.pullRemote(false)
+    const pull = await this.pullRemote(true)
     if (!pull.ok) {
       this.onLog(`pull failed, left as is: ${pull.detail}`)
       return
@@ -116,13 +119,15 @@ export class GitSync {
   }
 
   private async commitWorkingTree(
-    message: string
+    message: string,
+    paths?: string[]
   ): Promise<{ ok: boolean; updated: boolean; detail: string }> {
-    const add = await runGit(['add', '-A'], this.repoPath)
+    const scope = paths ? ['--', ...paths] : []
+    const add = await runGit(['add', '-A', ...scope], this.repoPath)
     if (add.code !== 0) return { ok: false, updated: false, detail: gitDetail(add) }
-    const staged = await runGit(['diff', '--cached', '--quiet'], this.repoPath)
+    const staged = await runGit(['diff', '--cached', '--quiet', ...scope], this.repoPath)
     if (staged.code === 0) return { ok: true, updated: false, detail: '' }
-    const commit = await runGit(['commit', '-m', message], this.repoPath)
+    const commit = await runGit(['commit', '-m', message, ...scope], this.repoPath)
     return {
       ok: commit.code === 0,
       updated: commit.code === 0,
@@ -172,7 +177,7 @@ export class GitSync {
     }
     const [branch, changes, remotes, divergence] = await Promise.all([
       runGit(['branch', '--show-current'], this.repoPath),
-      runGit(['status', '--porcelain'], this.repoPath),
+      runGit(['status', '--porcelain', '--', ...PROJECT_PATHS], this.repoPath),
       runGit(['remote'], this.repoPath),
       runGit(['rev-list', '--left-right', '--count', 'HEAD...@{upstream}'], this.repoPath)
     ])
