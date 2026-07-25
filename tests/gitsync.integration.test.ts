@@ -186,6 +186,50 @@ describe('git sync', () => {
     expect(fs.readFileSync(path.join(b, 'shared.ts'), 'utf8')).toContain('shared = true')
   })
 
+  it('never rewinds a file an agent is writing while the sync runs', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(a, 'agent.ts'), 'export const step = 1\n')
+    await new GitSync(a).syncNow()
+    await git(b, ['pull'])
+
+    for (let round = 2; round <= 6; round++) {
+      fs.writeFileSync(path.join(b, `from-b-${round}.ts`), `export const b = ${round}\n`)
+      await git(b, ['add', '-A'])
+      await git(b, ['commit', '-m', `b work ${round}`])
+      await git(b, ['push'])
+      const sync = new GitSync(a).syncNow()
+      fs.writeFileSync(path.join(a, 'agent.ts'), `export const step = ${round}\n`)
+      await sync
+      expect(fs.readFileSync(path.join(a, 'agent.ts'), 'utf8')).toBe(`export const step = ${round}\n`)
+    }
+
+    await new GitSync(a).syncNow()
+    expect(fs.readFileSync(path.join(a, 'agent.ts'), 'utf8')).toBe('export const step = 6\n')
+    expect(await git(a, ['log', '--oneline'])).toContain('b work 6')
+  })
+
+  it('keeps every local commit when remote work lands at the same time', async () => {
+    const { a, b } = await setupOriginWithTwoClones()
+    fs.writeFileSync(path.join(a, 'mine.ts'), 'export const mine = 1\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'my first change'])
+    fs.writeFileSync(path.join(a, 'mine2.ts'), 'export const mine = 2\n')
+    await git(a, ['add', '-A'])
+    await git(a, ['commit', '-m', 'my second change'])
+    fs.writeFileSync(path.join(b, 'theirs.ts'), 'export const theirs = true\n')
+    await git(b, ['add', '-A'])
+    await git(b, ['commit', '-m', 'their change'])
+    await git(b, ['push'])
+
+    await new GitSync(a).syncNow()
+
+    const log = await git(a, ['log', '--oneline'])
+    expect(log).toContain('my first change')
+    expect(log).toContain('my second change')
+    expect(log).toContain('their change')
+    expect(fs.readFileSync(path.join(a, 'theirs.ts'), 'utf8')).toContain('theirs = true')
+  })
+
   it('digs itself out of a rebase left half finished', async () => {
     const { a, b } = await setupOriginWithTwoClones()
     fs.writeFileSync(path.join(a, 'app.ts'), 'const value = 1\n')
