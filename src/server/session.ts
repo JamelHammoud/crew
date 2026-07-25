@@ -1648,6 +1648,18 @@ export class CrewSession {
       threadId,
       ...result
     })
+    if (thread && thread.mode === 'plan' && result.ok && result.text?.trim()) {
+      thread.plan = result.text.trim()
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'thread.plan',
+        threadId: thread.id,
+        text: thread.plan,
+        agentId: agent.id,
+        agentLabel: agent.label
+      })
+    }
     // Steers the run never acknowledged died with it, so give them a turn of
     // their own rather than losing them.
     const orphaned = this.steers.get(promptId) ?? []
