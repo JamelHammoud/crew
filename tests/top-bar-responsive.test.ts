@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
 
@@ -10,12 +11,12 @@ describe('responsive top bar', () => {
   it('keeps every tab icon available when labels collapse', () => {
     const onTab = vi.fn()
     render(
-      <TopBar
-        tab="chat"
-        onTab={onTab}
-        tasksOpen={false}
-        onToggleTasks={() => {}}
-      />
+      createElement(TopBar, {
+        tab: 'chat',
+        onTab,
+        tasksOpen: false,
+        onToggleTasks: () => {}
+      })
     )
 
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
