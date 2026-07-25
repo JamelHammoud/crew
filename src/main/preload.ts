@@ -36,6 +36,15 @@ const bridge = {
     ipcRenderer.invoke('file:write', path, text),
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
+  setBadge: (count: number): Promise<void> => ipcRenderer.invoke('app:badge', count),
+  notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
+  onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
+    const handler = (_event: unknown, threadId: string) => listener(threadId)
+    ipcRenderer.on('notification:open', handler)
+    return () => {
+      ipcRenderer.off('notification:open', handler)
+    }
+  },
   onFullScreen: (listener: (full: boolean) => void): void => {
     ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
   },
