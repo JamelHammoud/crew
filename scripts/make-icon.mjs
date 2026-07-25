@@ -104,9 +104,6 @@ const guides = () =>
     )
   ].join('\n')
 
-const outlines = () =>
-  BACK_TO_FRONT.map(x => `    <circle cx="${x}" cy="${CENTRE}" r="${RADIUS}" />`).join('\n')
-
 function svg({ ink, tile, rim, sheen, grid, guide }, blueprint = false) {
   const drawing = blueprint
     ? `  <g clip-path="url(#tile-clip)" stroke="${ink}" stroke-width="2" stroke-opacity="${grid}">
@@ -115,10 +112,12 @@ ${gridLines()}
   <g stroke="${ink}" stroke-width="3" stroke-opacity="${guide}" stroke-dasharray="26 20" stroke-linecap="round">
 ${guides()}
   </g>
-  <g mask="url(#stack)" fill="none" stroke="${ink}" stroke-width="${LINE}">
-${outlines()}
+  <g fill="none" stroke="${ink}" stroke-width="${LINE}">
+${discs()}
   </g>`
-    : `  <rect x="0" y="0" width="${CANVAS}" height="${CANVAS}" fill="${ink}" mask="url(#stack)" />`
+    : `  <g fill="${ink}">
+${discs()}
+  </g>`
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}" viewBox="0 0 ${CANVAS} ${CANVAS}">
   <defs>
     <linearGradient id="tile" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
