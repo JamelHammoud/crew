@@ -35,7 +35,8 @@ export default function HuddleDock({
 
   return (
     <div
-      style={{ left: spot.x, top: spot.y, width: SIZE.w }}
+      ref={attach}
+      style={{ left: spot.x, top: spot.y, width: WIDTH }}
       className={`glass fixed z-50 rounded-card p-2.5 flex flex-col gap-2.5 animate-pop ${
         dragging ? '' : 'transition-shadow duration-200'
       }`}
@@ -83,5 +84,3 @@ export default function HuddleDock({
     </div>
   )
 }
-
-export const DOCK_SIZE = SIZE
