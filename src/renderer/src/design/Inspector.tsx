@@ -179,11 +179,6 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
           <div key={at} className="flex items-center gap-1.5">
             {fill.type === 'solid' ? (
               <ColorInput value={fill.color} onChange={color => setFill(at, { ...fill, color })} />
-            ) : fill.type === 'glass' ? (
-              <>
-                <ColorInput value={fill.tint} onChange={tint => setFill(at, { ...fill, tint })} />
-                <NumberInput value={fill.blur} min={0} max={200} onChange={blur => setFill(at, { ...fill, blur })} />
-              </>
             ) : (
               <span className="flex-1 h-7 rounded-full bg-fg/[0.06] flex items-center px-3 text-xs text-fg-muted">
                 {fill.type === 'linear' ? 'Linear gradient' : 'Radial gradient'}
