@@ -15,7 +15,7 @@ export function fitTiles(count: number, width: number, height: number, gap: numb
     const rows = Math.ceil(count / columns)
     const across = (width - gap * (columns - 1)) / columns
     const down = ((height - gap * (rows - 1)) / rows) * RATIO
-    const size = Math.min(across, down)
+    const size = Math.floor(Math.min(across, down))
     if (size > best.width) best = { columns, width: size }
   }
   return best
