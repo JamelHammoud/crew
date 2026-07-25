@@ -14,16 +14,6 @@ const ATTACK = 0.006
 const LENGTH = 0.2
 const GAIN = 0.07
 
-let shared: AudioContext | null = null
-
-function context(): AudioContext | null {
-  const Ctor = globalThis.AudioContext
-  if (!Ctor) return null
-  if (!shared) shared = new Ctor()
-  if (shared.state === 'suspended') void shared.resume().catch(() => {})
-  return shared
-}
-
 export function playNotes(notes: Note[]): void {
   try {
     const ctx = context()
