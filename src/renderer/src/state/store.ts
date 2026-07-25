@@ -18,6 +18,8 @@ export interface ThreadMeta {
   title: string
   createdBy: string
   status: ThreadStatus
+  mode: ThreadMode
+  plan?: string
   boardId?: string
 }
 
@@ -82,6 +84,7 @@ interface CrewState {
   deleteMessage: (messageId: string) => void
   reactToMessage: (targetId: string, emoji: ReactionEmoji) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
+  implementPlan: (threadId: string) => void
   addTodo: (text: string, agentId?: string) => void
   editTodo: (todoId: string, text: string, agentId?: string) => void
   removeTodo: (todoId: string) => void
