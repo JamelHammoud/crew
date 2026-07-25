@@ -301,32 +301,7 @@ export class Runner {
   }
 
   private ownInstance(id: string): string | null {
-    const prefix = `${this.opts.name.trim().toLowerCase()}/`
-    return id.startsWith(prefix) ? id.slice(prefix.length) : null
-  }
-
-  // The server remembers agents across restarts; if one of ours is offline in
-  // the snapshot and its CLI is on this machine, the local definition was lost
-  // (wiped store, fresh install), not the agent. Re-register it instead of
-  // leaving a ghost the owner can see but never run.
-  private async adoptOwnAgents(snapshot: SessionSnapshot): Promise<void> {
-    for (const agent of snapshot.agents) {
-      const instanceId = this.ownInstance(agent.id)
-      if (!instanceId || agent.status !== 'offline') continue
-      if (this.agents.has(agent.id)) continue
-      const provider = this.providersByName.get(agent.provider)
-      if (!provider || !(await provider.detect())) continue
-      const def: AgentDef = {
-        instanceId,
-        provider: agent.provider,
-        name: agent.label,
-        settings: agent.settings ?? {}
-      }
-      const key = this.define(def)
-      if (!key) continue
-      this.send({ type: 'agent.register', llm: this.registered(this.agents.get(key)!) })
-      this.opts.onAdopt?.(def)
-    }
+    return this.agents.get(id)?.instanceId ?? null
   }
 
   // The run may finish while the attachments are being fetched, so the ack is
