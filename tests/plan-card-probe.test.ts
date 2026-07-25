@@ -89,13 +89,15 @@ describe('plans in the app', () => {
     })
 
     render(createElement(App))
-    expect(screen.getByText('Implement plan')).toBeTruthy()
+    expect(screen.getByText('Planning complete')).toBeTruthy()
+    expect(screen.getByText("ALI's PC")).toBeTruthy()
     expect(screen.getAllByText('Rename the tabs').length).toBeGreaterThan(0)
 
-    fireEvent.click(screen.getByText('Open'))
+    fireEvent.click(screen.getByText('Planning complete'))
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByText('Plan')).toBeTruthy()
     expect(screen.getByText('Not started')).toBeTruthy()
+    expect(screen.getByText('Implement plan')).toBeTruthy()
     expect(screen.getAllByText('Ship it').length).toBeGreaterThan(0)
   })
 
