@@ -107,6 +107,9 @@ export interface PooledAgent {
 }
 
 export interface AgentDef {
+  // Minted once, when the agent is made, and kept for the life of the agent.
+  // Older definitions have none and get one the first time they are loaded.
+  id?: string
   instanceId: string
   provider: string
   name: string
