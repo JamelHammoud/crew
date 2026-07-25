@@ -322,7 +322,7 @@ function Assets({ editor }: { editor: Editor }) {
           onClick={() => editor.select(shape.id)}
           className="w-full h-7 flex items-center gap-2 px-2 rounded-lg text-xs text-left text-fg-secondary transition-colors hover:text-fg hover:bg-fg/[0.06]"
         >
-          <CanvasGlyph name="geo-rectangle" className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+          <RectangleGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
           <span className="flex-1 truncate">{(shape.props as { component: string }).component}</span>
         </button>
       ))}
