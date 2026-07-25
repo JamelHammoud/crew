@@ -83,6 +83,23 @@ describe('presence stack', () => {
     expect(bar.querySelectorAll('.w-10.h-10').length).toBe(2)
   })
 
+  it('counts an agent as working while it has prompts in flight', () => {
+    here([member('self', 'Jamel', true)], [agent('a1', 'Bubbles', 'idle')], { a1: ['p1', 'p2'] })
+    render(createElement(PresenceStack))
+    fireEvent.click(screen.getByRole('button', { name: "Who's here" }))
+
+    expect(screen.getByText('Bubbles')).toBeTruthy()
+    expect(screen.getByText('2 threads')).toBeTruthy()
+  })
+
+  it('names a single thread in the singular', () => {
+    here([member('self', 'Jamel', true)], [agent('a1', 'Bubbles', 'busy')], { a1: ['p1'] })
+    render(createElement(PresenceStack))
+    fireEvent.click(screen.getByRole('button', { name: "Who's here" }))
+
+    expect(screen.getByText('1 thread')).toBeTruthy()
+  })
+
   it('shows nothing when nobody else is here', () => {
     here([member('self', 'Jamel', true), member('m2', 'Sam', false)], [agent('a2', 'Kimi', 'idle')])
     const { container } = render(createElement(PresenceStack))
