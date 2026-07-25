@@ -72,6 +72,17 @@ describe('presence stack', () => {
     expect(screen.queryByText('Ali')).toBeNull()
   })
 
+  it('draws faces the same size as the top bar avatar', () => {
+    here([member('self', 'Jamel', true), member('m1', 'Ali', true)], [agent('a1', 'Bubbles', 'busy')])
+    render(createElement(PresenceStack))
+    const bar = screen.getByRole('button', { name: "Who's here" })
+
+    for (const face of bar.querySelectorAll('span[style*="width"]')) {
+      expect((face as HTMLElement).style.width).toBe('40px')
+    }
+    expect(bar.querySelectorAll('.w-10.h-10').length).toBe(2)
+  })
+
   it('shows nothing when nobody else is here', () => {
     here([member('self', 'Jamel', true), member('m2', 'Sam', false)], [agent('a2', 'Kimi', 'idle')])
     const { container } = render(createElement(PresenceStack))
