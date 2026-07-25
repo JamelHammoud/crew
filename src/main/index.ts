@@ -14,11 +14,23 @@ import {
 } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  askForMedia,
+  installDisplayMedia,
+  mediaAccess,
+  openMediaSettings,
+  pickScreenSource,
+  screenSources,
+  type MediaKind
+} from './media'
 import { AppSession, type NewAgent } from './session'
 import { createWindowOptions } from './window-options'
 
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
 app.commandLine.appendSwitch('disable-renderer-backgrounding')
+// Huddle audio arrives without anyone clicking play, and Chromium blocks that
+// by default.
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
