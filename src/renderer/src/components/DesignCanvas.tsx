@@ -1,3 +1,4 @@
+import { CursorArrowRaysIcon } from '@heroicons/react/24/solid'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   createTLStore,
