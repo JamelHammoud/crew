@@ -14,6 +14,8 @@ import {
 } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { setBadge, showAlert } from './alerts'
+import type { AgentAlert } from '../shared/alerts'
 import {
   askForMedia,
   installDisplayMedia,
