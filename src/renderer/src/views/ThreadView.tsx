@@ -158,9 +158,9 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     <ChevronLeftIcon className="w-5 h-5" />
                   </button>
                 </Tooltip>
-                <MemberName id={thread.agentId} name={thread.agentLabel}>
+                <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0 flex-1">
                   <span className="flex items-center gap-3 min-w-0 cursor-default">
-                    <AgentIcon seed={thread.agentId} presence={agentPresence} />
+                    <AgentIcon seed={thread.agentId} presence={agentPresence} className="@max-[480px]:hidden" />
                     <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
                   </span>
                 </MemberName>
