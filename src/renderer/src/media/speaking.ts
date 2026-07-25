@@ -4,6 +4,7 @@ const STOP_LEVEL = 0.014
 const HOLD_MS = 550
 
 interface Watched {
+  stream: MediaStream
   analyser: AnalyserNode
   source: MediaStreamAudioSourceNode
   buffer: Float32Array
