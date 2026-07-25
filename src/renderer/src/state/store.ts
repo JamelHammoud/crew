@@ -627,6 +627,17 @@ export const useCrew = create<CrewState>((set, get) => {
     renameAgent: (agentId, label) => {
       socket.send({ type: 'agent.rename', agentId, label })
     },
+    setAgentAvatar: (agentId, file) => {
+      if (!file) {
+        socket.send({ type: 'agent.avatar', agentId, image: null })
+        return
+      }
+      const [picked] = imagesFrom([file])
+      if (!picked) return
+      void readImages([picked], 0).then(([image]) => {
+        if (image) socket.send({ type: 'agent.avatar', agentId, image: { name: image.name, mime: image.mime, data: image.data } })
+      })
+    },
     removeAgent: agentId => {
       socket.send({ type: 'agent.remove', agentId })
     },
