@@ -1,18 +1,13 @@
 import { app, nativeImage, type NativeImage } from 'electron'
+import { fromSource } from './from-source'
 import { DARK_ICON, DEV_DARK_ICON, DEV_LIGHT_ICON, LIGHT_ICON } from './icon-png'
 
 export type IconTheme = 'dark' | 'light'
 
 const cache = new Map<IconTheme, NativeImage>()
 
-// Not app.isPackaged: that only asks whether the binary is still called
-// Electron, and `yarn dev` renames it to Crew, so a run from source claims to
-// be packaged. A packaged app loads from inside the bundle's resources, and
-// nothing run from source does.
-export function fromSource(appPath: string): boolean {
-  return !/[\\/][Rr]esources[\\/]app(\.asar)?$/.test(appPath)
-}
-
+// A build run from source wears the blueprint, so it is never mistaken for the
+// installed app sitting next to it in the dock.
 function encoded(theme: IconTheme): string {
   if (fromSource(app.getAppPath())) return theme === 'light' ? DEV_LIGHT_ICON : DEV_DARK_ICON
   return theme === 'light' ? LIGHT_ICON : DARK_ICON
