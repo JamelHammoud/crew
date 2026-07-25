@@ -15,14 +15,23 @@ export interface Present {
   id: string
   name: string
   agent: boolean
+  threads: number
 }
 
-export function presentNow(members: MemberInfo[], agents: PooledAgent[], selfId: string): Present[] {
+export function presentNow(
+  members: MemberInfo[],
+  agents: PooledAgent[],
+  selfId: string,
+  activePrompts: Record<string, string[]> = {}
+): Present[] {
+  const threadsOf = (agent: PooledAgent): number => (activePrompts[agent.id] ?? []).length
   return [
     ...members
       .filter(member => member.connected && member.id !== selfId)
-      .map(member => ({ id: member.id, name: member.name, agent: false })),
-    ...agents.filter(agent => agent.status === 'busy').map(agent => ({ id: agent.id, name: agent.label, agent: true }))
+      .map(member => ({ id: member.id, name: member.name, agent: false, threads: 0 })),
+    ...agents
+      .filter(agent => threadsOf(agent) > 0 || agent.status === 'busy')
+      .map(agent => ({ id: agent.id, name: agent.label, agent: true, threads: threadsOf(agent) }))
   ]
 }
 
@@ -33,14 +42,21 @@ function Face({ who, size = 'md' }: { who: Present; size?: 'sm' | 'md' }): React
 function Group({ label, who }: { label: string; who: Present[] }): ReactElement | null {
   if (who.length === 0) return null
   return (
-    <div className="py-1">
-      <p className="px-3 pb-1 text-xs font-semibold text-fg-muted">{label}</p>
-      {who.map(one => (
-        <div key={one.id} className="flex items-center gap-2.5 px-3 py-1.5">
-          <Face who={one} size="sm" />
-          <span className="text-sm font-medium text-fg whitespace-nowrap">{one.name}</span>
-        </div>
-      ))}
+    <div className="py-2">
+      <p className="px-3 pb-2 text-xs font-semibold text-fg-muted">{label}</p>
+      <div className="space-y-0.5">
+        {who.map(one => (
+          <div key={one.id} className="flex items-center gap-2.5 px-3 py-1">
+            <Face who={one} size="sm" />
+            <span className="text-sm font-medium text-fg whitespace-nowrap">{one.name}</span>
+            {one.threads > 0 && (
+              <span className="ml-auto pl-4 text-xs text-fg-muted whitespace-nowrap">
+                {one.threads === 1 ? '1 thread' : `${one.threads} threads`}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -49,9 +65,10 @@ export default function PresenceStack(): ReactElement | null {
   const members = useCrew(s => s.members)
   const agents = useCrew(s => s.agents)
   const selfId = useCrew(s => s.selfId)
+  const activePrompts = useCrew(s => s.activePrompts)
   const [open, setOpen] = useState(false)
 
-  const here = presentNow(members, agents, selfId)
+  const here = presentNow(members, agents, selfId, activePrompts)
   if (here.length === 0) return null
 
   const shown = here.slice(0, FACES)
@@ -61,7 +78,7 @@ export default function PresenceStack(): ReactElement | null {
 
   return (
     <div className="relative">
-      <Tooltip label="Who's here">
+      <Tooltip label="Who's here" disabled={open}>
         <button
           onClick={() => setOpen(was => !was)}
           aria-label="Who's here"
@@ -84,9 +101,9 @@ export default function PresenceStack(): ReactElement | null {
           </FaceStack>
         </button>
       </Tooltip>
-      <Popover open={open} onClose={() => setOpen(false)} className="min-w-48">
+      <Popover open={open} onClose={() => setOpen(false)} className="min-w-52">
         <Group label="Online" who={people} />
-        {people.length > 0 && working.length > 0 && <div className="h-px bg-fg/[0.06]" />}
+        {people.length > 0 && working.length > 0 && <div className="h-px bg-fg/[0.06] -mx-1.5" />}
         <Group label="Working" who={working} />
       </Popover>
     </div>
