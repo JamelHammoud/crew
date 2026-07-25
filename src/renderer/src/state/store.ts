@@ -82,6 +82,7 @@ interface CrewState {
     pageId: string | null
   ) => void
   deleteMessage: (messageId: string) => void
+  editMessage: (messageId: string, text: string) => void
   reactToMessage: (targetId: string, emoji: ReactionEmoji) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
   implementPlan: (threadId: string) => void
@@ -532,6 +533,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
+    },
+    editMessage: (messageId, text) => {
+      socket.send({ type: 'chat.edit', messageId, text })
     },
     reactToMessage: (targetId, emoji) => {
       socket.send({ type: 'chat.react', targetId, emoji })

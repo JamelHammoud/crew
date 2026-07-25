@@ -52,6 +52,7 @@ export type ClientMessage =
       boardId?: string
     }
   | { type: 'chat.delete'; messageId: string }
+  | { type: 'chat.edit'; messageId: string; text: string }
   | { type: 'chat.react'; targetId: string; emoji: ReactionEmoji }
   | { type: 'thread.archive'; threadId: string }
   | { type: 'thread.status'; threadId: string; status: ThreadStatus }

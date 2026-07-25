@@ -143,7 +143,7 @@ export default function Chat() {
                     />
                   )
                 ) : (
-                  <ChatMessage item={entry.item} />
+                  <ChatMessage item={entry.item} editable />
                 )}
               </Fragment>
             )
