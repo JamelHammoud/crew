@@ -216,10 +216,7 @@ function Layers({ editor }: { editor: Editor }) {
               ) : (
                 <span className="w-4 shrink-0" />
               )}
-              <CanvasGlyph
-                name={layerGlyph(row.shape)}
-                className={`w-3.5 h-3.5 shrink-0 ${active ? 'text-fg' : 'text-fg-muted'}`}
-              />
+              <Glyph className={`w-4 h-4 shrink-0 ${active ? 'text-fg' : 'text-fg-muted'}`} />
               {renaming === id ? (
                 <input
                   autoFocus
