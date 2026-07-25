@@ -190,7 +190,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
                   </span>
                 </MemberName>
-                <div className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 pr-2 shrink-0">
                   {state === 'working' ? (
                     <>
                       <Spinner size={16} className="text-fg" />
