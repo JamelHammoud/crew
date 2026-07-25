@@ -18,15 +18,23 @@
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.28" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
-    <linearGradient id="mark" x1="0" y1="382" x2="0" y2="642" gradientUnits="userSpaceOnUse">
+    <radialGradient id="mark" cx="0.36" cy="0.28" r="0.84">
       <stop offset="0" stop-color="#ffffff" stop-opacity="1" />
-      <stop offset="0.5" stop-color="#f4faff" stop-opacity="1" />
-      <stop offset="1" stop-color="#cfe6fa" stop-opacity="1" />
-    </linearGradient>
-    <linearGradient id="gloss" x1="0" y1="382" x2="0" y2="492.5" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.55" />
+      <stop offset="0.5" stop-color="#eaf5ff" stop-opacity="1" />
+      <stop offset="1" stop-color="#a8cdee" stop-opacity="1" />
+    </radialGradient>
+    <radialGradient id="bounce" cx="0.5" cy="0.94" r="0.6">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.7" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-    </linearGradient>
+    </radialGradient>
+    <radialGradient id="gloss" cx="0.4" cy="0.17" r="0.46">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.17" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+    <filter id="cast" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#031228" flood-opacity="0.45" />
+    </filter>
     <clipPath id="tile-clip">
       <rect x="100" y="100" width="824" height="824" rx="185" />
     </clipPath>
@@ -59,7 +67,12 @@
   </g>
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)" />
   <rect x="102" y="102" width="820" height="820" rx="183" fill="none" stroke="url(#rim)" stroke-width="4" />
-  <g fill="url(#mark)">
+  <g fill="url(#mark)" filter="url(#cast)">
+    <circle cx="698" cy="512" r="130" mask="url(#cut-0)" />
+    <circle cx="512" cy="512" r="130" mask="url(#cut-1)" />
+    <circle cx="326" cy="512" r="130" mask="url(#cut-2)" />
+  </g>
+  <g fill="url(#bounce)">
     <circle cx="698" cy="512" r="130" mask="url(#cut-0)" />
     <circle cx="512" cy="512" r="130" mask="url(#cut-1)" />
     <circle cx="326" cy="512" r="130" mask="url(#cut-2)" />
