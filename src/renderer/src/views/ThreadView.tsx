@@ -44,7 +44,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, value => setThreadDraft(threadId, value), inputRef)
-  const agentPresence = usePresence(thread?.agentLabel ?? '')
+  const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
