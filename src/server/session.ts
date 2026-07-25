@@ -30,6 +30,7 @@ import {
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
 import {
   agentId,
+  mentionsIn,
   resolveSettings,
   type AgentMentionRef,
   type AgentStatus,
