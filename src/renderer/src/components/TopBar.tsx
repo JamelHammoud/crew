@@ -44,6 +44,16 @@ export default function TopBar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
+  const headerRef = useRef<HTMLElement>(null)
+  const [compact, setCompact] = useState(false)
+
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const observer = new ResizeObserver(() => setCompact(el.clientWidth <= COMPACT_WIDTH))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const copyLink = async () => {
     if (!joinLink) return
