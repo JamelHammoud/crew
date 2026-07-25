@@ -36,6 +36,7 @@ export default function Chat() {
 
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
+  const slash = useSlashCommands(text, setChatDraft, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { pinnedRef, scrolledUp, onScroll, jumpToBottom } = useStickToBottom(scrollRef)
   const didInitialScroll = useRef(false)
@@ -102,9 +103,11 @@ export default function Chat() {
     if (!text.trim() && pendingCount === 0) return
     sendChat(text)
     mention.close()
+    slash.close()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (slash.onKeyDown(e)) return
     if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
