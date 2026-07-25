@@ -24,6 +24,7 @@ const remembered = new Map<string, Remembered>()
 export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | null>, memoryKey?: string) {
   const pinnedRef = useRef(true)
   const [scrolledUp, setScrolledUp] = useState(false)
+  const [atBottom, setAtBottom] = useState(true)
   const lastScrollTop = useRef(0)
   const restored = useRef(false)
 
@@ -32,10 +33,17 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
     setScrolledUp(!pinned)
   }, [])
 
+  const measure = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight <= AT_BOTTOM_SLOP)
+  }, [scrollRef])
+
   const onScroll = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
     const distance = el.scrollHeight - el.scrollTop - el.clientHeight
+    setAtBottom(distance <= AT_BOTTOM_SLOP)
     const up = el.scrollTop < lastScrollTop.current
     if (up && distance > UNPIN_SLOP) setPinned(false)
     else if (!up && distance <= REPIN_DISTANCE) setPinned(true)
