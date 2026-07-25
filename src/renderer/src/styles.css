@@ -181,6 +181,15 @@ body {
     0 2px 8px rgb(0 0 0 / 0.08);
 }
 
+/* Chrome that floats over the canvas, where the artwork behind it can be any color. */
+.glass-strong {
+  background: rgb(24 24 24 / 0.94);
+}
+
+.light .glass-strong {
+  background: rgb(252 252 252 / 0.96);
+}
+
 .top-bar-container {
   container-type: inline-size;
 }
