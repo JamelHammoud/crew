@@ -125,6 +125,9 @@ export interface ProviderCapability {
   installable: boolean
 }
 
+// Mints an id for a new agent. Only ever called once per agent: the result is
+// saved with the definition, so renaming yourself keeps the agents you have
+// instead of minting a second set under the new name.
 export function agentId(ownerName: string, instanceId: string): string {
   return `${ownerName.trim().toLowerCase()}/${instanceId}`
 }
