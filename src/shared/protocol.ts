@@ -6,6 +6,9 @@ import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAge
 import type { ReactionEmoji } from './reactions'
 
 export interface RegisteredLlm {
+  // Absent only from machines running an older build, which have no minted id
+  // yet; the host falls back to the owner name for those.
+  id?: string
   instanceId: string
   provider: string
   label: string
