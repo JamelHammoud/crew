@@ -525,7 +525,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007914006,
+        "fetchedAt": 1785007974019,
         "windows": [
           {
             "key": "primary",
@@ -546,7 +546,7 @@
       "ownerId": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
       "ownerName": "Jamel",
       "settings": {
-        "model": "fable",
+        "model": "opus",
         "opusModel": "claude-opus-5",
         "effort": "xhigh"
       },
@@ -760,7 +760,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785007914006,
+        "fetchedAt": 1785007974019,
         "windows": [
           {
             "key": "primary",
