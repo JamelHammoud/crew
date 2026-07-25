@@ -38,7 +38,7 @@ export default function Chat() {
   const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
   const slash = useSlashCommands(text, setChatDraft, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { scrolledUp, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, CHAT_KEY)
+  const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, CHAT_KEY)
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
 
