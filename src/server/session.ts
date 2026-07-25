@@ -1244,7 +1244,12 @@ export class CrewSession {
     for (const [other, peer] of [...this.huddle]) {
       if (peer.peerId === peerId && other !== ws) this.huddle.delete(other)
     }
-    const existing = this.huddle.get(ws)
+    let existing = this.huddle.get(ws)
+    for (const [other, peer] of [...this.huddle]) {
+      if (peer.peerId !== peerId || other === ws) continue
+      existing = existing ?? peer
+      this.huddle.delete(other)
+    }
     if (!existing && this.huddle.size >= MAX_HUDDLE_PEERS) {
       this.send(ws, { type: 'error', message: 'This huddle is full.' })
       return
