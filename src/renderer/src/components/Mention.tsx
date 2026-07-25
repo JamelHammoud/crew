@@ -102,10 +102,21 @@ export function DocMention({ page, children }: { page: string | null; children: 
   return <HoverCard content={<DocCardContent page={page} />}>{pill}</HoverCard>
 }
 
-export function MentionText({ text, docMentions }: { text: string; docMentions?: DocMentionRef[] }) {
+export function MentionText({
+  text,
+  mentionRefs,
+  docMentions
+}: {
+  text: string
+  mentionRefs?: AgentMentionRef[]
+  docMentions?: DocMentionRef[]
+}) {
   const agents = useCrew(s => s.agents)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(() => tokenizeMentions(text, agents, docs, docMentions), [agents, docs, docMentions, text])
+  const tokens = useMemo(
+    () => tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, docs, docMentions),
+    [agents, docs, docMentions, mentionRefs, text]
+  )
   return (
     <>
       {tokens.map((token, index) => {
