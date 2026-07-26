@@ -522,6 +522,36 @@ body {
   pointer-events: none !important;
 }
 
+/* react-colorful ships its own sizes, and they are built for a page, not a popover. */
+.design-picker .react-colorful {
+  width: 100%;
+  height: auto;
+  gap: 10px;
+}
+
+.design-picker .react-colorful__saturation {
+  height: 132px;
+  border-radius: 12px;
+  border-bottom: none;
+}
+
+.design-picker .react-colorful__hue,
+.design-picker .react-colorful__alpha {
+  height: 10px;
+  border-radius: 999px;
+}
+
+.design-picker .react-colorful__pointer {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.design-picker .react-colorful__saturation-pointer {
+  width: 16px;
+  height: 16px;
+}
+
 .design-style-panel input[type='range'] {
   appearance: none;
   height: 3px;
