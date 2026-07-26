@@ -111,6 +111,9 @@ export class CrewTray {
     const tray = this.tray
     if (!tray) return
     tray.setToolTip(presenceTooltip(this.state))
+    // The count rides beside the mark rather than on it: a menu bar item is
+    // one line tall, and a badge drawn over twelve pixels of artwork is a
+    // smudge.
     if (isMac) tray.setTitle(badgeText(this.state.waiting), { fontType: 'monospacedDigit' })
     else tray.setContextMenu(this.menu())
     this.panel.update(this.state)
