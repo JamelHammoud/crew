@@ -105,6 +105,17 @@ export type SessionEvent =
   | {
       id: string
       ts: number
+      kind: 'music.added'
+      trackId: string
+      name: string
+      file: string
+      seconds: number
+      byName: string
+    }
+  | { id: string; ts: number; kind: 'music.removed'; trackId: string; byName: string }
+  | {
+      id: string
+      ts: number
       kind: 'agent.start'
       promptId: string
       agentId: string
@@ -158,7 +169,11 @@ const EPHEMERAL_KINDS = new Set([
   // ago is still a button, long after its event has fallen off the window.
   'tool.added',
   'tool.edited',
-  'tool.removed'
+  'tool.removed',
+  // A track somebody put on the shelf is the same: it stays on the shelf, and
+  // the crew does not need to scroll past the moment it arrived.
+  'music.added',
+  'music.removed'
 ])
 
 // The call one event belongs to, for the three that make up the record of a
