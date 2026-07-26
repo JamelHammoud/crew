@@ -210,3 +210,37 @@ describe('step rows', () => {
     expect(alone.container.firstElementChild?.className).not.toContain('-mt-3')
   })
 })
+
+describe('runs of the same tool', () => {
+  const tool = (name: string, key: string, patch: Partial<ThreadItem> = {}): ThreadItem =>
+    item({ name, key, promptId: 'p1', ...patch })
+
+  it('folds a long run into one line and leaves a pair where it is', () => {
+    const run = ['a', 'b', 'c'].map(key => tool('Edit', key))
+    expect(stepBlocks(run).length).toBe(1)
+    expect(stepBlocks(run)[0].items.length).toBe(3)
+    expect(stepBlocks(['a', 'b'].map(key => tool('Edit', key))).length).toBe(2)
+  })
+
+  it('only folds the same tool from the same run together', () => {
+    const mixed = [tool('Edit', 'a'), tool('Read', 'b'), tool('Edit', 'c'), tool('Edit', 'd')]
+    expect(stepBlocks(mixed).length).toBe(4)
+    const other = [tool('Edit', 'a'), tool('Edit', 'b'), tool('Edit', 'c', { promptId: 'p2' })]
+    expect(stepBlocks(other).map(block => block.items.length)).toEqual([1, 1, 1])
+  })
+
+  it('says how many lines the whole run touched and opens onto every step', () => {
+    const items = [
+      tool('Edit', 'a', { files: [{ path: 'src/app.ts', added: 6, removed: 3 }] }),
+      tool('Edit', 'b', { files: [{ path: 'src/panel.ts', added: 7, removed: 11 }] }),
+      tool('Edit', 'c', { files: [{ path: 'src/other.ts', added: 2, removed: 0 }] })
+    ]
+    const { container } = render(createElement(StepGroup, { items }))
+    expect(screen.getByText('Edited files')).not.toBeNull()
+    expect(screen.getByText('+15')).not.toBeNull()
+    expect(screen.getByText('−14')).not.toBeNull()
+    expect(screen.queryByText('src/panel.ts')).toBeNull()
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(screen.getAllByText('Edited').length).toBe(3)
+  })
+})
