@@ -43,6 +43,14 @@ import {
   type HuddleRoom,
   type HuddleSignal
 } from '../shared/huddle'
+import {
+  BY_LIMIT,
+  emptyMusic,
+  trackFor,
+  wrapAt,
+  type MusicRoom,
+  type MusicTrack
+} from '../shared/music'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
 import {
   agentId,
