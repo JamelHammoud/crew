@@ -49,7 +49,7 @@ export const MUSIC_TUNES = [
     mood: 'mellow',
     bpm: 96,
     beats: 32,
-    colors: ['#8a5cff', '#ff8fb1', '#3b2a6b', '#f7c873']
+    colors: ['#7b5cff', '#ff5fa2', '#22d3ee', '#ffc4e1', '#150b33']
   },
   {
     id: 'star-road',
@@ -57,7 +57,7 @@ export const MUSIC_TUNES = [
     mood: 'soaring',
     bpm: 120,
     beats: 32,
-    colors: ['#c7a6ff', '#57e2ff', '#fff1a8', '#3a2a8c']
+    colors: ['#a06bff', '#38e8ff', '#ffe45e', '#ffd0ff', '#1b0f4d']
   },
   {
     id: 'hearth',
@@ -65,7 +65,7 @@ export const MUSIC_TUNES = [
     mood: 'cosy',
     bpm: 88,
     beats: 32,
-    colors: ['#ffb37b', '#ff7a59', '#ffe0b2', '#7a3b2e']
+    colors: ['#ff7a3c', '#ffb703', '#ff4d6d', '#ffe3b5', '#4a1508']
   },
   {
     id: 'rain-check',
