@@ -72,7 +72,7 @@ export function AttachButton({
           onClick={() => inputRef.current?.click()}
           disabled={full}
           aria-label="Add an image"
-          className={`${ATTACH_SIZES[size]} rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0`}
+          className={`${ATTACH_SIZES[size]} rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0`}
         >
           <PlusIcon className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />
         </button>
