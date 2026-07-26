@@ -67,6 +67,8 @@ import {
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import {
   BOARD_ID,
+  resolveBoardRef,
+  type BoardMentionRef,
   type DesignBoardMeta,
   type DesignDocument,
   type DesignOp,
