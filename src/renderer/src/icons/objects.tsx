@@ -82,12 +82,26 @@ export const TerminalGlyph = glyph(
 )
 
 // A case with a handle and a seam across the lid. Wide and shallow rather than
-// tall, which is what tells a toolbox from a briefcase at 16px.
+// tall, which is what tells a toolbox from a briefcase at 16px. It is drawn in
+// three pieces so the lid can be hinged off the seam and swung open, and the
+// seam belongs to the lid rather than to the case: an open toolbox has nothing
+// across its mouth. Shut, the three land back on one outline with one stroke on
+// every edge.
+export const TOOLBOX_BODY = 'M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75'
+export const TOOLBOX_LID = 'M2.5 12.75V11a2.5 2.5 0 0 1 2.5-2.5h14a2.5 2.5 0 0 1 2.5 2.5v1.75Z'
+export const TOOLBOX_HANDLE = 'M8.25 8.5V7.25a2.75 2.75 0 0 1 2.75-2.75h2a2.75 2.75 0 0 1 2.75 2.75V8.5'
+
+// The far corner of the seam, and how far the lid comes up off it. Ten degrees
+// is what the box has room for: the lid carries its own back corner outwards as
+// it turns, and past this the case is painted into the edge of the grid.
+export const TOOLBOX_HINGE = { x: 21.5, y: 12.75 }
+export const TOOLBOX_SWING = 10
+
 export const ToolboxGlyph = glyph(
   <>
-    <rect x="2.5" y="8.5" width="19" height="11" rx="2.5" />
-    <path d="M8.25 8.5V7.25a2.75 2.75 0 0 1 2.75-2.75h2a2.75 2.75 0 0 1 2.75 2.75V8.5" />
-    <path d="M2.5 12.75h19" />
+    <path d={TOOLBOX_BODY} />
+    <path d={TOOLBOX_LID} />
+    <path d={TOOLBOX_HANDLE} />
   </>
 )
 
