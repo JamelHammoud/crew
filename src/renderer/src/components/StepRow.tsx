@@ -4,6 +4,7 @@ import type { FileChange } from '../../../shared/llm'
 import { FileTextLink, isPrivate, labelFor, PrivateChip, TextWithFileLinks, useLocated } from './fileLinks'
 import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
+import { THINKING, toolAction, type ToolIcon } from './toolActions'
 
 export function FilePathLink({
   path,
@@ -25,19 +26,31 @@ export function FilePathLink({
   )
 }
 
-function Marker({ running }: { running: boolean }) {
-  if (running) return <Spinner size={12} className="text-fg-secondary" />
-  return <span className="w-1.5 h-1.5 mx-[3px] rounded-full bg-ink-500 shrink-0" />
+function Chip({ icon: Icon, running }: { icon: ToolIcon; running: boolean }) {
+  return (
+    <span className="relative flex items-center justify-center shrink-0 w-[22px] h-[22px] rounded-full bg-ink-800">
+      <Icon
+        className={`w-3.5 h-3.5 transition-colors ${
+          running ? 'text-fg' : 'text-fg-muted group-hover:text-fg-secondary'
+        }`}
+      />
+      {running && <Spinner size={22} className="absolute inset-0 text-ink-500" />}
+    </span>
+  )
 }
 
 function Chevron({ open }: { open: boolean }) {
   return (
     <ChevronRightIcon
-      className={`w-3.5 h-3.5 shrink-0 text-fg-faint group-hover:text-fg-muted transition-transform duration-200 ${
-        open ? 'rotate-90' : ''
+      className={`w-3.5 h-3.5 shrink-0 text-fg-faint transition-all duration-200 ${
+        open ? 'rotate-90 opacity-100' : 'opacity-0 group-hover:opacity-100'
       }`}
     />
   )
+}
+
+function Rail() {
+  return <span aria-hidden className="absolute left-[67px] -top-2 h-3 w-px bg-ink-700" />
 }
 
 export function Counts({ added, removed, size = 'xs' }: { added: number; removed: number; size?: 'xs' | 'sm' }) {
@@ -68,103 +81,96 @@ function Diff({ diff }: { diff: string }) {
   )
 }
 
+function Detail({ children }: { children: React.ReactNode }) {
+  return <div className="mt-2 ml-[11px] border-l border-ink-700 pl-4">{children}</div>
+}
+
 function FileRows({ files, done }: { files: FileChange[]; done: boolean }) {
   return (
-    <div className="mt-2 ml-[5px] border-l border-ink-700 pl-4 space-y-3">
-      {files.map(file => (
-        <div key={file.path}>
-          <span className="flex items-center gap-2 text-xs font-mono">
-            <FilePathLink path={file.path} diff={file.diff} className="text-fg-secondary truncate" again={done} />
-            <Counts added={file.added} removed={file.removed} />
-          </span>
-          {file.diff && (
-            <div className="mt-1.5">
-              <Diff diff={file.diff} />
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+    <Detail>
+      <div className="space-y-3">
+        {files.map(file => (
+          <div key={file.path}>
+            <span className="flex items-center gap-2 text-xs font-mono">
+              <FilePathLink path={file.path} diff={file.diff} className="text-fg-secondary truncate" again={done} />
+              <Counts added={file.added} removed={file.removed} />
+            </span>
+            {file.diff && (
+              <div className="mt-1.5">
+                <Diff diff={file.diff} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Detail>
   )
 }
 
-export default function StepRow({ item }: { item: ThreadItem }) {
+export default function StepRow({ item, linked }: { item: ThreadItem; linked?: boolean }) {
   const [open, setOpen] = useState<boolean | null>(null)
+  const thinking = item.kind === 'thinking'
+  const action = thinking ? THINKING : toolAction(item.name, item.subagent)
+  const files = item.files ?? []
+  const totals = files.reduce(
+    (acc, file) => ({ added: acc.added + file.added, removed: acc.removed + file.removed }),
+    { added: 0, removed: 0 }
+  )
+  const expandable = thinking || files.length > 0 || Boolean(item.detail)
+  const expanded = open ?? (thinking ? item.streaming : false)
+  const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
-  if (item.kind === 'tool') {
-    const files = item.files ?? []
-    const totals = files.reduce(
-      (acc, file) => ({ added: acc.added + file.added, removed: acc.removed + file.removed }),
-      { added: 0, removed: 0 }
-    )
-    const expanded = open ?? false
-    const expandable = files.length > 0 || Boolean(item.detail)
-    return (
-      <div className="pl-14 animate-rise">
-        <button
-          onClick={() => expandable && setOpen(!expanded)}
-          className={`group flex items-center gap-2.5 text-sm w-full text-left ${
-            expandable ? '' : 'cursor-default'
+  return (
+    <div className={`relative pl-14 animate-rise ${linked ? '-mt-3' : ''}`}>
+      {linked && <Rail />}
+      <button
+        onClick={() => expandable && setOpen(!expanded)}
+        className={`group flex items-center gap-2.5 max-w-full text-sm text-left -ml-2 pl-2 pr-3 py-1 rounded-full transition-colors ${
+          expandable ? 'hover:bg-ink-hover' : 'cursor-default'
+        }`}
+      >
+        <Chip icon={action.icon} running={item.streaming} />
+        <span
+          className={`shrink-0 transition-colors ${
+            item.streaming ? 'text-fg-secondary' : 'text-fg-muted group-hover:text-fg-secondary'
           }`}
         >
-          <Marker running={item.streaming} />
-          <span className={`shrink-0 ${item.streaming ? 'text-fg-secondary' : 'text-fg-muted'}`}>
-            {item.subagent ? `${item.name} (agent)` : item.name}
+          {item.streaming ? action.run : action.done}
+        </span>
+        {files.length > 0 && (
+          <>
+            {files.length === 1 ? (
+              <FilePathLink
+                path={files[0].path}
+                diff={files[0].diff}
+                className="text-fg-faint truncate font-mono text-xs"
+                again={!item.streaming}
+              />
+            ) : (
+              <span className="text-fg-faint truncate font-mono text-xs">{`${files.length} files`}</span>
+            )}
+            <Counts added={totals.added} removed={totals.removed} />
+          </>
+        )}
+        {subject && (
+          <span className={`text-fg-faint truncate ${action.prose ? 'text-xs' : 'font-mono text-xs'}`}>
+            <TextWithFileLinks text={subject} inline again={!item.streaming} />
           </span>
-          {files.length > 0 ? (
-            <>
-              {files.length === 1 ? (
-                <FilePathLink
-                  path={files[0].path}
-                  diff={files[0].diff}
-                  className="text-fg-faint truncate font-mono text-xs"
-                  again={!item.streaming}
-                />
-              ) : (
-                <span className="text-fg-faint truncate font-mono text-xs">{`${files.length} files`}</span>
-              )}
-              <Counts added={totals.added} removed={totals.removed} />
-            </>
-          ) : (
-            item.detail && !expanded && (
-              <span className="text-fg-faint truncate font-mono text-xs">
-                <TextWithFileLinks text={item.detail} inline again={!item.streaming} />
-              </span>
-            )
-          )}
-        </button>
-        {expanded &&
-          (files.length > 0 ? (
-            <FileRows files={files} done={!item.streaming} />
-          ) : (
-            item.detail && (
-              <p
-                onClick={() => setOpen(false)}
-                className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-4 cursor-pointer"
-              >
-                <TextWithFileLinks text={item.detail} inline again={!item.streaming} />
-              </p>
-            )
-          ))}
-      </div>
-    )
-  }
-
-  const expanded = open ?? item.streaming
-  return (
-    <div className="pl-14 animate-rise">
-      <button
-        onClick={() => setOpen(!expanded)}
-        className="group flex items-center gap-2.5 text-sm text-fg-muted hover:text-fg-secondary transition-colors"
-      >
-        <Marker running={item.streaming} />
-        <span>Thinking</span>
-        <Chevron open={expanded} />
+        )}
+        {expandable && <Chevron open={expanded} />}
       </button>
-      {expanded && (
-        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l border-ink-700 pl-4">
-          <TextWithFileLinks text={item.text.trim()} inline />
-        </p>
+      {expanded && files.length > 0 && <FileRows files={files} done={!item.streaming} />}
+      {expanded && files.length === 0 && (thinking ? item.text.trim() : item.detail) && (
+        <Detail>
+          <p
+            onClick={() => setOpen(false)}
+            className={`whitespace-pre-wrap cursor-pointer ${
+              thinking ? 'text-sm text-fg-muted leading-6' : 'text-xs font-mono text-fg-muted leading-5 break-all'
+            }`}
+          >
+            <TextWithFileLinks text={thinking ? item.text.trim() : (item.detail ?? '')} inline again={!item.streaming} />
+          </p>
+        </Detail>
       )}
     </div>
   )
