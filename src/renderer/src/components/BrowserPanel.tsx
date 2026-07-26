@@ -226,9 +226,23 @@ export default function BrowserPanel() {
 }
 
 function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
+  const pillRef = useRef<HTMLButtonElement>(null)
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    if (active) pillRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+  }, [active])
+
   return (
+    <>
     <button
+      ref={pillRef}
+      data-tab={tab.id}
       onClick={() => useBrowser.getState().selectTab(tab.id)}
+      onContextMenu={event => {
+        event.preventDefault()
+        setMenuAt({ x: event.clientX, y: event.clientY })
+      }}
       className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
         active ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
       }`}
