@@ -57,6 +57,7 @@ export type ClientMessage =
       threadId?: string
       attachments?: OutgoingAttachment[]
       boardId?: string
+      replyTo?: string
     }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'chat.edit'; messageId: string; text: string }

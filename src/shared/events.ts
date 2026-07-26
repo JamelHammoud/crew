@@ -23,6 +23,13 @@ export interface Todo {
   checked: boolean
 }
 
+export interface MessageReply {
+  targetId: string
+  authorId: string
+  authorName: string
+  text: string
+}
+
 export type SessionEvent =
   | {
       id: string
@@ -38,6 +45,7 @@ export type SessionEvent =
       docMentions?: DocMentionRef[]
       threadId?: string
       attachments?: Attachment[]
+      replyTo?: MessageReply
     }
   | { id: string; ts: number; kind: 'message.deleted'; messageId: string }
   | {
