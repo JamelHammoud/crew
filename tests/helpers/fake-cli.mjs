@@ -16,12 +16,21 @@ if (withStreamedThinking) {
   lines.push('THINKSTART 0')
   lines.push('THINKDELTA 0 weighing ')
   lines.push('THINKDELTA 0 the options')
-  lines.push('THINKSTOP 0')
+  lines.push('BLOCKSTOP 0')
   // A block that arrives with nothing in it, the way a model that is asked to
   // keep its reasoning to itself sends one.
   lines.push('THINKSTART 1')
   lines.push('THINKDELTA 1 ')
-  lines.push('THINKSTOP 1')
+  lines.push('BLOCKSTOP 1')
+}
+// The reply as a real CLI sends it: deltas on the way, then the whole block
+// again once it closes.
+if (withStreamedText) {
+  lines.push('TEXTSTART 0')
+  lines.push('TEXTDELTA 0 the answer ')
+  lines.push('TEXTDELTA 0 in pieces')
+  lines.push('TEXT the answer in pieces')
+  lines.push('BLOCKSTOP 0')
 }
 if (withOutput) {
   lines.push('ACT t2 tool Bash ls -la')
