@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { isImageUrl } from '../../../shared/files'
+import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
   ArrowRightGlyph,
@@ -21,15 +22,6 @@ import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import TerminalView from './TerminalView'
 import Tooltip from './Tooltip'
-
-function normalizeUrl(input: string): string {
-  const trimmed = input.trim()
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-  if (/\s/.test(trimmed) || !trimmed.includes('.')) {
-    return `https://www.google.com/search?q=${encodeURIComponent(trimmed)}`
-  }
-  return `https://${trimmed}`
-}
 
 export const showsImage = (tab: BrowserTab): boolean =>
   tab.kind === 'image' || (tab.kind === 'web' && isImageUrl(tab.initialUrl))
