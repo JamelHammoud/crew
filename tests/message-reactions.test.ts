@@ -45,7 +45,7 @@ describe('message reaction controls', () => {
     const { container } = render(
       createElement(
         'div',
-        { className: 'group/message' },
+        { className: 'group/message', 'data-message': 'message:m1' },
         createElement(MessageReactions, {
           targetId: 'message:m1',
           reactions: [],
@@ -59,11 +59,54 @@ describe('message reaction controls', () => {
     const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
     expect(menu.className).toContain('group-hover/message:opacity-100')
 
-    fireEvent.click(screen.getByLabelText('React with 🎉'))
+    fireEvent.click(screen.getByLabelText('React with 🎉'), { detail: 1 })
     expect(menu.className).not.toContain('group-hover/message:opacity-100')
 
     fireEvent.mouseLeave(message)
+    expect(menu.className).not.toContain('group-hover/message:opacity-100')
+
+    fireEvent.mouseEnter(message)
     expect(menu.className).toContain('group-hover/message:opacity-100')
+  })
+
+  it('never pins the quick react menu open on the button that was clicked', () => {
+    useCrew.setState({ reactToMessage: vi.fn() })
+    render(
+      createElement(
+        'div',
+        { className: 'group/message', 'data-message': 'message:m1' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
+    )
+
+    const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
+    expect(menu.className).not.toContain('focus-within:opacity-100')
+    expect(menu.className).toContain('has-[:focus-visible]:opacity-100')
+  })
+
+  it('keeps the quick react menu up for a reaction sent from the keyboard', () => {
+    useCrew.setState({ reactToMessage: vi.fn() })
+    render(
+      createElement(
+        'div',
+        { className: 'group/message', 'data-message': 'message:m1' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
+    )
+
+    const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
+    fireEvent.click(screen.getByLabelText('React with 🎉'), { detail: 0 })
+    expect(menu.className).toContain('has-[:focus-visible]:opacity-100')
   })
 
   it('groups active reactions and removes toggled reactions', () => {
