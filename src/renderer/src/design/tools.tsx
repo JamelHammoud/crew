@@ -14,6 +14,7 @@ import {
   LineGlyph,
   NoteGlyph,
   PencilGlyph,
+  PentagonGlyph,
   RectangleGlyph,
   StarGlyph,
   TextGlyph,
