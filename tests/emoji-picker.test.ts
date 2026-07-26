@@ -31,7 +31,7 @@ const mount = (reactToMessage = vi.fn()) => {
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
-  localStorage.clear()
+  storage.clear()
   useCrew.setState({ reactToMessage: defaultReactToMessage })
 })
 
@@ -56,7 +56,7 @@ describe('emoji reactions', () => {
 
     expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🎉')
     expect(screen.queryByPlaceholderText('Search emoji')).toBeNull()
-    expect(JSON.parse(localStorage.getItem('crew.emoji.recent') ?? '[]')[0]).toBe('🎉')
+    expect(JSON.parse(storage.getItem('crew.emoji.recent') ?? '[]')[0]).toBe('🎉')
   })
 
   it('reaches emoji the quick row never had', () => {
