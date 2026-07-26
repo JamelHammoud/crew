@@ -5,7 +5,7 @@ import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 <<<<<<< HEAD
 =======
 export function autoLineHeight(editor: Editor): number {
-  return editor.getCurrentTheme().lineHeight
+  return editor.getCurrentTheme().lineHeight ?? BASE_TYPE.lineHeight
 }
 
 >>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
