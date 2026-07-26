@@ -92,21 +92,24 @@ function useNumberField({
   value,
   onChange,
   min,
-  max
+  max,
+  auto
 }: {
   value: number
   onChange: (next: number) => void
   min: number
   max: number
+  auto?: number
 }) {
   const editor = useMaybeEditor()
-  const [draft, setDraft] = useState(() => String(tidy(value)))
+  const shown = (next: number) => (auto !== undefined && next === auto ? 'Auto' : String(tidy(next)))
+  const [draft, setDraft] = useState(() => shown(value))
   const [editing, setEditing] = useState(false)
   const pending = useRef(value)
   const mark = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!editing) setDraft(String(tidy(value)))
+    if (!editing) setDraft(shown(value))
   }, [value, editing])
 
   const clamp = (next: number) => Math.min(max, Math.max(min, tidy(next)))
@@ -135,7 +138,8 @@ function useNumberField({
     onBlur: () => {
       setEditing(false)
       const next = Number(draft)
-      if (draft.trim() === '' || !isFinite(next)) return setDraft(String(tidy(value)))
+      if (auto !== undefined && (draft.trim() === '' || draft.trim().toLowerCase() === 'auto')) return onChange(auto)
+      if (draft.trim() === '' || !isFinite(next)) return setDraft(shown(value))
       onChange(clamp(next))
     },
     onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
