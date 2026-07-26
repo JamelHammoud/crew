@@ -275,7 +275,13 @@ export default function DesignCanvas({
   return (
     <div
       className="absolute inset-0 design"
-      style={{ ...DESIGN_CURSORS, '--design-selected': selected } as CSSProperties}
+      style={
+        {
+          ...DESIGN_CURSORS,
+          cursor: 'var(--tl-cursor-default)',
+          '--design-selected': selected
+        } as CSSProperties
+      }
     >
       <Tldraw
         store={store}
