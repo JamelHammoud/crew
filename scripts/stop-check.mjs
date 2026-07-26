@@ -31,15 +31,31 @@ const at = units => {
   )
 }
 
+const small = units => {
+  const rr = Math.round(units * 0.15 * 4) / 4
+  const xx = Math.round((24 - units) * 50) / 100
+  return svg(
+    16,
+    `<rect x="${xx}" y="${xx}" width="${units}" height="${units}" rx="${rr}" fill="currentColor" stroke="none"/>`,
+    2
+  )
+}
+
+const pencil = svg(16, '<path d="M4.6 19.4 5.3 15.8 15.9 5.2a2.3 2.3 0 0 1 3.2 3.2L8.5 19Z"/><path d="m14.4 6.7 3.2 3.2"/>', 2)
+const trash = svg(16, '<path d="M4.8 6.6h14.4M9.6 6.6V4.8h4.8v1.8M6.6 6.6l.9 12a1.8 1.8 0 0 0 1.8 1.7h5.4a1.8 1.8 0 0 0 1.8-1.7l.9-12"/>', 2)
+
+const bar = units =>
+  `<div style="display:flex;gap:10px;color:#a0a0a0;align-items:center">${pencil}${small(units)}${trash}</div>`
+
 const html = `<!doctype html><meta charset="utf-8">
 <body style="margin:0;padding:24px;background:#141414;font:13px system-ui">
 ${row('send, w-5', round(arrow(20)))}
+${row('stop, w-5 at 16', round(at(16)))}
+${row('stop, w-5 at 17', round(at(17)))}
 <div style="height:1px;background:#2a2a2a;margin:2px 0 20px"></div>
-${row('before, w-4 at 15', round(old(16)))}
-${row('w-5 at 15', round(at(15)))}
-${row('w-5 at 16', round(at(16)))}
-${row('w-5 at 17', round(at(17)))}
-${row('w-5 at 18', round(at(18)))}
+${row('agent row at 16', bar(16))}
+${row('agent row at 17', bar(17))}
+${row('agent row at 15', bar(15))}
 </body>`
 
 app.commandLine.appendSwitch('disable-gpu')
