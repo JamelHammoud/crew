@@ -8,7 +8,7 @@ export interface PanelPage {
   file: string
 }
 
-export const PANEL_WIDTH = 272
+const PANEL_WIDTH = 272
 const MIN_HEIGHT = 64
 const MAX_HEIGHT = 520
 // A click on the tray icon takes the focus off the panel before it arrives, so
