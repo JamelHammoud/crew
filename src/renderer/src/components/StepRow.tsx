@@ -2,7 +2,6 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState, type ReactNode } from 'react'
 import type { FileChange } from '../../../shared/llm'
 import { FileTextLink, isPrivate, labelFor, PrivateChip, TextWithFileLinks, useLocated } from './fileLinks'
-import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
 import { THINKING, toolAction, type ToolIcon } from './toolActions'
 
@@ -75,7 +74,7 @@ function Diff({ diff }: { diff: string }) {
 }
 
 function Detail({ children }: { children: ReactNode }) {
-  return <div className="mt-2 ml-[11px] border-l border-ink-700 pl-4">{children}</div>
+  return <div className="mt-2 ml-2 border-l border-ink-700 pl-4">{children}</div>
 }
 
 function FileRows({ files, done }: { files: FileChange[]; done: boolean }) {
@@ -121,7 +120,7 @@ export default function StepRow({ item, linked }: { item: ThreadItem; linked?: b
           expandable ? 'hover:bg-ink-hover' : 'cursor-default'
         }`}
       >
-        <Chip icon={action.icon} running={item.streaming} />
+        <Mark icon={action.icon} running={item.streaming} />
         <span
           className={`shrink-0 transition-colors ${
             item.streaming ? 'text-fg-secondary' : 'text-fg-muted group-hover:text-fg-secondary'
