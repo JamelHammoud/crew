@@ -9,8 +9,7 @@ import {
   SignalGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
-  SunGlyph,
-  ToolboxGlyph
+  SunGlyph
 } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
