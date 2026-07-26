@@ -29,7 +29,7 @@ export interface ThreadMeta {
 
 export type DesignServerMessage = Extract<
   ServerMessage,
-  { type: 'design.snapshot' | 'design.changes' | 'design.presence' }
+  { type: 'design.snapshot' | 'design.preview' | 'design.changes' | 'design.presence' }
 >
 
 const designListeners = new Set<(msg: DesignServerMessage) => void>()
