@@ -54,8 +54,16 @@ export const SpeakerOffGlyph = glyph(
   </>
 )
 
+// A handset turned face down, and it is solid for the same reason stop is: a
+// handset is a thing rather than a frame, and the crescent an outline leaves
+// between its two edges closes into a smudge at the size the button wears it.
+// The two bells hang well below the grip so the silhouette is a phone rather
+// than an arch, which is the whole of what the mark has to say.
 export const HangupGlyph = glyph(
-  <path d="M4 14.9 2.6 13.5a.95.95 0 0 1 .05-1.4C5.2 9.85 8.45 8.65 12 8.65s6.8 1.2 9.35 3.45a.95.95 0 0 1 .05 1.4L20 14.9a1.1 1.1 0 0 1-1.45.05 11.6 11.6 0 0 0-2.45-1.55v-2.35a12.4 12.4 0 0 0-8.2 0v2.35a11.6 11.6 0 0 0-2.45 1.55A1.1 1.1 0 0 1 4 14.9Z" />
+  <path
+    d="M2.75 12.9C5.3 9.35 8.4 7.4 12 7.4s6.7 1.95 9.25 5.5c-1.4 2.15-2.7 3.2-3.9 3.2-1.5 0-2.35-1.15-2.35-3V11.1c-1-.3-1.95-.45-3-.45s-2 .15-3 .45v2c0 1.85-.85 3-2.35 3-1.2 0-2.5-1.05-3.9-3.2Z"
+    fill="currentColor"
+  />
 )
 
 export const HandGlyph = glyph(
