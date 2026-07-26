@@ -102,7 +102,7 @@ function columnAt(row: Element, x: number, y: number): number {
   if (!text) return 0
   const end = text.textContent?.length ?? 0
   const point = document.caretRangeFromPoint?.(x, y)
-  if (!point) return end
+  if (!point) return 0
   if (point.startContainer !== text && !text.contains(point.startContainer)) {
     return x < text.getBoundingClientRect().left ? 0 : end
   }
