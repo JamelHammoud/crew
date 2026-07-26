@@ -67,16 +67,16 @@ export default function Design() {
             <div className="ml-auto flex items-center gap-1">
               {editor && <DesignZoom />}
               <HeaderButton
-                label={rightOpen ? 'Hide board panel' : 'Show board panel'}
-                pressed={rightOpen}
-                onClick={() => setRightOpen(value => !value)}
+                label={panels.right ? 'Hide board panel' : 'Show board panel'}
+                pressed={panels.right}
+                onClick={() => setPanels(value => ({ ...value, right: !value.right }))}
               >
-                <PanelRightGlyph className={`${GLYPH} ${rightOpen ? '' : 'scale-x-[-1]'}`} />
+                <PanelRightGlyph className={`${GLYPH} ${panels.right ? '' : 'scale-x-[-1]'}`} />
               </HeaderButton>
             </div>
           </div>
           <div className="flex-1 min-h-0 flex">
-            {leftOpen && editor && <DesignLeftPanel />}
+            {panels.left && editor && <DesignLeftPanel />}
             <div className="flex-1 min-w-0 relative">
               <DesignCanvas key={current} boardId={current} onEditor={setEditor} />
               {editor && <DesignToolbar />}
