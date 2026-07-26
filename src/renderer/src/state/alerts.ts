@@ -40,3 +40,13 @@ export function finishedAlert(event: SessionEvent, state: AlertState, watching: 
     threadId: event.threadId
   }
 }
+
+export function memberMentionAlert(event: SessionEvent, selfId: string, watching: boolean): AgentAlert | null {
+  if (event.kind !== 'message' || watching || event.authorId === selfId) return null
+  if (!event.memberMentionRefs?.some(ref => ref.id === selfId)) return null
+  return {
+    title: `${event.authorName} mentioned you`,
+    body: event.text,
+    threadId: event.threadId
+  }
+}
