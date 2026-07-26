@@ -36,9 +36,11 @@ function open(list: FakeShape[], selected: string[], extra: Record<string, unkno
   return { ...made, view }
 }
 
-const rows = () => [...document.querySelectorAll('[role="button"], button')].map(el => el.textContent ?? '')
+const rows = () => [...document.querySelectorAll('button')].map(el => el.textContent ?? '')
 
 describe('design right click menu', () => {
+  afterEach(cleanup)
+
   it('opens on the selection with the actions Figma puts there', () => {
     open([node('shape:a', 'Card'), node('shape:b', 'Label')], ['shape:a', 'shape:b'])
     const shown = rows()
