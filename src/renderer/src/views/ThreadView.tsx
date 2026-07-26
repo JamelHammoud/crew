@@ -15,7 +15,7 @@ import Spinner from '../components/Spinner'
 import { Counts } from '../components/StepRow'
 import ThreadItems from '../components/ThreadItems'
 import Tooltip from '../components/Tooltip'
-import { buildThread, THREAD_STATE_LABELS, threadState } from '../components/thread'
+import { buildThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { mentionsIn } from '../../../shared/llm'
@@ -42,7 +42,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
   const agents = useCrew(s => s.agents)
-  const [replyTo, setReplyTo] = useState<ReturnType<typeof buildThread>[number] | null>(null)
+  const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
@@ -131,6 +131,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && replyTo) {
+      e.preventDefault()
+      setReplyTo(null)
+      return
+    }
     if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()

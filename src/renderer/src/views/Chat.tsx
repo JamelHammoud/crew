@@ -103,6 +103,11 @@ export default function Chat() {
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && replyTo) {
+      e.preventDefault()
+      setReplyTo(null)
+      return
+    }
     if (slash.onKeyDown(e)) return
     if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
