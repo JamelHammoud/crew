@@ -369,6 +369,28 @@ describe('file view', () => {
     await screen.findByText('This file is not in the project')
   })
 
+  it('shows a picture instead of the bytes behind it', async () => {
+    useBrowser.getState().openFile('logo.png')
+    render(createElement(BrowserPanel))
+    const image = await screen.findByAltText('logo.png')
+    expect(image.getAttribute('src')).toBe('data:image/png;base64,AAAA')
+  })
+
+  it('shows a screenshot an agent took outside the project', async () => {
+    useBrowser.getState().openFile(SHOT)
+    render(createElement(BrowserPanel))
+    const image = await screen.findByAltText(SHOT)
+    expect(image.getAttribute('src')).toBe('data:image/png;base64,BBBB')
+    fireEvent.click(screen.getByText('qlout'))
+    expect(useBrowser.getState().tabs[0].path).toBe('/tmp/qlout')
+  })
+
+  it('reads a file from this computer that is outside the project', async () => {
+    useBrowser.getState().openFile('/tmp/qlout/run.log')
+    render(createElement(BrowserPanel))
+    await screen.findByText('started')
+  })
+
   it('highlights code once the grammar loads', async () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))
