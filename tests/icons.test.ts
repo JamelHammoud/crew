@@ -11,23 +11,23 @@ import { CIRCLE, GRID, LINE, LIVE, SQUARE, STROKE } from '../src/renderer/src/ic
 // keep to stay in the set, checked against the art itself rather than against
 // what the art was meant to be.
 
-type Art = { name: string; markup: string; box: NonNullable<ReturnType<typeof measure>> }
+type Art = { name: string; markup: string; box: Box }
 
 const CAP = 18.5
 const TOLERANCE = 8
 
-const drawn: Art[] = Object.entries(icons)
-  .filter((entry): entry is [string, (props: { className?: string }) => unknown] =>
-    typeof entry[1] === 'function' && entry[0].endsWith('Glyph')
-  )
+// The barrel carries the keyline numbers as well as the art, so the glyphs are
+// picked out by name rather than by being functions.
+const drawn: Art[] = Object.entries(icons as Record<string, unknown>)
+  .filter(([name]) => name.endsWith('Glyph'))
   .map(([name, Icon]) => {
-    const markup = renderToStaticMarkup(createElement(Icon as never, {}))
+    const markup = renderToStaticMarkup(createElement(Icon as Glyph, {}))
     const box = measure(markup)
     if (!box) throw new Error(`${name} draws nothing`)
     return { name, markup, box }
   })
 
-const keyline = (box: Art['box']) => {
+const keyline = (box: Box) => {
   if (!box.body) return { family: 'line', target: LINE, size: Math.max(box.width, box.height, box.reach) }
   if (box.round && Math.abs(box.width - box.height) < 1.2)
     return { family: 'round', target: CIRCLE, size: (box.width + box.height) / 2 }
