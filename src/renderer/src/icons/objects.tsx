@@ -52,11 +52,17 @@ export const UnarchiveGlyph = glyph(
 // different insides rather than three drawings that nearly agree.
 const SCREEN = { x: 2.5, y: 4.5, width: 19, height: 15, rx: 3 }
 
+// One hill, running off the frame at both ends rather than standing inside it: a
+// picture is a view of something larger, and a peak that stops short of the edges
+// reads as a triangle in a box. Both ends land on the frame's own stroke, which
+// is what hides the round caps. The sun is solid because an outlined one this
+// small closes up at 16 regardless, and a ring that fills unevenly is a smudge
+// where a dot is a dot.
 export const PhotoGlyph = glyph(
   <>
     <rect {...SCREEN} />
-    <circle cx="15.5" cy="9" r="1.6" />
-    <path d="m3 17.8 5-5 3.4 3.4 2.4-2.4 5.2 5.2" />
+    <circle cx="16" cy="9" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M2.5 16.6l4.9-4.9a1.8 1.8 0 0 1 2.5 0l7.8 7.8" />
   </>
 )
 
