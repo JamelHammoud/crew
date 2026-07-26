@@ -125,7 +125,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785037069773,
+        "fetchedAt": 1785037069464,
         "windows": [
           {
             "key": "session",
@@ -139,7 +139,7 @@
             "label": "Weekly (all models)",
             "percent": 15,
             "severity": "normal",
-            "resetsAt": 1785499199878,
+            "resetsAt": 1785499199658,
             "active": true
           }
         ],
@@ -229,7 +229,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785037189787,
+        "fetchedAt": 1785037249497,
         "windows": [
           {
             "key": "primary",
@@ -325,7 +325,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785037189787,
+        "fetchedAt": 1785037249497,
         "windows": [
           {
             "key": "primary",
@@ -444,22 +444,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785036944878,
+        "fetchedAt": 1785037244892,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 17,
+            "percent": 18,
             "severity": "normal",
-            "resetsAt": 1785050999140,
+            "resetsAt": 1785051000193,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 14,
+            "percent": 15,
             "severity": "normal",
-            "resetsAt": 1785535199140,
+            "resetsAt": 1785535199193,
             "active": false
           },
           {
@@ -617,7 +617,7 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785037069773,
+        "fetchedAt": 1785037069464,
         "windows": [
           {
             "key": "session",
@@ -631,7 +631,7 @@
             "label": "Weekly (all models)",
             "percent": 15,
             "severity": "normal",
-            "resetsAt": 1785499199878,
+            "resetsAt": 1785499199658,
             "active": true
           }
         ],
