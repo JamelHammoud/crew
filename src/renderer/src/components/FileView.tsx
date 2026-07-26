@@ -13,7 +13,7 @@ import {
 import type { FileEntry, RepoFile } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useTheme } from '../state/theme'
-import { changedLines, type ChangedLines } from './changedLines'
+import { changedLines, type ChangedLines } from './baseline'
 import { highlightLines, type ThemedToken } from './highlight'
 import ImageView from './ImageView'
 import Spinner from './Spinner'

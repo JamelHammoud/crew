@@ -1,3 +1,9 @@
+export interface ChangedLines {
+  added: Set<number>
+  removed: Map<number, string[]>
+  first: number
+}
+
 interface Range {
   from: number
   to: number
@@ -79,6 +85,29 @@ function locateAll(lines: string[], block: string[]): Range[] {
     rest = trimEnds(rest.slice(hit.run))
   }
   return found
+}
+
+export function changedLines(text: string, diff: string | null | undefined): ChangedLines | null {
+  if (!diff) return null
+  const lines = text.split('\n')
+  const added = new Set<number>()
+  const removed = new Map<number, string[]>()
+  for (const hunk of hunksOf(diff)) {
+    const block = trimEnds(hunk.added)
+    if (block.length === 0) continue
+    const ranges = locateAll(lines, block)
+    if (ranges.length === 0) continue
+    for (const range of ranges) {
+      for (let line = range.from; line <= range.to; line += 1) added.add(line)
+    }
+    const gone = trimEnds(hunk.removed)
+    if (gone.length === 0) continue
+    const at = ranges[0].from
+    removed.set(at, [...(removed.get(at) ?? []), ...gone])
+  }
+  if (added.size === 0) return null
+  if (removed.size === 0 && added.size >= lines.filter(line => line.trim()).length) return null
+  return { added, removed, first: Math.min(...added) }
 }
 
 export function baselineOf(text: string, diff: string | null | undefined): string | null {
