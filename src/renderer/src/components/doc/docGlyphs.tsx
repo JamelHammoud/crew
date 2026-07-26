@@ -167,29 +167,32 @@ export const ImageGlyph = mark(
 )
 
 export const BoldGlyph = mark(
-  <path d="M8 12h4.6a3.2 3.2 0 0 1 0 6.4H8V5.6h4.1a3.2 3.2 0 0 1 0 6.4" />
+  <path d={`M8 ${MIDDLE}h4.6a3.2 3.2 0 0 1 0 6.4H8V${CAP}h4.1a3.2 3.2 0 0 1 0 6.4`} />
 )
 
 export const ItalicGlyph = mark(
   <>
-    <path d="M15.6 5.8H9.8" />
-    <path d="M14.2 18.2H8.4" />
-    <path d="M13.4 5.8 10.6 18.2" />
+    <path d={`M15.6 ${CAP}H9.8`} />
+    <path d={`M14.2 ${BASE}H8.4`} />
+    <path d={`M13.4 ${CAP} 10.6 ${BASE}`} />
   </>
 )
 
+// The letter is shorter than the rest of the family, because the rule under it
+// stands on the baseline and the two cannot share it. Held to the cap line and
+// the rule's own stroke closes the gap between them.
 export const UnderlineGlyph = mark(
   <>
-    <path d="M6.8 5.4v6.2a5.2 5.2 0 0 0 10.4 0V5.4" />
-    <path d="M6 18.6h12" />
+    <path d={`M6.9 ${CAP}v4.6a5.1 5.1 0 0 0 10.2 0V${CAP}`} />
+    <path d={`M6 ${BASE}h12`} />
   </>
 )
 
 export const StrikeGlyph = mark(
   <>
-    <path d="M16 8.2a4.2 4.2 0 0 0-7.4 1.6c0 .9.5 1.6 1.4 2.2" />
-    <path d="M8.4 16a4.2 4.2 0 0 0 7.4-1.6" />
-    <path d="M4 12h16" />
+    <path d="M16.4 7.8a4.6 4.6 0 0 0-8.14 1.76c0 .99.55 1.76 1.54 2.42" />
+    <path d="M8 16.4a4.6 4.6 0 0 0 8.14-1.76" />
+    <path d={`M4 ${MIDDLE}h16`} />
   </>
 )
 
