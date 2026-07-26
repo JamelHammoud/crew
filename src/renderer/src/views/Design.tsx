@@ -63,7 +63,7 @@ export default function Design() {
                 pressed={rightOpen}
                 onClick={() => setRightOpen(value => !value)}
               >
-                <PanelRightGlyph className={`w-[18px] h-[18px] ${FLIP} ${rightOpen ? '' : '-scale-x-100'}`} />
+                <PanelRightGlyph className={`${GLYPH} ${rightOpen ? '' : 'scale-x-[-1]'}`} />
               </HeaderButton>
             </div>
           </div>
