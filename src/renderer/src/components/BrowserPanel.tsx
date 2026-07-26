@@ -10,7 +10,7 @@ import {
   PlusIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { isImageUrl } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
@@ -74,11 +74,31 @@ export default function BrowserPanel() {
             <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
         </div>
-        <Tooltip label="New tab">
-          <button onClick={() => useBrowser.getState().addTab()} aria-label="New tab" className={`app-no-drag ${iconButton}`}>
-            <PlusIcon className="w-4 h-4" />
-          </button>
-        </Tooltip>
+        <span className="app-no-drag shrink-0 flex">
+          <Tooltip label="New tab" disabled={newOpen}>
+            <button onClick={() => setNewOpen(true)} aria-label="New tab" className={iconButton}>
+              <PlusIcon className="w-4 h-4" />
+            </button>
+          </Tooltip>
+          <Popover open={newOpen} onClose={() => setNewOpen(false)}>
+            <MenuItem
+              icon={<GlobeAltIcon />}
+              label="Web page"
+              onClick={() => {
+                setNewOpen(false)
+                useBrowser.getState().addTab()
+              }}
+            />
+            <MenuItem
+              icon={<CommandLineIcon />}
+              label="Terminal"
+              onClick={() => {
+                setNewOpen(false)
+                useBrowser.getState().addTerminal()
+              }}
+            />
+          </Popover>
+        </span>
         <Tooltip label="Close">
           <button
             onClick={() => useBrowser.getState().closeAll()}
