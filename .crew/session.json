@@ -125,22 +125,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785065801768,
+        "fetchedAt": 1785066101808,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 42,
+            "percent": 48,
             "severity": "normal",
-            "resetsAt": 1785082800867,
+            "resetsAt": 1785082800959,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 18,
+            "percent": 19,
             "severity": "normal",
-            "resetsAt": 1785499200867,
+            "resetsAt": 1785499200959,
             "active": false
           }
         ],
@@ -230,7 +230,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785066041796,
+        "fetchedAt": 1785066102074,
         "windows": [
           {
             "key": "primary",
@@ -326,7 +326,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785066041796,
+        "fetchedAt": 1785066102074,
         "windows": [
           {
             "key": "primary",
@@ -445,7 +445,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785066042077,
+        "fetchedAt": 1785066102081,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
@@ -595,22 +595,22 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785065801768,
+        "fetchedAt": 1785066101808,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 42,
+            "percent": 48,
             "severity": "normal",
-            "resetsAt": 1785082800867,
+            "resetsAt": 1785082800959,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 18,
+            "percent": 19,
             "severity": "normal",
-            "resetsAt": 1785499200867,
+            "resetsAt": 1785499200959,
             "active": false
           }
         ],
@@ -724,7 +724,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785066042077,
+        "fetchedAt": 1785066102081,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
