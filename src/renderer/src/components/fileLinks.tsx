@@ -284,11 +284,13 @@ export function FileChip({ path, line, text }: { path: string; line: number | nu
 export function FileTextLink({
   path,
   line = null,
+  diff = null,
   className,
   children
 }: {
   path: string
   line?: number | null
+  diff?: string | null
   className?: string
   children: ReactNode
 }) {
@@ -296,7 +298,7 @@ export function FileTextLink({
     <span
       onClick={event => {
         event.stopPropagation()
-        openFile(path, line)
+        openFile(path, line, diff)
       }}
       className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
     >
