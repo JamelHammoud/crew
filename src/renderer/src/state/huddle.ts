@@ -166,9 +166,13 @@ export const useHuddle = create<HuddleState>((set, get) => {
     const before = connection
     connection = state.connection
     if (before === connection) return
-    if (connection === 'home' && get().joined) {
-      teardown()
-      set({ room: emptyRoom() })
+    if (connection === 'home') {
+      told = false
+      stopRinging()
+      if (get().joined) {
+        teardown()
+        set({ room: emptyRoom() })
+      }
       return
     }
     if (connection === 'online' && get().joined) {
