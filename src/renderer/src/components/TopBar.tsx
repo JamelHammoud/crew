@@ -24,6 +24,7 @@ import Pill from './Pill'
 import PresenceStack from './PresenceStack'
 import TabIcon from './TabIcon'
 import Toolbox from './Toolbox'
+import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 
@@ -140,7 +141,7 @@ export default function TopBar({
                   toolboxOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
                 }`}
               >
-                <ToolboxGlyph className="w-[22px] h-[22px]" />
+                <ToolboxMark open={toolboxOpen} />
               </button>
             </Tooltip>
             <Toolbox
