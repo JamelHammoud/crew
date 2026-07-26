@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { httpBaseFrom } from '../../../shared/attachments'
 import {
   emptyMusic,
   itemFor,
@@ -99,7 +98,7 @@ export const useMusic = create<MusicState>((set, get) => {
     if (tune) {
       player.play(tune, room.at)
     } else if (track.file) {
-      const url = uploadUrl(httpBaseFrom(useCrew.getState().url), track.file)
+      const url = uploadUrl(useCrew.getState().httpBase, track.file)
       void player.playFile(track.id, url, track.seconds, room.at)
     }
     player.setVolume(level())
