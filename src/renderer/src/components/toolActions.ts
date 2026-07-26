@@ -31,8 +31,7 @@ import {
   SparkGlyph,
   StopGlyph,
   ThinkingGlyph,
-  VideoGlyph,
-  WriteGlyph
+  VideoGlyph
 } from './toolGlyphs'
 
 export type ToolIcon = Glyph
@@ -53,9 +52,8 @@ export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done
 
 const TABLE: Array<[string, ToolAction]> = [
   ['read readfile viewfile view cat openfile readmediafile', { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files' }],
-  ['write writefile createfile create newfile savefile', { icon: WriteGlyph, run: 'Writing', done: 'Wrote', many: 'Wrote files' }],
   [
-    'edit editfile edits multiedit strreplace strreplacefile strreplaceeditor applypatch patch filechange',
+    'edit editfile edits multiedit strreplace strreplacefile strreplaceeditor applypatch patch filechange write writefile createfile create newfile savefile',
     { icon: EditGlyph, run: 'Editing', done: 'Edited', many: 'Edited files' }
   ],
   ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook', many: 'Edited notebooks' }],
