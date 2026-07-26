@@ -29,17 +29,14 @@ type Opened = { id: string; cols: number; rows: number }
 
 const opened: Opened[] = []
 const closed: string[] = []
-let warmed = 0
 let sendData: (id: string, chunk: string) => void = () => undefined
 let sendExit: (id: string) => void = () => undefined
 
 beforeEach(() => {
   opened.length = 0
   closed.length = 0
-  warmed = 0
   useBrowser.setState({ tabs: [], activeTabId: null })
   window.crew = {
-    warmTerminal: () => void (warmed += 1),
     openTerminal: (id: string, size: { cols: number; rows: number }) => opened.push({ id, ...size }),
     writeTerminal: () => undefined,
     resizeTerminal: () => undefined,
