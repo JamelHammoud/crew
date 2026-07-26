@@ -47,10 +47,7 @@ export default function DesignAskBar({
     'ask bar bounds',
     () => {
       const page = editor.getSelectionPageBounds()
-      if (!page) return null
-      const topLeft = editor.pageToViewport({ x: page.minX, y: page.minY })
-      const bottomRight = editor.pageToViewport({ x: page.maxX, y: page.maxY })
-      return { x: topLeft.x, y: bottomRight.y }
+      return page ? editor.pageToViewport({ x: page.minX, y: page.maxY }) : null
     },
     [editor]
   )
