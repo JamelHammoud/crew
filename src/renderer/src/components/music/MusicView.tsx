@@ -78,7 +78,7 @@ export default function MusicView() {
     <div className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:thin]">
       <div className="p-4 flex gap-4">
         {track ? (
-          <Cover item={track} playing={room.playing} className="w-[104px] h-[104px] shrink-0 rounded-2xl" />
+          <Cover item={track} size={104} playing={room.playing} className="w-[104px] h-[104px] shrink-0 rounded-2xl" />
         ) : (
           <div className="w-[104px] h-[104px] shrink-0 rounded-2xl bg-ink-800 flex ring-1 ring-inset ring-fg/[0.06]">
             <MusicGlyph className="w-7 h-7 m-auto text-fg-faint" />
@@ -158,7 +158,7 @@ export default function MusicView() {
                   on ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
                 }`}
               >
-                <Cover item={one} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-[10px]">
+                <Cover item={one} size={40} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-[10px]">
                   {on && (
                     // A scrim under the bars, because a cover can be any color
                     // and white on yellow is not a bar at all.
