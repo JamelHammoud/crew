@@ -36,7 +36,11 @@ function MentionHighlights({ value }: { value: string }) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(() => tokenizeMentions(value, agents, members, docs), [agents, docs, members, value])
+  const boards = useCrew(s => s.boards)
+  const tokens = useMemo(
+    () => tokenizeMentions(value, agents, members, writtenRefs(value, docs, boards)),
+    [agents, boards, docs, members, value]
+  )
   return (
     <>
       {tokens.map((token, index) => {
