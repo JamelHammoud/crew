@@ -11,6 +11,7 @@ import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
 
 const HEADER_LIFT = 10
+const FLIP = 'transition-transform duration-200'
 
 export default function Design() {
   const boards = useCrew(s => s.boards)
