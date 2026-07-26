@@ -108,8 +108,8 @@ describe('doc mentions in the thread preview', () => {
     boot()
     const pill = screen.getByText('@Bob (Kimi K3)')
     const preview = pill.closest('p')!
-    expect(preview.textContent).toBe(title)
-    const doc = screen.getByText('#Plan')
+    expect(preview.textContent).toBe(title.replace('#Plan', 'Plan'))
+    const doc = screen.getByText('Plan')
     expect(doc.className).toContain('text-sky-300')
   })
 
