@@ -330,7 +330,7 @@ app.on('window-all-closed', () => {
   if (process.platform === 'win32' && !balloonShown) {
     balloonShown = true
     tray.balloon(
-      'crew is still running',
+      'Crew is still running',
       'Your agents stay shared with your crew. Quit from this icon to stop.'
     )
   }

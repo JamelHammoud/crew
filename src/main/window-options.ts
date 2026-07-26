@@ -15,7 +15,7 @@ export function createWindowOptions(
     backgroundColor: isWindows ? '#141414' : '#00000000',
     resizable: true,
     maximizable: true,
-    title: 'crew',
+    title: 'Crew',
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 20, y: 27 },
     webPreferences: {
