@@ -236,43 +236,43 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
 
   return (
     <>
-    <button
-      ref={pillRef}
-      data-tab={tab.id}
-      onClick={() => useBrowser.getState().selectTab(tab.id)}
-      onContextMenu={event => {
-        event.preventDefault()
-        setMenuAt({ x: event.clientX, y: event.clientY })
-      }}
-      className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
-        active ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
-      }`}
-    >
-      {tab.loading ? (
-        <Spinner size={14} className="text-fg-muted" />
-      ) : tab.kind === 'terminal' ? (
-        <CommandLineIcon className="w-4 h-4 shrink-0" />
-      ) : tab.kind === 'file' ? (
-        <DocumentTextIcon className="w-4 h-4 shrink-0" />
-      ) : showsImage(tab) ? (
-        <PhotoIcon className="w-4 h-4 shrink-0" />
-      ) : tab.favicon ? (
-        <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
-      ) : (
-        <GlobeAltIcon className="w-4 h-4 shrink-0" />
-      )}
-      <span className="truncate">{tabLabel(tab)}</span>
-      <span
-        onClick={event => {
-          event.stopPropagation()
-          useBrowser.getState().closeTab(tab.id)
+      <button
+        ref={pillRef}
+        data-tab={tab.id}
+        onClick={() => useBrowser.getState().selectTab(tab.id)}
+        onContextMenu={event => {
+          event.preventDefault()
+          setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        aria-label="Close tab"
-        className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
+        className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
+          active ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+        }`}
       >
-        <XMarkIcon className="w-3 h-3" />
-      </span>
-    </button>
+        {tab.loading ? (
+          <Spinner size={14} className="text-fg-muted" />
+        ) : tab.kind === 'terminal' ? (
+          <CommandLineIcon className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'file' ? (
+          <DocumentTextIcon className="w-4 h-4 shrink-0" />
+        ) : showsImage(tab) ? (
+          <PhotoIcon className="w-4 h-4 shrink-0" />
+        ) : tab.favicon ? (
+          <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
+        ) : (
+          <GlobeAltIcon className="w-4 h-4 shrink-0" />
+        )}
+        <span className="truncate">{tabLabel(tab)}</span>
+        <span
+          onClick={event => {
+            event.stopPropagation()
+            useBrowser.getState().closeTab(tab.id)
+          }}
+          aria-label="Close tab"
+          className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
+        >
+          <XMarkIcon className="w-3 h-3" />
+        </span>
+      </button>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         <MenuItem
           icon={<XMarkIcon />}
