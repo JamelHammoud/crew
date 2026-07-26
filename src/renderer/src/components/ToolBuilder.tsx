@@ -1,7 +1,16 @@
 import { useState, type ReactNode } from 'react'
 import { DEFAULT_MARK, NAME_LIMIT, type CrewTool, type ToolAction } from '../../../shared/toolbox'
 import { agentsHere } from '../design/askAgent'
-import { ChatGlyph, FileGlyph, GlobeGlyph, PeopleGlyph, TerminalGlyph, TrashGlyph, type Glyph } from '../icons'
+import {
+  ChatGlyph,
+  FileGlyph,
+  GlobeGlyph,
+  PeopleGlyph,
+  PencilGlyph,
+  TerminalGlyph,
+  TrashGlyph,
+  type Glyph
+} from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import ToolMarkPicker from './ToolMarkPicker'
