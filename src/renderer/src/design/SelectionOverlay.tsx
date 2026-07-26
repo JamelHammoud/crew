@@ -48,7 +48,7 @@ export default function SelectionOverlay({ editor }: { editor: Editor | null }) 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {node && rect.w > MIN_FOR_HANDLES && rect.h > MIN_FOR_HANDLES && (
-        <RadiusHandles editor={editor} shape={node} rect={rect} zoom={zoom} />
+        <RadiusHandles editor={editor} shape={node} rect={rect} zoom={zoom} stroke={stroke} />
       )}
       <span
         className="absolute -translate-x-1/2 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums text-white whitespace-nowrap"
