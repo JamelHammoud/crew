@@ -75,6 +75,9 @@ describe('the toolbox', () => {
     hover('Music')
     expect(screen.getAllByText('Coming soon')).toHaveLength(1)
 
+    unhover('Music')
+    expect(screen.queryByText('Coming soon')).toBeNull()
+
     hover('Terminal')
     expect(screen.queryByText('Coming soon')).toBeNull()
   })
