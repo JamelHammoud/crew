@@ -29,5 +29,6 @@ export function agentToAsk<T extends { id: string; status: string }>(agents: T[]
 
 export function askPrompt(label: string, question: string, layers: string[]): string {
   const named = layers.length > 0 ? `\n\nOn this board, change: ${layers.join(', ')}` : ''
-  return `@${label} ${question.trim()}${named}`
+  const said = question.trim()
+  return `@${label}${said ? ` ${said}` : ''}${named}`
 }
