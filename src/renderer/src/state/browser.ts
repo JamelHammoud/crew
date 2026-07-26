@@ -134,6 +134,27 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = { ...makeTab(), kind: 'file' as const, path, line, diff }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
+  openFiles: () => {
+    const existing = get().tabs.find(t => t.kind === 'file')
+    if (existing) {
+      set(s => ({
+        activeTabId: existing.id,
+        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, tree: true } : t))
+      }))
+      return
+    }
+    const tab = { ...makeTab(), kind: 'file' as const, tree: true }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
+  toggleTree: id => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, tree: !t.tree } : t)) })),
+  toggleFolder: (id, path) =>
+    set(s => ({
+      tabs: s.tabs.map(t =>
+        t.id === id
+          ? { ...t, open: t.open.includes(path) ? t.open.filter(one => one !== path) : [...t.open, path] }
+          : t
+      )
+    })),
   addTab: () => {
     const tab = makeTab()
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
