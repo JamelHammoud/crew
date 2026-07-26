@@ -34,15 +34,31 @@ export function useMentionAutocomplete(
   const matches = useMemo<MentionItem[]>(() => {
     if (query?.trigger === '@') return mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent', agent }))
     if (query?.trigger === '#') return docCandidates(docs, query.text).map(doc => ({ kind: 'doc', doc }))
+    if (query?.trigger === ':')
+      return searchEmoji(query.text, EMOJI_MATCHES).map(entry => ({ kind: 'emoji', entry }))
     return []
   }, [agents, docs, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const onChange = (next: string) => {
-    setValue(next)
     const caret = inputRef.current?.selectionStart ?? next.length
-    const match = /(?:^|\s)([@#])([^@#]*)$/.exec(next.slice(0, caret))
-    setQuery(match ? { trigger: match[1] as Query['trigger'], text: match[2] } : null)
+    const head = next.slice(0, caret)
+    const closed = EMOJI_CLOSED.exec(head)
+    const char = closed && emojiForShortcode(closed[1])
+    if (char) {
+      const before = head.slice(0, head.length - closed[1].length - 2) + char
+      caretTarget.current = before.length
+      setValue(before + next.slice(caret))
+      rememberEmoji(char)
+      setQuery(null)
+      setActive(0)
+      return
+    }
+    setValue(next)
+    const mention = MENTION_QUERY.exec(head)
+    const emoji = EMOJI_QUERY.exec(head)
+    if (mention) setQuery({ trigger: mention[1] as Query['trigger'], text: mention[2] })
+    else setQuery(emoji ? { trigger: ':', text: emoji[1] } : null)
     setActive(0)
   }
 
