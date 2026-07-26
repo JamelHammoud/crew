@@ -151,31 +151,49 @@ function CodeBody({
   }, [tab.path, text, theme, dirty])
 
   return (
-    <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
+    <div
+      onMouseDown={event => {
+        if (!marks) return
+        const row = (event.target as HTMLElement).closest?.('[data-line]')
+        onDismiss(row ? Number(row.getAttribute('data-line')) : null)
+      }}
+      className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5"
+    >
       <div aria-hidden={editable || undefined}>
         {lines.map((content, index) => {
           const number = index + 1
-          const marked = tab.line === number || marks?.lines.has(number) === true
+          const gone = marks?.removed.get(number)
+          const added = marks?.added.has(number) === true
+          const marked = tab.line === number
           return (
-            <div key={number} data-line={number} className={`flex px-4 ${marked ? 'bg-fg/[0.07]' : ''}`}>
-              <span
-                style={{ minWidth: gutter }}
-                className={`shrink-0 mr-4 text-right select-none tabular-nums ${marked ? 'text-fg' : 'text-fg-faint'}`}
+            <Fragment key={number}>
+              {gone && <GoneLines lines={gone} gutter={gutter} />}
+              <div
+                data-line={number}
+                className={`flex px-4 ${added ? 'bg-positive/10' : marked ? 'bg-fg/[0.07]' : ''}`}
               >
-                {number}
-              </span>
-              <span className="whitespace-pre text-fg-secondary pr-4">
-                <LineText
-                  content={content}
-                  tokens={highlight?.lines[index] === content ? highlight.byLine[index] : undefined}
-                />
-              </span>
-            </div>
+                <span
+                  style={{ minWidth: gutter }}
+                  className={`shrink-0 mr-4 text-right select-none tabular-nums ${
+                    added || marked ? 'text-fg' : 'text-fg-faint'
+                  }`}
+                >
+                  {number}
+                </span>
+                <span className="whitespace-pre text-fg-secondary pr-4">
+                  <LineText
+                    content={content}
+                    tokens={highlight?.lines[index] === content ? highlight.byLine[index] : undefined}
+                  />
+                </span>
+              </div>
+            </Fragment>
           )
         })}
       </div>
       {editable && (
         <textarea
+          ref={areaRef}
           value={text}
           onChange={event => {
             const { value, selectionStart } = event.target
