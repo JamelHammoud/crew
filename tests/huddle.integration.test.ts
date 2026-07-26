@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { MAX_SIGNAL_CHARS } from '../src/shared/huddle'
+import { emptyRoom, MAX_SIGNAL_CHARS } from '../src/shared/huddle'
 import type { ServerMessage } from '../src/shared/protocol'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
