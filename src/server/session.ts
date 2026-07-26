@@ -1291,6 +1291,7 @@ export class CrewSession {
   private huddleRoom(): HuddleRoom {
     if (this.huddle.size === 0) return emptyRoom()
     return {
+      id: this.huddleId,
       peers: [...this.huddle.values()].sort((a, b) => a.joinedAt - b.joinedAt),
       startedAt: this.huddleStartedAt
     }
