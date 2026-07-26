@@ -45,6 +45,31 @@ describe('frame background', () => {
   })
 })
 
+describe('alignment', () => {
+  it('puts a layer against the edge it was sent to', () => {
+    const shape = box(100, 100, 100, 50)
+    const frame = box(0, 0, 400, 300)
+    expect(alignOffset(shape, frame, 'left')).toEqual({ x: -100, y: 0 })
+    expect(alignOffset(shape, frame, 'right')).toEqual({ x: 200, y: 0 })
+    expect(alignOffset(shape, frame, 'top')).toEqual({ x: 0, y: -100 })
+    expect(alignOffset(shape, frame, 'bottom')).toEqual({ x: 0, y: 150 })
+  })
+
+  it('centers on the middle of the frame, not the page', () => {
+    const shape = box(40, 40, 60, 60)
+    const frame = box(20, 20, 200, 100)
+    expect(alignOffset(shape, frame, 'center-horizontal')).toEqual({ x: 50, y: 0 })
+    expect(alignOffset(shape, frame, 'center-vertical')).toEqual({ x: 0, y: 0 })
+  })
+
+  it('moves nothing when a layer is already where it was sent', () => {
+    const shape = box(0, 0, 50, 50)
+    const frame = box(0, 0, 200, 200)
+    expect(alignOffset(shape, frame, 'left')).toEqual({ x: 0, y: 0 })
+    expect(alignOffset(shape, frame, 'top')).toEqual({ x: 0, y: 0 })
+  })
+})
+
 describe('canvas defaults', () => {
   it('draws straight and sans, never hand drawn', () => {
     expect(DESIGN_STYLE_DEFAULTS).toEqual({ font: 'sans', dash: 'solid', spline: 'line' })
