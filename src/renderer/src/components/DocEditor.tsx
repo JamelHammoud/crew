@@ -1,8 +1,6 @@
 import '@blocknote/mantine/style.css'
 import type { PartialBlock } from '@blocknote/core'
-import { BlockNoteSchema, createCodeBlockSpec, defaultBlockSpecs } from '@blocknote/core/blocks'
 import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions'
-import { en } from '@blocknote/core/locales'
 import { BlockNoteView } from '@blocknote/mantine'
 import {
   FormattingToolbarController,
@@ -13,10 +11,10 @@ import {
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
-import { CODE_LANGUAGES, createCodeHighlighter } from './doc/docCode'
 import { DocEmojiMenu, docEmojiItems } from './doc/DocEmojiMenu'
 import DocSideMenu from './doc/DocSideMenu'
 import { DocSlashMenu, docSlashItems } from './doc/DocSlashMenu'
+import { docDictionary, docSchema } from './doc/docSchema'
 import DocToolbar from './doc/DocToolbar'
 import { localizeDoc, relativizeDoc, uploadImage } from './images'
 
@@ -26,40 +24,14 @@ export interface DocEditorHandle {
   discard: () => void
 }
 
-const schema = BlockNoteSchema.create({
-  blockSpecs: {
-    ...defaultBlockSpecs,
-    codeBlock: createCodeBlockSpec({
-      defaultLanguage: 'text',
-      supportedLanguages: CODE_LANGUAGES,
-      createHighlighter: createCodeHighlighter
-    })
-  }
-})
-
-const dictionary = {
-  ...en,
-  placeholders: {
-    ...en.placeholders,
-    emptyDocument: 'Write, or press / to add a block',
-    default: 'Press / to add a block',
-    heading: 'Heading',
-    quote: 'Quote',
-    bulletListItem: 'List',
-    numberedListItem: 'List',
-    checkListItem: 'To-do',
-    toggleListItem: 'Toggle'
-  }
-}
-
 export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: string) => void }>(
   function DocEditor({ text, onChange }, ref) {
     const httpBase = useCrew(s => s.httpBase)
     const httpBaseRef = useRef(httpBase)
     httpBaseRef.current = httpBase
     const editor = useCreateBlockNote({
-      schema,
-      dictionary,
+      schema: docSchema,
+      dictionary: docDictionary,
       dropCursor: { width: 2, color: false },
       links: {
         onClick: (event: MouseEvent) => {
