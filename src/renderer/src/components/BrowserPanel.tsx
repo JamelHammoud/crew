@@ -272,6 +272,25 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         <XMarkIcon className="w-3 h-3" />
       </span>
     </button>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+        <MenuItem
+          icon={<XMarkIcon />}
+          label="Close tab"
+          onClick={() => {
+            setMenuAt(null)
+            useBrowser.getState().closeTab(tab.id)
+          }}
+        />
+        <MenuItem
+          icon={<XCircleIcon />}
+          label="Close all tabs"
+          onClick={() => {
+            setMenuAt(null)
+            useBrowser.getState().closeAll()
+          }}
+        />
+      </Popover>
+    </>
   )
 }
 
