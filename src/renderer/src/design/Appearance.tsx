@@ -1,11 +1,11 @@
 import { Fragment, useState } from 'react'
 import { useEditor, useValue } from 'tldraw'
-import type { Corner, DesignNodeProps } from '../../../shared/designNode'
+import type { Corner } from '../../../shared/designNode'
 import { PanelButton } from '../components/DesignControls'
-import type { DesignNodeShape } from './DesignNodeUtil'
 import Select from '../components/Select'
 import { ClipGlyph, CornerGlyph, CornersGlyph, OpacityGlyph } from './glyphs'
 import { MixedInput, NumberInput, Section, SubLabel, Trailing } from './InspectorFields'
+import type { NodeView } from './nodeView'
 
 const BLENDS = [
   { value: 'normal', label: 'Normal' },
@@ -33,13 +33,15 @@ const CORNERS: Array<{ at: number; label: string; spin: string }> = [
   { at: 2, label: 'Bottom right', spin: 'rotate-180' }
 ]
 
-export default function Appearance({ node }: { node: DesignNodeShape | null }) {
+export default function Appearance({ view }: { view: NodeView | null }) {
   const editor = useEditor()
   const opacity = useValue('design opacity', () => editor.getSharedOpacity(), [editor])
   const [perCorner, setPerCorner] = useState(false)
   const value = opacity.type === 'shared' ? opacity.value : 1
-  const props = node ? (node.props as DesignNodeProps) : null
-  const uniform = props ? props.radius.every(part => part === props.radius[0]) : true
+  const radius = view?.radius ?? null
+  const blend = view?.blend ?? null
+  const clip = view?.clip ?? null
+  const uniform = radius ? radius.value.every(part => part === radius.value[0]) : true
 
   const setOpacity = (next: number) => {
     editor.run(() => {
@@ -48,29 +50,19 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
     })
   }
 
-  const setRadius = (radius: Corner) => {
-    if (!node || !props) return
-    editor.markHistoryStoppingPoint()
-    editor.updateShape({ id: node.id, type: 'design-node', props: { ...props, radius } })
-  }
-  const patch = (next: Partial<DesignNodeProps>) => {
-    if (!node || !props) return
-    editor.markHistoryStoppingPoint()
-    editor.updateShape({ id: node.id, type: 'design-node', props: { ...props, ...next } })
-  }
-  const setAll = (next: number) => setRadius([next, next, next, next])
+  const setAll = (next: number) => radius?.set([next, next, next, next])
   const setOne = (at: number, next: number) => {
-    if (!props) return
-    const radius = [...props.radius] as Corner
-    radius[at] = next
-    setRadius(radius)
+    if (!radius) return
+    const corners = [...radius.value] as Corner
+    corners[at] = next
+    radius.set(corners)
   }
 
   return (
     <Section title="Appearance">
       <div className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
         <SubLabel>Opacity</SubLabel>
-        {props ? <SubLabel>Corner radius</SubLabel> : <span />}
+        {radius ? <SubLabel>Corner radius</SubLabel> : <span />}
         <span />
 
         <NumberInput
@@ -81,16 +73,16 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
           suffix="%"
           onChange={next => setOpacity(next / 100)}
         />
-        {props ? (
+        {radius ? (
           uniform ? (
-            <NumberInput icon={<CornersGlyph className="w-4 h-4" />} value={props.radius[0]} min={0} onChange={setAll} />
+            <NumberInput icon={<CornersGlyph className="w-4 h-4" />} value={radius.value[0]} min={0} onChange={setAll} />
           ) : (
             <MixedInput label="Corner radius" icon={<CornersGlyph className="w-4 h-4" />} onChange={setAll} />
           )
         ) : (
           <span />
         )}
-        {props ? (
+        {radius ? (
           <Trailing>
             <PanelButton label="Each corner" active={perCorner} onClick={() => setPerCorner(open => !open)}>
               <CornerGlyph className="w-4 h-4" />
@@ -100,13 +92,13 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
           <span />
         )}
 
-        {props &&
+        {radius &&
           perCorner &&
           CORNERS.map((corner, index) => (
             <Fragment key={corner.at}>
               <NumberInput
                 icon={<CornerGlyph className={`w-4 h-4 ${corner.spin}`} />}
-                value={props.radius[corner.at]}
+                value={radius.value[corner.at]}
                 min={0}
                 onChange={next => setOne(corner.at, next)}
               />
@@ -114,19 +106,19 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
             </Fragment>
           ))}
       </div>
-      {props && (
-        <>
-          <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
-            <SubLabel>Blend</SubLabel>
-            <span />
-            <Select full value={props.blend} options={BLENDS} onChange={blend => patch({ blend })} />
+      {blend && (
+        <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
+          <SubLabel>Blend</SubLabel>
+          <span />
+          <Select full value={blend.value} options={BLENDS} onChange={next => blend.set(next)} />
+          {clip && (
             <Trailing>
-              <PanelButton label="Clip content" active={props.clip} onClick={() => patch({ clip: !props.clip })}>
+              <PanelButton label="Clip content" active={clip.value} onClick={() => clip.set(!clip.value)}>
                 <ClipGlyph className="w-4 h-4" />
               </PanelButton>
             </Trailing>
-          </div>
-        </>
+          )}
+        </div>
       )}
     </Section>
   )
