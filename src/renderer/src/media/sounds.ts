@@ -100,6 +100,73 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       wet: 0.5,
       rasp: { hz: 6200, q: 1.4, gain: 0.3, length: 0.008 }
     }
+  ],
+  'toolbox.open': [
+    {
+      hz: 1245,
+      at: 0,
+      length: 0.05,
+      gain: 0.3,
+      partials: [1, 3.4, 6.1],
+      bend: 1.28,
+      bendTime: 0.006,
+      tone: 7200,
+      wet: 0.16,
+      rasp: { hz: 5400, q: 1.6, gain: 0.45, length: 0.012 }
+    },
+    {
+      hz: 466.16,
+      at: 0.045,
+      length: 0.3,
+      gain: 0.6,
+      partials: [1, 2.04, 3.9],
+      bend: 0.7,
+      bendTime: 0.06,
+      detune: 5,
+      tone: 2400,
+      wet: 0.24,
+      rasp: { hz: 950, q: 0.9, gain: 0.1, length: 0.012 }
+    },
+    {
+      hz: 932.33,
+      at: 0.115,
+      length: 0.26,
+      gain: 0.2,
+      partials: [1, 3.02],
+      bend: 0.86,
+      bendTime: 0.03,
+      tone: 5000,
+      wet: 0.4,
+      rasp: { hz: 2800, q: 1.2, gain: 0.05, length: 0.007 }
+    }
+  ],
+  'tasks.open': [
+    {
+      hz: 523.25,
+      at: 0,
+      length: 0.24,
+      gain: 0.5,
+      partials: [1, 2.4],
+      bend: 0.78,
+      bendTime: 0.05,
+      detune: 4,
+      tone: 2000,
+      wet: 0.16,
+      rasp: { hz: 1500, q: 0.6, gain: 0.2, length: 0.05 }
+    },
+    {
+      hz: 698.46,
+      at: 0.08,
+      length: 0.28,
+      gain: 0.46,
+      partials: [1, 2.04, 4.1],
+      bend: 0.92,
+      bendTime: 0.02,
+      detune: 4,
+      tone: 3400,
+      wet: 0.3,
+      rasp: { hz: 2400, q: 1.1, gain: 0.07, length: 0.008 }
+    }
   ]
 }
 
