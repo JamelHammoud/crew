@@ -200,15 +200,13 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
 
         <div>
           <Label>What it does</Label>
-          <div className="-mx-1">
-            <Row
-              mark={<picked.mark className="w-[18px] h-[18px]" />}
-              title={picked.title}
-              note={picked.note}
-              chevron
-              onClick={() => setScreen('kind')}
-            />
-          </div>
+          <Row
+            mark={<picked.mark className="w-[18px] h-[18px]" />}
+            title={picked.title}
+            note={picked.note}
+            chevron
+            onClick={() => setScreen('kind')}
+          />
         </div>
 
         {kind === 'web' && (
