@@ -14,34 +14,71 @@ beforeEach(() => {
 
 afterEach(() => cleanup())
 
-const handleFor = (root: HTMLElement) => root.querySelector('.cursor-col-resize')!
+const open = () => {
+  const { container } = render(createElement(SidePanel, { visible: true }))
+  return container.querySelector('.cursor-col-resize')!
+}
 
-const open = () => render(createElement(SidePanel, { visible: true }))
+const press = (handle: Element, clientX: number, timeStamp: number) =>
+  fireEvent.pointerDown(handle, { clientX, timeStamp })
+
+const release = (clientX: number, timeStamp: number) => fireEvent.pointerUp(window, { clientX, timeStamp })
+
+const drag = (clientX: number) => fireEvent.pointerMove(window, { clientX })
 
 describe('the panel resize bar', () => {
   it('drags the panel to a new width', () => {
-    const { container } = open()
+    const handle = open()
 
-    fireEvent.pointerDown(handleFor(container), { clientX: 800 })
-    fireEvent.pointerMove(window, { clientX: 700 })
-    fireEvent.pointerUp(window)
+    press(handle, 800, 0)
+    drag(700)
+    release(700, 50)
 
     expect(useBrowser.getState().width).toBe(DEFAULT_WIDTH + 100)
   })
 
   it('puts the width back to the default on a double click', () => {
-    const { container } = open()
+    const handle = open()
     useBrowser.getState().setWidth(760)
 
-    fireEvent.doubleClick(handleFor(container))
+    press(handle, 800, 0)
+    release(800, 40)
+    press(handle, 800, 90)
 
     expect(useBrowser.getState().width).toBe(DEFAULT_WIDTH)
   })
 
-  it('leaves a panel that is already the default width where it is', () => {
-    const { container } = open()
+  it('leaves the width alone when the second click comes long after the first', () => {
+    const handle = open()
+    useBrowser.getState().setWidth(760)
 
-    fireEvent.doubleClick(handleFor(container))
+    press(handle, 800, 0)
+    release(800, 40)
+    press(handle, 800, 1200)
+
+    expect(useBrowser.getState().width).toBe(760)
+  })
+
+  it('leaves the width alone when the first press was a drag', () => {
+    const handle = open()
+
+    press(handle, 800, 0)
+    drag(700)
+    release(700, 50)
+    press(handle, 700, 90)
+
+    expect(useBrowser.getState().width).toBe(DEFAULT_WIDTH + 100)
+  })
+
+  it('takes a second click that follows a drag on its own terms', () => {
+    const handle = open()
+
+    press(handle, 800, 0)
+    drag(700)
+    release(700, 50)
+    press(handle, 700, 90)
+    release(700, 130)
+    press(handle, 700, 180)
 
     expect(useBrowser.getState().width).toBe(DEFAULT_WIDTH)
   })
