@@ -254,6 +254,75 @@ export const FlipVerticalGlyph = glyph(
   </>
 )
 
+const LETTER_A = (
+  <>
+    <path d="M9.1 16.75 12 7.75l2.9 9" />
+    <path d="M10.1 14h3.8" />
+  </>
+)
+
+export const LineHeightGlyph = glyph(
+  <>
+    <path d="M4 4h16M4 20h16" />
+    {LETTER_A}
+  </>
+)
+
+export const LetterSpacingGlyph = glyph(
+  <>
+    <path d="M4 4v16M20 4v16" />
+    {LETTER_A}
+  </>
+)
+
+export const TextTopGlyph = glyph(
+  <>
+    <path d="M4 4h16" />
+    <path d="M12 20V8.5" />
+    <path d="m8.5 12 3.5-3.5 3.5 3.5" />
+  </>
+)
+
+export const TextMiddleGlyph = glyph(
+  <>
+    <path d="M4 12h16" />
+    <path d="M12 3.5V8m0 8v4.5" />
+    <path d="m9.5 5.5 2.5 2.5 2.5-2.5M9.5 18.5l2.5-2.5 2.5 2.5" />
+  </>
+)
+
+export const TextBottomGlyph = glyph(
+  <>
+    <path d="M4 20h16" />
+    <path d="M12 4v11.5" />
+    <path d="m8.5 12 3.5 3.5 3.5-3.5" />
+  </>
+)
+
+export const TypeSettingsGlyph = glyph(
+  <>
+    <path d="M9 4v4.5M9 13.5V20" />
+    <circle cx="9" cy="11" r="2.5" />
+    <path d="M15 4v8.5M15 17.5V20" />
+    <circle cx="15" cy="15" r="2.5" />
+  </>
+)
+
+export const UnderlineGlyph = glyph(
+  <>
+    <path d="M7 4.5v6.25a5 5 0 0 0 10 0V4.5" />
+    <path d="M6 20h12" />
+  </>
+)
+
+export const StrikeGlyph = glyph(
+  <>
+    <path d="M16 7.4c-.85-1.2-2.2-1.9-3.9-1.9-2.2 0-3.85 1.1-3.85 2.85 0 1.2.7 2 2.1 2.55" />
+    <path d="M8.1 16.4c.85 1.3 2.3 2.1 4.1 2.1 2.3 0 4-1.15 4-3 0-1.3-.8-2.15-2.35-2.7" />
+    <path d="M4.5 12h15" />
+  </>
+)
+
 const GEO_GLYPHS: Record<string, Glyph> = {
   rectangle: RectangleGlyph,
   ellipse: EllipseGlyph,
