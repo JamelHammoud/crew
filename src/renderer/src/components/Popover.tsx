@@ -149,6 +149,7 @@ export function MenuItem({
   hint,
   danger,
   active,
+  checked,
   onClick,
   onHover
 }: {
@@ -157,6 +158,7 @@ export function MenuItem({
   hint?: string
   danger?: boolean
   active?: boolean
+  checked?: boolean
   onClick: () => void
   onHover?: () => void
 }) {
