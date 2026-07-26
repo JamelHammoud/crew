@@ -49,7 +49,7 @@ export interface ToolAction {
 const AGENT: ToolAction = { icon: SparkGlyph, run: 'Asking an agent', done: 'Asked an agent', many: 'Asked agents', prose: true }
 const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', prose: true }
 
-export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thinking', prose: true }
+export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thought', prose: true }
 
 const TABLE: Array<[string, ToolAction]> = [
   ['read readfile viewfile view cat openfile readmediafile', { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files' }],
