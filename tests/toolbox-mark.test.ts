@@ -1,26 +1,29 @@
 // @vitest-environment jsdom
 import { cleanup, render } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it } from 'vitest'
 import ToolboxMark from '../src/renderer/src/components/ToolboxMark'
 import { GRID, LIVE } from '../src/renderer/src/icons/keylines'
+import { ToolboxGlyph } from '../src/renderer/src/icons/objects'
 import {
-  TOOLBOX_BODY,
-  TOOLBOX_HANDLE,
-  TOOLBOX_HINGE,
-  TOOLBOX_LID,
-  ToolboxGlyph,
-  toolboxTurn
-} from '../src/renderer/src/icons/objects'
+  TOOLBOX_CASE,
+  TOOLBOX_OPEN,
+  TOOLBOX_SHUT,
+  TOOLBOX_SWING,
+  toolboxAt
+} from '../src/renderer/src/icons/toolbox'
 
 afterEach(cleanup)
 
-const css = (require('node:fs') as typeof import('node:fs')).readFileSync(
-  `${process.cwd()}/src/renderer/src/styles.css`,
-  'utf8'
+const css = readFileSync(`${process.cwd()}/src/renderer/src/styles.css`, 'utf8')
+const rules = css.slice(
+  css.indexOf('.toolbox-mark .toolbox-turn'),
+  css.indexOf('/* The word turns over with the mark')
 )
-const rules = css.slice(css.indexOf('.toolbox-mark .toolbox-lid'), css.indexOf('/* Everything that carries a color'))
+
+const RIM = 12.75
 
 const mark = (): SVGElement => {
   const el = document.querySelector('.toolbox-mark')
@@ -28,27 +31,36 @@ const mark = (): SVGElement => {
   return el as SVGElement
 }
 
-const lid = (): SVGElement => mark().querySelector('.toolbox-lid') as SVGElement
+const moving = (): SVGElement[] => [...mark().querySelectorAll('.toolbox-turn')] as SVGElement[]
 
 const paths = (el: Element): string[] =>
   [...el.querySelectorAll('path')].map(path => path.getAttribute('d') ?? '')
 
-// What the transition really draws: every number in the list runs from the shut
-// value to the open one together, so the swing is read at a share of itself.
-const turnAt = (progress: number) => {
-  const open = toolboxTurn()
-  return {
-    rise: progress * open.rise,
-    squash: 1 + progress * (open.squash - 1),
-    away: 1 + progress * (open.away - 1)
+// Every corner the drawing turns, in the order it is written. An arc is read by
+// where it lands rather than by the radii it takes to get there.
+const corners = (d: string): { x: number; y: number }[] => {
+  const out: { x: number; y: number }[] = []
+  for (const [, letter, rest] of d.matchAll(/([MLA])([^MLAZ]*)/g)) {
+    const all = (rest.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number)
+    const landed = letter === 'A' ? all.slice(-2) : all
+    for (let i = 0; i < landed.length; i += 2) out.push({ x: landed[i], y: landed[i + 1] })
   }
+  return out
 }
 
-const lifted = (y: number, at = turnAt(1)): number =>
-  TOOLBOX_HINGE.y - (TOOLBOX_HINGE.y - y) * at.squash * at.away - at.rise
+// What the transition really draws. The two drawings are walked into each other,
+// so a curve that runs past 1 keeps going the way it was headed rather than
+// swinging the lid any further.
+const PEAK = 1.03
+const at = (share: number, shut: string, open: string): { x: number; y: number }[] => {
+  const from = corners(shut)
+  return corners(open).map((point, i) => ({
+    x: from[i].x + share * (point.x - from[i].x),
+    y: from[i].y + share * (point.y - from[i].y)
+  }))
+}
 
-// The open curve carries the lid this far past itself before it settles.
-const PEAK = 1.058
+const STROKE = 2
 
 describe('the toolbox mark', () => {
   it('opens its lid while the panel is open, on the same drawing', () => {
@@ -66,58 +78,101 @@ describe('the toolbox mark', () => {
   it('is the still icon when it is shut', () => {
     render(createElement(ToolboxMark, { open: false }))
     const still = renderToStaticMarkup(createElement(ToolboxGlyph, {}))
+    const drawn = [...(still.match(/ d="[^"]+"/g) ?? [])].map(d => d.slice(4, -1))
 
-    expect(paths(mark())).toEqual([...(still.match(/ d="[^"]+"/g) ?? [])].map(d => d.slice(4, -1)))
+    expect(drawn).toEqual([TOOLBOX_CASE, TOOLBOX_SHUT.lid, TOOLBOX_SHUT.handle])
+    expect(paths(mark())).toEqual([TOOLBOX_CASE, ...Object.values(TOOLBOX_SHUT).reverse()])
     expect(mark().getAttribute('stroke')).toBe('currentColor')
+
+    // The sides of the lid are the one piece the still icon does not draw, and
+    // shut they lie along the rim under the line already there.
+    for (const point of corners(TOOLBOX_SHUT.collar)) expect(point.y).toBe(RIM)
   })
 
-  it('hands the lid and the handle one hinge, at the middle of the mouth', () => {
+  it('closes the case across the top, so the mouth stays shut behind the lid', () => {
+    // Without this the open mark is a lid floating over a U, which is what an
+    // open toolbox is not.
+    expect(TOOLBOX_CASE.endsWith('Z')).toBe(true)
+    expect(TOOLBOX_CASE).toContain(`V${RIM}`)
+  })
+
+  it('hands each moving piece the shut drawing and the open one', () => {
     render(createElement(ToolboxMark, { open: true }))
-    const turn = toolboxTurn()
+    const pieces = moving()
 
-    expect(paths(lid())).toEqual([TOOLBOX_LID, TOOLBOX_HANDLE])
-    expect(paths(mark())).toContain(TOOLBOX_BODY)
-    expect(TOOLBOX_HINGE.x).toBe(GRID / 2)
-    expect(mark().style.getPropertyValue('--hinge')).toBe(`${TOOLBOX_HINGE.x}px ${TOOLBOX_HINGE.y}px`)
-    expect(mark().style.getPropertyValue('--rise')).toBe(`${turn.rise}px`)
-    expect(mark().style.getPropertyValue('--squash')).toBe(String(turn.squash))
-    expect(mark().style.getPropertyValue('--away')).toBe(String(turn.away))
+    expect(pieces).toHaveLength(3)
+    expect(pieces.map(piece => piece.getAttribute('d'))).toEqual([
+      TOOLBOX_SHUT.collar,
+      TOOLBOX_SHUT.lid,
+      TOOLBOX_SHUT.handle
+    ])
+    expect(pieces.map(piece => piece.style.getPropertyValue('--open'))).toEqual([
+      `path("${TOOLBOX_OPEN.collar}")`,
+      `path("${TOOLBOX_OPEN.lid}")`,
+      `path("${TOOLBOX_OPEN.handle}")`
+    ])
+    for (const [i, piece] of pieces.entries()) {
+      expect(piece.style.getPropertyValue('--shut')).toBe(`path("${piece.getAttribute('d')}")`)
+      expect(piece.style.getPropertyValue('--shut')).not.toBe(
+        pieces[i].style.getPropertyValue('--open')
+      )
+    }
+    // The case is not one of them.
+    expect(paths(mark())[0]).toBe(TOOLBOX_CASE)
   })
 
-  it('turns the lid in space rather than tilting it on the page', () => {
-    expect(rules).toContain('transform-origin: var(--hinge')
+  it('turns the lid by its shape rather than by a transform on it', () => {
+    expect(rules).toMatch(/\.toolbox-mark \.toolbox-turn \{[^}]*d: var\(--shut\)[^}]*transition: d /)
+    expect(rules).toMatch(/\.toolbox-mark\[data-state='open'\] \.toolbox-turn \{[^}]*d: var\(--open\)/)
+    // A transform is what this replaced. No scale or skew narrows a rectangle
+    // with the distance, and going back is the whole of what the lid does.
+    expect(rules).not.toContain('transform')
     expect(rules).toMatch(
-      /\.toolbox-mark\[data-state='open'\] \.toolbox-lid \{[^}]*translateY\(calc\(var\(--rise[^}]*scale\(var\(--away[^}]*scaleY\(var\(--squash/
+      /@media \(prefers-reduced-motion: reduce\) \{\s*\.toolbox-mark \.toolbox-turn,[^}]*\}\s*\}/
     )
-    // A rotate is the tilt this replaced. The lid is hinged behind the drawing,
-    // so it lifts and flattens instead of leaning over.
-    expect(rules).not.toContain('rotate(')
-    expect(rules).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.toolbox-mark \.toolbox-lid,[^}]*\}\s*\}/)
   })
 
-  it('lifts the lid clear of the mouth and flattens it as it goes over', () => {
-    const turn = toolboxTurn()
+  it('lifts the lid clear of the mouth and takes it back into the drawing', () => {
+    const lid = corners(TOOLBOX_OPEN.lid)
+    const collar = corners(TOOLBOX_OPEN.collar)
 
-    // Clear of the case, or it reads shut. It is what says the box is open.
-    expect(TOOLBOX_HINGE.y - lifted(TOOLBOX_HINGE.y)).toBeGreaterThan(2)
-    // And flattened, or it reads as a lid lifted straight up rather than turned.
-    expect(turn.squash).toBeLessThan(0.85)
-    expect(turn.away).toBeLessThan(1)
+    // Clear of the case, or it reads shut. The white between the rim and the lid
+    // is what says the box is open.
+    expect(RIM - lid[0].y - STROKE).toBeGreaterThan(1)
+    // Narrowing as it goes, or it reads as a lid lifted straight up.
+    expect(lid[1].x).toBeGreaterThan(lid[0].x)
+    expect(lid[2].x - lid[0].x).toBeGreaterThan(corners(TOOLBOX_SHUT.lid)[2].x - 2.5)
+    // The hinge is the full depth of the box behind the front, so the sides of
+    // the lid come back to a pair of feet well inside the corners of the case.
+    expect(collar[0].x - STROKE / 2).toBeGreaterThan(2.5 + STROKE / 2)
+    expect(collar[0].x).toBeGreaterThan(collar[1].x)
+    expect(collar[0].y).toBe(RIM)
+    // And they are welded to the lid, at both ends of the swing and every point
+    // between, or the lid comes away from the box on the way up.
+    expect(collar[1]).toEqual(lid[0])
+    expect(corners(TOOLBOX_SHUT.collar)[1]).toEqual(corners(TOOLBOX_SHUT.lid)[0])
   })
 
   it('keeps the lid inside the grid and its counters open at the top of the swing', () => {
     render(createElement(ToolboxMark, { open: true }))
-    const stroke = Number(mark().getAttribute('stroke-width'))
-    const peak = turnAt(PEAK)
+    expect(Number(mark().getAttribute('stroke-width'))).toBe(STROKE)
+
+    const lid = at(PEAK, TOOLBOX_SHUT.lid, TOOLBOX_OPEN.lid)
+    const handle = at(PEAK, TOOLBOX_SHUT.handle, TOOLBOX_OPEN.handle)
 
     // The handle is what the swing carries furthest, and it carries it up.
-    const top = lifted(4.5, peak)
-    expect(top).toBeGreaterThan((GRID - LIVE) / 2)
-    expect(top - stroke / 2).toBeGreaterThan(1.5)
+    expect(handle[2].y).toBeGreaterThan((GRID - LIVE) / 2)
 
-    // Both counters have to survive the flattening, or the lid and the handle
+    // Every counter has to survive the flattening, or the lid and the handle
     // close into bars at the size this is worn.
-    expect(lifted(12.75, peak) - lifted(8.5, peak) - stroke).toBeGreaterThan(1)
-    expect(lifted(8.5, peak) - lifted(4.5, peak) - stroke).toBeGreaterThan(1)
+    expect(RIM - lid[0].y - STROKE).toBeGreaterThan(1)
+    expect(lid[0].y - lid[2].y - STROKE).toBeGreaterThan(1)
+    expect(handle[0].y - handle[2].y - STROKE).toBeGreaterThan(1)
+  })
+
+  it('stands still when it is not turned', () => {
+    expect(toolboxAt(0)).toEqual(TOOLBOX_SHUT)
+    expect(toolboxAt(TOOLBOX_SWING)).toEqual(TOOLBOX_OPEN)
+    expect(TOOLBOX_SWING).toBeGreaterThan(0)
   })
 })
