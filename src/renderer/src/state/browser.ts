@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 export type BrowserTab = {
   id: string
-  kind: 'web' | 'file' | 'terminal' | 'image'
+  kind: 'web' | 'file' | 'terminal' | 'image' | 'music'
   initialUrl: string
   url: string
   title: string
@@ -36,6 +36,7 @@ type BrowserState = {
   openImage(src: string, name: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   openFiles(): void
+  openMusic(): void
   toggleTree(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
