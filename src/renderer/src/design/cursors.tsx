@@ -68,7 +68,7 @@ const crosshair = cursor(`<path d='${CROSSHAIR}' ${KEYLINE}/>`, AT_MIDDLE, 'cros
 const hand = (art: string, fallback: string) =>
   cursor(`<path d='${art}' transform='${HAND_PLACE}' ${KEYLINE}/>`, AT_MIDDLE, fallback)
 
-export const DESIGN_CURSORS: Partial<Record<`--tl-cursor-${TLCursorType}`, string>> = {
+export const DESIGN_CURSORS = {
   '--tl-cursor-default': arrow,
   '--tl-cursor-pointer': arrow,
   '--tl-cursor-move': arrow,
