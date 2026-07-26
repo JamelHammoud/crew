@@ -33,6 +33,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Type ramp: xs 11, sm 13, base 14, lg 16. System sans. The word "crew" is set in mono.
 - Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
 - Icons come from `@heroicons/react`. Never hand-roll SVG icons. The one exception is the design canvas, where Heroicons has no vocabulary for shapes: `src/renderer/src/design/glyphs.tsx` is the only place those are drawn, on the same 24 grid with the same 1.5 round stroke, so they sit beside Heroicons without looking foreign. It reaches for a Heroicon wherever one already fits, and nothing outside that file draws an icon by hand.
+- A divider inside a popover, a menu or a hover card runs edge to edge. It bleeds back through the padding the card holds its content in, rather than stopping short of both sides. `MenuDivider` does that for a menu, `CardRule` for a hover card.
 - Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin. Chrome that floats over the design canvas adds `.glass-strong`, because the artwork behind it can be any color and a white frame turns plain glass into pale grey.
 - Reusable primitives in `src/renderer/src/components`: `Avatar`, `AvatarStack`, `AgentIcon`, `Pill`, `Spinner`, `InsetRing`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`.
 - A tooltip never shows while the popover it opens is open. Pass `disabled` to the `Tooltip` around any button that opens a `Popover`.
@@ -102,6 +103,20 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - Every tool that places something asks for the same `cross` cursor, the pencil included, so a tool that wants its own art gets it by name: `applyToolCursor` writes that one variable again whenever the tool changes, and puts the target back for everything else.
 - The art is drawn on the grid the arrow came in on and scaled down from there, and `aimed` works out the shift that lands the point it aims from, the tip of the arrow or the middle of everything else, on a whole pixel. That pixel is the hotspot, and `ARROW_TIP` is the same number the remote arrow is offset by, so a cursor is where it says it is on either machine. Never move the art without moving both.
 - Everyone else's cursor is the same arrow in their own color, drawn by crew in `RemoteCursors` with a glass name tag, a pet for an agent and an avatar for a person. tldraw draws its own on the canvas, where a generated pet cannot go, so `CursorsDrawnByCrew` stands that overlay down. The presence record still goes into the store, because that is what marks what someone has selected.
+
+## Terminals
+
+A terminal is one of the things the side panel can hold, beside a web page and a file. The New button asks which. It is the real thing: a pty running the login shell, started the way Terminal and Windows Terminal start it, in the project folder.
+
+- `node-pty` opens the pty and xterm.js draws it. node-pty is built on N-API, so the binary in the package loads in Electron and in plain node alike and is never rebuilt for an Electron version. That is what lets the tests drive a real shell.
+- The package hands over its `spawn-helper` without the execute bit, and without that every terminal fails to start with "posix_spawnp failed". `scripts/ensure-pty.mjs` puts it back on every install, and `asarUnpack` keeps node-pty out of the asar so the helper stays a file the system can run.
+- Sessions live in `src/main/terminal.ts`, one `Terminals` per window, closed with the window and on quit. None of it is written down or shared. It is this machine's shell, not the crew's.
+- A shell is only spoken for while it is the one standing under its name. React mounts a view twice while developing, so a tab is opened, closed, and opened again under the same name in one breath, and the first shell's exit lands after the second has taken the name. Striking the new one off on the old one's word leaves a terminal that prints but never listens, and prints "[Process completed]" before its own first prompt.
+- The pty is named after the tab, so nothing has to be handed back before the terminal is wired up, and the first keystroke has somewhere to go.
+- xterm measures itself against the box it is in, and a box with no size yet throws from deep inside it. The fit is left to a `ResizeObserver` rather than done at mount, which is also what tells the shell its new size when the panel is dragged wider.
+- The palette is in `terminalTheme.ts` and follows the app theme. Red and green are the app's own danger and positive.
+- Copy and paste on a Mac are the app menu's, and xterm answers the events they raise. Everywhere else it is Ctrl+Shift+C and Ctrl+Shift+V, because plain Ctrl+C has to reach the shell.
+- A shell that ends says so and the tab stays open, the way Terminal does, so whatever it printed on the way out can still be read.
 
 ## Syncing
 
