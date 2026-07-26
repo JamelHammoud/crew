@@ -61,6 +61,7 @@ export default function Toolbox({
       id: 'huddle',
       name: 'Huddle',
       mark: SignalGlyph,
+      on: joined,
       run: () => {
         const huddle = useHuddle.getState()
         if (huddle.joined) huddle.leave()
@@ -85,6 +86,7 @@ export default function Toolbox({
       id: 'music',
       name: 'Music',
       mark: MusicGlyph,
+      on: playing,
       panel: true,
       run: () => useBrowser.getState().openMusic()
     }
