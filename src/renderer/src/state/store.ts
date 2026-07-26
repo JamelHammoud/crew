@@ -153,6 +153,7 @@ const EMPTY = {
   threads: {},
   threadPrompts: {},
   todos: [],
+  tools: [],
   boards: [],
   openThreadId: null,
   docsTarget: null,
