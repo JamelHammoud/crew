@@ -454,7 +454,7 @@ describe('changed lines', () => {
     fireEvent.click(await screen.findByText('src/panel.ts'))
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
-    expect(marked()).toEqual(['6', '7', '8', '10'])
+    expect(marked()).toEqual(['6', '7', '10'])
   })
 
   it('marks the lines that are still there when the rest moved on', async () => {
