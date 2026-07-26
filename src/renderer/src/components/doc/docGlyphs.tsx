@@ -61,13 +61,12 @@ export const BulletListGlyph = mark(
 
 export const NumberedListGlyph = mark(
   <>
-    <path d="M4.1 5.6 5.6 4.7v4.6" strokeWidth={1.6} />
-    <path d="M3.9 11.4a1.4 1.4 0 1 1 2.8 0c0 1.1-2.8 2-2.8 3.4h2.9" strokeWidth={1.6} />
-    <path d="M3.9 16.6a1.3 1.3 0 1 1 1.1 2.1h-.4" strokeWidth={1.6} />
-    <path d="M4.6 18.7a1.3 1.3 0 1 1-.8 2.1" strokeWidth={1.6} />
+    <path d="M3.9 5.4 5.2 4.6v4.4" strokeWidth={1.5} />
+    <path d="M3.7 10.9a1.3 1.3 0 1 1 2.6 0c0 1-2.6 1.9-2.6 3.3h2.8" strokeWidth={1.5} />
+    <path d="M3.8 15.1h2.6l-1.3 1.5a1.4 1.4 0 1 1-1.2 2.1" strokeWidth={1.5} />
     <path d="M10 6.8h10" />
-    <path d="M10 13.2h10" />
-    <path d="M10 19.4h10" />
+    <path d="M10 12h10" />
+    <path d="M10 17.2h10" />
   </>
 )
 
