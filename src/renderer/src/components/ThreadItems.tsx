@@ -18,7 +18,7 @@ export default function ThreadItems({
         <Fragment key={item.key}>
           {isNewDay(items[index - 1]?.ts, item.ts) && <DayDivider ts={item.ts} />}
           {item.kind === 'tool' || item.kind === 'thinking' ? (
-            <StepRow item={item} />
+            <StepRow item={item} linked={follows(items[index - 1], item)} />
           ) : (
             <ChatMessage item={item} onReply={onReply} />
           )}

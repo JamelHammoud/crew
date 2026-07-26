@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import type { DesignDocument } from '../../../shared/design'
 import { useBoardPeek } from '../state/boardPeek'
+import Skeleton from './Skeleton'
 
 const BoardImage = lazy(() => import('./BoardImage'))
 
