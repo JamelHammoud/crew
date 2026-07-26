@@ -87,6 +87,40 @@ const filenames: Record<string, string> = {
   makefile: 'make'
 }
 
+export const LANGUAGE_NAMES: Record<string, string> = {
+  typescript: 'TypeScript',
+  tsx: 'TSX',
+  javascript: 'JavaScript',
+  jsx: 'JSX',
+  json: 'JSON',
+  css: 'CSS',
+  html: 'HTML',
+  markdown: 'Markdown',
+  yaml: 'YAML',
+  toml: 'TOML',
+  shellscript: 'Shell',
+  python: 'Python',
+  rust: 'Rust',
+  go: 'Go',
+  java: 'Java',
+  c: 'C',
+  cpp: 'C++',
+  ruby: 'Ruby',
+  php: 'PHP',
+  swift: 'Swift',
+  kotlin: 'Kotlin',
+  sql: 'SQL',
+  xml: 'XML',
+  diff: 'Diff',
+  docker: 'Dockerfile',
+  make: 'Makefile'
+}
+
+export function aliasesFor(lang: string): string[] {
+  const from = (table: Record<string, string>) => Object.keys(table).filter(key => table[key] === lang)
+  return [...from(extensions), ...from(filenames)]
+}
+
 export function languageFor(path: string): string | null {
   const name = (path.split('/').pop() ?? '').toLowerCase()
   const byName = filenames[name]
