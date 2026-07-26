@@ -1,8 +1,19 @@
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState, type ReactNode } from 'react'
 import type { FileChange } from '../../../shared/llm'
+import { useBrowser } from '../state/browser'
 import Counts from './Counts'
-import { FileTextLink, isPrivate, labelFor, PrivateChip, TextWithFileLinks, useLocated } from './fileLinks'
+import {
+  FileTextLink,
+  isPrivate,
+  labelFor,
+  openable,
+  parseFileRef,
+  PrivateChip,
+  targetFor,
+  TextWithFileLinks,
+  useLocated
+} from './fileLinks'
 import StepDiff from './StepDiff'
 import type { ThreadItem } from './thread'
 import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
