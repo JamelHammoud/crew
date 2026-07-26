@@ -205,16 +205,24 @@ describe('music', () => {
     expect(fs.readdirSync(path.join(host.repoPath, '.crew', 'music'))).toHaveLength(0)
   })
 
-  it('is the crew's own, so a runner cannot touch it', async () => {
+  // The controls belong to the people here. An agent's machine is connected the
+  // whole time it is joined, and nothing it says moves what the crew is playing.
+  it('leaves the controls to the crew rather than to a runner', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
     sam.send({ type: 'music.set', trackId: 'lobby', playing: true, at: 0 })
     await sam.waitFor(m => m.type === 'music.room')
 
-    const runner = await TestUi.connectRunner(host.url, 'mac', host.code)
-    runner.send({ type: 'music.off' })
-    runner.send({ type: 'music.set', trackId: 'boss-fight', playing: true, at: 0 })
-    await new Promise(r => setTimeout(r, 200))
+    const runner = new WebSocket(host.url)
+    await new Promise<void>(resolve => {
+      runner.on('open', () => {
+        runner.send(JSON.stringify({ type: 'hello', role: 'runner', name: 'mac', code: host.code, llms: [] }))
+        resolve()
+      })
+    })
+    runner.send(JSON.stringify({ type: 'music.off' }))
+    runner.send(JSON.stringify({ type: 'music.set', trackId: 'boss-fight', playing: true, at: 0 }))
+    await new Promise(r => setTimeout(r, 250))
     runner.close()
     expect(host.session.snapshot().music?.trackId).toBe('lobby')
   })
