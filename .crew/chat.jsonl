@@ -25060,3 +25060,4 @@
 {"id":"335c58dd-f501-4bab-bad6-2910a2f51c64","ts":1785101596447,"kind":"huddle.started","huddleId":"442ffd33-7780-416f-87e4-39f1afc60e8c","byId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","byName":"Jamel"}
 {"id":"d4f4a058-c2c3-4d9f-b2a8-06375c72c7b5","ts":1785101601174,"kind":"huddle.joined","huddleId":"442ffd33-7780-416f-87e4-39f1afc60e8c","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
 {"id":"1cbbff6e-edc2-41ed-ae5a-d9d023cad5ef","ts":1785101643765,"kind":"huddle.ended","huddleId":"442ffd33-7780-416f-87e4-39f1afc60e8c","ms":47318}
+{"id":"0e378db0-4bce-4d3e-a84a-53064238607a","ts":1785101663407,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"@ALI hi","mentions":[],"mentionRefs":[],"memberMentionRefs":[{"id":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}],"docMentions":[],"boardMentions":[],"attachments":[]}
