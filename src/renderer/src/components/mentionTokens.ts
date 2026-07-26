@@ -27,9 +27,7 @@ export function writtenRefs(
   docMentions?: DocMentionRef[],
   boardMentions?: BoardMentionRef[]
 ): WrittenRef[] {
-  if (!docMentions && !boardMentions)
-    return refsIn(text, crewRefs(docs, boards)).map(ref => ({ kind: ref.kind, title: ref.title, target: ref.key }))
-  return [
+  const written = [
     ...(docMentions ?? []).map(ref => ({
       kind: 'doc' as const,
       title: ref.title,
@@ -41,6 +39,11 @@ export function writtenRefs(
       target: resolveBoardRef(boards, ref)
     }))
   ].filter(ref => ref.title.trim().length > 0)
+  const named = new Set(written.map(ref => ref.title.toLowerCase()))
+  const unnamed = refsIn(text, crewRefs(docs, boards))
+    .filter(ref => !named.has(ref.title.toLowerCase()))
+    .map(ref => ({ kind: ref.kind, title: ref.title, target: ref.key }))
+  return [...written, ...unnamed]
 }
 
 export function tokenizeMentions(
