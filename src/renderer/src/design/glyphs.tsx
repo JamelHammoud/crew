@@ -16,6 +16,7 @@ import {
   PencilGlyph,
   PhotoGlyph,
   SearchGlyph,
+  SparkGlyph,
   StarGlyph,
   TrashGlyph,
   UnlockGlyph
@@ -39,6 +40,7 @@ export {
   LockGlyph,
   PencilGlyph,
   SearchGlyph,
+  SparkGlyph,
   StarGlyph,
   TrashGlyph,
   UnlockGlyph
