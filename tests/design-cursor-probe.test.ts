@@ -1,15 +1,10 @@
 // @vitest-environment jsdom
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
+import tldrawCss from 'tldraw/tldraw.css?raw'
 
 const { CursorArrow, DESIGN_CURSORS } = await import('../src/renderer/src/design/cursors')
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const tldrawCss = readFileSync(path.join(root, 'node_modules/tldraw/tldraw.css'), 'utf8')
 
 const vars = DESIGN_CURSORS as unknown as Record<string, string>
 
