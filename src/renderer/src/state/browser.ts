@@ -32,7 +32,7 @@ type BrowserState = {
   navigateFile(id: string, path: string): void
   fileBack(id: string): void
   fileForward(id: string): void
-  reloadFile(id: string): void
+  reloadTab(id: string): void
   updateTab(id: string, patch: Partial<BrowserTab>): void
 }
 
@@ -145,7 +145,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
         return { ...t, path, line: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
       })
     })),
-  reloadFile: id =>
+  reloadTab: id =>
     set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, generation: t.generation + 1 } : t)) })),
   updateTab: (id, patch) =>
     set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, ...patch } : t)) }))
