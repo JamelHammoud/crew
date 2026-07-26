@@ -112,6 +112,9 @@ function useOpener(detail: string, files: FileChange[]): (() => void) | null {
   return null
 }
 
+// A blank line between thoughts is a paragraph, not an empty row of its own.
+const paragraphs = (text: string): string[] => text.trim().split(/\n{2,}/)
+
 export const stepFiles = (item: ThreadItem): FileChange[] => item.files ?? []
 
 export const stepTotals = (files: FileChange[]): { added: number; removed: number } =>
@@ -176,14 +179,20 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
       )}
       {expanded && files.length === 0 && (thinking || detail) && (
         <Detail>
-          {thinking || action.prose ? (
+          {thinking ? (
+            <div onClick={() => setOpen(false)} className="cursor-pointer space-y-2 text-sm leading-6 italic text-fg-muted">
+              {paragraphs(item.text).map((para, index) => (
+                <p key={index} className="whitespace-pre-wrap">
+                  <TextWithFileLinks text={para} inline again={!item.streaming} />
+                </p>
+              ))}
+            </div>
+          ) : action.prose ? (
             <p
               onClick={() => setOpen(false)}
-              className={`whitespace-pre-wrap cursor-pointer text-fg-muted ${
-                thinking ? 'text-sm leading-6' : 'text-xs leading-5'
-              }`}
+              className="whitespace-pre-wrap cursor-pointer text-fg-muted text-xs leading-5"
             >
-              <TextWithFileLinks text={thinking ? item.text.trim() : detail} inline again={!item.streaming} />
+              <TextWithFileLinks text={detail} inline again={!item.streaming} />
             </p>
           ) : (
             <StepCode text={detail} prompt={action.terminal} output={action.terminal ? item.output : undefined} />
