@@ -20,7 +20,7 @@ export default function ReplyQuote({
   const agentId = useCrew(s => s.agents.find(a => a.id === authorId)?.id)
   return (
     <span className="flex min-w-0 flex-1 items-center gap-2">
-      <ArrowUturnLeftIcon className="h-3 w-3 shrink-0 text-fg-faint" />
+      <ArrowUturnLeftIcon className="h-3 w-3 shrink-0 text-fg-muted" />
       <span className="flex shrink-0 items-center">
         {agentId ? <AgentIcon seed={agentId} size="xs" /> : <Avatar name={authorName} size="xs" />}
       </span>
