@@ -13,8 +13,10 @@ import { useAutoResize } from './useAutoResize'
 import { useBoardThreads } from './DesignChat'
 
 // A line of the ask is 20 tall on 8 of padding, and it grows to five of them
-// before it scrolls, so the bar never swallows the board it is standing on.
-const BAR = { w: 320, h: 46 }
+// before it scrolls, so the bar never swallows the board it is standing on. The
+// shell is `rounded-card` on 6, which is the pet's own radius plus that padding:
+// grown, its corners run parallel to the two circles standing in them.
+const BAR = { w: 320, h: 42 }
 const GROWN = 108
 
 function threadFor(threads: ThreadMeta[], agentId: string): string | undefined {
