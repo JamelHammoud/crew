@@ -96,6 +96,7 @@ interface CrewState {
   renameBoard: (boardId: string, name: string) => void
   deleteBoard: (boardId: string) => void
   openDesign: (boardId: string) => void
+  peekDesign: (boardId: string) => void
   initDesign: (boardId: string, document: DesignDocument) => void
   applyDesign: (boardId: string, put: unknown[], remove: string[]) => void
   sendDesignPresence: (
