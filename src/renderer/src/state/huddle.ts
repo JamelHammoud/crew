@@ -252,9 +252,9 @@ export const useHuddle = create<HuddleState>((set, get) => {
         announce()
         return
       }
-      const mic = await captureMic()
+      const mic = await captureMic(get().micId)
       tracks.mic = mic.track
-      set({ micOn: mic.track !== null, problem: mic.problem })
+      set({ micOn: mic.track !== null, micId: running(mic.track, get().micId), problem: mic.problem })
       publish()
       announce()
     },
