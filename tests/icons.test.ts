@@ -1,8 +1,9 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { measure } from '../scripts/icon-geometry.mjs'
+import { measure, type Box } from '../scripts/icon-geometry.mjs'
 import * as icons from '../src/renderer/src/icons'
+import type { Glyph } from '../src/renderer/src/components/glyph'
 import { CIRCLE, GRID, LINE, LIVE, SQUARE, STROKE } from '../src/renderer/src/icons/keylines'
 
 // An icon set is one drawing repeated with different insides, and the way it
