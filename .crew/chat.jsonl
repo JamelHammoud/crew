@@ -23715,3 +23715,4 @@
 {"id":"99b89d0e-5ba8-4ff3-be2f-b3823a827621","ts":1785074769012,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"95cf0969-42b9-4ccf-b212-76bb3bdce76a","ts":1785074769012,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"8acf05ee-0a18-408b-a54a-a934419a0fbe","ts":1785089717888,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Woowwwwwww","mentions":[],"mentionRefs":[],"memberMentionRefs":[],"docMentions":[],"boardMentions":[],"attachments":[],"replyTo":{"targetId":"message:11b1263b-ff78-4595-b545-d9305eaf5119","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":""}}
+{"id":"71380df5-a175-415b-9cda-8916269aa679","ts":1785089751477,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
