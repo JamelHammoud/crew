@@ -35,10 +35,9 @@ export class GitSync {
 
   constructor(private repoPath: string) {}
 
-  // The next pass is armed once this one has settled. On a timer of its own it
-  // would keep arriving while a pass was still going, and a pass that takes
-  // longer than the interval leaves the queue longer every time it runs. That is
-  // what put a prompt seven minutes behind the passes ahead of it.
+  // The next pass is armed once this one has settled, never on a timer of its
+  // own. A pass that runs longer than the interval leaves the queue one longer
+  // every time, and a prompt waits behind all of it.
   start(intervalMs = AUTO_SYNC_MS): void {
     this.stop()
     this.looping = true
