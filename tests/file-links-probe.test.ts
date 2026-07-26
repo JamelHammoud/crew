@@ -359,7 +359,7 @@ describe('changed lines', () => {
     expect(marked()).toEqual([])
     expect(useBrowser.getState().tabs[0].diff).toBeNull()
     const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
-    expect(editor.selectionStart).toBe(63)
+    expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 5).join('\n').length + 1)
   })
 
   it('marks every place a file was touched across the steps behind it', async () => {
