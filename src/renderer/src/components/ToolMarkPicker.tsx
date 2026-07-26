@@ -47,7 +47,7 @@ export default function ToolMarkPicker({
         </div>
       ) : (
         <EmojiPicker
-          columns={7}
+          columns={8}
           className="h-[352px] w-full"
           purpose="Use"
           hint="Pick a mark"
