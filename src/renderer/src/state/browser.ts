@@ -144,7 +144,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
       tabs: s.tabs.map(t => {
         if (t.id !== id || t.forward.length === 0) return t
         const path = t.forward[0]
-        return { ...t, path, line: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
+        return { ...t, path, line: null, diff: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
       })
     })),
   reloadTab: id =>
