@@ -60,20 +60,20 @@ function boot(selected: string[] = ['shape:a']) {
     pending: {},
     sendChat: () => {}
   } as never)
-  const view = render(
+  const stage = (boardId: string) =>
     createElement(
       EditorContext.Provider,
       { value: editor },
       createElement(DesignStage, {
-        boardId: 'board:a',
+        boardId,
         editor,
         onEditor: () => {},
         onRename: () => {},
         onAsked: () => {}
       })
     )
-  )
-  return { view, made, container }
+  const view = render(stage('board:a'))
+  return { view, made, container, rerender: (boardId: string) => view.rerender(stage(boardId)) }
 }
 
 function rightClick(container: HTMLElement) {
