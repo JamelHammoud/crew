@@ -6,7 +6,7 @@ const FOLD = <path d="M13.6 3.5v3.4a1.5 1.5 0 0 0 1.5 1.5h3.4" />
 export const ReadGlyph = glyph(
   <>
     <path d="M2.8 12c2-3.6 5.3-5.6 9.2-5.6s7.2 2 9.2 5.6c-2 3.6-5.3 5.6-9.2 5.6S4.8 15.6 2.8 12Z" />
-    <circle cx="10" cy="12" r="2.8" />
+    <circle cx="12" cy="12" r="2.8" />
   </>
 )
 
