@@ -8,30 +8,11 @@ import {
   RectangleGroupIcon,
   StarIcon
 } from '@heroicons/react/24/outline'
-import type { ComponentType, ReactNode } from 'react'
 import type { TLShape } from 'tldraw'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
+import { glyph, type Glyph } from '../components/glyph'
 
-export type Glyph = ComponentType<{ className?: string }>
-
-function glyph(art: ReactNode): Glyph {
-  return function DesignGlyph({ className = 'w-4 h-4' }: { className?: string }) {
-    return (
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        {art}
-      </svg>
-    )
-  }
-}
+export type { Glyph }
 
 function flipped(Icon: Glyph): Glyph {
   return function FlippedGlyph({ className = 'w-4 h-4' }: { className?: string }) {
