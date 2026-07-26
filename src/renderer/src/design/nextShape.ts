@@ -1,3 +1,4 @@
+import { atom } from 'tldraw'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 
 const LABELS: Record<NodeShape, string> = {
@@ -10,14 +11,14 @@ const LABELS: Record<NodeShape, string> = {
   star: 'Star'
 }
 
-let next: NodeShape = 'rect'
+const next = atom<NodeShape>('design next node shape', 'rect')
 
 export function setNextNodeShape(shape: NodeShape): void {
-  next = shape
+  next.set(shape)
 }
 
 export function nextNodeShape(): NodeShape {
-  return next
+  return next.get()
 }
 
 export function nextNodeName(shape: NodeShape): string {
