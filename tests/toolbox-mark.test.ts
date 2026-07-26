@@ -88,7 +88,12 @@ describe('the toolbox mark', () => {
     const drawn = [...(still.match(/ d="[^"]+"/g) ?? [])].map(d => d.slice(4, -1))
 
     expect(drawn).toEqual([TOOLBOX_CASE, TOOLBOX_SHUT.lid, TOOLBOX_SHUT.handle])
-    expect(paths(mark())).toEqual([TOOLBOX_CASE, ...Object.values(TOOLBOX_SHUT).reverse()])
+    expect(paths(mark())).toEqual([
+      TOOLBOX_CASE,
+      TOOLBOX_SHUT.collar,
+      TOOLBOX_SHUT.lid,
+      TOOLBOX_SHUT.handle
+    ])
     expect(mark().getAttribute('stroke')).toBe('currentColor')
 
     // The sides of the lid are the one piece the still icon does not draw, and
