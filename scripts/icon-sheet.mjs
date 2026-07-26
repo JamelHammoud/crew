@@ -25,7 +25,6 @@ const LIVE = 19.5
 const SQUARE = 17
 const CIRCLE = 18.5
 const LINE = 15
-const DIAGONAL = 19.5
 const SOLID = 15
 const SLASH = 'm3.9 3.9 16.2 16.2'
 
@@ -83,20 +82,19 @@ async function collect() {
 // line is measured on how far it reaches instead.
 const CAP = 18.5
 
+// A shape touching the live area has nowhere left to grow and is allowed to sit
+// light. A bare run already spanning the frame is the same case turned over: it
+// cannot come in without becoming a different mark, so it may sit heavy.
+const capped = box =>
+  Math.max(box.width, box.height) >= CAP || (!box.body && box.reach >= LIVE)
+
 const solid = markup =>
   (markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []).length === 1 &&
   markup.includes('fill="currentColor"')
 
 function keyline(box, markup) {
   if (solid(markup)) return { family: 'solid', target: SOLID, size: Math.sqrt(box.width * box.height) }
-  if (!box.body) {
-    // A single run laid corner to corner of its own box is a diagonal rather than
-    // a rule, and a diagonal reaches a good deal further for the same size.
-    const across = Math.hypot(box.width, box.height)
-    if (Math.abs(box.reach - across) < 0.5 && Math.abs(box.width - box.height) < 2)
-      return { family: 'diagonal', target: DIAGONAL, size: box.reach }
-    return { family: 'line', target: LINE, size: Math.max(box.width, box.height, box.reach) }
-  }
+  if (!box.body) return { family: 'line', target: LINE, size: Math.max(box.width, box.height, box.reach) }
   if (box.round && Math.abs(box.width - box.height) < 1.2)
     return { family: 'round', target: CIRCLE, size: (box.width + box.height) / 2 }
   return { family: 'shape', target: SQUARE, size: Math.sqrt(box.width * box.height) }
@@ -113,7 +111,7 @@ function report(rows) {
       off: (size / target - 1) * 100,
       // An icon already touching the live area has nowhere left to grow, so it
       // is allowed to sit light rather than being asked to break the frame.
-      capped: Math.max(row.box.width, row.box.height) >= CAP,
+      capped: capped(row.box),
       drift: Math.max(Math.abs(row.box.cx - 12), Math.abs(row.box.cy - 12)),
       over: Math.max(0, row.box.x + row.box.width - (12 + LIVE / 2), 12 - LIVE / 2 - row.box.x)
     }
