@@ -23,6 +23,7 @@
 
   --color-positive: #4ade80;
   --color-danger: #f87171;
+  --color-attention: #fbbf24;
 
   --text-xs: 11px;
   --text-xs--line-height: 16px;
@@ -95,6 +96,7 @@
 
   --color-positive: #16a34a;
   --color-danger: #dc2626;
+  --color-attention: #b45309;
 }
 
 html,
