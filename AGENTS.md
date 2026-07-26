@@ -116,6 +116,9 @@ A step in a thread says what happened in plain words, wearing a mark of its own.
 - A live step lights its mark white and pulses it. Only `RunStatus` spins, at the foot of the run, so a long thread is not a field of spinners.
 - Three or more of the same tool in a row fold into one line that opens: a pair is not clutter and stays where it can be read. Every step in the group keeps its own row and its own diff.
 - An edit opens into the file it touched: the path and the counts on a bar, then the diff, red where lines went and green where they arrived, with the words that actually changed picked out. `diffRows` and `codeLine.tsx` do that work for the browser panel too, so a diff reads the same wherever it is shown.
+- A command opens into a terminal: what was run after a `$`, then what it printed under it on the same surface, each with a copy button of its own. Every CLI hands back the result of every tool, so `cli.ts` keeps it only for a command, because a file read or a search would pour the whole file into the log the crew syncs. The result arrives without the name it was called under, so the name the tool started with is what decides.
+- What a command printed is cut down by `output.ts` before it is ever sent: the colors and cursor moves a terminal would have eaten are dropped, and a long run keeps its head and its tail and loses its middle, since a failure is at the end. The card scrolls inside its own height rather than counting off the lines it is not showing, because unlike a diff there is nowhere else to go and see the rest.
+- What a step says it did is what it did, not the summary the model wrote of it. `detail.ts` reads `command` before `description`, so a shell step shows the command itself.
 - The panel a step opens carries no rail or bracket. It is a card, or it is plain text, sitting under the row that opened it.
 
 ## Terminals
