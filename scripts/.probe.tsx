@@ -105,7 +105,9 @@ function Menu({ tint }: { tint: string }) {
                   at === 0 && group.group === 'Text' ? '#f5f5f5' : 'rgba(245,245,245,0.7)'
               }}
             >
-              <row.mark className="w-4 h-4" style={{ color: tint }} />
+              <span style={{ display: 'flex', color: tint }}>
+                <row.mark className="w-4 h-4" />
+              </span>
               <span style={{ flex: 1 }}>{row.title}</span>
               {row.hint && <span style={{ fontSize: 11, color: 'rgba(245,245,245,0.45)' }}>{row.hint}</span>}
             </div>
