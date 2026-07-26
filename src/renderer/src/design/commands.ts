@@ -134,10 +134,12 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'ask',
     label: 'Ask an agent',
+    hint: chordHint(ASK),
     group: 'agent',
     Icon: SparkGlyph,
     terms: 'ai change edit prompt chat',
-    when: some,
+    keys: ASK,
+    when: () => true,
     run: ctx => ctx.ask()
   },
   {
