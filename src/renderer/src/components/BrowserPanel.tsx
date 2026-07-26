@@ -274,7 +274,11 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         ) : tab.kind === 'terminal' ? (
           <TerminalGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'file' ? (
-          <DocGlyph className="w-4 h-4 shrink-0" />
+          tab.path ? (
+            <DocGlyph className="w-4 h-4 shrink-0" />
+          ) : (
+            <FolderGlyph className="w-4 h-4 shrink-0" />
+          )
         ) : showsImage(tab) ? (
           <PhotoGlyph className="w-4 h-4 shrink-0" />
         ) : tab.favicon ? (
