@@ -301,7 +301,7 @@ export function Choice<T extends string>({
   onPick: (value: T) => void
 }) {
   return (
-    <span className="min-w-0 flex bg-fg/[0.06] rounded-full p-0.5">
+    <span className="w-full min-w-0 flex bg-fg/[0.06] rounded-full p-0.5">
       {options.map(option => (
         <button
           key={option.value}
