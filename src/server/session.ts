@@ -777,8 +777,15 @@ export class CrewSession {
     })
   }
 
-  private docMentionRefs(text: string): DocMentionRef[] {
-    return docMentionRefsIn(text, Object.fromEntries(this.docs))
+  // A # names a doc or a design board, and one scan settles which, so the same
+  // word is never claimed by both.
+  private refsOf(text: string): { docMentions: DocMentionRef[]; boardMentions: BoardMentionRef[] } {
+    const refs = this.crewRefsIn(text)
+    return { docMentions: docMentionsOf(refs), boardMentions: boardMentionsOf(refs) }
+  }
+
+  private crewRefsIn(text: string): CrewRef[] {
+    return refsIn(text, crewRefs(Object.fromEntries(this.docs), this.boardList()))
   }
 
   private memberRefs(text: string) {
