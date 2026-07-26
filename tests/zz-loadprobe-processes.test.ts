@@ -52,8 +52,9 @@ describe('load: real process concurrency', () => {
       const memBefore = process.memoryUsage().rss
 
       const start = process.hrtime.bigint()
-      // One thread each: nothing queues, every one spawns a process.
-      for (const id of ids) ui.chat(`go ${id}`, [id], `t-${id}`)
+      // A top-level message mints its own thread, so nothing queues here and
+      // every one of these spawns a process.
+      for (const id of ids) ui.chat(`go ${id}`, [id])
       await waitUntil(() => ui.events.filter(e => e.kind === 'agent.start').length >= agents, 120000)
       const allStartedMs = ms(start)
       await waitUntil(() => ui.events.filter(e => e.kind === 'agent.end').length >= agents, 180000)
