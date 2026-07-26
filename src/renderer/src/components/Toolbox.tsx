@@ -1,50 +1,14 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { NAME_LIMIT, TOOL_MARKS, type CrewTool, type ToolAction, type ToolMark } from '../../../shared/toolbox'
-import {
-  ChevronLeftGlyph,
-  ClockGlyph,
-  CloudGlyph,
-  DesktopGlyph,
-  DocGlyph,
-  FolderGlyph,
-  GlobeGlyph,
-  LinkGlyph,
-  MusicGlyph,
-  PencilGlyph,
-  PeopleGlyph,
-  PhotoGlyph,
-  PlusGlyph,
-  SearchGlyph,
-  SignalGlyph,
-  StarGlyph,
-  TerminalGlyph,
-  TrashGlyph,
-  type Glyph
-} from '../icons'
+import { useEffect, useState } from 'react'
+import type { CrewTool } from '../../../shared/toolbox'
+import { FolderGlyph, MusicGlyph, PencilGlyph, PlusGlyph, SignalGlyph, TerminalGlyph, type Glyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
-import Tooltip from './Tooltip'
-
-const MARKS: Record<ToolMark, Glyph> = {
-  globe: GlobeGlyph,
-  terminal: TerminalGlyph,
-  folder: FolderGlyph,
-  doc: DocGlyph,
-  photo: PhotoGlyph,
-  music: MusicGlyph,
-  star: StarGlyph,
-  clock: ClockGlyph,
-  signal: SignalGlyph,
-  cloud: CloudGlyph,
-  search: SearchGlyph,
-  link: LinkGlyph,
-  desktop: DesktopGlyph,
-  people: PeopleGlyph
-}
-
-const markFor = (mark: ToolMark): Glyph => MARKS[mark] ?? StarGlyph
+import { opensPanel, runTool } from './runTool'
+import ToolBuilder from './ToolBuilder'
+import ToolMarkView from './toolMark'
+import { HeaderButton, Rule, SheetHeader, Tile } from './toolboxParts'
 
 // A built-in is the same button as one a crew builds, with the app's own hand
 // behind it rather than an action someone wrote down.
@@ -57,207 +21,14 @@ interface Builtin {
   run?: () => void
 }
 
-export function runTool(action: ToolAction): void {
-  if (action.kind === 'web') useBrowser.getState().openUrl(action.url)
-  if (action.kind === 'terminal') useBrowser.getState().addTerminal(action.command)
-}
-
-function Rule() {
-  return <div className="h-px bg-fg/[0.06]" />
-}
-
-function Label({ children }: { children: ReactNode }) {
-  return <span className="block mb-1.5 px-1 text-xs text-fg/45">{children}</span>
-}
-
-// One tile, whatever is behind it. Lit white while it is the thing happening,
-// filled quietly when it is waiting, barely there when it cannot be pressed.
-// A tile that is not ready yet says so on hover rather than wearing a label, and
-// it warms from the group, since a disabled button never matches its own hover.
-function Tile({
-  mark: Mark,
-  name,
-  active,
-  soon,
-  onClick,
-  children
-}: {
-  mark: Glyph
-  name: string
-  active?: boolean
-  soon?: boolean
-  onClick?: () => void
-  children?: ReactNode
-}) {
-  const look = soon
-    ? 'bg-fg/[0.03] text-fg/30 group-hover:bg-fg/[0.06] group-hover:text-fg/50'
-    : active
-      ? 'bg-fg text-ink-900'
-      : 'bg-fg/[0.05] text-fg/70 hover:bg-fg/[0.09] hover:text-fg'
-  return (
-    <div className="group relative">
-      <Tooltip label="Coming soon" disabled={!soon} className="w-full">
-        <button
-          onClick={onClick}
-          disabled={soon}
-          className={`w-full h-[82px] px-1.5 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
-        >
-          <Mark className="w-[22px] h-[22px]" />
-          <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
-        </button>
-      </Tooltip>
-      {children}
-    </div>
-  )
-}
-
-const field =
-  'w-full h-9 px-3.5 rounded-full bg-fg/[0.06] text-sm text-fg placeholder:text-fg/25 outline-none transition-colors focus:bg-fg/[0.1]'
-
-function Builder({ tool, onDone }: { tool: CrewTool | null; onDone: () => void }) {
-  const addTool = useCrew(s => s.addTool)
-  const editTool = useCrew(s => s.editTool)
-  const removeTool = useCrew(s => s.removeTool)
-  const [name, setName] = useState(tool?.name ?? '')
-  const [mark, setMark] = useState<ToolMark>(tool?.mark ?? 'star')
-  const [kind, setKind] = useState<ToolAction['kind']>(tool?.action.kind ?? 'web')
-  const [url, setUrl] = useState(tool?.action.kind === 'web' ? tool.action.url : '')
-  const [command, setCommand] = useState(tool?.action.kind === 'terminal' ? (tool.action.command ?? '') : '')
-
-  const action: ToolAction = kind === 'web' ? { kind: 'web', url } : { kind: 'terminal', command }
-  const ready = name.trim() !== '' && (kind === 'terminal' || url.trim() !== '')
-
-  const save = () => {
-    if (!ready) return
-    if (tool) editTool(tool.id, name, mark, action)
-    else addTool(name, mark, action)
-    onDone()
-  }
-
-  return (
-    <>
-      <header className="h-12 pl-1.5 pr-2.5 flex items-center gap-1">
-        <button
-          onClick={onDone}
-          aria-label="Back"
-          className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-        >
-          <ChevronLeftGlyph className="w-4 h-4" />
-        </button>
-        <h3 className="flex-1 text-sm font-semibold text-fg">{tool ? 'Edit tool' : 'New tool'}</h3>
-        {tool && (
-          <Tooltip label="Remove">
-            <button
-              onClick={() => {
-                removeTool(tool.id)
-                onDone()
-              }}
-              aria-label="Remove tool"
-              className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-danger hover:bg-danger/10 active:scale-95"
-            >
-              <TrashGlyph className="w-3.5 h-3.5" />
-            </button>
-          </Tooltip>
-        )}
-      </header>
-      <Rule />
-      <div className="p-2.5 space-y-3.5">
-        <div>
-          <Label>Name</Label>
-          <input
-            autoFocus
-            value={name}
-            maxLength={NAME_LIMIT}
-            onChange={e => setName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && save()}
-            placeholder="What to call it"
-            className={field}
-          />
-        </div>
-
-        <div>
-          <Label>Mark</Label>
-          <div className="grid grid-cols-7 gap-1">
-            {TOOL_MARKS.map(choice => {
-              const Mark = markFor(choice)
-              return (
-                <button
-                  key={choice}
-                  onClick={() => setMark(choice)}
-                  aria-label={choice}
-                  aria-pressed={mark === choice}
-                  className={`h-8 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-90 ${
-                    mark === choice ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.06]'
-                  }`}
-                >
-                  <Mark className="w-4 h-4" />
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <div>
-          <Label>What it does</Label>
-          <div className="flex rounded-full bg-fg/[0.06] p-0.5">
-            {(
-              [
-                { value: 'web', label: 'Open a page' },
-                { value: 'terminal', label: 'Run a command' }
-              ] as const
-            ).map(option => (
-              <button
-                key={option.value}
-                onClick={() => setKind(option.value)}
-                aria-pressed={kind === option.value}
-                className={`flex-1 h-8 rounded-full text-xs font-semibold transition-colors ${
-                  kind === option.value ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {kind === 'web' ? (
-          <input
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && save()}
-            placeholder="figma.com"
-            className={field}
-          />
-        ) : (
-          <input
-            value={command}
-            onChange={e => setCommand(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && save()}
-            placeholder="yarn dev"
-            className={`${field} font-mono`}
-          />
-        )}
-
-        <button
-          onClick={save}
-          disabled={!ready}
-          className="w-full h-9 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 enabled:hover:scale-[1.02] enabled:active:scale-95 disabled:opacity-25"
-        >
-          {tool ? 'Save' : 'Add to toolbox'}
-        </button>
-      </div>
-    </>
-  )
-}
-
 export default function Toolbox({
   open,
   onClose,
-  onSidePanel
+  onChat
 }: {
   open: boolean
   onClose: () => void
-  onSidePanel: () => void
+  onChat: () => void
 }) {
   const tools = useCrew(s => s.tools)
   const joined = useHuddle(s => s.joined)
@@ -297,34 +68,26 @@ export default function Toolbox({
 
   const press = (run: (() => void) | undefined, panel: boolean) => {
     run?.()
-    if (panel) onSidePanel()
+    if (panel) onChat()
     onClose()
   }
 
   return (
     <Popover open={open} onClose={onClose} align="center" flush className="w-[304px]">
       {building ? (
-        <Builder tool={building.tool} onDone={() => setBuilding(null)} />
+        <ToolBuilder tool={building.tool} onDone={() => setBuilding(null)} />
       ) : (
         <>
-          <header className="h-12 pl-4 pr-2.5 flex items-center">
-            <h3 className="flex-1 text-sm font-semibold text-fg">Toolbox</h3>
-            <Tooltip label="New tool">
-              <button
-                onClick={() => setBuilding({ tool: null })}
-                aria-label="New tool"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
-              >
-                <PlusGlyph className="w-4 h-4" />
-              </button>
-            </Tooltip>
-          </header>
-          <Rule />
+          <SheetHeader title="Toolbox">
+            <HeaderButton label="New tool" onClick={() => setBuilding({ tool: null })}>
+              <PlusGlyph className="w-4 h-4" />
+            </HeaderButton>
+          </SheetHeader>
           <div className="p-2.5 grid grid-cols-3 gap-1.5">
             {builtins.map(tool => (
               <Tile
                 key={tool.id}
-                mark={tool.mark}
+                mark={<tool.mark className="w-[22px] h-[22px]" />}
                 name={tool.name}
                 soon={tool.soon}
                 active={tool.id === 'huddle' && joined}
@@ -339,9 +102,9 @@ export default function Toolbox({
                 {tools.map(tool => (
                   <Tile
                     key={tool.id}
-                    mark={markFor(tool.mark)}
+                    mark={<ToolMarkView mark={tool.mark} className="w-[22px] h-[22px]" />}
                     name={tool.name}
-                    onClick={() => press(() => runTool(tool.action), true)}
+                    onClick={() => press(() => runTool(tool.action), opensPanel(tool.action))}
                   >
                     <button
                       onClick={() => setBuilding({ tool })}
