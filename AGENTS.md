@@ -201,6 +201,14 @@ A file opened from a message that changed it opens on the change, showing the di
 - The caret never sits in a line that was taken out. It steps over the whole block, back or forward depending on which way it came, the way a cursor steps over a view zone in VS Code. Rubbing out at the head of a line under a block joins it to the line above, because that is the line above it in the file.
 - Clicking dismisses nothing. It puts the caret where it landed and leaves the page where it was standing. Hide changes puts the diff away.
 
+Files from the toolbox opens the same tab with the project standing beside it, and the button in the toolbar puts that pane away and brings it back.
+
+- The tree and the folder listing are the same thing, so only one is ever on screen. `FileView` shows `DirRows` when the pane is closed and an empty state when it is open, rather than the same folder twice.
+- A folder opens where it stands and is read only once it is asked for, so nothing walks the whole project to draw the top of it. Which folders are open rides on the tab, beside where it has been, so a pane closed and opened again is where it was left.
+- Turning the pane on opens every folder down to the file already showing and scrolls to it. A tree that lands back at the top of the project when you were reading something four folders down is a tree nobody uses twice.
+- The filter searches the whole project rather than the folders that happen to be open. `listRepoFiles` asks git what the project is made of, which leaves out everything `.gitignore` covers for free, and only a folder that is not a repository is walked by hand.
+- What was typed is matched letter by letter, in order, by `matchFiles` in `src/shared/files.ts`. A run inside the file's own name beats one spread across the folders above it, and the letters that landed are handed back so they can be picked out in the row.
+
 ## Syncing
 
 Every machine commits its whole working tree, integrates, and pushes on a loop, host and joiner alike. Agents on different machines write to the same branch at the same time, so `GitSync` in `src/server/git.ts` has three hard rules. Each one is here because work was destroyed without it.
