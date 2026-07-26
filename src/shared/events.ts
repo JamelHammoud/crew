@@ -4,6 +4,7 @@ import type { DocMentionRef } from './docs'
 import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { MemberMentionRef } from './people'
 import type { ReactionEmoji } from './reactions'
+import type { ToolAction, ToolMark } from './toolbox'
 
 // 'open' means the thread still wants attention: either an agent is working or
 // the result is waiting for someone to look at it. 'done' is an explicit human
@@ -98,6 +99,9 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'todo.removed'; todoId: string; byName: string }
   | { id: string; ts: number; kind: 'todo.checked'; todoId: string; checked: boolean; byName: string }
   | { id: string; ts: number; kind: 'todo.started'; todoId: string; threadId: string; byName: string }
+  | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: ToolMark; action: ToolAction; byName: string }
+  | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: ToolMark; action: ToolAction; byName: string }
+  | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
   | {
       id: string
       ts: number
