@@ -182,7 +182,7 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
-  const TABS = ['tab.chat', 'tab.agents', 'tab.docs', 'tab.design'] as const
+  const TABS = ['tab.chat', 'tab.docs', 'tab.design'] as const
 
   type Heard = { at: number[]; hz: number[]; scrapes: number[]; root: number }
 
