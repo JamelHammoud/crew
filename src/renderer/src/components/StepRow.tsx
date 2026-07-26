@@ -67,14 +67,21 @@ export const rowClass = (expandable: boolean): string =>
     expandable ? 'hover:bg-ink-hover' : 'cursor-default'
   }`
 
-export function Label({ action, running }: { action: ToolAction; running: boolean }) {
+export function Label({ action, running, swap }: { action: ToolAction; running: boolean; swap?: boolean }) {
+  const word = running ? action.run : action.done
   return (
     <span
       className={`shrink-0 transition-colors ${
         running ? 'text-fg-secondary' : 'text-fg-muted group-hover:text-fg-secondary'
       }`}
     >
-      {running ? action.run : action.done}
+      {swap ? (
+        <span key={word} className="word-swap inline-block">
+          {word}
+        </span>
+      ) : (
+        word
+      )}
     </span>
   )
 }
@@ -131,8 +138,12 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
         onClick={() => (opens ? opens() : expandable && setOpen(!expanded))}
         className={rowClass(Boolean(opens) || expandable)}
       >
-        <Mark icon={action.icon} running={item.streaming} />
-        <Label action={action} running={item.streaming} />
+        {thinking ? (
+          <ThinkingMark running={item.streaming} />
+        ) : (
+          <Mark icon={action.icon} running={item.streaming} />
+        )}
+        <Label action={action} running={item.streaming} swap={thinking} />
         {files.length > 0 && (
           <>
             {files.length === 1 ? (
