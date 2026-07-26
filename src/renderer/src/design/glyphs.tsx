@@ -2,6 +2,7 @@ import type { TLShape } from 'tldraw'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 import { glyph, type Glyph } from '../components/glyph'
 import {
+  BoltGlyph,
   ClipboardGlyph,
   CloudGlyph,
   DuplicateGlyph,
@@ -28,6 +29,7 @@ export type { Glyph }
 // one is how two sets that nearly agree start. The open hand needs no turning
 // over here: it is drawn with its thumb on the left already, like the cursor.
 export {
+  BoltGlyph,
   CloudGlyph,
   DuplicateGlyph,
   EyeGlyph,
