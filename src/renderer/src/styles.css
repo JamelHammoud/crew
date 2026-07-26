@@ -61,6 +61,18 @@
       transform: none;
     }
   }
+
+  @keyframes flash {
+    0%,
+    30% {
+      background-color: color-mix(in srgb, var(--color-fg) 9%, transparent);
+      box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-fg) 9%, transparent);
+    }
+    to {
+      background-color: transparent;
+      box-shadow: 0 0 0 10px transparent;
+    }
+  }
 }
 
 .light {
