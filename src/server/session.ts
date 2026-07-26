@@ -816,7 +816,7 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.checked', todoId, checked, byName: member.name })
   }
 
-  private handleToolAdd(member: Member, name: string, mark: ToolMark, action: ToolAction): void {
+  private handleToolAdd(member: Member, name: string, mark: string, action: ToolAction): void {
     const clean = cleanTool(name, mark, action)
     if (!clean) return
     const tool: CrewTool = {
@@ -840,7 +840,7 @@ export class CrewSession {
     })
   }
 
-  private handleToolEdit(member: Member, toolId: string, name: string, mark: ToolMark, action: ToolAction): void {
+  private handleToolEdit(member: Member, toolId: string, name: string, mark: string, action: ToolAction): void {
     const tool = this.tools.get(toolId)
     const clean = cleanTool(name, mark, action)
     if (!tool || !clean) return
