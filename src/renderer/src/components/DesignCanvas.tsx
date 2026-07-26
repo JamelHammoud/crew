@@ -320,10 +320,10 @@ function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: De
               className="absolute left-0 top-0 transition-transform duration-200 ease-linear will-change-transform"
               style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
             >
-              <span className="absolute -left-[7px] -top-[6px]">
+              <span className="absolute" style={{ left: -ARROW_TIP.x, top: -ARROW_TIP.y }}>
                 <CursorArrow color={color} />
               </span>
-              <span className="absolute left-[13px] top-[17px] flex items-center gap-1.5 rounded-full glass glass-strong pl-1 pr-2.5 py-0.5 whitespace-nowrap">
+              <span className="absolute left-[11px] top-[14px] flex items-center gap-1.5 rounded-full glass glass-strong pl-1 pr-2.5 py-0.5 whitespace-nowrap">
                 {agent ? (
                   <AgentIcon seed={presence.userId} size="sm" />
                 ) : (
