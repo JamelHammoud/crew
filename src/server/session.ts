@@ -778,8 +778,6 @@ export class CrewSession {
     })
   }
 
-  // A # names a doc or a design board, and one scan settles which, so the same
-  // word is never claimed by both.
   private refsOf(text: string): { docMentions: DocMentionRef[]; boardMentions: BoardMentionRef[] } {
     const refs = this.crewRefsIn(text)
     return { docMentions: docMentionsOf(refs), boardMentions: boardMentionsOf(refs) }
@@ -2029,8 +2027,6 @@ export class CrewSession {
     return pages
   }
 
-  // A board named in the thread travels with the prompt as its id and name, so
-  // the runner can hand the agent the API for it the way an attached board does.
   private referencedBoards(prompt: QueuedPrompt): DesignBoardMeta[] {
     const boards = this.boardList()
     const found: DesignBoardMeta[] = []

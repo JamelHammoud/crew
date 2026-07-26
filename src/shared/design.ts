@@ -172,9 +172,6 @@ export function resolveBoardRef(boards: DesignBoardMeta[], ref: BoardMentionRef)
   return boards.find(board => board.name.toLowerCase() === name)?.id ?? null
 }
 
-// The board the thread sits on and the boards someone named with a # both land
-// here. The API is written out once, for the board the agent is most likely to
-// touch, and the rest are listed by id under it.
 export function boardsPreamble(
   apiBase: string,
   agentId: string,

@@ -20,9 +20,6 @@ function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-// A message written before references were recorded is read against what is
-// here now. One written since carries what it pointed at, so a doc that moved
-// or a board that was renamed still opens.
 export function writtenRefs(
   text: string,
   docs: Record<string, DocPage>,
