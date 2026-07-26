@@ -89,6 +89,12 @@ export function Popover({
     return { left, top }
   })()
 
+  const style: CSSProperties | null = spot && {
+    ...spot,
+    maxHeight: Math.min(maxHeight ?? Infinity, window.innerHeight - 16),
+    overflowY: 'auto'
+  }
+
   useEffect(() => {
     if (!open) return
     const anchor = holderRef.current?.parentElement
