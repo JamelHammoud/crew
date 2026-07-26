@@ -272,19 +272,26 @@ ${drawing}
 const MARK = { width: 2 * (STEP + RADIUS), height: 2 * RADIUS }
 const MARK_DISCS = [STEP + RADIUS + STEP, STEP + RADIUS, RADIUS]
 
-function mark() {
-  const cuts = MARK_DISCS.flatMap((x, index) => [
+// The menu bar holds the same mark, sized to sit beside the system's own icons
+// and padded out to the shape the bar reserves for it.
+const TRAY = { width: 30, height: 12 }
+const TRAY_BOX = { width: round((MARK.height * TRAY.width) / TRAY.height), height: MARK.height }
+
+function mark({ box, ink }) {
+  const shift = round((box.width - MARK.width) / 2)
+  const middle = round(box.height / 2)
+  const cuts = MARK_DISCS.map(x => x + shift).flatMap((x, index) => [
     ...(index === 0
       ? []
-      : [`    <circle cx="${x}" cy="${RADIUS}" r="${RADIUS + GAP}" fill="#000000" />`]),
-    `    <circle cx="${x}" cy="${RADIUS}" r="${RADIUS}" fill="#ffffff" />`
+      : [`    <circle cx="${x}" cy="${middle}" r="${RADIUS + GAP}" fill="#000000" />`]),
+    `    <circle cx="${x}" cy="${middle}" r="${RADIUS}" fill="#ffffff" />`
   ])
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${MARK.width} ${MARK.height}" width="${MARK.width}" height="${MARK.height}">
-  <mask id="crew-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="${MARK.width}" height="${MARK.height}">
-    <rect x="0" y="0" width="${MARK.width}" height="${MARK.height}" fill="#000000" />
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.width} ${box.height}" width="${box.width}" height="${box.height}">
+  <mask id="crew-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="${box.width}" height="${box.height}">
+    <rect x="0" y="0" width="${box.width}" height="${box.height}" fill="#000000" />
 ${cuts.join('\n')}
   </mask>
-  <rect x="0" y="0" width="${MARK.width}" height="${MARK.height}" fill="currentColor" mask="url(#crew-mark)" />
+  <rect x="0" y="0" width="${box.width}" height="${box.height}" fill="${ink}" mask="url(#crew-mark)" />
 </svg>
 `
 }
