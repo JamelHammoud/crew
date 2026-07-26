@@ -52,6 +52,7 @@ export function designView(editor: Editor, shape: DesignNodeShape): NodeView {
       ? {
           value: props.type,
           set: next => patch({ type: { ...props.type, ...next } }),
+          autoLine: BASE_TYPE.lineHeight,
           fields: {
             size: true,
             weight: true,
