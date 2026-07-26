@@ -1,4 +1,4 @@
-import { ArrowUturnLeftIcon, PencilIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { PencilIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
