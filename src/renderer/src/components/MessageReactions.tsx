@@ -1,4 +1,10 @@
-import { EllipsisHorizontalIcon, FaceSmileIcon, PencilIcon, TrashIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowUturnLeftIcon,
+  EllipsisHorizontalIcon,
+  FaceSmileIcon,
+  PencilIcon,
+  TrashIcon
+} from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import { QUICK_REACTIONS, type ReactionEmoji } from '../../../shared/reactions'
 import { useCrew } from '../state/store'
@@ -19,13 +25,15 @@ export default function MessageReactions({
   reactions = [],
   deletable,
   onDelete,
-  onEdit
+  onEdit,
+  onReply
 }: {
   targetId: string
   reactions?: ReactionGroup[]
   deletable: boolean
   onDelete: () => void
   onEdit?: () => void
+  onReply?: () => void
 }) {
   const reactToMessage = useCrew(state => state.reactToMessage)
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -63,6 +71,18 @@ export default function MessageReactions({
           </button>
         ))}
         <span className="mx-0.5 h-4 w-px bg-ink-600" />
+        {onReply && (
+          <Tooltip label="Reply">
+            <button
+              type="button"
+              aria-label="Reply"
+              onClick={onReply}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
+            >
+              <ArrowUturnLeftIcon className="h-4 w-4" />
+            </button>
+          </Tooltip>
+        )}
         <span className="relative">
           <Tooltip label="More reactions" disabled={pickerOpen}>
             <button

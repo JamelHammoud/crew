@@ -1,10 +1,11 @@
-import { ArrowUpIcon } from '@heroicons/react/20/solid'
+import { ArrowUpIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { StopIcon } from '@heroicons/react/16/solid'
 import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
 import { tokenizeMentions } from './mentionTokens'
 import Tooltip from './Tooltip'
+import type { ThreadItem } from './thread'
 
 function MentionHighlights({ value }: { value: string }) {
   const agents = useCrew(s => s.agents)
@@ -47,6 +48,8 @@ export default function Composer({
   onSend,
   onStop,
   sendLabel = 'Send',
+  replyTo,
+  onCancelReply,
   children
 }: {
   attachmentKey: string
@@ -58,6 +61,8 @@ export default function Composer({
   onSend: () => void
   onStop?: () => void
   sendLabel?: string
+  replyTo?: ThreadItem
+  onCancelReply?: () => void
   children?: ReactNode
 }) {
   const attach = useCrew(s => s.attach)
@@ -77,6 +82,27 @@ export default function Composer({
           void attach(attachmentKey, event.dataTransfer.files)
         }}
       >
+        {replyTo && (
+          <div className="mb-3 flex min-w-0 items-center gap-3 border-l-2 border-ink-600 pl-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-fg-secondary">Replying to {replyTo.author}</p>
+              <p className="mt-0.5 truncate text-sm text-fg-muted">{replyTo.text}</p>
+            </div>
+            <Tooltip label="Cancel reply">
+              <button
+                type="button"
+                aria-label="Cancel reply"
+                onClick={event => {
+                  event.stopPropagation()
+                  onCancelReply?.()
+                }}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-fg-muted transition-all hover:bg-fg/[0.06] hover:text-fg active:scale-95"
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
+            </Tooltip>
+          </div>
+        )}
         <AttachmentTray attachmentKey={attachmentKey} />
         <div className="relative">
           <div

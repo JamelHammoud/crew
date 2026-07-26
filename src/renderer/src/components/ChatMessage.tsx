@@ -14,7 +14,15 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
-export default function ChatMessage({ item, editable = false }: { item: ThreadItem; editable?: boolean }) {
+export default function ChatMessage({
+  item,
+  editable = false,
+  onReply
+}: {
+  item: ThreadItem
+  editable?: boolean
+  onReply?: (item: ThreadItem) => void
+}) {
   const presence = usePresence(item.author, item.authorId)
   const agentSeed = useCrew(s => {
     if (item.self) return undefined
@@ -71,6 +79,12 @@ export default function ChatMessage({ item, editable = false }: { item: ThreadIt
             <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
           </Tooltip>
         </div>
+        {item.replyTo && (
+          <div className="mt-2 border-l-2 border-ink-600 pl-3">
+            <p className="text-xs font-semibold text-fg-muted">Replying to {item.replyTo.authorName}</p>
+            <p className="mt-0.5 truncate text-sm text-fg-faint">{item.replyTo.text}</p>
+          </div>
+        )}
         {editing ? (
           <div className="mt-1.5">
             <textarea
@@ -123,6 +137,7 @@ export default function ChatMessage({ item, editable = false }: { item: ThreadIt
             deletable={deletable}
             onDelete={() => deleteMessage(item.key)}
             onEdit={canEdit ? () => setDraft(item.text) : undefined}
+            onReply={onReply ? () => onReply(item) : undefined}
           />
         )}
       </div>
