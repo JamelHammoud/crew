@@ -44,8 +44,8 @@ const handset = ({
   const P2 = at(A, 0, -r)
   const P3 = at(B, 0, -r)
   const P4 = at(B, 0, r)
-  const midOut = at([12, 12], 0, -(shift + waist / 2))
-  const midIn = at([12, 12], 0, waist / 2 - shift)
+  const midOut = at(middle, 0, -(shift + waist / 2))
+  const midIn = at(middle, 0, waist / 2 - shift)
   const control = (p: number[], q: number[], mid: number[]) => [
     2 * mid[0] - (p[0] + q[0]) / 2,
     2 * mid[1] - (q[1] + p[1]) / 2
