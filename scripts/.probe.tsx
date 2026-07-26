@@ -9,35 +9,69 @@ import {
   MicGlyph
 } from '../src/renderer/src/icons'
 
-const NOW =
-  'M3.5 11.6C6.1 7.7 8.9 5.7 12 5.7s5.9 2 8.5 5.9c.7 1.1 1 2.1 1 3 0 2.1-1.6 3.7-3.8 3.7-2 0-3.3-1.4-3.3-3.6v-2.9c-.8-.3-1.5-.4-2.4-.4s-1.6.1-2.4.4v2.9c0 2.2-1.3 3.6-3.3 3.6-2.2 0-3.8-1.6-3.8-3.7 0-.9.3-1.9 1-3Z'
+const round = (n: number) => Math.round(n * 100) / 100
 
-const turned = (deg: number) => (
-  <g transform={`rotate(${deg} 12 12)`}>
-    <path d={NOW} fill="currentColor" stroke="none" />
-  </g>
-)
+// A handset is two round ends and a waist between them. The ends are what say
+// telephone, the waist is what stops it reading as a bean.
+const handset = ({
+  deg,
+  gap,
+  r,
+  waist,
+  shift,
+  sweep
+}: {
+  deg: number
+  gap: number
+  r: number
+  waist: number
+  shift: number
+  sweep: 0 | 1
+}) => {
+  const rad = (deg * Math.PI) / 180
+  const u = [Math.cos(rad), Math.sin(rad)]
+  const n = [u[1], -u[0]]
+  const at = (p: number[], along: number, across: number) => [
+    p[0] + u[0] * along + n[0] * across,
+    p[1] + u[1] * along + n[1] * across
+  ]
+  const A = at([12, 12], -gap / 2, 0)
+  const B = at([12, 12], gap / 2, 0)
+  const P1 = at(A, 0, r)
+  const P2 = at(A, 0, -r)
+  const P3 = at(B, 0, -r)
+  const P4 = at(B, 0, r)
+  const midOut = at([12, 12], 0, -(shift + waist / 2))
+  const midIn = at([12, 12], 0, waist / 2 - shift)
+  const control = (p: number[], q: number[], mid: number[]) => [
+    2 * mid[0] - (p[0] + q[0]) / 2,
+    2 * mid[1] - (q[1] + p[1]) / 2
+  ]
+  const c1 = control(P2, P3, midOut)
+  const c2 = control(P4, P1, midIn)
+  const xy = (p: number[]) => `${round(p[0])} ${round(p[1])}`
+  return [
+    `M${xy(P1)}`,
+    `A${r} ${r} 0 0 ${sweep} ${xy(P2)}`,
+    `Q${xy(c1)} ${xy(P3)}`,
+    `A${r} ${r} 0 0 ${sweep} ${xy(P4)}`,
+    `Q${xy(c2)} ${xy(P1)}`,
+    'Z'
+  ].join('')
+}
 
-const Tilt135 = glyph(turned(135))
-const Tilt45 = glyph(turned(45))
-const Tilt225 = glyph(turned(225))
+const solid = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none" />)
 
-// A handset with its bells drawn deeper and the grip narrower, upright.
-const Deeper = glyph(
-  <path
-    d="M3.2 11.2C6 7.1 8.9 5 12 5s6 2.1 8.8 6.2c.8 1.2 1.2 2.4 1.2 3.4 0 2.4-1.8 4.2-4.3 4.2-2.3 0-3.8-1.6-3.8-4.1v-2.6c-.9-.3-1.6-.4-1.9-.4s-1 .1-1.9.4v2.6c0 2.5-1.5 4.1-3.8 4.1C3.8 18.8 2 17 2 14.6c0-1 .4-2.2 1.2-3.4Z"
-    fill="currentColor"
-    stroke="none"
-  />
-)
-
-// The handset, tilted, with the bells kept level so the mark reads as a phone
-// lifted off the cradle rather than as a shape spun round.
-const Lifted = glyph(
-  <g transform="rotate(-38 12 12)">
-    <path d={NOW} fill="currentColor" stroke="none" />
-  </g>
-)
+const CANDIDATES: { label: string; glyph: Glyph }[] = [
+  { label: 'now', glyph: HangupGlyph },
+  { label: '45 sweep 0', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.8, shift: 0.7, sweep: 0 })) },
+  { label: '45 sweep 1', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.8, shift: 0.7, sweep: 1 })) },
+  { label: '45 waist 2.2', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.3, waist: 2.2, shift: 0.9, sweep: 1 })) },
+  { label: '45 flat shift', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 0, sweep: 1 })) },
+  { label: '135', glyph: solid(handset({ deg: 135, gap: 9.6, r: 3.2, waist: 2.4, shift: 0.8, sweep: 1 })) },
+  { label: '135 sweep 0', glyph: solid(handset({ deg: 135, gap: 9.6, r: 3.2, waist: 2.4, shift: 0.8, sweep: 0 })) },
+  { label: '60 long', glyph: solid(handset({ deg: 60, gap: 10.4, r: 3.1, waist: 2.4, shift: 0.9, sweep: 1 })) }
+]
 
 function Button({ children, danger }: { children: ReactNode; danger?: boolean }) {
   return (
@@ -60,7 +94,7 @@ function Button({ children, danger }: { children: ReactNode; danger?: boolean })
 
 function Bar({ leave: Leave, label }: { leave: Glyph; label: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginBottom: 18 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginBottom: 16 }}>
       <span style={{ width: 96, fontSize: 11, color: 'rgba(245,245,245,0.4)' }}>{label}</span>
       <span
         style={{
@@ -101,12 +135,9 @@ function Bar({ leave: Leave, label }: { leave: Glyph; label: string }) {
 export default function Probe() {
   return (
     <div>
-      <Bar label="now" leave={HangupGlyph} />
-      <Bar label="deeper bells" leave={Deeper} />
-      <Bar label="lifted 38" leave={Lifted} />
-      <Bar label="turned 45" leave={Tilt45} />
-      <Bar label="turned 135" leave={Tilt135} />
-      <Bar label="turned 225" leave={Tilt225} />
+      {CANDIDATES.map(row => (
+        <Bar key={row.label} label={row.label} leave={row.glyph} />
+      ))}
     </div>
   )
 }
