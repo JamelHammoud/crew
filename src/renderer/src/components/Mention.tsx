@@ -72,22 +72,26 @@ export function AgentName({
   )
 }
 
+function MentionChip({ self = false, children }: { self?: boolean; children: ReactNode }) {
+  const tint = self
+    ? 'text-attention bg-attention/20 hover:bg-attention/30'
+    : 'text-fg bg-fg/10 hover:bg-fg/[0.16]'
+  return <strong className={`font-semibold cursor-default rounded-md px-1 py-0.5 transition-colors ${tint}`}>{children}</strong>
+}
+
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
   return (
     <AgentName agent={agent}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-1 py-0.5 bg-fg/10 transition-colors hover:bg-fg/[0.16]">
-        {children}
-      </strong>
+      <MentionChip>{children}</MentionChip>
     </AgentName>
   )
 }
 
 function MemberMention({ member, children }: { member: MemberInfo; children: ReactNode }) {
+  const selfId = useCrew(s => s.selfId)
   return (
     <MemberName id={member.id} name={member.name}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-1 py-0.5 bg-fg/10 transition-colors hover:bg-fg/[0.16]">
-        {children}
-      </strong>
+      <MentionChip self={member.id === selfId}>{children}</MentionChip>
     </MemberName>
   )
 }
