@@ -59,30 +59,27 @@ describe('the songs themselves', () => {
 describe('what the bars are drawn from', () => {
   it('rises where the music is loud and falls where it is quiet', () => {
     const levels = tuneLevels(overworld, 5)
-    const notes = strikesOf(overworld)
-    const loud = notes[0]
-    const onTheNote = levelsAt(levels, loud.at + 0.01, new Array(5).fill(0))
     const empty = new Array(5).fill(0)
-    expect(Math.max(...onTheNote)).toBeGreaterThan(0)
-
-    // Somewhere with nothing landing near it reads quieter than a note does.
-    const gaps = []
-    for (let at = 0; at < tuneLength(overworld); at += 0.05) {
-      if (notes.every(note => Math.abs(note.at - at) > 0.3)) gaps.push(at)
+    const loudest = []
+    for (let at = 0; at < tuneLength(overworld); at += 1 / 30) {
+      loudest.push(Math.max(...levelsAt(levels, at, empty)))
     }
-    const quiet = Math.min(...gaps.map(at => Math.max(...levelsAt(levels, at, empty))))
-    expect(quiet).toBeLessThan(Math.max(...onTheNote))
+    const sorted = [...loudest].sort((a, b) => a - b)
+    const middle = sorted[Math.floor(sorted.length / 2)]
+    // A hit stands well above an ordinary moment. Flat here is a bar that is
+    // keeping time rather than following the music.
+    expect(Math.max(...loudest)).toBeGreaterThan(middle * 2)
+    expect(sorted[0]).toBeLessThan(middle)
   })
 
   it('puts the low notes on the left and the high ones on the right', () => {
-    const levels = tuneLevels(overworld, 5)
-    const notes = strikesOf(overworld)
-    const low = notes.filter(note => note.hz < 120)[0]
-    const high = notes.filter(note => note.hz > 1000)[0]
-    const atLow = levelsAt(levels, low.at + 0.01, new Array(5).fill(0))
-    const atHigh = levelsAt(levels, high.at + 0.01, new Array(5).fill(0))
-    expect(atLow.indexOf(Math.max(...atLow))).toBeLessThan(2)
-    expect(atHigh.indexOf(Math.max(...atHigh))).toBeGreaterThan(2)
+    const bass = { hz: 60, at: 0, length: 0.4, gain: 1 }
+    const spark = { hz: 4000, at: 1, length: 0.4, gain: 1 }
+    const levels = levelsOf([bass, spark], 2, 5)
+    const atLow = levelsAt(levels, 0.01, new Array(5).fill(0))
+    const atHigh = levelsAt(levels, 1.01, new Array(5).fill(0))
+    expect(atLow.indexOf(Math.max(...atLow))).toBe(0)
+    expect(atHigh.indexOf(Math.max(...atHigh))).toBe(4)
   })
 
   it('comes round with the loop', () => {
