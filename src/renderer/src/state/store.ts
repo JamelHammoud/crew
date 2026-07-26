@@ -68,13 +68,22 @@ export function sendHuddle(msg: HuddleClientMessage): void {
 
 export type MusicServerMessage = Extract<ServerMessage, { type: 'music.room' }>
 
-export type MusicClientMessage = Extract<ClientMessage, { type: 'music.set' | 'music.off' }>
+export type MusicClientMessage = Extract<
+  ClientMessage,
+  { type: 'music.set' | 'music.off' | 'music.add' | 'music.remove' }
+>
 
 const musicListeners = new Set<(msg: MusicServerMessage) => void>()
+const shelfListeners = new Set<(uploads: MusicUpload[]) => void>()
 
 export function onMusic(listener: (msg: MusicServerMessage) => void): () => void {
   musicListeners.add(listener)
   return () => musicListeners.delete(listener)
+}
+
+export function onMusicShelf(listener: (uploads: MusicUpload[]) => void): () => void {
+  shelfListeners.add(listener)
+  return () => shelfListeners.delete(listener)
 }
 
 export function sendMusic(msg: MusicClientMessage): void {
