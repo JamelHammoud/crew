@@ -45,7 +45,7 @@ export const ParagraphGlyph = mark(
   <>
     <path d={`M13.3 ${CAP}v12.8`} />
     <path d={`M17.7 ${CAP}v12.8`} />
-    <path d={`M13.3 13.6h-3a4 4 0 0 1 0-8h7.4`} />
+    <path d="M13.3 13.6h-3a4 4 0 0 1 0-8h7.4" />
   </>
 )
 
