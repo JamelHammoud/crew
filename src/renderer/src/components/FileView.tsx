@@ -85,6 +85,24 @@ function LineText({ content, tokens }: { content: string; tokens: ThemedToken[] 
 
 type Highlight = { lines: string[]; byLine: ThemedToken[][] }
 
+function GoneLines({ lines, gutter }: { lines: string[]; gutter: string }) {
+  return (
+    <>
+      {lines.map((content, index) => (
+        <div key={index} className="flex px-4 bg-danger/10">
+          <span
+            style={{ minWidth: gutter }}
+            className="shrink-0 mr-4 text-right select-none text-danger/60"
+          >
+            −
+          </span>
+          <span className="whitespace-pre text-fg-muted pr-4">{content}</span>
+        </div>
+      ))}
+    </>
+  )
+}
+
 function CodeBody({
   tab,
   text,
@@ -93,7 +111,9 @@ function CodeBody({
   truncated,
   dirty,
   onChange,
-  onKeys
+  onKeys,
+  onDismiss,
+  areaRef
 }: {
   tab: BrowserTab
   text: string
@@ -103,6 +123,8 @@ function CodeBody({
   dirty: boolean
   onChange: (next: string, caretLine: number) => void
   onKeys: (event: KeyboardEvent<HTMLTextAreaElement>) => void
+  onDismiss: (line: number | null) => void
+  areaRef: RefObject<HTMLTextAreaElement | null>
 }) {
   const theme = useTheme()
   const [highlight, setHighlight] = useState<Highlight | null>(null)
