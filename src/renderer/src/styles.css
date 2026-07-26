@@ -485,13 +485,15 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .thinking-mark[data-state] .thinking-dot,
-  .thinking-mark[data-state] .thinking-ring {
+  .thinking-mark[data-state='thinking'] .thinking-dot,
+  .thinking-mark[data-state='thinking'] .thinking-ring,
+  .word-swap {
     animation: none;
   }
 
-  .word-swap {
-    animation: none;
+  .thinking-mark[data-landing] .thinking-dot,
+  .thinking-mark[data-landing] .thinking-ring {
+    animation-duration: 1ms;
   }
 }
 
