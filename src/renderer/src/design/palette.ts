@@ -13,6 +13,7 @@ const FONT_SIZES: Record<TLDefaultSizeStyle, number> = { s: 18, m: 24, l: 36, xl
 const SIZES = Object.keys(WEIGHTS) as TLDefaultSizeStyle[]
 
 const DASHES: Record<TLDefaultDashStyle, Stroke['style']> = {
+  none: 'solid',
   solid: 'solid',
   dashed: 'dashed',
   dotted: 'dotted',
