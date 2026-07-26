@@ -107,6 +107,17 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - The art is drawn on the grid the arrow came in on and scaled down from there, and `aimed` works out the shift that lands the point it aims from, the tip of the arrow or the middle of everything else, on a whole pixel. That pixel is the hotspot, and `ARROW_TIP` is the same number the remote arrow is offset by, so a cursor is where it says it is on either machine. Never move the art without moving both.
 - Everyone else's cursor is the same arrow in their own color, drawn by crew in `RemoteCursors` with a glass name tag, a pet for an agent and an avatar for a person. tldraw draws its own on the canvas, where a generated pet cannot go, so `CursorsDrawnByCrew` stands that overlay down. The presence record still goes into the store, because that is what marks what someone has selected.
 
+## What an agent did
+
+A step in a thread says what happened in plain words, wearing a mark of its own.
+
+- `toolActions.ts` is the one table that turns a tool name into a mark and a phrase: "Reading" while it runs, "Read" once it is done, "Read files" when a run of them is folded up. Every CLI is read through it, so `Read`, `read_file`, `ReadFile` and `view_file` all land on the same line, and an mcp tool is named after the tool rather than the plumbing around it. A name nobody has heard of is set in words rather than shown raw.
+- The marks are drawn in `toolGlyphs.tsx`, outlined on the same 24 grid as the design glyphs. They are sized by eye rather than by their box, so a page, a magnifier and a sparkle carry the same weight in a row. Nothing wears a container or a badge.
+- A live step lights its mark white and pulses it. Only `RunStatus` spins, at the foot of the run, so a long thread is not a field of spinners.
+- Three or more of the same tool in a row fold into one line that opens: a pair is not clutter and stays where it can be read. Every step in the group keeps its own row and its own diff.
+- An edit opens into the file it touched: the path and the counts on a bar, then the diff, red where lines went and green where they arrived, with the words that actually changed picked out. `diffRows` and `codeLine.tsx` do that work for the browser panel too, so a diff reads the same wherever it is shown.
+- The panel a step opens carries no rail or bracket. It is a card, or it is plain text, sitting under the row that opened it.
+
 ## Terminals
 
 A terminal is one of the things the side panel can hold, beside a web page and a file. The New button asks which. It is the real thing: a pty running the login shell, started the way Terminal and Windows Terminal start it, in the project folder.
