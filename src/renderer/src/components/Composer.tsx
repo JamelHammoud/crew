@@ -104,7 +104,9 @@ export default function Composer({
           <ArrowUturnLeftIcon className="h-4 w-4 shrink-0 text-fg-secondary" />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-fg">{replyTargetLabel(replyTo.author, replyTo.self, replyTo.self)}</p>
-            <p className="mt-0.5 truncate text-sm text-fg-muted">{replyTo.text}</p>
+            <p className="mt-0.5 truncate text-sm text-fg-muted">
+              <EmojiText text={replyTo.text} />
+            </p>
           </div>
           <Tooltip label="Cancel reply">
             <button
