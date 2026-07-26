@@ -460,6 +460,30 @@ body {
 }
 
 
+/* The toolbox in the top bar opens while its panel is open. The lid turns on the
+   far corner of the seam, the way the real thing is hinged, and takes the handle
+   with it, so the wedge that opens under it is the case being unlatched rather
+   than a mark being swapped for another. Opening carries a little overshoot and
+   closing carries none: past shut there is nowhere for the lid to go but through
+   the case it sits on. */
+.toolbox-mark .toolbox-lid {
+  transform-box: view-box;
+  transform-origin: var(--hinge, 21.5px 12.75px);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toolbox-mark[data-state='open'] .toolbox-lid {
+  transform: rotate(var(--swing, 10deg));
+  transition: transform 0.34s cubic-bezier(0.34, 1.26, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbox-mark .toolbox-lid,
+  .toolbox-mark[data-state='open'] .toolbox-lid {
+    transition: none;
+  }
+}
+
 /* The word turns over with the mark, so the two read as one change. */
 .word-swap {
   animation: word-swap 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
