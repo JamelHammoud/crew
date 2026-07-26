@@ -175,9 +175,8 @@ export const WeightGlyph = glyph(
 
 export const ClipGlyph = glyph(
   <>
-    <path d="M8 3v13.5A2.5 2.5 0 0 1 5.5 19h0A2.5 2.5 0 0 1 3 16.5" />
-    <path d="M16 3v13.5a2.5 2.5 0 0 0 2.5 2.5h0a2.5 2.5 0 0 0 2.5-2.5" />
-    <path d="M8 8h8" />
+    <path d="M7 2.5v12.9A1.6 1.6 0 0 0 8.6 17h12.9" />
+    <path d="M2.5 7h12.9A1.6 1.6 0 0 1 17 8.6v12.9" />
   </>
 )
 
