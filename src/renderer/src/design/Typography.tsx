@@ -51,8 +51,6 @@ const DECORATIONS = [
   { value: 'strike', label: 'Strikethrough', icon: <StrikeGlyph className="w-4 h-4" /> }
 ] as const
 
-const CASE_LABELS: Record<string, string> = { none: '', upper: 'AG', lower: 'ag' }
-
 function SizePicker({ onPick }: { onPick: (size: number) => void }) {
   const [open, setOpen] = useState(false)
   return (
@@ -93,21 +91,9 @@ function TypeSettings({ value, set }: { value: TypeStyle; set: (patch: Partial<T
       <Popover open={open} onClose={() => setOpen(false)} align="end" side="top">
         <div className="w-56 p-1 flex flex-col gap-2">
           <SubLabel>Case</SubLabel>
-          <Choice
-            value={value.transform}
-            options={CASES.map(item => ({
-              value: item.value,
-              label: item.label,
-              icon: item.icon ?? <span className="text-xs font-semibold">{CASE_LABELS[item.value]}</span>
-            }))}
-            onPick={transform => set({ transform })}
-          />
+          <Choice value={value.transform} options={CASES} onPick={transform => set({ transform })} />
           <SubLabel>Decoration</SubLabel>
-          <Choice
-            value={value.decoration}
-            options={DECORATIONS.map(item => ({ value: item.value, label: item.label, icon: item.icon }))}
-            onPick={decoration => set({ decoration })}
-          />
+          <Choice value={value.decoration} options={DECORATIONS} onPick={decoration => set({ decoration })} />
         </div>
       </Popover>
     </span>
