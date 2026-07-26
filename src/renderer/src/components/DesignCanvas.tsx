@@ -21,6 +21,7 @@ import type { DesignPresence } from '../../../shared/design'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import SelectionOverlay from '../design/SelectionOverlay'
+import { keepWholePixels } from '../design/wholePixels'
 import { selectionStroke } from '../design/selectionColor'
 import { designShapeUtils } from '../design/shapeUtils'
 import { onDesign, useCrew } from '../state/store'
@@ -246,9 +247,13 @@ export default function DesignCanvas({
     (mounted: Editor) => {
       applyDesignDefaults(mounted)
       mounted.user.updateUserPreferences({ isSnapMode: true, colorScheme: 'light' })
+      const stopRounding = keepWholePixels(mounted)
       setEditor(mounted)
       onEditor?.(mounted)
-      return () => onEditor?.(null)
+      return () => {
+        stopRounding()
+        onEditor?.(null)
+      }
     },
     [onEditor]
   )
