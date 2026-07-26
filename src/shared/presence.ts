@@ -29,10 +29,9 @@ export const badgeText = (count: number): string =>
   count <= 0 ? '' : count > 9 ? '9+' : String(count)
 
 export function presenceTooltip(state: PresenceSnapshot): string {
-  if (!state.sharing) return 'crew'
-  if (state.waiting === 1) return 'crew: 1 task needs review'
-  if (state.waiting > 1) return `crew: ${state.waiting} tasks need review`
-  return 'crew: sharing your agents'
+  if (state.waiting === 1) return 'Crew: 1 task needs review'
+  if (state.waiting > 1) return `Crew: ${state.waiting} tasks need review`
+  return 'Crew'
 }
 
 export function presentNow(
