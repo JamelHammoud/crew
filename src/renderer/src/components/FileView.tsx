@@ -102,6 +102,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const caret = useRef<number | null>(null)
   const last = useRef(0)
+  const composing = useRef(false)
   const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
 
   useEffect(() => {
@@ -162,7 +163,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   useLayoutEffect(() => {
     const area = areaRef.current
-    if (!area) return
+    if (!area || composing.current) return
     if (area.value !== shown) area.value = shown
     const want = caret.current
     if (want === null) return
