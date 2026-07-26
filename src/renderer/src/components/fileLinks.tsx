@@ -323,9 +323,12 @@ export function UrlLink({ url }: { url: string }) {
   )
 }
 
-export function TextWithFileLinks({ text, inline }: { text: string; inline?: boolean }) {
+export function TextWithFileLinks({ text, inline, again }: { text: string; inline?: boolean; again?: unknown }) {
   const tokens = fileTokens(text)
-  useLocated(tokens.flatMap(token => (token.kind === 'file' ? [token.path] : [])))
+  useLocated(
+    tokens.flatMap(token => (token.kind === 'file' ? [token.path] : [])),
+    again
+  )
 
   return (
     <>
