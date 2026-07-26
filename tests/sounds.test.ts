@@ -207,7 +207,7 @@ describe('playing a sound', () => {
 
   it('gives every tab its own noise', () => {
     const shapes = [...eachTab().values()].map(sound => `${sound.at.join(',')}|${sound.hz.join(',')}`)
-    expect(new Set(shapes).size).toBe(4)
+    expect(new Set(shapes).size).toBe(TABS.length)
   })
 
   it('keeps the tabs level with each other, none higher up the row than the rest', () => {
