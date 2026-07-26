@@ -160,7 +160,9 @@ export default function MusicView() {
               >
                 <Cover item={one} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-[10px]">
                   {on && (
-                    <span className="absolute inset-0 flex items-end p-[7px] text-white">
+                    // A scrim under the bars, because a cover can be any color
+                    // and white on yellow is not a bar at all.
+                    <span className="absolute inset-0 flex items-end p-[7px] text-white bg-gradient-to-t from-black/55 to-transparent">
                       <Bars count={4} className="h-3/4 w-full justify-between" barClassName="w-[3px]" />
                     </span>
                   )}
