@@ -377,6 +377,21 @@ export class CrewSession {
       if (event.kind === 'tool.removed') {
         this.tools.delete(event.toolId)
       }
+      // A track whose file has gone is left off the shelf rather than offered
+      // as a row that plays nothing.
+      if (event.kind === 'music.added' && this.store.musicPath(event.file)) {
+        this.uploads.set(event.trackId, {
+          id: event.trackId,
+          name: event.name,
+          file: event.file,
+          seconds: event.seconds,
+          by: event.byName,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'music.removed') {
+        this.uploads.delete(event.trackId)
+      }
       if (event.kind === 'thread.agent') {
         const thread = this.threads.get(event.threadId)
         if (thread) {
