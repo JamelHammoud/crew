@@ -308,7 +308,6 @@ export default function DesignCanvas({
 function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: DesignPresence[] }) {
   const camera = useValue('design camera', () => (editor ? editor.getCamera() : null), [editor])
   const pageId = useValue('design page', () => (editor ? editor.getCurrentPageId() : null), [editor])
-  const light = useTheme() === 'light'
   if (!editor || camera === null) return null
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
