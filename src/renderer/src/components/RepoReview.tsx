@@ -114,7 +114,7 @@ export default function RepoReview({
   }, [changes])
 
   return (
-    <div className="flex max-h-[min(620px,calc(100vh-32px))] flex-col overflow-hidden rounded-xl bg-ink-850">
+    <div className="flex max-h-[min(620px,calc(100vh-32px))] flex-col overflow-hidden bg-ink-850">
       <div className="flex items-start gap-3 border-b border-fg/[0.06] px-4 py-3.5">
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-fg">Review changes</span>
