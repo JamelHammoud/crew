@@ -7,7 +7,7 @@ export type { ThemedToken }
 
 const MAX_CHARS = 200_000
 
-const themeNames: Record<Theme, string> = {
+export const THEME_NAMES: Record<Theme, string> = {
   dark: 'github-dark-default',
   light: 'github-light-default'
 }
@@ -176,7 +176,7 @@ export async function highlightLines(
   if (!lang || text.length > MAX_CHARS) return null
   try {
     const highlighter = await withLanguage(lang)
-    return highlighter.codeToTokensBase(text, { lang, theme: themeNames[theme] })
+    return highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] })
   } catch {
     return null
   }
