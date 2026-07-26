@@ -1,4 +1,4 @@
-import type { NodeShape } from '../../../shared/designNode'
+import type { Corner, NodeShape } from '../../../shared/designNode'
 
 export interface UnitPoint {
   x: number
