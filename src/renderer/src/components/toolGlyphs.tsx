@@ -173,9 +173,8 @@ export const BranchGlyph = glyph(
 
 export const CodeGlyph = glyph(
   <>
-    <path d="M8.8 8.2 4.5 12l4.3 3.8" />
-    <path d="M15.2 8.2 19.5 12l-4.3 3.8" />
-    <path d="M13.6 5.5 10.4 18.5" />
+    <path d="m9.8 6.8-5 5.2 5 5.2" />
+    <path d="m14.2 6.8 5 5.2-5 5.2" />
   </>
 )
 
