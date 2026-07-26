@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { formOf, measure, type Box } from '../scripts/icon-geometry.mjs'
 import * as icons from '../src/renderer/src/icons'
 import type { Glyph } from '../src/renderer/src/components/glyph'
-import { CIRCLE, GRID, LINE, LIVE, SLASH, SQUARE, STROKE } from '../src/renderer/src/icons/keylines'
+import { CIRCLE, GRID, LINE, LIVE, SLASH, SOLID, SQUARE, STROKE } from '../src/renderer/src/icons/keylines'
 
 // An icon set is one drawing repeated with different insides, and the way it
 // stops being that is one shape at a time. These are the rules a shape has to
@@ -63,8 +63,8 @@ describe('crew icons', () => {
 
   // The one that keeps the set looking like one size. A shape already touching
   // the live area has nowhere left to grow and is allowed to sit light.
-  it.each(drawn)('$name sits on the keyline for its family', ({ box }) => {
-    const { target, size } = keyline(box)
+  it.each(drawn)('$name sits on the keyline for its family', ({ markup, box }) => {
+    const { target, size } = keyline(markup, box)
     if (Math.max(box.width, box.height) >= CAP) {
       expect(size).toBeLessThanOrEqual(LIVE + 0.01)
       return
