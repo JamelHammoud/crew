@@ -55,6 +55,7 @@ function SelectionHeader({ shapes }: { shapes: TLShape[] }) {
       <Glyph className="w-4 h-4 shrink-0 text-fg-muted" />
       {canRename(only) ? (
         <input
+          ref={nameRef}
           value={layerName(only)}
           onChange={event => renameShape(editor, only, event.target.value)}
           aria-label="Layer name"
