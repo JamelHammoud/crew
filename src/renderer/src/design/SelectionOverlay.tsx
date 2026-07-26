@@ -20,6 +20,10 @@ const CORNERS: Array<{ at: number; label: string; left: boolean; top: boolean }>
 
 const MIN_FOR_HANDLES = 72
 
+function rounds(shape: { type: string; props: unknown }): boolean {
+  return shape.type === 'design-node' && hasCorners(nodeShapeOf((shape.props as { shape?: unknown }).shape))
+}
+
 export default function SelectionOverlay({ editor }: { editor: Editor | null }) {
   const view = useValue(
     'design selection overlay',
