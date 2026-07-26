@@ -107,58 +107,55 @@ export default function Toolbox({
   }
 
   return (
-    <Popover open={open} onClose={onClose} align="center" flush className="w-[304px]">
+    <Popover open={open} onClose={onClose} align="center" flush className="w-[344px]">
       {building ? (
         <ToolBuilder tool={building.tool} onDone={() => setBuilding(null)} />
       ) : (
         <>
-          <SheetHeader title="Toolbox">
-            <HeaderButton label="New tool" onClick={() => setBuilding({ tool: null })}>
-              <PlusGlyph className="w-4 h-4" />
-            </HeaderButton>
-          </SheetHeader>
-          <div className="p-2.5 grid grid-cols-3 gap-1.5">
+          <SheetHeader title="Toolbox" />
+          <div className={GRID}>
             {builtins.map(tool => (
               <Tile
                 key={tool.id}
                 mark={<tool.mark className="w-[22px] h-[22px]" />}
                 name={tool.name}
-                soon={tool.soon}
-                active={tool.id === 'huddle' && joined}
+                active={tool.on}
                 onClick={() => press(tool.run, tool.panel ?? false)}
               />
             ))}
           </div>
-          {tools.length > 0 && (
-            <>
-              <Rule />
-              <div className="p-2.5 grid grid-cols-3 gap-1.5">
-                {tools.map(tool => (
-                  <Tile
-                    key={tool.id}
-                    mark={
-                      copied === tool.id ? (
-                        <CheckGlyph className="w-[22px] h-[22px]" />
-                      ) : (
-                        <ToolMarkView mark={tool.mark} className="w-[22px] h-[22px]" />
-                      )
-                    }
-                    name={copied === tool.id ? 'Copied' : tool.name}
-                    active={copied === tool.id}
-                    onClick={() => pressTool(tool)}
-                  >
-                    <button
-                      onClick={() => setBuilding({ tool })}
-                      aria-label={`Edit ${tool.name}`}
-                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90 group-hover:opacity-100 focus-visible:opacity-100"
-                    >
-                      <PencilGlyph className="w-3 h-3" />
-                    </button>
-                  </Tile>
-                ))}
-              </div>
-            </>
-          )}
+          <Rule />
+          <div className={GRID}>
+            {tools.map(tool => (
+              <Tile
+                key={tool.id}
+                mark={
+                  copied === tool.id ? (
+                    <CheckGlyph className="w-[22px] h-[22px]" />
+                  ) : (
+                    <ToolMarkView mark={tool.mark} className="w-[22px] h-[22px]" />
+                  )
+                }
+                name={copied === tool.id ? 'Copied' : tool.name}
+                active={copied === tool.id}
+                onClick={() => pressTool(tool)}
+              >
+                <button
+                  onClick={() => setBuilding({ tool })}
+                  aria-label={`Edit ${tool.name}`}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90 group-hover:opacity-100 focus-visible:opacity-100"
+                >
+                  <PencilGlyph className="w-3 h-3" />
+                </button>
+              </Tile>
+            ))}
+            <Tile
+              ghost
+              mark={<PlusGlyph className="w-[22px] h-[22px]" />}
+              name="New tool"
+              onClick={() => setBuilding({ tool: null })}
+            />
+          </div>
         </>
       )}
     </Popover>
