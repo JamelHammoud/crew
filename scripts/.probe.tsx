@@ -64,13 +64,13 @@ const solid = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none"
 
 const CANDIDATES: { label: string; glyph: Glyph }[] = [
   { label: 'now', glyph: HangupGlyph },
-  { label: '45 sweep 0', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.8, shift: 0.7, sweep: 0 })) },
-  { label: '45 sweep 1', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.8, shift: 0.7, sweep: 1 })) },
-  { label: '45 waist 2.2', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.3, waist: 2.2, shift: 0.9, sweep: 1 })) },
-  { label: '45 flat shift', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 0, sweep: 1 })) },
-  { label: '135', glyph: solid(handset({ deg: 135, gap: 9.6, r: 3.2, waist: 2.4, shift: 0.8, sweep: 1 })) },
-  { label: '135 sweep 0', glyph: solid(handset({ deg: 135, gap: 9.6, r: 3.2, waist: 2.4, shift: 0.8, sweep: 0 })) },
-  { label: '60 long', glyph: solid(handset({ deg: 60, gap: 10.4, r: 3.1, waist: 2.4, shift: 0.9, sweep: 1 })) }
+  { label: 'bow 1.8', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 1.8, sweep: 0, pull: 0.9 })) },
+  { label: 'bow 2.6', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
+  { label: 'bow 3.4', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 3.4, sweep: 0, pull: 1.7 })) },
+  { label: 'fat ends', glyph: solid(handset({ deg: 45, gap: 8.8, r: 3.6, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
+  { label: 'bow 2.6 at 135', glyph: solid(handset({ deg: 135, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
+  { label: 'bow 2.6 at 60', glyph: solid(handset({ deg: 60, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
+  { label: 'bow 2.6 at 30', glyph: solid(handset({ deg: 30, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) }
 ]
 
 function Button({ children, danger }: { children: ReactNode; danger?: boolean }) {
