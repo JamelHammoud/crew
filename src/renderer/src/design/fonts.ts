@@ -116,6 +116,18 @@ export function fontLabel(name: string): string {
 
 const WEIGHTS = '300,400,500,600,700,400italic,700italic'
 const loaded = new Set<string>()
+const listeners = new Set<() => void>()
+
+export function whenFontsLoad(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+function announce(): void {
+  for (const listener of listeners) listener()
+}
 
 function slug(name: string): string {
   return name.replace(/ /g, '+')
@@ -129,5 +141,10 @@ export function loadFonts(names: string[]): void {
   const link = document.createElement('link')
   link.rel = 'stylesheet'
   link.href = `https://fonts.googleapis.com/css?family=${fresh.map(name => `${slug(name)}:${WEIGHTS}`).join('%7C')}&display=swap`
+  link.addEventListener('load', () => {
+    const faces = document.fonts
+    if (!faces) return announce()
+    Promise.all(fresh.map(name => faces.load(`400 16px "${name}"`).catch(() => []))).then(announce, announce)
+  })
   document.head.append(link)
 }
