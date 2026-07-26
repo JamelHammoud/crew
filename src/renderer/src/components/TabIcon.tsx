@@ -38,43 +38,6 @@ function ChatIcon() {
   )
 }
 
-/**
- * Planet draws itself, its ring swings level as the two lobes sweep out behind it.
- * Lobe endpoints sit exactly where the ring meets the planet's silhouette, so the
- * ring reads as passing behind it.
- */
-function SpaceIcon() {
-  return (
-    <svg {...SVG}>
-      <circle
-        className="tab-icon-draw"
-        pathLength={1}
-        cx={9.2}
-        cy={10.6}
-        r={5}
-        style={{ '--draw-dur': '330ms' } as React.CSSProperties}
-      />
-      <g
-        className="tab-icon-sweep"
-        style={{ '--sweep-from': '-16deg', '--sweep-delay': '170ms' } as React.CSSProperties}
-      >
-        <path
-          className="tab-icon-draw"
-          pathLength={1}
-          d="M6.04 14.47A8.2 3 -20 0 1 4.29 9.67"
-          style={{ '--draw-dur': '230ms', '--draw-delay': '170ms' } as React.CSSProperties}
-        />
-        <path
-          className="tab-icon-draw"
-          pathLength={1}
-          d="M14.11 11.53A8.2 3 -20 0 0 12.37 6.73"
-          style={{ '--draw-dur': '230ms', '--draw-delay': '240ms' } as React.CSSProperties}
-        />
-      </g>
-    </svg>
-  )
-}
-
 /** Page outline draws, the corner folds over, then the text lines rule themselves in. */
 function DocsIcon() {
   return (
