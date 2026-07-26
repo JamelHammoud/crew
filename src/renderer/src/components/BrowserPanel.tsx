@@ -104,7 +104,7 @@ export default function BrowserPanel() {
             <ArrowRightIcon className="w-4 h-4" />
           </button>
           <button
-            onClick={() => useBrowser.getState().reloadFile(active.id)}
+            onClick={() => useBrowser.getState().reloadTab(active.id)}
             aria-label="Reload"
             className={iconButton}
           >
