@@ -1,12 +1,20 @@
 import type { CSSProperties } from 'react'
 import { STROKE, wearWeight } from '../icons/keylines'
-import { TOOLBOX_BODY, TOOLBOX_HANDLE, TOOLBOX_HINGE, TOOLBOX_LID, TOOLBOX_SWING } from '../icons/objects'
+import {
+  TOOLBOX_BODY,
+  TOOLBOX_HANDLE,
+  TOOLBOX_HINGE,
+  TOOLBOX_LID,
+  toolboxTurn
+} from '../icons/objects'
 
 // The toolbox drawn from the same three paths ToolboxGlyph is, with the lid on a
-// hinge. Like the thinking mark it draws its own frame instead of going through
-// glyph(), so it has to be handed the same stroke at the size it is worn at, or
-// the mark sits thinner than the buttons standing beside it.
+// hinge behind the box. Like the thinking mark it draws its own frame instead of
+// going through glyph(), so it has to be handed the same stroke at the size it is
+// worn at, or the mark sits thinner than the buttons standing beside it.
 const WORN = 'w-[22px] h-[22px]'
+
+const TURN = toolboxTurn()
 
 export default function ToolboxMark({ open }: { open: boolean }) {
   return (
@@ -22,7 +30,9 @@ export default function ToolboxMark({ open }: { open: boolean }) {
       style={
         {
           '--hinge': `${TOOLBOX_HINGE.x}px ${TOOLBOX_HINGE.y}px`,
-          '--swing': `${TOOLBOX_SWING}deg`
+          '--rise': `${TURN.rise}px`,
+          '--squash': TURN.squash,
+          '--away': TURN.away
         } as CSSProperties
       }
       className={`toolbox-mark ${WORN}`}
