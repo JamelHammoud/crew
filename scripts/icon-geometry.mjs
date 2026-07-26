@@ -273,7 +273,7 @@ export function measure(markup, stroke = 1.5) {
       // A bin, a browser frame and a door are drawn open where another shape
       // will close them, and they enclose all the same. What tells them from a
       // chevron is that their ends come back near each other.
-      const encloses = area >= ENCLOSING && gap < 0.45 * length
+      const encloses = area >= ENCLOSING && gap < 0.5 * length
       if (encloses && area > (body?.area ?? 0))
         body = { area, width: hi[0] - lo[0], height: hi[1] - lo[1] }
     }

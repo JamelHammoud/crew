@@ -42,15 +42,15 @@ export const ArrowLeftGlyph = glyph(
 
 export const UndoGlyph = glyph(
   <>
-    <path d="m9 4.5-4.5 4.5 4.5 4.5" />
-    <path d="M4.5 9h9.25a5.75 5.75 0 0 1 0 11.5H8" />
+    <path d="m9 3.65-4.75 4.75 4.75 4.75" />
+    <path d="M4.25 8.4h9.5a6 6 0 0 1 0 12H7.75" />
   </>
 )
 
 export const RedoGlyph = glyph(
   <>
-    <path d="m15 4.5 4.5 4.5-4.5 4.5" />
-    <path d="M19.5 9h-9.25a5.75 5.75 0 0 0 0 11.5H16" />
+    <path d="m15 3.65 4.75 4.75-4.75 4.75" />
+    <path d="M19.75 8.4h-9.5a6 6 0 0 0 0 12H16.25" />
   </>
 )
 
@@ -66,8 +66,8 @@ export const ExternalLinkGlyph = glyph(
 // head is the line arriving rather than a mark parked beside it.
 export const RefreshGlyph = glyph(
   <>
-    <path d="M19.2 16.15A8.3 8.3 0 1 1 19.5 8.5" />
-    <path d="M19.5 3.5v5h-5" />
+    <path d="M19.8 16.5A9 9 0 1 1 20.15 8.2" />
+    <path d="M20.15 3.2v5h-5" />
   </>
 )
 
