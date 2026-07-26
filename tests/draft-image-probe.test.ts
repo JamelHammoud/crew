@@ -33,8 +33,8 @@ describe('an image that has not been sent yet', () => {
   })
 
   it('is drawn by crew, under the name of the file, never as a web page', () => {
-    render(createElement(AttachmentTray, { attachmentKey: KEY }))
-    fireEvent.click(render(createElement(AttachmentTray, { attachmentKey: KEY })).getByLabelText('Open balance.png'))
+    const tray = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+    fireEvent.click(tray.getByLabelText('Open balance.png'))
     const { container } = render(createElement(BrowserPanel))
 
     expect(container.querySelector('webview')).toBeNull()
