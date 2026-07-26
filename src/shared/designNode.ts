@@ -260,8 +260,11 @@ export function cleanType(value: unknown): TypeStyle | null {
     lineHeight: clamp(type.lineHeight, 0.5, 4, BASE_TYPE.lineHeight),
     spacing: clamp(type.spacing, -20, 100, BASE_TYPE.spacing),
     align: type.align === 'center' || type.align === 'right' ? type.align : 'left',
+    vertical: type.vertical === 'middle' || type.vertical === 'bottom' ? type.vertical : 'top',
     color: isHex(type.color) ? type.color : BASE_TYPE.color,
     transform: type.transform === 'upper' || type.transform === 'lower' ? type.transform : 'none',
+    decoration: type.decoration === 'underline' || type.decoration === 'strike' ? type.decoration : 'none',
+    paragraph: clamp(type.paragraph, 0, 400, BASE_TYPE.paragraph),
     italic: type.italic === true
   }
 }
