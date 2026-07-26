@@ -22,7 +22,7 @@ export default function StepGroup({ items, linked }: { items: ThreadItem[]; link
             {action.many ?? action.done}
           </span>
         )}
-        <Counts added={totals.added} removed={totals.removed} />
+        <Counts added={totals.added} removed={totals.removed} className="mono-inline" />
         <Chevron open={expanded} />
       </button>
       {expanded && (
