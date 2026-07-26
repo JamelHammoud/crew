@@ -667,6 +667,110 @@
         }
       ],
       "steerable": false
+    },
+    {
+      "id": "jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130",
+      "label": "Thinker",
+      "provider": "claude",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": "opus",
+        "opusModel": "claude-opus-5",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "Opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "Sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "Haiku"
+            },
+            {
+              "value": "fable",
+              "label": "Fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true
     }
   ],
   "removedAgents": [
