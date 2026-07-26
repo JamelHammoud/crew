@@ -19,33 +19,40 @@ const CORNERS: Array<{ at: number; label: string; left: boolean; top: boolean }>
 const MIN_FOR_HANDLES = 72
 
 export default function SelectionOverlay({ editor }: { editor: Editor | null }) {
-  const camera = useValue('design camera', () => (editor ? editor.getCamera() : null), [editor])
-  const selected = useValue('design overlay selection', () => (editor ? editor.getSelectedShapes() : []), [editor])
-  const editing = useValue('design editing', () => (editor ? editor.getEditingShapeId() : null), [editor])
-  const selecting = useValue('design selecting', () => (editor ? editor.isIn('select') : false), [editor])
+  const view = useValue(
+    'design selection overlay',
+    () => {
+      if (!editor || !editor.isIn('select') || editor.getEditingShapeId()) return null
+      const shapes = editor.getSelectedShapes()
+      if (shapes.length === 0) return null
+      const bounds = editor.getSelectionPageBounds()
+      if (!bounds) return null
+      const topLeft = editor.pageToViewport({ x: bounds.minX, y: bounds.minY })
+      const bottomRight = editor.pageToViewport({ x: bounds.maxX, y: bounds.maxY })
+      const only = shapes.length === 1 ? shapes[0] : null
+      return {
+        rect: { x: topLeft.x, y: topLeft.y, w: bottomRight.x - topLeft.x, h: bottomRight.y - topLeft.y } as Rect,
+        size: { w: bounds.w, h: bounds.h },
+        zoom: editor.getZoomLevel(),
+        node: only && only.type === 'design-node' && only.rotation === 0 ? (only as DesignNodeShape) : null
+      }
+    },
+    [editor]
+  )
 
-  if (!editor || !camera || !selecting || editing || selected.length === 0) return null
-  const bounds = editor.getSelectionPageBounds()
-  if (!bounds) return null
-
-  const topLeft = editor.pageToViewport({ x: bounds.minX, y: bounds.minY })
-  const bottomRight = editor.pageToViewport({ x: bounds.maxX, y: bounds.maxY })
-  const rect: Rect = { x: topLeft.x, y: topLeft.y, w: bottomRight.x - topLeft.x, h: bottomRight.y - topLeft.y }
-  const node =
-    selected.length === 1 && selected[0].type === 'design-node' && selected[0].rotation === 0
-      ? (selected[0] as DesignNodeShape)
-      : null
+  if (!editor || !view) return null
+  const { rect, size, node, zoom } = view
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {node && rect.w > MIN_FOR_HANDLES && rect.h > MIN_FOR_HANDLES && (
-        <RadiusHandles editor={editor} shape={node} rect={rect} zoom={camera.z} />
+        <RadiusHandles editor={editor} shape={node} rect={rect} zoom={zoom} />
       )}
       <span
         className="absolute -translate-x-1/2 rounded-full bg-fg px-2 py-0.5 text-xs font-semibold tabular-nums text-ink-900 whitespace-nowrap"
         style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10 }}
       >
-        {Math.round(bounds.w)} × {Math.round(bounds.h)}
+        {Math.round(size.w)} × {Math.round(size.h)}
       </span>
     </div>
   )
@@ -98,7 +105,7 @@ function RadiusHandles({
             key={corner.at}
             aria-label={corner.label}
             onPointerDown={event => drag(event, corner.at)}
-            className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 grid place-items-center pointer-events-auto cursor-pointer group"
+            className="group absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 grid place-items-center pointer-events-auto"
             style={{
               left: corner.left ? rect.x + inset : rect.x + rect.w - inset,
               top: corner.top ? rect.y + inset : rect.y + rect.h - inset
