@@ -20,7 +20,7 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
-import { CursorArrow, DESIGN_CURSORS } from '../design/cursors'
+import { cursorColor, CursorArrow, DESIGN_CURSORS } from '../design/cursors'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import SelectionOverlay from '../design/SelectionOverlay'
