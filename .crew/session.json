@@ -824,7 +824,8 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg"
     }
   ],
   "removedAgents": [
