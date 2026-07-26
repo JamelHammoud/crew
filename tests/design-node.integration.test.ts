@@ -36,7 +36,7 @@ describe('design nodes', () => {
     expect(applied.results[0].error).toBeUndefined()
     const props = propsOf(document, applied.results[0].id!)
     expect(props.radius).toEqual([20, 20, 20, 20])
-    expect(props.fills).toEqual([{ type: 'solid', color: '#141414', opacity: 1 }])
+    expect(props.fills).toEqual([{ type: 'solid', color: '#141414', opacity: 1, visible: true }])
     expect(props.strokes[0].weight).toBe(1)
     expect(props.effects[0]).toMatchObject({ type: 'shadow', y: 8, spread: -4 })
     expect(props.layout).toMatchObject({ direction: 'column', gap: 12, padding: [20, 20, 20, 20] })
@@ -56,7 +56,7 @@ describe('design nodes', () => {
       }
     ])
     const props = propsOf(document, applied.results[0].id!)
-    expect(props.fills).toEqual([{ type: 'solid', color: '#ff0000', opacity: 0.5 }])
+    expect(props.fills).toEqual([{ type: 'solid', color: '#ff0000', opacity: 0.5, visible: true }])
     expect(props.strokes).toEqual([])
     expect(props.effects).toHaveLength(1)
   })
