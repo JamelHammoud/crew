@@ -65,6 +65,7 @@ export interface DesignCommand {
 }
 
 const ASK: Chord = { key: 'a', meta: true, shift: true }
+const HIDE: Chord = { key: 'h', meta: true, shift: true }
 const LOCK: Chord = { key: 'l', meta: true, shift: true }
 const MASK: Chord = { key: 'm', meta: true, ctrl: true }
 
@@ -398,8 +399,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'hide',
     label: 'Hide',
+    hint: chordHint(HIDE),
     group: 'state',
     Icon: EyeOffGlyph,
+    keys: HIDE,
     when: ctx => selection(ctx.editor).some(shape => !hidden(shape)),
     run: ctx => setHidden(ctx.editor, selection(ctx.editor), true)
   },
