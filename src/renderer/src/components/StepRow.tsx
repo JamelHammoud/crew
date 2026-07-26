@@ -82,13 +82,18 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
   const action = thinking ? THINKING : toolAction(item.name, item.subagent)
   const files = stepFiles(item)
   const totals = stepTotals(files)
-  const expandable = thinking || files.length > 1 || files.some(file => file.diff) || Boolean(item.detail)
+  const detail = thinking ? '' : (item.detail ?? '')
+  const opens = useOpener(detail, files)
+  const expandable = thinking || files.length > 1 || files.some(file => file.diff) || (!opens && crowded(detail))
   const expanded = open ?? (thinking ? item.streaming : false)
   const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
   return (
     <div className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}>
-      <button onClick={() => expandable && setOpen(!expanded)} className={rowClass(expandable)}>
+      <button
+        onClick={() => (opens ? opens() : expandable && setOpen(!expanded))}
+        className={rowClass(Boolean(opens) || expandable)}
+      >
         <Mark icon={action.icon} running={item.streaming} />
         <Label action={action} running={item.streaming} />
         {files.length > 0 && (
