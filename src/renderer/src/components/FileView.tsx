@@ -328,21 +328,22 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const dirty = editable && !!file && draft !== file.text
 
   useEffect(() => {
-    if (caret === null) return
+    if (!caret) return
     setCaret(null)
     const area = areaRef.current
     if (!area) return
-    const offset = draft
-      .split('\n')
-      .slice(0, caret - 1)
-      .reduce((sum, line) => sum + line.length + 1, 0)
-    area.focus()
+    const lines = draft.split('\n')
+    const line = Math.min(Math.max(caret.line, 1), lines.length)
+    const start = lines.slice(0, line - 1).reduce((sum, one) => sum + one.length + 1, 0)
+    const offset = start + Math.min(caret.column, lines[line - 1].length)
+    area.focus({ preventScroll: true })
     area.setSelectionRange(offset, offset)
   }, [caret])
 
-  const dismiss = (line: number | null) => {
+  const dismiss = (spot: Spot | null) => {
+    held.current = spot
     useBrowser.getState().updateTab(tab.id, { diff: null })
-    setCaret(line)
+    setCaret(spot)
   }
 
   const save = async () => {
