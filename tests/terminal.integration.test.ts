@@ -159,6 +159,59 @@ describe.skipIf(!unix)('a terminal tab', () => {
     expect(heard.exits).not.toContain('tab-8')
   })
 
+  it('opens onto the prompt a shell kept ready has already printed', async () => {
+    const heard = listener()
+    const made = terminals()
+    made.warm(process.cwd())
+    await until(() => made.ready(), 'a shell to stand by')
+
+    made.open('tab-9', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
+    expect(heard.text().length).toBeGreaterThan(0)
+
+    made.write('tab-9', 'echo warm-shell-answers\r')
+    await until(() => heard.text().includes('warm-shell-answers\r\n'), 'the warmed shell to answer')
+    expect(made.count()).toBe(1)
+  })
+
+  it('tells a shell kept ready the size of the tab that took it', async () => {
+    const out = scratch('warm-size')
+    rmSync(out, { force: true })
+    const made = terminals()
+    made.warm(process.cwd())
+    await until(() => made.ready(), 'a shell to stand by')
+
+    made.open('tab-10', process.cwd(), { cols: 100, rows: 30 }, listener().sink)
+    made.write('tab-10', `stty size > ${out}\r`)
+
+    await until(() => existsSync(out) && readFileSync(out, 'utf8').trim().length > 0, 'the shell to report')
+    expect(readFileSync(out, 'utf8').trim()).toBe('30 100')
+    rmSync(out, { force: true })
+  })
+
+  it('never hands a tab a shell warmed for another folder', async () => {
+    const out = scratch('warm-folder')
+    rmSync(out, { force: true })
+    const made = terminals()
+    made.warm(os.tmpdir())
+    await until(() => made.ready(), 'a shell to stand by')
+
+    made.open('tab-11', process.cwd(), { cols: 80, rows: 24 }, listener().sink)
+    made.write('tab-11', `pwd > ${out}\r`)
+
+    await until(() => existsSync(out) && readFileSync(out, 'utf8').trim().length > 0, 'the shell to report')
+    expect(readFileSync(out, 'utf8').trim()).toBe(process.cwd())
+    rmSync(out, { force: true })
+  })
+
+  it('takes the shell it was keeping ready with it when the window goes', async () => {
+    const made = terminals()
+    made.warm(process.cwd())
+    await until(() => made.ready(), 'a shell to stand by')
+
+    made.closeAll()
+    expect(made.ready()).toBe(false)
+  })
+
   it('keeps two terminals apart', async () => {
     const heard = listener()
     const made = terminals()
