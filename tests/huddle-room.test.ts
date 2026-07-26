@@ -57,8 +57,7 @@ describe('naming a call', () => {
   })
 
   it('picks out whoever is sharing', () => {
-    const room = { id: 'call-1', peers: [peer('a', 'Ali'), peer('b', 'Kim', { sharing: true })], startedAt: 1 }
-    expect(sharingPeer(room)?.name).toBe('Kim')
+    expect(sharingPeer(room(peer('a', 'Ali'), peer('b', 'Kim', { sharing: true })))?.name).toBe('Kim')
   })
 })
 
