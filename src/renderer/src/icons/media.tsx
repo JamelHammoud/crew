@@ -37,7 +37,7 @@ export const CameraOffGlyph = glyph(
 const CONE =
   'M4 9.5h3.25L12.5 5.25a.75.75 0 0 1 1.25.6v12.3a.75.75 0 0 1-1.25.6L7.25 14.5H4a1.25 1.25 0 0 1-1.25-1.25v-2.5A1.25 1.25 0 0 1 4 9.5Z'
 
-export const SpeakerGlyph = glyph(
+const SPEAKER_ART = (
   <>
     <path d={CONE} />
     <path d="M17 9.5a3.5 3.5 0 0 1 0 5" />
@@ -45,20 +45,22 @@ export const SpeakerGlyph = glyph(
   </>
 )
 
-// The one icon whose off is a cross rather than the SLASH, and the reason is the
-// cone. Every other form is centred and whole on its own, so a diagonal laid
-// over it negates it and nothing else. The cone is two thirds of a mark: it sits
-// left and stops at 13.75 because the waves hold the rest of the box. Take them
-// away and a slash is left crossing a small shape standing off to one side, so
-// the icon shrinks and slides the moment it is muted, in the same row it was
-// just drawn in. The cross stands where the waves stood, which is what keeps the
-// silhouette. It is a counterweight as much as it is a negation.
-// It has to carry their weight too. Drawn small it reads as a footnote beside
-// the cone at 16, so it is 6 across, the same reach as the outer wave.
+export const SpeakerGlyph = glyph(SPEAKER_ART)
+
+// Muted keeps the waves and takes the SLASH over the whole of it, like MicOff
+// and CameraOff. Two other ways round were tried in the app and both are worse.
+// Dropping the waves for the slash leaves the cone alone, which is two thirds of
+// a mark standing off to the left, so the icon shrinks and slides the moment it
+// is muted. Dropping them for a cross keeps the width but the cross has to reach
+// the cone's mouth to carry the weight the waves did, and at 16 its near arm
+// fuses into the mouth and the two become one blob with a barb on it. Kept, the
+// waves hold the silhouette themselves and the slash has only to negate. It
+// threads between the cone and the arcs rather than crossing them, because both
+// it and the mark are centred on the same box.
 export const SpeakerOffGlyph = glyph(
   <>
-    <path d={CONE} />
-    <path d="m15.75 9 6 6M21.75 9l-6 6" />
+    {SPEAKER_ART}
+    <path d={SLASH} />
   </>
 )
 

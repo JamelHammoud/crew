@@ -19,11 +19,10 @@ export function noiseBuffer(ctx: AudioContext): AudioBuffer {
   return noise
 }
 
-let room: ConvolverNode | null = null
+let held: AudioBuffer | null = null
 
-export function reverb(ctx: AudioContext): ConvolverNode | null {
-  if (room) return room
-  if (!ctx.createConvolver) return null
+function impulse(ctx: AudioContext): AudioBuffer {
+  if (held) return held
   const frames = Math.floor(ctx.sampleRate * 0.55)
   const tail = ctx.createBuffer(2, frames, ctx.sampleRate)
   let energy = 0
