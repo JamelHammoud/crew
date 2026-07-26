@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Toolbox from '../src/renderer/src/components/Toolbox'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -42,7 +42,15 @@ beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
 })
 
-afterEach(() => cleanup())
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+})
+
+const hover = (name: string) => {
+  fireEvent.mouseEnter(screen.getByText(name).closest('button')!.parentElement!)
+  act(() => vi.advanceTimersByTime(400))
+}
 
 describe('the toolbox', () => {
   it('holds the built-in tools, with the ones still coming turned off', () => {
