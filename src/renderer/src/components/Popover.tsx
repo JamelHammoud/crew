@@ -39,17 +39,23 @@ export function Popover({
     if (anchor) setRect(anchor.getBoundingClientRect())
   }, [open, at])
 
+  const measure = (): void => {
+    const el = popRef.current
+    if (!el) return
+    setSize(current =>
+      current && current.w === el.offsetWidth && current.h === el.offsetHeight
+        ? current
+        : { w: el.offsetWidth, h: el.offsetHeight }
+    )
+  }
+
+  useLayoutEffect(() => {
+    if (rect) measure()
+  })
+
   useLayoutEffect(() => {
     const el = popRef.current
-    if (!rect || !el) return
-    const measure = () =>
-      setSize(current =>
-        current && current.w === el.offsetWidth && current.h === el.offsetHeight
-          ? current
-          : { w: el.offsetWidth, h: el.offsetHeight }
-      )
-    measure()
-    if (typeof ResizeObserver === 'undefined') return
+    if (!rect || !el || typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     return () => observer.disconnect()
