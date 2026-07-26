@@ -1,29 +1,57 @@
-import { docRefs, resolveDocRef, type DocMentionRef, type DocPage } from '../../../shared/docs'
+import { resolveBoardRef, type BoardMentionRef, type DesignBoardMeta } from '../../../shared/design'
+import { resolveDocRef, type DocMentionRef, type DocPage } from '../../../shared/docs'
 import type { PooledAgent } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
+import { crewRefs, refsIn, type CrewRefKind } from '../../../shared/refs'
+
+export interface WrittenRef {
+  kind: CrewRefKind
+  title: string
+  target: string | null
+}
 
 export type MentionToken =
   | { kind: 'text'; text: string }
   | { kind: 'agent'; text: string; agent: PooledAgent }
   | { kind: 'member'; text: string; member: MemberInfo }
-  | { kind: 'doc'; text: string; page: string | null }
+  | { kind: 'ref'; text: string; ref: WrittenRef }
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// A message written before references were recorded is read against what is
+// here now. One written since carries what it pointed at, so a doc that moved
+// or a board that was renamed still opens.
+export function writtenRefs(
+  text: string,
+  docs: Record<string, DocPage>,
+  boards: DesignBoardMeta[],
+  docMentions?: DocMentionRef[],
+  boardMentions?: BoardMentionRef[]
+): WrittenRef[] {
+  if (!docMentions && !boardMentions)
+    return refsIn(text, crewRefs(docs, boards)).map(ref => ({ kind: ref.kind, title: ref.title, target: ref.key }))
+  return [
+    ...(docMentions ?? []).map(ref => ({
+      kind: 'doc' as const,
+      title: ref.title,
+      target: resolveDocRef(docs, ref)
+    })),
+    ...(boardMentions ?? []).map(ref => ({
+      kind: 'board' as const,
+      title: ref.name,
+      target: resolveBoardRef(boards, ref)
+    }))
+  ].filter(ref => ref.title.trim().length > 0)
 }
 
 export function tokenizeMentions(
   text: string,
   agents: PooledAgent[],
   members: MemberInfo[],
-  docs: Record<string, DocPage>,
-  docMentions?: DocMentionRef[]
+  refs: WrittenRef[]
 ): MentionToken[] {
-  const refs = docMentions
-    ? docMentions
-        .filter(ref => ref.title.trim().length > 0)
-        .map(ref => ({ title: ref.title, page: resolveDocRef(docs, ref) }))
-    : docRefs(docs).map(ref => ({ title: ref.title, page: ref.page as string | null }))
   const names = [
     ...agents.map(agent => `@${agent.label}`),
     ...members.map(member => `@${member.name}`),
@@ -47,7 +75,7 @@ export function tokenizeMentions(
     const ref = part.startsWith('#') ? refs.find(r => r.title.toLowerCase() === name) : undefined
     if (agent) tokens.push({ kind: 'agent', text: part, agent })
     else if (member) tokens.push({ kind: 'member', text: part, member })
-    else if (ref) tokens.push({ kind: 'doc', text: part, page: ref.page })
+    else if (ref) tokens.push({ kind: 'ref', text: part, ref })
     else tokens.push({ kind: 'text', text: part })
   }
   return tokens
