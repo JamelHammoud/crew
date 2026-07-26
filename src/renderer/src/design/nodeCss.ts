@@ -83,6 +83,18 @@ export function layoutStyle(layout: Layout): CSSProperties {
   }
 }
 
+const DECORATION: Record<TypeStyle['decoration'], string> = {
+  none: 'none',
+  underline: 'underline',
+  strike: 'line-through'
+}
+
+const VERTICAL: Record<TypeStyle['vertical'], string> = {
+  top: 'flex-start',
+  middle: 'center',
+  bottom: 'flex-end'
+}
+
 export function textStyle(type: TypeStyle): CSSProperties {
   return {
     fontFamily: FAMILIES[type.family] ?? type.family,
@@ -93,8 +105,14 @@ export function textStyle(type: TypeStyle): CSSProperties {
     textAlign: type.align,
     color: type.color,
     textTransform: type.transform === 'upper' ? 'uppercase' : type.transform === 'lower' ? 'lowercase' : 'none',
+    textDecoration: DECORATION[type.decoration] ?? 'none',
     fontStyle: type.italic ? 'italic' : 'normal'
   }
+}
+
+export function textBoxStyle(type: TypeStyle): CSSProperties {
+  if (!type.vertical || type.vertical === 'top') return {}
+  return { height: '100%', display: 'flex', flexDirection: 'column', justifyContent: VERTICAL[type.vertical] }
 }
 
 function fillLayers(fills: Paint[]): string[] {
