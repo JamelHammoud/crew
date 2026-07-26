@@ -65,9 +65,9 @@ export const WarningGlyph = glyph(
 
 export const SignalGlyph = glyph(
   <>
-    <path d="M6 18a8.5 8.5 0 0 1 0-12" />
-    <path d="M18 6a8.5 8.5 0 0 1 0 12" />
-    <circle cx="12" cy="12" r="2.6" />
+    <path d="M6.1 19.25a10 10 0 0 1 0-14.5" />
+    <path d="M17.9 4.75a10 10 0 0 1 0 14.5" />
+    <circle cx="12" cy="12" r="2.75" />
   </>
 )
 
@@ -90,7 +90,7 @@ export const UnlockGlyph = glyph(
 // Inner points at 47% of the outer radius rather than the 38% a pentagram gives.
 // The sharper star is the correct one and the friendlier one is this.
 export const StarGlyph = glyph(
-  <path d="M12 3.1 14.56 8.78 20.75 9.46 16.14 13.64 17.41 19.74 12 16.65 6.59 19.74 7.86 13.64 3.25 9.46 9.44 8.78Z" />
+  <path d="M12 3.5 14.6 9.32 20.94 10 16.2 14.27 17.53 20.5 12 17.32 6.47 20.5 7.8 14.27 3.06 10 9.4 9.32Z" />
 )
 
 export const SunGlyph = glyph(

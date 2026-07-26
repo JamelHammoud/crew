@@ -1,14 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { Store } from '../src/server/store'
+import type { SessionEvent } from '../src/shared/events'
 import { emptyRoom, MAX_SIGNAL_CHARS } from '../src/shared/huddle'
 import type { ServerMessage } from '../src/shared/protocol'
-import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { startHost, TestUi, tmpDir, waitUntil, type TestHost } from './helpers/session'
 
 type Room = Extract<ServerMessage, { type: 'huddle.room' }>
 type Signal = Extract<ServerMessage, { type: 'huddle.signal' }>
+type Logged = Extract<SessionEvent, { kind: `huddle.${string}` }>
 
 const rooms = (ui: TestUi): Room[] => ui.messages.filter((m): m is Room => m.type === 'huddle.room')
 const latest = (ui: TestUi): Room['room'] => rooms(ui).at(-1)?.room ?? emptyRoom()
 const names = (ui: TestUi): string[] => latest(ui).peers.map(peer => peer.name)
+const logged = (host: TestHost): Logged[] =>
+  host.store.loadEvents().filter((event): event is Logged => event.kind.startsWith('huddle'))
 
 describe('huddles', () => {
   let host: TestHost
@@ -218,13 +223,121 @@ describe('huddles', () => {
     expect(welcome?.type === 'welcome' && welcome.snapshot.huddle?.peers[0].name).toBe('jamel')
   })
 
-  it('keeps the call out of the event log so it is never committed', async () => {
+  it('keeps the call itself out of the event log so none of it is ever committed', async () => {
     const jamel = await open('jamel')
     jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
     await waitUntil(() => names(jamel).length === 1)
     jamel.send({ type: 'huddle.update', sharing: true })
     await waitUntil(() => latest(jamel).peers[0]?.sharing === true)
+    jamel.send({
+      type: 'huddle.signal',
+      to: 'peer-jamel',
+      signal: { kind: 'candidate', candidate: { candidate: 'a route to somewhere' } }
+    })
 
-    expect(host.store.loadEvents().some(event => event.kind.startsWith('huddle'))).toBe(false)
+    expect(logged(host).map(event => event.kind)).toEqual(['huddle.started'])
+    const written = JSON.stringify(host.store.loadEvents())
+    expect(written).not.toContain('peer-jamel')
+    expect(written).not.toContain('a route to somewhere')
+    expect(written).not.toContain('sharing')
+  })
+
+  it('records who started a call, who came to it, and how long it ran', async () => {
+    const jamel = await open('jamel')
+    const sam = await open('sam')
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 1)
+    sam.send({ type: 'huddle.join', peerId: 'peer-sam', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 2)
+
+    jamel.send({ type: 'huddle.leave' })
+    sam.send({ type: 'huddle.leave' })
+    await waitUntil(() => logged(host).some(event => event.kind === 'huddle.ended'))
+
+    const [started, joined, ended] = logged(host)
+    expect([started.kind, joined.kind, ended.kind]).toEqual(['huddle.started', 'huddle.joined', 'huddle.ended'])
+    expect(started.kind === 'huddle.started' && started.byName).toBe('jamel')
+    expect(joined.kind === 'huddle.joined' && joined.name).toBe('sam')
+    expect(ended.kind === 'huddle.ended' && ended.ms >= 0).toBe(true)
+    expect(new Set(logged(host).map(event => event.huddleId)).size).toBe(1)
+  })
+
+  it('names someone once however many times they come back to the same call', async () => {
+    const jamel = await open('jamel')
+    const sam = await open('sam')
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 1)
+    sam.send({ type: 'huddle.join', peerId: 'peer-sam', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 2)
+    sam.send({ type: 'huddle.leave' })
+    await waitUntil(() => names(jamel).length === 1)
+    sam.send({ type: 'huddle.join', peerId: 'peer-sam', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 2)
+
+    expect(logged(host).filter(event => event.kind === 'huddle.joined')).toHaveLength(1)
+  })
+
+  it('starts a record of its own for the next call', async () => {
+    const jamel = await open('jamel')
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 1)
+    jamel.send({ type: 'huddle.leave' })
+    await waitUntil(() => logged(host).some(event => event.kind === 'huddle.ended'))
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel-again', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 1)
+
+    const starts = logged(host).filter(event => event.kind === 'huddle.started')
+    expect(starts).toHaveLength(2)
+    expect(starts[0].huddleId).not.toBe(starts[1].huddleId)
+    expect(latest(jamel).id).toBe(starts[1].huddleId)
+  })
+
+  // A crash leaves a start in the log with no end, and a block with no end
+  // reads as live forever. Coming back up closes it where the session last
+  // said anything.
+  it('closes a call that was still going when the host went down', async () => {
+    const repoPath = tmpDir('huddle-restart')
+    const store = new Store(repoPath)
+    store.appendEvent({
+      id: 'started',
+      ts: 1000,
+      kind: 'huddle.started',
+      huddleId: 'call-1',
+      byId: 'm-jamel',
+      byName: 'jamel'
+    })
+    // A run left open by the same crash is closed at the time of the restart,
+    // so the call must be measured before that lands or it stretches to meet it.
+    store.appendEvent({
+      id: 'running',
+      ts: 3000,
+      kind: 'agent.start',
+      promptId: 'p1',
+      agentId: 'a1',
+      agentLabel: 'Bubbles',
+      promptText: 'have a look',
+      byName: 'jamel'
+    })
+    store.appendEvent({
+      id: 'after',
+      ts: 5000,
+      kind: 'message',
+      authorId: 'm-jamel',
+      authorName: 'jamel',
+      text: 'back in a sec',
+      mentions: []
+    })
+
+    const again = await startHost(repoPath)
+    const written = again.store.loadEvents().filter(event => event.kind.startsWith('huddle'))
+    await again.close()
+
+    expect(written.map(event => event.kind)).toEqual(['huddle.started', 'huddle.ended'])
+    const ended = written[1]
+    expect(ended.kind === 'huddle.ended' && ended.ms).toBe(4000)
   })
 })
