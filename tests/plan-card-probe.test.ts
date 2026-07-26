@@ -139,7 +139,11 @@ describe('plans in the app', () => {
     useCrew.setState({ ...online, events: [], threads: {}, chatDraft: '' })
 
     render(createElement(App))
+<<<<<<< HEAD
     const composer = screen.getByPlaceholderText('Send a message, @ someone, or / for a command')
+=======
+    const composer = screen.getByRole('textbox')
+>>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
     fireEvent.change(composer, { target: { value: '/' } })
 
     const command = screen.getByText('/plan')

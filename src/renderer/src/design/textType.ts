@@ -2,12 +2,23 @@ import type { Editor, TLTextShape } from 'tldraw'
 import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../shared/designNode'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 
+<<<<<<< HEAD
+=======
+export function autoLineHeight(editor: Editor): number {
+  return editor.getCurrentTheme().lineHeight
+}
+
+>>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
 export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
   const { font, size, textAlign, color } = shape.props
   const base: TypeStyle = {
     ...BASE_TYPE,
     family: familyOf(font),
     size: sizeFont(size),
+<<<<<<< HEAD
+=======
+    lineHeight: autoLineHeight(editor),
+>>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
     align: alignOf(textAlign),
     color: paletteHex(editor, color)
   }
