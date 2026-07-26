@@ -45,7 +45,7 @@ export const OutputGlyph = glyph(<path d="M3.5 12h3.6l2.4-5.6 3.8 11.2 2.4-5.6h4
 export const StopGlyph = glyph(
   <>
     <circle cx="12" cy="12" r="8.5" />
-    <rect x="9.25" y="9.25" width="5.5" height="5.5" rx="1.4" />
+    <rect x="8.9" y="8.9" width="6.2" height="6.2" rx="1.6" />
   </>
 )
 
