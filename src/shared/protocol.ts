@@ -4,6 +4,7 @@ import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
+import type { MusicRoom } from './music'
 import type { ReactionEmoji } from './reactions'
 import type { CrewTool, ToolAction } from './toolbox'
 
@@ -48,6 +49,8 @@ export interface SessionSnapshot {
   // A call lives only as long as the people in it, so it rides in the snapshot
   // and never in the event log.
   huddle?: HuddleRoom
+  // What is playing, for the same reason.
+  music?: MusicRoom
 }
 
 export type ClientMessage =
@@ -100,6 +103,8 @@ export type ClientMessage =
   | { type: 'huddle.update'; muted?: boolean; camera?: boolean; sharing?: boolean }
   | { type: 'huddle.signal'; to: string; signal: HuddleSignal }
   | { type: 'huddle.delete'; huddleId: string }
+  | { type: 'music.set'; trackId: string; playing: boolean; at: number }
+  | { type: 'music.off' }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
@@ -129,6 +134,7 @@ export type ServerMessage =
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
   | { type: 'huddle.room'; room: HuddleRoom }
   | { type: 'huddle.signal'; from: string; signal: HuddleSignal }
+  | { type: 'music.room'; room: MusicRoom }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
       type: 'design.snapshot'
