@@ -4,7 +4,7 @@ import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
-import type { MusicRoom } from './music'
+import type { MusicRoom, MusicUpload } from './music'
 import type { ReactionEmoji } from './reactions'
 import type { CrewTool, ToolAction } from './toolbox'
 
@@ -137,6 +137,7 @@ export type ServerMessage =
   | { type: 'huddle.room'; room: HuddleRoom }
   | { type: 'huddle.signal'; from: string; signal: HuddleSignal }
   | { type: 'music.room'; room: MusicRoom }
+  | { type: 'music.shelf'; uploads: MusicUpload[] }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
       type: 'design.snapshot'
