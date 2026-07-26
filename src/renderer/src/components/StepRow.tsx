@@ -7,17 +7,19 @@ import type { ThreadItem } from './thread'
 
 export function FilePathLink({
   path,
+  diff,
   className,
   again
 }: {
   path: string
+  diff?: string | null
   className?: string
   again?: unknown
 }) {
   useLocated([path], again)
   if (isPrivate(path)) return <PrivateChip />
   return (
-    <FileTextLink path={path} className={className}>
+    <FileTextLink path={path} diff={diff} className={className}>
       {labelFor(path, '', path)}
     </FileTextLink>
   )
