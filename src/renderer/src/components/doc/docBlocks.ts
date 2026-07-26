@@ -154,8 +154,6 @@ export const DOC_BLOCKS: DocBlockKind[] = [
   }
 ]
 
-export const DOC_GROUPS: DocBlockKind['group'][] = ['Text', 'Lists', 'Blocks']
-
 export function kindOf(block: { type: string; props?: unknown } | undefined): DocBlockKind | undefined {
   if (!block) return undefined
   const level = (block.props as { level?: number } | undefined)?.level
