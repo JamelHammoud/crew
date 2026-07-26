@@ -1,7 +1,13 @@
 import { useRef, type CSSProperties } from 'react'
+import { STROKE, wearWeight } from '../icons/keylines'
 import { CHECK_PATH, DOT_R, RING_R, THINKING_DOTS } from './toolGlyphs'
 
 const MIDDLE = THINKING_DOTS[1]
+
+// The one mark in the app that draws its own frame instead of going through
+// glyph(), so it has to be handed the same stroke the rest of the set wears at
+// the size it is worn at, or the thought sits thinner than the step above it.
+const WORN = 'w-[18px] h-[18px]'
 
 const DOTS = THINKING_DOTS.map((cx, index) => ({
   cx,
