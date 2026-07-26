@@ -72,8 +72,12 @@ const beam = cursor(`<path d='${BEAM}' ${KEYLINE}/>`, AT_MIDDLE, 'text')
 
 const crosshair = cursor(`<path d='${CROSSHAIR}' ${KEYLINE}/>`, AT_MIDDLE, 'crosshair')
 
+const pencil = cursor(`<path d='${PENCIL}' transform='${PENCIL_PLACE}' ${KEYLINE}/>`, AT_LEAD, 'crosshair')
+
 const hand = (art: string, fallback: string) =>
   cursor(`<path d='${art}' transform='${HAND_PLACE}' ${KEYLINE}/>`, AT_MIDDLE, fallback)
+
+const TOOL_CURSORS: Record<string, string> = { draw: pencil }
 
 export const DESIGN_CURSORS = {
   '--tl-cursor-default': arrow,
@@ -89,6 +93,10 @@ export const ARROW_TIP = { x: AT_TIP.x, y: AT_TIP.y }
 
 export function applyDesignCursors(container: HTMLElement): void {
   for (const [name, value] of Object.entries(DESIGN_CURSORS)) container.style.setProperty(name, value)
+}
+
+export function applyToolCursor(container: HTMLElement, toolId: string): void {
+  container.style.setProperty('--tl-cursor-cross', TOOL_CURSORS[toolId] ?? crosshair)
 }
 
 export function cursorColor(hue: number): string {
