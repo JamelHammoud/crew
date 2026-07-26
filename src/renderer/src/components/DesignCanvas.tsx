@@ -248,7 +248,7 @@ export default function DesignCanvas({
   )
 
   return (
-    <div className="absolute inset-0 design">
+    <div className="absolute inset-0 design" style={{ '--design-selected': selected } as CSSProperties}>
       <Tldraw
         store={store}
         shapeUtils={designShapeUtils}
