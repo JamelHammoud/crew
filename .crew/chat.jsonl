@@ -17175,3 +17175,4 @@
 {"id":"ca40e712-a154-4155-b26d-dfc0fd3b2365","ts":1785030571388,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"dd5c5c59-42cd-462c-8a0c-c329cb106618","ts":1785030590621,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"hello","mentions":[],"mentionRefs":[],"docMentions":[],"attachments":[]}
 {"id":"c4859df8-fcfc-41d7-a4a8-eac0e4f8247c","ts":1785030594336,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"hello","mentions":[],"mentionRefs":[],"docMentions":[],"attachments":[]}
+{"id":"5522fcbd-e75d-40f5-9d0a-5da93dab283b","ts":1785030604836,"kind":"message.deleted","messageId":"c4859df8-fcfc-41d7-a4a8-eac0e4f8247c"}
