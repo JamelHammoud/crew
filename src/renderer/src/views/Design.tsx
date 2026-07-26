@@ -70,36 +70,34 @@ export default function Design() {
       <DesignRenameContext.Provider value={renameContext}>
         <EditorContext.Provider value={editor}>
           <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H - HEADER_LIFT }}>
-          <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-2">
-            <HeaderButton
-              label={panels.left ? 'Hide layers' : 'Show layers'}
-              pressed={panels.left}
-              onClick={() => setPanels(value => ({ ...value, left: !value.left }))}
-            >
-              <PanelLeftGlyph className={`${GLYPH} ${panels.left ? '' : 'scale-x-[-1]'}`} />
-            </HeaderButton>
-            <BoardSwitcher />
-            <div className="ml-auto flex items-center gap-1">
-              {editor && <DesignZoom />}
+            <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-2">
               <HeaderButton
-                label={panels.right ? 'Hide board panel' : 'Show board panel'}
-                pressed={panels.right}
-                onClick={() => setPanels(value => ({ ...value, right: !value.right }))}
+                label={panels.left ? 'Hide layers' : 'Show layers'}
+                pressed={panels.left}
+                onClick={() => setPanels(value => ({ ...value, left: !value.left }))}
               >
-                <PanelRightGlyph className={`${GLYPH} ${panels.right ? '' : 'scale-x-[-1]'}`} />
+                <PanelLeftGlyph className={`${GLYPH} ${panels.left ? '' : 'scale-x-[-1]'}`} />
               </HeaderButton>
+              <BoardSwitcher />
+              <div className="ml-auto flex items-center gap-1">
+                {editor && <DesignZoom />}
+                <HeaderButton
+                  label={panels.right ? 'Hide board panel' : 'Show board panel'}
+                  pressed={panels.right}
+                  onClick={() => setPanels(value => ({ ...value, right: !value.right }))}
+                >
+                  <PanelRightGlyph className={`${GLYPH} ${panels.right ? '' : 'scale-x-[-1]'}`} />
+                </HeaderButton>
+              </div>
+            </div>
+            <div className="flex-1 min-h-0 flex">
+              {panels.left && editor && <DesignLeftPanel />}
+              <DesignStage boardId={current} editor={editor} onEditor={setEditor} onRename={askRename} />
+              {panels.right && editor && <DesignRightPanel boardId={current} />}
             </div>
           </div>
-          <div className="flex-1 min-h-0 flex">
-            {panels.left && editor && <DesignLeftPanel />}
-            <div className="flex-1 min-w-0 relative">
-              <DesignCanvas key={current} boardId={current} onEditor={setEditor} />
-              {editor && <DesignToolbar />}
-            </div>
-            {panels.right && editor && <DesignRightPanel boardId={current} />}
-          </div>
-        </div>
-      </EditorContext.Provider>
+        </EditorContext.Provider>
+      </DesignRenameContext.Provider>
     </DesignBoardContext.Provider>
   )
 }
