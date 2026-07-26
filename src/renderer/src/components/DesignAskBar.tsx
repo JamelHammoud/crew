@@ -1,6 +1,7 @@
 import { ArrowUpIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue } from 'tldraw'
+import { useAutoResize } from './useAutoResize'
 import { agentToAsk, agentsHere, askPrompt, lastAskAgent, rememberAskAgent } from '../design/askAgent'
 import { askAnchor, type Box } from '../design/askAnchor'
 import { layerName } from '../design/tools'
