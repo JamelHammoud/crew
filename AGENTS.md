@@ -80,7 +80,8 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - A frame is white in both themes, whatever the canvas behind it is doing. `frameFill.ts` owns that, a frame carries its own color in `meta.background`, and the design panel changes it. The outline follows the fill, dark on light backgrounds and light on dark ones.
 - The canvas palette never follows the app theme. Someone picked those colors on purpose, so the editor is pinned to one color mode and black stays black in both themes. Only the surfaces crew draws itself, the chrome and the canvas behind the artwork, flip with the theme.
 - The left panel is layers when nothing is selected and the design panel when something is. The right panel is board chat. Boards already do what pages would, so there is no page switcher.
-- The design panel follows Figma's layout: sections divided by a hairline with a bold title, small grey labels above each group of fields, and every field carrying its own label inside it. Position, Layout, Appearance, then whatever the selection can be styled with.
+- The design panel follows Figma's layout, section by section: Position, Layout, Appearance, Fill, Stroke, Effects. Sections are divided by a hairline and titled in bold, groups of fields carry a small grey label above them, and every field holds its own label inside it. Match Figma when adding to it.
+- A fill, a stroke or an effect can be hidden without being deleted, so `visible` rides on each one and `nodeCss.ts` leaves the hidden ones out. Anything that reads those lists honors it.
 - Corner handles and the size readout are crew's own overlay, drawn over the canvas in `SelectionOverlay.tsx` from page coordinates, not tldraw components.
 
 ## Syncing
