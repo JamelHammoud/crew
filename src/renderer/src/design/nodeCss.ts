@@ -36,7 +36,7 @@ function paintLayer(paint: Paint): string | null {
 function strokeShadows(strokes: Stroke[]): string[] {
   const out: string[] = []
   for (const stroke of strokes) {
-    if (stroke.weight <= 0 || stroke.style !== 'solid') continue
+    if (!stroke.visible || stroke.weight <= 0 || stroke.style !== 'solid') continue
     if (stroke.align === 'inside') out.push(`inset 0 0 0 ${stroke.weight}px ${stroke.color}`)
     else if (stroke.align === 'outside') out.push(`0 0 0 ${stroke.weight}px ${stroke.color}`)
     else {
@@ -48,7 +48,7 @@ function strokeShadows(strokes: Stroke[]): string[] {
 }
 
 function dashedStroke(strokes: Stroke[]): CSSProperties {
-  const dashed = strokes.find(stroke => stroke.style !== 'solid' && stroke.weight > 0)
+  const dashed = strokes.find(stroke => stroke.visible && stroke.style !== 'solid' && stroke.weight > 0)
   if (!dashed) return {}
   return { outline: `${dashed.weight}px ${dashed.style} ${dashed.color}`, outlineOffset: `-${dashed.weight}px` }
 }
@@ -58,6 +58,7 @@ function effectStyle(effects: Effect[]): { shadows: string[]; filter: string[]; 
   const filter: string[] = []
   const backdrop: string[] = []
   for (const effect of effects) {
+    if (!effect.visible) continue
     if (effect.type === 'shadow') shadows.push(`${effect.x}px ${effect.y}px ${effect.blur}px ${effect.spread}px ${effect.color}`)
     else if (effect.type === 'inner-shadow')
       shadows.push(`inset ${effect.x}px ${effect.y}px ${effect.blur}px ${effect.spread}px ${effect.color}`)
@@ -96,7 +97,10 @@ export function textStyle(type: TypeStyle): CSSProperties {
 }
 
 export function nodeStyle(props: DesignNodeProps): CSSProperties {
-  const layers = props.fills.map(paintLayer).filter((layer): layer is string => layer !== null)
+  const layers = props.fills
+    .filter(fill => fill.visible)
+    .map(paintLayer)
+    .filter((layer): layer is string => layer !== null)
   const { shadows, filter, backdrop } = effectStyle(props.effects)
   const [tl, tr, br, bl] = props.radius
   const boxShadow = [...strokeShadows(props.strokes), ...shadows]

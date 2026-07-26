@@ -1,7 +1,7 @@
 export type Paint =
-  | { type: 'solid'; color: string; opacity: number }
-  | { type: 'linear'; angle: number; stops: PaintStop[]; opacity: number }
-  | { type: 'radial'; stops: PaintStop[]; opacity: number }
+  | { type: 'solid'; color: string; opacity: number; visible: boolean }
+  | { type: 'linear'; angle: number; stops: PaintStop[]; opacity: number; visible: boolean }
+  | { type: 'radial'; stops: PaintStop[]; opacity: number; visible: boolean }
 
 export interface PaintStop {
   color: string
@@ -13,13 +13,14 @@ export interface Stroke {
   weight: number
   align: 'inside' | 'center' | 'outside'
   style: 'solid' | 'dashed' | 'dotted'
+  visible: boolean
 }
 
 export type Effect =
-  | { type: 'shadow'; x: number; y: number; blur: number; spread: number; color: string }
-  | { type: 'inner-shadow'; x: number; y: number; blur: number; spread: number; color: string }
-  | { type: 'layer-blur'; blur: number }
-  | { type: 'background-blur'; blur: number }
+  | { type: 'shadow'; x: number; y: number; blur: number; spread: number; color: string; visible: boolean }
+  | { type: 'inner-shadow'; x: number; y: number; blur: number; spread: number; color: string; visible: boolean }
+  | { type: 'layer-blur'; blur: number; visible: boolean }
+  | { type: 'background-blur'; blur: number; visible: boolean }
 
 export type Sizing = 'fixed' | 'hug' | 'fill'
 
@@ -90,7 +91,7 @@ export const BASE_TYPE: TypeStyle = {
 }
 
 export function solid(color: string): Paint {
-  return { type: 'solid', color, opacity: 1 }
+  return { type: 'solid', color, opacity: 1, visible: true }
 }
 
 export function corner(value: number): Corner {
@@ -139,17 +140,20 @@ export function cleanPaint(value: unknown): Paint | null {
   const paint = value as Partial<Paint> & { type?: string }
   if (!paint || typeof paint !== 'object') return null
   const opacity = clamp((paint as { opacity?: number }).opacity, 0, 1, 1)
+  const visible = (paint as { visible?: unknown }).visible !== false
   if (paint.type === 'solid') {
-    return isHex((paint as { color?: string }).color) ? { type: 'solid', color: (paint as { color: string }).color, opacity } : null
+    return isHex((paint as { color?: string }).color)
+      ? { type: 'solid', color: (paint as { color: string }).color, opacity, visible }
+      : null
   }
   if (paint.type === 'linear') {
     const stops = cleanStops((paint as { stops?: unknown }).stops)
     if (stops.length === 0) return null
-    return { type: 'linear', angle: clamp((paint as { angle?: number }).angle, -360, 360, 180), stops, opacity }
+    return { type: 'linear', angle: clamp((paint as { angle?: number }).angle, -360, 360, 180), stops, opacity, visible }
   }
   if (paint.type === 'radial') {
     const stops = cleanStops((paint as { stops?: unknown }).stops)
-    return stops.length === 0 ? null : { type: 'radial', stops, opacity }
+    return stops.length === 0 ? null : { type: 'radial', stops, opacity, visible }
   }
   return null
 }
@@ -161,15 +165,17 @@ export function cleanStroke(value: unknown): Stroke | null {
     color: stroke.color,
     weight: clamp(stroke.weight, 0, 200, 1),
     align: stroke.align === 'center' || stroke.align === 'outside' ? stroke.align : 'inside',
-    style: stroke.style === 'dashed' || stroke.style === 'dotted' ? stroke.style : 'solid'
+    style: stroke.style === 'dashed' || stroke.style === 'dotted' ? stroke.style : 'solid',
+    visible: stroke.visible !== false
   }
 }
 
 export function cleanEffect(value: unknown): Effect | null {
   const effect = value as Partial<Effect> & { type?: string }
   if (!effect || typeof effect !== 'object') return null
+  const visible = (effect as { visible?: unknown }).visible !== false
   if (effect.type === 'layer-blur' || effect.type === 'background-blur') {
-    return { type: effect.type, blur: clamp((effect as { blur?: number }).blur, 0, 200, 8) }
+    return { type: effect.type, blur: clamp((effect as { blur?: number }).blur, 0, 200, 8), visible }
   }
   if (effect.type === 'shadow' || effect.type === 'inner-shadow') {
     const shadow = effect as Partial<Extract<Effect, { type: 'shadow' }>>
@@ -179,7 +185,8 @@ export function cleanEffect(value: unknown): Effect | null {
       y: clamp(shadow.y, -400, 400, 4),
       blur: clamp(shadow.blur, 0, 400, 12),
       spread: clamp(shadow.spread, -400, 400, 0),
-      color: isHex(shadow.color) ? shadow.color : '#00000040'
+      color: isHex(shadow.color) ? shadow.color : '#00000040',
+      visible
     }
   }
   return null
