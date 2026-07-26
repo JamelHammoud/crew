@@ -19,6 +19,7 @@ export function huddleRecords(events: SessionEvent[]): Map<string, HuddleRecord>
         id: event.huddleId,
         ts: event.ts,
         by: event.byName,
+        byId: event.byId,
         names: [event.byName],
         ms: null
       })
