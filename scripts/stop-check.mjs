@@ -21,16 +21,25 @@ const row = (label, cells) =>
   `<div style="display:flex;align-items:center;gap:20px;margin-bottom:22px">
      <div style="width:150px;font:12px system-ui;color:#8a8a8a">${label}</div>${cells}</div>`
 
+const at = units => {
+  const rr = Math.round(units * 0.15 * 4) / 4
+  const xx = Math.round((24 - units) * 50) / 100
+  return svg(
+    20,
+    `<rect x="${xx}" y="${xx}" width="${units}" height="${units}" rx="${rr}" fill="currentColor" stroke="none"/>`,
+    2
+  )
+}
+
 const html = `<!doctype html><meta charset="utf-8">
-<body style="margin:0;padding:28px;background:#141414;font:13px system-ui">
+<body style="margin:0;padding:24px;background:#141414;font:13px system-ui">
 ${row('send, w-5', round(arrow(20)))}
-${row('stop now, w-5 at 16', round(stop(20)))}
-${row('stop before, w-4 at 15', round(old(16)))}
-<div style="height:1px;background:#2a2a2a;margin:6px 0 22px"></div>
-${row('agent card row, w-4', `<div style="display:flex;gap:4px;color:#a0a0a0">
-  ${svg(16, '<path d="M4.6 19.4 5.3 15.8 15.9 5.2a2.3 2.3 0 0 1 3.2 3.2L8.5 19Z"/><path d="m14.4 6.7 3.2 3.2"/>', 2)}
-  ${stop(16)}
-</div>`)}
+<div style="height:1px;background:#2a2a2a;margin:2px 0 20px"></div>
+${row('before, w-4 at 15', round(old(16)))}
+${row('w-5 at 15', round(at(15)))}
+${row('w-5 at 16', round(at(16)))}
+${row('w-5 at 17', round(at(17)))}
+${row('w-5 at 18', round(at(18)))}
 </body>`
 
 app.commandLine.appendSwitch('disable-gpu')
