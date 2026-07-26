@@ -117,6 +117,13 @@ function claudeModel(get: SettingReader): string {
 
 // The prompt is not passed in argv: with --input-format stream-json it goes in
 // over stdin, which is also the channel later messages use to steer the run.
+//
+// --thinking-display is what makes the thinking readable. From Opus 4.7 on, the
+// model's reasoning is withheld by default: the blocks still arrive, with a
+// signature and an empty string where the words should be, so a run looks like
+// it is thinking out loud and says nothing. The interactive CLI asks for the
+// summary; a headless one does not, and crew is headless. Asking for it here is
+// the whole of what puts the thinking on screen.
 export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   '-p',
   '--input-format',
@@ -125,6 +132,8 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   'stream-json',
   '--verbose',
   '--include-partial-messages',
+  '--thinking-display',
+  'summarized',
   ...flag('--model', claudeModel(get)),
   ...flag('--effort', get('effort')),
   '--permission-mode',
