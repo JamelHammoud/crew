@@ -2018,11 +2018,35 @@ export class CrewSession {
       if (event.kind === 'message' && event.docMentions) {
         for (const ref of event.docMentions) add(resolveDocRef(docs, ref))
       } else {
-        for (const page of docMentionsIn(event.text ?? '', docs)) add(page)
+        for (const ref of this.crewRefsIn(event.text ?? '')) {
+          if (ref.kind === 'doc') add(ref.key)
+        }
       }
     }
     for (const ref of prompt.docMentions) add(resolveDocRef(docs, ref))
     return pages
+  }
+
+  // A board named in the thread travels with the prompt as its id and name, so
+  // the runner can hand the agent the API for it the way an attached board does.
+  private referencedBoards(prompt: QueuedPrompt): DesignBoardMeta[] {
+    const boards = this.boardList()
+    const found: DesignBoardMeta[] = []
+    const add = (id: string | null) => {
+      const board = id ? boards.find(candidate => candidate.id === id) : undefined
+      if (board && !found.some(seen => seen.id === board.id)) found.push(board)
+    }
+    for (const event of this.threadContext(prompt.threadId)) {
+      if (event.kind === 'message' && event.boardMentions) {
+        for (const ref of event.boardMentions) add(resolveBoardRef(boards, ref))
+      } else if (!(event.kind === 'message' && event.docMentions)) {
+        for (const ref of this.crewRefsIn(event.text ?? '')) {
+          if (ref.kind === 'board') add(ref.key)
+        }
+      }
+    }
+    for (const ref of prompt.boardMentions) add(resolveBoardRef(boards, ref))
+    return found
   }
 
   private docExcerpt(text: string): string {
