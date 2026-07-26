@@ -9,7 +9,7 @@ import Tooltip from './Tooltip'
 const FACE = 40
 const FACES = 2
 
-export default function PresenceStack(): ReactElement | null {
+export default function PresenceStack({ compact = false }: { compact?: boolean }): ReactElement | null {
   const members = useCrew(s => s.members)
   const agents = useCrew(s => s.agents)
   const selfId = useCrew(s => s.selfId)
@@ -19,7 +19,7 @@ export default function PresenceStack(): ReactElement | null {
   const here = presentNow(members, agents, selfId, activePrompts)
   if (here.length === 0) return null
 
-  const shown = here.slice(0, FACES)
+  const shown = here.slice(0, compact ? 0 : FACES)
   const rest = here.length - shown.length
 
   return (
