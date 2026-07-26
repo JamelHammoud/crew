@@ -50,20 +50,34 @@ export default function HuddleCard({ record }: { record: HuddleRecord }) {
         }
       >
         <div className="w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3">
-        {live ? <Live /> : <SignalOffGlyph className="w-4 h-4 text-fg-muted shrink-0" />}
-        <AvatarStack names={names} />
-        <span className="text-base font-semibold text-fg truncate">{nameList(names)}</span>
-        <span className="text-base text-fg-muted truncate flex-1">{detail}</span>
-        {live && !joined && (
-          <button
-            onClick={() => void join()}
-            disabled={joining}
-            className="h-8 px-4 shrink-0 rounded-full text-sm font-semibold bg-fg text-ink-900 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:opacity-50"
-          >
-            {joining ? 'Joining' : 'Join'}
-          </button>
-        )}
-      </div>
-    </FeedCard>
+          {live ? <Live /> : <SignalOffGlyph className="w-4 h-4 text-fg-muted shrink-0" />}
+          <AvatarStack names={names} />
+          <span className="text-base font-semibold text-fg truncate">{nameList(names)}</span>
+          <span className="text-base text-fg-muted truncate flex-1">{detail}</span>
+          {live && !joined && (
+            <button
+              onClick={() => void join()}
+              disabled={joining}
+              className="h-8 px-4 shrink-0 rounded-full text-sm font-semibold bg-fg text-ink-900 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:opacity-50"
+            >
+              {joining ? 'Joining' : 'Join'}
+            </button>
+          )}
+        </div>
+      </FeedCard>
+      {deletable && (
+        <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+          <MenuItem
+            icon={<TrashGlyph />}
+            label="Delete huddle"
+            danger
+            onClick={() => {
+              setMenuAt(null)
+              deleteHuddle(record.id)
+            }}
+          />
+        </Popover>
+      )}
+    </>
   )
 }
