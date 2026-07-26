@@ -248,6 +248,17 @@ describe('the toolbox', () => {
     ])
   })
 
+  it('leaves the pet on the row it stands in rather than at the top of it', () => {
+    toolbox([], [agent('a1', 'Fable')])
+    build()
+    does('Ask an agent')
+
+    const row = screen.getByText('Fable').closest('button')!
+    expect(row.className).toContain('items-center')
+    for (const mark of row.querySelectorAll('span, svg'))
+      expect(mark.getAttribute('class') ?? '').not.toMatch(/\bself-/)
+  })
+
   it('will not build a tool with nothing to press or nowhere to go', () => {
     toolbox()
     build()
