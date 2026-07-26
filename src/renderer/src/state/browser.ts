@@ -77,6 +77,14 @@ function makeTab(url = ''): BrowserTab {
   }
 }
 
+// Every folder on the way down to a file, so a tree opened beside one that is
+// already showing lands on it rather than back at the top of the project.
+function reveal(open: string[], path: string): string[] {
+  const parts = path.split('/').filter(Boolean).slice(0, -1)
+  const folders = parts.map((_, index) => parts.slice(0, index + 1).join('/'))
+  return [...open, ...folders.filter(folder => !open.includes(folder))]
+}
+
 function clampWidth(width: number): number {
   const max = Math.max(360, window.innerWidth - 440)
   return Math.min(Math.max(width, 360), max)
