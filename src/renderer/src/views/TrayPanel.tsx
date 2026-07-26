@@ -14,8 +14,8 @@ function Nothing({ children }: { children: string }): ReactElement {
 }
 
 function Here({ state }: { state: PresenceSnapshot }): ReactElement {
-  if (!state.sharing) return <Nothing>Open crew to start or join a session.</Nothing>
-  if (!state.known) return <Nothing>Open crew to see who is here.</Nothing>
+  if (!state.sharing) return <Nothing>Open Crew to start or join a session.</Nothing>
+  if (!state.known) return <Nothing>Open Crew to see who is here.</Nothing>
   if (state.here.length === 0) return <Nothing>Nobody else is here.</Nothing>
   return <PresenceList here={state.here} />
 }
