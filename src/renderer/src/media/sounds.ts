@@ -142,30 +142,42 @@ const STRIKES: Record<StrikeName, Strike[]> = {
   ],
   'tasks.open': [
     {
-      hz: 523.25,
+      hz: 587.33,
       at: 0,
-      length: 0.24,
+      length: 0.15,
       gain: 0.5,
-      partials: [1, 2.4],
-      bend: 0.78,
-      bendTime: 0.05,
-      detune: 4,
-      tone: 2000,
-      wet: 0.16,
-      rasp: { hz: 1500, q: 0.6, gain: 0.2, length: 0.05 }
+      partials: [1, 2.92, 5.1],
+      bend: 0.53,
+      bendTime: 0.045,
+      detune: 6,
+      tone: 2700,
+      wet: 0.14,
+      rasp: { hz: 1900, q: 2.4, gain: 0.16, length: 0.006 }
     },
     {
-      hz: 698.46,
-      at: 0.08,
-      length: 0.28,
-      gain: 0.46,
-      partials: [1, 2.04, 4.1],
-      bend: 0.92,
-      bendTime: 0.02,
-      detune: 4,
-      tone: 3400,
-      wet: 0.3,
-      rasp: { hz: 2400, q: 1.1, gain: 0.07, length: 0.008 }
+      hz: 880,
+      at: 0.07,
+      length: 0.13,
+      gain: 0.4,
+      partials: [1, 2.92],
+      bend: 1.2,
+      bendTime: 0.018,
+      detune: 5,
+      tone: 3600,
+      wet: 0.22,
+      rasp: { hz: 2500, q: 2.6, gain: 0.09, length: 0.005 }
+    },
+    {
+      hz: 1174.66,
+      at: 0.125,
+      length: 0.2,
+      gain: 0.17,
+      partials: [1, 2.42],
+      bend: 0.9,
+      bendTime: 0.014,
+      tone: 6400,
+      wet: 0.42,
+      rasp: { hz: 3400, q: 2.8, gain: 0.04, length: 0.004 }
     }
   ]
 }
