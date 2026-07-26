@@ -102,7 +102,10 @@ export const QuestionGlyph = glyph(
   </>
 )
 
-export const BoltGlyph = glyph(<path d="M13.3 3.5 5.8 13.2H11l-.3 7.3 7.5-9.7H13Z" />)
+// A skill is run from a list of things you can do, which is what the Actions
+// palette on the canvas is, so both wear the one bolt rather than two that
+// nearly agree.
+export { BoltGlyph } from '../icons'
 
 export const ImageGlyph = glyph(
   <>
