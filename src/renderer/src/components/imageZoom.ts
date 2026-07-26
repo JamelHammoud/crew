@@ -7,7 +7,10 @@ export const FIT: View = { scale: 1, x: 0, y: 0 }
 const MIN_SCALE = 1
 const MAX_SCALE = 32
 
-const hold = (value: number, limit: number): number => Math.min(limit, Math.max(-limit, value))
+const hold = (value: number, limit: number): number => {
+  const held = Math.min(limit, Math.max(-limit, value))
+  return held === 0 ? 0 : held
+}
 
 const room = (image: Box, frame: Box, scale: number): Point => ({
   x: Math.max(0, (image.width * scale - frame.width) / 2),
