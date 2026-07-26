@@ -52,7 +52,7 @@ function boot(withMessage = true, log: SessionEvent[] = events) {
     selfName: 'Jamel',
     members: [{ id: 'jamel', name: 'Jamel', connected: true }],
     agents: [],
-    events: withMessage ? events : [],
+    events: withMessage ? log : [],
     docs: { main: { title: 'Main', text: '' }, 'plan-1abc': { title: 'Plan', text: 'ship it' } },
     boards: [{ id: 'landing-1abc', name: 'Landing' }],
     threads: {},
