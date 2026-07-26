@@ -111,41 +111,87 @@ const STRIKES: Record<StrikeName, Strike[]> = {
   ]
 }
 
-// Two bubbles surfacing, low then high, with room to breathe between one pair
-// and the next. Every turn is the same size as the last: it stops when its time
-// is up rather than trailing away.
+type Voice = Omit<Strike, 'hz' | 'at' | 'length'>
+
+// The same bubble the rest of the app is made of, in three sizes: a low one
+// holding the chord, the one that carries the tune, and a small bright one.
+const DEEP: Voice = {
+  gain: 0.5,
+  partials: [1, 2.04],
+  bend: 0.72,
+  bendTime: 0.055,
+  tone: 1500,
+  wet: 0.12,
+  rasp: { hz: 620, q: 0.9, gain: 0.06, length: 0.008 }
+}
+
+const TUNE: Voice = {
+  gain: 0.62,
+  partials: [1, 2.04, 4.1],
+  bend: 0.86,
+  bendTime: 0.025,
+  detune: 4,
+  tone: 2400,
+  wet: 0.26,
+  rasp: { hz: 1100, q: 0.9, gain: 0.07, length: 0.008 }
+}
+
+const SPARK: Voice = {
+  gain: 0.24,
+  partials: [1, 3.02],
+  bend: 0.9,
+  bendTime: 0.02,
+  tone: 5200,
+  wet: 0.42,
+  rasp: { hz: 2600, q: 1.2, gain: 0.07, length: 0.007 }
+}
+
+const NOTE = {
+  e3: 164.81,
+  fs3: 185,
+  a3: 220,
+  a4: 440,
+  b4: 493.88,
+  cs5: 554.37,
+  e5: 659.25,
+  fs5: 739.99,
+  a5: 880,
+  cs6: 1108.73
+}
+
+const bubble = (voice: Voice, hz: number, at: number, length: number, pan = 0): Strike => ({
+  ...voice,
+  hz,
+  at,
+  length,
+  pan
+})
+
+// Two bars that come round again: A, F sharp minor, E, A, with the same figure
+// said twice, once up and once answering it lower.
 export const CALL: Ring = {
   phrase: [
-    {
-      hz: 392,
-      at: 0,
-      length: 0.26,
-      gain: 0.66,
-      partials: [1, 2.04],
-      bend: 0.62,
-      bendTime: 0.07,
-      tone: 1900,
-      wet: 0.16,
-      pan: -0.1,
-      rasp: { hz: 800, q: 0.9, gain: 0.08, length: 0.008 }
-    },
-    {
-      hz: 587.33,
-      at: 0.18,
-      length: 0.62,
-      gain: 0.72,
-      partials: [1, 2.04, 4.1],
-      bend: 0.66,
-      bendTime: 0.08,
-      detune: 4,
-      tone: 2300,
-      wet: 0.3,
-      pan: 0.1,
-      rasp: { hz: 1100, q: 0.9, gain: 0.07, length: 0.009 }
-    }
+    bubble(DEEP, NOTE.a3, 0, 0.9),
+    bubble(DEEP, NOTE.fs3, 1.2, 0.9),
+    bubble(DEEP, NOTE.e3, 2.4, 0.9),
+    bubble(DEEP, NOTE.a3, 3.6, 1),
+
+    bubble(TUNE, NOTE.cs5, 0, 0.5, -0.06),
+    bubble(TUNE, NOTE.e5, 0.3, 0.5, 0.04),
+    bubble(TUNE, NOTE.fs5, 0.6, 0.9, -0.04),
+    bubble(TUNE, NOTE.e5, 1.5, 0.4, 0.06),
+    bubble(TUNE, NOTE.cs5, 1.8, 0.7, -0.06),
+    bubble(TUNE, NOTE.b4, 2.4, 0.4, 0.04),
+    bubble(TUNE, NOTE.cs5, 2.7, 0.4, -0.04),
+    bubble(TUNE, NOTE.e5, 3, 0.9, 0.06),
+    bubble(TUNE, NOTE.cs5, 3.9, 0.35, -0.06),
+    bubble(TUNE, NOTE.a4, 4.2, 1.1, 0),
+
+    bubble(SPARK, NOTE.a5, 0.9, 0.5, 0.2),
+    bubble(SPARK, NOTE.cs6, 3.3, 0.6, -0.2)
   ],
-  every: 1.9,
-  times: 3
+  every: 4.8,
+  times: 2
 }
 
 const APART = 140
