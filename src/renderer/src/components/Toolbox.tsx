@@ -173,16 +173,16 @@ function Builder({
 
       <Field label="Mark">
         <div className="grid grid-cols-7 gap-0.5">
-          {TOOL_MARKS.map(name => {
-            const Mark = MARKS[name]
+          {TOOL_MARKS.map(choice => {
+            const Mark = MARKS[choice]
             return (
               <button
-                key={name}
-                onClick={() => setMark(name)}
-                aria-label={name}
-                aria-pressed={mark === name}
+                key={choice}
+                onClick={() => setMark(choice)}
+                aria-label={choice}
+                aria-pressed={mark === choice}
                 className={`h-8 rounded-xl flex items-center justify-center transition-colors ${
-                  mark === name ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.06]'
+                  mark === choice ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.06]'
                 }`}
               >
                 <Mark className="w-4 h-4" />
