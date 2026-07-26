@@ -44,12 +44,18 @@ import {
   type HuddleSignal
 } from '../shared/huddle'
 import {
+  audioExtension,
   BY_LIMIT,
+  cleanUploadName,
   emptyMusic,
-  trackFor,
+  itemFor,
+  MAX_UPLOAD_BYTES,
+  MAX_UPLOAD_SECONDS,
+  MAX_UPLOADS,
   wrapAt,
+  type MusicItem,
   type MusicRoom,
-  type MusicTrack
+  type MusicUpload
 } from '../shared/music'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
 import {
