@@ -62,7 +62,12 @@ const at = (share: number, shut: string, open: string): { x: number; y: number }
   }))
 }
 
-const STROKE = 2
+// The weight the mark really wears, which is not the weight it is drawn at: a
+// 22 sits in the band that takes nine tenths of the house stroke.
+const worn = (): number => {
+  render(createElement(ToolboxMark, { open: true }))
+  return Number(mark().getAttribute('stroke-width'))
+}
 
 describe('the toolbox mark', () => {
   it('opens its lid while the panel is open, on the same drawing', () => {
