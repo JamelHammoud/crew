@@ -28,7 +28,18 @@ export default function DesignPanel() {
 
 function SelectionHeader({ shapes }: { shapes: TLShape[] }) {
   const editor = useEditor()
+  const { requested, request } = useContext(DesignRenameContext)
+  const nameRef = useRef<HTMLInputElement>(null)
   const only = shapes.length === 1 ? shapes[0] : null
+
+  useEffect(() => {
+    if (!only || requested !== only.id) return
+    request(null)
+    requestAnimationFrame(() => {
+      nameRef.current?.focus()
+      nameRef.current?.select()
+    })
+  }, [only, requested, request])
 
   if (!only) {
     return (
