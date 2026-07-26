@@ -125,9 +125,20 @@ describe('the file explorer', () => {
 
     fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'panel' } })
 
-    expect(await screen.findByText('panel.tsx')).toBeTruthy()
-    expect(screen.queryByText('readme.md')).toBeNull()
-    expect(screen.getByText('src/renderer')).toBeTruthy()
+    await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
+    expect(rowFor('readme.md')).toBeNull()
+    expect(rowFor('src/renderer/panel.tsx')!.textContent).toContain('src/renderer')
+  })
+
+  it('picks out the letters that matched', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+
+    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'pan' } })
+
+    await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
+    expect(rowFor('src/renderer/panel.tsx')!.querySelector('.text-fg')?.textContent).toBe('pan')
   })
 
   it('opens a file straight from the filter', async () => {
@@ -135,7 +146,9 @@ describe('the file explorer', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('src')
     fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'panel' } })
-    fireEvent.click(await screen.findByText('panel.tsx'))
+    await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
+
+    fireEvent.click(rowFor('src/renderer/panel.tsx')!)
 
     expect(activeTab().path).toBe('src/renderer/panel.tsx')
   })

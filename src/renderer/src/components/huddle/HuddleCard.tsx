@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SignalOffGlyph, TrashGlyph } from '../../icons'
+import { HangupGlyph, TrashGlyph } from '../../icons'
 import { useHuddle } from '../../state/huddle'
 import { useCrew } from '../../state/store'
 import AvatarStack from '../AvatarStack'
