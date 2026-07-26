@@ -19,8 +19,8 @@ export const DesignBoardContext = createContext<{ current: string; select: (id: 
   select: () => {}
 })
 
-// Rename lives in the layer list, so a Rename picked anywhere else asks for it
-// here rather than growing a second field of its own.
+// The design panel header already holds the name field, so a Rename picked
+// anywhere else asks for that one rather than growing a second of its own.
 export const DesignRenameContext = createContext<{
   requested: string | null
   request: (id: string | null) => void
