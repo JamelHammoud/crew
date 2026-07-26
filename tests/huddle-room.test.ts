@@ -43,14 +43,12 @@ describe('who gives way', () => {
 describe('naming a call', () => {
   it('says who is on the other end', () => {
     const self = peer('me', 'Jamel')
-    expect(huddleTitle({ id: 'call-1', peers: [self], startedAt: 1 }, 'me')).toBe('Waiting for others')
-    expect(huddleTitle({ id: 'call-1', peers: [self, peer('a', 'Ali')], startedAt: 1 }, 'me')).toBe('Ali')
-    expect(huddleTitle({ id: 'call-1', peers: [self, peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 1 }, 'me')).toBe(
-      'Ali and Kim'
+    expect(huddleTitle(room(self), 'me')).toBe('Waiting for others')
+    expect(huddleTitle(room(self, peer('a', 'Ali')), 'me')).toBe('Ali')
+    expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim')), 'me')).toBe('Ali and Kim')
+    expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')), 'me')).toBe(
+      'Ali and 2 others'
     )
-    expect(
-      huddleTitle({ id: 'call-1', peers: [self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')], startedAt: 1 }, 'me')
-    ).toBe('Ali and 2 others')
   })
 
   it('has nothing to say about an empty room', () => {
