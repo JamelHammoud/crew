@@ -120,7 +120,7 @@ describe('a terminal tab', () => {
 
   it('takes its name from the shell', async () => {
     const id = await openTerminal()
-    sendData(id, ']0;crew — zsh')
+    sendData(id, '\x1b]0;crew — zsh\x07')
 
     await waitFor(() => expect(only().title).toBe('crew — zsh'))
     expect(screen.getByText('crew — zsh')).toBeTruthy()
