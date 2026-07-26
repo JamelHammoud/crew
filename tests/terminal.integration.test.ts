@@ -73,6 +73,19 @@ describe('the shell a terminal opens', () => {
     expect(startingFolder('/nowhere/at/all')).toBe(os.homedir())
   })
 
+  // What zsh really writes on its way to a prompt, padded out to eighty
+  // columns because that is the width the shell that was kept ready had.
+  it('replays a prompt without the padding the shell drew it against', () => {
+    const held = `[1m[7m%[27m[1m[0m${' '.repeat(79)}\r \r\rjamel@crew % [K`
+    expect(replayable(held)).toBe('jamel@crew % [K')
+  })
+
+  it('keeps every line a shell printed on its way up', () => {
+    expect(replayable('nvm loaded\r\nnode v22\r\n$ ')).toBe('nvm loaded\r\nnode v22\r\n$ ')
+    expect(replayable('')).toBe('')
+    expect(replayable('$ ')).toBe('$ ')
+  })
+
   it('carries a colour terminal and none of the marks of how crew was started', () => {
     const env = terminalEnv({
       PATH: '/usr/bin',
