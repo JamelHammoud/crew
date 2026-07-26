@@ -16,7 +16,11 @@ const [, , section = '0', from = '0', count = '36'] = process.argv
 // Never top level await on whenReady in an ESM main. The ready event lands while
 // the module is still being evaluated and the two wait on each other forever.
 app.whenReady().then(async () => {
+  // On top and in front, because a window standing behind another one is not
+  // repainted and the capture comes back as an empty rectangle.
   const window = new BrowserWindow({ width: 1440, height: 900, show: true, x: 0, y: 0 })
+  window.setAlwaysOnTop(true, 'screen-saver')
+  window.focus()
   await window.loadFile(path.join(root, 'icon-sheet.html'))
   // Nothing here waits on an animation frame either. A window standing behind
   // another one is throttled to almost no frames, and the wait never ends.
