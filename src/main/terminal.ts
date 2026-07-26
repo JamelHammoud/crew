@@ -163,6 +163,7 @@ export class Terminals {
 
   closeAll(): void {
     for (const id of [...this.sessions.keys()]) this.close(id)
+    this.cool()
   }
 
   count(): number {
