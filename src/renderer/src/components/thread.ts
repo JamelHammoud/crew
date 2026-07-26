@@ -1,4 +1,5 @@
 import type { Attachment } from '../../../shared/attachments'
+import type { BoardMentionRef } from '../../../shared/design'
 import type { DocMentionRef } from '../../../shared/docs'
 import type { MessageReply, SessionEvent } from '../../../shared/events'
 import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../../shared/llm'
@@ -76,6 +77,7 @@ export interface ThreadItem {
   attachments?: Attachment[]
   mentionRefs?: AgentMentionRef[]
   docMentions?: DocMentionRef[]
+  boardMentions?: BoardMentionRef[]
   route?: MessageRoute
   reactionTargetId?: string
   reactions?: ReactionGroup[]
@@ -173,6 +175,7 @@ export function buildThread(
         attachments: event.attachments,
         mentionRefs: event.mentionRefs,
         docMentions: event.docMentions,
+        boardMentions: event.boardMentions,
         replyTo: event.replyTo,
         route: routeBadge(route, started, ended),
         reactionTargetId: event.authorId === 'crew' ? undefined : messageReactionTarget(event.id),

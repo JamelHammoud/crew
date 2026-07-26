@@ -138,7 +138,12 @@ export default function ChatMessage({
         ) : (
           item.text && (
             <p className="text-base text-fg leading-[22px] whitespace-pre-wrap mt-1">
-              <MentionText text={item.text} mentionRefs={item.mentionRefs} docMentions={item.docMentions} />
+              <MentionText
+                text={item.text}
+                mentionRefs={item.mentionRefs}
+                docMentions={item.docMentions}
+                boardMentions={item.boardMentions}
+              />
             </p>
           )
         )}
