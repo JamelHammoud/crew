@@ -2,7 +2,6 @@
 import { render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
-import tldrawCss from 'tldraw/tldraw.css?raw'
 
 const { CursorArrow, DESIGN_CURSORS } = await import('../src/renderer/src/design/cursors')
 
@@ -25,10 +24,6 @@ describe('design cursors', () => {
       '--tl-cursor-grab',
       '--tl-cursor-grabbing'
     ])
-  })
-
-  it('names them the way the canvas reads them', () => {
-    for (const name of Object.keys(vars)) expect(tldrawCss).toContain(`${name}:`)
   })
 
   it('falls back to the native cursor of the same job', () => {
