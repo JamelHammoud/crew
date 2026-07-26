@@ -1,6 +1,7 @@
 import type { Attachment } from './attachments'
 import type { DocMentionRef } from './docs'
 import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
+import type { MemberMentionRef } from './people'
 import type { ReactionEmoji } from './reactions'
 
 // 'open' means the thread still wants attention: either an agent is working or
@@ -42,6 +43,7 @@ export type SessionEvent =
       // Absent on messages written before mentions carried ids; those fall back
       // to matching on the name as written.
       mentionRefs?: AgentMentionRef[]
+      memberMentionRefs?: MemberMentionRef[]
       docMentions?: DocMentionRef[]
       threadId?: string
       attachments?: Attachment[]
@@ -55,6 +57,7 @@ export type SessionEvent =
       messageId: string
       text: string
       mentionRefs?: AgentMentionRef[]
+      memberMentionRefs?: MemberMentionRef[]
       docMentions?: DocMentionRef[]
     }
   | {

@@ -189,6 +189,7 @@ export const useCrew = create<CrewState>((set, get) => {
                 ...e,
                 text: event.text,
                 mentionRefs: event.mentionRefs ?? e.mentionRefs,
+                memberMentionRefs: event.memberMentionRefs ?? e.memberMentionRefs,
                 docMentions: event.docMentions ?? e.docMentions
               }
             : e
