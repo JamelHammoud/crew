@@ -226,10 +226,14 @@ function Percent({ value, onChange }: { value: number; onChange: (value: number)
   const { input, gesture } = useNumberField({ value: Math.round(value * 100), onChange: next => onChange(next / 100), min: 0, max: 100 })
   return (
     <span className="shrink-0 flex items-center gap-0.5">
+      <input
+        {...input}
+        aria-label="Opacity"
+        className="w-7 bg-transparent text-right text-xs tabular-nums text-fg-muted outline-none focus:text-fg"
+      />
       <Scrub label="Opacity" gesture={gesture}>
-        <input {...input} aria-label="Opacity" className="w-7 bg-transparent text-right text-xs tabular-nums text-fg-muted outline-none cursor-ew-resize focus:text-fg focus:cursor-text" />
+        <span className="text-xs text-fg-faint">%</span>
       </Scrub>
-      <span className="text-xs text-fg-faint">%</span>
     </span>
   )
 }
