@@ -73,12 +73,9 @@ const SIGNAL_ART = (
 
 export const SignalGlyph = glyph(SIGNAL_ART)
 
-// The dot goes with the waves. A slash laid over both arcs and the middle is
-// four marks crossing at 16px, and what is left after the waves are dropped is
-// the same shape a muted speaker uses: the mark itself, struck through.
 export const SignalOffGlyph = glyph(
   <>
-    <circle cx="12" cy="12" r="2.75" />
+    {SIGNAL_ART}
     <path d={SLASH} />
   </>
 )
