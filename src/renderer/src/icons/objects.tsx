@@ -26,14 +26,14 @@ export const FolderGlyph = glyph(
   <path d="M3 17.5V6.75A2 2 0 0 1 5 4.75h3.4a2 2 0 0 1 1.45.6l1.2 1.3a2 2 0 0 0 1.45.6H19a2 2 0 0 1 2 2v8.25a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
 )
 
-const CRATE_LID = { x: 3.5, y: 4.5, width: 17, height: 4.5, rx: 1.75 }
-const CRATE_BODY = 'M5.25 9v9.5A2 2 0 0 0 7.25 20.5h9.5a2 2 0 0 0 2-2V9'
+const CRATE_LID = { x: 3.5, y: 4, width: 17, height: 4.5, rx: 1.75 }
+const CRATE_BODY = 'M5.25 8.5V18A2 2 0 0 0 7.25 20h9.5a2 2 0 0 0 2-2V8.5'
 
 export const ArchiveGlyph = glyph(
   <>
     <rect {...CRATE_LID} />
     <path d={CRATE_BODY} />
-    <path d="M10 13.25h4" />
+    <path d="M10 12.75h4" />
   </>
 )
 
@@ -41,8 +41,8 @@ export const UnarchiveGlyph = glyph(
   <>
     <rect {...CRATE_LID} />
     <path d={CRATE_BODY} />
-    <path d="M12 17.5v-5.25" />
-    <path d="m9.5 14.75 2.5-2.5 2.5 2.5" />
+    <path d="M12 17v-5.25" />
+    <path d="m9.5 14.25 2.5-2.5 2.5 2.5" />
   </>
 )
 
