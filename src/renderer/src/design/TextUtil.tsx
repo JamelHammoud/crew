@@ -6,26 +6,16 @@ import {
   type Editor,
   type TLTextShape
 } from 'tldraw'
-import type { TypeStyle } from '../../../shared/designNode'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
+import { textInkStyle } from './nodeCss'
 import { textShapeType } from './textType'
-
-const CASE: Record<TypeStyle['transform'], string> = { none: 'none', upper: 'uppercase', lower: 'lowercase' }
-const LINE: Record<TypeStyle['decoration'], string> = { none: 'none', underline: 'underline', strike: 'line-through' }
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
 
-function inkStyle(type: TypeStyle): CSSProperties {
-  return {
-    letterSpacing: `${type.spacing}px`,
-    textTransform: CASE[type.transform] as CSSProperties['textTransform'],
-    textDecoration: LINE[type.decoration]
-  }
-}
-
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
+  const ink = textInkStyle(type)
   editor.fonts.trackFontsForShape(shape)
   const fixed = shape.props.autoSize ? null : Math.max(16, Math.floor(shape.props.w))
   const size = editor.textMeasure.measureHtml(renderHtmlFromRichTextForMeasurement(editor, shape.props.richText), {
@@ -36,7 +26,7 @@ function measure(editor: Editor, shape: TLTextShape): { width: number; height: n
     lineHeight: type.lineHeight,
     maxWidth: fixed,
     padding: '0px',
-    otherStyles: { 'letter-spacing': `${type.spacing}px`, 'text-transform': CASE[type.transform] }
+    otherStyles: { 'letter-spacing': `${ink.letterSpacing}`, 'text-transform': `${ink.textTransform}` }
   })
   return { width: fixed ?? Math.max(16, size.w + 1), height: Math.max(type.size, size.h) }
 }
