@@ -72,7 +72,7 @@ describe('the composer overlay', () => {
 
   it('draws emoji from the twitter sheet over the ones the system would draw', () => {
     const { overlay } = boot('well 😔')
-    const sprite = overlay.querySelector('span[aria-hidden] span[aria-hidden]') as HTMLElement
+    const sprite = overlay.querySelector('span[aria-hidden]') as HTMLElement
 
     expect(overlay.className).toContain('z-10')
     expect(sprite.style.backgroundImage).toMatch(/64\.png/)
