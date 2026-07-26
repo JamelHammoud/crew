@@ -78,14 +78,10 @@ export default function MusicView() {
     <div className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:thin]">
       <div className="p-4 flex gap-4">
         {track ? (
-          <Cover item={track} playing={room.playing} className="w-[124px] h-[124px] shrink-0 rounded-card">
-            <span className="absolute inset-0 flex items-end p-4 text-white">
-              <Bars count={5} className="h-1/2 w-full justify-between" barClassName="w-[7px]" />
-            </span>
-          </Cover>
+          <Cover item={track} playing={room.playing} className="w-[104px] h-[104px] shrink-0 rounded-2xl" />
         ) : (
-          <div className="w-[124px] h-[124px] shrink-0 rounded-card bg-ink-800 flex ring-1 ring-inset ring-fg/[0.06]">
-            <MusicGlyph className="w-8 h-8 m-auto text-fg-faint" />
+          <div className="w-[104px] h-[104px] shrink-0 rounded-2xl bg-ink-800 flex ring-1 ring-inset ring-fg/[0.06]">
+            <MusicGlyph className="w-7 h-7 m-auto text-fg-faint" />
           </div>
         )}
 
@@ -162,10 +158,10 @@ export default function MusicView() {
                   on ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
                 }`}
               >
-                <Cover item={one} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-xl">
+                <Cover item={one} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-[10px]">
                   {on && (
-                    <span className="absolute inset-0 flex items-end p-2 text-white">
-                      <Bars count={3} className="h-1/2 w-full justify-between" barClassName="w-[3px]" />
+                    <span className="absolute inset-0 flex items-end p-[7px] text-white">
+                      <Bars count={4} className="h-3/4 w-full justify-between" barClassName="w-[3px]" />
                     </span>
                   )}
                 </Cover>
