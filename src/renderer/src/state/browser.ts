@@ -26,6 +26,7 @@ type BrowserState = {
   openUrl(url: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   addTab(): void
+  addTerminal(): void
   selectTab(id: string): void
   closeTab(id: string): void
   closeAll(): void

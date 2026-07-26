@@ -345,7 +345,7 @@ describe('changed lines', () => {
     expect(gone.previousElementSibling?.textContent).toBe('−')
     const rows = [...(gone.closest('div')?.parentElement?.children ?? [])]
     expect(rows.indexOf(gone.closest('div') as Element)).toBe(5)
-    expect(screen.getByText('  return 1')).not.toBeNull()
+    expect(screen.getByText('return 1')).not.toBeNull()
   })
 
   it('puts the file back the moment you click into it', async () => {
