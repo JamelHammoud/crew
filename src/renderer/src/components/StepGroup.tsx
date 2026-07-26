@@ -26,7 +26,7 @@ export default function StepGroup({ items, linked }: { items: ThreadItem[]; link
         <Chevron open={expanded} />
       </button>
       {expanded && (
-        <div className="mt-0.5">
+        <div className="mt-2 space-y-2">
           {items.map(item => (
             <StepRow key={item.key} item={item} inGroup />
           ))}
