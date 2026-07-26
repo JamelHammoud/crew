@@ -44,15 +44,17 @@ export function resolveRepoPath(root: string, target: string): string | null {
   return absolute
 }
 
-// A path an agent wrote is followed only where it points: inside the project it
-// is read relative to the project, anywhere else it is read from this machine.
-export function resolveAnyPath(root: string | null, target: string): string | null {
+// A path an agent wrote is followed where it points: inside the project it is
+// read relative to the project, anywhere else it is read off this machine.
+export function repoPathOf(root: string, target: string): string | null {
   const expanded = expandHome(target)
-  if (path.isAbsolute(expanded)) {
-    if (!root) return path.resolve(expanded)
-    const absolute = path.resolve(expanded)
-    return insideRoot(path.resolve(root), absolute) === null ? absolute : absolute
-  }
+  if (path.isAbsolute(expanded)) return insideRoot(path.resolve(root), path.resolve(expanded))
+  return resolveRepoPath(root, expanded) === null ? null : trimPath(expanded)
+}
+
+export function absolutePathOf(root: string | null, target: string): string | null {
+  const expanded = expandHome(target)
+  if (path.isAbsolute(expanded)) return path.resolve(expanded)
   return root ? resolveRepoPath(root, expanded) : null
 }
 
@@ -141,10 +143,11 @@ export async function readRepoFile(root: string, target: string): Promise<RepoFi
 export async function readLocalFile(target: string): Promise<RepoFile> {
   const absolute = expandHome(target)
   if (!path.isAbsolute(absolute)) return { kind: 'missing', path: target }
+  const label = target.replace(/\/+$/, '') || '/'
   try {
-    return await readAt(target.replace(/\/+$/, '') || target, path.resolve(absolute))
+    return await readAt(label, path.resolve(absolute))
   } catch {
-    return { kind: 'missing', path: target }
+    return { kind: 'missing', path: label }
   }
 }
 
