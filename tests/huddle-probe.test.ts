@@ -196,7 +196,12 @@ describe('starting a huddle', () => {
     await waitFor(() => expect(useHuddle.getState().joined).toBe(true))
 
     openToolbox()
-    expect(screen.getByText('Leave huddle')).toBeTruthy()
+    const tile = screen.getByText('Huddle').closest('button')
+    expect(tile?.getAttribute('aria-pressed')).toBe('true')
+    await act(async () => {
+      fireEvent.click(tile!)
+    })
+    expect(useHuddle.getState().joined).toBe(false)
   })
 })
 
