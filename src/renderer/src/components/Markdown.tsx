@@ -74,6 +74,7 @@ export default function Markdown({
     const link = (event.target as HTMLElement).closest('a')
     if (!link) return
     event.preventDefault()
+    event.stopPropagation()
     if (link.dataset.path !== undefined) {
       const line = link.dataset.line ? parseInt(link.dataset.line, 10) : null
       useBrowser.getState().openFile(link.dataset.path, line)
