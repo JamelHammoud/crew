@@ -131,32 +131,40 @@ export default function TopBar({
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
-        <div className="relative flex items-center">
-          <Tooltip label="Toolbox" disabled={toolboxOpen}>
+        <div className="flex items-center gap-0.5">
+          <div className="relative flex items-center">
+            <Tooltip label="Toolbox" disabled={toolboxOpen}>
+              <button
+                onClick={() => setToolboxOpen(open => !open)}
+                aria-label="Toolbox"
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                  toolboxOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+                }`}
+              >
+                <ToolboxGlyph className="w-[22px] h-[22px]" />
+              </button>
+            </Tooltip>
+            <Toolbox
+              open={toolboxOpen}
+              onClose={() => setToolboxOpen(false)}
+              onSidePanel={() => {
+                if (tab !== 'chat') onTab('chat')
+              }}
+            />
+          </div>
+          <Tooltip label="Tasks">
             <button
-              onClick={() => setToolboxOpen(open => !open)}
-              aria-label="Toolbox"
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-                toolboxOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+              onClick={onToggleTasks}
+              aria-label="Tasks"
+              className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
               }`}
             >
-              <ToolboxGlyph className="w-[22px] h-[22px]" strokeWidth={1.8} />
+              <CheckCircleGlyph className="w-[22px] h-[22px]" />
+              <Badge count={waiting} className="absolute top-0 right-0" />
             </button>
           </Tooltip>
-          <Toolbox open={toolboxOpen} onClose={() => setToolboxOpen(false)} />
         </div>
-        <Tooltip label="Tasks">
-          <button
-            onClick={onToggleTasks}
-            aria-label="Tasks"
-            className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-              tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
-            }`}
-          >
-            <CheckCircleGlyph className="w-[22px] h-[22px]" />
-            <Badge count={waiting} className="absolute top-0 right-0" />
-          </button>
-        </Tooltip>
         <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />
         <PresenceStack />
         <div className="relative">
