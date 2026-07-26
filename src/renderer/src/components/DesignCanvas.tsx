@@ -267,6 +267,12 @@ export default function DesignCanvas({
     [editor]
   )
 
+  const tool = useValue('design tool cursor', () => editor?.getCurrentToolId() ?? '', [editor])
+
+  useEffect(() => {
+    if (editor) applyToolCursor(editor.getContainer(), tool)
+  }, [editor, tool])
+
   const onMount = useCallback(
     (mounted: Editor) => {
       applyDesignDefaults(mounted)
