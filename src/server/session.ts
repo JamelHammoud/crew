@@ -264,8 +264,10 @@ export class CrewSession {
         e =>
           e.kind !== 'message.deleted' &&
           e.kind !== 'message.edited' &&
+          e.kind !== 'huddle.deleted' &&
           !(e.kind === 'message' && deleted.has(e.id)) &&
-          !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId))
+          !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId)) &&
+          !inDeletedHuddle(e)
       )
       .map(e => {
         if (e.kind !== 'message') return e
