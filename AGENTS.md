@@ -232,6 +232,8 @@ Every machine commits its whole working tree, integrates, and pushes on a loop, 
 
 Only `.crew/session.json` resolves itself, by keeping the local copy. Logs ending in `.jsonl` union merge through `.gitattributes`. Several windows can share one folder, so a lock file in `.git` keeps them off each other, and an interrupted merge or rebase is finished or backed out at the start of every pass.
 
+A prompt waits for a sync before it starts, so the queue in front of it is what decides how long it takes an agent to say its first word. Nothing may put a pass on that queue on a clock. The loop arms the next pass once the last one has settled, and a request that arrives while a pass is already waiting is given that pass rather than one of its own, so the queue is never more than one running and one waiting. A pass on a busy folder takes longer than the interval between them, and a queue fed on a timer only ever gets longer: agents sat on "Starting" for seven minutes while the passes ahead of them drained.
+
 ## Rules for agents working here
 
 - `src/server`, `src/runner`, and `src/shared` must never import electron. Tests import them directly.
