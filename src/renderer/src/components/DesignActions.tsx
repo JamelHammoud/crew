@@ -42,7 +42,7 @@ export default function DesignActions({
             open ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
           }`}
         >
-          <SparkGlyph className="w-[18px] h-[18px]" />
+          <SparkGlyph className="w-6 h-6" />
           Actions
         </button>
       </Tooltip>
