@@ -111,8 +111,57 @@ const STRIKES: Record<StrikeName, Strike[]> = {
   ]
 }
 
+// Three bubbles surfacing, one for each disc in the mark, said again every
+// second and a bit and let go of before five seconds are up.
+const CALL: Ring = {
+  phrase: [
+    {
+      hz: 587.33,
+      at: 0,
+      length: 0.16,
+      gain: 0.62,
+      partials: [1, 4.6],
+      bend: 0.66,
+      bendTime: 0.05,
+      tone: 2600,
+      wet: 0.18,
+      pan: -0.12,
+      rasp: { hz: 1400, q: 1.1, gain: 0.12, length: 0.01 }
+    },
+    {
+      hz: 783.99,
+      at: 0.12,
+      length: 0.16,
+      gain: 0.6,
+      partials: [1, 4.6],
+      bend: 0.7,
+      bendTime: 0.045,
+      tone: 2900,
+      wet: 0.18,
+      rasp: { hz: 1750, q: 1.1, gain: 0.12, length: 0.01 }
+    },
+    {
+      hz: 1174.66,
+      at: 0.24,
+      length: 0.44,
+      gain: 0.7,
+      partials: [1, 3.2, 6.9],
+      bend: 0.74,
+      bendTime: 0.055,
+      detune: 5,
+      tone: 4200,
+      wet: 0.34,
+      pan: 0.12,
+      rasp: { hz: 3200, q: 1.3, gain: 0.16, length: 0.013 }
+    }
+  ],
+  every: 1.4,
+  levels: [1, 1, 0.82, 0.58]
+}
+
 const APART = 140
 const last: Partial<Record<SoundName, number>> = {}
+let ringing: (() => void) | null = null
 
 export function playSound(name: SoundName): void {
   if (!soundsOn()) return
