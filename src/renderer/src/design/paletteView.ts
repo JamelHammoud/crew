@@ -6,6 +6,7 @@ import {
   familyOf,
   fontSize,
   labelAlign,
+  labelVertical,
   nearestColor,
   paletteHex,
   sizeFont,
@@ -79,6 +80,7 @@ export function paletteView(editor: Editor, shape: TLShape): NodeView {
       family: familyOf(props.font),
       size: sizeFont(props.size),
       align: alignKey ? alignOf(props[alignKey]) : BASE_TYPE.align,
+      vertical: verticalOf(props.verticalAlign),
       color: paletteHex(editor, colorKey ? props[colorKey] : props.color)
     }
     view.text = {
@@ -88,6 +90,7 @@ export function paletteView(editor: Editor, shape: TLShape): NodeView {
         if (next.size !== undefined) out.size = fontSize(next.size)
         if (next.family !== undefined) out.font = next.family
         if (next.align !== undefined && alignKey) out[alignKey] = labelAlign(next.align)
+        if (next.vertical !== undefined && has('verticalAlign')) out.verticalAlign = labelVertical(next.vertical)
         if (next.color !== undefined && colorKey) out[colorKey] = nearestColor(editor, next.color)
         if (Object.keys(out).length > 0) patch(out)
       },
@@ -96,6 +99,10 @@ export function paletteView(editor: Editor, shape: TLShape): NodeView {
         weight: false,
         family: has('font'),
         align: alignKey !== null,
+        vertical: has('verticalAlign'),
+        lineHeight: false,
+        spacing: false,
+        settings: false,
         color: colorKey !== null && colorKey !== 'color'
       }
     }
