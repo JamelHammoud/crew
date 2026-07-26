@@ -126,8 +126,8 @@ export const ImageGlyph = glyph(
 
 export const VideoGlyph = glyph(
   <>
-    <rect x="3" y="6" width="12.5" height="12" rx="2.5" />
-    <path d="m15.5 11.3 4.5-2.8a.9.9 0 0 1 1.4.8v5.4a.9.9 0 0 1-1.4.8l-4.5-2.8Z" />
+    <rect x="3" y="5.2" width="13" height="13.6" rx="2.5" />
+    <path d="m16 11.1 4.2-2.9a.9.9 0 0 1 1.4.8v6a.9.9 0 0 1-1.4.8L16 12.9Z" />
   </>
 )
 
