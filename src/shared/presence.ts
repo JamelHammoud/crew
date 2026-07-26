@@ -23,6 +23,18 @@ export const emptyPresence = (): PresenceSnapshot => ({
   waiting: 0
 })
 
+// One badge everywhere: the button in the app and the menu bar say the same
+// thing about the same tasks.
+export const badgeText = (count: number): string =>
+  count <= 0 ? '' : count > 9 ? '9+' : String(count)
+
+export function presenceTooltip(state: PresenceSnapshot): string {
+  if (!state.sharing) return 'crew'
+  if (state.waiting === 1) return 'crew: 1 task needs review'
+  if (state.waiting > 1) return `crew: ${state.waiting} tasks need review`
+  return 'crew: sharing your agents'
+}
+
 export function presentNow(
   members: MemberInfo[],
   agents: PooledAgent[],

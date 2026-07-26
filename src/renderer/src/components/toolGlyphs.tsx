@@ -207,10 +207,16 @@ export const BoxGlyph = glyph(
   </>
 )
 
+// The resting frame of the ellipsis ThinkingMark animates, and the ring it grows
+// into on the way to the check. One set of numbers, whichever draws them.
+export const THINKING_DOTS = [5.4, 12, 18.6]
+export const DOT_R = 1.9
+export const RING_R = 8.5
+
 export const ThinkingGlyph = glyph(
   <>
-    <circle cx="5.4" cy="12" r="1.9" />
-    <circle cx="12" cy="12" r="1.9" />
-    <circle cx="18.6" cy="12" r="1.9" />
+    {THINKING_DOTS.map(cx => (
+      <circle key={cx} cx={cx} cy={12} r={DOT_R} />
+    ))}
   </>
 )
