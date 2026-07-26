@@ -90,6 +90,37 @@ export interface ThreadItem {
 // 'steered'), or it is still waiting for a turn of its own ('queued').
 export type MessageRoute = 'queued' | 'steering' | 'steered'
 
+// A run of the same tool over and over is one line of news, not ten. Only a run
+// long enough to be clutter is folded up; a pair stays where a reader can see it.
+const GROUP_MIN = 3
+
+export interface StepBlock {
+  key: string
+  ts: number
+  items: ThreadItem[]
+}
+
+const sameStep = (a: ThreadItem, b: ThreadItem): boolean => {
+  if (a.kind !== 'tool' || b.kind !== 'tool' || a.promptId !== b.promptId) return false
+  const one = toolAction(a.name, a.subagent)
+  const two = toolAction(b.name, b.subagent)
+  return one.icon === two.icon && one.done === two.done
+}
+
+export function stepBlocks(items: ThreadItem[]): StepBlock[] {
+  const runs: ThreadItem[][] = []
+  for (const item of items) {
+    const last = runs[runs.length - 1]
+    if (last && sameStep(last[last.length - 1], item)) last.push(item)
+    else runs.push([item])
+  }
+  return runs.flatMap(run =>
+    run.length >= GROUP_MIN
+      ? [{ key: run[0].key, ts: run[0].ts, items: run }]
+      : run.map(item => ({ key: item.key, ts: item.ts, items: [item] }))
+  )
+}
+
 export function describeStep(step: AgentStep | undefined): string {
   if (!step) return 'Starting'
   if (step.kind === 'thinking') return 'Thinking'
