@@ -24,12 +24,16 @@ const window = new BrowserWindow({
 })
 
 await window.loadFile(path.join(root, 'icon-sheet.html'))
+// Nothing here waits on an animation frame. A window standing behind another one
+// is throttled to almost no frames at all, and a capture that waits for one
+// never comes back.
 await window.webContents.executeJavaScript(`
   document.body.classList.add('keys')
   const keep = document.querySelectorAll('section')[${section}]
   for (const el of document.querySelectorAll('section, .bar, p.lede')) if (el !== keep) el.remove()
-  new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)))
+  document.title
 `)
+await new Promise(done => setTimeout(done, 600))
 
 const shot = await window.webContents.capturePage()
 const out = path.join(root, `icon-sheet-${section}.png`)
