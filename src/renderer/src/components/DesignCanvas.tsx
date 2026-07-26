@@ -239,20 +239,36 @@ export default function DesignCanvas({
     }
   }, [boardId, store, openDesign, initDesign, applyDesign, sendDesignPresence])
 
+  // A cursor that is not over the board is not on the board, so it goes away
+  // rather than standing wherever it was last seen.
   useEffect(() => {
     if (!ready || !editor) return
+    const container = editor.getContainer()
     let last = ''
+    let over = true
+    const onEnter = () => {
+      over = true
+    }
+    const onLeave = () => {
+      over = false
+    }
+    container.addEventListener('pointerenter', onEnter)
+    container.addEventListener('pointerleave', onLeave)
     const timer = window.setInterval(() => {
       const point = editor.inputs.currentPagePoint
-      const cursor = { x: Math.round(point.x), y: Math.round(point.y) }
+      const cursor = over ? { x: Math.round(point.x), y: Math.round(point.y) } : null
       const selection = editor.getSelectedShapeIds() as string[]
       const pageId = editor.getCurrentPageId() as string
-      const key = `${cursor.x},${cursor.y}|${selection.join(',')}|${pageId}`
+      const key = `${cursor ? `${cursor.x},${cursor.y}` : 'away'}|${selection.join(',')}|${pageId}`
       if (key === last) return
       last = key
       sendDesignPresence(boardId, cursor, selection, pageId)
     }, PRESENCE_MS)
-    return () => window.clearInterval(timer)
+    return () => {
+      container.removeEventListener('pointerenter', onEnter)
+      container.removeEventListener('pointerleave', onLeave)
+      window.clearInterval(timer)
+    }
   }, [ready, editor, boardId, sendDesignPresence])
 
   useEffect(() => {
