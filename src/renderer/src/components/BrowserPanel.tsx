@@ -209,6 +209,11 @@ export default function BrowserPanel() {
           .map(tab => (
             <FileView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
+        {tabs
+          .filter(tab => tab.kind === 'terminal')
+          .map(tab => (
+            <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
+          ))}
         {active && active.kind === 'web' && !active.initialUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <GlobeAltIcon className="w-8 h-8 text-fg-faint" />
