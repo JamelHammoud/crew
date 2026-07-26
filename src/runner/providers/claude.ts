@@ -81,7 +81,15 @@ export const parseClaudeLine: OutputParser = line => {
     const out = []
     for (const block of msg.message.content) {
       if (block?.type === 'tool_result' && typeof block.tool_use_id === 'string') {
-        out.push({ activity: { id: block.tool_use_id, kind: 'tool' as const, name: '', status: 'finished' as const } })
+        out.push({
+          activity: {
+            id: block.tool_use_id,
+            kind: 'tool' as const,
+            name: '',
+            status: 'finished' as const,
+            output: resultText(block.content)
+          }
+        })
       }
     }
     return out
