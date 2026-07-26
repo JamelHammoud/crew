@@ -65,7 +65,7 @@ const openChat = (events: SessionEvent[], sendChat = vi.fn()): void => {
 describe('seeing a reply', () => {
   afterEach(cleanup)
 
-  it('says a reply came to you and jumps back to what it answers', () => {
+  it('says a reply came to you and jumps back to what it answers', async () => {
     openChat([mine, theirs])
 
     expect(screen.getByText('Replying to you')).toBeTruthy()
@@ -75,7 +75,35 @@ describe('seeing a reply', () => {
 
     const target = document.querySelector('[data-message="message:mine"]')
     expect(target).toBeTruthy()
-    expect(target!.classList.contains('message-flash')).toBe(true)
+    await waitFor(() => expect(target!.classList.contains('message-flash')).toBe(true))
+  })
+
+  it('previews the picture when the message it answers is one', () => {
+    const picture: SessionEvent = {
+      id: 'picture',
+      ts: 1,
+      kind: 'message',
+      authorId: 'jamel',
+      authorName: 'Jamel',
+      text: '',
+      mentions: [],
+      attachments: [{ id: 'shot', name: 'image.png', mime: 'image/png', size: 10, file: 'shot.png' }]
+    }
+    const answer: SessionEvent = {
+      id: 'answer',
+      ts: 2,
+      kind: 'message',
+      authorId: 'ali',
+      authorName: 'ALI',
+      text: 'Woow',
+      mentions: [],
+      replyTo: { targetId: 'message:picture', authorId: 'jamel', authorName: 'Jamel', text: '' }
+    }
+    openChat([picture, answer])
+
+    const thumbnails = screen.getAllByAltText('image.png')
+    expect(thumbnails.some(node => node.className.includes('h-5'))).toBe(true)
+    expect(thumbnails.some(node => node.getAttribute('src') === 'http://localhost:7788/attachments/shot.png')).toBe(true)
   })
 
   it('names your own message as yourself when you reply to it', () => {
