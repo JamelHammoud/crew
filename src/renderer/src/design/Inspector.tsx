@@ -149,7 +149,18 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
         {props.fills.map((fill, at) => (
           <div key={at} className="flex items-center gap-1.5">
             {fill.type === 'solid' ? (
-              <ColorInput value={fill.color} onChange={color => setFill(at, { ...fill, color })} />
+              <>
+                <ColorInput value={fill.color} onChange={color => setFill(at, { ...fill, color })} />
+                <span className="w-16 shrink-0 flex">
+                  <NumberInput
+                    value={Math.round(fill.opacity * 100)}
+                    min={0}
+                    max={100}
+                    suffix="%"
+                    onChange={value => setFill(at, { ...fill, opacity: value / 100 })}
+                  />
+                </span>
+              </>
             ) : (
               <span className="flex-1 h-7 rounded-full bg-fg/[0.06] flex items-center px-3 text-xs text-fg-muted">
                 {fill.type === 'linear' ? 'Linear gradient' : 'Radial gradient'}
