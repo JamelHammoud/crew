@@ -25,7 +25,7 @@ export const MUSIC_TUNES = [
     mood: 'bouncy',
     bpm: 132,
     beats: 32,
-    colors: ['#ffd166', '#5ac8fa', '#7cf5c0', '#2a6df4']
+    colors: ['#ffd60a', '#3ddc97', '#4dc8ff', '#a8f5ff', '#0a2f8f']
   },
   {
     id: 'arcade',
@@ -33,7 +33,7 @@ export const MUSIC_TUNES = [
     mood: 'busy',
     bpm: 150,
     beats: 32,
-    colors: ['#ff5f6d', '#ffc371', '#8a5cff', '#22d3ee']
+    colors: ['#ff2d78', '#ff8a00', '#7b2dff', '#00e5ff', '#1a0033']
   },
   {
     id: 'tide-pool',
@@ -41,7 +41,7 @@ export const MUSIC_TUNES = [
     mood: 'floating',
     bpm: 84,
     beats: 32,
-    colors: ['#33d6c8', '#2a6df4', '#a5f3d0', '#0f4c81']
+    colors: ['#00e0c6', '#0a84ff', '#7cffd4', '#c4fff2', '#04314f']
   },
   {
     id: 'night-bus',
