@@ -12,9 +12,8 @@ import {
   FlipVerticalGlyph,
   type Glyph
 } from './glyphs'
+import { alignOffset, type Align } from './align'
 import { NumberInput, Row, Section, SubLabel } from './InspectorFields'
-
-type Align = 'left' | 'center-horizontal' | 'right' | 'top' | 'center-vertical' | 'bottom'
 
 const ALIGNMENTS: Array<{ op: Align; label: string; Icon: Glyph }> = [
   { op: 'left', label: 'Align left', Icon: AlignLeftGlyph },
@@ -35,14 +34,7 @@ function alignWithin(editor: Editor, shape: TLShape, op: Align): void {
   const bounds = editor.getShapePageBounds(shape.id)
   const frame = editor.getShapePageBounds(shape.parentId as TLShapeId)
   if (!bounds || !frame) return
-  const offset = { x: 0, y: 0 }
-  if (op === 'left') offset.x = frame.minX - bounds.minX
-  if (op === 'center-horizontal') offset.x = frame.midX - bounds.midX
-  if (op === 'right') offset.x = frame.maxX - bounds.maxX
-  if (op === 'top') offset.y = frame.minY - bounds.minY
-  if (op === 'center-vertical') offset.y = frame.midY - bounds.midY
-  if (op === 'bottom') offset.y = frame.maxY - bounds.maxY
-  editor.nudgeShapes([shape.id], offset)
+  editor.nudgeShapes([shape.id], alignOffset(bounds, frame, op))
 }
 
 export default function Transform() {
