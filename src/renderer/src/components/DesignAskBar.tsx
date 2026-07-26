@@ -12,10 +12,11 @@ import Tooltip from './Tooltip'
 import { useAutoResize } from './useAutoResize'
 import { useBoardThreads } from './DesignChat'
 
-// A line of the ask is 20 tall on 8 of padding, and it grows to five of them
-// before it scrolls, so the bar never swallows the board it is standing on. The
-// shell is `rounded-card` on 6, which is the pet's own radius plus that padding:
-// grown, its corners run parallel to the two circles standing in them.
+// A line of the ask stands 20 tall in a field 8 taller than it, and the field
+// grows to five lines before it scrolls, so the bar never swallows the board it
+// is standing on. The shell is `rounded-card` on 6 of its own, which is the
+// radius of the pet plus that padding: grown, the corners of the bar run
+// parallel to the two circles standing in them.
 const BAR = { w: 320, h: 42 }
 const GROWN = 108
 
