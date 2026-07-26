@@ -36,6 +36,7 @@ declare global {
     setBadge(count: number): Promise<void>
     setTheme(theme: 'dark' | 'light'): Promise<void>
     notify(alert: AgentAlert): Promise<void>
+    warmTerminal(): void
     openTerminal(id: string, size: { cols: number; rows: number }): void
     writeTerminal(id: string, data: string): void
     resizeTerminal(id: string, size: { cols: number; rows: number }): void

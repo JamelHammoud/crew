@@ -47,6 +47,7 @@ const bridge = {
       ipcRenderer.off('notification:open', handler)
     }
   },
+  warmTerminal: (): void => ipcRenderer.send('terminal:warm'),
   openTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:open', id, size),
   writeTerminal: (id: string, data: string): void => ipcRenderer.send('terminal:write', id, data),
   resizeTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:resize', id, size),
