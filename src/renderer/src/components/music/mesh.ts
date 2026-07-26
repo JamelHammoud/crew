@@ -111,69 +111,94 @@ const partsOf = (colors: readonly string[], roll: () => number): Parts => {
   return { fields: core.map((_, i) => core[(i + by) % core.length]), light, ground }
 }
 
-// Big overlapping lobes with solid middles, each one its own color where it is
-// thickest. The most direct of the three, and the one a bright palette wants.
-const bloom = (parts: Parts, roll: () => number): Layer[] => {
-  const layers: Layer[] = []
-  const count = 4 + Math.floor(roll() * 2)
-  for (let i = 0; i < count; i++) {
-    const color = i === 0 ? parts.light : parts.fields[i % parts.fields.length]
-    layers.push({
-      image: field(color, 4 + roll() * 92, 4 + roll() * 92, 54 + roll() * 46, 54 + roll() * 46, 12 + roll() * 24, 1),
-      blend: 'normal'
-    })
-  }
-  layers.push({ image: sweep([parts.fields[0], parts.ground], 60 + roll() * 240), blend: 'normal' })
-  return layers
-}
+// Every color the track has, in the order they are laid down: the light, the
+// three fields, and the ground. A cover uses all five, so the picture carries
+// the palette's whole range rather than the middle of it. A dark lobe next to a
+// bright one is what depth is here, and it costs nothing: a shade painted over
+// the top in black takes the color out of everything under it, which is what
+// turned these grey.
+const shuffle = (parts: Parts): string[] => [parts.light, ...parts.fields, parts.ground]
 
-// A sweep of spokes from somewhere off center, with a few fields sitting over
-// where they meet. This is the one that reads as light coming from a direction.
-const rays = (parts: Parts, roll: () => number): Layer[] => {
-  const layers: Layer[] = []
-  for (let i = 0; i < 3; i++) {
-    layers.push({
+// Lobes ringing the middle, each solid where it is thickest, all of them wide
+// enough to overlap their neighbours. This is the one that reads as the colors
+// pushing against each other.
+const bloom = (parts: Parts, roll: () => number): Layer[] => {
+  const palette = shuffle(parts)
+  const turn = roll()
+  const layers: Layer[] = palette.map((color, i) => {
+    const angle = (i / palette.length + turn) * Math.PI * 2
+    const reach = 0.28 + roll() * 0.2
+    return {
       image: field(
-        parts.fields[i % parts.fields.length],
-        4 + roll() * 92,
-        4 + roll() * 92,
-        44 + roll() * 42,
-        44 + roll() * 42,
-        8 + roll() * 20,
-        0.9
+        color,
+        0.5 + Math.cos(angle) * reach,
+        0.5 + Math.sin(angle) * reach,
+        0.6 + roll() * 0.55,
+        0.6 + roll() * 0.55,
+        40 + roll() * 26,
+        1
       ),
       blend: 'normal'
-    })
-  }
-  const spokes = [...parts.fields, parts.light, parts.fields[0], parts.ground, parts.fields[1 % parts.fields.length]]
-  layers.push({ image: fan(spokes, 10 + roll() * 80, 8 + roll() * 84, roll() * 360), blend: 'normal' })
+    }
+  })
+  layers.push({ image: field(parts.fields[0], 0.5, 0.5, 2.4, 2.4, 62, 1), blend: 'normal' })
   return layers
 }
 
-// Broad bands crossing the tile, with two lobes standing on them. The quietest
-// of the three, and the one that gives a slow track somewhere to breathe.
-const drape = (parts: Parts, roll: () => number): Layer[] => {
-  const layers: Layer[] = []
-  for (let i = 0; i < 2; i++) {
-    layers.push({
+// Spokes from somewhere off center, with a few lobes standing over where they
+// meet. This is the one that reads as light arriving from a direction.
+const rays = (parts: Parts, roll: () => number): Layer[] => {
+  const palette = shuffle(parts)
+  const turn = roll()
+  const layers: Layer[] = palette.slice(0, 3).map((color, i) => {
+    const angle = (i / 3 + turn) * Math.PI * 2
+    return {
       image: field(
-        i === 0 ? parts.light : parts.fields[1 % parts.fields.length],
-        4 + roll() * 92,
-        4 + roll() * 92,
-        50 + roll() * 44,
-        50 + roll() * 44,
-        10 + roll() * 22,
+        color,
+        0.5 + Math.cos(angle) * 0.32,
+        0.5 + Math.sin(angle) * 0.32,
+        0.6 + roll() * 0.4,
+        0.6 + roll() * 0.4,
+        36 + roll() * 22,
         0.95
       ),
       blend: 'normal'
-    })
-  }
-  const bands = [parts.fields[0], parts.light, parts.fields[1 % parts.fields.length], parts.fields[2 % parts.fields.length], parts.ground]
-  layers.push({ image: sweep(bands, roll() * 360), blend: 'normal' })
+    }
+  })
+  const spokes = [...parts.fields, parts.light, parts.fields[0], parts.ground, parts.fields[1 % parts.fields.length]]
+  layers.push({ image: fan(spokes, 0.1 + roll() * 0.8, 0.1 + roll() * 0.8, roll() * 360), blend: 'normal' })
   return layers
 }
 
-const LAYOUTS = [bloom, rays, drape, bloom, rays]
+// Broad bands crossing the whole thing, with lobes standing on them. The
+// quietest of the three, and the one that gives a slow track somewhere to
+// breathe. It takes four lobes rather than two, or the bands are all you see.
+const drape = (parts: Parts, roll: () => number): Layer[] => {
+  const palette = shuffle(parts)
+  const turn = roll()
+  const layers: Layer[] = palette.slice(0, 4).map((color, i) => {
+    const angle = (i / 4 + turn) * Math.PI * 2
+    return {
+      image: field(
+        color,
+        0.5 + Math.cos(angle) * (0.24 + roll() * 0.18),
+        0.5 + Math.sin(angle) * (0.24 + roll() * 0.18),
+        0.55 + roll() * 0.45,
+        0.55 + roll() * 0.45,
+        38 + roll() * 24,
+        0.95
+      ),
+      blend: 'normal'
+    }
+  })
+  layers.push({
+    image: sweep([parts.fields[0], parts.light, parts.fields[1 % parts.fields.length], parts.ground], roll() * 360),
+    blend: 'normal'
+  })
+  return layers
+}
+
+const LAYOUTS = [bloom, rays, drape, bloom, rays, drape]
 
 export interface Mesh {
   backgroundColor: string
@@ -186,25 +211,20 @@ export interface Mesh {
 // one size it is a soft mesh on the big cover and a single flat color on the
 // small one, since a fixed radius half the width of a tile averages the whole
 // picture away. This is the whole reason a cover in the list read as one color.
-const BLUR = 0.1
-const REACH = 1.5
+const BLUR = 0.09
 
 export function meshOf(item: MusicItem, size: number): Mesh {
   const roll = stream(seedOf(item.id))
   const parts = partsOf(item.colors, roll)
   const layout = LAYOUTS[Math.floor(roll() * LAYOUTS.length)]
-  // A light arriving from one side and a corner it never reaches. Without the
-  // pair the mesh is evenly lit all over and reads flat however many colors are
-  // in it. They are the two on top, so they fall across everything below.
-  const from = roll()
+  // One highlight, small and well inside the picture, where the light lands. It
+  // is the only layer that is not a plain color over a plain color, and it stays
+  // small: screened across the whole tile it is a bleached patch rather than a
+  // highlight, and it takes the palette with it.
   const layers: Layer[] = [
     {
-      image: field(lift(parts.light, 0.55), 10 + from * 80, 6 + roll() * 30, 62, 58, 0, 0.55),
+      image: field(lift(parts.light, 0.5), 0.16 + roll() * 0.68, 0.1 + roll() * 0.4, 0.5, 0.45, 8, 0.5),
       blend: 'screen'
-    },
-    {
-      image: field(parts.ground, 92 - from * 80, 88 + roll() * 10, 80, 74, 0, 0.85),
-      blend: 'multiply'
     },
     ...layout(parts, roll)
   ]
@@ -212,11 +232,11 @@ export function meshOf(item: MusicItem, size: number): Mesh {
     backgroundColor: parts.ground,
     backgroundImage: layers.map(one => one.image).join(', '),
     backgroundBlendMode: layers.map(one => one.blend).join(', '),
-    // Blurring mixes colors, and mixing two colors lands between them, so the
-    // whole picture loses a little of itself on the way through. Putting it back
-    // afterwards is what keeps a blurred mesh as saturated as the colors it was
-    // built from.
-    filter: `blur(${(size * REACH * BLUR).toFixed(1)}px) saturate(1.4) contrast(1.05)`
+    // Blurring mixes colors, and a mix of two colors lands between them, so the
+    // picture loses a little of itself on the way through. Putting it back
+    // afterwards is what keeps a blurred mesh as saturated as what it was built
+    // from.
+    filter: `blur(${(size * (1 + OVER * 2) * BLUR).toFixed(1)}px) saturate(1.35)`
   }
 }
 
