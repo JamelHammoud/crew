@@ -25057,3 +25057,4 @@
 {"id":"ead7183b-3d43-4d74-8ac0-1a642ebbe81a","ts":1785101563998,"kind":"agent.offline","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
 {"id":"c91a46c3-a6fa-4bb5-90a8-58f133fa62ba","ts":1785101563998,"kind":"agent.offline","agentId":"jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130","label":"Thinker"}
 {"id":"be5b09a5-17fb-49bf-892b-267474458052","ts":1785101565468,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"335c58dd-f501-4bab-bad6-2910a2f51c64","ts":1785101596447,"kind":"huddle.started","huddleId":"442ffd33-7780-416f-87e4-39f1afc60e8c","byId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","byName":"Jamel"}
