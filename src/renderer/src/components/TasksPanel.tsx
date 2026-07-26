@@ -577,7 +577,8 @@ export default function TasksPanel({
         open={picker !== null}
         onClose={() => setPicker(null)}
         at={picker?.at}
-        className="w-64 max-h-56 overflow-y-auto"
+        maxHeight={224}
+        className="w-64"
       >
         {online.length === 0 ? (
           <p className="px-3 py-2 text-sm text-fg-muted whitespace-nowrap">No agents online</p>

@@ -1,6 +1,7 @@
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useRef } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
+import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { previewSrc } from './images'
 import Tooltip from './Tooltip'
@@ -13,16 +14,20 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
     <div className="flex flex-wrap gap-2 mb-2">
       {pending.map(item => (
         <div key={item.id} className="relative group animate-pop">
-          <img
-            src={previewSrc(item)}
-            alt={item.name}
-            className="h-16 w-16 object-cover rounded-xl border border-fg/10"
-          />
-          <Tooltip label={`Remove ${item.name}`}>
+          <Tooltip label={item.name}>
+            <button
+              onClick={() => useBrowser.getState().openImage(previewSrc(item), item.name)}
+              aria-label={`Open ${item.name}`}
+              className="block h-16 w-16 rounded-xl overflow-hidden border border-fg/10 transition-all duration-150 hover:border-fg/25 active:scale-95"
+            >
+              <img src={previewSrc(item)} alt={item.name} className="block h-full w-full object-cover" />
+            </button>
+          </Tooltip>
+          <Tooltip label="Remove" className="absolute -top-1.5 -right-1.5">
             <button
               onClick={() => detach(attachmentKey, item.id)}
               aria-label={`Remove ${item.name}`}
-              className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full glass flex items-center justify-center text-fg-secondary opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
+              className="h-5 w-5 rounded-full glass flex items-center justify-center text-fg/70 opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
             >
               <XMarkIcon className="w-3 h-3" />
             </button>
