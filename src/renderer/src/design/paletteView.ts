@@ -18,7 +18,40 @@ import {
 } from './palette'
 import { emptyView, type NodeView } from './nodeView'
 
+function textShapeView(editor: Editor, shape: TLShape): NodeView {
+  const view = emptyView(shape.id)
+  const type = textShapeType(editor, shape)
+  const set = (patch: Partial<TypeStyle>) => setTextShapeType(editor, shape, patch)
+
+  view.fills = {
+    items: [typePaint(type)],
+    set: (_at, paint) => {
+      const color = paintColor(paint)
+      if (color) set({ color })
+    },
+    opacity: true,
+    hide: false
+  }
+  view.text = {
+    value: type,
+    set,
+    fields: {
+      size: true,
+      weight: true,
+      family: 'all',
+      align: true,
+      vertical: false,
+      lineHeight: true,
+      spacing: true,
+      settings: true,
+      color: false
+    }
+  }
+  return view
+}
+
 export function paletteView(editor: Editor, shape: TLShape): NodeView {
+  if (shape.type === 'text') return textShapeView(editor, shape)
   const props = shape.props as Record<string, unknown>
   const has = (key: string) => key in props
   const view = emptyView(shape.id)
