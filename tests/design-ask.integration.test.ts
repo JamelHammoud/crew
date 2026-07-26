@@ -80,7 +80,6 @@ describe('asking an agent from a board', () => {
       e => e.kind === 'agent.end' && e.threadId === started.threadId && e.id !== first.id
     )) as Ended
     expect(second.text).toContain('second ask')
-    const threads = await ui.waitFor(m => m.type === 'snapshot')
-    expect(threads.type === 'snapshot' && threads.snapshot.threads.length).toBeTruthy()
+    expect(ui.events.filter(e => e.kind === 'thread.started')).toHaveLength(1)
   })
 })
