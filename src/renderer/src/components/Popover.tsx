@@ -42,11 +42,10 @@ export function Popover({
   const measure = (): void => {
     const el = popRef.current
     if (!el) return
-    setSize(current =>
-      current && current.w === el.offsetWidth && current.h === el.offsetHeight
-        ? current
-        : { w: el.offsetWidth, h: el.offsetHeight }
-    )
+    const last = sizeRef.current
+    if (last && last.w === el.offsetWidth && last.h === el.offsetHeight) return
+    sizeRef.current = { w: el.offsetWidth, h: el.offsetHeight }
+    setSize(sizeRef.current)
   }
 
   useLayoutEffect(() => {
