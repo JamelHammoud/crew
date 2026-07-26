@@ -82,6 +82,8 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - The left panel is layers when nothing is selected and the design panel when something is. The right panel is board chat. Boards already do what pages would, so there is no page switcher.
 - The design panel follows Figma's layout, section by section: Position, Layout, Appearance, Fill, Stroke, Effects. Sections are divided by a hairline and titled in bold, groups of fields carry a small grey label above them, and every field holds its own label inside it. Match Figma when adding to it.
 - A fill, a stroke or an effect can be hidden without being deleted, so `visible` rides on each one and `nodeCss.ts` leaves the hidden ones out. Anything that reads those lists honors it.
+- Color is picked in `ColorPicker.tsx`: a saturation square, hue and alpha from `react-colorful`, a hex field, the system eyedropper, and the crew swatches. The library's own sizes are built for a page, so `.design-picker` in `styles.css` resizes it for a popover.
+- Shapes land on whole pixels. `wholePixels.ts` rounds x and y on anything a person creates or moves, so nothing ever reads 203.41.
 - Corner handles and the size readout are crew's own overlay, drawn over the canvas in `SelectionOverlay.tsx` from page coordinates, not tldraw components.
 
 ## Syncing
