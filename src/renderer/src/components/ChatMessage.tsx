@@ -91,6 +91,7 @@ export default function ChatMessage({
             className="mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 text-left transition-colors hover:bg-fg/[0.1] active:scale-[0.99]"
           >
             <ReplyQuote
+              targetId={item.replyTo.targetId}
               authorId={item.replyTo.authorId}
               authorName={item.replyTo.authorName}
               label={replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
