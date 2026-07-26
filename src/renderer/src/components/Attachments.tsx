@@ -33,7 +33,18 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   )
 }
 
-export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
+const ATTACH_SIZES = {
+  md: 'w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600',
+  sm: 'w-7 h-7'
+} as const
+
+export function AttachButton({
+  attachmentKey,
+  size = 'md'
+}: {
+  attachmentKey: string
+  size?: keyof typeof ATTACH_SIZES
+}) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
   const attach = useCrew(s => s.attach)
   const inputRef = useRef<HTMLInputElement>(null)
