@@ -172,6 +172,21 @@ export function playSound(name: SoundName): void {
   else playNotes(CHIMES[name as ChimeName])
 }
 
+export function startRinging(): void {
+  stopRinging()
+  if (!soundsOn()) return
+  ringing = playRing(CALL)
+}
+
+export function stopRinging(): void {
+  ringing?.()
+  ringing = null
+}
+
+export function callRing(): Ring {
+  return CALL
+}
+
 export function soundFor(event: SessionEvent, selfId: string): SoundName | null {
   if (event.kind === 'message') {
     if (event.authorId === selfId || event.authorId === SYSTEM_AUTHOR_ID) return null
