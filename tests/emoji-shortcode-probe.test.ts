@@ -3,10 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 
-afterEach(() => {
-  cleanup()
-  localStorage.clear()
-})
+afterEach(cleanup)
 import type { PooledAgent } from '../src/shared/llm'
 
 class TestResizeObserver {
