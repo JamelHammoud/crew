@@ -20,6 +20,23 @@ const size = (svg: string) => {
   return { w: Number(match[1]), h: Number(match[2]), viewBox: [Number(match[3]), Number(match[4])] }
 }
 
+const placement = (svg: string) => svg.match(/<path d='[^']+' transform='([^']+)'/)?.[1] ?? ''
+
+const drawn = (svg: string) => {
+  const d = svg.match(/<path d='([^']+)'/)![1]
+  const scale = Number(svg.match(/<g transform='translate\([^)]+\) scale\(([\d.]+)\)'/)![1])
+  const xs: number[] = []
+  const ys: number[] = []
+  for (const step of d.match(/[MHV][-\d. ]*/g)!) {
+    const numbers = step.slice(1).trim().split(' ').map(Number)
+    if (step[0] === 'M') xs.push(numbers[0]), ys.push(numbers[1])
+    if (step[0] === 'H') xs.push(...numbers)
+    if (step[0] === 'V') ys.push(...numbers)
+  }
+  const span = (values: number[]) => (Math.max(...values) - Math.min(...values)) * scale
+  return { w: span(xs), h: span(ys) }
+}
+
 describe('design cursors', () => {
   it('covers every cursor the board tools ask for', () => {
     expect(Object.keys(vars)).toEqual([
