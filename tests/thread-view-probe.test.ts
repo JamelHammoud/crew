@@ -111,6 +111,12 @@ describe('thread navigation', () => {
     fireEvent.click(screen.getAllByLabelText('Reply').at(-1)!)
     expect(screen.getByText('Replying to Claude 2')).toBeTruthy()
     expect(screen.getAllByText('Claude exited with code 1')).toHaveLength(2)
+
+    const card = screen.getByText('Replying to Claude 2').closest('div')!
+    const back = screen.getByLabelText('Back to chat')
+    expect(card.contains(back)).toBe(false)
+    expect(card.compareDocumentPosition(back) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+
     fireEvent.click(screen.getByLabelText('Cancel reply'))
     expect(screen.queryByText('Replying to Claude 2')).toBeNull()
   })
