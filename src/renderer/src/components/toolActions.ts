@@ -57,10 +57,7 @@ const TABLE: Array<[string, ToolAction]> = [
     { icon: EditGlyph, run: 'Editing', done: 'Edited', many: 'Edited files' }
   ],
   ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook', many: 'Edited notebooks' }],
-  [
-    'bash shell sh commandexecution localshell powershell run runcommand exec execute terminal',
-    { icon: ShellGlyph, run: 'Running', done: 'Ran', many: 'Ran commands', terminal: true }
-  ],
+  [SHELL_TOOLS, { icon: ShellGlyph, run: 'Running', done: 'Ran', many: 'Ran commands', terminal: true }],
   [
     'bashoutput shelloutput processoutput readoutput',
     { icon: OutputGlyph, run: 'Checking output', done: 'Checked output' }
@@ -140,7 +137,7 @@ const TABLE: Array<[string, ToolAction]> = [
 
 const TOOLS = new Map(TABLE.flatMap(([names, action]) => names.split(' ').map(name => [name, action] as const)))
 
-const normalize = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]/g, '')
+const normalize = normalizeTool
 
 const humanize = (name: string): string => {
   const words = name
