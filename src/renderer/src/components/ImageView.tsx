@@ -123,10 +123,10 @@ export default function ImageView({ src, alt }: { src: string; alt: string }) {
         className={`max-w-full max-h-full object-contain select-none ${zoomed ? '' : 'rounded-card'}`}
       />
       {zoomed && (
-        <Tooltip label="Reset">
+        <Tooltip label="Reset" className="absolute bottom-4 right-4">
           <button
             onClick={() => setView(FIT)}
-            className="glass animate-pop absolute bottom-4 right-4 h-8 px-3 rounded-full text-xs tabular-nums text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
+            className="glass animate-pop h-8 px-3 rounded-full text-xs tabular-nums text-fg/70 transition-all duration-150 hover:text-fg active:scale-95"
           >
             {zoomPercent(view.scale, ratio)}%
           </button>
