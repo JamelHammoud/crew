@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron'
-import { writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -8,32 +8,36 @@ import { fileURLToPath } from 'node:url'
 // keyline. It does not say the arc went the wrong way round.
 //
 //   npx electron scripts/icon-shot.mjs <set> <from> <count>
+//
+// What to show is written into a copy of the page before it is opened, never
+// switched on afterwards. A window that is not the front one is painted once and
+// never again, so anything changed after that first paint is captured blank.
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const [, , set = '0', from = '0', count = '32'] = process.argv
+const first = Number(from)
+const last = first + Number(count)
 
-// Never top level await on whenReady in an ESM main. The ready event lands while
-// the module is still being evaluated and the two wait on each other forever.
+const slice = `<style>
+section:not(:nth-of-type(${Number(set) + 1})), .bar, p.lede { display:none }
+.grid figure:nth-child(-n+${first}), .grid figure:nth-child(n+${last + 1}) { display:none }
+</style>`
+
 app.whenReady().then(async () => {
-  // On top and in front, because a window standing behind another one is not
-  // repainted and the capture comes back as an empty rectangle.
+  const page = await readFile(path.join(root, 'icon-sheet.html'), 'utf8')
+  const cut = path.join(root, 'icon-slice.html')
+  await writeFile(cut, page.replace('<body', `${slice}<body`).replace('<h1', `${slice}<h1`))
+
   const window = new BrowserWindow({ width: 1440, height: 900, show: true, x: 0, y: 0 })
   window.setAlwaysOnTop(true, 'screen-saver')
-  window.focus()
-  // What to show rides in on the address, and the page reads it before it has
-  // drawn once. Nothing is changed after the fact and nothing waits on an
-  // animation frame: a window that is not in front gets neither.
-  await window.loadFile(path.join(root, 'icon-sheet.html'), {
-    hash: `keys&only=${set},${from},${count}`
-  })
-  // Asking the page a question is what gets it painted. Left alone, a window
-  // that is not the front one can sit there loaded and never drawn.
-  await window.webContents.executeJavaScript('document.querySelectorAll("figure").length')
+  await window.loadFile(cut)
+  // Asking the page a question is what gets it drawn at all.
+  await window.webContents.executeJavaScript('document.body.classList.add("keys"), document.title')
   await new Promise(done => setTimeout(done, 1500))
   const shot = await window.webContents.capturePage()
   const out = path.join(root, `icon-sheet-${set}-${from}.png`)
   await writeFile(out, shot.toPNG())
-  console.log(out)
+  console.log(`${out}  ${shot.getSize().width}x${shot.getSize().height}`)
   app.quit()
 })
