@@ -117,6 +117,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
     })
   }
 
+  // The first room a client is told about is the room as it already stands, so
+  // nothing rings for a call that was under way before this window opened.
+  let told = false
+
   onHuddle(msg => {
     if (msg.type === 'huddle.signal') {
       mesh.accept(msg.from, msg.signal)
@@ -127,6 +131,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
     const self = get().peerId
     const mine = peerIn(msg.room, self)
     set({ room: msg.room, confirmed: get().confirmed || mine !== undefined })
+    const calling = told && !get().joined && !get().joining && startedWithout(before, msg.room, self)
+    told = true
+    if (calling) startRinging()
+    else if (mine || msg.room.peers.length === 0) stopRinging()
     // Once the server has shown this client in the room, a roster without it is
     // the call saying it moved on. Before that, it is only a roster that has not
     // caught up with the join yet.
