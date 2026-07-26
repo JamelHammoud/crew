@@ -72,32 +72,41 @@ async function collect() {
   }
 }
 
-// A rect keeps the square's area as it flattens, so the number an icon is held
-// to is the geometric mean of its own box rather than its longest side.
+// Three families, each held to its own number. A shape that encloses is
+// measured on its box, and a rect keeps the square's area as it flattens, so the
+// number is the geometric mean of the box rather than its longest side. A run of
+// line is measured on how far it reaches instead.
+const CAP = 18.5
+
 function keyline(box) {
-  const round = Math.abs(box.width - box.height) < 1.2
-  const target = round ? CIRCLE : SQUARE
-  const size = round ? (box.width + box.height) / 2 : Math.sqrt(box.width * box.height)
-  return { target, size, off: (size / target - 1) * 100 }
+  if (!box.body) return { family: 'line', target: LINE, size: Math.max(box.width, box.height, box.reach) }
+  if (box.round && Math.abs(box.width - box.height) < 1.2)
+    return { family: 'round', target: CIRCLE, size: (box.width + box.height) / 2 }
+  return { family: 'shape', target: SQUARE, size: Math.sqrt(box.width * box.height) }
 }
 
 function report(rows) {
-  const inks = rows.map(row => row.box.ink).sort((a, b) => a - b)
-  const median = inks[Math.floor(inks.length / 2)] || 1
-  return rows.map(row => {
-    const { target, size, off } = keyline(row.box)
-    const drift = Math.max(Math.abs(row.box.cx - 12), Math.abs(row.box.cy - 12))
-    const over = Math.max(0, row.box.x + row.box.width - (12 + LIVE / 2), 12 - LIVE / 2 - row.box.x)
+  const scored = rows.map(row => {
+    const { family, target, size } = keyline(row.box)
     return {
       ...row,
+      family,
       target,
       size,
-      off,
-      drift,
-      over,
-      weight: (row.box.ink / median - 1) * 100
+      off: (size / target - 1) * 100,
+      // An icon already touching the live area has nowhere left to grow, so it
+      // is allowed to sit light rather than being asked to break the frame.
+      capped: Math.max(row.box.width, row.box.height) >= CAP,
+      drift: Math.max(Math.abs(row.box.cx - 12), Math.abs(row.box.cy - 12)),
+      over: Math.max(0, row.box.x + row.box.width - (12 + LIVE / 2), 12 - LIVE / 2 - row.box.x)
     }
   })
+  const median = (of) => {
+    const sorted = scored.filter(row => row.family === of).map(row => row.box.ink).sort((a, b) => a - b)
+    return sorted[Math.floor(sorted.length / 2)] || 1
+  }
+  const middles = { line: median('line'), round: median('round'), shape: median('shape') }
+  return scored.map(row => ({ ...row, weight: (row.box.ink / middles[row.family] - 1) * 100 }))
 }
 
 const svg = (markup, px) =>
