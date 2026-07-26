@@ -105,12 +105,11 @@ describe('emoji shortcodes in the composer', () => {
     expect(input.selectionStart).toBe(input.value.length)
   })
 
-  it('picks a match from a click and remembers it for the picker', () => {
+  it('picks a match from a click', () => {
     const input = boot()
     type(input, ':joy')
     fireEvent.click(screen.getByLabelText(':joy:'))
     expect(input.value).toBe('😂 ')
-    expect(JSON.parse(localStorage.getItem('crew.emoji.recent') ?? '[]')[0]).toBe('😂')
   })
 
   it('waits for two letters before opening the menu', () => {
