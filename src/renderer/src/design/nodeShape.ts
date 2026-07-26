@@ -59,3 +59,51 @@ export function polygonPath(points: UnitPoint[], w: number, h: number): string {
   const steps = points.map((point, at) => `${at === 0 ? 'M' : 'L'}${round(point.x * w)} ${round(point.y * h)}`)
   return `${steps.join(' ')} Z`
 }
+
+const ARC_STEPS = 6
+const ELLIPSE_STEPS = 48
+
+function arc(cx: number, cy: number, rx: number, ry: number, from: number): UnitPoint[] {
+  const points: UnitPoint[] = []
+  for (let step = 0; step <= ARC_STEPS; step++) {
+    const angle = from + (step / ARC_STEPS) * (Math.PI / 2)
+    points.push({ x: cx + Math.cos(angle) * rx, y: cy + Math.sin(angle) * ry })
+  }
+  return points
+}
+
+function roundedBox(w: number, h: number, radius: Corner): UnitPoint[] {
+  const limit = Math.min(w, h) / 2
+  const [tl, tr, br, bl] = radius.map(part => Math.max(0, Math.min(part, limit)))
+  if (tl === 0 && tr === 0 && br === 0 && bl === 0) {
+    return [
+      { x: 0, y: 0 },
+      { x: w, y: 0 },
+      { x: w, y: h },
+      { x: 0, y: h }
+    ]
+  }
+  return [
+    ...arc(w - tr, tr, tr, tr, -Math.PI / 2),
+    ...arc(w - br, h - br, br, br, 0),
+    ...arc(bl, h - bl, bl, bl, Math.PI / 2),
+    ...arc(tl, tl, tl, tl, Math.PI)
+  ]
+}
+
+function ellipseRing(w: number, h: number): UnitPoint[] {
+  const points: UnitPoint[] = []
+  for (let step = 0; step < ELLIPSE_STEPS; step++) {
+    const angle = (step / ELLIPSE_STEPS) * Math.PI * 2
+    points.push({ x: (w / 2) * (1 + Math.cos(angle)), y: (h / 2) * (1 + Math.sin(angle)) })
+  }
+  return points
+}
+
+// The outline a node clips its children to, in the node's own coordinates.
+export function nodeOutline(shape: NodeShape, w: number, h: number, radius: Corner): UnitPoint[] {
+  if (shape === 'ellipse') return ellipseRing(w, h)
+  const points = nodePolygon(shape)
+  if (points) return points.map(point => ({ x: point.x * w, y: point.y * h }))
+  return roundedBox(w, h, radius)
+}
