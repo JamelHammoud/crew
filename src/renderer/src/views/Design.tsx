@@ -96,7 +96,13 @@ export default function Design() {
             </div>
             <div className="flex-1 min-h-0 flex">
               {panels.left && editor && <DesignLeftPanel />}
-              <DesignStage boardId={current} editor={editor} onEditor={setEditor} onRename={askRename} />
+              <DesignStage
+                boardId={current}
+                editor={editor}
+                onEditor={setEditor}
+                onRename={askRename}
+                onAsked={showChat}
+              />
               {panels.right && editor && <DesignRightPanel boardId={current} />}
             </div>
           </div>
