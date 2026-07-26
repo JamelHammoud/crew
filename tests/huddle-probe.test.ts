@@ -105,6 +105,8 @@ class FakeStream {
 
 global.MediaStream ??= FakeStream as unknown as typeof MediaStream
 
+const storage = installLocalStorage()
+
 // A track exists from the moment the connection does and stays quiet until the
 // other end starts sending, which is what the browser reports as muted.
 const fakeVideo = (): { stream: MediaStream; arrive: () => void } => {
