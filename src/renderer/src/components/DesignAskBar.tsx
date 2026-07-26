@@ -78,16 +78,16 @@ export default function DesignAskBar({
     setSize(null)
   }, [open])
 
-  // What the ask is about is taken when it opens and kept. A selection that
-  // goes while the bar is up leaves the bar standing where it was, rather than
+  // What the ask is about is held, so a selection that goes while the bar is up
+  // leaves it standing where it was with what it was asked about, rather than
   // taking it down mid-sentence.
   useEffect(() => {
     if (!open) {
-      aimed.current = []
+      aimed.current = { layers: [], box: null }
       return
     }
-    if (layers.length > 0) aimed.current = layers
-  }, [open, layers])
+    if (layers.length > 0) aimed.current = { layers, box: target }
+  }, [open, layers, target])
 
   useLayoutEffect(() => {
     const el = barRef.current
