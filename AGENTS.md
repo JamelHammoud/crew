@@ -64,6 +64,19 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - `src/renderer` — React app
 - `tests` — integration suites
 
+## The toolbox
+
+A panel of tiles under the top bar. The built-in ones are the app's own hand, a huddle, a terminal, the project files. The rest are the ones a crew builds for itself, and they are shared the way todos are, so everyone gets the same toolbox.
+
+- A tool is one button: a name, a mark, and the single thing it does. It opens a page, runs a command, opens a file, or asks an agent. `cleanTool` in `src/shared/toolbox.ts` is the whole of what a tool may be, and one with no name or nothing to do comes back as null rather than as a button that sits there doing nothing.
+- A mark is one of the app's own drawings or one emoji, and `ToolMarkView` draws both, so the two are always the same size. The size is read off the class it is handed, which is where a glyph already reads its own weight from.
+- Choosing a mark is a screen inside the panel rather than a popover of its own. A popover opened from inside a popover is outside the first one's box, so the click that picks the mark would close the toolbox under it. The same goes for anything else the builder ever needs to open.
+- The emoji grid is the one the reactions use. It is handed its columns, its size and its words, because the same grid reacts to a message in one place and marks a tool in another.
+- A command written over several lines is several commands. The newlines are handed to the shell as returns, so each line runs in turn.
+- A page opens in the side panel, or in the machine's own browser for a site that will not sit in a frame.
+- An ask is a message in the chat, aimed at an agent by id so it cannot be lost to a rename. The agent a tool names may be offline on the machine pressing it, so whoever is here takes the work rather than nothing happening.
+- Where pressing a tool leaves you is `opensPanel`. A page, a file and a terminal are things the side panel holds, and an ask is a message, so it takes you to the chat instead.
+
 ## Huddles
 
 Voice, video and screen share, started from the toolbox. The host relays the handshake and nothing else. The media itself goes machine to machine, everyone to everyone, so there is no server to run and no stream passing through the host.
