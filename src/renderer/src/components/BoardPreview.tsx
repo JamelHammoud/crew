@@ -13,15 +13,15 @@ export default function BoardPreview({ boardId }: { boardId: string }) {
   if (document === null) return null
   if (document && !drawnOn(document)) return null
   return (
-    <span
+    <div
       data-board-preview={boardId}
-      className="block -mx-3 -mt-3 mb-2.5 aspect-[16/9] overflow-hidden rounded-t-2xl bg-ink-950 light:bg-ink-800"
+      className="-mx-3 -mb-3 mt-2.5 aspect-[16/9] overflow-hidden rounded-b-2xl border-t border-fg/[0.06] bg-ink-950 light:bg-ink-800"
     >
       {document && (
         <Suspense fallback={null}>
           <BoardImage document={document} />
         </Suspense>
       )}
-    </span>
+    </div>
   )
 }
