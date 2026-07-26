@@ -249,7 +249,11 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
         className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
-          active ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+          active
+            ? 'bg-ink-800 text-fg'
+            : menuAt
+              ? 'text-fg-secondary bg-fg/[0.04]'
+              : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
         }`}
       >
         {tab.loading ? (
