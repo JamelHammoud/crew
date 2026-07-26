@@ -1,5 +1,6 @@
 import { glyph } from '../src/renderer/src/components/glyph'
-import { HangupGlyph, MicGlyph, CameraGlyph, DesktopGlyph } from '../src/renderer/src/icons/media'
+import { HangupGlyph, MicGlyph, CameraGlyph } from '../src/renderer/src/icons/media'
+import { DesktopGlyph } from '../src/renderer/src/icons'
 import * as doc from '../src/renderer/src/components/doc/docGlyphs'
 
 type Mark = typeof HangupGlyph
