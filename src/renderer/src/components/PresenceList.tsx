@@ -21,8 +21,6 @@ function Group({ label, who }: { label: string; who: Present[] }): ReactElement 
         {who.map(one => (
           <div key={one.id} className="flex items-center gap-2.5 px-3 py-1">
             <Face who={one} size="sm" />
-            {/* A long name is cut rather than pushing the row wider than the
-                panel it is in. */}
             <span className="flex-1 min-w-0 text-sm font-medium text-fg truncate">{one.name}</span>
             {one.threads > 0 && (
               <span className="shrink-0 pl-4 text-xs text-fg-muted whitespace-nowrap">
