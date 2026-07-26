@@ -13,4 +13,5 @@ export type Box = {
 
 export function samplePath(d: string, steps?: number): Array<Array<[number, number]>>
 export function shapesOf(markup: string): Array<{ d: string; filled: boolean; weight: number | null }>
+export function formOf(markup: string, slash?: string): string
 export function measure(markup: string, stroke?: number): Box | null

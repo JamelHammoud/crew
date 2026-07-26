@@ -1,10 +1,10 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { measure, type Box } from '../scripts/icon-geometry.mjs'
+import { formOf, measure, type Box } from '../scripts/icon-geometry.mjs'
 import * as icons from '../src/renderer/src/icons'
 import type { Glyph } from '../src/renderer/src/components/glyph'
-import { CIRCLE, GRID, LINE, LIVE, SQUARE, STROKE } from '../src/renderer/src/icons/keylines'
+import { CIRCLE, GRID, LINE, LIVE, SLASH, SQUARE, STROKE } from '../src/renderer/src/icons/keylines'
 
 // An icon set is one drawing repeated with different insides, and the way it
 // stops being that is one shape at a time. These are the rules a shape has to
@@ -22,7 +22,7 @@ const drawn: Art[] = Object.entries(icons as Record<string, unknown>)
   .filter(([name]) => name.endsWith('Glyph'))
   .map(([name, Icon]) => {
     const markup = renderToStaticMarkup(createElement(Icon as Glyph, {}))
-    const box = measure(markup)
+    const box = measure(formOf(markup, SLASH))
     if (!box) throw new Error(`${name} draws nothing`)
     return { name, markup, box }
   })
