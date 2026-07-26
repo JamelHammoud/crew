@@ -229,15 +229,16 @@ describe('the noise a huddle makes when it starts', () => {
     expect(started.length).toBe(0)
   })
 
-  it('falls away at the end instead of being cut off', () => {
-    expect(CALL.levels.at(-1)).toBeLessThan(CALL.levels[0])
-
-    playRing({ phrase: [{ hz: 600, at: 0, length: 0.1, gain: 1 }], every: 1, levels: [1, 0.5] })
+  it('says every turn at the size it said the first, rather than trailing away', () => {
+    playRing({ phrase: [{ hz: 600, at: 0, length: 0.1, gain: 1 }], every: 1, times: 3 })
     const first = loudest()
+    vi.advanceTimersByTime(1000)
+    const second = loudest()
     vi.advanceTimersByTime(1000)
 
     expect(first).toBeGreaterThan(0)
-    expect(loudest()).toBeCloseTo(first / 2, 5)
+    expect(second).toBe(first)
+    expect(loudest()).toBe(first)
   })
 
   it('stops the moment you join', async () => {
