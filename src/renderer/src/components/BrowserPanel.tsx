@@ -104,7 +104,7 @@ export default function BrowserPanel() {
             <ArrowRightIcon className="w-4 h-4" />
           </button>
           <button
-            onClick={() => useBrowser.getState().reloadFile(active.id)}
+            onClick={() => useBrowser.getState().reloadTab(active.id)}
             aria-label="Reload"
             className={iconButton}
           >
@@ -142,7 +142,7 @@ export default function BrowserPanel() {
             <ArrowRightIcon className="w-4 h-4" />
           </button>
           <button
-            onClick={() => (active.loading ? viewFor(active.id)?.stop() : viewFor(active.id)?.reload())}
+            onClick={() => reload(active)}
             disabled={!active.initialUrl}
             aria-label={active.loading ? 'Stop' : 'Reload'}
             className={iconButton}
@@ -207,6 +207,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         <Spinner size={14} className="text-fg-muted" />
       ) : tab.kind === 'file' ? (
         <DocumentTextIcon className="w-4 h-4 shrink-0" />
+      ) : showsImage(tab) ? (
+        <PhotoIcon className="w-4 h-4 shrink-0" />
       ) : tab.favicon ? (
         <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
       ) : (
