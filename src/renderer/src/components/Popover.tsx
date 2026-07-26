@@ -176,6 +176,7 @@ export function MenuItem({
       {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
       <span className="flex-1 truncate">{label}</span>
       {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
+      {checked && <CheckIcon className="w-4 h-4 shrink-0 text-fg" />}
     </button>
   )
 }
