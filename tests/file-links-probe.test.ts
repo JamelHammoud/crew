@@ -362,6 +362,77 @@ describe('changed lines', () => {
     expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 5).join('\n').length + 1)
   })
 
+  const ROW = 20
+
+  const fakeRows = (): (() => void) => {
+    const real = Element.prototype.getBoundingClientRect
+    Element.prototype.getBoundingClientRect = function (this: Element): DOMRect {
+      const body = document.querySelector('.overflow-auto')
+      const rows = body ? [...body.querySelectorAll('[data-line], [data-gone]')] : []
+      const index = rows.indexOf(this)
+      if (index < 0) return real.call(this)
+      const top = index * ROW - (body as HTMLElement).scrollTop
+      return { ...real.call(this).toJSON(), top, bottom: top + ROW, height: ROW, y: top } as DOMRect
+    }
+    return () => {
+      Element.prototype.getBoundingClientRect = real
+    }
+  }
+
+  const pointAt = (holder: Element, column: number): Range => {
+    const walker = document.createTreeWalker(holder, NodeFilter.SHOW_TEXT)
+    let left = column
+    let node = walker.nextNode()
+    while (node && left > (node.textContent?.length ?? 0)) {
+      left -= node.textContent?.length ?? 0
+      node = walker.nextNode()
+    }
+    const range = document.createRange()
+    range.setStart(node ?? holder, node ? left : 0)
+    return range
+  }
+
+  const openDiff = async (): Promise<void> => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await screen.findByText('export function old() {')
+  }
+
+  it('leaves the file where it was standing when you click into it', async () => {
+    const restore = fakeRows()
+    try {
+      await openDiff()
+      const body = document.querySelector('.overflow-auto') as HTMLElement
+      body.scrollTop = 100
+      fireEvent.mouseDown(document.querySelector('[data-line="6"]') as HTMLElement)
+      await waitFor(() => expect(screen.queryByText('export function old() {')).toBeNull())
+      expect(body.scrollTop).toBe(100 - 3 * ROW)
+    } finally {
+      restore()
+    }
+  })
+
+  it('puts the caret at the spot in the line you clicked', async () => {
+    await openDiff()
+    const text = document.querySelector('[data-line="7"]')?.lastElementChild as HTMLElement
+    document.caretRangeFromPoint = () => pointAt(text, 5)
+    try {
+      fireEvent.mouseDown(text)
+      const editor = (await screen.findByRole('textbox', { name: 'File contents' })) as HTMLTextAreaElement
+      expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 6).join('\n').length + 1 + 5)
+    } finally {
+      delete (document as Partial<Document>).caretRangeFromPoint
+    }
+  })
+
+  it('starts the caret on the line that replaced one you clicked', async () => {
+    await openDiff()
+    fireEvent.mouseDown(screen.getByText('return 1'))
+    const editor = (await screen.findByRole('textbox', { name: 'File contents' })) as HTMLTextAreaElement
+    expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 5).join('\n').length + 1)
+  })
+
   it('marks every place a file was touched across the steps behind it', async () => {
     const steps: AgentStep[] = [
       { id: 't1', kind: 'tool', status: 'done', ts: 0, name: 'Edit', files: [{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }] },
