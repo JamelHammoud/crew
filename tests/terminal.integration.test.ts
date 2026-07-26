@@ -76,8 +76,9 @@ describe('the shell a terminal opens', () => {
   // What zsh really writes on its way to a prompt, padded out to eighty
   // columns because that is the width the shell that was kept ready had.
   it('replays a prompt without the padding the shell drew it against', () => {
-    const held = `[1m[7m%[27m[1m[0m${' '.repeat(79)}\r \r\rjamel@crew % [K`
-    expect(replayable(held)).toBe('jamel@crew % [K')
+    const mark = '\u001b[1m\u001b[7m%\u001b[27m\u001b[1m\u001b[0m'
+    const prompt = '\u001b[0m\u001b[Jjamel@crew % \u001b[K\u001b[?2004h'
+    expect(replayable(`${mark}${' '.repeat(79)}\r \r\r${prompt}`)).toBe(prompt)
   })
 
   it('keeps every line a shell printed on its way up', () => {
