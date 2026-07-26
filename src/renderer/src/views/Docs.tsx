@@ -323,7 +323,7 @@ export default function Docs() {
                   }
                 }}
                 placeholder="Untitled"
-                className="w-full bg-transparent text-3xl font-bold text-fg placeholder:text-fg-faint outline-none"
+                className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg-faint outline-none"
               />
             </div>
             <DocEditor
@@ -332,7 +332,6 @@ export default function Docs() {
               text={docs[current]?.text ?? ''}
               onChange={markdown => updateDoc(current, markdown)}
             />
-            <div className="h-40" />
         </div>
       </div>
     </div>
