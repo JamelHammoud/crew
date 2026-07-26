@@ -299,27 +299,36 @@ export default function DesignCanvas({
   )
 }
 
-function AgentCursors({ editor, cursors }: { editor: Editor | null; cursors: DesignPresence[] }) {
+function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: DesignPresence[] }) {
   const camera = useValue('design camera', () => (editor ? editor.getCamera() : null), [editor])
+  const pageId = useValue('design page', () => (editor ? editor.getCurrentPageId() : null), [editor])
+  const light = useTheme() === 'light'
   if (!editor || camera === null) return null
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {cursors
-        .filter(presence => presence.cursor)
+        .filter(presence => presence.cursor && presence.pageId === pageId)
         .map(presence => {
           const point = editor.pageToViewport({ x: presence.cursor!.x, y: presence.cursor!.y })
+          const agent = presence.kind === 'agent'
+          const color = agent
+            ? `oklch(0.76 0.15 ${petHue(presence.userId)})`
+            : avatarColors(presence.name, light).color
           return (
             <div
               key={presence.userId}
               className="absolute left-0 top-0 transition-transform duration-200 ease-linear will-change-transform"
               style={{ transform: `translate(${point.x}px, ${point.y}px)` }}
             >
-              <span
-                className="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full"
-                style={{ background: `oklch(0.76 0.15 ${petHue(presence.userId)})` }}
-              />
-              <span className="absolute left-2 top-2 flex items-center gap-1.5 rounded-full glass glass-strong pl-1 pr-2.5 py-0.5 whitespace-nowrap">
-                <AgentIcon seed={presence.userId} size="sm" />
+              <span className="absolute -left-[7px] -top-[6px]">
+                <CursorArrow color={color} />
+              </span>
+              <span className="absolute left-[13px] top-[17px] flex items-center gap-1.5 rounded-full glass glass-strong pl-1 pr-2.5 py-0.5 whitespace-nowrap">
+                {agent ? (
+                  <AgentIcon seed={presence.userId} size="sm" />
+                ) : (
+                  <Avatar name={presence.name} size="sm" />
+                )}
                 <span className="text-xs font-semibold text-fg">{presence.name}</span>
               </span>
             </div>
