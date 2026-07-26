@@ -35,6 +35,7 @@ function textShapeView(editor: Editor, shape: TLTextShape): NodeView {
   view.text = {
     value: type,
     set,
+    autoLine: autoLineHeight(editor),
     fields: {
       size: true,
       weight: true,
@@ -120,6 +121,7 @@ export function paletteView(editor: Editor, shape: TLShape): NodeView {
     }
     view.text = {
       value,
+      autoLine: BASE_TYPE.lineHeight,
       set: next => {
         const out: Record<string, unknown> = {}
         if (next.size !== undefined) out.size = fontSize(next.size)
