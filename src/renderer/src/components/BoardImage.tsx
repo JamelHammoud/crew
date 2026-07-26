@@ -29,7 +29,11 @@ export default function BoardImage({ document }: { document: DesignDocument }) {
 
   return (
     <div ref={host} className="relative h-full w-full">
-      {!painted && <Skeleton className="absolute inset-0" />}
+      {!painted && (
+        <span className="absolute inset-0 z-10">
+          <Skeleton />
+        </span>
+      )}
       <TldrawImage
         snapshot={{ store: document.store, schema: document.schema } as unknown as TLStoreSnapshot}
         shapeUtils={designShapeUtils}
