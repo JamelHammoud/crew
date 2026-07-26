@@ -23,14 +23,17 @@ function view() {
   frame.getBoundingClientRect = () => ({ left: 0, top: 0, width: 800, height: 600 }) as DOMRect
   const image = container.querySelector('img') as HTMLImageElement
   fireEvent.load(image)
-  return { container, frame, image }
+  return { container, frame, image, drawn: drawnIn(container) }
 }
 
-const scaleOf = (image: HTMLImageElement): number =>
-  Number(/scale\(([\d.]+)\)/.exec(image.style.transform)?.[1] ?? 0)
+const drawnIn = (container: Element): HTMLElement =>
+  container.querySelector('[data-zoom-content]') as HTMLElement
 
-const offsetOf = (image: HTMLImageElement): { x: number; y: number } => {
-  const match = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(image.style.transform)
+const scaleOf = (drawn: HTMLElement): number =>
+  Number(/scale\(([\d.]+)\)/.exec(drawn.style.transform)?.[1] ?? 0)
+
+const offsetOf = (drawn: HTMLElement): { x: number; y: number } => {
+  const match = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px/.exec(drawn.style.transform)
   return { x: Number(match?.[1]), y: Number(match?.[2]) }
 }
 
@@ -79,70 +82,70 @@ describe('image zoom', () => {
   })
 
   it('pinches on the trackpad in the preview', () => {
-    const { frame, image } = view()
-    expect(scaleOf(image)).toBe(1)
+    const { frame, drawn } = view()
+    expect(scaleOf(drawn)).toBe(1)
 
     fireEvent.wheel(frame, { deltaY: -100, ctrlKey: true, clientX: 400, clientY: 300 })
-    expect(scaleOf(image)).toBeCloseTo(Math.E, 4)
+    expect(scaleOf(drawn)).toBeCloseTo(Math.E, 4)
 
     fireEvent.wheel(frame, { deltaY: 100, ctrlKey: true, clientX: 400, clientY: 300 })
-    expect(scaleOf(image)).toBeCloseTo(1, 4)
+    expect(scaleOf(drawn)).toBeCloseTo(1, 4)
   })
 
   it('scrolls two fingers to move a zoomed picture, and not a fitted one', () => {
-    const { frame, image } = view()
+    const { frame, drawn } = view()
 
     fireEvent.wheel(frame, { deltaX: 30, deltaY: 30, ctrlKey: false, clientX: 400, clientY: 300 })
-    expect(offsetOf(image)).toEqual({ x: 0, y: 0 })
+    expect(offsetOf(drawn)).toEqual({ x: 0, y: 0 })
 
     fireEvent.wheel(frame, { deltaY: -400, ctrlKey: true, clientX: 400, clientY: 300 })
     fireEvent.wheel(frame, { deltaX: 30, deltaY: 30, ctrlKey: false, clientX: 400, clientY: 300 })
-    expect(offsetOf(image)).toEqual({ x: -30, y: -30 })
+    expect(offsetOf(drawn)).toEqual({ x: -30, y: -30 })
   })
 
   it('takes a double click back to the fit', () => {
-    const { frame, image, container } = view()
+    const { frame, drawn, container } = view()
 
     fireEvent.doubleClick(frame, { clientX: 400, clientY: 300 })
-    expect(scaleOf(image)).toBe(2.5)
+    expect(scaleOf(drawn)).toBe(2.5)
     expect(container.querySelector('button')?.textContent).toBe('125%')
 
     fireEvent.doubleClick(frame, { clientX: 400, clientY: 300 })
-    expect(scaleOf(image)).toBe(1)
+    expect(scaleOf(drawn)).toBe(1)
     expect(container.querySelector('button')).toBeNull()
   })
 
   it('drags a zoomed picture with the pointer', () => {
-    const { frame, image } = view()
+    const { frame, drawn } = view()
 
     fireEvent.pointerDown(frame, { clientX: 400, clientY: 300, button: 0 })
     fireEvent.pointerMove(frame, { clientX: 380, clientY: 290 })
-    expect(offsetOf(image)).toEqual({ x: 0, y: 0 })
+    expect(offsetOf(drawn)).toEqual({ x: 0, y: 0 })
 
     fireEvent.wheel(frame, { deltaY: -400, ctrlKey: true, clientX: 400, clientY: 300 })
     fireEvent.pointerDown(frame, { clientX: 400, clientY: 300, button: 0 })
     fireEvent.pointerMove(frame, { clientX: 380, clientY: 290 })
-    expect(offsetOf(image)).toEqual({ x: -20, y: -10 })
+    expect(offsetOf(drawn)).toEqual({ x: -20, y: -10 })
 
     fireEvent.pointerUp(frame, { clientX: 380, clientY: 290 })
     fireEvent.pointerMove(frame, { clientX: 300, clientY: 200 })
-    expect(offsetOf(image)).toEqual({ x: -20, y: -10 })
+    expect(offsetOf(drawn)).toEqual({ x: -20, y: -10 })
   })
 
   it('keeps the entrance animation off the picture it moves', () => {
-    const { frame, image } = view()
+    const { frame, drawn } = view()
 
     expect(image.className).not.toMatch(/animate-/)
     expect(frame.className).toMatch(/animate-rise/)
   })
 
   it('goes back to the fit when another picture opens', () => {
-    const { frame, image, container } = view()
+    const { frame, drawn, container } = view()
 
     fireEvent.wheel(frame, { deltaY: -200, ctrlKey: true, clientX: 400, clientY: 300 })
-    expect(scaleOf(image)).toBeGreaterThan(1)
+    expect(scaleOf(drawn)).toBeGreaterThan(1)
 
     render(createElement(ImageView, { src: 'other.png', alt: 'other.png' }), { container })
-    expect(scaleOf(container.querySelector('img') as HTMLImageElement)).toBe(1)
+    expect(scaleOf(drawnIn(container))).toBe(1)
   })
 })
