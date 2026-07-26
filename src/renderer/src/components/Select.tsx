@@ -7,29 +7,31 @@ export default function Select({
   value,
   options,
   onChange,
-  side = 'bottom'
+  side = 'bottom',
+  full
 }: {
   label?: string
   value: string
   options: Array<{ value: string; label: string; hint?: ReactNode }>
   onChange: (value: string) => void
   side?: 'top' | 'bottom'
+  full?: boolean
 }) {
   const [open, setOpen] = useState(false)
   const current = options.find(option => option.value === value)
 
   return (
-    <div className="relative inline-block">
+    <div className={`relative ${full ? 'block min-w-0' : 'inline-block'}`}>
       <button
         onClick={() => setOpen(o => !o)}
         className={`flex items-center gap-1.5 h-8 pl-3 pr-2 rounded-full text-sm font-medium transition-all duration-150 active:scale-95 ${
-          open ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
-        }`}
+          full ? 'w-full min-w-0' : ''
+        } ${open ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'}`}
       >
         {label && <span className="text-fg-muted">{label}</span>}
-        <span>{current?.label ?? value}</span>
+        <span className={full ? 'flex-1 min-w-0 truncate text-left' : ''}>{current?.label ?? value}</span>
         <ChevronDownIcon
-          className={`w-4 h-4 text-fg-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       <Popover open={open} onClose={() => setOpen(false)} align="start" side={side} className="min-w-40 max-h-64 overflow-y-auto">

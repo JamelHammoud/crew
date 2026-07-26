@@ -218,6 +218,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
             </Row>
             <Row>
               <Select
+                full
                 value={stroke.align}
                 options={STROKE_POSITIONS}
                 onChange={value => setStroke(at, { align: value as Stroke['align'] })}
