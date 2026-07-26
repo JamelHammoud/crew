@@ -31,18 +31,22 @@ export const parseClaudeLine: OutputParser = line => {
   }
   if (msg?.type === 'stream_event' && msg.event) {
     const event = msg.event
-    if (event.type === 'content_block_start' && event.content_block?.type === 'thinking') {
-      return [{ thinkingStart: { index: event.index } }]
+    if (event.type === 'content_block_start') {
+      if (event.content_block?.type === 'thinking') return [{ thinkingStart: { index: event.index } }]
+      if (event.content_block?.type === 'text') return [{ textStart: { index: event.index } }]
+      return []
     }
-    if (
-      event.type === 'content_block_delta' &&
-      event.delta?.type === 'thinking_delta' &&
-      typeof event.delta.thinking === 'string'
-    ) {
-      return [{ thinkingDelta: { index: event.index, text: event.delta.thinking } }]
+    if (event.type === 'content_block_delta') {
+      if (event.delta?.type === 'thinking_delta' && typeof event.delta.thinking === 'string') {
+        return [{ thinkingDelta: { index: event.index, text: event.delta.thinking } }]
+      }
+      if (event.delta?.type === 'text_delta' && typeof event.delta.text === 'string') {
+        return [{ textDelta: { index: event.index, text: event.delta.text } }]
+      }
+      return []
     }
     if (event.type === 'content_block_stop') {
-      return [{ thinkingStop: { index: event.index } }]
+      return [{ blockStop: { index: event.index } }]
     }
     return []
   }
