@@ -22,6 +22,7 @@ import {
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
   trimEvents,
+  type MessageReply,
   type SessionEvent,
   type ThreadMode,
   type ThreadStatus,
@@ -105,6 +106,7 @@ interface QueuedPrompt {
   docMentions: DocMentionRef[]
   attachments: Attachment[]
   messageId: string
+  replyTo?: MessageReply
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -116,6 +118,7 @@ interface PendingSteer {
   authorId?: string
   threadId: string
   attachments: Attachment[]
+  replyTo?: MessageReply
 }
 
 interface Thread {
@@ -420,7 +423,9 @@ export class CrewSession {
     if (!member) return
     switch (msg.type) {
       case 'chat.send':
-        if (meta.role === 'ui') this.handleChat(member, msg.text, msg.mentions, msg.threadId, msg.attachments, msg.boardId)
+        if (meta.role === 'ui') {
+          this.handleChat(member, msg.text, msg.mentions, msg.threadId, msg.attachments, msg.boardId, msg.replyTo)
+        }
         break
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
@@ -561,13 +566,15 @@ export class CrewSession {
     mentions: string[],
     threadId?: string,
     incoming?: OutgoingAttachment[],
-    boardId?: string
+    boardId?: string,
+    replyTargetId?: string
   ): void {
     // '/plan' only opens threads, so inside one it stays plain text.
     const command = threadId ? { planning: false, text: text.trim() } : readPlanCommand(text.trim())
     const trimmed = command.text
     const attachments = this.saveAttachments(incoming)
     if (!trimmed && attachments.length === 0) return
+    const replyTo = this.replyReference(replyTargetId, threadId)
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
@@ -579,7 +586,7 @@ export class CrewSession {
       for (const id of targets) {
         const agent = this.agents.get(id)
         if (!agent) continue
-        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, { messageId, mentions: targets })
+        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, { messageId, mentions: targets, replyTo })
       }
       return
     }
@@ -590,7 +597,7 @@ export class CrewSession {
       // question worth asking.
       const solo = command.planning ? this.soloAgent() : null
       if (solo) {
-        this.startThread(member, solo, trimmed, attachments, { boardId, mode })
+        this.startThread(member, solo, trimmed, attachments, { boardId, mode, replyTo })
         return
       }
       if (command.planning) {
@@ -607,12 +614,13 @@ export class CrewSession {
         mentions,
         mentionRefs: this.agentRefs(mentions, trimmed),
         docMentions: this.docMentionRefs(trimmed),
-        attachments
+        attachments,
+        replyTo
       })
       return
     }
     for (const id of ids) {
-      this.startThread(member, this.agents.get(id)!, trimmed, attachments, { boardId, mode, mentions: ids })
+      this.startThread(member, this.agents.get(id)!, trimmed, attachments, { boardId, mode, mentions: ids, replyTo })
     }
   }
 
@@ -642,7 +650,7 @@ export class CrewSession {
     agent: AgentState,
     text: string,
     attachments: Attachment[],
-    opts: { boardId?: string; mode?: ThreadMode; mentions?: string[] } = {}
+    opts: { boardId?: string; mode?: ThreadMode; mentions?: string[]; replyTo?: MessageReply } = {}
   ): string {
     const threadId = randomUUID()
     const boardId = opts.boardId
@@ -672,7 +680,11 @@ export class CrewSession {
       boardId: thread.boardId,
       mode: thread.mode === 'plan' ? 'plan' : undefined
     })
-    this.enqueuePrompt(agent, member, text, threadId, attachments)
+    this.enqueuePrompt(agent, member, text, threadId, attachments, {
+      messageId: randomUUID(),
+      mentions: opts.mentions ?? [agent.id],
+      replyTo: opts.replyTo
+    })
     return threadId
   }
 
@@ -749,7 +761,8 @@ export class CrewSession {
       mentionRefs: this.agentRefs(entry.mentions, entry.text),
       docMentions: entry.docMentions,
       threadId: entry.threadId,
-      attachments: entry.attachments
+      attachments: entry.attachments,
+      replyTo: entry.replyTo
     })
   }
 
@@ -891,6 +904,18 @@ export class CrewSession {
       }
     }
     return null
+  }
+
+  private replyReference(targetId: string | undefined, threadId: string | undefined): MessageReply | undefined {
+    if (!targetId) return undefined
+    const target = this.reactionTarget(targetId)
+    if (!target || target.threadId !== threadId) return undefined
+    return {
+      targetId,
+      authorId: target.authorId,
+      authorName: target.authorName,
+      text: target.text.replace(/\s+/g, ' ').trim().slice(0, 280)
+    }
   }
 
   // Implementing is the moment the thread stops planning: the plan stays on it
@@ -1659,7 +1684,7 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    route?: { messageId: string; mentions: string[] }
+    route?: { messageId: string; mentions: string[]; replyTo?: MessageReply }
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -1673,7 +1698,8 @@ export class CrewSession {
       mentions: route?.mentions ?? [agent.id],
       docMentions: this.docMentionRefs(text),
       attachments,
-      messageId: route?.messageId ?? randomUUID()
+      messageId: route?.messageId ?? randomUUID(),
+      replyTo: route?.replyTo
     }
     if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
@@ -1692,7 +1718,8 @@ export class CrewSession {
         byName: member.name,
         authorId: member.id,
         threadId,
-        attachments
+        attachments,
+        replyTo: entry.replyTo
       })
       return
     }
@@ -1763,7 +1790,8 @@ export class CrewSession {
       mentions: [agent.id],
       docMentions: this.docMentionRefs(steer.text),
       attachments: steer.attachments,
-      messageId: steer.messageId
+      messageId: steer.messageId,
+      replyTo: steer.replyTo
     })
     this.routed(steer.messageId, steer.threadId, promptId, 'queued')
     this.broadcastQueue(thread)
