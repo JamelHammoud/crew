@@ -125,7 +125,7 @@ describe('starting a huddle', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { peers: [], startedAt: null },
+      room: { id: null, peers: [], startedAt: null },
       joined: false,
       joining: false,
       micOn: false,
@@ -154,7 +154,7 @@ describe('starting a huddle', () => {
   })
 
   it('names the huddle after who is already in it', () => {
-    useHuddle.setState({ room: { peers: [peer('a', 'Ali')], startedAt: 10 } })
+    useHuddle.setState({ room: { id: 'call-1', peers: [peer('a', 'Ali')], startedAt: 10 } })
     render(createElement(App))
     openMenu()
 
@@ -205,7 +205,7 @@ describe('a huddle you are not in', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { peers: [peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 10 },
+      room: { id: 'call-1', peers: [peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 10 },
       joined: false,
       joining: false,
       expanded: false,
@@ -262,7 +262,7 @@ describe('a huddle you are in', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
+      room: { id: 'call-1', peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
       peerId: 'me',
       joined: true,
       joining: false,
@@ -350,7 +350,7 @@ describe('a huddle you are in', () => {
   it('keeps the face up until the pictures actually arrive', async () => {
     const camera = fakeVideo()
     useHuddle.setState({
-      room: { peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
+      room: { id: 'call-1', peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
       remote: { a: { mic: emptyStream(), camera: camera.stream, screen: emptyStream() } },
       link: { a: 'connected' }
     })
@@ -410,7 +410,7 @@ describe('picking a microphone and a camera', () => {
     storage.clear()
     Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
     useHuddle.setState({
-      room: { peers: [], startedAt: null },
+      room: { id: null, peers: [], startedAt: null },
       joined: false,
       joining: false,
       micOn: false,
