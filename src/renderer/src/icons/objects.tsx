@@ -114,6 +114,19 @@ export const PromptGlyph = glyph(
   </>
 )
 
+// The tail hangs off the bottom left corner and turns at its point like every
+// other corner in the set. The three dots are filled because a 1.5 ring that
+// small closes into a smudge, and they are what tells a bubble from a rounded
+// box at 16px.
+export const ChatGlyph = glyph(
+  <>
+    <path d="M6.75 4.25h10.5A3.5 3.5 0 0 1 20.75 7.75V13a3.5 3.5 0 0 1-3.5 3.5H9.75l-2.35 2.85q-.65.8-.65-.25V16.5A3.5 3.5 0 0 1 3.25 13V7.75a3.5 3.5 0 0 1 3.5-3.5Z" />
+    <circle cx="8" cy="10.4" r=".95" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="10.4" r=".95" fill="currentColor" stroke="none" />
+    <circle cx="16" cy="10.4" r=".95" fill="currentColor" stroke="none" />
+  </>
+)
+
 export const DesktopGlyph = glyph(
   <>
     <rect x="2.5" y="4.5" width="19" height="13" rx="3" />
