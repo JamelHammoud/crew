@@ -156,6 +156,30 @@ export const AngleGlyph = glyph(
   </>
 )
 
+export const ShadowGlyph = glyph(
+  <>
+    <rect x="3.5" y="3.5" width="12" height="12" rx="2.5" />
+    <path d="M8 20h9.5a2.5 2.5 0 0 0 2.5-2.5V8" />
+  </>
+)
+
+export const BlurGlyph = glyph(<rect x="4" y="4" width="16" height="16" rx="2.5" strokeDasharray="2 2.5" />)
+
+export const WeightGlyph = glyph(
+  <>
+    <path d="M4 7h16" />
+    <path d="M4 12.25h16" strokeWidth={2} />
+    <path d="M4 18h16" strokeWidth={3} />
+  </>
+)
+
+export const ConstrainGlyph = glyph(
+  <>
+    <rect x="4" y="4" width="16" height="16" rx="2.5" />
+    <path d="M9 15h6v-6" />
+  </>
+)
+
 export const AlignLeftGlyph = glyph(
   <>
     <path d="M4 3.5v17" />
