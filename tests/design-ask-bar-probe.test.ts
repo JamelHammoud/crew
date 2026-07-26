@@ -21,7 +21,8 @@ global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 
 const { default: DesignAskBar } = await import('../src/renderer/src/components/DesignAskBar')
 const { useCrew } = await import('../src/renderer/src/state/store')
-const { askPrompt, lastAskAgent } = await import('../src/renderer/src/design/askAgent')
+const { agentToAsk, askPrompt, lastAskAgent, rememberAskAgent } = await import('../src/renderer/src/design/askAgent')
+const { mentionsIn } = await import('../src/shared/llm')
 
 const node = (id: string, name: string): FakeShape => ({
   id,
