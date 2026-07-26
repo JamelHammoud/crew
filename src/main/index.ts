@@ -40,6 +40,7 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
+const terminals = new Map<number, Terminals>()
 let tray: Tray | null = null
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()

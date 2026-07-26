@@ -271,9 +271,26 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     if (bodyRef.current) bodyRef.current.scrollTop = 0
   }, [loadKey, tab.line, marks])
 
-
-  const editable = !!file && !file.truncated && file.text.split('\n').length <= MAX_LINES
+  const editable = !!file && !marks && !file.truncated && file.text.split('\n').length <= MAX_LINES
   const dirty = editable && !!file && draft !== file.text
+
+  useEffect(() => {
+    if (caret === null) return
+    setCaret(null)
+    const area = areaRef.current
+    if (!area) return
+    const offset = draft
+      .split('\n')
+      .slice(0, caret - 1)
+      .reduce((sum, line) => sum + line.length + 1, 0)
+    area.focus()
+    area.setSelectionRange(offset, offset)
+  }, [caret])
+
+  const dismiss = (line: number | null) => {
+    useBrowser.getState().updateTab(tab.id, { diff: null })
+    setCaret(line)
+  }
 
   const save = async () => {
     if (saving || !dirty) return
@@ -345,6 +362,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             dirty={dirty}
             onChange={onEdit}
             onKeys={onEditorKeys}
+            onDismiss={dismiss}
+            areaRef={areaRef}
           />
         )}
         {data?.kind === 'image' && <ImageView src={data.url} alt={data.path} />}
