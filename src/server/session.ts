@@ -250,6 +250,11 @@ export class CrewSession {
     const loaded = store.loadEvents()
     const deleted = new Set(loaded.filter(e => e.kind === 'message.deleted').map(e => e.messageId))
     const deletedTargets = new Set([...deleted].map(messageReactionTarget))
+    const deletedHuddles = new Set(loaded.filter(e => e.kind === 'huddle.deleted').map(e => e.huddleId))
+    const inDeletedHuddle = (event: SessionEvent): boolean => {
+      const huddleId = huddleRecordId(event)
+      return huddleId !== undefined && deletedHuddles.has(huddleId)
+    }
     const edits = new Map<string, Extract<SessionEvent, { kind: 'message.edited' }>>()
     for (const event of loaded) {
       if (event.kind === 'message.edited') edits.set(event.messageId, event)
