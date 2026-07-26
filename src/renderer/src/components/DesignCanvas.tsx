@@ -317,9 +317,7 @@ function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: De
         .map(presence => {
           const point = editor.pageToViewport({ x: presence.cursor!.x, y: presence.cursor!.y })
           const agent = presence.kind === 'agent'
-          const color = agent
-            ? `oklch(0.76 0.15 ${petHue(presence.userId)})`
-            : avatarColors(presence.name, light).color
+          const color = cursorColor(agent ? petHue(presence.userId) : avatarHue(presence.name))
           return (
             <div
               key={presence.userId}

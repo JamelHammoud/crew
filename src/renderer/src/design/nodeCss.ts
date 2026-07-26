@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { nodeShapeOf, type DesignNodeProps, type Effect, type Layout, type Paint, type Stroke, type TypeStyle } from '../../../shared/designNode'
+import { fontStack } from './fonts'
 import { polygonClip, type UnitPoint } from './nodeShape'
 
 const ALIGN: Record<string, string> = { start: 'flex-start', center: 'center', end: 'flex-end' }
