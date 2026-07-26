@@ -215,25 +215,37 @@ export function MentionMenu({
       ref={listRef}
       className={`glass absolute ${side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50`}
     >
-      {matches.map((item, index) =>
-        item.kind === 'agent' ? (
-          <AgentRow
-            key={item.agent.id}
-            agent={item.agent}
-            active={index === activeIndex}
-            onClick={() => onPick(item)}
-            onMouseEnter={() => onHover(index)}
-          />
-        ) : (
-          <DocRow
-            key={item.doc.page}
-            doc={item.doc}
+      {matches.map((item, index) => {
+        if (item.kind === 'agent')
+          return (
+            <AgentRow
+              key={item.agent.id}
+              agent={item.agent}
+              active={index === activeIndex}
+              onClick={() => onPick(item)}
+              onMouseEnter={() => onHover(index)}
+            />
+          )
+        if (item.kind === 'doc')
+          return (
+            <DocRow
+              key={item.doc.page}
+              doc={item.doc}
+              active={index === activeIndex}
+              onClick={() => onPick(item)}
+              onMouseEnter={() => onHover(index)}
+            />
+          )
+        return (
+          <EmojiRow
+            key={item.entry.char}
+            entry={item.entry}
             active={index === activeIndex}
             onClick={() => onPick(item)}
             onMouseEnter={() => onHover(index)}
           />
         )
-      )}
+      })}
     </div>
   )
 }
