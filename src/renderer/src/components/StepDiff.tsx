@@ -49,26 +49,6 @@ function rowsOf(diff: string): Row[] {
   return rows
 }
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  return (
-    <Tooltip label={copied ? 'Copied' : 'Copy'}>
-      <button
-        onClick={event => {
-          event.stopPropagation()
-          void navigator.clipboard.writeText(text).then(() => {
-            setCopied(true)
-            setTimeout(() => setCopied(false), 1200)
-          })
-        }}
-        className="shrink-0 p-1 rounded-md text-fg-faint hover:text-fg hover:bg-ink-700 transition-colors active:scale-95"
-      >
-        <FilesGlyph className="w-[15px] h-[15px]" />
-      </button>
-    </Tooltip>
-  )
-}
-
 function Line({ row, tokens }: { row: Row; tokens: ReturnType<ReturnType<typeof useHighlight>> }) {
   const gone = row.line === null
   return (
