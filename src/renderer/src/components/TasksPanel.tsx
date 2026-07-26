@@ -178,11 +178,12 @@ export default function TasksPanel({
     }
   }, [open])
 
+  // Every thread the session knows about, not the ones whose start event is
+  // still in the log: the log is trimmed as it grows, and reading the list off
+  // it dropped older threads from the panel while they still counted as work.
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = []
-    for (const e of events) {
-      if (e.kind !== 'thread.started' || !threads[e.threadId]) continue
-      const thread = threads[e.threadId]
+    for (const thread of Object.values(threads)) {
       const promptId = threadPrompts[thread.id]
       const working = Boolean(promptId) || (queues[thread.id]?.length ?? 0) > 0
       const detail = promptId
