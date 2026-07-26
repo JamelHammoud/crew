@@ -178,15 +178,24 @@ describe('playing a track', () => {
   it('reads the levels off the music rather than off a clock', () => {
     expect(player.levels(5)).toBe(null)
     player.play(overworld, 0)
-    audio.heard = new Array(128).fill(0)
+    const bins = 1024
+    const bin = (hz: number) => Math.round(hz / (audio.sampleRate / 2 / bins))
+    audio.heard = new Array(bins).fill(0)
     expect(player.levels(5)?.every(level => level === 0)).toBe(true)
 
-    // A loud bin lights the band it belongs to and leaves the rest alone.
-    audio.heard = new Array(128).fill(0)
-    audio.heard[2] = 255
-    const levels = player.levels(5) ?? []
+    // A bass note lights the bar on the left and nothing else, which is the
+    // whole of what the bass bar is for.
+    audio.heard[bin(70)] = 255
+    let levels = player.levels(5) ?? []
     expect(levels[0]).toBe(1)
     expect(levels.slice(1).every(level => level === 0)).toBe(true)
+
+    // And a bright one lights the bar on the right.
+    audio.heard = new Array(bins).fill(0)
+    audio.heard[bin(5000)] = 255
+    levels = player.levels(5) ?? []
+    expect(levels[4]).toBe(1)
+    expect(levels.slice(0, 4).every(level => level === 0)).toBe(true)
   })
 
   it('plays a track somebody added, from wherever the crew is in it', async () => {
