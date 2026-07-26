@@ -72,6 +72,34 @@ export function serializeDocFile(doc: DocPage): string {
   return `---\ntitle: ${JSON.stringify(doc.title)}\n---\n\n${doc.text}`
 }
 
+const FENCE = /^\s*(```|~~~)/
+
+export function docExcerpt(text: string, limit = 320): string {
+  const kept: string[] = []
+  let length = 0
+  for (const line of text.trim().split('\n')) {
+    if (kept.length > 0 && length + line.length + 1 > limit) break
+    kept.push(kept.length === 0 ? clip(line, limit) : line)
+    length += line.length + 1
+  }
+  let open: string | null = null
+  for (const line of kept) {
+    const match = FENCE.exec(line)
+    if (!match) continue
+    if (open === null) open = match[1]
+    else if (line.trim().startsWith(open)) open = null
+  }
+  if (open) kept.push(open)
+  return kept.join('\n').trim()
+}
+
+function clip(line: string, limit: number): string {
+  if (line.length <= limit) return line
+  const cut = line.slice(0, limit)
+  const space = cut.lastIndexOf(' ')
+  return `${space > limit / 2 ? cut.slice(0, space) : cut}…`
+}
+
 function parseQuoted(value: string): string {
   try {
     return JSON.parse(value)
