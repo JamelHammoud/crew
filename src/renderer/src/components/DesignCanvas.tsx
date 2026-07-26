@@ -273,19 +273,23 @@ export default function DesignCanvas({
   )
 
   return (
-    <div className="absolute inset-0 design" style={{ '--design-selected': selected } as CSSProperties}>
+    <div
+      className="absolute inset-0 design"
+      style={{ ...DESIGN_CURSORS, '--design-selected': selected } as CSSProperties}
+    >
       <Tldraw
         store={store}
         shapeUtils={designShapeUtils}
         tools={tools}
         assetUrls={assetUrls}
         components={components}
+        overlayUtils={overlayUtils}
         options={tldrawOptions}
         getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
       <SelectionOverlay editor={editor} />
-      <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
+      <RemoteCursors editor={editor} cursors={Object.values(cursors)} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">
           <Spinner size={20} />
