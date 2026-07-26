@@ -119,7 +119,7 @@ vi.mock('../src/renderer/src/state/store', () => ({
 
 const { useHuddle } = await import('../src/renderer/src/state/huddle')
 const { CALL, stopRinging } = await import('../src/renderer/src/media/sounds')
-const { ringLength } = await import('../src/renderer/src/media/ring')
+const { playRing, ringLength } = await import('../src/renderer/src/media/ring')
 const { setSounds } = await import('../src/renderer/src/state/sound')
 
 const peer = (peerId: string, name: string): HuddlePeer => ({
