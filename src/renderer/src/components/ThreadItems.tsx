@@ -5,7 +5,13 @@ import StepRow from './StepRow'
 import type { ThreadItem } from './thread'
 import { isNewDay } from './time'
 
-export default function ThreadItems({ items }: { items: ThreadItem[] }) {
+export default function ThreadItems({
+  items,
+  onReply
+}: {
+  items: ThreadItem[]
+  onReply?: (item: ThreadItem) => void
+}) {
   return (
     <>
       {items.map((item, index) => (
@@ -14,7 +20,7 @@ export default function ThreadItems({ items }: { items: ThreadItem[] }) {
           {item.kind === 'tool' || item.kind === 'thinking' ? (
             <StepRow item={item} />
           ) : (
-            <ChatMessage item={item} />
+            <ChatMessage item={item} onReply={onReply} />
           )}
         </Fragment>
       ))}

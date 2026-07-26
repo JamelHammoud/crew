@@ -1,6 +1,6 @@
 import type { Attachment } from '../../../shared/attachments'
 import type { DocMentionRef } from '../../../shared/docs'
-import type { SessionEvent } from '../../../shared/events'
+import type { MessageReply, SessionEvent } from '../../../shared/events'
 import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../../shared/llm'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
@@ -73,6 +73,7 @@ export interface ThreadItem {
   route?: MessageRoute
   reactionTargetId?: string
   reactions?: ReactionGroup[]
+  replyTo?: MessageReply
 }
 
 // How a message reached the agent, shown on the message itself: it was folded
@@ -166,6 +167,7 @@ export function buildThread(
         attachments: event.attachments,
         mentionRefs: event.mentionRefs,
         docMentions: event.docMentions,
+        replyTo: event.replyTo,
         route: routeBadge(route, started, ended),
         reactionTargetId: event.authorId === 'crew' ? undefined : messageReactionTarget(event.id),
         reactions: event.authorId === 'crew' ? undefined : reactions.get(messageReactionTarget(event.id))
