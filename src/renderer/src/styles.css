@@ -34,6 +34,8 @@
   --text-lg: 16px;
   --text-lg--line-height: 24px;
 
+  --radius-tile: 12px;
+  --radius-field: 9px;
   --radius-card: 20px;
   --radius-shell: 30px;
 
