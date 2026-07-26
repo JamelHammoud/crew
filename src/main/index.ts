@@ -10,7 +10,8 @@ import {
   shell,
   Tray,
   type MenuItemConstructorOptions,
-  type NativeImage
+  type NativeImage,
+  type WebContents
 } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -27,6 +28,7 @@ import {
 } from './media'
 import type { MediaKind } from '../shared/media'
 import { AppSession, type NewAgent } from './session'
+import { Terminals, type TerminalSize } from './terminal'
 import { createWindowOptions } from './window-options'
 
 app.setName('Crew')
