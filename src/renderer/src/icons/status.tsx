@@ -29,7 +29,7 @@ export const StopGlyph = glyph(
     y={center(SOLID)}
     width={SOLID}
     height={SOLID}
-    rx={corner(SOLID, 0.24)}
+    rx={corner(SOLID)}
     fill="currentColor"
     stroke="none"
   />
