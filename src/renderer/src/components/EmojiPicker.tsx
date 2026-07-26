@@ -91,7 +91,7 @@ export default function EmojiPicker({
     <button
       key={entry.char}
       type="button"
-      aria-label={`React with :${entry.shortName}:`}
+      aria-label={`${purpose} :${entry.shortName}:`}
       aria-pressed={selected.has(entry.char)}
       onClick={() => onPick(entry.char)}
       onMouseEnter={() => setPreview(entry)}
@@ -105,7 +105,7 @@ export default function EmojiPicker({
   )
 
   return (
-    <div className="flex h-[400px] w-[380px] flex-col" onMouseLeave={() => setPreview(null)}>
+    <div className={`flex flex-col ${className}`} onMouseLeave={() => setPreview(null)}>
       <div className="px-3 pt-3 pb-2">
         <div className="relative">
           <SearchGlyph className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />

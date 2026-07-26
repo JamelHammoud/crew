@@ -77,12 +77,20 @@ function Folder({ tab, path, name, depth }: { tab: BrowserTab; path: string; nam
 }
 
 function Leaf({ tab, path, name, depth }: { tab: BrowserTab; path: string; name: string; depth: number }) {
+  const ref = useRef<HTMLButtonElement>(null)
+  const showing = tab.path === path
+
+  useEffect(() => {
+    if (showing) ref.current?.scrollIntoView?.({ block: 'nearest' })
+  }, [showing])
+
   return (
     <button
+      ref={ref}
       onClick={() => useBrowser.getState().navigateFile(tab.id, path)}
       data-file={path}
       style={{ paddingLeft: indent(depth) }}
-      className={`${row} ${tab.path === path ? picked : quiet}`}
+      className={`${row} ${showing ? picked : quiet}`}
     >
       <FileGlyph className="w-3.5 h-3.5 shrink-0 text-fg-faint" />
       <span className="truncate">{name}</span>
