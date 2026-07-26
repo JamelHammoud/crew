@@ -64,7 +64,11 @@ function fade(node: Node): void {
 
 function outermost(node: ChildNode, root: Element): ChildNode {
   let at = node
-  while (at.parentNode && at.parentNode !== root) at = at.parentNode as ChildNode
+  while (at.parentNode && at.parentNode !== root) {
+    const up = at.parentElement
+    if (!up) break
+    at = up
+  }
   return at
 }
 
