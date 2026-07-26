@@ -31,8 +31,7 @@ if (withStreamedText) {
   lines.push('TEXTDELTA 0 in pieces')
   lines.push('TEXT the answer in pieces')
   lines.push('BLOCKSTOP 0')
-}
-if (withOutput) {
+} else if (withOutput) {
   lines.push('ACT t2 tool Bash ls -la')
   lines.push('OUT t2 total 8 drwxr-xr-x 4 jamel staff 128 src')
   lines.push('ACT t3 tool Read src/index.ts')
