@@ -141,6 +141,8 @@ export function fakeBoard(list: FakeShape[]): FakeBoard {
     },
     getSelectionPageBounds: () =>
       selected.length === 0 ? null : { minX: 10, minY: 20, maxX: 110, maxY: 220, width: 100, height: 200 },
+    getViewportScreenBounds: () => ({ x: 0, y: 0, w: 1200, h: 800 }),
+    getEditingShapeId: () => null,
     getShapesAtPoint: () => order.map(id => shapes.get(id)!),
     zoomToFit: () => {
       calls.push('zoomToFit()')
