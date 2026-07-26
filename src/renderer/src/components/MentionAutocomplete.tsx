@@ -198,7 +198,7 @@ function RefRow({
   onClick: () => void
   onMouseEnter: () => void
 }) {
-  const Icon = refItem.kind === 'board' ? RectangleGroupIcon : DocumentTextIcon
+  const Icon = refItem.kind === 'board' ? FrameGlyph : DocumentTextIcon
   return (
     <button
       onClick={onClick}
