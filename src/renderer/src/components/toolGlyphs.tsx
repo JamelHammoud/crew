@@ -165,11 +165,9 @@ export const ClockGlyph = glyph(
 
 export const SignalGlyph = glyph(
   <>
-    <path d="M6.5 17.5a7.8 7.8 0 0 1 0-11" />
-    <path d="M17.5 6.5a7.8 7.8 0 0 1 0 11" />
-    <path d="M9.4 14.6a3.7 3.7 0 0 1 0-5.2" />
-    <path d="M14.6 9.4a3.7 3.7 0 0 1 0 5.2" />
-    <circle cx="12" cy="12" r="1.3" />
+    <path d="M6.2 17.8a8.2 8.2 0 0 1 0-11.6" />
+    <path d="M17.8 6.2a8.2 8.2 0 0 1 0 11.6" />
+    <circle cx="12" cy="12" r="2.4" />
   </>
 )
 
@@ -221,8 +219,8 @@ export const BoxGlyph = glyph(
 
 export const ThinkingGlyph = glyph(
   <>
-    <circle cx="5.6" cy="12" r="1.5" />
-    <circle cx="12" cy="12" r="1.5" />
-    <circle cx="18.4" cy="12" r="1.5" />
+    <circle cx="5.4" cy="12" r="1.9" />
+    <circle cx="12" cy="12" r="1.9" />
+    <circle cx="18.6" cy="12" r="1.9" />
   </>
 )
