@@ -1,5 +1,10 @@
 import { context, noiseBuffer, reverb } from './audio'
 
+// Where a note is sent: out to the speakers, and a share of it into a room. A
+// sound the app makes goes straight out, and music goes through a volume of its
+// own, so both are handed in rather than reached for.
+export type Sink = { out: AudioNode; room: ConvolverNode | null }
+
 export type Rasp = { hz: number; q: number; gain: number; length: number }
 
 export type Strike = {
@@ -21,20 +26,21 @@ const GAIN = 0.07
 const ATTACK = 0.004
 const HUSH = 0.06
 
-type Sounding = { bus: GainNode; sources: AudioScheduledSourceNode[] }
+export type Sounding = { bus: GainNode; sources: AudioScheduledSourceNode[] }
 
 export function playStrikes(strikes: Strike[]): () => void {
   try {
     const ctx = context()
     if (!ctx) return () => {}
-    const sounding = strikes.map(strike => hit(ctx, strike))
+    const sink = { out: ctx.destination, room: reverb(ctx) }
+    const sounding = strikes.map(strike => strikeAt(ctx, strike, ctx.currentTime + strike.at, sink))
     return () => hush(ctx, sounding)
   } catch {
     return () => {}
   }
 }
 
-function hush(ctx: AudioContext, sounding: Sounding[]): void {
+export function hush(ctx: AudioContext, sounding: Sounding[]): void {
   const now = ctx.currentTime
   const end = now + HUSH
   for (const { bus, sources } of sounding) {
