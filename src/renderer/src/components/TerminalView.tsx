@@ -23,6 +23,10 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
   const hostRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitRef = useRef<FitAddon | null>(null)
+  // A tab opened by a tool comes with something to run. It is typed into the
+  // shell rather than run behind it, so what happened is on screen and the
+  // prompt is left where any other terminal leaves it.
+  const commandRef = useRef(tab.command)
   const theme = useTheme()
   const themeRef = useRef(theme)
   themeRef.current = theme
