@@ -337,7 +337,7 @@ export default function DesignCanvas({
         getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
-      <SelectionOverlay editor={editor} />
+      <SelectionOverlay editor={editor} asking={asking} />
       <RemoteCursors editor={editor} boardId={boardId} live={cursors} held={lastSpot} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">

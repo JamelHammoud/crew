@@ -24,7 +24,7 @@ function rounds(shape: { type: string; props: unknown }): boolean {
   return shape.type === 'design-node' && hasCorners(nodeShapeOf((shape.props as { shape?: unknown }).shape))
 }
 
-export default function SelectionOverlay({ editor }: { editor: Editor | null }) {
+export default function SelectionOverlay({ editor, asking }: { editor: Editor | null; asking?: boolean }) {
   const view = useValue(
     'design selection overlay',
     () => {
