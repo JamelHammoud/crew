@@ -217,14 +217,15 @@ export function meshOf(item: MusicItem, size: number): Mesh {
   const roll = stream(seedOf(item.id))
   const parts = partsOf(item.colors, roll)
   const layout = LAYOUTS[Math.floor(roll() * LAYOUTS.length)]
-  // One highlight, small and well inside the picture, where the light lands. It
-  // is the only layer that is not a plain color over a plain color, and it stays
-  // small: screened across the whole tile it is a bleached patch rather than a
-  // highlight, and it takes the palette with it.
+  // A small highlight where the light lands, laid on plainly. It used to be
+  // screened, which is the one blend that reaches white: over a palette whose
+  // brightest color is already bright, screening it turned every cover into the
+  // same pale wash. Every layer here is now a plain color over a plain color,
+  // and the range comes from the palette carrying a deep ground of its own.
   const layers: Layer[] = [
     {
-      image: field(lift(parts.light, 0.5), 0.16 + roll() * 0.68, 0.1 + roll() * 0.4, 0.5, 0.45, 8, 0.5),
-      blend: 'screen'
+      image: field(lift(parts.light, 0.32), 0.18 + roll() * 0.64, 0.12 + roll() * 0.38, 0.42, 0.38, 6, 0.85),
+      blend: 'normal'
     },
     ...layout(parts, roll)
   ]
