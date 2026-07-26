@@ -30,7 +30,9 @@ const CLOSED_HAND = [
   box(3, 12.6, 8.2, 4.8, 2.4)
 ].join('')
 
-const HAND_PLACE = 'translate(25.12 3.86) scale(-0.9 0.9)'
+const OPEN_HAND_PLACE = 'translate(25.12 3.86) scale(-0.9 0.9)'
+
+const CLOSED_HAND_PLACE = 'translate(3.9 3.86) scale(0.9)'
 
 const SIZE = 22
 const SCALE = 0.75
@@ -74,8 +76,8 @@ const crosshair = cursor(`<path d='${CROSSHAIR}' ${KEYLINE}/>`, AT_MIDDLE, 'cros
 
 const pencil = cursor(`<path d='${PENCIL}' transform='${PENCIL_PLACE}' ${KEYLINE}/>`, AT_LEAD, 'crosshair')
 
-const hand = (art: string, fallback: string) =>
-  cursor(`<path d='${art}' transform='${HAND_PLACE}' ${KEYLINE}/>`, AT_MIDDLE, fallback)
+const hand = (art: string, place: string, fallback: string) =>
+  cursor(`<path d='${art}' transform='${place}' ${KEYLINE}/>`, AT_MIDDLE, fallback)
 
 const TOOL_CURSORS: Record<string, string> = { draw: pencil }
 
