@@ -20,13 +20,19 @@ export const XCircleGlyph = glyph(
   </>
 )
 
-// The inner square is the one place the generous radius is wrong. At 1.9 on a
-// 6.8 side it turns into a circle inside a circle, which is a record button.
+// Stop is the one mark in the set that is solid, and it is solid because that is
+// what stop means on a button. Nothing rings it: the button it stands in is the
+// circle, and a second one inside reads as a record light.
 export const StopGlyph = glyph(
-  <>
-    <circle {...RING} />
-    <rect x="8.5" y="8.5" width="7" height="7" rx="1.1" />
-  </>
+  <rect
+    x={center(SOLID)}
+    y={center(SOLID)}
+    width={SOLID}
+    height={SOLID}
+    rx={corner(SOLID, 0.24)}
+    fill="currentColor"
+    stroke="none"
+  />
 )
 
 export const ClockGlyph = glyph(
