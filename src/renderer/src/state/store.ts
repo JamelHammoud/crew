@@ -116,6 +116,7 @@ interface CrewState {
     pageId: string | null
   ) => void
   deleteMessage: (messageId: string) => void
+  deleteHuddle: (huddleId: string) => void
   editMessage: (messageId: string, text: string) => void
   reactToMessage: (targetId: string, emoji: ReactionEmoji) => void
   setThreadStatus: (threadId: string, status: ThreadStatus) => void
@@ -656,6 +657,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     deleteMessage: messageId => {
       socket.send({ type: 'chat.delete', messageId })
+    },
+    deleteHuddle: huddleId => {
+      socket.send({ type: 'huddle.delete', huddleId })
     },
     editMessage: (messageId, text) => {
       socket.send({ type: 'chat.edit', messageId, text })
