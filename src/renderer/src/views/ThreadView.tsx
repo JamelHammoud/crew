@@ -10,6 +10,7 @@ import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutoco
 import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import Pill from '../components/Pill'
 import { usePresence } from '../components/presence'
+import ReplyPreview from '../components/ReplyPreview'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
 import { Counts } from '../components/StepRow'
