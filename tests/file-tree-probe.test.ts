@@ -62,6 +62,8 @@ const activeTab = () => {
   return tabs.find(tab => tab.id === activeTabId)!
 }
 
+const rowFor = (path: string) => document.querySelector(`[data-file="${path}"]`) as HTMLElement | null
+
 describe('the file explorer', () => {
   it('opens on the project with the tree standing beside it', async () => {
     useBrowser.getState().openFiles()
