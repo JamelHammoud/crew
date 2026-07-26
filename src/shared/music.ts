@@ -73,7 +73,7 @@ export const MUSIC_TUNES = [
     mood: 'wistful',
     bpm: 76,
     beats: 32,
-    colors: ['#9db4d8', '#4a6fa5', '#cfe3f7', '#243b5e']
+    colors: ['#3aa0ff', '#7f8cff', '#63e0ff', '#dbecff', '#10224a']
   },
   {
     id: 'sprint',
@@ -81,7 +81,7 @@ export const MUSIC_TUNES = [
     mood: 'hurried',
     bpm: 168,
     beats: 32,
-    colors: ['#ff4d6d', '#ffd166', '#ff8c42', '#5b0e2d']
+    colors: ['#ff1f4b', '#ffd60a', '#ff6b00', '#ffb3c1', '#3d0016']
   },
   {
     id: 'bubble-bath',
