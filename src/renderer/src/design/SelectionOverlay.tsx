@@ -116,8 +116,8 @@ function RadiusHandles({
             }}
           >
             <span
-              className="w-2.5 h-2.5 rounded-full bg-white transition-transform group-hover:scale-125"
-              style={{ border: `1.5px solid ${stroke}` }}
+              className="w-3 h-3 rounded-full bg-white transition-transform group-hover:scale-125"
+              style={{ border: `1px solid ${stroke}` }}
             />
           </button>
         )

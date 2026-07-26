@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { CREW_SWATCHES } from '../../../shared/design'
 import { Popover } from '../components/Popover'
+import ColorPicker from './ColorPicker'
 
 export function Section({ title, action, children }: { title: string; action?: ReactNode; children?: ReactNode }) {
   return (
@@ -126,7 +126,6 @@ export function ColorInput({
   const [draft, setDraft] = useState(value)
   const [open, setOpen] = useState(false)
   useEffect(() => setDraft(value), [value])
-  const alpha = value.length === 9 ? value.slice(7) : ''
   return (
     <span className="flex-1 min-w-0 flex items-center gap-2 h-8 rounded-full bg-fg/[0.06] pl-1.5 pr-3">
       <button
