@@ -320,7 +320,7 @@ describe('changed lines', () => {
 
   const marked = (): string[] =>
     [...document.querySelectorAll('[data-line]')]
-      .filter(row => row.className.includes('bg-fg'))
+      .filter(row => row.className.includes('bg-positive'))
       .map(row => row.getAttribute('data-line') ?? '')
 
   it('opens the file where the change landed and marks those lines', async () => {
@@ -330,6 +330,31 @@ describe('changed lines', () => {
     render(createElement(BrowserPanel))
     await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
     expect(marked()).toEqual(['6', '7', '8'])
+  })
+
+  it('shows the lines that were replaced above the new ones', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    const gone = await screen.findByText('export function old() {')
+    expect(gone.previousElementSibling?.textContent).toBe('−')
+    const rows = [...(gone.closest('div')?.parentElement?.children ?? [])]
+    expect(rows.indexOf(gone.closest('div') as Element)).toBe(5)
+    expect(screen.getByText('  return 1')).not.toBeNull()
+  })
+
+  it('puts the file back the moment you click into it', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await screen.findByText('export function old() {')
+    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
+    fireEvent.mouseDown(document.querySelector('[data-line="6"]') as HTMLElement)
+    await waitFor(() => expect(screen.queryByText('export function old() {')).toBeNull())
+    expect(marked()).toEqual([])
+    expect(useBrowser.getState().tabs[0].diff).toBeNull()
+    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+    expect(editor.selectionStart).toBe(63)
   })
 
   it('marks every place a file was touched across the steps behind it', async () => {
