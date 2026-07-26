@@ -18,7 +18,7 @@ import {
 } from './palette'
 import { emptyView, type NodeView } from './nodeView'
 
-function textShapeView(editor: Editor, shape: TLShape): NodeView {
+function textShapeView(editor: Editor, shape: TLTextShape): NodeView {
   const view = emptyView(shape.id)
   const type = textShapeType(editor, shape)
   const set = (patch: Partial<TypeStyle>) => setTextShapeType(editor, shape, patch)
