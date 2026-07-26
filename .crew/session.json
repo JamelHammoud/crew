@@ -641,6 +641,34 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
       }
+    },
+    {
+      "id": "ali/5c7291cf-12cd-4b4c-8174-c08ec369f3b3",
+      "label": "Grok Grok-4.5",
+      "provider": "grok",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": "grok-4.5"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "grok-4.5",
+              "label": "grok-4.5"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ],
   "removedAgents": [
