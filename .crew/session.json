@@ -125,23 +125,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785034669622,
+        "fetchedAt": 1785035869683,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 100,
-            "severity": "critical",
-            "resetsAt": 1785034800008,
-            "active": true
+            "percent": 0,
+            "severity": "normal",
+            "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 15,
             "severity": "normal",
-            "resetsAt": 1785499200008,
-            "active": false
+            "resetsAt": 1785499199781,
+            "active": true
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
@@ -230,7 +229,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785035809686,
+        "fetchedAt": 1785035869885,
         "windows": [
           {
             "key": "primary",
@@ -326,7 +325,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785035809686,
+        "fetchedAt": 1785035869885,
         "windows": [
           {
             "key": "primary",
@@ -618,23 +617,22 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785034669622,
+        "fetchedAt": 1785035869683,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 100,
-            "severity": "critical",
-            "resetsAt": 1785034800008,
-            "active": true
+            "percent": 0,
+            "severity": "normal",
+            "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
             "percent": 15,
             "severity": "normal",
-            "resetsAt": 1785499200008,
-            "active": false
+            "resetsAt": 1785499199781,
+            "active": true
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
