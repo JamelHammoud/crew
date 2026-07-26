@@ -22,22 +22,33 @@ const RAIL = 232
 // that is not full sits in the middle instead of hugging the left edge.
 const span = (columns: number): string => `calc((100% - ${(columns - 1) * GAP}px) / ${columns})`
 
+const SCREEN = 'flex-1 min-w-0 rounded-card bg-ink-950 ring-1 ring-fg/[0.07]'
+
 function Shared({ stream, name, mine }: { stream: MediaStream | null; name: string; mine: boolean }) {
   const live = useLive(stream, true)
+  const [natural, setNatural] = useState<Box | null>(null)
 
-  return (
-    <div className="flex-1 min-w-0 rounded-card bg-ink-950 ring-1 ring-fg/[0.07] overflow-hidden flex items-center justify-center">
-      {live && stream ? (
-        <VideoStream stream={stream} contain />
-      ) : (
+  const content = useCallback(
+    (frame: Box) => (natural ? { box: containBox(natural, frame), natural: natural.width } : null),
+    [natural]
+  )
+
+  if (!live || !stream)
+    return (
+      <div className={`${SCREEN} overflow-hidden flex items-center justify-center`}>
         <div className="flex flex-col items-center gap-3">
           <Spinner size={20} className="text-fg-muted" />
           <p className="text-sm text-fg-muted">
             {mine ? 'Setting up your screen' : `Waiting for ${name}'s screen`}
           </p>
         </div>
-      )}
-    </div>
+      </div>
+    )
+
+  return (
+    <ZoomView content={content} refit={stream.id} className={SCREEN}>
+      <VideoStream stream={stream} contain onSize={setNatural} />
+    </ZoomView>
   )
 }
 
