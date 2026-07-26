@@ -187,6 +187,28 @@ describe('step rows', () => {
     return waitFor(() => expect(copied).toBe(command))
   })
 
+  it('shows what the command printed under the command itself', async () => {
+    const command = 'yarn tsc --noEmit'
+    const output = 'src/app.ts(12,3): error TS2345: wrong type'
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'Bash', detail: command, output }) })
+    )
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(container.textContent).toContain(output)
+    const buttons = container.querySelectorAll('button')
+    expect(buttons.length).toBe(3)
+    fireEvent.click(buttons[2])
+    await waitFor(() => expect(copied).toBe(output))
+  })
+
+  it('keeps a result to itself when the row is not a command', () => {
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'Grep', detail: 'AgentIcon', output: 'twelve hits' }) })
+    )
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(container.textContent).not.toContain('twelve hits')
+  })
+
   it('opens an edit into the lines that went and the lines that arrived', async () => {
     const diff = ['- const one = 1', '+ const one = 2'].join('\n')
     const { container } = render(

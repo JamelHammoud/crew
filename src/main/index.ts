@@ -255,11 +255,13 @@ app.whenReady().then(() => {
   ipcMain.handle('session:start', async (_event, folder: string, name: string) => {
     const info = await session.startHost(folder, name)
     refreshTray()
+    warmTerminals()
     return info
   })
   ipcMain.handle('session:join', async (_event, link: string, folder: string, name: string) => {
     const info = await session.startJoin(link, folder, name)
     refreshTray()
+    warmTerminals()
     return info
   })
   ipcMain.handle('session:leave', async () => {
