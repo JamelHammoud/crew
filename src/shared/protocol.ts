@@ -140,6 +140,7 @@ export type ServerMessage =
       settings: AgentSettings
       attachments?: Attachment[]
       designBoard?: DesignBoardMeta
+      designBoards?: DesignBoardMeta[]
     }
   | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[] }
   | { type: 'cancel'; promptId: string }
