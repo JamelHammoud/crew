@@ -296,8 +296,8 @@ describe('grok parser matches the documented streaming-json format', () => {
 
 describe('what a command printed', () => {
   it('drops the colors and the cursor moves a terminal would have eaten', () => {
-    expect(commandOutput('[32mpassed[0m')).toBe('passed')
-    expect(commandOutput('one[2Ktwo')).toBe('onetwo')
+    expect(commandOutput('\u001b[32mpassed\u001b[0m')).toBe('passed')
+    expect(commandOutput('one\u001b[2Ktwo')).toBe('onetwo')
     expect(commandOutput('  \n\n  ')).toBeUndefined()
     expect(commandOutput(undefined)).toBeUndefined()
   })
