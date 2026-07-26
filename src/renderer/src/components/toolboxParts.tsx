@@ -200,44 +200,39 @@ export function Empty({ children }: { children: ReactNode }) {
   return <p className="px-1 py-3 text-center text-xs text-fg/35">{children}</p>
 }
 
-// One tile, whatever is behind it: a tool in the toolbox, or the kind of thing a
-// tool being built will do. Lit white while it is the thing chosen, filled
-// quietly when it is waiting, barely there when it cannot be pressed. A tile
-// that is not ready yet says so on hover rather than wearing a label, and it
-// warms from the group, since a disabled button never matches its own hover.
+// One tile: a tool in the toolbox, built in or built here. Lit white while the
+// thing it opens is live, filled quietly the rest of the time, and barely there
+// when it is the empty slot at the end waiting to be filled.
 export function Tile({
   mark,
   name,
   active,
-  soon,
+  ghost,
   onClick,
   children
 }: {
   mark: ReactNode
   name: string
   active?: boolean
-  soon?: boolean
+  ghost?: boolean
   onClick?: () => void
   children?: ReactNode
 }) {
-  const look = soon
-    ? 'bg-fg/[0.03] text-fg/30 group-hover:bg-fg/[0.06] group-hover:text-fg/50'
+  const look = ghost
+    ? 'bg-fg/[0.02] text-fg/35 hover:bg-fg/[0.06] hover:text-fg'
     : active
       ? 'bg-fg text-ink-900'
       : 'bg-fg/[0.05] text-fg/70 hover:bg-fg/[0.09] hover:text-fg'
   return (
     <div className="group relative">
-      <Tooltip label="Coming soon" disabled={!soon} className="w-full">
-        <button
-          onClick={onClick}
-          disabled={soon}
-          aria-pressed={active}
-          className={`w-full h-[76px] px-1.5 rounded-tile flex flex-col items-center justify-center gap-2 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
-        >
-          {mark}
-          <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
-        </button>
-      </Tooltip>
+      <button
+        onClick={onClick}
+        aria-pressed={active}
+        className={`w-full h-[76px] px-1.5 rounded-tile flex flex-col items-center justify-center gap-2 transition-all duration-150 active:scale-95 ${look}`}
+      >
+        {mark}
+        <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
+      </button>
       {children}
     </div>
   )
