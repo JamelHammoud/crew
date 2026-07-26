@@ -290,6 +290,24 @@ app.whenReady().then(() => {
     const absolute = session.resolveFile(target)
     if (absolute) shell.showItemInFolder(absolute)
   })
+  ipcMain.on('terminal:open', (event, id: string, wanted: TerminalSize) => {
+    const sender = event.sender
+    terminalsFor(sender).open(id, session.projectFolder(), wanted, {
+      data: (session_, chunk) => {
+        if (!sender.isDestroyed()) sender.send('terminal:data', session_, chunk)
+      },
+      exit: session_ => {
+        if (!sender.isDestroyed()) sender.send('terminal:exit', session_)
+      }
+    })
+  })
+  ipcMain.on('terminal:write', (event, id: string, data: string) =>
+    terminalsFor(event.sender).write(id, data)
+  )
+  ipcMain.on('terminal:resize', (event, id: string, wanted: TerminalSize) =>
+    terminalsFor(event.sender).resize(id, wanted)
+  )
+  ipcMain.on('terminal:close', (event, id: string) => terminalsFor(event.sender).close(id))
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
