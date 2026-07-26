@@ -78,7 +78,7 @@ export default function Composer({
         <div className="mx-3 mb-2 flex min-w-0 items-center gap-3 rounded-card border border-ink-700 bg-ink-800 px-3 py-2.5 shadow-[0_8px_24px_rgb(0_0_0/0.2)]">
           <ArrowUturnLeftIcon className="h-4 w-4 shrink-0 text-fg-secondary" />
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-fg">Replying to {replyTo.author}</p>
+            <p className="text-xs font-semibold text-fg">{replyTargetLabel(replyTo.author, replyTo.self, replyTo.self)}</p>
             <p className="mt-0.5 truncate text-sm text-fg-muted">{replyTo.text}</p>
           </div>
           <Tooltip label="Cancel reply">
