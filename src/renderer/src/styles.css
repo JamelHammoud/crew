@@ -394,14 +394,12 @@ body {
    they stand rather than easing them, so the landing is animated too, and it
    starts on the value the wave rests at. Only a mark that was watched thinking
    wears it, or every old row in a thread would land again on the way past. */
-.thinking-mark .thinking-dot,
-.thinking-mark .thinking-ring {
+.thinking-mark .thinking-dot {
   transform-box: fill-box;
   transform-origin: center;
 }
 
-.thinking-mark[data-state='thinking'] .thinking-dot,
-.thinking-mark[data-state='thinking'] .thinking-ring {
+.thinking-mark[data-state='thinking'] .thinking-dot {
   animation: thinking-wave 1.25s cubic-bezier(0.4, 0, 0.2, 1) var(--dot-delay, 0ms) infinite;
 }
 
@@ -414,13 +412,16 @@ body {
   animation: thinking-gather 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.thinking-mark[data-landing] .thinking-ring {
-  animation: thinking-land 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+.thinking-mark .thinking-ring {
+  r: var(--ring, 1.7px);
+  opacity: 0;
+  transition:
+    r 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.thinking-mark .thinking-ring {
-  r: var(--ring, 1.9px);
-  transition: r 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+.thinking-mark[data-state='thought'] .thinking-ring {
+  opacity: 1;
 }
 
 .thinking-mark .thinking-check {
