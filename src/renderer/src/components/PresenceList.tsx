@@ -12,6 +12,8 @@ export function Face({ who, size = 'md' }: { who: Present; size?: 'sm' | 'md' })
   )
 }
 
+// A long name is cut rather than pushing the row wider than what holds it, so
+// nothing ever scrolls sideways.
 function Group({ label, who }: { label: string; who: Present[] }): ReactElement | null {
   if (who.length === 0) return null
   return (
