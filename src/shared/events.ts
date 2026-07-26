@@ -46,6 +46,7 @@ export type SessionEvent =
       mentionRefs?: AgentMentionRef[]
       memberMentionRefs?: MemberMentionRef[]
       docMentions?: DocMentionRef[]
+      boardMentions?: BoardMentionRef[]
       threadId?: string
       attachments?: Attachment[]
       replyTo?: MessageReply
