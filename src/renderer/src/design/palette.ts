@@ -93,6 +93,16 @@ export function labelAlign(align: TypeStyle['align']): string {
   return align === 'center' ? 'middle' : align === 'right' ? 'end' : 'start'
 }
 
+export function verticalOf(value: unknown): TypeStyle['vertical'] {
+  if (value === 'middle' || value === 'center') return 'middle'
+  if (value === 'end' || value === 'bottom') return 'bottom'
+  return 'top'
+}
+
+export function labelVertical(vertical: TypeStyle['vertical']): string {
+  return vertical === 'middle' ? 'middle' : vertical === 'bottom' ? 'end' : 'start'
+}
+
 export function familyOf(font: unknown): string {
   return font === 'serif' || font === 'mono' || font === 'draw' ? (font as string) : 'sans'
 }
