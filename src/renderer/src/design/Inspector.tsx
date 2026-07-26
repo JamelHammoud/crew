@@ -34,18 +34,6 @@ const STROKE_STYLES = [
   { value: 'dotted', label: 'Dot' }
 ] as const
 
-const TEXT_ALIGNS = [
-  { value: 'left', label: 'Left', icon: <Bars3BottomLeftIcon className="w-4 h-4" /> },
-  { value: 'center', label: 'Center', icon: <Bars3Icon className="w-4 h-4" /> },
-  { value: 'right', label: 'Right', icon: <Bars3BottomRightIcon className="w-4 h-4" /> }
-] as const
-
-const FAMILIES = [
-  { value: 'sans', label: 'Sans' },
-  { value: 'serif', label: 'Serif' },
-  { value: 'mono', label: 'Mono' }
-] as const
-
 function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <Tooltip label={label}>
