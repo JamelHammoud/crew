@@ -73,6 +73,7 @@ export interface ThreadItem {
   error?: string
   name?: string
   detail?: string
+  output?: string
   subagent?: boolean
   files?: FileChange[]
   attachments?: Attachment[]
@@ -143,6 +144,7 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
       promptId,
       name: step.name || 'Working',
       detail: step.detail,
+      output: step.output,
       files: step.files,
       subagent: step.kind === 'subagent'
     }
