@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
-import { canRename, renameShape } from '../design/tools'
+import { canRename, layerName, renameShape } from '../design/tools'
 import { PanelButton } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
@@ -55,15 +55,6 @@ function buildRows(shapes: TLShape[], collapsed: Set<string>): LayerRow[] {
     if (parentId.startsWith('page:')) walk(parentId, 0)
   }
   return rows
-}
-
-function layerName(shape: TLShape): string {
-  const props = shape.props as Record<string, unknown>
-  const name = typeof props.name === 'string' ? props.name.trim() : ''
-  if (name) return name
-  if (typeof props.text === 'string' && props.text.trim()) return props.text.trim().slice(0, 40)
-  if (shape.type === 'geo' && typeof props.geo === 'string') return props.geo
-  return shape.type
 }
 
 function Layers({ editor }: { editor: Editor }) {
