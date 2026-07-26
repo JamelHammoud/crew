@@ -293,11 +293,11 @@ app.whenReady().then(() => {
   ipcMain.on('terminal:open', (event, id: string, wanted: TerminalSize) => {
     const sender = event.sender
     terminalsFor(sender).open(id, session.projectFolder(), wanted, {
-      data: (session_, chunk) => {
-        if (!sender.isDestroyed()) sender.send('terminal:data', session_, chunk)
+      data: (opened, chunk) => {
+        if (!sender.isDestroyed()) sender.send('terminal:data', opened, chunk)
       },
-      exit: session_ => {
-        if (!sender.isDestroyed()) sender.send('terminal:exit', session_)
+      exit: opened => {
+        if (!sender.isDestroyed()) sender.send('terminal:exit', opened)
       }
     })
   })
