@@ -61,6 +61,7 @@ const overlayUtils = [CursorsDrawnByCrew]
 
 // crew owns every panel now, so tldraw's own chrome stays out of the way.
 const components: TLComponents = {
+  ContextMenu: null,
   MenuPanel: null,
   NavigationPanel: null,
   StylePanel: null,
