@@ -24,7 +24,6 @@ import {
 import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
-import Pill from './Pill'
 import { Popover } from './Popover'
 import Tooltip from './Tooltip'
 
@@ -321,7 +320,6 @@ export default function Toolbox({
                 key={tool.id}
                 mark={tool.mark}
                 name={tool.name}
-                note={tool.soon ? 'Soon' : undefined}
                 soon={tool.soon}
                 active={tool.id === 'huddle' && joined}
                 onClick={() => press(tool.run, tool.panel ?? false)}
