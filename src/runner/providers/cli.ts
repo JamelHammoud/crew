@@ -205,20 +205,27 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (out.thinkingStart) {
             thinkingBlocks.set(out.thinkingStart.index, `b${blocks++}`)
           }
-          if (out.thinkingDelta) {
+          // A model that is asked not to show its reasoning still sends the
+          // blocks, with an empty string where the words would be. Those are
+          // not steps: a run that thinks in silence should look like it is
+          // working, not open an empty card. Waiting for text is also what
+          // leaves the complete block at the end of the message free to stand
+          // in, on a CLI that only ever sends it that way.
+          if (out.thinkingDelta?.text) {
             let id = thinkingBlocks.get(out.thinkingDelta.index)
             if (!id) {
               id = `b${blocks++}`
               thinkingBlocks.set(out.thinkingDelta.index, id)
             }
             streamedThinking = true
+            thinkingWritten.add(id)
             written += out.thinkingDelta.text.length
             hooks.onStep({ id, kind: 'thinking', text: out.thinkingDelta.text, status: 'running' })
           }
           if (out.thinkingStop) {
             const id = thinkingBlocks.get(out.thinkingStop.index)
-            if (id) {
-              thinkingBlocks.delete(out.thinkingStop.index)
+            thinkingBlocks.delete(out.thinkingStop.index)
+            if (id && thinkingWritten.delete(id)) {
               hooks.onStep({ id, kind: 'thinking', status: 'done' })
             }
           }
