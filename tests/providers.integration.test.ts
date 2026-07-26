@@ -45,6 +45,25 @@ describe('fake provider contract', () => {
     expect(steps.filter(s => s.status === 'done').length).toBe(2)
   })
 
+  // A reply held back until its block closes is a run that says "Starting" for
+  // as long as it takes to write, however fast the words arrive.
+  it('posts the reply as it is written, under one step, and only once', async () => {
+    const provider = makeFakeProvider({ FAKE_CLI_TEXT_STREAM: '1' })
+    const steps: Array<{ id: string; text?: string; status: string }> = []
+    const run = provider.start('answer', repo, {
+      onStep: step => {
+        if (step.kind === 'text') steps.push({ id: step.id, text: step.text, status: step.status })
+      }
+    })
+    const { text } = await run.done
+    expect(steps).toEqual([
+      { id: 'b0', text: 'the answer ', status: 'running' },
+      { id: 'b0', text: 'in pieces', status: 'running' },
+      { id: 'b0', text: undefined, status: 'done' }
+    ])
+    expect(text).toBe('the answer in pieces')
+  })
+
   it('reports thinking as its own step', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_THINK: '1' })
     const thoughts: string[] = []
