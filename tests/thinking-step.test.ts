@@ -24,7 +24,7 @@ const thought = (text: string, streaming: boolean): ThreadItem => ({
 
 const readStyles = (): string =>
   (require('node:fs') as typeof import('node:fs')).readFileSync(
-    new URL('../src/renderer/src/styles.css', import.meta.url),
+    `${process.cwd()}/src/renderer/src/styles.css`,
     'utf8'
   )
 
