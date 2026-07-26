@@ -14,6 +14,7 @@ import {
   TextWithFileLinks,
   useLocated
 } from './fileLinks'
+import Markdown from './Markdown'
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
 import type { ThreadItem } from './thread'
