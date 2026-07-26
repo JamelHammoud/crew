@@ -367,12 +367,20 @@ for (const [name, size] of [
   ['icon_512x512', 512],
   ['icon_512x512@2x', 1024]
 ]) {
-  raster(dark, size, path.join(iconset, `${name}.png`))
+  raster(dark, size, size, path.join(iconset, `${name}.png`))
 }
 execFileSync('iconutil', ['-c', 'icns', iconset, '-o', path.join(resources, 'icon.icns')])
 rmSync(iconset, { recursive: true, force: true })
 
-raster(dark, 1024, path.join(resources, 'icon.png'))
+raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
+
+function encode(source, width, height, key) {
+  const out = path.join(tmpdir(), `crew-icon-${key}.png`)
+  raster(source, width, height, out)
+  const data = readFileSync(out).toString('base64')
+  rmSync(out, { force: true })
+  return data
+}
 
 const embedded = {}
 for (const [key, source] of [
@@ -381,10 +389,7 @@ for (const [key, source] of [
   ['DEV_DARK_ICON', devDark],
   ['DEV_LIGHT_ICON', devLight]
 ]) {
-  const out = path.join(tmpdir(), `crew-icon-${key}.png`)
-  raster(source, 512, out)
-  embedded[key] = readFileSync(out).toString('base64')
-  rmSync(out, { force: true })
+  embedded[key] = encode(source, 512, 512, key)
 }
 
 writeFileSync(
@@ -394,6 +399,13 @@ writeFileSync(
     .join('\n')
 )
 
+// Drawn at twice the size the menu bar asks for, so it stays sharp on a retina
+// display and the bar halves it everywhere else.
+writeFileSync(
+  path.join(root, 'src/main/tray-png.ts'),
+  `export const TRAY_WIDTH = ${TRAY.width}\n\nexport const TRAY_HEIGHT = ${TRAY.height}\n\nexport const TRAY_ICON = '${encode(trayMark, TRAY.width * 2, TRAY.height * 2, 'TRAY')}'\n`
+)
+
 console.log(
-  'wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, crew-logo.svg, icon.icns, icon.png, src/main/icon-png.ts and src/renderer/src/components/crew-mark.ts'
+  'wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, crew-logo.svg, tray.svg, icon.icns, icon.png, src/main/icon-png.ts, src/main/tray-png.ts and src/renderer/src/components/crew-mark.ts'
 )
