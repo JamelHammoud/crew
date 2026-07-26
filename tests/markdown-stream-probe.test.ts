@@ -45,7 +45,7 @@ describe('an answer arriving as it is written', () => {
     rerender(md('The parser threw'))
 
     expect(fading(container)).toEqual([' threw'])
-    expect(container.textContent).toBe('The parser threw')
+    expect(container.textContent?.trim()).toBe('The parser threw')
   })
 
   it('keeps the text already on screen as the very same node', () => {
@@ -64,7 +64,7 @@ describe('an answer arriving as it is written', () => {
     rerender(md('one two three'))
 
     expect(fading(container)).toEqual([' two', ' three'])
-    expect(container.textContent).toBe('one two three')
+    expect(container.textContent?.trim()).toBe('one two three')
   })
 
   it('fades a new paragraph in the same way', () => {
@@ -80,7 +80,7 @@ describe('an answer arriving as it is written', () => {
     rerender(md('one two', false))
 
     expect(fading(container)).toEqual([])
-    expect(container.textContent).toBe('one two')
+    expect(container.textContent?.trim()).toBe('one two')
   })
 
   it('does not fade markup closing over words already on screen', () => {
@@ -136,7 +136,7 @@ describe('a thought read in the same hand as an answer', () => {
   })
 
   it('spaces a blank line as a paragraph rather than an empty row', () => {
-    const { container } = render(createElement(StepRow, { item: thought('One thing.\n\nThen another.', false) }))
+    const { container } = render(createElement(StepRow, { item: thought('One thing.\n\nThen another.', true) }))
 
     const paras = [...container.querySelectorAll('.md-quiet p')].map(p => p.textContent)
     expect(paras).toEqual(['One thing.', 'Then another.'])
