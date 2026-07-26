@@ -97,16 +97,25 @@ export function textStyle(type: TypeStyle): CSSProperties {
   }
 }
 
-export function nodeStyle(props: DesignNodeProps): CSSProperties {
-  const layers = props.fills
+function fillLayers(fills: Paint[]): string[] {
+  return fills
     .filter(fill => fill.visible)
     .map(paintLayer)
     .filter((layer): layer is string => layer !== null)
-  const { shadows, filter, backdrop } = effectStyle(props.effects)
+}
+
+function cornerRadius(props: DesignNodeProps): string {
+  if (nodeShapeOf(props.shape) === 'ellipse') return '50%'
   const [tl, tr, br, bl] = props.radius
+  return `${tl}px ${tr}px ${br}px ${bl}px`
+}
+
+export function nodeStyle(props: DesignNodeProps): CSSProperties {
+  const layers = fillLayers(props.fills)
+  const { shadows, filter, backdrop } = effectStyle(props.effects)
   const boxShadow = [...strokeShadows(props.strokes), ...shadows]
   return {
-    borderRadius: `${tl}px ${tr}px ${br}px ${bl}px`,
+    borderRadius: cornerRadius(props),
     backgroundImage: layers.length > 0 ? layers.join(', ') : undefined,
     boxShadow: boxShadow.length > 0 ? boxShadow.join(', ') : undefined,
     filter: filter.length > 0 ? filter.join(' ') : undefined,
