@@ -90,18 +90,24 @@ const VERTICAL: Record<TypeStyle['vertical'], string> = {
   bottom: 'flex-end'
 }
 
+export function textInkStyle(type: TypeStyle): CSSProperties {
+  return {
+    letterSpacing: `${type.spacing}px`,
+    textTransform: type.transform === 'upper' ? 'uppercase' : type.transform === 'lower' ? 'lowercase' : 'none',
+    textDecoration: DECORATION[type.decoration] ?? 'none'
+  }
+}
+
 export function textStyle(type: TypeStyle): CSSProperties {
   return {
     fontFamily: fontStack(type.family),
     fontSize: `${type.size}px`,
     fontWeight: type.weight,
     lineHeight: type.lineHeight,
-    letterSpacing: `${type.spacing}px`,
     textAlign: type.align,
     color: type.color,
-    textTransform: type.transform === 'upper' ? 'uppercase' : type.transform === 'lower' ? 'lowercase' : 'none',
-    textDecoration: DECORATION[type.decoration] ?? 'none',
-    fontStyle: type.italic ? 'italic' : 'normal'
+    fontStyle: type.italic ? 'italic' : 'normal',
+    ...textInkStyle(type)
   }
 }
 
