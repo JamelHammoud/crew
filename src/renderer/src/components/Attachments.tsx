@@ -13,7 +13,7 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   return (
     <div className="flex flex-wrap gap-2 mb-2">
       {pending.map(item => (
-        <div key={item.id} className="relative group animate-pop">
+        <div key={item.id} className="relative group animate-pop flex">
           <Tooltip label={item.name}>
             <button
               onClick={() => useBrowser.getState().openImage(previewSrc(item), item.name)}
