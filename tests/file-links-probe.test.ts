@@ -355,6 +355,20 @@ describe('changed lines', () => {
     expect(marked()).toEqual(['6', '7'])
   })
 
+  it('takes you back to the change when you open the same file again', async () => {
+    await openDiff()
+    const seen: Element[] = []
+    Element.prototype.scrollIntoView = function (this: Element) {
+      seen.push(this)
+    }
+    try {
+      fireEvent.click(screen.getByText('src/panel.ts'))
+      await waitFor(() => expect(seen.some(row => row.getAttribute('data-line') === '6')).toBe(true))
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView
+    }
+  })
+
   it('shows the lines that were replaced above the new ones', async () => {
     await openDiff()
     expect(taken()).toEqual(['export function old() {', '  return 1'])
