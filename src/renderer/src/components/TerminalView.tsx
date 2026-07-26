@@ -98,7 +98,7 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
 
   useEffect(() => {
     if (!active) return
-    fitRef.current?.fit()
+    fitTo(hostRef.current, fitRef.current)
     termRef.current?.focus()
   }, [active])
 
