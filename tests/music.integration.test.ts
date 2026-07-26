@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import WebSocket from 'ws'
 import type { ServerMessage } from '../src/shared/protocol'
 import { CrewSession } from '../src/server/session'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
