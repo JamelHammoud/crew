@@ -80,10 +80,11 @@ export const CollapseGlyph = glyph(
 // 16px, where the pair reads as music from across the room. The heads follow the
 // beam down rather than standing level, which is what tells a pair of notes from
 // two circles on a pole.
+// The heads and the stems are one path rather than three shapes, because a stem
+// meets its head where the two strokes would otherwise lie on top of each other.
+// Worn at an opacity, as a tile that is not ready for pressing is, two stacked
+// strokes paint twice and the join comes out darker than the mark around it. One
+// element is painted once, whatever it crosses.
 export const MusicGlyph = glyph(
-  <>
-    <circle cx="6.75" cy="18.25" r="2.5" />
-    <circle cx="17.25" cy="16.5" r="2.5" />
-    <path d="M9.25 18.25V5L19.75 3.25v13.25" />
-  </>
+  <path d="M9.25 18.25a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0M19.75 16.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0M9.25 18.25V5l10.5-1.75V16.5" />
 )
