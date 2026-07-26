@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { cleanup, render } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it } from 'vitest'
