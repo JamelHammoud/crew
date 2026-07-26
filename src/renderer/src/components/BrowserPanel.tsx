@@ -9,6 +9,7 @@ import {
   ExternalLinkGlyph,
   FolderGlyph,
   GlobeGlyph,
+  MusicGlyph,
   PhotoGlyph,
   PlusGlyph,
   RefreshGlyph,
@@ -19,6 +20,7 @@ import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
 import ImageView from './ImageView'
+import MusicView from './music/MusicView'
 import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import TerminalView from './TerminalView'
@@ -30,6 +32,7 @@ export const showsImage = (tab: BrowserTab): boolean =>
 const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
 
 function tabLabel(tab: BrowserTab): string {
+  if (tab.kind === 'music') return 'Music'
   if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
