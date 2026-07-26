@@ -81,6 +81,7 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
       term.write('\r\n\x1b[90m[Process completed]\x1b[0m\r\n')
     })
     window.crew.openTerminal(tab.id, { cols: term.cols, rows: term.rows })
+    if (commandRef.current) window.crew.writeTerminal(tab.id, `${commandRef.current}\r`)
 
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => fitTo(host, fit))
     observer?.observe(host)
