@@ -200,7 +200,11 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
         </div>
       </div>
       <div className="flex-1 min-h-0 overflow-auto pb-2">
-        {query.trim() ? <Matches tab={tab} query={query} /> : <Branch tab={tab} path="" depth={0} />}
+        {query.trim() ? (
+          <Matches tab={tab} paths={paths} query={query} />
+        ) : (
+          <Branch tab={tab} path="" depth={0} />
+        )}
       </div>
     </aside>
   )
