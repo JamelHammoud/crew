@@ -153,11 +153,16 @@ export const TableGlyph = mark(
   </>
 )
 
+// One hill, and it runs off the frame at both ends rather than standing inside
+// it: a picture is a view of something larger, and a peak that stops short of
+// the edges reads as a triangle in a box. The three peaks it had before were a
+// zigzag at 16. Both ends land on the frame's own stroke, which is what hides
+// the round caps.
 export const ImageGlyph = mark(
   <>
     <rect {...BLOCK} />
-    <circle cx="8.7" cy="9.6" r="1.15" fill="currentColor" stroke="none" />
-    <path d="m4.2 18.2 4.8-4.4 3.4 3 2.8-2.4 5.4 4.6" />
+    <circle cx="16.2" cy="9" r="1.45" fill="currentColor" stroke="none" />
+    <path d="M3.4 16.9l4.6-4.6a1.7 1.7 0 0 1 2.4 0l7.3 7.3" />
   </>
 )
 
