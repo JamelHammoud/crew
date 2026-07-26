@@ -38,8 +38,14 @@ function open(list: FakeShape[], selected: string[], extra: Record<string, unkno
 
 const rows = () => [...document.querySelectorAll('button')].map(el => el.textContent ?? '')
 
+const resize = (height: number) =>
+  Object.defineProperty(window, 'innerHeight', { value: height, writable: true, configurable: true })
+
 describe('design right click menu', () => {
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    resize(768)
+  })
 
   it('opens on the selection with the actions Figma puts there', () => {
     open([node('shape:a', 'Card'), node('shape:b', 'Label')], ['shape:a', 'shape:b'])
@@ -103,6 +109,35 @@ describe('design right click menu', () => {
     const made = open([node('shape:a', 'Card')], ['shape:a'])
     fireEvent.click(screen.getByText('Bring to front'))
     expect(made.calls).toContain('bringToFront(shape:a)')
+  })
+
+  it('stops growing and scrolls instead of running off the bottom of the screen', () => {
+    open([node('shape:a', 'Card')], ['shape:a'])
+    const shell = document.querySelector('.glass') as HTMLElement
+    expect(shell.style.maxHeight).toBe('420px')
+    expect(shell.style.overflowY).toBe('auto')
+    expect(rows().length).toBeGreaterThan(12)
+  })
+
+  it('never stands taller than the window it is in', () => {
+    resize(320)
+    open([node('shape:a', 'Card')], ['shape:a'])
+    expect((document.querySelector('.glass') as HTMLElement).style.maxHeight).toBe('304px')
+  })
+
+  it('keeps the dividers running edge to edge in the part that scrolls', () => {
+    open([node('shape:a', 'Card')], ['shape:a'])
+    const shell = document.querySelector('.glass') as HTMLElement
+    expect(shell.className).toContain('p-1.5')
+    for (const line of shell.querySelectorAll('.h-px')) expect(line.className).toContain('-mx-1.5')
+  })
+
+  it('caps the layers it lists under the pointer the same way', () => {
+    open([node('shape:a', 'Card'), node('shape:b', 'Label')], ['shape:b'])
+    fireEvent.pointerEnter(screen.getByText('Select layer').parentElement!)
+    const shells = [...document.querySelectorAll('.glass')] as HTMLElement[]
+    expect(shells.length).toBe(2)
+    for (const shell of shells) expect(shell.style.maxHeight).toBe('420px')
   })
 
   it('draws nothing at all until it is opened', () => {
