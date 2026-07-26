@@ -17,6 +17,11 @@ const out = path.join(root, 'icon-sheet.html')
 const SETS = [
   { title: 'Crew icons', from: 'src/renderer/src/icons/index.ts', audit: true },
   { title: 'Thread steps', from: 'src/renderer/src/components/toolGlyphs.tsx', audit: true },
+  // Not audited, because half of this set is letters. A letter is drawn to the
+  // type it belongs to rather than to the box, so it stands on the set's own cap
+  // height and reads as undersized against a keyline meant for objects, and no
+  // measurement can tell a B from a bracket. The numbers are still printed, so
+  // the letterforms can be seen agreeing with one another.
   { title: 'Doc blocks', from: 'src/renderer/src/components/doc/docGlyphs.tsx', audit: false },
   { title: 'Design canvas', from: 'src/renderer/src/design/glyphs.tsx', audit: true }
 ]
