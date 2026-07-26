@@ -73,6 +73,9 @@ export type ClientMessage =
   | { type: 'todo.remove'; todoId: string }
   | { type: 'todo.check'; todoId: string; checked: boolean }
   | { type: 'todo.do'; todoId: string; agentId?: string }
+  | { type: 'tool.add'; name: string; mark: ToolMark; action: ToolAction }
+  | { type: 'tool.edit'; toolId: string; name: string; mark: ToolMark; action: ToolAction }
+  | { type: 'tool.remove'; toolId: string }
   | { type: 'doc.update'; page: string; text: string; title?: string }
   | { type: 'doc.title'; page: string; title: string }
   | { type: 'doc.retitle'; page: string; title: string }
