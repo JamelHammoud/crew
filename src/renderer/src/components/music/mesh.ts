@@ -264,11 +264,21 @@ export function meshOf(item: MusicItem, size: number): Mesh {
   const roll = stream(seedOf(item.id))
   const parts = partsOf(item.colors, roll)
   const layout = LAYOUTS[Math.floor(roll() * LAYOUTS.length)]
-  // The layout is the whole picture. Nothing is added over the top of it, so no
-  // two covers share a lit corner or a shaded one, and every layer in it is a
-  // plain color over a plain color. Blending was tried and every mode that
-  // reaches white or black takes the palette with it.
-  const layers = layout(parts, roll)
+  // Two veils over the color, lying within a few degrees of each other so they
+  // read as petals overlapping rather than as a weave. One is drawn in the light
+  // and one in a field color, so a veil is another color arriving rather than a
+  // grey film over the one underneath.
+  //
+  // Everything here is a plain color over a plain color, veils included. Nothing
+  // blends: every mode that reaches white or black takes the palette with it,
+  // and no layer sits in a fixed place, or every cover comes out the same
+  // picture in different colors.
+  const lie = roll() * 360
+  const layers: Layer[] = [
+    { image: veil(parts.light, lie, 0.85, roll), blend: 'normal' },
+    { image: veil(parts.fields[1 % parts.fields.length], lie + 14 + roll() * 22, 0.5, roll), blend: 'normal' },
+    ...layout(parts, roll)
+  ]
   return {
     backgroundColor: parts.ground,
     backgroundImage: layers.map(one => one.image).join(', '),
