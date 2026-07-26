@@ -20,6 +20,7 @@ export function Popover({
 }) {
   const holderRef = useRef<HTMLSpanElement>(null)
   const popRef = useRef<HTMLDivElement>(null)
+  const placedRef = useRef<'top' | 'bottom' | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
 
@@ -27,6 +28,7 @@ export function Popover({
     if (!open) {
       setRect(null)
       setSize(null)
+      placedRef.current = null
       return
     }
     if (at) {
@@ -39,7 +41,18 @@ export function Popover({
 
   useLayoutEffect(() => {
     const el = popRef.current
-    if (rect && el) setSize({ w: el.offsetWidth, h: el.offsetHeight })
+    if (!rect || !el) return
+    const measure = () =>
+      setSize(current =>
+        current && current.w === el.offsetWidth && current.h === el.offsetHeight
+          ? current
+          : { w: el.offsetWidth, h: el.offsetHeight }
+      )
+    measure()
+    if (typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [rect])
 
   const style = ((): CSSProperties | null => {
