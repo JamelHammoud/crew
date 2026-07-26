@@ -2,10 +2,11 @@ import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { Effect } from '../../../shared/designNode'
 import { Popover } from '../components/Popover'
+import Select from '../components/Select'
 import { BlurGlyph, ShadowGlyph } from './glyphs'
 import { ColorInput, NumberInput, Row, SubLabel } from './InspectorFields'
 
-const KINDS: Array<{ value: Effect['type']; label: string }> = [
+const KINDS = [
   { value: 'inner-shadow', label: 'Inner shadow' },
   { value: 'shadow', label: 'Drop shadow' },
   { value: 'layer-blur', label: 'Layer blur' },
@@ -47,23 +48,13 @@ export default function EffectRow({ effect, onChange }: { effect: Effect; onChan
       >
         <Glyph className="w-4 h-4 shrink-0 text-fg-muted" />
         <span className="flex-1 truncate">{labelOf(effect)}</span>
-        <ChevronDownIcon className={`w-3.5 h-3.5 shrink-0 text-fg-muted transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon
+          className={`w-3.5 h-3.5 shrink-0 text-fg-muted transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </button>
-      <Popover open={open} onClose={() => setOpen(false)} align="start" className="w-60">
-        <div className="flex flex-col gap-2 p-2">
-          {KINDS.map(kind => (
-            <button
-              key={kind.value}
-              onClick={() => onChange(retype(effect, kind.value))}
-              aria-pressed={kind.value === effect.type}
-              className={`w-full h-8 flex items-center gap-2 px-3 rounded-full text-xs text-left transition-colors ${
-                kind.value === effect.type ? 'bg-fg text-ink-900' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
-              }`}
-            >
-              {kind.label}
-            </button>
-          ))}
-          <div className="h-px bg-fg/10 mx-1" />
+      <Popover open={open} onClose={() => setOpen(false)} align="start">
+        <div className="w-56 p-1 flex flex-col gap-2">
+          <Select full value={effect.type} options={KINDS} onChange={type => onChange(retype(effect, type as Effect['type']))} />
           {shadow ? (
             <>
               <SubLabel>Position</SubLabel>
@@ -77,7 +68,9 @@ export default function EffectRow({ effect, onChange }: { effect: Effect; onChan
                 <NumberInput label="Spread" value={shadow.spread} onChange={spread => onChange({ ...shadow, spread })} />
               </Row>
               <SubLabel>Color</SubLabel>
-              <ColorInput value={shadow.color} onChange={color => onChange({ ...shadow, color })} />
+              <div className="flex">
+                <ColorInput value={shadow.color} onChange={color => onChange({ ...shadow, color })} />
+              </div>
             </>
           ) : (
             <>
