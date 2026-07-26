@@ -36,7 +36,7 @@ describe('a thinking step', () => {
     screen.getByText('Thinking')
     expect(mark().getAttribute('data-state')).toBe('thinking')
     expect(mark().style.getPropertyValue('--ring')).toBe(`${DOT_R}px`)
-    expect(mark().querySelectorAll('.thinking-dot').length).toBe(2)
+    expect(mark().querySelectorAll('.thinking-dot').length).toBe(3)
     expect(ring()).not.toBeNull()
     expect(mark().querySelector('.thinking-check')).not.toBeNull()
 
@@ -48,6 +48,15 @@ describe('a thinking step', () => {
     // rather than one glyph being swapped out for another.
     expect(mark()).toBe(before)
     expect(mark().getAttribute('data-state')).toBe('thought')
+    expect(mark().style.getPropertyValue('--ring')).toBe(`${RING_R}px`)
+    expect(mark().hasAttribute('data-landing')).toBe(true)
+  })
+
+  it('draws a thought that was already finished without landing it again', () => {
+    render(createElement(StepRow, { item: thought('worked it out', false) }))
+    screen.getByText('Thought')
+    expect(mark().getAttribute('data-state')).toBe('thought')
+    expect(mark().hasAttribute('data-landing')).toBe(false)
     expect(mark().style.getPropertyValue('--ring')).toBe(`${RING_R}px`)
   })
 
