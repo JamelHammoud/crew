@@ -641,6 +641,30 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
       }
+    },
+    {
+      "id": "ali/9f334874-f173-4ce2-9843-256cb886b931",
+      "label": "Kimi 2",
+      "provider": "kimi",
+      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
+      "ownerName": "ALI",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ],
   "removedAgents": [

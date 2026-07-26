@@ -64,6 +64,15 @@ for (const item of ordered) {
     y: item.sheet_y
   }
   byChar.set(entry.char, entry)
+  // A skin tone is its own picture on the sheet. It is not offered in the
+  // picker, but one typed or pasted in has to find its square.
+  for (const variation of Object.values(item.skin_variations ?? {})) {
+    if (!variation.has_img_twitter) continue
+    const char = toChar(variation.unified)
+    if (!byChar.has(char)) {
+      byChar.set(char, { ...entry, char, x: variation.sheet_x, y: variation.sheet_y })
+    }
+  }
   for (const name of item.short_names) {
     if (!byShortName.has(name)) byShortName.set(name, entry)
   }
