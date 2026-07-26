@@ -75,6 +75,7 @@ const SHAPE: PageBounds = { minX: 500, minY: 400, maxX: 800, maxY: 480 }
 function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
   const sent: Sent[] = []
   let asked = 0
+  let closed = 0
   const made = fakeBoard([node('shape:a', 'Card'), node('shape:b', 'Label')])
   made.select(...selected)
   const bounds = options.bounds === undefined ? SHAPE : options.bounds
