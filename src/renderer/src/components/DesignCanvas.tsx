@@ -315,7 +315,7 @@ export default function DesignCanvas({
         onMount={onMount}
       />
       <SelectionOverlay editor={editor} />
-      <RemoteCursors editor={editor} cursors={Object.values(cursors)} />
+      <RemoteCursors editor={editor} boardId={boardId} live={cursors} held={lastSpot} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">
           <Spinner size={20} />
