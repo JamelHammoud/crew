@@ -78,6 +78,9 @@ createRoot(document.getElementById('root')!).render(
       <Sheet title="Choose a mark">
         <ToolMarkPicker mark="star" onPick={noop} onBack={noop} />
       </Sheet>
+      <Sheet title="Choose a mark, emoji">
+        <ToolMarkPicker mark="🚀" onPick={noop} onBack={noop} />
+      </Sheet>
       <div className="w-[304px] h-[420px]">
         <p className="mb-2 text-xs text-fg-muted">Toolbox</p>
         <Toolbox open onClose={noop} onChat={noop} />
