@@ -49,6 +49,7 @@ const aimed = (point: { x: number; y: number }) => {
 
 const AT_TIP = aimed(TIP)
 const AT_MIDDLE = aimed(MIDDLE)
+const AT_LEAD = aimed(LEAD)
 
 const SHADOW =
   "<defs><filter id='drop' x='-40%' y='-40%' width='180%' height='180%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='1' stdDeviation='1.5' flood-opacity='.4'/></filter></defs>"

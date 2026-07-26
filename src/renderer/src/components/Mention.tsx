@@ -184,11 +184,11 @@ export function MentionText({
             </MemberMention>
           )
         }
-        if (token.kind === 'doc') {
+        if (token.kind === 'ref') {
           return (
-            <DocMention key={index} page={token.page}>
+            <RefMention key={index} refKind={token.ref.kind} target={token.ref.target}>
               {token.text}
-            </DocMention>
+            </RefMention>
           )
         }
         return <TextWithFileLinks key={index} text={token.text} />
