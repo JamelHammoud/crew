@@ -97,11 +97,12 @@ describe('toolbox', () => {
     expect(sam.events.some(e => e.kind.startsWith('tool.'))).toBe(false)
     expect(host.session.snapshot().tools).toHaveLength(0)
 
-    // A mark from a newer build is not a reason to lose the tool.
+    // A mark from a newer build, or a line of text where a mark goes, is not a
+    // reason to lose the tool.
     sam.send({
       type: 'tool.add',
       name: 'Long name that runs past the end of its own tile',
-      mark: 'hologram' as never,
+      mark: 'hologram',
       action: { kind: 'terminal', command: '' }
     })
     const added = (await sam.waitForEvent(e => e.kind === 'tool.added')) as Added
