@@ -13,11 +13,14 @@ const [, , section = '0', height = '2400'] = process.argv
 
 await app.whenReady()
 
+// Not an offscreen window. Offscreen rendering waits on a paint that a page of
+// static SVG never sends, and the capture hangs there forever.
 const window = new BrowserWindow({
   width: 1280,
   height: Number(height),
-  show: false,
-  webPreferences: { offscreen: true }
+  show: true,
+  x: 0,
+  y: 0
 })
 
 await window.loadFile(path.join(root, 'icon-sheet.html'))
