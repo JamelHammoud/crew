@@ -1,5 +1,7 @@
 import type { Editor, TLTextShape } from 'tldraw'
 import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../shared/designNode'
+import { fontStack } from './fonts'
+import { textInkStyle } from './nodeCss'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 
 export function autoLineHeight(editor: Editor): number {
