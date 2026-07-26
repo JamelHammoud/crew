@@ -201,6 +201,10 @@ export const useCrew = create<CrewState>((set, get) => {
       set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
       return
     }
+    if (event.kind === 'huddle.deleted') {
+      set(state => ({ events: state.events.filter(e => huddleRecordId(e) !== event.huddleId) }))
+      return
+    }
     if (event.kind === 'message.edited') {
       set(state => ({
         events: state.events.map(e =>
