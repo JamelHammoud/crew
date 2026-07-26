@@ -73,8 +73,12 @@ export function useMentionAutocomplete(
 
   const pick = (item: MentionItem) => {
     const caret = inputRef.current?.selectionStart ?? value.length
-    const token = item.kind === 'agent' ? `@${item.agent.label}` : `#${item.doc.title}`
-    const before = value.slice(0, caret).replace(/[@#][^@#]*$/, token)
+    if (item.kind === 'emoji') rememberEmoji(item.entry.char)
+    const token =
+      item.kind === 'agent' ? `@${item.agent.label}` : item.kind === 'doc' ? `#${item.doc.title}` : item.entry.char
+    const before = value
+      .slice(0, caret)
+      .replace(item.kind === 'emoji' ? EMOJI_TAIL : /[@#][^@#]*$/, token)
     const after = value.slice(caret)
     const gap = after.startsWith(' ') ? '' : ' '
     caretTarget.current = before.length + 1
