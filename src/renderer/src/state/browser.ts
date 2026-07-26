@@ -13,6 +13,8 @@ export type BrowserTab = {
   path: string
   line: number | null
   diff: string | null
+  // What a terminal tab was opened to run, typed into the shell once it is up.
+  command: string | null
   back: string[]
   forward: string[]
   generation: number
@@ -59,6 +61,7 @@ function makeTab(url = ''): BrowserTab {
     path: '',
     line: null,
     diff: null,
+    command: null,
     back: [],
     forward: [],
     generation: 0
