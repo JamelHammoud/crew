@@ -15,6 +15,12 @@ import HoverCard from './HoverCard'
 import { tokenizeMentions, writtenRefs } from './mentionTokens'
 import Pill from './Pill'
 
+function CardRule({ className = '', children }: { className?: string; children: ReactNode }) {
+  return (
+    <span className={`block -mx-3 mt-2.5 border-t border-fg/[0.06] px-3 pt-2.5 ${className}`}>{children}</span>
+  )
+}
+
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
   const settings = visibleSettingFields(agent.fields, agent.settings)
     .map(field => ({
