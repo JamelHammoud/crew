@@ -811,6 +811,27 @@ body {
   @apply border-b-0;
 }
 
+.md .md-tasks {
+  @apply pl-0;
+}
+
+.md .md-task {
+  @apply flex list-none items-start gap-2;
+}
+
+.md .md-check {
+  @apply relative mt-[0.3em] h-3.5 w-3.5 shrink-0 rounded border border-ink-600;
+}
+
+.md .md-check[data-checked] {
+  @apply border-fg bg-fg;
+}
+
+.md .md-check[data-checked]::after {
+  content: '';
+  @apply absolute left-1/2 top-1/2 h-[3px] w-[7px] -translate-x-1/2 -translate-y-[70%] -rotate-45 border-b-2 border-l-2 border-ink-900;
+}
+
 .md-peek {
   @apply text-[13px] leading-[1.6] text-fg-secondary;
 }
