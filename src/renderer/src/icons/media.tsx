@@ -77,11 +77,13 @@ export const CollapseGlyph = glyph(
 )
 
 // Two beamed notes rather than one. A single head with a flag is mostly stem at
-// 16px, where the pair reads as music from across the room.
+// 16px, where the pair reads as music from across the room. The heads follow the
+// beam down rather than standing level, which is what tells a pair of notes from
+// two circles on a pole.
 export const MusicGlyph = glyph(
   <>
-    <circle cx="6.75" cy="18.75" r="2.25" />
-    <circle cx="17.25" cy="18.75" r="2.25" />
-    <path d="M9 18.75V4.75L19.5 3v15.75" />
+    <circle cx="6.75" cy="18.25" r="2.5" />
+    <circle cx="17.25" cy="16.5" r="2.5" />
+    <path d="M9.25 18.25V5L19.75 3.25v13.25" />
   </>
 )
