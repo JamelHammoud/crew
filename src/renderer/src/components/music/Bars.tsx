@@ -1,48 +1,57 @@
-const frac = (n: number): number => n - Math.floor(n)
+import { useEffect, useRef } from 'react'
+import { useMusic } from '../../state/music'
 
-// Where a bar stands on a given beat. It is worked out rather than kept, so the
-// same beat of the same tune is the same shape on everyone's screen: what the
-// crew is looking at moves together the way what they are hearing does.
-const peakOf = (beat: number, column: number): number =>
-  0.4 + 0.6 * frac(Math.sin(beat * 12.9898 + column * 78.233) * 43758.5453)
+// The floor a bar never falls below, so a quiet moment is a row of dots rather
+// than nothing at all.
+const FLOOR = 0.14
 
-const FLOOR = 0.16
+// How fast a bar falls. It jumps straight to whatever the music is doing and
+// eases back down, which is what makes a beat read as a hit rather than a wave.
+const FALL = 0.16
 
-export function heightsAt(at: number, bpm: number, count: number, playing: boolean): number[] {
-  const beats = (at * bpm) / 60
-  const beat = Math.floor(beats)
-  const phase = beats - beat
-  return Array.from({ length: count }, (_, column) => {
-    const peak = peakOf(beat, column)
-    if (!playing) return FLOOR + (peak - FLOOR) * 0.45
-    return FLOOR + (peak - FLOOR) * (1 - phase) ** 1.4
-  })
-}
-
-// The tune's own beat, drawn. Every bar lands together and falls away on its
-// own, which is what a row of them dancing is.
+// The music's own loudness, drawn. Every bar is a band of it, low on the left
+// and high on the right, so the bass moves one end and a spark the other. The
+// heights are written straight onto the elements rather than held in state:
+// this runs every frame, and a render a frame would cost the whole panel.
 export default function Bars({
-  at,
-  bpm,
   count,
-  playing,
   className = '',
   barClassName = ''
 }: {
-  at: number
-  bpm: number
   count: number
-  playing: boolean
   className?: string
   barClassName?: string
 }) {
+  const bars = useRef<Array<HTMLSpanElement | null>>([])
+
+  useEffect(() => {
+    const read = new Array<number>(count).fill(0)
+    const held = new Array<number>(count).fill(FLOOR)
+    let frame = requestAnimationFrame(function tick() {
+      const levels = useMusic.getState().levels(count, read)
+      for (let band = 0; band < count; band++) {
+        const want = FLOOR + (1 - FLOOR) * Math.min(1, Math.max(0, levels[band]))
+        held[band] = want > held[band] ? want : held[band] + (want - held[band]) * FALL
+        const bar = bars.current[band]
+        if (!bar) continue
+        bar.style.height = `${(held[band] * 100).toFixed(1)}%`
+        bar.style.opacity = String(0.45 + held[band] * 0.55)
+      }
+      frame = requestAnimationFrame(tick)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [count])
+
   return (
     <span className={`flex items-end ${className}`} aria-hidden>
-      {heightsAt(at, bpm, count, playing).map((height, column) => (
+      {Array.from({ length: count }, (_, band) => (
         <span
-          key={column}
-          className={`block rounded-full bg-fg ${barClassName}`}
-          style={{ height: `${Math.round(height * 100)}%`, opacity: 0.45 + height * 0.55 }}
+          key={band}
+          ref={node => {
+            bars.current[band] = node
+          }}
+          style={{ height: `${FLOOR * 100}%` }}
+          className={`block rounded-full bg-current ${barClassName}`}
         />
       ))}
     </span>
