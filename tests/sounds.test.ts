@@ -272,6 +272,11 @@ describe('playing a sound', () => {
     expect(new Set(tasks?.at).size).toBeGreaterThan(1)
   })
 
+  it('opens the tasks drawer quickly rather than letting it slide', () => {
+    const tasks = eachPanel().get('tasks.open')
+    expect(Math.max(...(tasks?.at ?? []))).toBeLessThan(0.16)
+  })
+
   it('makes the toolbox and the tasks drawer two different objects', () => {
     const heard = [...eachPanel().values()]
     const grain = heard.map(sound => sound.scrapes.join(','))
