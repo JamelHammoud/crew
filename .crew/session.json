@@ -229,18 +229,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785064902012,
+        "fetchedAt": 1785064961709,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 10
+            "percent": 12
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785033305510
+        "asOf": 1785064955194
       },
       "avatar": "b1ecb2a9-f960-4ef8-8cb4-3e10cd0e6ece.png"
     },
@@ -325,18 +325,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785064902012,
+        "fetchedAt": 1785064961709,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 10
+            "percent": 12
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785033305510
+        "asOf": 1785064955194
       }
     },
     {
