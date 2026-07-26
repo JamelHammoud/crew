@@ -552,6 +552,48 @@ body {
   height: 16px;
 }
 
+/* A fill carries its own opacity rather than an alpha channel, so the bar under the hue is ours.
+   It reads like the library's alpha bar so the two pickers look like one control. */
+.design-picker__opacity {
+  position: relative;
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background-image:
+    linear-gradient(to right, transparent, var(--opacity-color)),
+    repeating-conic-gradient(rgb(255 255 255 / 0.22) 0% 25%, transparent 0% 50%);
+  background-size:
+    auto,
+    8px 8px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+
+.design-picker__opacity input[type='range'] {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  outline: none;
+}
+
+.design-picker__opacity input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: transparent;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+  cursor: grab;
+}
+
+.design-picker__opacity input[type='range']:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
 .design-style-panel input[type='range'] {
   appearance: none;
   height: 3px;
