@@ -5,7 +5,7 @@ import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
 import Emoji from './Emoji'
 import { tokenizeEmoji } from './emojiTokens'
-import { tokenizeMentions } from './mentionTokens'
+import { tokenizeMentions, writtenRefs } from './mentionTokens'
 import ReplyPreview from './ReplyPreview'
 import Tooltip from './Tooltip'
 import type { ThreadItem } from './thread'
@@ -51,7 +51,7 @@ function MentionHighlights({ value }: { value: string }) {
             </span>
           )
         }
-        if (token.kind === 'doc') {
+        if (token.kind === 'ref') {
           return (
             <span
               key={index}
