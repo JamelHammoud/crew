@@ -19,6 +19,12 @@ export const THREAD_STATE_LABELS: Record<ThreadState, string> = {
   archived: 'Archived'
 }
 
+export const threadWorking = (
+  threadId: string,
+  threadPrompts: Record<string, string>,
+  queues: Record<string, unknown[]>
+): boolean => Boolean(threadPrompts[threadId]) || (queues[threadId]?.length ?? 0) > 0
+
 export function threadState(thread: ThreadMeta, events: SessionEvent[], running: boolean): ThreadState {
   if (running) return 'working'
   if (thread.status !== 'open') return thread.status
