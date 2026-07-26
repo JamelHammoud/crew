@@ -20,8 +20,6 @@ export interface FakeBoard {
 
 const PAGE = 'page:main'
 
-// The board commands talk to, small enough to read and real enough that
-// parentage and stacking order answer honestly.
 export function fakeBoard(list: FakeShape[]): FakeBoard {
   const calls: string[] = []
   const shapes = new Map<string, TLShape>()

@@ -18,8 +18,6 @@ export interface MenuSpot {
   page: { x: number; y: number }
 }
 
-// Right-clicking a shape that is not in the selection picks it first, the way
-// Figma does, so the menu always talks about what is under the pointer.
 export function useContextMenu(editor: ReturnType<typeof useEditor> | null): {
   spot: MenuSpot | null
   close: () => void
