@@ -1,5 +1,6 @@
 import type { Editor, TLShape } from 'tldraw'
 import { BASE_TYPE, type Stroke, type TypeStyle } from '../../../shared/designNode'
+import { paintColor, setTextShapeType, textShapeType, typePaint } from './textType'
 import {
   alignOf,
   dashStyle,
