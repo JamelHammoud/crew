@@ -29,10 +29,16 @@ const agent = (id: string, label: string): PooledAgent =>
 
 let switched = 0
 
-const toolbox = (tools: CrewTool[] = [], agents: PooledAgent[] = []) => {
+const toolbox = (
+  tools: CrewTool[] = [],
+  agents: PooledAgent[] = [],
+  written: { docs?: Record<string, { title: string; text: string }>; boards?: Array<{ id: string; name: string }> } = {}
+) => {
   useCrew.setState({
     tools,
     agents,
+    docs: (written.docs ?? {}) as never,
+    boards: (written.boards ?? []) as never,
     addTool: (name, mark, action) => sent.push({ type: 'tool.add', name, mark, action }),
     editTool: (toolId, name, mark, action) => sent.push({ type: 'tool.edit', toolId, name, mark, action }),
     removeTool: toolId => sent.push({ type: 'tool.remove', toolId }),
