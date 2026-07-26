@@ -36,11 +36,11 @@ export default function Slider({
     setDragging(true)
     onChange(along(event.clientX))
     const move = (moved: PointerEvent) => onChange(along(moved.clientX))
-    const up = (let_go: PointerEvent) => {
+    const up = (release: PointerEvent) => {
       setDragging(false)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
-      onCommit?.(along(let_go.clientX))
+      onCommit?.(along(release.clientX))
     }
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
