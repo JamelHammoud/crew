@@ -65,11 +65,11 @@ export const DIAGONAL = 19.5
 // A bare run of stroke with nothing enclosed: arrow shafts, rules, the plus.
 export const LINE = 15
 
-// A shape that is filled rather than drawn carries its whole box as ink, where an
-// outlined one carries only its edge, so it has to be a good deal smaller to read
-// the same size. This is the square keyline holding roughly the ink an outlined
-// square holds, which is why it lands near three quarters of it.
-export const SOLID = 12.5
+// A filled shape carries its whole box as ink where an outlined one carries only
+// its edge, so it sits under the square keyline rather than on it. Not as far
+// under as equal ink would ask: a solid mark standing alone in a button is being
+// read as a button rather than against its neighbours, and it has to fill it.
+export const SOLID = 15
 
 // Outer corners. A radius is read against the side it turns, so it is written
 // as a share of the shorter side rather than as one number for every box.
