@@ -1,13 +1,5 @@
-import {
-  Bars3BottomLeftIcon,
-  Bars3BottomRightIcon,
-  Bars3Icon,
-  EyeIcon,
-  EyeSlashIcon,
-  MinusIcon,
-  PlusIcon
-} from '@heroicons/react/16/solid'
-import type { Layout, Stroke, TypeStyle } from '../../../shared/designNode'
+import { EyeIcon, EyeSlashIcon, MinusIcon, PlusIcon } from '@heroicons/react/16/solid'
+import type { Layout, Stroke } from '../../../shared/designNode'
 import Select from '../components/Select'
 import Tooltip from '../components/Tooltip'
 import EffectRow from './EffectRow'
