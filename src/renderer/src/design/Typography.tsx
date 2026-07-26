@@ -1,9 +1,10 @@
 import { ChevronDownIcon, MinusIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { BASE_TYPE, type TypeStyle } from '../../../shared/designNode'
 import { PanelButton } from '../components/DesignControls'
 import { MenuItem, Popover } from '../components/Popover'
 import Select from '../components/Select'
+import FontPicker from './FontPicker'
 import {
   AlignCenterGlyph,
   AlignLeftGlyph,
@@ -20,12 +21,6 @@ import {
 import { Choice, ColorInput, NumberInput, Row, Section, SubLabel, Trailing } from './InspectorFields'
 import type { TextControl } from './nodeView'
 import { FACES, SIZES, faceStyle, faceValue } from './typeFaces'
-
-const FAMILIES = [
-  { value: 'sans', label: 'Sans' },
-  { value: 'serif', label: 'Serif' },
-  { value: 'mono', label: 'Mono' }
-]
 
 const ALIGNS = [
   { value: 'left', label: 'Align left', icon: <AlignLeftGlyph className="w-4 h-4" /> },
@@ -51,6 +46,18 @@ const DECORATIONS = [
   { value: 'strike', label: 'Strikethrough', icon: <StrikeGlyph className="w-4 h-4" /> }
 ] as const
 
+function Pair({ left, right }: { left?: ReactNode; right?: ReactNode }) {
+  if (left && right) {
+    return (
+      <Row>
+        {left}
+        {right}
+      </Row>
+    )
+  }
+  return <>{left ?? right ?? null}</>
+}
+
 function SizePicker({ onPick }: { onPick: (size: number) => void }) {
   const [open, setOpen] = useState(false)
   return (
@@ -63,19 +70,17 @@ function SizePicker({ onPick }: { onPick: (size: number) => void }) {
       >
         <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-      <Popover open={open} onClose={() => setOpen(false)} align="end">
-        <div className="w-24 max-h-72 overflow-y-auto">
-          {SIZES.map(size => (
-            <MenuItem
-              key={size}
-              label={String(size)}
-              onClick={() => {
-                onPick(size)
-                setOpen(false)
-              }}
-            />
-          ))}
-        </div>
+      <Popover open={open} onClose={() => setOpen(false)} align="end" className="w-20 max-h-72 overflow-y-auto">
+        {SIZES.map(size => (
+          <MenuItem
+            key={size}
+            label={String(size)}
+            onClick={() => {
+              onPick(size)
+              setOpen(false)
+            }}
+          />
+        ))}
       </Popover>
     </span>
   )
@@ -88,8 +93,8 @@ function TypeSettings({ value, set }: { value: TypeStyle; set: (patch: Partial<T
       <PanelButton label="Type settings" active={open} onClick={() => setOpen(current => !current)}>
         <TypeSettingsGlyph className="w-4 h-4" />
       </PanelButton>
-      <Popover open={open} onClose={() => setOpen(false)} align="end" side="top">
-        <div className="w-56 p-1 flex flex-col gap-2">
+      <Popover open={open} onClose={() => setOpen(false)} align="end" className="w-52">
+        <div className="flex flex-col gap-2 p-1">
           <SubLabel>Case</SubLabel>
           <Choice value={value.transform} options={CASES} onPick={transform => set({ transform })} />
           <SubLabel>Decoration</SubLabel>
@@ -106,22 +111,15 @@ export default function Typography({ text }: { text: TextControl }) {
 
   return (
     <Section title="Typography">
-      {fields.family && (
-        <Select full value={value.family} options={FAMILIES} onChange={family => set({ family })} />
-      )}
-      {(fields.weight || fields.size) && (
-        <Row>
-          {fields.weight ? (
-            <Select
-              full
-              value={faceValue(value)}
-              options={FACES}
-              onChange={face => set(faceStyle(face))}
-            />
-          ) : (
-            <span />
-          )}
-          {fields.size && (
+      {fields.family && <FontPicker value={value.family} onChange={family => set({ family })} />}
+      <Pair
+        left={
+          fields.weight ? (
+            <Select full value={faceValue(value)} options={FACES} onChange={face => set(faceStyle(face))} />
+          ) : undefined
+        }
+        right={
+          fields.size ? (
             <NumberInput
               label="Size"
               value={value.size}
@@ -130,38 +128,43 @@ export default function Typography({ text }: { text: TextControl }) {
               onChange={size => set({ size })}
               after={<SizePicker onPick={size => set({ size })} />}
             />
-          )}
-        </Row>
-      )}
+          ) : undefined
+        }
+      />
       {(fields.lineHeight || fields.spacing) && (
         <>
-          <Row>
-            {fields.lineHeight && <SubLabel>Line height</SubLabel>}
-            {fields.spacing && <SubLabel>Letter spacing</SubLabel>}
-          </Row>
-          <Row>
-            {fields.lineHeight && (
-              <NumberInput
-                label="Line height"
-                icon={<LineHeightGlyph className="w-4 h-4" />}
-                value={Math.round(value.lineHeight * 100)}
-                min={50}
-                max={400}
-                auto={Math.round(BASE_TYPE.lineHeight * 100)}
-                onChange={next => set({ lineHeight: next / 100 })}
-              />
-            )}
-            {fields.spacing && (
-              <NumberInput
-                label="Letter spacing"
-                icon={<LetterSpacingGlyph className="w-4 h-4" />}
-                value={value.spacing}
-                min={-20}
-                max={100}
-                onChange={spacing => set({ spacing })}
-              />
-            )}
-          </Row>
+          <Pair
+            left={fields.lineHeight ? <SubLabel>Line height</SubLabel> : undefined}
+            right={fields.spacing ? <SubLabel>Letter spacing</SubLabel> : undefined}
+          />
+          <Pair
+            left={
+              fields.lineHeight ? (
+                <NumberInput
+                  label="Line height"
+                  icon={<LineHeightGlyph className="w-4 h-4" />}
+                  value={Math.round(value.lineHeight * 100)}
+                  min={50}
+                  max={400}
+                  suffix="%"
+                  auto={Math.round(BASE_TYPE.lineHeight * 100)}
+                  onChange={next => set({ lineHeight: next / 100 })}
+                />
+              ) : undefined
+            }
+            right={
+              fields.spacing ? (
+                <NumberInput
+                  label="Letter spacing"
+                  icon={<LetterSpacingGlyph className="w-4 h-4" />}
+                  value={value.spacing}
+                  min={-20}
+                  max={100}
+                  onChange={spacing => set({ spacing })}
+                />
+              ) : undefined
+            }
+          />
         </>
       )}
       {(fields.align || fields.vertical) && (
