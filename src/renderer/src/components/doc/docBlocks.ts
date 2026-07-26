@@ -1,4 +1,4 @@
-import type { Block, PartialBlock } from '@blocknote/core'
+import type { PartialBlock } from '@blocknote/core'
 import {
   Bars3BottomLeftIcon,
   ChatBubbleBottomCenterTextIcon,
