@@ -32,6 +32,23 @@ const repo: Record<string, RepoFile> = {
     text: 'const one = 1\nconst two = 2\nconst three = 3',
     truncated: false
   },
+  'src/panel.ts': {
+    kind: 'file',
+    path: 'src/panel.ts',
+    text: [
+      'export function panel() {',
+      '  const label = "hi"',
+      '  return label',
+      '}',
+      '',
+      'export function other() {',
+      '  return 2',
+      '}',
+      '',
+      'export const last = 9'
+    ].join('\n'),
+    truncated: false
+  },
   'big.log': { kind: 'file', path: 'big.log', text: 'line one\nline two', truncated: true },
   'logo.png': { kind: 'image', path: 'logo.png', url: 'data:image/png;base64,AAAA', size: 6 }
 }
