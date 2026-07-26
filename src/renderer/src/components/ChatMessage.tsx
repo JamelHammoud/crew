@@ -148,7 +148,6 @@ export default function ChatMessage({
           )
         )}
         {item.attachments && <MessageImages attachments={item.attachments} />}
-        {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
         {item.reactionTargetId && !editing && (
           <MessageReactions
             targetId={item.reactionTargetId}
