@@ -181,12 +181,8 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
       {expanded && files.length === 0 && (thinking || detail) && (
         <Detail>
           {thinking ? (
-            <div onClick={() => setOpen(false)} className="cursor-pointer space-y-2 text-sm leading-6 italic text-fg-muted">
-              {paragraphs(item.text).map((para, index) => (
-                <p key={index} className="whitespace-pre-wrap">
-                  <TextWithFileLinks text={para} inline again={!item.streaming} />
-                </p>
-              ))}
+            <div onClick={() => setOpen(false)} className="cursor-pointer">
+              <Markdown text={item.text} className="md-quiet" stream={item.streaming} />
             </div>
           ) : action.prose ? (
             <p
