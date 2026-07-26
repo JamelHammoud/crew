@@ -66,13 +66,13 @@ function Diff({ diff }: { diff: string }) {
   )
 }
 
-function FileRows({ files }: { files: FileChange[] }) {
+function FileRows({ files, done }: { files: FileChange[]; done: boolean }) {
   return (
     <div className="mt-2 ml-[5px] border-l border-ink-700 pl-4 space-y-3">
       {files.map(file => (
         <div key={file.path}>
           <span className="flex items-center gap-2 text-xs font-mono">
-            <FilePathLink path={file.path} className="text-fg-secondary truncate" />
+            <FilePathLink path={file.path} className="text-fg-secondary truncate" again={done} />
             <Counts added={file.added} removed={file.removed} />
           </span>
           {file.diff && (
@@ -112,7 +112,11 @@ export default function StepRow({ item }: { item: ThreadItem }) {
           {files.length > 0 ? (
             <>
               {files.length === 1 ? (
-                <FilePathLink path={files[0].path} className="text-fg-faint truncate font-mono text-xs" />
+                <FilePathLink
+                  path={files[0].path}
+                  className="text-fg-faint truncate font-mono text-xs"
+                  again={!item.streaming}
+                />
               ) : (
                 <span className="text-fg-faint truncate font-mono text-xs">{`${files.length} files`}</span>
               )}
@@ -121,21 +125,21 @@ export default function StepRow({ item }: { item: ThreadItem }) {
           ) : (
             item.detail && !expanded && (
               <span className="text-fg-faint truncate font-mono text-xs">
-                <TextWithFileLinks text={item.detail} inline />
+                <TextWithFileLinks text={item.detail} inline again={!item.streaming} />
               </span>
             )
           )}
         </button>
         {expanded &&
           (files.length > 0 ? (
-            <FileRows files={files} />
+            <FileRows files={files} done={!item.streaming} />
           ) : (
             item.detail && (
               <p
                 onClick={() => setOpen(false)}
                 className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-4 cursor-pointer"
               >
-                <TextWithFileLinks text={item.detail} inline />
+                <TextWithFileLinks text={item.detail} inline again={!item.streaming} />
               </p>
             )
           ))}
