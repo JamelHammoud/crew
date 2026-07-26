@@ -229,7 +229,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785065021722,
+        "fetchedAt": 1785065081721,
         "windows": [
           {
             "key": "primary",
@@ -240,7 +240,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785065017101
+        "asOf": 1785065070210
       },
       "avatar": "b1ecb2a9-f960-4ef8-8cb4-3e10cd0e6ece.png"
     },
@@ -325,7 +325,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785065021722,
+        "fetchedAt": 1785065081721,
         "windows": [
           {
             "key": "primary",
@@ -336,7 +336,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785065017101
+        "asOf": 1785065070210
       }
     },
     {
@@ -444,34 +444,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785064781907,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 20,
-            "severity": "normal",
-            "resetsAt": 1785535200420,
-            "active": true
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785065081963,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       }
     },
     {
@@ -744,34 +722,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785064781907,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 20,
-            "severity": "normal",
-            "resetsAt": 1785535200420,
-            "active": true
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785065081963,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       },
       "avatar": "a6acfa93-41c8-4291-9c3b-516cf5006d98.webp"
     }
