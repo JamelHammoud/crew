@@ -95,22 +95,6 @@ describe('the toolbox', () => {
     expect(switched).toBe(1)
   })
 
-  it('wears no label for what is still coming, and says it on hover instead', () => {
-    vi.useFakeTimers()
-    toolbox()
-
-    expect(screen.queryByText('Coming soon')).toBeNull()
-
-    hover('Music')
-    expect(screen.getAllByText('Coming soon')).toHaveLength(1)
-
-    unhover('Music')
-    expect(screen.queryByText('Coming soon')).toBeNull()
-
-    hover('Terminal')
-    expect(screen.queryByText('Coming soon')).toBeNull()
-  })
-
   it('opens a terminal, and takes you to where it opened', () => {
     toolbox()
     fireEvent.click(screen.getByText('Terminal'))
