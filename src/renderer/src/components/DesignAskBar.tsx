@@ -190,13 +190,14 @@ export default function DesignAskBar({
                   </div>
                 </Popover>
               </span>
-              <input
+              <textarea
                 ref={inputRef}
                 autoFocus
+                rows={1}
                 value={text}
                 onChange={event => setText(event.target.value)}
                 onKeyDown={event => {
-                  if (event.key === 'Enter') {
+                  if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault()
                     send()
                     return
@@ -209,7 +210,7 @@ export default function DesignAskBar({
                 onPaste={event => void attach(key, event.clipboardData.files)}
                 placeholder="Ask for a change"
                 aria-label="Ask for a change"
-                className="flex-1 min-w-0 h-8 bg-transparent text-sm text-fg placeholder:text-fg/40 outline-none"
+                className="flex-1 min-w-0 py-1 bg-transparent text-sm leading-5 text-fg placeholder:text-fg/40 outline-none resize-none [scrollbar-width:none]"
               />
               <AttachButton attachmentKey={key} size="sm" />
               <Tooltip label="Send">
@@ -217,7 +218,7 @@ export default function DesignAskBar({
                   onClick={send}
                   disabled={!ready}
                   aria-label="Send"
-                  className="w-8 h-8 shrink-0 rounded-full bg-fg text-ink-900 grid place-items-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg/40 disabled:scale-100"
+                  className="w-7 h-7 shrink-0 rounded-full bg-fg text-ink-900 grid place-items-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg/40 disabled:scale-100"
                 >
                   <ArrowUpIcon className="w-4 h-4" />
                 </button>
