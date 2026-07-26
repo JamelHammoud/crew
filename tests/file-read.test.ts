@@ -89,6 +89,56 @@ describe('readRepoFile', () => {
   })
 })
 
+describe('readLocalFile', () => {
+  it('reads a file from this computer that is nowhere near the project', async () => {
+    const outside = tmpDir('outside')
+    writeFileSync(path.join(outside, 'preview.mjs'), 'export const x = 1\n')
+    const result = await readLocalFile(path.join(outside, 'preview.mjs'))
+    expect(result).toEqual({
+      kind: 'file',
+      path: path.join(outside, 'preview.mjs'),
+      text: 'export const x = 1\n',
+      truncated: false
+    })
+  })
+
+  it('shows a picture taken outside the project', async () => {
+    const outside = tmpDir('outside')
+    writeFileSync(path.join(outside, 'shot.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47]))
+    const result = await readLocalFile(path.join(outside, 'shot.png'))
+    expect(result.kind).toBe('image')
+    if (result.kind !== 'image') return
+    expect(result.url.startsWith('data:image/png;base64,')).toBe(true)
+  })
+
+  it('lists a folder outside the project and keeps the full path', async () => {
+    const outside = tmpDir('outside')
+    mkdirSync(path.join(outside, 'logs'))
+    writeFileSync(path.join(outside, 'logs', 'run.log'), 'started\n')
+    const result = await readLocalFile(path.join(outside, 'logs') + '/')
+    expect(result).toEqual({
+      kind: 'dir',
+      path: path.join(outside, 'logs'),
+      entries: [{ name: 'run.log', dir: false }]
+    })
+  })
+
+  it('reports a path that is not on this computer', async () => {
+    const result = await readLocalFile('/nowhere/at/all.txt')
+    expect(result).toEqual({ kind: 'missing', path: '/nowhere/at/all.txt' })
+  })
+
+  it('writes back a file it read from outside the project', async () => {
+    const outside = tmpDir('outside')
+    const file = path.join(outside, 'preview.mjs')
+    writeFileSync(file, 'old\n')
+    const result = await writeLocalFile(file, 'new\n')
+    expect(result).toEqual({ kind: 'file', path: file, text: 'new\n', truncated: false })
+    expect(readFileSync(file, 'utf8')).toBe('new\n')
+    expect(await writeLocalFile(path.join(outside, 'brand-new.txt'), 'x')).toBeNull()
+  })
+})
+
 describe('statRepoFile', () => {
   it('tells files, folders, and missing paths apart', async () => {
     const root = makeRepo()
