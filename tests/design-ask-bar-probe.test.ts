@@ -54,20 +54,34 @@ interface Sent {
   aimedAt?: string[]
 }
 
+interface PageBounds {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
 interface BootOptions {
   selected?: string[]
   agents?: unknown[]
   threads?: Record<string, unknown>
+  bounds?: PageBounds | null
+  stage?: { w: number; h: number }
 }
+
+const SHAPE: PageBounds = { minX: 500, minY: 400, maxX: 800, maxY: 480 }
 
 function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
   const sent: Sent[] = []
   let asked = 0
   const made = fakeBoard([node('shape:a', 'Card'), node('shape:b', 'Label')])
   made.select(...selected)
+  const bounds = options.bounds === undefined ? SHAPE : options.bounds
+  const stage = options.stage ?? { w: 1200, h: 800 }
   const editor = {
     ...made.editor,
-    getSelectionPageBounds: () => ({ minX: 500, minY: 400, maxX: 800, maxY: 480 }),
+    getSelectionPageBounds: () => bounds,
+    getViewportScreenBounds: () => ({ x: 0, y: 0, ...stage }),
     pageToViewport: ({ x, y }: { x: number; y: number }) => ({ x: x - 460, y: y - 380 })
   } as unknown as Editor
   useCrew.setState({
