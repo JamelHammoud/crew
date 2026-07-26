@@ -22,16 +22,3 @@ export function useNodeView(): NodeView | null {
     [editor]
   )
 }
-
-export function useSelectedNode(): DesignNodeShape | null {
-  const editor = useEditor()
-  return useValue(
-    'design selected node',
-    () => {
-      const selected = editor.getSelectedShapes()
-      if (selected.length !== 1 || selected[0].type !== 'design-node') return null
-      return selected[0] as DesignNodeShape
-    },
-    [editor]
-  )
-}
