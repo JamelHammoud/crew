@@ -3,12 +3,14 @@ import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 
 const SIZES = {
+  xs: 'w-5 h-5',
   sm: 'w-7 h-7',
   md: 'w-10 h-10',
   lg: 'w-12 h-12'
 } as const
 
 const DOTS = {
+  xs: 'w-1.5 h-1.5 ring-2',
   sm: 'w-2 h-2 ring-2',
   md: 'w-2.5 h-2.5 ring-2',
   lg: 'w-3 h-3 ring-[2.5px]'
