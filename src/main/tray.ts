@@ -52,8 +52,6 @@ function dotIcon(): NativeImage {
   return nativeImage.createFromBitmap(buffer, { width: size, height: size, scaleFactor: 2 })
 }
 
-// The count rides beside the mark rather than on it: a menu bar item is one
-// line tall, and a badge drawn over twelve pixels of artwork is a smudge.
 export class CrewTray {
   private tray: Tray | null = null
   private panel: TrayPanel
