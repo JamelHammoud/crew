@@ -8,9 +8,6 @@ export function fromSource(appPath: string): boolean {
 
 const off = new Set(['', '0', 'false'])
 
-// yarn start previews the built app from the repo folder, so it is a run from
-// source like any other. CREW_SHIPPING_ICON asks for the real icon anyway, to
-// see it without installing.
 export function wearsBlueprint(appPath: string, env: Record<string, string | undefined>): boolean {
   const asked = env.CREW_SHIPPING_ICON
   if (asked !== undefined && !off.has(asked)) return false
