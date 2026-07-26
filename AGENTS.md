@@ -121,6 +121,16 @@ A terminal is one of the things the side panel can hold, beside a web page and a
 - Copy and paste on a Mac are the app menu's, and xterm answers the events they raise. Everywhere else it is Ctrl+Shift+C and Ctrl+Shift+V, because plain Ctrl+C has to reach the shell.
 - A shell that ends says so and the tab stays open, the way Terminal does, so whatever it printed on the way out can still be read.
 
+## Files
+
+A file opened from a message that changed it opens on the change, showing the diff the way VS Code shows one. It is still a file you can type in.
+
+- The lines that were taken out sit above the ones that replaced them, and the words that changed inside a line are tinted again over the line's own tint, the way VS Code marks what changed inside a line.
+- A step only records the text an agent swapped, not where it landed. `baseline.ts` matches that text against the file on disk and reverses it, to get the file as it stood before. `diffRows.ts` diffs that against what is on screen, and does it again on every keystroke, so what you type is part of the diff from the moment you type it. VS Code waits 200ms, because its editor holds the document and draws the deleted lines beside it. Here they are text in the same box, so a keystroke has to land on the rows it was typed against and there is nothing to wait for.
+- That box holds the deleted lines too, because it is the only way the text under the caret lines up with the rows drawn behind it. What is typed is mapped back onto the real file first with `toDoc`, and the caret is put back after with `toShown`. Never write the box's contents to disk. `docText` is the file and the rest is the diff.
+- The caret never sits in a line that was taken out. It steps over the whole block, back or forward depending on which way it came, the way a cursor steps over a view zone in VS Code. Rubbing out at the head of a line under a block joins it to the line above, because that is the line above it in the file.
+- Clicking dismisses nothing. It puts the caret where it landed and leaves the page where it was standing. Hide changes puts the diff away.
+
 ## Syncing
 
 Every machine commits its whole working tree, integrates, and pushes on a loop, host and joiner alike. Agents on different machines write to the same branch at the same time, so `GitSync` in `src/server/git.ts` has three hard rules. Each one is here because work was destroyed without it.
