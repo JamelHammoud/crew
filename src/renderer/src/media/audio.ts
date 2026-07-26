@@ -19,10 +19,10 @@ export function noiseBuffer(ctx: AudioContext): AudioBuffer {
   return noise
 }
 
-let held: AudioBuffer | null = null
+let tailBuffer: AudioBuffer | null = null
 
 function impulse(ctx: AudioContext): AudioBuffer {
-  if (held) return held
+  if (tailBuffer) return tailBuffer
   const frames = Math.floor(ctx.sampleRate * 0.55)
   const tail = ctx.createBuffer(2, frames, ctx.sampleRate)
   let energy = 0
@@ -40,7 +40,7 @@ function impulse(ctx: AudioContext): AudioBuffer {
     const data = tail.getChannelData(channel)
     for (let i = 0; i < frames; i++) data[i] *= scale
   }
-  held = tail
+  tailBuffer = tail
   return tail
 }
 
