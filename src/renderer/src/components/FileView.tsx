@@ -260,6 +260,12 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
                 value={shown}
                 onChange={onEdit}
                 onKeyDown={onKeys}
+                onCompositionStart={() => {
+                  composing.current = true
+                }}
+                onCompositionEnd={() => {
+                  composing.current = false
+                }}
                 aria-label="File contents"
                 spellCheck={false}
                 autoCorrect="off"
