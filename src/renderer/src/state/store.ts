@@ -674,6 +674,15 @@ export const useCrew = create<CrewState>((set, get) => {
     doTodo: (todoId, agentId) => {
       socket.send({ type: 'todo.do', todoId, agentId })
     },
+    addTool: (name, mark, action) => {
+      socket.send({ type: 'tool.add', name, mark, action })
+    },
+    editTool: (toolId, name, mark, action) => {
+      socket.send({ type: 'tool.edit', toolId, name, mark, action })
+    },
+    removeTool: toolId => {
+      socket.send({ type: 'tool.remove', toolId })
+    },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
     },
