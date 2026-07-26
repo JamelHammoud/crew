@@ -111,6 +111,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let reported = 0
       let sent = 0
       const thinkingBlocks = new Map<number, string>()
+      const toolNames = new Map<string, string>()
       let streamedThinking = false
 
       const idleMs = opts.idleTimeoutMs ?? IDLE_TIMEOUT_MS
