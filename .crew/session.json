@@ -641,30 +641,6 @@
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "pro"
       }
-    },
-    {
-      "id": "ali/9f334874-f173-4ce2-9843-256cb886b931",
-      "label": "Kimi 2",
-      "provider": "kimi",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": ""
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            }
-          ],
-          "default": ""
-        }
-      ],
-      "steerable": false
     }
   ],
   "removedAgents": [
@@ -689,6 +665,7 @@
     "jamel/codex",
     "jamel/ad836538-f482-4a88-b70a-adc257551883",
     "ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6",
-    "ali/a5870501-29f9-482a-8e95-280a04acf660"
+    "ali/a5870501-29f9-482a-8e95-280a04acf660",
+    "ali/9f334874-f173-4ce2-9843-256cb886b931"
   ]
 }
