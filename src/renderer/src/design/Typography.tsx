@@ -22,6 +22,12 @@ import { Choice, ColorInput, NumberInput, Row, Section, SubLabel, Trailing } fro
 import type { TextControl } from './nodeView'
 import { FACES, SIZES, faceStyle, faceValue } from './typeFaces'
 
+const SYSTEM_FAMILIES = [
+  { value: 'sans', label: 'Sans' },
+  { value: 'serif', label: 'Serif' },
+  { value: 'mono', label: 'Mono' }
+]
+
 const ALIGNS = [
   { value: 'left', label: 'Align left', icon: <AlignLeftGlyph className="w-4 h-4" /> },
   { value: 'center', label: 'Align center', icon: <AlignCenterGlyph className="w-4 h-4" /> },
