@@ -62,6 +62,10 @@ export const DESIGN_CURSORS: Partial<Record<`--tl-cursor-${TLCursorType}`, strin
   '--tl-cursor-grabbing': hand(CLOSED_HAND, 'grabbing')
 }
 
+export function cursorColor(hue: number): string {
+  return `oklch(0.7 0.22 ${hue})`
+}
+
 export function CursorArrow({ color }: { color: string }) {
   return (
     <svg
