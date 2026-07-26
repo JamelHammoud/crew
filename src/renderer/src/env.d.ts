@@ -34,6 +34,12 @@ declare global {
     locatePath(path: string): Promise<PathLocation>
     revealFile(path: string): Promise<void>
     setBadge(count: number): Promise<void>
+    publishPresence(here: Present[]): void
+    onPresence(listener: (snapshot: PresenceSnapshot) => void): () => void
+    onTrayTheme(listener: (theme: 'dark' | 'light') => void): () => void
+    resizeTray(height: number): void
+    openWindow(): void
+    closeTray(): void
     setTheme(theme: 'dark' | 'light'): Promise<void>
     notify(alert: AgentAlert): Promise<void>
     openTerminal(id: string, size: { cols: number; rows: number }): void
