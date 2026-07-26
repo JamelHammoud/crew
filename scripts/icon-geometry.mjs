@@ -14,13 +14,17 @@ function tokenize(d) {
     const key = code.toUpperCase()
     const take = ARGS[key]
     if (take === undefined) continue
-    const nums = (part.slice(1).match(NUMBER) ?? []).map(Number)
     if (take === 0) {
       out.push([code, []])
       continue
     }
+    const nums = (part.slice(1).match(NUMBER) ?? []).map(Number)
+    let first = true
     for (let at = 0; at + take <= nums.length; at += take) {
-      out.push([out.length && at ? (key === 'M' ? (code === 'm' ? 'l' : 'L') : code) : code, nums.slice(at, at + take)])
+      // A moveto that repeats its arguments is a lineto, and nothing else is.
+      const repeat = key === 'M' ? (code === 'm' ? 'l' : 'L') : code
+      out.push([first ? code : repeat, nums.slice(at, at + take)])
+      first = false
     }
   }
   return out
