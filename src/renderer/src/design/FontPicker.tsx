@@ -1,31 +1,18 @@
 import { CheckIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useState } from 'react'
 import { Popover } from '../components/Popover'
-import { FONTS, fontLabel, fontStack, loadFonts, type FontCategory } from './fonts'
-
-const GROUPS: Array<{ id: FontCategory | 'all'; label: string }> = [
-  { id: 'all', label: 'All fonts' },
-  { id: 'sans', label: 'Sans serif' },
-  { id: 'serif', label: 'Serif' },
-  { id: 'mono', label: 'Monospace' },
-  { id: 'display', label: 'Display' },
-  { id: 'hand', label: 'Handwriting' }
-]
+import { FONTS, fontLabel, fontStack, loadFonts } from './fonts'
 
 export default function FontPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [group, setGroup] = useState<FontCategory | 'all'>('all')
 
   useEffect(() => loadFonts([value]), [value])
 
   const shown = useMemo(() => {
     const clean = query.trim().toLowerCase()
-    return FONTS.filter(font => {
-      if (group !== 'all' && font.category !== group) return false
-      return clean === '' || font.label.toLowerCase().includes(clean)
-    })
-  }, [query, group])
+    return FONTS.filter(font => clean === '' || font.label.toLowerCase().includes(clean))
+  }, [query])
 
   useEffect(() => {
     if (open) loadFonts(shown.map(font => font.name))
