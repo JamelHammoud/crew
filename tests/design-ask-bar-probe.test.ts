@@ -150,6 +150,48 @@ describe('the ask bar', () => {
     expect(bar.style.top).toBe('112px')
   })
 
+  it('stands above a shape whose bottom edge is off the stage', () => {
+    const { view } = boot(['shape:a'], { bounds: { minX: 500, minY: 600, maxX: 800, maxY: 1600 } })
+    const bar = view.container.querySelector('.animate-pop') as HTMLElement
+    expect(bar.style.top).toBe('208px')
+  })
+
+  it('never leaves the stage, whatever is picked', () => {
+    const cases: PageBounds[] = [
+      { minX: 2000, minY: 400, maxX: 2400, maxY: 480 },
+      { minX: 500, minY: 1600, maxX: 800, maxY: 2000 },
+      { minX: -900, minY: -800, maxX: -400, maxY: -600 },
+      { minX: 460, minY: 380, maxX: 1660, maxY: 1180 }
+    ]
+    for (const bounds of cases) {
+      const { view } = boot(['shape:a'], { bounds })
+      const bar = view.container.querySelector('.animate-pop') as HTMLElement
+      const left = Number.parseInt(bar.style.left, 10)
+      const top = Number.parseInt(bar.style.top, 10)
+      expect(left, `left for ${JSON.stringify(bounds)}`).toBeGreaterThanOrEqual(0)
+      expect(left + 320, `right for ${JSON.stringify(bounds)}`).toBeLessThanOrEqual(1200)
+      expect(top, `top for ${JSON.stringify(bounds)}`).toBeGreaterThanOrEqual(0)
+      expect(top + 48, `bottom for ${JSON.stringify(bounds)}`).toBeLessThanOrEqual(800 - 72)
+      cleanup()
+    }
+  })
+
+  it('comes up even when the selection has no bounds to hang from', () => {
+    const { view } = boot(['shape:a'], { bounds: null })
+    expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
+    const bar = view.container.querySelector('.animate-pop') as HTMLElement
+    expect(bar.style.left).toBe('440px')
+    expect(bar.style.top).toBe('668px')
+  })
+
+  it('keeps what it was asked about when the selection goes', () => {
+    const { sent, made } = boot(['shape:a'])
+    made.select()
+    ask('make it round')
+    expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
+    expect(sent[0].text).toContain('Card')
+  })
+
   it('carries an attachment button and no record button', () => {
     boot()
     expect(screen.getByLabelText('Add an image')).toBeTruthy()
