@@ -41,6 +41,10 @@ export interface TextFields {
   weight: boolean
   family: boolean
   align: boolean
+  vertical: boolean
+  lineHeight: boolean
+  spacing: boolean
+  settings: boolean
   color: boolean
 }
 
