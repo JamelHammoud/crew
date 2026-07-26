@@ -205,6 +205,8 @@ export const useHuddle = create<HuddleState>((set, get) => {
     picking: false,
     speaking: [],
     problem: null,
+    micId: storedInput('microphone'),
+    cameraId: storedInput('camera'),
     localCamera: null,
     localScreen: null,
     remote: {},
@@ -216,10 +218,17 @@ export const useHuddle = create<HuddleState>((set, get) => {
       if (get().joined || get().joining) return
       stopRinging()
       set({ joining: true, problem: null })
-      const mic = await captureMic()
+      const mic = await captureMic(get().micId)
       tracks.mic = mic.track
       const peerId = get().peerId
-      set({ joined: true, joining: false, confirmed: false, micOn: mic.track !== null, problem: mic.problem })
+      set({
+        joined: true,
+        joining: false,
+        confirmed: false,
+        micOn: mic.track !== null,
+        micId: running(mic.track, get().micId),
+        problem: mic.problem
+      })
       sendHuddle({ type: 'huddle.join', peerId, muted: mic.track === null, camera: false })
       mesh.sync(peerId, get().room.peers.map(peer => peer.peerId))
       publish()
