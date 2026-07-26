@@ -136,13 +136,13 @@ describe('what the menu bar says', () => {
     expect(badgeText(40)).toBe('9+')
   })
 
-  it('names the session and what is waiting', () => {
+  it('says what is waiting, and nothing else', () => {
     const state = emptyPresence()
 
-    expect(presenceTooltip(state)).toBe('crew')
-    expect(presenceTooltip({ ...state, sharing: true })).toBe('crew: sharing your agents')
-    expect(presenceTooltip({ ...state, sharing: true, waiting: 1 })).toBe('crew: 1 task needs review')
-    expect(presenceTooltip({ ...state, sharing: true, waiting: 4 })).toBe('crew: 4 tasks need review')
+    expect(presenceTooltip(state)).toBe('Crew')
+    expect(presenceTooltip({ ...state, sharing: true })).toBe('Crew')
+    expect(presenceTooltip({ ...state, sharing: true, waiting: 1 })).toBe('Crew: 1 task needs review')
+    expect(presenceTooltip({ ...state, sharing: true, waiting: 4 })).toBe('Crew: 4 tasks need review')
   })
 })
 
