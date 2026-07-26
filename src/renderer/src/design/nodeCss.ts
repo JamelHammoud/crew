@@ -127,3 +127,33 @@ export function nodeStyle(props: DesignNodeProps): CSSProperties {
     ...layoutStyle(props.layout)
   } as CSSProperties
 }
+
+export function polygonFillStyle(props: DesignNodeProps, points: UnitPoint[]): CSSProperties {
+  const layers = fillLayers(props.fills)
+  const { backdrop } = effectStyle(props.effects)
+  return {
+    clipPath: polygonClip(points),
+    backgroundImage: layers.length > 0 ? layers.join(', ') : undefined,
+    backdropFilter: backdrop.length > 0 ? backdrop.join(' ') : undefined,
+    WebkitBackdropFilter: backdrop.length > 0 ? backdrop.join(' ') : undefined
+  } as CSSProperties
+}
+
+export function polygonStyle(props: DesignNodeProps): CSSProperties {
+  const filter: string[] = []
+  for (const effect of props.effects) {
+    if (!effect.visible) continue
+    if (effect.type === 'shadow') filter.push(`drop-shadow(${effect.x}px ${effect.y}px ${effect.blur}px ${effect.color})`)
+    else if (effect.type === 'layer-blur') filter.push(`blur(${effect.blur}px)`)
+  }
+  return {
+    filter: filter.length > 0 ? filter.join(' ') : undefined,
+    mixBlendMode: props.blend === 'normal' ? undefined : (props.blend as CSSProperties['mixBlendMode'])
+  }
+}
+
+export function strokeDash(stroke: Stroke): string | undefined {
+  if (stroke.style === 'dashed') return `${stroke.weight * 3} ${stroke.weight * 2}`
+  if (stroke.style === 'dotted') return `0 ${stroke.weight * 2}`
+  return undefined
+}
