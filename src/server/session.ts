@@ -202,6 +202,10 @@ export class CrewSession {
   // same folder are the same member but two separate people in the call.
   private huddle = new Map<WebSocket, HuddlePeer>()
   private huddleStartedAt: number | null = null
+  private huddleId: string | null = null
+  // Everyone the log already names for this call, so coming back to it after a
+  // dropped window does not say they joined twice.
+  private huddleNamed = new Set<string>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
