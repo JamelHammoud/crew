@@ -68,8 +68,8 @@ export const LinkGlyph = glyph(
 
 export const EyedropperGlyph = glyph(
   <>
-    <path d="M16 3.9a3.3 3.3 0 0 1 4.6 4.6l-2.3 2.3-4.6-4.6Z" />
-    <path d="m17 9.6-9.4 9.4-3.8 1.7 1.7-3.8 9.4-9.4" />
+    <path d="M15.7 3.6a3.3 3.3 0 0 1 4.6 4.6l-2.3 2.3-4.6-4.6Z" />
+    <path d="m16.7 9.3-9.4 9.4-3.8 1.7 1.7-3.8 9.4-9.4" />
   </>
 )
 
