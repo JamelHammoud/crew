@@ -166,9 +166,37 @@ export function plainTextOf(richText: unknown): string {
   return doc.content.map(p => (p.content ?? []).map(s => s.text ?? '').join('')).join('\n')
 }
 
-export function designPreamble(apiBase: string, board: DesignBoardMeta, agentId: string): string {
+export function resolveBoardRef(boards: DesignBoardMeta[], ref: BoardMentionRef): string | null {
+  if (boards.some(board => board.id === ref.id)) return ref.id
+  const name = ref.name.toLowerCase()
+  return boards.find(board => board.name.toLowerCase() === name)?.id ?? null
+}
+
+// The board the thread sits on and the boards someone named with a # both land
+// here. The API is written out once, for the board the agent is most likely to
+// touch, and the rest are listed by id under it.
+export function boardsPreamble(
+  apiBase: string,
+  agentId: string,
+  attached: DesignBoardMeta | undefined,
+  mentioned: DesignBoardMeta[] = []
+): string | null {
+  const others = mentioned.filter(board => board.id !== attached?.id)
+  const board = attached ?? others[0]
+  if (!board) return null
+  const rest = attached ? others : others.slice(1)
   return [
-    `This thread is attached to the design board "${board.name}". You can see and edit the board through a small HTTP API. Everyone watching the board sees your edits live, with your cursor moving as you work.`,
+    attached
+      ? `This thread is attached to the design board "${board.name}". You can see and edit the board through a small HTTP API. Everyone watching the board sees your edits live, with your cursor moving as you work.`
+      : `The design board "${board.name}" came up in this thread. You can see and edit it through a small HTTP API. Everyone watching the board sees your edits live, with your cursor moving as you work.`,
+    ...(rest.length > 0
+      ? [
+          ``,
+          `Other boards named here, reached the same way with their own id: ${rest
+            .map(other => `"${other.name}" is ${other.id}`)
+            .join(', ')}.`
+        ]
+      : []),
     ``,
     `Read the board first:`,
     `  curl -s ${apiBase}/design/${board.id}`,
