@@ -1,7 +1,10 @@
-import { SignalOffGlyph } from '../../icons'
+import { useState } from 'react'
+import { SignalOffGlyph, TrashGlyph } from '../../icons'
 import { useHuddle } from '../../state/huddle'
+import { useCrew } from '../../state/store'
 import AvatarStack from '../AvatarStack'
 import FeedCard from '../FeedCard'
+import { MenuItem, Popover } from '../Popover'
 import { formatElapsed, formatSpan } from '../time'
 import { useNow } from '../useNow'
 import Live from './Live'
@@ -14,6 +17,9 @@ export default function HuddleCard({ record }: { record: HuddleRecord }) {
   const joined = useHuddle(s => s.joined)
   const joining = useHuddle(s => s.joining)
   const join = useHuddle(s => s.join)
+  const selfId = useCrew(s => s.selfId)
+  const deleteHuddle = useCrew(s => s.deleteHuddle)
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   const live = room.id === record.id && room.peers.length > 0
   const now = useNow(live)
