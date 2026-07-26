@@ -367,12 +367,14 @@ body {
   }
 }
 
-.design-generating {
+.design-generating,
+.pulse-soft {
   animation: generating 1.1s ease-in-out infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .design-generating {
+  .design-generating,
+  .pulse-soft {
     animation: none;
   }
 }
