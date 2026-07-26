@@ -12,7 +12,7 @@ import type { FileEntry, RepoFile } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
-import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toShown } from './diffRows'
+import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
 import ImageView from './ImageView'
 import Spinner from './Spinner'
 
@@ -94,6 +94,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const [base, setBase] = useState<string | null>(null)
   const [hidden, setHidden] = useState(false)
   const [jump, setJump] = useState<number | null>(null)
+  const [tick, setTick] = useState(0)
   const [loadKey, setLoadKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
