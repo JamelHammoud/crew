@@ -127,13 +127,14 @@ describe('auto sync', () => {
     const sync = new GitSync(a)
     syncs.push(sync)
 
-    const running = sync.syncNow()
-    const queued = sync.syncNow()
-    const alsoQueued = sync.syncNow()
+    const pass = sync.syncNow()
+    expect(sync.syncNow()).toBe(pass)
+    expect(sync.syncNow()).toBe(pass)
+    await pass
 
-    expect(queued).not.toBe(running)
-    expect(alsoQueued).toBe(queued)
-    await Promise.all([running, queued, alsoQueued])
+    const next = sync.syncNow()
+    expect(next).not.toBe(pass)
+    await next
   })
 
   it('runs a prompt without queueing behind every sync asked for so far', async () => {
