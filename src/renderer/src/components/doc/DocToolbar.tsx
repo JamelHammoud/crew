@@ -29,11 +29,11 @@ export default function DocToolbar() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return
       event.preventDefault()
-      openLink()
+      setLink(editor.getSelectedLinkUrl() ?? '')
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  })
+  }, [editor])
 
   useEffect(() => {
     if (link !== null) inputRef.current?.focus()
@@ -43,6 +43,7 @@ export default function DocToolbar() {
     const url = (link ?? '').trim()
     setLink(null)
     if (url) editor.createLink(url)
+    else if (editor.getSelectedLinkUrl()) editor.deleteLink()
     editor.focus()
   }
 
