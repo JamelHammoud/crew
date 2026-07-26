@@ -283,13 +283,6 @@ body {
   animation: tab-icon-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.5) var(--pop-delay, 0ms) both;
 }
 
-/* The planet's ring tips level around it as its lobes draw. */
-.tab-icon-sweep {
-  transform-box: view-box;
-  transform-origin: 9.2px 10.6px;
-  animation: tab-icon-sweep 0.42s cubic-bezier(0.22, 1, 0.36, 1) var(--sweep-delay, 0ms) both;
-}
-
 @keyframes tab-icon-in {
   from {
     width: 0;
