@@ -12,6 +12,7 @@ export type BrowserTab = {
   canGoForward: boolean
   path: string
   line: number | null
+  diff: string | null
   back: string[]
   forward: string[]
   generation: number
@@ -23,7 +24,7 @@ type BrowserState = {
   activeTabId: string | null
   setWidth(width: number): void
   openUrl(url: string): void
-  openFile(path: string, line?: number | null): void
+  openFile(path: string, line?: number | null, diff?: string | null): void
   addTab(): void
   selectTab(id: string): void
   closeTab(id: string): void
@@ -52,6 +53,7 @@ function makeTab(url = ''): BrowserTab {
     canGoForward: false,
     path: '',
     line: null,
+    diff: null,
     back: [],
     forward: [],
     generation: 0
