@@ -23,18 +23,17 @@ app.whenReady().then(async () => {
   window.focus()
   await window.loadFile(path.join(root, 'icon-sheet.html'))
   // Nothing here waits on an animation frame either. A window standing behind
-  // another one is throttled to almost no frames, and the wait never ends.
+  // another one is throttled to almost no frames, and the wait never ends. It
+  // scrolls rather than taking cards out, because a page that has just had most
+  // of itself removed captures blank.
   await window.webContents.executeJavaScript(`
     document.body.classList.add('keys')
-    const keep = document.querySelectorAll('section')[${section}]
-    for (const el of document.querySelectorAll('section, .bar, p.lede, h1')) if (el !== keep) el.remove()
-    for (const [i, card] of [...keep.querySelectorAll('figure')].entries())
-      if (i < ${from} || i >= ${Number(from) + Number(count)}) card.remove()
+    window.scrollTo(0, ${top})
     document.title
   `)
-  await new Promise(done => setTimeout(done, 500))
+  await new Promise(done => setTimeout(done, 700))
   const shot = await window.webContents.capturePage()
-  const out = path.join(root, `icon-sheet-${section}-${from}.png`)
+  const out = path.join(root, `icon-sheet-${top}.png`)
   await writeFile(out, shot.toPNG())
   console.log(out)
   app.quit()
