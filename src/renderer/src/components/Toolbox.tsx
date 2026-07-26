@@ -1,11 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CrewTool } from '../../../shared/toolbox'
-import { FolderGlyph, MusicGlyph, PencilGlyph, PlusGlyph, SignalGlyph, TerminalGlyph, type Glyph } from '../icons'
+import {
+  CheckGlyph,
+  FolderGlyph,
+  MusicGlyph,
+  PencilGlyph,
+  PlusGlyph,
+  SignalGlyph,
+  TerminalGlyph,
+  type Glyph
+} from '../icons'
 import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
-import { opensPanel, runTool } from './runTool'
+import { opensPanel, runTool, staysOpen } from './runTool'
 import ToolBuilder from './ToolBuilder'
 import ToolMarkView from './toolMark'
 import { HeaderButton, Rule, SheetHeader, Tile } from './toolboxParts'
@@ -21,6 +30,8 @@ interface Builtin {
   run?: () => void
 }
 
+const SAID = 1200
+
 export default function Toolbox({
   open,
   onClose,
@@ -33,10 +44,14 @@ export default function Toolbox({
   const tools = useCrew(s => s.tools)
   const joined = useHuddle(s => s.joined)
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
+  const [copied, setCopied] = useState<string | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     if (!open) setBuilding(null)
   }, [open])
+
+  useEffect(() => () => clearTimeout(timer.current), [])
 
   const builtins: Builtin[] = [
     {
@@ -72,6 +87,14 @@ export default function Toolbox({
     onClose()
   }
 
+  const pressTool = (tool: CrewTool) => {
+    runTool(tool.action)
+    if (!staysOpen(tool.action)) return press(undefined, opensPanel(tool.action))
+    setCopied(tool.id)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setCopied(null), SAID)
+  }
+
   return (
     <Popover open={open} onClose={onClose} align="center" flush className="w-[304px]">
       {building ? (
@@ -102,9 +125,16 @@ export default function Toolbox({
                 {tools.map(tool => (
                   <Tile
                     key={tool.id}
-                    mark={<ToolMarkView mark={tool.mark} className="w-[22px] h-[22px]" />}
-                    name={tool.name}
-                    onClick={() => press(() => runTool(tool.action), opensPanel(tool.action))}
+                    mark={
+                      copied === tool.id ? (
+                        <CheckGlyph className="w-[22px] h-[22px]" />
+                      ) : (
+                        <ToolMarkView mark={tool.mark} className="w-[22px] h-[22px]" />
+                      )
+                    }
+                    name={copied === tool.id ? 'Copied' : tool.name}
+                    active={copied === tool.id}
+                    onClick={() => pressTool(tool)}
                   >
                     <button
                       onClick={() => setBuilding({ tool })}
