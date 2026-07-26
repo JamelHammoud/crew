@@ -539,7 +539,6 @@ export function availableCommands(ctx: CommandContext): DesignCommand[] {
   return DESIGN_COMMANDS.filter(command => command.when(ctx))
 }
 
-// A frame drawn round the selection, the way Figma wraps what you picked.
 function frameSelection(editor: Editor): void {
   const shapes = editor.getSelectedShapes()
   if (shapes.length === 0) return

@@ -50,8 +50,6 @@ function score(row: ActionRow, query: string): number {
   return row.terms.toLowerCase().includes(query) ? 4 : -1
 }
 
-// With nothing typed the palette suggests what is worth doing right now, and
-// the rest of the list stays underneath rather than being hidden.
 export function searchActions(rows: ActionRow[], query: string): { section: string; rows: ActionRow[] }[] {
   const clean = query.trim().toLowerCase()
   if (!clean) {

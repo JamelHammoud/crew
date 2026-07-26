@@ -163,7 +163,6 @@ export function MenuItem({
   )
 }
 
-// A row that opens a second panel beside it, the way a menu nests in Figma.
 export function SubMenu({
   icon,
   label,
