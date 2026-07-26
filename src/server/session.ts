@@ -1547,6 +1547,47 @@ export class CrewSession {
     this.broadcastHuddle()
   }
 
+  // Where the loop has got to by now. The clients are told a position rather
+  // than a moment on this machine's clock, so nothing depends on two computers
+  // agreeing what time it is.
+  private musicRoom(): MusicRoom {
+    const music = this.music
+    if (!music) return emptyMusic()
+    const run = music.playing ? (Date.now() - music.since) / 1000 : 0
+    return {
+      trackId: music.track.id,
+      playing: music.playing,
+      at: wrapAt(music.from + run, music.track),
+      by: music.by
+    }
+  }
+
+  private broadcastMusic(): void {
+    this.broadcast({ type: 'music.room', room: this.musicRoom() })
+  }
+
+  // Anyone can put something on, and anyone can take it off again. A track
+  // nobody has heard of is nothing to play, so it is dropped rather than sent
+  // on to everyone as a name their build cannot draw.
+  private handleMusicSet(member: Member, trackId: string, playing: boolean, at: number): void {
+    const track = trackFor(trackId)
+    if (!track) return
+    this.music = {
+      track,
+      playing: playing === true,
+      from: wrapAt(typeof at === 'number' ? at : 0, track),
+      since: Date.now(),
+      by: member.name.slice(0, BY_LIMIT)
+    }
+    this.broadcastMusic()
+  }
+
+  private handleMusicOff(): void {
+    if (!this.music) return
+    this.music = null
+    this.broadcastMusic()
+  }
+
   private handleHuddleSignal(ws: WebSocket, to: string, signal: HuddleSignal): void {
     const from = this.huddle.get(ws)
     if (!from || typeof to !== 'string') return
