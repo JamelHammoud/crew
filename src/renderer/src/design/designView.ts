@@ -52,7 +52,17 @@ export function designView(editor: Editor, shape: DesignNodeShape): NodeView {
       ? {
           value: props.type,
           set: next => patch({ type: { ...props.type, ...next } }),
-          fields: { size: true, weight: true, family: true, align: true, color: true }
+          fields: {
+            size: true,
+            weight: true,
+            family: true,
+            align: true,
+            vertical: true,
+            lineHeight: true,
+            spacing: true,
+            settings: true,
+            color: true
+          }
         }
       : null,
     blend: { value: props.blend, set: blend => patch({ blend }) },
