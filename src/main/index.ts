@@ -290,6 +290,7 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('clipboard:image', (_event, src: string) => copyImage(src))
   ipcMain.handle('file:read', (_event, target: string) => session.readFile(target))
+  ipcMain.handle('file:list', () => session.listFiles())
   ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
   ipcMain.handle('file:locate', (_event, target: string) => session.locatePath(target))
   ipcMain.handle('file:reveal', (_event, target: string) => {
