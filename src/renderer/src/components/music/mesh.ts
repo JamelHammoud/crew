@@ -88,6 +88,28 @@ const sweep = (colors: readonly string[], angle: number): string => {
   return `linear-gradient(${at(angle)}deg, ${stops.join(', ')})`
 }
 
+// A veil of ribbons lying the same way across the picture. This is the texture a
+// mesh of lobes cannot give you on its own: lobes are round, and what a
+// defocused petal leaves behind is a smear with a direction to it.
+//
+// Each ribbon comes up slowly from nothing and drops off fast, so it has a soft
+// flank on one side and a defined spine on the other, the way an out of focus
+// edge does. They are laid at uneven widths, or a veil reads as stripes.
+const veil = (color: string, angle: number, weight: number, roll: () => number): string => {
+  const stops: string[] = []
+  let head = 0
+  while (head < 100) {
+    const width = 9 + roll() * 26
+    const peak = (0.3 + roll() * 0.55) * weight
+    stops.push(`${rgba(color, 0)} ${at(head)}%`)
+    stops.push(`${rgba(color, peak * 0.55)} ${at(head + width * 0.45)}%`)
+    stops.push(`${rgba(color, peak)} ${at(head + width * 0.82)}%`)
+    head += width
+    stops.push(`${rgba(color, 0)} ${at(head)}%`)
+  }
+  return `linear-gradient(${at(angle)}deg, ${stops.join(', ')})`
+}
+
 interface Layer {
   image: string
   blend: string
