@@ -46,15 +46,13 @@ export default function Design() {
     <DesignBoardContext.Provider value={boardContext}>
       <EditorContext.Provider value={editor}>
         <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H - HEADER_LIFT }}>
-          <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-6">
+          <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-2">
             <HeaderButton
               label={leftOpen ? 'Hide layers' : 'Show layers'}
               pressed={leftOpen}
-              active={leftOpen}
               onClick={() => setLeftOpen(value => !value)}
             >
-              <PanelLeftGlyph className="w-[18px] h-[18px]" />
-            </HeaderButton>
+              <PanelLeftGlyph className={`w-[18px] h-[18px] ${FLIP} ${leftOpen ? '' : '-scale-x-100'}`} />
             <BoardSwitcher />
             <div className="ml-auto flex items-center gap-1">
               {editor && <DesignZoom />}
