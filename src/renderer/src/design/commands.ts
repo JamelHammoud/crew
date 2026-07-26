@@ -488,14 +488,16 @@ function frameSelection(editor: Editor): void {
   const bounds = editor.getSelectionPageBounds()
   if (!bounds) return
   const pad = 24
+  const id = createShapeId()
   editor.run(() => {
     editor.markHistoryStoppingPoint('frame selection')
-    const id = editor.createShape({
+    editor.createShape({
+      id,
       type: 'frame',
       x: Math.round(bounds.minX - pad),
       y: Math.round(bounds.minY - pad),
       props: { w: Math.round(bounds.width + pad * 2), h: Math.round(bounds.height + pad * 2), name: 'Frame' }
-    }).getLastCreatedShape().id
+    })
     editor.reparentShapes(
       shapes.map(shape => shape.id),
       id
