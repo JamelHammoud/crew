@@ -27,7 +27,7 @@ app.whenReady().then(async () => {
   await window.loadFile(path.join(root, 'icon-sheet.html'), {
     hash: `keys&only=${set},${from},${count}`
   })
-  await new Promise(done => setTimeout(done, 700))
+  await new Promise(done => setTimeout(done, 1800))
   const shot = await window.webContents.capturePage()
   const out = path.join(root, `icon-sheet-${set}-${from}.png`)
   await writeFile(out, shot.toPNG())
