@@ -64,12 +64,14 @@ function RadiusHandles({
   editor,
   shape,
   rect,
-  zoom
+  zoom,
+  stroke
 }: {
   editor: Editor
   shape: DesignNodeShape
   rect: Rect
   zoom: number
+  stroke: string
 }) {
   const props = shape.props as DesignNodeProps
   const limit = Math.min(props.w, props.h) / 2
