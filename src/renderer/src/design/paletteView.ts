@@ -98,7 +98,7 @@ export function paletteView(editor: Editor, shape: TLShape): NodeView {
       fields: {
         size: has('size'),
         weight: false,
-        family: has('font'),
+        family: has('font') ? 'system' : 'none',
         align: alignKey !== null,
         vertical: has('verticalAlign'),
         lineHeight: false,

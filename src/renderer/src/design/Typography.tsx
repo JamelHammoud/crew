@@ -111,7 +111,10 @@ export default function Typography({ text }: { text: TextControl }) {
 
   return (
     <Section title="Typography">
-      {fields.family && <FontPicker value={value.family} onChange={family => set({ family })} />}
+      {fields.family === 'all' && <FontPicker value={value.family} onChange={family => set({ family })} />}
+      {fields.family === 'system' && (
+        <Select full value={value.family} options={SYSTEM_FAMILIES} onChange={family => set({ family })} />
+      )}
       <Pair
         left={
           fields.weight ? (
