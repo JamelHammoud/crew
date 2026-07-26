@@ -146,7 +146,7 @@ export default function BrowserPanel() {
           <Tooltip label={active.tree ? 'Hide files' : 'Show files'}>
             <button
               onClick={() => useBrowser.getState().toggleTree(active.id)}
-              aria-label="Project files"
+              aria-label={active.tree ? 'Hide files' : 'Show files'}
               aria-pressed={active.tree}
               className={`${iconButton} ${active.tree ? 'text-fg bg-fg/[0.06]' : ''}`}
             >

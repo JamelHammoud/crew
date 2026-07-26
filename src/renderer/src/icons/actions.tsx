@@ -73,6 +73,12 @@ export const EyedropperGlyph = glyph(
   </>
 )
 
+// The mark for a list of things you can do. Half its box is empty the way a
+// triangle's is, so it takes the whole live area down the diagonal and still
+// runs light. The waist bars are the same length either side, which is what
+// keeps the two arms reading as one stroke folded rather than two shapes.
+export const BoltGlyph = glyph(<path d="M15 2.6 5.5 13.2h5l-1.5 8.2 9.5-10.6h-5Z" />)
+
 export const MenuGlyph = glyph(<path d="M4.5 7h15M4.5 12h15M4.5 17h15" />)
 
 export const HandleGlyph = glyph(<path d="M4.5 9.5h15M4.5 14.5h15" />)
