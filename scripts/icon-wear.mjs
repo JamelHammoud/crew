@@ -8,21 +8,20 @@ const root = path.resolve(here, '..')
 const out = path.join(root, 'icon-wear.html')
 
 const SET = 'src/renderer/src/icons/index.ts'
-const SIZES = [16, 14, 12]
 
 const ENTRY = `
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import * as set from ${JSON.stringify(path.join(root, SET))}
+const WEIGHTS = [1.5, 1.75, 2, 2.25]
 export function draw() {
   return Object.entries(set)
     .filter(([, value]) => typeof value === 'function' && /^[A-Z]/.test(value.name || ''))
     .map(([name, Icon]) => ({
       name,
-      sizes: [16, 14, 12].map(size => ({
-        size,
-        plain: renderToStaticMarkup(createElement(Icon, {})),
-        heavy: renderToStaticMarkup(createElement(Icon, { strokeWidth: size === 16 ? 1.7 : 1.9 }))
+      art: WEIGHTS.map(weight => ({
+        weight,
+        markup: renderToStaticMarkup(createElement(Icon, { strokeWidth: weight }))
       }))
     }))
 }
@@ -48,29 +47,25 @@ try {
   const card = icon => `
     <div class="card">
       <div class="name">${icon.name.replace(/Glyph$/, '')}</div>
-      ${icon.sizes
-        .map(
-          s => `<div class="row">
-            <span class="px">${s.size}</span>
-            <span class="art" style="width:${s.size}px;height:${s.size}px">${s.plain}</span>
-            <span class="art" style="width:${s.size}px;height:${s.size}px">${s.heavy}</span>
-          </div>`
-        )
-        .join('')}
+      <div class="row">
+        ${icon.art.map(a => `<span class="art">${a.markup}</span>`).join('')}
+      </div>
     </div>`
 
   await writeFile(
     out,
     `<!doctype html><meta charset="utf8"><style>
-      body{margin:0;padding:24px;background:#0c0d0e;color:#f5f5f5;font:11px -apple-system,system-ui,sans-serif}
-      .grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
-      .card{background:#151719;border-radius:12px;padding:10px 8px}
-      .name{color:#8b8f94;margin-bottom:8px;text-align:center;font-size:10px}
-      .row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px}
-      .px{color:#4d5155;width:14px;text-align:right;font-size:9px}
-      .art{display:inline-flex;align-items:center;justify-content:center}
+      body{margin:0;padding:20px;background:#0c0d0e;color:#f5f5f5;font:11px -apple-system,system-ui,sans-serif}
+      .head{display:flex;gap:20px;margin-bottom:14px;color:#8b8f94}
+      .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+      .card{background:#151719;border-radius:12px;padding:9px 6px}
+      .name{color:#8b8f94;margin-bottom:7px;text-align:center;font-size:10px}
+      .row{display:flex;align-items:center;justify-content:center;gap:14px}
+      .art{display:inline-flex;width:16px;height:16px}
       svg{width:100%;height:100%}
-    </style><div class="grid">${icons.map(card).join('')}</div>`
+    </style>
+    <div class="head"><span>16px wear</span><span>1.5</span><span>1.75</span><span>2.0</span><span>2.25</span></div>
+    <div class="grid">${icons.map(card).join('')}</div>`
   )
   console.log(out, icons.length)
 } finally {
