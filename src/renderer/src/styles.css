@@ -882,16 +882,16 @@ body {
 }
 
 .skeleton {
-  @apply relative overflow-hidden bg-fg/[0.04];
+  @apply relative overflow-hidden bg-fg/[0.07];
 }
 
 .skeleton::after {
   @apply absolute inset-0;
   content: '';
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.07), transparent);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.13), transparent);
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
 .light .skeleton::after {
-  background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.07), transparent);
 }
