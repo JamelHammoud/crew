@@ -18,11 +18,14 @@ export type BrowserTab = {
   generation: number
 }
 
+export const DEFAULT_WIDTH = 480
+
 type BrowserState = {
   width: number
   tabs: BrowserTab[]
   activeTabId: string | null
   setWidth(width: number): void
+  resetWidth(): void
   openUrl(url: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   addTab(): void
