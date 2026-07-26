@@ -17,7 +17,9 @@ const GLYPH = 'w-[18px] h-[18px] transition-transform duration-200'
 export default function Design() {
   const boards = useCrew(s => s.boards)
   const createBoard = useCrew(s => s.createBoard)
-  const [selected, setSelected] = useState<string | null>(lastBoard)
+  const designTarget = useCrew(s => s.designTarget)
+  const clearDesignTarget = useCrew(s => s.clearDesignTarget)
+  const [selected, setSelected] = useState<string | null>(designTarget ?? lastBoard)
   const [editor, setEditor] = useState<Editor | null>(null)
   const [panels, setPanels] = useState(lastPanels)
 
@@ -27,6 +29,12 @@ export default function Design() {
   useEffect(() => {
     if (current) rememberBoard(current)
   }, [current])
+
+  useEffect(() => {
+    if (!designTarget) return
+    setSelected(designTarget)
+    clearDesignTarget()
+  }, [designTarget, clearDesignTarget])
 
   useEffect(() => {
     rememberPanels(panels)
