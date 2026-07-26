@@ -142,7 +142,7 @@ export default function BrowserPanel() {
             <ArrowRightIcon className="w-4 h-4" />
           </button>
           <button
-            onClick={() => (active.loading ? viewFor(active.id)?.stop() : viewFor(active.id)?.reload())}
+            onClick={() => reload(active)}
             disabled={!active.initialUrl}
             aria-label={active.loading ? 'Stop' : 'Reload'}
             className={iconButton}
