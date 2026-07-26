@@ -7,7 +7,7 @@ const audio = installFakeAudio()
 
 const { MusicPlayer } = await import('../src/renderer/src/media/music')
 const { hzOf, stepsOf, strikesOf, tuneLevels } = await import('../src/renderer/src/media/tunes')
-const { levelsAt } = await import('../src/renderer/src/media/levels')
+const { levelsAt, levelsOf } = await import('../src/renderer/src/media/levels')
 const { SONGS } = await import('../src/renderer/src/media/songs')
 
 const overworld = MUSIC_TUNES[0]
