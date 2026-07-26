@@ -407,7 +407,7 @@ describe('picking a microphone and a camera', () => {
     made.length = 0
     asked.audio = null
     asked.video = null
-    localStorage.clear()
+    storage.clear()
     Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
     useHuddle.setState({
       room: { peers: [], startedAt: null },
@@ -481,7 +481,7 @@ describe('picking a microphone and a camera', () => {
       fireEvent.click(screen.getByText('Shure MV7'))
     })
 
-    await waitFor(() => expect(localStorage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
+    await waitFor(() => expect(storage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
   })
 
   // A camera picked while the camera is off is a choice, not a reason to start
@@ -504,7 +504,7 @@ describe('picking a microphone and a camera', () => {
   // A microphone that was chosen once and has since been unplugged must not be
   // asked for in a way that fails, or someone lands in the call with nothing.
   it('asks for a remembered device without insisting on it', async () => {
-    localStorage.setItem('crew.huddle.microphone', 'mic-gone')
+    storage.setItem('crew.huddle.microphone', 'mic-gone')
     useHuddle.setState({ micId: 'mic-gone' })
     await enter()
 
