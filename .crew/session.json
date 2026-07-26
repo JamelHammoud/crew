@@ -125,22 +125,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785103291398,
+        "fetchedAt": 1785103065524,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 13,
+            "percent": 9,
             "severity": "normal",
-            "resetsAt": 1785110399552,
+            "resetsAt": 1785110399709,
             "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 24,
+            "percent": 23,
             "severity": "normal",
-            "resetsAt": 1785499200552,
+            "resetsAt": 1785499200709,
             "active": true
           }
         ],
@@ -230,7 +230,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785103291611,
+        "fetchedAt": 1785103305537,
         "windows": [
           {
             "key": "primary",
@@ -326,7 +326,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785103291611,
+        "fetchedAt": 1785103305537,
         "windows": [
           {
             "key": "primary",
@@ -618,22 +618,22 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785103291398,
+        "fetchedAt": 1785103065524,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 13,
+            "percent": 9,
             "severity": "normal",
-            "resetsAt": 1785110399552,
+            "resetsAt": 1785110399709,
             "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 24,
+            "percent": 23,
             "severity": "normal",
-            "resetsAt": 1785499200552,
+            "resetsAt": 1785499200709,
             "active": true
           }
         ],
