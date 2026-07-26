@@ -168,12 +168,12 @@ describe('the file explorer', () => {
     render(createElement(BrowserPanel))
     await screen.findByText('src')
 
-    fireEvent.click(screen.getByLabelText('Project files'))
+    fireEvent.click(screen.getByLabelText('Hide files'))
     await waitFor(() => expect(screen.queryByLabelText('Filter files')).toBeNull())
     expect(activeTab().tree).toBe(false)
     expect(await screen.findByText('readme.md')).toBeTruthy()
 
-    fireEvent.click(screen.getByLabelText('Project files'))
+    fireEvent.click(screen.getByLabelText('Show files'))
     expect(await screen.findByLabelText('Filter files')).toBeTruthy()
   })
 
