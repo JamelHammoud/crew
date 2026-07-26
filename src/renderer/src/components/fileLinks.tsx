@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { PathLocation } from '../../../shared/files'
 import { useBrowser } from '../state/browser'
 
@@ -314,18 +314,25 @@ export function UrlLink({ url }: { url: string }) {
   )
 }
 
-export function TextWithFileLinks({ text, plain }: { text: string; plain?: boolean }) {
+export function TextWithFileLinks({ text, inline }: { text: string; inline?: boolean }) {
   const tokens = fileTokens(text)
   useLocated(tokens.flatMap(token => (token.kind === 'file' ? [token.path] : [])))
 
   return (
     <>
       {tokens.map((token, index) => {
-        if (token.kind === 'url') return plain ? token.text : <UrlLink key={index} url={token.text} />
+        if (token.kind === 'url') return <UrlLink key={index} url={token.text} />
         if (token.kind !== 'file') return token.text
         if (isPrivate(token.path)) return <PrivateChip key={index} />
         const label = labelFor(token.path, token.suffix, token.text)
-        if (plain || !openable(token.path)) return label
+        if (!openable(token.path)) return label
+        if (inline) {
+          return (
+            <FileTextLink key={index} path={token.path} line={token.line}>
+              {label}
+            </FileTextLink>
+          )
+        }
         return <FileChip key={index} path={token.path} line={token.line} text={label} />
       })}
     </>
