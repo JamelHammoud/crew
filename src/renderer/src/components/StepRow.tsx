@@ -116,7 +116,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
   const totals = stepTotals(files)
   const detail = thinking ? '' : (item.detail ?? '')
   const opens = useOpener(detail, files)
-  const expandable = thinking || files.length > 1 || files.some(file => file.diff) || (!opens && crowded(detail))
+  const expandable = thinking || files.length > 0 || (!opens && Boolean(detail))
   const expanded = open ?? (thinking ? item.streaming : false)
   const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
