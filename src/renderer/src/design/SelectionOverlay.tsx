@@ -24,7 +24,7 @@ export default function SelectionOverlay({ editor }: { editor: Editor | null }) 
   const view = useValue(
     'design selection overlay',
     () => {
-      if (!editor || !editor.isIn('select') || editor.getEditingShapeId()) return null
+      if (!editor || !selectionChromeVisible(editor)) return null
       const shapes = editor.getSelectedShapes()
       if (shapes.length === 0) return null
       const bounds = editor.getSelectionPageBounds()
