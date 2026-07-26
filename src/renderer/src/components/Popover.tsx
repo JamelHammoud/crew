@@ -171,8 +171,8 @@ export function MenuItem({
       }`}
     >
       {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
-      <span className="flex-1">{label}</span>
-      {hint && <span className="text-xs text-fg/40 tabular-nums">{hint}</span>}
+      <span className="flex-1 truncate">{label}</span>
+      {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
     </button>
   )
 }
@@ -180,10 +180,12 @@ export function MenuItem({
 export function SubMenu({
   icon,
   label,
+  maxHeight,
   children
 }: {
   icon?: ReactNode
   label: string
+  maxHeight?: number
   children: ReactNode
 }) {
   const rowRef = useRef<HTMLDivElement>(null)
