@@ -1,7 +1,14 @@
 import { SideMenuExtension, SuggestionMenu } from '@blocknote/core/extensions'
 import { useBlockNoteEditor, useExtension, useExtensionState } from '@blocknote/react'
 import { useLayoutEffect, useState, type DragEvent } from 'react'
-import { ArrowDownGlyph, ArrowUpGlyph, DuplicateGlyph, HandleGlyph, PlusGlyph, TrashGlyph } from '../../icons'
+import {
+  ArrowDownGlyph,
+  ArrowUpGlyph,
+  DuplicateGlyph,
+  HandleGlyph,
+  PlusGlyph,
+  TrashGlyph
+} from '../../icons'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import { blockHandleOffset } from './blockAnchor'
 

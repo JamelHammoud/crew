@@ -3,7 +3,15 @@ import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from '
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
 import { canRename, layerName, renameShape } from '../design/tools'
-import { ChevronRightGlyph, CloseGlyph, EyeGlyph, EyeOffGlyph, LockGlyph, SearchGlyph, UnlockGlyph } from '../icons'
+import {
+  ChevronRightGlyph,
+  CloseGlyph,
+  EyeGlyph,
+  EyeOffGlyph,
+  LockGlyph,
+  SearchGlyph,
+  UnlockGlyph
+} from '../icons'
 import { PanelButton } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'

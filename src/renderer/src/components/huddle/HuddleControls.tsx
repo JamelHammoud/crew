@@ -1,5 +1,14 @@
 import { useState, type ReactNode } from 'react'
-import { CameraGlyph, CameraOffGlyph, ChevronDownGlyph, CollapseGlyph, DesktopGlyph, ExpandGlyph, HangupGlyph, MicGlyph } from '../../icons'
+import {
+  CameraGlyph,
+  CameraOffGlyph,
+  ChevronDownGlyph,
+  CollapseGlyph,
+  DesktopGlyph,
+  ExpandGlyph,
+  HangupGlyph,
+  MicGlyph
+} from '../../icons'
 import type { InputKind } from '../../media/devices'
 import { useHuddle } from '../../state/huddle'
 import Tooltip from '../Tooltip'
