@@ -6,7 +6,12 @@ import {
   type BrowserWindow,
   type NativeImage
 } from 'electron'
-import { emptyPresence, type PresenceSnapshot } from '../shared/presence'
+import {
+  badgeText,
+  emptyPresence,
+  presenceTooltip,
+  type PresenceSnapshot
+} from '../shared/presence'
 import { TrayPanel, type PanelPage } from './tray-panel'
 import { TRAY_HEIGHT, TRAY_ICON, TRAY_WIDTH } from './tray-png'
 
@@ -47,21 +52,8 @@ function dotIcon(): NativeImage {
   return nativeImage.createFromBitmap(buffer, { width: size, height: size, scaleFactor: 2 })
 }
 
-export function trayTooltip(state: PresenceSnapshot): string {
-  if (!state.sharing) return 'crew'
-  if (state.waiting === 1) return 'crew: 1 task needs review'
-  if (state.waiting > 1) return `crew: ${state.waiting} tasks need review`
-  return 'crew: sharing your agents'
-}
-
-// The count rides beside the mark rather than on it. A menu bar item is one
-// line tall, so a badge drawn over 12 pixels of artwork is a smudge, and the
-// number is the thing being read anyway.
-export function trayBadge(waiting: number): string {
-  if (waiting <= 0) return ''
-  return waiting > 99 ? '99+' : String(waiting)
-}
-
+// The count rides beside the mark rather than on it: a menu bar item is one
+// line tall, and a badge drawn over twelve pixels of artwork is a smudge.
 export class CrewTray {
   private tray: Tray | null = null
   private panel: TrayPanel
@@ -120,8 +112,8 @@ export class CrewTray {
   private refresh(): void {
     const tray = this.tray
     if (!tray) return
-    tray.setToolTip(trayTooltip(this.state))
-    if (isMac) tray.setTitle(trayBadge(this.state.waiting), { fontType: 'monospacedDigit' })
+    tray.setToolTip(presenceTooltip(this.state))
+    if (isMac) tray.setTitle(badgeText(this.state.waiting), { fontType: 'monospacedDigit' })
     else tray.setContextMenu(this.menu())
     this.panel.update(this.state)
   }
