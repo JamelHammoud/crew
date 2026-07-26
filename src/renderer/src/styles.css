@@ -41,6 +41,9 @@
 
   --animate-pop: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
   --animate-rise: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* A cover breathing while its track plays. Slow enough to be felt rather than
+     watched, and only ever a transform, so nothing is painted twice. */
+  --animate-drift: drift 19s ease-in-out infinite;
 
   @keyframes pop {
     from {
@@ -61,6 +64,19 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: scale(1) translate(0, 0) rotate(0deg);
+    }
+    33% {
+      transform: scale(1.08) translate(2.5%, -3%) rotate(4deg);
+    }
+    66% {
+      transform: scale(1.05) translate(-3%, 2%) rotate(-3deg);
     }
   }
 }
