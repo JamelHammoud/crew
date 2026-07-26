@@ -10,12 +10,13 @@ import type { ThreadItem } from './thread'
 
 function MentionHighlights({ value }: { value: string }) {
   const agents = useCrew(s => s.agents)
+  const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(() => tokenizeMentions(value, agents, docs), [agents, docs, value])
+  const tokens = useMemo(() => tokenizeMentions(value, agents, members, docs), [agents, docs, members, value])
   return (
     <>
       {tokens.map((token, index) => {
-        if (token.kind === 'agent') {
+        if (token.kind === 'agent' || token.kind === 'member') {
           return (
             <span key={index} className="rounded-md pl-0.5 -ml-0.5 py-0.5 bg-fg/10">
               {token.text}
