@@ -386,15 +386,18 @@ body {
 }
 
 /* A thought carries a live ellipsis: a wave travels the three dots while it runs,
-   and when it lands the middle dot grows into a ring, gathers the other two into
-   it, and the check strokes itself in. One gesture, in the app's own hand. */
+   and when it lands the middle one grows into a ring, gathers the other two into
+   it, and the check strokes itself in. One gesture, in the app's own hand.
+   The two ends of the ring's growth are a transition, so a thought already
+   finished when it is scrolled into view is simply drawn done. What the wave
+   holds cannot be: taking an animation off an element drops its values where
+   they stand rather than easing them, so the landing is animated too, and it
+   starts on the value the wave rests at. Only a mark that was watched thinking
+   wears it, or every old row in a thread would land again on the way past. */
 .thinking-mark .thinking-dot,
 .thinking-mark .thinking-ring {
   transform-box: fill-box;
   transform-origin: center;
-  transition:
-    transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .thinking-mark[data-state='thinking'] .thinking-dot,
@@ -407,12 +410,17 @@ body {
   transform: translateX(var(--gather, 0)) scale(0.2);
 }
 
+.thinking-mark[data-landing] .thinking-dot {
+  animation: thinking-gather 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.thinking-mark[data-landing] .thinking-ring {
+  animation: thinking-land 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 .thinking-mark .thinking-ring {
   r: var(--ring, 1.9px);
-  transition:
-    r 0.38s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: r 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .thinking-mark .thinking-check {
@@ -435,6 +443,28 @@ body {
   28% {
     opacity: 1;
     transform: scale(1.08);
+  }
+}
+
+@keyframes thinking-gather {
+  from {
+    opacity: 0.4;
+    transform: translateX(0) scale(0.82);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--gather, 0)) scale(0.2);
+  }
+}
+
+@keyframes thinking-land {
+  from {
+    opacity: 0.4;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
