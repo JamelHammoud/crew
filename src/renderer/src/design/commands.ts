@@ -1,6 +1,7 @@
 import { copyAs, createShapeId, type Editor, type TLShape, type TLShapeId } from 'tldraw'
 import { holdsChildren, NO_LAYOUT, nodeShapeOf } from '../../../shared/designNode'
 import type { Glyph } from '../components/glyph'
+import { chordHint, matchesChord, typingInto, type Chord } from './designKeys'
 import {
   AutoLayoutGlyph,
   BackwardGlyph,
