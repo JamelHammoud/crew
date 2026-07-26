@@ -2,7 +2,14 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { readRepoFile, resolveRepoPath, statRepoFile, writeRepoFile } from '../src/main/files'
+import {
+  readLocalFile,
+  readRepoFile,
+  resolveRepoPath,
+  statRepoFile,
+  writeLocalFile,
+  writeRepoFile
+} from '../src/main/files'
 import { locatePath } from '../src/main/locate'
 import { stripRoot, stripRootFromText } from '../src/shared/files'
 import { tmpDir } from './helpers/session'
