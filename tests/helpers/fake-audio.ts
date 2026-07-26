@@ -87,17 +87,17 @@ export class FakeAudio {
   }
 
   createAnalyser(): unknown {
+    const held = { size: 2048 }
     return {
-      _size: 2048,
       get fftSize(): number {
-        return this._size
+        return held.size
       },
       set fftSize(next: number) {
-        this._size = next
+        held.size = next
       },
       smoothingTimeConstant: 0,
       get frequencyBinCount(): number {
-        return this._size / 2
+        return held.size / 2
       },
       connect: () => {},
       getByteFrequencyData: (into: Uint8Array) => {
