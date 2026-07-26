@@ -9,7 +9,7 @@ export interface PanelPage {
 }
 
 export const PANEL_WIDTH = 272
-const MIN_HEIGHT = 88
+const MIN_HEIGHT = 64
 const MAX_HEIGHT = 520
 // A click on the tray icon takes the focus off the panel before it arrives, so
 // a panel that has only just closed is not reopened by the click that shut it.
@@ -26,6 +26,12 @@ export class TrayPanel {
 
   owns(win: BrowserWindow): boolean {
     return this.win === win
+  }
+
+  // Built and loaded before anyone asks for it, so the first click opens a
+  // list rather than an empty card that fills in a moment later.
+  warm(): void {
+    this.window()
   }
 
   toggle(icon: Rectangle): void {
