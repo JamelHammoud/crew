@@ -1,20 +1,34 @@
-import { useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { useBrowser } from '../state/browser'
 import BrowserPanel from './BrowserPanel'
+
+const AGAIN_WITHIN = 400
+const STILL_WITHIN = 3
 
 export default function SidePanel({ visible }: { visible: boolean }) {
   const open = useBrowser(s => s.tabs.length > 0) && visible
   const width = useBrowser(s => s.width)
   const [dragging, setDragging] = useState(false)
+  const lastRelease = useRef(0)
 
   const startResize = (event: ReactPointerEvent) => {
     event.preventDefault()
+    if (event.timeStamp - lastRelease.current < AGAIN_WITHIN) {
+      lastRelease.current = 0
+      useBrowser.getState().resetWidth()
+      return
+    }
     setDragging(true)
     const startX = event.clientX
     const startWidth = width
-    const move = (e: PointerEvent) => useBrowser.getState().setWidth(startWidth + startX - e.clientX)
-    const stop = () => {
+    let moved = false
+    const move = (e: PointerEvent) => {
+      if (Math.abs(e.clientX - startX) > STILL_WITHIN) moved = true
+      useBrowser.getState().setWidth(startWidth + startX - e.clientX)
+    }
+    const stop = (e: PointerEvent) => {
       setDragging(false)
+      lastRelease.current = moved ? 0 : e.timeStamp
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', stop)
     }
@@ -35,7 +49,6 @@ export default function SidePanel({ visible }: { visible: boolean }) {
       {open && (
         <div
           onPointerDown={startResize}
-          onDoubleClick={() => useBrowser.getState().resetWidth()}
           className="absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize hover:bg-fg/10 transition-colors"
         />
       )}

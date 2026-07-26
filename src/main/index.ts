@@ -244,7 +244,10 @@ app.whenReady().then(() => {
   installTray()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
-  resumed = session.resume().then(() => refreshTray())
+  resumed = session.resume().then(() => {
+    refreshTray()
+    warmTerminals()
+  })
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]
