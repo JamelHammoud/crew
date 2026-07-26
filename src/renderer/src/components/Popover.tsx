@@ -207,11 +207,11 @@ export function SubMenu({
         }`}
       >
         {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
-        <span className="flex-1">{label}</span>
+        <span className="flex-1 truncate">{label}</span>
         <ChevronRightIcon className="w-3.5 h-3.5 shrink-0 text-fg/40" />
       </div>
       {open && at && (
-        <Popover open onClose={() => setOpen(false)} at={at}>
+        <Popover open onClose={() => setOpen(false)} at={at} maxHeight={maxHeight}>
           {children}
         </Popover>
       )}

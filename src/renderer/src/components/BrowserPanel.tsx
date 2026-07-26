@@ -31,7 +31,8 @@ function normalizeUrl(input: string): string {
   return `https://${trimmed}`
 }
 
-export const showsImage = (tab: BrowserTab): boolean => tab.kind === 'web' && isImageUrl(tab.initialUrl)
+export const showsImage = (tab: BrowserTab): boolean =>
+  tab.kind === 'image' || (tab.kind === 'web' && isImageUrl(tab.initialUrl))
 
 const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
 
