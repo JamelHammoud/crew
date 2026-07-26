@@ -79,7 +79,7 @@ A panel of tiles under the top bar. The built-in ones are the app's own hand, a 
 - A command written over several lines is several commands. The newlines are handed to the shell as returns, so each line runs in turn.
 - A page opens in the side panel, or in the machine's own browser for a site that will not sit in a frame.
 - An ask is a message in the chat, aimed at an agent by id so it cannot be lost to a rename. The agent a tool names may be offline on the machine pressing it, so whoever is here takes the work rather than nothing happening.
-- Where pressing a tool leaves you is `opensPanel`. A page, a file and a terminal are things the side panel holds, and an ask is a message, so it takes you to the chat instead.
+- Where pressing a tool leaves you is `opensPanel`. A page, a file and a terminal are things the side panel holds, and an ask is a message, so it takes you to the chat instead. A doc and a board have tabs of their own. Copying leaves you where you are, so `staysOpen` keeps the toolbox up and the tile says it copied rather than a panel closing over nothing.
 
 ## Huddles
 
