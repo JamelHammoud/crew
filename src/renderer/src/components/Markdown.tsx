@@ -2,6 +2,7 @@ import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { useBrowser } from '../state/browser'
+import { emojifyHtml } from './emojiHtml'
 import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
 
 function wrapTables(container: HTMLElement) {
@@ -21,6 +22,7 @@ export default function Markdown({ text }: { text: string }) {
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false }) as string)
     wrapTables(container)
     const unknown = linkifyFiles(container)
+    emojifyHtml(container)
     return { html: container.innerHTML, unknown }
   }, [text, resolved])
 
