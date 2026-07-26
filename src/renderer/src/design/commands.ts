@@ -31,6 +31,7 @@ import {
   ZoomOneGlyph,
   ZoomSelectionGlyph
 } from './glyphs'
+import { chordHint, matchesChord, typingInto, type Chord } from './designKeys'
 import { maskCandidate, maskOf, removeMask, useAsMask } from './mask'
 import { canRename } from './tools'
 
