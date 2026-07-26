@@ -52,14 +52,15 @@ export const TOOL_GROUPS: DesignToolGroup[] = [
     id: 'shape',
     label: 'Shape',
     tools: [
-      { id: 'design-node', label: 'Rectangle', shortcut: 'R', Icon: RectangleGlyph },
-      { id: 'geo:ellipse', label: 'Ellipse', shortcut: 'O', Icon: EllipseGlyph },
+      { id: 'node:rect', label: 'Rectangle', shortcut: 'R', Icon: RectangleGlyph },
+      { id: 'node:ellipse', label: 'Ellipse', shortcut: 'O', Icon: EllipseGlyph },
       { id: 'line', label: 'Line', shortcut: 'L', Icon: LineGlyph },
       { id: 'arrow', label: 'Arrow', shortcut: 'Shift L', Icon: ArrowGlyph },
-      { id: 'geo:triangle', label: 'Triangle', shortcut: '', Icon: TriangleGlyph },
-      { id: 'geo:diamond', label: 'Diamond', shortcut: '', Icon: DiamondGlyph },
-      { id: 'geo:hexagon', label: 'Hexagon', shortcut: '', Icon: HexagonGlyph },
-      { id: 'geo:star', label: 'Star', shortcut: '', Icon: StarGlyph }
+      { id: 'node:triangle', label: 'Triangle', shortcut: '', Icon: TriangleGlyph },
+      { id: 'node:diamond', label: 'Diamond', shortcut: '', Icon: DiamondGlyph },
+      { id: 'node:pentagon', label: 'Pentagon', shortcut: '', Icon: PentagonGlyph },
+      { id: 'node:hexagon', label: 'Hexagon', shortcut: '', Icon: HexagonGlyph },
+      { id: 'node:star', label: 'Star', shortcut: '', Icon: StarGlyph }
     ]
   },
   {
