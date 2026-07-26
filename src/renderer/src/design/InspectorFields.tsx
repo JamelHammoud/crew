@@ -136,35 +136,7 @@ export function ColorInput({
         className="w-5 h-5 shrink-0 rounded-full ring-1 ring-inset ring-fg/15 transition-transform hover:scale-110 active:scale-95"
       />
       <Popover open={open} onClose={() => setOpen(false)} align="start">
-        <div className="w-44 p-1">
-          <div className="grid grid-cols-6 gap-1.5">
-            {CREW_SWATCHES.map(swatch => (
-              <button
-                key={swatch.hex}
-                onClick={() => {
-                  onChange(swatch.hex)
-                  setOpen(false)
-                }}
-                aria-label={swatch.name}
-                style={{ background: swatch.hex }}
-                className={`w-6 h-6 rounded-full transition-transform hover:scale-110 active:scale-95 ${
-                  swatch.hex.toLowerCase() === value.toLowerCase()
-                    ? 'ring-2 ring-fg ring-offset-2 ring-offset-ink-800'
-                    : 'ring-1 ring-inset ring-fg/15'
-                }`}
-              />
-            ))}
-          </div>
-          <label className="mt-2 flex items-center gap-2 px-2 py-1.5 rounded-xl text-xs text-fg-secondary transition-colors hover:text-fg hover:bg-fg/5">
-            <input
-              type="color"
-              value={value.slice(0, 7)}
-              onChange={e => onChange(e.target.value + alpha)}
-              className="w-4 h-4 shrink-0 rounded-full bg-transparent border-0 p-0 cursor-pointer"
-            />
-            Custom
-          </label>
-        </div>
+        <ColorPicker value={value} onChange={onChange} alpha={onOpacity === undefined} />
       </Popover>
       <input
         value={draft}
