@@ -218,11 +218,11 @@ app.whenReady().then(() => {
   powerSaveBlocker.start('prevent-app-suspension')
   applyIcon(iconTheme)
   installMenu()
-  installTray()
+  tray.install()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
   resumed = session.resume().then(() => {
-    refreshTray()
+    sharing()
     warmTerminals()
   })
   ipcMain.handle('folder:pick', async () => {
@@ -231,19 +231,19 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('session:start', async (_event, folder: string, name: string) => {
     const info = await session.startHost(folder, name)
-    refreshTray()
+    sharing()
     warmTerminals()
     return info
   })
   ipcMain.handle('session:join', async (_event, link: string, folder: string, name: string) => {
     const info = await session.startJoin(link, folder, name)
-    refreshTray()
+    sharing()
     warmTerminals()
     return info
   })
   ipcMain.handle('session:leave', async () => {
     await session.leave()
-    refreshTray()
+    sharing()
   })
   ipcMain.handle('session:current', async () => {
     await resumed
