@@ -244,14 +244,20 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   }
 
   return (
-    <div className="absolute inset-0 bg-ink-900" style={{ visibility: active ? 'visible' : 'hidden' }}>
+    <div className="absolute inset-0 bg-ink-900 flex" style={{ visibility: active ? 'visible' : 'hidden' }}>
+      <div className="relative flex-1 min-w-0">
       <div ref={bodyRef} className="absolute inset-0 overflow-auto">
         {!data && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Spinner size={20} className="text-fg-muted" />
           </div>
         )}
-        {data?.kind === 'dir' && <DirRows tab={tab} path={data.path} entries={data.entries} />}
+        {data?.kind === 'dir' &&
+          (tab.tree ? (
+            <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="Pick a file from the project" />
+          ) : (
+            <DirRows tab={tab} path={data.path} entries={data.entries} />
+          ))}
         {file && (
           <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
             <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
