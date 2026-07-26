@@ -19,7 +19,8 @@ const handset = ({
   r,
   waist,
   shift,
-  sweep
+  sweep,
+  pull
 }: {
   deg: number
   gap: number
@@ -27,6 +28,7 @@ const handset = ({
   waist: number
   shift: number
   sweep: 0 | 1
+  pull: number
 }) => {
   const rad = (deg * Math.PI) / 180
   const u = [Math.cos(rad), Math.sin(rad)]
@@ -35,8 +37,9 @@ const handset = ({
     p[0] + u[0] * along + n[0] * across,
     p[1] + u[1] * along + n[1] * across
   ]
-  const A = at([12, 12], -gap / 2, 0)
-  const B = at([12, 12], gap / 2, 0)
+  const middle = at([12, 12], 0, pull)
+  const A = at(middle, -gap / 2, 0)
+  const B = at(middle, gap / 2, 0)
   const P1 = at(A, 0, r)
   const P2 = at(A, 0, -r)
   const P3 = at(B, 0, -r)
