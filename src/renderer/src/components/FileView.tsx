@@ -334,6 +334,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
           )}
         </div>
       )}
+      </div>
+      {tab.tree && <FileTree tab={tab} />}
     </div>
   )
 }
