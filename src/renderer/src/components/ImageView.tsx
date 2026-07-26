@@ -5,16 +5,13 @@ const PIXELATED_AT = 3
 
 export default function ImageView({ src, alt }: { src: string; alt: string }) {
   const imageRef = useRef<HTMLImageElement>(null)
-  const [loaded, setLoaded] = useState(0)
+  const [natural, setNatural] = useState(0)
 
   const content = useCallback(() => {
     const image = imageRef.current
-    if (!image?.naturalWidth) return null
-    return {
-      box: { width: image.offsetWidth, height: image.offsetHeight },
-      natural: image.naturalWidth
-    }
-  }, [loaded])
+    if (!image || !natural) return null
+    return { box: { width: image.offsetWidth, height: image.offsetHeight }, natural }
+  }, [natural])
 
   return (
     <div data-image-frame className="absolute inset-0">
@@ -25,7 +22,7 @@ export default function ImageView({ src, alt }: { src: string; alt: string }) {
             src={src}
             alt={alt}
             draggable={false}
-            onLoad={() => setLoaded(count => count + 1)}
+            onLoad={event => setNatural(event.currentTarget.naturalWidth)}
             style={{ imageRendering: scale * ratio >= PIXELATED_AT ? 'pixelated' : undefined }}
             className={`max-w-full max-h-full object-contain select-none ${scale > 1 ? '' : 'rounded-card'}`}
           />
