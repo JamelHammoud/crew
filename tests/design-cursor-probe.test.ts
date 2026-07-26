@@ -88,11 +88,9 @@ describe('design cursors', () => {
     expect(h - art.h).toBeGreaterThan(4)
   })
 
-  it('turns the hands over so the thumb is on the left', () => {
+  it('puts the thumb on the left of both hands', () => {
     expect(placement(parse(vars['--tl-cursor-grab']).svg)).toContain('scale(-0.9 0.9)')
-    expect(placement(parse(vars['--tl-cursor-grabbing']).svg)).toBe(
-      placement(parse(vars['--tl-cursor-grab']).svg)
-    )
+    expect(placement(parse(vars['--tl-cursor-grabbing']).svg)).toContain('scale(0.9)')
   })
 
   it('hands the pencil its own cursor and takes it back', () => {
