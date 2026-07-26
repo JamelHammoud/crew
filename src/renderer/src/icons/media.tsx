@@ -74,11 +74,9 @@ export const SpeakerOffGlyph = glyph(
 // than the inner one, which leaves each end cut on a slant and standing wider
 // than the crown it hangs from. Drawn as an even bar with its legs cut square it
 // was an arch, and an arch reads as a bridge at 18px however deep it is hung.
-const CROWN = { rx: 8, ry: 6.4, cy: 13.3, bar: 3.2 }
-
 export const HangupGlyph = glyph(
   <path
-    d={`M4.04 17.77A${CROWN.rx + CROWN.bar / 2} ${CROWN.ry + CROWN.bar / 2} 0 1 1 19.96 17.77A2.14 2.14 0 0 1 18.36 13.8A${CROWN.rx - CROWN.bar / 2} ${CROWN.ry - CROWN.bar / 2} 0 1 0 5.64 13.8A2.14 2.14 0 0 1 4.04 17.77Z`}
+    d="M4.04 17.77A9.6 8 0 1 1 19.96 17.77A2.14 2.14 0 0 1 18.36 13.8A6.4 4.8 0 1 0 5.64 13.8A2.14 2.14 0 0 1 4.04 17.77Z"
     fill="currentColor"
   />
 )
