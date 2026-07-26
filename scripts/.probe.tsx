@@ -55,12 +55,12 @@ const DIAGONAL =
 const CANDIDATES: { label: string; glyph: Glyph }[] = [
   { label: 'now', glyph: HangupGlyph },
   { label: 'diagonal', glyph: filled(DIAGONAL) },
-  { label: 'arch plain', glyph: filled(UNIFORM) },
-  { label: 'arch pads', glyph: filled(FLARED) },
-  { label: 'arch thin bar', glyph: filled(FLARED_THIN) },
-  { label: 'arch wider', glyph: filled(WIDER) },
-  { label: 'arch outlined', glyph: outlined(UNIFORM) },
-  { label: 'pads outlined', glyph: outlined(FLARED) }
+  { label: 'flare 122/104', glyph: filled(FLARE_A) },
+  { label: 'flare 128/100', glyph: filled(FLARE_B) },
+  { label: 'flare 118/106', glyph: filled(FLARE_C) },
+  { label: 'flare 130/98', glyph: filled(FLARE_D) },
+  { label: 'flare A outlined', glyph: outlined(FLARE_A) },
+  { label: 'flare B outlined', glyph: outlined(FLARE_B) }
 ]
 
 function Button({ children, danger }: { children: ReactNode; danger?: boolean }) {
