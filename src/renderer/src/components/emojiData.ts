@@ -82,6 +82,10 @@ export function lookupEmoji(char: string): EmojiEntry | undefined {
   return byChar.get(char)
 }
 
+export function emojiForShortcode(name: string): string | undefined {
+  return byShortName.get(name.toLowerCase())?.char
+}
+
 export function searchEmoji(query: string, limit = 108): EmojiEntry[] {
   const needle = query.trim().toLowerCase().replace(/^:|:$/g, '')
   if (!needle) return []
