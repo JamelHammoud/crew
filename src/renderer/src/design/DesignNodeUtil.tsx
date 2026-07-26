@@ -10,10 +10,10 @@ import {
   type TLResizeInfo,
   type TLShape
 } from 'tldraw'
-import { nodeDefaults, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
+import { holdsChildren, nodeDefaults, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
 import { loadFonts } from './fonts'
 import { nodeStyle, polygonFillStyle, polygonStyle, strokeDash, textBoxStyle, textStyle } from './nodeCss'
-import { nodePolygon, polygonPath, type UnitPoint } from './nodeShape'
+import { nodeOutline, nodePolygon, polygonPath, type UnitPoint } from './nodeShape'
 import { nextNodeName, nextNodeShape } from './nextShape'
 
 declare module '@tldraw/tlschema' {
