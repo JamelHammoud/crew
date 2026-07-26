@@ -155,9 +155,6 @@ export default function DesignAskBar({
           <>
             <AttachmentTray attachmentKey={key} />
             <div className="flex items-end gap-1.5">
-              {/* Flex, not the inline box a tooltip hands back: an inline anchor
-                  keeps a line of its own under the button, and the row centers
-                  that line rather than the pet. */}
               <span className="relative shrink-0 flex">
                 <Tooltip label={`Ask ${agent.label}`} disabled={switching}>
                   <button
@@ -171,9 +168,7 @@ export default function DesignAskBar({
                       switching ? 'ring-2' : 'hover:ring-2'
                     }`}
                   >
-                    <span className="block">
-                      <AgentIcon seed={agent.id} size="sm" />
-                    </span>
+                    <AgentIcon seed={agent.id} size="sm" />
                   </button>
                 </Tooltip>
                 <Popover open={switching} onClose={() => setSwitching(false)} side="top" align="start">
