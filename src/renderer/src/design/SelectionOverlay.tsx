@@ -42,7 +42,7 @@ export default function SelectionOverlay({ editor }: { editor: Editor | null }) 
   )
 
   if (!editor || !view) return null
-  const { rect, size, node, zoom } = view
+  const { rect, size, node, zoom, stroke } = view
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
