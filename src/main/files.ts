@@ -1,23 +1,11 @@
 import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { FileEntry, RepoFile, RepoPathKind } from '../shared/files'
+import { imageType, type FileEntry, type RepoFile, type RepoPathKind } from '../shared/files'
 
 const MAX_BYTES = 512 * 1024
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024
 const CASELESS = process.platform === 'darwin' || process.platform === 'win32'
-
-const IMAGE_TYPES: Record<string, string> = {
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  gif: 'image/gif',
-  webp: 'image/webp',
-  avif: 'image/avif',
-  bmp: 'image/bmp',
-  ico: 'image/x-icon',
-  svg: 'image/svg+xml'
-}
 
 export function expandHome(target: string): string {
   if (!target.startsWith('~')) return target
