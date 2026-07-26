@@ -22702,3 +22702,4 @@
 {"id":"45204130-b555-45ca-83a7-d5072ab45781","ts":1785063100033,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"21460a5c-83de-4fa3-95c6-6f8cebfbc2bd","ts":1785063100033,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"8f752b74-4f19-4341-b1ad-a55944d25928","ts":1785063100033,"kind":"agent.online","agentId":"ali/5c7291cf-12cd-4b4c-8174-c08ec369f3b3","label":"Grok Grok-4.5"}
+{"id":"464c03c0-e7ea-41c3-b9df-652e48136950","ts":1785064249177,"kind":"agent.updated","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","settings":{"model":"opus","opusModel":"claude-opus-5","effort":"xhigh"}}
