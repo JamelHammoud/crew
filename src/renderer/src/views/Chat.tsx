@@ -1,4 +1,4 @@
-import { Fragment, useLayoutEffect, useMemo, useRef } from 'react'
+import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
 import Composer from '../components/Composer'
 import DayDivider from '../components/DayDivider'
@@ -33,6 +33,7 @@ export default function Chat() {
   const setChatDraft = useCrew(s => s.setChatDraft)
   const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
   const agents = useCrew(s => s.agents)
+  const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
@@ -63,6 +64,7 @@ export default function Chat() {
             attachments: e.attachments,
             mentionRefs: e.mentionRefs,
             docMentions: e.docMentions,
+            replyTo: e.replyTo,
             reactionTargetId: e.authorId === 'crew' ? undefined : targetId,
             reactions: e.authorId === 'crew' ? undefined : reactions.get(targetId)
           }
@@ -94,7 +96,8 @@ export default function Chat() {
 
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
-    sendChat(text)
+    sendChat(text, undefined, undefined, replyTo?.reactionTargetId)
+    setReplyTo(null)
     mention.close()
     slash.close()
   }
@@ -136,7 +139,14 @@ export default function Chat() {
                     />
                   )
                 ) : (
-                  <ChatMessage item={entry.item} editable />
+                  <ChatMessage
+                    item={entry.item}
+                    editable
+                    onReply={item => {
+                      setReplyTo(item)
+                      inputRef.current?.focus()
+                    }}
+                  />
                 )}
               </Fragment>
             )
@@ -159,6 +169,8 @@ export default function Chat() {
               onChange={mention.onChange}
               onKeyDown={onKeyDown}
               onSend={send}
+              replyTo={replyTo ?? undefined}
+              onCancelReply={() => setReplyTo(null)}
             >
               <MentionMenu
                 matches={mention.matches}
