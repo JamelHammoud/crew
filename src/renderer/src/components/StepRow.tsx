@@ -136,17 +136,17 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
               <FilePathLink
                 path={files[0].path}
                 diff={files[0].diff}
-                className="text-fg-faint truncate font-mono text-xs"
+                className={SUBJECT_MONO}
                 again={!item.streaming}
               />
             ) : (
-              <span className="text-fg-faint truncate font-mono text-xs">{`${files.length} files`}</span>
+              <span className={SUBJECT_MONO}>{`${files.length} files`}</span>
             )}
-            <Counts added={totals.added} removed={totals.removed} />
+            <Counts added={totals.added} removed={totals.removed} className="mono-inline" />
           </>
         )}
         {subject && (
-          <span className={`text-fg-faint truncate text-xs ${action.prose ? '' : 'font-mono'}`}>
+          <span className={action.prose ? SUBJECT : SUBJECT_MONO}>
             <TextWithFileLinks text={subject} inline again={!item.streaming} />
           </span>
         )}
