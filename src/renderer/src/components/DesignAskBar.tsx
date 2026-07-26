@@ -167,7 +167,7 @@ export default function DesignAskBar({
                     }}
                     aria-label="Pick an agent"
                     aria-expanded={switching}
-                    className={`h-8 w-8 rounded-full grid place-items-center transition-all cursor-pointer active:scale-95 ring-fg/25 ${
+                    className={`h-7 w-7 rounded-full grid place-items-center transition-all cursor-pointer active:scale-95 ring-fg/25 ${
                       switching ? 'ring-2' : 'hover:ring-2'
                     }`}
                   >
