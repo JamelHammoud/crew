@@ -112,13 +112,12 @@ const to3 = (n: number): number => Math.round(n * 1000) / 1000
 // The turn is worked out here and handed over as a lift, a squash and the share
 // the lid keeps, which is a plain 2D transform and stays as sharp as the still
 // icon at every size. Nothing tapers, and that is on purpose: the case is drawn
-// flat on, with no vanishing point anywhere in the set, so a lid that narrowed
-// as it went back would be the one part of the drawing standing in a different
-// space. The share it keeps is the one wink at distance, small enough to read as
-// having gone back rather than as a lid of another size. It would not be worth
-// having either way. A perspective on an SVG is not a projection, since Chromium
-// flattens it to a skew, and the real thing drawn into the path buys a taper of
-// half a pixel and closes the handle up at 22px.
+// flat on, and a lid that narrowed as it went back would be the one part of the
+// drawing with a vanishing point in it. The share it keeps is the one wink at
+// distance, small enough to read as having gone back rather than as a lid of
+// another size. Chromium could not do the rest anyway: a perspective on an SVG
+// is flattened to a skew, and the real projection drawn into the path buys half
+// a pixel of taper and closes the handle up at 22px.
 export const toolboxTurn = (
   swing: number = TOOLBOX_SWING
 ): { rise: number; squash: number; away: number } => {
