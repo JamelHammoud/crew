@@ -556,6 +556,9 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'huddle.signal':
         for (const listener of huddleListeners) listener(msg)
         break
+      case 'music.room':
+        for (const listener of musicListeners) listener(msg)
+        break
     }
   }
 
