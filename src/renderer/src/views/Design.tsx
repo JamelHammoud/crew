@@ -81,7 +81,7 @@ export default function Design() {
               <DesignCanvas key={current} boardId={current} onEditor={setEditor} />
               {editor && <DesignToolbar />}
             </div>
-            {rightOpen && editor && <DesignRightPanel boardId={current} />}
+            {panels.right && editor && <DesignRightPanel boardId={current} />}
           </div>
         </div>
       </EditorContext.Provider>
