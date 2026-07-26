@@ -324,6 +324,13 @@ describe('steps and thinking', () => {
     expect(tab.line).toBe(3)
   })
 
+  it('opens a file that is on this computer but outside the project', async () => {
+    render(createElement(StepRow, { item: item({ name: 'Read', detail: `Read ${SHOT}` }) }))
+    const link = await screen.findByText(SHOT)
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].path).toBe(SHOT)
+  })
+
   it('hides a thought about a file on someone else’s computer', async () => {
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: 'I saved /Users/ali/Desktop/notes.md' }) }))
     fireEvent.click(screen.getByText('Thinking'))
