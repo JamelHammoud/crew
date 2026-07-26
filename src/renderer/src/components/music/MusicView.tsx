@@ -1,29 +1,26 @@
-import { useEffect, useState } from 'react'
-import {
-  MUSIC_TRACKS,
-  trackFor,
-  trackLength,
-  type MusicRoom,
-  type MusicTrack
-} from '../../../../shared/music'
+import { useEffect, useRef, useState } from 'react'
+import type { MusicItem, MusicRoom } from '../../../../shared/music'
 import {
   MusicGlyph,
   PauseGlyph,
   PlayGlyph,
+  PlusGlyph,
   SkipBackGlyph,
   SkipNextGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
-  StopGlyph
+  StopGlyph,
+  TrashGlyph
 } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useMusic } from '../../state/music'
 import { setSounds, useSounds } from '../../state/sound'
 import { useCrew } from '../../state/store'
-import InsetRing from '../InsetRing'
 import Slider from '../Slider'
+import Spinner from '../Spinner'
 import Tooltip from '../Tooltip'
 import Bars from './Bars'
+import Cover from './Cover'
 
 const clock = (seconds: number): string => {
   const whole = Math.max(0, Math.floor(seconds))
@@ -37,12 +34,10 @@ function useAt(room: MusicRoom, playing: boolean): number {
   useEffect(() => {
     setAt(useMusic.getState().position())
     if (!playing) return
-    let frame = 0
-    const tick = () => {
+    let frame = requestAnimationFrame(function tick() {
       setAt(useMusic.getState().position())
       frame = requestAnimationFrame(tick)
-    }
-    frame = requestAnimationFrame(tick)
+    })
     return () => cancelAnimationFrame(frame)
   }, [room, playing])
   return at
@@ -53,40 +48,46 @@ const round =
 
 export default function MusicView() {
   const room = useMusic(s => s.room)
+  const uploads = useMusic(s => s.uploads)
   const volume = useMusic(s => s.volume)
   const muted = useMusic(s => s.muted)
+  const adding = useMusic(s => s.adding)
   const selfName = useCrew(s => s.selfName)
   const sounds = useSounds()
-  const track = trackFor(room.trackId)
+  const items = useMusic.getState().items()
+  const track = items.find(one => one.id === room.trackId) ?? null
   const at = useAt(room, room.playing && track !== null)
   // Where the bar is being dragged to, which is what it shows until the crew
   // has been told, so it does not spring back under your own finger.
   const [scrub, setScrub] = useState<number | null>(null)
+  const [trouble, setTrouble] = useState<string | null>(null)
+  const picker = useRef<HTMLInputElement>(null)
   useEffect(() => setScrub(null), [room])
 
-  const put = (one: MusicTrack) => {
+  const put = (one: MusicItem) => {
     if (one.id === room.trackId) useMusic.getState().toggle()
     else useMusic.getState().put(one.id)
+  }
+
+  const take = async (file: File | undefined) => {
+    if (!file) return
+    setTrouble(await useMusic.getState().add(file))
   }
 
   return (
     <div className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:thin]">
       <div className="p-4 flex gap-4">
-        <div className="relative w-[124px] h-[124px] shrink-0 rounded-card bg-ink-800 flex p-5">
-          {track ? (
-            <Bars
-              at={at}
-              bpm={track.bpm}
-              count={5}
-              playing={room.playing}
-              className="h-full w-full justify-between"
-              barClassName="w-[7px]"
-            />
-          ) : (
+        {track ? (
+          <Cover item={track} playing={room.playing} className="w-[124px] h-[124px] shrink-0 rounded-card">
+            <span className="absolute inset-0 flex items-end p-4 text-white">
+              <Bars count={5} className="h-1/2 w-full justify-between" barClassName="w-[7px]" />
+            </span>
+          </Cover>
+        ) : (
+          <div className="w-[124px] h-[124px] shrink-0 rounded-card bg-ink-800 flex ring-1 ring-inset ring-fg/[0.06]">
             <MusicGlyph className="w-8 h-8 m-auto text-fg-faint" />
-          )}
-          <InsetRing className="ring-1 ring-inset ring-fg/[0.06] rounded-card" />
-        </div>
+          </div>
+        )}
 
         <div className="min-w-0 flex-1 flex flex-col justify-center gap-1">
           <h2 className="text-lg font-semibold text-fg truncate">{track ? track.name : 'Nothing on'}</h2>
@@ -106,15 +107,14 @@ export default function MusicView() {
       <div className="px-4 flex items-center gap-3">
         <Slider
           label="Where the track is"
-          value={scrub ?? (track ? at / trackLength(track) : 0)}
+          value={scrub ?? (track ? at / track.seconds : 0)}
           disabled={!track}
           className="flex-1"
           onChange={setScrub}
-          onCommit={share => track && useMusic.getState().seek(share * trackLength(track))}
+          onCommit={share => track && useMusic.getState().seek(share * track.seconds)}
         />
         <span className="shrink-0 text-xs tabular-nums text-fg-muted">
-          {clock(scrub !== null && track ? scrub * trackLength(track) : at)} /{' '}
-          {clock(track ? trackLength(track) : 0)}
+          {clock(scrub !== null && track ? scrub * track.seconds : at)} / {clock(track ? track.seconds : 0)}
         </span>
       </div>
 
@@ -148,45 +148,86 @@ export default function MusicView() {
         )}
       </div>
 
-      <div className="h-px mx-4 bg-ink-700" />
+      <div className="h-px bg-ink-700" />
 
       <ul className="p-2">
-        {MUSIC_TRACKS.map(one => {
+        {items.map(one => {
           const on = one.id === room.trackId
           return (
             <li key={one.id}>
               <button
                 onClick={() => put(one)}
                 aria-pressed={on}
-                className={`w-full h-12 px-2.5 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 ${
+                className={`group w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 ${
                   on ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
                 }`}
               >
-                <span className="w-5 h-5 shrink-0 flex items-center justify-center">
-                  {on ? (
-                    <Bars
-                      at={at}
-                      bpm={one.bpm}
-                      count={3}
-                      playing={room.playing}
-                      className="h-[15px] w-[13px] justify-between"
-                      barClassName="w-[3px] transition-[height] duration-100 ease-out"
-                    />
-                  ) : (
-                    <MusicGlyph className="w-[18px] h-[18px] text-fg-faint" />
+                <Cover item={one} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-xl">
+                  {on && (
+                    <span className="absolute inset-0 flex items-end p-2 text-white">
+                      <Bars count={3} className="h-1/2 w-full justify-between" barClassName="w-[3px]" />
+                    </span>
                   )}
+                </Cover>
+                <span className="flex-1 min-w-0">
+                  <span className={`block truncate text-sm ${on ? 'text-fg font-medium' : 'text-fg-secondary'}`}>
+                    {one.name}
+                  </span>
+                  <span className="block truncate text-xs text-fg-muted">
+                    {one.by ? `${one.mood}, from ${one.by}` : one.mood}
+                  </span>
                 </span>
-                <span className={`flex-1 min-w-0 truncate text-sm ${on ? 'text-fg font-medium' : 'text-fg-secondary'}`}>
-                  {one.name}
-                </span>
-                <span className="shrink-0 text-xs text-fg-muted">{one.mood}</span>
                 <span className="shrink-0 w-9 text-right text-xs tabular-nums text-fg-faint">
-                  {clock(trackLength(one))}
+                  {clock(one.seconds)}
                 </span>
+                {one.file && (
+                  <Tooltip label="Take off the shelf">
+                    <span
+                      role="button"
+                      aria-label={`Remove ${one.name}`}
+                      onClick={event => {
+                        event.stopPropagation()
+                        useMusic.getState().remove(one.id)
+                      }}
+                      className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg-faint opacity-0 group-hover:opacity-100 transition-all duration-150 hover:text-fg hover:bg-fg/10 active:scale-95"
+                    >
+                      <TrashGlyph className="w-4 h-4" />
+                    </span>
+                  </Tooltip>
+                )}
               </button>
             </li>
           )
         })}
+        <li>
+          <button
+            onClick={() => picker.current?.click()}
+            disabled={adding}
+            className="w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.04] disabled:opacity-50"
+          >
+            <span className="w-10 h-10 shrink-0 rounded-xl border border-dashed border-fg/15 flex items-center justify-center text-fg-faint">
+              {adding ? <Spinner size={16} /> : <PlusGlyph className="w-4 h-4" />}
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-sm text-fg-secondary">
+                {adding ? 'Putting it on the shelf' : 'Add a track'}
+              </span>
+              <span className="block truncate text-xs text-fg-muted">
+                {trouble ?? 'An audio file from this machine, for everyone here'}
+              </span>
+            </span>
+          </button>
+          <input
+            ref={picker}
+            type="file"
+            accept="audio/*"
+            className="hidden"
+            onChange={event => {
+              void take(event.target.files?.[0])
+              event.target.value = ''
+            }}
+          />
+        </li>
       </ul>
 
       <div className="mt-auto">
@@ -205,22 +246,26 @@ export default function MusicView() {
           </div>
         )}
         <div className="p-4 flex items-center gap-3">
-        <Tooltip label={muted ? 'Unmute' : 'Mute'}>
-          <button
-            onClick={() => useMusic.getState().setMuted(!muted)}
-            aria-label={muted ? 'Unmute' : 'Mute'}
-            className={round}
-          >
-            {muted ? <SpeakerOffGlyph className="w-[18px] h-[18px]" /> : <SpeakerGlyph className="w-[18px] h-[18px]" />}
-          </button>
-        </Tooltip>
-        <Slider
-          label="Your volume"
-          value={muted ? 0 : volume}
-          className="flex-1"
-          onChange={level => useMusic.getState().setVolume(level)}
-        />
-        <span className="shrink-0 text-xs text-fg-faint">Only yours</span>
+          <Tooltip label={muted ? 'Unmute' : 'Mute'}>
+            <button
+              onClick={() => useMusic.getState().setMuted(!muted)}
+              aria-label={muted ? 'Unmute' : 'Mute'}
+              className={round}
+            >
+              {muted ? (
+                <SpeakerOffGlyph className="w-[18px] h-[18px]" />
+              ) : (
+                <SpeakerGlyph className="w-[18px] h-[18px]" />
+              )}
+            </button>
+          </Tooltip>
+          <Slider
+            label="Your volume"
+            value={muted ? 0 : volume}
+            className="flex-1"
+            onChange={level => useMusic.getState().setVolume(level)}
+          />
+          <span className="shrink-0 text-xs text-fg-faint">Only yours</span>
         </div>
       </div>
     </div>
