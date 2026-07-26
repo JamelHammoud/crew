@@ -35,6 +35,7 @@ export default function SidePanel({ visible }: { visible: boolean }) {
       {open && (
         <div
           onPointerDown={startResize}
+          onDoubleClick={() => useBrowser.getState().resetWidth()}
           className="absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize hover:bg-fg/10 transition-colors"
         />
       )}
