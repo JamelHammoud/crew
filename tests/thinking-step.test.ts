@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
+import fs from 'node:fs'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import StepRow from '../src/renderer/src/components/StepRow'
@@ -67,7 +67,7 @@ describe('a thinking step', () => {
     const quiet = line.closest('.md-quiet')
     expect(quiet).not.toBeNull()
 
-    const css = readFileSync(new URL('../src/renderer/src/styles.css', import.meta.url), 'utf8')
+    const css = fs.readFileSync(new URL('../src/renderer/src/styles.css', import.meta.url), 'utf8')
     const rule = css.split('.md-quiet {')[1]?.split('}')[0] ?? ''
     expect(rule).toContain('italic')
     expect(rule).toContain('text-fg-muted')
