@@ -74,7 +74,7 @@ export function serializeDocFile(doc: DocPage): string {
 
 const FENCE = /^\s*(```|~~~)/
 
-export function docExcerpt(text: string, limit = 320): string {
+export function docExcerpt(text: string, limit = 240): string {
   const kept: string[] = []
   let length = 0
   for (const line of text.trim().split('\n')) {
