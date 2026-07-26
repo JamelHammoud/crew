@@ -50,92 +50,92 @@ const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', p
 export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thinking', prose: true }
 
 const TABLE: Array<[string, ToolAction]> = [
-  ['read readfile viewfile view cat openfile readmediafile', { icon: DocumentTextIcon, run: 'Reading', done: 'Read' }],
-  ['write writefile createfile create newfile savefile', { icon: DocumentPlusIcon, run: 'Writing', done: 'Wrote' }],
+  ['read readfile viewfile view cat openfile readmediafile', { icon: ReadGlyph, run: 'Reading', done: 'Read' }],
+  ['write writefile createfile create newfile savefile', { icon: WriteGlyph, run: 'Writing', done: 'Wrote' }],
   [
     'edit editfile edits multiedit strreplace strreplacefile strreplaceeditor applypatch patch filechange',
-    { icon: PencilSquareIcon, run: 'Editing', done: 'Edited' }
+    { icon: EditGlyph, run: 'Editing', done: 'Edited' }
   ],
-  ['notebookedit notebook', { icon: BookOpenIcon, run: 'Editing a notebook', done: 'Edited a notebook' }],
+  ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook' }],
   [
     'bash shell sh commandexecution localshell powershell run runcommand exec execute terminal',
-    { icon: CommandLineIcon, run: 'Running', done: 'Ran' }
+    { icon: ShellGlyph, run: 'Running', done: 'Ran' }
   ],
   [
     'bashoutput shelloutput processoutput readoutput',
-    { icon: EyeIcon, run: 'Checking output', done: 'Checked output' }
+    { icon: OutputGlyph, run: 'Checking output', done: 'Checked output' }
   ],
-  ['killbash killshell killprocess stopprocess', { icon: StopCircleIcon, run: 'Stopping', done: 'Stopped' }],
+  ['killbash killshell killprocess stopprocess', { icon: StopGlyph, run: 'Stopping', done: 'Stopped' }],
   [
     'grep search searchcode codesearch ripgrep searchfiles findinfiles',
-    { icon: MagnifyingGlassIcon, run: 'Searching', done: 'Searched' }
+    { icon: SearchGlyph, run: 'Searching', done: 'Searched' }
   ],
-  ['glob findfiles filesearch find', { icon: DocumentMagnifyingGlassIcon, run: 'Finding files', done: 'Found files' }],
-  ['ls list listdir listdirectory listfiles tree', { icon: FolderOpenIcon, run: 'Listing files', done: 'Listed files' }],
+  ['glob findfiles filesearch find', { icon: FilesGlyph, run: 'Finding files', done: 'Found files' }],
+  ['ls list listdir listdirectory listfiles tree', { icon: FolderGlyph, run: 'Listing files', done: 'Listed files' }],
   [
     'websearch searchweb googlesearch',
-    { icon: GlobeAltIcon, run: 'Searching the web', done: 'Searched the web', prose: true }
+    { icon: GlobeGlyph, run: 'Searching the web', done: 'Searched the web', prose: true }
   ],
   [
     'webfetch fetchurl fetch openurl browse readurl urlfetch',
-    { icon: LinkIcon, run: 'Reading a page', done: 'Read a page' }
+    { icon: PageGlyph, run: 'Reading a page', done: 'Read a page' }
   ],
   [
     'searchx xsearch xkeywordsearch xsemanticsearch',
-    { icon: HashtagIcon, run: 'Searching X', done: 'Searched X', prose: true }
+    { icon: PostsGlyph, run: 'Searching X', done: 'Searched X', prose: true }
   ],
   [
     'todowrite todo todolist settodolist writetodos updateplan',
-    { icon: ListBulletIcon, run: 'Planning', done: 'Planned', prose: true }
+    { icon: ChecklistGlyph, run: 'Planning', done: 'Planned', prose: true }
   ],
   [
     'exitplanmode enterplanmode planmode plan',
-    { icon: ClipboardDocumentListIcon, run: 'Writing a plan', done: 'Wrote a plan', prose: true }
+    { icon: ClipboardGlyph, run: 'Writing a plan', done: 'Wrote a plan', prose: true }
   ],
   ['task agent subagent delegate dispatchagent launchagent', AGENT],
   [
     'askuserquestion ask question',
-    { icon: QuestionMarkCircleIcon, run: 'Asking', done: 'Asked', prose: true }
+    { icon: QuestionGlyph, run: 'Asking', done: 'Asked', prose: true }
   ],
-  ['skill slashcommand command', { icon: BoltIcon, run: 'Running a skill', done: 'Ran a skill', prose: true }],
+  ['skill slashcommand command', { icon: BoltGlyph, run: 'Running a skill', done: 'Ran a skill', prose: true }],
   [
     'generateimage createimage editimage imagegen',
-    { icon: PhotoIcon, run: 'Making an image', done: 'Made an image', prose: true }
+    { icon: ImageGlyph, run: 'Making an image', done: 'Made an image', prose: true }
   ],
   [
     'generatevideo createvideo videogen',
-    { icon: VideoCameraIcon, run: 'Making a video', done: 'Made a video', prose: true }
+    { icon: VideoGlyph, run: 'Making a video', done: 'Made a video', prose: true }
   ],
   [
     'memory remember savememory recall selfimprove',
-    { icon: BookmarkSquareIcon, run: 'Saving to memory', done: 'Saved to memory', prose: true }
+    { icon: BookmarkGlyph, run: 'Saving to memory', done: 'Saved to memory', prose: true }
   ],
   [
     'taskcreate taskupdate tasklist taskget taskoutput taskstop',
-    { icon: CheckCircleIcon, run: 'Updating tasks', done: 'Updated tasks', prose: true }
+    { icon: DoneGlyph, run: 'Updating tasks', done: 'Updated tasks', prose: true }
   ],
   [
     'sendmessage message',
-    { icon: PaperAirplaneIcon, run: 'Sending a message', done: 'Sent a message', prose: true }
+    { icon: PlaneGlyph, run: 'Sending a message', done: 'Sent a message', prose: true }
   ],
-  ['pushnotification notify', { icon: BellIcon, run: 'Sending a notice', done: 'Sent a notice', prose: true }],
+  ['pushnotification notify', { icon: BellGlyph, run: 'Sending a notice', done: 'Sent a notice', prose: true }],
   [
     'croncreate crondelete cronlist schedulewakeup schedule',
-    { icon: ClockIcon, run: 'Scheduling', done: 'Scheduled', prose: true }
+    { icon: ClockGlyph, run: 'Scheduling', done: 'Scheduled', prose: true }
   ],
-  ['monitor watch', { icon: SignalIcon, run: 'Watching', done: 'Watched', prose: true }],
-  ['workflow pipeline', { icon: Squares2X2Icon, run: 'Running a workflow', done: 'Ran a workflow', prose: true }],
+  ['monitor watch', { icon: SignalGlyph, run: 'Watching', done: 'Watched', prose: true }],
+  ['workflow pipeline', { icon: FlowGlyph, run: 'Running a workflow', done: 'Ran a workflow', prose: true }],
   [
     'enterworktree exitworktree worktree',
-    { icon: Square3Stack3DIcon, run: 'Setting up a workspace', done: 'Set up a workspace', prose: true }
+    { icon: BranchGlyph, run: 'Setting up a workspace', done: 'Set up a workspace', prose: true }
   ],
-  ['lsp diagnostics typecheck', { icon: CodeBracketIcon, run: 'Checking the code', done: 'Checked the code', prose: true }],
-  ['reportfindings findings', { icon: FlagIcon, run: 'Reporting', done: 'Reported', prose: true }],
+  ['lsp diagnostics typecheck', { icon: CodeGlyph, run: 'Checking the code', done: 'Checked the code', prose: true }],
+  ['reportfindings findings', { icon: FlagGlyph, run: 'Reporting', done: 'Reported', prose: true }],
   [
     'toolsearch listmcpresources listmcpresourcestool readmcpresource readmcpresourcetool',
-    { icon: WrenchScrewdriverIcon, run: 'Finding tools', done: 'Found tools', prose: true }
+    { icon: BoxGlyph, run: 'Finding tools', done: 'Found tools', prose: true }
   ],
-  ['mcp mcptool mcptoolcall', { icon: PuzzlePieceIcon, run: 'Running a tool', done: 'Ran a tool', prose: true }]
+  ['mcp mcptool mcptoolcall', { icon: PlugGlyph, run: 'Running a tool', done: 'Ran a tool', prose: true }]
 ]
 
 const TOOLS = new Map(TABLE.flatMap(([names, action]) => names.split(' ').map(name => [name, action] as const)))
@@ -166,8 +166,8 @@ export function toolAction(name: string | undefined, subagent = false): ToolActi
   const mcp = mcpTool(raw)
   if (mcp) {
     const label = humanize(mcp)
-    return TOOLS.get(normalize(mcp)) ?? { icon: PuzzlePieceIcon, run: label, done: label, prose: true }
+    return TOOLS.get(normalize(mcp)) ?? { icon: PlugGlyph, run: label, done: label, prose: true }
   }
   const label = humanize(raw)
-  return { icon: WrenchScrewdriverIcon, run: label, done: label, prose: true }
+  return { icon: BoxGlyph, run: label, done: label, prose: true }
 }
