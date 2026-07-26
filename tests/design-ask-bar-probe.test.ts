@@ -31,27 +31,38 @@ const node = (id: string, name: string): FakeShape => ({
   props: { ...nodeDefaults(), name }
 })
 
-const agent = (id: string, label: string) =>
+const agent = (id: string, label: string, status = 'idle') =>
   ({
     id,
     label,
     provider: 'claude',
     ownerId: 'jamel',
     ownerName: 'Jamel',
-    status: 'idle',
+    status,
     runs: {},
     settings: {},
     fields: []
   }) as never
 
+const thread = (id: string, agentId: string, status = 'open') =>
+  ({ id, agentId, agentLabel: agentId, title: id, createdBy: 'ALI', status, mode: 'build', boardId: 'board:a' }) as never
+
 interface Sent {
   text: string
   threadId?: string
   boardId?: string
+  aimedAt?: string[]
 }
 
-function boot(selected: string[] = ['shape:a']) {
+interface BootOptions {
+  selected?: string[]
+  agents?: unknown[]
+  threads?: Record<string, unknown>
+}
+
+function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
   const sent: Sent[] = []
+  let asked = 0
   const made = fakeBoard([node('shape:a', 'Card'), node('shape:b', 'Label')])
   made.select(...selected)
   const editor = {
@@ -59,19 +70,33 @@ function boot(selected: string[] = ['shape:a']) {
     getSelectionRotatedScreenBounds: () => ({ x: 100, y: 200, width: 300, height: 80 })
   } as unknown as Editor
   useCrew.setState({
-    agents: [agent('agent:bubbles', 'Bubbles'), agent('agent:fable', 'Fable')],
-    threads: {},
+    agents: options.agents ?? [agent('agent:bubbles', 'Bubbles'), agent('agent:fable', 'Fable')],
+    threads: options.threads ?? {},
     pending: {},
-    sendChat: (text: string, threadId?: string, boardId?: string) => sent.push({ text, threadId, boardId })
+    sendChat: (text: string, threadId?: string, boardId?: string, _replyTo?: string, aimedAt?: string[]) =>
+      sent.push({ text, threadId, boardId, aimedAt })
   } as never)
   const view = render(
     createElement(
       EditorContext.Provider,
       { value: editor },
-      createElement(DesignAskBar, { boardId: 'board:a', open: true, onClose: () => {} })
+      createElement(DesignAskBar, {
+        boardId: 'board:a',
+        open: true,
+        onClose: () => {},
+        onSent: () => {
+          asked += 1
+        }
+      })
     )
   )
-  return { sent, view, made }
+  return { sent, view, made, asked: () => asked }
+}
+
+function ask(what: string) {
+  const input = screen.getByPlaceholderText('Ask for a change')
+  fireEvent.change(input, { target: { value: what } })
+  fireEvent.keyDown(input, { key: 'Enter' })
 }
 
 describe('the ask bar', () => {
