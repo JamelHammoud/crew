@@ -1448,11 +1448,12 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
-    const docMentions = this.docMentionRefs(trimmed)
+    const { docMentions, boardMentions } = this.refsOf(trimmed)
     for (const entry of found.thread.queue) {
       if (entry.messageId === found.entry.messageId) {
         entry.text = trimmed
         entry.docMentions = docMentions
+        entry.boardMentions = boardMentions
       }
     }
     if (this.emittedMessages.has(found.entry.messageId)) {
@@ -1460,13 +1461,15 @@ export class CrewSession {
       if (message && message.kind === 'message') {
         message.text = trimmed
         message.docMentions = docMentions
+        message.boardMentions = boardMentions
         this.emit({
           id: randomUUID(),
           ts: Date.now(),
           kind: 'message.edited',
           messageId: message.id,
           text: trimmed,
-          docMentions
+          docMentions,
+          boardMentions
         })
       }
     }
