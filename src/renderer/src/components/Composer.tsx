@@ -145,7 +145,7 @@ export default function Composer({
                 aria-label="Stop"
                 className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 cursor-pointer hover:scale-105 active:scale-95"
               >
-                <StopGlyph className="w-4 h-4" />
+                <StopGlyph className="w-5 h-5" />
               </button>
             </Tooltip>
           ) : (
