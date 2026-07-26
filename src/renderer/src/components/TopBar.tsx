@@ -27,13 +27,14 @@ import { MenuDivider, MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'agents' | 'docs' | 'design'
 
+export type NavTab = Exclude<Tab, 'agents'>
+
 export const TOP_BAR_H = 70
 
 const COMPACT_WIDTH = 760
 
-const TABS: Array<{ id: Tab; label: string }> = [
+const TABS: Array<{ id: NavTab; label: string }> = [
   { id: 'chat', label: 'Chat' },
-  { id: 'agents', label: 'Crew' },
   { id: 'docs', label: 'Docs' },
   { id: 'design', label: 'Design' }
 ]
