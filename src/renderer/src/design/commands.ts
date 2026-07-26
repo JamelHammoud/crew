@@ -500,9 +500,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'unlock-all',
     label: 'Unlock all',
-    hint: '⇧⌘L',
+    hint: chordHint(LOCK),
     group: 'canvas',
     Icon: UnlockGlyph,
+    keys: LOCK,
     when: ctx => lockedOnPage(ctx.editor).length > 0,
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('unlock all')
