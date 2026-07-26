@@ -158,16 +158,20 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
           ))}
         </Detail>
       )}
-      {expanded && files.length === 0 && (thinking ? item.text.trim() : item.detail) && (
+      {expanded && files.length === 0 && (thinking || detail) && (
         <Detail>
-          <p
-            onClick={() => setOpen(false)}
-            className={`whitespace-pre-wrap cursor-pointer ${
-              thinking ? 'text-sm text-fg-muted leading-6' : 'text-xs font-mono text-fg-muted leading-5 break-all'
-            }`}
-          >
-            <TextWithFileLinks text={thinking ? item.text.trim() : (item.detail ?? '')} inline again={!item.streaming} />
-          </p>
+          {thinking || action.prose ? (
+            <p
+              onClick={() => setOpen(false)}
+              className={`whitespace-pre-wrap cursor-pointer text-fg-muted ${
+                thinking ? 'text-sm leading-6' : 'text-xs leading-5'
+              }`}
+            >
+              <TextWithFileLinks text={thinking ? item.text.trim() : detail} inline again={!item.streaming} />
+            </p>
+          ) : (
+            <StepCode text={detail} prompt={action.terminal} />
+          )}
         </Detail>
       )}
     </div>
