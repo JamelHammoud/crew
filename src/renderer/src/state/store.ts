@@ -79,6 +79,7 @@ interface CrewState {
   boards: DesignBoardMeta[]
   openThreadId: string | null
   docsTarget: string | null
+  designTarget: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
   httpBase: string
@@ -128,6 +129,8 @@ interface CrewState {
   closeThread: () => void
   openDoc: (page: string) => void
   clearDocsTarget: () => void
+  openBoard: (boardId: string) => void
+  clearDesignTarget: () => void
 }
 
 const socket = new CrewSocket()
@@ -147,6 +150,7 @@ const EMPTY = {
   boards: [],
   openThreadId: null,
   docsTarget: null,
+  designTarget: null,
   chatDraft: '',
   threadDrafts: {},
   pending: {}
@@ -191,7 +195,8 @@ export const useCrew = create<CrewState>((set, get) => {
                 text: event.text,
                 mentionRefs: event.mentionRefs ?? e.mentionRefs,
                 memberMentionRefs: event.memberMentionRefs ?? e.memberMentionRefs,
-                docMentions: event.docMentions ?? e.docMentions
+                docMentions: event.docMentions ?? e.docMentions,
+                boardMentions: event.boardMentions ?? e.boardMentions
               }
             : e
         )
@@ -696,6 +701,8 @@ export const useCrew = create<CrewState>((set, get) => {
     openThread: threadId => set({ openThreadId: threadId }),
     closeThread: () => set({ openThreadId: null }),
     openDoc: page => set({ docsTarget: page }),
-    clearDocsTarget: () => set({ docsTarget: null })
+    clearDocsTarget: () => set({ docsTarget: null }),
+    openBoard: boardId => set({ designTarget: boardId }),
+    clearDesignTarget: () => set({ designTarget: null })
   }
 })
