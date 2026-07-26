@@ -1,9 +1,3 @@
-export interface ChangedLines {
-  added: Set<number>
-  removed: Map<number, string[]>
-  first: number
-}
-
 interface Range {
   from: number
   to: number
@@ -87,25 +81,29 @@ function locateAll(lines: string[], block: string[]): Range[] {
   return found
 }
 
-export function changedLines(text: string, diff: string | null | undefined): ChangedLines | null {
+export function baselineOf(text: string, diff: string | null | undefined): string | null {
   if (!diff) return null
   const lines = text.split('\n')
-  const added = new Set<number>()
-  const removed = new Map<number, string[]>()
+  const swaps: Array<Range & { gone: string[] }> = []
+  let covered = 0
+  let dropped = false
   for (const hunk of hunksOf(diff)) {
     const block = trimEnds(hunk.added)
     if (block.length === 0) continue
     const ranges = locateAll(lines, block)
     if (ranges.length === 0) continue
-    for (const range of ranges) {
-      for (let line = range.from; line <= range.to; line += 1) added.add(line)
-    }
     const gone = trimEnds(hunk.removed)
-    if (gone.length === 0) continue
-    const at = ranges[0].from
-    removed.set(at, [...(removed.get(at) ?? []), ...gone])
+    if (gone.length > 0) dropped = true
+    for (const range of ranges) {
+      covered += range.to - range.from + 1
+      swaps.push({ ...range, gone })
+    }
   }
-  if (added.size === 0) return null
-  if (removed.size === 0 && added.size >= lines.filter(line => line.trim()).length) return null
-  return { added, removed, first: Math.min(...added) }
+  if (swaps.length === 0) return null
+  if (!dropped && covered >= lines.filter(line => line.trim()).length) return null
+  const out = [...lines]
+  for (const swap of swaps.sort((a, b) => b.from - a.from)) {
+    out.splice(swap.from - 1, swap.to - swap.from + 1, ...swap.gone)
+  }
+  return out.join('\n')
 }
