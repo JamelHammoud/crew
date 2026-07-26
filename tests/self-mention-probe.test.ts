@@ -85,7 +85,7 @@ function boot(selfId: string) {
 }
 
 describe('a mention of you', () => {
-  it('tints your own chip, and nobody else's', () => {
+  it('tints your own chip and leaves the rest plain', () => {
     boot('jamel')
     expect(screen.getByText('@Jamel').className).toContain('text-attention')
     expect(screen.getByText('@ALI').className).toContain('text-fg')
