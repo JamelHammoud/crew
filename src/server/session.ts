@@ -354,6 +354,26 @@ export class CrewSession {
       this.events.push(close)
       store.appendEvent(close)
     }
+    // A call the host was in when it went down has a start in the log and no
+    // end. It ran until the session last said anything, so that is where it is
+    // closed, rather than being left reading as live forever.
+    const finished = new Set<string>()
+    for (const event of this.events) {
+      if (event.kind === 'huddle.ended') finished.add(event.huddleId)
+    }
+    const lastTs = this.events.at(-1)?.ts ?? Date.now()
+    for (const event of [...this.events]) {
+      if (event.kind !== 'huddle.started' || finished.has(event.huddleId)) continue
+      const close: SessionEvent = {
+        id: randomUUID(),
+        ts: Math.max(event.ts, lastTs),
+        kind: 'huddle.ended',
+        huddleId: event.huddleId,
+        ms: Math.max(0, lastTs - event.ts)
+      }
+      this.events.push(close)
+      store.appendEvent(close)
+    }
     for (const [page, doc] of Object.entries(store.loadDocs())) this.docs.set(page, doc)
     for (const [id, design] of Object.entries(store.loadDesigns())) {
       this.designs.set(id, { id, name: design.name, document: design.document, presence: new Map(), saveTimer: null })
