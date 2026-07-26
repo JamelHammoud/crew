@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import StepRow from '../src/renderer/src/components/StepRow'
