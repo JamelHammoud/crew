@@ -8,7 +8,7 @@ import {
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/16/solid'
-import { useEffect, useState, type DragEvent } from 'react'
+import { useLayoutEffect, useState, type DragEvent } from 'react'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import { blockHandleOffset } from './blockAnchor'
 
