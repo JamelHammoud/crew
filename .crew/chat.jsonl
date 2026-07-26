@@ -25864,3 +25864,11 @@
 {"id":"39e30579-6be1-44ff-9f8d-f65cd9288e34","ts":1785104236622,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"694cd9da-0a0e-41c3-80e3-76ebd0b897f3","ts":1785104236622,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"d7e36f2e-c3b4-4158-8423-d3571323a96f","ts":1785104236622,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"a1537b46-e53f-444f-8be4-3ba8fa1642ce","ts":1785104239413,"kind":"agent.online","agentId":"ali/claude","label":"Fable"}
+{"id":"64b66766-cc48-43a9-b958-629c36fa3f6a","ts":1785104239413,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"27f9e4f3-30fd-4f24-8223-6b0536e584db","ts":1785104239413,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"26d3c6f3-0658-402e-a686-9ea1bf39df4b","ts":1785104239413,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
+{"id":"e4da3901-f41c-4257-900d-869866cbdcde","ts":1785104239952,"kind":"agent.online","agentId":"ali/claude","label":"Fable"}
+{"id":"801e4896-970a-4699-bb2b-74015e80620f","ts":1785104239952,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"f0977f24-f2cb-4990-b31c-f2d72f0bee84","ts":1785104239952,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"998ede4f-7189-4237-baaa-73c9e43ce36f","ts":1785104239953,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
