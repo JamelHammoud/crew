@@ -56,6 +56,9 @@ export function nodePropsFrom(input: DesignNodeInput, base: DesignNodeProps = no
 }
 
 export function nodeErrors(input: DesignNodeInput): string | null {
+  if (input.shape !== undefined && !cleanNodeShape(input.shape)) {
+    return 'shape must be rect, ellipse, triangle, diamond, pentagon, hexagon or star'
+  }
   if (input.fills !== undefined && !Array.isArray(input.fills)) return 'fills must be an array of paints'
   if (input.strokes !== undefined && !Array.isArray(input.strokes)) return 'strokes must be an array'
   if (input.effects !== undefined && !Array.isArray(input.effects)) return 'effects must be an array'
