@@ -107,7 +107,7 @@ export default function Home() {
       <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
       <div className="w-full max-w-sm min-h-full mx-auto py-16 flex flex-col justify-center gap-8 animate-rise">
         <div>
-          <h1 className="font-mono font-semibold text-3xl text-fg select-none">crew</h1>
+          <h1 className="font-mono font-semibold text-3xl text-fg select-none">Crew</h1>
           <p className="text-base text-fg-muted mt-2">Pool your LLMs with friends and build together.</p>
         </div>
 
