@@ -12,6 +12,7 @@ import {
   sizeFont,
   sizeWeight,
   styleDash,
+  verticalOf,
   weightSize
 } from './palette'
 import { emptyView, type NodeView } from './nodeView'
