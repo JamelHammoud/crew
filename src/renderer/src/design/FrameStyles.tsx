@@ -13,7 +13,7 @@ export default function FrameStyles({ shape }: { shape: TLFrameShape }) {
 
   return (
     <Section
-      label="Background"
+      title="Background"
       action={
         background === FRAME_BACKGROUND ? undefined : (
           <button
