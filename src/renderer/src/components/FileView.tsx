@@ -296,10 +296,19 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             onKeys={onEditorKeys}
           />
         )}
+        {data?.kind === 'image' && (
+          <div className="absolute inset-0 flex items-center justify-center p-6">
+            <img
+              src={data.url}
+              alt={data.path}
+              className="max-w-full max-h-full object-contain rounded-card animate-rise"
+            />
+          </div>
+        )}
         {data?.kind === 'missing' && (
           <Empty
             icon={<DocumentIcon className="w-8 h-8 text-fg-faint" />}
-            label="This file is not in the project"
+            label={fromRoot(data.path) ? 'This file is not on this computer' : 'This file is not in the project'}
             detail={data.path}
           />
         )}
