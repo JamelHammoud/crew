@@ -237,18 +237,28 @@ export function linkifyFiles(root: HTMLElement): string[] {
   return [...unknown]
 }
 
-export function useLocated(paths: string[]): void {
+function forget(paths: string[]): void {
+  for (const path of paths) {
+    const entry = located.get(path)
+    if (entry && !settled(entry.location)) located.delete(path)
+  }
+}
+
+// `again` is asked a second time: a file an agent was writing while the step
+// was live is on disk by the time it finishes.
+export function useLocated(paths: string[], again?: unknown): void {
   const [, bump] = useState(0)
   const key = paths.join('\n')
 
   useEffect(() => {
     if (paths.length === 0) return
     let alive = true
+    forget(paths)
     void locatePaths(paths).then(moved => alive && moved && bump(count => count + 1))
     return () => {
       alive = false
     }
-  }, [key])
+  }, [key, again])
 }
 
 const openFile = (path: string, line: number | null) => useBrowser.getState().openFile(targetFor(path), line)
