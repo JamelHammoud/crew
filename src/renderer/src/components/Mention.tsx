@@ -1,4 +1,4 @@
-import { ComputerDesktopIcon, DocumentTextIcon, RectangleGroupIcon } from '@heroicons/react/16/solid'
+import { ComputerDesktopIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useMemo, type ReactNode } from 'react'
 import type { BoardMentionRef } from '../../../shared/design'
 import type { DocMentionRef } from '../../../shared/docs'
