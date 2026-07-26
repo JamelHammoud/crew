@@ -124,6 +124,22 @@ export function nodeDefaults(): DesignNodeProps {
   }
 }
 
+export function cleanNodeShape(value: unknown): NodeShape | null {
+  return NODE_SHAPES.includes(value as NodeShape) ? (value as NodeShape) : null
+}
+
+export function nodeShapeOf(value: unknown): NodeShape {
+  return cleanNodeShape(value) ?? 'rect'
+}
+
+export function hasCorners(shape: NodeShape): boolean {
+  return shape === 'rect'
+}
+
+export function holdsChildren(shape: NodeShape): boolean {
+  return shape === 'rect'
+}
+
 const HEX = /^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{8}$/
 
 export function isHex(value: unknown): value is string {
