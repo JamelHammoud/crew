@@ -80,6 +80,7 @@ function Leaf({ tab, path, name, depth }: { tab: BrowserTab; path: string; name:
   return (
     <button
       onClick={() => useBrowser.getState().navigateFile(tab.id, path)}
+      data-file={path}
       style={{ paddingLeft: indent(depth) }}
       className={`${row} ${tab.path === path ? picked : quiet}`}
     >
@@ -117,6 +118,7 @@ function Match({ tab, match }: { tab: BrowserTab; match: FileMatch }) {
   return (
     <button
       onClick={() => useBrowser.getState().navigateFile(tab.id, match.path)}
+      data-file={match.path}
       style={{ paddingLeft: indent(0) }}
       className={`${row} ${tab.path === match.path ? picked : quiet}`}
     >
