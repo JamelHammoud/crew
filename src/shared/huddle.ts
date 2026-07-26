@@ -45,6 +45,13 @@ export function sharingPeer(room: HuddleRoom): HuddlePeer | undefined {
   return room.peers.find(peer => peer.sharing)
 }
 
+// Whoever starts a call is already standing in the room that starts it, so a
+// call that turns up without them in it is a call being made to them.
+export function startedWithout(before: HuddleRoom, after: HuddleRoom, selfPeerId: string): boolean {
+  if (before.peers.length > 0 || after.peers.length === 0) return false
+  return peerIn(after, selfPeerId) === undefined
+}
+
 export function huddleTitle(room: HuddleRoom, selfPeerId: string): string {
   const others = room.peers.filter(peer => peer.peerId !== selfPeerId)
   if (others.length === 0) return 'Waiting for others'
