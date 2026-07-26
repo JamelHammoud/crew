@@ -10,7 +10,7 @@ import StepRow from '../src/renderer/src/components/StepRow'
 import type { ThreadItem } from '../src/renderer/src/components/thread'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { PathLocation, RepoFile } from '../src/shared/files'
-import type { AgentStep } from '../src/shared/llm'
+import type { AgentStep, FileChange } from '../src/shared/llm'
 
 if (!Element.prototype.getAnimations) {
   Element.prototype.getAnimations = () => []
@@ -297,6 +297,83 @@ describe('changed file lists', () => {
     render(createElement(StepRow, { item }))
     await screen.findByText('src/app.ts')
     expect(document.body.textContent).not.toContain(ROOT)
+  })
+})
+
+describe('changed lines', () => {
+  const EDIT = ['- export function old() {', '-   return 1', '- }', '+ export function other() {', '+   return 2', '+ }'].join(
+    '\n'
+  )
+  const LAST = ['- export const last = 8', '+ export const last = 9'].join('\n')
+
+  const toolItem = (files: FileChange[]): ThreadItem => ({
+    key: 'p1:t1',
+    ts: 0,
+    kind: 'tool',
+    author: 'Claude',
+    self: false,
+    text: '',
+    streaming: false,
+    name: 'Edit',
+    files
+  })
+
+  const marked = (): string[] =>
+    [...document.querySelectorAll('[data-line]')]
+      .filter(row => row.className.includes('bg-fg'))
+      .map(row => row.getAttribute('data-line') ?? '')
+
+  it('opens the file where the change landed and marks those lines', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7', '8'])
+  })
+
+  it('marks every place a file was touched across the steps behind it', async () => {
+    const steps: AgentStep[] = [
+      { id: 't1', kind: 'tool', status: 'done', ts: 0, name: 'Edit', files: [{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }] },
+      { id: 't2', kind: 'tool', status: 'done', ts: 1, name: 'Edit', files: [{ path: 'src/panel.ts', added: 1, removed: 1, diff: LAST }] }
+    ]
+    render(createElement(FilesChanged, { steps }))
+    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7', '8', '10'])
+  })
+
+  it('marks the lines that are still there when the rest moved on', async () => {
+    const stale = ['+ export function other() {', '+   return 2', '+ }', '+ ', '+ export const gone = 0'].join('\n')
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 5, removed: 0, diff: stale }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7', '8'])
+  })
+
+  it('marks nothing when the whole file was written', async () => {
+    const file = repo['src/panel.ts']
+    const whole = (file.kind === 'file' ? file.text : '')
+      .split('\n')
+      .map(line => `+ ${line}`)
+      .join('\n')
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 10, removed: 0, diff: whole }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual([])
+  })
+
+  it('leaves a file named in prose unmarked', async () => {
+    render(createElement(TextWithFileLinks, { text: 'have a look at src/panel.ts' }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    expect(useBrowser.getState().tabs[0].diff).toBeNull()
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual([])
   })
 })
 
