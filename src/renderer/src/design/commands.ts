@@ -549,6 +549,13 @@ export function availableCommands(ctx: CommandContext): DesignCommand[] {
   return DESIGN_COMMANDS.filter(command => command.when(ctx))
 }
 
+export function commandForKey(event: KeyboardEvent, ctx: CommandContext): DesignCommand | null {
+  if (typingInto(event.target) || ctx.editor.getEditingShapeId()) return null
+  return (
+    DESIGN_COMMANDS.find(command => command.keys && matchesChord(event, command.keys) && command.when(ctx)) ?? null
+  )
+}
+
 function frameSelection(editor: Editor): void {
   const shapes = editor.getSelectedShapes()
   if (shapes.length === 0) return
