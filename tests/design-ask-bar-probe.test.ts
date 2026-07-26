@@ -216,6 +216,23 @@ describe('the ask bar', () => {
     expect(screen.queryByLabelText(/record/i)).toBe(null)
   })
 
+  it('hands the images it is holding to the thread the ask goes to', () => {
+    const image = { id: 'i1', name: 'shot.png', mime: 'image/png', data: 'x', size: 4 }
+    const { sent } = boot(['shape:a'], { staged: [image], threads: { t2: thread('t2', 'agent:bubbles') } })
+    ask('match this')
+    expect(sent[0].threadId).toBe('t2')
+    expect(useCrew.getState().pending['ask:board:a']).toEqual([])
+    expect(useCrew.getState().pending['t2']).toEqual([image])
+  })
+
+  it('sends an image on its own, with nothing typed', () => {
+    const image = { id: 'i1', name: 'shot.png', mime: 'image/png', data: 'x', size: 4 }
+    const { sent } = boot(['shape:a'], { staged: [image] })
+    fireEvent.click(screen.getByLabelText('Send'))
+    expect(sent).toHaveLength(1)
+    expect(sent[0].text).toBe('@Bubbles\n\nOn this board, change: Card')
+  })
+
   it('sends on Enter, naming the agent and what to change', () => {
     const { sent } = boot(['shape:a', 'shape:b'])
     const input = screen.getByPlaceholderText('Ask for a change')
