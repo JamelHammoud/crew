@@ -204,7 +204,7 @@ describe('the toolbox', () => {
     build()
 
     name('Notes')
-    fireEvent.click(screen.getByText('Open a file'))
+    does('Open a file')
     fireEvent.change(screen.getByPlaceholderText('src/renderer/src/App.tsx'), { target: { value: 'docs/notes.md' } })
     fireEvent.click(screen.getByText('Add to toolbox'))
 
@@ -218,7 +218,7 @@ describe('the toolbox', () => {
     build()
 
     name('Tests')
-    fireEvent.click(screen.getByText('Ask an agent'))
+    does('Ask an agent')
     fireEvent.change(screen.getByPlaceholderText('Run the tests and fix what fails'), {
       target: { value: 'Run the tests' }
     })
@@ -231,7 +231,7 @@ describe('the toolbox', () => {
     sent.length = 0
     build()
     name('Tests')
-    fireEvent.click(screen.getByText('Ask an agent'))
+    does('Ask an agent')
     fireEvent.click(screen.getByText('Bubbles'))
     fireEvent.change(screen.getByPlaceholderText('Run the tests and fix what fails'), {
       target: { value: 'Run the tests' }
@@ -264,7 +264,7 @@ describe('the toolbox', () => {
     // A file with no path and an ask with nothing in it are not tools.
     fireEvent.click(screen.getByText('Open a file'))
     expect(save?.disabled).toBe(true)
-    fireEvent.click(screen.getByText('Ask an agent'))
+    does('Ask an agent')
     expect(save?.disabled).toBe(true)
   })
 
