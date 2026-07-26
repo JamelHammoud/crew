@@ -102,9 +102,7 @@ function DocCardContent({ page }: { page: string }) {
         <span className="text-sm font-semibold text-fg truncate">{doc.title}</span>
       </span>
       {snippet && (
-        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] text-xs text-fg-muted whitespace-pre-wrap line-clamp-4">
-          {snippet}
-        </span>
+        <CardRule className="text-xs text-fg-muted whitespace-pre-wrap line-clamp-4">{snippet}</CardRule>
       )}
     </>
   )
@@ -119,7 +117,7 @@ function BoardCardContent({ boardId }: { boardId: string }) {
         <FrameGlyph className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{board.name}</span>
       </span>
-      <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] text-xs text-fg-muted">Design board</span>
+      <CardRule className="text-xs text-fg-muted">Design board</CardRule>
     </>
   )
 }
