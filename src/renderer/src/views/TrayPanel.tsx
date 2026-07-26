@@ -54,7 +54,7 @@ export default function TrayPanel(): ReactElement {
         <Badge count={waiting} className="ml-auto" />
       </div>
       <MenuDivider />
-      <div className="overflow-y-auto overflow-x-hidden" style={{ maxHeight: LIST }}>
+      <div className="-mx-1.5 px-1.5 overflow-y-auto" style={{ maxHeight: LIST }}>
         <Here state={state} />
       </div>
       <MenuDivider />
