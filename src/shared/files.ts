@@ -34,6 +34,28 @@ export function stripRootFromText(root: string, text: string): string {
   return text.replace(pattern, (_, tail: string) => slashed(tail))
 }
 
+const IMAGE_TYPES: Record<string, string> = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  bmp: 'image/bmp',
+  ico: 'image/x-icon',
+  svg: 'image/svg+xml'
+}
+
+export function imageType(name: string): string | null {
+  const file = slashed(name).split('/').pop() ?? ''
+  const extension = /\.([a-z0-9]+)$/i.exec(file)?.[1]
+  return extension ? (IMAGE_TYPES[extension.toLowerCase()] ?? null) : null
+}
+
+export function isImageUrl(url: string): boolean {
+  return imageType(url.split(/[?#]/)[0] ?? '') !== null
+}
+
 export type RepoFile =
   | { kind: 'file'; path: string; text: string; truncated: boolean }
   | { kind: 'dir'; path: string; entries: FileEntry[] }
