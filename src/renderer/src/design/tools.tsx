@@ -1,4 +1,6 @@
-import { GeoShapeGeoStyle, type Editor, type TLShape } from 'tldraw'
+import { type Editor, type TLShape } from 'tldraw'
+import { nodeShapeOf } from '../../../shared/designNode'
+import { nextNodeShape, setNextNodeShape } from './nextShape'
 import {
   ArrowGlyph,
   CursorGlyph,
