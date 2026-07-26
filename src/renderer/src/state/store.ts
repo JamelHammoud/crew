@@ -76,6 +76,7 @@ interface CrewState {
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
   todos: Todo[]
+  tools: CrewTool[]
   boards: DesignBoardMeta[]
   openThreadId: string | null
   docsTarget: string | null
