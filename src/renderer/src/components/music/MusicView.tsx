@@ -72,15 +72,15 @@ export default function MusicView() {
   return (
     <div className="absolute inset-0 flex flex-col overflow-y-auto [scrollbar-width:thin]">
       <div className="p-4 flex gap-4">
-        <div className="relative w-[124px] h-[124px] shrink-0 rounded-card bg-ink-800 flex items-end justify-center gap-[7px] p-5">
+        <div className="relative w-[124px] h-[124px] shrink-0 rounded-card bg-ink-800 flex p-5">
           {track ? (
             <Bars
               at={at}
               bpm={track.bpm}
               count={5}
               playing={room.playing}
-              className="h-full w-full justify-center gap-[7px]"
-              barClassName="w-[7px] transition-[height] duration-100 ease-out"
+              className="h-full w-full justify-between"
+              barClassName="w-[7px]"
             />
           ) : (
             <MusicGlyph className="w-8 h-8 m-auto text-fg-faint" />
