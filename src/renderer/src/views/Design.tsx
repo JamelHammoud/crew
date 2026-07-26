@@ -17,13 +17,20 @@ const GLYPH = 'w-[18px] h-[18px] transition-transform duration-200'
 export default function Design() {
   const boards = useCrew(s => s.boards)
   const createBoard = useCrew(s => s.createBoard)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [selected, setSelected] = useState<string | null>(lastBoard)
   const [editor, setEditor] = useState<Editor | null>(null)
-  const [leftOpen, setLeftOpen] = useState(true)
-  const [rightOpen, setRightOpen] = useState(true)
+  const [panels, setPanels] = useState(lastPanels)
 
   const current = selected && boards.some(b => b.id === selected) ? selected : (boards[0]?.id ?? null)
   const boardContext = useMemo(() => ({ current: current ?? '', select: setSelected }), [current])
+
+  useEffect(() => {
+    if (current) rememberBoard(current)
+  }, [current])
+
+  useEffect(() => {
+    rememberPanels(panels)
+  }, [panels])
 
   if (!current) {
     return (
