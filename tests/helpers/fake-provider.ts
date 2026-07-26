@@ -9,6 +9,13 @@ export const fakeSteerCliPath = fileURLToPath(new URL('./fake-steer-cli.mjs', im
 export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('TEXT ')) return [{ text: line.slice(5) }]
   if (line.startsWith('THINK ')) return [{ thinking: line.slice(6) }]
+  if (line.startsWith('THINKSTART ')) return [{ thinkingStart: { index: Number(line.slice(11)) } }]
+  if (line.startsWith('THINKSTOP ')) return [{ thinkingStop: { index: Number(line.slice(10)) } }]
+  if (line.startsWith('THINKDELTA ')) {
+    const rest = line.slice(11)
+    const space = rest.indexOf(' ')
+    return [{ thinkingDelta: { index: Number(rest.slice(0, space)), text: rest.slice(space + 1) } }]
+  }
   if (line.startsWith('ACT ')) {
     const [, id, kind, ...rest] = line.split(' ')
     return [
