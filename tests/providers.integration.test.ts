@@ -174,6 +174,13 @@ describe('a step says what it is about', () => {
     expect(detail('Grep', { pattern: 'AgentIcon', path: 'src' })).toBe('AgentIcon')
   })
 
+  it('shows what was run rather than the summary written of it', () => {
+    expect(detail('Bash', { command: 'yarn test --run', description: 'Run the full test suite' })).toBe(
+      'yarn test --run'
+    )
+    expect(detail('Task', { description: 'Explore the repo', prompt: 'look around' })).toBe('Explore the repo')
+  })
+
   it('shows the step someone is on rather than the whole list', () => {
     const todos = [
       { content: 'Read the icons', status: 'completed' },
