@@ -8,6 +8,8 @@ title: "Ideas"
 
 (Fixed this!)
 
+/
+
 * [x] Ability to mention a different agent while in a thread
 * [ ] Have the app running in the background
 * [ ] Better at finding what CLIs are available on your computer
