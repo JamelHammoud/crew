@@ -328,109 +328,120 @@ describe('changed lines', () => {
       .filter(row => row.className.includes('bg-positive'))
       .map(row => row.getAttribute('data-line') ?? '')
 
-  it('opens the file where the change landed and marks those lines', async () => {
-    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
-    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
-    render(createElement(BrowserPanel))
-    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
-    expect(marked()).toEqual(['6', '7', '8'])
-  })
+  const taken = (): string[] =>
+    [...document.querySelectorAll('[data-gone]')].map(row => row.lastElementChild?.textContent ?? '')
 
-  it('shows the lines that were replaced above the new ones', async () => {
-    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
-    render(createElement(BrowserPanel))
-    const gone = await screen.findByText('export function old() {')
-    expect(gone.previousElementSibling?.textContent).toBe('−')
-    const rows = [...(gone.closest('div')?.parentElement?.children ?? [])]
-    expect(rows.indexOf(gone.closest('div') as Element)).toBe(5)
-    expect(screen.getByText('return 1')).not.toBeNull()
-  })
-
-  it('puts the file back the moment you click into it', async () => {
-    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
-    fireEvent.click(await screen.findByText('src/panel.ts'))
-    render(createElement(BrowserPanel))
-    await screen.findByText('export function old() {')
-    expect(screen.queryByRole('textbox', { name: 'File contents' })).toBeNull()
-    fireEvent.mouseDown(document.querySelector('[data-line="6"]') as HTMLElement)
-    await waitFor(() => expect(screen.queryByText('export function old() {')).toBeNull())
-    expect(marked()).toEqual([])
-    expect(useBrowser.getState().tabs[0].diff).toBeNull()
-    const editor = screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
-    expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 5).join('\n').length + 1)
-  })
-
-  const ROW = 20
-
-  const fakeRows = (): (() => void) => {
-    const real = Element.prototype.getBoundingClientRect
-    Element.prototype.getBoundingClientRect = function (this: Element): DOMRect {
-      const body = document.querySelector('.overflow-auto')
-      const rows = body ? [...body.querySelectorAll('[data-line], [data-gone]')] : []
-      const index = rows.indexOf(this)
-      if (index < 0) return real.call(this)
-      const top = index * ROW - (body as HTMLElement).scrollTop
-      return { ...real.call(this), top, bottom: top + ROW, height: ROW, y: top } as DOMRect
-    }
-    return () => {
-      Element.prototype.getBoundingClientRect = real
-    }
-  }
-
-  const pointAt = (holder: Element, column: number): Range => {
-    const walker = document.createTreeWalker(holder, NodeFilter.SHOW_TEXT)
-    let left = column
-    let node = walker.nextNode()
-    while (node && left > (node.textContent?.length ?? 0)) {
-      left -= node.textContent?.length ?? 0
-      node = walker.nextNode()
-    }
-    const range = document.createRange()
-    range.setStart(node ?? holder, node ? left : 0)
-    return range
-  }
+  const editor = (): HTMLTextAreaElement =>
+    screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
 
   const openDiff = async (): Promise<void> => {
     render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
     fireEvent.click(await screen.findByText('src/panel.ts'))
     render(createElement(BrowserPanel))
-    await screen.findByText('export function old() {')
+    await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(2))
   }
 
-  it('leaves the file where it was standing when you click into it', async () => {
-    const restore = fakeRows()
-    try {
-      await openDiff()
-      const body = document.querySelector('.overflow-auto') as HTMLElement
-      body.scrollTop = 100
-      fireEvent.mouseDown(document.querySelector('[data-line="6"]') as HTMLElement)
-      await waitFor(() => expect(screen.queryByText('export function old() {')).toBeNull())
-      expect(body.scrollTop).toBe(100 - 3 * ROW)
-    } finally {
-      restore()
-    }
+  const retype = (from: string, to: string): void => {
+    const area = editor()
+    fireEvent.change(area, { target: { value: area.value.replace(from, to) } })
+  }
+
+  it('opens the file where the change landed and marks the lines that replaced it', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7'])
   })
 
-  it('puts the caret at the spot in the line you clicked', async () => {
+  it('shows the lines that were replaced above the new ones', async () => {
     await openDiff()
-    const text = document.querySelector('[data-line="7"]')?.lastElementChild as HTMLElement
-    document.caretRangeFromPoint = () => pointAt(text, 5)
-    try {
-      fireEvent.mouseDown(text)
-      const editor = (await screen.findByRole('textbox', { name: 'File contents' })) as HTMLTextAreaElement
-      expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 6).join('\n').length + 1 + 5)
-    } finally {
-      delete (document as Partial<Document>).caretRangeFromPoint
-    }
+    expect(taken()).toEqual(['export function old() {', '  return 1'])
+    const rows = [...document.querySelectorAll('[data-row]')]
+    expect(rows.findIndex(row => row.hasAttribute('data-gone'))).toBe(5)
+    expect(rows[5].firstElementChild?.textContent).toBe('−')
   })
 
-  it('starts the caret on the line that replaced one you clicked', async () => {
+  it('tints the words that changed inside a line', async () => {
     await openDiff()
-    fireEvent.mouseDown(screen.getByText('return 1'))
-    const editor = (await screen.findByRole('textbox', { name: 'File contents' })) as HTMLTextAreaElement
-    expect(editor.selectionStart).toBe(panelText().split('\n').slice(0, 5).join('\n').length + 1)
+    const line = document.querySelector('[data-line="6"]') as HTMLElement
+    const green = [...line.querySelectorAll('span')].filter(span => span.className.includes('bg-positive'))
+    expect(green.map(span => span.textContent)).toEqual(['other'])
+    const red = [...document.querySelectorAll('[data-gone]')[0].querySelectorAll('span')].filter(span =>
+      span.className.includes('bg-danger')
+    )
+    expect(red.map(span => span.textContent)).toEqual(['old'])
+  })
+
+  it('lets you type while the change is showing and works the diff out again', async () => {
+    await openDiff()
+    expect(editor().value.split('\n').length).toBe(12)
+    retype('  return label', '  return LABEL')
+    await waitFor(() => expect(marked()).toEqual(['3', '6', '7']))
+    expect(taken()).toEqual(['  return label', 'export function old() {', '  return 1'])
+  })
+
+  it('drops a change from the diff when you put the line back', async () => {
+    await openDiff()
+    retype('export function other() {', 'export function old() {')
+    await waitFor(() => expect(marked()).toEqual(['7']))
+    expect(taken()).toEqual(['  return 1'])
+  })
+
+  it('keeps the caret out of the lines that were taken out', async () => {
+    await openDiff()
+    const area = editor()
+    area.focus()
+    const block = area.value.indexOf('export function old() {')
+    const below = area.value.indexOf('export function other() {')
+    area.setSelectionRange(block + 4, block + 4)
+    document.dispatchEvent(new Event('selectionchange'))
+    expect(area.selectionStart).toBe(below)
+    area.setSelectionRange(below + 2, below + 2)
+    document.dispatchEvent(new Event('selectionchange'))
+    area.setSelectionRange(block + 4, block + 4)
+    document.dispatchEvent(new Event('selectionchange'))
+    expect(area.selectionStart).toBe(block - 1)
+  })
+
+  it('leaves the page and the diff where they were when you click into the file', async () => {
+    await openDiff()
+    const body = document.querySelector('.overflow-auto') as HTMLElement
+    body.scrollTop = 100
+    const row = document.querySelector('[data-line="6"]') as HTMLElement
+    fireEvent.mouseDown(row)
+    fireEvent.click(row)
+    expect(body.scrollTop).toBe(100)
+    expect(taken().length).toBe(2)
+    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
+  })
+
+  it('saves the file without the lines that were taken out', async () => {
+    const written: string[] = []
+    window.crew = {
+      ...window.crew,
+      writeFile: async (path: string, text: string) => {
+        written.push(text)
+        return { kind: 'file', path, text, truncated: false }
+      }
+    } as unknown as CrewBridge
+    await openDiff()
+    retype('  return 2', '  return 22')
+    fireEvent.click(await screen.findByText('Save'))
+    await waitFor(() => expect(written.length).toBe(1))
+    expect(written[0]).toBe(panelText().replace('  return 2', '  return 22'))
+    expect(written[0]).not.toContain('return 1')
+  })
+
+  it('hides the changes and puts them back', async () => {
+    await openDiff()
+    fireEvent.click(screen.getByText('Hide changes'))
+    await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(0))
+    expect(marked()).toEqual([])
+    fireEvent.click(screen.getByText('Show changes'))
+    await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(2))
+    expect(marked()).toEqual(['6', '7'])
   })
 
   it('marks every place a file was touched across the steps behind it', async () => {
