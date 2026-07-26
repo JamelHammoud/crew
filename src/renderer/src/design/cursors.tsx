@@ -30,13 +30,14 @@ const CLOSED_HAND = [
   box(3, 12.6, 8.2, 4.8, 2.4)
 ].join('')
 
-const HAND_PLACE = "translate(3.9 3.86) scale(0.9)"
+const HAND_PLACE = 'translate(25.12 3.86) scale(-0.9 0.9)'
 
 const SIZE = 22
 const SCALE = 0.75
 
 const TIP = { x: 7, y: 5.9 }
 const MIDDLE = { x: 14, y: 15 }
+const LEAD = { x: 3.92, y: 25.28 }
 
 const nudge = (from: number, to: number) => Number((to - from * SCALE).toFixed(4))
 

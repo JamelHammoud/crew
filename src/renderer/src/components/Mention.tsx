@@ -151,19 +151,22 @@ export function RefMention({ refKind, target, children }: { refKind: CrewRefKind
 export function MentionText({
   text,
   mentionRefs,
-  docMentions
+  docMentions,
+  boardMentions
 }: {
   text: string
   mentionRefs?: AgentMentionRef[]
   docMentions?: DocMentionRef[]
+  boardMentions?: BoardMentionRef[]
 }) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(
-    () => tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, members, docs, docMentions),
-    [agents, docs, docMentions, members, mentionRefs, text]
-  )
+  const boards = useCrew(s => s.boards)
+  const tokens = useMemo(() => {
+    const refs = writtenRefs(text, docs, boards, docMentions, boardMentions)
+    return tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, members, refs)
+  }, [agents, boardMentions, boards, docMentions, docs, members, mentionRefs, text])
   return (
     <>
       {tokens.map((token, index) => {
