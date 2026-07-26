@@ -112,7 +112,7 @@ function Group({
             hasMenu ? 'w-9 pl-1.5' : 'w-10'
           } ${active ? '' : 'hover:text-fg hover:bg-fg/[0.06]'}`}
         >
-          <shown.Icon className="w-[18px] h-[18px]" />
+          <shown.Icon className="w-6 h-6" />
         </button>
       </Tooltip>
       {hasMenu && (
