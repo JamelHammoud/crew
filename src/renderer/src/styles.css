@@ -60,18 +60,22 @@
       transform: none;
     }
   }
+}
 
-  @keyframes flash {
-    0%,
-    30% {
-      background-color: color-mix(in srgb, var(--color-fg) 9%, transparent);
-      box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-fg) 9%, transparent);
-    }
-    to {
-      background-color: transparent;
-      box-shadow: 0 0 0 10px transparent;
-    }
+@keyframes message-flash {
+  0%,
+  30% {
+    background-color: color-mix(in srgb, var(--color-fg) 9%, transparent);
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-fg) 9%, transparent);
   }
+  to {
+    background-color: transparent;
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+.message-flash {
+  animation: message-flash 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .light {
