@@ -10,6 +10,8 @@ title: "Ideas"
 
 ***
 
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Le_Penseur_by_Rodin_%28Kunsthalle_Bielefeld%29_2014-04-10.JPG/250px-Le_Penseur_by_Rodin_%28Kunsthalle_Bielefeld%29_2014-04-10.JPG)
+
 
 
 ## Testing 123
