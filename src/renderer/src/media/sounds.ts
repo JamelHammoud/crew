@@ -5,7 +5,7 @@ import { playStrikes, type Strike } from './strike'
 import { playNotes, type Note } from './tone'
 
 type ChimeName = 'send' | 'receive' | 'done' | 'failed' | 'join' | 'leave'
-type StrikeName = 'tab.chat' | 'tab.agents' | 'tab.docs' | 'tab.design'
+type StrikeName = 'tab.chat' | 'tab.docs' | 'tab.design'
 
 export type SoundName = ChimeName | StrikeName
 
