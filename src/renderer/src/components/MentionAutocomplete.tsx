@@ -14,7 +14,7 @@ import { rememberEmoji } from './emojiRecents'
 export type MentionItem =
   | { kind: 'agent'; agent: PooledAgent }
   | { kind: 'member'; member: MemberInfo }
-  | { kind: 'doc'; doc: DocRef }
+  | { kind: 'ref'; ref: CrewRef }
   | { kind: 'emoji'; entry: EmojiEntry }
 
 type Query = { trigger: '@' | '#' | ':'; text: string }
@@ -34,6 +34,7 @@ export function useMentionAutocomplete(
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
+  const boards = useCrew(s => s.boards)
   const [query, setQuery] = useState<Query | null>(null)
   const [active, setActive] = useState(0)
   const caretTarget = useRef<number | null>(null)

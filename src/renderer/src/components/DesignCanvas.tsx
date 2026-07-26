@@ -22,6 +22,7 @@ import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
 import {
   applyDesignCursors,
+  applyToolCursor,
   ARROW_TIP,
   cursorColor,
   CursorArrow,
