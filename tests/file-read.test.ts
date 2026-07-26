@@ -182,11 +182,21 @@ describe('locatePath', () => {
     expect(await locatePath(null, '/Users/someone/notes.md')).toEqual({ kind: 'private' })
   })
 
-  it('shows paths that are on this computer', async () => {
+  it('opens paths that are on this computer', async () => {
     const root = makeRepo()
-    expect(await locatePath(root, os.homedir())).toEqual({ kind: 'local' })
-    expect(await locatePath(root, '~/')).toEqual({ kind: 'local' })
-    expect(await locatePath(root, '/usr/bin')).toEqual({ kind: 'local' })
+    const outside = tmpDir('outside')
+    writeFileSync(path.join(outside, 'preview.mjs'), 'export const x = 1\n')
+    expect(await locatePath(root, os.homedir())).toEqual({ kind: 'local', exists: true })
+    expect(await locatePath(root, '~/')).toEqual({ kind: 'local', exists: true })
+    expect(await locatePath(root, '/usr/bin')).toEqual({ kind: 'local', exists: true })
+    expect(await locatePath(root, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true })
+    expect(await locatePath(null, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true })
+  })
+
+  it('keeps back a full path that is not on this computer', async () => {
+    const root = makeRepo()
+    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({ kind: 'private' })
+    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'private' })
   })
 
   it('matches a windows path onto the same file here', async () => {
