@@ -93,10 +93,10 @@ function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
     sendChat: (text: string, threadId?: string, boardId?: string, _replyTo?: string, aimedAt?: string[]) =>
       sent.push({ text, threadId, boardId, aimedAt })
   } as never)
-  const view = render(
+  const tree = (holds: boolean) =>
     createElement(
       EditorContext.Provider,
-      { value: editor },
+      { value: editorWith(holds) },
       createElement(DesignAskBar, {
         boardId: 'board:a',
         open: true,
@@ -106,8 +106,8 @@ function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
         }
       })
     )
-  )
-  return { sent, view, made, asked: () => asked }
+  const view = render(tree(true))
+  return { sent, view, made, asked: () => asked, deselect: () => view.rerender(tree(false)) }
 }
 
 function ask(what: string) {
