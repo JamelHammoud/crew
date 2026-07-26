@@ -480,31 +480,30 @@ body {
 
 /* The toolbox in the top bar opens while its panel is open. The lid comes up off
    the mouth of the case and turns away from you, on a hinge that is behind the
-   drawing rather than on it: it lifts, its own height flattens as it goes over,
-   and it loses a couple of percent all round to the distance. Three numbers, all
-   worked out from the swing in objects.tsx, which is why nothing here is a
-   rotate. The order is the lift last, so it is measured in the grid's units
-   rather than in the flattened ones.
+   drawing rather than on it, so it lifts, flattens, and keeps a little less of
+   itself the further back it goes. That is a shape rather than a transform: a
+   lid going away has to narrow with the distance, and no scale or skew can do
+   that to a rectangle. So each piece is handed the drawing at both ends and the
+   browser walks one into the other. Both come out of toolbox.ts, which is where
+   the turn is worked out, and nothing here knows any of the numbers.
 
-   It opens the way something with a hinge does, quickly and a shade past itself
+   It opens the way something on a hinge does, quickly and a shade past itself
    before it settles, and it falls shut the way a lid does, tipping past its
    balance and landing on the case. Nothing overshoots on the way down: past shut
    there is nowhere for it to go but through the box it sits on. */
-.toolbox-mark .toolbox-lid {
-  transform-box: view-box;
-  transform-origin: var(--hinge, 12px 12.75px);
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.75, 0.6);
+.toolbox-mark .toolbox-turn {
+  d: var(--shut);
+  transition: d 0.2s cubic-bezier(0.4, 0, 0.75, 0.6);
 }
 
-.toolbox-mark[data-state='open'] .toolbox-lid {
-  transform: translateY(calc(var(--rise, 2.581px) * -1)) scale(var(--away, 0.977))
-    scaleY(var(--squash, 0.819));
-  transition: transform 0.32s cubic-bezier(0.34, 1.42, 0.6, 1);
+.toolbox-mark[data-state='open'] .toolbox-turn {
+  d: var(--open);
+  transition: d 0.34s cubic-bezier(0.34, 1.3, 0.64, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .toolbox-mark .toolbox-lid,
-  .toolbox-mark[data-state='open'] .toolbox-lid {
+  .toolbox-mark .toolbox-turn,
+  .toolbox-mark[data-state='open'] .toolbox-turn {
     transition: none;
   }
 }
