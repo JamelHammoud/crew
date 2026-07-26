@@ -217,6 +217,9 @@ export class CrewSession {
   // Everyone the log already names for this call, so coming back to it after a
   // dropped window does not say they joined twice.
   private huddleNamed = new Set<string>()
+  // What is playing, and the moment it was last set, so the position can be
+  // worked out for whoever asks. Held in memory the way a call is.
+  private music: { track: MusicTrack; playing: boolean; from: number; since: number; by: string } | null = null
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()

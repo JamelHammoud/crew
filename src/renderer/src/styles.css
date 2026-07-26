@@ -491,33 +491,6 @@ body {
   }
 }
 
-/* Everything that carries a color crosses to the new one together when the theme
-   is turned over, for exactly as long as the flip takes and no longer. Left on
-   permanently it would put a lag under every hover in the app, which is why it
-   is a class that is armed and taken away again rather than a rule anything
-   wears. */
-.theming,
-.theming *,
-.theming *::before,
-.theming *::after {
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    fill 0.18s ease,
-    stroke 0.18s ease,
-    box-shadow 0.18s ease !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theming,
-  .theming *,
-  .theming *::before,
-  .theming *::after {
-    transition: none !important;
-  }
-}
-
 /* The word turns over with the mark, so the two read as one change. */
 .word-swap {
   animation: word-swap 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
