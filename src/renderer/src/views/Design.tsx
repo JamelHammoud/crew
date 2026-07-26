@@ -60,10 +60,9 @@ export default function Design() {
               <HeaderButton
                 label={rightOpen ? 'Hide board panel' : 'Show board panel'}
                 pressed={rightOpen}
-                active={rightOpen}
                 onClick={() => setRightOpen(value => !value)}
               >
-                <PanelRightGlyph className="w-[18px] h-[18px]" />
+                <PanelRightGlyph className={`w-[18px] h-[18px] ${FLIP} ${rightOpen ? '' : '-scale-x-100'}`} />
               </HeaderButton>
             </div>
           </div>
