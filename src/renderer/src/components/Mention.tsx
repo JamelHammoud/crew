@@ -110,7 +110,7 @@ function BoardCardContent({ boardId }: { boardId: string }) {
   return (
     <>
       <span className="flex items-center gap-2">
-        <RectangleGroupIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+        <FrameGlyph className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{board.name}</span>
       </span>
       <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] text-xs text-fg-muted">Design board</span>
