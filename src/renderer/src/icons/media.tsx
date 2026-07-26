@@ -67,15 +67,18 @@ export const SpeakerOffGlyph = glyph(
 // A handset turned face down, and it is solid for the same reason stop is: a
 // handset is a thing rather than a frame, and the crescent an outline leaves
 // between its two edges closes into a smudge at the size the button wears it.
-// The bells are the whole of what the mark has to say, so they are round, they
-// flare wider than the crown, and they hang the full depth of the box. Drawn
-// flat, at 19 across and 9 down, it was a dash in a round button: the same
-// silhouette as an arch, and nothing about it read as a phone. A solid keeps
-// sqrt(w * h) at 16 the way every other one does, which is 19 by 12.6, and that
-// is the number that had gone missing rather than the size it was worn at.
+//
+// Every number in it is read off one ellipse, 16 across and 12.8 down, so the
+// crown, the two legs and the bells cannot drift apart from one another. The
+// bells are what say telephone: the outer edge runs 28 degrees further round
+// than the inner one, which leaves each end cut on a slant and standing wider
+// than the crown it hangs from. Drawn as an even bar with its legs cut square it
+// was an arch, and an arch reads as a bridge at 18px however deep it is hung.
+const CROWN = { rx: 8, ry: 6.4, cy: 13.3, bar: 3.2 }
+
 export const HangupGlyph = glyph(
   <path
-    d="M3.5 11.6C6.1 7.7 8.9 5.7 12 5.7s5.9 2 8.5 5.9c.7 1.1 1 2.1 1 3 0 2.1-1.6 3.7-3.8 3.7-2 0-3.3-1.4-3.3-3.6v-2.9c-.8-.3-1.5-.4-2.4-.4s-1.6.1-2.4.4v2.9c0 2.2-1.3 3.6-3.3 3.6-2.2 0-3.8-1.6-3.8-3.7 0-.9.3-1.9 1-3Z"
+    d={`M4.04 17.77A${CROWN.rx + CROWN.bar / 2} ${CROWN.ry + CROWN.bar / 2} 0 1 1 19.96 17.77A2.14 2.14 0 0 1 18.36 13.8A${CROWN.rx - CROWN.bar / 2} ${CROWN.ry - CROWN.bar / 2} 0 1 0 5.64 13.8A2.14 2.14 0 0 1 4.04 17.77Z`}
     fill="currentColor"
   />
 )
