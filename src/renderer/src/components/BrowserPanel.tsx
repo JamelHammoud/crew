@@ -282,6 +282,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
       >
         {tab.loading ? (
           <Spinner size={14} className="text-fg-muted" />
+        ) : tab.kind === 'music' ? (
+          <MusicGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'terminal' ? (
           <TerminalGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'file' ? (
