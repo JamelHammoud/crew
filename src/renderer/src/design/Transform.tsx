@@ -16,6 +16,7 @@ import {
 } from './glyphs'
 import { alignOffset, type Align } from './align'
 import { NumberInput, Row, Section, SubLabel, Trailing } from './InspectorFields'
+import { sizeOf } from './wholePixels'
 
 const ALIGNMENTS: Array<{ op: Align; label: string; Icon: Glyph }> = [
   { op: 'left', label: 'Align left', Icon: AlignLeftGlyph },
@@ -25,12 +26,6 @@ const ALIGNMENTS: Array<{ op: Align; label: string; Icon: Glyph }> = [
   { op: 'center-vertical', label: 'Align middle', Icon: AlignMiddleGlyph },
   { op: 'bottom', label: 'Align bottom', Icon: AlignBottomGlyph }
 ]
-
-function sizeOf(shape: TLShape): { w: number; h: number } | null {
-  const props = shape.props as { w?: unknown; h?: unknown }
-  if (typeof props.w !== 'number' || typeof props.h !== 'number') return null
-  return { w: props.w, h: props.h }
-}
 
 function alignWithin(editor: Editor, shape: TLShape, op: Align): void {
   const bounds = editor.getShapePageBounds(shape.id)
