@@ -105,14 +105,13 @@ function DesignIcon() {
   )
 }
 
-const ICONS: Record<Tab, () => React.ReactElement> = {
+const ICONS: Record<NavTab, () => React.ReactElement> = {
   chat: ChatIcon,
-  agents: SpaceIcon,
   docs: DocsIcon,
   design: DesignIcon
 }
 
-export default function TabIcon({ tab }: { tab: Tab }) {
+export default function TabIcon({ tab }: { tab: NavTab }) {
   const Icon = ICONS[tab]
   return (
     <span className="tab-icon" aria-hidden="true">
