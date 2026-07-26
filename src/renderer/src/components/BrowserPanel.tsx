@@ -235,7 +235,7 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
-    if (active) pillRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+    if (active) pillRef.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
   }, [active])
 
   return (
