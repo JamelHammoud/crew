@@ -45,7 +45,7 @@ ${row('w-5 at 18', round(at(18)))}
 app.commandLine.appendSwitch('disable-gpu')
 
 app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 460, height: 300, show: false, backgroundColor: '#141414' })
+  const win = new BrowserWindow({ width: 440, height: 420, show: false, backgroundColor: '#141414' })
   await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html))
   const shot = await win.webContents.capturePage()
   writeFileSync('stop-check.png', shot.toPNG())

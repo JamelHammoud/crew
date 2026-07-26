@@ -49,7 +49,7 @@ afterEach(() => {
 })
 
 describe('right clicking a picture', () => {
-  it('opens crew's own menu where the pointer is', () => {
+  it('opens the menu crew draws itself, where the pointer is', () => {
     open()
     const menu = screen.getByText('Copy image').closest('.glass') as HTMLElement
 
