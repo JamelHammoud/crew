@@ -1,5 +1,6 @@
 import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../../../shared/events'
 import { soundsOn } from '../state/sound'
+import { playRing, type Ring } from './ring'
 import { playStrikes, type Strike } from './strike'
 import { playNotes, type Note } from './tone'
 
