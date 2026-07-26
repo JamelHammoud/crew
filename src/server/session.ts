@@ -9,8 +9,6 @@ import {
   type OutgoingAttachment
 } from '../shared/attachments'
 import {
-  docMentionRefsIn,
-  docMentionsIn,
   fallbackTitle,
   pageCode,
   pageCodeOf,
@@ -18,6 +16,13 @@ import {
   type DocMentionRef,
   type DocPage
 } from '../shared/docs'
+import {
+  boardMentionsOf,
+  crewRefs,
+  docMentionsOf,
+  refsIn,
+  type CrewRef
+} from '../shared/refs'
 import {
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
