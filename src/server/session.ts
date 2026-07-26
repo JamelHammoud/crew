@@ -328,6 +328,27 @@ export class CrewSession {
       if (event.kind === 'todo.removed' || event.kind === 'todo.started') {
         this.todos.delete(event.todoId)
       }
+      if (event.kind === 'tool.added') {
+        this.tools.set(event.toolId, {
+          id: event.toolId,
+          name: event.name,
+          mark: event.mark,
+          action: event.action,
+          createdBy: event.byName,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'tool.edited') {
+        const tool = this.tools.get(event.toolId)
+        if (tool) {
+          tool.name = event.name
+          tool.mark = event.mark
+          tool.action = event.action
+        }
+      }
+      if (event.kind === 'tool.removed') {
+        this.tools.delete(event.toolId)
+      }
       if (event.kind === 'thread.agent') {
         const thread = this.threads.get(event.threadId)
         if (thread) {
@@ -432,6 +453,7 @@ export class CrewSession {
           .map(thread => [thread.id, this.queueItems(thread)])
       ),
       todos: [...this.todos.values()],
+      tools: [...this.tools.values()],
       boards: this.boardList(),
       huddle: this.huddleRoom()
     }
