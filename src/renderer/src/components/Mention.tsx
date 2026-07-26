@@ -92,16 +92,19 @@ function MemberMention({ member, children }: { member: MemberInfo; children: Rea
 
 function DocCardContent({ page }: { page: string }) {
   const doc = useCrew(s => s.docs[page])
+  const httpBase = useCrew(s => s.httpBase)
   if (!doc) return null
-  const snippet = doc.text.trim().slice(0, 280)
+  const excerpt = docExcerpt(doc.text)
   return (
     <>
       <span className="flex items-center gap-2">
         <DocumentTextIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{doc.title}</span>
       </span>
-      {snippet && (
-        <CardRule className="text-xs text-fg-muted whitespace-pre-wrap line-clamp-4">{snippet}</CardRule>
+      {excerpt && (
+        <CardRule>
+          <Markdown className="md-peek max-h-40 overflow-hidden" text={localizeDoc(excerpt, httpBase)} />
+        </CardRule>
       )}
     </>
   )
@@ -112,12 +115,11 @@ function BoardCardContent({ boardId }: { boardId: string }) {
   if (!board) return null
   return (
     <>
-      <BoardPreview boardId={boardId} />
       <span className="flex items-center gap-2">
         <FrameGlyph className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{board.name}</span>
       </span>
-      <CardRule className="text-xs text-fg-muted">Design board</CardRule>
+      <BoardPreview boardId={boardId} />
     </>
   )
 }
