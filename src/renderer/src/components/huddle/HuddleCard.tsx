@@ -1,4 +1,4 @@
-import { SignalSlashIcon } from '@heroicons/react/16/solid'
+import { SignalOffGlyph } from '../../icons'
 import { useHuddle } from '../../state/huddle'
 import AvatarStack from '../AvatarStack'
 import FeedCard from '../FeedCard'
@@ -29,7 +29,7 @@ export default function HuddleCard({ record }: { record: HuddleRecord }) {
   return (
     <FeedCard author={record.by} ts={record.ts} title="Huddle">
       <div className="w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3">
-        {live ? <Live /> : <SignalSlashIcon className="w-4 h-4 text-fg-muted shrink-0" />}
+        {live ? <Live /> : <SignalOffGlyph className="w-4 h-4 text-fg-muted shrink-0" />}
         <AvatarStack names={names} />
         <span className="text-base font-semibold text-fg truncate">{nameList(names)}</span>
         <span className="text-base text-fg-muted truncate flex-1">{detail}</span>

@@ -1,6 +1,6 @@
-import { ComputerDesktopIcon, WindowIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState } from 'react'
 import type { ScreenSource } from '../../../../shared/media'
+import { DesktopGlyph, WindowGlyph } from '../../icons'
 import { useHuddle } from '../../state/huddle'
 import InsetRing from '../InsetRing'
 import Spinner from '../Spinner'
@@ -98,9 +98,9 @@ export default function ScreenPicker() {
                   {source.icon ? (
                     <img src={source.icon} alt="" className="w-4 h-4 shrink-0 rounded" />
                   ) : source.kind === 'screen' ? (
-                    <ComputerDesktopIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+                    <DesktopGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
                   ) : (
-                    <WindowIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+                    <WindowGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
                   )}
                   <span className="text-sm text-fg-secondary truncate group-hover:text-fg transition-colors">
                     {source.name}

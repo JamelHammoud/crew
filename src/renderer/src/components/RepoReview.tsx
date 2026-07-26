@@ -1,6 +1,6 @@
-import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useState } from 'react'
 import type { RepoChange } from '../../../shared/repository'
+import { ChevronRightGlyph } from '../icons'
 import Spinner from './Spinner'
 import Counts from './Counts'
 
@@ -63,7 +63,7 @@ function ChangeRow({
         onClick={onToggle}
         className="group flex min-h-11 w-full items-center gap-2.5 px-3 text-left transition-colors duration-150 hover:bg-fg/[0.04] active:bg-fg/[0.06]"
       >
-        <ChevronRightIcon
+        <ChevronRightGlyph
           className={`h-3.5 w-3.5 shrink-0 text-fg-faint transition-transform duration-200 ${
             open ? 'rotate-90' : ''
           }`}

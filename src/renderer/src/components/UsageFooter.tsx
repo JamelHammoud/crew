@@ -1,6 +1,6 @@
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { AgentUsage, UsageWindow } from '../../../shared/llm'
+import { ChevronDownGlyph } from '../icons'
 import { useNow } from './useNow'
 
 function formatAgo(ms: number): string {
@@ -80,7 +80,7 @@ export default function UsageFooter({ usage }: { usage: AgentUsage }) {
               </span>
             </>
           )}
-          <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+          <ChevronDownGlyph className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
         </span>
       </button>
       {open && (

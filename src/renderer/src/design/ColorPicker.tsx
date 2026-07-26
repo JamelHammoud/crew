@@ -1,8 +1,8 @@
-import { EyeDropperIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { HexAlphaColorPicker, HexColorPicker } from 'react-colorful'
 import { CREW_SWATCHES } from '../../../shared/design'
 import Tooltip from '../components/Tooltip'
+import { EyedropperGlyph } from '../icons'
 
 interface Dropper {
   open: () => Promise<{ sRGBHex: string }>
@@ -85,7 +85,7 @@ export default function ColorPicker({
               aria-label="Pick a color"
               className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-colors hover:text-fg hover:bg-fg/[0.08]"
             >
-              <EyeDropperIcon className="w-4 h-4" />
+              <EyedropperGlyph className="w-4 h-4" />
             </button>
           </Tooltip>
         )}

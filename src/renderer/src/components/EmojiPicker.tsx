@@ -1,5 +1,5 @@
-import { ClockIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useMemo, useRef, useState } from 'react'
+import { ClockGlyph, SearchGlyph } from '../icons'
 import Emoji from './Emoji'
 import { EMOJI_CATEGORIES, lookupEmoji, searchEmoji, type EmojiEntry } from './emojiData'
 import { recentEmoji } from './emojiRecents'
@@ -95,7 +95,7 @@ export default function EmojiPicker({
     <div className="flex h-[400px] w-[380px] flex-col" onMouseLeave={() => setPreview(null)}>
       <div className="px-3 pt-3 pb-2">
         <div className="relative">
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />
+          <SearchGlyph className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />
           <input
             autoFocus
             value={query}
@@ -123,7 +123,7 @@ export default function EmojiPicker({
                     : 'text-fg-muted hover:bg-fg/6 hover:text-fg-secondary'
                 }`}
               >
-                {section.icon ? <Emoji char={section.icon} size={18} /> : <ClockIcon className="h-4 w-4" />}
+                {section.icon ? <Emoji char={section.icon} size={18} /> : <ClockGlyph className="h-4 w-4" />}
               </button>
             </Tooltip>
           ))}

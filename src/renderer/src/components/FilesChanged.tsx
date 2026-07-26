@@ -1,6 +1,6 @@
-import { ChevronRightIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 import type { AgentStep } from '../../../shared/llm'
+import { ChevronRightGlyph, DocGlyph } from '../icons'
 import Counts from './Counts'
 import { FilePathLink } from './StepRow'
 
@@ -33,13 +33,13 @@ export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
         onClick={() => setOpen(!open)}
         className="group flex items-center gap-2.5 px-4 h-11 w-full text-left bg-ink-700/50"
       >
-        <DocumentTextIcon className="w-4 h-4 text-fg-muted shrink-0" />
+        <DocGlyph className="w-4 h-4 text-fg-muted shrink-0" />
         <span className="text-sm font-semibold text-fg">
           {files.length} {files.length === 1 ? 'file' : 'files'} changed
         </span>
         <span className="ml-auto flex items-center gap-2.5">
           <Counts added={totals.added} removed={totals.removed} />
-          <ChevronRightIcon
+          <ChevronRightGlyph
             className={`w-3.5 h-3.5 shrink-0 text-fg-faint group-hover:text-fg-muted transition-transform duration-200 ${
               open ? 'rotate-90' : ''
             }`}

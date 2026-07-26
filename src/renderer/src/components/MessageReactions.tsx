@@ -1,12 +1,6 @@
-import {
-  ArrowUturnLeftIcon,
-  EllipsisHorizontalIcon,
-  FaceSmileIcon,
-  PencilIcon,
-  TrashIcon
-} from '@heroicons/react/20/solid'
 import { useEffect, useRef, useState } from 'react'
 import { QUICK_REACTIONS, type ReactionEmoji } from '../../../shared/reactions'
+import { MoreGlyph, PencilGlyph, SmileGlyph, TrashGlyph, UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import Emoji from './Emoji'
 import EmojiPicker from './EmojiPicker'
@@ -100,7 +94,7 @@ export default function MessageReactions({
               onClick={onReply}
               className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
             >
-              <ArrowUturnLeftIcon className="h-4 w-4" />
+              <UndoGlyph className="h-4 w-4" />
             </button>
           </Tooltip>
         )}
@@ -116,7 +110,7 @@ export default function MessageReactions({
               }}
               className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
             >
-              <FaceSmileIcon className="h-4 w-4" />
+              <SmileGlyph className="h-4 w-4" />
             </button>
           </Tooltip>
           <Popover
@@ -142,13 +136,13 @@ export default function MessageReactions({
                 }}
                 className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
               >
-                <EllipsisHorizontalIcon className="h-4 w-4" />
+                <MoreGlyph className="h-4 w-4" />
               </button>
             </Tooltip>
             <Popover open={actionsOpen} onClose={() => setActionsOpen(false)} side="top">
               {onEdit && (
                 <MenuItem
-                  icon={<PencilIcon />}
+                  icon={<PencilGlyph />}
                   label="Edit message"
                   onClick={() => {
                     setActionsOpen(false)
@@ -157,7 +151,7 @@ export default function MessageReactions({
                 />
               )}
               <MenuItem
-                icon={<TrashIcon />}
+                icon={<TrashGlyph />}
                 label="Delete message"
                 danger
                 onClick={() => {

@@ -1,18 +1,6 @@
-import {
-  ArrowLeftIcon,
-  ArrowPathIcon,
-  ArrowRightIcon,
-  ArrowTopRightOnSquareIcon,
-  CommandLineIcon,
-  DocumentTextIcon,
-  GlobeAltIcon,
-  PhotoIcon,
-  PlusIcon,
-  XCircleIcon,
-  XMarkIcon
-} from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { isImageUrl } from '../../../shared/files'
+import { ArrowLeftGlyph, ArrowRightGlyph, CloseGlyph, DocGlyph, ExternalLinkGlyph, GlobeGlyph, PhotoGlyph, PlusGlyph, RefreshGlyph, TerminalGlyph, XCircleGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
@@ -83,12 +71,12 @@ export default function BrowserPanel() {
               aria-label="New tab"
               className={`${iconButton} ${newOpen ? 'text-fg bg-fg/[0.06]' : ''}`}
             >
-              <PlusIcon className="w-4 h-4" />
+              <PlusGlyph className="w-4 h-4" />
             </button>
           </Tooltip>
           <Popover open={newOpen} onClose={() => setNewOpen(false)}>
             <MenuItem
-              icon={<GlobeAltIcon />}
+              icon={<GlobeGlyph />}
               label="Web page"
               onClick={() => {
                 setNewOpen(false)
@@ -96,7 +84,7 @@ export default function BrowserPanel() {
               }}
             />
             <MenuItem
-              icon={<CommandLineIcon />}
+              icon={<TerminalGlyph />}
               label="Terminal"
               onClick={() => {
                 setNewOpen(false)
@@ -111,7 +99,7 @@ export default function BrowserPanel() {
             aria-label="Close"
             className={`app-no-drag ${iconButton}`}
           >
-            <XMarkIcon className="w-4 h-4" />
+            <CloseGlyph className="w-4 h-4" />
           </button>
         </Tooltip>
       </header>
@@ -124,7 +112,7 @@ export default function BrowserPanel() {
             aria-label="Back"
             className={iconButton}
           >
-            <ArrowLeftIcon className="w-4 h-4" />
+            <ArrowLeftGlyph className="w-4 h-4" />
           </button>
           <button
             onClick={() => useBrowser.getState().fileForward(active.id)}
@@ -132,14 +120,14 @@ export default function BrowserPanel() {
             aria-label="Forward"
             className={iconButton}
           >
-            <ArrowRightIcon className="w-4 h-4" />
+            <ArrowRightGlyph className="w-4 h-4" />
           </button>
           <button
             onClick={() => useBrowser.getState().reloadTab(active.id)}
             aria-label="Reload"
             className={iconButton}
           >
-            <ArrowPathIcon className="w-4 h-4" />
+            <RefreshGlyph className="w-4 h-4" />
           </button>
           <FileCrumbs tab={active} />
           <Tooltip label="Show in folder">
@@ -148,7 +136,7 @@ export default function BrowserPanel() {
               aria-label="Show in folder"
               className={iconButton}
             >
-              <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+              <ExternalLinkGlyph className="w-4 h-4" />
             </button>
           </Tooltip>
         </div>
@@ -162,7 +150,7 @@ export default function BrowserPanel() {
             aria-label="Back"
             className={iconButton}
           >
-            <ArrowLeftIcon className="w-4 h-4" />
+            <ArrowLeftGlyph className="w-4 h-4" />
           </button>
           <button
             onClick={() => viewFor(active.id)?.goForward()}
@@ -170,7 +158,7 @@ export default function BrowserPanel() {
             aria-label="Forward"
             className={iconButton}
           >
-            <ArrowRightIcon className="w-4 h-4" />
+            <ArrowRightGlyph className="w-4 h-4" />
           </button>
           <button
             onClick={() => reload(active)}
@@ -178,7 +166,7 @@ export default function BrowserPanel() {
             aria-label={active.loading ? 'Stop' : 'Reload'}
             className={iconButton}
           >
-            {active.loading ? <XMarkIcon className="w-4 h-4" /> : <ArrowPathIcon className="w-4 h-4" />}
+            {active.loading ? <CloseGlyph className="w-4 h-4" /> : <RefreshGlyph className="w-4 h-4" />}
           </button>
           <UrlBar key={active.id} tab={active} />
           <Tooltip label="Open in your browser">
@@ -188,7 +176,7 @@ export default function BrowserPanel() {
               aria-label="Open in your browser"
               className={iconButton}
             >
-              <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+              <ExternalLinkGlyph className="w-4 h-4" />
             </button>
           </Tooltip>
         </div>
@@ -222,7 +210,7 @@ export default function BrowserPanel() {
           ))}
         {active && active.kind === 'web' && !active.initialUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-            <GlobeAltIcon className="w-8 h-8 text-fg-faint" />
+            <GlobeGlyph className="w-8 h-8 text-fg-faint" />
             <p className="text-sm text-fg-muted">Search or enter a web address above</p>
           </div>
         )}
@@ -260,15 +248,15 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         {tab.loading ? (
           <Spinner size={14} className="text-fg-muted" />
         ) : tab.kind === 'terminal' ? (
-          <CommandLineIcon className="w-4 h-4 shrink-0" />
+          <TerminalGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'file' ? (
-          <DocumentTextIcon className="w-4 h-4 shrink-0" />
+          <DocGlyph className="w-4 h-4 shrink-0" />
         ) : showsImage(tab) ? (
-          <PhotoIcon className="w-4 h-4 shrink-0" />
+          <PhotoGlyph className="w-4 h-4 shrink-0" />
         ) : tab.favicon ? (
           <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
         ) : (
-          <GlobeAltIcon className="w-4 h-4 shrink-0" />
+          <GlobeGlyph className="w-4 h-4 shrink-0" />
         )}
         <span className="truncate">{tabLabel(tab)}</span>
         <span
@@ -279,12 +267,12 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           aria-label="Close tab"
           className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
         >
-          <XMarkIcon className="w-3 h-3" />
+          <CloseGlyph className="w-3 h-3" />
         </span>
       </button>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         <MenuItem
-          icon={<XMarkIcon />}
+          icon={<CloseGlyph />}
           label="Close tab"
           onClick={() => {
             setMenuAt(null)
@@ -292,7 +280,7 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           }}
         />
         <MenuItem
-          icon={<XCircleIcon />}
+          icon={<XCircleGlyph />}
           label="Close all tabs"
           onClick={() => {
             setMenuAt(null)

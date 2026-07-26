@@ -1,17 +1,9 @@
-import {
-  ChevronRightIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  LockClosedIcon,
-  LockOpenIcon,
-  MagnifyingGlassIcon,
-  XMarkIcon
-} from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
 import { canRename, layerName, renameShape } from '../design/tools'
+import { ChevronRightGlyph, CloseGlyph, EyeGlyph, EyeOffGlyph, LockGlyph, SearchGlyph, UnlockGlyph } from '../icons'
 import { PanelButton } from './DesignControls'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
@@ -98,7 +90,7 @@ function Layers({ editor }: { editor: Editor }) {
       <div className="h-12 shrink-0 flex items-center gap-1 pl-4 pr-2">
         {searching ? (
           <label className="flex-1 min-w-0 h-8 flex items-center gap-1.5 rounded-full bg-fg/[0.06] px-3">
-            <MagnifyingGlassIcon className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+            <SearchGlyph className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
             <input
               autoFocus
               value={query}
@@ -116,7 +108,7 @@ function Layers({ editor }: { editor: Editor }) {
           label={searching ? 'Close search' : 'Find a layer'}
           onClick={() => (searching ? closeSearch() : setSearching(true))}
         >
-          {searching ? <XMarkIcon className="w-4 h-4" /> : <MagnifyingGlassIcon className="w-4 h-4" />}
+          {searching ? <CloseGlyph className="w-4 h-4" /> : <SearchGlyph className="w-4 h-4" />}
         </PanelButton>
       </div>
       <div ref={listRef} className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
@@ -145,7 +137,7 @@ function Layers({ editor }: { editor: Editor }) {
                   aria-label={collapsed.has(id) ? 'Expand' : 'Collapse'}
                   className="w-4 h-4 shrink-0 grid place-items-center text-fg-muted hover:text-fg"
                 >
-                  <ChevronRightIcon
+                  <ChevronRightGlyph
                     className={`w-3 h-3 transition-transform ${collapsed.has(id) ? '' : 'rotate-90'}`}
                   />
                 </button>
@@ -189,14 +181,14 @@ function Layers({ editor }: { editor: Editor }) {
                   editor.updateShape({ id: id as TLShapeId, type: row.shape.type, meta: { hidden: !hidden } })
                 }
               >
-                {hidden ? <EyeSlashIcon className="w-3 h-3" /> : <EyeIcon className="w-3 h-3" />}
+                {hidden ? <EyeOffGlyph className="w-3 h-3" /> : <EyeGlyph className="w-3 h-3" />}
               </RowButton>
               <RowButton
                 label={row.shape.isLocked ? 'Unlock' : 'Lock'}
                 shown={row.shape.isLocked}
                 onClick={() => editor.toggleLock([id as TLShapeId])}
               >
-                {row.shape.isLocked ? <LockClosedIcon className="w-3 h-3" /> : <LockOpenIcon className="w-3 h-3" />}
+                {row.shape.isLocked ? <LockGlyph className="w-3 h-3" /> : <UnlockGlyph className="w-3 h-3" />}
               </RowButton>
             </div>
           )

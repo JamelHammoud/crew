@@ -1,8 +1,8 @@
-import { ArrowRightIcon, ClockIcon, FolderIcon } from '@heroicons/react/20/solid'
 import { useEffect, useState } from 'react'
 import { parseLink } from '../../../shared/link'
 import type { RecentJoin } from '../../../shared/recent'
 import Spinner from '../components/Spinner'
+import { ArrowRightGlyph, ClockGlyph, FolderGlyph } from '../icons'
 import { useCrew } from '../state/store'
 
 function cleanError(err: unknown): string {
@@ -123,7 +123,7 @@ export default function Home() {
                   className="group w-full rounded-2xl px-3 py-2.5 flex items-center gap-3 text-left transition-all duration-150 hover:bg-ink-700 active:scale-[0.99] disabled:opacity-50 disabled:scale-100"
                 >
                   <span className="w-9 h-9 rounded-full bg-ink-700 flex items-center justify-center shrink-0 group-hover:bg-ink-600">
-                    <ClockIcon className="w-4 h-4 text-fg-secondary" />
+                    <ClockGlyph className="w-4 h-4 text-fg-secondary" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-medium text-fg truncate">{serverName(recent.link)}</span>
@@ -132,7 +132,7 @@ export default function Home() {
                   {busyLink === recent.link ? (
                     <Spinner size={15} className="text-fg-muted" />
                   ) : (
-                    <ArrowRightIcon className="w-4 h-4 text-fg-faint group-hover:text-fg-secondary group-hover:translate-x-0.5 transition-all duration-150" />
+                    <ArrowRightGlyph className="w-4 h-4 text-fg-faint group-hover:text-fg-secondary group-hover:translate-x-0.5 transition-all duration-150" />
                   )}
                 </button>
               ))}
@@ -149,7 +149,7 @@ export default function Home() {
           <div>
             <label className="block text-sm text-fg-muted mb-2">Project folder</label>
             <button onClick={pickFolder} className={`${FIELD} flex items-center gap-2.5 text-left hover:bg-ink-700`}>
-              <FolderIcon className="w-5 h-5 text-fg-muted shrink-0" />
+              <FolderGlyph className="w-5 h-5 text-fg-muted shrink-0" />
               <span className={`truncate ${folder ? 'text-fg' : 'text-fg-muted'}`}>
                 {folder ?? 'Choose a folder tracked with git'}
               </span>

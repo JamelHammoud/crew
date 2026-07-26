@@ -1,7 +1,7 @@
-import { PencilIcon, StopIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
 import type { PooledAgent } from '../../../shared/llm'
 import { visibleSettingFields } from '../../../shared/llm'
+import { PencilGlyph, StopGlyph, TrashGlyph } from '../icons'
 import AgentIcon from './AgentIcon'
 import AgentPhoto from './AgentPhoto'
 import Pill from './Pill'
@@ -85,7 +85,7 @@ export default function AgentCard({
                   aria-label="Rename agent"
                   className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
                 >
-                  <PencilIcon className="w-4 h-4" />
+                  <PencilGlyph className="w-4 h-4" />
                 </button>
               </Tooltip>
             )}
@@ -96,7 +96,7 @@ export default function AgentCard({
                   aria-label="Stop"
                   className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
                 >
-                  <StopIcon className="w-4 h-4" />
+                  <StopGlyph className="w-4 h-4" />
                 </button>
               </Tooltip>
             )}
@@ -107,7 +107,7 @@ export default function AgentCard({
                   aria-label="Remove agent"
                   className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors"
                 >
-                  <TrashIcon className="w-4 h-4" />
+                  <TrashGlyph className="w-4 h-4" />
                 </button>
               </Tooltip>
             )}

@@ -1,10 +1,10 @@
-import { ChevronRightIcon, DocumentTextIcon, PlusIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { fallbackTitle, pageCode, pageCodeOf, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
 import { MenuItem, Popover } from '../components/Popover'
 import Tooltip from '../components/Tooltip'
+import { ChevronRightGlyph, DocGlyph, PlusGlyph, TrashGlyph } from '../icons'
 import { useCrew } from '../state/store'
 
 interface PageNode {
@@ -219,7 +219,7 @@ export default function Docs() {
               node.children.length === 0 ? 'invisible' : ''
             }`}
           >
-            <ChevronRightIcon className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? 'rotate-90' : ''}`} />
+            <ChevronRightGlyph className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? 'rotate-90' : ''}`} />
           </button>
           <button
             onClick={() => setPage(node.slug)}
@@ -227,7 +227,7 @@ export default function Docs() {
               active ? 'text-fg' : 'text-fg-muted hover:text-fg-secondary'
             }`}
           >
-            <DocumentTextIcon className="w-4 h-4 shrink-0 opacity-60" />
+            <DocGlyph className="w-4 h-4 shrink-0 opacity-60" />
             <span className="truncate">{titleOf(node.slug) || 'Untitled'}</span>
           </button>
           <Tooltip label="Add sub-page">
@@ -236,7 +236,7 @@ export default function Docs() {
               aria-label="Add sub-page"
               className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-fg-muted opacity-0 group-hover/row:opacity-100 hover:text-fg hover:bg-fg/[0.08] transition-all shrink-0"
             >
-              <PlusIcon className="w-3.5 h-3.5" />
+              <PlusGlyph className="w-3.5 h-3.5" />
             </button>
           </Tooltip>
         </div>
@@ -261,12 +261,12 @@ export default function Docs() {
             onClick={() => createPage('')}
             className="mt-1 w-full flex items-center gap-2 text-left px-3.5 py-2 rounded-full text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary hover:bg-fg/[0.04]"
           >
-            <PlusIcon className="w-4 h-4 shrink-0" />
+            <PlusGlyph className="w-4 h-4 shrink-0" />
             New page
           </button>
           <Popover open={menu !== null} onClose={() => setMenu(null)} at={menu ?? undefined} align="start">
             <MenuItem
-              icon={<PlusIcon />}
+              icon={<PlusGlyph />}
               label="New sub-page"
               onClick={() => {
                 if (menu) createPage(menu.slug)
@@ -275,7 +275,7 @@ export default function Docs() {
             />
             {menu?.slug !== 'main' && (
               <MenuItem
-                icon={<TrashIcon />}
+                icon={<TrashGlyph />}
                 label="Delete page"
                 danger
                 onClick={() => {

@@ -1,5 +1,5 @@
-import { PencilIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useLayoutEffect, useRef, useState } from 'react'
+import { PencilGlyph, TrashGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -164,7 +164,7 @@ export default function ChatMessage({
         <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
           {canEdit && (
             <MenuItem
-              icon={<PencilIcon />}
+              icon={<PencilGlyph />}
               label="Edit message"
               onClick={() => {
                 setMenuAt(null)
@@ -173,7 +173,7 @@ export default function ChatMessage({
             />
           )}
           <MenuItem
-            icon={<TrashIcon />}
+            icon={<TrashGlyph />}
             label="Delete message"
             danger
             onClick={() => {

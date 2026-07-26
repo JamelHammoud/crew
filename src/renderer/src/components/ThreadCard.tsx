@@ -1,11 +1,5 @@
-import {
-  ArchiveBoxIcon,
-  ArrowUturnLeftIcon,
-  CheckIcon,
-  ExclamationTriangleIcon,
-  EyeIcon
-} from '@heroicons/react/16/solid'
 import { useState } from 'react'
+import { ArchiveGlyph, CheckGlyph, EyeGlyph, UndoGlyph, WarningGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
@@ -15,10 +9,10 @@ import ThreadStatusBar from './ThreadStatusBar'
 
 export function StateIcon({ state }: { state: ThreadState }) {
   if (state === 'working') return <Spinner size={16} className="text-fg" />
-  if (state === 'failed') return <ExclamationTriangleIcon className="w-4 h-4 text-danger shrink-0" />
-  if (state === 'ready') return <EyeIcon className="w-4 h-4 text-fg shrink-0" />
-  if (state === 'archived') return <ArchiveBoxIcon className="w-4 h-4 text-fg-muted shrink-0" />
-  return <CheckIcon className="w-4 h-4 text-fg shrink-0" />
+  if (state === 'failed') return <WarningGlyph className="w-4 h-4 text-danger shrink-0" />
+  if (state === 'ready') return <EyeGlyph className="w-4 h-4 text-fg shrink-0" />
+  if (state === 'archived') return <ArchiveGlyph className="w-4 h-4 text-fg-muted shrink-0" />
+  return <CheckGlyph className="w-4 h-4 text-fg shrink-0" />
 }
 
 export default function ThreadCard({
@@ -63,11 +57,11 @@ export default function ThreadCard({
       </ThreadCardShell>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         {thread.status === 'done' ? (
-          <MenuItem icon={<ArrowUturnLeftIcon />} label="Reopen" onClick={() => setStatus('open')} />
+          <MenuItem icon={<UndoGlyph />} label="Reopen" onClick={() => setStatus('open')} />
         ) : (
-          <MenuItem icon={<CheckIcon />} label="Mark done" onClick={() => setStatus('done')} />
+          <MenuItem icon={<CheckGlyph />} label="Mark done" onClick={() => setStatus('done')} />
         )}
-        <MenuItem icon={<ArchiveBoxIcon />} label="Archive thread" onClick={() => setStatus('archived')} />
+        <MenuItem icon={<ArchiveGlyph />} label="Archive thread" onClick={() => setStatus('archived')} />
       </Popover>
     </>
   )

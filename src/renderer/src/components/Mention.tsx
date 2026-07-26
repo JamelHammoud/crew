@@ -1,4 +1,3 @@
-import { ComputerDesktopIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useMemo, type ReactNode } from 'react'
 import type { BoardMentionRef } from '../../../shared/design'
 import { docExcerpt, type DocMentionRef } from '../../../shared/docs'
@@ -7,6 +6,7 @@ import { relabelMentions, visibleSettingFields } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
 import type { CrewRefKind } from '../../../shared/refs'
 import { FrameGlyph } from '../design/glyphs'
+import { DesktopGlyph, DocGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -39,7 +39,7 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
         </span>
       </span>
       <span className="flex items-center gap-2 mt-2.5 text-xs text-fg-muted">
-        <ComputerDesktopIcon className="w-3.5 h-3.5 shrink-0" />
+        <DesktopGlyph className="w-3.5 h-3.5 shrink-0" />
         {agent.ownerName}'s PC
       </span>
       {settings.length > 0 && (
@@ -104,7 +104,7 @@ function DocCardContent({ page }: { page: string }) {
   return (
     <>
       <span className="flex items-center gap-2">
-        <DocumentTextIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+        <DocGlyph className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{doc.title}</span>
       </span>
       {excerpt && (
@@ -141,7 +141,7 @@ export function RefMention({
 }) {
   const openDoc = useCrew(s => s.openDoc)
   const openBoard = useCrew(s => s.openBoard)
-  const Icon = refKind === 'board' ? FrameGlyph : DocumentTextIcon
+  const Icon = refKind === 'board' ? FrameGlyph : DocGlyph
   const pill = (
     <span
       onClick={

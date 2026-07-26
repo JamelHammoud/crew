@@ -1,5 +1,5 @@
-import { CheckIcon, ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useState, type ReactNode } from 'react'
+import { CheckGlyph, ChevronDownGlyph } from '../icons'
 import { Popover } from './Popover'
 
 export default function Select({
@@ -30,7 +30,7 @@ export default function Select({
       >
         {label && <span className="text-fg-muted">{label}</span>}
         <span className={full ? 'flex-1 min-w-0 truncate text-left' : ''}>{current?.label ?? value}</span>
-        <ChevronDownIcon
+        <ChevronDownGlyph
           className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
@@ -50,7 +50,7 @@ export default function Select({
             >
               <span className="flex-1">{option.label}</span>
               {option.hint != null && <span className="text-xs text-fg-muted">{option.hint}</span>}
-              {selected && <CheckIcon className="w-4 h-4 shrink-0" />}
+              {selected && <CheckGlyph className="w-4 h-4 shrink-0" />}
             </button>
           )
         })}

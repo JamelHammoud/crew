@@ -1,5 +1,5 @@
-import { PlusIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
+import { PlusGlyph } from '../icons'
 import DesignChat, { useBoardThreads } from './DesignChat'
 import { PanelButton } from './DesignControls'
 
@@ -15,7 +15,7 @@ export default function DesignRightPanel({ boardId }: { boardId: string }) {
       {boardThreads.length > 0 && (
         <div className="h-12 shrink-0 flex items-center justify-end pr-2">
           <PanelButton label="New thread" onClick={() => setComposeNew(true)}>
-            <PlusIcon className="w-4 h-4" />
+            <PlusGlyph className="w-4 h-4" />
           </PanelButton>
         </div>
       )}

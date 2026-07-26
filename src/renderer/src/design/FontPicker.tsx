@@ -1,6 +1,6 @@
-import { CheckIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useState } from 'react'
 import { Popover } from '../components/Popover'
+import { CheckGlyph, ChevronDownGlyph, SearchGlyph } from '../icons'
 import { FONTS, fontLabel, fontStack, loadFonts } from './fonts'
 
 export default function FontPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
@@ -31,14 +31,14 @@ export default function FontPicker({ value, onChange }: { value: string; onChang
         <span className="flex-1 min-w-0 truncate text-left" style={{ fontFamily: fontStack(value) }}>
           {fontLabel(value)}
         </span>
-        <ChevronDownIcon
+        <ChevronDownGlyph
           className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       <Popover open={open} onClose={() => setOpen(false)} align="start" className="w-64">
         <div className="flex flex-col gap-1.5">
           <label className="h-8 shrink-0 flex items-center gap-1.5 rounded-full bg-fg/[0.06] px-3 focus-within:bg-fg/[0.12] transition-colors">
-            <MagnifyingGlassIcon className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+            <SearchGlyph className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
             <input
               autoFocus
               value={query}
@@ -64,7 +64,7 @@ export default function FontPicker({ value, onChange }: { value: string; onChang
                 <span className="flex-1 min-w-0 truncate text-base" style={{ fontFamily: fontStack(font.name) }}>
                   {font.label}
                 </span>
-                {font.name === value && <CheckIcon className="w-4 h-4 shrink-0" />}
+                {font.name === value && <CheckGlyph className="w-4 h-4 shrink-0" />}
               </button>
             ))}
           </div>

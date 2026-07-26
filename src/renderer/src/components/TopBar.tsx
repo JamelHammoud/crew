@@ -1,16 +1,5 @@
-import {
-  ArrowRightStartOnRectangleIcon,
-  CheckIcon,
-  LinkIcon,
-  MoonIcon,
-  SignalIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-  SunIcon,
-  UserGroupIcon
-} from '@heroicons/react/16/solid'
-import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, useState } from 'react'
+import { CheckCircleGlyph, CheckGlyph, LeaveGlyph, LinkGlyph, MoonGlyph, PeopleGlyph, SignalGlyph, SpeakerGlyph, SpeakerOffGlyph, SunGlyph } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
 import { useHuddle } from '../state/huddle'
@@ -136,7 +125,7 @@ export default function TopBar({
               tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
             }`}
           >
-            <CheckCircleIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
+            <CheckCircleGlyph className="w-[22px] h-[22px]" strokeWidth={1.8} />
             <Badge count={waiting} className="absolute top-0 right-0" />
           </button>
         </Tooltip>
@@ -163,7 +152,7 @@ export default function TopBar({
             </div>
             <MenuDivider />
             <MenuItem
-              icon={<UserGroupIcon />}
+              icon={<PeopleGlyph />}
               label="Crew"
               active={tab === 'agents'}
               onClick={() => {
@@ -172,7 +161,7 @@ export default function TopBar({
               }}
             />
             <MenuItem
-              icon={<SignalIcon />}
+              icon={<SignalGlyph />}
               label={huddleJoined ? 'Leave huddle' : huddleSize > 0 ? 'Join huddle' : 'Huddle'}
               hint={huddleSize > 0 ? `${huddleSize}` : undefined}
               onClick={() => {
@@ -184,25 +173,25 @@ export default function TopBar({
             />
             {joinLink && (
               <MenuItem
-                icon={copied ? <CheckIcon /> : <LinkIcon />}
+                icon={copied ? <CheckGlyph /> : <LinkGlyph />}
                 label={copied ? 'Copied' : 'Invite link'}
                 onClick={() => void copyLink()}
               />
             )}
             <MenuDivider />
             <MenuItem
-              icon={theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+              icon={theme === 'dark' ? <SunGlyph /> : <MoonGlyph />}
               label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
               onClick={() => applyTheme(theme === 'dark' ? 'light' : 'dark')}
             />
             <MenuItem
-              icon={sounds ? <SpeakerXMarkIcon /> : <SpeakerWaveIcon />}
+              icon={sounds ? <SpeakerOffGlyph /> : <SpeakerGlyph />}
               label={sounds ? 'Mute sounds' : 'Unmute sounds'}
               onClick={() => setSounds(!sounds)}
             />
             <MenuDivider />
             <MenuItem
-              icon={<ArrowRightStartOnRectangleIcon />}
+              icon={<LeaveGlyph />}
               label="Leave"
               danger
               onClick={() => {

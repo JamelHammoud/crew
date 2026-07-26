@@ -1,4 +1,4 @@
-import { XMarkIcon } from '@heroicons/react/16/solid'
+import { CloseGlyph } from '../icons'
 import { replyTargetLabel } from './reply'
 import ReplyQuote from './ReplyQuote'
 import Tooltip from './Tooltip'
@@ -23,7 +23,7 @@ export default function ReplyPreview({ replyTo, onCancel }: { replyTo: ThreadIte
             onClick={onCancel}
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.08] hover:text-fg active:scale-95"
           >
-            <XMarkIcon className="h-3.5 w-3.5" />
+            <CloseGlyph className="h-3.5 w-3.5" />
           </button>
         </Tooltip>
       </div>

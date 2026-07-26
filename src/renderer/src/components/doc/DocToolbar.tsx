@@ -1,6 +1,6 @@
 import { useActiveStyles, useBlockNoteEditor, useSelectedBlocks } from '@blocknote/react'
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
+import { ChevronDownGlyph } from '../../icons'
 import type { Glyph } from '../glyph'
 import { MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
@@ -95,7 +95,7 @@ export default function DocToolbar() {
             }`}
           >
             <span className="whitespace-nowrap">{kind.title}</span>
-            <ChevronDownIcon className={`w-3.5 h-3.5 text-fg/45 transition-transform ${turnOpen ? 'rotate-180' : ''}`} />
+            <ChevronDownGlyph className={`w-3.5 h-3.5 text-fg/45 transition-transform ${turnOpen ? 'rotate-180' : ''}`} />
           </button>
           <Popover open={turnOpen} onClose={() => setTurnOpen(false)} align="start" className="min-w-48">
             {DOC_BLOCKS.filter(option => option.convert).map(option => (

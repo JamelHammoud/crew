@@ -1,6 +1,6 @@
-import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useRef } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
+import { CloseGlyph, PlusGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { previewSrc } from './images'
@@ -29,7 +29,7 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
               aria-label={`Remove ${item.name}`}
               className="h-5 w-5 rounded-full glass flex items-center justify-center text-fg/70 opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
             >
-              <XMarkIcon className="w-3 h-3" />
+              <CloseGlyph className="w-3 h-3" />
             </button>
           </Tooltip>
         </div>
@@ -74,7 +74,7 @@ export function AttachButton({
           aria-label="Add an image"
           className={`${ATTACH_SIZES[size]} rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0`}
         >
-          <PlusIcon className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />
+          <PlusGlyph className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />
         </button>
       </Tooltip>
     </>

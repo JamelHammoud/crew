@@ -1,7 +1,7 @@
-import { PlusIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
+import { PlusGlyph } from '../icons'
 import Select from './Select'
 import Spinner from './Spinner'
 
@@ -118,7 +118,7 @@ export default function CreateAgent() {
         disabled={!caps}
         className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 disabled:opacity-50"
       >
-        <PlusIcon className="w-4 h-4" />
+        <PlusGlyph className="w-4 h-4" />
         Add agent
       </button>
       {open && (

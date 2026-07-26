@@ -1,5 +1,5 @@
-import { ArrowUturnLeftIcon } from '@heroicons/react/16/solid'
 import { attachmentUrl } from '../../../shared/attachments'
+import { UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -27,7 +27,7 @@ export default function ReplyQuote({
   return (
     <span className="flex min-w-0 flex-1 items-center gap-2">
       <span className="flex shrink-0 items-center gap-1.5">
-        <ArrowUturnLeftIcon className="h-4 w-4 text-fg-muted" />
+        <UndoGlyph className="h-4 w-4 text-fg-muted" />
         {agentId ? <AgentIcon seed={agentId} size="xs" /> : <Avatar name={authorName} size="xs" />}
       </span>
       <span className={`min-w-0 shrink-0 truncate text-sm font-semibold ${strong ? 'text-fg' : 'text-fg-secondary'}`}>

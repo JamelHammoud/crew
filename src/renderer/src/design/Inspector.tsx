@@ -1,7 +1,7 @@
-import { EyeIcon, EyeSlashIcon, MinusIcon, PlusIcon } from '@heroicons/react/16/solid'
 import type { Layout, Stroke } from '../../../shared/designNode'
 import Select from '../components/Select'
 import Tooltip from '../components/Tooltip'
+import { EyeGlyph, EyeOffGlyph, MinusGlyph, PlusGlyph } from '../icons'
 import EffectRow from './EffectRow'
 import Typography from './Typography'
 import { WeightGlyph } from './glyphs'
@@ -42,7 +42,7 @@ function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
         aria-label={label}
         className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-colors hover:text-fg hover:bg-fg/[0.08]"
       >
-        <PlusIcon className="w-4 h-4" />
+        <PlusGlyph className="w-4 h-4" />
       </button>
     </Tooltip>
   )
@@ -59,7 +59,7 @@ function ShowButton({ shown, onClick }: { shown: boolean; onClick: () => void })
           shown ? 'text-fg-muted hover:text-fg' : 'text-fg-faint hover:text-fg-muted'
         }`}
       >
-        {shown ? <EyeIcon className="w-4 h-4" /> : <EyeSlashIcon className="w-4 h-4" />}
+        {shown ? <EyeGlyph className="w-4 h-4" /> : <EyeOffGlyph className="w-4 h-4" />}
       </button>
     </Tooltip>
   )
@@ -73,7 +73,7 @@ function RemoveButton({ label, onClick }: { label: string; onClick: () => void }
         aria-label={label}
         className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-colors hover:text-danger hover:bg-danger/10"
       >
-        <MinusIcon className="w-4 h-4" />
+        <MinusGlyph className="w-4 h-4" />
       </button>
     </Tooltip>
   )

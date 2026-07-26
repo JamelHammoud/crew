@@ -1,17 +1,7 @@
-import {
-  ArchiveBoxXMarkIcon,
-  ArrowUturnLeftIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-  TrashIcon,
-  XMarkIcon
-} from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Todo } from '../../../shared/events'
 import { mentionsIn, relabelMentions, type PooledAgent } from '../../../shared/llm'
+import { CheckGlyph, ChevronDownGlyph, ChevronRightGlyph, CloseGlyph, PlusGlyph, SearchGlyph, TrashGlyph, UnarchiveGlyph, UndoGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { AgentName } from './Mention'
 import { AgentRow, MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
@@ -324,7 +314,7 @@ export default function TasksPanel({
                 aria-label="Check off"
                 className="w-4 h-4 rounded-full border-[1.5px] border-fg-muted text-transparent flex items-center justify-center transition-colors duration-150 hover:border-fg hover:text-fg"
               >
-                <CheckIcon className="w-3 h-3" />
+                <CheckGlyph className="w-3 h-3" />
               </button>
             </Tooltip>
           </span>
@@ -353,7 +343,7 @@ export default function TasksPanel({
               aria-label="Delete"
               className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-danger active:scale-95"
             >
-              <TrashIcon className="w-3.5 h-3.5" />
+              <TrashGlyph className="w-3.5 h-3.5" />
             </button>
           </Tooltip>
           <button
@@ -380,7 +370,7 @@ export default function TasksPanel({
               aria-label="Reopen"
               className="w-4 h-4 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 active:scale-90"
             >
-              <CheckIcon className="w-3 h-3" />
+              <CheckGlyph className="w-3 h-3" />
             </button>
           </Tooltip>
         </span>
@@ -397,7 +387,7 @@ export default function TasksPanel({
             aria-label="Delete"
             className="w-8 h-8 rounded-full bg-ink-800 text-fg-muted flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-danger active:scale-95"
           >
-            <TrashIcon className="w-3.5 h-3.5" />
+            <TrashGlyph className="w-3.5 h-3.5" />
           </button>
         </Tooltip>
       </span>
@@ -416,9 +406,9 @@ export default function TasksPanel({
       className="px-3 -ml-1 mb-1 flex items-center gap-1.5 text-sm font-semibold text-fg-muted transition-colors hover:text-fg-secondary"
     >
       {shown ? (
-        <ChevronDownIcon className="w-3.5 h-3.5" />
+        <ChevronDownGlyph className="w-3.5 h-3.5" />
       ) : (
-        <ChevronRightIcon className="w-3.5 h-3.5" />
+        <ChevronRightGlyph className="w-3.5 h-3.5" />
       )}
       {title} <span className="text-fg-faint">{count}</span>
     </button>
@@ -438,7 +428,7 @@ export default function TasksPanel({
           <header className="h-[70px] px-5 flex items-center shrink-0">
             {searching ? (
               <>
-                <MagnifyingGlassIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+                <SearchGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
                 <input
                   autoFocus
                   value={query}
@@ -457,7 +447,7 @@ export default function TasksPanel({
                   aria-label="Close search"
                   className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
                 >
-                  <XMarkIcon className="w-4 h-4" />
+                  <CloseGlyph className="w-4 h-4" />
                 </button>
               </>
             ) : (
@@ -468,14 +458,14 @@ export default function TasksPanel({
                   aria-label="Search tasks"
                   className="w-9 h-9 mr-1 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
                 >
-                  <MagnifyingGlassIcon className="w-4 h-4" />
+                  <SearchGlyph className="w-4 h-4" />
                 </button>
                 <button
                   onClick={onClose}
                   aria-label="Close tasks"
                   className="w-9 h-9 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
                 >
-                  <XMarkIcon className="w-4 h-4" />
+                  <CloseGlyph className="w-4 h-4" />
                 </button>
               </>
             )}
@@ -503,7 +493,7 @@ export default function TasksPanel({
                       >
                         <span className="h-[22px] shrink-0 flex items-center">
                           <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
-                            <PlusIcon className="w-3 h-3" />
+                            <PlusGlyph className="w-3 h-3" />
                           </span>
                         </span>
                         <span className="text-base">Add a task</span>
@@ -529,7 +519,7 @@ export default function TasksPanel({
                 <section>
                   {heading('Needs review', needsReview.length)}
                   {needsReview.map(row =>
-                    item(row, { icon: <CheckIcon className="w-4 h-4" />, label: 'Mark done', status: 'done' })
+                    item(row, { icon: <CheckGlyph className="w-4 h-4" />, label: 'Mark done', status: 'done' })
                   )}
                 </section>
               )}
@@ -543,7 +533,7 @@ export default function TasksPanel({
                       ...done.map(row => ({
                         ts: lastMessageAt[row.thread.id] ?? 0,
                         node: item(row, {
-                          icon: <ArrowUturnLeftIcon className="w-4 h-4" />,
+                          icon: <UndoGlyph className="w-4 h-4" />,
                           label: 'Reopen',
                           status: 'open' as const
                         })
@@ -564,7 +554,7 @@ export default function TasksPanel({
                   )}
                   {(showArchived || q !== '') &&
                     archived.map(row =>
-                      item(row, { icon: <ArchiveBoxXMarkIcon className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
+                      item(row, { icon: <UnarchiveGlyph className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
                     )}
                 </section>
               )}

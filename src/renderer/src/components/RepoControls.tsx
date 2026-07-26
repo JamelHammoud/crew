@@ -1,6 +1,6 @@
-import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../../../shared/repository'
+import { ArrowDownGlyph, ArrowUpGlyph } from '../icons'
 import { Popover } from './Popover'
 import RepoReview from './RepoReview'
 import Spinner from './Spinner'
@@ -177,7 +177,7 @@ export default function RepoControls() {
           onClick={() => void run('pull')}
           className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-all duration-150 hover:bg-fg/[0.06] hover:text-fg active:scale-90 disabled:pointer-events-none disabled:opacity-35"
         >
-          {action === 'pull' ? <Spinner size={13} /> : <ArrowDownIcon className="h-3.5 w-3.5" />}
+          {action === 'pull' ? <Spinner size={13} /> : <ArrowDownGlyph className="h-3.5 w-3.5" />}
         </button>
       </Tooltip>
       <Tooltip label="Push changes">
@@ -188,7 +188,7 @@ export default function RepoControls() {
           onClick={() => void run('push')}
           className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-all duration-150 hover:bg-fg/[0.06] hover:text-fg active:scale-90 disabled:pointer-events-none disabled:opacity-35"
         >
-          {action === 'push' ? <Spinner size={13} /> : <ArrowUpIcon className="h-3.5 w-3.5" />}
+          {action === 'push' ? <Spinner size={13} /> : <ArrowUpGlyph className="h-3.5 w-3.5" />}
         </button>
       </Tooltip>
     </div>
