@@ -72,6 +72,16 @@ export function AgentMention({ agent, children }: { agent: PooledAgent; children
   )
 }
 
+function MemberMention({ member, children }: { member: MemberInfo; children: ReactNode }) {
+  return (
+    <MemberName id={member.id} name={member.name}>
+      <strong className="font-semibold text-fg cursor-default rounded-md px-1 py-0.5 bg-fg/10 transition-colors hover:bg-fg/[0.16]">
+        {children}
+      </strong>
+    </MemberName>
+  )
+}
+
 function DocCardContent({ page }: { page: string }) {
   const doc = useCrew(s => s.docs[page])
   if (!doc) return null
@@ -124,10 +134,11 @@ export function MentionText({
   docMentions?: DocMentionRef[]
 }) {
   const agents = useCrew(s => s.agents)
+  const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
   const tokens = useMemo(
-    () => tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, docs, docMentions),
-    [agents, docs, docMentions, mentionRefs, text]
+    () => tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, members, docs, docMentions),
+    [agents, docs, docMentions, members, mentionRefs, text]
   )
   return (
     <>
@@ -137,6 +148,13 @@ export function MentionText({
             <AgentMention key={index} agent={token.agent}>
               {token.text}
             </AgentMention>
+          )
+        }
+        if (token.kind === 'member') {
+          return (
+            <MemberMention key={index} member={token.member}>
+              {token.text}
+            </MemberMention>
           )
         }
         if (token.kind === 'doc') {
