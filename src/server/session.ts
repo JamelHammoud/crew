@@ -1825,7 +1825,7 @@ export class CrewSession {
       authorId: steer.authorId ?? '',
       threadId: steer.threadId,
       mentions: [agent.id],
-      docMentions: this.docMentionRefs(steer.text),
+      ...this.refsOf(steer.text),
       attachments: steer.attachments,
       messageId: steer.messageId,
       replyTo: steer.replyTo
