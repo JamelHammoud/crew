@@ -1,7 +1,15 @@
 import type { TLShape } from 'tldraw'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 import { glyph, type Glyph } from '../components/glyph'
-import { CloudGlyph, FilmGlyph, LinkGlyph, PhotoGlyph } from '../icons'
+import {
+  CloudGlyph,
+  FilmGlyph,
+  HandGlyph,
+  LinkGlyph,
+  PencilGlyph,
+  PhotoGlyph,
+  StarGlyph
+} from '../icons'
 import { ARROW_BODY, ARROW_ON_GRID } from './cursors'
 
 export type { Glyph }
@@ -9,7 +17,7 @@ export type { Glyph }
 // The canvas draws its own vocabulary, and reaches into the icon set for the
 // marks that are not a canvas idea. The open hand needs no turning over there:
 // it is drawn with its thumb on the left already, the way the cursor is.
-export { CloudGlyph, HandGlyph, PencilGlyph, StarGlyph } from '../icons'
+export { CloudGlyph, HandGlyph, PencilGlyph, StarGlyph }
 
 export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} strokeWidth={1.6} />)
 
