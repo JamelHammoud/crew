@@ -112,6 +112,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let reported = 0
       let sent = 0
       const thinkingBlocks = new Map<number, string>()
+      const thinkingWritten = new Set<string>()
       const toolNames = new Map<string, string>()
       let streamedThinking = false
 
