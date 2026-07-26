@@ -1,4 +1,4 @@
-import { DocumentTextIcon, RectangleGroupIcon } from '@heroicons/react/16/solid'
+import { DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
 import { memberMentionCandidates } from '../../../shared/people'
