@@ -44,6 +44,19 @@ export function startingFolder(folder: string | null): string {
   return folder && existsSync(folder) ? folder : os.homedir()
 }
 
+// A shell kept ready draws its prompt into a terminal of its own size, and zsh
+// pads that line out to the width it believes it has before returning to the
+// start of it. Replayed into a tab of another size the padding lands somewhere
+// else and the end of line mark it left is still on screen. Only what follows
+// the last carriage return of a line was ever meant to be read, which is what
+// the terminal would have been showing had it been there from the start.
+export function replayable(held: string): string {
+  return held
+    .split('\r\n')
+    .map(line => line.slice(line.lastIndexOf('\r') + 1))
+    .join('\r\n')
+}
+
 const size = (value: number): number => (Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1)
 
 const FIRST_SIZE: TerminalSize = { cols: 80, rows: 24 }
