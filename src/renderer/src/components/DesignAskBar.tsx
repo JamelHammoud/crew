@@ -40,7 +40,20 @@ export default function DesignAskBar({
   const here = useMemo(() => agentsHere(agents), [agents])
   const agent = useMemo(() => agentToAsk(agents, picked), [agents, picked])
 
-  const bounds = useValue('ask bar bounds', () => editor.getSelectionRotatedScreenBounds(), [editor])
+  // Viewport, not screen: the bar is drawn in the stage's own box, which starts
+  // under the top bar and beside the panels. Screen coordinates put it that far
+  // off the shape it belongs to.
+  const bounds = useValue(
+    'ask bar bounds',
+    () => {
+      const page = editor.getSelectionPageBounds()
+      if (!page) return null
+      const topLeft = editor.pageToViewport({ x: page.minX, y: page.minY })
+      const bottomRight = editor.pageToViewport({ x: page.maxX, y: page.maxY })
+      return { x: topLeft.x, y: bottomRight.y }
+    },
+    [editor]
+  )
   const selected = useValue('ask bar selection', () => editor.getSelectedShapes(), [editor])
 
   useEffect(() => {
@@ -75,7 +88,7 @@ export default function DesignAskBar({
   return (
     <div
       className="absolute z-30 animate-pop"
-      style={{ left: bounds.x, top: bounds.y + bounds.height + LIFT, minWidth: 320 }}
+      style={{ left: bounds.x, top: bounds.y + LIFT, minWidth: 320 }}
       onPointerDown={event => event.stopPropagation()}
       onKeyDown={event => event.stopPropagation()}
     >
