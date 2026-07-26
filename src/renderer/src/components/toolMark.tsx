@@ -26,6 +26,7 @@ import {
   WindowGlyph,
   type Glyph
 } from '../icons'
+import { wornAt } from '../icons/keylines'
 import Emoji from './Emoji'
 
 const GLYPHS: Record<ToolMark, Glyph> = {
