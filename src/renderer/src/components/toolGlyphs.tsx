@@ -7,14 +7,6 @@ export const ReadGlyph = glyph(
   </>
 )
 
-export const WriteGlyph = glyph(
-  <>
-    {PAGE}
-    {FOLD}
-    <path d="M12 11.4v5.2M9.4 14h5.2" />
-  </>
-)
-
 export const EditGlyph = glyph(
   <>
     <path d="M4.6 19.4 5.3 15.8 15.9 5.2a2.3 2.3 0 0 1 3.2 3.2L8.5 19Z" />

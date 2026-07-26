@@ -62,6 +62,7 @@ describe('tool names', () => {
     expect(toolAction('Read').done).toBe('Read')
     expect(toolAction('Bash').done).toBe('Ran')
     expect(toolAction('Edit').done).toBe('Edited')
+    expect(toolAction('Write').done).toBe('Edited')
     expect(toolAction('Grep').done).toBe('Searched')
     expect(toolAction('Glob').done).toBe('Found files')
     expect(toolAction('WebSearch').done).toBe('Searched the web')
@@ -82,7 +83,7 @@ describe('tool names', () => {
     same('Read', 'read_file', 'ReadFile', 'view_file')
     same('Bash', 'Shell', 'command_execution', 'local_shell')
     same('Edit', 'file_change', 'StrReplaceFile', 'apply_patch', 'MultiEdit')
-    same('Write', 'WriteFile', 'create_file')
+    same('Edit', 'Write', 'WriteFile', 'create_file')
     same('WebSearch', 'web_search', 'search_web')
     same('WebFetch', 'fetch_url', 'FetchURL')
     same('TodoWrite', 'Todo', 'SetTodoList', 'update_plan')
@@ -132,7 +133,7 @@ describe('step rows', () => {
       const { container } = render(createElement(StepRow, { item: item({ name }) }))
       return mark(container)?.innerHTML ?? ''
     }
-    const marks = ['Read', 'Write', 'Edit', 'Bash', 'Grep', 'Glob', 'WebSearch', 'TodoWrite'].map(drawn)
+    const marks = ['Read', 'Edit', 'Bash', 'Grep', 'Glob', 'WebSearch', 'TodoWrite'].map(drawn)
     expect(marks.every(Boolean)).toBe(true)
     expect(new Set(marks).size).toBe(marks.length)
   })
