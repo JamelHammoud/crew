@@ -232,7 +232,7 @@ function Percent({ value, onChange }: { value: number; onChange: (value: number)
         className="w-7 bg-transparent text-right text-xs tabular-nums text-fg-muted outline-none focus:text-fg"
       />
       <Scrub label="Opacity" gesture={gesture}>
-        <span className="text-xs text-fg-faint">%</span>
+        <span className="px-1 -mr-1 text-xs text-fg-faint">%</span>
       </Scrub>
     </span>
   )
