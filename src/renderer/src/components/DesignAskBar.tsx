@@ -40,7 +40,7 @@ export default function DesignAskBar({
   const [switching, setSwitching] = useState(false)
   const [text, setText] = useState('')
   const [size, setSize] = useState<Box | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useAutoResize(text, GROWN)
   const barRef = useRef<HTMLDivElement>(null)
 
   const here = useMemo(() => agentsHere(agents), [agents])
