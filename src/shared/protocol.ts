@@ -130,6 +130,7 @@ export type ServerMessage =
       document: DesignDocument | null
       presence: DesignPresence[]
     }
+  | { type: 'design.preview'; boardId: string; document: DesignDocument | null }
   | { type: 'design.changes'; boardId: string; put?: unknown[]; remove?: string[] }
   | { type: 'design.presence'; boardId: string; presence: DesignPresence }
   | {
