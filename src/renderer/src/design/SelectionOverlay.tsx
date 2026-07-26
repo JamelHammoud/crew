@@ -37,7 +37,7 @@ export default function SelectionOverlay({ editor }: { editor: Editor | null }) 
         size: { w: bounds.w, h: bounds.h },
         zoom: editor.getZoomLevel(),
         stroke: selectionStroke(editor),
-        node: only && only.type === 'design-node' && only.rotation === 0 ? (only as DesignNodeShape) : null
+        node: only && rounds(only) && only.rotation === 0 ? (only as DesignNodeShape) : null
       }
     },
     [editor]
