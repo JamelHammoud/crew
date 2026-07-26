@@ -5,13 +5,16 @@ import {
   ArrowTopRightOnSquareIcon,
   DocumentTextIcon,
   GlobeAltIcon,
+  PhotoIcon,
   PlusIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
 import { useEffect, useState, type KeyboardEvent } from 'react'
+import { isImageUrl } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
+import ImageView from './ImageView'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 
