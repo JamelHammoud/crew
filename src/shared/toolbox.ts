@@ -58,6 +58,8 @@ export const NAME_LIMIT = 24
 export const COMMAND_LIMIT = 500
 export const PATH_LIMIT = 500
 export const PROMPT_LIMIT = 2000
+export const COPY_LIMIT = 2000
+export const KEY_LIMIT = 200
 export const MARK_LIMIT = 16
 
 // One emoji, however many code points it takes to say it: a face is one, a face
