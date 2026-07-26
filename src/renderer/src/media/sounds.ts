@@ -191,7 +191,7 @@ export const CALL: Ring = {
     bubble(SPARK, NOTE.cs6, 3.3, 0.6, -0.2)
   ],
   every: 4.8,
-  times: 2
+  times: 3
 }
 
 const APART = 140
