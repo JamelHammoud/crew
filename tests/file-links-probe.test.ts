@@ -32,7 +32,15 @@ const repo: Record<string, RepoFile> = {
     text: 'const one = 1\nconst two = 2\nconst three = 3',
     truncated: false
   },
-  'big.log': { kind: 'file', path: 'big.log', text: 'line one\nline two', truncated: true }
+  'big.log': { kind: 'file', path: 'big.log', text: 'line one\nline two', truncated: true },
+  'logo.png': { kind: 'image', path: 'logo.png', url: 'data:image/png;base64,AAAA', size: 6 }
+}
+
+const SHOT = '/tmp/qlout/cursor-preview.svg.png'
+
+const machine: Record<string, RepoFile> = {
+  [SHOT]: { kind: 'image', path: SHOT, url: 'data:image/png;base64,BBBB', size: 12 },
+  '/tmp/qlout/run.log': { kind: 'file', path: '/tmp/qlout/run.log', text: 'started\ndone', truncated: false }
 }
 
 const ROOT = '/Users/me/code/crew'
@@ -45,7 +53,7 @@ function locate(raw: string): PathLocation {
       const relative = parts.slice(start).join('/')
       if (relative in repo) return { kind: 'repo', path: relative, exists: true }
     }
-    return /^[A-Za-z]:\/Users\//.test(target) ? { kind: 'private' } : { kind: 'local' }
+    return { kind: 'private' }
   }
   if (!target.startsWith('/')) return { kind: 'repo', path: target, exists: target in repo }
   if (target.startsWith(`${ROOT}/`)) {
@@ -57,7 +65,7 @@ function locate(raw: string): PathLocation {
     const relative = parts.slice(start).join('/')
     if (relative in repo) return { kind: 'repo', path: relative, exists: true }
   }
-  return /^\/(?:Users|home)\//.test(target) ? { kind: 'private' } : { kind: 'local' }
+  return target in machine ? { kind: 'local', exists: true } : { kind: 'private' }
 }
 
 beforeEach(() => {
