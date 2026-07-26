@@ -199,7 +199,7 @@ export function NumberInput({
         aria-label={label}
         className="w-full min-w-0 bg-transparent text-xs tabular-nums text-fg outline-none"
       />
-      {suffix && <span className="shrink-0 text-xs text-fg-faint">{suffix}</span>}
+      {suffix && value !== auto && <span className="shrink-0 text-xs text-fg-faint">{suffix}</span>}
       {after}
     </Shell>
   )
