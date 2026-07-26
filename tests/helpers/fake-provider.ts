@@ -6,16 +6,19 @@ import type { OutputParser, Provider } from '../../src/runner/providers/types'
 export const fakeCliPath = fileURLToPath(new URL('./fake-cli.mjs', import.meta.url))
 export const fakeSteerCliPath = fileURLToPath(new URL('./fake-steer-cli.mjs', import.meta.url))
 
+const delta = (rest: string): { index: number; text: string } => {
+  const space = rest.indexOf(' ')
+  return { index: Number(rest.slice(0, space)), text: rest.slice(space + 1) }
+}
+
 export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('TEXT ')) return [{ text: line.slice(5) }]
   if (line.startsWith('THINK ')) return [{ thinking: line.slice(6) }]
   if (line.startsWith('THINKSTART ')) return [{ thinkingStart: { index: Number(line.slice(11)) } }]
-  if (line.startsWith('THINKSTOP ')) return [{ thinkingStop: { index: Number(line.slice(10)) } }]
-  if (line.startsWith('THINKDELTA ')) {
-    const rest = line.slice(11)
-    const space = rest.indexOf(' ')
-    return [{ thinkingDelta: { index: Number(rest.slice(0, space)), text: rest.slice(space + 1) } }]
-  }
+  if (line.startsWith('TEXTSTART ')) return [{ textStart: { index: Number(line.slice(10)) } }]
+  if (line.startsWith('BLOCKSTOP ')) return [{ blockStop: { index: Number(line.slice(10)) } }]
+  if (line.startsWith('THINKDELTA ')) return [{ thinkingDelta: delta(line.slice(11)) }]
+  if (line.startsWith('TEXTDELTA ')) return [{ textDelta: delta(line.slice(10)) }]
   if (line.startsWith('ACT ')) {
     const [, id, kind, ...rest] = line.split(' ')
     return [
