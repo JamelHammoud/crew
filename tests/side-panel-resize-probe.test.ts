@@ -44,7 +44,7 @@ describe('the panel resize bar', () => {
 
   it('puts the width back to the default on a double click', () => {
     const handle = open()
-    useBrowser.getState().setWidth(760)
+    useBrowser.getState().setWidth(560)
 
     press(handle, 800)
     release(800)
@@ -56,14 +56,14 @@ describe('the panel resize bar', () => {
 
   it('leaves the width alone when the second click comes long after the first', () => {
     const handle = open()
-    useBrowser.getState().setWidth(760)
+    useBrowser.getState().setWidth(560)
 
     press(handle, 800)
     release(800)
     wait(1200)
     press(handle, 800)
 
-    expect(useBrowser.getState().width).toBe(760)
+    expect(useBrowser.getState().width).toBe(560)
   })
 
   it('leaves the width alone when the first press was a drag', () => {
