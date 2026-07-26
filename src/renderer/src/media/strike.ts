@@ -119,4 +119,5 @@ function scrape(ctx: AudioContext, rasp: Rasp, bus: GainNode, start: number): Au
   env.connect(bus)
   source.start(start)
   source.stop(start + rasp.length + 0.02)
+  return source
 }
