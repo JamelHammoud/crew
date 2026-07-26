@@ -246,94 +246,94 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   return (
     <div className="absolute inset-0 bg-ink-900 flex" style={{ visibility: active ? 'visible' : 'hidden' }}>
       <div className="relative flex-1 min-w-0">
-      <div ref={bodyRef} className="absolute inset-0 overflow-auto">
-        {!data && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Spinner size={20} className="text-fg-muted" />
-          </div>
-        )}
-        {data?.kind === 'dir' &&
-          (tab.tree ? (
-            <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="Pick a file from the project" />
-          ) : (
-            <DirRows tab={tab} path={data.path} entries={data.entries} />
-          ))}
-        {file && (
-          <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
-            <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
-            {editable && (
-              <textarea
-                ref={areaRef}
-                value={shown}
-                onChange={onEdit}
-                onKeyDown={onKeys}
-                onCompositionStart={() => {
-                  composing.current = true
-                }}
-                onCompositionEnd={() => {
-                  composing.current = false
-                }}
-                aria-label="File contents"
-                spellCheck={false}
-                autoCorrect="off"
-                autoCapitalize="off"
-                wrap="off"
-                style={{ padding: `12px 16px 12px calc(2rem + ${gutter})` }}
-                className="absolute inset-0 w-full h-full resize-none overflow-hidden bg-transparent font-mono text-xs leading-5 text-transparent caret-fg selection:bg-fg/25 outline-none"
-              />
-            )}
-            {!editable && (file.truncated || long) && (
-              <p className="px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
-            )}
-          </div>
-        )}
-        {data?.kind === 'image' && <ImageView src={data.url} alt={data.path} />}
-        {data?.kind === 'missing' && (
-          <Empty
-            icon={<FileGlyph className="w-8 h-8 text-fg-faint" />}
-            label={fromRoot(data.path) ? 'This file is not on this computer' : 'This file is not in the project'}
-            detail={data.path}
-          />
-        )}
-        {data?.kind === 'binary' && (
-          <Empty
-            icon={<DocGlyph className="w-8 h-8 text-fg-faint" />}
-            label="No preview for this file"
-            detail={`${data.path} · ${Math.max(1, Math.round(data.size / 1024))} KB`}
-          />
-        )}
-      </div>
-      {(base || dirty) && (
-        <div className="absolute top-2.5 right-4 flex items-center gap-1.5">
-          {saveFailed && <span className="text-xs text-danger mr-1">Could not save</span>}
-          {base && (
-            <button
-              onClick={() => setHidden(!hidden)}
-              className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
-            >
-              {hidden ? 'Show changes' : 'Hide changes'}
-            </button>
+        <div ref={bodyRef} className="absolute inset-0 overflow-auto">
+          {!data && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Spinner size={20} className="text-fg-muted" />
+            </div>
           )}
-          {dirty && (
-            <button
-              onClick={discard}
-              className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
-            >
-              Discard
-            </button>
+          {data?.kind === 'dir' &&
+            (tab.tree ? (
+              <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="Pick a file from the project" />
+            ) : (
+              <DirRows tab={tab} path={data.path} entries={data.entries} />
+            ))}
+          {file && (
+            <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
+              <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
+              {editable && (
+                <textarea
+                  ref={areaRef}
+                  value={shown}
+                  onChange={onEdit}
+                  onKeyDown={onKeys}
+                  onCompositionStart={() => {
+                    composing.current = true
+                  }}
+                  onCompositionEnd={() => {
+                    composing.current = false
+                  }}
+                  aria-label="File contents"
+                  spellCheck={false}
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  wrap="off"
+                  style={{ padding: `12px 16px 12px calc(2rem + ${gutter})` }}
+                  className="absolute inset-0 w-full h-full resize-none overflow-hidden bg-transparent font-mono text-xs leading-5 text-transparent caret-fg selection:bg-fg/25 outline-none"
+                />
+              )}
+              {!editable && (file.truncated || long) && (
+                <p className="px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
+              )}
+            </div>
           )}
-          {dirty && (
-            <button
-              onClick={() => void save()}
-              disabled={saving}
-              className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:scale-100"
-            >
-              {saving && <Spinner size={12} className="text-ink-900" />}
-              Save
-            </button>
+          {data?.kind === 'image' && <ImageView src={data.url} alt={data.path} />}
+          {data?.kind === 'missing' && (
+            <Empty
+              icon={<FileGlyph className="w-8 h-8 text-fg-faint" />}
+              label={fromRoot(data.path) ? 'This file is not on this computer' : 'This file is not in the project'}
+              detail={data.path}
+            />
+          )}
+          {data?.kind === 'binary' && (
+            <Empty
+              icon={<DocGlyph className="w-8 h-8 text-fg-faint" />}
+              label="No preview for this file"
+              detail={`${data.path} · ${Math.max(1, Math.round(data.size / 1024))} KB`}
+            />
           )}
         </div>
-      )}
+        {(base || dirty) && (
+          <div className="absolute top-2.5 right-4 flex items-center gap-1.5">
+            {saveFailed && <span className="text-xs text-danger mr-1">Could not save</span>}
+            {base && (
+              <button
+                onClick={() => setHidden(!hidden)}
+                className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
+              >
+                {hidden ? 'Show changes' : 'Hide changes'}
+              </button>
+            )}
+            {dirty && (
+              <button
+                onClick={discard}
+                className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
+              >
+                Discard
+              </button>
+            )}
+            {dirty && (
+              <button
+                onClick={() => void save()}
+                disabled={saving}
+                className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:scale-100"
+              >
+                {saving && <Spinner size={12} className="text-ink-900" />}
+                Save
+              </button>
+            )}
+          </div>
+        )}
       </div>
       {tab.tree && <FileTree tab={tab} />}
     </div>
