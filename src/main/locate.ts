@@ -69,5 +69,10 @@ export async function locatePath(root: string | null, target: string): Promise<P
     const mirrored = await mirroredInRepo(base, absolute)
     if (mirrored) return { kind: 'repo', path: mirrored, exists: true }
   }
-  return (await onThisMachine(absolute)) ? { kind: 'local', exists: true } : { kind: 'private' }
+  if (await onThisMachine(absolute)) return { kind: 'local', exists: true }
+  // A file an agent is still writing belongs to this machine when the folder it
+  // is going into is here, and calling that someone else's file would be a lie.
+  return (await onThisMachine(path.dirname(absolute)))
+    ? { kind: 'local', exists: false }
+    : { kind: 'private' }
 }
