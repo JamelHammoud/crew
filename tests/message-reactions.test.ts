@@ -40,6 +40,32 @@ describe('message reaction controls', () => {
     expect(reactToMessage).toHaveBeenCalledWith('message:m1', '❤️')
   })
 
+  it('hides the quick react menu after a reaction and brings it back on the next hover', () => {
+    useCrew.setState({ reactToMessage: vi.fn() })
+    const { container } = render(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
+    )
+
+    const message = container.firstElementChild as HTMLElement
+    const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
+    expect(menu.className).toContain('group-hover/message:opacity-100')
+
+    fireEvent.click(screen.getByLabelText('React with 🎉'))
+    expect(menu.className).not.toContain('group-hover/message:opacity-100')
+
+    fireEvent.mouseLeave(message)
+    expect(menu.className).toContain('group-hover/message:opacity-100')
+  })
+
   it('groups active reactions and removes toggled reactions', () => {
     const events: SessionEvent[] = [
       {
