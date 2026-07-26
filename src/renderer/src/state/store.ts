@@ -65,6 +65,21 @@ export function sendHuddle(msg: HuddleClientMessage): void {
   socket.send(msg)
 }
 
+export type MusicServerMessage = Extract<ServerMessage, { type: 'music.room' }>
+
+export type MusicClientMessage = Extract<ClientMessage, { type: 'music.set' | 'music.off' }>
+
+const musicListeners = new Set<(msg: MusicServerMessage) => void>()
+
+export function onMusic(listener: (msg: MusicServerMessage) => void): () => void {
+  musicListeners.add(listener)
+  return () => musicListeners.delete(listener)
+}
+
+export function sendMusic(msg: MusicClientMessage): void {
+  socket.send(msg)
+}
+
 const EVENT_LIMIT = 500
 
 interface CrewState {
