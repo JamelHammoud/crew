@@ -188,11 +188,11 @@ export function MenuItem({
       }`}
     >
       {icon && (
-        <span key={label} className={`${swap} w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4`}>
+        <span key={`mark:${label}`} className={`${swap} w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4`}>
           {icon}
         </span>
       )}
-      <span key={label} className={`${swap} flex-1 truncate`}>
+      <span key={`word:${label}`} className={`${swap} flex-1 truncate`}>
         {label}
       </span>
       {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
