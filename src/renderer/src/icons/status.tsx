@@ -75,13 +75,12 @@ const SIGNAL_ART = (
 
 export const SignalGlyph = glyph(SIGNAL_ART)
 
-// The waves stay and the middle goes. The slash lands where the dot was, so
-// keeping both puts two marks in the same place and the middle of the icon
-// closes up into a blot.
+// The dot stays. Struck through on its own the waves read as a letter N, and
+// what makes the mark legible is that the thing in the middle is still there
+// under the slash.
 export const SignalOffGlyph = glyph(
   <>
-    <path d="M6.1 19.25a10 10 0 0 1 0-14.5" />
-    <path d="M17.9 4.75a10 10 0 0 1 0 14.5" />
+    {SIGNAL_ART}
     <path d={SLASH} />
   </>
 )
