@@ -53,6 +53,8 @@ export const TriangleGlyph = glyph(<path d="M12 4.25 20.5 19.25H3.5Z" />)
 
 export const DiamondGlyph = glyph(<path d="M12 3.5 20.5 12 12 20.5 3.5 12Z" />)
 
+export const PentagonGlyph = glyph(<path d="M12 3.5 20.1 9.4 17 18.9H7L3.9 9.4Z" />)
+
 export const HexagonGlyph = glyph(<path d="M7.75 4.65h8.5L20.5 12l-4.25 7.35h-8.5L3.5 12Z" />)
 
 export const StarGlyph = StarIcon
