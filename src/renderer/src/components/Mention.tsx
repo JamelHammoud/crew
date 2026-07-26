@@ -196,7 +196,7 @@ export function MentionText({
         if (token.kind === 'ref') {
           return (
             <RefMention key={index} refKind={token.ref.kind} target={token.ref.target}>
-              {token.text}
+              {token.text.slice(1)}
             </RefMention>
           )
         }
