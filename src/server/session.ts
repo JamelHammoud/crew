@@ -805,6 +805,54 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.checked', todoId, checked, byName: member.name })
   }
 
+  private handleToolAdd(member: Member, name: string, mark: ToolMark, action: ToolAction): void {
+    const clean = cleanTool(name, mark, action)
+    if (!clean) return
+    const tool: CrewTool = {
+      id: randomUUID(),
+      name: clean.name,
+      mark: clean.mark,
+      action: clean.action,
+      createdBy: member.name,
+      ts: Date.now()
+    }
+    this.tools.set(tool.id, tool)
+    this.emit({
+      id: randomUUID(),
+      ts: tool.ts,
+      kind: 'tool.added',
+      toolId: tool.id,
+      name: tool.name,
+      mark: tool.mark,
+      action: tool.action,
+      byName: member.name
+    })
+  }
+
+  private handleToolEdit(member: Member, toolId: string, name: string, mark: ToolMark, action: ToolAction): void {
+    const tool = this.tools.get(toolId)
+    const clean = cleanTool(name, mark, action)
+    if (!tool || !clean) return
+    tool.name = clean.name
+    tool.mark = clean.mark
+    tool.action = clean.action
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'tool.edited',
+      toolId,
+      name: clean.name,
+      mark: clean.mark,
+      action: clean.action,
+      byName: member.name
+    })
+  }
+
+  private handleToolRemove(member: Member, toolId: string): void {
+    if (!this.tools.delete(toolId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'tool.removed', toolId, byName: member.name })
+  }
+
   // 'Do' is the moment a todo becomes real work: a thread starts with the
   // todo's text as its first prompt, and the todo itself is gone.
   private handleTodoDo(member: Member, todoId: string, agentId?: string): void {
