@@ -44,10 +44,10 @@ const arch = ({
 const filled = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none" />)
 const outlined = (d: string) => glyph(<path d={d} />)
 
-const UNIFORM = arch({ cy: 14, mid: 7, bar: 3.4, span: 115, pad: 0 })
-const FLARED = arch({ cy: 13.8, mid: 7, bar: 3.2, span: 115, pad: 2.4 })
-const FLARED_THIN = arch({ cy: 13.8, mid: 7.1, bar: 2.8, span: 118, pad: 2.5 })
-const WIDER = arch({ cy: 13.6, mid: 7, bar: 3.2, span: 128, pad: 2.4 })
+const FLARE_A = arch({ cy: 13.4, mid: 7, bar: 3.2, spanOut: 122, spanIn: 104 })
+const FLARE_B = arch({ cy: 13.2, mid: 7, bar: 3.2, spanOut: 128, spanIn: 100 })
+const FLARE_C = arch({ cy: 13.6, mid: 7, bar: 3, spanOut: 118, spanIn: 106 })
+const FLARE_D = arch({ cy: 13.2, mid: 6.9, bar: 2.8, spanOut: 130, spanIn: 98 })
 
 const DIAGONAL =
   'M10.06 5.25A3.4 3.4 0 0 0 5.25 10.06Q8.18 15.82 13.94 18.75A3.4 3.4 0 0 0 18.75 13.94Q7.33 16.67 10.06 5.25Z'
