@@ -218,11 +218,12 @@ describe('the noise a huddle makes when it starts', () => {
   })
 
   it('gives up on its own rather than ringing until someone answers', () => {
-    expect(ringLength(CALL)).toBeLessThanOrEqual(5)
+    expect(ringLength(CALL)).toBeGreaterThan(5)
+    expect(ringLength(CALL)).toBeLessThanOrEqual(15)
 
     arrives(emptyRoom())
     arrives(room(peer('a', 'Ali')))
-    vi.advanceTimersByTime(5000)
+    vi.advanceTimersByTime(ringLength(CALL) * 1000)
     heard()
     vi.advanceTimersByTime(60_000)
 
