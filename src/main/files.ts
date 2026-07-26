@@ -2,9 +2,12 @@ import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { imageType, type FileEntry, type RepoFile, type RepoPathKind } from '../shared/files'
+import { runGit } from '../shared/git'
 
 const MAX_BYTES = 512 * 1024
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024
+const MAX_LISTED = 20000
+const NEVER_LISTED = new Set(['.git', 'node_modules'])
 const CASELESS = process.platform === 'darwin' || process.platform === 'win32'
 
 export function expandHome(target: string): string {
