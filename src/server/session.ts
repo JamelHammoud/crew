@@ -831,11 +831,12 @@ export class CrewSession {
     if (event.authorId !== member.id || event.threadId) return
     const trimmed = text.trim()
     if (!trimmed || trimmed === event.text) return
-    const docMentions = this.docMentionRefs(trimmed)
+    const { docMentions, boardMentions } = this.refsOf(trimmed)
     const mentionRefs = this.agentRefs([], trimmed)
     const memberMentionRefs = this.memberRefs(trimmed)
     event.text = trimmed
     event.docMentions = docMentions
+    event.boardMentions = boardMentions
     event.mentionRefs = mentionRefs
     event.memberMentionRefs = memberMentionRefs
     this.emit({
@@ -846,7 +847,8 @@ export class CrewSession {
       text: trimmed,
       mentionRefs,
       memberMentionRefs,
-      docMentions
+      docMentions,
+      boardMentions
     })
   }
 
