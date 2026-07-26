@@ -129,7 +129,7 @@ export function RefMention({
 }) {
   const openDoc = useCrew(s => s.openDoc)
   const openBoard = useCrew(s => s.openBoard)
-  const Icon = refKind === 'board' ? RectangleGroupIcon : DocumentTextIcon
+  const Icon = refKind === 'board' ? FrameGlyph : DocumentTextIcon
   const pill = (
     <span
       onClick={
