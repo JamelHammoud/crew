@@ -96,6 +96,14 @@ export default function BrowserPanel() {
                 useBrowser.getState().addTerminal()
               }}
             />
+            <MenuItem
+              icon={<FolderGlyph />}
+              label="Files"
+              onClick={() => {
+                setNewOpen(false)
+                useBrowser.getState().openFiles()
+              }}
+            />
           </Popover>
         </span>
         <Tooltip label="Close">
