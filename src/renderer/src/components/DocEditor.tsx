@@ -1,7 +1,7 @@
 import '@blocknote/mantine/style.css'
 import type { PartialBlock } from '@blocknote/core'
 import { BlockNoteSchema, createCodeBlockSpec, defaultBlockSpecs } from '@blocknote/core/blocks'
-import { filterSuggestionItems } from '@blocknote/core/extensions'
+import { filterSuggestionItems, insertOrUpdateBlockForSlashMenu } from '@blocknote/core/extensions'
 import { en } from '@blocknote/core/locales'
 import { BlockNoteView } from '@blocknote/mantine'
 import {
