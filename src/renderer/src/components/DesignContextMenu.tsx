@@ -13,6 +13,8 @@ import { MenuDivider, MenuItem, Popover, SubMenu } from './Popover'
 
 const ORDER: CommandGroup[] = ['agent', 'clipboard', 'order', 'group', 'transform', 'state', 'remove', 'canvas']
 
+const MENU_HEIGHT = 420
+
 export interface MenuSpot {
   screen: { x: number; y: number }
   page: { x: number; y: number }

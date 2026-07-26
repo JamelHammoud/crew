@@ -196,7 +196,7 @@ export default function BrowserPanel() {
 
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
         {tabs
-          .filter(tab => tab.kind === 'web' && tab.initialUrl)
+          .filter(tab => (tab.kind === 'web' || tab.kind === 'image') && tab.initialUrl)
           .map(tab =>
             showsImage(tab) ? (
               <div
@@ -204,7 +204,7 @@ export default function BrowserPanel() {
                 className="absolute inset-0 bg-ink-900"
                 style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
               >
-                <ImageView key={tab.generation} src={tab.initialUrl} alt={imageName(tab.initialUrl)} />
+                <ImageView key={tab.generation} src={tab.initialUrl} alt={tabLabel(tab)} />
               </div>
             ) : (
               <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
