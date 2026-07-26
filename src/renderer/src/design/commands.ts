@@ -343,20 +343,22 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'mask',
     label: 'Use as mask',
-    hint: '⌃⌘M',
+    hint: chordHint(MASK),
     group: 'group',
     Icon: MaskGlyph,
     terms: 'clip crop',
+    keys: MASK,
     when: ctx => maskCandidate(ctx.editor) !== null,
     run: ctx => useAsMask(ctx.editor)
   },
   {
     id: 'unmask',
     label: 'Remove mask',
-    hint: '⌃⌘M',
+    hint: chordHint(MASK),
     group: 'group',
     Icon: MaskGlyph,
     terms: 'clip crop',
+    keys: MASK,
     when: ctx => maskOf(ctx.editor) !== null,
     run: ctx => removeMask(ctx.editor)
   },
