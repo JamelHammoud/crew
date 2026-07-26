@@ -221,6 +221,7 @@ export default function DesignCanvas({
         })
         return
       }
+      if (msg.type !== 'design.presence') return
       applyPresence(msg.presence)
     })
 
