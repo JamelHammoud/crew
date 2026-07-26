@@ -142,6 +142,7 @@ export default function DesignCanvas({
 
     const applyPresence = (presence: DesignPresence) => {
       if (presence.userId === selfIdRef.current) return
+      if (presence.kind === 'agent' && presence.cursor) lastSpot.current[presence.userId] = presence
       setCursors(prev => {
         if (presence.pageId === null || !presence.cursor) {
           if (!(presence.userId in prev)) return prev
