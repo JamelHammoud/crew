@@ -61,6 +61,7 @@ export default function TopBar({
   const huddleJoined = useHuddle(s => s.joined)
   const huddleSize = useHuddle(s => s.room.peers.length)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [toolboxOpen, setToolboxOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
   const sounds = useSounds()
