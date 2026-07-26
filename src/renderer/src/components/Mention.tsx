@@ -101,27 +101,51 @@ function DocCardContent({ page }: { page: string }) {
   )
 }
 
-export function DocMention({ page, children }: { page: string | null; children: ReactNode }) {
+function BoardCardContent({ boardId }: { boardId: string }) {
+  const board = useCrew(s => s.boards.find(b => b.id === boardId))
+  if (!board) return null
+  return (
+    <>
+      <span className="flex items-center gap-2">
+        <RectangleGroupIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+        <span className="text-sm font-semibold text-fg truncate">{board.name}</span>
+      </span>
+      <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] text-xs text-fg-muted">Design board</span>
+    </>
+  )
+}
+
+// Docs and boards share the pill. The icon is what says which one it is, here
+// and in the menu that writes it.
+export function RefMention({ refKind, target, children }: { refKind: CrewRefKind; target: string | null; children: ReactNode }) {
   const openDoc = useCrew(s => s.openDoc)
+  const openBoard = useCrew(s => s.openBoard)
+  const Icon = refKind === 'board' ? RectangleGroupIcon : DocumentTextIcon
   const pill = (
     <span
       onClick={
-        page
+        target
           ? event => {
               event.stopPropagation()
-              openDoc(page)
+              if (refKind === 'board') openBoard(target)
+              else openDoc(target)
             }
           : undefined
       }
-      className={`font-medium rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
-        page ? 'cursor-pointer' : 'cursor-default'
+      className={`inline-flex items-center gap-0.5 align-baseline font-medium rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
+        target ? 'cursor-pointer' : 'cursor-default'
       }`}
     >
+      <Icon className="w-3.5 h-3.5 shrink-0 -mt-px" />
       {children}
     </span>
   )
-  if (!page) return pill
-  return <HoverCard content={<DocCardContent page={page} />}>{pill}</HoverCard>
+  if (!target) return pill
+  return (
+    <HoverCard content={refKind === 'board' ? <BoardCardContent boardId={target} /> : <DocCardContent page={target} />}>
+      {pill}
+    </HoverCard>
+  )
 }
 
 export function MentionText({
