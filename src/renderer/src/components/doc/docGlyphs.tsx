@@ -143,22 +143,3 @@ export const LinkGlyph = mark(
     <path d="M13.4 10.6a3.9 3.9 0 0 0-5.6 0l-2.4 2.5a3.9 3.9 0 0 0 5.5 5.5l1.3-1.3" />
   </>
 )
-
-export const AddGlyph = mark(
-  <>
-    <path d="M12 5.6v12.8" />
-    <path d="M5.6 12h12.8" />
-  </>
-)
-
-export const GripGlyph = glyph(
-  <>
-    <path d="M9.2 6.6h.01" />
-    <path d="M14.8 6.6h.01" />
-    <path d="M9.2 12h.01" />
-    <path d="M14.8 12h.01" />
-    <path d="M9.2 17.4h.01" />
-    <path d="M14.8 17.4h.01" />
-  </>,
-  2.6
-)
