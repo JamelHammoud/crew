@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { cleanup, render } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -17,7 +16,10 @@ import {
 
 afterEach(cleanup)
 
-const css = readFileSync(`${process.cwd()}/src/renderer/src/styles.css`, 'utf8')
+const css = (require('node:fs') as typeof import('node:fs')).readFileSync(
+  `${process.cwd()}/src/renderer/src/styles.css`,
+  'utf8'
+)
 const rules = css.slice(
   css.indexOf('.toolbox-mark .toolbox-turn'),
   css.indexOf('/* The word turns over with the mark')
