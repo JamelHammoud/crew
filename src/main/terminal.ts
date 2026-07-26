@@ -11,6 +11,8 @@ export type TerminalSink = {
 
 type Shell = { file: string; args: string[] }
 
+type Spare = { pty: IPty; folder: string; held: string; ended: boolean }
+
 // The shell a terminal on this machine would open, started the way Terminal
 // and Windows Terminal start it: the login shell, so it reads the same
 // profile and arrives with the same PATH.
