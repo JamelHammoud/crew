@@ -291,21 +291,36 @@ describe('huddles', () => {
     expect(latest(jamel).id).toBe(starts[1].huddleId)
   })
 
-  it('closes a call the host was in when it went down, so nothing reads as live forever', async () => {
-    const jamel = await open('jamel')
-    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
-    await waitUntil(() => names(jamel).length === 1)
-    await waitUntil(() => logged(host).some(event => event.kind === 'huddle.started'))
+  // A crash leaves a start in the log with no end, and a block with no end
+  // reads as live forever. Coming back up closes it where the session last
+  // said anything.
+  it('closes a call that was still going when the host went down', async () => {
+    const repoPath = tmpDir('huddle-restart')
+    const store = new Store(repoPath)
+    store.appendEvent({
+      id: 'started',
+      ts: 1000,
+      kind: 'huddle.started',
+      huddleId: 'call-1',
+      byId: 'm-jamel',
+      byName: 'jamel'
+    })
+    store.appendEvent({
+      id: 'after',
+      ts: 5000,
+      kind: 'message',
+      authorId: 'm-jamel',
+      authorName: 'jamel',
+      text: 'back in a sec',
+      mentions: []
+    })
 
-    const folder = host.folder
-    jamel.close()
-    await host.kill()
-
-    const again = await startHost({ folder })
-    const events = again.store.loadEvents().filter(event => event.kind.startsWith('huddle'))
+    const again = await startHost(repoPath)
+    const written = again.store.loadEvents().filter(event => event.kind.startsWith('huddle'))
     await again.close()
 
-    expect(events.map(event => event.kind)).toEqual(['huddle.started', 'huddle.ended'])
-    expect(events[0].kind === 'huddle.started' && events[1].kind === 'huddle.ended').toBe(true)
+    expect(written.map(event => event.kind)).toEqual(['huddle.started', 'huddle.ended'])
+    const ended = written[1]
+    expect(ended.kind === 'huddle.ended' && ended.ms).toBe(4000)
   })
 })
