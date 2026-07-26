@@ -117,9 +117,15 @@ export class TrayPanel {
       }
     })
     // Above a full screen app and on whichever space is in front, the way the
-    // menu bar itself is.
+    // menu bar itself is. Never `skipTaskbar`, and never this call without
+    // `skipTransformProcessType`: either one turns the app into an accessory
+    // on macOS, and the icon leaves the dock and does not come back.
     win.setAlwaysOnTop(true, 'pop-up-menu')
-    win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+    win.setVisibleOnAllWorkspaces(true, {
+      visibleOnFullScreen: true,
+      skipTransformProcessType: true
+    })
+    win.excludedFromShownWindowsMenu = true
     win.on('blur', () => this.hide())
     win.on('closed', () => {
       this.win = null
