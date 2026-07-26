@@ -94,7 +94,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     if (existing) {
       set(s => ({
         activeTabId: existing.id,
-        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, line, diff } : t))
+        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, line, diff, generation: t.generation + 1 } : t))
       }))
       return
     }

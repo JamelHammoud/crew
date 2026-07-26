@@ -194,7 +194,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     caret.current = edit.at
     setSaveFailed(false)
     setDoc(edit.text)
-    setTick(count => count + 1)
+    setTick(value => value + 1)
   }
 
   const save = async () => {
@@ -216,7 +216,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     const area = areaRef.current
     caret.current = area ? toDoc(rows, area.selectionStart) : 0
     setDoc(file.text)
-    setTick(count => count + 1)
+    setTick(value => value + 1)
     setSaveFailed(false)
   }
 
