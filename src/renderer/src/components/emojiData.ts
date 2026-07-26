@@ -82,6 +82,18 @@ export function lookupEmoji(char: string): EmojiEntry | undefined {
   return byChar.get(char)
 }
 
+export function spriteStyle(entry: EmojiEntry): {
+  backgroundImage: string
+  backgroundSize: string
+  backgroundPosition: string
+} {
+  return {
+    backgroundImage: `url(${SHEET_URL})`,
+    backgroundSize: `${SHEET_GRID * 100}% ${SHEET_GRID * 100}%`,
+    backgroundPosition: `${(entry.x / (SHEET_GRID - 1)) * 100}% ${(entry.y / (SHEET_GRID - 1)) * 100}%`
+  }
+}
+
 export function emojiForShortcode(name: string): string | undefined {
   return byShortName.get(name.toLowerCase())?.char
 }
