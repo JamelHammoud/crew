@@ -309,13 +309,13 @@ const CHROME = [
   }
 })
 
-function raster(source, size, out) {
+function raster(source, width, height, out) {
   if (!CHROME) throw new Error('needs Chrome or Chromium to rasterise the icon')
   const work = mkdtempSync(path.join(tmpdir(), 'crew-icon-'))
   const page = path.join(work, 'icon.html')
   writeFileSync(
     page,
-    `<html><body style="margin:0"><img src="data:image/svg+xml;base64,${Buffer.from(source).toString('base64')}" width="${size}" height="${size}"></body></html>`
+    `<html><body style="margin:0"><img src="data:image/svg+xml;base64,${Buffer.from(source).toString('base64')}" width="${width}" height="${height}"></body></html>`
   )
   execFileSync(CHROME, [
     '--headless',
@@ -323,7 +323,7 @@ function raster(source, size, out) {
     '--hide-scrollbars',
     '--force-device-scale-factor=1',
     '--default-background-color=00000000',
-    `--window-size=${size},${size}`,
+    `--window-size=${width},${height}`,
     `--screenshot=${out}`,
     page
   ])
