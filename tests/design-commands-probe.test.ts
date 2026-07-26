@@ -146,8 +146,13 @@ describe('the shortcuts the menu names', () => {
     for (const command of DESIGN_COMMANDS) {
       if (!command.keys) continue
       expect(command.hint, command.id).toBe(chordHint(command.keys))
-      expect(commandForKey(press(chord(command.keys)), board([node('shape:a')], 'shape:a').ctx), command.id).toBeTruthy()
     }
+  })
+
+  it('answers every shortcut it names', () => {
+    const { ctx } = board([node('shape:a'), node('shape:b')], 'shape:a', 'shape:b')
+    const named = new Map(DESIGN_COMMANDS.filter(command => command.keys).map(command => [command.hint!, command.keys!]))
+    for (const [hint, keys] of named) expect(commandForKey(press(chord(keys)), ctx), hint).toBeTruthy()
   })
 
   it('reaches the command the selection can actually do', () => {
