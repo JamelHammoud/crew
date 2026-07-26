@@ -77,6 +77,40 @@ describe('design cursors', () => {
     expect(h).toBeLessThan(30)
   })
 
+  it('keeps the target small enough to aim with', () => {
+    const { svg } = parse(vars['--tl-cursor-cross'])
+    const { w, h } = size(svg)
+    const art = drawn(svg)
+    expect(art.w).toBeCloseTo(art.h)
+    expect(art.w).toBeLessThan(13)
+    expect(art.w).toBeGreaterThan(9)
+    expect(w - art.w).toBeGreaterThan(4)
+    expect(h - art.h).toBeGreaterThan(4)
+  })
+
+  it('turns the hands over so the thumb is on the left', () => {
+    expect(placement(parse(vars['--tl-cursor-grab']).svg)).toContain('scale(-0.9 0.9)')
+    expect(placement(parse(vars['--tl-cursor-grabbing']).svg)).toBe(
+      placement(parse(vars['--tl-cursor-grab']).svg)
+    )
+  })
+
+  it('hands the pencil its own cursor and takes it back', () => {
+    const container = document.createElement('div')
+    applyDesignCursors(container)
+    applyToolCursor(container, 'draw')
+    const drawing = container.style.getPropertyValue('--tl-cursor-cross')
+    expect(drawing).not.toBe(vars['--tl-cursor-cross'])
+    const pencil = parse(drawing)
+    const { w, h, viewBox } = size(pencil.svg)
+    expect([w, h]).toEqual(viewBox)
+    expect(pencil.fallback).toBe('crosshair')
+    expect(pencil.x).toBeGreaterThan(0)
+    expect(pencil.y).toBeLessThan(h)
+    applyToolCursor(container, 'select')
+    expect(container.style.getPropertyValue('--tl-cursor-cross')).toBe(vars['--tl-cursor-cross'])
+  })
+
   it('points from the tip of the arrow, wherever it is drawn', () => {
     const { x, y } = parse(vars['--tl-cursor-default'])
     expect(ARROW_TIP).toEqual({ x, y })
