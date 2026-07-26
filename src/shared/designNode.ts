@@ -49,10 +49,15 @@ export interface TypeStyle {
 
 export type Corner = [number, number, number, number]
 
+export type NodeShape = 'rect' | 'ellipse' | 'triangle' | 'diamond' | 'pentagon' | 'hexagon' | 'star'
+
+export const NODE_SHAPES: NodeShape[] = ['rect', 'ellipse', 'triangle', 'diamond', 'pentagon', 'hexagon', 'star']
+
 export interface DesignNodeProps {
   w: number
   h: number
   name: string
+  shape: NodeShape
   radius: Corner
   fills: Paint[]
   strokes: Stroke[]
@@ -103,6 +108,7 @@ export function nodeDefaults(): DesignNodeProps {
     w: 200,
     h: 120,
     name: 'Frame',
+    shape: 'rect',
     radius: corner(0),
     fills: [solid('#222222')],
     strokes: [],
