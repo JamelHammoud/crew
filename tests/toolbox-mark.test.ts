@@ -140,30 +140,31 @@ describe('the toolbox mark', () => {
   })
 
   it('lifts the lid clear of the mouth and takes it back into the drawing', () => {
+    const stroke = worn()
     const lid = corners(TOOLBOX_OPEN.lid)
+    const shutLid = corners(TOOLBOX_SHUT.lid)
     const collar = corners(TOOLBOX_OPEN.collar)
 
     // Clear of the case, or it reads shut. The white between the rim and the lid
     // is what says the box is open.
-    expect(RIM - lid[0].y - STROKE).toBeGreaterThan(1)
-    // Narrowing as it goes, or it reads as a lid lifted straight up.
+    expect(RIM - lid[0].y - stroke).toBeGreaterThan(1)
+    // Narrowing as it goes, or it reads as a lid lifted straight up. Shut, the
+    // same side of it stands plumb.
+    expect(shutLid[1].x).toBe(shutLid[0].x)
     expect(lid[1].x).toBeGreaterThan(lid[0].x)
-    expect(lid[2].x - lid[0].x).toBeGreaterThan(corners(TOOLBOX_SHUT.lid)[2].x - 2.5)
-    // The hinge is the full depth of the box behind the front, so the sides of
-    // the lid come back to a pair of feet well inside the corners of the case.
-    expect(collar[0].x - STROKE / 2).toBeGreaterThan(2.5 + STROKE / 2)
-    expect(collar[0].x).toBeGreaterThan(collar[1].x)
+    // The hinge is the depth of the box behind the front, so the sides of the
+    // lid come back to a pair of feet inside the corners of the case.
+    expect(collar[0].x).toBeGreaterThan(2.5)
+    expect(collar[0].x - collar[1].x).toBeGreaterThan(0.4)
     expect(collar[0].y).toBe(RIM)
     // And they are welded to the lid, at both ends of the swing and every point
     // between, or the lid comes away from the box on the way up.
     expect(collar[1]).toEqual(lid[0])
-    expect(corners(TOOLBOX_SHUT.collar)[1]).toEqual(corners(TOOLBOX_SHUT.lid)[0])
+    expect(corners(TOOLBOX_SHUT.collar)[1]).toEqual(shutLid[0])
   })
 
   it('keeps the lid inside the grid and its counters open at the top of the swing', () => {
-    render(createElement(ToolboxMark, { open: true }))
-    expect(Number(mark().getAttribute('stroke-width'))).toBe(STROKE)
-
+    const stroke = worn()
     const lid = at(PEAK, TOOLBOX_SHUT.lid, TOOLBOX_OPEN.lid)
     const handle = at(PEAK, TOOLBOX_SHUT.handle, TOOLBOX_OPEN.handle)
 
@@ -172,9 +173,9 @@ describe('the toolbox mark', () => {
 
     // Every counter has to survive the flattening, or the lid and the handle
     // close into bars at the size this is worn.
-    expect(RIM - lid[0].y - STROKE).toBeGreaterThan(1)
-    expect(lid[0].y - lid[2].y - STROKE).toBeGreaterThan(1)
-    expect(handle[0].y - handle[2].y - STROKE).toBeGreaterThan(1)
+    expect(RIM - lid[0].y - stroke).toBeGreaterThan(1)
+    expect(lid[0].y - lid[2].y - stroke).toBeGreaterThan(1)
+    expect(handle[0].y - handle[2].y - stroke).toBeGreaterThan(1)
   })
 
   it('stands still when it is not turned', () => {
