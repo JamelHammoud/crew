@@ -211,17 +211,17 @@ describe('playing a track', () => {
   })
 
   it('drops a file that lands after the crew has moved on', async () => {
-    let release: ((value: unknown) => void) | null = null
+    const held: { release: (() => void) | null } = { release: null }
     vi.stubGlobal('fetch', async () => {
-      await new Promise(resolve => {
-        release = resolve
+      await new Promise<void>(resolve => {
+        held.release = resolve
       })
       return { arrayBuffer: async () => new ArrayBuffer(8) }
     })
     const loading = player.playFile('slow', 'http://host/music/slow.mp3', 12, 0)
     player.play(overworld, 0)
     const playing = audio.notes().length
-    release?.(null)
+    held.release?.()
     await loading
     expect(player.trackId).toBe(overworld.id)
     expect(audio.notes().length).toBe(playing)
