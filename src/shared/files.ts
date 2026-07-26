@@ -37,5 +37,6 @@ export function stripRootFromText(root: string, text: string): string {
 export type RepoFile =
   | { kind: 'file'; path: string; text: string; truncated: boolean }
   | { kind: 'dir'; path: string; entries: FileEntry[] }
+  | { kind: 'image'; path: string; url: string; size: number }
   | { kind: 'binary'; path: string; size: number }
   | { kind: 'missing'; path: string }
