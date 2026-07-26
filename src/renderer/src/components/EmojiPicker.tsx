@@ -108,7 +108,7 @@ export default function EmojiPicker({
     <div className={`flex flex-col ${className}`} onMouseLeave={() => setPreview(null)}>
       <div className="px-3 pt-3 pb-2">
         <div className="relative">
-          <SearchGlyph className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />
+          <SearchGlyph className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg/45" />
           <input
             autoFocus
             value={query}
@@ -117,7 +117,7 @@ export default function EmojiPicker({
               if (event.key === 'Enter' && results[0]) onPick(results[0].char)
             }}
             placeholder="Search emoji"
-            className="h-9 w-full rounded-full bg-fg/6 pl-9 pr-3 text-sm text-fg outline-none transition-colors placeholder:text-fg-muted focus:bg-fg/10"
+            className="h-9 w-full rounded-full bg-fg/6 pl-9 pr-3 text-sm text-fg outline-none transition-colors placeholder:text-fg/40 focus:bg-fg/10"
           />
         </div>
       </div>
@@ -133,7 +133,7 @@ export default function EmojiPicker({
                 className={`flex h-8 w-8 items-center justify-center rounded-full transition-[background-color,color] duration-150 ${
                   !searching && active === section.id
                     ? 'bg-fg/12 text-fg'
-                    : 'text-fg-muted hover:bg-fg/6 hover:text-fg-secondary'
+                    : 'text-fg/45 hover:bg-fg/6 hover:text-fg/70'
                 }`}
               >
                 {section.icon ? <Emoji char={section.icon} size={18} /> : <ClockGlyph className="h-4 w-4" />}
@@ -177,10 +177,10 @@ export default function EmojiPicker({
         {preview ? (
           <>
             <Emoji char={preview.char} size={24} />
-            <span className="truncate text-sm font-medium text-fg-secondary">:{preview.shortName}:</span>
+            <span className="truncate text-sm font-medium text-fg/70">:{preview.shortName}:</span>
           </>
         ) : (
-          <span className="text-sm text-fg-muted">{hint}</span>
+          <span className="text-sm text-fg/45">{hint}</span>
         )}
       </div>
     </div>
