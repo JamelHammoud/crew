@@ -1,4 +1,4 @@
-import type { Tab } from './TopBar'
+import type { NavTab } from './TopBar'
 
 const SVG = {
   className: 'tab-icon-svg',
