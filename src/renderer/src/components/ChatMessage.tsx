@@ -25,6 +25,7 @@ export default function ChatMessage({
   onReply?: (item: ThreadItem) => void
 }) {
   const presence = usePresence(item.author, item.authorId)
+  const selfId = useCrew(s => s.selfId)
   const agentSeed = useCrew(s => {
     if (item.self) return undefined
     const agent = s.agents.find(a => (item.authorId ? a.id === item.authorId : a.label === item.author))
