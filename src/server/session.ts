@@ -906,10 +906,13 @@ export class CrewSession {
     return null
   }
 
-  private replyReference(targetId: string | undefined, threadId: string | undefined): MessageReply | undefined {
+  // A target id already names one message, so where it was said is not part of
+  // finding it. Asking for the thread to match as well dropped the quote in
+  // silence whenever a reply crossed from a live run into the log.
+  private replyReference(targetId: string | undefined): MessageReply | undefined {
     if (!targetId) return undefined
     const target = this.reactionTarget(targetId)
-    if (!target || target.threadId !== threadId) return undefined
+    if (!target) return undefined
     return {
       targetId,
       authorId: target.authorId,
