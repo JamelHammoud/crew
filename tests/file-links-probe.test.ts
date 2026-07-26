@@ -318,6 +318,11 @@ describe('changed lines', () => {
     files
   })
 
+  const panelText = (): string => {
+    const file = repo['src/panel.ts']
+    return file.kind === 'file' ? file.text : ''
+  }
+
   const marked = (): string[] =>
     [...document.querySelectorAll('[data-line]')]
       .filter(row => row.className.includes('bg-positive'))

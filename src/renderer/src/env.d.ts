@@ -36,6 +36,12 @@ declare global {
     setBadge(count: number): Promise<void>
     setTheme(theme: 'dark' | 'light'): Promise<void>
     notify(alert: AgentAlert): Promise<void>
+    openTerminal(id: string, size: { cols: number; rows: number }): void
+    writeTerminal(id: string, data: string): void
+    resizeTerminal(id: string, size: { cols: number; rows: number }): void
+    closeTerminal(id: string): void
+    onTerminalData(listener: (id: string, chunk: string) => void): () => void
+    onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string) => void): () => void
     onFullScreen(listener: (full: boolean) => void): void
     onOpenUrl(listener: (url: string) => void): void
