@@ -44,6 +44,15 @@ const joined: SessionEvent = {
   name: 'Ali'
 }
 
+const mine: SessionEvent = {
+  id: 'started',
+  ts: 1000,
+  kind: 'huddle.started',
+  huddleId: 'call-1',
+  byId: 'ali',
+  byName: 'Ali'
+}
+
 const ended: SessionEvent = { id: 'ended', ts: 900_000, kind: 'huddle.ended', huddleId: 'call-1', ms: 780_000 }
 
 const session = (events: SessionEvent[]) => {
