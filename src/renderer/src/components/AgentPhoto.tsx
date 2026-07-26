@@ -25,7 +25,7 @@ export default function AgentPhoto({
   }
 
   return (
-    <span className="relative inline-flex shrink-0 self-start">
+    <span className="relative inline-flex shrink-0">
       <AgentIcon seed={agent.id} presence={presence} />
       <button
         onClick={() => (agent.avatar ? setMenu(true) : pick())}
