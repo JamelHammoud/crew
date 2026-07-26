@@ -117,7 +117,15 @@ function BoardCardContent({ boardId }: { boardId: string }) {
   )
 }
 
-export function RefMention({ refKind, target, children }: { refKind: CrewRefKind; target: string | null; children: ReactNode }) {
+export function RefMention({
+  refKind,
+  target,
+  children
+}: {
+  refKind: CrewRefKind
+  target: string | null
+  children: ReactNode
+}) {
   const openDoc = useCrew(s => s.openDoc)
   const openBoard = useCrew(s => s.openBoard)
   const Icon = refKind === 'board' ? RectangleGroupIcon : DocumentTextIcon
