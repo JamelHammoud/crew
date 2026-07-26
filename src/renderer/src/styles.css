@@ -447,11 +447,13 @@ body {
 }
 
 /* Text is edited on top of the artwork, so the highlight cannot borrow either theme's color.
-   Rich text puts the words in paragraphs inside the editor, and the plain app-wide rule matches
-   those directly, so the highlight has to be set on them too or it stays white on a white frame. */
+   It takes the blue a selected shape is drawn in, which the canvas keeps in JS rather than in a
+   CSS variable, so `DesignCanvas` hands it down. Rich text puts the words in paragraphs inside
+   the editor and the plain app-wide rule matches those directly, so the highlight has to be set
+   on them too or it stays white on a white frame. */
 .design .tl-text-input::selection,
 .design .tl-text-input *::selection {
-  background: rgb(128 128 128 / 0.6);
+  background: color-mix(in srgb, var(--design-selected) 45%, transparent);
   color: inherit;
   text-shadow: none;
 }
