@@ -28,6 +28,7 @@ import {
   CursorArrow,
   DESIGN_CURSORS
 } from '../design/cursors'
+import { busyAgents } from '../design/busyAgents'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import SelectionOverlay from '../design/SelectionOverlay'
