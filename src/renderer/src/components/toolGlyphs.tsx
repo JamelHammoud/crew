@@ -90,9 +90,6 @@ export const ClipboardGlyph = glyph(
   </>
 )
 
-export const SparkGlyph = glyph(
-  <path d="M12 3.5c1 3.9 4.6 7.5 8.5 8.5-3.9 1-7.5 4.6-8.5 8.5-1-3.9-4.6-7.5-8.5-8.5 3.9-1 7.5-4.6 8.5-8.5Z" />
-)
 
 export const QuestionGlyph = glyph(
   <>
@@ -103,9 +100,9 @@ export const QuestionGlyph = glyph(
 )
 
 // A skill is run from a list of things you can do, which is what the Actions
-// palette on the canvas is, so both wear the one bolt rather than two that
-// nearly agree.
-export { BoltGlyph } from '../icons'
+// palette on the canvas is, and an agent is asked on the canvas as well as in a
+// thread. Both wear the one drawing rather than two that nearly agree.
+export { BoltGlyph, SparkGlyph } from '../icons'
 
 export const ImageGlyph = glyph(
   <>

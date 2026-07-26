@@ -62,8 +62,18 @@ describe('the toolbox', () => {
 
     expect(screen.getByText('Huddle')).toBeTruthy()
     expect(screen.getByText('Terminal')).toBeTruthy()
+    expect(screen.getByText('Files').closest('button')?.disabled).toBe(false)
     expect(screen.getByText('Music').closest('button')?.disabled).toBe(true)
-    expect(screen.getByText('Files').closest('button')?.disabled).toBe(true)
+  })
+
+  it('opens the project files, and takes you to where they opened', () => {
+    toolbox()
+    fireEvent.click(screen.getByText('Files'))
+
+    const tabs = useBrowser.getState().tabs
+    expect(tabs).toHaveLength(1)
+    expect(tabs[0]).toMatchObject({ kind: 'file', path: '', tree: true })
+    expect(switched).toBe(1)
   })
 
   it('wears no label for what is still coming, and says it on hover instead', () => {
