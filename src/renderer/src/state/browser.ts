@@ -17,6 +17,10 @@ export type BrowserTab = {
   command: string | null
   back: string[]
   forward: string[]
+  // Whether the file tree is standing beside the file, and which folders in it
+  // are open. Both ride on the tab, so a tree survives a look at another tab.
+  tree: boolean
+  open: string[]
   generation: number
 }
 
@@ -31,6 +35,9 @@ type BrowserState = {
   openUrl(url: string): void
   openImage(src: string, name: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
+  openFiles(): void
+  toggleTree(id: string): void
+  toggleFolder(id: string, path: string): void
   addTab(): void
   addTerminal(command?: string): void
   selectTab(id: string): void
