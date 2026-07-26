@@ -13,7 +13,11 @@ import {
 
 afterEach(cleanup)
 
-const styles = (): string => readFileSync(`${process.cwd()}/src/renderer/src/styles.css`, 'utf8')
+const styles = (): string =>
+  (require('node:fs') as typeof import('node:fs')).readFileSync(
+    `${process.cwd()}/src/renderer/src/styles.css`,
+    'utf8'
+  )
 
 const mark = (): SVGElement => {
   const el = document.querySelector('.toolbox-mark')
