@@ -70,10 +70,11 @@ function clampWidth(width: number): number {
 }
 
 export const useBrowser = create<BrowserState>((set, get) => ({
-  width: 480,
+  width: DEFAULT_WIDTH,
   tabs: [],
   activeTabId: null,
   setWidth: width => set({ width: clampWidth(width) }),
+  resetWidth: () => set({ width: clampWidth(DEFAULT_WIDTH) }),
   openUrl: url => {
     const { tabs, activeTabId } = get()
     const existing = tabs.find(t => t.kind === 'web' && t.url === url)
