@@ -53,7 +53,6 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
       return true
     })
     term.open(host)
-    fit.fit()
     termRef.current = term
     fitRef.current = fit
 
