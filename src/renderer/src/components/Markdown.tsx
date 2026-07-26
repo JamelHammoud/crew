@@ -5,6 +5,19 @@ import { useBrowser } from '../state/browser'
 import { emojifyHtml } from './emojiHtml'
 import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
 
+function markTasks(container: HTMLElement) {
+  for (const box of Array.from(container.querySelectorAll('li > input[type="checkbox"]'))) {
+    const item = box.parentElement
+    if (!item) continue
+    const mark = document.createElement('span')
+    mark.className = 'md-check'
+    if ((box as HTMLInputElement).checked) mark.dataset.checked = ''
+    box.replaceWith(mark)
+    item.classList.add('md-task')
+    item.parentElement?.classList.add('md-tasks')
+  }
+}
+
 function wrapTables(container: HTMLElement) {
   for (const table of Array.from(container.querySelectorAll('table'))) {
     if (table.parentElement?.classList.contains('table-scroll')) continue
