@@ -35,6 +35,7 @@ uniform float uSmear;
 uniform float uSpine;
 uniform float uLift;
 uniform float uReach;
+uniform vec2 uTilt;
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21) + uSeed);
@@ -147,7 +148,7 @@ void main() {
   // Grain, and it goes on last so it is grain on the picture rather than
   // something the picture was built out of.
   float grain = hash(gl_FragCoord.xy * 0.37) - 0.5;
-  color += grain * 0.022;
+  color += grain * 0.016;
 
   gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
@@ -203,7 +204,7 @@ const build = (): Rig | null => {
   gl.vertexAttribPointer(spot, 2, gl.FLOAT, false, 0, 0)
   gl.viewport(0, 0, SIDE, SIDE)
 
-  const named = ['uSeed', 'uWarp', 'uScale', 'uLie', 'uSmear', 'uSpine', 'uLift', 'uReach']
+  const named = ['uSeed', 'uWarp', 'uScale', 'uLie', 'uSmear', 'uSpine', 'uLift', 'uReach', 'uTilt']
   const spots: Record<string, WebGLUniformLocation | null> = {}
   for (const name of named) spots[name] = gl.getUniformLocation(program, name)
   for (let i = 0; i < 5; i++) spots[`uRamp${i}`] = gl.getUniformLocation(program, `uRamp[${i}]`)
@@ -229,6 +230,7 @@ const paint = (art: CoverArt): HTMLCanvasElement | null => {
   gl.uniform1f(spots.uSpine, art.spine)
   gl.uniform1f(spots.uLift, art.lift)
   gl.uniform1f(spots.uReach, art.reach)
+  gl.uniform2f(spots.uTilt, art.tilt[0], art.tilt[1])
   for (let i = 0; i < 5; i++) {
     const color = art.ramp[Math.min(i, art.ramp.length - 1)]
     gl.uniform3f(spots[`uRamp${i}`], color[0], color[1], color[2])

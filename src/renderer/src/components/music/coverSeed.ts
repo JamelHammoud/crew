@@ -49,6 +49,8 @@ export interface CoverArt {
   // makes one cover airy and the next one deep.
   lift: number
   reach: number
+  // Which way the picture brightens across the frame, and by how much.
+  tilt: [number, number]
 }
 
 const rgbOf = (hex: string): [number, number, number] => {
@@ -70,11 +72,11 @@ const toLinear = (hex: string): [number, number, number] => {
 
 const KIND_SHAPE: Record<CoverKind, { warp: [number, number]; smear: [number, number]; scale: [number, number] }> = {
   // Pushed hard and smeared a little: lobes that fold over each other.
-  petal: { warp: [1.5, 2.6], smear: [0.1, 0.22], scale: [1.5, 2.6] },
+  petal: { warp: [0.6, 1.2], smear: [0.1, 0.24], scale: [0.85, 1.5] },
   // Barely pushed and smeared a long way: the long blades of a leaf out of focus.
-  ribbon: { warp: [0.5, 1.1], smear: [0.34, 0.62], scale: [1.1, 2.0] },
+  ribbon: { warp: [0.25, 0.6], smear: [0.4, 0.75], scale: [0.7, 1.2] },
   // Pushed hard, smeared barely at all, and coarse: one big soft shape.
-  bloom: { warp: [2.0, 3.4], smear: [0.04, 0.12], scale: [0.9, 1.6] }
+  bloom: { warp: [0.9, 1.7], smear: [0.05, 0.14], scale: [0.55, 0.95] }
 }
 
 const between = (range: [number, number], roll: number): number => range[0] + roll * (range[1] - range[0])
@@ -102,8 +104,9 @@ export function coverArt(item: MusicItem): CoverArt {
     scale: between(shape.scale, roll()),
     lie: [Math.cos(angle), Math.sin(angle)],
     smear: between(shape.smear, roll()),
-    spine: 0.25 + roll() * 0.6,
-    lift: -0.24 + roll() * 0.3,
-    reach: 1.15 + roll() * 0.6
+    spine: 0.2 + roll() * 0.5,
+    lift: -0.12 + roll() * 0.24,
+    reach: 1.5 + roll() * 1.1,
+    tilt: [(roll() - 0.5) * 0.9, (roll() - 0.5) * 0.9]
   }
 }
