@@ -1,4 +1,12 @@
-import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode
+} from 'react'
 import { useMaybeEditor } from 'tldraw'
 import { Popover } from '../components/Popover'
 import ColorPicker from './ColorPicker'
@@ -123,7 +131,7 @@ function useNumberField({
   const input = {
     value: draft,
     onFocus: () => setEditing(true),
-    onChange: (event: { target: { value: string } }) => setDraft(event.target.value),
+    onChange: (event: ChangeEvent<HTMLInputElement>) => setDraft(event.target.value),
     onBlur: () => {
       setEditing(false)
       const next = Number(draft)
