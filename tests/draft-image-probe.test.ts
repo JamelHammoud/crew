@@ -61,6 +61,14 @@ describe('an image that has not been sent yet', () => {
     expect(tabs.find(t => t.id === activeTabId)!.kind).toBe('image')
   })
 
+  it('hangs the remove tooltip on the button rather than on the flow', () => {
+    const { getByLabelText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+    const anchor = getByLabelText('Remove balance.png').parentElement!
+
+    expect(anchor.className).toContain('absolute')
+    expect(getByLabelText('Open balance.png').className).not.toContain('absolute')
+  })
+
   it('can still be taken off the message', () => {
     const { getByLabelText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
     fireEvent.click(getByLabelText('Remove balance.png'))
