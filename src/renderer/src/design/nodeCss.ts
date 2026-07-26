@@ -2,12 +2,6 @@ import type { CSSProperties } from 'react'
 import { nodeShapeOf, type DesignNodeProps, type Effect, type Layout, type Paint, type Stroke, type TypeStyle } from '../../../shared/designNode'
 import { polygonClip, type UnitPoint } from './nodeShape'
 
-const FAMILIES: Record<string, string> = {
-  sans: 'ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif',
-  serif: 'ui-serif, Georgia, "Times New Roman", serif',
-  mono: '"Cascadia Mono", ui-monospace, "SF Mono", Menlo, monospace'
-}
-
 const ALIGN: Record<string, string> = { start: 'flex-start', center: 'center', end: 'flex-end' }
 const JUSTIFY: Record<string, string> = { ...ALIGN, between: 'space-between' }
 
