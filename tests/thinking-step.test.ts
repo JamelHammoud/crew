@@ -83,6 +83,7 @@ describe('a thinking step', () => {
     render(createElement(StepRow, { item: thought('one line\nthe next', true) }))
     const paras = Array.from(document.querySelectorAll('p'))
     expect(paras.length).toBe(1)
-    expect(paras[0].textContent).toBe('one line\nthe next')
+    expect(paras[0].querySelectorAll('br').length).toBe(1)
+    expect(paras[0].textContent).toBe('one linethe next')
   })
 })
