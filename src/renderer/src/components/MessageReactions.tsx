@@ -123,7 +123,8 @@ export default function MessageReactions({
             open={pickerOpen}
             onClose={() => setPickerOpen(false)}
             side="top"
-            className="overflow-hidden !rounded-card !p-0"
+            flush
+            className="overflow-hidden !rounded-card"
           >
             <EmojiPicker selected={selected} onPick={reactFromMenu} />
           </Popover>
