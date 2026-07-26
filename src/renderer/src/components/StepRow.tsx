@@ -5,8 +5,16 @@ import { FileTextLink, isPrivate, labelFor, PrivateChip, TextWithFileLinks, useL
 import Spinner from './Spinner'
 import type { ThreadItem } from './thread'
 
-export function FilePathLink({ path, className }: { path: string; className?: string }) {
-  useLocated([path])
+export function FilePathLink({
+  path,
+  className,
+  again
+}: {
+  path: string
+  className?: string
+  again?: unknown
+}) {
+  useLocated([path], again)
   if (isPrivate(path)) return <PrivateChip />
   return (
     <FileTextLink path={path} className={className}>
