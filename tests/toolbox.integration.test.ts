@@ -83,6 +83,25 @@ describe('toolbox', () => {
     expect(page.action).toEqual({ kind: 'web', url: 'https://crew.dev', external: true })
   })
 
+  it('carries a doc, a board and something to copy', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+
+    sam.send({ type: 'tool.add', name: 'Notes', mark: 'doc', action: { kind: 'doc', page: '  notes  ' } })
+    const page = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Notes')) as Added
+    expect(page.action).toEqual({ kind: 'doc', page: 'notes' })
+
+    sam.send({ type: 'tool.add', name: 'Onboarding', mark: 'star', action: { kind: 'board', boardId: 'b1' } })
+    const board = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Onboarding')) as Added
+    expect(board.action).toEqual({ kind: 'board', boardId: 'b1' })
+
+    // What is copied is kept the way it was written, since a snippet is only
+    // worth having if its own spacing survives.
+    sam.send({ type: 'tool.add', name: 'Join link', mark: 'clipboard', action: { kind: 'copy', text: '  crew://join  ' } })
+    const copy = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Join link')) as Added
+    expect(copy.action).toEqual({ kind: 'copy', text: '  crew://join  ' })
+  })
+
   it('turns away a tool that could not be pressed', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
@@ -91,6 +110,9 @@ describe('toolbox', () => {
     sam.send({ type: 'tool.add', name: 'Nowhere', mark: 'globe', action: { kind: 'web', url: '  ' } })
     sam.send({ type: 'tool.add', name: 'Nothing', mark: 'globe', action: { kind: 'file', path: ' ' } })
     sam.send({ type: 'tool.add', name: 'Silent', mark: 'globe', action: { kind: 'prompt', text: ' ' } })
+    sam.send({ type: 'tool.add', name: 'Nowhere', mark: 'globe', action: { kind: 'doc', page: ' ' } })
+    sam.send({ type: 'tool.add', name: 'Blank', mark: 'globe', action: { kind: 'board', boardId: '' } })
+    sam.send({ type: 'tool.add', name: 'Empty', mark: 'globe', action: { kind: 'copy', text: '   ' } })
     sam.send({ type: 'tool.edit', toolId: 'nope', name: 'Ghost', mark: 'star', action: { kind: 'terminal' } })
     sam.send({ type: 'tool.remove', toolId: 'nope' })
     await new Promise(r => setTimeout(r, 200))
