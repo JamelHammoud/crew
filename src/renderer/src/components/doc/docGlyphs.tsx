@@ -85,12 +85,22 @@ export const Heading3Glyph = mark(
 // Punctuation is solid in every face it is set in, so this is solid too: a
 // counter that small closes up at 16 anyway, and filled it cannot smudge.
 const comma = (cx: number, cy: number, r: number) =>
-  `M${cx - r} ${cy}A${r} ${r} 0 0 1 ${cx + r} ${cy}C${cx + r} ${cy + 1.9} ${cx + 0.4} ${cy + 3.3} ${cx - 1.6} ${cy + 4.2}C${cx - 0.5} ${cy + 2.5} ${cx - r} ${cy + 1.4} ${cx - r} ${cy}Z`
+  [
+    `M${cx - r} ${cy}`,
+    `A${r} ${r} 0 0 1 ${cx + r} ${cy}`,
+    `C${cx + r} ${cy + r * 0.86} ${cx + r * 0.18} ${cy + r * 1.5} ${cx - r * 0.73} ${cy + r * 1.9}`,
+    `C${cx - r * 0.23} ${cy + r * 1.14} ${cx - r} ${cy + r * 0.64} ${cx - r} ${cy}`,
+    'Z'
+  ].join('')
 
+// The bowl and the tail are both drawn off the radius, so the pair grows as one
+// mark. Its own centre is a bowl's height above the bottom of the tail, which is
+// where the y sits: punctuation hangs from the cap line when it is set in text,
+// and a mark standing alone in a row is read against the middle of the row.
 export const QuoteGlyph = mark(
   <>
-    <path d={comma(8.8, 11, 2.2)} fill="currentColor" stroke="none" />
-    <path d={comma(15.2, 11, 2.2)} fill="currentColor" stroke="none" />
+    <path d={comma(8.6, 10.9, 2.5)} fill="currentColor" stroke="none" />
+    <path d={comma(15.4, 10.9, 2.5)} fill="currentColor" stroke="none" />
   </>
 )
 
