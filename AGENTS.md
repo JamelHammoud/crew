@@ -87,7 +87,9 @@ A mark in the macOS menu bar, and a panel under it holding who is here: the peop
 - No context menu is set on the mac tray. One would open on a left click too, and the left click belongs to the panel. Right click pops the menu itself.
 - The panel is a frameless window that loads the renderer at `#tray`. It never connects to the session: a second connection would be a second member. The window that is open publishes who it can see, main holds it, and the panel is handed it. With no window open there is nothing to publish, so the panel says to open Crew rather than showing a list that stopped moving.
 - It is built and loaded before anyone clicks, the way a terminal is warmed, so the first click opens a list rather than an empty card. It measures itself and asks main for the height it needs, so the window is only ever as tall as what it holds.
+- Two things about that window empty the dock, and both are one line each. `skipTaskbar` turns the app into an accessory on macOS, and `setVisibleOnAllWorkspaces` does the same transform unless it is passed `skipTransformProcessType`. Either one and the icon leaves the dock and does not come back. `createPanelOptions` in `window-options.ts` is where the first is kept out.
 - macOS will not hand out the highlight it draws behind a menu bar item unless the item is opening a native menu, and Electron dropped `setHighlightMode` in version 9. A panel of one's own does not get it.
+- A menu bar item is as wide as its image plus eight points either side, and as tall as the bar, which is 24 on a normal display and 33 or more on a notched Mac. The image is centred in that and never scales it, so nothing drawn into the artwork can line up with the item's own edges.
 
 ## Design boards
 
