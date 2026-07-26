@@ -333,5 +333,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
+  for (const open of terminals.values()) open.closeAll()
+  terminals.clear()
   void session.shutdown()
 })
