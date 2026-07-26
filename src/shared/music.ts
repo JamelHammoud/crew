@@ -89,7 +89,7 @@ export const MUSIC_TUNES = [
     mood: 'silly',
     bpm: 108,
     beats: 32,
-    colors: ['#7cf5c0', '#ffd6f5', '#5ac8fa', '#2f8f83']
+    colors: ['#3ff0c0', '#ff8fe0', '#4dc8ff', '#eaffd0', '#0d5a55']
   },
   {
     id: 'deep-dive',
@@ -97,7 +97,7 @@ export const MUSIC_TUNES = [
     mood: 'murky',
     bpm: 92,
     beats: 32,
-    colors: ['#1f6f8b', '#0b2545', '#4cc9b0', '#08304f']
+    colors: ['#00c2a8', '#0a6cff', '#00e5ff', '#7ef3ff', '#02182e']
   },
   {
     id: 'sunrise',
@@ -105,7 +105,7 @@ export const MUSIC_TUNES = [
     mood: 'hopeful',
     bpm: 104,
     beats: 32,
-    colors: ['#ffb86b', '#ff7eb3', '#ffe9a8', '#6a4bbc']
+    colors: ['#ff9d3c', '#ff4d94', '#ffd84d', '#c9a7ff', '#3a1152']
   },
   {
     id: 'snowfield',
