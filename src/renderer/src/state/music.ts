@@ -1,14 +1,21 @@
 import { create } from 'zustand'
+import { httpBaseFrom } from '../../../shared/attachments'
 import {
   emptyMusic,
+  itemFor,
+  musicItems,
   trackAfter,
-  trackFor,
+  tuneFor,
+  uploadUrl,
   wrapAt,
+  type MusicItem,
   type MusicRoom,
-  type MusicTrack
+  type MusicUpload
 } from '../../../shared/music'
+import { levelsAt } from '../media/levels'
 import { MusicPlayer } from '../media/music'
-import { onMusic, sendMusic, useCrew } from './store'
+import { tuneLevels } from '../media/tunes'
+import { onMusic, onMusicShelf, sendMusic, useCrew } from './store'
 import { onSounds, soundsOn } from './sound'
 
 const VOLUME_KEY = 'crew.music.volume'
@@ -21,18 +28,24 @@ const DRIFT = 0.35
 
 export interface MusicState {
   room: MusicRoom
+  uploads: MusicUpload[]
   // The moment the room landed here, so the bar keeps moving on a machine that
   // is not playing anything: muted, or with the app's sounds turned off.
   since: number
   volume: number
   muted: boolean
-  track: () => MusicTrack | null
+  adding: boolean
+  track: () => MusicItem | null
+  items: () => MusicItem[]
   position: () => number
+  levels: (count: number, into: number[]) => number[]
   put: (trackId: string) => void
   toggle: () => void
   skip: (step: number) => void
   seek: (at: number) => void
   off: () => void
+  add: (file: File) => Promise<string | null>
+  remove: (trackId: string) => void
   setVolume: (volume: number) => void
   setMuted: (muted: boolean) => void
 }
@@ -41,6 +54,30 @@ const stored = (key: string, fallback: number): number => {
   const held = Number(globalThis.localStorage?.getItem(key))
   return Number.isFinite(held) && held >= 0 && held <= 1 ? held : fallback
 }
+
+// A file the browser can read is one the app can play, so its length is asked
+// of the browser rather than guessed at from the size of it.
+const secondsOf = (file: File): Promise<number> =>
+  new Promise(resolve => {
+    const url = URL.createObjectURL(file)
+    const probe = new Audio()
+    const done = (seconds: number) => {
+      URL.revokeObjectURL(url)
+      resolve(seconds)
+    }
+    probe.preload = 'metadata'
+    probe.onloadedmetadata = () => done(Number.isFinite(probe.duration) ? probe.duration : 0)
+    probe.onerror = () => done(0)
+    probe.src = url
+  })
+
+const base64Of = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '')
+    reader.onerror = () => reject(new Error('unreadable'))
+    reader.readAsDataURL(file)
+  })
 
 export const useMusic = create<MusicState>((set, get) => {
   const player = new MusicPlayer()
@@ -51,19 +88,30 @@ export const useMusic = create<MusicState>((set, get) => {
   // is the one that asked for it makes no difference to how it is played.
   const settle = (): void => {
     const room = get().room
-    const track = trackFor(room.trackId)
+    const track = itemFor(room.trackId, get().uploads)
     if (!track || !room.playing || !soundsOn()) {
       player.stop()
       return
     }
     const inStep = player.running() && player.trackId === track.id
     if (inStep && Math.abs(player.position() - room.at) <= DRIFT) return
-    player.play(track, room.at)
+    const tune = tuneFor(track.id)
+    if (tune) {
+      player.play(tune, room.at)
+    } else if (track.file) {
+      const url = uploadUrl(httpBaseFrom(useCrew.getState().url), track.file)
+      void player.playFile(track.id, url, track.seconds, room.at)
+    }
     player.setVolume(level())
   }
 
   onMusic(msg => {
     set({ room: msg.room, since: Date.now() })
+    settle()
+  })
+
+  onMusicShelf(uploads => {
+    set({ uploads })
     settle()
   })
 
@@ -77,26 +125,48 @@ export const useMusic = create<MusicState>((set, get) => {
     connection = state.connection
     if (before === connection || connection !== 'home') return
     player.stop()
-    set({ room: emptyMusic(), since: Date.now() })
+    set({ room: emptyMusic(), uploads: [], since: Date.now() })
   })
 
   return {
     room: emptyMusic(),
+    uploads: [],
     since: Date.now(),
     volume: stored(VOLUME_KEY, 0.7),
     muted: globalThis.localStorage?.getItem(MUTED_KEY) === 'on',
+    adding: false,
 
-    track: () => trackFor(get().room.trackId),
+    track: () => itemFor(get().room.trackId, get().uploads),
+
+    items: () => musicItems(get().uploads),
 
     // Where the loop has got to. The player's own clock while it is playing, and
     // where the room said it was plus however long ago that was when it is not.
     position: () => {
       const { room, since } = get()
-      const track = trackFor(room.trackId)
+      const track = itemFor(room.trackId, get().uploads)
       if (!track) return 0
       if (player.running()) return player.position()
       const run = room.playing ? (Date.now() - since) / 1000 : 0
-      return wrapAt(room.at + run, track)
+      return wrapAt(room.at + run, track.seconds)
+    },
+
+    // What the bars stand at. The music itself where it is playing, and the
+    // tune's own shape where it is not, so a muted machine watches the same
+    // dance as everyone else rather than a flat line.
+    levels: (count, into) => {
+      const heard = player.levels(count)
+      if (heard) {
+        for (let band = 0; band < count; band++) into[band] = heard[band]
+        return into
+      }
+      const room = get().room
+      const tune = tuneFor(room.trackId)
+      if (!tune) return into.fill(0)
+      const held = levelsAt(tuneLevels(tune, count), get().position(), into)
+      if (room.playing) return held
+      for (let band = 0; band < count; band++) held[band] *= 0.45
+      return held
     },
 
     put: trackId => sendMusic({ type: 'music.set', trackId, playing: true, at: 0 }),
@@ -104,7 +174,7 @@ export const useMusic = create<MusicState>((set, get) => {
     toggle: () => {
       const room = get().room
       if (!room.trackId) {
-        get().put(trackAfter(null, 1))
+        get().put(trackAfter(null, 1, get().uploads))
         return
       }
       sendMusic({ type: 'music.set', trackId: room.trackId, playing: !room.playing, at: get().position() })
@@ -112,7 +182,7 @@ export const useMusic = create<MusicState>((set, get) => {
 
     skip: step => {
       const room = get().room
-      const trackId = trackAfter(room.trackId, step)
+      const trackId = trackAfter(room.trackId, step, get().uploads)
       sendMusic({ type: 'music.set', trackId, playing: room.trackId ? room.playing : true, at: 0 })
     },
 
@@ -123,6 +193,26 @@ export const useMusic = create<MusicState>((set, get) => {
     },
 
     off: () => sendMusic({ type: 'music.off' }),
+
+    // Adding a track hands the file to the host, which keeps it beside the
+    // session. What comes back is what everyone else will play.
+    add: async file => {
+      set({ adding: true })
+      try {
+        const seconds = await secondsOf(file)
+        if (!seconds) return 'That file will not play here'
+        const data = await base64Of(file)
+        if (!data) return 'That file could not be read'
+        sendMusic({ type: 'music.add', name: file.name, mime: file.type, seconds, data })
+        return null
+      } catch {
+        return 'That file could not be read'
+      } finally {
+        set({ adding: false })
+      }
+    },
+
+    remove: trackId => sendMusic({ type: 'music.remove', trackId }),
 
     setVolume: volume => {
       const held = Math.min(1, Math.max(0, volume))
