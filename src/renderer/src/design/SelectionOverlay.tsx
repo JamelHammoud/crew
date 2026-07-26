@@ -55,12 +55,14 @@ export default function SelectionOverlay({ editor, asking }: { editor: Editor | 
       {node && rect.w > MIN_FOR_HANDLES && rect.h > MIN_FOR_HANDLES && (
         <RadiusHandles editor={editor} shape={node} rect={rect} zoom={zoom} stroke={stroke} />
       )}
-      <span
-        className="absolute -translate-x-1/2 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums text-white whitespace-nowrap"
-        style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10, background: stroke }}
-      >
-        {Math.round(size.w)} × {Math.round(size.h)}
-      </span>
+      {!asking && (
+        <span
+          className="absolute -translate-x-1/2 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums text-white whitespace-nowrap"
+          style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10, background: stroke }}
+        >
+          {Math.round(size.w)} × {Math.round(size.h)}
+        </span>
+      )}
     </div>
   )
 }
