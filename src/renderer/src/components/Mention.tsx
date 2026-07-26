@@ -113,6 +113,7 @@ function BoardCardContent({ boardId }: { boardId: string }) {
   if (!board) return null
   return (
     <>
+      <BoardPreview boardId={boardId} />
       <span className="flex items-center gap-2">
         <FrameGlyph className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{board.name}</span>
