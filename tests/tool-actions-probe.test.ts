@@ -89,26 +89,45 @@ describe('tool names', () => {
   })
 })
 
+const mark = (container: HTMLElement): SVGElement | null => container.querySelector('svg')
+
 describe('step rows', () => {
   it('wears a mark of its own and says what it did', () => {
-    render(createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn test' }) }))
+    const { container } = render(createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn test' }) }))
     expect(screen.getByText('Ran')).not.toBeNull()
     expect(screen.getByText('yarn test')).not.toBeNull()
-    expect(document.querySelectorAll('svg').length).toBeGreaterThan(0)
-    expect(document.querySelector('[role="status"]')).toBeNull()
+    expect(mark(container)?.getAttribute('viewBox')).toBe('0 0 24 24')
+    expect(mark(container)?.getAttribute('stroke-width')).toBe('1.5')
+    expect(mark(container)?.getAttribute('fill')).toBe('none')
   })
 
-  it('spins while the step is still going and speaks in the present', () => {
-    render(createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn test', streaming: true }) }))
+  it('gives every tool a mark of its own', () => {
+    const drawn = (name: string): string => {
+      cleanup()
+      const { container } = render(createElement(StepRow, { item: item({ name }) }))
+      return mark(container)?.innerHTML ?? ''
+    }
+    const marks = ['Read', 'Write', 'Edit', 'Bash', 'Grep', 'Glob', 'WebSearch', 'TodoWrite'].map(drawn)
+    expect(marks.every(Boolean)).toBe(true)
+    expect(new Set(marks).size).toBe(marks.length)
+  })
+
+  it('lights the mark up and speaks in the present while the step is live', () => {
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn test', streaming: true }) })
+    )
     expect(screen.getByText('Running')).not.toBeNull()
-    expect(document.querySelector('[role="status"]')).not.toBeNull()
+    expect(mark(container)?.getAttribute('class')).toContain('pulse-soft')
+    cleanup()
+    const done = render(createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn test' }) }))
+    expect(mark(done.container)?.getAttribute('class')).not.toContain('pulse-soft')
   })
 
-  it('draws a thread up to the step above it and nothing when it stands alone', () => {
+  it('sits closer to the step above it than to a message', () => {
     const { container } = render(createElement(StepRow, { item: item({ name: 'Read' }), linked: true }))
-    expect(container.querySelector('span[aria-hidden]')).not.toBeNull()
+    expect(container.firstElementChild?.className).toContain('-mt-3')
     cleanup()
     const alone = render(createElement(StepRow, { item: item({ name: 'Read' }) }))
-    expect(alone.container.querySelector('span[aria-hidden]')).toBeNull()
+    expect(alone.container.firstElementChild?.className).not.toContain('-mt-3')
   })
 })
