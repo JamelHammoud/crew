@@ -39,8 +39,7 @@ const assetUrls = designAssetUrls()
 
 const tools = [DesignNodeTool]
 
-// crew draws everyone's cursor itself, in RemoteCursors.
-class QuietCollaboratorCursors extends CollaboratorCursorOverlayUtil {
+class CursorsDrawnByCrew extends CollaboratorCursorOverlayUtil {
   isActive(): boolean {
     return false
   }
