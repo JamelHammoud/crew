@@ -177,6 +177,18 @@ describe('the file explorer', () => {
     expect(await screen.findByLabelText('Filter files')).toBeTruthy()
   })
 
+  it('lands on the file already showing rather than back at the top', async () => {
+    useBrowser.getState().openFile('src/renderer/panel.tsx')
+    render(createElement(BrowserPanel))
+    await screen.findByText('export const panel = 2')
+
+    fireEvent.click(screen.getByLabelText('Show files'))
+
+    expect(activeTab().open).toEqual(['src', 'src/renderer'])
+    await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
+    expect(rowFor('src/renderer/panel.tsx')!.className).toContain('bg-fg/[0.06]')
+  })
+
   it('leaves a file opened from a message without a tree', async () => {
     useBrowser.getState().openFile('src/app.ts')
     render(createElement(BrowserPanel))

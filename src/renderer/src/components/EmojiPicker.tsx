@@ -162,7 +162,9 @@ export default function EmojiPicker({
                       <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg/45">
                         {section.label}
                       </p>
-                      <div className="grid grid-cols-9">{section.entries.map(cell)}</div>
+                      <div className="grid" style={grid}>
+                        {section.entries.map(cell)}
+                      </div>
                     </>
                   )}
                 </div>
@@ -178,7 +180,7 @@ export default function EmojiPicker({
             <span className="truncate text-sm font-medium text-fg-secondary">:{preview.shortName}:</span>
           </>
         ) : (
-          <span className="text-sm text-fg-muted">Pick a reaction</span>
+          <span className="text-sm text-fg-muted">{hint}</span>
         )}
       </div>
     </div>
