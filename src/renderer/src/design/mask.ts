@@ -1,5 +1,4 @@
 import type { Editor, TLShape, TLShapeId } from 'tldraw'
-import { holdsChildren, nodeShapeOf } from '../../../shared/designNode'
 
 type MaskNode = TLShape & { props: { mask: boolean; clip: boolean } }
 
