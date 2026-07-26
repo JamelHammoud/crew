@@ -97,4 +97,45 @@ describe('the design stage', () => {
     expect(screen.queryByText('Ask an agent')).toBe(null)
     expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
   })
+
+  it('carries the shortcut the menu row promises', () => {
+    const { container } = boot()
+    rightClick(container)
+    const row = [...document.querySelectorAll('button')].find(el => el.textContent?.startsWith('Ask an agent'))
+    expect(row?.textContent).toContain('⇧⌘A')
+  })
+
+  it('brings up the ask bar on the shortcut alone', () => {
+    boot()
+    fireEvent.keyDown(window, { key: 'A', metaKey: true, shiftKey: true })
+    expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
+  })
+
+  it('asks nothing when nothing is picked', () => {
+    boot([])
+    fireEvent.keyDown(window, { key: 'A', metaKey: true, shiftKey: true })
+    expect(screen.queryByPlaceholderText('Ask for a change')).toBe(null)
+  })
+
+  it('leaves the shortcut alone while something is being typed into', () => {
+    boot()
+    const field = document.createElement('input')
+    document.body.appendChild(field)
+    fireEvent.keyDown(field, { key: 'A', metaKey: true, shiftKey: true })
+    expect(screen.queryByPlaceholderText('Ask for a change')).toBe(null)
+  })
+
+  it('runs the other shortcuts the menu names', () => {
+    const { made } = boot()
+    fireEvent.keyDown(window, { key: 'L', metaKey: true, shiftKey: true })
+    expect(made.calls).toContain('toggleLock(shape:a)')
+  })
+
+  it('puts the ask away when the board changes under it', () => {
+    const { container, rerender } = boot()
+    rightClick(container)
+    fireEvent.click(screen.getByText('Ask an agent'))
+    rerender('board:b')
+    expect(screen.queryByPlaceholderText('Ask for a change')).toBe(null)
+  })
 })
