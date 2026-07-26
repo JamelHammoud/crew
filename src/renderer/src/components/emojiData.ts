@@ -52,6 +52,7 @@ const ordered = (source as unknown as SourceEmoji[])
 
 const byCategory = new Map<string, EmojiEntry[]>()
 const byChar = new Map<string, EmojiEntry>()
+const byShortName = new Map<string, EmojiEntry>()
 
 for (const item of ordered) {
   const entry: EmojiEntry = {
@@ -62,6 +63,9 @@ for (const item of ordered) {
     y: item.sheet_y
   }
   byChar.set(entry.char, entry)
+  for (const name of item.short_names) {
+    if (!byShortName.has(name)) byShortName.set(name, entry)
+  }
   const bucket = byCategory.get(item.category) ?? []
   bucket.push(entry)
   byCategory.set(item.category, bucket)
