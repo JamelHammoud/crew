@@ -8,8 +8,10 @@ import Spinner from './Spinner'
 
 const MAX_LINES = 5000
 
+const fromRoot = (path: string): boolean => path.startsWith('/')
+
 export function FileCrumbs({ tab }: { tab: BrowserTab }) {
-  const parts = tab.path ? tab.path.split('/') : []
+  const parts = tab.path.split('/').filter(Boolean)
   return (
     <div className="flex-1 min-w-0 h-9 mx-1 px-3.5 rounded-full bg-fg/[0.06] flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] font-mono text-[13px] whitespace-nowrap">
       <button
@@ -20,7 +22,7 @@ export function FileCrumbs({ tab }: { tab: BrowserTab }) {
         <FolderIcon className="w-4 h-4" />
       </button>
       {parts.map((part, index) => {
-        const prefix = parts.slice(0, index + 1).join('/')
+        const prefix = (fromRoot(tab.path) ? '/' : '') + parts.slice(0, index + 1).join('/')
         const last = index === parts.length - 1
         return (
           <span key={prefix} className="flex items-center gap-1.5 shrink-0">
