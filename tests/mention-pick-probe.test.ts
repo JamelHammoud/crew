@@ -46,9 +46,12 @@ const agent: PooledAgent = {
 function boot() {
   useCrew.setState({
     connection: 'online',
-    selfId: 'jamel',
-    selfName: 'Jamel',
-    members: [{ id: 'jamel', name: 'Jamel', connected: true }],
+    selfId: 'ali',
+    selfName: 'ALI',
+    members: [
+      { id: 'ali', name: 'ALI', connected: true },
+      { id: 'jamel', name: 'Jamel', connected: true }
+    ],
     agents: [agent],
     events: [],
     docs: { main: { title: 'Main', text: '' }, 'plan-1abc': { title: 'Plan', text: 'ship it' } },
@@ -87,6 +90,15 @@ describe('picking a mention', () => {
     fireEvent.click(screen.getByText('@Bob (Kimi K3)'))
     expect(input.value).toBe('@Bob (Kimi K3) ')
     expect(input.selectionStart).toBe(input.value.length)
+  })
+
+  it('adds a human member from the same mention menu', () => {
+    const input = boot()
+    type(input, 'thanks @jam')
+    fireEvent.click(screen.getByText('@Jamel'))
+    expect(input.value).toBe('thanks @Jamel ')
+    expect(input.selectionStart).toBe(input.value.length)
+    expect(screen.getByText('@Jamel').className).toContain('bg-fg/10')
   })
 
   it('adds a space after a doc name', () => {
