@@ -185,7 +185,7 @@ export default function TasksPanel({
     const list: Row[] = []
     for (const thread of Object.values(threads)) {
       const promptId = threadPrompts[thread.id]
-      const working = Boolean(promptId) || (queues[thread.id]?.length ?? 0) > 0
+      const working = threadWorking(thread.id, threadPrompts, queues)
       const detail = promptId
         ? describeStep((steps[promptId] ?? []).at(-1))
         : endPreview(lastEnd(thread.id, events))
