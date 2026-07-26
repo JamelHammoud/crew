@@ -88,6 +88,7 @@ type Highlight = { lines: string[]; byLine: ThemedToken[][] }
 function CodeBody({
   tab,
   text,
+  marks,
   editable,
   truncated,
   dirty,
@@ -96,6 +97,7 @@ function CodeBody({
 }: {
   tab: BrowserTab
   text: string
+  marks: ChangedLines | null
   editable: boolean
   truncated: boolean
   dirty: boolean

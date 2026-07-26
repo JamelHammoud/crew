@@ -39,7 +39,7 @@ const SCALE = 0.75
 
 const TIP = { x: 7, y: 5.9 }
 const MIDDLE = { x: 14, y: 15 }
-const LEAD = { x: 3.92, y: 25.28 }
+const LEAD = { x: 5.3, y: 23.98 }
 
 const nudge = (from: number, to: number) => Number((to - from * SCALE).toFixed(4))
 
