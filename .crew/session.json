@@ -325,119 +325,6 @@
       }
     },
     {
-      "id": "ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6",
-      "label": "Claude Opus",
-      "provider": "claude",
-      "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
-      "ownerName": "ALI",
-      "settings": {
-        "model": "opus",
-        "opusModel": "claude-opus-5",
-        "effort": "max"
-      },
-      "fields": [
-        {
-          "key": "model",
-          "label": "Model",
-          "options": [
-            {
-              "value": "",
-              "label": "Default"
-            },
-            {
-              "value": "opus",
-              "label": "Opus"
-            },
-            {
-              "value": "sonnet",
-              "label": "Sonnet"
-            },
-            {
-              "value": "haiku",
-              "label": "Haiku"
-            },
-            {
-              "value": "fable",
-              "label": "Fable"
-            }
-          ],
-          "default": "opus"
-        },
-        {
-          "key": "opusModel",
-          "label": "Version",
-          "options": [
-            {
-              "value": "claude-opus-5",
-              "label": "Opus 5"
-            },
-            {
-              "value": "claude-opus-4-8",
-              "label": "Opus 4.8"
-            },
-            {
-              "value": "claude-opus-4-7",
-              "label": "Opus 4.7"
-            },
-            {
-              "value": "claude-opus-4-6",
-              "label": "Opus 4.6"
-            },
-            {
-              "value": "claude-opus-4-5-20251101",
-              "label": "Opus 4.5"
-            },
-            {
-              "value": "opus",
-              "label": "Latest"
-            }
-          ],
-          "default": "claude-opus-5",
-          "visibleWhen": {
-            "key": "model",
-            "value": "opus"
-          }
-        },
-        {
-          "key": "effort",
-          "label": "Thinking",
-          "options": [
-            {
-              "value": "low",
-              "label": "low"
-            },
-            {
-              "value": "medium",
-              "label": "medium"
-            },
-            {
-              "value": "high",
-              "label": "high"
-            },
-            {
-              "value": "xhigh",
-              "label": "xhigh"
-            },
-            {
-              "value": "max",
-              "label": "max"
-            }
-          ],
-          "default": "high"
-        }
-      ],
-      "steerable": true,
-      "usage": {
-        "provider": "claude",
-        "fetchedAt": 1785030693132,
-        "windows": [],
-        "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
-        "accountLabel": "alihammoud0202@gmail.com",
-        "plan": "pro",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
-      }
-    },
-    {
       "id": "ali/a5870501-29f9-482a-8e95-280a04acf660",
       "label": "Claude Fable",
       "provider": "claude",
@@ -857,6 +744,7 @@
     "jamel/7e2e6858-6d6d-494b-a5ed-00004d6a5357",
     "jamel/claude",
     "jamel/codex",
-    "jamel/ad836538-f482-4a88-b70a-adc257551883"
+    "jamel/ad836538-f482-4a88-b70a-adc257551883",
+    "ali/f64753ff-a1e3-4cbc-add7-e3fd5377a9e6"
   ]
 }
