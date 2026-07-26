@@ -1640,12 +1640,12 @@ export class CrewSession {
   // nobody has heard of is nothing to play, so it is dropped rather than sent
   // on to everyone as a name their build cannot draw.
   private handleMusicSet(member: Member, trackId: string, playing: boolean, at: number): void {
-    const track = trackFor(trackId)
+    const track = itemFor(trackId, [...this.uploads.values()])
     if (!track) return
     this.music = {
       track,
       playing: playing === true,
-      from: wrapAt(typeof at === 'number' ? at : 0, track),
+      from: wrapAt(typeof at === 'number' ? at : 0, track.seconds),
       since: Date.now(),
       by: member.name.slice(0, BY_LIMIT)
     }
