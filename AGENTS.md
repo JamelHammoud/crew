@@ -77,8 +77,11 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - The canvas draws straight. Sans type, solid strokes, straight lines, no hand drawn wobble. The values live once in `DESIGN_STYLE_DEFAULTS` and both sides read them: `applyDesignDefaults` for what people draw, `designops` for what agents create.
 - Those defaults are applied again every time a board snapshot lands. tldraw drops the styles for the next shape whenever a document is loaded, so setting them once on mount lasts only until the board arrives, which is why text came out hand drawn.
 - Nothing wears a text outline. tldraw halos labels in the canvas color to help them read over shapes, and it looks like a sticker, so `shapeUtils.ts` turns it off for text, geo and arrow shapes.
-- A frame is white in both themes, whatever the canvas behind it is doing. `frameFill.ts` owns that, a frame carries its own color in `meta.background`, and the board panel changes it. The outline follows the fill, dark on light backgrounds and light on dark ones.
-- The left panel is layers and nothing else. Boards already do what pages would.
+- A frame is white in both themes, whatever the canvas behind it is doing. `frameFill.ts` owns that, a frame carries its own color in `meta.background`, and the design panel changes it. The outline follows the fill, dark on light backgrounds and light on dark ones.
+- The canvas palette never follows the app theme. Someone picked those colors on purpose, so the editor is pinned to one color mode and black stays black in both themes. Only the surfaces crew draws itself, the chrome and the canvas behind the artwork, flip with the theme.
+- The left panel is layers when nothing is selected and the design panel when something is. The right panel is board chat. Boards already do what pages would, so there is no page switcher.
+- The design panel follows Figma's layout: sections divided by a hairline with a bold title, small grey labels above each group of fields, and every field carrying its own label inside it. Position, Layout, Appearance, then whatever the selection can be styled with.
+- Corner handles and the size readout are crew's own overlay, drawn over the canvas in `SelectionOverlay.tsx` from page coordinates, not tldraw components.
 
 ## Syncing
 
