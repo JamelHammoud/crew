@@ -8,8 +8,9 @@ import {
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/16/solid'
-import { useState, type DragEvent } from 'react'
+import { useEffect, useState, type DragEvent } from 'react'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
+import { blockHandleOffset } from './blockAnchor'
 
 export default function DocSideMenu() {
   const editor = useBlockNoteEditor<any, any, any>()
@@ -17,10 +18,20 @@ export default function DocSideMenu() {
   const suggestions = useExtension(SuggestionMenu)
   const block = useExtensionState(SideMenuExtension, { selector: state => state?.block })
   const [menu, setMenu] = useState(false)
+  const [offset, setOffset] = useState(0)
+  const id = block?.id
+
+  useEffect(() => {
+    const node = id ? editor.domElement?.querySelector(`[data-id="${CSS.escape(id)}"]`) : null
+    if (!node) return
+    const measure = () => setOffset(blockHandleOffset(node))
+    measure()
+    const watch = new ResizeObserver(measure)
+    watch.observe(node)
+    return () => watch.disconnect()
+  }, [editor, id])
 
   if (!block) return null
-
-  const heading = block.type === 'heading' ? String((block.props as { level?: number }).level ?? 1) : undefined
 
   const add = () => {
     const empty = Array.isArray(block.content) && block.content.length === 0
