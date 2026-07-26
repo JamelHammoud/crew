@@ -4,8 +4,8 @@ import { isAttachmentFile } from '../shared/attachments'
 import { BOARD_ID, type DesignDocument } from '../shared/design'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
-import { isUploadFile } from '../shared/music'
 import type { PooledAgent } from '../shared/llm'
+import { isUploadFile } from '../shared/music'
 
 export interface PersistedMember {
   id: string
