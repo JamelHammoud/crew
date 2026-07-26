@@ -3,6 +3,11 @@ export interface DesignBoardMeta {
   name: string
 }
 
+export interface BoardMentionRef {
+  id: string
+  name: string
+}
+
 export interface DesignDocument {
   store: Record<string, unknown>
   schema: unknown
