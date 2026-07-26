@@ -75,3 +75,13 @@ export const ExpandGlyph = glyph(
 export const CollapseGlyph = glyph(
   <path d="M4.5 9.5h5v-5M19.5 9.5h-5v-5M14.5 19.5v-5h5M9.5 19.5v-5h-5" />
 )
+
+// Two beamed notes rather than one. A single head with a flag is mostly stem at
+// 16px, where the pair reads as music from across the room.
+export const MusicGlyph = glyph(
+  <>
+    <circle cx="6.75" cy="18.75" r="2.25" />
+    <circle cx="17.25" cy="18.75" r="2.25" />
+    <path d="M9 18.75V4.75L19.5 3v15.75" />
+  </>
+)
