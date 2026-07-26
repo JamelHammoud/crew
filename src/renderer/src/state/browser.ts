@@ -32,7 +32,7 @@ type BrowserState = {
   openImage(src: string, name: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   addTab(): void
-  addTerminal(): void
+  addTerminal(command?: string): void
   selectTab(id: string): void
   closeTab(id: string): void
   closeAll(): void
@@ -129,8 +129,8 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = makeTab()
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
-  addTerminal: () => {
-    const tab = { ...makeTab(), kind: 'terminal' as const }
+  addTerminal: command => {
+    const tab = { ...makeTab(), kind: 'terminal' as const, command: command ?? null }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
   selectTab: id => set({ activeTabId: id }),
