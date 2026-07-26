@@ -11,9 +11,10 @@ export function autoLineHeight(editor: Editor): number {
 >>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
 export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
   const { font, size, textAlign, color } = shape.props
+  const drawn = familyOf(font)
   const base: TypeStyle = {
     ...BASE_TYPE,
-    family: familyOf(font),
+    family: drawn === 'draw' ? 'sans' : drawn,
     size: sizeFont(size),
 <<<<<<< HEAD
 =======
