@@ -91,11 +91,41 @@ export const TOOLBOX_BODY = 'M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 
 export const TOOLBOX_LID = 'M2.5 12.75V11a2.5 2.5 0 0 1 2.5-2.5h14a2.5 2.5 0 0 1 2.5 2.5v1.75Z'
 export const TOOLBOX_HANDLE = 'M8.25 8.5V7.25a2.75 2.75 0 0 1 2.75-2.75h2a2.75 2.75 0 0 1 2.75 2.75V8.5'
 
-// The far corner of the seam, and how far the lid comes up off it. Ten degrees
-// is what the box has room for: the lid carries its own back corner outwards as
-// it turns, and past this the case is painted into the edge of the grid.
-export const TOOLBOX_HINGE = { x: 21.5, y: 12.75 }
-export const TOOLBOX_SWING = 10
+// The lid is hinged along the back of the mouth, which is behind the drawing
+// rather than on it, and that is what makes the swing read as a turn in space
+// instead of a tilt on the page. The front of the lid travels an arc: it lifts
+// by the depth of the hinge times the sine of the swing, its own height flattens
+// by the cosine the way anything turning away from you does, and the whole of it
+// loses a little to the distance it has gone back. Thirty five degrees on a
+// hinge four and a half deep is what the grid has room for, since the handle is
+// carried up as the lid comes over.
+export const TOOLBOX_HINGE = { x: 12, y: 12.75 }
+export const TOOLBOX_DEPTH = 4.5
+export const TOOLBOX_SWING = 35
+
+// How far off the drawing is being watched from, in the grid's own units. A long
+// way, so going back costs a couple of percent rather than turning the lid into
+// a different shape.
+export const TOOLBOX_AWAY = 34
+
+const to3 = (n: number): number => Math.round(n * 1000) / 1000
+
+// A perspective on an SVG is not a projection: Chromium flattens it to a skew,
+// so the turn is worked out here and handed over as the lift, the squash and the
+// share it keeps, which is a plain 2D transform and is drawn as sharp as the
+// still icon. What the real projection would buy on top of this is a taper of
+// under a pixel at the size the mark is worn.
+export const toolboxTurn = (
+  swing: number = TOOLBOX_SWING
+): { rise: number; squash: number; away: number } => {
+  const turn = (swing * Math.PI) / 180
+  const back = TOOLBOX_DEPTH * (1 - Math.cos(turn))
+  return {
+    rise: to3(TOOLBOX_DEPTH * Math.sin(turn)),
+    squash: to3(Math.cos(turn)),
+    away: to3(TOOLBOX_AWAY / (TOOLBOX_AWAY + back))
+  }
+}
 
 export const ToolboxGlyph = glyph(
   <>
