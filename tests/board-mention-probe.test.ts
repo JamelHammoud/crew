@@ -45,6 +45,19 @@ const events: SessionEvent[] = [
   }
 ]
 
+const hostWithoutBoards: SessionEvent[] = [
+  {
+    id: 'message-1',
+    ts: 2,
+    kind: 'message',
+    authorId: 'jamel',
+    authorName: 'Jamel',
+    text: 'see #Plan and #Landing',
+    mentions: [],
+    docMentions: [{ page: 'plan-1abc', title: 'Plan' }]
+  }
+]
+
 function boot(withMessage = true, log: SessionEvent[] = events) {
   useCrew.setState({
     connection: 'online',
@@ -85,7 +98,7 @@ describe('board mentions in a message', () => {
   })
 
   it('pills a board the host never named', () => {
-    boot(true, [{ ...events[0], boardMentions: undefined }])
+    boot(true, hostWithoutBoards)
     expect(screen.getByText('Landing').className).toContain('text-sky-300')
   })
 
