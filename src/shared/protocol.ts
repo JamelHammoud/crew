@@ -79,6 +79,7 @@ export type ClientMessage =
   | { type: 'design.rename'; boardId: string; name: string }
   | { type: 'design.delete'; boardId: string }
   | { type: 'design.open'; boardId: string }
+  | { type: 'design.peek'; boardId: string }
   | { type: 'design.init'; boardId: string; document: DesignDocument }
   | { type: 'design.apply'; boardId: string; put?: unknown[]; remove?: string[] }
   | {
