@@ -216,16 +216,20 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     }
   }, [tab.path, tab.generation])
 
+  const file = data?.kind === 'file' ? data : null
+  const marks = useMemo(() => (file ? changedLines(file.text, tab.diff) : null), [file, tab.diff])
+
   useEffect(() => {
+    const target = tab.line ?? marks?.first ?? null
     if (!data) return
-    if (data.kind === 'file' && tab.line) {
-      bodyRef.current?.querySelector(`[data-line="${tab.line}"]`)?.scrollIntoView?.({ block: 'center' })
+    if (data.kind === 'file' && target) {
+      bodyRef.current?.querySelector(`[data-line="${target}"]`)?.scrollIntoView?.({ block: 'center' })
       return
     }
     if (bodyRef.current) bodyRef.current.scrollTop = 0
-  }, [loadKey, tab.line])
+  }, [loadKey, tab.line, marks])
 
-  const file = data?.kind === 'file' ? data : null
+
   const editable = !!file && !file.truncated && file.text.split('\n').length <= MAX_LINES
   const dirty = editable && !!file && draft !== file.text
 
