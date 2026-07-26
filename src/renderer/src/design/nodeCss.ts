@@ -91,7 +91,7 @@ const VERTICAL: Record<TypeStyle['vertical'], string> = {
 
 export function textStyle(type: TypeStyle): CSSProperties {
   return {
-    fontFamily: FAMILIES[type.family] ?? type.family,
+    fontFamily: fontStack(type.family),
     fontSize: `${type.size}px`,
     fontWeight: type.weight,
     lineHeight: type.lineHeight,
