@@ -27,7 +27,10 @@ app.whenReady().then(async () => {
   await window.loadFile(path.join(root, 'icon-sheet.html'), {
     hash: `keys&only=${set},${from},${count}`
   })
-  await new Promise(done => setTimeout(done, 1800))
+  // Asking the page a question is what gets it painted. Left alone, a window
+  // that is not the front one can sit there loaded and never drawn.
+  await window.webContents.executeJavaScript('document.querySelectorAll("figure").length')
+  await new Promise(done => setTimeout(done, 1500))
   const shot = await window.webContents.capturePage()
   const out = path.join(root, `icon-sheet-${set}-${from}.png`)
   await writeFile(out, shot.toPNG())
