@@ -120,7 +120,7 @@ export default function ImageView({ src, alt }: { src: string; alt: string }) {
           transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`,
           imageRendering: view.scale * ratio >= PIXELATED_AT ? 'pixelated' : undefined
         }}
-        className="max-w-full max-h-full object-contain rounded-card animate-rise select-none"
+        className={`max-w-full max-h-full object-contain animate-rise select-none ${zoomed ? '' : 'rounded-card'}`}
       />
       {zoomed && (
         <Tooltip label="Reset">
