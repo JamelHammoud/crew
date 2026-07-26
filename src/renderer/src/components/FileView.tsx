@@ -162,7 +162,7 @@ function CodeBody({
   dirty: boolean
   onChange: (next: string, caretLine: number) => void
   onKeys: (event: KeyboardEvent<HTMLTextAreaElement>) => void
-  onDismiss: (line: number | null) => void
+  onDismiss: (spot: Spot | null) => void
   areaRef: RefObject<HTMLTextAreaElement>
 }) {
   const theme = useTheme()
@@ -192,9 +192,7 @@ function CodeBody({
   return (
     <div
       onMouseDown={event => {
-        if (!marks) return
-        const row = (event.target as HTMLElement).closest?.('[data-line]')
-        onDismiss(row ? Number(row.getAttribute('data-line')) : null)
+        if (marks) onDismiss(spotAt(event))
       }}
       className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5"
     >
