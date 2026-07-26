@@ -122,6 +122,37 @@ describe('auto sync', () => {
     expect(fs.existsSync(path.join(b, 'fresh.ts'))).toBe(true)
   })
 
+  it('folds sync requests into the pass that has not started yet', async () => {
+    const { a } = await originWithClones()
+    const sync = new GitSync(a)
+    syncs.push(sync)
+
+    const running = sync.syncNow()
+    const queued = sync.syncNow()
+    const alsoQueued = sync.syncNow()
+
+    expect(queued).not.toBe(running)
+    expect(alsoQueued).toBe(queued)
+    await Promise.all([running, queued, alsoQueued])
+  })
+
+  it('runs a prompt without queueing behind every sync asked for so far', async () => {
+    const { a, b } = await originWithClones()
+    host = await startHost(a)
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const sync = autoSync(b, 10)
+    connectRunner(b, sync)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === agentId('jamel', 'fake'))
+
+    for (let i = 0; i < 200; i++) void sync.syncNow()
+
+    const asked = Date.now()
+    ui.chat('hello @Fake', [agentId('jamel', 'fake')])
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.agentId === agentId('jamel', 'fake'))
+    expect(Date.now() - asked).toBeLessThan(6000)
+  })
+
   it('leaves a plain folder alone and still runs prompts', async () => {
     host = await startHost(tmpDir('autosync-host'))
     const ui = await TestUi.connect(host.url, 'sam', host.code)
