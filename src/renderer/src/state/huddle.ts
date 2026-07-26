@@ -29,6 +29,8 @@ export interface HuddleState {
   picking: boolean
   speaking: string[]
   problem: MediaKind | null
+  micId: string | null
+  cameraId: string | null
   localCamera: MediaStream | null
   localScreen: MediaStream | null
   remote: Record<string, SlotStreams>
@@ -37,6 +39,7 @@ export interface HuddleState {
   leave: () => void
   toggleMic: () => Promise<void>
   toggleCamera: () => Promise<void>
+  pickInput: (kind: InputKind, id: string) => Promise<void>
   share: (sourceId: string) => Promise<void>
   stopSharing: () => void
   setPicking: (picking: boolean) => void
