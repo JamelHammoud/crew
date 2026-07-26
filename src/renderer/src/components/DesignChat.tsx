@@ -16,15 +16,7 @@ export function useBoardThreads(boardId: string): ThreadMeta[] {
   return useMemo(() => Object.values(threads).filter(thread => thread.boardId === boardId), [threads, boardId])
 }
 
-export default function DesignChat({
-  boardId,
-  composeNew,
-  onComposeNew
-}: {
-  boardId: string
-  composeNew: boolean
-  onComposeNew: (value: boolean) => void
-}) {
+export default function DesignChat({ boardId }: { boardId: string }) {
   const events = useCrew(s => s.events)
   const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
@@ -39,6 +31,7 @@ export default function DesignChat({
 
   const boardThreads = useBoardThreads(boardId)
   const [picked, setPicked] = useState<string | null>(null)
+  const [composeNew, setComposeNew] = useState(false)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
   const known = useRef(new Set<string>())
 
@@ -47,9 +40,9 @@ export default function DesignChat({
     for (const thread of fresh) known.current.add(thread.id)
     if (fresh.length > 0) {
       setPicked(fresh[fresh.length - 1].id)
-      onComposeNew(false)
+      setComposeNew(false)
     }
-  }, [boardThreads, onComposeNew])
+  }, [boardThreads])
 
   const fallback = boardThreads.length > 0 ? boardThreads[boardThreads.length - 1].id : null
   const threadId = composeNew ? null : picked && threads[picked] ? picked : fallback
