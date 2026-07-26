@@ -222,4 +222,11 @@ describe('what the ask bar says to the agent', () => {
   it('leaves the layers out when there are none to name', () => {
     expect(askPrompt('Bubbles', 'add a header', [])).toBe('@Bubbles add a header')
   })
+
+  it('is why the ask carries the id: a written name is not always readable back', () => {
+    const written = askPrompt('Bubbles', 'make it round', [])
+    expect(mentionsIn(written, [{ id: 'agent:bubbles', label: 'Bubbles', status: 'idle' }])).toEqual(['agent:bubbles'])
+    expect(mentionsIn(written, [{ id: 'agent:bubbles', label: 'Bubbles', status: 'offline' }])).toEqual([])
+    expect(mentionsIn(written, [{ id: 'agent:bubbles', label: 'Bubbles 2', status: 'idle' }])).toEqual([])
+  })
 })
