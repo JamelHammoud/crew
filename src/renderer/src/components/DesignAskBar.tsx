@@ -215,7 +215,7 @@ export default function DesignAskBar({
                 className="flex-1 min-w-0 py-1 bg-transparent text-sm leading-5 text-fg placeholder:text-fg/40 outline-none resize-none [scrollbar-width:none]"
               />
               <AttachButton attachmentKey={key} size="sm" />
-              <Tooltip label="Send">
+              <Tooltip label="Send" className="shrink-0">
                 <button
                   onClick={send}
                   disabled={!ready}
