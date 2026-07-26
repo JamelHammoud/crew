@@ -6,7 +6,9 @@ import { lookupEmoji, searchEmoji } from '../src/renderer/src/components/emojiDa
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
 import { useCrew } from '../src/renderer/src/state/store'
 import { isReactionEmoji } from '../src/shared/reactions'
+import { installLocalStorage } from './helpers/local-storage'
 
+const storage = installLocalStorage()
 const defaultReactToMessage = useCrew.getState().reactToMessage
 
 const mount = (reactToMessage = vi.fn()) => {
