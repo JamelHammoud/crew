@@ -1,5 +1,5 @@
 import { app, nativeImage, type NativeImage } from 'electron'
-import { fromSource } from './from-source'
+import { wearsBlueprint } from './from-source'
 import { DARK_ICON, DEV_DARK_ICON, DEV_LIGHT_ICON, LIGHT_ICON } from './icon-png'
 
 export type IconTheme = 'dark' | 'light'
