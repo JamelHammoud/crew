@@ -91,7 +91,7 @@ export default function DesignCanvas({
   const theme = useTheme()
   const [editor, setEditor] = useState<Editor | null>(null)
   const [ready, setReady] = useState(false)
-  const [agentCursors, setAgentCursors] = useState<Record<string, DesignPresence>>({})
+  const [cursors, setCursors] = useState<Record<string, DesignPresence>>({})
   const selfIdRef = useRef(selfId)
   selfIdRef.current = selfId
   const editorRef = useRef<Editor | null>(null)
@@ -103,7 +103,7 @@ export default function DesignCanvas({
 
   useEffect(() => {
     setReady(false)
-    setAgentCursors({})
+    setCursors({})
     let stopListen: (() => void) | null = null
     const pendingPut = new Map<string, TLRecord>()
     const pendingRemove = new Set<string>()
