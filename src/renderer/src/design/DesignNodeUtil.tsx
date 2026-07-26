@@ -99,6 +99,7 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
 
 function NodeText({ props, centered }: { props: DesignNodeProps; centered?: boolean }) {
   if (!props.text) return null
+  loadFonts([props.type.family])
   return (
     <div
       style={{
