@@ -8,6 +8,7 @@ export function Popover({
   align = 'end',
   side = 'bottom',
   at,
+  flush,
   className = '',
   children
 }: {
@@ -16,6 +17,7 @@ export function Popover({
   align?: 'start' | 'end'
   side?: 'top' | 'bottom'
   at?: { x: number; y: number }
+  flush?: boolean
   className?: string
   children: ReactNode
 }) {
@@ -115,7 +117,11 @@ export function Popover({
       {open &&
         style &&
         createPortal(
-          <div ref={popRef} style={style} className={`glass fixed z-50 rounded-2xl p-1.5 animate-pop ${className}`}>
+          <div
+            ref={popRef}
+            style={style}
+            className={`glass fixed z-50 rounded-2xl animate-pop ${flush ? '' : 'p-1.5'} ${className}`}
+          >
             {children}
           </div>,
           document.body
