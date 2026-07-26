@@ -124,7 +124,7 @@ function CodeBody({
   onChange: (next: string, caretLine: number) => void
   onKeys: (event: KeyboardEvent<HTMLTextAreaElement>) => void
   onDismiss: (line: number | null) => void
-  areaRef: RefObject<HTMLTextAreaElement | null>
+  areaRef: RefObject<HTMLTextAreaElement>
 }) {
   const theme = useTheme()
   const [highlight, setHighlight] = useState<Highlight | null>(null)
