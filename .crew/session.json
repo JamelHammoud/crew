@@ -125,7 +125,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785030032248,
+        "fetchedAt": 1785030064093,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -214,7 +214,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785030032250,
+        "fetchedAt": 1785030064097,
         "windows": [
           {
             "key": "primary",
@@ -309,7 +309,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785030032250,
+        "fetchedAt": 1785030064097,
         "windows": [
           {
             "key": "primary",
@@ -428,7 +428,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785030032248,
+        "fetchedAt": 1785030064093,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -541,7 +541,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785030032248,
+        "fetchedAt": 1785030064093,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -654,14 +654,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785029762607,
+        "fetchedAt": 1785030062651,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 52,
             "severity": "normal",
-            "resetsAt": 1785033000886,
+            "resetsAt": 1785033000907,
             "active": true
           },
           {
@@ -669,7 +669,7 @@
             "label": "Weekly (all models)",
             "percent": 11,
             "severity": "normal",
-            "resetsAt": 1785535200886,
+            "resetsAt": 1785535200907,
             "active": false
           },
           {
