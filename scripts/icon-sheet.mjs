@@ -46,7 +46,9 @@ export function draw() {
 `
 
 async function collect() {
-  const dir = await mkdtemp(path.join(tmpdir(), 'crew-icons-'))
+  // The bundle keeps react external and has to resolve it the way the app does,
+  // so it is built inside the project rather than in the system temp folder.
+  const dir = await mkdtemp(path.join(root, 'node_modules', '.crew-icons-'))
   try {
     const entry = path.join(dir, 'entry.jsx')
     await writeFile(entry, ENTRY(SETS.map(set => set.from)))
