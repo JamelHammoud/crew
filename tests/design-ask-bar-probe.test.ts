@@ -74,7 +74,7 @@ function boot(selected: string[] = ['shape:a']) {
 }
 
 describe('the ask bar', () => {
-  beforeEach(() => globalThis.localStorage?.clear())
+  beforeEach(() => storage.clear())
 
   it('stays out of the way until it is asked for', () => {
     const made = fakeBoard([node('shape:a', 'Card')])
