@@ -12,7 +12,7 @@ export const TOOL_KINDS: Array<{ kind: ToolKind; title: string; note: string; ma
   { kind: 'terminal', title: 'Run a command', note: 'Opens a terminal and runs it', mark: TerminalGlyph },
   { kind: 'file', title: 'Open a file', note: 'Anything in the project', mark: FileGlyph },
   { kind: 'doc', title: 'Open a doc', note: 'One of the pages the crew writes', mark: DocGlyph },
-  { kind: 'board', title: 'Open a board', note: 'One of the crew’s design boards', mark: FrameGlyph },
+  { kind: 'board', title: 'Open a board', note: 'One of the boards the crew draws on', mark: FrameGlyph },
   { kind: 'prompt', title: 'Ask an agent', note: 'Puts the work in the chat', mark: ChatGlyph },
   { kind: 'copy', title: 'Copy something', note: 'Puts what you write on the clipboard', mark: ClipboardGlyph }
 ]
