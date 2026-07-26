@@ -1,7 +1,8 @@
 import { ChevronRightIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useMemo, useState } from 'react'
 import type { AgentStep } from '../../../shared/llm'
-import { Counts, FilePathLink } from './StepRow'
+import Counts from './Counts'
+import { FilePathLink } from './StepRow'
 
 export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
   const [open, setOpen] = useState(false)
