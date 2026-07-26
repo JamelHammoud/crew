@@ -96,7 +96,9 @@ export default function ChatMessage({
               >
                 {replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
               </span>
-              <span className="mt-0.5 block truncate text-sm text-fg-faint">{item.replyTo.text}</span>
+              <span className="mt-0.5 block truncate text-sm text-fg-faint">
+                <EmojiText text={item.replyTo.text} />
+              </span>
             </span>
           </button>
         )}
