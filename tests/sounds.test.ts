@@ -241,6 +241,61 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
+  const PANELS = ['toolbox.open', 'tasks.open'] as const
+
+  const eachPanel = (): Map<string, Heard> => {
+    const heard = new Map<string, Heard>()
+    for (const panel of PANELS) {
+      started.length = 0
+      landed.length = 0
+      filters = []
+      clock += 500
+      playSound(panel)
+      expect(started.length).toBeGreaterThan(0)
+      heard.set(panel, {
+        at: [...started],
+        hz: [...landed],
+        scrapes: filters.filter(f => f.type === 'bandpass').map(f => f.hz[0]),
+        root: Math.min(...landed)
+      })
+    }
+    return heard
+  }
+
+  it('opens the toolbox in more than one movement', () => {
+    const toolbox = eachPanel().get('toolbox.open')
+    expect(new Set(toolbox?.at).size).toBeGreaterThan(1)
+  })
+
+  it('opens the tasks drawer in more than one movement', () => {
+    const tasks = eachPanel().get('tasks.open')
+    expect(new Set(tasks?.at).size).toBeGreaterThan(1)
+  })
+
+  it('makes the toolbox and the tasks drawer two different objects', () => {
+    const heard = [...eachPanel().values()]
+    const grain = heard.map(sound => sound.scrapes.join(','))
+    const bodies = heard.map(sound => sound.hz.map(hz => (hz / sound.root).toFixed(2)).join(','))
+    expect(new Set(grain).size).toBe(PANELS.length)
+    expect(new Set(bodies).size).toBe(PANELS.length)
+  })
+
+  it('strikes something on both rather than sounding a bare tone', () => {
+    for (const sound of eachPanel().values()) expect(sound.scrapes.length).toBeGreaterThan(0)
+  })
+
+  it('keeps both level with the tabs, neither one higher up the row', () => {
+    const roots = [...eachPanel().values(), ...eachTab().values()].map(sound => sound.root)
+    expect(Math.max(...roots) / Math.min(...roots)).toBeLessThan(1.6)
+  })
+
+  it('lets you open the toolbox and the tasks drawer one after the other', () => {
+    playSound('toolbox.open')
+    const first = started.length
+    playSound('tasks.open')
+    expect(started.length).toBeGreaterThan(first)
+  })
+
   it('says nothing when sounds are muted', () => {
     setSounds(false)
     playSound('send')
