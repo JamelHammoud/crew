@@ -519,6 +519,15 @@ export class CrewSession {
       case 'todo.do':
         if (meta.role === 'ui') this.handleTodoDo(member, msg.todoId, msg.agentId)
         break
+      case 'tool.add':
+        if (meta.role === 'ui') this.handleToolAdd(member, msg.name, msg.mark, msg.action)
+        break
+      case 'tool.edit':
+        if (meta.role === 'ui') this.handleToolEdit(member, msg.toolId, msg.name, msg.mark, msg.action)
+        break
+      case 'tool.remove':
+        if (meta.role === 'ui') this.handleToolRemove(member, msg.toolId)
+        break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
         break
