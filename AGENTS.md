@@ -44,6 +44,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - A tooltip never shows while the popover it opens is open. Pass `disabled` to the `Tooltip` around any button that opens a `Popover`.
 - The box a `Tooltip` puts around what it wraps is a flex one, so the button inside it is the whole of it. An inline box would carry a line of text it has no text for, and the few pixels a descender leaves under the button are what push it off center in every row it stands in. Anything else that wraps a control for positioning has to be flex for the same reason.
 - Agents always render `AgentIcon` (a deterministic generated pet seeded by the agent id), never an initial `Avatar`. Humans keep `Avatar`.
+- A mark never says where it sits in the row it is handed to. `Avatar`, `AgentIcon` and `AgentPhoto` carried `self-start` of their own, which beats the `items-center` of every row they stand in, so the pet rode high in the mention menu, the reply quote, the thread bar and the ask row. The row decides: `items-center` for a face beside one line, `items-start` on the few that hold a face beside a paragraph, which is a chat message and a feed card.
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
 - No logo or branding beyond the word "Crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
