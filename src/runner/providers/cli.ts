@@ -231,11 +231,19 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             hooks.onStep({ id: `b${blocks++}`, kind: 'text', text: out.text, status: 'done' })
           }
           if (out.activity) {
+            // Most tools hand back their whole result, and a file read or a
+            // search would fill the log the whole crew syncs. Only a command
+            // keeps what it printed, and the name it started under is what
+            // says so, since the result arrives unnamed.
+            const name = out.activity.name || toolNames.get(out.activity.id) || ''
+            if (out.activity.name) toolNames.set(out.activity.id, out.activity.name)
+            const output = isShellTool(name) ? out.activity.output : undefined
             hooks.onStep({
               id: `t${out.activity.id}`,
               kind: out.activity.kind,
               name: out.activity.name,
               detail: out.activity.detail ? stripRootFromText(cwd, out.activity.detail) : undefined,
+              output: output ? stripRootFromText(cwd, output) : undefined,
               files: out.activity.files?.map(file => ({ ...file, path: stripRoot(cwd, file.path) })),
               status: out.activity.status === 'started' ? 'running' : 'done'
             })
