@@ -68,6 +68,28 @@ function Detail({ children }: { children: ReactNode }) {
   return <div className="mt-1.5 mb-1 space-y-2">{children}</div>
 }
 
+// A row that already shows everything it has is not worth a chevron. A path or
+// a link opens where it points instead, and only what a row cannot hold opens
+// underneath it.
+const ROW_ROOM = 90
+
+const crowded = (detail: string): boolean => detail.length > ROW_ROOM || detail.includes('\n')
+
+const linkIn = (detail: string): string | null => {
+  const one = detail.trim()
+  return /^https?:\/\/\S+$/.test(one) ? one : null
+}
+
+function useOpener(detail: string, files: FileChange[]): (() => void) | null {
+  const alone = files.length === 1 && !files[0].diff ? files[0].path : null
+  const url = alone ? null : linkIn(detail)
+  const ref = alone ? { path: alone, line: null } : url ? null : parseFileRef(detail)
+  useLocated(ref ? [ref.path] : [])
+  if (url) return () => useBrowser.getState().openUrl(url)
+  if (ref && openable(ref.path)) return () => useBrowser.getState().openFile(targetFor(ref.path), ref.line)
+  return null
+}
+
 export const stepFiles = (item: ThreadItem): FileChange[] => item.files ?? []
 
 export const stepTotals = (files: FileChange[]): { added: number; removed: number } =>
