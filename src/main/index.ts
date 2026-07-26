@@ -190,7 +190,10 @@ function createWindow(): void {
   win.on('leave-full-screen', syncWindowShape)
   installContextMenu(win)
   installDisplayMedia(win.webContents.session)
-  win.webContents.once('did-finish-load', () => warmTerminals())
+  win.webContents.once('did-finish-load', () => {
+    warmTerminals()
+    tray.warm()
+  })
   // Who is here is read from a window's own view of the session, so with none
   // open the tray says so rather than showing a list that stopped moving.
   win.on('closed', () => {

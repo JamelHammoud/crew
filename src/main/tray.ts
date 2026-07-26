@@ -85,6 +85,10 @@ export class CrewTray {
     return this.panel.owns(win)
   }
 
+  warm(): void {
+    if (isMac) this.panel.warm()
+  }
+
   resizePanel(height: number): void {
     this.panel.resize(height)
   }
