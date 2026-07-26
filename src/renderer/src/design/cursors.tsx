@@ -52,7 +52,7 @@ const crosshair = cursor(`<path d='${CROSSHAIR}' ${KEYLINE}/>`, 14, 15, 'crossha
 const hand = (art: string, fallback: string) =>
   cursor(`<path d='${art}' transform='${HAND_PLACE}' ${KEYLINE}/>`, 14, 15, fallback)
 
-export const DESIGN_CURSORS = {
+export const DESIGN_CURSORS: Partial<Record<`--tl-cursor-${TLCursorType}`, string>> = {
   '--tl-cursor-default': arrow,
   '--tl-cursor-pointer': arrow,
   '--tl-cursor-move': arrow,
@@ -60,7 +60,7 @@ export const DESIGN_CURSORS = {
   '--tl-cursor-cross': crosshair,
   '--tl-cursor-grab': hand(OPEN_HAND, 'grab'),
   '--tl-cursor-grabbing': hand(CLOSED_HAND, 'grabbing')
-} as CSSProperties
+}
 
 export function CursorArrow({ color }: { color: string }) {
   return (
