@@ -867,6 +867,11 @@ body {
   @apply my-1.5 rounded-lg;
 }
 
+.tl-text-measure {
+  position: absolute !important;
+  visibility: hidden !important;
+}
+
 @keyframes shimmer {
   from {
     transform: translateX(-100%);
