@@ -5,6 +5,7 @@ import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 import type { ReactionEmoji } from './reactions'
+import type { CrewTool, ToolAction, ToolMark } from './toolbox'
 
 export interface RegisteredLlm {
   // Absent only from machines running an older build, which have no minted id
@@ -41,6 +42,8 @@ export interface SessionSnapshot {
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   todos: Todo[]
+  // Absent from a host running an older build, which has no toolbox to send.
+  tools?: CrewTool[]
   boards?: DesignBoardMeta[]
   // A call lives only as long as the people in it, so it rides in the snapshot
   // and never in the event log.
