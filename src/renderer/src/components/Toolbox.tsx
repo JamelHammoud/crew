@@ -18,7 +18,7 @@ import { Popover } from './Popover'
 import { opensPanel, runTool, staysOpen } from './runTool'
 import ToolBuilder from './ToolBuilder'
 import ToolMarkView from './toolMark'
-import { HeaderButton, Rule, SheetHeader, Tile } from './toolboxParts'
+import { Rule, SheetHeader, Tile } from './toolboxParts'
 
 // A built-in is the same button as one a crew builds, with the app's own hand
 // behind it rather than an action someone wrote down. It lights the same way a
