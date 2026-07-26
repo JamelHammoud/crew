@@ -2,14 +2,18 @@ import { DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { docCandidates, type DocRef } from '../../../shared/docs'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
+import { memberMentionCandidates } from '../../../shared/people'
+import type { MemberInfo } from '../../../shared/protocol'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
+import Avatar from './Avatar'
 import Emoji from './Emoji'
 import { emojiForShortcode, searchEmoji, type EmojiEntry } from './emojiData'
 import { rememberEmoji } from './emojiRecents'
 
 export type MentionItem =
   | { kind: 'agent'; agent: PooledAgent }
+  | { kind: 'member'; member: MemberInfo }
   | { kind: 'doc'; doc: DocRef }
   | { kind: 'emoji'; entry: EmojiEntry }
 
@@ -27,17 +31,22 @@ export function useMentionAutocomplete(
   inputRef: RefObject<HTMLTextAreaElement>
 ) {
   const agents = useCrew(s => s.agents)
+  const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
   const [query, setQuery] = useState<Query | null>(null)
   const [active, setActive] = useState(0)
   const caretTarget = useRef<number | null>(null)
   const matches = useMemo<MentionItem[]>(() => {
-    if (query?.trigger === '@') return mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent', agent }))
+    if (query?.trigger === '@')
+      return [
+        ...memberMentionCandidates(members, query.text).map(member => ({ kind: 'member' as const, member })),
+        ...mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent' as const, agent }))
+      ]
     if (query?.trigger === '#') return docCandidates(docs, query.text).map(doc => ({ kind: 'doc', doc }))
     if (query?.trigger === ':')
       return searchEmoji(query.text, EMOJI_MATCHES).map(entry => ({ kind: 'emoji', entry }))
     return []
-  }, [agents, docs, query])
+  }, [agents, docs, members, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const onChange = (next: string) => {
@@ -75,7 +84,13 @@ export function useMentionAutocomplete(
     const caret = inputRef.current?.selectionStart ?? value.length
     if (item.kind === 'emoji') rememberEmoji(item.entry.char)
     const token =
-      item.kind === 'agent' ? `@${item.agent.label}` : item.kind === 'doc' ? `#${item.doc.title}` : item.entry.char
+      item.kind === 'agent'
+        ? `@${item.agent.label}`
+        : item.kind === 'member'
+          ? `@${item.member.name}`
+          : item.kind === 'doc'
+            ? `#${item.doc.title}`
+            : item.entry.char
     const before = value
       .slice(0, caret)
       .replace(item.kind === 'emoji' ? EMOJI_TAIL : /[@#][^@#]*$/, token)
@@ -135,6 +150,33 @@ export function AgentRow({
       <AgentIcon seed={agent.id} size="sm" presence={agent.status === 'offline' ? 'offline' : 'online'} />
       <span className="flex-1 truncate">@{agent.label}</span>
       <span className="text-xs text-fg-muted shrink-0">{agent.ownerName}</span>
+    </button>
+  )
+}
+
+function MemberRow({
+  member,
+  active,
+  onClick,
+  onMouseEnter
+}: {
+  member: MemberInfo
+  active: boolean
+  onClick: () => void
+  onMouseEnter: () => void
+}) {
+  const selfId = useCrew(s => s.selfId)
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
+        active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
+      }`}
+    >
+      <Avatar name={member.name} size="sm" presence={member.connected ? 'online' : 'offline'} />
+      <span className="flex-1 truncate">@{member.name}</span>
+      <span className="text-xs text-fg-muted shrink-0">{member.id === selfId ? 'You' : 'Person'}</span>
     </button>
   )
 }
@@ -221,6 +263,16 @@ export function MentionMenu({
             <AgentRow
               key={item.agent.id}
               agent={item.agent}
+              active={index === activeIndex}
+              onClick={() => onPick(item)}
+              onMouseEnter={() => onHover(index)}
+            />
+          )
+        if (item.kind === 'member')
+          return (
+            <MemberRow
+              key={item.member.id}
+              member={item.member}
               active={index === activeIndex}
               onClick={() => onPick(item)}
               onMouseEnter={() => onHover(index)}
