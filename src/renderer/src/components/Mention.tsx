@@ -42,14 +42,14 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
         {agent.ownerName}'s PC
       </span>
       {settings.length > 0 && (
-        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] space-y-1.5">
+        <CardRule className="space-y-1.5">
           {settings.map(row => (
             <span key={row.label} className="flex items-center justify-between text-xs">
               <span className="text-fg-muted">{row.label}</span>
               <span className="text-fg-secondary">{row.value}</span>
             </span>
           ))}
-        </span>
+        </CardRule>
       )}
     </>
   )
