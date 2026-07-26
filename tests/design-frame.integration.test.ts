@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
+import { alignOffset, type Box } from '../src/renderer/src/design/align'
 import { FRAME_BACKGROUND, frameBackground, frameStroke, isLightFill } from '../src/renderer/src/design/frameFill'
 import { applyDesignOps } from '../src/server/designops'
 import { DESIGN_STYLE_DEFAULTS, type DesignDocument } from '../src/shared/design'
+
+function box(x: number, y: number, w: number, h: number): Box {
+  return { minX: x, minY: y, maxX: x + w, maxY: y + h, midX: x + w / 2, midY: y + h / 2 }
+}
 
 const PAGE = { id: 'page:page', typeName: 'page', name: 'Page 1', index: 'a1', meta: {} }
 
