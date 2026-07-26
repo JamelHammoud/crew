@@ -51,6 +51,16 @@ export default function BrowserPanel() {
   const activeTabId = useBrowser(s => s.activeTabId)
   const active = tabs.find(t => t.id === activeTabId) ?? null
 
+  const reload = (tab: BrowserTab) => {
+    if (showsImage(tab)) {
+      useBrowser.getState().reloadTab(tab.id)
+      return
+    }
+    const view = viewFor(tab.id)
+    if (tab.loading) view?.stop()
+    else view?.reload()
+  }
+
   return (
     <div className="h-full flex flex-col">
       <header className="app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0">
@@ -156,9 +166,19 @@ export default function BrowserPanel() {
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
         {tabs
           .filter(tab => tab.kind === 'web' && tab.initialUrl)
-          .map(tab => (
-            <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
-          ))}
+          .map(tab =>
+            showsImage(tab) ? (
+              <div
+                key={tab.id}
+                className="absolute inset-0 bg-ink-900"
+                style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
+              >
+                <ImageView key={tab.generation} src={tab.initialUrl} alt={imageName(tab.initialUrl)} />
+              </div>
+            ) : (
+              <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
+            )
+          )}
         {tabs
           .filter(tab => tab.kind === 'file')
           .map(tab => (
