@@ -148,7 +148,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
       </button>
       {expanded && (
         <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l border-ink-700 pl-4">
-          {item.text.trim()}
+          <TextWithFileLinks text={item.text.trim()} inline />
         </p>
       )}
     </div>
