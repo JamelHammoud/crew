@@ -285,8 +285,14 @@ export default function Toolbox({
       panel: true,
       run: () => useBrowser.getState().addTerminal()
     },
-    { id: 'music', name: 'Music', mark: MusicGlyph, soon: true },
-    { id: 'files', name: 'Files', mark: FolderGlyph, soon: true }
+    {
+      id: 'files',
+      name: 'Files',
+      mark: FolderGlyph,
+      panel: true,
+      run: () => useBrowser.getState().openFiles()
+    },
+    { id: 'music', name: 'Music', mark: MusicGlyph, soon: true }
   ]
 
   const press = (run: (() => void) | undefined, panel: boolean) => {
