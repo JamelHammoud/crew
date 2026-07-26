@@ -120,9 +120,11 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
             <SubLabel>Blend</SubLabel>
             <span />
             <Select full value={props.blend} options={BLENDS} onChange={blend => patch({ blend })} />
-            <PanelButton label="Clip content" active={props.clip} onClick={() => patch({ clip: !props.clip })}>
-              <ClipGlyph className="w-4 h-4" />
-            </PanelButton>
+            <Trailing>
+              <PanelButton label="Clip content" active={props.clip} onClick={() => patch({ clip: !props.clip })}>
+                <ClipGlyph className="w-4 h-4" />
+              </PanelButton>
+            </Trailing>
           </div>
         </>
       )}
