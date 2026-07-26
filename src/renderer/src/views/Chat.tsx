@@ -7,6 +7,8 @@ import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutoco
 import PlanCard from '../components/PlanCard'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
 import ThreadCard from '../components/ThreadCard'
+import HuddleCard from '../components/huddle/HuddleCard'
+import { huddleRecords, type HuddleRecord } from '../components/huddle/log'
 import { describeStep, endPreview, lastEnd, threadState, type ThreadItem, type ThreadState } from '../components/thread'
 import { reactionGroups } from '../components/reactionGroups'
 import { formatElapsed, formatTokens, isNewDay } from '../components/time'
@@ -19,6 +21,7 @@ import { messageReactionTarget } from '../../../shared/reactions'
 type Feed =
   | { kind: 'msg'; key: string; item: ThreadItem }
   | { kind: 'card'; key: string; ts: number; thread: ThreadMeta }
+  | { kind: 'huddle'; key: string; ts: number; record: HuddleRecord }
 
 export default function Chat() {
   const events = useCrew(s => s.events)
