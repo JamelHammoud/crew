@@ -10,6 +10,8 @@ import { PanelLeftGlyph, PanelRightGlyph } from '../design/glyphs'
 import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
 
+const HEADER_LIFT = 10
+
 export default function Design() {
   const boards = useCrew(s => s.boards)
   const createBoard = useCrew(s => s.createBoard)
