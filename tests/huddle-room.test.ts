@@ -34,13 +34,13 @@ describe('who gives way', () => {
 describe('naming a call', () => {
   it('says who is on the other end', () => {
     const self = peer('me', 'Jamel')
-    expect(huddleTitle({ peers: [self], startedAt: 1 }, 'me')).toBe('Waiting for others')
-    expect(huddleTitle({ peers: [self, peer('a', 'Ali')], startedAt: 1 }, 'me')).toBe('Ali')
-    expect(huddleTitle({ peers: [self, peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 1 }, 'me')).toBe(
+    expect(huddleTitle({ id: 'call-1', peers: [self], startedAt: 1 }, 'me')).toBe('Waiting for others')
+    expect(huddleTitle({ id: 'call-1', peers: [self, peer('a', 'Ali')], startedAt: 1 }, 'me')).toBe('Ali')
+    expect(huddleTitle({ id: 'call-1', peers: [self, peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 1 }, 'me')).toBe(
       'Ali and Kim'
     )
     expect(
-      huddleTitle({ peers: [self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')], startedAt: 1 }, 'me')
+      huddleTitle({ id: 'call-1', peers: [self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')], startedAt: 1 }, 'me')
     ).toBe('Ali and 2 others')
   })
 
@@ -50,7 +50,7 @@ describe('naming a call', () => {
   })
 
   it('picks out whoever is sharing', () => {
-    const room = { peers: [peer('a', 'Ali'), peer('b', 'Kim', { sharing: true })], startedAt: 1 }
+    const room = { id: 'call-1', peers: [peer('a', 'Ali'), peer('b', 'Kim', { sharing: true })], startedAt: 1 }
     expect(sharingPeer(room)?.name).toBe('Kim')
   })
 })
