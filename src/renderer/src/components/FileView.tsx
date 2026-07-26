@@ -95,11 +95,40 @@ function LineText({ content, tokens }: { content: string; tokens: ThemedToken[] 
 
 type Highlight = { lines: string[]; byLine: ThemedToken[][] }
 
+type Spot = { line: number; column: number; top: number }
+
+function columnAt(row: Element, x: number, y: number): number {
+  const text = row.lastElementChild
+  if (!text) return 0
+  const end = text.textContent?.length ?? 0
+  const point = document.caretRangeFromPoint?.(x, y)
+  if (!point) return end
+  if (point.startContainer !== text && !text.contains(point.startContainer)) {
+    return x < text.getBoundingClientRect().left ? 0 : end
+  }
+  const upto = document.createRange()
+  upto.setStart(text, 0)
+  upto.setEnd(point.startContainer, point.startOffset)
+  return upto.toString().length
+}
+
+function spotAt(event: MouseEvent<HTMLDivElement>): Spot | null {
+  const hit = (event.target as HTMLElement).closest?.('[data-line], [data-gone]') ?? null
+  let row: Element | null = hit
+  while (row && !row.hasAttribute('data-line')) row = row.nextElementSibling
+  if (!hit || !row) return null
+  return {
+    line: Number(row.getAttribute('data-line')),
+    column: hit === row ? columnAt(row, event.clientX, event.clientY) : 0,
+    top: row.getBoundingClientRect().top
+  }
+}
+
 function GoneLines({ lines, gutter }: { lines: string[]; gutter: string }) {
   return (
     <>
       {lines.map((content, index) => (
-        <div key={index} className="flex px-4 bg-danger/10">
+        <div key={index} data-gone className="flex px-4 bg-danger/10">
           <span
             style={{ minWidth: gutter }}
             className="shrink-0 mr-4 text-right select-none text-danger/60"
