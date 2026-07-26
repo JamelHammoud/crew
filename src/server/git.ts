@@ -27,17 +27,29 @@ export class GitSync {
   private chain: Promise<void> = Promise.resolve()
   private timer: NodeJS.Timeout | null = null
   private loop: NodeJS.Timeout | null = null
+  private looping = false
+  private waiting: Promise<void> | null = null
   private hasRemote: boolean | null = null
   private inRepo: boolean | null = null
   onLog: (line: string) => void = () => {}
 
   constructor(private repoPath: string) {}
 
+  // The next pass is armed once this one has settled. On a timer of its own it
+  // would keep arriving while a pass was still going, and a pass that takes
+  // longer than the interval leaves the queue longer every time it runs. That is
+  // what put a prompt seven minutes behind the passes ahead of it.
   start(intervalMs = AUTO_SYNC_MS): void {
     this.stop()
-    void this.syncNow()
-    this.loop = setInterval(() => void this.syncNow(), intervalMs)
-    this.loop.unref?.()
+    this.looping = true
+    const tick = (): void => {
+      void this.syncNow().then(() => {
+        if (!this.looping) return
+        this.loop = setTimeout(tick, intervalMs)
+        this.loop.unref?.()
+      })
+    }
+    tick()
   }
 
   schedule(): void {
@@ -46,14 +58,25 @@ export class GitSync {
   }
 
   stop(): void {
+    this.looping = false
     if (this.timer) clearTimeout(this.timer)
-    if (this.loop) clearInterval(this.loop)
+    if (this.loop) clearTimeout(this.loop)
     this.timer = null
     this.loop = null
   }
 
+  // A pass that has not started yet is the pass everyone asking now wants: it
+  // commits whatever is on disk when it runs, so a second one behind it would
+  // find nothing left to do. Only a pass already under way is waited out, which
+  // holds the queue at one running and one waiting however often this is called.
   syncNow(message = 'crew sync'): Promise<void> {
-    return this.enqueue(() => this.sync(message)).catch(() => {})
+    if (this.waiting) return this.waiting
+    const pass = this.enqueue(() => {
+      this.waiting = null
+      return this.sync(message)
+    }).catch(() => {})
+    this.waiting = pass
+    return pass
   }
 
   status(): Promise<RepoStatus> {
