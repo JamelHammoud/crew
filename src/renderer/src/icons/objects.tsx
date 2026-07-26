@@ -90,13 +90,6 @@ export const PromptGlyph = glyph(
   </>
 )
 
-export const VideoGlyph = glyph(
-  <>
-    <rect x="2.5" y="5.5" width="13.5" height="13" rx="3" />
-    <path d="M16 11 20.2 8.1a1 1 0 0 1 1.6.8v6.2a1 1 0 0 1-1.6.8L16 13Z" />
-  </>
-)
-
 export const DesktopGlyph = glyph(
   <>
     <rect x="2.5" y="4.5" width="19" height="13" rx="3" />
