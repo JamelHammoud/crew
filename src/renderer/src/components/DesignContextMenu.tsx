@@ -107,7 +107,7 @@ export default function DesignContextMenu({
         {layers.length > 1 && (
           <>
             <MenuDivider />
-            <SubMenu icon={<LayersGlyph />} label="Select layer">
+            <SubMenu icon={<LayersGlyph />} label="Select layer" maxHeight={MENU_HEIGHT}>
               <div className="min-w-48 max-w-64">
                 {layers.map(shape => {
                   const Icon = glyphForShape(shape)

@@ -211,13 +211,17 @@ body {
   box-shadow: var(--glass-shadow);
 }
 
-/* Chrome that floats over the canvas, where the artwork behind it can be any color. */
+/* Chrome that floats over the canvas, where the artwork behind it can be any
+   color. A white shape behind a panel reads straight through a plain glass tint,
+   so this one is deeper and blurs harder: what comes through is the color of
+   what is back there, never its edges. */
 .glass-strong {
-  background: rgb(24 24 24 / 0.94);
+  background: rgb(24 24 24 / 0.97);
+  backdrop-filter: blur(48px) saturate(180%);
 }
 
 .light .glass-strong {
-  background: rgb(252 252 252 / 0.96);
+  background: rgb(252 252 252 / 0.975);
 }
 
 .top-bar-container {

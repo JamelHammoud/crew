@@ -34,7 +34,7 @@ export default function Select({
           className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
-      <Popover open={open} onClose={() => setOpen(false)} align="start" side={side} className="min-w-40 max-h-64 overflow-y-auto">
+      <Popover open={open} onClose={() => setOpen(false)} align="start" side={side} maxHeight={256} className="min-w-40">
         {options.map(option => {
           const selected = option.value === value
           return (
