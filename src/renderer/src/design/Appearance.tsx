@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useEditor, useValue } from 'tldraw'
 import type { Corner, DesignNodeProps } from '../../../shared/designNode'
 import { PanelButton } from '../components/DesignControls'
@@ -76,7 +76,7 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
         {props &&
           perCorner &&
           CORNERS.map((corner, index) => (
-            <span key={corner.at} className={index % 2 === 0 ? 'contents' : 'contents'}>
+            <Fragment key={corner.at}>
               <NumberInput
                 icon={<CornerGlyph className={`w-4 h-4 ${corner.spin}`} />}
                 value={props.radius[corner.at]}
@@ -84,7 +84,7 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
                 onChange={next => setOne(corner.at, next)}
               />
               {index % 2 === 1 && <span />}
-            </span>
+            </Fragment>
           ))}
       </div>
     </Section>
