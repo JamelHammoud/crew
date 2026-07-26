@@ -60,10 +60,16 @@ describe('a thinking step', () => {
     expect(mark().style.getPropertyValue('--ring')).toBe(`${RING_R}px`)
   })
 
-  it('sets the thought in italic', () => {
+  it('sets the thought in italic, in the muted grey', () => {
     render(createElement(StepRow, { item: thought('working it out', true) }))
     const line = screen.getByText('working it out')
-    expect(line.closest('.italic')).not.toBeNull()
+    const quiet = line.closest('.md-quiet')
+    expect(quiet).not.toBeNull()
+
+    const css = readFileSync(new URL('../src/renderer/src/styles.css', import.meta.url), 'utf8')
+    const rule = css.split('.md-quiet {')[1]?.split('}')[0] ?? ''
+    expect(rule).toContain('italic')
+    expect(rule).toContain('text-fg-muted')
   })
 
   it('breaks a thought into paragraphs instead of leaving a blank line between them', () => {
