@@ -1,4 +1,5 @@
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
+import { PanelButton } from '../components/DesignControls'
 import {
   AlignBottomGlyph,
   AlignCenterGlyph,
@@ -8,11 +9,9 @@ import {
   AlignTopGlyph,
   FlipHorizontalGlyph,
   FlipVerticalGlyph,
-  RotationGlyph,
   type Glyph
 } from './glyphs'
 import { Field, NumberInput, Section } from './InspectorFields'
-import { PanelButton } from '../components/DesignControls'
 
 type Align = 'left' | 'center-horizontal' | 'right' | 'top' | 'center-vertical' | 'bottom'
 
@@ -24,6 +23,12 @@ const ALIGNMENTS: Array<{ op: Align; label: string; Icon: Glyph }> = [
   { op: 'center-vertical', label: 'Align middle', Icon: AlignMiddleGlyph },
   { op: 'bottom', label: 'Align bottom', Icon: AlignBottomGlyph }
 ]
+
+function sizeOf(shape: TLShape): { w: number; h: number } | null {
+  const props = shape.props as { w?: unknown; h?: unknown }
+  if (typeof props.w !== 'number' || typeof props.h !== 'number') return null
+  return { w: props.w, h: props.h }
+}
 
 function alignWithin(editor: Editor, shape: TLShape, op: Align): void {
   const bounds = editor.getShapePageBounds(shape.id)
@@ -42,10 +47,9 @@ function alignWithin(editor: Editor, shape: TLShape, op: Align): void {
 export default function Transform() {
   const editor = useEditor()
   const shapes = useValue('design selected shapes', () => editor.getSelectedShapes(), [editor])
-  const bounds = useValue('design selection bounds', () => editor.getSelectionRotatedPageBounds(), [editor])
   const only = shapes.length === 1 ? shapes[0] : null
-  const inParent = only ? editor.getShape(only.parentId as TLShapeId) !== undefined : false
-  const canAlign = shapes.length > 1 || inParent
+  const size = only ? sizeOf(only) : null
+  const nested = only ? editor.getShape(only.parentId as TLShapeId) !== undefined : false
 
   const align = (op: Align) => {
     editor.markHistoryStoppingPoint()
@@ -53,20 +57,16 @@ export default function Transform() {
     else if (only) alignWithin(editor, only, op)
   }
 
-  const move = (axis: 'x' | 'y', value: number) => {
-    if (!bounds) return
+  const move = (next: { x?: number; y?: number }) => {
+    if (!only) return
     editor.markHistoryStoppingPoint()
-    editor.nudgeShapes(editor.getSelectedShapeIds(), {
-      x: axis === 'x' ? value - bounds.minX : 0,
-      y: axis === 'y' ? value - bounds.minY : 0
-    })
+    editor.updateShape({ id: only.id, type: only.type, x: next.x ?? only.x, y: next.y ?? only.y })
   }
 
-  const resize = (axis: 'w' | 'h', value: number) => {
-    if (!bounds || value <= 0) return
+  const resize = (next: { w?: number; h?: number }) => {
+    if (!only || !size) return
     editor.markHistoryStoppingPoint()
-    const scale = axis === 'w' ? value / bounds.w : value / bounds.h
-    editor.resizeShape(editor.getSelectedShapeIds()[0], { x: axis === 'w' ? scale : 1, y: axis === 'h' ? scale : 1 })
+    editor.resizeShape(only.id, { x: (next.w ?? size.w) / size.w, y: (next.h ?? size.h) / size.h })
   }
 
   const spin = (degrees: number) => {
@@ -83,54 +83,59 @@ export default function Transform() {
   return (
     <>
       <Section label="Position">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between">
           {ALIGNMENTS.map(item => (
-            <PanelButton key={item.op} label={item.label} disabled={!canAlign} onClick={() => align(item.op)}>
+            <PanelButton
+              key={item.op}
+              label={item.label}
+              disabled={shapes.length < 2 && !nested}
+              onClick={() => align(item.op)}
+            >
               <item.Icon className="w-4 h-4" />
             </PanelButton>
           ))}
         </div>
-        {bounds && (
-          <div className="flex gap-2">
-            <Field label="X">
-              <NumberInput value={bounds.minX} onChange={value => move('x', value)} />
-            </Field>
-            <Field label="Y">
-              <NumberInput value={bounds.minY} onChange={value => move('y', value)} />
-            </Field>
-          </div>
-        )}
         {only && (
-          <div className="flex items-center gap-2">
-            <Field label="Angle">
-              <NumberInput
-                value={Math.round((only.rotation * 180) / Math.PI)}
-                min={-360}
-                max={360}
-                suffix="°"
-                onChange={spin}
-              />
-            </Field>
-            <span className="flex items-center gap-1 shrink-0">
-              <PanelButton label="Flip horizontal" onClick={() => flip('horizontal')}>
-                <FlipHorizontalGlyph className="w-4 h-4" />
-              </PanelButton>
-              <PanelButton label="Flip vertical" onClick={() => flip('vertical')}>
-                <FlipVerticalGlyph className="w-4 h-4" />
-              </PanelButton>
-            </span>
-          </div>
+          <>
+            <div className="flex gap-2">
+              <Field label="X">
+                <NumberInput value={only.x} onChange={value => move({ x: value })} />
+              </Field>
+              <Field label="Y">
+                <NumberInput value={only.y} onChange={value => move({ y: value })} />
+              </Field>
+            </div>
+            <div className="flex items-center gap-2">
+              <Field label="Angle">
+                <NumberInput
+                  value={Math.round((only.rotation * 180) / Math.PI)}
+                  min={-360}
+                  max={360}
+                  suffix="°"
+                  onChange={spin}
+                />
+              </Field>
+              <span className="flex items-center gap-1 shrink-0">
+                <PanelButton label="Flip horizontal" onClick={() => flip('horizontal')}>
+                  <FlipHorizontalGlyph className="w-4 h-4" />
+                </PanelButton>
+                <PanelButton label="Flip vertical" onClick={() => flip('vertical')}>
+                  <FlipVerticalGlyph className="w-4 h-4" />
+                </PanelButton>
+              </span>
+            </div>
+          </>
         )}
       </Section>
 
-      {bounds && (
+      {size && (
         <Section label="Layout">
           <div className="flex gap-2">
             <Field label="W">
-              <NumberInput value={bounds.w} min={1} onChange={value => resize('w', value)} />
+              <NumberInput value={size.w} min={1} onChange={value => resize({ w: value })} />
             </Field>
             <Field label="H">
-              <NumberInput value={bounds.h} min={1} onChange={value => resize('h', value)} />
+              <NumberInput value={size.h} min={1} onChange={value => resize({ h: value })} />
             </Field>
           </div>
         </Section>
@@ -138,5 +143,3 @@ export default function Transform() {
     </>
   )
 }
-
-export { RotationGlyph }
