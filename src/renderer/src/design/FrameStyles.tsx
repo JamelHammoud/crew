@@ -12,21 +12,21 @@ export default function FrameStyles({ shape }: { shape: TLFrameShape }) {
   }
 
   return (
-      <Section
-        label="Background"
-        action={
-          background === FRAME_BACKGROUND ? undefined : (
-            <button
-              onClick={() => setBackground(FRAME_BACKGROUND)}
-              className="text-xs text-fg-muted transition-colors hover:text-fg"
-            >
-              Reset
-            </button>
-          )
-        }
-      >
-        <ColorInput value={background} onChange={setBackground} />
-      </Section>
+    <Section
+      label="Background"
+      action={
+        background === FRAME_BACKGROUND ? undefined : (
+          <button
+            onClick={() => setBackground(FRAME_BACKGROUND)}
+            className="text-xs text-fg-muted transition-colors hover:text-fg"
+          >
+            Reset
+          </button>
+        )
+      }
+    >
+      <ColorInput value={background} onChange={setBackground} />
+    </Section>
   )
 }
 
