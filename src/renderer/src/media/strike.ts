@@ -54,8 +54,7 @@ export function hush(ctx: AudioContext, sounding: Sounding[]): void {
   }
 }
 
-function hit(ctx: AudioContext, s: Strike): Sounding {
-  const start = ctx.currentTime + s.at
+export function strikeAt(ctx: AudioContext, s: Strike, start: number, sink: Sink): Sounding {
   const bus = ctx.createGain()
   bus.gain.value = (s.gain ?? 1) * GAIN
 
@@ -63,12 +62,12 @@ function hit(ctx: AudioContext, s: Strike): Sounding {
   if (panner) {
     panner.pan.value = s.pan ?? 0
     bus.connect(panner)
-    panner.connect(ctx.destination)
+    panner.connect(sink.out)
   } else {
-    bus.connect(ctx.destination)
+    bus.connect(sink.out)
   }
 
-  const room = s.wet ? reverb(ctx) : null
+  const room = s.wet ? sink.room : null
   if (room) {
     const send = ctx.createGain()
     send.gain.value = s.wet ?? 0
