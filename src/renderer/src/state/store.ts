@@ -587,6 +587,9 @@ export const useCrew = create<CrewState>((set, get) => {
     openDesign: boardId => {
       socket.send({ type: 'design.open', boardId })
     },
+    peekDesign: boardId => {
+      socket.send({ type: 'design.peek', boardId })
+    },
     initDesign: (boardId, document) => {
       socket.send({ type: 'design.init', boardId, document })
     },
