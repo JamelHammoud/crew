@@ -7,7 +7,6 @@ import {
   MoreGlyph,
   MoonGlyph,
   PeopleGlyph,
-  SignalGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
   SunGlyph
@@ -240,17 +239,6 @@ export default function TopBar({
               onClick={() => {
                 setMenuOpen(false)
                 onTab('agents')
-              }}
-            />
-            <MenuItem
-              icon={<SignalGlyph />}
-              label={huddleJoined ? 'Leave huddle' : huddleSize > 0 ? 'Join huddle' : 'Huddle'}
-              hint={huddleSize > 0 ? `${huddleSize}` : undefined}
-              onClick={() => {
-                setMenuOpen(false)
-                const huddle = useHuddle.getState()
-                if (huddle.joined) huddle.leave()
-                else void huddle.join()
               }}
             />
             {joinLink && (
