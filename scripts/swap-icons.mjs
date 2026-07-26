@@ -60,7 +60,7 @@ const MAP = {
   PlusIcon: 'PlusGlyph',
   RectangleGroupIcon: 'GroupGlyph',
   SignalIcon: 'SignalGlyph',
-  SignalSlashIcon: 'SignalOffGlyph',
+  SignalSlashIcon: 'HangupGlyph',
   SpeakerWaveIcon: 'SpeakerGlyph',
   SpeakerXMarkIcon: 'SpeakerOffGlyph',
   StarIcon: 'StarGlyph',
