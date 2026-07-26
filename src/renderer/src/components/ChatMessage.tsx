@@ -88,19 +88,15 @@ export default function ChatMessage({
             type="button"
             aria-label="Go to the message this replies to"
             onClick={() => jumpToMessage(item.replyTo!.targetId)}
-            className="mt-2 flex w-full min-w-0 items-center gap-2 border-l-2 border-ink-600 py-0.5 pl-3 pr-2 text-left transition-colors hover:border-ink-500"
+            className="mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 text-left transition-colors hover:bg-fg/[0.1] active:scale-[0.99]"
           >
-            <ArrowUturnLeftIcon className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
-            <span className="min-w-0">
-              <span
-                className={`block text-xs font-semibold ${item.replyTo.authorId === selfId && !item.self ? 'text-fg' : 'text-fg-muted'}`}
-              >
-                {replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
-              </span>
-              <span className="mt-0.5 block truncate text-sm text-fg-faint">
-                <EmojiText text={item.replyTo.text} />
-              </span>
-            </span>
+            <ReplyQuote
+              authorId={item.replyTo.authorId}
+              authorName={item.replyTo.authorName}
+              label={replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
+              text={item.replyTo.text}
+              strong={item.replyTo.authorId === selfId && !item.self}
+            />
           </button>
         )}
         {editing ? (
