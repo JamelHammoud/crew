@@ -32,6 +32,11 @@ const drawn = (Icon: typeof CursorGlyph): SVGPathElement => {
   return document.querySelector('svg path') as SVGPathElement
 }
 
+const step = (className: string, prefix: string) => {
+  const found = className.match(new RegExp(`(?:^|\\s)${prefix}-([\\d.]+)(?:\\s|$)`))
+  return found ? Number(found[1]) * 4 : null
+}
+
 const placed = (transform: string) => {
   const move = transform.match(/translate\((-?[\d.]+) (-?[\d.]+)\)/)!
   const scale = Number(transform.match(/scale\(([\d.]+)\)/)![1])
