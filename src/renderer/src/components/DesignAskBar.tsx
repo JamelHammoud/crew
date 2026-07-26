@@ -9,6 +9,7 @@ import AgentIcon from './AgentIcon'
 import { AttachButton, AttachmentTray } from './Attachments'
 import { MenuItem, Popover } from './Popover'
 import Tooltip from './Tooltip'
+import { useAutoResize } from './useAutoResize'
 import { useBoardThreads } from './DesignChat'
 
 // A line of the ask is 20 tall on 8 of padding, and it grows to five of them
