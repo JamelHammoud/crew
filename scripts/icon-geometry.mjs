@@ -228,29 +228,49 @@ export function shapesOf(markup) {
   return out
 }
 
+// A subpath that comes back to where it started encloses something, and a shape
+// that encloses is measured on its box. One that does not is a run of line, and
+// a line is measured on how far it reaches. Telling the two apart is the whole
+// of it: grading a chevron against a square is how a set ends up reporting that
+// everything in it is undersized.
+const ENCLOSING = 12
+
 export function measure(markup, stroke = 1.5) {
   let minX = Infinity
   let minY = Infinity
   let maxX = -Infinity
   let maxY = -Infinity
   let ink = 0
+  let reach = 0
+  let body = null
   for (const shape of shapesOf(markup)) {
     const weight = shape.weight === null ? stroke : shape.weight
     for (const run of samplePath(shape.d)) {
       let length = 0
       let area = 0
+      let lo = [Infinity, Infinity]
+      let hi = [-Infinity, -Infinity]
       for (let i = 0; i < run.length; i++) {
         const [x, y] = run[i]
-        minX = Math.min(minX, x)
-        minY = Math.min(minY, y)
-        maxX = Math.max(maxX, x)
-        maxY = Math.max(maxY, y)
+        lo = [Math.min(lo[0], x), Math.min(lo[1], y)]
+        hi = [Math.max(hi[0], x), Math.max(hi[1], y)]
         if (i) length += Math.hypot(x - run[i - 1][0], y - run[i - 1][1])
         const [nx, ny] = run[(i + 1) % run.length]
         area += x * ny - nx * y
       }
+      minX = Math.min(minX, lo[0])
+      minY = Math.min(minY, lo[1])
+      maxX = Math.max(maxX, hi[0])
+      maxY = Math.max(maxY, hi[1])
       ink += length * weight
-      if (shape.filled) ink += Math.abs(area / 2)
+      area = Math.abs(area / 2)
+      if (shape.filled) ink += area
+      const shut = Math.hypot(run[0][0] - run.at(-1)[0], run[0][1] - run.at(-1)[1]) < 0.01
+      // How far this run gets from end to end, which is what a chevron, a plus
+      // or a cross is really asking to be measured on.
+      reach = Math.max(reach, Math.hypot(hi[0] - lo[0], hi[1] - lo[1]))
+      if (shut && area >= ENCLOSING && area > (body?.area ?? 0))
+        body = { area, width: hi[0] - lo[0], height: hi[1] - lo[1] }
     }
   }
   if (minX === Infinity) return null
@@ -260,9 +280,15 @@ export function measure(markup, stroke = 1.5) {
     width: maxX - minX,
     height: maxY - minY,
     // The centre of the art, which is what has to agree with the centre of the
-    // box. A shape that is a quarter unit low reads low in every row it sits in.
+    // box. A shape a quarter unit low reads low in every row it sits in.
     cx: (minX + maxX) / 2,
     cy: (minY + maxY) / 2,
-    ink
+    ink,
+    reach,
+    // The largest thing the art encloses, and how round it is. A circle fills
+    // 79% of its own box and a rectangle fills all of it, which is enough to
+    // tell a ring from a panel without being told.
+    body,
+    round: body ? body.area / (body.width * body.height) < 0.88 : false
   }
 }
