@@ -139,7 +139,7 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
     Icon: SparkGlyph,
     terms: 'ai change edit prompt chat',
     keys: ASK,
-    when: () => true,
+    when: some,
     run: ctx => ctx.ask()
   },
   {
