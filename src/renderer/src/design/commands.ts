@@ -59,9 +59,14 @@ export interface DesignCommand {
   group: CommandGroup
   Icon: Glyph
   terms?: string
+  keys?: Chord
   when: (ctx: CommandContext) => boolean
   run: (ctx: CommandContext) => void
 }
+
+const ASK: Chord = { key: 'a', meta: true, shift: true }
+const LOCK: Chord = { key: 'l', meta: true, shift: true }
+const MASK: Chord = { key: 'm', meta: true, ctrl: true }
 
 let held: ReturnType<Editor['getContentFromCurrentPage']> = undefined
 
