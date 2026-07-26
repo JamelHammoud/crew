@@ -88,6 +88,9 @@ class FakeAudioContext {
   resume(): Promise<void> {
     return Promise.resolve()
   }
+  close(): Promise<void> {
+    return Promise.resolve()
+  }
 }
 
 vi.stubGlobal('AudioContext', FakeAudioContext)
