@@ -237,46 +237,14 @@ function EffectsSection({ effects }: { effects: NodeView['effects'] }) {
   )
 }
 
-function TextSection({ text }: { text: NodeView['text'] }) {
-  if (!text) return null
-  const { fields, value } = text
-  return (
-    <Section title="Text">
-      {(fields.size || fields.weight) && (
-        <Row>
-          {fields.size && <NumberInput label="Size" value={value.size} min={1} onChange={size => text.set({ size })} />}
-          {fields.weight && (
-            <NumberInput
-              label="Weight"
-              value={value.weight}
-              min={100}
-              max={900}
-              onChange={weight => text.set({ weight })}
-            />
-          )}
-        </Row>
-      )}
-      {fields.family && <Choice value={value.family} options={FAMILIES} onPick={family => text.set({ family })} />}
-      {fields.color && <ColorInput value={value.color} onChange={color => text.set({ color })} />}
-      {fields.align && (
-        <Choice
-          value={value.align}
-          options={TEXT_ALIGNS}
-          onPick={align => text.set({ align: align as TypeStyle['align'] })}
-        />
-      )}
-    </Section>
-  )
-}
-
 export default function Inspector({ view }: { view: NodeView }) {
   return (
     <>
       <LayoutSection layout={view.layout} />
+      {view.text && <Typography text={view.text} />}
       <FillSection fills={view.fills} />
       <StrokeSection strokes={view.strokes} />
       <EffectsSection effects={view.effects} />
-      <TextSection text={view.text} />
     </>
   )
 }
