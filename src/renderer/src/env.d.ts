@@ -4,6 +4,7 @@ import type { AgentAlert } from '../../shared/alerts'
 import type { PathLocation, RepoFile } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
+import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../../shared/repository'
 import type { RecentJoin } from '../../shared/recent'
 
@@ -34,8 +35,20 @@ declare global {
     locatePath(path: string): Promise<PathLocation>
     revealFile(path: string): Promise<void>
     setBadge(count: number): Promise<void>
+    publishPresence(here: Present[]): void
+    onPresence(listener: (snapshot: PresenceSnapshot) => void): () => void
+    onTrayTheme(listener: (theme: 'dark' | 'light') => void): () => void
+    resizeTray(height: number): void
+    openWindow(): void
+    closeTray(): void
     setTheme(theme: 'dark' | 'light'): Promise<void>
     notify(alert: AgentAlert): Promise<void>
+    openTerminal(id: string, size: { cols: number; rows: number }): void
+    writeTerminal(id: string, data: string): void
+    resizeTerminal(id: string, size: { cols: number; rows: number }): void
+    closeTerminal(id: string): void
+    onTerminalData(listener: (id: string, chunk: string) => void): () => void
+    onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string) => void): () => void
     onFullScreen(listener: (full: boolean) => void): void
     onOpenUrl(listener: (url: string) => void): void

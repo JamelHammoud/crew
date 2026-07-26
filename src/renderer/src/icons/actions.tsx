@@ -1,0 +1,98 @@
+import { glyph } from '../components/glyph'
+
+export const PlusGlyph = glyph(<path d="M12 4.5v15M4.5 12h15" />)
+
+export const MinusGlyph = glyph(<path d="M4.5 12h15" />)
+
+// A diagonal reads longer than the same stroke laid flat, so the cross runs 11
+// where the plus runs 15. Both end up carrying about thirty units of ink.
+export const CloseGlyph = glyph(<path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5" />)
+
+// The short arm is a little under half the long one. Any shorter and the tick
+// loses its foot, any longer and it turns into a corner.
+export const CheckGlyph = glyph(<path d="m5 12.5 4.5 4.5L19 7" />)
+
+export const PencilGlyph = glyph(
+  <>
+    <path d="M4.1 19.9 4.85 16.05 16.15 4.75a2.45 2.45 0 0 1 3.45 3.45L8.25 19.5Z" />
+    <path d="m14.55 6.35 3.45 3.45" />
+  </>
+)
+
+export const TrashGlyph = glyph(
+  <>
+    <path d="M4.5 7.25h15" />
+    <path d="M9.25 7.25V5.75a1.5 1.5 0 0 1 1.5-1.5h2.5a1.5 1.5 0 0 1 1.5 1.5v1.5" />
+    <path d="M6.25 7.25V18A2.5 2.5 0 0 0 8.75 20.5h6.5A2.5 2.5 0 0 0 17.75 18V7.25" />
+  </>
+)
+
+export const SearchGlyph = glyph(
+  <>
+    <circle cx="10.75" cy="10.75" r="6.75" />
+    <path d="m15.6 15.6 4.4 4.4" />
+  </>
+)
+
+// The sheet behind is drawn as an open corner rather than a second closed box.
+// Two full rectangles cross twice and the crossing is all you see at 16px.
+export const DuplicateGlyph = glyph(
+  <>
+    <rect x="8" y="8" width="12" height="12" rx="3" />
+    <path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8" />
+  </>
+)
+
+export const ClipboardGlyph = glyph(
+  <>
+    <path d="M9 6H7.25A2.25 2.25 0 0 0 5 8.25v10.5A2.25 2.25 0 0 0 7.25 21h9.5A2.25 2.25 0 0 0 19 18.75V8.25A2.25 2.25 0 0 0 16.75 6H15" />
+    <rect x="9" y="3" width="6" height="4.5" rx="2" />
+  </>
+)
+
+export const ChecklistGlyph = glyph(
+  <>
+    <path d="m4 8 2 2 3.75-4.25" />
+    <path d="M13 8h7" />
+    <path d="m4 16.25 2 2 3.75-4.25" />
+    <path d="M13 16.25h7" />
+  </>
+)
+
+export const LinkGlyph = glyph(
+  <>
+    <path d="M10.4 13.6a4.1 4.1 0 0 0 5.9 0l2.5-2.6a4.1 4.1 0 0 0-5.8-5.8l-1.4 1.4" />
+    <path d="M13.6 10.4a4.1 4.1 0 0 0-5.9 0l-2.5 2.6a4.1 4.1 0 0 0 5.8 5.8l1.4-1.4" />
+  </>
+)
+
+export const EyedropperGlyph = glyph(
+  <>
+    <path d="M15.4 4.45a3 3 0 0 1 4.2 4.2l-2.1 2.1-4.2-4.2Z" />
+    <path d="m16.3 9.55-8.5 8.5-3.4 1.5 1.5-3.4 8.5-8.5" />
+  </>
+)
+
+export const MenuGlyph = glyph(<path d="M4.5 7h15M4.5 12h15M4.5 17h15" />)
+
+export const HandleGlyph = glyph(<path d="M4.5 9.5h15M4.5 14.5h15" />)
+
+// Ellipsis dots are filled, because a 1.5 stroke ring at this size fills in on
+// its own and reads as a smudge rather than as a circle.
+const DOTS = [5.6, 12, 18.4]
+
+export const MoreGlyph = glyph(
+  <>
+    {DOTS.map(cx => (
+      <circle key={cx} cx={cx} cy={12} r={1.6} fill="currentColor" stroke="none" />
+    ))}
+  </>
+)
+
+export const MoreVerticalGlyph = glyph(
+  <>
+    {DOTS.map(cy => (
+      <circle key={cy} cx={12} cy={cy} r={1.6} fill="currentColor" stroke="none" />
+    ))}
+  </>
+)

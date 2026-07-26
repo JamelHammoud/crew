@@ -22,17 +22,20 @@ import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
 import {
   applyDesignCursors,
+  applyToolCursor,
   ARROW_TIP,
   cursorColor,
   CursorArrow,
   DESIGN_CURSORS
 } from '../design/cursors'
+import { busyAgents } from '../design/busyAgents'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import SelectionOverlay from '../design/SelectionOverlay'
 import { keepWholePixels } from '../design/wholePixels'
 import { selectionStroke } from '../design/selectionColor'
 import { designShapeUtils } from '../design/shapeUtils'
+import { restoreView, watchView } from '../design/viewMemory'
 import { onDesign, useCrew } from '../state/store'
 import AgentIcon, { petHue } from './AgentIcon'
 import Avatar from './Avatar'
@@ -58,6 +61,7 @@ const overlayUtils = [CursorsDrawnByCrew]
 
 // crew owns every panel now, so tldraw's own chrome stays out of the way.
 const components: TLComponents = {
+  ContextMenu: null,
   MenuPanel: null,
   NavigationPanel: null,
   StylePanel: null,
@@ -83,9 +87,11 @@ const PRESENCE_MS = 100
 
 export default function DesignCanvas({
   boardId,
+  asking,
   onEditor
 }: {
   boardId: string
+  asking?: boolean
   onEditor?: (editor: Editor | null) => void
 }) {
   const openDesign = useCrew(s => s.openDesign)
@@ -100,6 +106,7 @@ export default function DesignCanvas({
   selfIdRef.current = selfId
   const editorRef = useRef<Editor | null>(null)
   editorRef.current = editor
+  const lastSpot = useRef<Record<string, DesignPresence>>({})
 
   const store = useMemo(() => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
 
@@ -140,6 +147,7 @@ export default function DesignCanvas({
 
     const applyPresence = (presence: DesignPresence) => {
       if (presence.userId === selfIdRef.current) return
+      if (presence.kind === 'agent' && presence.cursor) lastSpot.current[presence.userId] = presence
       setCursors(prev => {
         if (presence.pageId === null || !presence.cursor) {
           if (!(presence.userId in prev)) return prev
@@ -150,9 +158,12 @@ export default function DesignCanvas({
         return { ...prev, [presence.userId]: presence }
       })
       if (presence.kind === 'agent') return
+      // What someone has selected outlives their cursor leaving the board, so
+      // this record only goes when they do.
       const id = InstancePresenceRecordType.createId(presence.userId)
+      const at = presence.cursor ?? { x: 0, y: 0 }
       store.mergeRemoteChanges(() => {
-        if (presence.pageId === null || !presence.cursor) {
+        if (presence.pageId === null) {
           if (store.has(id)) store.remove([id])
           return
         }
@@ -163,7 +174,7 @@ export default function DesignCanvas({
               userId: presence.userId as TLUserId,
               userName: presence.name,
               color: cursorColor(avatarHue(presence.name)),
-              cursor: { x: presence.cursor.x, y: presence.cursor.y, type: 'default', rotation: 0 },
+              cursor: { x: at.x, y: at.y, type: 'default', rotation: 0 },
               selectedShapeIds: presence.selection as TLShapeId[],
               currentPageId: presence.pageId as TLPageId,
               lastActivityTimestamp: Date.now()
@@ -219,6 +230,7 @@ export default function DesignCanvas({
         })
         return
       }
+      if (msg.type !== 'design.presence') return
       applyPresence(msg.presence)
     })
 
@@ -233,31 +245,59 @@ export default function DesignCanvas({
     }
   }, [boardId, store, openDesign, initDesign, applyDesign, sendDesignPresence])
 
+  // A cursor that is not over the board is not on the board, so it goes away
+  // rather than standing wherever it was last seen.
   useEffect(() => {
     if (!ready || !editor) return
+    const container = editor.getContainer()
     let last = ''
+    let over = true
+    const onEnter = () => {
+      over = true
+    }
+    const onLeave = () => {
+      over = false
+    }
+    container.addEventListener('pointerenter', onEnter)
+    container.addEventListener('pointerleave', onLeave)
     const timer = window.setInterval(() => {
       const point = editor.inputs.currentPagePoint
-      const cursor = { x: Math.round(point.x), y: Math.round(point.y) }
+      const cursor = over ? { x: Math.round(point.x), y: Math.round(point.y) } : null
       const selection = editor.getSelectedShapeIds() as string[]
       const pageId = editor.getCurrentPageId() as string
-      const key = `${cursor.x},${cursor.y}|${selection.join(',')}|${pageId}`
+      const key = `${cursor ? `${cursor.x},${cursor.y}` : 'away'}|${selection.join(',')}|${pageId}`
       if (key === last) return
       last = key
       sendDesignPresence(boardId, cursor, selection, pageId)
     }, PRESENCE_MS)
-    return () => window.clearInterval(timer)
+    return () => {
+      container.removeEventListener('pointerenter', onEnter)
+      container.removeEventListener('pointerleave', onLeave)
+      window.clearInterval(timer)
+    }
   }, [ready, editor, boardId, sendDesignPresence])
 
   useEffect(() => {
     if (ready && editor) applyDesignDefaults(editor)
   }, [ready, editor])
 
+  useEffect(() => {
+    if (!ready || !editor) return
+    restoreView(editor, boardId)
+    return watchView(editor, boardId)
+  }, [ready, editor, boardId])
+
   const selected = useValue(
     'design selected color',
     () => (editor ? selectionStroke(editor) : null),
     [editor]
   )
+
+  const tool = useValue('design tool cursor', () => editor?.getCurrentToolId() ?? '', [editor])
+
+  useEffect(() => {
+    if (editor) applyToolCursor(editor.getContainer(), tool)
+  }, [editor, tool])
 
   const onMount = useCallback(
     (mounted: Editor) => {
@@ -297,8 +337,8 @@ export default function DesignCanvas({
         getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
-      <SelectionOverlay editor={editor} />
-      <RemoteCursors editor={editor} cursors={Object.values(cursors)} />
+      <SelectionOverlay editor={editor} asking={asking} />
+      <RemoteCursors editor={editor} boardId={boardId} live={cursors} held={lastSpot} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">
           <Spinner size={20} />
@@ -308,13 +348,49 @@ export default function DesignCanvas({
   )
 }
 
-function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: DesignPresence[] }) {
+function RemoteCursors({
+  editor,
+  boardId,
+  live,
+  held
+}: {
+  editor: Editor | null
+  boardId: string
+  live: Record<string, DesignPresence>
+  held: { current: Record<string, DesignPresence> }
+}) {
+  const threads = useCrew(s => s.threads)
+  const threadPrompts = useCrew(s => s.threadPrompts)
+  const agents = useCrew(s => s.agents)
   const camera = useValue('design camera', () => (editor ? editor.getCamera() : null), [editor])
   const pageId = useValue('design page', () => (editor ? editor.getCurrentPageId() : null), [editor])
-  if (!editor || camera === null) return null
+  const middle = useValue('design middle', () => editor?.getCurrentPageBounds()?.center ?? null, [editor])
+
+  const busy = useMemo(
+    () =>
+      busyAgents(
+        boardId,
+        Object.values(threads),
+        threadPrompts,
+        Object.fromEntries(agents.map(agent => [agent.id, agent.label]))
+      ),
+    [boardId, threads, threadPrompts, agents]
+  )
+
+  if (!editor || camera === null || pageId === null) return null
+
+  const working = new Set(busy.map(agent => agent.id))
+  const standing: DesignPresence[] = busy
+    .filter(agent => !live[agent.id])
+    .map(agent => {
+      const spot = held.current[agent.id]
+      const cursor = spot?.cursor ?? (middle ? { x: middle.x, y: middle.y } : null)
+      return { userId: agent.id, name: agent.label, kind: 'agent', cursor, selection: [], pageId, ts: 0 }
+    })
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {cursors
+      {[...Object.values(live), ...standing]
         .filter(presence => presence.cursor && presence.pageId === pageId)
         .map(presence => {
           const point = editor.pageToViewport({ x: presence.cursor!.x, y: presence.cursor!.y })
@@ -336,6 +412,7 @@ function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: De
                   <Avatar name={presence.name} size="sm" />
                 )}
                 <span className="text-xs font-semibold text-fg">{presence.name}</span>
+                {working.has(presence.userId) && <Spinner size={11} />}
               </span>
             </div>
           )

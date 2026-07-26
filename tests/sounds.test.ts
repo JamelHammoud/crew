@@ -182,7 +182,7 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
-  const TABS = ['tab.chat', 'tab.agents', 'tab.docs', 'tab.design'] as const
+  const TABS = ['tab.chat', 'tab.docs', 'tab.design'] as const
 
   type Heard = { at: number[]; hz: number[]; scrapes: number[]; root: number }
 
@@ -207,7 +207,7 @@ describe('playing a sound', () => {
 
   it('gives every tab its own noise', () => {
     const shapes = [...eachTab().values()].map(sound => `${sound.at.join(',')}|${sound.hz.join(',')}`)
-    expect(new Set(shapes).size).toBe(4)
+    expect(new Set(shapes).size).toBe(TABS.length)
   })
 
   it('keeps the tabs level with each other, none higher up the row than the rest', () => {
@@ -223,14 +223,13 @@ describe('playing a sound', () => {
     const heard = [...eachTab().values()]
     const grain = heard.map(sound => sound.scrapes.join(','))
     const bodies = heard.map(sound => sound.hz.map(hz => (hz / sound.root).toFixed(2)).join(','))
-    expect(new Set(grain).size).toBe(4)
-    expect(new Set(bodies).size).toBe(4)
+    expect(new Set(grain).size).toBe(TABS.length)
+    expect(new Set(bodies).size).toBe(TABS.length)
   })
 
   it('lets you cross the whole row without a note being swallowed', () => {
     playSound('tab.chat')
     const first = started.length
-    playSound('tab.agents')
     playSound('tab.docs')
     playSound('tab.design')
     expect(started.length).toBeGreaterThan(first)

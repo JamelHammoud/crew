@@ -3,19 +3,23 @@ import {
   ArrowPathIcon,
   ArrowRightIcon,
   ArrowTopRightOnSquareIcon,
+  CommandLineIcon,
   DocumentTextIcon,
   GlobeAltIcon,
   PhotoIcon,
   PlusIcon,
+  XCircleIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { isImageUrl } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
 import ImageView from './ImageView'
+import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
+import TerminalView from './TerminalView'
 import Tooltip from './Tooltip'
 
 function normalizeUrl(input: string): string {
@@ -27,13 +31,15 @@ function normalizeUrl(input: string): string {
   return `https://${trimmed}`
 }
 
-export const showsImage = (tab: BrowserTab): boolean => tab.kind === 'web' && isImageUrl(tab.initialUrl)
+export const showsImage = (tab: BrowserTab): boolean =>
+  tab.kind === 'image' || (tab.kind === 'web' && isImageUrl(tab.initialUrl))
 
 const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
 
 function tabLabel(tab: BrowserTab): string {
+  if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
-  if (showsImage(tab)) return imageName(tab.initialUrl)
+  if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
   if (tab.title) return tab.title
   if (!tab.url) return 'New tab'
   try {
@@ -50,6 +56,7 @@ export default function BrowserPanel() {
   const tabs = useBrowser(s => s.tabs)
   const activeTabId = useBrowser(s => s.activeTabId)
   const active = tabs.find(t => t.id === activeTabId) ?? null
+  const [newOpen, setNewOpen] = useState(false)
 
   const reload = (tab: BrowserTab) => {
     if (showsImage(tab)) {
@@ -69,11 +76,35 @@ export default function BrowserPanel() {
             <TabPill key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
         </div>
-        <Tooltip label="New tab">
-          <button onClick={() => useBrowser.getState().addTab()} aria-label="New tab" className={`app-no-drag ${iconButton}`}>
-            <PlusIcon className="w-4 h-4" />
-          </button>
-        </Tooltip>
+        <span className="app-no-drag shrink-0 flex">
+          <Tooltip label="New tab" disabled={newOpen}>
+            <button
+              onClick={() => setNewOpen(true)}
+              aria-label="New tab"
+              className={`${iconButton} ${newOpen ? 'text-fg bg-fg/[0.06]' : ''}`}
+            >
+              <PlusIcon className="w-4 h-4" />
+            </button>
+          </Tooltip>
+          <Popover open={newOpen} onClose={() => setNewOpen(false)}>
+            <MenuItem
+              icon={<GlobeAltIcon />}
+              label="Web page"
+              onClick={() => {
+                setNewOpen(false)
+                useBrowser.getState().addTab()
+              }}
+            />
+            <MenuItem
+              icon={<CommandLineIcon />}
+              label="Terminal"
+              onClick={() => {
+                setNewOpen(false)
+                useBrowser.getState().addTerminal()
+              }}
+            />
+          </Popover>
+        </span>
         <Tooltip label="Close">
           <button
             onClick={() => useBrowser.getState().closeAll()}
@@ -165,7 +196,7 @@ export default function BrowserPanel() {
 
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
         {tabs
-          .filter(tab => tab.kind === 'web' && tab.initialUrl)
+          .filter(tab => (tab.kind === 'web' || tab.kind === 'image') && tab.initialUrl)
           .map(tab =>
             showsImage(tab) ? (
               <div
@@ -173,7 +204,7 @@ export default function BrowserPanel() {
                 className="absolute inset-0 bg-ink-900"
                 style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
               >
-                <ImageView key={tab.generation} src={tab.initialUrl} alt={imageName(tab.initialUrl)} />
+                <ImageView key={tab.generation} src={tab.initialUrl} alt={tabLabel(tab)} />
               </div>
             ) : (
               <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
@@ -183,6 +214,11 @@ export default function BrowserPanel() {
           .filter(tab => tab.kind === 'file')
           .map(tab => (
             <FileView key={tab.id} tab={tab} active={tab.id === activeTabId} />
+          ))}
+        {tabs
+          .filter(tab => tab.kind === 'terminal')
+          .map(tab => (
+            <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
         {active && active.kind === 'web' && !active.initialUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -196,36 +232,75 @@ export default function BrowserPanel() {
 }
 
 function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
+  const pillRef = useRef<HTMLButtonElement>(null)
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    if (active) pillRef.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+  }, [active])
+
   return (
-    <button
-      onClick={() => useBrowser.getState().selectTab(tab.id)}
-      className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
-        active ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
-      }`}
-    >
-      {tab.loading ? (
-        <Spinner size={14} className="text-fg-muted" />
-      ) : tab.kind === 'file' ? (
-        <DocumentTextIcon className="w-4 h-4 shrink-0" />
-      ) : showsImage(tab) ? (
-        <PhotoIcon className="w-4 h-4 shrink-0" />
-      ) : tab.favicon ? (
-        <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
-      ) : (
-        <GlobeAltIcon className="w-4 h-4 shrink-0" />
-      )}
-      <span className="truncate">{tabLabel(tab)}</span>
-      <span
-        onClick={event => {
-          event.stopPropagation()
-          useBrowser.getState().closeTab(tab.id)
+    <>
+      <button
+        ref={pillRef}
+        data-tab={tab.id}
+        onClick={() => useBrowser.getState().selectTab(tab.id)}
+        onContextMenu={event => {
+          event.preventDefault()
+          setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        aria-label="Close tab"
-        className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
+        className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
+          active
+            ? 'bg-ink-800 text-fg'
+            : menuAt
+              ? 'text-fg-secondary bg-fg/[0.04]'
+              : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+        }`}
       >
-        <XMarkIcon className="w-3 h-3" />
-      </span>
-    </button>
+        {tab.loading ? (
+          <Spinner size={14} className="text-fg-muted" />
+        ) : tab.kind === 'terminal' ? (
+          <CommandLineIcon className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'file' ? (
+          <DocumentTextIcon className="w-4 h-4 shrink-0" />
+        ) : showsImage(tab) ? (
+          <PhotoIcon className="w-4 h-4 shrink-0" />
+        ) : tab.favicon ? (
+          <img src={tab.favicon} alt="" className="w-4 h-4 shrink-0 rounded-sm" />
+        ) : (
+          <GlobeAltIcon className="w-4 h-4 shrink-0" />
+        )}
+        <span className="truncate">{tabLabel(tab)}</span>
+        <span
+          onClick={event => {
+            event.stopPropagation()
+            useBrowser.getState().closeTab(tab.id)
+          }}
+          aria-label="Close tab"
+          className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
+        >
+          <XMarkIcon className="w-3 h-3" />
+        </span>
+      </button>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+        <MenuItem
+          icon={<XMarkIcon />}
+          label="Close tab"
+          onClick={() => {
+            setMenuAt(null)
+            useBrowser.getState().closeTab(tab.id)
+          }}
+        />
+        <MenuItem
+          icon={<XCircleIcon />}
+          label="Close all tabs"
+          onClick={() => {
+            setMenuAt(null)
+            useBrowser.getState().closeAll()
+          }}
+        />
+      </Popover>
+    </>
   )
 }
 

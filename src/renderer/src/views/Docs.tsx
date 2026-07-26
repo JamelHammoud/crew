@@ -72,6 +72,8 @@ export default function Docs() {
   }
 
   const tree = buildTree(Object.keys(docs))
+  const trail: string[] = []
+  for (let parent = parentOf(current); parent; parent = parentOf(parent)) trail.unshift(parent)
 
   const currentTitle = docs[current]?.title ?? fallbackTitle(current)
   useEffect(() => {
@@ -290,6 +292,21 @@ export default function Docs() {
       <FindBar containerRef={contentRef} scrollerRef={scrollerRef} />
       <div ref={scrollerRef} className="flex-1 min-w-0 overflow-y-auto px-6">
         <div ref={contentRef} className="max-w-[760px] mx-auto pt-24">
+            {trail.length > 0 && (
+              <nav className="px-[54px] pb-1 flex items-center gap-1 text-xs font-semibold text-fg-muted">
+                {trail.map((slug, index) => (
+                  <span key={slug} className="flex items-center gap-1 min-w-0">
+                    {index > 0 && <span className="text-fg-faint">/</span>}
+                    <button
+                      onClick={() => setPage(slug)}
+                      className="truncate max-w-44 transition-colors hover:text-fg-secondary"
+                    >
+                      {titleOf(slug) || 'Untitled'}
+                    </button>
+                  </span>
+                ))}
+              </nav>
+            )}
             <div className="px-[54px] pb-2">
               <input
                 ref={titleRef}
@@ -308,7 +325,7 @@ export default function Docs() {
                   }
                 }}
                 placeholder="Untitled"
-                className="w-full bg-transparent text-3xl font-bold text-fg placeholder:text-fg-faint outline-none"
+                className="w-full bg-transparent text-[32px] leading-tight font-semibold tracking-[-0.02em] text-fg placeholder:text-fg-faint outline-none"
               />
             </div>
             <DocEditor
@@ -317,7 +334,6 @@ export default function Docs() {
               text={docs[current]?.text ?? ''}
               onChange={markdown => updateDoc(current, markdown)}
             />
-            <div className="h-40" />
         </div>
       </div>
     </div>

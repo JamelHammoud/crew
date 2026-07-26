@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 export type BrowserTab = {
   id: string
-  kind: 'web' | 'file'
+  kind: 'web' | 'file' | 'terminal' | 'image'
   initialUrl: string
   url: string
   title: string
@@ -12,19 +12,25 @@ export type BrowserTab = {
   canGoForward: boolean
   path: string
   line: number | null
+  diff: string | null
   back: string[]
   forward: string[]
   generation: number
 }
+
+export const DEFAULT_WIDTH = 480
 
 type BrowserState = {
   width: number
   tabs: BrowserTab[]
   activeTabId: string | null
   setWidth(width: number): void
+  resetWidth(): void
   openUrl(url: string): void
-  openFile(path: string, line?: number | null): void
+  openImage(src: string, name: string): void
+  openFile(path: string, line?: number | null, diff?: string | null): void
   addTab(): void
+  addTerminal(): void
   selectTab(id: string): void
   closeTab(id: string): void
   closeAll(): void
@@ -52,6 +58,7 @@ function makeTab(url = ''): BrowserTab {
     canGoForward: false,
     path: '',
     line: null,
+    diff: null,
     back: [],
     forward: [],
     generation: 0
@@ -64,10 +71,11 @@ function clampWidth(width: number): number {
 }
 
 export const useBrowser = create<BrowserState>((set, get) => ({
-  width: 480,
+  width: DEFAULT_WIDTH,
   tabs: [],
   activeTabId: null,
   setWidth: width => set({ width: clampWidth(width) }),
+  resetWidth: () => set({ width: clampWidth(DEFAULT_WIDTH) }),
   openUrl: url => {
     const { tabs, activeTabId } = get()
     const existing = tabs.find(t => t.kind === 'web' && t.url === url)
@@ -85,28 +93,41 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = makeTab(url)
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
-  openFile: (path, line = null) => {
+  openImage: (src, name) => {
+    const existing = get().tabs.find(t => t.kind === 'image' && t.initialUrl === src)
+    if (existing) {
+      set({ activeTabId: existing.id })
+      return
+    }
+    const tab = { ...makeTab(src), kind: 'image' as const, title: name }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
+  openFile: (path, line = null, diff = null) => {
     const { tabs, activeTabId } = get()
     const existing = tabs.find(t => t.kind === 'file' && t.path === path)
     if (existing) {
       set(s => ({
         activeTabId: existing.id,
-        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, line } : t))
+        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, line, diff, generation: t.generation + 1 } : t))
       }))
       return
     }
     const active = tabs.find(t => t.id === activeTabId)
     if (active && active.kind === 'web' && !active.initialUrl) {
       set(s => ({
-        tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'file' as const, path, line } : t))
+        tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'file' as const, path, line, diff } : t))
       }))
       return
     }
-    const tab = { ...makeTab(), kind: 'file' as const, path, line }
+    const tab = { ...makeTab(), kind: 'file' as const, path, line, diff }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
   addTab: () => {
     const tab = makeTab()
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
+  addTerminal: () => {
+    const tab = { ...makeTab(), kind: 'terminal' as const }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
   selectTab: id => set({ activeTabId: id }),
@@ -125,7 +146,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     set(s => ({
       tabs: s.tabs.map(t =>
         t.id === id && t.path !== path
-          ? { ...t, path, line: null, back: [...t.back, t.path], forward: [] }
+          ? { ...t, path, line: null, diff: null, back: [...t.back, t.path], forward: [] }
           : t
       )
     })),
@@ -134,7 +155,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
       tabs: s.tabs.map(t => {
         if (t.id !== id || t.back.length === 0) return t
         const path = t.back[t.back.length - 1]
-        return { ...t, path, line: null, back: t.back.slice(0, -1), forward: [t.path, ...t.forward] }
+        return { ...t, path, line: null, diff: null, back: t.back.slice(0, -1), forward: [t.path, ...t.forward] }
       })
     })),
   fileForward: id =>
@@ -142,7 +163,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
       tabs: s.tabs.map(t => {
         if (t.id !== id || t.forward.length === 0) return t
         const path = t.forward[0]
-        return { ...t, path, line: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
+        return { ...t, path, line: null, diff: null, back: [...t.back, t.path], forward: t.forward.slice(1) }
       })
     })),
   reloadTab: id =>

@@ -24,7 +24,7 @@ function rounds(shape: { type: string; props: unknown }): boolean {
   return shape.type === 'design-node' && hasCorners(nodeShapeOf((shape.props as { shape?: unknown }).shape))
 }
 
-export default function SelectionOverlay({ editor }: { editor: Editor | null }) {
+export default function SelectionOverlay({ editor, asking }: { editor: Editor | null; asking?: boolean }) {
   const view = useValue(
     'design selection overlay',
     () => {
@@ -55,12 +55,16 @@ export default function SelectionOverlay({ editor }: { editor: Editor | null }) 
       {node && rect.w > MIN_FOR_HANDLES && rect.h > MIN_FOR_HANDLES && (
         <RadiusHandles editor={editor} shape={node} rect={rect} zoom={zoom} stroke={stroke} />
       )}
-      <span
-        className="absolute -translate-x-1/2 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums text-white whitespace-nowrap"
-        style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10, background: stroke }}
-      >
-        {Math.round(size.w)} × {Math.round(size.h)}
-      </span>
+      {/* The ask bar hangs under the same edge, and a readout behind glass reads
+          as a smudge rather than a number. */}
+      {!asking && (
+        <span
+          className="absolute -translate-x-1/2 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums text-white whitespace-nowrap"
+          style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10, background: stroke }}
+        >
+          {Math.round(size.w)} × {Math.round(size.h)}
+        </span>
+      )}
     </div>
   )
 }

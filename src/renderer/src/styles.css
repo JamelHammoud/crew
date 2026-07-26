@@ -23,6 +23,7 @@
 
   --color-positive: #4ade80;
   --color-danger: #f87171;
+  --color-attention: #fbbf24;
 
   --text-xs: 11px;
   --text-xs--line-height: 16px;
@@ -64,18 +65,30 @@
 
 @keyframes message-flash {
   0%,
-  30% {
-    background-color: color-mix(in srgb, var(--color-fg) 9%, transparent);
-    box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-fg) 9%, transparent);
+  55% {
+    opacity: 1;
   }
   to {
-    background-color: transparent;
-    box-shadow: 0 0 0 10px transparent;
+    opacity: 0;
   }
 }
 
+/* The flash is a layer of its own behind the message, never the message's own
+   animation: that property already carries the rise it arrived on, and taking
+   it away made every jump land the row a second time. */
 .message-flash {
-  animation: message-flash 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  isolation: isolate;
+}
+
+.message-flash::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -6px -12px;
+  border-radius: var(--radius-card);
+  background-color: color-mix(in srgb, var(--color-fg) 10%, transparent);
+  pointer-events: none;
+  animation: message-flash 0.5s ease-out both;
 }
 
 .light {
@@ -95,6 +108,7 @@
 
   --color-positive: #16a34a;
   --color-danger: #dc2626;
+  --color-attention: #b45309;
 }
 
 html,
@@ -143,6 +157,12 @@ body {
 
 ::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -178,32 +198,42 @@ body {
   -webkit-app-region: no-drag;
 }
 
-.glass {
-  background: rgb(28 28 28 / 0.78);
-  /* No -webkit- fallback: Electron's Chromium only honors the standard property,
-     and Lightning CSS collapses an alias pair down to the prefixed one at build. */
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow:
+:root {
+  --glass-bg: rgb(28 28 28 / 0.78);
+  --glass-line: rgb(255 255 255 / 0.08);
+  --glass-shadow:
     0 16px 48px rgb(0 0 0 / 0.55),
     0 2px 8px rgb(0 0 0 / 0.35);
 }
 
-.light .glass {
-  background: rgb(255 255 255 / 0.85);
-  border: 1px solid rgb(0 0 0 / 0.08);
-  box-shadow:
+.light {
+  --glass-bg: rgb(255 255 255 / 0.85);
+  --glass-line: rgb(0 0 0 / 0.08);
+  --glass-shadow:
     0 16px 48px rgb(0 0 0 / 0.14),
     0 2px 8px rgb(0 0 0 / 0.08);
 }
 
-/* Chrome that floats over the canvas, where the artwork behind it can be any color. */
+.glass {
+  background: var(--glass-bg);
+  /* No -webkit- fallback: Electron's Chromium only honors the standard property,
+     and Lightning CSS collapses an alias pair down to the prefixed one at build. */
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Chrome that floats over the canvas, where the artwork behind it can be any
+   color. A white shape behind a panel reads straight through a plain glass tint,
+   so this one is deeper and blurs harder: what comes through is the color of
+   what is back there, never its edges. */
 .glass-strong {
-  background: rgb(24 24 24 / 0.94);
+  background: rgb(24 24 24 / 0.97);
+  backdrop-filter: blur(48px) saturate(180%);
 }
 
 .light .glass-strong {
-  background: rgb(252 252 252 / 0.96);
+  background: rgb(252 252 252 / 0.975);
 }
 
 .top-bar-container {
@@ -265,13 +295,6 @@ body {
   animation: tab-icon-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.5) var(--pop-delay, 0ms) both;
 }
 
-/* The planet's ring tips level around it as its lobes draw. */
-.tab-icon-sweep {
-  transform-box: view-box;
-  transform-origin: 9.2px 10.6px;
-  animation: tab-icon-sweep 0.42s cubic-bezier(0.22, 1, 0.36, 1) var(--sweep-delay, 0ms) both;
-}
-
 @keyframes tab-icon-in {
   from {
     width: 0;
@@ -315,19 +338,9 @@ body {
   }
 }
 
-@keyframes tab-icon-sweep {
-  from {
-    transform: rotate(var(--sweep-from, 0deg));
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tab-icon,
   .tab-icon-svg,
-  .tab-icon-sweep,
   .tab-icon-draw,
   .tab-icon-pop {
     animation-duration: 1ms;
@@ -361,13 +374,144 @@ body {
   }
 }
 
-.design-generating {
+.design-generating,
+.pulse-soft {
   animation: generating 1.1s ease-in-out infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .design-generating {
+  .design-generating,
+  .pulse-soft {
     animation: none;
+  }
+}
+
+/* A thought carries a live ellipsis: a wave travels the three dots while it runs,
+   and when it lands the middle one grows into a ring, gathers the other two into
+   it, and the check strokes itself in. One gesture, in the app's own hand.
+   The two ends of the ring's growth are a transition, so a thought already
+   finished when it is scrolled into view is simply drawn done. What the wave
+   holds cannot be: taking an animation off an element drops its values where
+   they stand rather than easing them, so the landing is animated too, and it
+   starts on the value the wave rests at. Only a mark that was watched thinking
+   wears it, or every old row in a thread would land again on the way past. */
+.thinking-mark .thinking-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.thinking-mark[data-state='thinking'] .thinking-dot {
+  animation: thinking-wave 1.25s cubic-bezier(0.4, 0, 0.2, 1) var(--dot-delay, 0ms) infinite;
+}
+
+.thinking-mark[data-state='thought'] .thinking-dot {
+  opacity: 0;
+  transform: translateX(var(--gather, 0)) scale(0.2);
+}
+
+.thinking-mark[data-landing] .thinking-dot {
+  animation: thinking-gather 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.thinking-mark .thinking-ring {
+  r: var(--ring, 1.7px);
+  opacity: 0;
+  transition:
+    r 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.thinking-mark[data-state='thought'] .thinking-ring {
+  opacity: 1;
+}
+
+.thinking-mark .thinking-check {
+  stroke-dasharray: 1 1.2;
+  stroke-dashoffset: 1.1;
+  transition: stroke-dashoffset 0.26s cubic-bezier(0.4, 0, 0.2, 1) 0.16s;
+}
+
+.thinking-mark[data-state='thought'] .thinking-check {
+  stroke-dashoffset: 0;
+}
+
+@keyframes thinking-wave {
+  0%,
+  62%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.82);
+  }
+  28% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes thinking-gather {
+  from {
+    opacity: 0.4;
+    transform: translateX(0) scale(0.82);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--gather, 0)) scale(0.2);
+  }
+}
+
+
+/* The word turns over with the mark, so the two read as one change. */
+.word-swap {
+  animation: word-swap 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes word-swap {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thinking-mark[data-state='thinking'] .thinking-dot,
+  .word-swap {
+    animation: none;
+  }
+
+  .thinking-mark[data-landing] .thinking-dot {
+    animation-duration: 1ms;
+  }
+}
+
+/* An answer arrives as it is written, so the words that have just landed are
+   faded up and the ones before them are already still. Several are in the air at
+   once, each a little further along than the one after it, which leaves the end
+   of the line as a soft edge that firms up rather than a block blinking in a box.
+   Opacity is the whole of it: an inline box cannot be moved without shifting the
+   line it sits in, and a word that hops as it lands is worse than one that never
+   moved. The grain is whatever the model sent, so a CLI that writes a word at a
+   time is read a word at a time and one that hands back a whole answer fades it
+   in once, instead of being dealt back out at a speed nobody chose. */
+.md-in {
+  animation: text-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes text-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-in {
+    animation-duration: 1ms;
   }
 }
 
@@ -694,11 +838,347 @@ body {
 }
 
 .doc .bn-editor {
-  @apply text-base;
+  font-size: 16px;
+  line-height: 1.7;
+  padding-bottom: 30vh;
 }
 
 .doc .bn-editor .bn-inline-content code {
-  @apply font-mono text-[13px] bg-ink-800 rounded-md px-1.5 py-0.5;
+  @apply font-mono text-[0.875em] bg-ink-800 rounded-md px-1.5 py-0.5;
+}
+
+.doc .bn-editor .bn-inline-content strong {
+  font-weight: 600;
+}
+
+.doc .bn-editor .bn-inline-content a {
+  @apply text-fg underline underline-offset-2 decoration-fg-muted transition-colors;
+}
+
+.doc .bn-editor .bn-inline-content a:hover {
+  @apply decoration-fg;
+}
+
+.doc .bn-block-content {
+  padding-block: 4px;
+}
+
+.doc .bn-block-content[data-content-type='bulletListItem'],
+.doc .bn-block-content[data-content-type='numberedListItem'],
+.doc .bn-block-content[data-content-type='checkListItem'],
+.doc .bn-block-content[data-content-type='toggleListItem'] {
+  padding-block: 2px;
+}
+
+.doc .bn-editor > .bn-block-group > .bn-block-outer:first-child > .bn-block > .bn-block-content {
+  padding-top: 0;
+}
+
+.doc [data-content-type='heading'] {
+  --level: 1.625em;
+}
+
+.doc [data-content-type='heading'][data-level='2'] {
+  --level: 1.3125em;
+}
+
+.doc [data-content-type='heading'][data-level='3'] {
+  --level: 1.0625em;
+}
+
+.doc [data-prev-level='1'] {
+  --prev-level: 1.625em;
+}
+
+.doc [data-prev-level='2'] {
+  --prev-level: 1.3125em;
+}
+
+.doc [data-prev-level='3'] {
+  --prev-level: 1.0625em;
+}
+
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'] {
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  padding-top: 30px;
+}
+
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'][data-level='2'] {
+  letter-spacing: -0.015em;
+  padding-top: 24px;
+}
+
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'][data-level='3'] {
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  padding-top: 18px;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='bulletListItem']::before,
+.doc .bn-editor .bn-block-content[data-content-type='numberedListItem']::before {
+  color: var(--color-fg-muted);
+}
+
+.doc .bn-editor .bn-block-group .bn-block .bn-block-group .bn-block-outer:not([data-prev-depth-changed])::before {
+  border-left: 1px solid var(--color-ink-700);
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input {
+  appearance: none;
+  position: relative;
+  width: 15px;
+  height: 15px;
+  margin: 6px 8px 0 2px;
+  border: 1.5px solid var(--color-ink-600);
+  border-radius: 5px;
+  background: transparent;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:hover {
+  border-color: var(--color-ink-500);
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:checked {
+  background: var(--color-fg);
+  border-color: var(--color-fg);
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:checked::after {
+  content: '';
+  @apply absolute left-1/2 top-1/2 h-[3px] w-[7px] -translate-x-1/2 -translate-y-[70%] -rotate-45 border-b-2 border-l-2 border-ink-900;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'][data-checked='true'] .bn-inline-content {
+  color: var(--color-fg-muted);
+  text-decoration-color: var(--color-fg-faint);
+}
+
+.doc .bn-editor [data-content-type='quote'] blockquote {
+  border-left: 2px solid var(--color-ink-600);
+  color: var(--color-fg-secondary);
+  padding-left: 16px;
+}
+
+.doc .bn-editor [data-content-type='divider'] hr {
+  border-top: 1px solid var(--color-ink-600);
+  margin-block: 10px;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] {
+  background: var(--color-ink-850);
+  border: 1px solid var(--color-ink-700);
+  border-radius: 14px;
+  color: var(--color-fg);
+  margin-block: 6px;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > pre {
+  @apply font-mono;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select {
+  top: 7px;
+  right: 9px;
+  left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--color-fg-muted);
+  background: var(--color-ink-800);
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock']:hover > div > select,
+.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select:focus {
+  opacity: 1;
+  color: var(--color-fg-secondary);
+}
+
+.doc .bn-editor .shiki {
+  color: var(--shiki-dark);
+  font-style: var(--shiki-dark-font-style, inherit);
+  font-weight: var(--shiki-dark-font-weight, inherit);
+}
+
+.light .doc .bn-editor .shiki {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style, inherit);
+  font-weight: var(--shiki-light-font-weight, inherit);
+}
+
+.doc .bn-editor [data-content-type='table'] table {
+  font-size: var(--text-base);
+}
+
+.doc .bn-editor [data-content-type='table'] th,
+.doc .bn-editor [data-content-type='table'] td {
+  border: 1px solid var(--color-ink-700);
+  padding: 6px 10px;
+}
+
+.doc .bn-editor [data-content-type='table'] th {
+  background: var(--color-ink-850);
+  font-weight: 600;
+}
+
+.doc .bn-editor .bn-visual-media {
+  border-radius: 12px;
+}
+
+.doc .bn-editor .bn-resize-handle {
+  width: 5px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-fg);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+}
+
+.doc .bn-editor .bn-block-content.ProseMirror-selectednode > *,
+.doc .bn-editor .ProseMirror-selectednode > .bn-block-content > * {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.doc .bn-editor [data-file-block] .bn-file-block-content-wrapper .bn-add-file-button {
+  padding: 14px;
+  border: 1px solid var(--color-ink-700);
+  border-radius: 14px;
+  background: var(--color-ink-850);
+  color: var(--color-fg-muted);
+}
+
+.doc .bn-editor [data-file-block] .bn-file-block-content-wrapper .bn-add-file-button:hover {
+  background: var(--color-ink-800);
+  color: var(--color-fg-secondary);
+}
+
+.doc .bn-editor [data-file-block] .bn-add-file-button-text {
+  font-size: var(--text-base);
+}
+
+.doc .bn-editor .bn-block-content:has(.ProseMirror-trailingBreak:only-child)::after {
+  font-style: normal;
+  color: var(--color-fg-faint);
+}
+
+.prosemirror-dropcursor-block-horizontal,
+.prosemirror-dropcursor-block-vertical-left,
+.prosemirror-dropcursor-block-vertical-right,
+.prosemirror-dropcursor-inline {
+  border-radius: 999px;
+  background: var(--color-fg);
+}
+
+.doc-float {
+  max-height: inherit;
+}
+
+.bn-drag-preview {
+  width: fit-content;
+  max-width: 340px;
+  max-height: 76px;
+  overflow: hidden;
+  padding: 6px 14px;
+  border: 1px solid var(--glass-line);
+  border-radius: 12px;
+  background: var(--color-ink-800);
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.45);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-fg);
+}
+
+.bn-drag-preview [data-content-type='heading'] {
+  --level: 1.15em;
+}
+
+.bn-drag-preview .bn-block-content {
+  padding-block: 0;
+}
+
+.bn-drag-preview .bn-block-group .bn-block-group {
+  display: none;
+}
+
+.doc .bn-container .bn-toolbar,
+.doc .bn-container .bn-form-popover,
+.doc .bn-container .bn-menu-dropdown,
+.doc .bn-container .mantine-Menu-dropdown,
+.doc .bn-container .bn-tooltip,
+.doc .bn-container .bn-table-handle,
+.doc .bn-container .bn-table-cell-handle,
+.doc .bn-container .bn-extend-button {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow);
+  color: var(--color-fg-secondary);
+}
+
+.doc .bn-container .bn-toolbar,
+.doc .bn-container .bn-form-popover {
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+}
+
+.doc .bn-container .bn-menu-dropdown,
+.doc .bn-container .mantine-Menu-dropdown {
+  padding: 6px;
+  border-radius: 16px;
+}
+
+.doc .bn-container .mantine-Menu-item {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: var(--text-sm);
+}
+
+.doc .bn-container .bn-toolbar .mantine-Button-root,
+.doc .bn-container .bn-toolbar .mantine-ActionIcon-root {
+  border-radius: 999px;
+  background: transparent;
+}
+
+.doc .bn-container .bn-toolbar .mantine-Button-root:hover,
+.doc .bn-container .bn-toolbar .mantine-ActionIcon-root:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.light .doc .bn-container .bn-toolbar .mantine-Button-root:hover,
+.light .doc .bn-container .bn-toolbar .mantine-ActionIcon-root:hover {
+  background: rgb(0 0 0 / 0.06);
+}
+
+.doc .bn-container .bn-tooltip {
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: var(--text-xs);
+}
+
+.doc .bn-container .bn-table-handle,
+.doc .bn-container .bn-table-cell-handle,
+.doc .bn-container .bn-extend-button {
+  border-radius: 6px;
+  color: var(--color-fg-muted);
+}
+
+.doc .bn-container .bn-form-popover .mantine-TextInput-input {
+  background: transparent;
+  border: none;
+  font-size: var(--text-sm);
+  color: var(--color-fg);
 }
 
 .md {
@@ -760,6 +1240,13 @@ body {
   @apply font-mono text-[13px] bg-ink-800 text-fg-faint rounded-md px-1.5 py-0.5 cursor-default;
 }
 
+/* Mono set beside the sans on one line comes out sitting high: the two faces
+   carry their text at different heights, and a row centers boxes rather than
+   baselines. A pixel down puts them on the same line. */
+.mono-inline {
+  @apply font-mono relative top-px;
+}
+
 .md a.file-link {
   @apply no-underline;
 }
@@ -803,4 +1290,147 @@ body {
 
 .md tbody tr:last-child td {
   @apply border-b-0;
+}
+
+.md .md-tasks {
+  @apply pl-0;
+}
+
+.md .md-task {
+  @apply flex list-none items-start gap-2;
+}
+
+.md .md-check {
+  @apply relative mt-[0.3em] h-3.5 w-3.5 shrink-0 rounded border border-ink-600;
+}
+
+.md .md-check[data-checked] {
+  @apply border-fg bg-fg;
+}
+
+.md .md-check[data-checked]::after {
+  content: '';
+  @apply absolute left-1/2 top-1/2 h-[3px] w-[7px] -translate-x-1/2 -translate-y-[70%] -rotate-45 border-b-2 border-l-2 border-ink-900;
+}
+
+.md-peek {
+  @apply text-[13px] leading-[1.6] text-fg-secondary;
+}
+
+.md-peek h1 {
+  @apply text-sm;
+}
+
+.md-peek h2,
+.md-peek h3 {
+  @apply text-[13px];
+}
+
+.md-peek h1,
+.md-peek h2,
+.md-peek h3 {
+  @apply mt-2.5 mb-1;
+}
+
+.md-peek p,
+.md-peek ul,
+.md-peek ol,
+.md-peek blockquote {
+  @apply my-1.5;
+}
+
+.md-peek ul,
+.md-peek ol {
+  @apply pl-4;
+}
+
+.md-peek code {
+  @apply text-[11px];
+}
+
+.md-peek pre {
+  @apply my-1.5 rounded-lg p-2;
+}
+
+.md-peek .table-scroll {
+  @apply my-2 rounded-lg;
+}
+
+.md-peek table {
+  @apply text-[11px];
+}
+
+.md-peek th,
+.md-peek td {
+  @apply px-2 py-1;
+}
+
+.md-peek img {
+  @apply my-1.5 rounded-lg;
+}
+
+/* A thought is written in the same hand as an answer, so it is read by the same
+   renderer and arrives with the same fade. The model marks its reasoning up as
+   it goes, and set as plain text those marks were left lying on the page as
+   asterisks. Quieter is the whole of the difference: smaller, muted and italic,
+   with the mono kept upright, since a slanted mono reads as a mistake. */
+.md-quiet {
+  @apply text-sm leading-6 italic text-fg-muted;
+}
+
+.md-quiet h1,
+.md-quiet h2,
+.md-quiet h3 {
+  @apply text-sm text-fg-secondary mt-3 mb-1;
+}
+
+.md-quiet strong {
+  @apply text-fg-secondary font-semibold;
+}
+
+.md-quiet p,
+.md-quiet blockquote {
+  @apply my-2;
+}
+
+.md-quiet ul,
+.md-quiet ol {
+  @apply my-2 pl-4;
+}
+
+.md-quiet code {
+  @apply not-italic text-[11px];
+}
+
+.md-quiet pre {
+  @apply not-italic my-2 rounded-lg p-2;
+}
+
+.tl-text-measure {
+  position: absolute !important;
+  visibility: hidden !important;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  @apply relative overflow-hidden bg-fg/[0.07];
+}
+
+.skeleton::after {
+  @apply absolute inset-0;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.13), transparent);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.light .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.07), transparent);
 }

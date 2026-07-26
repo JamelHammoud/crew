@@ -4,19 +4,18 @@ import {
   dialog,
   ipcMain,
   Menu,
-  nativeImage,
-  nativeTheme,
   powerSaveBlocker,
   shell,
-  Tray,
   type MenuItemConstructorOptions,
-  type NativeImage
+  type WebContents
 } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { setBadge, showAlert } from './alerts'
 import type { AgentAlert } from '../shared/alerts'
+import type { Present } from '../shared/presence'
 import { appIcon, type IconTheme } from './icon'
+import { CrewTray } from './tray'
 import {
   askForMedia,
   installDisplayMedia,
@@ -27,6 +26,7 @@ import {
 } from './media'
 import type { MediaKind } from '../shared/media'
 import { AppSession, type NewAgent } from './session'
+import { Terminals, type TerminalSize } from './terminal'
 import { createWindowOptions } from './window-options'
 
 app.setName('Crew')
@@ -38,20 +38,40 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
-let tray: Tray | null = null
+const terminals = new Map<number, Terminals>()
+const tray = new CrewTray({
+  page: {
+    preload: path.join(dirname, '../preload/preload.mjs'),
+    devUrl: process.env['ELECTRON_RENDERER_URL'],
+    file: path.join(dirname, '../renderer/index.html')
+  },
+  openWindow: () => openWindow(),
+  quit: () => app.quit()
+})
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
+
+// The tray panel is a window like any other as far as Electron is concerned,
+// so everything that means "the app's own windows" asks for these.
+function appWindows(): BrowserWindow[] {
+  return BrowserWindow.getAllWindows().filter(win => !tray.owns(win))
+}
+
+function sharing(): void {
+  tray.update({ sharing: session.current() !== null })
+}
 
 // The icon is a white mark on black, or the inverse, so it follows the theme
 // chosen inside the app rather than the one the system is wearing.
 function applyIcon(theme: IconTheme): void {
   iconTheme = theme
+  tray.theme(theme)
   if (process.platform === 'darwin') {
     app.dock?.setIcon(appIcon(theme))
     return
   }
-  for (const win of BrowserWindow.getAllWindows()) win.setIcon(appIcon(theme))
+  for (const win of appWindows()) win.setIcon(appIcon(theme))
 }
 
 // Without an application menu the standard clipboard accelerators (copy, cut,
@@ -122,6 +142,30 @@ app.on('web-contents-created', (_event, contents) => {
   })
 })
 
+// Shells belong to the window that opened them, so closing a window takes its
+// terminals with it rather than leaving them running with nobody watching.
+function terminalsFor(sender: WebContents): Terminals {
+  const open = terminals.get(sender.id)
+  if (open) return open
+  const made = new Terminals()
+  terminals.set(sender.id, made)
+  sender.once('destroyed', () => {
+    made.closeAll()
+    terminals.delete(sender.id)
+  })
+  return made
+}
+
+// A login shell reads the whole profile before it says anything, so one is
+// started for every window as soon as the folder a terminal would open in is
+// known, rather than when somebody asks for a tab and watches it blink.
+function warmTerminals(): void {
+  const folder = session.projectFolder()
+  for (const win of appWindows()) {
+    if (!win.webContents.isDestroyed()) terminalsFor(win.webContents).warm(folder)
+  }
+}
+
 function createWindow(): void {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow(
@@ -146,6 +190,15 @@ function createWindow(): void {
   win.on('leave-full-screen', syncWindowShape)
   installContextMenu(win)
   installDisplayMedia(win.webContents.session)
+  win.webContents.once('did-finish-load', () => {
+    warmTerminals()
+    tray.warm()
+  })
+  // Who is here is read from a window's own view of the session, so with none
+  // open the tray says so rather than showing a list that stopped moving.
+  win.on('closed', () => {
+    if (appWindows().length === 0) tray.update({ here: [], known: false })
+  })
   if (devUrl) {
     win.loadURL(devUrl)
   } else {
@@ -154,7 +207,8 @@ function createWindow(): void {
 }
 
 function openWindow(): void {
-  const win = BrowserWindow.getAllWindows()[0]
+  tray.hidePanel()
+  const win = appWindows()[0]
   if (!win) {
     createWindow()
     return
@@ -164,76 +218,36 @@ function openWindow(): void {
   win.focus()
 }
 
-// The app ships no icon asset, so the tray dot is drawn in memory. It follows
-// the system theme: light dot on a dark taskbar, dark dot on a light one.
-function trayIcon(): NativeImage {
-  const size = 32
-  const shade = nativeTheme.shouldUseDarkColors ? 255 : 0
-  const center = (size - 1) / 2
-  const radius = size * 0.34
-  const buffer = Buffer.alloc(size * size * 4)
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const alpha = Math.max(0, Math.min(1, radius + 0.5 - Math.hypot(x - center, y - center)))
-      const i = (y * size + x) * 4
-      buffer[i] = shade
-      buffer[i + 1] = shade
-      buffer[i + 2] = shade
-      buffer[i + 3] = Math.round(alpha * 255)
-    }
-  }
-  return nativeImage.createFromBitmap(buffer, { width: size, height: size, scaleFactor: 2 })
-}
-
-function refreshTray(): void {
-  if (!tray) return
-  const active = session.current() !== null
-  tray.setToolTip(active ? 'crew is sharing your agents' : 'crew')
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: active ? 'Sharing your agents' : 'Not in a session', enabled: false },
-      { type: 'separator' },
-      { label: 'Open crew', click: openWindow },
-      { label: 'Quit crew', click: () => app.quit() }
-    ])
-  )
-}
-
-// On mac the dock already keeps the app alive without a window; everywhere
-// else the tray is the handle back to a session running in the background.
-function installTray(): void {
-  if (process.platform === 'darwin') return
-  tray = new Tray(trayIcon())
-  tray.on('click', openWindow)
-  nativeTheme.on('updated', () => tray?.setImage(trayIcon()))
-  refreshTray()
-}
-
 app.whenReady().then(() => {
   powerSaveBlocker.start('prevent-app-suspension')
   applyIcon(iconTheme)
   installMenu()
-  installTray()
+  tray.install()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
-  resumed = session.resume().then(() => refreshTray())
+  resumed = session.resume().then(() => {
+    sharing()
+    warmTerminals()
+  })
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]
   })
   ipcMain.handle('session:start', async (_event, folder: string, name: string) => {
     const info = await session.startHost(folder, name)
-    refreshTray()
+    sharing()
+    warmTerminals()
     return info
   })
   ipcMain.handle('session:join', async (_event, link: string, folder: string, name: string) => {
     const info = await session.startJoin(link, folder, name)
-    refreshTray()
+    sharing()
+    warmTerminals()
     return info
   })
   ipcMain.handle('session:leave', async () => {
     await session.leave()
-    refreshTray()
+    sharing()
   })
   ipcMain.handle('session:current', async () => {
     await resumed
@@ -253,13 +267,20 @@ app.whenReady().then(() => {
   ipcMain.handle('media:settings', (_event, kind: MediaKind) => openMediaSettings(kind))
   ipcMain.handle('media:sources', () => screenSources())
   ipcMain.handle('media:pickSource', (_event, id: string | null) => pickScreenSource(id))
-  ipcMain.handle('app:badge', (_event, count: number) => setBadge(count))
+  ipcMain.handle('app:badge', (_event, count: number) => {
+    setBadge(count)
+    tray.update({ waiting: count })
+  })
   ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme))
+  ipcMain.on('presence:publish', (_event, here: Present[]) => tray.update({ here, known: true }))
+  ipcMain.on('tray:size', (_event, height: number) => tray.resizePanel(height))
+  ipcMain.on('tray:open', () => openWindow())
+  ipcMain.on('tray:hide', () => tray.hidePanel())
   ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
     showAlert(alert, () => {
       openWindow()
       if (alert.threadId) {
-        BrowserWindow.getAllWindows()[0]?.webContents.send('notification:open', alert.threadId)
+        appWindows()[0]?.webContents.send('notification:open', alert.threadId)
       }
     })
   })
@@ -273,9 +294,27 @@ app.whenReady().then(() => {
     const absolute = session.resolveFile(target)
     if (absolute) shell.showItemInFolder(absolute)
   })
+  ipcMain.on('terminal:open', (event, id: string, wanted: TerminalSize) => {
+    const sender = event.sender
+    terminalsFor(sender).open(id, session.projectFolder(), wanted, {
+      data: (opened, chunk) => {
+        if (!sender.isDestroyed()) sender.send('terminal:data', opened, chunk)
+      },
+      exit: opened => {
+        if (!sender.isDestroyed()) sender.send('terminal:exit', opened)
+      }
+    })
+  })
+  ipcMain.on('terminal:write', (event, id: string, data: string) =>
+    terminalsFor(event.sender).write(id, data)
+  )
+  ipcMain.on('terminal:resize', (event, id: string, wanted: TerminalSize) =>
+    terminalsFor(event.sender).resize(id, wanted)
+  )
+  ipcMain.on('terminal:close', (event, id: string) => terminalsFor(event.sender).close(id))
   createWindow()
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (appWindows().length === 0) createWindow()
   })
 })
 
@@ -287,16 +326,19 @@ app.on('window-all-closed', () => {
     app.quit()
     return
   }
-  refreshTray()
-  if (process.platform === 'win32' && tray && !balloonShown) {
+  sharing()
+  if (process.platform === 'win32' && !balloonShown) {
     balloonShown = true
-    tray.displayBalloon({
-      title: 'crew is still running',
-      content: 'Your agents stay shared with your crew. Quit from this icon to stop.'
-    })
+    tray.balloon(
+      'Crew is still running',
+      'Your agents stay shared with your crew. Quit from this icon to stop.'
+    )
   }
 })
 
 app.on('before-quit', () => {
+  for (const open of terminals.values()) open.closeAll()
+  terminals.clear()
+  tray.close()
   void session.shutdown()
 })

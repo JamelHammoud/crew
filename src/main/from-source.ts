@@ -5,3 +5,11 @@
 export function fromSource(appPath: string): boolean {
   return !/[\\/][Rr]esources[\\/]app(\.asar)?$/.test(appPath)
 }
+
+const off = new Set(['', '0', 'false'])
+
+export function wearsBlueprint(appPath: string, env: Record<string, string | undefined>): boolean {
+  const asked = env.CREW_SHIPPING_ICON
+  if (asked !== undefined && !off.has(asked)) return false
+  return fromSource(appPath)
+}

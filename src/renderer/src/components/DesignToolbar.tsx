@@ -1,7 +1,8 @@
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useCallback, useEffect, useState } from 'react'
-import { useEditor, useValue, type Editor } from 'tldraw'
+import { useEditor, useValue, type Editor, type TLShape } from 'tldraw'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
+import DesignActions from './DesignActions'
 import DesignToolMenu from './DesignToolMenus'
 import Tooltip from './Tooltip'
 
@@ -13,7 +14,13 @@ function combo(shortcut: string): { key: string; shift: boolean } | null {
   return { key: parts[parts.length - 1].toLowerCase(), shift: parts.includes('Shift') }
 }
 
-export default function DesignToolbar() {
+export default function DesignToolbar({
+  onAsk,
+  onRename
+}: {
+  onAsk: () => void
+  onRename: (shape: TLShape) => void
+}) {
   const editor = useEditor()
   const [defaults, setDefaults] = useState<Record<string, string>>(FIRST)
   const [menu, setMenu] = useState<string | null>(null)
@@ -49,7 +56,7 @@ export default function DesignToolbar() {
       <div
         role="toolbar"
         aria-label="Design tools"
-        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-2 pointer-events-auto"
+        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-1.5 pointer-events-auto"
       >
         {TOOL_GROUPS.map(group => (
           <Group
@@ -64,6 +71,8 @@ export default function DesignToolbar() {
             onPick={toolId => remember(group.id, toolId)}
           />
         ))}
+        <span className="w-px h-5 bg-fg/10 mx-1 shrink-0" />
+        <DesignActions onAsk={onAsk} onRename={onRename} />
       </div>
     </div>
   )
@@ -90,20 +99,23 @@ function Group({
 }) {
   const shown = group.tools.find(tool => tool.id === (active ? current : fallback)) ?? group.tools[0]
   const hasMenu = group.tools.length > 1 || group.id === 'frame'
-  const tone = active ? 'bg-fg text-ink-900' : 'text-fg-secondary'
 
   return (
-    <span className={`relative flex items-center h-9 rounded-full ${tone}`}>
+    <span
+      className={`relative flex items-center h-9 rounded-full transition-colors ${
+        active ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
+      }`}
+    >
       <Tooltip label={shown.shortcut ? `${shown.label}  ${shown.shortcut}` : shown.label} disabled={menuOpen}>
         <button
           onClick={() => activateTool(editor, shown.id)}
           aria-label={shown.label}
           aria-pressed={active}
-          className={`h-9 rounded-full flex items-center justify-center transition-all active:scale-95 ${
-            hasMenu ? 'w-9 pl-1.5' : 'w-10'
-          } ${active ? '' : 'hover:text-fg hover:bg-fg/[0.06]'}`}
+          className={`h-9 grid place-items-center transition-transform active:scale-95 ${
+            hasMenu ? 'w-8 pl-2' : 'w-10 px-2'
+          }`}
         >
-          <shown.Icon className="w-[18px] h-[18px]" />
+          <shown.Icon className="w-6 h-6" />
         </button>
       </Tooltip>
       {hasMenu && (
@@ -111,8 +123,8 @@ function Group({
           onClick={() => onMenu(!menuOpen)}
           aria-label={`${group.label} options`}
           aria-expanded={menuOpen}
-          className={`h-9 w-4 pr-1.5 rounded-full grid place-items-center transition-colors ${
-            active ? 'text-ink-900/70 hover:text-ink-900' : 'text-fg-muted hover:text-fg'
+          className={`h-9 w-6 pr-2 grid place-items-center transition-all active:scale-95 ${
+            active ? 'text-ink-900/55 hover:text-ink-900' : 'text-fg/45 hover:text-fg'
           }`}
         >
           <ChevronDownIcon className="w-3.5 h-3.5" />

@@ -2,10 +2,12 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { AgentAlert } from '../shared/alerts'
 import type { PathLocation, RepoFile } from '../shared/files'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
+import type { Present, PresenceSnapshot } from '../shared/presence'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { RecentJoin } from '../shared/recent'
 import type { CurrentSession } from './session'
+import type { TerminalSize } from './terminal'
 
 const bridge = {
   pickFolder: (): Promise<string | null> => ipcRenderer.invoke('folder:pick'),
@@ -37,6 +39,24 @@ const bridge = {
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
   setBadge: (count: number): Promise<void> => ipcRenderer.invoke('app:badge', count),
+  publishPresence: (here: Present[]): void => ipcRenderer.send('presence:publish', here),
+  onPresence: (listener: (snapshot: PresenceSnapshot) => void): (() => void) => {
+    const handler = (_event: unknown, snapshot: PresenceSnapshot) => listener(snapshot)
+    ipcRenderer.on('presence:update', handler)
+    return () => {
+      ipcRenderer.off('presence:update', handler)
+    }
+  },
+  onTrayTheme: (listener: (theme: 'dark' | 'light') => void): (() => void) => {
+    const handler = (_event: unknown, theme: 'dark' | 'light') => listener(theme)
+    ipcRenderer.on('tray:theme', handler)
+    return () => {
+      ipcRenderer.off('tray:theme', handler)
+    }
+  },
+  resizeTray: (height: number): void => ipcRenderer.send('tray:size', height),
+  openWindow: (): void => ipcRenderer.send('tray:open'),
+  closeTray: (): void => ipcRenderer.send('tray:hide'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
   onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
@@ -44,6 +64,24 @@ const bridge = {
     ipcRenderer.on('notification:open', handler)
     return () => {
       ipcRenderer.off('notification:open', handler)
+    }
+  },
+  openTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:open', id, size),
+  writeTerminal: (id: string, data: string): void => ipcRenderer.send('terminal:write', id, data),
+  resizeTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:resize', id, size),
+  closeTerminal: (id: string): void => ipcRenderer.send('terminal:close', id),
+  onTerminalData: (listener: (id: string, chunk: string) => void): (() => void) => {
+    const handler = (_event: unknown, id: string, chunk: string) => listener(id, chunk)
+    ipcRenderer.on('terminal:data', handler)
+    return () => {
+      ipcRenderer.off('terminal:data', handler)
+    }
+  },
+  onTerminalExit: (listener: (id: string) => void): (() => void) => {
+    const handler = (_event: unknown, id: string) => listener(id)
+    ipcRenderer.on('terminal:exit', handler)
+    return () => {
+      ipcRenderer.off('terminal:exit', handler)
     }
   },
   onFullScreen: (listener: (full: boolean) => void): void => {

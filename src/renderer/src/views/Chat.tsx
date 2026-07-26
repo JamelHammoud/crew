@@ -64,6 +64,7 @@ export default function Chat() {
             attachments: e.attachments,
             mentionRefs: e.mentionRefs,
             docMentions: e.docMentions,
+            boardMentions: e.boardMentions,
             replyTo: e.replyTo,
             reactionTargetId: e.authorId === 'crew' ? undefined : targetId,
             reactions: e.authorId === 'crew' ? undefined : reactions.get(targetId)

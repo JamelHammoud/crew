@@ -1,9 +1,10 @@
 import { DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { docCandidates, type DocRef } from '../../../shared/docs'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
 import { memberMentionCandidates } from '../../../shared/people'
 import type { MemberInfo } from '../../../shared/protocol'
+import { crewRefs, refCandidates, type CrewRef } from '../../../shared/refs'
+import { FrameGlyph } from '../design/glyphs'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -14,7 +15,7 @@ import { rememberEmoji } from './emojiRecents'
 export type MentionItem =
   | { kind: 'agent'; agent: PooledAgent }
   | { kind: 'member'; member: MemberInfo }
-  | { kind: 'doc'; doc: DocRef }
+  | { kind: 'ref'; ref: CrewRef }
   | { kind: 'emoji'; entry: EmojiEntry }
 
 type Query = { trigger: '@' | '#' | ':'; text: string }
@@ -34,6 +35,7 @@ export function useMentionAutocomplete(
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
+  const boards = useCrew(s => s.boards)
   const [query, setQuery] = useState<Query | null>(null)
   const [active, setActive] = useState(0)
   const caretTarget = useRef<number | null>(null)
@@ -45,11 +47,12 @@ export function useMentionAutocomplete(
           : []),
         ...mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent' as const, agent }))
       ]
-    if (query?.trigger === '#') return docCandidates(docs, query.text).map(doc => ({ kind: 'doc', doc }))
+    if (query?.trigger === '#')
+      return refCandidates(crewRefs(docs, boards), query.text).map(ref => ({ kind: 'ref', ref }))
     if (query?.trigger === ':')
       return searchEmoji(query.text, EMOJI_MATCHES).map(entry => ({ kind: 'emoji', entry }))
     return []
-  }, [agents, docs, includeMembers, members, query])
+  }, [agents, boards, docs, includeMembers, members, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const onChange = (next: string) => {
@@ -91,8 +94,8 @@ export function useMentionAutocomplete(
         ? `@${item.agent.label}`
         : item.kind === 'member'
           ? `@${item.member.name}`
-          : item.kind === 'doc'
-            ? `#${item.doc.title}`
+          : item.kind === 'ref'
+            ? `#${item.ref.title}`
             : item.entry.char
     const before = value
       .slice(0, caret)
@@ -184,17 +187,18 @@ function MemberRow({
   )
 }
 
-function DocRow({
-  doc,
+function RefRow({
+  refItem,
   active,
   onClick,
   onMouseEnter
 }: {
-  doc: DocRef
+  refItem: CrewRef
   active: boolean
   onClick: () => void
   onMouseEnter: () => void
 }) {
+  const Icon = refItem.kind === 'board' ? FrameGlyph : DocumentTextIcon
   return (
     <button
       onClick={onClick}
@@ -203,8 +207,9 @@ function DocRow({
         active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
       }`}
     >
-      <DocumentTextIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
-      <span className="flex-1 truncate">#{doc.title}</span>
+      <Icon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+      <span className="flex-1 truncate">#{refItem.title}</span>
+      <span className="text-xs text-fg-muted shrink-0">{refItem.kind === 'board' ? 'Board' : 'Doc'}</span>
     </button>
   )
 }
@@ -281,11 +286,11 @@ export function MentionMenu({
               onMouseEnter={() => onHover(index)}
             />
           )
-        if (item.kind === 'doc')
+        if (item.kind === 'ref')
           return (
-            <DocRow
-              key={item.doc.page}
-              doc={item.doc}
+            <RefRow
+              key={`${item.ref.kind}:${item.ref.key}`}
+              refItem={item.ref}
               active={index === activeIndex}
               onClick={() => onPick(item)}
               onMouseEnter={() => onHover(index)}

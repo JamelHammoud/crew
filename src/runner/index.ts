@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 import { httpBaseFrom, type Attachment } from '../shared/attachments'
-import { designPreamble, type DesignBoardMeta } from '../shared/design'
+import { boardsPreamble, type DesignBoardMeta } from '../shared/design'
 import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../shared/llm'
 import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
@@ -271,7 +271,16 @@ export class Runner {
         break
       }
       case 'prompt':
-        this.runPrompt(msg.promptId, msg.agentId, msg.threadId, msg.text, msg.settings, msg.attachments ?? [], msg.designBoard)
+        this.runPrompt(
+          msg.promptId,
+          msg.agentId,
+          msg.threadId,
+          msg.text,
+          msg.settings,
+          msg.attachments ?? [],
+          msg.designBoard,
+          msg.designBoards ?? []
+        )
         break
       case 'steer':
         void this.steer(msg.promptId, msg.text, msg.byName, msg.attachments ?? [])
@@ -330,7 +339,8 @@ export class Runner {
     text: string,
     settings: AgentSettings,
     attachments: Attachment[],
-    designBoard?: DesignBoardMeta
+    designBoard?: DesignBoardMeta,
+    designBoards: DesignBoardMeta[] = []
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -341,7 +351,8 @@ export class Runner {
     this.accepted.add(promptId)
     // The design preamble is written here rather than on the host because only
     // this side knows the http address it reaches the server at.
-    const body = designBoard ? `${text}\n\n${designPreamble(this.httpBase, designBoard, forAgentId)}` : text
+    const preamble = boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards)
+    const body = preamble ? `${text}\n\n${preamble}` : text
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
       .then(() => this.execute(agent.provider, promptId, body, settings, attachments))

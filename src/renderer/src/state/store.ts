@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { httpBaseFrom } from '../../../shared/attachments'
+import { httpBaseFrom, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import { trimEvents, type SessionEvent, type ThreadMode, type ThreadStatus, type Todo } from '../../../shared/events'
@@ -29,7 +29,7 @@ export interface ThreadMeta {
 
 export type DesignServerMessage = Extract<
   ServerMessage,
-  { type: 'design.snapshot' | 'design.changes' | 'design.presence' }
+  { type: 'design.snapshot' | 'design.preview' | 'design.changes' | 'design.presence' }
 >
 
 const designListeners = new Set<(msg: DesignServerMessage) => void>()
@@ -79,6 +79,7 @@ interface CrewState {
   boards: DesignBoardMeta[]
   openThreadId: string | null
   docsTarget: string | null
+  designTarget: string | null
   chatDraft: string
   threadDrafts: Record<string, string>
   httpBase: string
@@ -90,11 +91,13 @@ interface CrewState {
   setThreadDraft: (threadId: string, text: string) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
-  sendChat: (text: string, threadId?: string, boardId?: string, replyTo?: string) => void
+  moveAttachments: (from: string, to: string) => void
+  sendChat: (text: string, threadId?: string, boardId?: string, replyTo?: string, aimedAt?: string[]) => void
   createBoard: (name: string) => string
   renameBoard: (boardId: string, name: string) => void
   deleteBoard: (boardId: string) => void
   openDesign: (boardId: string) => void
+  peekDesign: (boardId: string) => void
   initDesign: (boardId: string, document: DesignDocument) => void
   applyDesign: (boardId: string, put: unknown[], remove: string[]) => void
   sendDesignPresence: (
@@ -128,6 +131,8 @@ interface CrewState {
   closeThread: () => void
   openDoc: (page: string) => void
   clearDocsTarget: () => void
+  openBoard: (boardId: string) => void
+  clearDesignTarget: () => void
 }
 
 const socket = new CrewSocket()
@@ -147,6 +152,7 @@ const EMPTY = {
   boards: [],
   openThreadId: null,
   docsTarget: null,
+  designTarget: null,
   chatDraft: '',
   threadDrafts: {},
   pending: {}
@@ -191,7 +197,8 @@ export const useCrew = create<CrewState>((set, get) => {
                 text: event.text,
                 mentionRefs: event.mentionRefs ?? e.mentionRefs,
                 memberMentionRefs: event.memberMentionRefs ?? e.memberMentionRefs,
-                docMentions: event.docMentions ?? e.docMentions
+                docMentions: event.docMentions ?? e.docMentions,
+                boardMentions: event.boardMentions ?? e.boardMentions
               }
             : e
         )
@@ -482,6 +489,7 @@ export const useCrew = create<CrewState>((set, get) => {
         set({ boards: msg.boards })
         break
       case 'design.snapshot':
+      case 'design.preview':
       case 'design.changes':
       case 'design.presence':
         for (const listener of designListeners) listener(msg)
@@ -539,10 +547,25 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     detach: (key, id) =>
       set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
-    sendChat: (text, threadId, boardId, replyTo) => {
+    // A control that stages images under a key of its own has to hand them to
+    // the thread or board the message is going to, because that is the only
+    // place sendChat looks for them.
+    moveAttachments: (from, to) =>
+      set(state => {
+        const carried = state.pending[from] ?? []
+        if (from === to || carried.length === 0) return {}
+        const waiting = state.pending[to] ?? []
+        return {
+          pending: { ...state.pending, [from]: [], [to]: [...waiting, ...carried].slice(0, MAX_ATTACHMENTS) }
+        }
+      }),
+    sendChat: (text, threadId, boardId, replyTo, aimedAt) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
-      const mentions = mentionsIn(text, get().agents)
+      // A message typed in a composer says who it is for by naming them. One
+      // sent from a control that already knows the agent says so by id, so it
+      // cannot be lost to a rename, a duplicate name or a fumbled spelling.
+      const mentions = aimedAt ?? mentionsIn(text, get().agents)
       playSound('send')
       if (threadId || boardId) {
         socket.send({
@@ -579,6 +602,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     openDesign: boardId => {
       socket.send({ type: 'design.open', boardId })
+    },
+    peekDesign: boardId => {
+      socket.send({ type: 'design.peek', boardId })
     },
     initDesign: (boardId, document) => {
       socket.send({ type: 'design.init', boardId, document })
@@ -696,6 +722,8 @@ export const useCrew = create<CrewState>((set, get) => {
     openThread: threadId => set({ openThreadId: threadId }),
     closeThread: () => set({ openThreadId: null }),
     openDoc: page => set({ docsTarget: page }),
-    clearDocsTarget: () => set({ docsTarget: null })
+    clearDocsTarget: () => set({ docsTarget: null }),
+    openBoard: boardId => set({ designTarget: boardId }),
+    clearDesignTarget: () => set({ designTarget: null })
   }
 })

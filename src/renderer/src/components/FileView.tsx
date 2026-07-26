@@ -1,9 +1,18 @@
 import { DocumentIcon, DocumentTextIcon, FolderIcon } from '@heroicons/react/16/solid'
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent
+} from 'react'
 import type { FileEntry, RepoFile } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
-import { useTheme } from '../state/theme'
-import { highlightLines, type ThemedToken } from './highlight'
+import { baselineOf } from './baseline'
+import CodeRows from './CodeRows'
+import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
 import ImageView from './ImageView'
 import Spinner from './Spinner'
 
@@ -69,110 +78,6 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
   )
 }
 
-function LineText({ content, tokens }: { content: string; tokens: ThemedToken[] | undefined }) {
-  if (!tokens?.length) return <>{content}</>
-  return (
-    <>
-      {tokens.map((token, index) => (
-        <span key={index} style={token.color ? { color: token.color } : undefined}>
-          {token.content}
-        </span>
-      ))}
-    </>
-  )
-}
-
-type Highlight = { lines: string[]; byLine: ThemedToken[][] }
-
-function CodeBody({
-  tab,
-  text,
-  editable,
-  truncated,
-  dirty,
-  onChange,
-  onKeys
-}: {
-  tab: BrowserTab
-  text: string
-  editable: boolean
-  truncated: boolean
-  dirty: boolean
-  onChange: (next: string, caretLine: number) => void
-  onKeys: (event: KeyboardEvent<HTMLTextAreaElement>) => void
-}) {
-  const theme = useTheme()
-  const [highlight, setHighlight] = useState<Highlight | null>(null)
-  const all = text.split('\n')
-  const lines = editable ? all : all.slice(0, MAX_LINES)
-  const gutter = `${Math.max(String(lines.length).length, 2)}ch`
-
-  useEffect(() => setHighlight(null), [tab.path, theme])
-
-  useEffect(() => {
-    let alive = true
-    const source = text.split('\n').slice(0, MAX_LINES).join('\n')
-    const timer = setTimeout(
-      () =>
-        void highlightLines(tab.path, source, theme).then(result => {
-          if (alive && result) setHighlight({ lines: source.split('\n'), byLine: result })
-        }),
-      dirty ? 150 : 0
-    )
-    return () => {
-      alive = false
-      clearTimeout(timer)
-    }
-  }, [tab.path, text, theme, dirty])
-
-  return (
-    <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
-      <div aria-hidden={editable || undefined}>
-        {lines.map((content, index) => {
-          const number = index + 1
-          const marked = tab.line === number
-          return (
-            <div key={number} data-line={number} className={`flex px-4 ${marked ? 'bg-fg/[0.07]' : ''}`}>
-              <span
-                style={{ minWidth: gutter }}
-                className={`shrink-0 mr-4 text-right select-none tabular-nums ${marked ? 'text-fg' : 'text-fg-faint'}`}
-              >
-                {number}
-              </span>
-              <span className="whitespace-pre text-fg-secondary pr-4">
-                <LineText
-                  content={content}
-                  tokens={highlight?.lines[index] === content ? highlight.byLine[index] : undefined}
-                />
-              </span>
-            </div>
-          )
-        })}
-      </div>
-      {editable && (
-        <textarea
-          value={text}
-          onChange={event => {
-            const { value, selectionStart } = event.target
-            onChange(value, value.slice(0, selectionStart).split('\n').length)
-          }}
-          onKeyDown={onKeys}
-          aria-label="File contents"
-          spellCheck={false}
-          autoCorrect="off"
-          autoCapitalize="off"
-          wrap="off"
-          style={{ padding: `12px 16px 12px calc(2rem + ${gutter})` }}
-          className="absolute inset-0 w-full h-full resize-none overflow-hidden bg-transparent font-mono text-xs leading-5 text-transparent caret-fg selection:bg-fg/25 outline-none"
-        />
-      )}
-      {!editable && (truncated || all.length > MAX_LINES) && (
-        <p className="px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
-      )}
-    </div>
-  )
-}
-
 function Empty({ icon, label, detail }: { icon: React.ReactNode; label: string; detail?: string }) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6">
@@ -185,11 +90,20 @@ function Empty({ icon, label, detail }: { icon: React.ReactNode; label: string; 
 
 export default function FileView({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const [data, setData] = useState<RepoFile | null>(null)
-  const [draft, setDraft] = useState('')
+  const [doc, setDoc] = useState('')
+  const [base, setBase] = useState<string | null>(null)
+  const [hidden, setHidden] = useState(false)
+  const [jump, setJump] = useState<number | null>(null)
+  const [tick, setTick] = useState(0)
   const [loadKey, setLoadKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
   const bodyRef = useRef<HTMLDivElement>(null)
+  const areaRef = useRef<HTMLTextAreaElement>(null)
+  const caret = useRef<number | null>(null)
+  const last = useRef(0)
+  const composing = useRef(false)
+  const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
 
   useEffect(() => {
     let alive = true
@@ -198,8 +112,12 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       .then(result => {
         if (!alive) return
         const next = result ?? { kind: 'missing' as const, path: tab.path }
+        const start = next.kind === 'file' ? baselineOf(next.text, tab.diff) : null
         setData(next)
-        if (next.kind === 'file') setDraft(next.text)
+        setBase(start)
+        setHidden(false)
+        setJump(next.kind === 'file' && start ? firstChange(diffRows(start, next.text)) : null)
+        if (next.kind === 'file') setDoc(next.text)
         setSaveFailed(false)
         setLoadKey(key => key + 1)
       })
@@ -211,29 +129,82 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     return () => {
       alive = false
     }
-  }, [tab.path, tab.generation])
+  }, [tab.path, tab.generation, tab.diff])
+
+  const file = data?.kind === 'file' ? data : null
+  const long = !!file && file.text.split('\n').length > MAX_LINES
+  const editable = !!file && !file.truncated && !long
+  const text = editable ? doc : (file?.text ?? '')
+  const baseline = hidden ? null : base
+
+  const rows = useMemo(() => {
+    if (!file) return []
+    const all = baseline === null ? plainRows(text) : diffRows(baseline, text)
+    return editable ? all : all.slice(0, MAX_LINES)
+  }, [file, baseline, text, editable])
+
+  const shown = useMemo(() => joinRows(rows), [rows])
+  const count = useMemo(() => rows.filter(row => row.line !== null).length, [rows])
+  const gutter = `${Math.max(String(count).length, 2)}ch`
 
   useEffect(() => {
     if (!data) return
-    if (data.kind === 'file' && tab.line) {
-      bodyRef.current?.querySelector(`[data-line="${tab.line}"]`)?.scrollIntoView?.({ block: 'center' })
+    const target = tab.line ?? jump
+    const seen = scrolled.current
+    if (seen.load === loadKey && seen.target === target) return
+    const fresh = seen.load !== loadKey
+    scrolled.current = { load: loadKey, target }
+    if (data.kind === 'file' && target) {
+      bodyRef.current?.querySelector(`[data-line="${target}"]`)?.scrollIntoView?.({ block: 'center' })
       return
     }
-    if (bodyRef.current) bodyRef.current.scrollTop = 0
-  }, [loadKey, tab.line])
+    if (fresh && bodyRef.current) bodyRef.current.scrollTop = 0
+  }, [data, loadKey, tab.line, jump])
 
-  const file = data?.kind === 'file' ? data : null
-  const editable = !!file && !file.truncated && file.text.split('\n').length <= MAX_LINES
-  const dirty = editable && !!file && draft !== file.text
+  useLayoutEffect(() => {
+    const area = areaRef.current
+    if (!area || composing.current) return
+    if (area.value !== shown) area.value = shown
+    const want = caret.current
+    if (want === null) return
+    caret.current = null
+    const at = toShown(rows, want)
+    last.current = at
+    area.setSelectionRange(at, at)
+    bodyRef.current?.querySelector(`[data-row="${rowAt(rows, at).index}"]`)?.scrollIntoView?.({ block: 'nearest' })
+  }, [tick, shown, rows])
+
+  useEffect(() => {
+    const onSelection = () => {
+      const area = areaRef.current
+      if (!area || document.activeElement !== area) return
+      if (area.selectionStart !== area.selectionEnd) return
+      const at = snap(rows, area.selectionStart, area.selectionStart < last.current)
+      last.current = at
+      if (at !== area.selectionStart) area.setSelectionRange(at, at)
+    }
+    document.addEventListener('selectionchange', onSelection)
+    return () => document.removeEventListener('selectionchange', onSelection)
+  }, [rows])
+
+  const dirty = editable && !!file && doc !== file.text
+
+  const apply = (next: string) => {
+    const edit = editDoc(rows, doc, shown, next)
+    caret.current = edit.at
+    setSaveFailed(false)
+    setDoc(edit.text)
+    setTick(value => value + 1)
+  }
 
   const save = async () => {
     if (saving || !dirty) return
     setSaving(true)
-    const fresh = await window.crew.writeFile(tab.path, draft).catch(() => null)
+    const fresh = await window.crew.writeFile(tab.path, doc).catch(() => null)
     setSaving(false)
     if (fresh?.kind === 'file') {
       setData(fresh)
-      setDraft(fresh.text)
+      setDoc(fresh.text)
       setSaveFailed(false)
     } else {
       setSaveFailed(true)
@@ -241,19 +212,17 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   }
 
   const discard = () => {
-    if (file) setDraft(file.text)
+    if (!file) return
+    const area = areaRef.current
+    caret.current = area ? toDoc(rows, area.selectionStart) : 0
+    setDoc(file.text)
+    setTick(value => value + 1)
     setSaveFailed(false)
   }
 
-  const onEdit = (next: string, caretLine: number) => {
-    setDraft(next)
-    setSaveFailed(false)
-    setTimeout(() => {
-      bodyRef.current?.querySelector(`[data-line="${caretLine}"]`)?.scrollIntoView?.({ block: 'nearest' })
-    }, 0)
-  }
+  const onEdit = (event: ChangeEvent<HTMLTextAreaElement>) => apply(event.target.value)
 
-  const onEditorKeys = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+  const onKeys = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 's') {
       event.preventDefault()
       void save()
@@ -268,12 +237,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     }
     if (event.key === 'Tab') {
       event.preventDefault()
-      const target = event.currentTarget
-      const { selectionStart, selectionEnd, value } = target
-      const next = `${value.slice(0, selectionStart)}  ${value.slice(selectionEnd)}`
-      target.value = next
-      target.setSelectionRange(selectionStart + 2, selectionStart + 2)
-      setDraft(next)
+      const { selectionStart, selectionEnd, value } = event.currentTarget
+      apply(`${value.slice(0, selectionStart)}  ${value.slice(selectionEnd)}`)
     }
   }
 
@@ -287,15 +252,33 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
         )}
         {data?.kind === 'dir' && <DirRows tab={tab} path={data.path} entries={data.entries} />}
         {file && (
-          <CodeBody
-            tab={tab}
-            text={editable ? draft : file.text}
-            editable={editable}
-            truncated={file.truncated}
-            dirty={dirty}
-            onChange={onEdit}
-            onKeys={onEditorKeys}
-          />
+          <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
+            <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
+            {editable && (
+              <textarea
+                ref={areaRef}
+                value={shown}
+                onChange={onEdit}
+                onKeyDown={onKeys}
+                onCompositionStart={() => {
+                  composing.current = true
+                }}
+                onCompositionEnd={() => {
+                  composing.current = false
+                }}
+                aria-label="File contents"
+                spellCheck={false}
+                autoCorrect="off"
+                autoCapitalize="off"
+                wrap="off"
+                style={{ padding: `12px 16px 12px calc(2rem + ${gutter})` }}
+                className="absolute inset-0 w-full h-full resize-none overflow-hidden bg-transparent font-mono text-xs leading-5 text-transparent caret-fg selection:bg-fg/25 outline-none"
+              />
+            )}
+            {!editable && (file.truncated || long) && (
+              <p className="px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
+            )}
+          </div>
         )}
         {data?.kind === 'image' && <ImageView src={data.url} alt={data.path} />}
         {data?.kind === 'missing' && (
@@ -313,23 +296,35 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
           />
         )}
       </div>
-      {dirty && (
+      {(base || dirty) && (
         <div className="absolute top-2.5 right-4 flex items-center gap-1.5">
           {saveFailed && <span className="text-xs text-danger mr-1">Could not save</span>}
-          <button
-            onClick={discard}
-            className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
-          >
-            Discard
-          </button>
-          <button
-            onClick={() => void save()}
-            disabled={saving}
-            className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:scale-100"
-          >
-            {saving && <Spinner size={12} className="text-ink-900" />}
-            Save
-          </button>
+          {base && (
+            <button
+              onClick={() => setHidden(!hidden)}
+              className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
+            >
+              {hidden ? 'Show changes' : 'Hide changes'}
+            </button>
+          )}
+          {dirty && (
+            <button
+              onClick={discard}
+              className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
+            >
+              Discard
+            </button>
+          )}
+          {dirty && (
+            <button
+              onClick={() => void save()}
+              disabled={saving}
+              className="h-8 px-3.5 rounded-full bg-fg text-ink-900 text-sm font-semibold flex items-center gap-1.5 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:scale-100"
+            >
+              {saving && <Spinner size={12} className="text-ink-900" />}
+              Save
+            </button>
+          )}
         </div>
       )}
     </div>

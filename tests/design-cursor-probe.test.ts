@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
-const { ARROW_TIP, CursorArrow, DESIGN_CURSORS, applyDesignCursors } = await import(
+const { ARROW_TIP, CursorArrow, DESIGN_CURSORS, applyDesignCursors, applyToolCursor } = await import(
   '../src/renderer/src/design/cursors'
 )
 
@@ -18,6 +18,23 @@ const parse = (value: string) => {
 const size = (svg: string) => {
   const match = svg.match(/width='(\d+)' height='(\d+)' viewBox='0 0 (\d+) (\d+)'/)!
   return { w: Number(match[1]), h: Number(match[2]), viewBox: [Number(match[3]), Number(match[4])] }
+}
+
+const placement = (svg: string) => svg.match(/<path d='[^']+' transform='([^']+)'/)?.[1] ?? ''
+
+const drawn = (svg: string) => {
+  const d = svg.match(/<path d='([^']+)'/)![1]
+  const scale = Number(svg.match(/<g transform='translate\([^)]+\) scale\(([\d.]+)\)'/)![1])
+  const xs: number[] = []
+  const ys: number[] = []
+  for (const step of d.match(/[MHV][-\d. ]*/g)!) {
+    const numbers = step.slice(1).trim().split(' ').map(Number)
+    if (step[0] === 'M') xs.push(numbers[0]), ys.push(numbers[1])
+    if (step[0] === 'H') xs.push(...numbers)
+    if (step[0] === 'V') ys.push(...numbers)
+  }
+  const span = (values: number[]) => (Math.max(...values) - Math.min(...values)) * scale
+  return { w: span(xs), h: span(ys) }
 }
 
 describe('design cursors', () => {
@@ -58,6 +75,38 @@ describe('design cursors', () => {
     const { w, h } = size(parse(vars['--tl-cursor-default']).svg)
     expect(w).toBeLessThan(29)
     expect(h).toBeLessThan(30)
+  })
+
+  it('keeps the target small enough to aim with', () => {
+    const { svg } = parse(vars['--tl-cursor-cross'])
+    const { w, h } = size(svg)
+    const art = drawn(svg)
+    expect(art.w).toBeCloseTo(art.h)
+    expect(art.w).toBeLessThan(13)
+    expect(art.w).toBeGreaterThan(9)
+    expect(w - art.w).toBeGreaterThan(4)
+    expect(h - art.h).toBeGreaterThan(4)
+  })
+
+  it('puts the thumb on the left of both hands', () => {
+    expect(placement(parse(vars['--tl-cursor-grab']).svg)).toContain('scale(-0.9 0.9)')
+    expect(placement(parse(vars['--tl-cursor-grabbing']).svg)).toContain('scale(0.9)')
+  })
+
+  it('hands the pencil its own cursor and takes it back', () => {
+    const container = document.createElement('div')
+    applyDesignCursors(container)
+    applyToolCursor(container, 'draw')
+    const drawing = container.style.getPropertyValue('--tl-cursor-cross')
+    expect(drawing).not.toBe(vars['--tl-cursor-cross'])
+    const pencil = parse(drawing)
+    const { w, h, viewBox } = size(pencil.svg)
+    expect([w, h]).toEqual(viewBox)
+    expect(pencil.fallback).toBe('crosshair')
+    expect(pencil.x).toBeGreaterThan(0)
+    expect(pencil.y).toBeLessThan(h)
+    applyToolCursor(container, 'select')
+    expect(container.style.getPropertyValue('--tl-cursor-cross')).toBe(vars['--tl-cursor-cross'])
   })
 
   it('points from the tip of the arrow, wherever it is drawn', () => {

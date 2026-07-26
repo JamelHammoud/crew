@@ -9,8 +9,6 @@ import {
   type OutgoingAttachment
 } from '../shared/attachments'
 import {
-  docMentionRefsIn,
-  docMentionsIn,
   fallbackTitle,
   pageCode,
   pageCodeOf,
@@ -18,6 +16,13 @@ import {
   type DocMentionRef,
   type DocPage
 } from '../shared/docs'
+import {
+  boardMentionsOf,
+  crewRefs,
+  docMentionsOf,
+  refsIn,
+  type CrewRef
+} from '../shared/refs'
 import {
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
@@ -62,6 +67,8 @@ import {
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import {
   BOARD_ID,
+  resolveBoardRef,
+  type BoardMentionRef,
   type DesignBoardMeta,
   type DesignDocument,
   type DesignOp,
@@ -105,6 +112,7 @@ interface QueuedPrompt {
   threadId: string
   mentions: string[]
   docMentions: DocMentionRef[]
+  boardMentions: BoardMentionRef[]
   attachments: Attachment[]
   messageId: string
   replyTo?: MessageReply
@@ -194,6 +202,10 @@ export class CrewSession {
   // same folder are the same member but two separate people in the call.
   private huddle = new Map<WebSocket, HuddlePeer>()
   private huddleStartedAt: number | null = null
+  private huddleId: string | null = null
+  // Everyone the log already names for this call, so coming back to it after a
+  // dropped window does not say they joined twice.
+  private huddleNamed = new Set<string>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
@@ -338,6 +350,26 @@ export class CrewSession {
         threadId: event.threadId,
         ok: false,
         error: 'Interrupted by a restart'
+      }
+      this.events.push(close)
+      store.appendEvent(close)
+    }
+    // A call the host was in when it went down has a start in the log and no
+    // end. It ran until the session last said anything, so that is where it is
+    // closed, rather than being left reading as live forever.
+    const finished = new Set<string>()
+    for (const event of this.events) {
+      if (event.kind === 'huddle.ended') finished.add(event.huddleId)
+    }
+    const lastTs = this.events.at(-1)?.ts ?? Date.now()
+    for (const event of [...this.events]) {
+      if (event.kind !== 'huddle.started' || finished.has(event.huddleId)) continue
+      const close: SessionEvent = {
+        id: randomUUID(),
+        ts: Math.max(event.ts, lastTs),
+        kind: 'huddle.ended',
+        huddleId: event.huddleId,
+        ms: Math.max(0, lastTs - event.ts)
       }
       this.events.push(close)
       store.appendEvent(close)
@@ -488,6 +520,9 @@ export class CrewSession {
       case 'design.open':
         if (meta.role === 'ui') this.handleDesignOpen(ws, msg.boardId)
         break
+      case 'design.peek':
+        if (meta.role === 'ui') this.handleDesignPeek(ws, msg.boardId)
+        break
       case 'design.init':
         if (meta.role === 'ui') this.handleDesignInit(msg.boardId, msg.document)
         break
@@ -615,7 +650,7 @@ export class CrewSession {
         mentions,
         mentionRefs: this.agentRefs(mentions, trimmed),
         memberMentionRefs: this.memberRefs(trimmed),
-        docMentions: this.docMentionRefs(trimmed),
+        ...this.refsOf(trimmed),
         attachments,
         replyTo
       })
@@ -763,14 +798,20 @@ export class CrewSession {
       mentionRefs: this.agentRefs(entry.mentions, entry.text),
       memberMentionRefs: this.memberRefs(entry.text),
       docMentions: entry.docMentions,
+      boardMentions: entry.boardMentions,
       threadId: entry.threadId,
       attachments: entry.attachments,
       replyTo: entry.replyTo
     })
   }
 
-  private docMentionRefs(text: string): DocMentionRef[] {
-    return docMentionRefsIn(text, Object.fromEntries(this.docs))
+  private refsOf(text: string): { docMentions: DocMentionRef[]; boardMentions: BoardMentionRef[] } {
+    const refs = this.crewRefsIn(text)
+    return { docMentions: docMentionsOf(refs), boardMentions: boardMentionsOf(refs) }
+  }
+
+  private crewRefsIn(text: string): CrewRef[] {
+    return refsIn(text, crewRefs(Object.fromEntries(this.docs), this.boardList()))
   }
 
   private memberRefs(text: string) {
@@ -815,11 +856,12 @@ export class CrewSession {
     if (event.authorId !== member.id || event.threadId) return
     const trimmed = text.trim()
     if (!trimmed || trimmed === event.text) return
-    const docMentions = this.docMentionRefs(trimmed)
+    const { docMentions, boardMentions } = this.refsOf(trimmed)
     const mentionRefs = this.agentRefs([], trimmed)
     const memberMentionRefs = this.memberRefs(trimmed)
     event.text = trimmed
     event.docMentions = docMentions
+    event.boardMentions = boardMentions
     event.mentionRefs = mentionRefs
     event.memberMentionRefs = memberMentionRefs
     this.emit({
@@ -830,7 +872,8 @@ export class CrewSession {
       text: trimmed,
       mentionRefs,
       memberMentionRefs,
-      docMentions
+      docMentions,
+      boardMentions
     })
   }
 
@@ -1171,6 +1214,12 @@ export class CrewSession {
     })
   }
 
+  private handleDesignPeek(ws: WebSocket, boardId: string): void {
+    const board = this.designs.get(boardId)
+    if (!board) return
+    this.send(ws, { type: 'design.preview', boardId, document: board.document })
+  }
+
   // The first person to open a fresh board sends the starting document, so the
   // server never has to know how to build one. Everyone else loads it from the
   // snapshot broadcast here.
@@ -1262,6 +1311,7 @@ export class CrewSession {
   private huddleRoom(): HuddleRoom {
     if (this.huddle.size === 0) return emptyRoom()
     return {
+      id: this.huddleId,
       peers: [...this.huddle.values()].sort((a, b) => a.joinedAt - b.joinedAt),
       startedAt: this.huddleStartedAt
     }
@@ -1301,14 +1351,55 @@ export class CrewSession {
       sharing: existing?.sharing ?? false,
       joinedAt: existing?.joinedAt ?? Date.now()
     })
-    if (this.huddleStartedAt === null) this.huddleStartedAt = Date.now()
+    this.recordHuddleArrival(member)
     this.broadcastHuddle()
   }
 
   private handleHuddleLeave(ws: WebSocket): void {
     if (!this.huddle.delete(ws)) return
-    if (this.huddle.size === 0) this.huddleStartedAt = null
+    if (this.huddle.size === 0) this.recordHuddleEnd()
     this.broadcastHuddle()
+  }
+
+  // The chat keeps the record of a call: who started it, who came, and how long
+  // it ran. The call itself stays out of the log, so nothing about the media or
+  // the handshake is ever committed.
+  private recordHuddleArrival(member: Member): void {
+    if (this.huddleStartedAt === null) {
+      this.huddleStartedAt = Date.now()
+      this.huddleId = randomUUID()
+      this.huddleNamed = new Set([member.id])
+      this.emit({
+        id: randomUUID(),
+        ts: this.huddleStartedAt,
+        kind: 'huddle.started',
+        huddleId: this.huddleId,
+        byId: member.id,
+        byName: member.name
+      })
+      return
+    }
+    if (this.huddleId === null || this.huddleNamed.has(member.id)) return
+    this.huddleNamed.add(member.id)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'huddle.joined',
+      huddleId: this.huddleId,
+      memberId: member.id,
+      name: member.name
+    })
+  }
+
+  private recordHuddleEnd(): void {
+    const huddleId = this.huddleId
+    const startedAt = this.huddleStartedAt
+    this.huddleId = null
+    this.huddleStartedAt = null
+    this.huddleNamed.clear()
+    if (huddleId === null || startedAt === null) return
+    const ts = Date.now()
+    this.emit({ id: randomUUID(), ts, kind: 'huddle.ended', huddleId, ms: ts - startedAt })
   }
 
   private handleHuddleUpdate(
@@ -1430,11 +1521,12 @@ export class CrewSession {
     const found = this.queuedEntry(promptId)
     const trimmed = text.trim()
     if (!found || !trimmed || found.entry.authorId !== member.id) return
-    const docMentions = this.docMentionRefs(trimmed)
+    const { docMentions, boardMentions } = this.refsOf(trimmed)
     for (const entry of found.thread.queue) {
       if (entry.messageId === found.entry.messageId) {
         entry.text = trimmed
         entry.docMentions = docMentions
+        entry.boardMentions = boardMentions
       }
     }
     if (this.emittedMessages.has(found.entry.messageId)) {
@@ -1442,13 +1534,15 @@ export class CrewSession {
       if (message && message.kind === 'message') {
         message.text = trimmed
         message.docMentions = docMentions
+        message.boardMentions = boardMentions
         this.emit({
           id: randomUUID(),
           ts: Date.now(),
           kind: 'message.edited',
           messageId: message.id,
           text: trimmed,
-          docMentions
+          docMentions,
+          boardMentions
         })
       }
     }
@@ -1545,6 +1639,7 @@ export class CrewSession {
       status: step.status,
       name: step.name || existing?.name,
       detail: step.detail ?? existing?.detail,
+      output: step.output ?? existing?.output,
       files: step.files ?? existing?.files,
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
@@ -1668,7 +1763,8 @@ export class CrewSession {
           text: this.buildPrompt(agent, entry, this.assignedReactions(promptId)),
           settings: agent.settings,
           attachments: entry.attachments,
-          designBoard: this.boardOf(this.threads.get(ref.threadId))
+          designBoard: this.boardOf(this.threads.get(ref.threadId)),
+          designBoards: this.referencedBoards(entry)
         })
       }
     }
@@ -1712,7 +1808,7 @@ export class CrewSession {
       authorId: member.id,
       threadId,
       mentions: route?.mentions ?? [agent.id],
-      docMentions: this.docMentionRefs(text),
+      ...this.refsOf(text),
       attachments,
       messageId: route?.messageId ?? randomUUID(),
       replyTo: route?.replyTo
@@ -1804,7 +1900,7 @@ export class CrewSession {
       authorId: steer.authorId ?? '',
       threadId: steer.threadId,
       mentions: [agent.id],
-      docMentions: this.docMentionRefs(steer.text),
+      ...this.refsOf(steer.text),
       attachments: steer.attachments,
       messageId: steer.messageId,
       replyTo: steer.replyTo
@@ -1852,7 +1948,8 @@ export class CrewSession {
       text: this.buildPrompt(agent, next, reactions),
       settings: agent.settings,
       attachments: next.attachments,
-      designBoard: this.boardOf(thread)
+      designBoard: this.boardOf(thread),
+      designBoards: this.referencedBoards(next)
     })
   }
 
@@ -1924,14 +2021,18 @@ export class CrewSession {
     )
   }
 
-  private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
-    const people = [...this.members.values()].map(m => m.name).join(', ')
-    const context = this.events
+  private threadContext(threadId: string): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
+    return this.events
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
-          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === prompt.threadId
+          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === threadId
       )
       .slice(-CONTEXT_EVENT_LIMIT)
+  }
+
+  private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
+    const people = [...this.members.values()].map(m => m.name).join(', ')
+    const context = this.threadContext(prompt.threadId)
     const transcript = context
       .map(e => {
         if (e.kind === 'message') {
@@ -1993,11 +2094,33 @@ export class CrewSession {
       if (event.kind === 'message' && event.docMentions) {
         for (const ref of event.docMentions) add(resolveDocRef(docs, ref))
       } else {
-        for (const page of docMentionsIn(event.text ?? '', docs)) add(page)
+        for (const ref of this.crewRefsIn(event.text ?? '')) {
+          if (ref.kind === 'doc') add(ref.key)
+        }
       }
     }
     for (const ref of prompt.docMentions) add(resolveDocRef(docs, ref))
     return pages
+  }
+
+  private referencedBoards(prompt: QueuedPrompt): DesignBoardMeta[] {
+    const boards = this.boardList()
+    const found: DesignBoardMeta[] = []
+    const add = (id: string | null) => {
+      const board = id ? boards.find(candidate => candidate.id === id) : undefined
+      if (board && !found.some(seen => seen.id === board.id)) found.push(board)
+    }
+    for (const event of this.threadContext(prompt.threadId)) {
+      if (event.kind === 'message' && event.boardMentions) {
+        for (const ref of event.boardMentions) add(resolveBoardRef(boards, ref))
+        continue
+      }
+      for (const ref of this.crewRefsIn(event.text ?? '')) {
+        if (ref.kind === 'board') add(ref.key)
+      }
+    }
+    for (const ref of prompt.boardMentions) add(resolveBoardRef(boards, ref))
+    return found
   }
 
   private docExcerpt(text: string): string {

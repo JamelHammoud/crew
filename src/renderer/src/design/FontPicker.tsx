@@ -1,31 +1,18 @@
 import { CheckIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useState } from 'react'
 import { Popover } from '../components/Popover'
-import { FONTS, fontLabel, fontStack, loadFonts, type FontCategory } from './fonts'
-
-const GROUPS: Array<{ id: FontCategory | 'all'; label: string }> = [
-  { id: 'all', label: 'All fonts' },
-  { id: 'sans', label: 'Sans serif' },
-  { id: 'serif', label: 'Serif' },
-  { id: 'mono', label: 'Monospace' },
-  { id: 'display', label: 'Display' },
-  { id: 'hand', label: 'Handwriting' }
-]
+import { FONTS, fontLabel, fontStack, loadFonts } from './fonts'
 
 export default function FontPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [group, setGroup] = useState<FontCategory | 'all'>('all')
 
   useEffect(() => loadFonts([value]), [value])
 
   const shown = useMemo(() => {
     const clean = query.trim().toLowerCase()
-    return FONTS.filter(font => {
-      if (group !== 'all' && font.category !== group) return false
-      return clean === '' || font.label.toLowerCase().includes(clean)
-    })
-  }, [query, group])
+    return FONTS.filter(font => clean === '' || font.label.toLowerCase().includes(clean))
+  }, [query])
 
   useEffect(() => {
     if (open) loadFonts(shown.map(font => font.name))
@@ -61,20 +48,6 @@ export default function FontPicker({ value, onChange }: { value: string; onChang
               className="w-full min-w-0 bg-transparent text-xs text-fg placeholder:text-fg-muted outline-none"
             />
           </label>
-          <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
-            {GROUPS.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setGroup(item.id)}
-                aria-pressed={group === item.id}
-                className={`shrink-0 h-6 px-2.5 rounded-full text-xs font-medium transition-colors ${
-                  group === item.id ? 'bg-fg text-ink-900' : 'text-fg-muted hover:text-fg hover:bg-fg/[0.06]'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
           <div className="max-h-72 overflow-y-auto">
             {shown.length === 0 && <p className="px-3 py-6 text-xs text-fg-muted text-center">Nothing matches that.</p>}
             {shown.map(font => (

@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { PathLocation } from '../../../shared/files'
 import { useBrowser } from '../state/browser'
+import { EmojiText } from './Emoji'
 
 export interface FileRef {
   path: string
@@ -261,7 +262,8 @@ export function useLocated(paths: string[], again?: unknown): void {
   }, [key, again])
 }
 
-const openFile = (path: string, line: number | null) => useBrowser.getState().openFile(targetFor(path), line)
+const openFile = (path: string, line: number | null, diff: string | null = null) =>
+  useBrowser.getState().openFile(targetFor(path), line, diff)
 
 export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
   return (
@@ -282,11 +284,13 @@ export function FileChip({ path, line, text }: { path: string; line: number | nu
 export function FileTextLink({
   path,
   line = null,
+  diff = null,
   className,
   children
 }: {
   path: string
   line?: number | null
+  diff?: string | null
   className?: string
   children: ReactNode
 }) {
@@ -294,7 +298,7 @@ export function FileTextLink({
     <span
       onClick={event => {
         event.stopPropagation()
-        openFile(path, line)
+        openFile(path, line, diff)
       }}
       className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
     >
@@ -334,7 +338,7 @@ export function TextWithFileLinks({ text, inline, again }: { text: string; inlin
     <>
       {tokens.map((token, index) => {
         if (token.kind === 'url') return <UrlLink key={index} url={token.text} />
-        if (token.kind !== 'file') return token.text
+        if (token.kind !== 'file') return <EmojiText key={index} text={token.text} />
         if (isPrivate(token.path)) return <PrivateChip key={index} />
         const label = labelFor(token.path, token.suffix, token.text)
         if (!openable(token.path)) return label

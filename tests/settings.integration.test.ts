@@ -21,6 +21,13 @@ describe('provider settings map to command line flags', () => {
     expect(args.join(' ')).toContain('--effort max')
   })
 
+  // Without this the thinking blocks still arrive, carrying an empty string, so
+  // the thread shows a run that thinks in silence.
+  it('claude asks for the thinking to be readable', () => {
+    const args = claudeArgs('hi', reader({ model: 'opus', effort: 'high' }))
+    expect(args.join(' ')).toContain('--thinking-display summarized')
+  })
+
   it('claude sends the exact selected opus model', () => {
     const args = claudeArgs('hi', reader({ model: 'opus', opusModel: 'claude-opus-4-8', effort: 'high' }))
     expect(args.join(' ')).toContain('--model claude-opus-4-8')

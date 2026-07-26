@@ -10,10 +10,10 @@ import {
   type TLResizeInfo,
   type TLShape
 } from 'tldraw'
-import { nodeDefaults, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
+import { holdsChildren, nodeDefaults, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
 import { loadFonts } from './fonts'
 import { nodeStyle, polygonFillStyle, polygonStyle, strokeDash, textBoxStyle, textStyle } from './nodeCss'
-import { nodePolygon, polygonPath, type UnitPoint } from './nodeShape'
+import { nodeOutline, nodePolygon, polygonPath, type UnitPoint } from './nodeShape'
 import { nextNodeName, nextNodeShape } from './nextShape'
 
 declare module '@tldraw/tlschema' {
@@ -72,8 +72,19 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
     return new Rectangle2d({ width: w, height: h, isFilled: true })
   }
 
+  override canReceiveNewChildrenOfType(shape: DesignNodeShape) {
+    return holdsChildren(nodeShapeOf(shape.props.shape)) && !shape.isLocked
+  }
+
+  override getClipPath(shape: DesignNodeShape) {
+    const { w, h, radius, clip, mask } = shape.props
+    if (!clip && !mask) return undefined
+    return nodeOutline(nodeShapeOf(shape.props.shape), w, h, radius).map(point => new Vec(point.x, point.y))
+  }
+
   component(shape: DesignNodeShape) {
     const { props } = shape
+    if (props.mask) return <HTMLContainer style={{ width: props.w, height: props.h }} />
     const points = nodePolygon(nodeShapeOf(props.shape))
     return (
       <HTMLContainer style={{ width: props.w, height: props.h, pointerEvents: 'all' }}>

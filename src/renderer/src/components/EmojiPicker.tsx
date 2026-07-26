@@ -131,7 +131,7 @@ export default function EmojiPicker({
         <div ref={scrollRef} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto pr-1">
           {searching ? (
             <div className="px-1 pb-2">
-              <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg-faint">
+              <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg/45">
                 {results.length > 0 ? 'Results' : 'No emoji found'}
               </p>
               <div className="grid grid-cols-9">{results.map(cell)}</div>
@@ -144,7 +144,7 @@ export default function EmojiPicker({
                 <div key={section.id} style={{ height: section.height }} className="px-1">
                   {near && (
                     <>
-                      <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg-faint">
+                      <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg/45">
                         {section.label}
                       </p>
                       <div className="grid grid-cols-9">{section.entries.map(cell)}</div>

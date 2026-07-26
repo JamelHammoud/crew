@@ -16,6 +16,7 @@ export interface RunStep {
   text?: string
   name?: string
   detail?: string
+  output?: string
   files?: FileChange[]
 }
 

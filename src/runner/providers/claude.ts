@@ -1,6 +1,7 @@
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges } from './detail'
 import type { AgentSettingField } from '../../shared/llm'
+import { resultText } from './output'
 import { claudeUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
@@ -30,18 +31,22 @@ export const parseClaudeLine: OutputParser = line => {
   }
   if (msg?.type === 'stream_event' && msg.event) {
     const event = msg.event
-    if (event.type === 'content_block_start' && event.content_block?.type === 'thinking') {
-      return [{ thinkingStart: { index: event.index } }]
+    if (event.type === 'content_block_start') {
+      if (event.content_block?.type === 'thinking') return [{ thinkingStart: { index: event.index } }]
+      if (event.content_block?.type === 'text') return [{ textStart: { index: event.index } }]
+      return []
     }
-    if (
-      event.type === 'content_block_delta' &&
-      event.delta?.type === 'thinking_delta' &&
-      typeof event.delta.thinking === 'string'
-    ) {
-      return [{ thinkingDelta: { index: event.index, text: event.delta.thinking } }]
+    if (event.type === 'content_block_delta') {
+      if (event.delta?.type === 'thinking_delta' && typeof event.delta.thinking === 'string') {
+        return [{ thinkingDelta: { index: event.index, text: event.delta.thinking } }]
+      }
+      if (event.delta?.type === 'text_delta' && typeof event.delta.text === 'string') {
+        return [{ textDelta: { index: event.index, text: event.delta.text } }]
+      }
+      return []
     }
     if (event.type === 'content_block_stop') {
-      return [{ thinkingStop: { index: event.index } }]
+      return [{ blockStop: { index: event.index } }]
     }
     return []
   }
@@ -81,7 +86,15 @@ export const parseClaudeLine: OutputParser = line => {
     const out = []
     for (const block of msg.message.content) {
       if (block?.type === 'tool_result' && typeof block.tool_use_id === 'string') {
-        out.push({ activity: { id: block.tool_use_id, kind: 'tool' as const, name: '', status: 'finished' as const } })
+        out.push({
+          activity: {
+            id: block.tool_use_id,
+            kind: 'tool' as const,
+            name: '',
+            status: 'finished' as const,
+            output: resultText(block.content)
+          }
+        })
       }
     }
     return out
@@ -108,6 +121,13 @@ function claudeModel(get: SettingReader): string {
 
 // The prompt is not passed in argv: with --input-format stream-json it goes in
 // over stdin, which is also the channel later messages use to steer the run.
+//
+// --thinking-display is what makes the thinking readable. From Opus 4.7 on, the
+// model's reasoning is withheld by default: the blocks still arrive, with a
+// signature and an empty string where the words should be, so a run looks like
+// it is thinking out loud and says nothing. The interactive CLI asks for the
+// summary; a headless one does not, and crew is headless. Asking for it here is
+// the whole of what puts the thinking on screen.
 export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   '-p',
   '--input-format',
@@ -116,6 +136,8 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   'stream-json',
   '--verbose',
   '--include-partial-messages',
+  '--thinking-display',
+  'summarized',
   ...flag('--model', claudeModel(get)),
   ...flag('--effort', get('effort')),
   '--permission-mode',

@@ -108,14 +108,14 @@ describe('doc mentions in the thread preview', () => {
     boot()
     const pill = screen.getByText('@Bob (Kimi K3)')
     const preview = pill.closest('p')!
-    expect(preview.textContent).toBe(title)
-    const doc = screen.getByText('#Plan')
+    expect(preview.textContent).toBe(title.replace('#Plan', 'Plan'))
+    const doc = screen.getByText('Plan')
     expect(doc.className).toContain('text-sky-300')
   })
 
   it('opens the doc page when its pill is clicked, without opening the thread', () => {
     const { unmount } = boot()
-    fireEvent.click(screen.getByText('#Plan'))
+    fireEvent.click(screen.getByText('Plan'))
     expect(useCrew.getState().docsTarget).toBe('plan-1abc')
     expect(useCrew.getState().openThreadId).toBeNull()
 

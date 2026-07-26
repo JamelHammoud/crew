@@ -10,9 +10,10 @@ import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutoco
 import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import Pill from '../components/Pill'
 import { usePresence } from '../components/presence'
+import ReplyPreview from '../components/ReplyPreview'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
-import { Counts } from '../components/StepRow'
+import Counts from '../components/Counts'
 import ThreadItems from '../components/ThreadItems'
 import Tooltip from '../components/Tooltip'
 import { buildThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '../components/thread'
@@ -182,6 +183,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
             <div className="relative max-w-[660px] mx-auto pointer-events-auto">
               {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
               <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
+              {replyTo && <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />}
               <div
                 ref={setHeaderRow}
                 className="relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] flex items-center gap-3 px-3 pt-2.5 pb-12 -mb-9"
@@ -250,8 +252,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   onSend={send}
                   onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
                   sendLabel={canSteer ? 'Steer' : 'Send'}
-                  replyTo={replyTo ?? undefined}
-                  onCancelReply={() => setReplyTo(null)}
                 >
                   <MentionMenu
                     matches={mention.matches}

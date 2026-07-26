@@ -45,10 +45,15 @@ function Session() {
   const closeThread = useCrew(s => s.closeThread)
   const openThread = useCrew(s => s.openThread)
   const docsTarget = useCrew(s => s.docsTarget)
+  const designTarget = useCrew(s => s.designTarget)
 
   useEffect(() => {
     if (docsTarget) setTab('docs')
   }, [docsTarget])
+
+  useEffect(() => {
+    if (designTarget) setTab('design')
+  }, [designTarget])
 
   useEffect(
     () =>
