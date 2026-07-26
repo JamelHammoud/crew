@@ -1945,14 +1945,18 @@ export class CrewSession {
     )
   }
 
-  private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
-    const people = [...this.members.values()].map(m => m.name).join(', ')
-    const context = this.events
+  private threadContext(threadId: string): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
+    return this.events
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
-          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === prompt.threadId
+          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === threadId
       )
       .slice(-CONTEXT_EVENT_LIMIT)
+  }
+
+  private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
+    const people = [...this.members.values()].map(m => m.name).join(', ')
+    const context = this.threadContext(prompt.threadId)
     const transcript = context
       .map(e => {
         if (e.kind === 'message') {
