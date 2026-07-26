@@ -236,6 +236,16 @@ describe('picking an icon', () => {
     }
   })
 
+  it('asks for it from yarn start, which runs the built app the way it ships', () => {
+    const scripts = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).scripts
+    const [, asked] = scripts.start.match(/CREW_SHIPPING_ICON=(\S+)/) ?? []
+
+    expect(wearsBlueprint('/Users/someone/Repositories/crew', { CREW_SHIPPING_ICON: asked })).toBe(
+      false
+    )
+    expect(scripts.preview).not.toContain('CREW_SHIPPING_ICON')
+  })
+
   it('keeps the blueprint when the ask is turned off rather than unset', () => {
     const source = '/Users/someone/Repositories/crew'
 
