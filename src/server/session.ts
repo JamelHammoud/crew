@@ -1331,14 +1331,55 @@ export class CrewSession {
       sharing: existing?.sharing ?? false,
       joinedAt: existing?.joinedAt ?? Date.now()
     })
-    if (this.huddleStartedAt === null) this.huddleStartedAt = Date.now()
+    this.recordHuddleArrival(member)
     this.broadcastHuddle()
   }
 
   private handleHuddleLeave(ws: WebSocket): void {
     if (!this.huddle.delete(ws)) return
-    if (this.huddle.size === 0) this.huddleStartedAt = null
+    if (this.huddle.size === 0) this.recordHuddleEnd()
     this.broadcastHuddle()
+  }
+
+  // The chat keeps the record of a call: who started it, who came, and how long
+  // it ran. The call itself stays out of the log, so nothing about the media or
+  // the handshake is ever committed.
+  private recordHuddleArrival(member: Member): void {
+    if (this.huddleStartedAt === null) {
+      this.huddleStartedAt = Date.now()
+      this.huddleId = randomUUID()
+      this.huddleNamed = new Set([member.id])
+      this.emit({
+        id: randomUUID(),
+        ts: this.huddleStartedAt,
+        kind: 'huddle.started',
+        huddleId: this.huddleId,
+        byId: member.id,
+        byName: member.name
+      })
+      return
+    }
+    if (this.huddleId === null || this.huddleNamed.has(member.id)) return
+    this.huddleNamed.add(member.id)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'huddle.joined',
+      huddleId: this.huddleId,
+      memberId: member.id,
+      name: member.name
+    })
+  }
+
+  private recordHuddleEnd(): void {
+    const huddleId = this.huddleId
+    const startedAt = this.huddleStartedAt
+    this.huddleId = null
+    this.huddleStartedAt = null
+    this.huddleNamed.clear()
+    if (huddleId === null || startedAt === null) return
+    const ts = Date.now()
+    this.emit({ id: randomUUID(), ts, kind: 'huddle.ended', huddleId, ms: ts - startedAt })
   }
 
   private handleHuddleUpdate(
