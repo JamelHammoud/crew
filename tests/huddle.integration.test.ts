@@ -310,6 +310,18 @@ describe('huddles', () => {
       byId: 'm-jamel',
       byName: 'jamel'
     })
+    // A run left open by the same crash is closed at the time of the restart,
+    // so the call must be measured before that lands or it stretches to meet it.
+    store.appendEvent({
+      id: 'running',
+      ts: 3000,
+      kind: 'agent.start',
+      promptId: 'p1',
+      agentId: 'a1',
+      agentLabel: 'Bubbles',
+      promptText: 'have a look',
+      byName: 'jamel'
+    })
     store.appendEvent({
       id: 'after',
       ts: 5000,
