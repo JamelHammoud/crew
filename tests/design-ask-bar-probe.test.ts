@@ -67,7 +67,8 @@ function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
   made.select(...selected)
   const editor = {
     ...made.editor,
-    getSelectionRotatedScreenBounds: () => ({ x: 100, y: 200, width: 300, height: 80 })
+    getSelectionPageBounds: () => ({ minX: 500, minY: 400, maxX: 800, maxY: 480 }),
+    pageToViewport: ({ x, y }: { x: number; y: number }) => ({ x: x - 460, y: y - 380 })
   } as unknown as Editor
   useCrew.setState({
     agents: options.agents ?? [agent('agent:bubbles', 'Bubbles'), agent('agent:fable', 'Fable')],
