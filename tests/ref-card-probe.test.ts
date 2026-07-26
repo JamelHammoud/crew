@@ -123,7 +123,7 @@ describe('the card behind a board pill', () => {
   it('shows a skeleton until the board arrives', () => {
     boot()
     const card = hover('Landing')
-    expect(card.querySelector('[data-board-skeleton]')?.className).toContain('skeleton')
+    expect(card.querySelector('[data-board-preview] [data-skeleton]')?.className).toContain('skeleton')
   })
 })
 

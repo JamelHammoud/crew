@@ -5,6 +5,12 @@ import StepRow from './StepRow'
 import type { ThreadItem } from './thread'
 import { isNewDay } from './time'
 
+const follows = (previous: ThreadItem | undefined, item: ThreadItem): boolean =>
+  previous !== undefined &&
+  (previous.kind === 'tool' || previous.kind === 'thinking') &&
+  previous.promptId === item.promptId &&
+  !isNewDay(previous.ts, item.ts)
+
 export default function ThreadItems({
   items,
   onReply
