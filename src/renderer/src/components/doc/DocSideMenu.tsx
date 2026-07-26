@@ -13,7 +13,7 @@ import { MenuDivider, MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
 
 export default function DocSideMenu() {
-  const editor = useBlockNoteEditor()
+  const editor = useBlockNoteEditor<any, any, any>()
   const sideMenu = useExtension(SideMenuExtension)
   const suggestions = useExtension(SuggestionMenu)
   const block = useExtensionState(SideMenuExtension, { selector: state => state?.block })
