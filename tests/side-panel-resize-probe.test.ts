@@ -1,15 +1,19 @@
 // @vitest-environment jsdom
-import { fireEvent, render } from '@testing-library/react'
+import { cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import type { CrewBridge } from '../src/renderer/src/types'
 
 const { useBrowser, DEFAULT_WIDTH } = await import('../src/renderer/src/state/browser')
 const SidePanel = (await import('../src/renderer/src/components/SidePanel')).default
 
 beforeEach(() => {
+  window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null, width: DEFAULT_WIDTH })
   useBrowser.getState().openUrl('https://example.com')
 })
+
+afterEach(() => cleanup())
 
 const handleFor = (root: HTMLElement) => root.querySelector('.cursor-col-resize')!
 
