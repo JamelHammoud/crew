@@ -496,6 +496,9 @@ export class CrewSession {
       case 'design.open':
         if (meta.role === 'ui') this.handleDesignOpen(ws, msg.boardId)
         break
+      case 'design.peek':
+        if (meta.role === 'ui') this.handleDesignPeek(ws, msg.boardId)
+        break
       case 'design.init':
         if (meta.role === 'ui') this.handleDesignInit(msg.boardId, msg.document)
         break
