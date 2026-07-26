@@ -68,12 +68,13 @@ export default function MessageReactions({
     <>
       <div
         ref={tray}
+        onFocus={() => setDismissed(false)}
         className={`absolute right-0 -top-4 z-10 flex items-center gap-px rounded-full border border-ink-700 bg-ink-800 p-0.5 shadow-[0_8px_24px_rgb(0_0_0/0.24)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           menuOpen
             ? 'translate-y-0 opacity-100'
             : dismissed
               ? 'pointer-events-none translate-y-1 opacity-0'
-              : 'pointer-events-none translate-y-1 opacity-0 group-hover/message:pointer-events-auto group-hover/message:translate-y-0 group-hover/message:opacity-100 focus-within:pointer-events-auto focus-within:translate-y-0 focus-within:opacity-100'
+              : 'pointer-events-none translate-y-1 opacity-0 group-hover/message:pointer-events-auto group-hover/message:translate-y-0 group-hover/message:opacity-100 has-[:focus-visible]:pointer-events-auto has-[:focus-visible]:translate-y-0 has-[:focus-visible]:opacity-100'
         }`}
       >
         {QUICK_REACTIONS.map(emoji => (
