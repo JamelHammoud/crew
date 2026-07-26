@@ -81,6 +81,16 @@ export const TerminalGlyph = glyph(
   </>
 )
 
+// A case with a handle and a seam across the lid. Wide and shallow rather than
+// tall, which is what tells a toolbox from a briefcase at 16px.
+export const ToolboxGlyph = glyph(
+  <>
+    <rect x="2.5" y="8.5" width="19" height="11" rx="2.5" />
+    <path d="M8.25 8.5V7.25a2.75 2.75 0 0 1 2.75-2.75h2a2.75 2.75 0 0 1 2.75 2.75V8.5" />
+    <path d="M2.5 12.75h19" />
+  </>
+)
+
 // The bare prompt, for a step in a thread that ran a command. No frame, because
 // it stands in a line of text rather than in a row of objects.
 export const PromptGlyph = glyph(
