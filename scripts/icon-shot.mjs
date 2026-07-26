@@ -30,6 +30,10 @@ app.whenReady().then(async () => {
 
   const window = new BrowserWindow({ width: 1440, height: 900, show: true, x: 0, y: 0 })
   window.setAlwaysOnTop(true, 'screen-saver')
+  // The whole app has to come forward, not just the window. macOS hands back an
+  // empty rectangle for a window belonging to an app that is not the active one.
+  app.focus({ steal: true })
+  window.focus()
   await window.loadFile(cut)
   // Asking the page a question is what gets it drawn at all.
   await window.webContents.executeJavaScript('document.body.classList.add("keys"), document.title')
