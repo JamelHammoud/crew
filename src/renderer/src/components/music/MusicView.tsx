@@ -26,7 +26,7 @@ const clock = (seconds: number): string => {
 
 // Where the loop has got to, read as fast as the screen draws. Nothing is asked
 // for while it is standing still, since a paused loop is where it was left.
-function useAt(playing: boolean, trackId: string | null): number {
+function useAt(room: MusicRoom, playing: boolean): number {
   const [at, setAt] = useState(() => useMusic.getState().position())
   useEffect(() => {
     setAt(useMusic.getState().position())
@@ -38,7 +38,7 @@ function useAt(playing: boolean, trackId: string | null): number {
     }
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
-  }, [playing, trackId])
+  }, [room, playing])
   return at
 }
 
