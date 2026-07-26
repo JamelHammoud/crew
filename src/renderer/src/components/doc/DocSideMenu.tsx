@@ -21,7 +21,7 @@ export default function DocSideMenu() {
   const [offset, setOffset] = useState(0)
   const id = block?.id
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const node = id ? editor.domElement?.querySelector(`[data-id="${CSS.escape(id)}"]`) : null
     if (!node) return
     const measure = () => setOffset(blockHandleOffset(node))
