@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { httpBaseFrom } from '../../../shared/attachments'
+import { httpBaseFrom, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import { trimEvents, type SessionEvent, type ThreadMode, type ThreadStatus, type Todo } from '../../../shared/events'
