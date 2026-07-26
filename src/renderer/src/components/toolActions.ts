@@ -43,6 +43,7 @@ export interface ToolAction {
   done: string
   many?: string
   prose?: boolean
+  terminal?: boolean
 }
 
 const AGENT: ToolAction = { icon: SparkGlyph, run: 'Asking an agent', done: 'Asked an agent', many: 'Asked agents', prose: true }
@@ -60,7 +61,7 @@ const TABLE: Array<[string, ToolAction]> = [
   ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook', many: 'Edited notebooks' }],
   [
     'bash shell sh commandexecution localshell powershell run runcommand exec execute terminal',
-    { icon: ShellGlyph, run: 'Running', done: 'Ran', many: 'Ran commands' }
+    { icon: ShellGlyph, run: 'Running', done: 'Ran', many: 'Ran commands', terminal: true }
   ],
   [
     'bashoutput shelloutput processoutput readoutput',
