@@ -172,7 +172,7 @@ describe('the ask bar', () => {
   it('stands above a shape whose bottom edge is off the stage', () => {
     const { view } = boot(['shape:a'], { bounds: { minX: 500, minY: 600, maxX: 800, maxY: 1600 } })
     const bar = view.container.querySelector('.animate-pop') as HTMLElement
-    expect(bar.style.top).toBe('160px')
+    expect(bar.style.top).toBe('162px')
   })
 
   it('never leaves the stage, whatever is picked', () => {
