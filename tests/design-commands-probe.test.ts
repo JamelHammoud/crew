@@ -99,6 +99,24 @@ describe('design commands', () => {
     expect((shapes.get('shape:a')!.props as { layout: { direction: string } }).layout.direction).toBe('none')
   })
 
+  it('carries a style from one node to the others', () => {
+    const from = board(
+      [node('shape:a', { fills: [{ type: 'solid', color: '#ff0000', opacity: 1, visible: true }] }), node('shape:b')],
+      'shape:a'
+    )
+    expect(labels(availableCommands(from.ctx))).not.toContain('Paste properties')
+    runCommand('copy-style', from.ctx)
+    from.select('shape:b')
+    expect(labels(availableCommands(from.ctx))).toContain('Paste properties')
+    runCommand('paste-style', from.ctx)
+    expect((from.shapes.get('shape:b')!.props as { fills: { color: string }[] }).fills[0].color).toBe('#ff0000')
+  })
+
+  it('leaves the style commands out for a shape that has no style of ours', () => {
+    const { ctx } = board([{ id: 'shape:draw', type: 'draw', parentId: 'page:main' }], 'shape:draw')
+    expect(labels(availableCommands(ctx))).not.toContain('Copy properties')
+  })
+
   it('names every command once and gives each one a mark', () => {
     const ids = DESIGN_COMMANDS.map(command => command.id)
     expect(new Set(ids).size).toBe(ids.length)
