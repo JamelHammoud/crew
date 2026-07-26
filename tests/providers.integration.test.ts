@@ -152,6 +152,31 @@ describe('claude parser matches the real CLI format', () => {
   })
 })
 
+describe('a step says what it is about', () => {
+  const detail = (name: string, input: unknown): string | undefined =>
+    parseClaudeLine(
+      JSON.stringify({
+        type: 'assistant',
+        message: { content: [{ type: 'tool_use', id: 't1', name, input }] }
+      })
+    )[0].activity?.detail
+
+  it('shows the thing asked for rather than the arguments it came in', () => {
+    expect(detail('WebSearch', { query: 'pooling llms' })).toBe('pooling llms')
+    expect(detail('WebFetch', { url: 'https://crew.dev/docs', prompt: 'summarize' })).toBe('https://crew.dev/docs')
+    expect(detail('Grep', { pattern: 'AgentIcon', path: 'src' })).toBe('AgentIcon')
+  })
+
+  it('shows the step someone is on rather than the whole list', () => {
+    const todos = [
+      { content: 'Read the icons', status: 'completed' },
+      { content: 'Draw the rows', activeForm: 'Drawing the rows', status: 'in_progress' }
+    ]
+    expect(detail('TodoWrite', { todos })).toBe('Drawing the rows')
+    expect(detail('TodoWrite', { todos: [{ content: 'Read the icons', status: 'pending' }] })).toBe('Read the icons')
+  })
+})
+
 describe('codex parser matches the real CLI format', () => {
   const parse = (event: unknown) => parseCodexLine(JSON.stringify(event))
 
