@@ -266,7 +266,7 @@ const GEO_GLYPHS: Record<string, Glyph> = {
   'check-box': CheckBoxGlyph,
   rhombus: DiamondGlyph,
   'rhombus-2': DiamondGlyph,
-  pentagon: HexagonGlyph,
+  pentagon: PentagonGlyph,
   octagon: HexagonGlyph,
   trapezoid: HexagonGlyph,
   'arrow-right': ArrowGlyph,
