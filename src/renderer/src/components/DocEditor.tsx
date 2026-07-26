@@ -138,7 +138,7 @@ export default forwardRef<DocEditorHandle, { text: string; onChange: (markdown: 
 
     const onPick = async (file: File) => {
       const url = await uploadImage(httpBaseRef.current, file)
-      editor.insertBlocks([{ type: 'image', props: { url } }], editor.getTextCursorPosition().block, 'after')
+      insertOrUpdateBlockForSlashMenu(editor, { type: 'image', props: { url } })
       editor.focus()
     }
 
