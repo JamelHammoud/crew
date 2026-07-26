@@ -132,7 +132,7 @@ export default function TopBar({
             )}
           </button>
         </Tooltip>
-        <span className="w-px h-5 bg-fg/[0.07]" />
+        <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />
         <PresenceStack />
         <div className="relative">
           <button
