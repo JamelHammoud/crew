@@ -67,13 +67,13 @@ const solid = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none"
 
 const CANDIDATES: { label: string; glyph: Glyph }[] = [
   { label: 'now', glyph: HangupGlyph },
-  { label: 'bow 1.8', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 1.8, sweep: 0, pull: 0.9 })) },
-  { label: 'bow 2.6', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
-  { label: 'bow 3.4', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 3.4, sweep: 0, pull: 1.7 })) },
-  { label: 'fat ends', glyph: solid(handset({ deg: 45, gap: 8.8, r: 3.6, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
-  { label: 'bow 2.6 at 135', glyph: solid(handset({ deg: 135, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
-  { label: 'bow 2.6 at 60', glyph: solid(handset({ deg: 60, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) },
-  { label: 'bow 2.6 at 30', glyph: solid(handset({ deg: 30, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 1.3 })) }
+  { label: 'small', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 0 })) },
+  { label: 'r3.4 gap12.3', glyph: solid(handset({ deg: 45, gap: 12.3, r: 3.4, waist: 2.8, shift: 3, sweep: 0, pull: 0 })) },
+  { label: 'r3.6 gap11.7', glyph: solid(handset({ deg: 45, gap: 11.7, r: 3.6, waist: 3, shift: 3, sweep: 0, pull: 0 })) },
+  { label: 'r3.2 gap12.9', glyph: solid(handset({ deg: 45, gap: 12.9, r: 3.2, waist: 2.6, shift: 3.2, sweep: 0, pull: 0 })) },
+  { label: 'deeper bow', glyph: solid(handset({ deg: 45, gap: 12.3, r: 3.4, waist: 2.8, shift: 3.8, sweep: 0, pull: 0 })) },
+  { label: 'shallow bow', glyph: solid(handset({ deg: 45, gap: 12.3, r: 3.4, waist: 2.8, shift: 2.2, sweep: 0, pull: 0 })) },
+  { label: 'at 135', glyph: solid(handset({ deg: 135, gap: 12.3, r: 3.4, waist: 2.8, shift: 3, sweep: 0, pull: 0 })) }
 ]
 
 function Button({ children, danger }: { children: ReactNode; danger?: boolean }) {
