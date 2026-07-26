@@ -94,6 +94,7 @@ export default function HuddleControls() {
     <div className="flex items-center gap-1.5">
       <Control
         label={micOn ? 'Mute' : 'Unmute'}
+        kind="microphone"
         active={micOn}
         lit={micOn && talking}
         onClick={() => void toggleMic()}
@@ -102,6 +103,7 @@ export default function HuddleControls() {
       </Control>
       <Control
         label={cameraOn ? 'Stop video' : 'Start video'}
+        kind="camera"
         active={cameraOn}
         onClick={() => void toggleCamera()}
       >
