@@ -427,9 +427,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'unlock',
     label: 'Unlock',
-    hint: '⇧⌘L',
+    hint: chordHint(LOCK),
     group: 'state',
     Icon: UnlockGlyph,
+    keys: LOCK,
     when: ctx => locked(ctx).length > 0,
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('unlock')
