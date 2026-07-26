@@ -62,7 +62,7 @@ const session = () => {
   })
 }
 
-const openMenu = () => fireEvent.click(screen.getByLabelText('Profile menu'))
+const openToolbox = () => fireEvent.click(screen.getByLabelText('Toolbox'))
 
 const emptyStream = (): MediaStream => ({ getVideoTracks: () => [] }) as unknown as MediaStream
 
