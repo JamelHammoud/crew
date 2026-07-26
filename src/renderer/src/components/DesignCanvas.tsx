@@ -236,6 +236,12 @@ export default function DesignCanvas({
     if (ready && editor) applyDesignDefaults(editor)
   }, [ready, editor])
 
+  const selected = useValue(
+    'design selected color',
+    () => (editor ? selectionStroke(editor) : null),
+    [editor]
+  )
+
   const onMount = useCallback(
     (mounted: Editor) => {
       applyDesignDefaults(mounted)
