@@ -143,7 +143,7 @@ function Match({ tab, match }: { tab: BrowserTab; match: FileMatch }) {
   )
 }
 
-function Matches({ tab, query }: { tab: BrowserTab; query: string }) {
+function useProjectFiles(generation: number): string[] | null {
   const [paths, setPaths] = useState<string[] | null>(null)
 
   useEffect(() => {
@@ -159,8 +159,12 @@ function Matches({ tab, query }: { tab: BrowserTab; query: string }) {
     return () => {
       alive = false
     }
-  }, [tab.generation])
+  }, [generation])
 
+  return paths
+}
+
+function Matches({ tab, paths, query }: { tab: BrowserTab; paths: string[] | null; query: string }) {
   const found = useMemo(() => (paths ? matchFiles(paths, query, MATCH_LIMIT) : []), [paths, query])
 
   if (!paths) return <Loading depth={0} />
@@ -178,6 +182,7 @@ function Matches({ tab, query }: { tab: BrowserTab; query: string }) {
 
 export default function FileTree({ tab }: { tab: BrowserTab }) {
   const [query, setQuery] = useState('')
+  const paths = useProjectFiles(tab.generation)
 
   return (
     <aside className="w-[42%] min-w-[168px] max-w-[288px] shrink-0 flex flex-col border-l border-ink-700">
