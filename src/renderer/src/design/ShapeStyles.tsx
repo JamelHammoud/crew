@@ -72,7 +72,6 @@ function Segments<T extends string>({
 export default function ShapeStyles() {
   const editor = useEditor()
   const styles = useValue('design styles', () => editor.getSharedStyles(), [editor])
-  const opacity = useValue('design opacity', () => editor.getSharedOpacity(), [editor])
   const swatches = useValue(
     'design swatches',
     () => {
@@ -99,18 +98,10 @@ export default function ShapeStyles() {
   const size = styles.get(DefaultSizeStyle)
   const font = styles.get(DefaultFontStyle)
   const align = styles.get(DefaultTextAlignStyle)
-  const opacityValue = opacity.type === 'shared' ? opacity.value : 1
   const shared = <T extends string>(style?: SharedStyle<T>) => (style && style.type === 'shared' ? style.value : null)
 
-  const setOpacity = (value: number) => {
-    editor.run(() => {
-      editor.setOpacityForSelectedShapes(value)
-      editor.setOpacityForNextShapes(value)
-    })
-  }
-
   return (
-    <div className="design-style-panel flex flex-col gap-4 p-3">
+    <>
       {color && (
         <Section label="Color">
           <div className="flex flex-wrap gap-1.5">
@@ -170,21 +161,6 @@ export default function ShapeStyles() {
           )}
         </Section>
       )}
-      <Section label="Opacity">
-        <div className="flex items-center gap-2">
-          <input
-            type="range"
-            min={0.1}
-            max={1}
-            step={0.01}
-            value={opacityValue}
-            onChange={e => setOpacity(Number(e.target.value))}
-            aria-label="Opacity"
-            className="flex-1 min-w-0"
-          />
-          <span className="w-8 text-right text-xs tabular-nums text-fg-muted">{Math.round(opacityValue * 100)}%</span>
-        </div>
-      </Section>
-    </div>
+    </>
   )
 }
