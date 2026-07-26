@@ -113,7 +113,8 @@ describe('the ask bar', () => {
         {
           value: {
             ...made.editor,
-            getSelectionRotatedScreenBounds: () => ({ x: 0, y: 0, width: 10, height: 10 })
+            getSelectionPageBounds: () => ({ minX: 0, minY: 0, maxX: 10, maxY: 10 }),
+            pageToViewport: ({ x, y }: { x: number; y: number }) => ({ x, y })
           } as unknown as Editor
         },
         createElement(DesignAskBar, { boardId: 'board:a', open: false, onClose: () => {} })
