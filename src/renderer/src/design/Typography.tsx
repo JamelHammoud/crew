@@ -156,7 +156,7 @@ export default function Typography({ text }: { text: TextControl }) {
                   min={50}
                   max={400}
                   suffix="%"
-                  auto={Math.round(BASE_TYPE.lineHeight * 100)}
+                  auto={Math.round(text.autoLine * 100)}
                   onChange={next => set({ lineHeight: next / 100 })}
                 />
               ) : undefined

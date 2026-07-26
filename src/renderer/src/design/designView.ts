@@ -1,6 +1,6 @@
 import type { Editor } from 'tldraw'
 import { NEW_FILL, NEW_STROKE } from '../../../shared/design'
-import { hasCorners, holdsChildren, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
+import { BASE_TYPE, hasCorners, holdsChildren, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
 import type { DesignNodeShape } from './DesignNodeUtil'
 import type { NodeView } from './nodeView'
 
