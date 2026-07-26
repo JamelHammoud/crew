@@ -49,6 +49,13 @@ export class TrayPanel {
     }
   }
 
+  theme(theme: 'dark' | 'light'): void {
+    this.wearing = theme
+    if (this.win && !this.win.webContents.isLoading()) {
+      this.win.webContents.send('tray:theme', theme)
+    }
+  }
+
   resize(height: number): void {
     const win = this.win
     if (!win) return
