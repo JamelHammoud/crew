@@ -62,6 +62,15 @@ const only = () => useBrowser.getState().tabs[0]!
 const screenText = (): string => document.querySelector('.xterm-rows')?.textContent ?? ''
 
 describe('opening something new in the side panel', () => {
+  it('has a shell warming before anyone asks for one', () => {
+    render(createElement(BrowserPanel))
+    expect(warmed).toBeGreaterThan(0)
+
+    const early = warmed
+    newTab()
+    expect(warmed).toBeGreaterThan(early)
+  })
+
   it('asks whether it should be a web page or a terminal', () => {
     render(createElement(BrowserPanel))
     newTab()
