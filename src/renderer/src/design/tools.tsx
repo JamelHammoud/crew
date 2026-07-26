@@ -113,6 +113,15 @@ export function currentToolId(editor: Editor): string {
   return `geo:${String(editor.getStyleForNextShape(GeoShapeGeoStyle))}`
 }
 
+export function layerName(shape: TLShape): string {
+  const props = shape.props as Record<string, unknown>
+  const name = typeof props.name === 'string' ? props.name.trim() : ''
+  if (name) return name
+  if (typeof props.text === 'string' && props.text.trim()) return props.text.trim().slice(0, 40)
+  if (shape.type === 'geo' && typeof props.geo === 'string') return props.geo
+  return shape.type
+}
+
 export function canRename(shape: TLShape): boolean {
   return shape.type === 'frame' || shape.type === 'design-node'
 }
