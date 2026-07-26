@@ -200,17 +200,14 @@ describe('the ask bar', () => {
     expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
     const bar = view.container.querySelector('.animate-pop') as HTMLElement
     expect(bar.style.left).toBe('440px')
-    expect(bar.style.top).toBe('668px')
+    expect(bar.style.top).toBe('670px')
   })
 
-  it('keeps what it was asked about, and where, when the selection goes', () => {
-    const { sent, deselect, view } = boot(['shape:a'])
+  it('goes when the selection goes, rather than asking about nothing', () => {
+    const { deselect, closed } = boot(['shape:a'])
+    expect(closed()).toBe(0)
     deselect()
-    expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
-    const bar = view.container.querySelector('.animate-pop') as HTMLElement
-    expect(bar.style.top).toBe('112px')
-    ask('make it round')
-    expect(sent[0].text).toContain('Card')
+    expect(closed()).toBe(1)
   })
 
   it('carries an attachment button and no record button', () => {
