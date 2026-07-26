@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
-import { MUSIC_TRACKS, trackFor, trackLength, type MusicTrack } from '../../../../shared/music'
+import {
+  MUSIC_TRACKS,
+  trackFor,
+  trackLength,
+  type MusicRoom,
+  type MusicTrack
+} from '../../../../shared/music'
 import {
   MusicGlyph,
   PauseGlyph,
