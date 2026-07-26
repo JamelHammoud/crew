@@ -2039,10 +2039,10 @@ export class CrewSession {
     for (const event of this.threadContext(prompt.threadId)) {
       if (event.kind === 'message' && event.boardMentions) {
         for (const ref of event.boardMentions) add(resolveBoardRef(boards, ref))
-      } else if (!(event.kind === 'message' && event.docMentions)) {
-        for (const ref of this.crewRefsIn(event.text ?? '')) {
-          if (ref.kind === 'board') add(ref.key)
-        }
+        continue
+      }
+      for (const ref of this.crewRefsIn(event.text ?? '')) {
+        if (ref.kind === 'board') add(ref.key)
       }
     }
     for (const ref of prompt.boardMentions) add(resolveBoardRef(boards, ref))
