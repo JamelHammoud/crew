@@ -320,3 +320,195 @@ describe('a huddle you are in', () => {
     await waitFor(() => expect(container.querySelector('video')).toBeTruthy())
   })
 })
+
+describe('picking a microphone and a camera', () => {
+  const made: FakeTrack[] = []
+  const asked: { audio: string | null; video: string | null } = { audio: null, video: null }
+
+  const ideal = (constraint: MediaTrackConstraints | undefined): string | null =>
+    (constraint?.deviceId as { ideal?: string } | undefined)?.ideal ?? null
+
+  const mediaDevices = {
+    enumerateDevices: () => Promise.resolve(DEVICES as MediaDeviceInfo[]),
+    getUserMedia: (constraints: MediaStreamConstraints) => {
+      const audio = constraints.audio as MediaTrackConstraints | undefined
+      const kind = audio ? ('audio' as const) : ('video' as const)
+      const id =
+        ideal(audio ?? (constraints.video as MediaTrackConstraints | undefined)) ??
+        (audio ? 'mic-built-in' : 'cam-built-in')
+      asked[kind] = id
+      const track = fakeTrack(kind, id)
+      made.push(track)
+      return Promise.resolve(new FakeStream([track]) as unknown as MediaStream)
+    },
+    addEventListener: () => {},
+    removeEventListener: () => {}
+  }
+
+  const enter = async () => {
+    render(createElement(App))
+    openMenu()
+    await act(async () => {
+      fireEvent.click(screen.getByText('Huddle'))
+    })
+    await waitFor(() => expect(useHuddle.getState().joined).toBe(true))
+  }
+
+  const open = async (label: string) => {
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText(label))
+    })
+  }
+
+  beforeEach(() => {
+    session()
+    made.length = 0
+    asked.audio = null
+    asked.video = null
+    localStorage.clear()
+    Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
+    useHuddle.setState({
+      room: { peers: [], startedAt: null },
+      joined: false,
+      joining: false,
+      micOn: false,
+      cameraOn: false,
+      sharing: false,
+      expanded: false,
+      picking: false,
+      speaking: [],
+      problem: null,
+      micId: null,
+      cameraId: null,
+      localCamera: null,
+      localScreen: null,
+      remote: {},
+      link: {}
+    })
+  })
+
+  afterEach(() => {
+    cleanup()
+    act(() => useHuddle.getState().leave())
+    delete (navigator as { mediaDevices?: MediaDevices }).mediaDevices
+  })
+
+  it('lists what is plugged in and marks the one that is live', async () => {
+    await enter()
+    await open('Choose a microphone')
+
+    expect(screen.getByText('Microphone')).toBeTruthy()
+    expect(screen.getByText('Shure MV7')).toBeTruthy()
+    const live = screen.getByText('MacBook Pro Microphone').closest('button')
+    expect(live?.querySelector('svg')).toBeTruthy()
+    expect(screen.getByText('Shure MV7').closest('button')?.querySelector('svg')).toBeNull()
+  })
+
+  // Right-click is the way the rest of the app opens a menu, so the notch on the
+  // corner is a way in rather than the only one.
+  it('opens the same menu on a right click', async () => {
+    await enter()
+    await act(async () => {
+      fireEvent.contextMenu(screen.getByLabelText('Mute'))
+    })
+
+    expect(screen.getByText('Shure MV7')).toBeTruthy()
+  })
+
+  // Swapping the track into a slot that already exists is what keeps a call from
+  // renegotiating, and the one being replaced is only stopped once it is out.
+  it('swaps a live microphone for the one that was picked', async () => {
+    await enter()
+    await open('Choose a microphone')
+    await act(async () => {
+      fireEvent.click(screen.getByText('Shure MV7'))
+    })
+
+    await waitFor(() => expect(useHuddle.getState().micId).toBe('mic-usb'))
+    expect(asked.audio).toBe('mic-usb')
+    expect(made).toHaveLength(2)
+    expect(made[0].readyState).toBe('ended')
+    expect(made[1].readyState).toBe('live')
+    expect(useHuddle.getState().micOn).toBe(true)
+  })
+
+  it('remembers the choice for the next call', async () => {
+    await enter()
+    await open('Choose a microphone')
+    await act(async () => {
+      fireEvent.click(screen.getByText('Shure MV7'))
+    })
+
+    await waitFor(() => expect(localStorage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
+  })
+
+  // A camera picked while the camera is off is a choice, not a reason to start
+  // filming. It is the one that comes on when the button beside it is pressed.
+  it('holds a camera picked while the camera is off until it is turned on', async () => {
+    await enter()
+    await open('Choose a camera')
+    await act(async () => {
+      fireEvent.click(screen.getByText('Logitech Brio'))
+    })
+
+    await waitFor(() => expect(useHuddle.getState().cameraId).toBe('cam-usb'))
+    expect(asked.video).toBeNull()
+
+    await open('Start video')
+    await waitFor(() => expect(useHuddle.getState().cameraOn).toBe(true))
+    expect(asked.video).toBe('cam-usb')
+  })
+
+  // A microphone that was chosen once and has since been unplugged must not be
+  // asked for in a way that fails, or someone lands in the call with nothing.
+  it('asks for a remembered device without insisting on it', async () => {
+    localStorage.setItem('crew.huddle.microphone', 'mic-gone')
+    useHuddle.setState({ micId: 'mic-gone' })
+    await enter()
+
+    expect(asked.audio).toBe('mic-gone')
+    expect(useHuddle.getState().micOn).toBe(true)
+  })
+})
+
+describe('a huddle you are in, still', () => {
+  beforeEach(() => {
+    session()
+    useHuddle.setState({
+      room: { peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
+      peerId: 'me',
+      joined: true,
+      joining: false,
+      micOn: false,
+      cameraOn: false,
+      sharing: false,
+      expanded: false,
+      picking: false,
+      speaking: ['a'],
+      problem: null,
+      localCamera: null,
+      localScreen: null,
+      remote: {},
+      link: {}
+    })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('keeps the face up until the pictures actually arrive', async () => {
+    const camera = fakeVideo()
+    useHuddle.setState({
+      room: { peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
+      remote: { a: { mic: emptyStream(), camera: camera.stream, screen: emptyStream() } },
+      link: { a: 'connected' }
+    })
+    const { container } = render(createElement(App))
+
+    expect(container.querySelector('video')).toBeNull()
+
+    camera.arrive()
+    await waitFor(() => expect(container.querySelector('video')).toBeTruthy())
+  })
+})
