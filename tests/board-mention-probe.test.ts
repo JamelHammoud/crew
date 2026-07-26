@@ -75,21 +75,27 @@ function iconOf(label: string): string | null {
 }
 
 describe('board mentions in a message', () => {
-  it('pills a board beside a doc, each with its own icon', () => {
+  it('pills a board beside a doc, without the hash, each with its own icon', () => {
     boot()
-    const board = screen.getByText('#Landing')
+    const board = screen.getByText('Landing')
     expect(board.className).toContain('text-sky-300')
-    expect(iconOf('#Landing')).toBeTruthy()
-    expect(iconOf('#Landing')).not.toBe(iconOf('#Plan'))
+    expect(screen.queryByText('#Landing')).toBeNull()
+    expect(iconOf('Landing')).toBeTruthy()
+    expect(iconOf('Landing')).not.toBe(iconOf('Plan'))
+  })
+
+  it('pills a board the host never named', () => {
+    boot(true, [{ ...events[0], boardMentions: undefined }])
+    expect(screen.getByText('Landing').className).toContain('text-sky-300')
   })
 
   it('opens the board when its pill is clicked', () => {
     boot()
-    fireEvent.click(screen.getByText('#Landing'))
+    fireEvent.click(screen.getByText('Landing'))
     expect(useCrew.getState().designTarget).toBe('landing-1abc')
     expect(useCrew.getState().docsTarget).toBeNull()
 
-    fireEvent.click(screen.getByText('#Plan'))
+    fireEvent.click(screen.getByText('Plan'))
     expect(useCrew.getState().docsTarget).toBe('plan-1abc')
   })
 })
