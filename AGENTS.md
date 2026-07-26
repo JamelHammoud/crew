@@ -66,11 +66,15 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 ## The toolbox
 
-A panel of tiles under the top bar. The built-in ones are the app's own hand, a huddle, a terminal, the project files. The rest are the ones a crew builds for itself, and they are shared the way todos are, so everyone gets the same toolbox.
+A panel of tiles under the top bar. The built-in ones are the app's own hand, a huddle, a terminal, the project files, the music. The rest are the ones a crew builds for itself, and they are shared the way todos are, so everyone gets the same toolbox.
 
-- A tool is one button: a name, a mark, and the single thing it does. It opens a page, runs a command, opens a file, or asks an agent. `cleanTool` in `src/shared/toolbox.ts` is the whole of what a tool may be, and one with no name or nothing to do comes back as null rather than as a button that sits there doing nothing.
+- A tool is one button: a name, a mark, and the single thing it does. It opens a page, runs a command, opens a file, a doc or a board, asks an agent, or copies something. `cleanTool` in `src/shared/toolbox.ts` is the whole of what a tool may be, and one with no name or nothing to do comes back as null rather than as a button that sits there doing nothing.
+- Both halves stand on the same four columns, so the app's own hand and the crew's own tools are the same button in the same grid. The built-ins are one full row of it. The crew's row ends on the empty slot that opens the builder, which is the way in and the empty state both, so the panel never holds a second way to do the same thing.
+- A built-in tile lights the way a built one does, while the thing it opens is live: in the huddle, playing the music.
+- The toolbox is a builder rather than chrome, so it is set on its own two radii, `rounded-tile` for a tile and `rounded-field` for the fields under it, and both are squarer than the pills the rest of the app wears.
 - A mark is one of the app's own drawings or one emoji, and `ToolMarkView` draws both, so the two are always the same size. The size is read off the class it is handed, which is where a glyph already reads its own weight from.
-- Choosing a mark is a screen inside the panel rather than a popover of its own. A popover opened from inside a popover is outside the first one's box, so the click that picks the mark would close the toolbox under it. The same goes for anything else the builder ever needs to open.
+- Choosing a mark is a screen inside the panel rather than a popover of its own, and so is choosing what a tool does. A popover opened from inside a popover is outside the first one's box, so the click that picks the mark would close the toolbox under it. The same goes for anything else the builder ever needs to open.
+- `TOOL_KINDS` in `src/renderer/src/components/toolKinds.tsx` is the one table of what a tool can do. The screen that picks a kind and the row in the form that says which one is picked both read it, so the words a person chose from are the words they are shown afterwards.
 - The emoji grid is the one the reactions use. It is handed its columns, its size and its words, because the same grid reacts to a message in one place and marks a tool in another.
 - A command written over several lines is several commands. The newlines are handed to the shell as returns, so each line runs in turn.
 - A page opens in the side panel, or in the machine's own browser for a site that will not sit in a frame.
