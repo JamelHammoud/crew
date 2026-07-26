@@ -60,10 +60,22 @@ describe('readRepoFile', () => {
     expect(resolveRepoPath(root, 'src/../../outside.txt')).toBeNull()
   })
 
-  it('marks binary files instead of returning garbage', async () => {
+  it('returns a picture ready to show', async () => {
     const root = makeRepo()
     const result = await readRepoFile(root, 'logo.png')
-    expect(result).toEqual({ kind: 'binary', path: 'logo.png', size: 6 })
+    expect(result).toEqual({
+      kind: 'image',
+      path: 'logo.png',
+      url: `data:image/png;base64,${Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x00, 0x01]).toString('base64')}`,
+      size: 6
+    })
+  })
+
+  it('marks other binary files instead of returning garbage', async () => {
+    const root = makeRepo()
+    writeFileSync(path.join(root, 'app.bin'), Buffer.from([0x00, 0x01, 0x02]))
+    const result = await readRepoFile(root, 'app.bin')
+    expect(result).toEqual({ kind: 'binary', path: 'app.bin', size: 3 })
   })
 
   it('truncates very large files', async () => {
