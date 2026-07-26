@@ -183,7 +183,22 @@ export default function MusicView() {
         })}
       </ul>
 
-      <div className="mt-auto p-4 flex items-center gap-3">
+      <div className="mt-auto">
+        {!sounds && (
+          <div className="mx-4 mb-1 px-4 py-3 rounded-2xl bg-ink-800 flex items-center gap-3">
+            <p className="flex-1 text-xs text-fg-secondary">Crew's sounds are off, so you cannot hear this.</p>
+            <button
+              onClick={() => {
+                setSounds(true)
+                playSound('sound.on')
+              }}
+              className="shrink-0 h-8 px-3.5 rounded-full bg-fg text-ink-900 text-xs font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
+            >
+              Turn them on
+            </button>
+          </div>
+        )}
+        <div className="p-4 flex items-center gap-3">
         <Tooltip label={muted ? 'Unmute' : 'Mute'}>
           <button
             onClick={() => useMusic.getState().setMuted(!muted)}
