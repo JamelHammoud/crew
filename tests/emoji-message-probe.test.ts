@@ -29,8 +29,11 @@ describe('emoji in the feed', () => {
 
   it('keeps a skin tone or a flag as one sprite', () => {
     boot()
-    const { container } = render(createElement(MentionText, { text: '👍🏽 🇱🇧' }))
-    expect(sprites(container)).toHaveLength(2)
+    const { container } = render(createElement(MentionText, { text: '👍🏽 🇱🇧 👍' }))
+    const drawn = sprites(container)
+
+    expect(drawn).toHaveLength(3)
+    expect(drawn[0].style.backgroundPosition).not.toBe(drawn[2].style.backgroundPosition)
   })
 
   it('draws an agent reply from the sheet and leaves code alone', () => {
