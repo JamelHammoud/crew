@@ -12,6 +12,7 @@ import {
 } from '../../../shared/events'
 import type { CrewTool, ToolAction } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
+import { emptyMusic } from '../../../shared/music'
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import type { ReactionEmoji } from '../../../shared/reactions'
