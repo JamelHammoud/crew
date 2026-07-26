@@ -2,6 +2,7 @@ import {
   cleanCorner,
   cleanEffect,
   cleanLayout,
+  cleanNodeShape,
   cleanPaint,
   cleanStroke,
   cleanType,
