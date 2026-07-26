@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { markRuns, matchFiles, type FileEntry, type FileMatch } from '../../../shared/files'
-import { ChevronRightGlyph, FileGlyph, FolderGlyph, SearchGlyph } from '../icons'
+import { ChevronRightGlyph, FileGlyph, SearchGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import Skeleton from './Skeleton'
 
