@@ -130,7 +130,7 @@ describe('what the canvas draws and measures text with', () => {
     expect(values.lineHeight).toBe(1.35)
   })
 
-  it('stands in for tldraw's own text shape, outline off', () => {
+  it('stands in for the text shape tldraw ships, outline off', () => {
     expect(DesignTextUtil.type).toBe('text')
     expect(new DesignTextUtil(fakeEditor([])).options.showTextOutline).toBe(false)
   })
