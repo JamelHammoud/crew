@@ -199,6 +199,36 @@ describe('threads', () => {
     expect(texts).toContain(']')
   })
 
+  it('streams thinking as it is written and keeps a silent block out of the thread', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel', { FAKE_CLI_THINK_STREAM: '1' })
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('think it over @Fake', [fake])
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
+
+    const thoughts = ui.steps.filter(s => s.promptId === end.promptId && s.step.kind === 'thinking')
+    expect(thoughts.some(s => s.step.status === 'running')).toBe(true)
+    expect(thoughts.map(s => s.step.text)).toContain('weighing the options')
+
+    // Every thought that reached the thread carries words, and each one grew
+    // into place rather than landing whole at the end.
+    expect(thoughts.every(s => s.step.text)).toBe(true)
+    const ids = new Set(thoughts.map(s => s.step.id))
+    expect(ids.size).toBe(1)
+
+    const persisted = host.store
+      .loadEvents()
+      .filter(
+        (e): e is Extract<SessionEvent, { kind: 'agent.step' }> =>
+          e.kind === 'agent.step' && e.promptId === end.promptId && e.step.kind === 'thinking'
+      )
+    expect(persisted).toHaveLength(1)
+    expect(persisted[0].step.text).toBe('weighing the options')
+  })
+
   it('keeps what the agent wrote before it was stopped', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
