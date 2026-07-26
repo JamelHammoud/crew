@@ -51,6 +51,16 @@ export default function BrowserPanel() {
   const activeTabId = useBrowser(s => s.activeTabId)
   const active = tabs.find(t => t.id === activeTabId) ?? null
 
+  const reload = (tab: BrowserTab) => {
+    if (showsImage(tab)) {
+      useBrowser.getState().reloadTab(tab.id)
+      return
+    }
+    const view = viewFor(tab.id)
+    if (tab.loading) view?.stop()
+    else view?.reload()
+  }
+
   return (
     <div className="h-full flex flex-col">
       <header className="app-drag h-[70px] px-4 flex items-center gap-1.5 shrink-0">
