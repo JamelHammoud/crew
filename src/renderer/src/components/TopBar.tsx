@@ -127,7 +127,7 @@ export default function TopBar({
         ))}
       </nav>
 
-      <div className="app-no-drag flex items-center justify-end gap-2">
+      <div className={`app-no-drag flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
@@ -165,8 +165,8 @@ export default function TopBar({
             </button>
           </Tooltip>
         </div>
-        <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />
-        <PresenceStack />
+        {!compact && <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />}
+        <PresenceStack compact={compact} />
         <div className="relative">
           <button
             onClick={() => setMenuOpen(open => !open)}

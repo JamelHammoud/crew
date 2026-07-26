@@ -96,6 +96,38 @@ describe('responsive top bar', () => {
     expect(follows(faces, you)).toBe(true)
   })
 
+  it('collapses the presence faces into a count with the tab labels', () => {
+    useCrew.setState({
+      selfId: 'self',
+      selfName: 'Jamel',
+      members: [
+        { id: 'self', name: 'Jamel', connected: true },
+        { id: 'm1', name: 'Ali', connected: true },
+        { id: 'm2', name: 'Bo', connected: true }
+      ],
+      agents: [],
+      activePrompts: {}
+    })
+    render(
+      createElement(TopBar, {
+        tab: 'chat',
+        onTab: () => {},
+        tasksOpen: false,
+        onToggleTasks: () => {}
+      })
+    )
+
+    setHeaderWidth(600)
+
+    const faces = screen.getByRole('button', { name: "Who's here" })
+    expect(faces.textContent).toBe('+2')
+    expect(document.querySelector('.top-bar > div > span.w-px')).toBeNull()
+
+    fireEvent.click(faces)
+    expect(screen.getByText('Ali')).toBeTruthy()
+    expect(screen.getByText('Bo')).toBeTruthy()
+  })
+
   it('only shows tab tooltips once the labels collapse', () => {
     vi.useFakeTimers()
     render(
