@@ -446,11 +446,19 @@ body {
   animation: var(--animate-pop);
 }
 
-/* Text is edited on top of the artwork, so the highlight cannot borrow either theme's color. */
-.design .tl-text-input::selection {
+/* Text is edited on top of the artwork, so the highlight cannot borrow either theme's color.
+   Rich text puts the words in paragraphs inside the editor, and the plain app-wide rule matches
+   those directly, so the highlight has to be set on them too or it stays white on a white frame. */
+.design .tl-text-input::selection,
+.design .tl-text-input *::selection {
   background: rgb(128 128 128 / 0.6);
   color: inherit;
   text-shadow: none;
+}
+
+/* The caret follows the text being typed, for the same reason. */
+.design .tl-text {
+  caret-color: currentColor;
 }
 
 .design .tlui-menu {
