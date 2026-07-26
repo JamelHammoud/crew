@@ -22,12 +22,12 @@ function Row({
       onClick={onPick}
       aria-pressed={active}
       className={`w-full flex items-center gap-2.5 pl-3 pr-2.5 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors ${
-        active ? 'text-fg bg-fg/[0.08]' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
+        active ? 'text-fg bg-fg/[0.08]' : 'text-fg/70 hover:text-fg hover:bg-fg/5'
       }`}
     >
       <tool.Icon className="w-4 h-4 shrink-0" />
       <span className="flex-1">{tool.label}</span>
-      {tool.shortcut && <span className="text-xs text-fg-muted">{tool.shortcut}</span>}
+      {tool.shortcut && <span className="text-xs text-fg/40">{tool.shortcut}</span>}
     </button>
   )
 }
