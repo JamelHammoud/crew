@@ -7,11 +7,12 @@ import {
   AlignMiddleGlyph,
   AlignRightGlyph,
   AlignTopGlyph,
+  AngleGlyph,
   FlipHorizontalGlyph,
   FlipVerticalGlyph,
   type Glyph
 } from './glyphs'
-import { Field, NumberInput, Section } from './InspectorFields'
+import { NumberInput, Row, Section, SubLabel } from './InspectorFields'
 
 type Align = 'left' | 'center-horizontal' | 'right' | 'top' | 'center-vertical' | 'bottom'
 
@@ -82,46 +83,55 @@ export default function Transform() {
 
   return (
     <>
-      <Section label="Position">
-        <div className="flex items-center justify-between">
-          {ALIGNMENTS.map(item => (
-            <PanelButton
-              key={item.op}
-              label={item.label}
-              disabled={shapes.length < 2 && !nested}
-              onClick={() => align(item.op)}
-            >
-              <item.Icon className="w-4 h-4" />
-            </PanelButton>
+      <Section title="Position">
+        <SubLabel>Alignment</SubLabel>
+        <div className="flex items-center gap-2">
+          {[ALIGNMENTS.slice(0, 3), ALIGNMENTS.slice(3)].map((group, at) => (
+            <div key={at} className="flex-1 flex items-center gap-0.5 rounded-full bg-fg/[0.06] p-0.5">
+              {group.map(item => (
+                <span key={item.op} className="flex-1 flex justify-center">
+                  <PanelButton
+                    label={item.label}
+                    disabled={shapes.length < 2 && !nested}
+                    onClick={() => align(item.op)}
+                  >
+                    <item.Icon className="w-4 h-4" />
+                  </PanelButton>
+                </span>
+              ))}
+            </div>
           ))}
         </div>
         {only && (
           <>
-            <div className="flex gap-2">
-              <Field label="X">
-                <NumberInput value={only.x} onChange={value => move({ x: value })} />
-              </Field>
-              <Field label="Y">
-                <NumberInput value={only.y} onChange={value => move({ y: value })} />
-              </Field>
-            </div>
+            <SubLabel>Position</SubLabel>
+            <Row>
+              <NumberInput label="X" value={only.x} onChange={value => move({ x: value })} />
+              <NumberInput label="Y" value={only.y} onChange={value => move({ y: value })} />
+            </Row>
+            <SubLabel>Rotation</SubLabel>
             <div className="flex items-center gap-2">
-              <Field label="Angle">
+              <span className="flex-1 min-w-0 flex">
                 <NumberInput
+                  icon={<AngleGlyph className="w-4 h-4" />}
                   value={Math.round((only.rotation * 180) / Math.PI)}
                   min={-360}
                   max={360}
                   suffix="°"
                   onChange={spin}
                 />
-              </Field>
-              <span className="flex items-center gap-1 shrink-0">
-                <PanelButton label="Flip horizontal" onClick={() => flip('horizontal')}>
-                  <FlipHorizontalGlyph className="w-4 h-4" />
-                </PanelButton>
-                <PanelButton label="Flip vertical" onClick={() => flip('vertical')}>
-                  <FlipVerticalGlyph className="w-4 h-4" />
-                </PanelButton>
+              </span>
+              <span className="flex-1 flex items-center gap-0.5 rounded-full bg-fg/[0.06] p-0.5">
+                <span className="flex-1 flex justify-center">
+                  <PanelButton label="Flip horizontal" onClick={() => flip('horizontal')}>
+                    <FlipHorizontalGlyph className="w-4 h-4" />
+                  </PanelButton>
+                </span>
+                <span className="flex-1 flex justify-center">
+                  <PanelButton label="Flip vertical" onClick={() => flip('vertical')}>
+                    <FlipVerticalGlyph className="w-4 h-4" />
+                  </PanelButton>
+                </span>
               </span>
             </div>
           </>
@@ -129,15 +139,12 @@ export default function Transform() {
       </Section>
 
       {size && (
-        <Section label="Layout">
-          <div className="flex gap-2">
-            <Field label="W">
-              <NumberInput value={size.w} min={1} onChange={value => resize({ w: value })} />
-            </Field>
-            <Field label="H">
-              <NumberInput value={size.h} min={1} onChange={value => resize({ h: value })} />
-            </Field>
-          </div>
+        <Section title="Layout">
+          <SubLabel>Dimensions</SubLabel>
+          <Row>
+            <NumberInput label="W" value={size.w} min={1} onChange={value => resize({ w: value })} />
+            <NumberInput label="H" value={size.h} min={1} onChange={value => resize({ h: value })} />
+          </Row>
         </Section>
       )}
     </>
