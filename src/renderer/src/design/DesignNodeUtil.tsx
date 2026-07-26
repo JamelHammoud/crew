@@ -72,10 +72,6 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
     return new Rectangle2d({ width: w, height: h, isFilled: true })
   }
 
-  override providesBackgroundForChildren() {
-    return true
-  }
-
   override canReceiveNewChildrenOfType(shape: DesignNodeShape) {
     return holdsChildren(nodeShapeOf(shape.props.shape)) && !shape.isLocked
   }
