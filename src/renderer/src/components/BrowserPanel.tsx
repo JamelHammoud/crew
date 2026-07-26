@@ -39,7 +39,7 @@ const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
-  if (showsImage(tab)) return imageName(tab.initialUrl)
+  if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
   if (tab.title) return tab.title
   if (!tab.url) return 'New tab'
   try {
