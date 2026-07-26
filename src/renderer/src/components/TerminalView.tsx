@@ -100,14 +100,10 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
     termRef.current?.focus()
   }, [active])
 
-  const focusOnPadding = (event: MouseEvent) => {
-    if (event.target === event.currentTarget) termRef.current?.focus()
-  }
-
   return (
     <div
       data-terminal={tab.id}
-      onMouseDown={focusOnPadding}
+      onMouseDown={() => termRef.current?.focus()}
       className="absolute inset-0 bg-ink-900 p-3"
       style={{ visibility: active ? 'visible' : 'hidden' }}
     >

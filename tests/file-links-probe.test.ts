@@ -372,7 +372,7 @@ describe('changed lines', () => {
       const index = rows.indexOf(this)
       if (index < 0) return real.call(this)
       const top = index * ROW - (body as HTMLElement).scrollTop
-      return { ...real.call(this).toJSON(), top, bottom: top + ROW, height: ROW, y: top } as DOMRect
+      return { ...real.call(this), top, bottom: top + ROW, height: ROW, y: top } as DOMRect
     }
     return () => {
       Element.prototype.getBoundingClientRect = real
