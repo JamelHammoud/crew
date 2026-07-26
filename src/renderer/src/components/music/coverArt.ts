@@ -55,15 +55,21 @@ float vnoise(vec2 p) {
 
 const mat2 TURN = mat2(0.8, 0.6, -0.6, 0.8);
 
+// Three octaves, and the second and third are quiet. A thing held right up to a
+// lens has two or three shapes in it and no detail at all: the fine octaves that
+// make good landscape noise are exactly what turns one of these into marbled
+// fabric, which is a texture but not this one.
 float fbm(vec2 p) {
   float sum = 0.0;
-  float amp = 0.5;
-  for (int i = 0; i < 5; i++) {
+  float amp = 0.62;
+  float total = 0.0;
+  for (int i = 0; i < 3; i++) {
     sum += amp * vnoise(p);
+    total += amp;
     p = TURN * p * 2.0;
-    amp *= 0.5;
+    amp *= 0.42;
   }
-  return sum;
+  return sum / total;
 }
 
 // The field itself, pushed around by two rounds of noise. Once is a wobble.
