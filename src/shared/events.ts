@@ -152,7 +152,12 @@ const EPHEMERAL_KINDS = new Set([
   'todo.edited',
   'todo.removed',
   'todo.checked',
-  'todo.started'
+  'todo.started',
+  // The toolbox rides in the snapshot for the same reason: a tool built weeks
+  // ago is still a button, long after its event has fallen off the window.
+  'tool.added',
+  'tool.edited',
+  'tool.removed'
 ])
 
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
