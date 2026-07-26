@@ -82,60 +82,16 @@ export const TerminalGlyph = glyph(
   </>
 )
 
-// A case with a handle and a seam across the lid. Wide and shallow rather than
-// tall, which is what tells a toolbox from a briefcase at 16px. It is drawn in
-// three pieces so the lid can be swung open, and the seam belongs to the lid
-// rather than to the case: an open toolbox has nothing across its mouth. Shut,
-// the three land back on one outline with one stroke on every edge.
-export const TOOLBOX_BODY = 'M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75'
-export const TOOLBOX_LID = 'M2.5 12.75V11a2.5 2.5 0 0 1 2.5-2.5h14a2.5 2.5 0 0 1 2.5 2.5v1.75Z'
-export const TOOLBOX_HANDLE = 'M8.25 8.5V7.25a2.75 2.75 0 0 1 2.75-2.75h2a2.75 2.75 0 0 1 2.75 2.75V8.5'
-
-// The lid is hinged along the back of the mouth, which is behind the drawing
-// rather than on it, and that is what makes the swing read as a turn in space
-// instead of a tilt on the page. The front of the lid travels an arc: it lifts
-// by the depth of the hinge times the sine of the swing, its own height flattens
-// by the cosine the way anything turning away from you does, and the whole of it
-// loses a little to the distance it has gone back. Thirty five degrees on a
-// hinge four and a half deep is what the grid has room for, since the handle is
-// carried up as the lid comes over.
-export const TOOLBOX_HINGE = { x: 12, y: 12.75 }
-export const TOOLBOX_DEPTH = 4.5
-export const TOOLBOX_SWING = 35
-
-// How far off the drawing is being watched from, in the grid's own units. A long
-// way, so going back costs a couple of percent rather than turning the lid into
-// a different shape.
-export const TOOLBOX_AWAY = 34
-
-const to3 = (n: number): number => Math.round(n * 1000) / 1000
-
-// The turn is worked out here and handed over as a lift, a squash and the share
-// the lid keeps, which is a plain 2D transform and stays as sharp as the still
-// icon at every size. Nothing tapers, and that is on purpose: the case is drawn
-// flat on, and a lid that narrowed as it went back would be the one part of the
-// drawing with a vanishing point in it. The share it keeps is the one wink at
-// distance, small enough to read as having gone back rather than as a lid of
-// another size. Chromium could not do the rest anyway: a perspective on an SVG
-// is flattened to a skew, and the real projection drawn into the path buys half
-// a pixel of taper and closes the handle up at 22px.
-export const toolboxTurn = (
-  swing: number = TOOLBOX_SWING
-): { rise: number; squash: number; away: number } => {
-  const turn = (swing * Math.PI) / 180
-  const back = TOOLBOX_DEPTH * (1 - Math.cos(turn))
-  return {
-    rise: to3(TOOLBOX_DEPTH * Math.sin(turn)),
-    squash: to3(Math.cos(turn)),
-    away: to3(TOOLBOX_AWAY / (TOOLBOX_AWAY + back))
-  }
-}
-
+// A case with a handle and a lid on it. Wide and shallow rather than tall, which
+// is what tells a toolbox from a briefcase at 16px. The case is a box of its own
+// and closes across the top, so the lid is a lid rather than the upper half of a
+// rounded rectangle, and the mouth stays shut behind it when it comes up. The
+// geometry is in toolbox.ts, which is also where the open drawing comes from.
 export const ToolboxGlyph = glyph(
   <>
-    <path d={TOOLBOX_BODY} />
-    <path d={TOOLBOX_LID} />
-    <path d={TOOLBOX_HANDLE} />
+    <path d={TOOLBOX_CASE} />
+    <path d={TOOLBOX_SHUT.lid} />
+    <path d={TOOLBOX_SHUT.handle} />
   </>
 )
 
