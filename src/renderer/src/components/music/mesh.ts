@@ -194,17 +194,18 @@ const rays = (parts: Parts, roll: () => number): Layer[] => {
 // quietest of the three, and the one that gives a slow track somewhere to
 // breathe. It takes four lobes rather than two, or the bands are all you see.
 const drape = (parts: Parts, roll: () => number): Layer[] => {
-  const palette = shuffle(parts)
+  const palette = ends(parts, 4)
   const turn = roll()
-  const layers: Layer[] = palette.slice(0, 4).map((color, i) => {
-    const angle = (i / 4 + turn) * Math.PI * 2
+  const layers: Layer[] = palette.map((color, i) => {
+    const angle = (i / palette.length + turn) * Math.PI * 2
+    const size = (color === parts.ground ? GROUND_REACH : 1) * (0.58 + roll() * 0.42)
     return {
       image: field(
         color,
         0.5 + Math.cos(angle) * (0.24 + roll() * 0.18),
         0.5 + Math.sin(angle) * (0.24 + roll() * 0.18),
-        0.55 + roll() * 0.45,
-        0.55 + roll() * 0.45,
+        size,
+        size * (0.85 + roll() * 0.4),
         38 + roll() * 24,
         0.95
       ),

@@ -1,79 +1,76 @@
 import type { ReactNode } from 'react'
 import { glyph } from '../src/renderer/src/components/glyph'
 import type { Glyph } from '../src/renderer/src/components/glyph'
-import {
-  CameraGlyph,
-  DesktopGlyph,
-  ExpandGlyph,
-  HangupGlyph,
-  MicGlyph
-} from '../src/renderer/src/icons'
+import { CameraGlyph, DesktopGlyph, ExpandGlyph, HangupGlyph, MicGlyph } from '../src/renderer/src/icons'
 
 const round = (n: number) => Math.round(n * 100) / 100
+const xy = (p: number[]) => `${round(p[0])} ${round(p[1])}`
 
-// A handset is two round ends and a waist between them. The ends are what say
-// telephone, the waist is what stops it reading as a bean.
-const handset = ({
-  deg,
-  gap,
-  r,
-  waist,
-  shift,
-  sweep,
-  pull
+// The handset seen from the front: a deep arch with a pad at each end. Every
+// number is read off one circle, so the bar, the legs and the pads cannot drift
+// apart from one another.
+const arch = ({
+  cy,
+  mid,
+  bar,
+  span,
+  pad
 }: {
-  deg: number
-  gap: number
-  r: number
-  waist: number
-  shift: number
-  sweep: 0 | 1
-  pull: number
+  cy: number
+  mid: number
+  bar: number
+  span: number
+  pad: number
 }) => {
-  const rad = (deg * Math.PI) / 180
-  const u = [Math.cos(rad), Math.sin(rad)]
-  const n = [u[1], -u[0]]
-  const at = (p: number[], along: number, across: number) => [
-    p[0] + u[0] * along + n[0] * across,
-    p[1] + u[1] * along + n[1] * across
-  ]
-  const middle = at([12, 12], 0, pull)
-  const A = at(middle, -gap / 2, 0)
-  const B = at(middle, gap / 2, 0)
-  const P1 = at(A, 0, r)
-  const P2 = at(A, 0, -r)
-  const P3 = at(B, 0, -r)
-  const P4 = at(B, 0, r)
-  const midOut = at(middle, 0, -(shift + waist / 2))
-  const midIn = at(middle, 0, waist / 2 - shift)
-  const control = (p: number[], q: number[], mid: number[]) => [
-    2 * mid[0] - (p[0] + q[0]) / 2,
-    2 * mid[1] - (q[1] + p[1]) / 2
-  ]
-  const c1 = control(P2, P3, midOut)
-  const c2 = control(P4, P1, midIn)
-  const xy = (p: number[]) => `${round(p[0])} ${round(p[1])}`
-  return [
-    `M${xy(P1)}`,
-    `A${r} ${r} 0 0 ${sweep} ${xy(P2)}`,
-    `Q${xy(c1)} ${xy(P3)}`,
-    `A${r} ${r} 0 0 ${sweep} ${xy(P4)}`,
-    `Q${xy(c2)} ${xy(P1)}`,
-    'Z'
-  ].join('')
+  const out = mid + bar / 2
+  const inn = mid - bar / 2
+  const rad = (span * Math.PI) / 180
+  const dir = (side: number) => [side * Math.sin(rad), -Math.cos(rad)]
+  const on = (r: number, side: number) => {
+    const d = dir(side)
+    return [12 + r * d[0], cy + r * d[1]]
+  }
+  const cap = bar / 2
+  const pads = pad
+    ? [-1, 1]
+        .map(side => {
+          const c = on(mid, side)
+          return `M${xy([c[0] - pad, c[1]])}A${pad} ${pad} 0 1 1 ${xy([c[0] + pad, c[1]])}A${pad} ${pad} 0 1 1 ${xy([c[0] - pad, c[1]])}Z`
+        })
+        .join('')
+    : ''
+  return (
+    [
+      `M${xy(on(out, -1))}`,
+      `A${out} ${out} 0 1 1 ${xy(on(out, 1))}`,
+      `A${cap} ${cap} 0 0 1 ${xy(on(inn, 1))}`,
+      `A${inn} ${inn} 0 1 0 ${xy(on(inn, -1))}`,
+      `A${cap} ${cap} 0 0 1 ${xy(on(out, -1))}`,
+      'Z'
+    ].join('') + pads
+  )
 }
 
-const solid = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none" />)
+const filled = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none" />)
+const outlined = (d: string) => glyph(<path d={d} />)
+
+const UNIFORM = arch({ cy: 14, mid: 7, bar: 3.4, span: 115, pad: 0 })
+const FLARED = arch({ cy: 13.8, mid: 7, bar: 3.2, span: 115, pad: 2.4 })
+const FLARED_THIN = arch({ cy: 13.8, mid: 7.1, bar: 2.8, span: 118, pad: 2.5 })
+const WIDER = arch({ cy: 13.6, mid: 7, bar: 3.2, span: 128, pad: 2.4 })
+
+const DIAGONAL =
+  'M10.06 5.25A3.4 3.4 0 0 0 5.25 10.06Q8.18 15.82 13.94 18.75A3.4 3.4 0 0 0 18.75 13.94Q7.33 16.67 10.06 5.25Z'
 
 const CANDIDATES: { label: string; glyph: Glyph }[] = [
   { label: 'now', glyph: HangupGlyph },
-  { label: 'small', glyph: solid(handset({ deg: 45, gap: 9.6, r: 3.2, waist: 2.6, shift: 2.6, sweep: 0, pull: 0 })) },
-  { label: 'r3.4 gap12.3', glyph: solid(handset({ deg: 45, gap: 12.3, r: 3.4, waist: 2.8, shift: 3, sweep: 0, pull: 0 })) },
-  { label: 'r3.6 gap11.7', glyph: solid(handset({ deg: 45, gap: 11.7, r: 3.6, waist: 3, shift: 3, sweep: 0, pull: 0 })) },
-  { label: 'r3.2 gap12.9', glyph: solid(handset({ deg: 45, gap: 12.9, r: 3.2, waist: 2.6, shift: 3.2, sweep: 0, pull: 0 })) },
-  { label: 'deeper bow', glyph: solid(handset({ deg: 45, gap: 12.3, r: 3.4, waist: 2.8, shift: 3.8, sweep: 0, pull: 0 })) },
-  { label: 'shallow bow', glyph: solid(handset({ deg: 45, gap: 12.3, r: 3.4, waist: 2.8, shift: 2.2, sweep: 0, pull: 0 })) },
-  { label: 'at 135', glyph: solid(handset({ deg: 135, gap: 12.3, r: 3.4, waist: 2.8, shift: 3, sweep: 0, pull: 0 })) }
+  { label: 'diagonal', glyph: filled(DIAGONAL) },
+  { label: 'arch plain', glyph: filled(UNIFORM) },
+  { label: 'arch pads', glyph: filled(FLARED) },
+  { label: 'arch thin bar', glyph: filled(FLARED_THIN) },
+  { label: 'arch wider', glyph: filled(WIDER) },
+  { label: 'arch outlined', glyph: outlined(UNIFORM) },
+  { label: 'pads outlined', glyph: outlined(FLARED) }
 ]
 
 function Button({ children, danger }: { children: ReactNode; danger?: boolean }) {
@@ -98,7 +95,7 @@ function Button({ children, danger }: { children: ReactNode; danger?: boolean })
 function Bar({ leave: Leave, label }: { leave: Glyph; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginBottom: 16 }}>
-      <span style={{ width: 96, fontSize: 11, color: 'rgba(245,245,245,0.4)' }}>{label}</span>
+      <span style={{ width: 104, fontSize: 11, color: 'rgba(245,245,245,0.4)' }}>{label}</span>
       <span
         style={{
           display: 'flex',
@@ -129,6 +126,10 @@ function Bar({ leave: Leave, label }: { leave: Glyph; label: string }) {
         <Leave className="w-4 h-4" />
         <Leave className="w-5 h-5" />
         <Leave className="w-6 h-6" />
+        <Leave className="w-12 h-12" />
+      </span>
+      <span style={{ display: 'flex', gap: 14, alignItems: 'center', color: 'rgba(245,245,245,0.8)' }}>
+        <Leave className="w-4 h-4" />
         <Leave className="w-12 h-12" />
       </span>
     </div>
