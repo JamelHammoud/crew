@@ -109,7 +109,6 @@ export class TrayPanel {
       minimizable: false,
       maximizable: false,
       fullscreenable: false,
-      skipTaskbar: true,
       title: 'Crew',
       webPreferences: {
         preload: this.page.preload,
