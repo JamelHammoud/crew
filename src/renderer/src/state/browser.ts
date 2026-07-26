@@ -27,6 +27,7 @@ type BrowserState = {
   setWidth(width: number): void
   resetWidth(): void
   openUrl(url: string): void
+  openImage(src: string, name: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   addTab(): void
   addTerminal(): void
@@ -90,6 +91,15 @@ export const useBrowser = create<BrowserState>((set, get) => ({
       return
     }
     const tab = makeTab(url)
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
+  openImage: (src, name) => {
+    const existing = get().tabs.find(t => t.kind === 'image' && t.initialUrl === src)
+    if (existing) {
+      set({ activeTabId: existing.id })
+      return
+    }
+    const tab = { ...makeTab(src), kind: 'image' as const, title: name }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
   openFile: (path, line = null, diff = null) => {
