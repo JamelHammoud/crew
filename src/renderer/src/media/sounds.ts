@@ -66,6 +66,26 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       rasp: { hz: 4200, q: 0.5, gain: 0.55, length: 0.018 }
     }
   ],
+  // Turning sound back on is the one setting whose result is the thing it just
+  // switched on, so it says so in its own voice. One bubble of the app's own
+  // material, no figure and nothing to read into it: a chime that means anything
+  // else would have someone looking for who had just arrived. Muting says
+  // nothing, which is the whole of what muting is.
+  'sound.on': [
+    {
+      hz: 880,
+      at: 0,
+      length: 0.34,
+      gain: 0.55,
+      partials: [1, 2.04, 4.1],
+      bend: 0.86,
+      bendTime: 0.025,
+      detune: 4,
+      tone: 3000,
+      wet: 0.3,
+      rasp: { hz: 1800, q: 0.9, gain: 0.08, length: 0.008 }
+    }
+  ],
   'tab.design': [
     {
       hz: 660,
