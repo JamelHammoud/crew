@@ -26,6 +26,22 @@ export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('END ')) {
     return [{ activity: { id: line.slice(4), kind: 'tool' as const, name: '', status: 'finished' as const } }]
   }
+  // A result arrives without the name it was called under, the way every real
+  // CLI reports one.
+  if (line.startsWith('OUT ')) {
+    const [, id, ...rest] = line.split(' ')
+    return [
+      {
+        activity: {
+          id,
+          kind: 'tool' as const,
+          name: '',
+          status: 'finished' as const,
+          output: rest.join(' ')
+        }
+      }
+    ]
+  }
   if (line === 'RESULT') return [{ turnEnd: true }]
   return []
 }
