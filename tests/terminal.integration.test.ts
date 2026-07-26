@@ -125,15 +125,35 @@ describe.skipIf(!unix)('a terminal tab', () => {
     expect(made.count()).toBe(0)
   })
 
-  it('takes the shell with it when the tab is closed', async () => {
+  it('takes the shell with it when the tab is closed, and says nothing more about it', async () => {
     const heard = listener()
     const made = terminals()
     made.open('tab-5', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
     await until(() => heard.text().length > 0, 'the shell to start')
     made.close('tab-5')
-
-    await until(() => heard.exits.includes('tab-5'), 'the shell to end')
     expect(made.count()).toBe(0)
+
+    const said = heard.text().length
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    expect(heard.exits).not.toContain('tab-5')
+    expect(heard.text().length).toBe(said)
+  })
+
+  // React mounts a view twice while developing, so a terminal is opened,
+  // closed, and opened again under the same name in the same breath.
+  it('keeps the second shell when a tab is opened again as the first one ends', async () => {
+    const heard = listener()
+    const made = terminals()
+    made.open('tab-8', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
+    made.close('tab-8')
+    made.open('tab-8', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    expect(made.count()).toBe(1)
+    expect(heard.exits).not.toContain('tab-8')
+
+    made.write('tab-8', 'echo still-listening\r')
+    await until(() => heard.text().includes('still-listening\r\n'), 'the second shell to answer')
   })
 
   it('keeps two terminals apart', async () => {
