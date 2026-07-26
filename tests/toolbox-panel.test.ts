@@ -59,27 +59,30 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-const tile = (name: string) => screen.getByText(name).closest('button')!.parentElement!
-
-const hover = (name: string) => {
-  fireEvent.mouseEnter(tile(name))
-  act(() => vi.advanceTimersByTime(400))
-}
-
-const unhover = (name: string) => act(() => void fireEvent.mouseLeave(tile(name)))
-
-const build = () => fireEvent.click(screen.getByLabelText('New tool'))
+const build = () => fireEvent.click(screen.getByText('New tool'))
 const name = (value: string) =>
   fireEvent.change(screen.getByPlaceholderText('What to call it'), { target: { value } })
 
+// What a tool does is a screen of its own, reached from the row that says which
+// kind is picked.
+const does = (title: string) => {
+  fireEvent.click(screen.getByText('What it does').parentElement!.querySelector('button')!)
+  fireEvent.click(screen.getByText(title))
+}
+
 describe('the toolbox', () => {
-  it('holds the built-in tools, with the ones still coming turned off', () => {
+  it('holds the built-in tools, every one of them live', () => {
     toolbox()
 
-    expect(screen.getByText('Huddle')).toBeTruthy()
-    expect(screen.getByText('Terminal')).toBeTruthy()
-    expect(screen.getByText('Files').closest('button')?.disabled).toBe(false)
-    expect(screen.getByText('Music').closest('button')?.disabled).toBe(true)
+    for (const built of ['Huddle', 'Terminal', 'Files', 'Music'])
+      expect(screen.getByText(built).closest('button')?.disabled).toBe(false)
+  })
+
+  it('ends on an empty slot that opens the builder, with no tools built yet', () => {
+    toolbox()
+
+    build()
+    expect(screen.getByPlaceholderText('What to call it')).toBeTruthy()
   })
 
   it('opens the project files, and takes you to where they opened', () => {
