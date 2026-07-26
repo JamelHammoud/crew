@@ -92,9 +92,8 @@ function DocsIcon() {
         style={{ '--draw-dur': '170ms', '--draw-delay': '250ms' } as React.CSSProperties}
       />
       {[
-        { y: 10.7, x2: 12.8 },
-        { y: 13, x2: 12.8 },
-        { y: 15.3, x2: 10.4 }
+        { y: 11, x2: 12.8 },
+        { y: 13.5, x2: 10.4 }
       ].map((line, i) => (
         <path
           key={line.y}
