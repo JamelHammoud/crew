@@ -173,7 +173,8 @@ ${cards}
   <label><input type="checkbox" onchange="document.body.classList.toggle('keys')"> keylines</label>
   <label><input type="checkbox" onchange="document.body.classList.toggle('light')"> light</label>
   <span>square ${SQUARE} &middot; circle ${CIRCLE} &middot; live ${LIVE}</span>
-</div>`
+</div>
+`
 }
 
 const drawn = await collect()

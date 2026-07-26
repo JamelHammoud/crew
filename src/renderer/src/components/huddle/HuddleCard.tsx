@@ -17,7 +17,9 @@ export default function HuddleCard({ record }: { record: HuddleRecord }) {
 
   const live = room.id === record.id && room.peers.length > 0
   const now = useNow(live)
-  const names = live ? room.peers.map(peer => peer.name) : record.names
+  // Two windows on one folder are two people in the call and one name in the
+  // crew, so the block names them once either way.
+  const names = live ? [...new Set(room.peers.map(peer => peer.name))] : record.names
   const detail = live
     ? formatElapsed(now - (room.startedAt ?? record.ts))
     : record.ms === null
