@@ -38,6 +38,7 @@
 
   --animate-pop: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
   --animate-rise: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-flash: flash 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
   @keyframes pop {
     from {
