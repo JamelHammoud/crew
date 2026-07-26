@@ -89,6 +89,8 @@ describe('toolbox', () => {
 
     sam.send({ type: 'tool.add', name: '   ', mark: 'globe', action: { kind: 'web', url: 'figma.com' } })
     sam.send({ type: 'tool.add', name: 'Nowhere', mark: 'globe', action: { kind: 'web', url: '  ' } })
+    sam.send({ type: 'tool.add', name: 'Nothing', mark: 'globe', action: { kind: 'file', path: ' ' } })
+    sam.send({ type: 'tool.add', name: 'Silent', mark: 'globe', action: { kind: 'prompt', text: ' ' } })
     sam.send({ type: 'tool.edit', toolId: 'nope', name: 'Ghost', mark: 'star', action: { kind: 'terminal' } })
     sam.send({ type: 'tool.remove', toolId: 'nope' })
     await new Promise(r => setTimeout(r, 200))
