@@ -125,6 +125,20 @@ app.on('web-contents-created', (_event, contents) => {
   })
 })
 
+// Shells belong to the window that opened them, so closing a window takes its
+// terminals with it rather than leaving them running with nobody watching.
+function terminalsFor(sender: WebContents): Terminals {
+  const open = terminals.get(sender.id)
+  if (open) return open
+  const made = new Terminals()
+  terminals.set(sender.id, made)
+  sender.once('destroyed', () => {
+    made.closeAll()
+    terminals.delete(sender.id)
+  })
+  return made
+}
+
 function createWindow(): void {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow(
