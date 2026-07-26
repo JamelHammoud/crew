@@ -147,4 +147,56 @@ describe('responsive top bar', () => {
     hover(screen.getByRole('button', { name: 'Docs' }))
     expect(screen.queryByText('Docs', { selector: 'span.glass' })).not.toBeNull()
   })
+
+  it('keeps the current tab visible and moves the other tabs into More when space runs out', () => {
+    const onTab = vi.fn()
+    render(
+      createElement(TopBar, {
+        tab: 'docs',
+        onTab,
+        tasksOpen: false,
+        onToggleTasks: () => {}
+      })
+    )
+
+    setHeaderWidth(540)
+
+    const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
+    expect(
+      within(navigation)
+        .getAllByRole('button')
+        .map(button => button.getAttribute('aria-label'))
+    ).toEqual(['Docs', 'More'])
+
+    fireEvent.click(within(navigation).getByRole('button', { name: 'More' }))
+    expect(screen.getByRole('button', { name: 'Chat' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Design' })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Design' }))
+    expect(onTab).toHaveBeenCalledWith('design')
+    expect(screen.queryByRole('button', { name: 'Chat' })).toBeNull()
+  })
+
+  it('restores every tab when the bar has room again', () => {
+    render(
+      createElement(TopBar, {
+        tab: 'chat',
+        onTab: () => {},
+        tasksOpen: false,
+        onToggleTasks: () => {}
+      })
+    )
+
+    setHeaderWidth(540)
+    fireEvent.click(screen.getByRole('button', { name: 'More' }))
+    setHeaderWidth(900)
+
+    const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
+    expect(
+      within(navigation)
+        .getAllByRole('button')
+        .map(button => button.getAttribute('aria-label'))
+    ).toEqual(['Chat', 'Docs', 'Design'])
+    expect(screen.queryByRole('button', { name: 'More' })).toBeNull()
+  })
 })
