@@ -52,6 +52,7 @@ import {
   type PooledAgent,
   type RunStep
 } from '../shared/llm'
+import { memberMentionRefsIn } from '../shared/people'
 import {
   agentEndReactionTarget,
   agentStepReactionTarget,
@@ -613,6 +614,7 @@ export class CrewSession {
         text: trimmed,
         mentions,
         mentionRefs: this.agentRefs(mentions, trimmed),
+        memberMentionRefs: this.memberRefs(trimmed),
         docMentions: this.docMentionRefs(trimmed),
         attachments,
         replyTo
@@ -759,6 +761,7 @@ export class CrewSession {
       text: entry.text,
       mentions: entry.mentions,
       mentionRefs: this.agentRefs(entry.mentions, entry.text),
+      memberMentionRefs: this.memberRefs(entry.text),
       docMentions: entry.docMentions,
       threadId: entry.threadId,
       attachments: entry.attachments,
@@ -768,6 +771,13 @@ export class CrewSession {
 
   private docMentionRefs(text: string): DocMentionRef[] {
     return docMentionRefsIn(text, Object.fromEntries(this.docs))
+  }
+
+  private memberRefs(text: string) {
+    return memberMentionRefsIn(
+      text,
+      [...this.members.values()].map(member => ({ id: member.id, name: member.name }))
+    )
   }
 
   // Pairs the agents a piece of text pointed at with the names they carried
@@ -807,9 +817,11 @@ export class CrewSession {
     if (!trimmed || trimmed === event.text) return
     const docMentions = this.docMentionRefs(trimmed)
     const mentionRefs = this.agentRefs([], trimmed)
+    const memberMentionRefs = this.memberRefs(trimmed)
     event.text = trimmed
     event.docMentions = docMentions
     event.mentionRefs = mentionRefs
+    event.memberMentionRefs = memberMentionRefs
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -817,6 +829,7 @@ export class CrewSession {
       messageId,
       text: trimmed,
       mentionRefs,
+      memberMentionRefs,
       docMentions
     })
   }
