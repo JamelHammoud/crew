@@ -164,8 +164,12 @@ describe.skipIf(!unix)('a terminal tab', () => {
     expect(made.count()).toBe(2)
 
     made.close('tab-6')
-    await until(() => heard.exits.includes('tab-6'), 'the first shell to end')
     expect(made.count()).toBe(1)
-    expect(heard.exits).not.toContain('tab-7')
+    made.write('tab-6', 'echo gone\r')
+    made.write('tab-7', 'echo second-still-here\r')
+
+    await until(() => heard.text().includes('second-still-here\r\n'), 'the second shell to answer')
+    expect(heard.text()).not.toContain('gone\r\n')
+    expect(heard.exits).toHaveLength(0)
   })
 })
