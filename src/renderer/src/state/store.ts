@@ -546,10 +546,13 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     detach: (key, id) =>
       set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
-    sendChat: (text, threadId, boardId, replyTo) => {
+    sendChat: (text, threadId, boardId, replyTo, aimedAt) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
-      const mentions = mentionsIn(text, get().agents)
+      // A message typed in a composer says who it is for by naming them. One
+      // sent from a control that already knows the agent says so by id, so it
+      // cannot be lost to a rename, a duplicate name or a fumbled spelling.
+      const mentions = aimedAt ?? mentionsIn(text, get().agents)
       playSound('send')
       if (threadId || boardId) {
         socket.send({
