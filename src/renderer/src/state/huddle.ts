@@ -91,6 +91,11 @@ export const useHuddle = create<HuddleState>((set, get) => {
     monitor.watch(get().peerId, own)
   }
 
+  // What is asked for and what the machine hands over are not always the same
+  // device, so the one actually running is what the menu ticks.
+  const running = (track: MediaStreamTrack | null, asked: string | null): string | null =>
+    (track && deviceOf(track)) || asked
+
   const announce = () => {
     const { micOn, cameraOn, sharing } = get()
     sendHuddle({ type: 'huddle.update', muted: !micOn, camera: cameraOn, sharing })
