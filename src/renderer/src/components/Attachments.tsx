@@ -11,7 +11,7 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   const detach = useCrew(s => s.detach)
   if (!pending || pending.length === 0) return null
   return (
-    <div className="flex flex-wrap gap-2 mb-2">
+    <div className="flex flex-wrap gap-2 mb-3">
       {pending.map(item => (
         <div key={item.id} className="relative group animate-pop flex">
           <Tooltip label={item.name}>
