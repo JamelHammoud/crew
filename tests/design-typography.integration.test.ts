@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { textBoxStyle, textStyle } from '../src/renderer/src/design/nodeCss'
+import { FONTS, fontStack } from '../src/renderer/src/design/fonts'
 import { FACES, SIZES, faceStyle, faceValue } from '../src/renderer/src/design/typeFaces'
 import { BASE_TYPE, cleanType, type TypeStyle } from '../src/shared/designNode'
 
@@ -55,5 +56,33 @@ describe('typography styles', () => {
     expect(stored?.vertical).toBe('top')
     expect(stored?.decoration).toBe('none')
     expect(stored?.size).toBe(20)
+  })
+})
+
+describe('fonts', () => {
+  it('offers a long list across every kind of face', () => {
+    expect(FONTS.length).toBeGreaterThan(50)
+    for (const kind of ['sans', 'serif', 'mono', 'display', 'hand']) {
+      expect(FONTS.filter(font => font.category === kind).length).toBeGreaterThan(3)
+    }
+    expect(FONTS.filter(font => font.category === 'system').map(font => font.name)).toEqual(['sans', 'serif', 'mono'])
+  })
+
+  it('never lists the same family twice and keeps each group sorted', () => {
+    const names = FONTS.map(font => font.name)
+    expect(new Set(names).size).toBe(names.length)
+    for (const kind of ['sans', 'serif', 'mono', 'display', 'hand'] as const) {
+      const labels = FONTS.filter(font => font.category === kind).map(font => font.label)
+      expect(labels).toEqual([...labels].sort())
+    }
+  })
+
+  it('gives a real fallback stack behind every family', () => {
+    expect(fontStack('sans')).toContain('system-ui')
+    expect(fontStack('Inter')).toBe('"Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif')
+    expect(fontStack('Lora')).toContain('Georgia')
+    expect(fontStack('JetBrains Mono')).toContain('ui-monospace')
+    expect(fontStack('Caveat')).toContain('cursive')
+    expect(fontStack('Something Nobody Has')).toBe('Something Nobody Has')
   })
 })
