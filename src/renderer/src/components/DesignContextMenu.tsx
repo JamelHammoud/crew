@@ -85,7 +85,7 @@ export default function DesignContextMenu({
   )
 
   return (
-    <Popover open onClose={onClose} at={spot.screen}>
+    <Popover open onClose={onClose} at={spot.screen} maxHeight={MENU_HEIGHT}>
       <div className="min-w-56 max-w-72">
         {shown.map((list, at) => (
           <Fragment key={list[0].id}>
