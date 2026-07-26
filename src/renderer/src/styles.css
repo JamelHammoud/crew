@@ -458,16 +458,6 @@ body {
   }
 }
 
-@keyframes thinking-land {
-  from {
-    opacity: 0.4;
-    transform: scale(0.82);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 
 /* The word turns over with the mark, so the two read as one change. */
 .word-swap {
@@ -492,8 +482,7 @@ body {
     animation: none;
   }
 
-  .thinking-mark[data-landing] .thinking-dot,
-  .thinking-mark[data-landing] .thinking-ring {
+  .thinking-mark[data-landing] .thinking-dot {
     animation-duration: 1ms;
   }
 }
