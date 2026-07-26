@@ -6,7 +6,8 @@ import {
   SignalIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
-  SunIcon
+  SunIcon,
+  UserGroupIcon
 } from '@heroicons/react/16/solid'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, useState } from 'react'
@@ -71,6 +72,15 @@ export default function TopBar({
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  const standing =
+    connection === 'reconnecting'
+      ? 'Reconnecting'
+      : connection === 'connecting'
+        ? 'Connecting'
+        : joinLink
+          ? 'Hosting'
+          : 'Joined'
 
   const copyLink = async () => {
     if (!joinLink) return
