@@ -145,7 +145,7 @@ export default function DesignAskBar({
       onKeyDown={event => event.stopPropagation()}
     >
       <div
-        className="glass glass-strong rounded-shell px-2 py-2 cursor-text"
+        className="glass glass-strong rounded-card p-1.5 cursor-text"
         onClick={() => inputRef.current?.focus()}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
