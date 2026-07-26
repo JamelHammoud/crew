@@ -1,7 +1,22 @@
 import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
 import { createElement, type ComponentType } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { ChevronDownGlyph, ChevronLeftGlyph, ChevronRightGlyph, ChevronUpGlyph, CloseGlyph, DuplicateGlyph, MenuGlyph, MinusGlyph, MoreGlyph, MoreVerticalGlyph, PlusGlyph, RedoGlyph, TrashGlyph, UndoGlyph } from '../icons'
+import {
+  ChevronDownGlyph,
+  ChevronLeftGlyph,
+  ChevronRightGlyph,
+  ChevronUpGlyph,
+  CloseGlyph,
+  DuplicateGlyph,
+  MenuGlyph,
+  MinusGlyph,
+  MoreGlyph,
+  MoreVerticalGlyph,
+  PlusGlyph,
+  RedoGlyph,
+  TrashGlyph,
+  UndoGlyph
+} from '../icons'
 
 type IconComponent = ComponentType<{ className?: string }>
 

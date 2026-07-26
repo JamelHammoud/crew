@@ -1,6 +1,18 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { isImageUrl } from '../../../shared/files'
-import { ArrowLeftGlyph, ArrowRightGlyph, CloseGlyph, DocGlyph, ExternalLinkGlyph, GlobeGlyph, PhotoGlyph, PlusGlyph, RefreshGlyph, TerminalGlyph, XCircleGlyph } from '../icons'
+import {
+  ArrowLeftGlyph,
+  ArrowRightGlyph,
+  CloseGlyph,
+  DocGlyph,
+  ExternalLinkGlyph,
+  GlobeGlyph,
+  PhotoGlyph,
+  PlusGlyph,
+  RefreshGlyph,
+  TerminalGlyph,
+  XCircleGlyph
+} from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
