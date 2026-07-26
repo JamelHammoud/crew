@@ -17283,3 +17283,4 @@
 {"id":"4725eafc-fc0e-44c3-b591-d18257c3dcf9","ts":1785031398522,"kind":"thread.status","threadId":"77675211-55f9-4bc9-ba08-20b66fe52f3d","status":"done","byName":"Jamel"}
 {"id":"f64a4928-bc0c-488a-aa6c-9ae42896b5cc","ts":1785031401329,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"replys dont work","mentions":[],"mentionRefs":[],"docMentions":[],"attachments":[]}
 {"id":"ac8327b0-7124-4f49-9671-0b1bf3028da9","ts":1785031407080,"kind":"message.reaction","targetId":"message:f64a4928-bc0c-488a-aa6c-9ae42896b5cc","targetAuthorId":"60b55620-a113-478c-9935-77bd360c6f40","targetAuthorName":"ALI","memberId":"60b55620-a113-478c-9935-77bd360c6f40","memberName":"ALI","emoji":"😪","active":true}
+{"id":"5d7c8aa8-08ad-4c0f-9d3d-bdcdbe1f23fc","ts":1785031409749,"kind":"thread.status","threadId":"8be7d220-d8af-4e90-ae02-942951444504","status":"done","byName":"Jamel"}
