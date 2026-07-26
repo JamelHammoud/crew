@@ -129,7 +129,8 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - A shortcut crew owns rides on the command as a `keys` chord, and the hint beside the row is drawn from that same chord, so the menu cannot promise a key nothing listens for. `⌘R` and `⌘H` are the app's own, reload and hide, and a menu accelerator beats the renderer, so nothing on the canvas offers them.
 - Right-clicking something that is not selected picks it first, the way Figma does, so the menu always talks about what is under the pointer. Select layer is the one part that cannot live in the catalogue, because it is built from whatever the pointer is standing on.
 - A mask is the bottom shape of the selection taking the rest in as children, with `mask` and `clip` both set. `clip` is real: `getClipPath` on the node samples the outline through `nodeOutline`, so a rounded corner and an ellipse clip to their own shape rather than to their box. A mask paints none of its own fill or text while it is one, and gets it all back when the mask is removed.
-- Asking an agent is a right-click away and nothing else. It was on every selection once, and a bar that opens whenever you click something is in the way rather than at hand.
+- Asking an agent is a right-click or `⇧⌘A` away and nothing else. It was on every selection once, and a bar that opens whenever you click something is in the way rather than at hand.
+- The ask bar hangs under what it is asking about, and `askAnchor` keeps it inside the stage. Pinned straight to the bottom edge of the selection it is drawn off screen for anything taller than the viewport or standing at the foot of it, which reads as the button doing nothing at all. It stands above the selection when there is no room under it, and it never draws nothing: with no bounds to hang from it sits above the toolbar. A selection that goes while it is open leaves it standing where it was, holding what it was asked about.
 
 ## Docs
 
