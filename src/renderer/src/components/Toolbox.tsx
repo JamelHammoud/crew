@@ -34,6 +34,10 @@ interface Builtin {
 
 const SAID = 1200
 
+// Both halves of the toolbox stand on the same four columns, so the app's own
+// hand and the crew's own tools are the same button in the same grid.
+const GRID = 'p-2.5 grid grid-cols-4 gap-1.5'
+
 export default function Toolbox({
   open,
   onClose,
