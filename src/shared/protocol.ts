@@ -51,6 +51,8 @@ export interface SessionSnapshot {
   huddle?: HuddleRoom
   // What is playing, for the same reason.
   music?: MusicRoom
+  // What the crew has put on the shelf itself. Unlike the room, this lasts.
+  musicUploads?: MusicUpload[]
 }
 
 export type ClientMessage =
