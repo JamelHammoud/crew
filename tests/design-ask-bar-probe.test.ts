@@ -91,7 +91,7 @@ function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
   useCrew.setState({
     agents: options.agents ?? [agent('agent:bubbles', 'Bubbles'), agent('agent:fable', 'Fable')],
     threads: options.threads ?? {},
-    pending: {},
+    pending: options.staged ? { 'ask:board:a': options.staged } : {},
     sendChat: (text: string, threadId?: string, boardId?: string, _replyTo?: string, aimedAt?: string[]) =>
       sent.push({ text, threadId, boardId, aimedAt })
   } as never)
@@ -102,14 +102,23 @@ function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
       createElement(DesignAskBar, {
         boardId: 'board:a',
         open: true,
-        onClose: () => {},
+        onClose: () => {
+          closed += 1
+        },
         onSent: () => {
           asked += 1
         }
       })
     )
   const view = render(tree(true))
-  return { sent, view, made, asked: () => asked, deselect: () => view.rerender(tree(false)) }
+  return {
+    sent,
+    view,
+    made,
+    asked: () => asked,
+    closed: () => closed,
+    deselect: () => view.rerender(tree(false))
+  }
 }
 
 function ask(what: string) {
