@@ -589,7 +589,7 @@ body {
   border-radius: 999px;
   background-image:
     linear-gradient(to right, transparent, var(--opacity-color)),
-    repeating-conic-gradient(rgb(255 255 255 / 0.22) 0% 25%, transparent 0% 50%);
+    repeating-conic-gradient(rgb(128 128 128 / 0.32) 0% 25%, transparent 0% 50%);
   background-size:
     auto,
     8px 8px;
