@@ -97,25 +97,9 @@ export class TrayPanel {
 
   private window(): BrowserWindow {
     if (this.win) return this.win
-    const win = new BrowserWindow({
-      width: PANEL_WIDTH,
-      height: MIN_HEIGHT,
-      show: false,
-      frame: false,
-      transparent: true,
-      backgroundColor: '#00000000',
-      resizable: false,
-      movable: false,
-      minimizable: false,
-      maximizable: false,
-      fullscreenable: false,
-      title: 'Crew',
-      webPreferences: {
-        preload: this.page.preload,
-        contextIsolation: true,
-        sandbox: false
-      }
-    })
+    const win = new BrowserWindow(
+      createPanelOptions(this.page.preload, { width: PANEL_WIDTH, height: MIN_HEIGHT })
+    )
     // Above a full screen app and on whichever space is in front, the way the
     // menu bar itself is. Never `skipTaskbar`, and never this call without
     // `skipTransformProcessType`: either one turns the app into an accessory
