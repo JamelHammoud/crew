@@ -3,10 +3,32 @@ import { StopIcon } from '@heroicons/react/16/solid'
 import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
+import Emoji from './Emoji'
+import { tokenizeEmoji } from './emojiTokens'
 import { tokenizeMentions } from './mentionTokens'
 import { replyTargetLabel } from './reply'
 import Tooltip from './Tooltip'
 import type { ThreadItem } from './thread'
+
+function EmojiText({ text }: { text: string }) {
+  const tokens = useMemo(() => tokenizeEmoji(text), [text])
+  return (
+    <>
+      {tokens.map((token, index) =>
+        token.kind === 'text' ? (
+          token.text
+        ) : (
+          <span key={index} className="relative inline-block">
+            {token.text}
+            <span className="absolute inset-y-0 -inset-x-px flex items-center justify-center bg-ink-800">
+              <Emoji char={token.entry.char} size="1.15em" />
+            </span>
+          </span>
+        )
+      )}
+    </>
+  )
+}
 
 function MentionHighlights({ value }: { value: string }) {
   const agents = useCrew(s => s.agents)
@@ -33,7 +55,7 @@ function MentionHighlights({ value }: { value: string }) {
             </span>
           )
         }
-        return token.text
+        return <EmojiText key={index} text={token.text} />
       })}
       {'\u200b'}
     </>
