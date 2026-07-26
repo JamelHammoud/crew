@@ -235,6 +235,15 @@ export function shapesOf(markup) {
 // everything in it is undersized.
 const ENCLOSING = 12
 
+// A negated icon is the form plus one diagonal laid over it, and the diagonal is
+// a modifier rather than part of the drawing. Measured with it, a form that has
+// nothing enclosing left reads as a bare line reaching the length of the slash,
+// which grades a perfectly good icon at half again its keyline.
+export function formOf(markup, slash) {
+  if (!slash) return markup
+  return markup.replaceAll(`<path d="${slash}"></path>`, '')
+}
+
 export function measure(markup, stroke = 1.5) {
   let minX = Infinity
   let minY = Infinity
