@@ -62,6 +62,10 @@ export interface DesignCommand {
 
 let held: ReturnType<Editor['getContentFromCurrentPage']> = undefined
 
+const STYLE_KEYS = ['fills', 'strokes', 'effects', 'radius', 'type', 'blend'] as const
+
+let heldStyle: Record<string, unknown> | null = null
+
 const selection = (editor: Editor): TLShape[] => editor.getSelectedShapes()
 
 const some = (ctx: CommandContext): boolean => selection(ctx.editor).length > 0
