@@ -2,6 +2,7 @@ import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges } from './detail'
 import { kimiModels } from './kimi-models'
+import { resultText } from './output'
 import type { OutputParser, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Agent'])
@@ -45,7 +46,15 @@ export const parseKimiLine: OutputParser = line => {
     }
   }
   if (msg?.role === 'tool' && typeof msg.tool_call_id === 'string') {
-    out.push({ activity: { id: msg.tool_call_id, kind: 'tool' as const, name: '', status: 'finished' as const } })
+    out.push({
+      activity: {
+        id: msg.tool_call_id,
+        kind: 'tool' as const,
+        name: '',
+        status: 'finished' as const,
+        output: resultText(msg.content)
+      }
+    })
   }
   const tokens = msg?.usage?.output_tokens ?? msg?.usage?.completion_tokens
   if (typeof tokens === 'number') out.push({ tokens })
