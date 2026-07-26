@@ -262,7 +262,8 @@ export function useLocated(paths: string[], again?: unknown): void {
   }, [key, again])
 }
 
-const openFile = (path: string, line: number | null) => useBrowser.getState().openFile(targetFor(path), line)
+const openFile = (path: string, line: number | null, diff: string | null = null) =>
+  useBrowser.getState().openFile(targetFor(path), line, diff)
 
 export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
   return (
