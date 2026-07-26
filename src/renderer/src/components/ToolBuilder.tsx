@@ -1,32 +1,17 @@
 import { useState, type ReactNode } from 'react'
 import { DEFAULT_MARK, NAME_LIMIT, type CrewTool, type ToolAction } from '../../../shared/toolbox'
 import { agentsHere } from '../design/askAgent'
-import {
-  ChatGlyph,
-  FileGlyph,
-  GlobeGlyph,
-  PeopleGlyph,
-  PencilGlyph,
-  TerminalGlyph,
-  TrashGlyph,
-  type Glyph
-} from '../icons'
+import { FrameGlyph } from '../design/glyphs'
+import { DocGlyph, PeopleGlyph, PencilGlyph, TrashGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import ToolMarkPicker from './ToolMarkPicker'
 import ToolMarkView from './toolMark'
-import { AREA, Field, FIELD, HeaderButton, Label, Segmented, SheetHeader, Tile } from './toolboxParts'
+import { AREA, Empty, Field, FIELD, Footer, HeaderButton, Label, Primary, Row, Segmented, SheetHeader } from './toolboxParts'
+import ToolKindPicker from './ToolKindPicker'
+import { kindOf, type ToolKind } from './toolKinds'
 import Tooltip from './Tooltip'
 import { useAutoResize } from './useAutoResize'
-
-type Kind = ToolAction['kind']
-
-const KINDS: Array<{ kind: Kind; title: string; mark: Glyph }> = [
-  { kind: 'web', title: 'Open a page', mark: GlobeGlyph },
-  { kind: 'terminal', title: 'Run a command', mark: TerminalGlyph },
-  { kind: 'file', title: 'Open a file', mark: FileGlyph },
-  { kind: 'prompt', title: 'Ask an agent', mark: ChatGlyph }
-]
 
 const GROWN = 108
 
@@ -48,8 +33,8 @@ function Who({
     <button
       onClick={onClick}
       aria-pressed={picked}
-      className={`h-8 pl-1 pr-3 rounded-full flex items-center gap-1.5 text-xs font-medium transition-all duration-150 active:scale-95 ${
-        picked ? 'bg-fg text-ink-900' : 'bg-fg/[0.05] text-fg/70 hover:bg-fg/[0.09] hover:text-fg'
+      className={`h-8 pl-1 pr-2.5 rounded-field flex items-center gap-1.5 text-xs font-medium transition-all duration-150 active:scale-95 ${
+        picked ? 'bg-fg text-ink-900' : 'bg-fg/[0.06] text-fg/70 hover:bg-fg/[0.1] hover:text-fg'
       }`}
     >
       {mark}
@@ -58,23 +43,52 @@ function Who({
   )
 }
 
+// A list the sheet can hold without growing past it: the docs the crew writes,
+// the boards it draws on.
+function Pick({
+  label,
+  empty,
+  children
+}: {
+  label: string
+  empty: string
+  children: ReactNode[]
+}) {
+  return (
+    <div>
+      <Label>{label}</Label>
+      {children.length === 0 ? (
+        <Empty>{empty}</Empty>
+      ) : (
+        <div className="max-h-[168px] overflow-y-auto overscroll-contain [scrollbar-width:none]">{children}</div>
+      )}
+    </div>
+  )
+}
+
 export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; onDone: () => void }) {
   const agents = useCrew(s => s.agents)
+  const docs = useCrew(s => s.docs)
+  const boards = useCrew(s => s.boards)
   const addTool = useCrew(s => s.addTool)
   const editTool = useCrew(s => s.editTool)
   const removeTool = useCrew(s => s.removeTool)
-  const [picking, setPicking] = useState(false)
+  const [screen, setScreen] = useState<'form' | 'mark' | 'kind'>('form')
   const [name, setName] = useState(tool?.name ?? '')
   const [mark, setMark] = useState<string>(tool?.mark ?? DEFAULT_MARK)
-  const [kind, setKind] = useState<Kind>(tool?.action.kind ?? 'web')
+  const [kind, setKind] = useState<ToolKind>(tool?.action.kind ?? 'web')
   const [url, setUrl] = useState(tool?.action.kind === 'web' ? tool.action.url : '')
   const [external, setExternal] = useState(tool?.action.kind === 'web' && Boolean(tool.action.external))
   const [command, setCommand] = useState(tool?.action.kind === 'terminal' ? (tool.action.command ?? '') : '')
   const [path, setPath] = useState(tool?.action.kind === 'file' ? tool.action.path : '')
+  const [page, setPage] = useState(tool?.action.kind === 'doc' ? tool.action.page : '')
+  const [boardId, setBoardId] = useState(tool?.action.kind === 'board' ? tool.action.boardId : '')
+  const [copy, setCopy] = useState(tool?.action.kind === 'copy' ? tool.action.text : '')
   const [ask, setAsk] = useState(tool?.action.kind === 'prompt' ? tool.action.text : '')
   const [agentId, setAgentId] = useState(tool?.action.kind === 'prompt' ? (tool.action.agentId ?? null) : null)
   const commandRef = useAutoResize(command, GROWN)
   const askRef = useAutoResize(ask, GROWN)
+  const copyRef = useAutoResize(copy, GROWN)
 
   // An agent that has gone quiet is still worth showing while it is the one the
   // tool names, or opening a tool to change its wording would quietly take the
@@ -86,13 +100,17 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const action = (): ToolAction => {
     if (kind === 'terminal') return { kind: 'terminal', command }
     if (kind === 'file') return { kind: 'file', path }
+    if (kind === 'doc') return { kind: 'doc', page }
+    if (kind === 'board') return { kind: 'board', boardId }
+    if (kind === 'copy') return { kind: 'copy', text: copy }
     if (kind === 'prompt') return agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }
     return external ? { kind: 'web', url, external: true } : { kind: 'web', url }
   }
 
   // A command is the one thing a tool can be built without: a terminal that
   // opens on a prompt is a tool.
-  const written = kind === 'web' ? url : kind === 'file' ? path : kind === 'prompt' ? ask : ''
+  const written =
+    kind === 'web' ? url : kind === 'file' ? path : kind === 'doc' ? page : kind === 'board' ? boardId : kind === 'copy' ? copy : kind === 'prompt' ? ask : ''
   const ready = name.trim() !== '' && (kind === 'terminal' || written.trim() !== '')
 
   const save = () => {
@@ -108,18 +126,33 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
     save()
   }
 
-  if (picking) {
+  if (screen === 'mark') {
     return (
       <ToolMarkPicker
         mark={mark}
-        onBack={() => setPicking(false)}
+        onBack={() => setScreen('form')}
         onPick={chosen => {
           setMark(chosen)
-          setPicking(false)
+          setScreen('form')
         }}
       />
     )
   }
+
+  if (screen === 'kind') {
+    return (
+      <ToolKindPicker
+        kind={kind}
+        onBack={() => setScreen('form')}
+        onPick={chosen => {
+          setKind(chosen)
+          setScreen('form')
+        }}
+      />
+    )
+  }
+
+  const picked = kindOf(kind)
 
   return (
     <>
@@ -139,48 +172,42 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
       </SheetHeader>
 
       <div className="p-2.5 space-y-3">
-        <div className="flex items-end gap-2">
+        <div className="flex items-center gap-2">
           <span className="group relative flex shrink-0">
             <Tooltip label="Choose a mark">
               <button
-                onClick={() => setPicking(true)}
+                onClick={() => setScreen('mark')}
                 aria-label="Choose a mark"
-                className="w-14 h-14 rounded-2xl flex items-center justify-center bg-fg/[0.05] text-fg/70 transition-all duration-150 hover:bg-fg/[0.09] hover:text-fg active:scale-95"
+                className="w-11 h-11 rounded-field flex items-center justify-center bg-fg/[0.06] text-fg/70 transition-all duration-150 hover:bg-fg/[0.1] hover:text-fg active:scale-95"
               >
-                <ToolMarkView mark={mark} className="w-[26px] h-[26px]" />
+                <ToolMarkView mark={mark} className="w-[22px] h-[22px]" />
               </button>
             </Tooltip>
-            <span className="pointer-events-none absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center bg-fg text-ink-900 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-              <PencilGlyph className="w-3 h-3" />
+            <span className="pointer-events-none absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-full flex items-center justify-center bg-fg text-ink-900 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+              <PencilGlyph className="w-2.5 h-2.5" />
             </span>
           </span>
-          <div className="flex-1 min-w-0">
-            <Field label="Name">
-              <input
-                autoFocus
-                value={name}
-                maxLength={NAME_LIMIT}
-                onChange={e => setName(e.target.value)}
-                onKeyDown={onEnter}
-                placeholder="What to call it"
-                className={FIELD}
-              />
-            </Field>
-          </div>
+          <input
+            autoFocus
+            value={name}
+            maxLength={NAME_LIMIT}
+            onChange={e => setName(e.target.value)}
+            onKeyDown={onEnter}
+            placeholder="What to call it"
+            className={`${FIELD} h-11 text-base font-medium placeholder:font-normal`}
+          />
         </div>
 
         <div>
           <Label>What it does</Label>
-          <div className="grid grid-cols-2 gap-1.5">
-            {KINDS.map(choice => (
-              <Tile
-                key={choice.kind}
-                mark={<choice.mark className="w-[22px] h-[22px]" />}
-                name={choice.title}
-                active={kind === choice.kind}
-                onClick={() => setKind(choice.kind)}
-              />
-            ))}
+          <div className="-mx-1">
+            <Row
+              mark={<picked.mark className="w-[18px] h-[18px]" />}
+              title={picked.title}
+              note={picked.note}
+              chevron
+              onClick={() => setScreen('kind')}
+            />
           </div>
         </div>
 
@@ -234,6 +261,47 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
           </Field>
         )}
 
+        {kind === 'doc' && (
+          <Pick label="Which doc" empty="No docs yet">
+            {Object.entries(docs).map(([key, doc]) => (
+              <Row
+                key={key}
+                mark={<DocGlyph className="w-[18px] h-[18px]" />}
+                title={doc.title || 'Untitled'}
+                active={page === key}
+                onClick={() => setPage(key)}
+              />
+            ))}
+          </Pick>
+        )}
+
+        {kind === 'board' && (
+          <Pick label="Which board" empty="No boards yet">
+            {boards.map(board => (
+              <Row
+                key={board.id}
+                mark={<FrameGlyph className="w-[18px] h-[18px]" />}
+                title={board.name || 'Untitled'}
+                active={boardId === board.id}
+                onClick={() => setBoardId(board.id)}
+              />
+            ))}
+          </Pick>
+        )}
+
+        {kind === 'copy' && (
+          <Field label="What to copy">
+            <textarea
+              ref={copyRef}
+              rows={2}
+              value={copy}
+              onChange={e => setCopy(e.target.value)}
+              placeholder="The bit everyone keeps looking up"
+              className={AREA}
+            />
+          </Field>
+        )}
+
         {kind === 'prompt' && (
           <>
             <div>
@@ -268,15 +336,11 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
             </Field>
           </>
         )}
-
-        <button
-          onClick={save}
-          disabled={!ready}
-          className="w-full h-9 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 enabled:hover:scale-[1.02] enabled:active:scale-95 disabled:opacity-25"
-        >
-          {tool ? 'Save' : 'Add to toolbox'}
-        </button>
       </div>
+
+      <Footer>
+        <Primary label={tool ? 'Save' : 'Add to toolbox'} disabled={!ready} onClick={save} />
+      </Footer>
     </>
   )
 }
