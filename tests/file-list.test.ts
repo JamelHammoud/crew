@@ -1,0 +1,102 @@
+import { mkdirSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
+import { describe, expect, it } from 'vitest'
+import { listRepoFiles } from '../src/main/files'
+import { markRuns, matchFiles } from '../src/shared/files'
+import { runGit } from '../src/shared/git'
+import { tmpDir } from './helpers/session'
+
+function write(root: string, file: string, text: string): void {
+  const target = path.join(root, file)
+  mkdirSync(path.dirname(target), { recursive: true })
+  writeFileSync(target, text)
+}
+
+async function makeRepo(): Promise<string> {
+  const root = tmpDir('list')
+  write(root, '.gitignore', 'node_modules\nout\n')
+  write(root, 'readme.md', 'hello\n')
+  write(root, 'src/app.ts', 'export const x = 1\n')
+  write(root, 'src/renderer/panel.tsx', 'export const y = 2\n')
+  write(root, 'node_modules/left/index.js', 'module.exports = 1\n')
+  write(root, 'out/build.js', 'built\n')
+  await runGit(['init'], root)
+  await runGit(['add', '-A'], root)
+  return root
+}
+
+describe('listRepoFiles', () => {
+  it('lists what the project is made of and leaves out what git ignores', async () => {
+    const root = await makeRepo()
+    expect(await listRepoFiles(root)).toEqual(['.gitignore', 'readme.md', 'src/app.ts', 'src/renderer/panel.tsx'])
+  })
+
+  it('lists a file that has never been committed', async () => {
+    const root = await makeRepo()
+    write(root, 'src/fresh.ts', 'export const z = 3\n')
+    expect(await listRepoFiles(root)).toContain('src/fresh.ts')
+  })
+
+  it('walks a folder that is not a repository, skipping the heavy ones', async () => {
+    const root = tmpDir('plain')
+    write(root, 'notes.md', 'hi\n')
+    write(root, 'src/app.ts', 'x\n')
+    write(root, 'node_modules/left/index.js', 'y\n')
+    expect(await listRepoFiles(root)).toEqual(['notes.md', 'src/app.ts'])
+  })
+})
+
+describe('matchFiles', () => {
+  const paths = [
+    'src/renderer/src/components/FileTree.tsx',
+    'src/renderer/src/components/FileView.tsx',
+    'src/main/files.ts',
+    'tests/file-read.test.ts',
+    'readme.md'
+  ]
+
+  it('finds files by the letters of their name, in order', () => {
+    const found = matchFiles(paths, 'filetree', 10)
+    expect(found.map(match => match.path)).toEqual(['src/renderer/src/components/FileTree.tsx'])
+  })
+
+  it('puts a match in the file name above one spread across the folders', () => {
+    const found = matchFiles(paths, 'files', 10)
+    expect(found[0].path).toBe('src/main/files.ts')
+  })
+
+  it('prefers the tighter run when two names both match', () => {
+    const found = matchFiles(paths, 'filev', 10)
+    expect(found[0].path).toBe('src/renderer/src/components/FileView.tsx')
+  })
+
+  it('matches across folders when nothing in a name lines up', () => {
+    const found = matchFiles(paths, 'testsfile', 10)
+    expect(found.map(match => match.path)).toEqual(['tests/file-read.test.ts'])
+  })
+
+  it('says nothing matched rather than guessing', () => {
+    expect(matchFiles(paths, 'zzz', 10)).toEqual([])
+    expect(matchFiles(paths, '   ', 10)).toEqual([])
+  })
+
+  it('keeps only as many as it was asked for', () => {
+    expect(matchFiles(paths, 'e', 2).length).toBe(2)
+  })
+
+  it('hands back where each letter landed, so they can be picked out', () => {
+    const found = matchFiles(['src/app.ts'], 'app', 10)
+    expect(found[0].hits).toEqual([4, 5, 6])
+  })
+})
+
+describe('markRuns', () => {
+  it('gathers the letters that matched into runs', () => {
+    expect(markRuns('FileTree.tsx', [0, 1, 2, 3])).toEqual([
+      { text: 'File', hit: true },
+      { text: 'Tree.tsx', hit: false }
+    ])
+    expect(markRuns('app.ts', [])).toEqual([{ text: 'app.ts', hit: false }])
+    expect(markRuns('', [])).toEqual([])
+  })
+})
