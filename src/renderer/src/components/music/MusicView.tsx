@@ -100,14 +100,15 @@ export default function MusicView() {
       <div className="px-4 flex items-center gap-3">
         <Slider
           label="Where the track is"
-          value={track ? at / trackLength(track) : 0}
+          value={scrub ?? (track ? at / trackLength(track) : 0)}
           disabled={!track}
           className="flex-1"
+          onChange={setScrub}
           onCommit={share => track && useMusic.getState().seek(share * trackLength(track))}
-          onChange={() => undefined}
         />
         <span className="shrink-0 text-xs tabular-nums text-fg-muted">
-          {clock(at)} / {clock(track ? trackLength(track) : 0)}
+          {clock(scrub !== null && track ? scrub * trackLength(track) : at)} /{' '}
+          {clock(track ? trackLength(track) : 0)}
         </span>
       </div>
 
