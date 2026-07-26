@@ -95,9 +95,9 @@ function ActionsPalette({ ctx, onClose }: { ctx: CommandContext; onClose: () => 
   }
 
   return (
-    <Popover open onClose={onClose} side="top" align="start" className="p-0 overflow-hidden">
+    <Popover open onClose={onClose} side="top" align="start" flush className="overflow-hidden">
       <div className="w-80">
-        <div className="flex items-center gap-2.5 px-3.5 h-11 border-b border-fg/[0.06]">
+        <div className="flex items-center gap-2.5 px-4.5 h-12 border-b border-fg/[0.06]">
           <SearchGlyph className="w-4 h-4 shrink-0 text-fg/40" />
           <input
             ref={inputRef}
