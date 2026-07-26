@@ -17180,3 +17180,4 @@
 {"id":"f07adf9f-09e6-4c11-b71e-c24c95dbf851","ts":1785030616003,"kind":"message.deleted","messageId":"893c4457-682a-44f8-990f-dc6322f06396"}
 {"id":"72582478-d55a-442f-acde-0b67d591bd69","ts":1785030652095,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"im replying","mentions":[],"mentionRefs":[],"docMentions":[],"attachments":[]}
 {"id":"ff6a061a-ea90-4168-864a-10586baedcf1","ts":1785030657251,"kind":"message.deleted","messageId":"72582478-d55a-442f-acde-0b67d591bd69"}
+{"id":"3b9ecb5c-c25d-4c37-a8ac-da00d4503dff","ts":1785030659560,"kind":"message.deleted","messageId":"dd5c5c59-42cd-462c-8a0c-c329cb106618"}
