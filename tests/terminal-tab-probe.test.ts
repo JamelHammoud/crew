@@ -54,7 +54,7 @@ beforeEach(() => {
 
 afterEach(() => cleanup())
 
-const newTab = (): void => fireEvent.click(screen.getByLabelText('New tab'))
+const newTab = (): void => void fireEvent.click(screen.getByLabelText('New tab'))
 const only = () => useBrowser.getState().tabs[0]!
 const screenText = (): string => document.querySelector('.xterm-rows')?.textContent ?? ''
 
