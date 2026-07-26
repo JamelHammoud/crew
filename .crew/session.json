@@ -125,22 +125,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785067901978,
+        "fetchedAt": 1785068201996,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 88,
-            "severity": "warning",
-            "resetsAt": 1785082800100,
+            "percent": 100,
+            "severity": "critical",
+            "resetsAt": 1785082800169,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 22,
+            "percent": 23,
             "severity": "normal",
-            "resetsAt": 1785499200100,
+            "resetsAt": 1785499200169,
             "active": false
           }
         ],
@@ -230,7 +230,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785068141986,
+        "fetchedAt": 1785068202246,
         "windows": [
           {
             "key": "primary",
@@ -326,7 +326,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785068141986,
+        "fetchedAt": 1785068202246,
         "windows": [
           {
             "key": "primary",
@@ -445,12 +445,34 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785068142266,
-        "windows": [],
+        "fetchedAt": 1785068202274,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 20,
+            "severity": "normal",
+            "resetsAt": 1785535199528,
+            "active": true
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          }
+        ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "max"
       }
     },
     {
@@ -595,22 +617,22 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785067901978,
+        "fetchedAt": 1785068201996,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 88,
-            "severity": "warning",
-            "resetsAt": 1785082800100,
+            "percent": 100,
+            "severity": "critical",
+            "resetsAt": 1785082800169,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 22,
+            "percent": 23,
             "severity": "normal",
-            "resetsAt": 1785499200100,
+            "resetsAt": 1785499200169,
             "active": false
           }
         ],
@@ -724,12 +746,34 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785068142266,
-        "windows": [],
+        "fetchedAt": 1785068202274,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 20,
+            "severity": "normal",
+            "resetsAt": 1785535199528,
+            "active": true
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 0,
+            "severity": "normal",
+            "active": false
+          }
+        ],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max",
-        "error": "Claude sign-in expired. Run claude once to refresh it."
+        "plan": "max"
       },
       "avatar": "a6acfa93-41c8-4291-9c3b-516cf5006d98.webp"
     }
