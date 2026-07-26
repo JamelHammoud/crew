@@ -57,6 +57,8 @@ export default function BrowserPanel() {
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
 
+  useEffect(() => window.crew.warmTerminal(), [])
+
   const reload = (tab: BrowserTab) => {
     if (showsImage(tab)) {
       useBrowser.getState().reloadTab(tab.id)
