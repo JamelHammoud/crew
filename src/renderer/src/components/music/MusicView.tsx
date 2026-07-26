@@ -52,7 +52,11 @@ export default function MusicView() {
   const selfName = useCrew(s => s.selfName)
   const sounds = useSounds()
   const track = trackFor(room.trackId)
-  const at = useAt(room.playing && track !== null, room.trackId)
+  const at = useAt(room, room.playing && track !== null)
+  // Where the bar is being dragged to, which is what it shows until the crew
+  // has been told, so it does not spring back under your own finger.
+  const [scrub, setScrub] = useState<number | null>(null)
+  useEffect(() => setScrub(null), [room])
 
   const put = (one: MusicTrack) => {
     if (one.id === room.trackId) useMusic.getState().toggle()
