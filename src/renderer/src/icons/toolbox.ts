@@ -14,17 +14,19 @@ const HANDLE_HALF = 3.75
 const HANDLE_RISE = 8.25
 const HANDLE_R = 2.75
 
-// A shade deeper than the shut box is tall, and watched from a box and a half
-// away. The distance is what decides how much of itself the lid keeps as it goes
-// back, and how far in the hinge sits from the corners of the case. Stand the
-// viewer further off and the lid flattens into a bar laid on a box.
-export const TOOLBOX_DEPTH = 13
-export const TOOLBOX_AWAY = 24
+// Three quarters of what the shut box is tall, watched from a long way off. The
+// distance is the whole of how much perspective is in this: far enough that
+// going back costs the lid a few percent rather than turning it into a shape of
+// another kind, and that its sides come back to the rim just inside the corners
+// of the case rather than halfway across it. Bring the viewer in and the drawing
+// sharpens into something folded.
+export const TOOLBOX_DEPTH = 8.25
+export const TOOLBOX_AWAY = 80
 
 // The lid stops where the counters do. The handle is four across the middle and
 // the face of the lid four and a quarter, and the turn takes a cosine off both,
 // so past this they close into bars at the size the mark is worn.
-export const TOOLBOX_SWING = 14
+export const TOOLBOX_SWING = 24
 
 export const TOOLBOX_CASE =
   'M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z'
