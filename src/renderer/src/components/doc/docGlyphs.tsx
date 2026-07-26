@@ -10,19 +10,29 @@ const NUMERAL = 1.7
 const mark = (art: Parameters<typeof glyph>[0]) => glyph(art, WEIGHT)
 
 // The menu has three groups and it reads as three groups: the text blocks are
-// letterforms, the lists are the same three rows with a different marker down
-// the side, and the blocks are objects. Six of these were a run of horizontal
-// lines with something small in front, which is why nothing in it could be told
-// apart at a glance.
+// letterforms, the lists are rows with a different marker down the side, and the
+// blocks are objects. Six of these were a run of horizontal lines with something
+// small in front, which is why nothing in it could be told apart at a glance.
 
-// The rows every list is written on. One set of numbers, so a bullet, a numeral
-// and a check all stand against the same lines.
-const ROWS = [6.4, 12, 17.6]
+// One cap height for every letter in the set, and one baseline under them. The
+// pilcrow, the three headings and the marks the toolbar wears are the same face,
+// so they are drawn to these two lines rather than each to its own. The family
+// sits under the box keyline on purpose: a letter grown until it fills a 17 box
+// towers over the row it is read in.
+const CAP = 5.6
+const BASE = 18.4
+const MIDDLE = (CAP + BASE) / 2
 
-const rows = (from: number, last = 20) => (
+// The rows a list is written on. Three where the marker is a dot, two where it
+// is a drawing of its own: a numeral and a check both need the room, and three
+// of either closes up at the size the menu wears.
+const THREE = [6.4, 12, 17.6]
+const PAIR = [7.6, 16.6]
+
+const rows = (ys: number[], from: number) => (
   <>
-    {ROWS.map((y, at) => (
-      <path key={y} d={`M${from} ${y}H${at === ROWS.length - 1 ? last : 20}`} />
+    {ys.map(y => (
+      <path key={y} d={`M${from} ${y}H20`} />
     ))}
   </>
 )
@@ -30,21 +40,20 @@ const rows = (from: number, last = 20) => (
 // A pilcrow rather than three lines. It is the mark for a paragraph in every
 // place text is set, it stands with the headings as a letterform rather than
 // against them, and it is the one shape in the menu nothing else can be mistaken
-// for. Held to the headings' cap height instead of to the box keyline: a letter
-// grown until it fills a 17 box towers over the row it is read in.
+// for.
 export const ParagraphGlyph = mark(
   <>
-    <path d="M13.3 5.7v12.6" />
-    <path d="M17.7 5.7v12.6" />
-    <path d="M13.3 13.7h-3a4 4 0 0 1 0-8h7.4" />
+    <path d={`M13.3 ${CAP}v12.8`} />
+    <path d={`M17.7 ${CAP}v12.8`} />
+    <path d={`M13.3 13.6h-3a4 4 0 0 1 0-8h7.4`} />
   </>
 )
 
 const HEADING = (
   <>
-    <path d="M3.8 6v12" />
-    <path d="M11.4 6v12" />
-    <path d="M3.8 12h7.6" />
+    <path d={`M3.8 ${CAP}v12.8`} />
+    <path d={`M11.4 ${CAP}v12.8`} />
+    <path d={`M3.8 ${MIDDLE}h7.6`} />
   </>
 )
 
