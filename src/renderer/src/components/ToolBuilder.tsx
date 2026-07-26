@@ -76,7 +76,12 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const commandRef = useAutoResize(command, GROWN)
   const askRef = useAutoResize(ask, GROWN)
 
+  // An agent that has gone quiet is still worth showing while it is the one the
+  // tool names, or opening a tool to change its wording would quietly take the
+  // name off it.
   const here = agentsHere(agents)
+  const named = agents.find(agent => agent.id === agentId)
+  const choices = named && !here.includes(named) ? [...here, named] : here
 
   const action = (): ToolAction => {
     if (kind === 'terminal') return { kind: 'terminal', command }
