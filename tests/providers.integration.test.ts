@@ -58,6 +58,21 @@ describe('fake provider contract', () => {
     expect(text).not.toContain('weighing the options')
   })
 
+  // Every tool hands back its whole result, and a file read would fill the log
+  // the crew syncs, so only a command keeps what it printed.
+  it('keeps what a command printed and drops the rest', async () => {
+    const provider = makeFakeProvider({ FAKE_CLI_OUTPUT: '1' })
+    const outputs = new Map<string, string | undefined>()
+    const run = provider.start('work', repo, {
+      onStep: step => {
+        if (step.kind === 'tool' && step.status === 'done') outputs.set(step.id, step.output)
+      }
+    })
+    await run.done
+    expect(outputs.get('tt2')).toBe('total 8 drwxr-xr-x 4 jamel staff 128 src')
+    expect(outputs.get('tt3')).toBeUndefined()
+  })
+
   it('rejects with stderr on failure', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_FAIL: '1' })
     const run = provider.start('boom', repo, { onStep: () => {} })
