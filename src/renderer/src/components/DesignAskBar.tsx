@@ -81,18 +81,19 @@ export default function DesignAskBar({
     setSize(null)
   }, [open])
 
-  // Escape puts the bar away from wherever the caret has got to, so it is never
-  // left standing over the board by a click that landed outside it.
+  // Escape puts the bar away from wherever the caret has got to, so a click that
+  // landed on the board does not leave it standing there with no way to close
+  // it. While the agent picker is up the key belongs to the picker.
   useEffect(() => {
-    if (!open) return
+    if (!open || switching) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
       event.stopPropagation()
       onClose()
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => window.removeEventListener('keydown', onKeyDown, true)
+  }, [open, switching, onClose])
 
   // What the ask is about is held, so a selection that goes while the bar is up
   // leaves it standing where it was with what it was asked about, rather than
