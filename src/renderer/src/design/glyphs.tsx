@@ -11,6 +11,7 @@ import {
 import type { TLShape } from 'tldraw'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 import { glyph, type Glyph } from '../components/glyph'
+import { ARROW_BODY, ARROW_ON_GRID } from './cursors'
 
 export type { Glyph }
 
