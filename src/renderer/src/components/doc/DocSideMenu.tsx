@@ -1,15 +1,9 @@
 import { SideMenuExtension, SuggestionMenu } from '@blocknote/core/extensions'
 import { useBlockNoteEditor, useExtension, useExtensionState } from '@blocknote/react'
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  Bars2Icon,
-  DocumentDuplicateIcon,
-  PlusIcon,
-  TrashIcon
-} from '@heroicons/react/16/solid'
+import { ArrowDownIcon, ArrowUpIcon, DocumentDuplicateIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useState, type DragEvent } from 'react'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
+import { AddGlyph, GripGlyph } from './docGlyphs'
 import Tooltip from '../Tooltip'
 
 export default function DocSideMenu() {
@@ -48,7 +42,7 @@ export default function DocSideMenu() {
           aria-label="Add a block below"
           className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors"
         >
-          <PlusIcon className="w-4 h-4" />
+          <AddGlyph className="w-4 h-4" />
         </button>
       </Tooltip>
       <span className="relative flex items-center">
@@ -64,7 +58,7 @@ export default function DocSideMenu() {
             aria-label="Block menu"
             className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors cursor-grab active:cursor-grabbing"
           >
-            <Bars2Icon className="w-4 h-4" />
+            <GripGlyph className="w-4 h-4" />
           </button>
         </Tooltip>
         <Popover open={menu} onClose={close} align="start" className="min-w-44">
