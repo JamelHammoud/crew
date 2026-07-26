@@ -104,7 +104,7 @@ describe('kimi parser matches the real CLI format', () => {
     expect(subagent[0].activity?.kind).toBe('subagent')
 
     expect(parseKimiLine('{"role":"tool","tool_call_id":"tool_123","content":"AGENTS.md"}')).toEqual([
-      { activity: { id: 'tool_123', kind: 'tool', name: '', status: 'finished' } }
+      { activity: { id: 'tool_123', kind: 'tool', name: '', status: 'finished', output: 'AGENTS.md' } }
     ])
 
     expect(parseKimiLine('{"role":"meta","type":"session.resume_hint"}')).toEqual([])
