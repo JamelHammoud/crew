@@ -944,6 +944,20 @@ export class CrewSession {
     this.onSyncNeeded?.()
   }
 
+  // Whoever started a call can take its block out of the chat, and only once the
+  // call is over: while it is going the block is the way in, so removing it
+  // would take the way in off everyone else's screen mid-call.
+  private handleDeleteHuddle(member: Member, huddleId: string): void {
+    if (this.huddleId === huddleId) return
+    const started = this.events.find(e => e.kind === 'huddle.started' && e.huddleId === huddleId)
+    if (!started || started.kind !== 'huddle.started' || started.byId !== member.id) return
+    this.events = this.events.filter(e => huddleRecordId(e) !== huddleId)
+    const tombstone: SessionEvent = { id: randomUUID(), ts: Date.now(), kind: 'huddle.deleted', huddleId }
+    this.store.appendEvent(tombstone)
+    this.broadcast({ type: 'event', event: tombstone })
+    this.onSyncNeeded?.()
+  }
+
   private handleEditMessage(member: Member, messageId: string, text: string): void {
     const event = this.events.find(e => e.kind === 'message' && e.id === messageId)
     if (!event || event.kind !== 'message') return
