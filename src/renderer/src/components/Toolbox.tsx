@@ -25,6 +25,7 @@ import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
+import Tooltip from './Tooltip'
 
 const MARKS: Record<ToolMark, Glyph> = {
   globe: GlobeGlyph,
@@ -43,13 +44,16 @@ const MARKS: Record<ToolMark, Glyph> = {
   people: PeopleGlyph
 }
 
-// What a built-in tool is: the same button as one a crew builds, with the app's
-// own hand behind it rather than an action someone wrote down.
+const markFor = (mark: ToolMark): Glyph => MARKS[mark] ?? StarGlyph
+
+// A built-in is the same button as one a crew builds, with the app's own hand
+// behind it rather than an action someone wrote down.
 interface Builtin {
   id: string
   name: string
   mark: Glyph
   soon?: boolean
+  panel?: boolean
   run?: () => void
 }
 
@@ -58,12 +62,22 @@ export function runTool(action: ToolAction): void {
   if (action.kind === 'terminal') useBrowser.getState().addTerminal(action.command)
 }
 
+function Rule() {
+  return <div className="h-px bg-fg/[0.06]" />
+}
+
+function Label({ children }: { children: ReactNode }) {
+  return <span className="block mb-1.5 px-1 text-xs text-fg/45">{children}</span>
+}
+
+// One tile, whatever is behind it. Lit white while it is the thing happening,
+// filled quietly when it is waiting, barely there when it cannot be pressed.
 function Tile({
   mark: Mark,
   name,
   note,
   active,
-  quiet,
+  soon,
   onClick,
   children
 }: {
@@ -71,50 +85,37 @@ function Tile({
   name: string
   note?: string
   active?: boolean
-  quiet?: boolean
+  soon?: boolean
   onClick?: () => void
   children?: ReactNode
 }) {
-  const look = quiet
-    ? 'text-fg/30'
+  const look = soon
+    ? 'bg-fg/[0.03] text-fg/30'
     : active
-      ? 'bg-fg/[0.12] text-fg'
-      : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
+      ? 'bg-fg text-ink-900'
+      : 'bg-fg/[0.05] text-fg/70 hover:bg-fg/[0.09] hover:text-fg'
   return (
     <div className="group relative">
       <button
         onClick={onClick}
-        disabled={quiet}
-        className={`w-full h-[78px] px-1 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
+        disabled={soon}
+        className={`w-full h-[82px] px-1.5 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
       >
         <Mark className="w-[22px] h-[22px]" />
-        <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
-        {note && <span className="text-xs leading-none text-fg/25">{note}</span>}
+        <span className="w-full text-center leading-none">
+          <span className="block truncate text-xs font-medium">{name}</span>
+          {note && <span className="block mt-1 text-xs text-fg/25">{note}</span>}
+        </span>
       </button>
       {children}
     </div>
   )
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className="block">
-      <span className="block mb-1.5 px-1 text-xs text-fg/45">{label}</span>
-      {children}
-    </label>
-  )
-}
+const field =
+  'w-full h-9 px-3.5 rounded-full bg-fg/[0.06] text-sm text-fg placeholder:text-fg/25 outline-none transition-colors focus:bg-fg/[0.1]'
 
-const input =
-  'w-full h-9 px-3 rounded-full bg-fg/[0.06] text-sm text-fg placeholder:text-fg/30 outline-none transition-colors focus:bg-fg/[0.12]'
-
-function Builder({
-  tool,
-  onDone
-}: {
-  tool: CrewTool | null
-  onDone: () => void
-}) {
+function Builder({ tool, onDone }: { tool: CrewTool | null; onDone: () => void }) {
   const addTool = useCrew(s => s.addTool)
   const editTool = useCrew(s => s.editTool)
   const removeTool = useCrew(s => s.removeTool)
@@ -135,115 +136,130 @@ function Builder({
   }
 
   return (
-    <div className="p-1.5 space-y-3">
-      <div className="flex items-center gap-1">
+    <>
+      <header className="h-12 pl-1.5 pr-2.5 flex items-center gap-1">
         <button
           onClick={onDone}
           aria-label="Back"
-          className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-fg hover:bg-fg/[0.06]"
+          className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
         >
           <ChevronLeftGlyph className="w-4 h-4" />
         </button>
         <h3 className="flex-1 text-sm font-semibold text-fg">{tool ? 'Edit tool' : 'New tool'}</h3>
         {tool && (
-          <button
-            onClick={() => {
-              removeTool(tool.id)
-              onDone()
-            }}
-            aria-label="Remove tool"
-            className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-danger hover:bg-danger/10"
-          >
-            <TrashGlyph className="w-3.5 h-3.5" />
-          </button>
+          <Tooltip label="Remove">
+            <button
+              onClick={() => {
+                removeTool(tool.id)
+                onDone()
+              }}
+              aria-label="Remove tool"
+              className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-danger hover:bg-danger/10 active:scale-95"
+            >
+              <TrashGlyph className="w-3.5 h-3.5" />
+            </button>
+          </Tooltip>
         )}
-      </div>
+      </header>
+      <Rule />
+      <div className="p-2.5 space-y-3.5">
+        <div>
+          <Label>Name</Label>
+          <input
+            autoFocus
+            value={name}
+            maxLength={NAME_LIMIT}
+            onChange={e => setName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && save()}
+            placeholder="What to call it"
+            className={field}
+          />
+        </div>
 
-      <Field label="Name">
-        <input
-          autoFocus
-          value={name}
-          maxLength={NAME_LIMIT}
-          onChange={e => setName(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && save()}
-          placeholder="What to call it"
-          className={input}
-        />
-      </Field>
+        <div>
+          <Label>Mark</Label>
+          <div className="grid grid-cols-7 gap-1">
+            {TOOL_MARKS.map(choice => {
+              const Mark = markFor(choice)
+              return (
+                <button
+                  key={choice}
+                  onClick={() => setMark(choice)}
+                  aria-label={choice}
+                  aria-pressed={mark === choice}
+                  className={`h-8 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-90 ${
+                    mark === choice ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.06]'
+                  }`}
+                >
+                  <Mark className="w-4 h-4" />
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-      <Field label="Mark">
-        <div className="grid grid-cols-7 gap-0.5">
-          {TOOL_MARKS.map(choice => {
-            const Mark = MARKS[choice]
-            return (
+        <div>
+          <Label>What it does</Label>
+          <div className="flex rounded-full bg-fg/[0.06] p-0.5">
+            {(
+              [
+                { value: 'web', label: 'Open a page' },
+                { value: 'terminal', label: 'Run a command' }
+              ] as const
+            ).map(option => (
               <button
-                key={choice}
-                onClick={() => setMark(choice)}
-                aria-label={choice}
-                aria-pressed={mark === choice}
-                className={`h-8 rounded-xl flex items-center justify-center transition-colors ${
-                  mark === choice ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.06]'
+                key={option.value}
+                onClick={() => setKind(option.value)}
+                aria-pressed={kind === option.value}
+                className={`flex-1 h-8 rounded-full text-xs font-semibold transition-colors ${
+                  kind === option.value ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg'
                 }`}
               >
-                <Mark className="w-4 h-4" />
+                {option.label}
               </button>
-            )
-          })}
+            ))}
+          </div>
         </div>
-      </Field>
 
-      <Field label="What it does">
-        <span className="w-full flex rounded-full bg-fg/[0.06] p-0.5">
-          {(
-            [
-              { value: 'web', label: 'Open a page' },
-              { value: 'terminal', label: 'Run a command' }
-            ] as const
-          ).map(option => (
-            <button
-              key={option.value}
-              onClick={() => setKind(option.value)}
-              aria-pressed={kind === option.value}
-              className={`flex-1 h-8 rounded-full text-xs font-semibold transition-colors ${
-                kind === option.value ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </span>
-      </Field>
+        {kind === 'web' ? (
+          <input
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && save()}
+            placeholder="figma.com"
+            className={field}
+          />
+        ) : (
+          <input
+            value={command}
+            onChange={e => setCommand(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && save()}
+            placeholder="yarn dev"
+            className={`${field} font-mono`}
+          />
+        )}
 
-      {kind === 'web' ? (
-        <input
-          value={url}
-          onChange={e => setUrl(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && save()}
-          placeholder="figma.com"
-          className={input}
-        />
-      ) : (
-        <input
-          value={command}
-          onChange={e => setCommand(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && save()}
-          placeholder="yarn dev"
-          className={`${input} font-mono`}
-        />
-      )}
-
-      <button
-        onClick={save}
-        disabled={!ready}
-        className="w-full h-9 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 enabled:hover:scale-[1.02] enabled:active:scale-95 disabled:opacity-30"
-      >
-        {tool ? 'Save' : 'Add to toolbox'}
-      </button>
-    </div>
+        <button
+          onClick={save}
+          disabled={!ready}
+          className="w-full h-9 rounded-full bg-fg text-ink-900 text-sm font-semibold transition-all duration-150 enabled:hover:scale-[1.02] enabled:active:scale-95 disabled:opacity-25"
+        >
+          {tool ? 'Save' : 'Add to toolbox'}
+        </button>
+      </div>
+    </>
   )
 }
 
-export default function Toolbox({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function Toolbox({
+  open,
+  onClose,
+  onSidePanel
+}: {
+  open: boolean
+  onClose: () => void
+  onSidePanel: () => void
+}) {
   const tools = useCrew(s => s.tools)
   const joined = useHuddle(s => s.joined)
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
@@ -263,58 +279,81 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
         else void huddle.join()
       }
     },
-    { id: 'terminal', name: 'Terminal', mark: TerminalGlyph, run: () => useBrowser.getState().addTerminal() },
+    {
+      id: 'terminal',
+      name: 'Terminal',
+      mark: TerminalGlyph,
+      panel: true,
+      run: () => useBrowser.getState().addTerminal()
+    },
     { id: 'music', name: 'Music', mark: MusicGlyph, soon: true },
     { id: 'files', name: 'Files', mark: FolderGlyph, soon: true }
   ]
 
+  const press = (run: (() => void) | undefined, panel: boolean) => {
+    run?.()
+    if (panel) onSidePanel()
+    onClose()
+  }
+
   return (
-    <Popover open={open} onClose={onClose} flush className="w-[288px]">
+    <Popover open={open} onClose={onClose} align="center" flush className="w-[304px]">
       {building ? (
         <Builder tool={building.tool} onDone={() => setBuilding(null)} />
       ) : (
-        <div className="p-1.5 grid grid-cols-3 gap-0.5">
-          {builtins.map(tool => (
-            <Tile
-              key={tool.id}
-              mark={tool.mark}
-              name={tool.name}
-              note={tool.soon ? 'Soon' : undefined}
-              quiet={tool.soon}
-              active={tool.id === 'huddle' && joined}
-              onClick={() => {
-                tool.run?.()
-                onClose()
-              }}
-            />
-          ))}
-          {tools.map(tool => (
-            <Tile
-              key={tool.id}
-              mark={MARKS[tool.mark] ?? StarGlyph}
-              name={tool.name}
-              onClick={() => {
-                runTool(tool.action)
-                onClose()
-              }}
-            >
+        <>
+          <header className="h-12 pl-4 pr-2.5 flex items-center">
+            <h3 className="flex-1 text-sm font-semibold text-fg">Toolbox</h3>
+            <Tooltip label="New tool">
               <button
-                onClick={() => setBuilding({ tool })}
-                aria-label={`Edit ${tool.name}`}
-                className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-95 group-hover:opacity-100 focus-visible:opacity-100"
+                onClick={() => setBuilding({ tool: null })}
+                aria-label="New tool"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
               >
-                <PencilGlyph className="w-3 h-3" />
+                <PlusGlyph className="w-4 h-4" />
               </button>
-            </Tile>
-          ))}
-          <button
-            onClick={() => setBuilding({ tool: null })}
-            className="h-[78px] px-1 rounded-2xl border border-dashed border-fg/15 flex flex-col items-center justify-center gap-1.5 text-fg/45 transition-all duration-150 hover:border-fg/25 hover:text-fg hover:bg-fg/[0.04] active:scale-95"
-          >
-            <PlusGlyph className="w-[22px] h-[22px]" />
-            <span className="w-full truncate text-center text-xs font-medium leading-none">New tool</span>
-          </button>
-        </div>
+            </Tooltip>
+          </header>
+          <Rule />
+          <div className="p-2.5 grid grid-cols-3 gap-1.5">
+            {builtins.map(tool => (
+              <Tile
+                key={tool.id}
+                mark={tool.mark}
+                name={tool.name}
+                note={tool.soon ? 'Soon' : undefined}
+                soon={tool.soon}
+                active={tool.id === 'huddle' && joined}
+                onClick={() => press(tool.run, tool.panel ?? false)}
+              />
+            ))}
+          </div>
+          <Rule />
+          {tools.length === 0 ? (
+            <p className="px-4 py-3.5 text-xs leading-relaxed text-fg/45">
+              Build your own tools. A tool is one button that opens a page or runs a command.
+            </p>
+          ) : (
+            <div className="p-2.5 grid grid-cols-3 gap-1.5">
+              {tools.map(tool => (
+                <Tile
+                  key={tool.id}
+                  mark={markFor(tool.mark)}
+                  name={tool.name}
+                  onClick={() => press(() => runTool(tool.action), true)}
+                >
+                  <button
+                    onClick={() => setBuilding({ tool })}
+                    aria-label={`Edit ${tool.name}`}
+                    className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90 group-hover:opacity-100 focus-visible:opacity-100"
+                  >
+                    <PencilGlyph className="w-3 h-3" />
+                  </button>
+                </Tile>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </Popover>
   )
