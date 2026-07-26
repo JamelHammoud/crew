@@ -119,9 +119,11 @@ describe('node styling', () => {
     const style = nodeStyle({
       ...nodeDefaults(),
       radius: [20, 20, 0, 0],
-      fills: [{ type: 'linear', angle: 160, stops: [{ color: '#1e293b', at: 0 }, { color: '#0f172a', at: 1 }], opacity: 1 }],
-      strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid' }],
-      effects: [{ type: 'shadow', x: 0, y: 8, blur: 24, spread: -4, color: '#00000059' }]
+      fills: [
+        { type: 'linear', angle: 160, stops: [{ color: '#1e293b', at: 0 }, { color: '#0f172a', at: 1 }], opacity: 1, visible: true }
+      ],
+      strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid', visible: true }],
+      effects: [{ type: 'shadow', x: 0, y: 8, blur: 24, spread: -4, color: '#00000059', visible: true }]
     })
     expect(style.borderRadius).toBe('20px 20px 0px 0px')
     expect(style.backgroundImage).toBe('linear-gradient(160deg, #1e293b 0%, #0f172a 100%)')
@@ -131,9 +133,20 @@ describe('node styling', () => {
   it('gives a background blur effect a real backdrop filter', () => {
     const style = nodeStyle({
       ...nodeDefaults(),
-      effects: [{ type: 'background-blur', blur: 24 }]
+      effects: [{ type: 'background-blur', blur: 24, visible: true }]
     })
     expect(style.backdropFilter).toContain('blur(24px)')
+  })
+
+  it('leaves out a fill, stroke or effect that is hidden', () => {
+    const style = nodeStyle({
+      ...nodeDefaults(),
+      fills: [{ type: 'solid', color: '#ff0000', opacity: 1, visible: false }],
+      strokes: [{ color: '#ffffff14', weight: 2, align: 'inside', style: 'solid', visible: false }],
+      effects: [{ type: 'shadow', x: 0, y: 8, blur: 24, spread: -4, color: '#00000059', visible: false }]
+    })
+    expect(style.backgroundImage).toBeUndefined()
+    expect(style.boxShadow).toBeUndefined()
   })
 
   it('lays out a container with flexbox when it has auto layout', () => {
