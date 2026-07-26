@@ -92,5 +92,5 @@ export default function Markdown({
     if (ref) useBrowser.getState().openFile(targetFor(ref.path), ref.line)
   }
 
-  return <div className={`md ${className}`} onClick={onClick} dangerouslySetInnerHTML={{ __html: html }} />
+  return <div ref={host} className={`md ${className}`} onClick={onClick} />
 }
