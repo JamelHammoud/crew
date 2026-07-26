@@ -151,13 +151,64 @@ describe('the ask bar', () => {
   })
 
   it('wears the agent as its orb and remembers the one you pick', () => {
-    boot()
+    const { sent } = boot()
     fireEvent.click(screen.getByLabelText('Pick an agent'))
     fireEvent.click(screen.getByText('Fable'))
     expect(lastAskAgent()).toBe('agent:fable')
-    const input = screen.getByPlaceholderText('Ask for a change')
-    fireEvent.change(input, { target: { value: 'try again' } })
-    fireEvent.keyDown(input, { key: 'Enter' })
+    ask('try again')
+    expect(sent[0].aimedAt).toEqual(['agent:fable'])
+  })
+
+  it('aims the ask at the agent itself, not at the name written in it', () => {
+    const { sent } = boot()
+    ask('make it round')
+    expect(sent[0].aimedAt).toEqual(['agent:bubbles'])
+  })
+
+  it('says the ask went out so the board chat can come up on it', () => {
+    const { asked } = boot()
+    ask('make it round')
+    expect(asked()).toBe(1)
+  })
+
+  it('only ever asks an agent that is here', () => {
+    rememberAskAgent('agent:gone')
+    const { sent } = boot(['shape:a'], {
+      agents: [agent('agent:gone', 'Gone', 'offline'), agent('agent:fable', 'Fable')]
+    })
+    fireEvent.click(screen.getByLabelText('Pick an agent'))
+    expect(screen.queryByText('Gone')).toBe(null)
+    ask('make it round')
+    expect(sent[0].aimedAt).toEqual(['agent:fable'])
+    expect(sent[0].text).toContain('@Fable')
+  })
+
+  it('says so plainly when there is nobody to ask', () => {
+    boot(['shape:a'], { agents: [agent('agent:gone', 'Gone', 'offline')] })
+    expect(screen.queryByPlaceholderText('Ask for a change')).toBe(null)
+    expect(document.body.textContent).toContain('No agents are here')
+  })
+
+  it('carries on in the agent’s own thread rather than taking over another', () => {
+    const { sent } = boot(['shape:a'], {
+      threads: {
+        't1': thread('t1', 'agent:fable'),
+        't2': thread('t2', 'agent:bubbles'),
+        't3': thread('t3', 'agent:bubbles', 'archived')
+      }
+    })
+    ask('make it round')
+    expect(sent[0].threadId).toBe('t2')
+    expect(sent[0].boardId).toBe(undefined)
+  })
+})
+
+describe('who the ask bar can reach', () => {
+  it('passes over an agent that has gone offline', () => {
+    const agents = [agent('a', 'Away', 'offline'), agent('b', 'Here')] as Array<{ id: string; status: string }>
+    expect(agentToAsk(agents, 'a')?.id).toBe('b')
+    expect(agentToAsk(agents, null)?.id).toBe('b')
+    expect(agentToAsk([agents[0]], null)).toBe(null)
   })
 })
 
