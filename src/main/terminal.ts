@@ -169,4 +169,8 @@ export class Terminals {
   count(): number {
     return this.sessions.size
   }
+
+  ready(): boolean {
+    return !!this.spare && !this.spare.ended && this.spare.held.length > 0
+  }
 }
