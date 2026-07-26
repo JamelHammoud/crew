@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
 import type { SessionEvent } from '../src/shared/events'
 import { emptyRoom, MAX_SIGNAL_CHARS } from '../src/shared/huddle'
@@ -294,6 +295,51 @@ describe('huddles', () => {
     expect(starts).toHaveLength(2)
     expect(starts[0].huddleId).not.toBe(starts[1].huddleId)
     expect(latest(jamel).id).toBe(starts[1].huddleId)
+  })
+
+  async function callAndLeave(ui: TestUi, peerId: string): Promise<string> {
+    ui.send({ type: 'huddle.join', peerId, muted: false, camera: false })
+    await waitUntil(() => names(ui).length === 1)
+    ui.send({ type: 'huddle.leave' })
+    await waitUntil(() => logged(host).some(event => event.kind === 'huddle.ended'))
+    return logged(host)[0].huddleId
+  }
+
+  it('lets whoever started a call take its block out, and it stays out after a restart', async () => {
+    const jamel = await open('jamel')
+    const sam = await open('sam')
+    const huddleId = await callAndLeave(jamel, 'peer-jamel')
+
+    jamel.send({ type: 'huddle.delete', huddleId })
+    await sam.waitForEvent(event => event.kind === 'huddle.deleted')
+
+    expect(host.session.snapshot().events.some(event => event.kind.startsWith('huddle'))).toBe(false)
+    const revived = new CrewSession(host.store)
+    expect(revived.snapshot().events.some(event => event.kind.startsWith('huddle'))).toBe(false)
+  })
+
+  it('ignores a delete from anyone but the person who started the call', async () => {
+    const jamel = await open('jamel')
+    const sam = await open('sam')
+    const huddleId = await callAndLeave(jamel, 'peer-jamel')
+
+    sam.send({ type: 'huddle.delete', huddleId })
+    await new Promise(r => setTimeout(r, 200))
+    expect(host.session.snapshot().events.some(event => event.kind === 'huddle.started')).toBe(true)
+  })
+
+  // The block is the way into a call that is going, so taking it out would take
+  // the way in off everyone else's screen.
+  it('keeps the block while the call is still going', async () => {
+    const jamel = await open('jamel')
+
+    jamel.send({ type: 'huddle.join', peerId: 'peer-jamel', muted: false, camera: false })
+    await waitUntil(() => names(jamel).length === 1)
+    const huddleId = logged(host)[0].huddleId
+
+    jamel.send({ type: 'huddle.delete', huddleId })
+    await new Promise(r => setTimeout(r, 200))
+    expect(host.session.snapshot().events.some(event => event.kind === 'huddle.started')).toBe(true)
   })
 
   // A crash leaves a start in the log with no end, and a block with no end
