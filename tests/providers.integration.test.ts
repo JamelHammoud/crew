@@ -269,8 +269,9 @@ describe('grok parser matches the documented streaming-json format', () => {
     expect(sub[0].activity?.detail).toBe('explore')
 
     expect(parse({ type: 'tool.result', id: 'c1', output: 'done' })).toEqual([
-      { activity: { id: 'c1', kind: 'tool', name: '', status: 'finished' } }
+      { activity: { id: 'c1', kind: 'tool', name: '', status: 'finished', output: 'done' } }
     ])
+    expect(parse({ type: 'tool.result', id: 'c1', content: 'done' })[0].activity?.output).toBe('done')
   })
 
   it('reports tokens and errors', () => {
