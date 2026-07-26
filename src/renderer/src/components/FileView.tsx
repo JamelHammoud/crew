@@ -232,7 +232,9 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const [loadKey, setLoadKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
+  const [caret, setCaret] = useState<number | null>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
+  const areaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     let alive = true
