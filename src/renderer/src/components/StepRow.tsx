@@ -74,7 +74,7 @@ function FileRows({ files, done }: { files: FileChange[]; done: boolean }) {
       {files.map(file => (
         <div key={file.path}>
           <span className="flex items-center gap-2 text-xs font-mono">
-            <FilePathLink path={file.path} className="text-fg-secondary truncate" again={done} />
+            <FilePathLink path={file.path} diff={file.diff} className="text-fg-secondary truncate" again={done} />
             <Counts added={file.added} removed={file.removed} />
           </span>
           {file.diff && (
@@ -116,6 +116,7 @@ export default function StepRow({ item }: { item: ThreadItem }) {
               {files.length === 1 ? (
                 <FilePathLink
                   path={files[0].path}
+                  diff={files[0].diff}
                   className="text-fg-faint truncate font-mono text-xs"
                   again={!item.streaming}
                 />
