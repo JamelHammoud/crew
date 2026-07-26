@@ -142,17 +142,25 @@ export default function TopBar({
           >
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
-          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-44">
-            <div className="px-3 pt-2 pb-1.5">
-              <p className="text-sm font-semibold text-fg">{selfName}</p>
-              <p className="text-xs text-fg-muted">{joinLink ? 'Hosting' : 'Joined'}</p>
-              {import.meta.env.DEV && (
-                <div className="mt-1.5">
-                  <Pill>DEV mode</Pill>
-                </div>
-              )}
+          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-60">
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-fg truncate">{selfName}</p>
+                <p className="text-xs text-fg/45">{standing}</p>
+              </div>
+              {import.meta.env.DEV && <Pill glass>DEV</Pill>}
             </div>
             <MenuDivider />
+            <MenuItem
+              icon={<UserGroupIcon />}
+              label="Crew"
+              active={tab === 'agents'}
+              onClick={() => {
+                setMenuOpen(false)
+                onTab('agents')
+              }}
+            />
             <MenuItem
               icon={<SignalIcon />}
               label={huddleJoined ? 'Leave huddle' : huddleSize > 0 ? 'Join huddle' : 'Huddle'}
@@ -171,6 +179,7 @@ export default function TopBar({
                 onClick={() => void copyLink()}
               />
             )}
+            <MenuDivider />
             <MenuItem
               icon={theme === 'dark' ? <SunIcon /> : <MoonIcon />}
               label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
@@ -181,6 +190,7 @@ export default function TopBar({
               label={sounds ? 'Mute sounds' : 'Unmute sounds'}
               onClick={() => setSounds(!sounds)}
             />
+            <MenuDivider />
             <MenuItem
               icon={<ArrowRightStartOnRectangleIcon />}
               label="Leave"
