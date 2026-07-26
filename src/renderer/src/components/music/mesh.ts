@@ -145,13 +145,6 @@ const bloom = (parts: Parts, roll: () => number): Layer[] => {
       blend: 'normal'
     }
   })
-  // The one specular, and it rides on the light's own lobe rather than being a
-  // layer of its own, so it lands somewhere different on every cover.
-  const spark = (turn + 0.5) * Math.PI * 2
-  layers.unshift({
-    image: field(lift(parts.light, 0.24), 0.5 + Math.cos(spark) * 0.22, 0.5 + Math.sin(spark) * 0.22, 0.34, 0.3, 4, 0.7),
-    blend: 'normal'
-  })
   layers.push({ image: field(parts.fields[0], 0.5, 0.5, 2.4, 2.4, 62, 1), blend: 'normal' })
   return layers
 }
