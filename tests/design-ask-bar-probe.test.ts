@@ -78,12 +78,14 @@ function boot(selected: string[] = ['shape:a'], options: BootOptions = {}) {
   made.select(...selected)
   const bounds = options.bounds === undefined ? SHAPE : options.bounds
   const stage = options.stage ?? { w: 1200, h: 800 }
-  const editor = {
-    ...made.editor,
-    getSelectionPageBounds: () => bounds,
-    getViewportScreenBounds: () => ({ x: 0, y: 0, ...stage }),
-    pageToViewport: ({ x, y }: { x: number; y: number }) => ({ x: x - 460, y: y - 380 })
-  } as unknown as Editor
+  const editorWith = (holds: boolean) =>
+    ({
+      ...made.editor,
+      getSelectedShapes: holds ? made.editor.getSelectedShapes : () => [],
+      getSelectionPageBounds: () => (holds ? bounds : null),
+      getViewportScreenBounds: () => ({ x: 0, y: 0, ...stage }),
+      pageToViewport: ({ x, y }: { x: number; y: number }) => ({ x: x - 460, y: y - 380 })
+    }) as unknown as Editor
   useCrew.setState({
     agents: options.agents ?? [agent('agent:bubbles', 'Bubbles'), agent('agent:fable', 'Fable')],
     threads: options.threads ?? {},
