@@ -14,16 +14,29 @@ describe('claude thinking stream', () => {
       parseClaudeLine(streamEvent({ type: 'content_block_delta', index: 0, delta: { type: 'thinking_delta', thinking: 'step one' } }))
     ).toEqual([{ thinkingDelta: { index: 0, text: 'step one' } }])
     expect(parseClaudeLine(streamEvent({ type: 'content_block_stop', index: 0 }))).toEqual([
-      { thinkingStop: { index: 0 } }
+      { blockStop: { index: 0 } }
     ])
   })
 
-  it('ignores text deltas and non-thinking block starts', () => {
+  it('parses the reply as it is written, so a run is not silent until the block closes', () => {
     expect(
       parseClaudeLine(streamEvent({ type: 'content_block_start', index: 1, content_block: { type: 'text', text: '' } }))
-    ).toEqual([])
+    ).toEqual([{ textStart: { index: 1 } }])
     expect(
       parseClaudeLine(streamEvent({ type: 'content_block_delta', index: 1, delta: { type: 'text_delta', text: 'hi' } }))
+    ).toEqual([{ textDelta: { index: 1, text: 'hi' } }])
+  })
+
+  it('ignores block kinds it has nothing to show for', () => {
+    expect(
+      parseClaudeLine(
+        streamEvent({ type: 'content_block_start', index: 2, content_block: { type: 'tool_use', id: 't1' } })
+      )
+    ).toEqual([])
+    expect(
+      parseClaudeLine(
+        streamEvent({ type: 'content_block_delta', index: 2, delta: { type: 'input_json_delta', partial_json: '{' } })
+      )
     ).toEqual([])
   })
 
