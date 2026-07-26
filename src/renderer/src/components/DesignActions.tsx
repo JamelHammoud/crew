@@ -33,19 +33,16 @@ export default function DesignActions({
 
   return (
     <span className="relative flex items-center">
-      <Tooltip label="Actions  ⌘K" disabled={open}>
-        <button
-          onClick={() => setOpen(value => !value)}
-          aria-label="Actions"
-          aria-expanded={open}
-          className={`h-9 pl-2 pr-3.5 rounded-full flex items-center gap-1.5 text-sm font-semibold transition-all active:scale-95 ${
-            open ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
-          }`}
-        >
-          <BoltGlyph className="w-6 h-6" />
-          Actions
-        </button>
-      </Tooltip>
+      <button
+        onClick={() => setOpen(value => !value)}
+        aria-label="Actions"
+        aria-expanded={open}
+        className={`h-9 px-3.5 rounded-full flex items-center text-sm font-semibold transition-all active:scale-95 ${
+          open ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
+        }`}
+      >
+        Actions
+      </button>
       {open && <ActionsPalette ctx={ctx} onClose={() => setOpen(false)} />}
     </span>
   )
