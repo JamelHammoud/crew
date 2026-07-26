@@ -128,6 +128,33 @@ describe('finished alerts', () => {
   })
 })
 
+describe('member mention alerts', () => {
+  const message = (authorId = 'jamel'): SessionEvent => ({
+    id: 'm1',
+    ts: 1,
+    kind: 'message',
+    authorId,
+    authorName: 'Jamel',
+    text: 'Can you look at this @ALI?',
+    mentions: [],
+    memberMentionRefs: [{ id: 'ali', name: 'ALI' }],
+    threadId: 't1'
+  })
+
+  it('alerts the named member while the app is in the background', () => {
+    expect(memberMentionAlert(message(), 'ali', false)).toEqual({
+      title: 'Jamel mentioned you',
+      body: 'Can you look at this @ALI?',
+      threadId: 't1'
+    })
+  })
+
+  it('stays quiet when the app is focused or the author tags themself', () => {
+    expect(memberMentionAlert(message(), 'ali', true)).toBeNull()
+    expect(memberMentionAlert(message('ali'), 'ali', false)).toBeNull()
+  })
+})
+
 describe('the tasks button', () => {
   beforeEach(() => {
     vi.stubGlobal(
