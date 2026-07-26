@@ -19,18 +19,38 @@ export type Strike = {
 
 const GAIN = 0.07
 const ATTACK = 0.004
+const HUSH = 0.06
 
-export function playStrikes(strikes: Strike[]): void {
+type Sounding = { bus: GainNode; sources: AudioScheduledSourceNode[] }
+
+export function playStrikes(strikes: Strike[]): () => void {
   try {
     const ctx = context()
-    if (!ctx) return
-    for (const strike of strikes) hit(ctx, strike)
+    if (!ctx) return () => {}
+    const sounding = strikes.map(strike => hit(ctx, strike))
+    return () => hush(ctx, sounding)
   } catch {
-    return
+    return () => {}
   }
 }
 
-function hit(ctx: AudioContext, s: Strike): void {
+// Everything a strike makes hangs off its own bus, the reverb send included, so
+// taking that one gain down to nothing is the whole phrase gone.
+function hush(ctx: AudioContext, sounding: Sounding[]): void {
+  const now = ctx.currentTime
+  const end = now + HUSH
+  for (const { bus, sources } of sounding) {
+    try {
+      bus.gain.setValueAtTime(bus.gain.value, now)
+      bus.gain.linearRampToValueAtTime(0, end)
+      for (const source of sources) source.stop(end)
+    } catch {
+      continue
+    }
+  }
+}
+
+function hit(ctx: AudioContext, s: Strike): Sounding {
   const start = ctx.currentTime + s.at
   const bus = ctx.createGain()
   bus.gain.value = (s.gain ?? 1) * GAIN
