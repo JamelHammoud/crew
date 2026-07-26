@@ -61,7 +61,7 @@ export default function FontPicker({ value, onChange }: { value: string; onChang
               className="w-full min-w-0 bg-transparent text-xs text-fg placeholder:text-fg-muted outline-none"
             />
           </label>
-          <div className="flex gap-1 overflow-x-auto pb-0.5">
+          <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
             {GROUPS.map(item => (
               <button
                 key={item.id}
