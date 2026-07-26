@@ -48,20 +48,6 @@ export default function FontPicker({ value, onChange }: { value: string; onChang
               className="w-full min-w-0 bg-transparent text-xs text-fg placeholder:text-fg-muted outline-none"
             />
           </label>
-          <div className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
-            {GROUPS.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setGroup(item.id)}
-                aria-pressed={group === item.id}
-                className={`shrink-0 h-6 px-2.5 rounded-full text-xs font-medium transition-colors ${
-                  group === item.id ? 'bg-fg text-ink-900' : 'text-fg-muted hover:text-fg hover:bg-fg/[0.06]'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
           <div className="max-h-72 overflow-y-auto">
             {shown.length === 0 && <p className="px-3 py-6 text-xs text-fg-muted text-center">Nothing matches that.</p>}
             {shown.map(font => (
