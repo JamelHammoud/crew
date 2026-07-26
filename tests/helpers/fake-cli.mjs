@@ -3,6 +3,7 @@ const delay = Number(process.env.FAKE_CLI_DELAY_MS ?? 20)
 const fail = process.env.FAKE_CLI_FAIL === '1'
 const withActivity = process.env.FAKE_CLI_ACTIVITY === '1'
 const withThinking = process.env.FAKE_CLI_THINK === '1'
+const withStreamedThinking = process.env.FAKE_CLI_THINK_STREAM === '1'
 const withOutput = process.env.FAKE_CLI_OUTPUT === '1'
 
 const rest = process.argv.slice(3).join(' ')
