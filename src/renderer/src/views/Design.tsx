@@ -21,9 +21,16 @@ export default function Design() {
   const [selected, setSelected] = useState<string | null>(designTarget ?? lastBoard)
   const [editor, setEditor] = useState<Editor | null>(null)
   const [panels, setPanels] = useState(lastPanels)
+  const [renaming, setRenaming] = useState<string | null>(null)
 
   const current = selected && boards.some(b => b.id === selected) ? selected : (boards[0]?.id ?? null)
   const boardContext = useMemo(() => ({ current: current ?? '', select: setSelected }), [current])
+  const renameContext = useMemo(() => ({ requested: renaming, request: setRenaming }), [renaming])
+
+  const askRename = useCallback((shape: TLShape) => {
+    setPanels(value => (value.left ? value : { ...value, left: true }))
+    setRenaming(shape.id)
+  }, [])
 
   useEffect(() => {
     if (current) rememberBoard(current)
