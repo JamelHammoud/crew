@@ -1,15 +1,40 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import StepGroup from '../src/renderer/src/components/StepGroup'
 import StepRow from '../src/renderer/src/components/StepRow'
-import { describeStep, type ThreadItem } from '../src/renderer/src/components/thread'
+import { describeStep, stepBlocks, type ThreadItem } from '../src/renderer/src/components/thread'
 import { toolAction } from '../src/renderer/src/components/toolActions'
+import { useBrowser } from '../src/renderer/src/state/browser'
+import type { PathLocation } from '../src/shared/files'
 import type { AgentStep } from '../src/shared/llm'
 
 if (!Element.prototype.getAnimations) {
   Element.prototype.getAnimations = () => []
 }
+
+const REPO = new Set(['src/app.ts', 'src/panel.ts'])
+let copied = ''
+
+beforeEach(() => {
+  copied = ''
+  useBrowser.setState({ tabs: [], activeTabId: null })
+  window.crew = {
+    readFile: async (path: string) => ({ kind: 'missing', path }),
+    locatePath: async (path: string): Promise<PathLocation> => ({ kind: 'repo', path, exists: REPO.has(path) }),
+    revealFile: async () => undefined,
+    openExternal: async () => undefined
+  } as unknown as CrewBridge
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: {
+      writeText: async (text: string) => {
+        copied = text
+      }
+    }
+  })
+})
 
 afterEach(() => cleanup())
 
