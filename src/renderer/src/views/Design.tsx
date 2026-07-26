@@ -73,7 +73,7 @@ export default function Design() {
               <DesignCanvas key={current} boardId={current} onEditor={setEditor} />
               {editor && <DesignToolbar />}
             </div>
-            {rightOpen && editor && <DesignRightPanel boardId={current} onClose={() => setRightOpen(false)} />}
+            {rightOpen && editor && <DesignRightPanel boardId={current} />}
           </div>
         </div>
       </EditorContext.Provider>
