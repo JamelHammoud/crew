@@ -15,13 +15,16 @@ const started: number[] = []
 const pitched: number[] = []
 const landed: number[] = []
 const gains: number[] = []
+const faded: number[] = []
+const ends: number[] = []
 let filters: { type: string; hz: number[] }[] = []
 
 class FakeParam {
   #held = 0
   constructor(
     private readonly set?: number[],
-    private readonly ramp?: number[]
+    private readonly ramp?: number[],
+    private readonly straight?: number[]
   ) {}
   get value(): number {
     return this.#held
@@ -33,7 +36,9 @@ class FakeParam {
   setValueAtTime(value: number): void {
     this.set?.push(value)
   }
-  linearRampToValueAtTime(): void {}
+  linearRampToValueAtTime(value: number): void {
+    this.straight?.push(value)
+  }
   exponentialRampToValueAtTime(value: number): void {
     this.ramp?.push(value)
   }
