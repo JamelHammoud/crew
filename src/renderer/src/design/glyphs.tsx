@@ -293,8 +293,19 @@ const TYPE_GLYPHS: Record<string, Glyph> = {
   bookmark: LinkIcon
 }
 
+const NODE_GLYPHS: Record<NodeShape, Glyph> = {
+  rect: RectangleGlyph,
+  ellipse: EllipseGlyph,
+  triangle: TriangleGlyph,
+  diamond: DiamondGlyph,
+  pentagon: PentagonGlyph,
+  hexagon: HexagonGlyph,
+  star: StarGlyph
+}
+
 export function glyphForShape(shape: TLShape): Glyph {
-  const geo = (shape.props as { geo?: string }).geo
-  if (shape.type === 'geo' && geo) return GEO_GLYPHS[geo] ?? RectangleGlyph
+  const props = shape.props as { geo?: string; shape?: unknown }
+  if (shape.type === 'geo' && props.geo) return GEO_GLYPHS[props.geo] ?? RectangleGlyph
+  if (shape.type === 'design-node') return NODE_GLYPHS[nodeShapeOf(props.shape)]
   return TYPE_GLYPHS[shape.type] ?? RectangleGlyph
 }
