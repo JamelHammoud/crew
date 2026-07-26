@@ -143,7 +143,7 @@ export default function Composer({
               <button
                 onClick={onStop}
                 aria-label="Stop"
-                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 cursor-pointer hover:scale-105 active:scale-95"
+                className="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-transform duration-150 cursor-pointer hover:scale-105 active:scale-95"
               >
                 <StopGlyph className="w-5 h-5" />
               </button>
