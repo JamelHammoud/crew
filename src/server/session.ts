@@ -589,6 +589,9 @@ export class CrewSession {
       case 'huddle.signal':
         if (meta.role === 'ui') this.handleHuddleSignal(ws, msg.to, msg.signal)
         break
+      case 'huddle.delete':
+        if (meta.role === 'ui') this.handleDeleteHuddle(member, msg.huddleId)
+        break
       case 'queue.edit':
         if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
         break
