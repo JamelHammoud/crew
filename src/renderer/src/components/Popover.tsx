@@ -128,7 +128,7 @@ export function Popover({
           <div
             ref={popRef}
             style={style}
-            className={`glass fixed z-50 rounded-2xl animate-pop ${flush ? '' : 'p-1.5'} ${className}`}
+            className={`glass fixed z-50 rounded-2xl animate-pop overscroll-contain ${flush ? '' : 'p-1.5'} ${className}`}
           >
             {children}
           </div>,
