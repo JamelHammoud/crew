@@ -5,7 +5,7 @@ import { PanelButton } from '../components/DesignControls'
 import type { DesignNodeShape } from './DesignNodeUtil'
 import Select from '../components/Select'
 import { ClipGlyph, CornerGlyph, CornersGlyph, OpacityGlyph } from './glyphs'
-import { MixedInput, NumberInput, Section, SubLabel } from './InspectorFields'
+import { MixedInput, NumberInput, Section, SubLabel, Trailing } from './InspectorFields'
 
 const BLENDS = [
   { value: 'normal', label: 'Normal' },
