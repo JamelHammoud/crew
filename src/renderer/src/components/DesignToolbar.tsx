@@ -1,7 +1,8 @@
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useCallback, useEffect, useState } from 'react'
-import { useEditor, useValue, type Editor } from 'tldraw'
+import { useEditor, useValue, type Editor, type TLShape } from 'tldraw'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
+import DesignActions from './DesignActions'
 import DesignToolMenu from './DesignToolMenus'
 import Tooltip from './Tooltip'
 
