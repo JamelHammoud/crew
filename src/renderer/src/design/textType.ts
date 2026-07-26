@@ -1,5 +1,7 @@
 import type { Editor, TLTextShape } from 'tldraw'
 import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../shared/designNode'
+import { fontStack } from './fonts'
+import { textInkStyle } from './nodeCss'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 
 <<<<<<< HEAD
@@ -37,6 +39,20 @@ export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Part
     props: { textAlign: labelAlign(align) as TLTextShape['props']['textAlign'] },
     meta: { ...shape.meta, type }
   })
+}
+
+export function typeMeasure(type: TypeStyle, maxWidth: number | null) {
+  const ink = textInkStyle(type)
+  return {
+    fontFamily: fontStack(type.family),
+    fontSize: type.size,
+    fontStyle: type.italic ? 'italic' : 'normal',
+    fontWeight: String(type.weight),
+    lineHeight: type.lineHeight,
+    maxWidth,
+    padding: '0px',
+    otherStyles: { 'letter-spacing': `${ink.letterSpacing}`, 'text-transform': `${ink.textTransform}` }
+  }
 }
 
 export function typePaint(type: TypeStyle): Paint {

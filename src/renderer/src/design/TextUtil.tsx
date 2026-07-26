@@ -8,26 +8,17 @@ import {
 } from 'tldraw'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
-import { textShapeType } from './textType'
+import { textShapeType, typeMeasure } from './textType'
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
-  const ink = textInkStyle(type)
   editor.fonts.trackFontsForShape(shape)
   const fixed = shape.props.autoSize ? null : Math.max(16, Math.floor(shape.props.w))
-  const size = editor.textMeasure.measureHtml(renderHtmlFromRichTextForMeasurement(editor, shape.props.richText), {
-    fontFamily: fontStack(type.family),
-    fontSize: type.size,
-    fontStyle: type.italic ? 'italic' : 'normal',
-    fontWeight: String(type.weight),
-    lineHeight: type.lineHeight,
-    maxWidth: fixed,
-    padding: '0px',
-    otherStyles: { 'letter-spacing': `${ink.letterSpacing}`, 'text-transform': `${ink.textTransform}` }
-  })
+  const html = renderHtmlFromRichTextForMeasurement(editor, shape.props.richText)
+  const size = editor.textMeasure.measureHtml(html, typeMeasure(type, fixed))
   return { width: fixed ?? Math.max(16, size.w + 1), height: Math.max(type.size, size.h) }
 }
 

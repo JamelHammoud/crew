@@ -4,9 +4,10 @@ import { createElement } from 'react'
 import { DefaultColorStyle, type Editor, type TLShape, type TLTextShape } from 'tldraw'
 import { describe, expect, it } from 'vitest'
 
-const { paintColor, setTextShapeType, textShapeType, typePaint } = await import(
+const { paintColor, setTextShapeType, textShapeType, typeMeasure, typePaint } = await import(
   '../src/renderer/src/design/textType'
 )
+const { DesignTextUtil } = await import('../src/renderer/src/design/TextUtil')
 const { viewOf } = await import('../src/renderer/src/design/useNodeView')
 const { default: Inspector } = await import('../src/renderer/src/design/Inspector')
 
@@ -100,6 +101,38 @@ describe('type on a text shape', () => {
     const paint = typePaint({ ...textShapeType(fakeEditor([]), text()), color: '#ff005580' })
     expect(paint).toMatchObject({ type: 'solid', color: '#ff0055' })
     expect(Math.round(paint.opacity * 100)).toBe(50)
+  })
+})
+
+describe('what the canvas draws and measures text with', () => {
+  const styled = { family: 'Inter', size: 48, weight: 700, spacing: 2, transform: 'upper', italic: true }
+
+  it('measures with the style, not with the four sizes tldraw ships', () => {
+    const type = textShapeType(fakeEditor([]), text({}, { type: styled }))
+    const opts = typeMeasure(type, null)
+    expect(opts.fontFamily).toContain('"Inter"')
+    expect(opts.fontSize).toBe(48)
+    expect(opts.fontWeight).toBe('700')
+    expect(opts.fontStyle).toBe('italic')
+    expect(opts.otherStyles['letter-spacing']).toBe('2px')
+    expect(opts.otherStyles['text-transform']).toBe('uppercase')
+    expect(opts.maxWidth).toBeNull()
+  })
+
+  it('hands the same style to what gets painted', () => {
+    const editor = fakeEditor([])
+    const util = new DesignTextUtil(editor)
+    const values = util.options.getCustomDisplayValues(editor, text({}, { type: styled }), {} as never, 'light')
+    expect(values.fontFamily).toContain('"Inter"')
+    expect(values.fontSize).toBe(48)
+    expect(values.fontWeight).toBe('700')
+    expect(values.fontStyle).toBe('italic')
+    expect(values.lineHeight).toBe(1.35)
+  })
+
+  it('stands in for the text shape tldraw ships, outline off', () => {
+    expect(DesignTextUtil.type).toBe('text')
+    expect(new DesignTextUtil(fakeEditor([])).options.showTextOutline).toBe(false)
   })
 })
 
