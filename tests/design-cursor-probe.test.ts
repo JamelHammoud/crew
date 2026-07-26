@@ -65,6 +65,7 @@ describe('design cursors', () => {
     expect(paths).toHaveLength(2)
     expect(paths[0].getAttribute('fill')).toBe('oklch(0.76 0.15 120)')
     expect(paths[1].getAttribute('stroke')).toBe('white')
-    expect(paths[0].getAttribute('d')).toBe(parse(vars['--tl-cursor-default']).svg.match(/d='([^']+)'/)![1])
+    const drawn = parse(vars['--tl-cursor-default']).svg.match(/<path d='([^']+)'/)![1]
+    expect(paths[0].getAttribute('d')).toBe(drawn)
   })
 })
