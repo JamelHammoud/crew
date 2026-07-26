@@ -1,4 +1,4 @@
-const FLASH = 'animate-flash'
+const FLASH = 'message-flash'
 
 export function replyTargetLabel(authorName: string, toSelf: boolean, byMe: boolean): string {
   if (!toSelf) return `Replying to ${authorName}`
