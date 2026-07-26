@@ -12,6 +12,11 @@ export function setSounds(on: boolean): void {
   for (const listener of listeners) listener()
 }
 
+export function onSounds(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
 export function useSounds(): boolean {
   return useSyncExternalStore(listener => {
     listeners.add(listener)
