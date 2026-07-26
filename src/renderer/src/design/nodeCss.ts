@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
-import type { DesignNodeProps, Effect, Layout, Paint, Stroke, TypeStyle } from '../../../shared/designNode'
+import { nodeShapeOf, type DesignNodeProps, type Effect, type Layout, type Paint, type Stroke, type TypeStyle } from '../../../shared/designNode'
+import { polygonClip, type UnitPoint } from './nodeShape'
 
 const FAMILIES: Record<string, string> = {
   sans: 'ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif',
