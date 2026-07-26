@@ -91,9 +91,11 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
           <span />
         )}
         {props ? (
-          <PanelButton label="Each corner" active={perCorner} onClick={() => setPerCorner(open => !open)}>
-            <CornerGlyph className="w-4 h-4" />
-          </PanelButton>
+          <Trailing>
+            <PanelButton label="Each corner" active={perCorner} onClick={() => setPerCorner(open => !open)}>
+              <CornerGlyph className="w-4 h-4" />
+            </PanelButton>
+          </Trailing>
         ) : (
           <span />
         )}
