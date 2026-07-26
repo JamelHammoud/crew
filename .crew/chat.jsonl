@@ -25029,3 +25029,13 @@
 {"id":"6375cae8-337b-4438-833c-3fef753f3971","ts":1785100885491,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"Everything works now!!","mentions":[],"mentionRefs":[],"memberMentionRefs":[],"docMentions":[],"boardMentions":[],"attachments":[]}
 {"id":"aeba2564-6db7-483e-8a66-ff190baf07e3","ts":1785100888146,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"for me","mentions":[],"mentionRefs":[],"memberMentionRefs":[],"docMentions":[],"boardMentions":[],"attachments":[]}
 {"id":"5d817ff7-f835-4e6a-88a0-15382cfc737a","ts":1785100898214,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"thats cool","mentions":[],"mentionRefs":[],"memberMentionRefs":[],"docMentions":[],"boardMentions":[],"attachments":[],"replyTo":{"targetId":"message:d4b81dbf-96f2-4538-86e3-12befd2b26fe","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":""}}
+{"id":"a7df0ce2-d5fc-42dd-94dc-b89c7f303f6f","ts":1785101537335,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"65d41843-414c-45da-ad34-e56d3c5a4b5f","ts":1785101537336,"kind":"agent.offline","agentId":"ali/claude","label":"Fable"}
+{"id":"9ce8926f-07e8-41de-8142-ea3906bd2cab","ts":1785101537336,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"66dca0e9-6384-49c0-93f8-7f40bee7e23b","ts":1785101537336,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"d512683c-654c-4276-91e7-4cbbcf0b3808","ts":1785101537336,"kind":"agent.offline","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
+{"id":"a7a05d43-b44b-41d8-b321-1a9a70fdc947","ts":1785101537337,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"555fac09-bc1b-42d8-9ebe-71cd108e5a42","ts":1785101537337,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"53e24510-51de-4290-a473-b5d34380d549","ts":1785101537337,"kind":"agent.offline","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
+{"id":"c9aed572-1c03-4a2c-90aa-2b1ca990c931","ts":1785101537337,"kind":"agent.offline","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
+{"id":"2a88d7b6-17be-42f1-bc93-dc3d03420ec3","ts":1785101537337,"kind":"agent.offline","agentId":"jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130","label":"Thinker"}
