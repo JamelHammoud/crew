@@ -38,6 +38,24 @@ const bridge = {
   locatePath: (path: string): Promise<PathLocation> => ipcRenderer.invoke('file:locate', path),
   revealFile: (path: string): Promise<void> => ipcRenderer.invoke('file:reveal', path),
   setBadge: (count: number): Promise<void> => ipcRenderer.invoke('app:badge', count),
+  publishPresence: (here: Present[]): void => ipcRenderer.send('presence:publish', here),
+  onPresence: (listener: (snapshot: PresenceSnapshot) => void): (() => void) => {
+    const handler = (_event: unknown, snapshot: PresenceSnapshot) => listener(snapshot)
+    ipcRenderer.on('presence:update', handler)
+    return () => {
+      ipcRenderer.off('presence:update', handler)
+    }
+  },
+  onTrayTheme: (listener: (theme: 'dark' | 'light') => void): (() => void) => {
+    const handler = (_event: unknown, theme: 'dark' | 'light') => listener(theme)
+    ipcRenderer.on('tray:theme', handler)
+    return () => {
+      ipcRenderer.off('tray:theme', handler)
+    }
+  },
+  resizeTray: (height: number): void => ipcRenderer.send('tray:size', height),
+  openWindow: (): void => ipcRenderer.send('tray:open'),
+  closeTray: (): void => ipcRenderer.send('tray:hide'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
   onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
