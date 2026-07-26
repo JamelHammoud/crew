@@ -39,7 +39,7 @@ export interface RadiusControl {
 export interface TextFields {
   size: boolean
   weight: boolean
-  family: boolean
+  family: 'none' | 'system' | 'all'
   align: boolean
   vertical: boolean
   lineHeight: boolean
