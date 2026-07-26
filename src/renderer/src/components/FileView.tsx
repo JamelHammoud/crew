@@ -103,8 +103,6 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const caret = useRef<number | null>(null)
   const last = useRef(0)
   const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
-  const asked = useRef(tab.diff)
-  asked.current = tab.diff
 
   useEffect(() => {
     let alive = true
@@ -113,7 +111,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
       .then(result => {
         if (!alive) return
         const next = result ?? { kind: 'missing' as const, path: tab.path }
-        const start = next.kind === 'file' ? baselineOf(next.text, asked.current) : null
+        const start = next.kind === 'file' ? baselineOf(next.text, tab.diff) : null
         setData(next)
         setBase(start)
         setHidden(false)
@@ -164,14 +162,16 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   useLayoutEffect(() => {
     const area = areaRef.current
+    if (!area) return
+    if (area.value !== shown) area.value = shown
     const want = caret.current
-    if (!area || want === null) return
+    if (want === null) return
     caret.current = null
     const at = toShown(rows, want)
     last.current = at
     area.setSelectionRange(at, at)
     bodyRef.current?.querySelector(`[data-row="${rowAt(rows, at).index}"]`)?.scrollIntoView?.({ block: 'nearest' })
-  }, [shown, rows])
+  }, [tick, shown, rows])
 
   useEffect(() => {
     const onSelection = () => {
@@ -193,6 +193,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     caret.current = edit.at
     setSaveFailed(false)
     setDoc(edit.text)
+    setTick(count => count + 1)
   }
 
   const save = async () => {
