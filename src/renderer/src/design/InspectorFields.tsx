@@ -138,7 +138,7 @@ function useNumberField({
       if (draft.trim() === '' || !isFinite(next)) return setDraft(String(tidy(value)))
       onChange(clamp(next))
     },
-    onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
+    onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault()
         if (!event.repeat) gesture.onStart()
