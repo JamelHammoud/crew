@@ -5,6 +5,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { playSound } from '../src/renderer/src/media/sounds'
+import { setSounds } from '../src/renderer/src/state/sound'
 import { useCrew } from '../src/renderer/src/state/store'
 
 vi.mock('../src/renderer/src/media/sounds', async importOriginal => {
@@ -16,6 +17,7 @@ const heard = playSound as unknown as ReturnType<typeof vi.fn>
 
 beforeEach(() => {
   heard.mockClear()
+  setSounds(true)
   vi.stubGlobal(
     'ResizeObserver',
     class {
