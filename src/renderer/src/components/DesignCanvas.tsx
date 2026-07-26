@@ -138,18 +138,16 @@ export default function DesignCanvas({
 
     const applyPresence = (presence: DesignPresence) => {
       if (presence.userId === selfIdRef.current) return
-      if (presence.kind === 'agent') {
-        setAgentCursors(prev => {
-          if (presence.pageId === null || !presence.cursor) {
-            if (!(presence.userId in prev)) return prev
-            const next = { ...prev }
-            delete next[presence.userId]
-            return next
-          }
-          return { ...prev, [presence.userId]: presence }
-        })
-        return
-      }
+      setCursors(prev => {
+        if (presence.pageId === null || !presence.cursor) {
+          if (!(presence.userId in prev)) return prev
+          const next = { ...prev }
+          delete next[presence.userId]
+          return next
+        }
+        return { ...prev, [presence.userId]: presence }
+      })
+      if (presence.kind === 'agent') return
       const id = InstancePresenceRecordType.createId(presence.userId)
       store.mergeRemoteChanges(() => {
         if (presence.pageId === null || !presence.cursor) {
