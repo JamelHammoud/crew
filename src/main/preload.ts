@@ -6,6 +6,7 @@ import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { RecentJoin } from '../shared/recent'
 import type { CurrentSession } from './session'
+import type { TerminalSize } from './terminal'
 
 const bridge = {
   pickFolder: (): Promise<string | null> => ipcRenderer.invoke('folder:pick'),
