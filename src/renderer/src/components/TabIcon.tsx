@@ -7,7 +7,7 @@ const SVG = {
   viewBox: '0 0 20 20',
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 1.55,
+  strokeWidth: 1.67,
   strokeLinecap: 'round',
   strokeLinejoin: 'round'
 } as const
@@ -62,7 +62,7 @@ function DocsIcon() {
           key={line.y}
           className="tab-icon-draw"
           pathLength={1}
-          strokeWidth={1.45}
+          strokeWidth={1.56}
           d={`M7.2 ${line.y}H${line.x2}`}
           style={
             { '--draw-dur': '150ms', '--draw-delay': `${330 + i * 65}ms` } as React.CSSProperties

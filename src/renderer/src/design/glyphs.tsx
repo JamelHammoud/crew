@@ -19,7 +19,7 @@ export type { Glyph }
 // it is drawn with its thumb on the left already, the way the cursor is.
 export { CloudGlyph, HandGlyph, PencilGlyph, StarGlyph }
 
-export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} strokeWidth={1.6} />)
+export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />)
 
 export const FrameGlyph = glyph(
   <>
@@ -148,9 +148,9 @@ export const BlurGlyph = glyph(<rect x="4" y="4" width="16" height="16" rx="2.5"
 
 export const WeightGlyph = glyph(
   <>
-    <path d="M4 7h16" />
-    <path d="M4 12.25h16" strokeWidth={2} />
-    <path d="M4 18h16" strokeWidth={3} />
+    <path d="M4 7h16" strokeWidth={1.25} />
+    <path d="M4 12.25h16" strokeWidth={2.25} />
+    <path d="M4 18h16" strokeWidth={3.5} />
   </>
 )
 
