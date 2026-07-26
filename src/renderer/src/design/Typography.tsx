@@ -19,7 +19,7 @@ import {
 } from './glyphs'
 import { Choice, ColorInput, NumberInput, Row, Section, SubLabel, Trailing } from './InspectorFields'
 import type { TextControl } from './nodeView'
-import { FACES, SIZES, faceStyle, faceValue } from './typography'
+import { FACES, SIZES, faceStyle, faceValue } from './typeFaces'
 
 const FAMILIES = [
   { value: 'sans', label: 'Sans' },
