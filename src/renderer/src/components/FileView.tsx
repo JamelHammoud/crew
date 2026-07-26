@@ -297,6 +297,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
           <CodeBody
             tab={tab}
             text={editable ? draft : file.text}
+            marks={marks}
             editable={editable}
             truncated={file.truncated}
             dirty={dirty}
