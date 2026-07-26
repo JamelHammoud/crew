@@ -57,6 +57,7 @@ const openChat = (events: SessionEvent[], sendChat = vi.fn()): void => {
     pending: {},
     openThreadId: null,
     docsTarget: null,
+    httpBase: 'http://localhost:7788',
     sendChat
   })
   render(createElement(Chat))
