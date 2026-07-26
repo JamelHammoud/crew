@@ -154,8 +154,11 @@ export default function DesignAskBar({
         ) : (
           <>
             <AttachmentTray attachmentKey={key} />
-            <div className="flex items-center gap-1.5">
-              <span className="relative shrink-0">
+            <div className="flex items-end gap-1.5">
+              {/* Flex, not the inline box a tooltip hands back: an inline anchor
+                  keeps a line of its own under the button, and the row centers
+                  that line rather than the pet. */}
+              <span className="relative shrink-0 flex">
                 <Tooltip label={`Ask ${agent.label}`} disabled={switching}>
                   <button
                     onClick={event => {
@@ -164,11 +167,13 @@ export default function DesignAskBar({
                     }}
                     aria-label="Pick an agent"
                     aria-expanded={switching}
-                    className={`rounded-full grid place-items-center transition-all cursor-pointer active:scale-95 ring-fg/25 ${
+                    className={`h-8 w-8 rounded-full grid place-items-center transition-all cursor-pointer active:scale-95 ring-fg/25 ${
                       switching ? 'ring-2' : 'hover:ring-2'
                     }`}
                   >
-                    <AgentIcon seed={agent.id} size="sm" />
+                    <span className="block">
+                      <AgentIcon seed={agent.id} size="sm" />
+                    </span>
                   </button>
                 </Tooltip>
                 <Popover open={switching} onClose={() => setSwitching(false)} side="top" align="start">
