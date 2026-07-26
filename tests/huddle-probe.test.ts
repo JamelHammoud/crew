@@ -146,19 +146,14 @@ describe('starting a huddle', () => {
     cleanup()
   })
 
-  it('offers a huddle from the profile menu', () => {
+  it('offers a huddle from the toolbox and nowhere else', () => {
     render(createElement(App))
-    openMenu()
+    openToolbox()
 
     expect(screen.getByText('Huddle')).toBeTruthy()
-  })
 
-  it('names the huddle after who is already in it', () => {
-    useHuddle.setState({ room: { id: 'call-1', peers: [peer('a', 'Ali')], startedAt: 10 } })
-    render(createElement(App))
-    openMenu()
-
-    expect(screen.getByText('Join huddle')).toBeTruthy()
+    fireEvent.click(screen.getByLabelText('Profile menu'))
+    expect(screen.queryByText(/huddle/i)).toBeNull()
   })
 
   // Getting into the call never waits on a device, so a machine with no
