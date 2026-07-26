@@ -52,6 +52,7 @@ export interface TextControl {
   value: TypeStyle
   set: (patch: Partial<TypeStyle>) => void
   fields: TextFields
+  autoLine: number
 }
 
 export interface Toggle<T> {
