@@ -99,6 +99,7 @@ export type ClientMessage =
   | { type: 'huddle.leave' }
   | { type: 'huddle.update'; muted?: boolean; camera?: boolean; sharing?: boolean }
   | { type: 'huddle.signal'; to: string; signal: HuddleSignal }
+  | { type: 'huddle.delete'; huddleId: string }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }

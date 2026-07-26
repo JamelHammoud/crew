@@ -161,6 +161,16 @@ const EPHEMERAL_KINDS = new Set([
   'tool.removed'
 ])
 
+// The call one event belongs to, for the three that make up the record of a
+// call. Deleting a huddle block takes all three out, so every side of it asks
+// the same question rather than listing the kinds again.
+export function huddleRecordId(event: SessionEvent): string | undefined {
+  if (event.kind === 'huddle.started' || event.kind === 'huddle.joined' || event.kind === 'huddle.ended') {
+    return event.huddleId
+  }
+  return undefined
+}
+
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
   const lasting = events.filter(e => !EPHEMERAL_KINDS.has(e.kind))
   let count = 0
