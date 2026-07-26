@@ -50,17 +50,18 @@ class FakeAudioContext {
   state = 'running'
   destination = {}
   createOscillator(): unknown {
+    const slot = ends.push(Infinity) - 1
     return {
       type: 'sine',
       frequency: new FakeParam(pitched, landed),
       detune: new FakeParam(),
       connect: () => {},
       start: (at: number) => void started.push(at),
-      stop: () => {}
+      stop: (at: number) => void (ends[slot] = at)
     }
   }
   createGain(): unknown {
-    return { gain: new FakeParam(gains), connect: () => {} }
+    return { gain: new FakeParam(gains, undefined, faded), connect: () => {} }
   }
   createBiquadFilter(): unknown {
     const entry = { type: 'lowpass', hz: [] as number[] }
@@ -78,7 +79,8 @@ class FakeAudioContext {
     }
   }
   createBufferSource(): unknown {
-    return { buffer: null, connect: () => {}, start: () => {}, stop: () => {} }
+    const slot = ends.push(Infinity) - 1
+    return { buffer: null, connect: () => {}, start: () => {}, stop: (at: number) => void (ends[slot] = at) }
   }
   createBuffer(channels: number, frames: number): unknown {
     const data = Array.from({ length: channels }, () => new Float32Array(frames))
