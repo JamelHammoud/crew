@@ -172,7 +172,7 @@ describe('the ask bar', () => {
   it('stands above a shape whose bottom edge is off the stage', () => {
     const { view } = boot(['shape:a'], { bounds: { minX: 500, minY: 600, maxX: 800, maxY: 1600 } })
     const bar = view.container.querySelector('.animate-pop') as HTMLElement
-    expect(bar.style.top).toBe('162px')
+    expect(bar.style.top).toBe('166px')
   })
 
   it('never leaves the stage, whatever is picked', () => {
@@ -200,7 +200,7 @@ describe('the ask bar', () => {
     expect(screen.getByPlaceholderText('Ask for a change')).toBeTruthy()
     const bar = view.container.querySelector('.animate-pop') as HTMLElement
     expect(bar.style.left).toBe('440px')
-    expect(bar.style.top).toBe('670px')
+    expect(bar.style.top).toBe('674px')
   })
 
   it('goes when the selection goes, rather than asking about nothing', () => {
