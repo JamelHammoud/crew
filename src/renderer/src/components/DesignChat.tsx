@@ -6,7 +6,7 @@ import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import RunStatus from './RunStatus'
 import ScrollFade from './ScrollFade'
 import ThreadItems from './ThreadItems'
-import { buildThread } from './thread'
+import { buildThread, type ThreadItem } from './thread'
 import { useAutoResize } from './useAutoResize'
 import useScrollEdges from './useScrollEdges'
 import { useStickToBottom } from './useStickToBottom'
@@ -39,6 +39,7 @@ export default function DesignChat({
 
   const boardThreads = useBoardThreads(boardId)
   const [picked, setPicked] = useState<string | null>(null)
+  const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
   const known = useRef(new Set<string>())
 
   useEffect(() => {
@@ -62,6 +63,8 @@ export default function DesignChat({
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, value => setThreadDraft(key, value), inputRef)
 
+  useEffect(() => setReplyTo(null), [threadId])
+
   const threadEvents = useMemo(
     () => events.filter(e => 'threadId' in e && e.threadId === threadId),
     [events, threadId]
@@ -80,11 +83,17 @@ export default function DesignChat({
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
     if (!threadId && draftMentions.length === 0) return
-    sendChat(text, threadId ?? undefined, threadId ? undefined : boardId)
+    sendChat(text, threadId ?? undefined, threadId ? undefined : boardId, replyTo?.reactionTargetId)
+    setReplyTo(null)
     mention.close()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && replyTo) {
+      e.preventDefault()
+      setReplyTo(null)
+      return
+    }
     if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -118,7 +127,13 @@ export default function DesignChat({
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
           {threadId ? (
             <div className="space-y-4 py-4">
-              <ThreadItems items={items} />
+              <ThreadItems
+                items={items}
+                onReply={item => {
+                  setReplyTo(item)
+                  inputRef.current?.focus()
+                }}
+              />
               {activePromptId && runningStart && (
                 <RunStatus
                   startedAt={runningStart.ts}
@@ -147,6 +162,8 @@ export default function DesignChat({
           onKeyDown={onKeyDown}
           onSend={send}
           onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
+          replyTo={replyTo ?? undefined}
+          onCancelReply={() => setReplyTo(null)}
         >
           <MentionMenu
             matches={mention.matches}
