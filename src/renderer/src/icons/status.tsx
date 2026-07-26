@@ -1,5 +1,5 @@
 import { glyph } from '../components/glyph'
-import { SLASH } from './keylines'
+import { center, corner, SLASH, SOLID } from './keylines'
 
 // One ring, one radius. Every circular icon in the set is this circle, so a
 // check, a cross, a clock and a stop read as the same object holding different
