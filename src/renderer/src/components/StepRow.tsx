@@ -114,7 +114,6 @@ function useOpener(detail: string, files: FileChange[]): (() => void) | null {
 }
 
 // A blank line between thoughts is a paragraph, not an empty row of its own.
-const paragraphs = (text: string): string[] => text.trim().split(/\n{2,}/)
 
 export const stepFiles = (item: ThreadItem): FileChange[] => item.files ?? []
 
