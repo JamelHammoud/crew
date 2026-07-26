@@ -38,6 +38,8 @@ export function nodePropsFrom(input: DesignNodeInput, base: DesignNodeProps = no
   if (typeof input.blend === 'string') next.blend = input.blend
   if (typeof input.clip === 'boolean') next.clip = input.clip
   if (typeof input.mask === 'boolean') next.mask = input.mask
+  const shape = cleanNodeShape(input.shape)
+  if (shape) next.shape = shape
   const radius = cleanCorner(input.radius)
   if (radius) next.radius = radius
   const fills = list(input.fills, cleanPaint)
