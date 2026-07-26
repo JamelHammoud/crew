@@ -187,8 +187,8 @@ const rounded = (x, y, w, h, rx, ry) => {
   ].join('')
 }
 
-const num = (el, name, fallback = 0) => {
-  const found = el.match(new RegExp(`${name}="(-?[\\d.]+)"`))
+const num = (attrs, name, fallback = 0) => {
+  const found = attrs.match(new RegExp(`\\b${name}="(-?[\\d.]+)"`))
   return found ? Number(found[1]) : fallback
 }
 
@@ -196,23 +196,29 @@ const num = (el, name, fallback = 0) => {
 // the page. Measuring only wants points, so everything becomes a path first.
 export function shapesOf(markup) {
   const out = []
-  for (const [, tag, attrs] of markup.matchAll(/<(path|rect|circle|ellipse|line|polyline)\b([^>]*)>/g)) {
+  for (const [, tag, attrs] of markup.matchAll(/<(path|rect|circle|ellipse|line)\b([^>]*)>/g)) {
     const filled = /fill="(?!none)[^"]+"/.test(attrs)
-    const width = num({ match: (r) => attrs.match(r) }, 'stroke-width', null) ?? null
-    const weight = /stroke="none"/.test(attrs) ? 0 : width
-    const el = { match: (r) => attrs.match(r) }
+    const own = attrs.match(/\bstroke-width="(-?[\d.]+)"/)
+    const weight = /stroke="none"/.test(attrs) ? 0 : own ? Number(own[1]) : null
     let d = null
     if (tag === 'path') d = attrs.match(/\sd="([^"]+)"/)?.[1] ?? null
     else if (tag === 'rect')
-      d = rounded(num(el, 'x'), num(el, 'y'), num(el, 'width'), num(el, 'height'), num(el, 'rx'), num(el, 'ry'))
+      d = rounded(
+        num(attrs, 'x'),
+        num(attrs, 'y'),
+        num(attrs, 'width'),
+        num(attrs, 'height'),
+        num(attrs, 'rx'),
+        num(attrs, 'ry')
+      )
     else if (tag === 'circle' || tag === 'ellipse') {
-      const cx = num(el, 'cx')
-      const cy = num(el, 'cy')
-      const rx = tag === 'circle' ? num(el, 'r') : num(el, 'rx')
-      const ry = tag === 'circle' ? num(el, 'r') : num(el, 'ry')
+      const cx = num(attrs, 'cx')
+      const cy = num(attrs, 'cy')
+      const rx = tag === 'circle' ? num(attrs, 'r') : num(attrs, 'rx')
+      const ry = tag === 'circle' ? num(attrs, 'r') : num(attrs, 'ry')
       d = `M${cx - rx} ${cy}A${rx} ${ry} 0 0 1 ${cx + rx} ${cy}A${rx} ${ry} 0 0 1 ${cx - rx} ${cy}Z`
     } else if (tag === 'line')
-      d = `M${num(el, 'x1')} ${num(el, 'y1')}L${num(el, 'x2')} ${num(el, 'y2')}`
+      d = `M${num(attrs, 'x1')} ${num(attrs, 'y1')}L${num(attrs, 'x2')} ${num(attrs, 'y2')}`
     if (d) out.push({ d, filled, weight })
   }
   return out
