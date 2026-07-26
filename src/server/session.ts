@@ -112,6 +112,7 @@ interface QueuedPrompt {
   threadId: string
   mentions: string[]
   docMentions: DocMentionRef[]
+  boardMentions: BoardMentionRef[]
   attachments: Attachment[]
   messageId: string
   replyTo?: MessageReply
