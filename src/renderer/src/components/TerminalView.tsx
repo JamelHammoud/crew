@@ -11,6 +11,14 @@ import { TERMINAL_FONT, terminalTheme } from './terminalTheme'
 const shifted = (event: KeyboardEvent, letter: string): boolean =>
   event.ctrlKey && event.shiftKey && event.key.toLowerCase() === letter
 
+// xterm works the terminal out from the box it was given, and a box with no
+// size yet throws from deep inside it. Nothing is measured until there is
+// something to measure against.
+function fitTo(host: HTMLElement | null, fit: FitAddon | null): void {
+  if (!host || !fit || host.clientWidth < 2 || host.clientHeight < 2) return
+  fit.fit()
+}
+
 export default function TerminalView({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const hostRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
