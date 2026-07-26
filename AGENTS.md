@@ -8,7 +8,8 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - `yarn build` — build main, preload, and renderer
 - `yarn start` — run the built app, wearing the icon it ships with
 - `yarn preview` — the same run, wearing the blueprint
-- `yarn test` — integration tests (vitest)
+- `yarn test tests/<name>.test.ts` — one suite (vitest), which is how tests are normally run
+- `yarn test` — the whole suite, which takes a long time. Only when asked for it
 - `yarn tsc --noEmit` — typecheck
 - `yarn dist` — build a mac dmg
 
@@ -35,7 +36,8 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
 - Icons come from `@heroicons/react`. Never hand-roll SVG icons. Two files are the exception, and both draw through `glyph()` in `src/renderer/src/components/glyph.tsx`, on a 24 grid with a 1.5 round stroke, so they sit beside Heroicons without looking foreign: `src/renderer/src/design/glyphs.tsx` for the shapes the canvas needs, which Heroicons has no vocabulary for, and `src/renderer/src/components/toolGlyphs.tsx` for what an agent did. The one mark that moves, `ThinkingMark.tsx`, is drawn to the same grid and stroke from the numbers `toolGlyphs.tsx` holds. Nothing else draws an icon by hand.
 - A divider inside a popover, a menu or a hover card runs edge to edge. It bleeds back through the padding the card holds its content in, rather than stopping short of both sides. `MenuDivider` does that for a menu, `CardRule` for a hover card.
-- Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin. Chrome that floats over the design canvas adds `.glass-strong`, because the artwork behind it can be any color and a white frame turns plain glass into pale grey.
+- Popovers and menus use the `.glass` class: semi-transparent dark, backdrop blur and saturation, like Mobbin. Chrome that floats over the design canvas adds `.glass-strong`, because the artwork behind it can be any color and a white frame turns plain glass into pale grey. The look is held in `--glass-bg`, `--glass-line` and `--glass-shadow`, so anything that has to wear glass without the class, like the chrome a library draws for itself, reads the same three values.
+- Nothing on glass is set in a solid grey. Glass lifts with whatever is behind it, and a photo under a panel raises it past `fg-faint` and `fg-muted`, which then vanish. Text and marks on a floating panel take the foreground color at an opacity, `text-fg/45` for a quiet label and `text-fg/70` for a row, so they always sit above the surface rather than beside it.
 - Reusable primitives in `src/renderer/src/components`: `Avatar`, `AvatarStack`, `AgentIcon`, `Pill`, `Spinner`, `Skeleton`, `InsetRing`, `Popover`/`MenuItem`, `Select`, `Tooltip`, `HoverCard`, `Composer`, `TopBar`, `DayDivider`. Use them before writing new ones. Never use the native `title` attribute, use `Tooltip`. When something should be a primitive and there is no primitive for it yet, write one rather than a one-off.
 - `Skeleton` is what stands in for content that has not arrived. One shimmer, and every instance is pinned to the same start time the way `Spinner` is, so a stack of them breathes together instead of rippling. Its own class carries `position`, and a plain CSS rule beats a Tailwind utility whichever order they are written in, so a skeleton that has to float over something goes inside a positioned wrapper rather than being handed `absolute`. Handed it directly, it keeps `relative`, collapses to nothing, and reads as an empty box.
 - A tooltip never shows while the popover it opens is open. Pass `disabled` to the `Tooltip` around any button that opens a `Popover`.
