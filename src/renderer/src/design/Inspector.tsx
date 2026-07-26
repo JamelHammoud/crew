@@ -167,7 +167,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
         }
       >
         {props.fills.map((fill, at) => (
-          <div key={at} className="flex items-center gap-0.5">
+          <div key={at} className="flex items-center gap-0.5 -mr-1.5">
             {fill.type === 'solid' ? (
               <ColorInput
                 value={fill.color}
@@ -204,7 +204,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
       >
         {props.strokes.map((stroke, at) => (
           <div key={at} className="flex flex-col gap-2">
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5 -mr-1.5">
               <ColorInput value={stroke.color} onChange={color => setStroke(at, { color })} />
               <ShowButton shown={stroke.visible} onClick={() => setStroke(at, { visible: !stroke.visible })} />
               <RemoveButton

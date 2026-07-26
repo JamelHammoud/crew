@@ -142,13 +142,15 @@ export default function Transform() {
           <div className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
             <NumberInput label="W" value={size.w} min={1} onChange={value => resize({ w: value })} />
             <NumberInput label="H" value={size.h} min={1} onChange={value => resize({ h: value })} />
-            <PanelButton
-              label={locked ? 'Free size' : 'Keep proportions'}
-              active={locked}
-              onClick={() => setLocked(value => !value)}
-            >
-              <ConstrainGlyph className="w-4 h-4" />
-            </PanelButton>
+            <Trailing>
+              <PanelButton
+                label={locked ? 'Free size' : 'Keep proportions'}
+                active={locked}
+                onClick={() => setLocked(value => !value)}
+              >
+                <ConstrainGlyph className="w-4 h-4" />
+              </PanelButton>
+            </Trailing>
           </div>
         </Section>
       )}
