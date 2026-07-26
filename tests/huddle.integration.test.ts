@@ -1,14 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { Store } from '../src/server/store'
+import type { SessionEvent } from '../src/shared/events'
 import { emptyRoom, MAX_SIGNAL_CHARS } from '../src/shared/huddle'
 import type { ServerMessage } from '../src/shared/protocol'
-import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
+import { startHost, TestUi, tmpDir, waitUntil, type TestHost } from './helpers/session'
 
 type Room = Extract<ServerMessage, { type: 'huddle.room' }>
 type Signal = Extract<ServerMessage, { type: 'huddle.signal' }>
+type Logged = Extract<SessionEvent, { kind: `huddle.${string}` }>
 
 const rooms = (ui: TestUi): Room[] => ui.messages.filter((m): m is Room => m.type === 'huddle.room')
 const latest = (ui: TestUi): Room['room'] => rooms(ui).at(-1)?.room ?? emptyRoom()
 const names = (ui: TestUi): string[] => latest(ui).peers.map(peer => peer.name)
+const logged = (host: TestHost): Logged[] =>
+  host.store.loadEvents().filter((event): event is Logged => event.kind.startsWith('huddle'))
 
 describe('huddles', () => {
   let host: TestHost
