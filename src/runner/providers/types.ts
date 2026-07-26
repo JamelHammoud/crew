@@ -6,6 +6,7 @@ export interface ParsedActivity {
   name: string
   status: 'started' | 'finished'
   detail?: string
+  output?: string
   files?: FileChange[]
 }
 
