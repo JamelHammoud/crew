@@ -215,22 +215,8 @@ export default function MusicView() {
           onChange={level => useMusic.getState().setVolume(level)}
         />
         <span className="shrink-0 text-xs text-fg-faint">Only yours</span>
-      </div>
-
-      {!sounds && (
-        <div className="mx-4 mb-4 px-4 py-3 rounded-2xl bg-ink-800 flex items-center gap-3">
-          <p className="flex-1 text-xs text-fg-secondary">Crew's sounds are off, so you cannot hear this.</p>
-          <button
-            onClick={() => {
-              setSounds(true)
-              playSound('sound.on')
-            }}
-            className="shrink-0 h-8 px-3.5 rounded-full bg-fg text-ink-900 text-xs font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-95"
-          >
-            Turn them on
-          </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
