@@ -14,6 +14,9 @@ export function runTool(action: ToolAction): void {
   }
   if (action.kind === 'terminal') useBrowser.getState().addTerminal(action.command && typed(action.command))
   if (action.kind === 'file') useBrowser.getState().openFile(action.path)
+  if (action.kind === 'doc') useCrew.getState().openDoc(action.page)
+  if (action.kind === 'board') useCrew.getState().openBoard(action.boardId)
+  if (action.kind === 'copy') void navigator.clipboard?.writeText(action.text)
   if (action.kind === 'prompt') {
     const { agents, sendChat } = useCrew.getState()
     // The agent a tool was built to ask may be offline on the machine pressing
@@ -25,8 +28,13 @@ export function runTool(action: ToolAction): void {
 }
 
 // Where pressing it leaves you: a page, a file and a terminal are all things the
-// side panel holds, and an ask is a message in the chat.
+// side panel holds. An ask is a message in the chat, and a doc and a board take
+// you to their own tab, so all three are somewhere else already.
 export function opensPanel(action: ToolAction): boolean {
   if (action.kind === 'web') return !action.external
-  return action.kind !== 'prompt'
+  return action.kind === 'terminal' || action.kind === 'file'
 }
+
+// Copying leaves you where you are, so the toolbox stays up and the tile says
+// what happened rather than a panel closing over nothing.
+export const staysOpen = (action: ToolAction): boolean => action.kind === 'copy'
