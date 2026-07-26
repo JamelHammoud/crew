@@ -7,6 +7,8 @@ import { PanelButton } from './DesignControls'
 import { MenuItem, Popover } from './Popover'
 import { stripMention } from './thread'
 
+const ROW = 'h-8 flex items-center gap-2 pl-1 pr-2.5'
+
 // The pet in front of the name says which agent it is, so the name it was
 // started with does not have to say it again.
 export function threadName(thread: ThreadMeta, agents: Array<Pick<PooledAgent, 'id' | 'label'>>): string {
