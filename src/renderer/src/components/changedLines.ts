@@ -8,6 +8,11 @@ interface Range {
   to: number
 }
 
+interface Hit {
+  at: number
+  run: number
+}
+
 const norm = (line: string): string => line.trimEnd()
 
 function trimEnds(block: string[]): string[] {
@@ -42,8 +47,8 @@ function runFrom(lines: string[], block: string[], start: number): number {
   return count
 }
 
-function locateBlock(lines: string[], block: string[]): Range | null {
-  let best: { at: number; run: number } | null = null
+function locateBlock(lines: string[], block: string[]): Hit | null {
+  let best: Hit | null = null
   let hits = 0
   for (let index = 0; index < lines.length; index += 1) {
     if (norm(lines[index]) !== norm(block[0])) continue
@@ -54,17 +59,19 @@ function locateBlock(lines: string[], block: string[]): Range | null {
   }
   if (!best) return null
   if (best.run < 2 && hits > 1) return null
-  return { from: best.at + 1, to: best.at + best.run }
+  return best
 }
 
 function locateAll(lines: string[], block: string[]): Range[] {
   const found: Range[] = []
   let rest = block
   while (rest.length > 0) {
-    const range = locateBlock(lines, rest)
-    if (!range) break
-    found.push(range)
-    rest = trimEnds(rest.slice(range.to - range.from + 1))
+    const hit = locateBlock(lines, rest)
+    if (!hit) break
+    let end = hit.run
+    while (end > 1 && !rest[end - 1].trim()) end -= 1
+    found.push({ from: hit.at + 1, to: hit.at + end })
+    rest = trimEnds(rest.slice(hit.run))
   }
   return found
 }
