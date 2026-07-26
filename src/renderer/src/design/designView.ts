@@ -55,7 +55,7 @@ export function designView(editor: Editor, shape: DesignNodeShape): NodeView {
           fields: {
             size: true,
             weight: true,
-            family: true,
+            family: 'all',
             align: true,
             vertical: true,
             lineHeight: true,
