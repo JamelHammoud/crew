@@ -87,9 +87,11 @@ const PRESENCE_MS = 100
 
 export default function DesignCanvas({
   boardId,
+  asking,
   onEditor
 }: {
   boardId: string
+  asking?: boolean
   onEditor?: (editor: Editor | null) => void
 }) {
   const openDesign = useCrew(s => s.openDesign)
