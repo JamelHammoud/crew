@@ -294,6 +294,35 @@ describe('grok parser matches the documented streaming-json format', () => {
   })
 })
 
+describe('what a command printed', () => {
+  it('drops the colors and the cursor moves a terminal would have eaten', () => {
+    expect(commandOutput('[32mpassed[0m')).toBe('passed')
+    expect(commandOutput('one[2Ktwo')).toBe('onetwo')
+    expect(commandOutput('  \n\n  ')).toBeUndefined()
+    expect(commandOutput(undefined)).toBeUndefined()
+  })
+
+  it('keeps both ends of a long run, since a failure is at the end', () => {
+    const lines = Array.from({ length: 200 }, (_, i) => `line ${i + 1}`)
+    const kept = commandOutput(lines.join('\n'))!.split('\n')
+    expect(kept[0]).toBe('line 1')
+    expect(kept[kept.length - 1]).toBe('line 200')
+    expect(kept.length).toBeLessThan(45)
+    expect(kept.some(line => line.includes('left out'))).toBe(true)
+  })
+
+  it('holds a size a synced log can carry, however wide the lines', () => {
+    const wide = Array.from({ length: 200 }, () => 'x'.repeat(2000)).join('\n')
+    expect(commandOutput(wide)!.length).toBeLessThanOrEqual(4000)
+  })
+
+  it('reads a result given as content blocks the same as a plain string', () => {
+    expect(resultText([{ type: 'text', text: 'first' }, { type: 'text', text: 'second' }])).toBe('first\nsecond')
+    expect(resultText('plain')).toBe('plain')
+    expect(resultText({ nope: true })).toBeUndefined()
+  })
+})
+
 describe('provider install', () => {
   const installProvider = (command: string): Provider => ({
     name: 'fakeinstall',
