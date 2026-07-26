@@ -126,6 +126,7 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'huddle.started'; huddleId: string; byId: string; byName: string }
   | { id: string; ts: number; kind: 'huddle.joined'; huddleId: string; memberId: string; name: string }
   | { id: string; ts: number; kind: 'huddle.ended'; huddleId: string; ms: number }
+  | { id: string; ts: number; kind: 'huddle.deleted'; huddleId: string }
   | { id: string; ts: number; kind: 'doc'; page: string; text: string; title?: string; byName: string }
   | { id: string; ts: number; kind: 'doc.titled'; page: string; title: string; byName: string }
   | { id: string; ts: number; kind: 'doc.renamed'; from: string; to: string; title?: string; byName: string }
