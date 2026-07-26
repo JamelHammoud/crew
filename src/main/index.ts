@@ -301,7 +301,6 @@ app.whenReady().then(() => {
       }
     })
   })
-  ipcMain.on('terminal:warm', event => terminalsFor(event.sender).warm(session.projectFolder()))
   ipcMain.on('terminal:write', (event, id: string, data: string) =>
     terminalsFor(event.sender).write(id, data)
   )
