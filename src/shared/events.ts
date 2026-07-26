@@ -1,4 +1,5 @@
 import type { Attachment } from './attachments'
+import type { BoardMentionRef } from './design'
 import type { DocMentionRef } from './docs'
 import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { MemberMentionRef } from './people'
