@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Editor, TLShape } from 'tldraw'
+import { commandForKey, type CommandContext } from '../design/commands'
 import DesignAskBar from './DesignAskBar'
 import DesignCanvas from './DesignCanvas'
 import DesignContextMenu, { useContextMenu } from './DesignContextMenu'
@@ -23,6 +24,26 @@ export default function DesignStage({
 
   const ask = useCallback(() => setAsking(true), [])
   const stopAsking = useCallback(() => setAsking(false), [])
+
+  const ctx: CommandContext | null = useMemo(
+    () => (editor ? { editor, point: null, ask, rename: onRename } : null),
+    [editor, ask, onRename]
+  )
+
+  useEffect(() => {
+    if (!ctx) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      const command = commandForKey(event, ctx)
+      if (!command) return
+      event.preventDefault()
+      event.stopPropagation()
+      command.run(ctx)
+    }
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => window.removeEventListener('keydown', onKeyDown, true)
+  }, [ctx])
+
+  useEffect(() => setAsking(false), [boardId])
 
   return (
     <div className="flex-1 min-w-0 relative">
