@@ -263,13 +263,20 @@ app.whenReady().then(() => {
   ipcMain.handle('media:settings', (_event, kind: MediaKind) => openMediaSettings(kind))
   ipcMain.handle('media:sources', () => screenSources())
   ipcMain.handle('media:pickSource', (_event, id: string | null) => pickScreenSource(id))
-  ipcMain.handle('app:badge', (_event, count: number) => setBadge(count))
+  ipcMain.handle('app:badge', (_event, count: number) => {
+    setBadge(count)
+    tray.update({ waiting: count })
+  })
   ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme))
+  ipcMain.on('presence:publish', (_event, here: Present[]) => tray.update({ here, known: true }))
+  ipcMain.on('tray:size', (_event, height: number) => tray.resizePanel(height))
+  ipcMain.on('tray:open', () => openWindow())
+  ipcMain.on('tray:hide', () => tray.hidePanel())
   ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
     showAlert(alert, () => {
       openWindow()
       if (alert.threadId) {
-        BrowserWindow.getAllWindows()[0]?.webContents.send('notification:open', alert.threadId)
+        appWindows()[0]?.webContents.send('notification:open', alert.threadId)
       }
     })
   })
@@ -303,7 +310,7 @@ app.whenReady().then(() => {
   ipcMain.on('terminal:close', (event, id: string) => terminalsFor(event.sender).close(id))
   createWindow()
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (appWindows().length === 0) createWindow()
   })
 })
 
@@ -315,18 +322,19 @@ app.on('window-all-closed', () => {
     app.quit()
     return
   }
-  refreshTray()
-  if (process.platform === 'win32' && tray && !balloonShown) {
+  sharing()
+  if (process.platform === 'win32' && !balloonShown) {
     balloonShown = true
-    tray.displayBalloon({
-      title: 'crew is still running',
-      content: 'Your agents stay shared with your crew. Quit from this icon to stop.'
-    })
+    tray.balloon(
+      'crew is still running',
+      'Your agents stay shared with your crew. Quit from this icon to stop.'
+    )
   }
 })
 
 app.on('before-quit', () => {
   for (const open of terminals.values()) open.closeAll()
   terminals.clear()
+  tray.close()
   void session.shutdown()
 })

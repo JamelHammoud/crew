@@ -184,23 +184,29 @@ body {
   -webkit-app-region: no-drag;
 }
 
-.glass {
-  background: rgb(28 28 28 / 0.78);
-  /* No -webkit- fallback: Electron's Chromium only honors the standard property,
-     and Lightning CSS collapses an alias pair down to the prefixed one at build. */
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow:
+:root {
+  --glass-bg: rgb(28 28 28 / 0.78);
+  --glass-line: rgb(255 255 255 / 0.08);
+  --glass-shadow:
     0 16px 48px rgb(0 0 0 / 0.55),
     0 2px 8px rgb(0 0 0 / 0.35);
 }
 
-.light .glass {
-  background: rgb(255 255 255 / 0.85);
-  border: 1px solid rgb(0 0 0 / 0.08);
-  box-shadow:
+.light {
+  --glass-bg: rgb(255 255 255 / 0.85);
+  --glass-line: rgb(0 0 0 / 0.08);
+  --glass-shadow:
     0 16px 48px rgb(0 0 0 / 0.14),
     0 2px 8px rgb(0 0 0 / 0.08);
+}
+
+.glass {
+  background: var(--glass-bg);
+  /* No -webkit- fallback: Electron's Chromium only honors the standard property,
+     and Lightning CSS collapses an alias pair down to the prefixed one at build. */
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow);
 }
 
 /* Chrome that floats over the canvas, where the artwork behind it can be any color. */
