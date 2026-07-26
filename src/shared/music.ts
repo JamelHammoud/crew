@@ -10,9 +10,12 @@ export interface MusicTune {
   bpm: number
   // How long the loop is, in beats. The tune is written against these two.
   beats: number
-  // The four colors the cover is mixed from, warmest first. They are the tune
-  // heard as a picture: bright and high for a fast one, deep for a slow one.
-  colors: readonly [string, string, string, string]
+  // The five colors the cover is mixed from. The first three are the fields it
+  // is built out of, the fourth is the light that falls on it, and the last is
+  // the ground underneath. They are the tune heard as a picture, so a fast one
+  // is hot and a slow one is deep, and none of them are quiet: a mesh mixed
+  // from soft colors comes out of the blur as one flat color.
+  colors: readonly [string, string, string, string, string]
 }
 
 export const MUSIC_TUNES = [
