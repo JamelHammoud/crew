@@ -23,6 +23,7 @@ const SETS = [
 const LIVE = 19.5
 const SQUARE = 17
 const CIRCLE = 18.5
+const LINE = 15
 
 const ENTRY = (files) => `
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -112,8 +113,9 @@ function report(rows) {
 const svg = (markup, px) =>
   markup.replace('<svg', `<svg width="${px}" height="${px}"`).replace(/class="[^"]*"/, '')
 
-const flag = (row) =>
-  row.over > 0.01 ? 'over' : Math.abs(row.off) > 8 || Math.abs(row.weight) > 45 ? 'watch' : ''
+const astray = (row) => !row.capped && Math.abs(row.off) > 8
+
+const flag = (row) => (row.over > 0.01 ? 'over' : astray(row) || row.drift > 0.5 ? 'watch' : '')
 
 function page(sets) {
   const cards = sets
