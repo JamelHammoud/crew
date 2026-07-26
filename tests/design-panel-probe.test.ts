@@ -108,7 +108,7 @@ describe('design panel', () => {
       props: { color: DefaultColorStyle.values[1], size: 'l', font: 'sans', textAlign: 'middle', richText: {} }
     } as unknown as TLShape
     const { view, container } = panelFor(shape)
-    expect(sections(container)).toEqual(['Fill', 'Text'])
+    expect(sections(container)).toEqual(['Typography', 'Fill'])
     expect(view.text?.value.size).toBe(36)
     expect(view.text?.value.align).toBe('center')
     expect(view.text?.fields.weight).toBe(false)
