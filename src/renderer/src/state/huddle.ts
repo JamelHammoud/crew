@@ -269,15 +269,46 @@ export const useHuddle = create<HuddleState>((set, get) => {
         announce()
         return
       }
-      const camera = await captureCamera()
+      const camera = await captureCamera(get().cameraId)
       tracks.camera = camera.track
       set({
         cameraOn: camera.track !== null,
+        cameraId: running(camera.track, get().cameraId),
         localCamera: camera.track ? new MediaStream([camera.track]) : null,
         problem: camera.problem
       })
       publish()
       announce()
+    },
+
+    // The choice is kept whether or not anything is running on it, so a
+    // microphone picked while muted is the one that comes back on. A device that
+    // is live is swapped into the slot it already holds, and the one it replaces
+    // is only stopped once the new one is in, so nothing renegotiates and there
+    // is no gap in what the others hear.
+    pickInput: async (kind, id) => {
+      rememberInput(kind, id)
+      if (kind === 'microphone') set({ micId: id })
+      else set({ cameraId: id })
+      const live = kind === 'microphone' ? get().micOn : get().cameraOn
+      if (!get().joined || !live) return
+      const next = kind === 'microphone' ? await captureMic(id) : await captureCamera(id)
+      const chosen = kind === 'microphone' ? get().micId : get().cameraId
+      if (chosen !== id) {
+        stop(next.track)
+        return
+      }
+      if (!next.track) {
+        set({ problem: next.problem })
+        return
+      }
+      const slot = kind === 'microphone' ? 'mic' : 'camera'
+      const before = tracks[slot]
+      tracks[slot] = next.track
+      if (kind === 'microphone') set({ micId: running(next.track, id), problem: null })
+      else set({ cameraId: running(next.track, id), localCamera: new MediaStream([next.track]), problem: null })
+      publish()
+      stop(before)
     },
 
     share: async sourceId => {
