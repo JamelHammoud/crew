@@ -67,13 +67,12 @@ export function Popover({
     }
     let left = align === 'start' ? rect.left : rect.right - size.w
     left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
-    let top = side === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
-    if (side === 'bottom' && top + size.h > window.innerHeight - 8 && rect.top - 8 - size.h >= 8) {
-      top = rect.top - 8 - size.h
-    }
-    if (side === 'top' && top < 8 && rect.bottom + 8 + size.h <= window.innerHeight - 8) {
-      top = rect.bottom + 8
-    }
+    const fits = (choice: 'top' | 'bottom') =>
+      choice === 'bottom' ? rect.bottom + 8 + size.h <= window.innerHeight - 8 : rect.top - 8 - size.h >= 8
+    const other = side === 'bottom' ? 'top' : 'bottom'
+    const placed = placedRef.current ?? (fits(side) || !fits(other) ? side : other)
+    placedRef.current = placed
+    let top = placed === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
     top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
     return { left, top }
   })()
