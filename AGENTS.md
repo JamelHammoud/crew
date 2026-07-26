@@ -16,6 +16,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 ## Writing
 
 - No em dashes, and no semicolons used in their place. Write plain sentences.
+- The app is called Crew, and it is capitalized wherever it is named. It is a name, not a word.
 - Plain words. No over-selling, no narration. State things simply.
 - UI copy is for everyone, not just engineers. Avoid engineering jargon.
 - Copy never echoes the request that produced it. Placeholders and empty states describe what the user can do in general terms, never the specifics of what was asked for or how it was built.
@@ -31,7 +32,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 - Dark mode. Tokens live in `src/renderer/src/styles.css` (Tailwind `@theme`): ink scale for surfaces (`ink-900` background, `ink-800` raised, `ink-700` borders and sunken bars), fg scale for text (`fg`, `fg-secondary`, `fg-muted`, `fg-faint`).
 - White is the single action color. `positive` and `danger` appear only for status.
-- Type ramp: xs 11, sm 13, base 14, lg 16. System sans. The word "crew" is set in mono.
+- Type ramp: xs 11, sm 13, base 14, lg 16. System sans. The word "Crew" is set in mono.
 - Mono set on the same line as the sans comes out sitting high: the two faces carry their text at different heights, and a row centers boxes rather than baselines. `.mono-inline` in `styles.css` is the pixel that puts them back on one line, and it is what any mono beside sans wears.
 - Radii: `rounded-card` (20px) for cards, `rounded-shell` (30px) for the composer. Buttons, tabs, and inputs are pills.
 - Icons come from `@heroicons/react`. Never hand-roll SVG icons. Two files are the exception, and both draw through `glyph()` in `src/renderer/src/components/glyph.tsx`, on a 24 grid with a 1.5 round stroke, so they sit beside Heroicons without looking foreign: `src/renderer/src/design/glyphs.tsx` for the shapes the canvas needs, which Heroicons has no vocabulary for, and `src/renderer/src/components/toolGlyphs.tsx` for what an agent did. The one mark that moves, `ThinkingMark.tsx`, is drawn to the same grid and stroke from the numbers `toolGlyphs.tsx` holds. `src/renderer/src/components/doc/docGlyphs.tsx` is the third set, the blocks and the type styles a doc is written in, drawn on the same grid at a heavier stroke because they stand together in a menu of their own. Nothing else draws an icon by hand.
@@ -44,14 +45,14 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - Agents always render `AgentIcon` (a deterministic generated pet seeded by the agent id), never an initial `Avatar`. Humans keep `Avatar`.
 - Small interactions matter: hover states on everything interactive, `animate-pop` for popovers, `animate-rise` for feed items, scale on press.
 - Labels like "You" go in a `Pill`, never in parentheses.
-- No logo or branding beyond the word "crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
+- No logo or branding beyond the word "Crew". No emoji in the UI. Gradients only as scrims where content scrolls under chrome.
 - The app icon is three overlapping discs, the same stack of members the app draws everywhere else. All three are the same size, each cut out of the one behind it by a mask, so nothing shrinks a disc. The tile is glass like the system icons: a top-to-bottom gradient, a sheen over the top half, and a rim that catches light at the top and bottom. Black and white, and it flips with the theme picked in the app.
 - The same three discs are the mark in the top left of the app, in place of the word "crew". `CrewMark` draws them at whatever `currentColor` is.
 - A build run from source wears a blueprint: vivid blue paper, ruled and lightly grained, with the same three discs on it lit like glass. It is the one place in the project that is blue, so a dev window is never mistaken for the installed app sitting beside it in the dock. Both dev icons stand on the same paper, so only the mark flips with the theme, black in dark and white in light, the way the shipping pair flips.
 - A disc is lit from the upper left and built in layers: a body that falls away to the far side, a shade drawn in all round the edge, a light rim on the top where the light arrives, a softer one on the bottom where the tile throws it back, a specular where the light lands, and a shadow cast into the gap behind. The two rims are the same ring gradient held to opposite halves by a mask, which is what makes a flat circle read as a bead. Every gradient is in bounding box units, so one set of them shades all three discs the same way. Keep it gentle: a black edge and a blown specular turn glass into a toy.
 - `src/main/from-source.ts` decides which of the two a window wears, from where the app is loaded. Never `app.isPackaged` for this: that only asks whether the binary is still called Electron, and `yarn dev` renames it to Crew, so a run from source claims to be packaged and wears the shipping icon. The one way past it is `CREW_SHIPPING_ICON`, which `yarn start` sets, so the shipping icon can be seen without installing. Nothing else loosens the path check.
 - Each disc is cut only by the discs standing in front of it, one mask each. A single mask for the whole stack reopens the gaps, which is invisible on the filled icon and turns the blueprint outlines into crossing rings.
-- `yarn icon` redraws all of it from `scripts/make-icon.mjs` into `resources/` (`icon.svg`, `icon-light.svg`, `icon-dev.svg`, `icon-dev-light.svg`, `crew-logo.svg`, `icon.icns`, `icon.png`), `src/main/icon-png.ts` and `src/renderer/src/components/crew-mark.ts`. That is the only place the geometry lives. Nothing there is edited by hand.
+- `yarn icon` redraws all of it from `scripts/make-icon.mjs` into `resources/` (`icon.svg`, `icon-light.svg`, `icon-dev.svg`, `icon-dev-light.svg`, `crew-logo.svg`, `tray.svg`, `icon.icns`, `icon.png`), `src/main/icon-png.ts`, `src/main/tray-png.ts` and `src/renderer/src/components/crew-mark.ts`. That is the only place the geometry lives. Nothing there is edited by hand.
 
 ## Layout
 
@@ -76,6 +77,17 @@ Voice, video and screen share, started from the user popover menu. The host rela
 - Joining never waits on a device. Someone with no microphone still gets into the call, muted, and is told what to fix.
 - Tiles are widescreen everywhere, and a tile owns its own shape. Wrapping one in something that sets the shape from outside is how they ended up as slivers.
 - Marks like the ring on whoever is talking are painted inside the box they mark, with `InsetRing`. Anything drawn around the outside is cropped the moment the box lands in a scroller or a card that clips, which is where the dock, the rail beside a shared screen, and the screen picker all put it.
+
+## The menu bar
+
+A mark in the macOS menu bar, and a panel under it holding who is here: the people online and the agents working, the same list the presence popover in the app shows.
+
+- The icon is the same three discs, drawn once by `yarn icon` into `src/main/tray-png.ts` as black art on nothing. macOS reads a template image by its alpha alone and tints it to whatever the bar is wearing, so one image covers a light bar and a dark one, and nothing has to follow the system theme by hand. Everywhere else the taskbar has no template images, so the tray keeps the dot it always drew.
+- The count of tasks waiting for review rides beside the mark as the item's own title, in the system's digit face. A badge painted into the artwork would be a smudge: a menu bar item is one line tall, and the number is the thing being read. It is the same count the button in the app carries, through the same `badgeText`, and it moves the moment the app's own badge does.
+- No context menu is set on the mac tray. One would open on a left click too, and the left click belongs to the panel. Right click pops the menu itself.
+- The panel is a frameless window that loads the renderer at `#tray`. It never connects to the session: a second connection would be a second member. The window that is open publishes who it can see, main holds it, and the panel is handed it. With no window open there is nothing to publish, so the panel says to open Crew rather than showing a list that stopped moving.
+- It is built and loaded before anyone clicks, the way a terminal is warmed, so the first click opens a list rather than an empty card. It measures itself and asks main for the height it needs, so the window is only ever as tall as what it holds.
+- macOS will not hand out the highlight it draws behind a menu bar item unless the item is opening a native menu, and Electron dropped `setHighlightMode` in version 9. A panel of one's own does not get it.
 
 ## Design boards
 
