@@ -1,5 +1,5 @@
 import { Bars3BottomLeftIcon, Bars3BottomRightIcon, Bars3Icon } from '@heroicons/react/16/solid'
-import { useCallback, type CSSProperties, type ReactNode } from 'react'
+import { useCallback } from 'react'
 import {
   DefaultColorStyle,
   DefaultDashStyle,
@@ -13,7 +13,7 @@ import {
   type SharedStyle,
   type StyleProp
 } from 'tldraw'
-import { Section } from './InspectorFields'
+import { Choice, Row, Section, SubLabel } from './InspectorFields'
 
 const FILL_OPTIONS = [
   { value: 'none', label: 'None' },
@@ -37,37 +37,15 @@ const SIZE_OPTIONS = [
 
 const FONT_OPTIONS = [
   { value: 'sans', label: 'Sans' },
-  { value: 'serif', label: 'Serif', style: { fontFamily: 'Georgia, serif' } },
-  { value: 'mono', label: 'Mono', className: 'font-mono' }
+  { value: 'serif', label: 'Serif' },
+  { value: 'mono', label: 'Mono' }
 ] as const
 
-function Segments<T extends string>({
-  value,
-  options,
-  onPick
-}: {
-  value: string | null
-  options: ReadonlyArray<{ value: T; label?: string; icon?: ReactNode; style?: CSSProperties; className?: string }>
-  onPick: (value: T) => void
-}) {
-  return (
-    <div className="flex bg-fg/[0.06] rounded-full p-0.5">
-      {options.map(option => (
-        <button
-          key={option.value}
-          onClick={() => onPick(option.value)}
-          style={option.style}
-          aria-pressed={option.value === value}
-          className={`flex-1 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
-            option.value === value ? 'bg-fg text-ink-900' : 'text-fg-muted hover:text-fg'
-          } ${option.className ?? ''}`}
-        >
-          {option.icon ?? option.label}
-        </button>
-      ))}
-    </div>
-  )
-}
+const TEXT_ALIGNS = [
+  { value: 'start', label: 'Left', icon: <Bars3BottomLeftIcon className="w-4 h-4" /> },
+  { value: 'middle', label: 'Center', icon: <Bars3Icon className="w-4 h-4" /> },
+  { value: 'end', label: 'Right', icon: <Bars3BottomRightIcon className="w-4 h-4" /> }
+] as const
 
 export default function ShapeStyles() {
   const editor = useEditor()
@@ -102,62 +80,65 @@ export default function ShapeStyles() {
 
   return (
     <>
-      {color && (
-        <Section label="Color">
-          <div className="flex flex-wrap gap-1.5">
-            {swatches.map(swatch => (
-              <button
-                key={swatch.name}
-                onClick={() => apply(DefaultColorStyle, swatch.name)}
-                aria-label={swatch.name}
-                style={{ background: swatch.hex }}
-                className={`w-5 h-5 rounded-full transition-transform hover:scale-110 active:scale-95 ${
-                  shared(color) === swatch.name
-                    ? 'ring-2 ring-fg ring-offset-2 ring-offset-ink-900'
-                    : 'ring-1 ring-inset ring-fg/10'
-                }`}
-              />
-            ))}
-          </div>
+      {(color || fill) && (
+        <Section title="Fill">
+          {color && (
+            <div className="grid grid-cols-7 gap-1.5">
+              {swatches.map(swatch => (
+                <button
+                  key={swatch.name}
+                  onClick={() => apply(DefaultColorStyle, swatch.name)}
+                  aria-label={swatch.name}
+                  style={{ background: swatch.hex }}
+                  className={`w-6 h-6 rounded-full transition-transform hover:scale-110 active:scale-95 ${
+                    shared(color) === swatch.name
+                      ? 'ring-2 ring-fg ring-offset-2 ring-offset-ink-900'
+                      : 'ring-1 ring-inset ring-fg/10'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+          {fill && (
+            <Choice value={shared(fill)} options={FILL_OPTIONS} onPick={value => apply(DefaultFillStyle, value)} />
+          )}
         </Section>
       )}
-      {fill && (
-        <Section label="Fill">
-          <Segments value={shared(fill)} options={FILL_OPTIONS} onPick={value => apply(DefaultFillStyle, value)} />
-        </Section>
-      )}
+
       {(dash || size) && (
-        <Section label="Stroke">
-          {dash && (
-            <Segments value={shared(dash)} options={DASH_OPTIONS} onPick={value => apply(DefaultDashStyle, value)} />
-          )}
-          {size && (
-            <Segments
-              value={shared(size)}
-              options={SIZE_OPTIONS.map(option => ({
-                value: option.value,
-                icon: <span className={`${option.dot} rounded-full bg-current`} />
-              }))}
-              onPick={value => apply(DefaultSizeStyle, value)}
-            />
-          )}
+        <Section title="Stroke">
+          <Row>
+            {dash && (
+              <Choice value={shared(dash)} options={DASH_OPTIONS} onPick={value => apply(DefaultDashStyle, value)} />
+            )}
+            {size && (
+              <Choice
+                value={shared(size)}
+                options={SIZE_OPTIONS.map(option => ({
+                  value: option.value,
+                  label: option.value.toUpperCase(),
+                  icon: <span className={`${option.dot} rounded-full bg-current`} />
+                }))}
+                onPick={value => apply(DefaultSizeStyle, value)}
+              />
+            )}
+          </Row>
         </Section>
       )}
+
       {(font || align) && (
-        <Section label="Text">
+        <Section title="Text">
           {font && (
-            <Segments value={shared(font)} options={FONT_OPTIONS} onPick={value => apply(DefaultFontStyle, value)} />
+            <>
+              <SubLabel>Font</SubLabel>
+              <Choice value={shared(font)} options={FONT_OPTIONS} onPick={value => apply(DefaultFontStyle, value)} />
+            </>
           )}
           {align && (
-            <Segments
-              value={shared(align)}
-              options={[
-                { value: 'start', icon: <Bars3BottomLeftIcon className="w-4 h-4" /> },
-                { value: 'middle', icon: <Bars3Icon className="w-4 h-4" /> },
-                { value: 'end', icon: <Bars3BottomRightIcon className="w-4 h-4" /> }
-              ]}
-              onPick={value => apply(DefaultTextAlignStyle, value)}
-            />
+            <>
+              <SubLabel>Alignment</SubLabel>
+              <Choice value={shared(align)} options={TEXT_ALIGNS} onPick={value => apply(DefaultTextAlignStyle, value)} />
+            </>
           )}
         </Section>
       )}
