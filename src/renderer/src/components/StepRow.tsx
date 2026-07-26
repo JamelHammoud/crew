@@ -14,6 +14,7 @@ import {
   TextWithFileLinks,
   useLocated
 } from './fileLinks'
+import StepCode from './StepCode'
 import StepDiff from './StepDiff'
 import type { ThreadItem } from './thread'
 import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
