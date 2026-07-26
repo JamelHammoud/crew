@@ -1,19 +1,19 @@
 import type { PartialBlock } from '@blocknote/core'
-import {
-  Bars3BottomLeftIcon,
-  ChatBubbleBottomCenterTextIcon,
-  CheckCircleIcon,
-  CodeBracketIcon,
-  H1Icon,
-  H2Icon,
-  H3Icon,
-  ListBulletIcon,
-  MinusIcon,
-  NumberedListIcon,
-  PhotoIcon,
-  TableCellsIcon
-} from '@heroicons/react/16/solid'
 import type { Glyph } from '../glyph'
+import {
+  BulletListGlyph,
+  CodeGlyph,
+  DividerGlyph,
+  Heading1Glyph,
+  Heading2Glyph,
+  Heading3Glyph,
+  ImageGlyph,
+  NumberedListGlyph,
+  ParagraphGlyph,
+  QuoteGlyph,
+  TableGlyph,
+  TodoGlyph
+} from './docGlyphs'
 
 export interface DocBlockKind {
   key: string
