@@ -5,7 +5,6 @@ import { EMOJI_CATEGORIES, lookupEmoji, searchEmoji, type EmojiEntry } from './e
 import { recentEmoji } from './emojiRecents'
 import Tooltip from './Tooltip'
 
-const COLUMNS = 9
 const CELL = 34
 const HEADER = 28
 const OVERSCAN = 320
@@ -19,14 +18,24 @@ interface Section {
   height: number
 }
 
-const sectionHeight = (count: number) => HEADER + Math.ceil(count / COLUMNS) * CELL
-
+// What the picker is for changes with where it stands: the same grid reacts to
+// a message and marks a tool, so the words and the width it is given are the
+// caller's, and the rows it holds are worked out from the columns it was asked
+// for rather than from a number of its own.
 export default function EmojiPicker({
   selected,
-  onPick
+  onPick,
+  columns = 9,
+  className = 'h-[400px] w-[380px]',
+  purpose = 'React with',
+  hint = 'Pick a reaction'
 }: {
   selected: Set<string>
   onPick: (char: string) => void
+  columns?: number
+  className?: string
+  purpose?: string
+  hint?: string
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState('')
