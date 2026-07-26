@@ -4,6 +4,7 @@ import { isAttachmentFile } from '../shared/attachments'
 import { BOARD_ID, type DesignDocument } from '../shared/design'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
+import { isUploadFile } from '../shared/music'
 import type { PooledAgent } from '../shared/llm'
 
 export interface PersistedMember {
@@ -37,6 +38,7 @@ export class Store {
     fs.mkdirSync(path.join(this.root, 'docs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'designs'), { recursive: true })
+    fs.mkdirSync(path.join(this.root, 'music'), { recursive: true })
   }
 
   saveAttachment(file: string, data: Buffer): void {
@@ -48,6 +50,22 @@ export class Store {
     if (!isAttachmentFile(file)) return null
     const full = path.join(this.root, 'attachments', file)
     return fs.existsSync(full) ? full : null
+  }
+
+  saveMusic(file: string, data: Buffer): void {
+    if (!isUploadFile(file)) throw new Error(`Bad track name: ${file}`)
+    this.writeAtomic(path.join(this.root, 'music', file), data)
+  }
+
+  musicPath(file: string): string | null {
+    if (!isUploadFile(file)) return null
+    const full = path.join(this.root, 'music', file)
+    return fs.existsSync(full) ? full : null
+  }
+
+  deleteMusic(file: string): void {
+    if (!isUploadFile(file)) return
+    fs.rmSync(path.join(this.root, 'music', file), { force: true })
   }
 
   loadSession(): PersistedSession | null {
