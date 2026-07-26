@@ -269,9 +269,11 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const [loadKey, setLoadKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
-  const [caret, setCaret] = useState<number | null>(null)
+  const [caret, setCaret] = useState<Spot | null>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const areaRef = useRef<HTMLTextAreaElement>(null)
+  const held = useRef<Spot | null>(null)
+  const scrolled = useRef<{ load: number; target: number | null }>({ load: -1, target: null })
 
   useEffect(() => {
     let alive = true
@@ -301,12 +303,26 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   useEffect(() => {
     if (!data) return
     const target = tab.line ?? marks?.first ?? null
+    const seen = scrolled.current
+    if (seen.load === loadKey && seen.target === target) return
+    const fresh = seen.load !== loadKey
+    scrolled.current = { load: loadKey, target }
     if (data.kind === 'file' && target) {
       bodyRef.current?.querySelector(`[data-line="${target}"]`)?.scrollIntoView?.({ block: 'center' })
       return
     }
-    if (bodyRef.current) bodyRef.current.scrollTop = 0
-  }, [loadKey, tab.line, marks])
+    if (fresh && bodyRef.current) bodyRef.current.scrollTop = 0
+  }, [data, loadKey, tab.line, marks])
+
+  useLayoutEffect(() => {
+    const hold = held.current
+    if (!hold || marks) return
+    held.current = null
+    const body = bodyRef.current
+    const row = body?.querySelector(`[data-line="${hold.line}"]`)
+    if (!body || !row) return
+    body.scrollTop += row.getBoundingClientRect().top - hold.top
+  }, [marks])
 
   const editable = !!file && !marks && !file.truncated && file.text.split('\n').length <= MAX_LINES
   const dirty = editable && !!file && draft !== file.text
