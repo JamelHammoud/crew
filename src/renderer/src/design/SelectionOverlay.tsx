@@ -115,7 +115,10 @@ function RadiusHandles({
               top: corner.top ? rect.y + inset : rect.y + rect.h - inset
             }}
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-fg ring-1 ring-ink-900/40 transition-transform group-hover:scale-125" />
+            <span
+              className="w-2.5 h-2.5 rounded-full bg-white transition-transform group-hover:scale-125"
+              style={{ border: `1.5px solid ${stroke}` }}
+            />
           </button>
         )
       })}
