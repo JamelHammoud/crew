@@ -80,7 +80,7 @@ describe('the user menu', () => {
     openMenu()
     const menu = document.querySelector('.glass.fixed') as HTMLElement
     for (const el of menu.querySelectorAll('*')) {
-      expect(el.className).not.toMatch(/text-fg-(muted|faint)/)
+      expect(el.getAttribute('class') ?? '').not.toMatch(/text-fg-(muted|faint)/)
     }
   })
 
