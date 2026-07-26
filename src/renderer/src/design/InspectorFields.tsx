@@ -151,7 +151,7 @@ function useNumberField({
         event.currentTarget.blur()
       }
     },
-    onKeyUp: (event: React.KeyboardEvent<HTMLInputElement>) => {
+    onKeyUp: (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') gesture.onEnd()
     }
   }
