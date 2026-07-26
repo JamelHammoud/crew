@@ -32,6 +32,10 @@ export default function Design() {
     setRenaming(shape.id)
   }, [])
 
+  const showChat = useCallback(() => {
+    setPanels(value => (value.right ? value : { ...value, right: true }))
+  }, [])
+
   useEffect(() => {
     if (current) rememberBoard(current)
   }, [current])
