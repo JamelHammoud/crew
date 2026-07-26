@@ -40,10 +40,18 @@ const peer = (peerId: string, name: string, extra: Partial<HuddlePeer> = {}): Hu
   ...extra
 })
 
-const shared = (): MediaStream => {
-  const track = Object.assign(new EventTarget(), { kind: 'video', muted: false, readyState: 'live' })
-  return { id: 'screen-1', getVideoTracks: () => [track], getTracks: () => [track] } as unknown as MediaStream
+// A slot holds a stream from the moment the connection does, and the track in
+// it stays muted until the other end starts sending.
+const slot = (id: string, sending: boolean): MediaStream => {
+  const track = Object.assign(new EventTarget(), { kind: 'video', muted: !sending, readyState: 'live' })
+  return { id, getVideoTracks: () => [track], getTracks: () => [track] } as unknown as MediaStream
 }
+
+const streams = (sending: boolean) => ({
+  mic: slot('mic-1', sending),
+  camera: slot('camera-1', false),
+  screen: slot('screen-1', sending)
+})
 
 const stage = () => {
   Object.defineProperty(HTMLDivElement.prototype, 'clientWidth', { configurable: true, value: FRAME.width })
@@ -61,7 +69,7 @@ const stage = () => {
     problem: null,
     localCamera: null,
     localScreen: null,
-    remote: { a: { mic: null, camera: null, screen: shared() } },
+    remote: { a: streams(true) },
     link: { a: 'connected' }
   })
 
@@ -150,7 +158,7 @@ describe('zooming a shared screen', () => {
       peerId: 'me',
       joined: true,
       expanded: true,
-      remote: { a: { mic: null, camera: null, screen: null } },
+      remote: { a: streams(false) },
       link: { a: 'connected' }
     })
     const { container } = render(createElement(HuddleStage))
