@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { PathLocation } from '../../../shared/files'
 import { useBrowser } from '../state/browser'
+import { EmojiText } from './Emoji'
 
 export interface FileRef {
   path: string
@@ -334,7 +335,7 @@ export function TextWithFileLinks({ text, inline, again }: { text: string; inlin
     <>
       {tokens.map((token, index) => {
         if (token.kind === 'url') return <UrlLink key={index} url={token.text} />
-        if (token.kind !== 'file') return token.text
+        if (token.kind !== 'file') return <EmojiText key={index} text={token.text} />
         if (isPrivate(token.path)) return <PrivateChip key={index} />
         const label = labelFor(token.path, token.suffix, token.text)
         if (!openable(token.path)) return label
