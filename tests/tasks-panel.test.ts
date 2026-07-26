@@ -8,6 +8,8 @@ import { reviewCount } from '../src/renderer/src/state/alerts'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
 
+Element.prototype.getAnimations ??= () => []
+
 const thread = (id: string, extra: Partial<ThreadMeta> = {}): ThreadMeta => ({
   id,
   agentId: 'a1',

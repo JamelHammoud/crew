@@ -285,11 +285,11 @@ export function MentionMenu({
               onMouseEnter={() => onHover(index)}
             />
           )
-        if (item.kind === 'doc')
+        if (item.kind === 'ref')
           return (
-            <DocRow
-              key={item.doc.page}
-              doc={item.doc}
+            <RefRow
+              key={`${item.ref.kind}:${item.ref.key}`}
+              refItem={item.ref}
               active={index === activeIndex}
               onClick={() => onPick(item)}
               onMouseEnter={() => onHover(index)}
