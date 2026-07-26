@@ -77,7 +77,7 @@ export function Label({ action, running }: { action: ToolAction; running: boolea
 }
 
 function Detail({ children }: { children: ReactNode }) {
-  return <div className="mt-1.5 mb-1 space-y-2">{children}</div>
+  return <div className="mt-2 space-y-2">{children}</div>
 }
 
 // A row that already shows everything it has is not worth a chevron. A path or
