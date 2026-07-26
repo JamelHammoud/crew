@@ -41,25 +41,26 @@ export interface ToolAction {
   icon: ToolIcon
   run: string
   done: string
+  many?: string
   prose?: boolean
 }
 
-const AGENT: ToolAction = { icon: SparkGlyph, run: 'Asking an agent', done: 'Asked an agent', prose: true }
+const AGENT: ToolAction = { icon: SparkGlyph, run: 'Asking an agent', done: 'Asked an agent', many: 'Asked agents', prose: true }
 const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', prose: true }
 
 export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thinking', prose: true }
 
 const TABLE: Array<[string, ToolAction]> = [
-  ['read readfile viewfile view cat openfile readmediafile', { icon: ReadGlyph, run: 'Reading', done: 'Read' }],
-  ['write writefile createfile create newfile savefile', { icon: WriteGlyph, run: 'Writing', done: 'Wrote' }],
+  ['read readfile viewfile view cat openfile readmediafile', { icon: ReadGlyph, run: 'Reading', done: 'Read', many: 'Read files' }],
+  ['write writefile createfile create newfile savefile', { icon: WriteGlyph, run: 'Writing', done: 'Wrote', many: 'Wrote files' }],
   [
     'edit editfile edits multiedit strreplace strreplacefile strreplaceeditor applypatch patch filechange',
-    { icon: EditGlyph, run: 'Editing', done: 'Edited' }
+    { icon: EditGlyph, run: 'Editing', done: 'Edited', many: 'Edited files' }
   ],
-  ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook' }],
+  ['notebookedit notebook', { icon: NotebookGlyph, run: 'Editing a notebook', done: 'Edited a notebook', many: 'Edited notebooks' }],
   [
     'bash shell sh commandexecution localshell powershell run runcommand exec execute terminal',
-    { icon: ShellGlyph, run: 'Running', done: 'Ran' }
+    { icon: ShellGlyph, run: 'Running', done: 'Ran', many: 'Ran commands' }
   ],
   [
     'bashoutput shelloutput processoutput readoutput',
@@ -68,7 +69,7 @@ const TABLE: Array<[string, ToolAction]> = [
   ['killbash killshell killprocess stopprocess', { icon: StopGlyph, run: 'Stopping', done: 'Stopped' }],
   [
     'grep search searchcode codesearch ripgrep searchfiles findinfiles',
-    { icon: SearchGlyph, run: 'Searching', done: 'Searched' }
+    { icon: SearchGlyph, run: 'Searching', done: 'Searched', many: 'Searched the code' }
   ],
   ['glob findfiles filesearch find', { icon: FilesGlyph, run: 'Finding files', done: 'Found files' }],
   ['ls list listdir listdirectory listfiles tree', { icon: FolderGlyph, run: 'Listing files', done: 'Listed files' }],
@@ -78,7 +79,7 @@ const TABLE: Array<[string, ToolAction]> = [
   ],
   [
     'webfetch fetchurl fetch openurl browse readurl urlfetch',
-    { icon: PageGlyph, run: 'Reading a page', done: 'Read a page' }
+    { icon: PageGlyph, run: 'Reading a page', done: 'Read a page', many: 'Read pages' }
   ],
   [
     'searchx xsearch xkeywordsearch xsemanticsearch',
