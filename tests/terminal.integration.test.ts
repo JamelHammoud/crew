@@ -2,7 +2,14 @@ import { existsSync, readFileSync, rmSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { shellFor, startingFolder, terminalEnv, Terminals, type TerminalSink } from '../src/main/terminal'
+import {
+  replayable,
+  shellFor,
+  startingFolder,
+  terminalEnv,
+  Terminals,
+  type TerminalSink
+} from '../src/main/terminal'
 
 const unix = process.platform !== 'win32'
 
