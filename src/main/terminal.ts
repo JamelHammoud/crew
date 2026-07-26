@@ -59,7 +59,11 @@ export class Terminals {
         env: terminalEnv(process.env)
       })
       this.sessions.set(id, pty)
-      pty.onData(chunk => sink.data(id, chunk))
+      pty.onData(chunk => {
+        const holder = this.sessions.get(id)
+        if (holder && holder !== pty) return
+        sink.data(id, chunk)
+      })
       // A shell that was already closed is nobody's business when it finally
       // ends. A tab reopened under the same name has a shell of its own by
       // then, and taking the old one's word for it would strike the new one
