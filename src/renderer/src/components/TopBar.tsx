@@ -4,6 +4,7 @@ import {
   CheckGlyph,
   LeaveGlyph,
   LinkGlyph,
+  MoreGlyph,
   MoonGlyph,
   PeopleGlyph,
   SignalGlyph,
@@ -35,6 +36,7 @@ export type NavTab = Exclude<Tab, 'agents'>
 export const TOP_BAR_H = 70
 
 const COMPACT_WIDTH = 760
+const COLLAPSED_NAV_WIDTH = 560
 
 const TABS: Array<{ id: NavTab; label: string }> = [
   { id: 'chat', label: 'Chat' },
@@ -61,20 +63,29 @@ export default function TopBar({
   const huddleJoined = useHuddle(s => s.joined)
   const huddleSize = useHuddle(s => s.room.peers.length)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
   const sounds = useSounds()
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
+  const [collapsedNav, setCollapsedNav] = useState(false)
 
   useEffect(() => {
     const el = headerRef.current
     if (!el) return
-    const observer = new ResizeObserver(() => setCompact(el.clientWidth <= COMPACT_WIDTH))
+    const observer = new ResizeObserver(() => {
+      setCompact(el.clientWidth <= COMPACT_WIDTH)
+      setCollapsedNav(el.clientWidth <= COLLAPSED_NAV_WIDTH)
+    })
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    if (!collapsedNav) setMoreOpen(false)
+  }, [collapsedNav])
 
   const standing =
     connection === 'reconnecting'
@@ -95,6 +106,14 @@ export default function TopBar({
     }, 900)
   }
 
+  const selectTab = (next: NavTab) => {
+    if (next !== tab) playSound(`tab.${next}`)
+    onTab(next)
+  }
+
+  const visibleTabs = collapsedNav ? TABS.filter(item => item.id === tab) : TABS
+  const hiddenTabs = collapsedNav ? TABS.filter(item => item.id !== tab) : []
+
   return (
     <header
       ref={headerRef}
@@ -106,13 +125,10 @@ export default function TopBar({
       </span>
 
       <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">
-        {TABS.map(t => (
+        {visibleTabs.map(t => (
           <Tooltip key={t.id} label={t.label} disabled={!compact}>
             <button
-              onClick={() => {
-                if (t.id !== tab) playSound(`tab.${t.id}`)
-                onTab(t.id)
-              }}
+              onClick={() => selectTab(t.id)}
               aria-label={t.label}
               className={`top-bar-tab flex items-center justify-center h-10 px-4 rounded-full text-base font-semibold transition-all duration-150 active:scale-95 ${
                 tab === t.id
@@ -125,6 +141,36 @@ export default function TopBar({
             </button>
           </Tooltip>
         ))}
+        {collapsedNav && (
+          <div className="relative">
+            <Tooltip label="More" disabled={moreOpen}>
+              <button
+                onClick={() => setMoreOpen(open => !open)}
+                aria-label="More"
+                aria-expanded={moreOpen}
+                aria-haspopup="menu"
+                className={`top-bar-tab flex h-10 w-10 items-center justify-center rounded-full transition-all duration-150 active:scale-95 ${
+                  moreOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:bg-fg/[0.04] hover:text-fg-secondary'
+                }`}
+              >
+                <MoreGlyph className="h-5 w-5" />
+              </button>
+            </Tooltip>
+            <Popover open={moreOpen} onClose={() => setMoreOpen(false)} align="center" className="min-w-40">
+              {hiddenTabs.map(item => (
+                <MenuItem
+                  key={item.id}
+                  icon={<TabIcon tab={item.id} />}
+                  label={item.label}
+                  onClick={() => {
+                    setMoreOpen(false)
+                    selectTab(item.id)
+                  }}
+                />
+              ))}
+            </Popover>
+          </div>
+        )}
       </nav>
 
       <div className={`app-no-drag flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
