@@ -105,7 +105,7 @@ function NodeText({ props, centered }: { props: DesignNodeProps; centered?: bool
         width: '100%',
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-word',
-        ...(centered ? { position: 'absolute', top: '50%', transform: 'translateY(-50%)' } : {}),
+        ...(centered ? { position: 'absolute', top: '50%', transform: 'translateY(-50%)' } : textBoxStyle(props.type)),
         ...textStyle(props.type)
       }}
     >

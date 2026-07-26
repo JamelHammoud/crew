@@ -61,6 +61,20 @@ describe('design nodes', () => {
     expect(props.effects).toHaveLength(1)
   })
 
+  it('draws a node in any shape, and says so when the shape is not one it has', () => {
+    const document = freshDocument()
+    const applied = applyDesignOps(document, [
+      { op: 'node', x: 0, y: 0, shape: 'triangle', name: 'Play' },
+      { op: 'node', x: 0, y: 0, shape: 'blob' }
+    ])
+    expect(propsOf(document, applied.results[0].id!).shape).toBe('triangle')
+    expect(applied.results[1].error).toContain('shape')
+    expect(applied.put).toHaveLength(1)
+
+    applyDesignOps(document, [{ op: 'set', id: applied.results[0].id!, shape: 'star' }])
+    expect(propsOf(document, applied.results[0].id!).shape).toBe('star')
+  })
+
   it('reports a bad shape of input rather than silently ignoring it', () => {
     const document = freshDocument()
     const applied = applyDesignOps(document, [
