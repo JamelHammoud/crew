@@ -137,8 +137,6 @@ const TABLE: Array<[string, ToolAction]> = [
 
 const TOOLS = new Map(TABLE.flatMap(([names, action]) => names.split(' ').map(name => [name, action] as const)))
 
-const normalize = normalizeTool
-
 const humanize = (name: string): string => {
   const words = name
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
@@ -158,12 +156,12 @@ export function toolAction(name: string | undefined, subagent = false): ToolActi
   if (subagent) return AGENT
   const raw = (name ?? '').trim()
   if (!raw) return WORKING
-  const known = TOOLS.get(normalize(raw))
+  const known = TOOLS.get(normalizeTool(raw))
   if (known) return known
   const mcp = mcpTool(raw)
   if (mcp) {
     const label = humanize(mcp)
-    return TOOLS.get(normalize(mcp)) ?? { icon: PlugGlyph, run: label, done: label, prose: true }
+    return TOOLS.get(normalizeTool(mcp)) ?? { icon: PlugGlyph, run: label, done: label, prose: true }
   }
   const label = humanize(raw)
   return { icon: BoxGlyph, run: label, done: label, prose: true }
