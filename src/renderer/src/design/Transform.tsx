@@ -15,7 +15,7 @@ import {
   type Glyph
 } from './glyphs'
 import { alignOffset, type Align } from './align'
-import { NumberInput, Row, Section, SubLabel } from './InspectorFields'
+import { NumberInput, Row, Section, SubLabel, Trailing } from './InspectorFields'
 
 const ALIGNMENTS: Array<{ op: Align; label: string; Icon: Glyph }> = [
   { op: 'left', label: 'Align left', Icon: AlignLeftGlyph },
