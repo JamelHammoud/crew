@@ -113,10 +113,14 @@ const partsOf = (colors: readonly string[], roll: () => number): Parts => {
 
 // Every color the track has, in the order they are laid down: the light, the
 // three fields, and the ground. A cover uses all five, so the picture carries
-// the palette's whole range rather than the middle of it. A dark lobe next to a
-// bright one is what depth is here, and it costs nothing: a shade painted over
-// the top in black takes the color out of everything under it, which is what
-// turned these grey.
+// the palette's whole range rather than the middle of it. The bright end and the
+// deep end are both lobes like any other, standing wherever the id puts them.
+//
+// Neither of them is ever a layer of its own in a fixed place. A highlight
+// painted across the top and a shade dropped in the far corner give every cover
+// the same lit-from-there diagonal, and a set of covers that all read alike is
+// worse than a flat one: the whole job of these is telling one track from
+// another down a list.
 const shuffle = (parts: Parts): string[] => [parts.light, ...parts.fields, parts.ground]
 
 // Lobes ringing the middle, each solid where it is thickest, all of them wide
@@ -127,7 +131,7 @@ const bloom = (parts: Parts, roll: () => number): Layer[] => {
   const turn = roll()
   const layers: Layer[] = palette.map((color, i) => {
     const angle = (i / palette.length + turn) * Math.PI * 2
-    const reach = 0.28 + roll() * 0.2
+    const reach = 0.26 + roll() * 0.24
     return {
       image: field(
         color,
@@ -140,6 +144,13 @@ const bloom = (parts: Parts, roll: () => number): Layer[] => {
       ),
       blend: 'normal'
     }
+  })
+  // The one specular, and it rides on the light's own lobe rather than being a
+  // layer of its own, so it lands somewhere different on every cover.
+  const spark = (turn + 0.5) * Math.PI * 2
+  layers.unshift({
+    image: field(lift(parts.light, 0.24), 0.5 + Math.cos(spark) * 0.22, 0.5 + Math.sin(spark) * 0.22, 0.34, 0.3, 4, 0.7),
+    blend: 'normal'
   })
   layers.push({ image: field(parts.fields[0], 0.5, 0.5, 2.4, 2.4, 62, 1), blend: 'normal' })
   return layers
