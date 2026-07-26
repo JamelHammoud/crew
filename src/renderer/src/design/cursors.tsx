@@ -27,30 +27,46 @@ const CLOSED_HAND = [
 
 const HAND_PLACE = "translate(3.9 3.86) scale(0.9)"
 
+const SIZE = 22
+const SCALE = 0.75
+
+const TIP = { x: 7, y: 5.9 }
+const MIDDLE = { x: 14, y: 15 }
+
+const nudge = (from: number, to: number) => Number((to - from * SCALE).toFixed(4))
+
+const aimed = (point: { x: number; y: number }) => {
+  const x = Math.round(point.x * SCALE)
+  const y = Math.round(point.y * SCALE)
+  return { x, y, transform: `translate(${nudge(point.x, x)} ${nudge(point.y, y)}) scale(${SCALE})` }
+}
+
+const AT_TIP = aimed(TIP)
+const AT_MIDDLE = aimed(MIDDLE)
+
 const SHADOW =
   "<defs><filter id='drop' x='-40%' y='-40%' width='180%' height='180%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='1' stdDeviation='1.5' flood-opacity='.4'/></filter></defs>"
 
 const KEYLINE = "paint-order='stroke' stroke='white' stroke-width='2' stroke-linejoin='round' fill='black'"
 
-const svg = (art: string) =>
-  `<svg xmlns='http://www.w3.org/2000/svg' width='29' height='30' viewBox='0 0 29 30' fill='none'>${SHADOW}<g filter='url(%23drop)'>${art}</g></svg>`
+const svg = (art: string, at: { transform: string }) =>
+  `<svg xmlns='http://www.w3.org/2000/svg' width='${SIZE}' height='${SIZE}' viewBox='0 0 ${SIZE} ${SIZE}' fill='none'>${SHADOW}<g filter='url(%23drop)'><g transform='${at.transform}'>${art}</g></g></svg>`
 
-const cursor = (art: string, x: number, y: number, fallback: string) =>
-  `url("data:image/svg+xml,${svg(art)}") ${x} ${y}, ${fallback}`
+const cursor = (art: string, at: { x: number; y: number; transform: string }, fallback: string) =>
+  `url("data:image/svg+xml,${svg(art, at)}") ${at.x} ${at.y}, ${fallback}`
 
 const arrow = cursor(
   `<path d='${ARROW_BODY}' fill='black'/><path d='${ARROW_EDGE}' stroke='white'/>`,
-  7,
-  6,
+  AT_TIP,
   'default'
 )
 
-const beam = cursor(`<path d='${BEAM}' ${KEYLINE}/>`, 14, 15, 'text')
+const beam = cursor(`<path d='${BEAM}' ${KEYLINE}/>`, AT_MIDDLE, 'text')
 
-const crosshair = cursor(`<path d='${CROSSHAIR}' ${KEYLINE}/>`, 14, 15, 'crosshair')
+const crosshair = cursor(`<path d='${CROSSHAIR}' ${KEYLINE}/>`, AT_MIDDLE, 'crosshair')
 
 const hand = (art: string, fallback: string) =>
-  cursor(`<path d='${art}' transform='${HAND_PLACE}' ${KEYLINE}/>`, 14, 15, fallback)
+  cursor(`<path d='${art}' transform='${HAND_PLACE}' ${KEYLINE}/>`, AT_MIDDLE, fallback)
 
 export const DESIGN_CURSORS: Partial<Record<`--tl-cursor-${TLCursorType}`, string>> = {
   '--tl-cursor-default': arrow,
@@ -61,6 +77,8 @@ export const DESIGN_CURSORS: Partial<Record<`--tl-cursor-${TLCursorType}`, strin
   '--tl-cursor-grab': hand(OPEN_HAND, 'grab'),
   '--tl-cursor-grabbing': hand(CLOSED_HAND, 'grabbing')
 }
+
+export const ARROW_TIP = { x: AT_TIP.x, y: AT_TIP.y }
 
 export function applyDesignCursors(container: HTMLElement): void {
   for (const [name, value] of Object.entries(DESIGN_CURSORS)) container.style.setProperty(name, value)
@@ -74,14 +92,16 @@ export function CursorArrow({ color }: { color: string }) {
   return (
     <svg
       aria-hidden
-      width="29"
-      height="30"
-      viewBox="0 0 29 30"
+      width={SIZE}
+      height={SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
       fill="none"
       style={{ filter: 'drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.4))' }}
     >
-      <path d={ARROW_BODY} fill={color} />
-      <path d={ARROW_EDGE} stroke="white" />
+      <g transform={AT_TIP.transform}>
+        <path d={ARROW_BODY} fill={color} />
+        <path d={ARROW_EDGE} stroke="white" />
+      </g>
     </svg>
   )
 }
