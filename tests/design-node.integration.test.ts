@@ -27,9 +27,9 @@ describe('design nodes', () => {
         h: 220,
         name: 'Card',
         radius: 20,
-        fills: [{ type: 'solid', color: '#141414', opacity: 1 }],
-        strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid' }],
-        effects: [{ type: 'shadow', x: 0, y: 8, blur: 24, spread: -4, color: '#00000059' }],
+        fills: [{ type: 'solid', color: '#141414', opacity: 1, visible: true }],
+        strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid', visible: true }],
+        effects: [{ type: 'shadow', x: 0, y: 8, blur: 24, spread: -4, color: '#00000059', visible: true }],
         layout: { direction: 'column', gap: 12, padding: [20, 20, 20, 20] }
       }
     ])
