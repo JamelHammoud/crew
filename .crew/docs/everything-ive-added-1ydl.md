@@ -21,4 +21,4 @@ For July 20th I have added the ability to add symbols to headings in docs that i
 
 Finally I added that you can mention agents inside of it. You can mention agents inside of not just the regular chat but the chat that you started with. For example say I started a chat with Claude, Opus 4.8, and midway through I want to change it to Fable then I can have Fable working on it. Or say if I run out of Claude users completely I can just change to a Codex model like 5.6 Sol.
 
-That's basically what I've done for this day. Right now I am working on the usage limits on how they're going to look. Let me know what you think and you can also just put some notes in here if you want./
+That's basically what I've done for this day. Right now I am working on the usage limits on how they're going to look. Let me know what you think and you can also just put some notes in here if you want.
