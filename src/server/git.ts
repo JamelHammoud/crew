@@ -65,9 +65,9 @@ export class GitSync {
   }
 
   // A pass that has not started yet is the pass everyone asking now wants: it
-  // commits whatever is on disk when it runs, so a second one behind it would
-  // find nothing left to do. Only a pass already under way is waited out, which
-  // holds the queue at one running and one waiting however often this is called.
+  // commits whatever is on disk by the time it runs, so a second one queued
+  // behind it would find nothing left to do. Only a pass already under way is
+  // waited out, which holds the queue at one running and one waiting.
   syncNow(message = 'crew sync'): Promise<void> {
     if (this.waiting) return this.waiting
     const pass = this.enqueue(() => {
