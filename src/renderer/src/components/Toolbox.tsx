@@ -21,14 +21,15 @@ import ToolMarkView from './toolMark'
 import { HeaderButton, Rule, SheetHeader, Tile } from './toolboxParts'
 
 // A built-in is the same button as one a crew builds, with the app's own hand
-// behind it rather than an action someone wrote down.
+// behind it rather than an action someone wrote down. It lights the same way a
+// built tool does, while the thing it opens is live.
 interface Builtin {
   id: string
   name: string
   mark: Glyph
-  soon?: boolean
+  on?: boolean
   panel?: boolean
-  run?: () => void
+  run: () => void
 }
 
 const SAID = 1200
