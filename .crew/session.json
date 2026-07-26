@@ -125,7 +125,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785029072136,
+        "fetchedAt": 1785029126239,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -214,7 +214,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785029072137,
+        "fetchedAt": 1785029126242,
         "windows": [
           {
             "key": "primary",
@@ -225,7 +225,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785029067223
+        "asOf": 1785029101448
       }
     },
     {
@@ -309,7 +309,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785029072137,
+        "fetchedAt": 1785029126242,
         "windows": [
           {
             "key": "primary",
@@ -320,7 +320,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785029067223
+        "asOf": 1785029101448
       }
     },
     {
@@ -428,7 +428,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785029072136,
+        "fetchedAt": 1785029126239,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -541,7 +541,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785029072136,
+        "fetchedAt": 1785029126239,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
