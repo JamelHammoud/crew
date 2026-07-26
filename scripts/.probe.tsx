@@ -38,13 +38,13 @@ function Bar() {
 }
 
 const GROUPS: [string, string[]][] = [
-  ['TEXT', ['paragraph', 'heading', 'heading2', 'heading3', 'quote']],
-  ['LISTS', ['bulletList', 'numberedList', 'checkList']],
-  ['BLOCKS', ['codeBlock', 'divider', 'table', 'image']]
+  ['TEXT', ['Paragraph', 'Heading 1', 'Heading 2', 'Heading 3', 'Quote']],
+  ['LISTS', ['Bulleted list', 'Numbered list', 'To-do list']],
+  ['BLOCKS', ['Code', 'Divider', 'Table', 'Image']]
 ]
 
 function Menu() {
-  const byType = new Map(DOC_BLOCKS.map(block => [block.type, block]))
+  const byType = new Map(DOC_BLOCKS.map(block => [block.title, block]))
   return (
     <div
       style={{
@@ -103,7 +103,7 @@ function Menu() {
 }
 
 function Big() {
-  const byType = new Map(DOC_BLOCKS.map(block => [block.type, block]))
+  const byType = new Map(DOC_BLOCKS.map(block => [block.title, block]))
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, width: 420 }}>
       {GROUPS.flatMap(([, types]) => types).map(type => {
