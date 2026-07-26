@@ -98,6 +98,18 @@ describe('the card behind a doc pill', () => {
     expect(card.textContent).not.toContain('# Heading')
   })
 
+  it('draws a checkbox for a task line and no bullet beside it', () => {
+    boot(['- [ ] todo', '- [x] done'].join('\n'))
+    const card = hover('Plan')
+    expect(card.querySelectorAll('input')).toHaveLength(0)
+    const tasks = card.querySelectorAll('li.md-task')
+    expect(tasks).toHaveLength(2)
+    for (const task of tasks) expect(getComputedStyle(task).listStyleType).not.toBe('disc')
+    expect(card.querySelectorAll('.md-check')).toHaveLength(2)
+    expect(card.querySelectorAll('.md-check[data-checked]')).toHaveLength(1)
+    expect(card.querySelector('ul')?.className).toContain('md-tasks')
+  })
+
   it('leaves the card at the title alone when the doc is empty', () => {
     boot('')
     const card = hover('Plan')
