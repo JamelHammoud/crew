@@ -52,34 +52,6 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       rasp: { hz: 1600, q: 1.2, gain: 0.16, length: 0.01 }
     }
   ],
-  'tab.agents': [
-    {
-      hz: 620,
-      at: 0,
-      length: 0.2,
-      gain: 0.6,
-      partials: [1, 3.94, 10.2],
-      bend: 1.16,
-      bendTime: 0.014,
-      tone: 4200,
-      wet: 0.18,
-      pan: -0.08,
-      rasp: { hz: 900, q: 1.1, gain: 0.3, length: 0.014 }
-    },
-    {
-      hz: 775,
-      at: 0.014,
-      length: 0.24,
-      gain: 0.5,
-      partials: [1, 3.94, 10.2],
-      bend: 1.16,
-      bendTime: 0.014,
-      tone: 4600,
-      wet: 0.18,
-      pan: 0.08,
-      rasp: { hz: 1150, q: 1.1, gain: 0.22, length: 0.012 }
-    }
-  ],
   'tab.docs': [
     {
       hz: 700,
