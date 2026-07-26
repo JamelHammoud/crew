@@ -36,6 +36,25 @@ function serveAttachment(session: CrewSession, file: string, res: http.ServerRes
     .pipe(res)
 }
 
+// A track the crew put there themselves, played from everyone's own copy. The
+// name is a uuid the host wrote, so there is nothing in it to walk out of the
+// folder with.
+function serveMusic(session: CrewSession, file: string, res: http.ServerResponse): void {
+  const full = session.musicPath(file)
+  if (!full) {
+    res.writeHead(404)
+    res.end()
+    return
+  }
+  res.writeHead(200, {
+    'content-type': mimeForMusic(file),
+    'cache-control': 'public, max-age=31536000, immutable'
+  })
+  fs.createReadStream(full)
+    .on('error', () => res.end())
+    .pipe(res)
+}
+
 function receiveAttachment(session: CrewSession, req: http.IncomingMessage, res: http.ServerResponse): void {
   const mime = (req.headers['content-type'] ?? '').split(';')[0].trim()
   let name = 'image'
@@ -137,6 +156,11 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
     const attachment = /^\/attachments\/([^/?#]+)$/.exec(req.url ?? '')
     if (attachment) {
       serveAttachment(session, decodeURIComponent(attachment[1]), res)
+      return
+    }
+    const music = /^\/music\/([^/?#]+)$/.exec(req.url ?? '')
+    if (music) {
+      serveMusic(session, decodeURIComponent(music[1]), res)
       return
     }
     const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(req.url ?? '')
