@@ -52,9 +52,6 @@ function repoRelative(root: string, absolute: string): string {
 
 const trimPath = (target: string): string => target.replace(/^\.?\//, '').replace(/\/+$/, '')
 
-const imageType = (absolute: string): string | null =>
-  IMAGE_TYPES[path.extname(absolute).slice(1).toLowerCase()] ?? null
-
 async function listDir(label: string, absolute: string): Promise<RepoFile> {
   const dirents = await fs.readdir(absolute, { withFileTypes: true })
   const entries: FileEntry[] = dirents
