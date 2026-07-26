@@ -112,6 +112,10 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = makeTab()
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
+  addTerminal: () => {
+    const tab = { ...makeTab(), kind: 'terminal' as const }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
   selectTab: id => set({ activeTabId: id }),
   closeTab: id =>
     set(s => {
