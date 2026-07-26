@@ -170,7 +170,9 @@ export function NumberInput({
   onChange,
   min = -99999,
   max = 99999,
-  suffix
+  suffix,
+  auto,
+  after
 }: {
   label?: string
   icon?: ReactNode
@@ -179,8 +181,10 @@ export function NumberInput({
   min?: number
   max?: number
   suffix?: string
+  auto?: number
+  after?: ReactNode
 }) {
-  const { input, gesture } = useNumberField({ value, onChange, min, max })
+  const { input, gesture } = useNumberField({ value, onChange, min, max, auto })
   const lead = icon ?? (label ? <span className="text-xs">{label}</span> : null)
 
   return (
@@ -196,6 +200,7 @@ export function NumberInput({
         className="w-full min-w-0 bg-transparent text-xs tabular-nums text-fg outline-none"
       />
       {suffix && <span className="shrink-0 text-xs text-fg-faint">{suffix}</span>}
+      {after}
     </Shell>
   )
 }
