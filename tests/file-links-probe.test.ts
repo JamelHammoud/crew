@@ -543,7 +543,7 @@ describe('steps and thinking', () => {
   it('opens a file an agent named while thinking, without the backticks', async () => {
     const thought = 'Next I will read `src/app.ts:3` and then src/other.ts'
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: thought }) }))
-    fireEvent.click(screen.getByText('Thinking'))
+    fireEvent.click(screen.getByText('Thought'))
     const link = await screen.findByText('src/app.ts:3')
     expect(document.body.textContent).not.toContain('`')
     expect(document.body.textContent).toContain('src/other.ts')
@@ -562,7 +562,7 @@ describe('steps and thinking', () => {
 
   it('hides a thought about a file on someone else’s computer', async () => {
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: 'I saved /Users/ali/Desktop/notes.md' }) }))
-    fireEvent.click(screen.getByText('Thinking'))
+    fireEvent.click(screen.getByText('Thought'))
     await screen.findByText('Private file')
     expect(document.body.textContent).not.toContain('/Users/ali')
   })
