@@ -24,6 +24,7 @@ import {
   type CrewRef
 } from '../shared/refs'
 import {
+  huddleRecordId,
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
   trimEvents,
