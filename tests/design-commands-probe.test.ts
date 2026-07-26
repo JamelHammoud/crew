@@ -3,7 +3,18 @@ import { describe, expect, it } from 'vitest'
 import { corner, nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
 
-const { availableCommands, DESIGN_COMMANDS, runCommand } = await import('../src/renderer/src/design/commands')
+const { availableCommands, commandForKey, DESIGN_COMMANDS, runCommand } = await import(
+  '../src/renderer/src/design/commands'
+)
+const { chordHint } = await import('../src/renderer/src/design/designKeys')
+type Chord = Parameters<typeof chordHint>[0]
+
+const chord = (keys: Chord) => ({
+  key: keys.shift ? keys.key.toUpperCase() : keys.key,
+  metaKey: !!keys.meta,
+  shiftKey: !!keys.shift,
+  ctrlKey: !!keys.ctrl
+})
 const { maskCandidate, maskOf, removeMask, useAsMask } = await import('../src/renderer/src/design/mask')
 const { nodeOutline } = await import('../src/renderer/src/design/nodeShape')
 
