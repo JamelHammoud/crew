@@ -487,6 +487,21 @@ export const SearchGlyph = glyph(
   </>
 )
 
+export const ImageGlyph = glyph(
+  <>
+    <rect x="4" y="5" width="16" height="14" rx="2.5" />
+    <circle cx="9" cy="10" r="1.5" />
+    <path d="m5 17 4.5-4.5 3 3L16 12l3 3" />
+  </>
+)
+
+export const StyleGlyph = glyph(
+  <>
+    <path d="M12 4 6 20h12L12 4Z" />
+    <path d="M8.5 14h7" />
+  </>
+)
+
 export const LayersGlyph = glyph(
   <>
     <path d="m12 3.5 8.5 4.5-8.5 4.5L3.5 8Z" />
