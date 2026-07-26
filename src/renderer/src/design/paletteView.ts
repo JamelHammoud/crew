@@ -1,4 +1,4 @@
-import type { Editor, TLShape } from 'tldraw'
+import type { Editor, TLShape, TLTextShape } from 'tldraw'
 import { BASE_TYPE, type Stroke, type TypeStyle } from '../../../shared/designNode'
 import { paintColor, setTextShapeType, textShapeType, typePaint } from './textType'
 import {
@@ -51,7 +51,7 @@ function textShapeView(editor: Editor, shape: TLTextShape): NodeView {
 }
 
 export function paletteView(editor: Editor, shape: TLShape): NodeView {
-  if (shape.type === 'text') return textShapeView(editor, shape)
+  if (shape.type === 'text') return textShapeView(editor, shape as TLTextShape)
   const props = shape.props as Record<string, unknown>
   const has = (key: string) => key in props
   const view = emptyView(shape.id)
