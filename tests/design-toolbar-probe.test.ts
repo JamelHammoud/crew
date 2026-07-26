@@ -84,14 +84,18 @@ describe('the design toolbar', () => {
     expect(pill.contains(screen.getByLabelText('Move'))).toBe(true)
   })
 
-  it('leaves the arrow and the chevron evenly set in the pill', () => {
+  it('sets every mark the same way in from the ends of its own pill', () => {
     toolbar()
-    expect(screen.getByLabelText('Move').className).toContain('pl-1')
-    expect(screen.getByLabelText('Move tools options').className).toContain('pr-1')
+    expect(step(screen.getByLabelText('Move').className, 'pl')).toBe(8)
+    expect(step(screen.getByLabelText('Move tools options').className, 'pr')).toBe(8)
+    expect(step(screen.getByLabelText('Text').className, 'px')).toBe(8)
+    expect(step(screen.getByLabelText('Note').className, 'px')).toBe(8)
   })
 
-  it('holds the pills clear of the rounded ends of the bar', () => {
+  it('stands in from the ends of the bar by the sliver it leaves above and below a pill', () => {
     toolbar()
-    expect(screen.getByRole('toolbar').className).toContain('px-3')
+    const bar = screen.getByRole('toolbar')
+    const pill = screen.getByLabelText('Move tools options').parentElement!
+    expect(step(bar.className, 'px')).toBe((step(bar.className, 'h')! - step(pill.className, 'h')!) / 2)
   })
 })
