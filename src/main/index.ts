@@ -139,6 +139,16 @@ function terminalsFor(sender: WebContents): Terminals {
   return made
 }
 
+// A login shell reads the whole profile before it says anything, so one is
+// started for every window as soon as the folder a terminal would open in is
+// known, rather than when somebody asks for a tab and watches it blink.
+function warmTerminals(): void {
+  const folder = session.projectFolder()
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (!win.webContents.isDestroyed()) terminalsFor(win.webContents).warm(folder)
+  }
+}
+
 function createWindow(): void {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow(
