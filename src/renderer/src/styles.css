@@ -768,6 +768,13 @@ body {
   @apply font-mono text-[13px] bg-ink-800 text-fg-faint rounded-md px-1.5 py-0.5 cursor-default;
 }
 
+/* Mono set beside the sans on one line comes out sitting high: the two faces
+   carry their text at different heights, and a row centers boxes rather than
+   baselines. A pixel down puts them on the same line. */
+.mono-inline {
+  @apply font-mono relative top-px;
+}
+
 .md a.file-link {
   @apply no-underline;
 }
