@@ -141,7 +141,7 @@ export function RefMention({
             }
           : undefined
       }
-      className={`inline-flex items-center gap-0.5 align-baseline font-medium rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
+      className={`inline-flex items-center gap-1 align-baseline font-medium rounded-md px-1.5 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
         target ? 'cursor-pointer' : 'cursor-default'
       }`}
     >
