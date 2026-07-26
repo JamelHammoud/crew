@@ -682,7 +682,7 @@ export class CrewSession {
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments, {
       messageId: randomUUID(),
-      mentions: opts.mentions ?? [agent.id],
+      mentions: [agent.id],
       replyTo: opts.replyTo
     })
     return threadId
@@ -1920,7 +1920,8 @@ export class CrewSession {
       .map(e => {
         if (e.kind === 'message') {
           const images = (e.attachments ?? []).map(a => `[image: ${a.name}]`).join(' ')
-          return `${e.authorName}: ${[e.text, images].filter(Boolean).join(' ')}`
+          const reply = e.replyTo ? `, replying to ${e.replyTo.authorName}: ${JSON.stringify(e.replyTo.text)}` : ''
+          return `${e.authorName}${reply}: ${[e.text, images].filter(Boolean).join(' ')}`
         }
         if (e.ok && e.text) return `${e.agentLabel}: ${e.text}`
         return null
