@@ -110,7 +110,7 @@ describe('thread navigation', () => {
 
     fireEvent.click(screen.getAllByLabelText('Reply').at(-1)!)
     expect(screen.getByText('Replying to Claude 2')).toBeTruthy()
-    expect(screen.getByText('Claude exited with code 1')).toBeTruthy()
+    expect(screen.getAllByText('Claude exited with code 1')).toHaveLength(2)
     fireEvent.click(screen.getByLabelText('Cancel reply'))
     expect(screen.queryByText('Replying to Claude 2')).toBeNull()
   })
