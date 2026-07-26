@@ -26,16 +26,13 @@ export function FilePathLink({
   )
 }
 
-function Chip({ icon: Icon, running }: { icon: ToolIcon; running: boolean }) {
+function Mark({ icon: Icon, running }: { icon: ToolIcon; running: boolean }) {
   return (
-    <span className="relative flex items-center justify-center shrink-0 w-[22px] h-[22px] rounded-full bg-ink-800">
-      <Icon
-        className={`w-3.5 h-3.5 transition-colors ${
-          running ? 'text-fg' : 'text-fg-muted group-hover:text-fg-secondary'
-        }`}
-      />
-      {running && <Spinner size={22} className="absolute inset-0 text-ink-500" />}
-    </span>
+    <Icon
+      className={`w-4 h-4 shrink-0 transition-colors ${
+        running ? 'text-fg pulse-soft' : 'text-fg-muted group-hover:text-fg-secondary'
+      }`}
+    />
   )
 }
 
@@ -47,10 +44,6 @@ function Chevron({ open }: { open: boolean }) {
       }`}
     />
   )
-}
-
-function Rail() {
-  return <span aria-hidden className="absolute left-[67px] -top-2 h-3 w-px bg-ink-700" />
 }
 
 export function Counts({ added, removed, size = 'xs' }: { added: number; removed: number; size?: 'xs' | 'sm' }) {
@@ -121,8 +114,7 @@ export default function StepRow({ item, linked }: { item: ThreadItem; linked?: b
   const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
   return (
-    <div className={`relative pl-14 animate-rise ${linked ? '-mt-3' : ''}`}>
-      {linked && <Rail />}
+    <div className={`pl-14 animate-rise ${linked ? '-mt-3' : ''}`}>
       <button
         onClick={() => expandable && setOpen(!expanded)}
         className={`group flex items-center gap-2.5 max-w-full text-sm text-left -ml-2 pl-2 pr-3 py-1 rounded-full transition-colors ${
