@@ -1,5 +1,3 @@
-import { ChevronLeftIcon } from '@heroicons/react/20/solid'
-import { ArchiveBoxIcon, CheckIcon, ExclamationTriangleIcon, EyeIcon } from '@heroicons/react/24/outline'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import AgentIcon from '../components/AgentIcon'
 import Composer from '../components/Composer'
@@ -20,6 +18,7 @@ import { buildThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '
 import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { mentionsIn } from '../../../shared/llm'
+import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
 import { useCrew } from '../state/store'
 
 const BACK_WIDTH = 40
@@ -194,7 +193,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     aria-label="Back to chat"
                     className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
                   >
-                    <ChevronLeftIcon className="w-5 h-5" />
+                    <ChevronLeftGlyph className="w-5 h-5" />
                   </button>
                 </Tooltip>
                 <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0">
@@ -213,10 +212,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     </>
                   ) : (
                     <>
-                      {state === 'done' && <CheckIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
-                      {state === 'ready' && <EyeIcon strokeWidth={2} className="w-5 h-5 text-fg" />}
-                      {state === 'failed' && <ExclamationTriangleIcon strokeWidth={2} className="w-5 h-5 text-danger" />}
-                      {state === 'archived' && <ArchiveBoxIcon strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
+                      {state === 'done' && <CheckGlyph strokeWidth={2} className="w-5 h-5 text-fg" />}
+                      {state === 'ready' && <EyeGlyph strokeWidth={2} className="w-5 h-5 text-fg" />}
+                      {state === 'failed' && <WarningGlyph strokeWidth={2} className="w-5 h-5 text-danger" />}
+                      {state === 'archived' && <ArchiveGlyph strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
                       <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
                         {THREAD_STATE_LABELS[state]}
                       </span>

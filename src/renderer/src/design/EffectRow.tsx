@@ -1,8 +1,8 @@
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useState } from 'react'
 import type { Effect } from '../../../shared/designNode'
 import { Popover } from '../components/Popover'
 import Select from '../components/Select'
+import { ChevronDownGlyph } from '../icons'
 import { BlurGlyph, ShadowGlyph } from './glyphs'
 import { ColorInput, NumberInput, Row, SubLabel } from './InspectorFields'
 
@@ -48,7 +48,7 @@ export default function EffectRow({ effect, onChange }: { effect: Effect; onChan
       >
         <Glyph className="w-4 h-4 shrink-0 text-fg-muted" />
         <span className="flex-1 truncate">{labelOf(effect)}</span>
-        <ChevronDownIcon
+        <ChevronDownGlyph
           className={`w-3.5 h-3.5 shrink-0 text-fg-muted transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>

@@ -1,10 +1,10 @@
-import { ArrowTopRightOnSquareIcon, CheckCircleIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { emptyPresence, type PresenceSnapshot } from '../../../shared/presence'
 import Badge from '../components/Badge'
 import { CrewMark } from '../components/CrewMark'
 import { MenuDivider, MenuItem } from '../components/Popover'
 import PresenceList from '../components/PresenceList'
+import { CheckCircleGlyph, ExternalLinkGlyph } from '../icons'
 import { showTheme } from '../state/theme'
 
 const LIST = 400
@@ -60,13 +60,13 @@ export default function TrayPanel(): ReactElement {
       <MenuDivider />
       {waiting > 0 && (
         <MenuItem
-          icon={<CheckCircleIcon />}
+          icon={<CheckCircleGlyph />}
           label={waiting === 1 ? '1 task needs review' : `${waiting} tasks need review`}
           onClick={() => window.crew.openWindow()}
         />
       )}
       <MenuItem
-        icon={<ArrowTopRightOnSquareIcon />}
+        icon={<ExternalLinkGlyph />}
         label="Open Crew"
         onClick={() => window.crew.openWindow()}
       />

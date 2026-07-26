@@ -1,14 +1,5 @@
-import {
-  ArrowsPointingInIcon,
-  ArrowsPointingOutIcon,
-  ChevronDownIcon,
-  ComputerDesktopIcon,
-  MicrophoneIcon,
-  PhoneXMarkIcon,
-  VideoCameraIcon,
-  VideoCameraSlashIcon
-} from '@heroicons/react/16/solid'
 import { useState, type ReactNode } from 'react'
+import { CameraGlyph, CameraOffGlyph, ChevronDownGlyph, CollapseGlyph, DesktopGlyph, ExpandGlyph, HangupGlyph, MicGlyph } from '../../icons'
 import type { InputKind } from '../../media/devices'
 import { useHuddle } from '../../state/huddle'
 import Tooltip from '../Tooltip'
@@ -68,7 +59,7 @@ function Control({
               open ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
             }`}
           >
-            <ChevronDownIcon className="w-2.5 h-2.5" />
+            <ChevronDownGlyph className="w-2.5 h-2.5" />
           </button>
           <DeviceMenu kind={kind} open={open} onClose={() => setOpen(false)} />
         </>
@@ -99,7 +90,7 @@ export default function HuddleControls() {
         lit={micOn && talking}
         onClick={() => void toggleMic()}
       >
-        <MicrophoneIcon className="w-[18px] h-[18px]" />
+        <MicGlyph className="w-[18px] h-[18px]" />
       </Control>
       <Control
         label={cameraOn ? 'Stop video' : 'Start video'}
@@ -108,9 +99,9 @@ export default function HuddleControls() {
         onClick={() => void toggleCamera()}
       >
         {cameraOn ? (
-          <VideoCameraIcon className="w-[18px] h-[18px]" />
+          <CameraGlyph className="w-[18px] h-[18px]" />
         ) : (
-          <VideoCameraSlashIcon className="w-[18px] h-[18px]" />
+          <CameraOffGlyph className="w-[18px] h-[18px]" />
         )}
       </Control>
       <Control
@@ -118,18 +109,18 @@ export default function HuddleControls() {
         active={sharing}
         onClick={() => (sharing ? stopSharing() : setPicking(true))}
       >
-        <ComputerDesktopIcon className="w-[18px] h-[18px]" />
+        <DesktopGlyph className="w-[18px] h-[18px]" />
       </Control>
       <Control label={expanded ? 'Shrink' : 'Expand'} onClick={() => setExpanded(!expanded)}>
         {expanded ? (
-          <ArrowsPointingInIcon className="w-[18px] h-[18px]" />
+          <CollapseGlyph className="w-[18px] h-[18px]" />
         ) : (
-          <ArrowsPointingOutIcon className="w-[18px] h-[18px]" />
+          <ExpandGlyph className="w-[18px] h-[18px]" />
         )}
       </Control>
       <span className="w-px h-6 bg-fg/[0.08] mx-1" />
       <Control label="Leave" danger onClick={leave}>
-        <PhoneXMarkIcon className="w-[18px] h-[18px]" />
+        <HangupGlyph className="w-[18px] h-[18px]" />
       </Control>
     </div>
   )

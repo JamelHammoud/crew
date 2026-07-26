@@ -1,7 +1,7 @@
-import { ArrowUpTrayIcon, PhotoIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useRef, useState } from 'react'
 import { IMAGE_TYPES } from '../../../shared/attachments'
 import type { PooledAgent } from '../../../shared/llm'
+import { PhotoGlyph, TrashGlyph, UploadGlyph } from '../icons'
 import AgentIcon from './AgentIcon'
 import { MenuItem, Popover } from './Popover'
 
@@ -32,12 +32,12 @@ export default function AgentPhoto({
         aria-label={agent.avatar ? 'Change photo' : 'Add a photo'}
         className="absolute inset-0 rounded-full flex items-center justify-center bg-ink-900/70 text-fg opacity-0 transition-all duration-150 hover:opacity-100 focus-visible:opacity-100 active:scale-95"
       >
-        <PhotoIcon className="w-4 h-4" />
+        <PhotoGlyph className="w-4 h-4" />
       </button>
       <Popover open={menu} onClose={() => setMenu(false)} align="start">
-        <MenuItem icon={<ArrowUpTrayIcon />} label="Change photo" onClick={pick} />
+        <MenuItem icon={<UploadGlyph />} label="Change photo" onClick={pick} />
         <MenuItem
-          icon={<TrashIcon />}
+          icon={<TrashGlyph />}
           label="Remove photo"
           danger
           onClick={() => {

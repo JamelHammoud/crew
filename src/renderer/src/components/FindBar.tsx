@@ -1,5 +1,5 @@
-import { ChevronDownIcon, ChevronUpIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type RefObject } from 'react'
+import { ChevronDownGlyph, ChevronUpGlyph, CloseGlyph, SearchGlyph } from '../icons'
 
 // Per-char lowercase that never changes string length, so match offsets stay
 // valid UTF-16 offsets into the original text nodes (e.g. 'İ'.toLowerCase() is 2 chars).
@@ -147,7 +147,7 @@ export default function FindBar({
   if (!open) return null
   return (
     <div className="glass fixed top-[78px] right-8 z-40 flex w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
-      <MagnifyingGlassIcon className="w-4 h-4 text-fg-muted shrink-0 mr-1.5" />
+      <SearchGlyph className="w-4 h-4 text-fg-muted shrink-0 mr-1.5" />
       <input
         ref={inputRef}
         autoFocus
@@ -174,7 +174,7 @@ export default function FindBar({
         aria-label="Previous match"
         className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
       >
-        <ChevronUpIcon className="w-3.5 h-3.5" />
+        <ChevronUpGlyph className="w-3.5 h-3.5" />
       </button>
       <button
         onClick={() => step(1)}
@@ -183,14 +183,14 @@ export default function FindBar({
         aria-label="Next match"
         className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
       >
-        <ChevronDownIcon className="w-3.5 h-3.5" />
+        <ChevronDownGlyph className="w-3.5 h-3.5" />
       </button>
       <button
         onClick={() => setOpen(false)}
         aria-label="Close find"
         className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
       >
-        <XMarkIcon className="w-3.5 h-3.5" />
+        <CloseGlyph className="w-3.5 h-3.5" />
       </button>
     </div>
   )

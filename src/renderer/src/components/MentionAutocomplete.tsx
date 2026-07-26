@@ -1,10 +1,10 @@
-import { DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
 import { memberMentionCandidates } from '../../../shared/people'
 import type { MemberInfo } from '../../../shared/protocol'
 import { crewRefs, refCandidates, type CrewRef } from '../../../shared/refs'
 import { FrameGlyph } from '../design/glyphs'
+import { DocGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
@@ -198,7 +198,7 @@ function RefRow({
   onClick: () => void
   onMouseEnter: () => void
 }) {
-  const Icon = refItem.kind === 'board' ? FrameGlyph : DocumentTextIcon
+  const Icon = refItem.kind === 'board' ? FrameGlyph : DocGlyph
   return (
     <button
       onClick={onClick}

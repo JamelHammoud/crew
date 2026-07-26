@@ -1,6 +1,6 @@
-import { CheckIcon, ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { CheckGlyph, ChevronRightGlyph } from '../icons'
 
 export function Popover({
   open,
@@ -176,7 +176,7 @@ export function MenuItem({
       {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
       <span className="flex-1 truncate">{label}</span>
       {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
-      {checked && <CheckIcon className="w-4 h-4 shrink-0 text-fg" />}
+      {checked && <CheckGlyph className="w-4 h-4 shrink-0 text-fg" />}
     </button>
   )
 }
@@ -212,7 +212,7 @@ export function SubMenu({
       >
         {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
         <span className="flex-1 truncate">{label}</span>
-        <ChevronRightIcon className="w-3.5 h-3.5 shrink-0 text-fg/40" />
+        <ChevronRightGlyph className="w-3.5 h-3.5 shrink-0 text-fg/40" />
       </div>
       {open && at && (
         <Popover open onClose={() => setOpen(false)} at={at} maxHeight={maxHeight}>

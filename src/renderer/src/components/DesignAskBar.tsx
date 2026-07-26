@@ -1,9 +1,9 @@
-import { ArrowUpIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, useValue } from 'tldraw'
 import { agentToAsk, agentsHere, askPrompt, lastAskAgent, rememberAskAgent } from '../design/askAgent'
 import { askAnchor, type Box } from '../design/askAnchor'
 import { layerName } from '../design/tools'
+import { ArrowUpGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
 import { AttachButton, AttachmentTray } from './Attachments'
@@ -222,7 +222,7 @@ export default function DesignAskBar({
                   aria-label="Send"
                   className="w-7 h-7 shrink-0 rounded-full bg-fg text-ink-900 grid place-items-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg/40 disabled:scale-100"
                 >
-                  <ArrowUpIcon className="w-4 h-4" />
+                  <ArrowUpGlyph className="w-4 h-4" />
                 </button>
               </Tooltip>
             </div>

@@ -1,9 +1,9 @@
-import { ClipboardDocumentListIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { slashCandidates, type SlashCommand } from '../../../shared/plan'
+import { ChecklistGlyph } from '../icons'
 
-const ICONS: Record<string, typeof ClipboardDocumentListIcon> = {
-  plan: ClipboardDocumentListIcon
+const ICONS: Record<string, typeof ChecklistGlyph> = {
+  plan: ChecklistGlyph
 }
 
 export function useSlashCommands(
@@ -73,7 +73,7 @@ export function SlashMenu({
       className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
     >
       {matches.map((command, index) => {
-        const Icon = ICONS[command.name] ?? ClipboardDocumentListIcon
+        const Icon = ICONS[command.name] ?? ChecklistGlyph
         return (
           <button
             key={command.name}

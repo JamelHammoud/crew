@@ -1,6 +1,6 @@
-import { ComputerDesktopIcon, MicrophoneIcon } from '@heroicons/react/16/solid'
 import type { ReactNode } from 'react'
 import type { HuddlePeer } from '../../../../shared/huddle'
+import { DesktopGlyph, MicGlyph } from '../../icons'
 import { useTheme } from '../../state/theme'
 import Avatar from '../Avatar'
 import { avatarColors } from '../avatarColor'
@@ -103,7 +103,7 @@ export default function HuddleTile({
       {peer.sharing && size !== 'sm' && (
         <div className={`absolute top-0 left-0 ${look.pad}`}>
           <Badge tone="quiet">
-            <ComputerDesktopIcon className="w-3 h-3" />
+            <DesktopGlyph className="w-3 h-3" />
             <span className="text-[11px] font-medium">Sharing</span>
           </Badge>
         </div>
@@ -111,7 +111,7 @@ export default function HuddleTile({
 
       <div className={`absolute inset-x-0 bottom-0 flex items-end gap-1.5 ${look.pad} pointer-events-none`}>
         <span className="min-w-0 h-6 pl-2 pr-2.5 rounded-full bg-ink-950/55 backdrop-blur-md flex items-center gap-1.5">
-          {peer.muted && <MicrophoneIcon className="w-3 h-3 shrink-0 text-danger" />}
+          {peer.muted && <MicGlyph className="w-3 h-3 shrink-0 text-danger" />}
           <span className={`${look.label} font-medium text-fg truncate`}>{peer.name}</span>
         </span>
         {self && size !== 'sm' && <Pill>You</Pill>}

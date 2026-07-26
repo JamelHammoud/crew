@@ -1,6 +1,6 @@
-import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useState, type ReactNode } from 'react'
 import type { FileChange } from '../../../shared/llm'
+import { ChevronRightGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import Counts from './Counts'
 import {
@@ -53,7 +53,7 @@ export function Mark({ icon: Icon, running }: { icon: ToolIcon; running: boolean
 
 export function Chevron({ open }: { open: boolean }) {
   return (
-    <ChevronRightIcon
+    <ChevronRightGlyph
       className={`w-3.5 h-3.5 shrink-0 text-fg-faint transition-all duration-200 ${
         open ? 'rotate-90 opacity-100' : 'opacity-0 group-hover:opacity-100'
       }`}

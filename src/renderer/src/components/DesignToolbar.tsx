@@ -1,7 +1,7 @@
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useCallback, useEffect, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape } from 'tldraw'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
+import { ChevronDownGlyph } from '../icons'
 import DesignActions from './DesignActions'
 import DesignToolMenu from './DesignToolMenus'
 import Tooltip from './Tooltip'
@@ -127,7 +127,7 @@ function Group({
             active ? 'text-ink-900/55 hover:text-ink-900' : 'text-fg/45 hover:text-fg'
           }`}
         >
-          <ChevronDownIcon className="w-3.5 h-3.5" />
+          <ChevronDownGlyph className="w-3.5 h-3.5" />
         </button>
       )}
       <DesignToolMenu

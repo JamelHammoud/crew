@@ -1,6 +1,5 @@
-import { ArrowUpIcon } from '@heroicons/react/20/solid'
-import { StopIcon } from '@heroicons/react/16/solid'
 import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
+import { ArrowUpGlyph, StopGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
 import Emoji from './Emoji'
@@ -146,7 +145,7 @@ export default function Composer({
                 aria-label="Stop"
                 className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 cursor-pointer hover:scale-105 active:scale-95"
               >
-                <StopIcon className="w-4 h-4" />
+                <StopGlyph className="w-4 h-4" />
               </button>
             </Tooltip>
           ) : (
@@ -157,7 +156,7 @@ export default function Composer({
                 aria-label={sendLabel}
                 className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
               >
-                <ArrowUpIcon className="w-5 h-5" />
+                <ArrowUpGlyph className="w-5 h-5" />
               </button>
             </Tooltip>
           )}

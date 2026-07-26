@@ -1,4 +1,4 @@
-import { ClipboardDocumentListIcon } from '@heroicons/react/16/solid'
+import { ChecklistGlyph } from '../icons'
 import type { ThreadMeta } from '../state/store'
 import Markdown from './Markdown'
 import ThreadCardShell from './ThreadCardShell'
@@ -18,7 +18,7 @@ export default function PlanCard({ thread, ts, onOpen }: { thread: ThreadMeta; t
       </div>
       <ThreadStatusBar
         thread={thread}
-        icon={<ClipboardDocumentListIcon className="w-4 h-4 text-fg shrink-0" />}
+        icon={<ChecklistGlyph className="w-4 h-4 text-fg shrink-0" />}
         label="Planning complete"
       />
     </ThreadCardShell>

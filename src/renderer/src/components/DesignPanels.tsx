@@ -1,15 +1,6 @@
-import {
-  ArrowUturnLeftIcon,
-  ArrowUturnRightIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  MinusIcon,
-  PencilIcon,
-  PlusIcon,
-  TrashIcon
-} from '@heroicons/react/16/solid'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useCanRedo, useCanUndo, useEditor, useValue } from 'tldraw'
+import { CheckGlyph, ChevronDownGlyph, MinusGlyph, PencilGlyph, PlusGlyph, RedoGlyph, TrashGlyph, UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import { HeaderButton } from './DesignControls'
 import { MenuDivider, MenuItem, Popover } from './Popover'
@@ -92,7 +83,7 @@ export function BoardSwitcher() {
         className="h-9 rounded-full pl-3.5 pr-2.5 flex items-center gap-1.5 text-base font-semibold text-fg transition-colors hover:bg-fg/[0.04]"
       >
         <span className="truncate max-w-52">{board.name}</span>
-        <ChevronDownIcon
+        <ChevronDownGlyph
           className={`w-4 h-4 shrink-0 text-fg-muted transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
         />
       </button>
@@ -110,26 +101,26 @@ export function BoardSwitcher() {
                 }`}
               >
                 <span className="truncate flex-1">{b.name}</span>
-                {b.id === current && <CheckIcon className="w-3.5 h-3.5 shrink-0" />}
+                {b.id === current && <CheckGlyph className="w-3.5 h-3.5 shrink-0" />}
               </button>
               <button
                 onClick={() => startRename(b.id, b.name)}
                 aria-label="Rename board"
                 className="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-fg-muted opacity-0 transition-opacity group-hover:opacity-100 hover:text-fg hover:bg-fg/[0.08]"
               >
-                <PencilIcon className="w-3 h-3" />
+                <PencilGlyph className="w-3 h-3" />
               </button>
               <button
                 onClick={() => deleteBoard(b.id)}
                 aria-label="Delete board"
                 className="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-fg-muted opacity-0 transition-opacity group-hover:opacity-100 hover:text-danger hover:bg-danger/10"
               >
-                <TrashIcon className="w-3 h-3" />
+                <TrashGlyph className="w-3 h-3" />
               </button>
             </div>
           ))}
           <MenuDivider />
-          <MenuItem icon={<PlusIcon />} label="New board" onClick={startCreate} />
+          <MenuItem icon={<PlusGlyph />} label="New board" onClick={startCreate} />
         </div>
       </Popover>
     </span>
@@ -153,14 +144,14 @@ export function DesignZoom() {
   return (
     <div className="flex items-center gap-1">
       <HeaderButton label="Undo" disabled={!canUndo} onClick={() => editor.undo()}>
-        <ArrowUturnLeftIcon className="w-4 h-4" />
+        <UndoGlyph className="w-4 h-4" />
       </HeaderButton>
       <HeaderButton label="Redo" disabled={!canRedo} onClick={() => editor.redo()}>
-        <ArrowUturnRightIcon className="w-4 h-4" />
+        <RedoGlyph className="w-4 h-4" />
       </HeaderButton>
       <span className="w-px h-5 bg-fg/10 mx-1.5 shrink-0" />
       <HeaderButton label="Zoom out" onClick={() => editor.zoomOut()}>
-        <MinusIcon className="w-4 h-4" />
+        <MinusGlyph className="w-4 h-4" />
       </HeaderButton>
       <button
         onClick={() => setOpen(value => !value)}
@@ -184,7 +175,7 @@ export function DesignZoom() {
         </div>
       </Popover>
       <HeaderButton label="Zoom in" onClick={() => editor.zoomIn()}>
-        <PlusIcon className="w-4 h-4" />
+        <PlusGlyph className="w-4 h-4" />
       </HeaderButton>
     </div>
   )

@@ -1,14 +1,7 @@
 import { SideMenuExtension, SuggestionMenu } from '@blocknote/core/extensions'
 import { useBlockNoteEditor, useExtension, useExtensionState } from '@blocknote/react'
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  Bars2Icon,
-  DocumentDuplicateIcon,
-  PlusIcon,
-  TrashIcon
-} from '@heroicons/react/16/solid'
 import { useLayoutEffect, useState, type DragEvent } from 'react'
+import { ArrowDownGlyph, ArrowUpGlyph, DuplicateGlyph, HandleGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import { blockHandleOffset } from './blockAnchor'
 
@@ -57,7 +50,7 @@ export default function DocSideMenu() {
         aria-label="Add a block below"
         className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors"
       >
-        <PlusIcon className="w-4 h-4" />
+        <PlusGlyph className="w-4 h-4" />
       </button>
       <span className="relative flex items-center">
         <button
@@ -71,11 +64,11 @@ export default function DocSideMenu() {
           aria-label="Block menu"
           className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors cursor-grab active:cursor-grabbing"
         >
-          <Bars2Icon className="w-4 h-4" />
+          <HandleGlyph className="w-4 h-4" />
         </button>
         <Popover open={menu} onClose={close} align="start" className="min-w-44">
           <MenuItem
-            icon={<DocumentDuplicateIcon />}
+            icon={<DuplicateGlyph />}
             label="Duplicate"
             onClick={() => {
               duplicate()
@@ -83,7 +76,7 @@ export default function DocSideMenu() {
             }}
           />
           <MenuItem
-            icon={<ArrowUpIcon />}
+            icon={<ArrowUpGlyph />}
             label="Move up"
             onClick={() => {
               editor.moveBlocksUp(block)
@@ -91,7 +84,7 @@ export default function DocSideMenu() {
             }}
           />
           <MenuItem
-            icon={<ArrowDownIcon />}
+            icon={<ArrowDownGlyph />}
             label="Move down"
             onClick={() => {
               editor.moveBlocksDown(block)
@@ -100,7 +93,7 @@ export default function DocSideMenu() {
           />
           <MenuDivider />
           <MenuItem
-            icon={<TrashIcon />}
+            icon={<TrashGlyph />}
             label="Delete"
             danger
             onClick={() => {

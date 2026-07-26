@@ -1,4 +1,3 @@
-import { DocumentIcon, DocumentTextIcon, FolderIcon } from '@heroicons/react/16/solid'
 import {
   useEffect,
   useLayoutEffect,
@@ -9,6 +8,7 @@ import {
   type KeyboardEvent
 } from 'react'
 import type { FileEntry, RepoFile } from '../../../shared/files'
+import { DocGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
@@ -29,7 +29,7 @@ export function FileCrumbs({ tab }: { tab: BrowserTab }) {
         aria-label="Project files"
         className={`shrink-0 transition-colors ${parts.length === 0 ? 'text-fg' : 'text-fg-muted hover:text-fg'}`}
       >
-        <FolderIcon className="w-4 h-4" />
+        <FolderGlyph className="w-4 h-4" />
       </button>
       {parts.map((part, index) => {
         const prefix = (fromRoot(tab.path) ? '/' : '') + parts.slice(0, index + 1).join('/')
@@ -56,7 +56,7 @@ export function FileCrumbs({ tab }: { tab: BrowserTab }) {
 
 function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entries: FileEntry[] }) {
   if (entries.length === 0) {
-    return <Empty icon={<FolderIcon className="w-8 h-8 text-fg-faint" />} label="This folder is empty" />
+    return <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="This folder is empty" />
   }
   return (
     <div className="py-2">
@@ -67,9 +67,9 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
           className="w-full flex items-center gap-2.5 px-4 h-9 text-sm text-left transition-colors hover:bg-fg/[0.04]"
         >
           {entry.dir ? (
-            <FolderIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+            <FolderGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
           ) : (
-            <DocumentIcon className="w-4 h-4 shrink-0 text-fg-faint" />
+            <FileGlyph className="w-4 h-4 shrink-0 text-fg-faint" />
           )}
           <span className="text-fg-secondary truncate">{entry.name}</span>
         </button>
@@ -283,14 +283,14 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
         {data?.kind === 'image' && <ImageView src={data.url} alt={data.path} />}
         {data?.kind === 'missing' && (
           <Empty
-            icon={<DocumentIcon className="w-8 h-8 text-fg-faint" />}
+            icon={<FileGlyph className="w-8 h-8 text-fg-faint" />}
             label={fromRoot(data.path) ? 'This file is not on this computer' : 'This file is not in the project'}
             detail={data.path}
           />
         )}
         {data?.kind === 'binary' && (
           <Empty
-            icon={<DocumentTextIcon className="w-8 h-8 text-fg-faint" />}
+            icon={<DocGlyph className="w-8 h-8 text-fg-faint" />}
             label="No preview for this file"
             detail={`${data.path} · ${Math.max(1, Math.round(data.size / 1024))} KB`}
           />

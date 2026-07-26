@@ -1,9 +1,9 @@
-import { ChevronDownIcon, MinusIcon } from '@heroicons/react/16/solid'
 import { useState, type ReactNode } from 'react'
 import { BASE_TYPE, type TypeStyle } from '../../../shared/designNode'
 import { PanelButton } from '../components/DesignControls'
 import { MenuItem, Popover } from '../components/Popover'
 import Select from '../components/Select'
+import { ChevronDownGlyph, MinusGlyph } from '../icons'
 import FontPicker from './FontPicker'
 import {
   AlignCenterGlyph,
@@ -41,13 +41,13 @@ const VERTICALS = [
 ] as const
 
 const CASES = [
-  { value: 'none', label: 'As typed', icon: <MinusIcon className="w-4 h-4" /> },
+  { value: 'none', label: 'As typed', icon: <MinusGlyph className="w-4 h-4" /> },
   { value: 'upper', label: 'Upper case', icon: <span className="text-xs font-semibold">AG</span> },
   { value: 'lower', label: 'Lower case', icon: <span className="text-xs font-semibold">ag</span> }
 ] as const
 
 const DECORATIONS = [
-  { value: 'none', label: 'No decoration', icon: <MinusIcon className="w-4 h-4" /> },
+  { value: 'none', label: 'No decoration', icon: <MinusGlyph className="w-4 h-4" /> },
   { value: 'underline', label: 'Underline', icon: <UnderlineGlyph className="w-4 h-4" /> },
   { value: 'strike', label: 'Strikethrough', icon: <StrikeGlyph className="w-4 h-4" /> }
 ] as const
@@ -74,7 +74,7 @@ function SizePicker({ onPick }: { onPick: (size: number) => void }) {
         aria-expanded={open}
         className="w-5 h-6 -mr-1 rounded-full flex items-center justify-center text-fg-muted transition-colors hover:text-fg"
       >
-        <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDownGlyph className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       <Popover open={open} onClose={() => setOpen(false)} align="end" maxHeight={288} className="w-20">
         {SIZES.map(size => (

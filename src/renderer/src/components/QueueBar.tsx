@@ -1,6 +1,5 @@
-import { CheckIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/16/solid'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+import { CheckGlyph, ChevronDownGlyph, CloseGlyph, PencilGlyph, TrashGlyph } from '../icons'
 import Pill from './Pill'
 import Tooltip from './Tooltip'
 
@@ -48,7 +47,7 @@ function QueueRow({
             aria-label="Save"
             className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
           >
-            <CheckIcon className="w-3.5 h-3.5" />
+            <CheckGlyph className="w-3.5 h-3.5" />
           </button>
         </Tooltip>
         <Tooltip label="Cancel">
@@ -57,7 +56,7 @@ function QueueRow({
             aria-label="Cancel"
             className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
           >
-            <XMarkIcon className="w-3.5 h-3.5" />
+            <CloseGlyph className="w-3.5 h-3.5" />
           </button>
         </Tooltip>
       </div>
@@ -84,7 +83,7 @@ function QueueRow({
               aria-label="Edit queued message"
               className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors"
             >
-              <PencilIcon className="w-3.5 h-3.5" />
+              <PencilGlyph className="w-3.5 h-3.5" />
             </button>
           </Tooltip>
           <Tooltip label="Remove from queue">
@@ -93,7 +92,7 @@ function QueueRow({
               aria-label="Remove from queue"
               className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors"
             >
-              <TrashIcon className="w-3.5 h-3.5" />
+              <TrashGlyph className="w-3.5 h-3.5" />
             </button>
           </Tooltip>
         </span>
@@ -120,7 +119,7 @@ export default function QueueBar({
         className="group w-full flex items-center gap-2 h-8 text-sm font-semibold text-fg-muted hover:text-fg-secondary transition-colors"
       >
         {items.length === 1 ? '1 message queued' : `${items.length} messages queued`}
-        <ChevronDownIcon
+        <ChevronDownGlyph
           strokeWidth={3}
           className={`w-4 h-4 ml-auto text-fg-muted group-hover:text-fg-secondary transition-transform duration-200 ${
             open ? 'rotate-180' : ''

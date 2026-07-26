@@ -1,22 +1,7 @@
 import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
-import {
-  ArrowUturnLeftIcon,
-  ArrowUturnRightIcon,
-  Bars3Icon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  DocumentDuplicateIcon,
-  EllipsisHorizontalIcon,
-  EllipsisVerticalIcon,
-  MinusIcon,
-  PlusIcon,
-  TrashIcon,
-  XMarkIcon
-} from '@heroicons/react/24/outline'
 import { createElement, type ComponentType } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { ChevronDownGlyph, ChevronLeftGlyph, ChevronRightGlyph, ChevronUpGlyph, CloseGlyph, DuplicateGlyph, MenuGlyph, MinusGlyph, MoreGlyph, MoreVerticalGlyph, PlusGlyph, RedoGlyph, TrashGlyph, UndoGlyph } from '../icons'
 
 type IconComponent = ComponentType<{ className?: string }>
 
@@ -24,20 +9,20 @@ type IconComponent = ComponentType<{ className?: string }>
 // swapped out for the Heroicons the rest of crew uses. Everything crew draws itself comes
 // from src/renderer/src/design/glyphs.tsx.
 const ICONS: Record<string, IconComponent> = {
-  'chevron-up': ChevronUpIcon,
-  'chevron-down': ChevronDownIcon,
-  'chevron-left': ChevronLeftIcon,
-  'chevron-right': ChevronRightIcon,
-  'dots-vertical': EllipsisVerticalIcon,
-  'dots-horizontal': EllipsisHorizontalIcon,
-  'cross-2': XMarkIcon,
-  menu: Bars3Icon,
-  undo: ArrowUturnLeftIcon,
-  redo: ArrowUturnRightIcon,
-  trash: TrashIcon,
-  duplicate: DocumentDuplicateIcon,
-  plus: PlusIcon,
-  minus: MinusIcon
+  'chevron-up': ChevronUpGlyph,
+  'chevron-down': ChevronDownGlyph,
+  'chevron-left': ChevronLeftGlyph,
+  'chevron-right': ChevronRightGlyph,
+  'dots-vertical': MoreVerticalGlyph,
+  'dots-horizontal': MoreGlyph,
+  'cross-2': CloseGlyph,
+  menu: MenuGlyph,
+  undo: UndoGlyph,
+  redo: RedoGlyph,
+  trash: TrashGlyph,
+  duplicate: DuplicateGlyph,
+  plus: PlusGlyph,
+  minus: MinusGlyph
 }
 
 function dataUrl(icon: IconComponent): string {

@@ -1,6 +1,6 @@
-import { XMarkIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState } from 'react'
 import type { HuddleRoom } from '../../../../shared/huddle'
+import { CloseGlyph } from '../../icons'
 import { stopRinging } from '../../media/sounds'
 import { useHuddle } from '../../state/huddle'
 import AvatarStack from '../AvatarStack'
@@ -48,7 +48,7 @@ export default function HuddleBanner() {
           aria-label="Dismiss"
           className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors active:scale-95"
         >
-          <XMarkIcon className="w-4 h-4" />
+          <CloseGlyph className="w-4 h-4" />
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import type { ReactNode } from 'react'
+import { ChevronRightGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 
 export default function ThreadStatusBar({
@@ -28,7 +28,7 @@ export default function ThreadStatusBar({
           <span className="text-base font-semibold text-fg-muted">{owner}'s PC</span>
         </span>
       )}
-      <ChevronRightIcon className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
+      <ChevronRightGlyph className="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
     </div>
   )
 }
