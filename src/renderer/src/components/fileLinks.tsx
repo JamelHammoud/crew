@@ -81,7 +81,7 @@ export async function locatePaths(paths: string[]): Promise<boolean> {
 
 export function openable(path: string): boolean {
   const location = locationOf(path)
-  return location?.kind === 'repo' && location.exists
+  return location !== null && location.kind !== 'private' && location.exists
 }
 
 export function isPrivate(path: string): boolean {
