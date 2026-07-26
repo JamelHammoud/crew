@@ -1,12 +1,13 @@
 import { useRef, type CSSProperties } from 'react'
 import { CHECK_PATH, DOT_R, RING_R, THINKING_DOTS } from './toolGlyphs'
 
-const [LEFT, MIDDLE, RIGHT] = THINKING_DOTS
+const MIDDLE = THINKING_DOTS[1]
 
-const SIDES = [
-  { cx: LEFT, delay: '0ms', gather: `${(MIDDLE - LEFT) * 0.66}px` },
-  { cx: RIGHT, delay: '260ms', gather: `${(MIDDLE - RIGHT) * 0.66}px` }
-]
+const DOTS = THINKING_DOTS.map((cx, index) => ({
+  cx,
+  delay: `${index * 140}ms`,
+  gather: `${MIDDLE - cx}px`
+}))
 
 export default function ThinkingMark({ running }: { running: boolean }) {
   const watched = useRef(running)
@@ -28,23 +29,19 @@ export default function ThinkingMark({ running }: { running: boolean }) {
         running ? 'text-fg' : 'text-fg-muted group-hover:text-fg-secondary'
       }`}
     >
-      {SIDES.map(dot => (
+      <circle className="thinking-ring" cx={MIDDLE} cy={12} r={DOT_R} />
+      {DOTS.map(dot => (
         <circle
           key={dot.cx}
           className="thinking-dot"
           cx={dot.cx}
           cy={12}
           r={DOT_R}
+          fill="currentColor"
+          stroke="none"
           style={{ '--dot-delay': dot.delay, '--gather': dot.gather } as CSSProperties}
         />
       ))}
-      <circle
-        className="thinking-ring"
-        cx={MIDDLE}
-        cy={12}
-        r={DOT_R}
-        style={{ '--dot-delay': '130ms' } as CSSProperties}
-      />
       <path className="thinking-check" pathLength={1} d={CHECK_PATH} />
     </svg>
   )
