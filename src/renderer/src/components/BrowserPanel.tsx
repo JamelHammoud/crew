@@ -77,7 +77,11 @@ export default function BrowserPanel() {
         </div>
         <span className="app-no-drag shrink-0 flex">
           <Tooltip label="New tab" disabled={newOpen}>
-            <button onClick={() => setNewOpen(true)} aria-label="New tab" className={iconButton}>
+            <button
+              onClick={() => setNewOpen(true)}
+              aria-label="New tab"
+              className={`${iconButton} ${newOpen ? 'text-fg bg-fg/[0.06]' : ''}`}
+            >
               <PlusIcon className="w-4 h-4" />
             </button>
           </Tooltip>
