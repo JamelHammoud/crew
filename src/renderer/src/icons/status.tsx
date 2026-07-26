@@ -20,10 +20,12 @@ export const XCircleGlyph = glyph(
   </>
 )
 
+// The inner square is the one place the generous radius is wrong. At 1.9 on a
+// 6.8 side it turns into a circle inside a circle, which is a record button.
 export const StopGlyph = glyph(
   <>
     <circle {...RING} />
-    <rect x="8.6" y="8.6" width="6.8" height="6.8" rx="1.9" />
+    <rect x="8.5" y="8.5" width="7" height="7" rx="1.1" />
   </>
 )
 
