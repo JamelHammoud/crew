@@ -156,9 +156,19 @@ export default function BrowserPanel() {
       <div className="app-no-drag flex-1 min-h-0 relative border-t border-ink-700">
         {tabs
           .filter(tab => tab.kind === 'web' && tab.initialUrl)
-          .map(tab => (
-            <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
-          ))}
+          .map(tab =>
+            showsImage(tab) ? (
+              <div
+                key={tab.id}
+                className="absolute inset-0 bg-ink-900"
+                style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
+              >
+                <ImageView key={tab.generation} src={tab.initialUrl} alt={imageName(tab.initialUrl)} />
+              </div>
+            ) : (
+              <BrowserTabView key={tab.id} tab={tab} active={tab.id === activeTabId} />
+            )
+          )}
         {tabs
           .filter(tab => tab.kind === 'file')
           .map(tab => (
