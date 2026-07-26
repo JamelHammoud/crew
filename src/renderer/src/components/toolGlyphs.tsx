@@ -123,10 +123,12 @@ export const BookmarkGlyph = glyph(
   <path d="M6.5 4.8A1.3 1.3 0 0 1 7.8 3.5h8.4a1.3 1.3 0 0 1 1.3 1.3v15.4a.7.7 0 0 1-1.1.55L12 17.2l-4.4 3.55a.7.7 0 0 1-1.1-.55Z" />
 )
 
+export const CHECK_PATH = 'm8.2 12.2 2.6 2.6 5-5.5'
+
 export const DoneGlyph = glyph(
   <>
     <circle cx="12" cy="12" r="8.5" />
-    <path d="m8.2 12.2 2.6 2.6 5-5.5" />
+    <path d={CHECK_PATH} />
   </>
 )
 
