@@ -79,6 +79,15 @@ export const EyedropperGlyph = glyph(
 // keeps the two arms reading as one stroke folded rather than two shapes.
 export const BoltGlyph = glyph(<path d="M15 2.6 5.5 13.2h5l-1.5 8.2 9.5-10.6h-5Z" />)
 
+// Asking an agent, wherever it is asked from. One star rather than a big one
+// with a small one beside it: the pair has no centre of its own, so it hangs off
+// to a corner in every row it stands in, and at 16 the two run together anyway.
+// Four points, each arm hollowed by the two beside it, on the circle keyline
+// because that is the box it fills.
+export const SparkGlyph = glyph(
+  <path d="M12 2.75c1.09 4.24 5 8.16 9.25 9.25-4.24 1.09-8.16 5-9.25 9.25-1.09-4.24-5-8.16-9.25-9.25 4.24-1.09 8.16-5 9.25-9.25Z" />
+)
+
 export const MenuGlyph = glyph(<path d="M4.5 7h15M4.5 12h15M4.5 17h15" />)
 
 export const HandleGlyph = glyph(<path d="M4.5 9.5h15M4.5 14.5h15" />)
