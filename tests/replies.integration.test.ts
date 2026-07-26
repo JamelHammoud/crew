@@ -107,4 +107,77 @@ describe('message replies', () => {
       text: step.step.text
     })
   })
+
+  it('quotes your own earlier message when you reply to yourself in a thread', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [{ instanceId: 'fake', provider: 'fake', name: 'Fake', settings: {} }]
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+
+    const fake = agentId('jamel', 'fake')
+    await ui.waitForEvent(event => event.kind === 'agent.online' && event.agentId === fake)
+    ui.chat('look at the composer @Fake', [fake])
+    const thread = (await ui.waitForEvent(event => event.kind === 'thread.started')) as Started
+    const first = (await ui.waitForEvent(
+      event => event.kind === 'message' && event.threadId === thread.threadId
+    )) as Message
+    await ui.waitForEvent(event => event.kind === 'agent.end' && event.threadId === thread.threadId)
+
+    const targetId = messageReactionTarget(first.id)
+    ui.send({
+      type: 'chat.send',
+      text: 'this one',
+      mentions: [],
+      threadId: thread.threadId,
+      replyTo: targetId
+    })
+    const reply = (await ui.waitForEvent(
+      event => event.kind === 'message' && event.text === 'this one'
+    )) as Message
+
+    expect(reply.replyTo).toEqual({
+      targetId,
+      authorId: first.authorId,
+      authorName: 'sam',
+      text: 'look at the composer @Fake'
+    })
+  })
+
+  it('quotes a message said in a thread when the reply goes to the main chat', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const runner = testRunner({
+      name: 'jamel',
+      code: host.code,
+      repoPath: host.repoPath,
+      providers: [makeFakeProvider()],
+      agents: [{ instanceId: 'fake', provider: 'fake', name: 'Fake', settings: {} }]
+    })
+    runners.push(runner)
+    runner.connect(host.url)
+
+    const fake = agentId('jamel', 'fake')
+    await ui.waitForEvent(event => event.kind === 'agent.online' && event.agentId === fake)
+    ui.chat('inside a thread @Fake', [fake])
+    const thread = (await ui.waitForEvent(event => event.kind === 'thread.started')) as Started
+    const inThread = (await ui.waitForEvent(
+      event => event.kind === 'message' && event.threadId === thread.threadId
+    )) as Message
+
+    const targetId = messageReactionTarget(inThread.id)
+    ui.send({ type: 'chat.send', text: 'out here', mentions: [], replyTo: targetId })
+    const reply = (await ui.waitForEvent(
+      event => event.kind === 'message' && event.text === 'out here'
+    )) as Message
+
+    expect(reply.replyTo?.targetId).toBe(targetId)
+    expect(reply.replyTo?.text).toBe('inside a thread @Fake')
+  })
 })
