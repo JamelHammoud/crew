@@ -3,7 +3,7 @@ import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../share
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 
 export function autoLineHeight(editor: Editor): number {
-  return editor.getCurrentTheme().lineHeight
+  return editor.getCurrentTheme().lineHeight ?? BASE_TYPE.lineHeight
 }
 
 export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
