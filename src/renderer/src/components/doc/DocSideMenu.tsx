@@ -1,10 +1,15 @@
 import { SideMenuExtension, SuggestionMenu } from '@blocknote/core/extensions'
 import { useBlockNoteEditor, useExtension, useExtensionState } from '@blocknote/react'
-import { ArrowDownIcon, ArrowUpIcon, DocumentDuplicateIcon, TrashIcon } from '@heroicons/react/16/solid'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  Bars2Icon,
+  DocumentDuplicateIcon,
+  PlusIcon,
+  TrashIcon
+} from '@heroicons/react/16/solid'
 import { useState, type DragEvent } from 'react'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
-import { AddGlyph, GripGlyph } from './docGlyphs'
-import Tooltip from '../Tooltip'
 
 export default function DocSideMenu() {
   const editor = useBlockNoteEditor<any, any, any>()
@@ -36,31 +41,27 @@ export default function DocSideMenu() {
 
   return (
     <div className="doc-side flex items-start gap-0.5 pr-1" data-block-type={block.type} data-level={heading}>
-      <Tooltip label="Add a block below">
-        <button
-          onClick={add}
-          aria-label="Add a block below"
-          className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors"
-        >
-          <AddGlyph className="w-4 h-4" />
-        </button>
-      </Tooltip>
+      <button
+        onClick={add}
+        aria-label="Add a block below"
+        className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors"
+      >
+        <PlusIcon className="w-4 h-4" />
+      </button>
       <span className="relative flex items-center">
-        <Tooltip label="Drag to move, click for more" disabled={menu}>
-          <button
-            draggable
-            onDragStart={(event: DragEvent<HTMLButtonElement>) => sideMenu.blockDragStart(event, block)}
-            onDragEnd={() => sideMenu.blockDragEnd()}
-            onClick={() => {
-              setMenu(true)
-              sideMenu.freezeMenu()
-            }}
-            aria-label="Block menu"
-            className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors cursor-grab active:cursor-grabbing"
-          >
-            <GripGlyph className="w-4 h-4" />
-          </button>
-        </Tooltip>
+        <button
+          draggable
+          onDragStart={(event: DragEvent<HTMLButtonElement>) => sideMenu.blockDragStart(event, block)}
+          onDragEnd={() => sideMenu.blockDragEnd()}
+          onClick={() => {
+            setMenu(true)
+            sideMenu.freezeMenu()
+          }}
+          aria-label="Block menu"
+          className="w-6 h-6 rounded-lg grid place-items-center text-fg-faint hover:text-fg-secondary hover:bg-fg/[0.06] transition-colors cursor-grab active:cursor-grabbing"
+        >
+          <Bars2Icon className="w-4 h-4" />
+        </button>
         <Popover open={menu} onClose={close} align="start" className="min-w-44">
           <MenuItem
             icon={<DocumentDuplicateIcon />}
