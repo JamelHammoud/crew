@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import {
   readLocalFile,
   readRepoFile,
+  repoPathOf,
   resolveRepoPath,
   statRepoFile,
   writeLocalFile,
