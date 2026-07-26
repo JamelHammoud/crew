@@ -134,7 +134,14 @@ describe('claude parser matches the real CLI format', () => {
     const result = parseClaudeLine(
       '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"toolu_1","content":"done"}]}}'
     )
-    expect(result).toEqual([{ activity: { id: 'toolu_1', kind: 'tool', name: '', status: 'finished' } }])
+    expect(result).toEqual([
+      { activity: { id: 'toolu_1', kind: 'tool', name: '', status: 'finished', output: 'done' } }
+    ])
+
+    const blocks = parseClaudeLine(
+      '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"toolu_1","content":[{"type":"text","text":"two files"}]}]}}'
+    )
+    expect(blocks[0].activity?.output).toBe('two files')
 
     const thinking = parseClaudeLine(
       '{"type":"assistant","message":{"content":[{"type":"thinking","thinking":"let me check"},{"type":"text","text":"ok"}]}}'
