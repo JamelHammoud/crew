@@ -72,6 +72,8 @@ export default function Docs() {
   }
 
   const tree = buildTree(Object.keys(docs))
+  const trail: string[] = []
+  for (let parent = parentOf(current); parent; parent = parentOf(parent)) trail.unshift(parent)
 
   const currentTitle = docs[current]?.title ?? fallbackTitle(current)
   useEffect(() => {
