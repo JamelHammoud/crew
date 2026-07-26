@@ -125,10 +125,8 @@ export class CrewTray {
 
   private menu(): Menu {
     return Menu.buildFromTemplate([
-      { label: this.state.sharing ? 'Sharing your agents' : 'Not in a session', enabled: false },
-      { type: 'separator' },
-      { label: 'Open crew', click: this.opts.openWindow },
-      { label: 'Quit crew', click: this.opts.quit }
+      { label: 'Open Crew', click: this.opts.openWindow },
+      { label: 'Quit Crew', click: this.opts.quit }
     ])
   }
 }
