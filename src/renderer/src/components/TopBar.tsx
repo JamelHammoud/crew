@@ -128,6 +128,20 @@ export default function TopBar({
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
+        <div className="relative flex items-center">
+          <Tooltip label="Toolbox" disabled={toolboxOpen}>
+            <button
+              onClick={() => setToolboxOpen(open => !open)}
+              aria-label="Toolbox"
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                toolboxOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
+              }`}
+            >
+              <ToolboxGlyph className="w-[22px] h-[22px]" strokeWidth={1.8} />
+            </button>
+          </Tooltip>
+          <Toolbox open={toolboxOpen} onClose={() => setToolboxOpen(false)} />
+        </div>
         <Tooltip label="Tasks">
           <button
             onClick={onToggleTasks}
