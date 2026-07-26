@@ -31,7 +31,7 @@ export const ICE_SERVERS: RTCIceServer[] = [
 ]
 
 export function emptyRoom(): HuddleRoom {
-  return { peers: [], startedAt: null }
+  return { id: null, peers: [], startedAt: null }
 }
 
 // Exactly one side of a pair is polite, and that side is the one that gives way
