@@ -207,5 +207,17 @@ describe('the file explorer', () => {
     expect(useBrowser.getState().tabs.filter(tab => tab.kind === 'file').length).toBe(1)
     expect(activeTab().path).toBe('src/app.ts')
     expect(activeTab().tree).toBe(true)
+    expect(activeTab().open).toEqual(['src'])
+  })
+
+  it('shows the files beside the one being looked at, not some other tab', () => {
+    useBrowser.getState().openFile('src/app.ts')
+    useBrowser.getState().openFile('src/renderer/panel.tsx')
+    render(createElement(BrowserPanel))
+
+    useBrowser.getState().openFiles()
+
+    expect(activeTab().path).toBe('src/renderer/panel.tsx')
+    expect(activeTab().tree).toBe(true)
   })
 })
