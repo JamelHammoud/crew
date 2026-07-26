@@ -45,15 +45,20 @@ export const SpeakerGlyph = glyph(
   </>
 )
 
-// Muted drops the waves rather than striking them through, because a slash over
-// three arcs at 16px is four marks arguing. What is left is a cone and one
-// SLASH, the same two marks as MicOff and CameraOff, so off is said one way
-// everywhere. A cross here would be a second word for it, and the app would have
-// two, in a set whose whole argument is that it has one.
+// The one icon whose off is a cross rather than the SLASH, and the reason is the
+// cone. Every other form is centred and whole on its own, so a diagonal laid
+// over it negates it and nothing else. The cone is two thirds of a mark: it sits
+// left and stops at 13.75 because the waves hold the rest of the box. Take them
+// away and a slash is left crossing a small shape standing off to one side, so
+// the icon shrinks and slides the moment it is muted, in the same row it was
+// just drawn in. The cross stands where the waves stood, which is what keeps the
+// silhouette. It is a counterweight as much as it is a negation.
+// It has to carry their weight too. Drawn small it reads as a footnote beside
+// the cone at 16, so it is 6 across, the same reach as the outer wave.
 export const SpeakerOffGlyph = glyph(
   <>
     <path d={CONE} />
-    <path d={SLASH} />
+    <path d="m15.75 9 6 6M21.75 9l-6 6" />
   </>
 )
 
