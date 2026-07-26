@@ -39,7 +39,7 @@ export default function DesignAskBar({
   const [size, setSize] = useState<Box | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const barRef = useRef<HTMLDivElement>(null)
-  const aimed = useRef<string[]>([])
+  const aimed = useRef<{ layers: string[]; box: Box | null }>({ layers: [], box: null })
 
   const here = useMemo(() => agentsHere(agents), [agents])
   const agent = useMemo(() => agentToAsk(agents, picked), [agents, picked])
