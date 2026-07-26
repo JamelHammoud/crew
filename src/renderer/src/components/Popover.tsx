@@ -9,6 +9,7 @@ export function Popover({
   side = 'bottom',
   at,
   flush,
+  maxHeight,
   className = '',
   children
 }: {
@@ -18,6 +19,7 @@ export function Popover({
   side?: 'top' | 'bottom'
   at?: { x: number; y: number }
   flush?: boolean
+  maxHeight?: number
   className?: string
   children: ReactNode
 }) {
