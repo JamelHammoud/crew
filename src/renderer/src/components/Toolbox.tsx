@@ -81,7 +81,7 @@ function Tile({
       ? 'bg-fg/[0.12] text-fg'
       : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
   return (
-    <div className="relative">
+    <div className="group relative">
       <button
         onClick={onClick}
         disabled={quiet}
@@ -301,7 +301,7 @@ export default function Toolbox({ open, onClose }: { open: boolean; onClose: () 
               <button
                 onClick={() => setBuilding({ tool })}
                 aria-label={`Edit ${tool.name}`}
-                className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-95 focus-visible:opacity-100 [div:hover>&]:opacity-100"
+                className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-95 group-hover:opacity-100 focus-visible:opacity-100"
               >
                 <PencilGlyph className="w-3 h-3" />
               </button>
