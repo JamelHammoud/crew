@@ -67,11 +67,15 @@ export const SpeakerOffGlyph = glyph(
 // A handset turned face down, and it is solid for the same reason stop is: a
 // handset is a thing rather than a frame, and the crescent an outline leaves
 // between its two edges closes into a smudge at the size the button wears it.
-// The two bells hang well below the grip so the silhouette is a phone rather
-// than an arch, which is the whole of what the mark has to say.
+// The bells are the whole of what the mark has to say, so they are round, they
+// flare wider than the crown, and they hang the full depth of the box. Drawn
+// flat, at 19 across and 9 down, it was a dash in a round button: the same
+// silhouette as an arch, and nothing about it read as a phone. A solid keeps
+// sqrt(w * h) at 16 the way every other one does, which is 19 by 12.6, and that
+// is the number that had gone missing rather than the size it was worn at.
 export const HangupGlyph = glyph(
   <path
-    d="M2.75 12.9C5.3 9.35 8.4 7.4 12 7.4s6.7 1.95 9.25 5.5c-1.4 2.15-2.7 3.2-3.9 3.2-1.5 0-2.35-1.15-2.35-3V11.1c-1-.3-1.95-.45-3-.45s-2 .15-3 .45v2c0 1.85-.85 3-2.35 3-1.2 0-2.5-1.05-3.9-3.2Z"
+    d="M3.5 11.6C6.1 7.7 8.9 5.7 12 5.7s5.9 2 8.5 5.9c.7 1.1 1 2.1 1 3 0 2.1-1.6 3.7-3.8 3.7-2 0-3.3-1.4-3.3-3.6v-2.9c-.8-.3-1.5-.4-2.4-.4s-1.6.1-2.4.4v2.9c0 2.2-1.3 3.6-3.3 3.6-2.2 0-3.8-1.6-3.8-3.7 0-.9.3-1.9 1-3Z"
     fill="currentColor"
   />
 )
