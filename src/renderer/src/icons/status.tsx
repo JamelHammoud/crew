@@ -71,23 +71,15 @@ export const WarningGlyph = glyph(
   </>
 )
 
-const SIGNAL_ART = (
+// Live, and only live. There is no struck version of this: two long arcs, a dot
+// and a slash is four curved marks crossing inside one small box, and what came
+// out at 16 was a scribble. A call that is over wears the handset instead, which
+// says the same thing in one shape.
+export const SignalGlyph = glyph(
   <>
     <path d="M6.1 19.25a10 10 0 0 1 0-14.5" />
     <path d="M17.9 4.75a10 10 0 0 1 0 14.5" />
     <circle cx="12" cy="12" r="2.75" />
-  </>
-)
-
-export const SignalGlyph = glyph(SIGNAL_ART)
-
-// The dot stays. Struck through on its own the waves read as a letter N, and
-// what makes the mark legible is that the thing in the middle is still there
-// under the slash.
-export const SignalOffGlyph = glyph(
-  <>
-    {SIGNAL_ART}
-    <path d={SLASH} />
   </>
 )
 
