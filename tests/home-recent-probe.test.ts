@@ -5,6 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCrew } from '../src/renderer/src/state/store'
 import Home from '../src/renderer/src/views/Home'
 import type { RecentJoin } from '../src/shared/recent'
+import { installLocalStorage } from './helpers/local-storage'
+
+const storage = installLocalStorage()
 
 function installBridge(recentJoins: RecentJoin[]) {
   const join = vi.fn().mockResolvedValue({ wsUrl: 'ws://10.0.0.2:2739/ws' })
@@ -19,7 +22,7 @@ function installBridge(recentJoins: RecentJoin[]) {
 
 describe('Home recent sessions', () => {
   beforeEach(() => {
-    localStorage.clear()
+    storage.clear()
     Element.prototype.getAnimations = vi.fn().mockReturnValue([])
     useCrew.setState({ connection: 'home', connect: vi.fn() })
   })
@@ -50,8 +53,8 @@ describe('Home recent sessions', () => {
     fireEvent.click(await screen.findByRole('button', { name: /10\.0\.0\.2:2739/ }))
 
     await waitFor(() => expect(join).toHaveBeenCalledWith(saved.link, saved.folder, saved.name))
-    expect(localStorage.getItem('crew.link')).toBe(saved.link)
-    expect(localStorage.getItem('crew.folder')).toBe(saved.folder)
-    expect(localStorage.getItem('crew.name')).toBe(saved.name)
+    expect(storage.getItem('crew.link')).toBe(saved.link)
+    expect(storage.getItem('crew.folder')).toBe(saved.folder)
+    expect(storage.getItem('crew.name')).toBe(saved.name)
   })
 })
