@@ -103,6 +103,21 @@ export function cleanTool(
     if (!path) return null
     return built({ kind: 'file', path })
   }
+  if (action?.kind === 'doc') {
+    const page = action.page?.trim().slice(0, KEY_LIMIT)
+    if (!page) return null
+    return built({ kind: 'doc', page })
+  }
+  if (action?.kind === 'board') {
+    const boardId = action.boardId?.trim().slice(0, KEY_LIMIT)
+    if (!boardId) return null
+    return built({ kind: 'board', boardId })
+  }
+  if (action?.kind === 'copy') {
+    const text = action.text?.slice(0, COPY_LIMIT)
+    if (!text?.trim()) return null
+    return built({ kind: 'copy', text })
+  }
   if (action?.kind === 'prompt') {
     const text = action.text?.trim().slice(0, PROMPT_LIMIT)
     if (!text) return null
