@@ -95,16 +95,12 @@ export default function DesignAskBar({
     return () => window.removeEventListener('keydown', onKeyDown, true)
   }, [open, switching, onClose])
 
-  // What the ask is about is held, so a selection that goes while the bar is up
-  // leaves it standing where it was with what it was asked about, rather than
-  // taking it down mid-sentence.
+  // The bar only ever talks about what is picked, so letting go of the selection
+  // takes it down rather than leaving it hanging over the board asking about
+  // nothing.
   useEffect(() => {
-    if (!open) {
-      aimed.current = { layers: [], box: null }
-      return
-    }
-    if (layers.length > 0) aimed.current = { layers, box: target }
-  }, [open, layers, target])
+    if (open && selected.length === 0) onClose()
+  }, [open, selected, onClose])
 
   useLayoutEffect(() => {
     const el = barRef.current
