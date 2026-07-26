@@ -41,8 +41,8 @@ const VERTICALS = [
 
 const CASES = [
   { value: 'none', label: 'As typed', icon: <MinusIcon className="w-4 h-4" /> },
-  { value: 'upper', label: 'Upper case' },
-  { value: 'lower', label: 'Lower case' }
+  { value: 'upper', label: 'Upper case', icon: <span className="text-xs font-semibold">AG</span> },
+  { value: 'lower', label: 'Lower case', icon: <span className="text-xs font-semibold">ag</span> }
 ] as const
 
 const DECORATIONS = [
