@@ -17,7 +17,7 @@ import { reviewCount } from '../state/alerts'
 import { useHuddle } from '../state/huddle'
 import { setSounds, useSounds } from '../state/sound'
 import { useCrew } from '../state/store'
-import { applyTheme, useTheme } from '../state/theme'
+import { toggleTheme, useTheme } from '../state/theme'
 import Avatar from './Avatar'
 import Badge from './Badge'
 import { CrewMark } from './CrewMark'
@@ -264,12 +264,15 @@ export default function TopBar({
             <MenuItem
               icon={theme === 'dark' ? <SunGlyph /> : <MoonGlyph />}
               label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-              onClick={() => applyTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={toggleTheme}
             />
             <MenuItem
               icon={sounds ? <SpeakerOffGlyph /> : <SpeakerGlyph />}
               label={sounds ? 'Mute sounds' : 'Unmute sounds'}
-              onClick={() => setSounds(!sounds)}
+              onClick={() => {
+                setSounds(!sounds)
+                if (!sounds) playSound('sound.on')
+              }}
             />
             <MenuDivider />
             <MenuItem
