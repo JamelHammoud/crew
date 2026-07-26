@@ -168,7 +168,7 @@ export function Row({
     <button
       onClick={onClick}
       aria-pressed={chevron ? undefined : active}
-      className={`w-full px-2 py-2 rounded-field flex items-center gap-2.5 text-left transition-colors ${
+      className={`w-full px-2.5 py-2 rounded-field flex items-center gap-2.5 text-left transition-colors ${
         chevron
           ? 'bg-fg/[0.05] text-fg hover:bg-fg/[0.09]'
           : active
