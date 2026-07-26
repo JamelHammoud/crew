@@ -31,7 +31,7 @@ export default function DesignStage({
         <>
           <DesignToolbar onAsk={ask} onRename={onRename} />
           <DesignContextMenu spot={spot} onClose={close} onAsk={ask} onRename={onRename} />
-          <DesignAskBar boardId={boardId} open={asking} onClose={stopAsking} />
+          <DesignAskBar boardId={boardId} open={asking} onClose={stopAsking} onSent={onAsked} />
         </>
       )}
     </div>
