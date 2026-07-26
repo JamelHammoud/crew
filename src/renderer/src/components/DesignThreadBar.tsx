@@ -29,7 +29,14 @@ export default function DesignThreadBar({
   const [open, setOpen] = useState(false)
   const thread = threads.find(item => item.id === current)
   const label = thread ? threadName(thread, agents) : 'New thread'
-  const mark = thread ? <AgentIcon seed={thread.agentId} size="xs" className="self-center" /> : null
+  // The pet is handed a flex box of its own rather than the row's alignment: it
+  // stands at the top of whatever holds it, which in a row of one line is six
+  // pixels above the name beside it.
+  const mark = thread ? (
+    <span className="flex shrink-0 items-center">
+      <AgentIcon seed={thread.agentId} size="xs" />
+    </span>
+  ) : null
 
   return (
     <div className="h-12 shrink-0 flex items-center gap-1 pl-2 pr-2">
