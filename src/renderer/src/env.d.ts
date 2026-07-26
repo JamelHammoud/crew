@@ -30,6 +30,7 @@ declare global {
     screenSources(): Promise<ScreenSource[]>
     pickScreenSource(id: string | null): Promise<void>
     openExternal(url: string): Promise<void>
+    copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>
