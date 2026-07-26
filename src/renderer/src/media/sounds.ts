@@ -111,52 +111,41 @@ const STRIKES: Record<StrikeName, Strike[]> = {
   ]
 }
 
-// Three bubbles surfacing, one for each disc in the mark, said again every
-// second and a bit and let go of before five seconds are up.
+// Two bubbles surfacing, low then high, with room to breathe between one pair
+// and the next. Every turn is the same size as the last: it stops when its time
+// is up rather than trailing away.
 export const CALL: Ring = {
   phrase: [
     {
-      hz: 587.33,
+      hz: 392,
       at: 0,
-      length: 0.16,
-      gain: 0.62,
-      partials: [1, 4.6],
+      length: 0.26,
+      gain: 0.66,
+      partials: [1, 2.04],
+      bend: 0.62,
+      bendTime: 0.07,
+      tone: 1900,
+      wet: 0.16,
+      pan: -0.1,
+      rasp: { hz: 800, q: 0.9, gain: 0.08, length: 0.008 }
+    },
+    {
+      hz: 587.33,
+      at: 0.18,
+      length: 0.62,
+      gain: 0.72,
+      partials: [1, 2.04, 4.1],
       bend: 0.66,
-      bendTime: 0.05,
-      tone: 2600,
-      wet: 0.18,
-      pan: -0.12,
-      rasp: { hz: 1400, q: 1.1, gain: 0.12, length: 0.01 }
-    },
-    {
-      hz: 783.99,
-      at: 0.12,
-      length: 0.16,
-      gain: 0.6,
-      partials: [1, 4.6],
-      bend: 0.7,
-      bendTime: 0.045,
-      tone: 2900,
-      wet: 0.18,
-      rasp: { hz: 1750, q: 1.1, gain: 0.12, length: 0.01 }
-    },
-    {
-      hz: 1174.66,
-      at: 0.24,
-      length: 0.44,
-      gain: 0.7,
-      partials: [1, 3.2, 6.9],
-      bend: 0.74,
-      bendTime: 0.055,
-      detune: 5,
-      tone: 4200,
-      wet: 0.34,
-      pan: 0.12,
-      rasp: { hz: 3200, q: 1.3, gain: 0.16, length: 0.013 }
+      bendTime: 0.08,
+      detune: 4,
+      tone: 2300,
+      wet: 0.3,
+      pan: 0.1,
+      rasp: { hz: 1100, q: 0.9, gain: 0.07, length: 0.009 }
     }
   ],
-  every: 1.4,
-  levels: [1, 1, 0.82, 0.58]
+  every: 1.9,
+  times: 3
 }
 
 const APART = 140
