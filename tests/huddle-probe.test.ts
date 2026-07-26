@@ -7,6 +7,7 @@ import { useHuddle } from '../src/renderer/src/state/huddle'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { HuddlePeer } from '../src/shared/huddle'
 import type { ScreenSource } from '../src/shared/media'
+import { installLocalStorage } from './helpers/local-storage'
 
 class TestResizeObserver {
   observe(): void {}
@@ -65,6 +66,47 @@ const openMenu = () => fireEvent.click(screen.getByLabelText('Profile menu'))
 
 const emptyStream = (): MediaStream => ({ getVideoTracks: () => [] }) as unknown as MediaStream
 
+const DEVICES = [
+  { deviceId: 'mic-built-in', kind: 'audioinput', label: 'MacBook Pro Microphone', groupId: '1' },
+  { deviceId: 'mic-usb', kind: 'audioinput', label: 'Shure MV7', groupId: '2' },
+  { deviceId: 'cam-built-in', kind: 'videoinput', label: 'FaceTime HD Camera', groupId: '1' },
+  { deviceId: 'cam-usb', kind: 'videoinput', label: 'Logitech Brio', groupId: '3' }
+]
+
+type FakeTrack = ReturnType<typeof fakeTrack>
+
+const fakeTrack = (kind: 'audio' | 'video', deviceId: string) => {
+  const track = Object.assign(new EventTarget(), {
+    kind,
+    muted: false,
+    readyState: 'live',
+    contentHint: '',
+    getSettings: () => ({ deviceId }),
+    stop: (): void => {}
+  })
+  track.stop = () => {
+    track.readyState = 'ended'
+  }
+  return track
+}
+
+class FakeStream {
+  constructor(private tracks: FakeTrack[] = []) {}
+  getTracks(): FakeTrack[] {
+    return this.tracks
+  }
+  getAudioTracks(): FakeTrack[] {
+    return this.tracks.filter(track => track.kind === 'audio')
+  }
+  getVideoTracks(): FakeTrack[] {
+    return this.tracks.filter(track => track.kind === 'video')
+  }
+}
+
+global.MediaStream ??= FakeStream as unknown as typeof MediaStream
+
+const storage = installLocalStorage()
+
 // A track exists from the moment the connection does and stays quiet until the
 // other end starts sending, which is what the browser reports as muted.
 const fakeVideo = (): { stream: MediaStream; arrive: () => void } => {
@@ -83,7 +125,7 @@ describe('starting a huddle', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { peers: [], startedAt: null },
+      room: { id: null, peers: [], startedAt: null },
       joined: false,
       joining: false,
       micOn: false,
@@ -112,7 +154,7 @@ describe('starting a huddle', () => {
   })
 
   it('names the huddle after who is already in it', () => {
-    useHuddle.setState({ room: { peers: [peer('a', 'Ali')], startedAt: 10 } })
+    useHuddle.setState({ room: { id: 'call-1', peers: [peer('a', 'Ali')], startedAt: 10 } })
     render(createElement(App))
     openMenu()
 
@@ -163,7 +205,7 @@ describe('a huddle you are not in', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { peers: [peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 10 },
+      room: { id: 'call-1', peers: [peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 10 },
       joined: false,
       joining: false,
       expanded: false,
@@ -220,7 +262,7 @@ describe('a huddle you are in', () => {
   beforeEach(() => {
     session()
     useHuddle.setState({
-      room: { peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
+      room: { id: 'call-1', peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
       peerId: 'me',
       joined: true,
       joining: false,
@@ -308,7 +350,7 @@ describe('a huddle you are in', () => {
   it('keeps the face up until the pictures actually arrive', async () => {
     const camera = fakeVideo()
     useHuddle.setState({
-      room: { peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
+      room: { id: 'call-1', peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
       remote: { a: { mic: emptyStream(), camera: camera.stream, screen: emptyStream() } },
       link: { a: 'connected' }
     })
@@ -365,10 +407,17 @@ describe('picking a microphone and a camera', () => {
     made.length = 0
     asked.audio = null
     asked.video = null
+<<<<<<< HEAD
     localStorage.clear()
     Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
     useHuddle.setState({
       room: { peers: [], startedAt: null },
+=======
+    storage.clear()
+    Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
+    useHuddle.setState({
+      room: { id: null, peers: [], startedAt: null },
+>>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
       joined: false,
       joining: false,
       micOn: false,
@@ -439,7 +488,11 @@ describe('picking a microphone and a camera', () => {
       fireEvent.click(screen.getByText('Shure MV7'))
     })
 
+<<<<<<< HEAD
     await waitFor(() => expect(localStorage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
+=======
+    await waitFor(() => expect(storage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
+>>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
   })
 
   // A camera picked while the camera is off is a choice, not a reason to start
@@ -462,7 +515,11 @@ describe('picking a microphone and a camera', () => {
   // A microphone that was chosen once and has since been unplugged must not be
   // asked for in a way that fails, or someone lands in the call with nothing.
   it('asks for a remembered device without insisting on it', async () => {
+<<<<<<< HEAD
     localStorage.setItem('crew.huddle.microphone', 'mic-gone')
+=======
+    storage.setItem('crew.huddle.microphone', 'mic-gone')
+>>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
     useHuddle.setState({ micId: 'mic-gone' })
     await enter()
 
@@ -470,6 +527,7 @@ describe('picking a microphone and a camera', () => {
     expect(useHuddle.getState().micOn).toBe(true)
   })
 })
+<<<<<<< HEAD
 
 describe('a huddle you are in, still', () => {
   beforeEach(() => {
@@ -512,3 +570,5 @@ describe('a huddle you are in, still', () => {
     await waitFor(() => expect(container.querySelector('video')).toBeTruthy())
   })
 })
+=======
+>>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
