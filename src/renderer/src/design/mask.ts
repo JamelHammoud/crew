@@ -19,8 +19,6 @@ function sameParent(shapes: TLShape[]): boolean {
   return shapes.every(shape => shape.parentId === shapes[0].parentId)
 }
 
-// Figma masks with the bottom shape of the selection, so that is the one that
-// takes the others in as children and clips them to its own outline.
 export function maskCandidate(editor: Editor): MaskNode | null {
   const shapes = editor.getSelectedShapes()
   if (shapes.length < 2 || !sameParent(shapes)) return null
