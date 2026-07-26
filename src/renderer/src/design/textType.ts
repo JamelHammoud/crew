@@ -23,7 +23,7 @@ export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
     align: alignOf(textAlign),
     color: paletteHex(editor, color)
   }
-  const stored = shape.meta.type
+  const stored = shape.meta?.type
   if (!stored || typeof stored !== 'object') return base
   return cleanType({ ...base, ...(stored as object), align: base.align }) ?? base
 }
