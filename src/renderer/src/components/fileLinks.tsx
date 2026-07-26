@@ -252,17 +252,45 @@ export function useLocated(paths: string[]): void {
   }, [key])
 }
 
+const openFile = (path: string, line: number | null) => useBrowser.getState().openFile(targetFor(path), line)
+
 export function FileChip({ path, line, text }: { path: string; line: number | null; text: string }) {
   return (
     <code
       onClick={event => {
         event.stopPropagation()
-        useBrowser.getState().openFile(targetFor(path), line)
+        openFile(path, line)
       }}
       className="font-mono text-[13px] bg-ink-800 rounded-md px-1.5 py-0.5 cursor-pointer transition-colors hover:bg-ink-700 hover:text-fg"
     >
       {text}
     </code>
+  )
+}
+
+// Steps and thinking are already set in faint mono, so a link there keeps the
+// type it sits in and only answers to hover.
+export function FileTextLink({
+  path,
+  line = null,
+  className,
+  children
+}: {
+  path: string
+  line?: number | null
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <span
+      onClick={event => {
+        event.stopPropagation()
+        openFile(path, line)
+      }}
+      className={`cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2 ${className ?? ''}`}
+    >
+      {children}
+    </span>
   )
 }
 
