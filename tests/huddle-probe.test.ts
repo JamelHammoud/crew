@@ -65,6 +65,45 @@ const openMenu = () => fireEvent.click(screen.getByLabelText('Profile menu'))
 
 const emptyStream = (): MediaStream => ({ getVideoTracks: () => [] }) as unknown as MediaStream
 
+const DEVICES = [
+  { deviceId: 'mic-built-in', kind: 'audioinput', label: 'MacBook Pro Microphone', groupId: '1' },
+  { deviceId: 'mic-usb', kind: 'audioinput', label: 'Shure MV7', groupId: '2' },
+  { deviceId: 'cam-built-in', kind: 'videoinput', label: 'FaceTime HD Camera', groupId: '1' },
+  { deviceId: 'cam-usb', kind: 'videoinput', label: 'Logitech Brio', groupId: '3' }
+]
+
+type FakeTrack = ReturnType<typeof fakeTrack>
+
+const fakeTrack = (kind: 'audio' | 'video', deviceId: string) => {
+  const track = Object.assign(new EventTarget(), {
+    kind,
+    muted: false,
+    readyState: 'live',
+    contentHint: '',
+    getSettings: () => ({ deviceId }),
+    stop: (): void => {}
+  })
+  track.stop = () => {
+    track.readyState = 'ended'
+  }
+  return track
+}
+
+class FakeStream {
+  constructor(private tracks: FakeTrack[] = []) {}
+  getTracks(): FakeTrack[] {
+    return this.tracks
+  }
+  getAudioTracks(): FakeTrack[] {
+    return this.tracks.filter(track => track.kind === 'audio')
+  }
+  getVideoTracks(): FakeTrack[] {
+    return this.tracks.filter(track => track.kind === 'video')
+  }
+}
+
+global.MediaStream ??= FakeStream as unknown as typeof MediaStream
+
 // A track exists from the moment the connection does and stays quiet until the
 // other end starts sending, which is what the browser reports as muted.
 const fakeVideo = (): { stream: MediaStream; arrive: () => void } => {
