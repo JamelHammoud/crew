@@ -33,6 +33,7 @@ export default function Markdown({ text, className = '' }: { text: string; class
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false }) as string)
+    markTasks(container)
     wrapTables(container)
     const unknown = linkifyFiles(container)
     emojifyHtml(container)
