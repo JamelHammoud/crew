@@ -117,6 +117,9 @@ interface CrewState {
   removeTodo: (todoId: string) => void
   checkTodo: (todoId: string, checked: boolean) => void
   doTodo: (todoId: string, agentId?: string) => void
+  addTool: (name: string, mark: ToolMark, action: ToolAction) => void
+  editTool: (toolId: string, name: string, mark: ToolMark, action: ToolAction) => void
+  removeTool: (toolId: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string, title?: string) => void
   retitleDoc: (page: string, title: string) => void
