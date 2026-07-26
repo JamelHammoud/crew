@@ -6,6 +6,25 @@ import type { DesignNodeShape } from './DesignNodeUtil'
 import { CornerGlyph, CornersGlyph, OpacityGlyph } from './glyphs'
 import { MixedInput, NumberInput, Section, SubLabel } from './InspectorFields'
 
+const BLENDS = [
+  { value: 'normal', label: 'Normal' },
+  { value: 'darken', label: 'Darken' },
+  { value: 'multiply', label: 'Multiply' },
+  { value: 'color-burn', label: 'Color burn' },
+  { value: 'lighten', label: 'Lighten' },
+  { value: 'screen', label: 'Screen' },
+  { value: 'color-dodge', label: 'Color dodge' },
+  { value: 'overlay', label: 'Overlay' },
+  { value: 'soft-light', label: 'Soft light' },
+  { value: 'hard-light', label: 'Hard light' },
+  { value: 'difference', label: 'Difference' },
+  { value: 'exclusion', label: 'Exclusion' },
+  { value: 'hue', label: 'Hue' },
+  { value: 'saturation', label: 'Saturation' },
+  { value: 'color', label: 'Color' },
+  { value: 'luminosity', label: 'Luminosity' }
+]
+
 const CORNERS: Array<{ at: number; label: string; spin: string }> = [
   { at: 0, label: 'Top left', spin: '' },
   { at: 1, label: 'Top right', spin: 'rotate-90' },
