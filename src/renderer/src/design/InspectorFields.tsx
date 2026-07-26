@@ -151,7 +151,7 @@ function useNumberField({
       }
       if (event.key === 'Enter') event.currentTarget.blur()
       if (event.key === 'Escape') {
-        setDraft(String(tidy(value)))
+        setDraft(shown(value))
         event.currentTarget.blur()
       }
     },

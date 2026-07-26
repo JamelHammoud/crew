@@ -137,9 +137,14 @@ function pathTokens(text: string): FileToken[] {
     const ref = toRef(match[1], match[2])
     if (!ref) continue
     const start = match.index ?? 0
-    if (start > cursor) tokens.push({ kind: 'text', text: text.slice(cursor, start) })
+    const end = start + match[0].length
+    // Agents quote paths as they think, and a link wearing backticks reads as
+    // punctuation nobody typed.
+    const quoted = text[start - 1] === '`' && text[end] === '`'
+    const from = quoted ? start - 1 : start
+    if (from > cursor) tokens.push({ kind: 'text', text: text.slice(cursor, from) })
     tokens.push({ kind: 'file', text: match[0], path: ref.path, suffix: match[2] ?? '', line: ref.line })
-    cursor = start + match[0].length
+    cursor = quoted ? end + 1 : end
   }
   if (cursor < text.length) tokens.push({ kind: 'text', text: text.slice(cursor) })
   return tokens

@@ -87,6 +87,8 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - Color is picked in `ColorPicker.tsx`: a saturation square, hue and alpha from `react-colorful`, a hex field, the system eyedropper, and the crew swatches. The library's own sizes are built for a page, so `.design-picker` in `styles.css` resizes it for a popover.
 - Shapes land on whole pixels. `wholePixels.ts` rounds x and y on anything a person creates or moves, so nothing ever reads 203.41.
 - Corner handles and the size readout are crew's own overlay, drawn over the canvas in `SelectionOverlay.tsx` from page coordinates, not tldraw components.
+- The board has its own cursors, drawn once in `cursors.tsx`: an arrow, a beam for text, an open hand and a fist for panning, and a crosshair for placing something. Black art, a white keyline and a soft shadow, so they read on any artwork. tldraw picks one by writing `--tl-cursor-<type>`, so overriding those variables on the canvas is all it takes, and every one keeps a native cursor after it as a fallback. The arrow is the only shape drawn from a design file. The rest are built from a Heroicon or from plain boxes in the same language, and the white keyline is painted under the fill in one pass so a shape made of several boxes has no seams.
+- Everyone else's cursor is the same arrow in their own color, drawn by crew in `RemoteCursors` with a glass name tag, a pet for an agent and an avatar for a person. tldraw draws its own on the canvas, where a generated pet cannot go, so `CursorsDrawnByCrew` stands that overlay down. The presence record still goes into the store, because that is what marks what someone has selected.
 
 ## Syncing
 
