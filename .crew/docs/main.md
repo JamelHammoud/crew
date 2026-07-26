@@ -2,11 +2,9 @@
 title: "Ideas"
 ---
 
-* [ ] Testing 
+* [ ] Testing
 * [ ] 12321
 * [ ] 3213
-
-
 
 ***
 
