@@ -110,11 +110,16 @@ export const TOOLBOX_AWAY = 34
 
 const to3 = (n: number): number => Math.round(n * 1000) / 1000
 
-// A perspective on an SVG is not a projection: Chromium flattens it to a skew,
-// so the turn is worked out here and handed over as the lift, the squash and the
-// share it keeps, which is a plain 2D transform and is drawn as sharp as the
-// still icon. What the real projection would buy on top of this is a taper of
-// under a pixel at the size the mark is worn.
+// The turn is worked out here and handed over as a lift, a squash and the share
+// the lid keeps, which is a plain 2D transform and stays as sharp as the still
+// icon at every size. Nothing tapers, and that is on purpose: the case is drawn
+// flat on, with no vanishing point anywhere in the set, so a lid that narrowed
+// as it went back would be the one part of the drawing standing in a different
+// space. The share it keeps is the one wink at distance, small enough to read as
+// having gone back rather than as a lid of another size. It would not be worth
+// having either way. A perspective on an SVG is not a projection, since Chromium
+// flattens it to a skew, and the real thing drawn into the path buys a taper of
+// half a pixel and closes the handle up at 22px.
 export const toolboxTurn = (
   swing: number = TOOLBOX_SWING
 ): { rise: number; squash: number; away: number } => {
