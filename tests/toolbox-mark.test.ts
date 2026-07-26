@@ -16,7 +16,10 @@ import {
 
 afterEach(cleanup)
 
-const css = readFileSync(`${process.cwd()}/src/renderer/src/styles.css`, 'utf8')
+const css = (require('node:fs') as typeof import('node:fs')).readFileSync(
+  `${process.cwd()}/src/renderer/src/styles.css`,
+  'utf8'
+)
 const rules = css.slice(css.indexOf('.toolbox-mark .toolbox-lid'), css.indexOf('/* Everything that carries a color'))
 
 const mark = (): SVGElement => {
