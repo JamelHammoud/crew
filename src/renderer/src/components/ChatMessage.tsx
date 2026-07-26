@@ -83,10 +83,22 @@ export default function ChatMessage({
           </Tooltip>
         </div>
         {item.replyTo && (
-          <div className="mt-2 border-l-2 border-ink-600 pl-3">
-            <p className="text-xs font-semibold text-fg-muted">Replying to {item.replyTo.authorName}</p>
-            <p className="mt-0.5 truncate text-sm text-fg-faint">{item.replyTo.text}</p>
-          </div>
+          <button
+            type="button"
+            aria-label="Go to the message this replies to"
+            onClick={() => jumpToMessage(item.replyTo!.targetId)}
+            className="mt-2 flex w-full min-w-0 items-center gap-2 border-l-2 border-ink-600 py-0.5 pl-3 pr-2 text-left transition-colors hover:border-ink-500"
+          >
+            <ArrowUturnLeftIcon className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
+            <span className="min-w-0">
+              <span
+                className={`block text-xs font-semibold ${item.replyTo.authorId === selfId && !item.self ? 'text-fg' : 'text-fg-muted'}`}
+              >
+                {replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
+              </span>
+              <span className="mt-0.5 block truncate text-sm text-fg-faint">{item.replyTo.text}</span>
+            </span>
+          </button>
         )}
         {editing ? (
           <div className="mt-1.5">
