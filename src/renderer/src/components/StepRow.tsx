@@ -171,7 +171,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
               <TextWithFileLinks text={thinking ? item.text.trim() : detail} inline again={!item.streaming} />
             </p>
           ) : (
-            <StepCode text={detail} prompt={action.terminal} />
+            <StepCode text={detail} prompt={action.terminal} output={action.terminal ? item.output : undefined} />
           )}
         </Detail>
       )}
