@@ -6,11 +6,12 @@ export interface FileEntry {
 export type RepoPathKind = 'file' | 'dir' | 'missing'
 
 // Where a path an agent mentioned lives, from this machine's point of view.
-// 'repo' paths are shown relative to the project, 'local' paths are shown as
-// written, and 'private' paths belong to someone else's computer.
+// 'repo' paths are shown relative to the project, 'local' paths are elsewhere
+// on this computer and are shown as written, and 'private' paths are on
+// someone else's computer, where nobody here can follow them.
 export type PathLocation =
   | { kind: 'repo'; path: string; exists: boolean }
-  | { kind: 'local' }
+  | { kind: 'local'; exists: boolean }
   | { kind: 'private' }
 
 const slashed = (text: string): string => text.split('\\').join('/')
