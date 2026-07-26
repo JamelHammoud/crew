@@ -810,3 +810,51 @@ body {
 .md tbody tr:last-child td {
   @apply border-b-0;
 }
+
+.md-peek {
+  @apply text-xs leading-[1.55] text-fg-muted;
+}
+
+.md-peek h1,
+.md-peek h2,
+.md-peek h3 {
+  @apply text-xs text-fg-secondary mt-2 mb-0.5;
+}
+
+.md-peek p,
+.md-peek ul,
+.md-peek ol,
+.md-peek pre,
+.md-peek blockquote {
+  @apply my-1;
+}
+
+.md-peek ul,
+.md-peek ol {
+  @apply pl-4;
+}
+
+.md-peek code {
+  @apply text-[11px] px-1 py-0;
+}
+
+.md-peek pre {
+  @apply p-2 rounded-lg my-1.5;
+}
+
+.md-peek .table-scroll {
+  @apply my-1.5 rounded-lg;
+}
+
+.md-peek table {
+  @apply text-xs;
+}
+
+.md-peek th,
+.md-peek td {
+  @apply px-2 py-1;
+}
+
+.md-peek img {
+  @apply rounded-lg my-1.5;
+}
