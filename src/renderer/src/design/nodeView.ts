@@ -74,7 +74,7 @@ export interface NodeView {
 export const NO_TEXT_FIELDS: TextFields = {
   size: false,
   weight: false,
-  family: false,
+  family: 'none',
   align: false,
   vertical: false,
   lineHeight: false,
