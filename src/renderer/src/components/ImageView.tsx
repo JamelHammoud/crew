@@ -103,7 +103,7 @@ export default function ImageView({ src, alt }: { src: string; alt: string }) {
     <div
       ref={frameRef}
       data-image-frame
-      className={`absolute inset-0 overflow-hidden flex items-center justify-center p-6 touch-none ${zoomed ? (dragging ? 'cursor-grabbing' : 'cursor-grab') : ''}`}
+      className={`absolute inset-0 overflow-hidden flex items-center justify-center p-6 touch-none animate-rise ${zoomed ? (dragging ? 'cursor-grabbing' : 'cursor-grab') : ''}`}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
