@@ -1,9 +1,10 @@
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
-import { useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { useBrowser } from '../state/browser'
 import { emojifyHtml } from './emojiHtml'
 import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
+import { morph } from './mdMorph'
 
 function markTasks(container: HTMLElement) {
   for (const box of Array.from(container.querySelectorAll('li > input[type="checkbox"]'))) {
@@ -28,7 +29,17 @@ function wrapTables(container: HTMLElement) {
   }
 }
 
-export default function Markdown({ text, className = '' }: { text: string; className?: string }) {
+export default function Markdown({
+  text,
+  className = '',
+  stream = false
+}: {
+  text: string
+  className?: string
+  stream?: boolean
+}) {
+  const host = useRef<HTMLDivElement>(null)
+  const drawn = useRef(false)
   const [resolved, setResolved] = useState(0)
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
