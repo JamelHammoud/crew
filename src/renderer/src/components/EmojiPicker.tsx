@@ -43,6 +43,8 @@ export default function EmojiPicker({
   const [active, setActive] = useState('recent')
   const [preview, setPreview] = useState<EmojiEntry | null>(null)
 
+  const sectionHeight = (count: number) => HEADER + Math.ceil(count / columns) * CELL
+
   const sections = useMemo<Section[]>(() => {
     const recents = recentEmoji()
       .map(char => lookupEmoji(char))
