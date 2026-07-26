@@ -1,5 +1,5 @@
 import { DocumentIcon, DocumentTextIcon, FolderIcon } from '@heroicons/react/16/solid'
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
 import type { FileEntry, RepoFile } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useTheme } from '../state/theme'
