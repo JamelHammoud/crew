@@ -106,9 +106,9 @@ describe('step rows', () => {
 
   it('draws a thread up to the step above it and nothing when it stands alone', () => {
     const { container } = render(createElement(StepRow, { item: item({ name: 'Read' }), linked: true }))
-    expect(container.querySelector('[aria-hidden]')).not.toBeNull()
+    expect(container.querySelector('span[aria-hidden]')).not.toBeNull()
     cleanup()
     const alone = render(createElement(StepRow, { item: item({ name: 'Read' }) }))
-    expect(alone.container.querySelector('[aria-hidden]')).toBeNull()
+    expect(alone.container.querySelector('span[aria-hidden]')).toBeNull()
   })
 })
