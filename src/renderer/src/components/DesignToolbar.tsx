@@ -99,18 +99,21 @@ function Group({
 }) {
   const shown = group.tools.find(tool => tool.id === (active ? current : fallback)) ?? group.tools[0]
   const hasMenu = group.tools.length > 1 || group.id === 'frame'
-  const tone = active ? 'bg-fg text-ink-900' : 'text-fg-secondary'
 
   return (
-    <span className={`relative flex items-center h-9 rounded-full ${tone}`}>
+    <span
+      className={`relative flex items-center h-9 rounded-full transition-colors ${
+        active ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
+      }`}
+    >
       <Tooltip label={shown.shortcut ? `${shown.label}  ${shown.shortcut}` : shown.label} disabled={menuOpen}>
         <button
           onClick={() => activateTool(editor, shown.id)}
           aria-label={shown.label}
           aria-pressed={active}
-          className={`h-9 rounded-full flex items-center justify-center transition-all active:scale-95 ${
-            hasMenu ? 'w-9 pl-1.5' : 'w-10'
-          } ${active ? '' : 'hover:text-fg hover:bg-fg/[0.06]'}`}
+          className={`h-9 grid place-items-center transition-transform active:scale-95 ${
+            hasMenu ? 'w-7 pl-1' : 'w-10'
+          }`}
         >
           <shown.Icon className="w-6 h-6" />
         </button>
@@ -120,8 +123,8 @@ function Group({
           onClick={() => onMenu(!menuOpen)}
           aria-label={`${group.label} options`}
           aria-expanded={menuOpen}
-          className={`h-9 w-4 pr-1.5 rounded-full grid place-items-center transition-colors ${
-            active ? 'text-ink-900/70 hover:text-ink-900' : 'text-fg-muted hover:text-fg'
+          className={`h-9 w-5 pr-1 grid place-items-center transition-transform active:scale-95 ${
+            active ? 'text-ink-900/55' : 'text-fg/45'
           }`}
         >
           <ChevronDownIcon className="w-3.5 h-3.5" />
