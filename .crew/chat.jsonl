@@ -22693,3 +22693,4 @@
 {"id":"6fd882b2-b29b-4a54-8b72-9bfd650e724d","ts":1785047045389,"kind":"todo.checked","todoId":"2fbd05f0-7b82-4178-82bc-6cdc521b91bf","checked":true,"byName":"Jamel"}
 {"id":"ff2041e7-f33b-4404-8d40-034af66e609d","ts":1785047081096,"kind":"todo.added","todoId":"c8a584f8-e412-4f3b-ac25-87aefd98f714","text":"Order done tasks by last sent message date","byName":"Jamel"}
 {"id":"af6ba435-6eb8-417c-bbef-a2a57ce35e9c","ts":1785047094058,"kind":"todo.edited","todoId":"c8a584f8-e412-4f3b-ac25-87aefd98f714","text":"Order done tasks by last sent message date\n\nPotentially show the date in the list too","byName":"Jamel"}
+{"id":"dda06fc0-04a9-4007-ac6a-baf858f7792a","ts":1785062920372,"kind":"message.reaction","targetId":"message:eb9962d2-25ac-4daf-8899-8d88642fa815","targetAuthorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","targetAuthorName":"Jamel","memberId":"60b55620-a113-478c-9935-77bd360c6f40","memberName":"ALI","emoji":"🎉","active":true}
