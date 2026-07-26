@@ -53,6 +53,7 @@ export default function Design() {
               onClick={() => setLeftOpen(value => !value)}
             >
               <PanelLeftGlyph className={`w-[18px] h-[18px] ${FLIP} ${leftOpen ? '' : '-scale-x-100'}`} />
+            </HeaderButton>
             <BoardSwitcher />
             <div className="ml-auto flex items-center gap-1">
               {editor && <DesignZoom />}
