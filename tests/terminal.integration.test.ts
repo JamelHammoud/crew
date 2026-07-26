@@ -6,6 +6,11 @@ import { shellFor, startingFolder, terminalEnv, Terminals, type TerminalSink } f
 
 const unix = process.platform !== 'win32'
 
+// A real pty running a real shell, but the plainest one on the machine.
+// Whoever runs this has their own login shell, and some of them take seconds
+// to read their profile before they say anything.
+if (unix) process.env['SHELL'] = '/bin/sh'
+
 function listener(): { sink: TerminalSink; text(): string; exits: string[] } {
   let text = ''
   const exits: string[] = []
