@@ -275,6 +275,55 @@ describe('changed file lists', () => {
   })
 })
 
+describe('steps and thinking', () => {
+  const item = (patch: Partial<ThreadItem>): ThreadItem => ({
+    key: 'p1:s1',
+    ts: 0,
+    kind: 'tool',
+    author: 'Claude',
+    self: false,
+    text: '',
+    streaming: false,
+    ...patch
+  })
+
+  it('opens a file an agent read from the step row', async () => {
+    render(createElement(StepRow, { item: item({ name: 'Read', detail: `${ROOT}/src/app.ts` }) }))
+    const link = await screen.findByText('src/app.ts')
+    expect(document.body.textContent).not.toContain(ROOT)
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
+    expect(screen.getAllByText('src/app.ts').length).toBe(1)
+  })
+
+  it('opens a file named inside a command', async () => {
+    render(createElement(StepRow, { item: item({ name: 'Bash', detail: 'yarn vitest run src/app.ts' }) }))
+    const link = await screen.findByText('src/app.ts')
+    fireEvent.click(link)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
+  })
+
+  it('opens a file an agent named while thinking, without the backticks', async () => {
+    const thought = 'Next I will read `src/app.ts:3` and then src/other.ts'
+    render(createElement(StepRow, { item: item({ kind: 'thinking', text: thought }) }))
+    fireEvent.click(screen.getByText('Thinking'))
+    const link = await screen.findByText('src/app.ts:3')
+    expect(document.body.textContent).not.toContain('`')
+    expect(document.body.textContent).toContain('src/other.ts')
+    fireEvent.click(link)
+    const tab = useBrowser.getState().tabs[0]
+    expect(tab.path).toBe('src/app.ts')
+    expect(tab.line).toBe(3)
+  })
+
+  it('hides a thought about a file on someone else’s computer', async () => {
+    render(createElement(StepRow, { item: item({ kind: 'thinking', text: 'I saved /Users/ali/Desktop/notes.md' }) }))
+    fireEvent.click(screen.getByText('Thinking'))
+    await screen.findByText('Private file')
+    expect(document.body.textContent).not.toContain('/Users/ali')
+  })
+})
+
 describe('file view', () => {
   it('shows file contents with the target line marked', async () => {
     useBrowser.getState().openFile('src/app.ts', 2)
