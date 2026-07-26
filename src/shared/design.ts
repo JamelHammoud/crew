@@ -120,6 +120,7 @@ export interface DesignNodeInput {
   w?: number
   h?: number
   name?: string
+  shape?: string
   text?: string
   radius?: number | number[]
   fills?: unknown[]
