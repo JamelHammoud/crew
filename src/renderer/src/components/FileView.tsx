@@ -220,8 +220,8 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
   const marks = useMemo(() => (file ? changedLines(file.text, tab.diff) : null), [file, tab.diff])
 
   useEffect(() => {
-    const target = tab.line ?? marks?.first ?? null
     if (!data) return
+    const target = tab.line ?? marks?.first ?? null
     if (data.kind === 'file' && target) {
       bodyRef.current?.querySelector(`[data-line="${target}"]`)?.scrollIntoView?.({ block: 'center' })
       return
