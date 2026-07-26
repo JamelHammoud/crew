@@ -5,8 +5,11 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { EditorContext, type Editor } from 'tldraw'
 import { nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
+import { installLocalStorage } from './helpers/local-storage'
 
 afterEach(cleanup)
+
+const storage = installLocalStorage()
 
 class TestResizeObserver {
   observe(): void {}
