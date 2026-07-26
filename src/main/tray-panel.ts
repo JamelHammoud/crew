@@ -42,7 +42,7 @@ export class TrayPanel {
     this.win.hide()
   }
 
-  show(snapshot: PresenceSnapshot): void {
+  update(snapshot: PresenceSnapshot): void {
     this.snapshot = snapshot
     if (this.win && !this.win.webContents.isLoading()) {
       this.win.webContents.send('presence:update', snapshot)
