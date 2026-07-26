@@ -6,10 +6,10 @@ import { describe, expect, it, vi } from 'vitest'
 const { NumberInput } = await import('../src/renderer/src/design/InspectorFields')
 
 function field(props: { value: number; min?: number; max?: number; onChange: (value: number) => void }) {
-  const view = render(createElement(NumberInput, { label: 'X', ...props }))
+  const { container } = render(createElement(NumberInput, { label: 'X', ...props }))
   return {
-    input: view.getByLabelText('X'),
-    handle: view.container.querySelector('[data-scrub="X"]') as HTMLElement
+    input: container.querySelector('input') as HTMLInputElement,
+    handle: container.querySelector('[data-scrub="X"]') as HTMLElement
   }
 }
 
