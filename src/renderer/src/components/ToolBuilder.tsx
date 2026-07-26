@@ -90,9 +90,10 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
     return external ? { kind: 'web', url, external: true } : { kind: 'web', url }
   }
 
-  const written =
-    kind === 'web' ? url.trim() : kind === 'file' ? path.trim() : kind === 'prompt' ? ask.trim() : 'runs'
-  const ready = name.trim() !== '' && written !== ''
+  // A command is the one thing a tool can be built without: a terminal that
+  // opens on a prompt is a tool.
+  const written = kind === 'web' ? url : kind === 'file' ? path : kind === 'prompt' ? ask : ''
+  const ready = name.trim() !== '' && (kind === 'terminal' || written.trim() !== '')
 
   const save = () => {
     if (!ready) return
