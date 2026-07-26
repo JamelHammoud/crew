@@ -1,25 +1,23 @@
 import { useEditor, useValue, type TLShape } from 'tldraw'
 import Appearance from './Appearance'
-import FrameStyles, { useSelectedFrame } from './FrameStyles'
 import { glyphForShape } from './glyphs'
-import Inspector, { useSelectedNode } from './Inspector'
-import ShapeStyles from './ShapeStyles'
+import Inspector from './Inspector'
 import { canRename, layerName, renameShape } from './tools'
 import Transform from './Transform'
+import { useNodeView } from './useNodeView'
 
 export default function DesignPanel() {
   const editor = useEditor()
   const shapes = useValue('design selected shapes', () => editor.getSelectedShapes(), [editor])
-  const node = useSelectedNode()
-  const frame = useSelectedFrame()
+  const view = useNodeView()
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
       <div className="design-style-panel flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
         <SelectionHeader shapes={shapes} />
         <Transform />
-        <Appearance node={node} />
-        {node ? <Inspector shape={node} /> : frame ? <FrameStyles shape={frame} /> : <ShapeStyles />}
+        <Appearance view={view} />
+        {view && <Inspector view={view} />}
         <div className="h-6" />
       </div>
     </div>
