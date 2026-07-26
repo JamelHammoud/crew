@@ -8,21 +8,23 @@ type Mark = typeof HangupGlyph
 const solid = (d: string) => glyph(<path d={d} fill="currentColor" />)
 const mark = (art: React.ReactNode) => glyph(art, 2)
 
-const HANG_B = solid(
-  'M2.5 12.7C5.3 8.6 8.4 5.7 12 5.7s6.7 0 9.5 7C21.3 15.7 20 18.3 17.3 18.3 15.9 18.3 15.1 16.6 15.1 14.4V11.3C14.1 10.95 13.1 10.7 12 10.7S9.9 10.95 8.9 11.3v3.1C8.9 16.6 8.1 18.3 6.7 18.3 4 18.3 2.7 15.7 2.5 12.7Z'
-)
-const HANG_C = solid(
+const C1 = solid(
   'M2.5 12.7C5.3 8.6 8.4 5.7 12 5.7s6.7 2.9 9.5 7c-.2 3-1.5 5.6-4.2 5.6-1.6 0-2.6-1.6-2.6-3.9v-3.1c-1-.35-2-.6-2.7-.6s-1.7.25-2.7.6v3.1c0 2.3-1 3.9-2.6 3.9-2.7 0-4-2.6-4.2-5.6Z'
 )
-const HANG_D = solid(
-  'M2.5 13.4C5.4 8.9 8.5 6.6 12 6.6s6.6 2.3 9.5 6.8c-.4 2.9-1.8 4.9-4.3 4.9-1.7 0-2.8-1.5-2.8-3.9v-2.6c-1-.3-1.9-.45-2.4-.45s-1.4.15-2.4.45v2.6c0 2.4-1.1 3.9-2.8 3.9-2.5 0-3.9-2-4.3-4.9Z'
+// Bells flaring wider than the crown, the way a handset's caps do.
+const C2 = solid(
+  'M3.5 11.6C6.1 7.7 8.9 5.7 12 5.7s5.9 2 8.5 5.9c.7 1.1 1 2.1 1 3 0 2.1-1.6 3.7-3.8 3.7-2 0-3.3-1.4-3.3-3.6v-2.9c-.8-.3-1.5-.4-2.4-.4s-1.6.1-2.4.4v2.9c0 2.2-1.3 3.6-3.3 3.6-2.2 0-3.8-1.6-3.8-3.7 0-.9.3-1.9 1-3Z'
+)
+// The same as C2, with the grip thinner so the notch under it opens up.
+const C3 = solid(
+  'M3.5 11.2C6.1 7.4 8.9 5.4 12 5.4s5.9 2 8.5 5.8c.7 1.1 1 2.2 1 3.2 0 2.2-1.6 3.8-3.8 3.8-2 0-3.3-1.5-3.3-3.7v-2.9c-.8-.3-1.5-.4-2.4-.4s-1.6.1-2.4.4v2.9c0 2.2-1.3 3.7-3.3 3.7-2.2 0-3.8-1.6-3.8-3.8 0-1 .3-2.1 1-3.2Z'
 )
 
 const HANGUPS: [string, Mark][] = [
   ['A now', HangupGlyph],
-  ['B', HANG_B],
-  ['C', HANG_C],
-  ['D', HANG_D]
+  ['C1', C1],
+  ['C2 flared', C2],
+  ['C3 thin grip', C3]
 ]
 
 function Bar({ Leave }: { Leave: Mark }) {
@@ -54,31 +56,20 @@ function Bar({ Leave }: { Leave: Mark }) {
       <span style={pill('red')}>
         <Leave className="w-5 h-5" />
       </span>
+      <span style={{ color: '#ffffff8c', display: 'flex', marginLeft: 10 }}>
+        <Leave className="w-4 h-4" />
+      </span>
     </span>
   )
 }
 
-// ---- doc candidates -------------------------------------------------------
+// ---- doc set --------------------------------------------------------------
 
 const Pilcrow = mark(
   <>
     <path d="M13.4 5.5v13" />
     <path d="M17.8 5.5v13" />
     <path d="M13.4 12.9h-2.8a3.7 3.7 0 0 1 0-7.4h7.2" />
-  </>
-)
-const IndentLines = mark(
-  <>
-    <path d="M8.6 6.2h11.4" />
-    <path d="M4 11.4h16" />
-    <path d="M4 16.6h11.4" />
-  </>
-)
-const TextLines = mark(
-  <>
-    <path d="M4 6.2h16" />
-    <path d="M4 11.4h16" />
-    <path d="M4 16.6h9.6" />
   </>
 )
 
@@ -92,12 +83,7 @@ const H = (numeral: React.ReactNode) =>
     </>
   )
 const H1a = H(<path d="M19.6 18v-7.6l-2.2 1.8" strokeWidth={1.7} />)
-const H2a = H(
-  <path
-    d="M15.5 12.3a2.2 2.2 0 1 1 4.4 0c0 1.7-4.4 3.3-4.4 5.7h4.6"
-    strokeWidth={1.7}
-  />
-)
+const H2a = H(<path d="M15.5 12.3a2.2 2.2 0 1 1 4.4 0c0 1.7-4.4 3.3-4.4 5.7h4.6" strokeWidth={1.7} />)
 const H3a = H(
   <>
     <path d="M15.6 11.3a2.1 2.1 0 1 1 1.7 3.3h-.5" strokeWidth={1.7} />
@@ -112,10 +98,18 @@ const QuoteBar = mark(
     <path d="M9.8 15.4h6.6" />
   </>
 )
-const QuoteMarks = mark(
+// A pair of opening quotes, drawn solid so the counter cannot close at 16.
+const comma = (x: number) =>
+  `M${x} 15.6c2.6-.5 4.2-2.1 4.2-4.4V6.4h-5.6v5.3h2.6c0 1.3-.7 2-2.2 2.3Z`
+const QuoteSolid = glyph(
+  <path d={`${comma(5.2)}${comma(14.4)}`} fill="currentColor" strokeWidth={0} />
+)
+const QuoteBar2 = mark(
   <>
-    <path d="M9.4 15.2c-2.4 0-3.9-1.5-3.9-3.6 0-2 1.5-3.6 3.4-3.6 1.6 0 2.6 1 2.6 2.4 0 1.3-.9 2.3-2.2 2.3" />
-    <path d="M18.6 15.2c-2.4 0-3.9-1.5-3.9-3.6 0-2 1.5-3.6 3.4-3.6 1.6 0 2.6 1 2.6 2.4 0 1.3-.9 2.3-2.2 2.3" />
+    <path d="M4.4 5.6v12.8" />
+    <path d="M9.6 8.2h10.4" />
+    <path d="M9.6 12h10.4" />
+    <path d="M9.6 15.8h6.4" />
   </>
 )
 
@@ -131,7 +125,6 @@ const Bullets = mark(
     ))}
   </>
 )
-
 const Numbers = mark(
   <>
     <path d="M3.4 5.1 5 4.1v4.6" strokeWidth={1.7} />
@@ -142,30 +135,12 @@ const Numbers = mark(
     ))}
   </>
 )
-
 const Todo2 = mark(
   <>
     <path d="m3.4 7.4 1.9 1.9 3.4-3.8" />
     <path d="m3.4 16.4 1.9 1.9 3.4-3.8" />
     <path d="M12.2 7.6H20" />
     <path d="M12.2 16.6H20" />
-  </>
-)
-const Todo3 = mark(
-  <>
-    <path d="m3.3 6.3 1.5 1.5 2.7-3" />
-    <path d="m3.3 11.9 1.5 1.5 2.7-3" />
-    <path d="m3.3 17.5 1.5 1.5 2.7-3" />
-    {LIST_Y.map(y => (
-      <path key={y} d={`M11 ${y}h9`} />
-    ))}
-  </>
-)
-
-const Code2 = mark(
-  <>
-    <path d="m9 6.9-4.6 5.1 4.6 5.1" />
-    <path d="m15 6.9 4.6 5.1-4.6 5.1" />
   </>
 )
 const Code3 = mark(
@@ -175,30 +150,7 @@ const Code3 = mark(
     <path d="m13.4 5.6-2.8 12.8" />
   </>
 )
-
 const Div1 = mark(<path d="M3.4 12h17.2" />)
-const Div2 = mark(
-  <>
-    <path d="M3.4 12h17.2" />
-    <path d="M7.6 6.4h8.8" />
-    <path d="M7.6 17.6h8.8" />
-  </>
-)
-const Div3 = mark(
-  <>
-    <path d="M3.4 12h5.4" />
-    <path d="M15.2 12h5.4" />
-    <circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none" />
-  </>
-)
-
-const Table1 = mark(
-  <>
-    <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2.8" />
-    <path d="M3.4 9.6h17.2" />
-    <path d="M12 9.6v10" />
-  </>
-)
 const Table2 = mark(
   <>
     <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2.8" />
@@ -206,14 +158,6 @@ const Table2 = mark(
     <path d="M12 4.4v15.2" />
   </>
 )
-const Table3 = mark(
-  <>
-    <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2.8" />
-    <path d="M3.4 9.6h17.2M3.4 14.6h17.2" />
-    <path d="M12 9.6v10" />
-  </>
-)
-
 const Image1 = mark(
   <>
     <rect x="3.4" y="4.4" width="17.2" height="15.2" rx="2.8" />
@@ -223,21 +167,21 @@ const Image1 = mark(
 )
 
 const OPTIONS: [string, Mark[]][] = [
-  ['Paragraph', [doc.ParagraphGlyph, TextLines, IndentLines, Pilcrow]],
-  ['Heading 1', [doc.Heading1Glyph, H1a]],
-  ['Heading 2', [doc.Heading2Glyph, H2a]],
-  ['Heading 3', [doc.Heading3Glyph, H3a]],
-  ['Quote', [doc.QuoteGlyph, QuoteBar, QuoteMarks]],
-  ['Bulleted', [doc.BulletListGlyph, Bullets]],
-  ['Numbered', [doc.NumberedListGlyph, Numbers]],
-  ['To-do', [doc.TodoGlyph, Todo2, Todo3]],
-  ['Code', [doc.CodeGlyph, Code2, Code3]],
-  ['Divider', [doc.DividerGlyph, Div1, Div2, Div3]],
-  ['Table', [doc.TableGlyph, Table1, Table2, Table3]],
-  ['Image', [doc.ImageGlyph, Image1]]
+  ['Paragraph', [doc.ParagraphGlyph, Pilcrow, Pilcrow]],
+  ['Heading 1', [doc.Heading1Glyph, H1a, H1a]],
+  ['Heading 2', [doc.Heading2Glyph, H2a, H2a]],
+  ['Heading 3', [doc.Heading3Glyph, H3a, H3a]],
+  ['Quote', [doc.QuoteGlyph, QuoteBar, QuoteSolid, QuoteBar2]],
+  ['Bulleted', [doc.BulletListGlyph, Bullets, Bullets]],
+  ['Numbered', [doc.NumberedListGlyph, Numbers, Numbers]],
+  ['To-do', [doc.TodoGlyph, Todo2, Todo2]],
+  ['Code', [doc.CodeGlyph, Code3, Code3]],
+  ['Divider', [doc.DividerGlyph, Div1, Div1]],
+  ['Table', [doc.TableGlyph, Table2, Table2]],
+  ['Image', [doc.ImageGlyph, Image1, Image1]]
 ]
 
-function Menu({ title, pick }: { title: string; pick: (name: string, all: Mark[]) => Mark }) {
+function Menu({ title, at }: { title: string; at: number }) {
   return (
     <div
       style={{
@@ -250,17 +194,11 @@ function Menu({ title, pick }: { title: string; pick: (name: string, all: Mark[]
     >
       <p style={{ margin: '4px 10px 8px', fontSize: 11, color: '#ffffff73' }}>{title}</p>
       {OPTIONS.map(([name, all]) => {
-        const M = pick(name, all)
+        const M = all[at] ?? all[all.length - 1]
         return (
           <div
             key={name}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '7px 10px',
-              fontSize: 14
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', fontSize: 14 }}
           >
             <span style={{ color: '#ffffff8c', display: 'flex' }}>
               <M className="w-4 h-4" />
@@ -284,10 +222,10 @@ export default function Probe() {
         </div>
       ))}
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginTop: 28 }}>
-        <Menu title="now" pick={(_n, all) => all[0]} />
-        <Menu title="new" pick={(_n, all) => all[1] ?? all[0]} />
-        <Menu title="alt a" pick={(_n, all) => all[2] ?? all[1] ?? all[0]} />
-        <Menu title="alt b" pick={(_n, all) => all[3] ?? all[2] ?? all[1] ?? all[0]} />
+        <Menu title="now" at={0} />
+        <Menu title="new, quote bar" at={1} />
+        <Menu title="new, quote solid" at={2} />
+        <Menu title="new, quote 3 lines" at={3} />
       </div>
     </div>
   )
