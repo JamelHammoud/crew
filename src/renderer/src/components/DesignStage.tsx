@@ -9,12 +9,14 @@ export default function DesignStage({
   boardId,
   editor,
   onEditor,
-  onRename
+  onRename,
+  onAsked
 }: {
   boardId: string
   editor: Editor | null
   onEditor: (editor: Editor | null) => void
   onRename: (shape: TLShape) => void
+  onAsked: () => void
 }) {
   const [asking, setAsking] = useState(false)
   const { spot, close } = useContextMenu(editor)
