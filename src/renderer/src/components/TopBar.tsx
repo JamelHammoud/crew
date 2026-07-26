@@ -13,7 +13,6 @@ import {
 } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
-import { useHuddle } from '../state/huddle'
 import { setSounds, useSounds } from '../state/sound'
 import { useCrew } from '../state/store'
 import { toggleTheme, useTheme } from '../state/theme'
@@ -59,8 +58,6 @@ export default function TopBar({
   const selfName = useCrew(s => s.selfName)
   const leave = useCrew(s => s.leave)
   const waiting = useCrew(reviewCount)
-  const huddleJoined = useHuddle(s => s.joined)
-  const huddleSize = useHuddle(s => s.room.peers.length)
   const [menuOpen, setMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
