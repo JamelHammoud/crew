@@ -107,5 +107,11 @@ describe('thread navigation', () => {
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByPlaceholderText('Send a message or @ another agent')).toBeTruthy()
     expect(screen.getByText('Claude exited with code 1')).toBeTruthy()
+
+    fireEvent.click(screen.getAllByLabelText('Reply').at(-1)!)
+    expect(screen.getByText('Replying to Claude 2')).toBeTruthy()
+    expect(screen.getByText('Claude exited with code 1')).toBeTruthy()
+    fireEvent.click(screen.getByLabelText('Cancel reply'))
+    expect(screen.queryByText('Replying to Claude 2')).toBeNull()
   })
 })
