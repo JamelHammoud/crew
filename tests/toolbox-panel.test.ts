@@ -251,21 +251,23 @@ describe('the toolbox', () => {
   it('will not build a tool with nothing to press or nowhere to go', () => {
     toolbox()
     build()
-    const save = screen.getByText('Add to toolbox').closest('button')
-    expect(save?.disabled).toBe(true)
+    // Picking what a tool does is a screen of its own, so the footer it comes
+    // back to is a new one and has to be asked for again.
+    const save = () => screen.getByText('Add to toolbox').closest('button')
+    expect(save()?.disabled).toBe(true)
 
     name('Nowhere')
-    expect(save?.disabled).toBe(true)
+    expect(save()?.disabled).toBe(true)
 
     // A command is optional, so naming it is enough once it runs one.
     does('Run a command')
-    expect(save?.disabled).toBe(false)
+    expect(save()?.disabled).toBe(false)
 
     // A file with no path and an ask with nothing in it are not tools.
     does('Open a file')
-    expect(save?.disabled).toBe(true)
+    expect(save()?.disabled).toBe(true)
     does('Ask an agent')
-    expect(save?.disabled).toBe(true)
+    expect(save()?.disabled).toBe(true)
   })
 
   it('builds a tool that opens a doc, and one that opens a board', () => {
