@@ -148,6 +148,60 @@ describe('step rows', () => {
     expect(mark(done.container)?.getAttribute('class')).not.toContain('pulse-soft')
   })
 
+  it('opens what a row points at instead of unfolding it', async () => {
+    const { container } = render(createElement(StepRow, { item: item({ name: 'Read', detail: 'src/app.ts' }) }))
+    await waitFor(() => expect(screen.getByText('src/app.ts')).not.toBeNull())
+    expect(container.querySelectorAll('button').length).toBe(1)
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(useBrowser.getState().tabs[0].path).toBe('src/app.ts')
+  })
+
+  it('opens a page an agent read', () => {
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'WebFetch', detail: 'https://crew.dev/docs' }) })
+    )
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    const tab = useBrowser.getState().tabs[0]
+    expect(tab.kind).toBe('web')
+    expect(tab.url).toBe('https://crew.dev/docs')
+  })
+
+  it('leaves a row with nothing more to show alone', () => {
+    const { container } = render(
+      createElement(StepRow, { item: item({ name: 'WebSearch', detail: 'pooling llms' }) })
+    )
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(useBrowser.getState().tabs.length).toBe(0)
+    expect(container.querySelectorAll('svg').length).toBe(1)
+  })
+
+  it('opens a command into something you can read and copy', () => {
+    const command = 'yarn vitest run tests/tool-actions-probe.test.ts'
+    const { container } = render(createElement(StepRow, { item: item({ name: 'Bash', detail: command }) }))
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    expect(screen.getByText('$')).not.toBeNull()
+    const buttons = container.querySelectorAll('button')
+    expect(buttons.length).toBe(2)
+    fireEvent.click(buttons[1])
+    return waitFor(() => expect(copied).toBe(command))
+  })
+
+  it('opens an edit into the lines that went and the lines that arrived', async () => {
+    const diff = ['- const one = 1', '+ const one = 2'].join('\n')
+    const { container } = render(
+      createElement(StepRow, {
+        item: item({ name: 'Edit', files: [{ path: 'src/app.ts', added: 1, removed: 1, diff }] })
+      })
+    )
+    fireEvent.click(container.querySelector('button') as HTMLButtonElement)
+    await waitFor(() => expect(screen.getByText('const one = 1')).not.toBeNull())
+    expect(screen.getByText('const one = 2')).not.toBeNull()
+    expect(screen.getByText('−')).not.toBeNull()
+    expect(screen.getByText('+')).not.toBeNull()
+    fireEvent.click(container.querySelectorAll('button')[1])
+    await waitFor(() => expect(copied).toBe('const one = 2'))
+  })
+
   it('sits closer to the step above it than to a message', () => {
     const { container } = render(createElement(StepRow, { item: item({ name: 'Read' }), linked: true }))
     expect(container.firstElementChild?.className).toContain('-mt-3')
