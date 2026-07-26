@@ -257,7 +257,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
         }
       >
         {props.effects.map((effect, at) => (
-          <div key={at} className="flex items-center gap-0.5">
+          <div key={at} className="flex items-center gap-0.5 -mr-1.5">
             <EffectRow effect={effect} onChange={next => setEffect(at, next)} />
             <ShowButton shown={effect.visible} onClick={() => setEffect(at, { ...effect, visible: !effect.visible })} />
             <RemoveButton
