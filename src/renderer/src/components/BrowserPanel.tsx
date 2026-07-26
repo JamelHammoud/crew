@@ -134,9 +134,20 @@ export default function BrowserPanel() {
             <RefreshGlyph className="w-4 h-4" />
           </button>
           <FileCrumbs tab={active} />
+          <Tooltip label={active.tree ? 'Hide files' : 'Show files'}>
+            <button
+              onClick={() => useBrowser.getState().toggleTree(active.id)}
+              aria-label="Project files"
+              aria-pressed={active.tree}
+              className={`${iconButton} ${active.tree ? 'text-fg bg-fg/[0.06]' : ''}`}
+            >
+              <FolderGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
           <Tooltip label="Show in folder">
             <button
               onClick={() => void window.crew.revealFile(active.path)}
+              disabled={!active.path}
               aria-label="Show in folder"
               className={iconButton}
             >
