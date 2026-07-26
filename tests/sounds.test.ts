@@ -223,14 +223,13 @@ describe('playing a sound', () => {
     const heard = [...eachTab().values()]
     const grain = heard.map(sound => sound.scrapes.join(','))
     const bodies = heard.map(sound => sound.hz.map(hz => (hz / sound.root).toFixed(2)).join(','))
-    expect(new Set(grain).size).toBe(4)
-    expect(new Set(bodies).size).toBe(4)
+    expect(new Set(grain).size).toBe(TABS.length)
+    expect(new Set(bodies).size).toBe(TABS.length)
   })
 
   it('lets you cross the whole row without a note being swallowed', () => {
     playSound('tab.chat')
     const first = started.length
-    playSound('tab.agents')
     playSound('tab.docs')
     playSound('tab.design')
     expect(started.length).toBeGreaterThan(first)
