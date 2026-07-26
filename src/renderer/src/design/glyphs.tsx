@@ -310,6 +310,191 @@ export const StrikeGlyph = glyph(
   </>
 )
 
+const STACK_BACK = <rect x="4" y="4" width="11" height="11" rx="2" />
+const STACK_FRONT = <rect x="9" y="9" width="11" height="11" rx="2" />
+
+export const ToFrontGlyph = glyph(
+  <>
+    <path d="M4 15V6a2 2 0 0 1 2-2h9" strokeDasharray="2 2.5" />
+    {STACK_FRONT}
+  </>
+)
+
+export const ToBackGlyph = glyph(
+  <>
+    {STACK_BACK}
+    <path d="M20 9v9a2 2 0 0 1-2 2H9" strokeDasharray="2 2.5" />
+  </>
+)
+
+export const ForwardGlyph = glyph(
+  <>
+    <path d="M12 20V8" />
+    <path d="M7 13l5-5 5 5" />
+    <path d="M4 4h16" strokeDasharray="2 2.5" />
+  </>
+)
+
+export const BackwardGlyph = glyph(
+  <>
+    <path d="M12 4v12" />
+    <path d="M7 11l5 5 5-5" />
+    <path d="M4 20h16" strokeDasharray="2 2.5" />
+  </>
+)
+
+export const GroupGlyph = glyph(
+  <>
+    <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16" />
+    <rect x="8" y="8" width="8" height="8" rx="1.5" />
+  </>
+)
+
+export const UngroupGlyph = glyph(
+  <>
+    <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 20h2.5a1.5 1.5 0 0 0 1.5-1.5V16" />
+    <rect x="4" y="12" width="8" height="8" rx="1.5" />
+    <rect x="12" y="4" width="8" height="8" rx="1.5" />
+  </>
+)
+
+export const MaskGlyph = glyph(
+  <>
+    <circle cx="12" cy="12" r="8" />
+    <path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor" stroke="none" />
+    <path d="M4 12h16" strokeDasharray="2 2.5" />
+  </>
+)
+
+export const AutoLayoutGlyph = glyph(
+  <>
+    <rect x="4" y="4" width="16" height="16" rx="2.5" strokeDasharray="2 2.5" />
+    <rect x="7" y="7" width="4" height="10" rx="1" />
+    <rect x="13" y="7" width="4" height="10" rx="1" />
+  </>
+)
+
+export const RotateGlyph = glyph(
+  <>
+    <path d="M20 12a8 8 0 1 1-2.35-5.65" />
+    <path d="M20 4v4h-4" />
+  </>
+)
+
+export const DuplicateGlyph = glyph(
+  <>
+    {STACK_BACK}
+    <path d="M9 15h7a1 1 0 0 0 1-1V7" transform="translate(3 3)" />
+  </>
+)
+
+export const PasteGlyph = glyph(
+  <>
+    <path d="M9 5H6.5A1.5 1.5 0 0 0 5 6.5v12A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 17.5 5H15" />
+    <rect x="9" y="3" width="6" height="4" rx="1.5" />
+  </>
+)
+
+export const RenameGlyph = glyph(
+  <>
+    <path d="M4 8V6h16v2" />
+    <path d="M12 6v12" />
+    <path d="M9 18h6" />
+  </>
+)
+
+export const TrashGlyph = glyph(
+  <>
+    <path d="M4 7h16" />
+    <path d="M9 7V5h6v2" />
+    <path d="M6 7v12a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 19V7" />
+  </>
+)
+
+export const LockGlyph = glyph(
+  <>
+    <rect x="5" y="11" width="14" height="9" rx="2" />
+    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+  </>
+)
+
+export const UnlockGlyph = glyph(
+  <>
+    <rect x="5" y="11" width="14" height="9" rx="2" />
+    <path d="M8 11V8a4 4 0 0 1 7.5-2" />
+  </>
+)
+
+export const EyeGlyph = glyph(
+  <>
+    <path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6Z" />
+    <circle cx="12" cy="12" r="2.5" />
+  </>
+)
+
+export const EyeOffGlyph = glyph(
+  <>
+    <path d="M6 6.5C4.2 8 3 12 3 12s3.5 6 9 6c1.7 0 3.2-.55 4.4-1.35" />
+    <path d="M19.4 15C20.5 13.7 21 12 21 12s-3.5-6-9-6c-.7 0-1.35.1-1.95.25" />
+    <path d="M4 4l16 16" />
+  </>
+)
+
+export const SelectAllGlyph = glyph(
+  <>
+    <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16" />
+    <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+  </>
+)
+
+export const DeselectGlyph = glyph(
+  <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16" />
+)
+
+export const ZoomFitGlyph = glyph(
+  <>
+    <rect x="4" y="6" width="16" height="12" rx="2" />
+    <path d="M8 10V9h2M16 14v1h-2" />
+  </>
+)
+
+export const ZoomSelectionGlyph = glyph(
+  <>
+    <path d="M4 8V6h2M18 6h2v2M20 16v2h-2M6 18H4v-2" />
+    <rect x="9" y="9" width="6" height="6" rx="1" />
+  </>
+)
+
+export const ZoomOneGlyph = glyph(
+  <>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="m16 16 4 4" />
+    <path d="M10 9.5 11.5 8.5v5" />
+  </>
+)
+
+export const SparkGlyph = glyph(
+  <>
+    <path d="M12 3.5c0 4 1.5 5.5 5.5 5.5-4 0-5.5 1.5-5.5 5.5 0-4-1.5-5.5-5.5-5.5 4 0 5.5-1.5 5.5-5.5Z" />
+    <path d="M17.5 15c0 2.2.8 3 3 3-2.2 0-3 .8-3 3 0-2.2-.8-3-3-3 2.2 0 3-.8 3-3Z" />
+  </>
+)
+
+export const SearchGlyph = glyph(
+  <>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="m16 16 4 4" />
+  </>
+)
+
+export const LayersGlyph = glyph(
+  <>
+    <path d="m12 3.5 8.5 4.5-8.5 4.5L3.5 8Z" />
+    <path d="m4.5 12 7.5 4 7.5-4" />
+    <path d="m4.5 16 7.5 4 7.5-4" />
+  </>
+)
+
 const GEO_GLYPHS: Record<string, Glyph> = {
   rectangle: RectangleGlyph,
   ellipse: EllipseGlyph,
