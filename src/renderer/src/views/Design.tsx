@@ -67,8 +67,9 @@ export default function Design() {
 
   return (
     <DesignBoardContext.Provider value={boardContext}>
-      <EditorContext.Provider value={editor}>
-        <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H - HEADER_LIFT }}>
+      <DesignRenameContext.Provider value={renameContext}>
+        <EditorContext.Provider value={editor}>
+          <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H - HEADER_LIFT }}>
           <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-2">
             <HeaderButton
               label={panels.left ? 'Hide layers' : 'Show layers'}
