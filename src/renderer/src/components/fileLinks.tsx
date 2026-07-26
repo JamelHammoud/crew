@@ -52,8 +52,8 @@ function locate(path: string): Promise<PathLocation> {
   let promise = pending.get(path)
   if (!promise) {
     const ask = window.crew?.locatePath
-    promise = (ask ? ask(path) : Promise.resolve<PathLocation>({ kind: 'local' }))
-      .catch((): PathLocation => ({ kind: 'local' }))
+    promise = (ask ? ask(path) : Promise.resolve<PathLocation>({ kind: 'local', exists: false }))
+      .catch((): PathLocation => ({ kind: 'local', exists: false }))
       .then(location => {
         located.set(path, { location, at: Date.now() })
         pending.delete(path)
