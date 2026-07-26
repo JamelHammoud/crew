@@ -82,7 +82,7 @@ export default function MessageReactions({
             type="button"
             aria-label={`React with ${emoji}`}
             aria-pressed={selected.has(emoji)}
-            onClick={() => react(emoji)}
+            onClick={() => reactFromMenu(emoji)}
             className={`flex h-7 w-7 items-center justify-center rounded-full transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
               selected.has(emoji) ? 'bg-fg/12' : 'hover:bg-fg/8'
             }`}
@@ -124,7 +124,7 @@ export default function MessageReactions({
             side="top"
             className="overflow-hidden !rounded-card !p-0"
           >
-            <EmojiPicker selected={selected} onPick={react} />
+            <EmojiPicker selected={selected} onPick={reactFromMenu} />
           </Popover>
         </span>
         {deletable && (
