@@ -97,24 +97,29 @@ export default function AgentIcon({
   seed,
   size = 'md',
   presence,
+  photo,
   className = ''
 }: {
   seed: string
   size?: keyof typeof SIZES
   presence?: 'online' | 'offline'
+  // For the tray panel, which is handed the picture rather than the session it
+  // came from.
+  photo?: string
   className?: string
 }) {
   const pet = petOf(seed)
   const light = useTheme() === 'light'
-  const photo = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
+  const file = useCrew(state => state.agents.find(agent => agent.id === seed)?.avatar)
   const httpBase = useCrew(state => state.httpBase)
+  const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
   const bg = light ? `oklch(0.93 0.05 ${pet.hue})` : `oklch(0.3 0.055 ${pet.hue})`
   const body = light ? `oklch(0.62 0.16 ${pet.hue})` : `oklch(0.76 0.15 ${pet.hue})`
   return (
     <span className={`${SIZES[size]} relative inline-block shrink-0 self-start ${className}`}>
-      {photo && httpBase ? (
+      {src ? (
         <img
-          src={attachmentFileUrl(httpBase, photo)}
+          src={src}
           alt=""
           draggable={false}
           className="w-full h-full rounded-full object-cover select-none"
