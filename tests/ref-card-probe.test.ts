@@ -28,6 +28,7 @@ Element.prototype.scrollIntoView = () => {}
 if (typeof globalThis.CSS === 'undefined') {
   ;(globalThis as { CSS?: unknown }).CSS = {}
 }
+;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
 const { default: Chat } = await import('../src/renderer/src/views/Chat')
 const { useCrew } = await import('../src/renderer/src/state/store')
