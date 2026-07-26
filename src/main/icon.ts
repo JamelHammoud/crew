@@ -9,7 +9,8 @@ const cache = new Map<IconTheme, NativeImage>()
 // A build run from source wears the blueprint, so it is never mistaken for the
 // installed app sitting next to it in the dock.
 function encoded(theme: IconTheme): string {
-  if (fromSource(app.getAppPath())) return theme === 'light' ? DEV_LIGHT_ICON : DEV_DARK_ICON
+  if (wearsBlueprint(app.getAppPath(), process.env))
+    return theme === 'light' ? DEV_LIGHT_ICON : DEV_DARK_ICON
   return theme === 'light' ? LIGHT_ICON : DARK_ICON
 }
 
