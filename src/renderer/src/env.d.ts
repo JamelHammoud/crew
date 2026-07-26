@@ -32,6 +32,7 @@ declare global {
     openExternal(url: string): Promise<void>
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
+    listFiles(): Promise<string[]>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>
     revealFile(path: string): Promise<void>
