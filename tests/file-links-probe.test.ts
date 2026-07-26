@@ -71,7 +71,7 @@ function locate(raw: string): PathLocation {
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   window.crew = {
-    readFile: async (path: string) => repo[path] ?? { kind: 'missing', path },
+    readFile: async (path: string) => repo[path] ?? machine[path] ?? { kind: 'missing', path },
     writeFile: async () => null,
     locatePath: async (path: string) => locate(path),
     revealFile: async () => undefined,
