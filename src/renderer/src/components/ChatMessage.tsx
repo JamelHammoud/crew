@@ -58,7 +58,8 @@ export default function ChatMessage({
   }
   return (
     <div
-      className="group/message relative flex gap-4 animate-rise"
+      data-message={item.reactionTargetId}
+      className="group/message relative flex gap-4 rounded-card animate-rise"
       onContextMenu={
         deletable && !editing
           ? event => {
