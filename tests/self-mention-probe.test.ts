@@ -62,6 +62,7 @@ function boot(selfId: string) {
         status: 'idle',
         ownerId: 'jamel',
         ownerName: 'Jamel',
+        runs: {},
         settings: {},
         fields: []
       }
