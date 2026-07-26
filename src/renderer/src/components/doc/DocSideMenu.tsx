@@ -51,7 +51,7 @@ export default function DocSideMenu() {
   }
 
   return (
-    <div className="doc-side flex items-start gap-0.5 pr-1" data-block-type={block.type} data-level={heading}>
+    <div className="flex items-start gap-0.5 pr-1" style={{ paddingTop: offset }}>
       <button
         onClick={add}
         aria-label="Add a block below"
