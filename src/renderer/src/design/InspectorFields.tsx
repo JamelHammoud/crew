@@ -1,13 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { useMaybeEditor } from 'tldraw'
 import { Popover } from '../components/Popover'
 import ColorPicker from './ColorPicker'
+
+const tidy = (value: number) => Math.round(value * 100) / 100
 
 export function Section({ title, action, children }: { title: string; action?: ReactNode; children?: ReactNode }) {
   return (
     <section className="border-t border-ink-700 px-4 py-3 flex flex-col gap-2">
       <div className="min-h-7 flex items-center">
         <h3 className="flex-1 text-sm font-semibold text-fg">{title}</h3>
-        {action}
+        {action && <span className="shrink-0 flex items-center -mr-1.5">{action}</span>}
       </div>
       {children}
     </section>
@@ -22,18 +25,130 @@ export function Row({ children }: { children: ReactNode }) {
   return <div className="grid grid-cols-2 gap-2">{children}</div>
 }
 
+export function Trailing({ children }: { children: ReactNode }) {
+  return <span className="shrink-0 flex items-center -mr-2">{children}</span>
+}
+
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <span className="min-w-0 h-8 flex items-center gap-2 rounded-full bg-fg/[0.06] px-3 transition-colors focus-within:bg-fg/[0.12]">
+    <span className="min-w-0 h-8 flex items-center gap-1.5 rounded-full bg-fg/[0.06] px-2.5 transition-colors focus-within:bg-fg/[0.12]">
       {children}
     </span>
   )
 }
 
-function Lead({ label, icon }: { label?: string; icon?: ReactNode }) {
-  if (icon) return <span className="shrink-0 text-fg-muted">{icon}</span>
-  if (label) return <span className="shrink-0 text-xs text-fg-muted">{label}</span>
-  return null
+interface Gesture {
+  onStart: () => void
+  onStep: (by: number) => void
+  onEnd: () => void
+}
+
+function Scrub({ label, gesture, children }: { label: string; gesture: Gesture; children: ReactNode }) {
+  const from = useRef<number | null>(null)
+
+  const stop = (event: PointerEvent<HTMLSpanElement>) => {
+    if (from.current === null) return
+    from.current = null
+    event.currentTarget.releasePointerCapture?.(event.pointerId)
+    gesture.onEnd()
+  }
+
+  return (
+    <span
+      data-scrub={label}
+      aria-hidden
+      onPointerDown={event => {
+        if (event.button !== 0) return
+        event.preventDefault()
+        from.current = event.clientX
+        event.currentTarget.setPointerCapture?.(event.pointerId)
+        gesture.onStart()
+      }}
+      onPointerMove={event => {
+        if (from.current === null) return
+        const steps = Math.trunc(event.clientX - from.current)
+        if (steps === 0) return
+        from.current += steps
+        gesture.onStep(steps * (event.shiftKey ? 10 : 1))
+      }}
+      onPointerUp={stop}
+      onPointerCancel={stop}
+      className="shrink-0 flex items-center text-fg-muted cursor-ew-resize select-none touch-none transition-colors hover:text-fg"
+    >
+      {children}
+    </span>
+  )
+}
+
+function useNumberField({
+  value,
+  onChange,
+  min,
+  max
+}: {
+  value: number
+  onChange: (next: number) => void
+  min: number
+  max: number
+}) {
+  const editor = useMaybeEditor()
+  const [draft, setDraft] = useState(() => String(tidy(value)))
+  const [editing, setEditing] = useState(false)
+  const pending = useRef(value)
+  const mark = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!editing) setDraft(String(tidy(value)))
+  }, [value, editing])
+
+  const clamp = (next: number) => Math.min(max, Math.max(min, tidy(next)))
+
+  const gesture: Gesture = {
+    onStart: () => {
+      const base = Number(draft)
+      pending.current = draft.trim() !== '' && isFinite(base) ? base : value
+      if (editor && mark.current === null) mark.current = editor.markHistoryStoppingPoint()
+    },
+    onStep: by => {
+      pending.current = clamp(pending.current + by)
+      setDraft(String(pending.current))
+      onChange(pending.current)
+    },
+    onEnd: () => {
+      if (editor && mark.current !== null) editor.squashToMark(mark.current)
+      mark.current = null
+    }
+  }
+
+  const input = {
+    value: draft,
+    onFocus: () => setEditing(true),
+    onChange: (event: { target: { value: string } }) => setDraft(event.target.value),
+    onBlur: () => {
+      setEditing(false)
+      const next = Number(draft)
+      if (draft.trim() === '' || !isFinite(next)) return setDraft(String(tidy(value)))
+      onChange(clamp(next))
+    },
+    onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        event.preventDefault()
+        if (!event.repeat) gesture.onStart()
+        gesture.onStep((event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? 10 : 1))
+        return
+      }
+      if (event.key === 'Enter') event.currentTarget.blur()
+      if (event.key === 'Escape') {
+        setDraft(String(tidy(value)))
+        event.currentTarget.blur()
+      }
+    },
+    onKeyUp: (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') gesture.onEnd()
+    }
+  }
+
+  return { input, gesture }
 }
 
 export function NumberInput({
@@ -53,35 +168,18 @@ export function NumberInput({
   max?: number
   suffix?: string
 }) {
-  const [draft, setDraft] = useState(String(value))
-  const [editing, setEditing] = useState(false)
-
-  useEffect(() => {
-    if (!editing) setDraft(String(Math.round(value * 100) / 100))
-  }, [value, editing])
-
-  const commit = () => {
-    setEditing(false)
-    const next = Number(draft)
-    if (!isFinite(next)) return setDraft(String(value))
-    onChange(Math.min(max, Math.max(min, next)))
-  }
+  const { input, gesture } = useNumberField({ value, onChange, min, max })
+  const lead = icon ?? (label ? <span className="text-xs">{label}</span> : null)
 
   return (
     <Shell>
-      <Lead label={label} icon={icon} />
+      {lead && (
+        <Scrub label={label ?? 'Value'} gesture={gesture}>
+          {lead}
+        </Scrub>
+      )}
       <input
-        value={draft}
-        onFocus={() => setEditing(true)}
-        onChange={e => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={e => {
-          if (e.key === 'Enter') e.currentTarget.blur()
-          if (e.key === 'Escape') {
-            setDraft(String(value))
-            e.currentTarget.blur()
-          }
-        }}
+        {...input}
         aria-label={label}
         className="w-full min-w-0 bg-transparent text-xs tabular-nums text-fg outline-none"
       />
@@ -94,7 +192,11 @@ export function MixedInput({ label, icon, onChange }: { label: string; icon?: Re
   const [draft, setDraft] = useState('')
   return (
     <Shell>
-      <Lead label={icon ? undefined : label} icon={icon} />
+      {icon ? (
+        <span className="shrink-0 text-fg-muted">{icon}</span>
+      ) : (
+        <span className="shrink-0 text-xs text-fg-muted">{label}</span>
+      )}
       <input
         value={draft}
         placeholder="Mixed"
@@ -109,6 +211,18 @@ export function MixedInput({ label, icon, onChange }: { label: string; icon?: Re
         className="w-full min-w-0 bg-transparent text-xs tabular-nums text-fg placeholder:text-fg-muted outline-none"
       />
     </Shell>
+  )
+}
+
+function Percent({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+  const { input, gesture } = useNumberField({ value: Math.round(value * 100), onChange: next => onChange(next / 100), min: 0, max: 100 })
+  return (
+    <span className="shrink-0 flex items-center gap-0.5">
+      <Scrub label="Opacity" gesture={gesture}>
+        <input {...input} aria-label="Opacity" className="w-7 bg-transparent text-right text-xs tabular-nums text-fg-muted outline-none cursor-ew-resize focus:text-fg focus:cursor-text" />
+      </Scrub>
+      <span className="text-xs text-fg-faint">%</span>
+    </span>
   )
 }
 
@@ -127,7 +241,7 @@ export function ColorInput({
   const [open, setOpen] = useState(false)
   useEffect(() => setDraft(value), [value])
   return (
-    <span className="flex-1 min-w-0 flex items-center gap-2 h-8 rounded-full bg-fg/[0.06] pl-1.5 pr-3">
+    <span className="flex-1 min-w-0 flex items-center gap-2 h-8 rounded-full bg-fg/[0.06] pl-1.5 pr-2.5">
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Color"
@@ -135,7 +249,13 @@ export function ColorInput({
         className="w-5 h-5 shrink-0 rounded-full ring-1 ring-inset ring-fg/15 transition-transform hover:scale-110 active:scale-95"
       />
       <Popover open={open} onClose={() => setOpen(false)} align="start">
-        <ColorPicker value={value} onChange={onChange} alpha={onOpacity === undefined} />
+        <ColorPicker
+          value={value}
+          onChange={onChange}
+          alpha={onOpacity === undefined}
+          opacity={opacity}
+          onOpacity={onOpacity}
+        />
       </Popover>
       <input
         value={draft}
@@ -145,17 +265,7 @@ export function ColorInput({
         aria-label="Hex"
         className="w-full min-w-0 bg-transparent text-xs font-mono uppercase text-fg outline-none"
       />
-      {opacity !== undefined && onOpacity && (
-        <input
-          value={Math.round(opacity * 100)}
-          onChange={e => {
-            const next = Number(e.target.value)
-            if (isFinite(next)) onOpacity(Math.min(100, Math.max(0, next)) / 100)
-          }}
-          aria-label="Opacity"
-          className="w-8 shrink-0 bg-transparent text-right text-xs tabular-nums text-fg-muted outline-none"
-        />
-      )}
+      {opacity !== undefined && onOpacity && <Percent value={opacity} onChange={onOpacity} />}
     </span>
   )
 }
