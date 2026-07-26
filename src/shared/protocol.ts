@@ -105,6 +105,8 @@ export type ClientMessage =
   | { type: 'huddle.delete'; huddleId: string }
   | { type: 'music.set'; trackId: string; playing: boolean; at: number }
   | { type: 'music.off' }
+  | { type: 'music.add'; name: string; mime: string; seconds: number; data: string }
+  | { type: 'music.remove'; trackId: string }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
