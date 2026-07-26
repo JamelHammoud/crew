@@ -125,14 +125,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785069702124,
+        "fetchedAt": 1785070002161,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1785082800331,
+            "resetsAt": 1785082800392,
             "active": true
           },
           {
@@ -140,7 +140,7 @@
             "label": "Weekly (all models)",
             "percent": 23,
             "severity": "normal",
-            "resetsAt": 1785499200331,
+            "resetsAt": 1785499200392,
             "active": false
           }
         ],
@@ -230,7 +230,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785069942154,
+        "fetchedAt": 1785070002452,
         "windows": [
           {
             "key": "primary",
@@ -326,7 +326,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785069942154,
+        "fetchedAt": 1785070002452,
         "windows": [
           {
             "key": "primary",
@@ -445,14 +445,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785069702443,
+        "fetchedAt": 1785070002454,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 4,
             "severity": "normal",
-            "resetsAt": 1785085800701,
+            "resetsAt": 1785085800885,
             "active": false
           },
           {
@@ -460,7 +460,7 @@
             "label": "Weekly (all models)",
             "percent": 20,
             "severity": "normal",
-            "resetsAt": 1785535199701,
+            "resetsAt": 1785535199885,
             "active": true
           },
           {
@@ -618,14 +618,14 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785069702124,
+        "fetchedAt": 1785070002161,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1785082800331,
+            "resetsAt": 1785082800392,
             "active": true
           },
           {
@@ -633,7 +633,7 @@
             "label": "Weekly (all models)",
             "percent": 23,
             "severity": "normal",
-            "resetsAt": 1785499200331,
+            "resetsAt": 1785499200392,
             "active": false
           }
         ],
@@ -747,14 +747,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785069702443,
+        "fetchedAt": 1785070002454,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 4,
             "severity": "normal",
-            "resetsAt": 1785085800701,
+            "resetsAt": 1785085800885,
             "active": false
           },
           {
@@ -762,7 +762,7 @@
             "label": "Weekly (all models)",
             "percent": 20,
             "severity": "normal",
-            "resetsAt": 1785535199701,
+            "resetsAt": 1785535199885,
             "active": true
           },
           {
