@@ -94,8 +94,6 @@ export default function DesignCanvas({
   selfIdRef.current = selfId
   const editorRef = useRef<Editor | null>(null)
   editorRef.current = editor
-  const lightRef = useRef(theme === 'light')
-  lightRef.current = theme === 'light'
 
   const store = useMemo(() => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
 
