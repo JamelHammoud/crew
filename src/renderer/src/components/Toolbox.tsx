@@ -12,6 +12,7 @@ import {
 } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
+import { useMusic } from '../state/music'
 import { useCrew } from '../state/store'
 import { Popover } from './Popover'
 import { opensPanel, runTool, staysOpen } from './runTool'
