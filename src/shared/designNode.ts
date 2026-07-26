@@ -42,8 +42,11 @@ export interface TypeStyle {
   lineHeight: number
   spacing: number
   align: 'left' | 'center' | 'right'
+  vertical: 'top' | 'middle' | 'bottom'
   color: string
   transform: 'none' | 'upper' | 'lower'
+  decoration: 'none' | 'underline' | 'strike'
+  paragraph: number
   italic: boolean
 }
 
