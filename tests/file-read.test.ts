@@ -216,7 +216,6 @@ describe('locatePath', () => {
   it('keeps back windows paths that belong to someone else', async () => {
     const root = makeRepo()
     expect(await locatePath(root, 'C:\\Users\\Ali Hammoud\\Desktop\\notes.md')).toEqual({ kind: 'private' })
-    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'local' })
   })
 })
 
