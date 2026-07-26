@@ -19,19 +19,26 @@ Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
   get(): number {
     const own = (this as HTMLElement).dataset.tall
     if (own) return Number(own)
-    return Array.from((this as HTMLElement).children).reduce((total, kid) => total + (kid as HTMLElement).offsetHeight, 0)
+    return Array.from((this as HTMLElement).children).reduce(
+      (total, kid) => total + (Number((kid as HTMLElement).offsetHeight) || 0),
+      0
+    )
   }
 })
 
-function harness(top: number, tall: number) {
-  const rect = { top, bottom: top + 32, left: 100, right: 300, width: 200, height: 32 } as DOMRect
+Object.defineProperty(HTMLElement.prototype, 'getBoundingClientRect', {
+  configurable: true,
+  value(this: HTMLElement): DOMRect {
+    const top = Number((this as HTMLElement).dataset.at)
+    if (Number.isNaN(top)) return new DOMRect()
+    return { top, bottom: top + 32, left: 100, right: 300, width: 200, height: 32 } as DOMRect
+  }
+})
+
+function harness(at: number, tall: number) {
   return createElement(
     'div',
-    {
-      ref: (node: HTMLDivElement | null) => {
-        if (node) node.getBoundingClientRect = () => rect
-      }
-    },
+    { 'data-at': at },
     createElement(Popover, { open: true, onClose: () => {}, align: 'start' }, createElement('div', { 'data-tall': tall }))
   )
 }
