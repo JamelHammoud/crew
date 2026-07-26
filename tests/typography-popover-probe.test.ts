@@ -39,7 +39,12 @@ function harness(at: number, tall: number) {
   return createElement(
     'div',
     { 'data-at': at },
-    createElement(Popover, { open: true, onClose: () => {}, align: 'start' }, createElement('div', { 'data-tall': tall }))
+    createElement(Popover, {
+      open: true,
+      onClose: () => {},
+      align: 'start',
+      children: createElement('div', { 'data-tall': tall })
+    })
   )
 }
 
