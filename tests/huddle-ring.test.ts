@@ -272,6 +272,18 @@ describe('the noise a huddle makes when it starts', () => {
     expect(started.length).toBe(0)
   })
 
+  it('comes round in time with itself, so the turns run on as one piece', () => {
+    for (const strike of CALL.phrase) expect(strike.at).toBeLessThan(CALL.every)
+  })
+
+  it('keeps something under the tune rather than sounding one note at a time', () => {
+    const together = CALL.phrase.some(one =>
+      CALL.phrase.some(other => other !== one && other.at > one.at && other.at < one.at + one.length)
+    )
+
+    expect(together).toBe(true)
+  })
+
   it('bubbles up into every note rather than sounding a bare tone', () => {
     arrives(emptyRoom())
     arrives(room(peer('a', 'Ali')))
