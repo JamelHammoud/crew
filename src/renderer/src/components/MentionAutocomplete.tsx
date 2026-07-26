@@ -186,17 +186,18 @@ function MemberRow({
   )
 }
 
-function DocRow({
-  doc,
+function RefRow({
+  refItem,
   active,
   onClick,
   onMouseEnter
 }: {
-  doc: DocRef
+  refItem: CrewRef
   active: boolean
   onClick: () => void
   onMouseEnter: () => void
 }) {
+  const Icon = refItem.kind === 'board' ? RectangleGroupIcon : DocumentTextIcon
   return (
     <button
       onClick={onClick}
@@ -205,8 +206,9 @@ function DocRow({
         active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
       }`}
     >
-      <DocumentTextIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
-      <span className="flex-1 truncate">#{doc.title}</span>
+      <Icon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+      <span className="flex-1 truncate">#{refItem.title}</span>
+      <span className="text-xs text-fg-muted shrink-0">{refItem.kind === 'board' ? 'Board' : 'Doc'}</span>
     </button>
   )
 }
