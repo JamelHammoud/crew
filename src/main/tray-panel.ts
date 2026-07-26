@@ -19,6 +19,7 @@ export class TrayPanel {
   private win: BrowserWindow | null = null
   private snapshot: PresenceSnapshot = emptyPresence()
   private icon: Rectangle | null = null
+  private wearing: 'dark' | 'light' = 'dark'
   private closedAt = 0
 
   constructor(private page: PanelPage) {}
@@ -119,6 +120,7 @@ export class TrayPanel {
       this.win = null
     })
     win.webContents.once('did-finish-load', () => {
+      win.webContents.send('tray:theme', this.wearing)
       win.webContents.send('presence:update', this.snapshot)
     })
     if (this.page.devUrl) win.loadURL(`${this.page.devUrl}#tray`)
