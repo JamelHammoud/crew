@@ -34,6 +34,7 @@ export default function SelectionOverlay({ editor }: { editor: Editor | null }) 
         rect: { x: topLeft.x, y: topLeft.y, w: bottomRight.x - topLeft.x, h: bottomRight.y - topLeft.y } as Rect,
         size: { w: bounds.w, h: bounds.h },
         zoom: editor.getZoomLevel(),
+        stroke: editor.getCurrentTheme().colors[editor.getColorMode()].selectionStroke,
         node: only && only.type === 'design-node' && only.rotation === 0 ? (only as DesignNodeShape) : null
       }
     },
