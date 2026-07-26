@@ -25,6 +25,16 @@ body { margin: 0; background: #0d0d0f; color: #fff;
   font: 13px -apple-system, BlinkMacSystemFont, sans-serif; padding: 24px; }
 .row { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
 .cap { color: #ffffff66; font-size: 11px; width: 120px; }
+svg[class~="w-3"] { width: 12px; height: 12px; }
+svg[class~="w-4"] { width: 16px; height: 16px; }
+svg[class~="w-5"] { width: 20px; height: 20px; }
+svg[class~="w-6"] { width: 24px; height: 24px; }
+svg[class~="w-12"] { width: 48px; height: 48px; }
+svg[class~="w-[16px]"] { width: 16px; height: 16px; }
+svg[class~="w-[17px]"] { width: 17px; height: 17px; }
+svg[class~="w-[18px]"] { width: 18px; height: 18px; }
+svg[class~="w-[20px]"] { width: 20px; height: 20px; }
+svg[class~="w-[22px]"] { width: 22px; height: 22px; }
 </style></head><body>${body}</body></html>`
 
 const MAIN = page => `import { app, BrowserWindow } from 'electron'
