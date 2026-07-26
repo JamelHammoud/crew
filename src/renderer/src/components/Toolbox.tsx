@@ -43,6 +43,7 @@ export default function Toolbox({
 }) {
   const tools = useCrew(s => s.tools)
   const joined = useHuddle(s => s.joined)
+  const playing = useMusic(s => s.room.playing)
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
