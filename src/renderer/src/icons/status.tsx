@@ -105,11 +105,16 @@ export const StarGlyph = glyph(
   <path d="M12 3.5 14.6 9.32 20.94 10 16.2 14.27 17.53 20.5 12 17.32 6.47 20.5 7.8 14.27 3.06 10 9.4 9.32Z" />
 )
 
+// Eight rays is what tells a sun from a target, so the count stays and the
+// length is what pays for it. A ray has to be longer than the gap it stands off,
+// or at 16 the two arrive the same size and the whole ring reads as a smudge
+// around the disc. The ray is 3.25 against a gap of 1.75, which lands at 2.2px
+// and 1.2px, and the disc keeps the size it had.
 export const SunGlyph = glyph(
   <>
     <circle cx="12" cy="12" r="4.5" />
-    <path d="M12 2.75v2.4M12 18.85v2.4M21.25 12h-2.4M5.15 12H2.75" />
-    <path d="m18.55 5.45-1.7 1.7M7.15 16.85l-1.7 1.7M18.55 18.55l-1.7-1.7M7.15 7.15l-1.7-1.7" />
+    <path d="M12 2.5v3.25M12 18.25v3.25M21.5 12h-3.25M5.75 12H2.5" />
+    <path d="m18.75 5.25-2.25 2.25M7.5 16.5l-2.25 2.25M18.75 18.75l-2.25-2.25M7.5 7.5l-2.25-2.25" />
   </>
 )
 

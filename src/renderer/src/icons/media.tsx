@@ -45,12 +45,15 @@ export const SpeakerGlyph = glyph(
   </>
 )
 
-// Muted drops the waves rather than striking them through. The cross is the
-// whole message and a slash over three arcs at 16px is four marks arguing.
+// Muted drops the waves rather than striking them through, because a slash over
+// three arcs at 16px is four marks arguing. What is left is a cone and one
+// SLASH, the same two marks as MicOff and CameraOff, so off is said one way
+// everywhere. A cross here would be a second word for it, and the app would have
+// two, in a set whose whole argument is that it has one.
 export const SpeakerOffGlyph = glyph(
   <>
     <path d={CONE} />
-    <path d="m16.75 9.75 5 4.5M21.75 9.75l-5 4.5" />
+    <path d={SLASH} />
   </>
 )
 
