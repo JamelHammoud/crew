@@ -157,6 +157,23 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = { ...makeTab(), kind: 'file' as const, tree: true }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
+  // One crew, one music tab. Pressing it again brings the one that is already
+  // open to the front rather than opening a second copy of the same thing.
+  openMusic: () => {
+    const { tabs, activeTabId } = get()
+    const existing = tabs.find(t => t.kind === 'music')
+    if (existing) {
+      set({ activeTabId: existing.id })
+      return
+    }
+    const active = tabs.find(t => t.id === activeTabId)
+    if (active && active.kind === 'web' && !active.initialUrl) {
+      set(s => ({ tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'music' as const } : t)) }))
+      return
+    }
+    const tab = { ...makeTab(), kind: 'music' as const }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
   toggleTree: id =>
     set(s => ({
       tabs: s.tabs.map(t =>
