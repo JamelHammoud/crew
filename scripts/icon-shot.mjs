@@ -7,11 +7,11 @@ import { fileURLToPath } from 'node:url'
 // can be looked at rather than only measured. A number says a shape sits on its
 // keyline. It does not say the arc went the wrong way round.
 //
-//   npx electron scripts/icon-shot.mjs <section> <from> <count>
+//   npx electron scripts/icon-shot.mjs <scrollTop>
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
-const [, , section = '0', from = '0', count = '36'] = process.argv
+const [, , top = '0'] = process.argv
 
 // Never top level await on whenReady in an ESM main. The ready event lands while
 // the module is still being evaluated and the two wait on each other forever.
