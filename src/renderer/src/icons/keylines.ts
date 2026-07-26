@@ -9,8 +9,39 @@ export const GRID = 24
 // which is the closest anything comes to the edge of the box.
 export const LIVE = 19.5
 
-export const STROKE = 1.5
-export const STROKE_BOLD = 2
+// The house stroke, and the size it is the right stroke at. A 24 grid worn at 16
+// paints two thirds of whatever is written here, so 1.5 arrives as a single pixel
+// and the whole set reads wiry. 2 arrives at 1.33 and reads the way an icon
+// beside a solid one has to. Past 2.25 the counters start closing: the sun fills
+// in, the terminal prompt runs into its own frame.
+export const STROKE = 2
+export const STROKE_BOLD = 2.5
+export const WORN = 16
+
+// How the stroke is adjusted for the size an icon is actually worn at. A small
+// mark needs relatively more weight to hold its color and a large one needs
+// less, so the ramp is gentle and it is a share of the drawing's own weight
+// rather than a number of its own.
+const WEAR: { upTo: number; of: number }[] = [
+  { upTo: 14, of: 1.05 },
+  { upTo: 21, of: 1 },
+  { upTo: 27, of: 0.9 },
+  { upTo: Infinity, of: 0.8 }
+]
+
+const WIDTH = /(?:^|\s)(?:w|size)-(?:\[(\d+(?:\.\d+)?)px\]|(\d+(?:\.\d+)?))(?:\s|$)/
+
+export function wornAt(className: string): number {
+  const found = WIDTH.exec(className)
+  if (!found) return WORN
+  return found[1] ? Number(found[1]) : Number(found[2]) * 4
+}
+
+export function wearWeight(weight: number, className: string): number {
+  const px = wornAt(className)
+  const step = WEAR.find(one => px <= one.upTo) ?? WEAR[WEAR.length - 1]
+  return Math.round(weight * step.of * 100) / 100
+}
 
 // A square is the anchor. Every other keyline is derived from it, so moving this
 // one number moves the whole set together.
