@@ -16,7 +16,14 @@ import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } f
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { RecentJoin } from '../shared/recent'
 import { AgentStore } from './agents-store'
-import { readRepoFile, resolveRepoPath, writeRepoFile } from './files'
+import {
+  absolutePathOf,
+  readLocalFile,
+  readRepoFile,
+  repoPathOf,
+  writeLocalFile,
+  writeRepoFile
+} from './files'
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
 import type { PathLocation, RepoFile } from '../shared/files'
