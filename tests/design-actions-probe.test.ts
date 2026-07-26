@@ -10,7 +10,7 @@ const node = (id: string): FakeShape => ({
   id,
   type: 'design-node',
   parentId: 'page:main',
-  props: nodeDefaults()
+  props: { ...nodeDefaults() }
 })
 
 function rowsFor(...selected: string[]) {
