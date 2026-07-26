@@ -62,7 +62,10 @@ export default function Tooltip({
   })()
 
   return (
-    <span className="inline-block" ref={anchorRef} onMouseEnter={enter} onMouseLeave={hide}>
+    // Flex rather than inline-block: an inline box keeps a line of its own, and
+    // the few pixels a descender leaves under a button push it off center in
+    // every row it stands in.
+    <span className="inline-flex" ref={anchorRef} onMouseEnter={enter} onMouseLeave={hide}>
       {children}
       {!disabled &&
         style &&
