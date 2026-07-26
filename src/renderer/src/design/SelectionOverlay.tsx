@@ -114,7 +114,7 @@ function RadiusHandles({
             key={corner.at}
             aria-label={corner.label}
             onPointerDown={event => drag(event, corner.at)}
-            className="group absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 grid place-items-center pointer-events-auto"
+            className="group absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 grid place-items-center pointer-events-auto cursor-[inherit]"
             style={{
               left: corner.left ? rect.x + inset : rect.x + rect.w - inset,
               top: corner.top ? rect.y + inset : rect.y + rect.h - inset
