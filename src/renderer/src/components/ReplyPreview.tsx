@@ -9,6 +9,7 @@ export default function ReplyPreview({ replyTo, onCancel }: { replyTo: ThreadIte
     <div className="animate-rise -mb-10 rounded-t-[30px] border border-b-0 border-ink-700 bg-ink-900 px-5 pb-12 pt-2">
       <div className="flex h-8 min-w-0 items-center gap-2">
         <ReplyQuote
+          targetId={replyTo.reactionTargetId}
           authorId={replyTo.authorId}
           authorName={replyTo.author}
           label={replyTargetLabel(replyTo.author, replyTo.self, replyTo.self)}
