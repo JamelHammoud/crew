@@ -134,17 +134,58 @@ look at the icon before changing the tool.
 Arcs are where this goes wrong. A sweep flag the wrong way round makes a shape
 that is still valid SVG and still lands near its keyline. Look at it.
 
-## Still on Heroicons
+## Look at it where it is worn
 
-The app has not been switched over yet. `src/renderer/src/icons` is complete and
-covers every Heroicon in use; the call sites still import from `@heroicons/react`.
-Three older sets are on the 24 grid but not on these keylines, and `yarn icons`
-lists what is off in each:
+The sheet says whether a mark is the right size. It does not say whether the mark
+is the thing it is meant to be, and that is the mistake the numbers cannot catch:
+a handset can sit dead on its keyline, dead centre, and read as an arch. So draw
+three or four of it, put them in the surface they will be worn in, at the size
+they will be worn at, and look.
 
-- `src/renderer/src/components/toolGlyphs.tsx`, what an agent did
-- `src/renderer/src/components/doc/docGlyphs.tsx`, doc blocks, at a 2 stroke
-- `src/renderer/src/design/glyphs.tsx`, the canvas
+Render a throwaway page rather than starting the app. Bundle the glyphs with
+esbuild, paint them to markup with `renderToStaticMarkup`, load the file in a
+hidden Electron window and capture it. The one rule is that the page must be
+finished at first paint: a background window's compositor will not repaint after
+a mutation, so anything that sets its state in an effect comes back blank. Delete
+the script afterwards, it is a probe rather than a tool.
 
-Their circles are at 17 where the keyline is 18.5, which is the drift the
-keylines exist to stop. Fold them into `src/renderer/src/icons` when the swap
-happens rather than adding a fourth set.
+## Letters are not objects
+
+A set that sets type has letters in it, and a letter is drawn to the type it
+belongs to rather than to the box. `docGlyphs.tsx` holds `CAP` and `BASE`, and
+every letterform in that file stands on those two lines: the pilcrow, the three
+headings, the marks the toolbar wears. They sit well under the 17 box keyline and
+that is correct, so the set is printed by `yarn icons` but not audited by it. No
+measurement can tell a B from a bracket.
+
+Punctuation is solid, the way it is in a real face. A quotation mark's counter
+closes up at 16 whatever you do, so filled is the honest drawing of what it
+becomes.
+
+## Solid is for a thing in a button
+
+Stop, play, pause, the handset. A mark standing alone in a round button is being
+read as the button, and an outline inside one reads as a second ring. Solid sits
+on 16 rather than 17, because a filled shape carries its whole box as ink where
+an outlined one carries only its edge.
+
+A solid silhouette has to carry what the object actually is. The handset only
+reads as a phone because its ends are cut on a slant and stand wider than the
+crown they hang from: an even bar with square legs is an arch, at any angle and
+any depth. Find the one feature that tells the object from its nearest neighbour
+and draw that first.
+
+## The three sets beside this one
+
+`src/renderer/src/icons` is the set, and every call site reads it. Nothing
+imports an icon library. Three sets stand beside it, on the same grid and stroke,
+and `yarn icons` lists what is off in each:
+
+- `src/renderer/src/components/toolGlyphs.tsx`, what an agent did. Its circles are
+  at 17 where the keyline is 18.5, which is the drift the keylines exist to stop.
+- `src/renderer/src/components/doc/docGlyphs.tsx`, doc blocks. Half letters.
+- `src/renderer/src/design/glyphs.tsx`, the canvas.
+
+Fold them into `src/renderer/src/icons` rather than adding a fourth. When a mark
+in one of them is the same idea as one in the set, re-export the set's drawing:
+`toolGlyphs.tsx` already does that for the bolt, the sparkle and the photo.
