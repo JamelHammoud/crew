@@ -1,4 +1,5 @@
 import { glyph } from '../components/glyph'
+import { TOOLBOX_CASE, TOOLBOX_SHUT } from './toolbox'
 
 // A page is taller than the keyline would like and there is nowhere left to put
 // the height, so it takes the cap at 19 and sits a shade light. Pushing further
