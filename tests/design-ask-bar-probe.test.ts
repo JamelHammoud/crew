@@ -129,6 +129,13 @@ describe('the ask bar', () => {
     expect(document.body.textContent).not.toContain('Card')
   })
 
+  it('stands under the shape it is asking about, in the stage’s own coordinates', () => {
+    const { view } = boot()
+    const bar = view.container.querySelector('.animate-pop') as HTMLElement
+    expect(bar.style.left).toBe('40px')
+    expect(bar.style.top).toBe('112px')
+  })
+
   it('carries an attachment button and no record button', () => {
     boot()
     expect(screen.getByLabelText('Add an image')).toBeTruthy()
