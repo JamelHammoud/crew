@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
-const { ARROW_TIP, CursorArrow, DESIGN_CURSORS, applyDesignCursors } = await import(
+const { ARROW_TIP, CursorArrow, DESIGN_CURSORS, applyDesignCursors, applyToolCursor } = await import(
   '../src/renderer/src/design/cursors'
 )
 

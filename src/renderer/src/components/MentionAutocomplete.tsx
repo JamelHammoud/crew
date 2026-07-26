@@ -93,8 +93,8 @@ export function useMentionAutocomplete(
         ? `@${item.agent.label}`
         : item.kind === 'member'
           ? `@${item.member.name}`
-          : item.kind === 'doc'
-            ? `#${item.doc.title}`
+          : item.kind === 'ref'
+            ? `#${item.ref.title}`
             : item.entry.char
     const before = value
       .slice(0, caret)
