@@ -11,7 +11,7 @@ import {
   type TLShape
 } from 'tldraw'
 import { nodeDefaults, nodeShapeOf, type DesignNodeProps } from '../../../shared/designNode'
-import { nodeStyle, polygonFillStyle, polygonStyle, strokeDash, textStyle } from './nodeCss'
+import { nodeStyle, polygonFillStyle, polygonStyle, strokeDash, textBoxStyle, textStyle } from './nodeCss'
 import { nodePolygon, polygonPath, type UnitPoint } from './nodeShape'
 import { nextNodeName, nextNodeShape } from './nextShape'
 
