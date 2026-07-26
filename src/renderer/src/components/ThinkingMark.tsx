@@ -9,6 +9,9 @@ const SIDES = [
 ]
 
 export default function ThinkingMark({ running }: { running: boolean }) {
+  const watched = useRef(running)
+  if (running) watched.current = true
+
   return (
     <svg
       aria-hidden
@@ -19,6 +22,7 @@ export default function ThinkingMark({ running }: { running: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       data-state={running ? 'thinking' : 'thought'}
+      data-landing={!running && watched.current ? '' : undefined}
       style={{ '--ring': `${running ? DOT_R : RING_R}px` } as CSSProperties}
       className={`thinking-mark w-[18px] h-[18px] shrink-0 transition-colors ${
         running ? 'text-fg' : 'text-fg-muted group-hover:text-fg-secondary'
