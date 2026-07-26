@@ -20,7 +20,7 @@ function flipped(Icon: Glyph): Glyph {
   }
 }
 
-export const CursorGlyph = glyph(<path d="M5.5 3 5.5 18.9 9.6 15l2.6 5.6 2.8-1.3-2.6-5.5 5.4-.7Z" />)
+export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} strokeWidth={1.6} />)
 
 export const HandGlyph = flipped(HandRaisedIcon)
 
