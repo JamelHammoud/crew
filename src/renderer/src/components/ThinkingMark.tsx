@@ -25,13 +25,13 @@ export default function ThinkingMark({ running }: { running: boolean }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.5}
+      strokeWidth={wearWeight(STROKE, WORN)}
       strokeLinecap="round"
       strokeLinejoin="round"
       data-state={running ? 'thinking' : 'thought'}
       data-landing={!running && watched.current ? '' : undefined}
       style={{ '--ring': `${running ? DOT_R : RING_R}px` } as CSSProperties}
-      className={`thinking-mark w-[18px] h-[18px] shrink-0 transition-colors ${
+      className={`thinking-mark ${WORN} shrink-0 transition-colors ${
         running ? 'text-fg' : 'text-fg-muted group-hover:text-fg-secondary'
       }`}
     >
