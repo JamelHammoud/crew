@@ -167,17 +167,18 @@ const bloom = (parts: Parts, roll: () => number): Layer[] => {
 // Spokes from somewhere off center, with a few lobes standing over where they
 // meet. This is the one that reads as light arriving from a direction.
 const rays = (parts: Parts, roll: () => number): Layer[] => {
-  const palette = shuffle(parts)
+  const palette = ends(parts, 3)
   const turn = roll()
-  const layers: Layer[] = palette.slice(0, 3).map((color, i) => {
-    const angle = (i / 3 + turn) * Math.PI * 2
+  const layers: Layer[] = palette.map((color, i) => {
+    const angle = (i / palette.length + turn) * Math.PI * 2
+    const size = (color === parts.ground ? GROUND_REACH : 1) * (0.62 + roll() * 0.42)
     return {
       image: field(
         color,
         0.5 + Math.cos(angle) * 0.32,
         0.5 + Math.sin(angle) * 0.32,
-        0.6 + roll() * 0.4,
-        0.6 + roll() * 0.4,
+        size,
+        size * (0.85 + roll() * 0.4),
         36 + roll() * 22,
         0.95
       ),
