@@ -46,6 +46,24 @@ const bridge = {
       ipcRenderer.off('notification:open', handler)
     }
   },
+  openTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:open', id, size),
+  writeTerminal: (id: string, data: string): void => ipcRenderer.send('terminal:write', id, data),
+  resizeTerminal: (id: string, size: TerminalSize): void => ipcRenderer.send('terminal:resize', id, size),
+  closeTerminal: (id: string): void => ipcRenderer.send('terminal:close', id),
+  onTerminalData: (listener: (id: string, chunk: string) => void): (() => void) => {
+    const handler = (_event: unknown, id: string, chunk: string) => listener(id, chunk)
+    ipcRenderer.on('terminal:data', handler)
+    return () => {
+      ipcRenderer.off('terminal:data', handler)
+    }
+  },
+  onTerminalExit: (listener: (id: string) => void): (() => void) => {
+    const handler = (_event: unknown, id: string) => listener(id)
+    ipcRenderer.on('terminal:exit', handler)
+    return () => {
+      ipcRenderer.off('terminal:exit', handler)
+    }
+  },
   onFullScreen: (listener: (full: boolean) => void): void => {
     ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
   },
