@@ -67,7 +67,7 @@ export function Popover({
     return () => observer.disconnect()
   }, [rect])
 
-  const style = ((): CSSProperties | null => {
+  const spot = ((): CSSProperties | null => {
     if (!rect) return null
     if (!size) return { left: 0, top: 0, visibility: 'hidden' }
     if (at) {
