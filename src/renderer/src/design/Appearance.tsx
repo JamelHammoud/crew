@@ -3,7 +3,8 @@ import { useEditor, useValue } from 'tldraw'
 import type { Corner, DesignNodeProps } from '../../../shared/designNode'
 import { PanelButton } from '../components/DesignControls'
 import type { DesignNodeShape } from './DesignNodeUtil'
-import { CornerGlyph, CornersGlyph, OpacityGlyph } from './glyphs'
+import Select from '../components/Select'
+import { ClipGlyph, CornerGlyph, CornersGlyph, OpacityGlyph } from './glyphs'
 import { MixedInput, NumberInput, Section, SubLabel } from './InspectorFields'
 
 const BLENDS = [
@@ -51,6 +52,11 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
     if (!node || !props) return
     editor.markHistoryStoppingPoint()
     editor.updateShape({ id: node.id, type: 'design-node', props: { ...props, radius } })
+  }
+  const patch = (next: Partial<DesignNodeProps>) => {
+    if (!node || !props) return
+    editor.markHistoryStoppingPoint()
+    editor.updateShape({ id: node.id, type: 'design-node', props: { ...props, ...next } })
   }
   const setAll = (next: number) => setRadius([next, next, next, next])
   const setOne = (at: number, next: number) => {
@@ -106,6 +112,18 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
             </Fragment>
           ))}
       </div>
+      {props && (
+        <>
+          <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
+            <SubLabel>Blend</SubLabel>
+            <span />
+            <Select value={props.blend} options={BLENDS} onChange={blend => patch({ blend })} />
+            <PanelButton label="Clip content" active={props.clip} onClick={() => patch({ clip: !props.clip })}>
+              <ClipGlyph className="w-4 h-4" />
+            </PanelButton>
+          </div>
+        </>
+      )}
     </Section>
   )
 }
