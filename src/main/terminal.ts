@@ -101,7 +101,8 @@ export class Terminals {
     const ready = this.claim(where)
     if (ready) {
       this.hold(id, ready.pty, sink)
-      if (ready.held) sink.data(id, ready.held)
+      const seen = replayable(ready.held)
+      if (seen) sink.data(id, seen)
       this.resize(id, wanted)
       this.warm(folder)
       return
