@@ -151,4 +151,34 @@ describe('a huddle in the chat', () => {
     render(createElement(Chat))
     expect(screen.queryByText('Huddle')).toBeNull()
   })
+
+  it('lets whoever started a call take its block out', () => {
+    const deleteHuddle = vi.fn()
+    session([mine, joined, ended])
+    useCrew.setState({ deleteHuddle })
+
+    render(createElement(Chat))
+    fireEvent.contextMenu(screen.getByText('Huddle'))
+    fireEvent.click(screen.getByText('Delete huddle'))
+    expect(deleteHuddle).toHaveBeenCalledWith('call-1')
+  })
+
+  it('offers nothing on a call someone else started', () => {
+    session([started, joined, ended])
+
+    render(createElement(Chat))
+    fireEvent.contextMenu(screen.getByText('Huddle'))
+    expect(screen.queryByText('Delete huddle')).toBeNull()
+  })
+
+  // The block is the way into a call that is going, so it cannot be taken out
+  // from under the people who have not joined yet.
+  it('leaves the block alone while the call is going', () => {
+    session([mine, joined])
+    useHuddle.setState({ room: { id: 'call-1', peers: [peer('p-ali', 'Ali')], startedAt: Date.now() } })
+
+    render(createElement(Chat))
+    fireEvent.contextMenu(screen.getByText('Huddle'))
+    expect(screen.queryByText('Delete huddle')).toBeNull()
+  })
 })
