@@ -354,6 +354,27 @@ export const useCrew = create<CrewState>((set, get) => {
         case 'todo.removed':
         case 'todo.started':
           return { events, todos: state.todos.filter(t => t.id !== event.todoId) }
+        case 'tool.added': {
+          if (state.tools.some(t => t.id === event.toolId)) return { events }
+          const tool: CrewTool = {
+            id: event.toolId,
+            name: event.name,
+            mark: event.mark,
+            action: event.action,
+            createdBy: event.byName,
+            ts: event.ts
+          }
+          return { events, tools: [...state.tools, tool] }
+        }
+        case 'tool.edited':
+          return {
+            events,
+            tools: state.tools.map(t =>
+              t.id === event.toolId ? { ...t, name: event.name, mark: event.mark, action: event.action } : t
+            )
+          }
+        case 'tool.removed':
+          return { events, tools: state.tools.filter(t => t.id !== event.toolId) }
       }
       return {
         events,
@@ -431,6 +452,7 @@ export const useCrew = create<CrewState>((set, get) => {
           docs: msg.snapshot.docs,
           queues: msg.snapshot.queues ?? {},
           todos: msg.snapshot.todos ?? [],
+          tools: msg.snapshot.tools ?? [],
           boards: msg.snapshot.boards ?? [],
           steps,
           tokens,
