@@ -13,42 +13,32 @@ const arch = ({
   cy,
   mid,
   bar,
-  span,
-  pad
+  spanOut,
+  spanIn
 }: {
   cy: number
   mid: number
   bar: number
-  span: number
-  pad: number
+  spanOut: number
+  spanIn: number
 }) => {
   const out = mid + bar / 2
   const inn = mid - bar / 2
-  const rad = (span * Math.PI) / 180
-  const dir = (side: number) => [side * Math.sin(rad), -Math.cos(rad)]
-  const on = (r: number, side: number) => {
-    const d = dir(side)
-    return [12 + r * d[0], cy + r * d[1]]
+  const on = (r: number, span: number, side: number) => {
+    const rad = (span * Math.PI) / 180
+    return [12 + r * side * Math.sin(rad), cy - r * Math.cos(rad)]
   }
-  const cap = bar / 2
-  const pads = pad
-    ? [-1, 1]
-        .map(side => {
-          const c = on(mid, side)
-          return `M${xy([c[0] - pad, c[1]])}A${pad} ${pad} 0 1 1 ${xy([c[0] + pad, c[1]])}A${pad} ${pad} 0 1 1 ${xy([c[0] - pad, c[1]])}Z`
-        })
-        .join('')
-    : ''
-  return (
-    [
-      `M${xy(on(out, -1))}`,
-      `A${out} ${out} 0 1 1 ${xy(on(out, 1))}`,
-      `A${cap} ${cap} 0 0 1 ${xy(on(inn, 1))}`,
-      `A${inn} ${inn} 0 1 0 ${xy(on(inn, -1))}`,
-      `A${cap} ${cap} 0 0 1 ${xy(on(out, -1))}`,
-      'Z'
-    ].join('') + pads
-  )
+  const O = (side: number) => on(out, spanOut, side)
+  const I = (side: number) => on(inn, spanIn, side)
+  const cap = round(Math.hypot(O(1)[0] - I(1)[0], O(1)[1] - I(1)[1]) / 2)
+  return [
+    `M${xy(O(-1))}`,
+    `A${out} ${out} 0 1 1 ${xy(O(1))}`,
+    `A${cap} ${cap} 0 0 1 ${xy(I(1))}`,
+    `A${inn} ${inn} 0 1 0 ${xy(I(-1))}`,
+    `A${cap} ${cap} 0 0 1 ${xy(O(-1))}`,
+    'Z'
+  ].join('')
 }
 
 const filled = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none" />)
