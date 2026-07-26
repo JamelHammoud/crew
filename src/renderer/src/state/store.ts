@@ -90,7 +90,7 @@ interface CrewState {
   setThreadDraft: (threadId: string, text: string) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
-  sendChat: (text: string, threadId?: string, boardId?: string) => void
+  sendChat: (text: string, threadId?: string, boardId?: string, replyTo?: string) => void
   createBoard: (name: string) => string
   renameBoard: (boardId: string, name: string) => void
   deleteBoard: (boardId: string) => void
@@ -537,7 +537,7 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     detach: (key, id) =>
       set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
-    sendChat: (text, threadId, boardId) => {
+    sendChat: (text, threadId, boardId, replyTo) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
       const mentions = mentionsIn(text, get().agents)
@@ -549,7 +549,8 @@ export const useCrew = create<CrewState>((set, get) => {
           mentions,
           threadId,
           attachments,
-          boardId: threadId ? undefined : boardId
+          boardId: threadId ? undefined : boardId,
+          replyTo
         })
         set(state => ({
           threadDrafts: { ...state.threadDrafts, [key]: '' },
@@ -557,7 +558,7 @@ export const useCrew = create<CrewState>((set, get) => {
         }))
         return
       }
-      socket.send({ type: 'chat.send', text, mentions, attachments })
+      socket.send({ type: 'chat.send', text, mentions, attachments, replyTo })
       set(state => ({ chatDraft: '', pending: { ...state.pending, [key]: [] } }))
     },
     createBoard: name => {

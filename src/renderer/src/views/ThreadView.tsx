@@ -42,6 +42,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
   const agents = useCrew(s => s.agents)
+  const [replyTo, setReplyTo] = useState<ReturnType<typeof buildThread>[number] | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
@@ -123,7 +124,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const send = () => {
     if (!text.trim() && pendingCount === 0) return
-    sendChat(text, threadId)
+    sendChat(text, threadId, undefined, replyTo?.reactionTargetId)
+    setReplyTo(null)
     mention.close()
     jumpToBottom()
   }
@@ -153,7 +155,13 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       <div className="flex-1 min-w-0 relative">
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
           <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
-            <ThreadItems items={items} />
+            <ThreadItems
+              items={items}
+              onReply={item => {
+                setReplyTo(item)
+                inputRef.current?.focus()
+              }}
+            />
             {activePromptId && startedAt && (
               <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
             )}
@@ -237,6 +245,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   onSend={send}
                   onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
                   sendLabel={canSteer ? 'Steer' : 'Send'}
+                  replyTo={replyTo ?? undefined}
+                  onCancelReply={() => setReplyTo(null)}
                 >
                   <MentionMenu
                     matches={mention.matches}
