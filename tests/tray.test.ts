@@ -160,7 +160,7 @@ describe('who is here', () => {
     expect(here[1]).toMatchObject({ agent: true, threads: 2 })
   })
 
-  it('carries an agent's own picture, which the panel cannot look up', () => {
+  it('carries the picture an agent wears, which the panel cannot look up', () => {
     const withPhoto = { ...agent('a1', 'Bubbles', 'busy'), avatar: 'pet.png' }
     const here = presentNow([], [withPhoto], 'self', {}, one =>
       one.avatar ? `http://host/files/${one.avatar}` : undefined
