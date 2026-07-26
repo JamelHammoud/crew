@@ -47,7 +47,7 @@ export default function DesignStage({
 
   return (
     <div className="flex-1 min-w-0 relative">
-      <DesignCanvas key={boardId} boardId={boardId} onEditor={onEditor} />
+      <DesignCanvas key={boardId} boardId={boardId} asking={asking} onEditor={onEditor} />
       {editor && (
         <>
           <DesignToolbar onAsk={ask} onRename={onRename} />
