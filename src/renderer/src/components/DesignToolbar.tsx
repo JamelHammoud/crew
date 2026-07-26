@@ -123,7 +123,7 @@ function Group({
           onClick={() => onMenu(!menuOpen)}
           aria-label={`${group.label} options`}
           aria-expanded={menuOpen}
-          className={`h-9 w-5 pr-1 grid place-items-center transition-all active:scale-95 ${
+          className={`h-9 w-6 pr-2 grid place-items-center transition-all active:scale-95 ${
             active ? 'text-ink-900/55 hover:text-ink-900' : 'text-fg/45 hover:text-fg'
           }`}
         >
