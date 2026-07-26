@@ -398,7 +398,6 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'hide',
     label: 'Hide',
-    hint: '⇧⌘H',
     group: 'state',
     Icon: EyeOffGlyph,
     when: ctx => selection(ctx.editor).some(shape => !hidden(shape)),
@@ -407,7 +406,6 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'show',
     label: 'Show',
-    hint: '⇧⌘H',
     group: 'state',
     Icon: EyeGlyph,
     when: ctx => some(ctx) && selection(ctx.editor).every(shape => hidden(shape)),
