@@ -113,7 +113,7 @@ const STRIKES: Record<StrikeName, Strike[]> = {
 
 // Three bubbles surfacing, one for each disc in the mark, said again every
 // second and a bit and let go of before five seconds are up.
-const CALL: Ring = {
+export const CALL: Ring = {
   phrase: [
     {
       hz: 587.33,
