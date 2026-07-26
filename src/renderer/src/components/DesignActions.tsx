@@ -2,9 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, type TLShape } from 'tldraw'
 import { actionRows, searchActions, type ActionRow } from '../design/actionSearch'
 import type { CommandContext } from '../design/commands'
-import { BoltGlyph, SearchGlyph } from '../design/glyphs'
+import { SearchGlyph } from '../design/glyphs'
 import { Popover } from './Popover'
-import Tooltip from './Tooltip'
 
 export default function DesignActions({
   onAsk,
