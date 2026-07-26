@@ -10,7 +10,9 @@ import { replyTargetLabel } from './reply'
 import Tooltip from './Tooltip'
 import type { ThreadItem } from './thread'
 
-function EmojiText({ text }: { text: string }) {
+// The textarea keeps its own glyph under the caret, so the sheet is painted
+// over it rather than in place of it.
+function EmojiHighlight({ text }: { text: string }) {
   const tokens = useMemo(() => tokenizeEmoji(text), [text])
   return (
     <>
@@ -55,7 +57,7 @@ function MentionHighlights({ value }: { value: string }) {
             </span>
           )
         }
-        return <EmojiText key={index} text={token.text} />
+        return <EmojiHighlight key={index} text={token.text} />
       })}
       {'\u200b'}
     </>
