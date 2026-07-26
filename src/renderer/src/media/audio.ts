@@ -40,8 +40,24 @@ function impulse(ctx: AudioContext): AudioBuffer {
     const data = tail.getChannelData(channel)
     for (let i = 0; i < frames; i++) data[i] *= scale
   }
-  room = ctx.createConvolver()
-  room.buffer = tail
-  room.connect(ctx.destination)
+  held = tail
+  return tail
+}
+
+// A room of one's own, hung off whatever it is handed. Anything with a volume of
+// its own needs its own, or the wet half of every note walks past the control
+// and out to the speakers at full strength.
+export function convolver(ctx: AudioContext, out: AudioNode): ConvolverNode | null {
+  if (!ctx.createConvolver) return null
+  const node = ctx.createConvolver()
+  node.buffer = impulse(ctx)
+  node.connect(out)
+  return node
+}
+
+let room: ConvolverNode | null = null
+
+export function reverb(ctx: AudioContext): ConvolverNode | null {
+  if (!room) room = convolver(ctx, ctx.destination)
   return room
 }
