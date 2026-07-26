@@ -133,9 +133,10 @@ describe('image zoom', () => {
   })
 
   it('keeps the entrance animation off the picture it moves', () => {
-    const { frame, drawn } = view()
+    const { frame, image, drawn } = view()
 
     expect(image.className).not.toMatch(/animate-/)
+    expect(drawn.className).not.toMatch(/animate-/)
     expect(frame.className).toMatch(/animate-rise/)
   })
 
