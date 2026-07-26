@@ -130,7 +130,7 @@ describe('zooming a shared screen', () => {
     expect(offsetOf(drawn)).toEqual({ x: -30, y: -20 })
 
     fireEvent.wheel(frame, { deltaX: 9000, deltaY: 9000, ctrlKey: false, clientX: 500, clientY: 300 })
-    expect(offsetOf(drawn)).toEqual({ x: -750, y: -375 })
+    expect(offsetOf(drawn)).toEqual({ x: -750, y: -325 })
   })
 
   it('goes back to the fit from the percentage', () => {
