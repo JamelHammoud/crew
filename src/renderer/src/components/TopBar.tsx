@@ -125,11 +125,7 @@ export default function TopBar({
             }`}
           >
             <CheckCircleIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
-            {waiting > 0 && (
-              <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 rounded-full bg-fg text-ink-900 text-xs font-bold flex items-center justify-center ring-2 ring-ink-900">
-                {waiting > 9 ? '9+' : waiting}
-              </span>
-            )}
+            <Badge count={waiting} className="absolute top-0 right-0" />
           </button>
         </Tooltip>
         <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />
