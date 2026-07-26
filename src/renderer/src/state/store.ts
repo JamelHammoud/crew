@@ -547,6 +547,18 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     detach: (key, id) =>
       set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
+    // A control that stages images under a key of its own has to hand them to
+    // the thread or board the message is going to, because that is the only
+    // place sendChat looks for them.
+    moveAttachments: (from, to) =>
+      set(state => {
+        const carried = state.pending[from] ?? []
+        if (from === to || carried.length === 0) return {}
+        const waiting = state.pending[to] ?? []
+        return {
+          pending: { ...state.pending, [from]: [], [to]: [...waiting, ...carried].slice(0, MAX_ATTACHMENTS) }
+        }
+      }),
     sendChat: (text, threadId, boardId, replyTo, aimedAt) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
