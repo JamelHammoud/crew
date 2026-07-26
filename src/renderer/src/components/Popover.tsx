@@ -92,7 +92,8 @@ export function Popover({
   const style: CSSProperties | null = spot && {
     ...spot,
     maxHeight: Math.min(maxHeight ?? Infinity, window.innerHeight - 16),
-    overflowY: 'auto'
+    overflowY: 'auto',
+    overflowX: 'hidden'
   }
 
   useEffect(() => {
