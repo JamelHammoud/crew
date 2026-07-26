@@ -209,6 +209,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
     >
       {tab.loading ? (
         <Spinner size={14} className="text-fg-muted" />
+      ) : tab.kind === 'terminal' ? (
+        <CommandLineIcon className="w-4 h-4 shrink-0" />
       ) : tab.kind === 'file' ? (
         <DocumentTextIcon className="w-4 h-4 shrink-0" />
       ) : showsImage(tab) ? (
