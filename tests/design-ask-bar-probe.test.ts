@@ -67,6 +67,7 @@ interface BootOptions {
   threads?: Record<string, unknown>
   bounds?: PageBounds | null
   stage?: { w: number; h: number }
+  staged?: unknown[]
 }
 
 const SHAPE: PageBounds = { minX: 500, minY: 400, maxX: 800, maxY: 480 }
