@@ -131,6 +131,31 @@ export const PanelRightGlyph = glyph(
   </>
 )
 
+export const CornerGlyph = glyph(<path d="M5 19V9.5A4.5 4.5 0 0 1 9.5 5H19" />)
+
+export const CornersGlyph = glyph(
+  <>
+    <path d="M4 9V6.5A2.5 2.5 0 0 1 6.5 4H9" />
+    <path d="M15 4h2.5A2.5 2.5 0 0 1 20 6.5V9" />
+    <path d="M20 15v2.5a2.5 2.5 0 0 1-2.5 2.5H15" />
+    <path d="M9 20H6.5A2.5 2.5 0 0 1 4 17.5V15" />
+  </>
+)
+
+export const OpacityGlyph = glyph(
+  <>
+    <circle cx="12" cy="12" r="8" />
+    <path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor" stroke="none" />
+  </>
+)
+
+export const AngleGlyph = glyph(
+  <>
+    <path d="M5 4.5v15h15" />
+    <path d="M13 19.5A8.5 8.5 0 0 0 5 11" />
+  </>
+)
+
 export const AlignLeftGlyph = glyph(
   <>
     <path d="M4 3.5v17" />
