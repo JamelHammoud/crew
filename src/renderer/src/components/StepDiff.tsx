@@ -110,14 +110,16 @@ export default function StepDiff({ file, again }: { file: FileChange; again?: un
       </div>
       {rows.length > 0 && (
         <div className="bg-ink-850 py-1.5 font-mono text-xs leading-5 overflow-x-auto">
-          {shown.map((row, index) => (
-            <Line key={index} row={row} tokens={tokensFor(row)} />
-          ))}
-          {rest > 0 && (
-            <FileTextLink path={file.path} diff={file.diff} className="block px-3 pt-1 text-fg-faint">
-              {`${rest} more ${rest === 1 ? 'line' : 'lines'}`}
-            </FileTextLink>
-          )}
+          <div className="w-max min-w-full">
+            {shown.map((row, index) => (
+              <Line key={index} row={row} tokens={tokensFor(row)} />
+            ))}
+            {rest > 0 && (
+              <FileTextLink path={file.path} diff={file.diff} className="block px-3 pt-1 text-fg-faint">
+                {`${rest} more ${rest === 1 ? 'line' : 'lines'}`}
+              </FileTextLink>
+            )}
+          </div>
         </div>
       )}
     </div>
