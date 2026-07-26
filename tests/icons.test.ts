@@ -27,13 +27,13 @@ const drawn: Art[] = Object.entries(icons as Record<string, unknown>)
     return { name, markup, box }
   })
 
-// A form drawn in one filled shape carries its whole box as ink rather than its
-// edge, so it is read against the solid keyline. The ellipsis dots are filled and
-// are not this: they are three marks, not one form.
+// A form drawn as one filled shape carries its whole box as ink rather than just
+// its edge, so it is read against the solid keyline. The ellipsis dots are filled
+// and are not this: they are three marks rather than one form.
+const drawnShapes = (markup: string) => markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []
+
 const solid = (markup: string) =>
-  (markup.match(/fill="currentColor"/g) ?? []).length === 1 &&
-  !markup.includes('stroke="currentColor" stroke-width') === false &&
-  (markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []).length === 1
+  drawnShapes(markup).length === 1 && markup.includes('fill="currentColor"')
 
 const keyline = (markup: string, box: Box) => {
   if (solid(markup)) return { family: 'solid', target: SOLID, size: Math.sqrt(box.width * box.height) }
