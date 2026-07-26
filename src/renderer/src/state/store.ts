@@ -2,7 +2,14 @@ import { create } from 'zustand'
 import { httpBaseFrom, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
-import { trimEvents, type SessionEvent, type ThreadMode, type ThreadStatus, type Todo } from '../../../shared/events'
+import {
+  huddleRecordId,
+  trimEvents,
+  type SessionEvent,
+  type ThreadMode,
+  type ThreadStatus,
+  type Todo
+} from '../../../shared/events'
 import type { CrewTool, ToolAction, ToolMark } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
