@@ -325,13 +325,49 @@ export default function DesignCanvas({
   )
 }
 
-function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: DesignPresence[] }) {
+function RemoteCursors({
+  editor,
+  boardId,
+  live,
+  held
+}: {
+  editor: Editor | null
+  boardId: string
+  live: Record<string, DesignPresence>
+  held: { current: Record<string, DesignPresence> }
+}) {
+  const threads = useCrew(s => s.threads)
+  const threadPrompts = useCrew(s => s.threadPrompts)
+  const agents = useCrew(s => s.agents)
   const camera = useValue('design camera', () => (editor ? editor.getCamera() : null), [editor])
   const pageId = useValue('design page', () => (editor ? editor.getCurrentPageId() : null), [editor])
-  if (!editor || camera === null) return null
+  const middle = useValue('design middle', () => editor?.getCurrentPageBounds()?.center ?? null, [editor])
+
+  const busy = useMemo(
+    () =>
+      busyAgents(
+        boardId,
+        Object.values(threads),
+        threadPrompts,
+        Object.fromEntries(agents.map(agent => [agent.id, agent.label]))
+      ),
+    [boardId, threads, threadPrompts, agents]
+  )
+
+  if (!editor || camera === null || pageId === null) return null
+
+  const working = new Set(busy.map(agent => agent.id))
+  const standing: DesignPresence[] = busy
+    .filter(agent => !live[agent.id])
+    .map(agent => {
+      const spot = held.current[agent.id]
+      const cursor = spot?.cursor ?? (middle ? { x: middle.x, y: middle.y } : null)
+      return { userId: agent.id, name: agent.label, kind: 'agent', cursor, selection: [], pageId, ts: 0 }
+    })
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {cursors
+      {[...Object.values(live), ...standing]
         .filter(presence => presence.cursor && presence.pageId === pageId)
         .map(presence => {
           const point = editor.pageToViewport({ x: presence.cursor!.x, y: presence.cursor!.y })
@@ -353,6 +389,7 @@ function RemoteCursors({ editor, cursors }: { editor: Editor | null; cursors: De
                   <Avatar name={presence.name} size="sm" />
                 )}
                 <span className="text-xs font-semibold text-fg">{presence.name}</span>
+                {working.has(presence.userId) && <Spinner size={11} />}
               </span>
             </div>
           )
