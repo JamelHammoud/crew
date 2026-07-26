@@ -11,7 +11,10 @@ import { MenuItem, Popover } from './Popover'
 import Tooltip from './Tooltip'
 import { useBoardThreads } from './DesignChat'
 
-const BAR = { w: 320, h: 48 }
+// A line of the ask is 20 tall on 8 of padding, and it grows to five of them
+// before it scrolls, so the bar never swallows the board it is standing on.
+const BAR = { w: 320, h: 46 }
+const GROWN = 108
 
 function threadFor(threads: ThreadMeta[], agentId: string): string | undefined {
   const mine = threads.filter(thread => thread.agentId === agentId && thread.status === 'open')
