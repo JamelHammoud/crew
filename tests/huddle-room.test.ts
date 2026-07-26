@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { fitTiles } from '../src/renderer/src/components/huddle/tiles'
 import { formatClock } from '../src/renderer/src/components/time'
-import { emptyRoom, huddleTitle, politeToward, sharingPeer, type HuddlePeer } from '../src/shared/huddle'
+import {
+  emptyRoom,
+  huddleTitle,
+  politeToward,
+  sharingPeer,
+  type HuddlePeer,
+  type HuddleRoom
+} from '../src/shared/huddle'
+
+const room = (...peers: HuddlePeer[]): HuddleRoom => ({ id: 'call-1', peers, startedAt: 1 })
 
 const peer = (peerId: string, name: string, extra: Partial<HuddlePeer> = {}): HuddlePeer => ({
   peerId,
@@ -34,14 +43,12 @@ describe('who gives way', () => {
 describe('naming a call', () => {
   it('says who is on the other end', () => {
     const self = peer('me', 'Jamel')
-    expect(huddleTitle({ peers: [self], startedAt: 1 }, 'me')).toBe('Waiting for others')
-    expect(huddleTitle({ peers: [self, peer('a', 'Ali')], startedAt: 1 }, 'me')).toBe('Ali')
-    expect(huddleTitle({ peers: [self, peer('a', 'Ali'), peer('b', 'Kim')], startedAt: 1 }, 'me')).toBe(
-      'Ali and Kim'
+    expect(huddleTitle(room(self), 'me')).toBe('Waiting for others')
+    expect(huddleTitle(room(self, peer('a', 'Ali')), 'me')).toBe('Ali')
+    expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim')), 'me')).toBe('Ali and Kim')
+    expect(huddleTitle(room(self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')), 'me')).toBe(
+      'Ali and 2 others'
     )
-    expect(
-      huddleTitle({ peers: [self, peer('a', 'Ali'), peer('b', 'Kim'), peer('c', 'Sam')], startedAt: 1 }, 'me')
-    ).toBe('Ali and 2 others')
   })
 
   it('has nothing to say about an empty room', () => {
@@ -50,7 +57,7 @@ describe('naming a call', () => {
   })
 
   it('picks out whoever is sharing', () => {
-    const room = { peers: [peer('a', 'Ali'), peer('b', 'Kim', { sharing: true })], startedAt: 1 }
+    const room = { id: 'call-1', peers: [peer('a', 'Ali'), peer('b', 'Kim', { sharing: true })], startedAt: 1 }
     expect(sharingPeer(room)?.name).toBe('Kim')
   })
 })
