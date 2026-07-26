@@ -35,7 +35,7 @@ export class MusicPlayer {
   private master: GainNode | null = null
   private bus: GainNode | null = null
   private tap: AnalyserNode | null = null
-  private reading: Uint8Array<ArrayBuffer> | null = null
+  private reading: Uint8Array | null = null
   private sink: Sink | null = null
   private timer: ReturnType<typeof setInterval> | null = null
   private notes: Strike[] = []
