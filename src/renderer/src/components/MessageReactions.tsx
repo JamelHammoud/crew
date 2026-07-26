@@ -48,8 +48,8 @@ export default function MessageReactions({
     const message = tray.current?.closest('[data-message]') ?? tray.current?.parentElement
     if (!message) return
     const restore = () => setDismissed(false)
-    message.addEventListener('mouseleave', restore)
-    return () => message.removeEventListener('mouseleave', restore)
+    message.addEventListener('mouseenter', restore)
+    return () => message.removeEventListener('mouseenter', restore)
   }, [dismissed])
 
   const react = (emoji: ReactionEmoji) => {
@@ -57,11 +57,11 @@ export default function MessageReactions({
     rememberEmoji(emoji)
   }
 
-  const reactFromMenu = (emoji: ReactionEmoji) => {
+  const reactFromMenu = (emoji: ReactionEmoji, byPointer = true) => {
     react(emoji)
     setPickerOpen(false)
     setActionsOpen(false)
-    setDismissed(true)
+    if (byPointer) setDismissed(true)
   }
 
   return (
