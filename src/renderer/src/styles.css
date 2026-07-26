@@ -326,19 +326,9 @@ body {
   }
 }
 
-@keyframes tab-icon-sweep {
-  from {
-    transform: rotate(var(--sweep-from, 0deg));
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .tab-icon,
   .tab-icon-svg,
-  .tab-icon-sweep,
   .tab-icon-draw,
   .tab-icon-pop {
     animation-duration: 1ms;
