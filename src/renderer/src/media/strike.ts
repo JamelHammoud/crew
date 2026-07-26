@@ -77,6 +77,7 @@ function hit(ctx: AudioContext, s: Strike): Sounding {
   body.frequency.exponentialRampToValueAtTime(Math.max(240, s.hz * 1.6), start + s.length)
   body.connect(bus)
 
+  const sources: AudioScheduledSourceNode[] = []
   const detune = s.detune ?? 0
   const partials = s.partials ?? [1, 2.7]
   partials.forEach((ratio, i) => {
