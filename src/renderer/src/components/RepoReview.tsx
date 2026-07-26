@@ -2,7 +2,7 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useEffect, useMemo, useState } from 'react'
 import type { RepoChange } from '../../../shared/repository'
 import Spinner from './Spinner'
-import { Counts } from './StepRow'
+import Counts from './Counts'
 
 const KIND_LABELS: Record<RepoChange['kind'], string> = {
   added: 'Added',
