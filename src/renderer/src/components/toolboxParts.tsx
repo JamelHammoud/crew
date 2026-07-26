@@ -169,12 +169,16 @@ export function Row({
       onClick={onClick}
       aria-pressed={chevron ? undefined : active}
       className={`w-full px-2 py-2 rounded-field flex items-center gap-2.5 text-left transition-colors ${
-        active && !chevron ? 'bg-fg/[0.09] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
+        chevron
+          ? 'bg-fg/[0.05] text-fg hover:bg-fg/[0.09]'
+          : active
+            ? 'bg-fg/[0.09] text-fg'
+            : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
       }`}
     >
       <span
         className={`w-8 h-8 shrink-0 rounded-[7px] flex items-center justify-center transition-colors ${
-          active ? 'bg-fg text-ink-900' : 'bg-fg/[0.07]'
+          active && !chevron ? 'bg-fg text-ink-900' : chevron ? 'bg-fg/10' : 'bg-fg/[0.07]'
         }`}
       >
         {mark}
