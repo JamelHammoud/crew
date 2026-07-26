@@ -98,7 +98,17 @@ describe('zooming a shared screen', () => {
     expect(scaleOf(drawn)).toBe(1)
   })
 
-  it('pinches on the trackpad, and reads the percentage against their real pixels', () => {
+  it('pinches on the trackpad, either way', () => {
+    const { frame, drawn } = stage()
+
+    fireEvent.wheel(frame, { deltaY: -100, ctrlKey: true, clientX: 500, clientY: 300 })
+    expect(scaleOf(drawn)).toBeCloseTo(Math.E, 4)
+
+    fireEvent.wheel(frame, { deltaY: 100, ctrlKey: true, clientX: 500, clientY: 300 })
+    expect(scaleOf(drawn)).toBeCloseTo(1, 4)
+  })
+
+  it('reads the percentage against their real pixels, not the fit', () => {
     const { container, frame, drawn } = stage()
 
     expect(container.querySelector('button[class*="glass"]')).toBeNull()
@@ -106,9 +116,6 @@ describe('zooming a shared screen', () => {
     fireEvent.doubleClick(frame, { clientX: 500, clientY: 300 })
     expect(scaleOf(drawn)).toBe(2.5)
     expect(container.querySelector('button[class*="glass"]')?.textContent).toBe('125%')
-
-    fireEvent.wheel(frame, { deltaY: 100, ctrlKey: true, clientX: 500, clientY: 300 })
-    expect(scaleOf(drawn)).toBeCloseTo(2.5 / Math.E, 4)
   })
 
   it('moves a zoomed screen and holds it inside the frame', () => {
