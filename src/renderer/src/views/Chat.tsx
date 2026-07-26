@@ -49,6 +49,7 @@ export default function Chat() {
   const feed = useMemo<Feed[]>(() => {
     const list: Feed[] = []
     const reactions = reactionGroups(events, selfId)
+    const huddles = huddleRecords(events)
     for (const e of events) {
       if (e.kind === 'message' && !e.threadId) {
         const targetId = messageReactionTarget(e.id)
