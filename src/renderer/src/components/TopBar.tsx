@@ -152,8 +152,8 @@ export default function TopBar({
           >
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
-          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-60">
-            <div className="flex items-center gap-2.5 px-2 py-1.5">
+          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-56">
+            <div className="flex items-center gap-2.5 px-3 py-2">
               <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-fg truncate">{selfName}</p>
