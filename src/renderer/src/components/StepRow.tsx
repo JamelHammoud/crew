@@ -59,6 +59,9 @@ export function Chevron({ open }: { open: boolean }) {
   )
 }
 
+const SUBJECT = 'truncate text-xs text-fg-faint'
+export const SUBJECT_MONO = `${SUBJECT} mono-inline`
+
 export const rowClass = (expandable: boolean): string =>
   `group flex items-center gap-2.5 max-w-full text-sm text-left -ml-2 pl-2 pr-3 py-1 rounded-full transition-colors ${
     expandable ? 'hover:bg-ink-hover' : 'cursor-default'
