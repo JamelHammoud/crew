@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { tokenizeEmoji } from '../Users/jamel/Documents/Repositories/crew/src/renderer/src/components/emojiTokens'
-import { lookupEmoji } from '../Users/jamel/Documents/Repositories/crew/src/renderer/src/components/emojiData'
+import { tokenizeEmoji } from '../src/renderer/src/components/emojiTokens'
+import { lookupEmoji } from '../src/renderer/src/components/emojiData'
 
 describe('dbg', () => {
   it('shows', () => {
