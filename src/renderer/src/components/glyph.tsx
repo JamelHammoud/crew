@@ -1,14 +1,18 @@
 import type { ComponentType, ReactNode } from 'react'
+import { STROKE, wearWeight } from '../icons/keylines'
 
 export type Glyph = ComponentType<{ className?: string; strokeWidth?: number }>
 
-// A stroke does not scale with the icon. Worn small, 1.5 on a 24 grid comes out
-// under a pixel and the mark goes grey, so a small one is drawn heavier and a
-// large one lighter. The weight is the drawing's own and the prop is the wear.
-export function glyph(art: ReactNode, weight = 1.5): Glyph {
+// The weight a drawing carries is the weight it wants at 16, which is where
+// nearly everything in the app is worn. Worn smaller or larger, the stroke is
+// adjusted for it: a stroke does not scale with the icon, so the same number
+// comes out spindly on a 12 and chunky on a 32. The size is read off the class
+// the caller already writes, so no call site has to know any of this, and a
+// strokeWidth of its own still wins.
+export function glyph(art: ReactNode, weight = STROKE): Glyph {
   return function CrewGlyph({
     className = 'w-4 h-4',
-    strokeWidth = weight
+    strokeWidth
   }: {
     className?: string
     strokeWidth?: number
@@ -20,7 +24,7 @@ export function glyph(art: ReactNode, weight = 1.5): Glyph {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth={strokeWidth}
+        strokeWidth={strokeWidth ?? wearWeight(weight, className)}
         strokeLinecap="round"
         strokeLinejoin="round"
         className={className}
