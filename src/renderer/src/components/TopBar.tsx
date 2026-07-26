@@ -136,7 +136,7 @@ export default function TopBar({
               tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
             }`}
           >
-            <CheckCircleGlyph className="w-[22px] h-[22px]" strokeWidth={1.8} />
+            <CheckCircleGlyph className="w-[22px] h-[22px]" />
             <Badge count={waiting} className="absolute top-0 right-0" />
           </button>
         </Tooltip>

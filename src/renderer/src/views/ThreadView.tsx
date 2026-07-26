@@ -212,10 +212,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     </>
                   ) : (
                     <>
-                      {state === 'done' && <CheckGlyph strokeWidth={2} className="w-5 h-5 text-fg" />}
-                      {state === 'ready' && <EyeGlyph strokeWidth={2} className="w-5 h-5 text-fg" />}
-                      {state === 'failed' && <WarningGlyph strokeWidth={2} className="w-5 h-5 text-danger" />}
-                      {state === 'archived' && <ArchiveGlyph strokeWidth={2} className="w-5 h-5 text-fg-muted" />}
+                      {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
+                      {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
+                      {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
+                      {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
                       <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
                         {THREAD_STATE_LABELS[state]}
                       </span>

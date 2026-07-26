@@ -120,7 +120,6 @@ export default function QueueBar({
       >
         {items.length === 1 ? '1 message queued' : `${items.length} messages queued`}
         <ChevronDownGlyph
-          strokeWidth={3}
           className={`w-4 h-4 ml-auto text-fg-muted group-hover:text-fg-secondary transition-transform duration-200 ${
             open ? 'rotate-180' : ''
           }`}
