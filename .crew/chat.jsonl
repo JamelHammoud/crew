@@ -25876,3 +25876,4 @@
 {"id":"6c67b12a-f522-440e-9007-26cbf9084062","ts":1785104249696,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
 {"id":"73572a7f-49b2-4902-b378-d6a95d2d174c","ts":1785104249696,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"1be2267b-530c-4191-967b-f4b92aab68a4","ts":1785104249696,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
+{"id":"2c132fe7-08e0-4eec-b876-3e263f20b4fa","ts":1785104273596,"kind":"todo.added","todoId":"f8ceeea5-f7ee-49b9-ac25-375ce734cc73","text":"Beta testing","byName":"ALI"}
