@@ -93,8 +93,11 @@ export const BASE_TYPE: TypeStyle = {
   lineHeight: 1.5,
   spacing: 0,
   align: 'left',
+  vertical: 'top',
   color: '#ffffff',
   transform: 'none',
+  decoration: 'none',
+  paragraph: 0,
   italic: false
 }
 
