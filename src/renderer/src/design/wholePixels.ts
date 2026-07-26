@@ -1,11 +1,21 @@
 import type { Editor } from 'tldraw'
 
+function whole<T extends { x: number; y: number }>(shape: T): T {
+  const x = Math.round(shape.x)
+  const y = Math.round(shape.y)
+  return x === shape.x && y === shape.y ? shape : { ...shape, x, y }
+}
+
 export function keepWholePixels(editor: Editor): () => void {
-  return editor.sideEffects.registerBeforeChangeHandler('shape', (prev, next, source) => {
-    if (source !== 'user') return next
-    if (next.x === prev.x && next.y === prev.y) return next
-    const x = Math.round(next.x)
-    const y = Math.round(next.y)
-    return x === next.x && y === next.y ? next : { ...next, x, y }
+  const stopCreate = editor.sideEffects.registerBeforeCreateHandler('shape', (shape, source) =>
+    source === 'user' ? whole(shape) : shape
+  )
+  const stopChange = editor.sideEffects.registerBeforeChangeHandler('shape', (prev, next, source) => {
+    if (source !== 'user' || (next.x === prev.x && next.y === prev.y)) return next
+    return whole(next)
   })
+  return () => {
+    stopCreate()
+    stopChange()
+  }
 }
