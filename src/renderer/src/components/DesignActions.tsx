@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEditor, type TLShape } from 'tldraw'
 import { actionRows, searchActions, type ActionRow } from '../design/actionSearch'
 import type { CommandContext } from '../design/commands'
-import { SearchGlyph, SparkGlyph } from '../design/glyphs'
+import { BoltGlyph, SearchGlyph } from '../design/glyphs'
 import { Popover } from './Popover'
 import Tooltip from './Tooltip'
 
@@ -42,7 +42,7 @@ export default function DesignActions({
             open ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
           }`}
         >
-          <SparkGlyph className="w-6 h-6" />
+          <BoltGlyph className="w-6 h-6" />
           Actions
         </button>
       </Tooltip>
