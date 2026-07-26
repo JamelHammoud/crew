@@ -4,6 +4,7 @@ import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
 import { tokenizeMentions } from './mentionTokens'
+import { replyTargetLabel } from './reply'
 import Tooltip from './Tooltip'
 import type { ThreadItem } from './thread'
 
