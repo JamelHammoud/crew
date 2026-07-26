@@ -70,8 +70,12 @@ export default function DesignAskBar({
   const layers = useMemo(() => selected.map(shape => layerName(shape)).slice(0, 8), [selected])
 
   useEffect(() => {
-    if (open) requestAnimationFrame(() => inputRef.current?.focus())
-    else setText('')
+    if (open) {
+      requestAnimationFrame(() => inputRef.current?.focus())
+      return
+    }
+    setText('')
+    setSize(null)
   }, [open])
 
   // What the ask is about is taken when it opens and kept. A selection that
