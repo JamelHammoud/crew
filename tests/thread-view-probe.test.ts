@@ -105,7 +105,7 @@ describe('thread navigation', () => {
     fireEvent.click(screen.getAllByText('I want to follow up with another agent')[0])
 
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
-    expect(screen.getByPlaceholderText('Send a message or @ another agent')).toBeTruthy()
+    expect(screen.getByPlaceholderText('Send a message or @ someone')).toBeTruthy()
     expect(screen.getByText('Claude exited with code 1')).toBeTruthy()
 
     fireEvent.click(screen.getAllByLabelText('Reply').at(-1)!)

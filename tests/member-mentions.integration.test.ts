@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import type { ExtractEvent } from './helpers/types'
+import type { SessionEvent } from '../src/shared/events'
 import { startHost, TestUi, type TestHost } from './helpers/session'
 
 describe('member mentions', () => {
@@ -21,7 +21,7 @@ describe('member mentions', () => {
 
     const event = (await jamel.waitForEvent(
       candidate => candidate.kind === 'message' && candidate.text === 'Can you look at this @Jamel?'
-    )) as ExtractEvent<'message'>
+    )) as Extract<SessionEvent, { kind: 'message' }>
     expect(event.memberMentionRefs).toEqual([{ id: jamel.selfId, name: 'Jamel' }])
     expect(event.mentions).toEqual([])
   })
