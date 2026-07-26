@@ -25,7 +25,7 @@ const LIVE = 19.5
 const SQUARE = 17
 const CIRCLE = 18.5
 const LINE = 15
-const SOLID = 15
+const SOLID = 16
 const SLASH = 'm3.9 3.9 16.2 16.2'
 
 const ENTRY = (files) => `
