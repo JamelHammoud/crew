@@ -3,13 +3,13 @@ import { lookupEmoji, type EmojiEntry } from './emojiData'
 export type EmojiToken = { kind: 'text'; text: string } | { kind: 'emoji'; text: string; entry: EmojiEntry }
 
 const PICTOGRAPHIC = /\p{Extended_Pictographic}/u
-const VARIATION = /️/g
+const VARIATION = /\uFE0F/g
 const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 
 function entryFor(segment: string): EmojiEntry | undefined {
   if (!PICTOGRAPHIC.test(segment)) return undefined
   return (
-    lookupEmoji(segment) ?? lookupEmoji(segment.replace(VARIATION, '')) ?? lookupEmoji(`${segment}️`)
+    lookupEmoji(segment) ?? lookupEmoji(segment.replace(VARIATION, '')) ?? lookupEmoji(`${segment}\uFE0F`)
   )
 }
 
