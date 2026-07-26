@@ -6,19 +6,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { useCrew } from '../src/renderer/src/state/store'
 
-let notify: (() => void) | null = null
+const observers = new Set<() => void>()
 
 beforeEach(() => {
-  notify = null
+  observers.clear()
   vi.stubGlobal(
     'ResizeObserver',
     class {
+      private callback: () => void
+
       constructor(callback: () => void) {
-        notify = callback
+        this.callback = callback
       }
-      observe() {}
+
+      observe() {
+        observers.add(this.callback)
+      }
+
       disconnect() {
-        notify = null
+        observers.delete(this.callback)
       }
     }
   )
@@ -37,7 +43,7 @@ const follows = (first: Element, second: Element) =>
 const setHeaderWidth = (width: number) => {
   const header = document.querySelector('header')!
   Object.defineProperty(header, 'clientWidth', { value: width, configurable: true })
-  act(() => notify?.())
+  act(() => observers.forEach(notify => notify()))
 }
 
 const hover = (element: Element) => {
