@@ -9,12 +9,14 @@ export function ringLength(ring: Ring): number {
 
 export function playRing(ring: Ring): () => void {
   const timers: ReturnType<typeof setTimeout>[] = []
-  playStrikes(ring.phrase)
+  const sounding: (() => void)[] = [playStrikes(ring.phrase)]
   for (let turn = 1; turn < ring.times; turn++) {
-    timers.push(setTimeout(() => playStrikes(ring.phrase), turn * ring.every * 1000))
+    timers.push(setTimeout(() => sounding.push(playStrikes(ring.phrase)), turn * ring.every * 1000))
   }
   return () => {
     for (const timer of timers) clearTimeout(timer)
     timers.length = 0
+    for (const hush of sounding) hush()
+    sounding.length = 0
   }
 }
