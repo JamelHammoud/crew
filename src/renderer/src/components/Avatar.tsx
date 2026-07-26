@@ -31,7 +31,7 @@ export default function Avatar({
   const colors = avatarColors(name, useTheme() === 'light')
   return (
     <span
-      className={`${px ? '' : SIZES[size]} relative inline-block shrink-0 self-start`}
+      className={`${px ? '' : SIZES[size]} relative inline-block shrink-0`}
       style={px ? { width: px, height: px, fontSize: Math.round(px * 0.36) } : undefined}
     >
       <span

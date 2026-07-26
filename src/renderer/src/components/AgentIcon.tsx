@@ -116,7 +116,7 @@ export default function AgentIcon({
   const bg = light ? `oklch(0.93 0.05 ${pet.hue})` : `oklch(0.3 0.055 ${pet.hue})`
   const body = light ? `oklch(0.62 0.16 ${pet.hue})` : `oklch(0.76 0.15 ${pet.hue})`
   return (
-    <span className={`${SIZES[size]} relative inline-block shrink-0 self-start ${className}`}>
+    <span className={`${SIZES[size]} relative inline-block shrink-0 ${className}`}>
       {src ? (
         <img
           src={src}
