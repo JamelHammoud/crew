@@ -121,16 +121,20 @@ const partsOf = (colors: readonly string[], roll: () => number): Parts => {
 // the same lit-from-there diagonal, and a set of covers that all read alike is
 // worse than a flat one: the whole job of these is telling one track from
 // another down a list.
-const shuffle = (parts: Parts): string[] => [parts.light, ...parts.fields, parts.ground]
+// The fields come first, so they are the lobes on top and the picture is made of
+// the colors the palette is actually about. The light and the ground go under
+// them as the two ends. Laid the other way round the palest color in the palette
+// is the one covering everything, which is how a hot pink track came out white.
+const shuffle = (parts: Parts): string[] => [...parts.fields, parts.light, parts.ground]
 
-// A layout that takes fewer lobes than the palette has still takes the two ends
-// of it. Slicing off the front left the ground behind every time, and a picture
+// A layout that takes fewer lobes than the palette has still takes both ends of
+// it. Slicing off the tail left the ground behind every time, and a picture
 // mixed from the middle of a palette is the flat one this started as.
-const ends = (parts: Parts, count: number): string[] => {
-  const middle = shuffle(parts).slice(1, -1)
-  const held = [parts.light, ...middle.slice(0, Math.max(0, count - 2)), parts.ground]
-  return held.slice(0, count)
-}
+const ends = (parts: Parts, count: number): string[] => [
+  ...parts.fields.slice(0, Math.max(0, count - 2)),
+  parts.light,
+  parts.ground
+]
 
 // The deep end is the widest lobe of any cover. It is what everything brighter
 // stands on, so it needs the room, and it is the one thing keeping these from
