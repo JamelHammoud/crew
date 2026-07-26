@@ -100,11 +100,9 @@ export const FRAME_PRESETS: FramePreset[] = [
 export const ALL_TOOLS: DesignTool[] = TOOL_GROUPS.flatMap(group => group.tools)
 
 export function activateTool(editor: Editor, id: string): void {
-  if (id.startsWith('geo:')) {
-    editor.run(() => {
-      editor.setStyleForNextShapes(GeoShapeGeoStyle, id.slice(4) as never)
-      editor.setCurrentTool('geo')
-    })
+  if (id.startsWith('node:')) {
+    setNextNodeShape(nodeShapeOf(id.slice(5)))
+    editor.setCurrentTool('design-node')
     return
   }
   editor.setCurrentTool(id)
@@ -112,8 +110,7 @@ export function activateTool(editor: Editor, id: string): void {
 
 export function currentToolId(editor: Editor): string {
   const id = editor.getCurrentToolId()
-  if (id !== 'geo') return id
-  return `geo:${String(editor.getStyleForNextShape(GeoShapeGeoStyle))}`
+  return id === 'design-node' ? `node:${nextNodeShape()}` : id
 }
 
 export function layerName(shape: TLShape): string {
