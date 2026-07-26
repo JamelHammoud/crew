@@ -48,11 +48,22 @@ const lift = (hex: string, amount: number): string => {
   return `#${up(r)}${up(g)}${up(b)}`
 }
 
-const at = (value: number): string => value.toFixed(0)
+const at = (value: number): string => value.toFixed(1)
 
-// A field of one color: solid across its middle, gone by its edge. It always
-// fades to its own color at zero alpha and never to `transparent`, which is
-// transparent black and would drag every edge through grey on the way out.
+// The mesh is painted on a layer half again as big as the tile, so the tile is
+// the middle two thirds of it and the outer third is only there for the blur to
+// spill into. Everything below is laid out in the tile's own coordinates and put
+// through these, or a light placed near an edge lands outside the picture: that
+// is how a cover ends up as the one wash left over in the middle.
+const OVER = 0.25
+const spot = (share: number): number => (OVER + share * 1) * (100 / (1 + OVER * 2))
+const span = (share: number): number => share * (100 / (1 + OVER * 2))
+
+// A field of one color: solid across its middle, gone by its edge. The plateau
+// is most of it, so what the blur has to work with is the boundary between two
+// colors rather than the whole of both. It fades to its own color at zero alpha
+// and never to `transparent`, which is transparent black and would drag every
+// edge through grey on the way out.
 const field = (
   color: string,
   x: number,
@@ -62,17 +73,16 @@ const field = (
   core: number,
   alpha: number
 ): string =>
-  `radial-gradient(${at(wide)}% ${at(tall)}% at ${at(x)}% ${at(y)}%, ${rgba(color, alpha)} 0%, ${rgba(color, alpha)} ${at(core)}%, ${rgba(color, 0)} 100%)`
+  `radial-gradient(${at(span(wide))}% ${at(span(tall))}% at ${at(spot(x))}% ${at(spot(y))}%, ${rgba(color, alpha)} 0%, ${rgba(color, alpha)} ${at(core)}%, ${rgba(color, 0)} 100%)`
 
 // The petals. Blurred, a conic gradient's spokes bow into the lobed shapes the
 // covers this is drawn after are made of, which no stack of circles gives you.
 const fan = (colors: readonly string[], x: number, y: number, from: number): string => {
   const stops = colors.map((color, i) => `${rgba(color, 1)} ${at((i / colors.length) * 360)}deg`)
-  return `conic-gradient(from ${at(from)}deg at ${at(x)}% ${at(y)}%, ${stops.join(', ')}, ${rgba(colors[0], 1)} 360deg)`
+  return `conic-gradient(from ${at(from)}deg at ${at(spot(x))}% ${at(spot(y))}%, ${stops.join(', ')}, ${rgba(colors[0], 1)} 360deg)`
 }
 
-// The ground a layout stands on, so there is never a corner the fields did not
-// reach showing bare color underneath.
+// Broad bands across the whole thing, for a layout to stand its lobes on.
 const sweep = (colors: readonly string[], angle: number): string => {
   const stops = colors.map((color, i) => `${rgba(color, 1)} ${at((i / Math.max(1, colors.length - 1)) * 100)}%`)
   return `linear-gradient(${at(angle)}deg, ${stops.join(', ')})`
