@@ -82,7 +82,7 @@ describe('chat replies', () => {
     expect(screen.getByText('Replying to Jamel')).toBeTruthy()
     expect(screen.getAllByText('Can you take a look?')).toHaveLength(2)
 
-    const composer = screen.getByPlaceholderText('Send a message, @ an agent to start a thread, or / for a command')
+    const composer = screen.getByRole('textbox')
     fireEvent.change(composer, { target: { value: 'Yes, I can.' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
