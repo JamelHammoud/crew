@@ -15,7 +15,7 @@ export function Popover({
 }: {
   open: boolean
   onClose: () => void
-  align?: 'start' | 'end'
+  align?: 'start' | 'center' | 'end'
   side?: 'top' | 'bottom'
   at?: { x: number; y: number }
   flush?: boolean
@@ -77,7 +77,12 @@ export function Popover({
       top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
       return { left, top }
     }
-    let left = align === 'start' ? rect.left : rect.right - size.w
+    let left =
+      align === 'start'
+        ? rect.left
+        : align === 'center'
+          ? rect.left + rect.width / 2 - size.w / 2
+          : rect.right - size.w
     left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
     const fits = (choice: 'top' | 'bottom') =>
       choice === 'bottom' ? rect.bottom + 8 + size.h <= window.innerHeight - 8 : rect.top - 8 - size.h >= 8
