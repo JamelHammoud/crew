@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { FileChange } from '../../../shared/llm'
 import { LineText, useHighlight } from './codeLine'
-import { diffRows, docText, type Row } from './diffRows'
+import CopyButton from './CopyButton'
 import Counts from './Counts'
+import { diffRows, docText, type Row } from './diffRows'
 import { FileTextLink, isPrivate, labelFor, PrivateChip, useLocated } from './fileLinks'
-import { FilesGlyph } from './toolGlyphs'
-import Tooltip from './Tooltip'
 
 const SHOWN = 30
 
