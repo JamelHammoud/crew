@@ -99,8 +99,8 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'todo.removed'; todoId: string; byName: string }
   | { id: string; ts: number; kind: 'todo.checked'; todoId: string; checked: boolean; byName: string }
   | { id: string; ts: number; kind: 'todo.started'; todoId: string; threadId: string; byName: string }
-  | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: ToolMark; action: ToolAction; byName: string }
-  | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: ToolMark; action: ToolAction; byName: string }
+  | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
+  | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
   | {
       id: string
