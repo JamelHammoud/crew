@@ -64,7 +64,7 @@ try {
     loader: { '.ts': 'ts', '.tsx': 'tsx' },
     external: ['react', 'react-dom', 'react/jsx-runtime'],
     absWorkingDir: root,
-    logLevel: 'silent'
+    logLevel: "warning"
   })
   const { draw } = await import(`file://${bundle}`)
   const page = path.join(dir, 'probe.html')
