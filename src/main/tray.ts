@@ -99,6 +99,10 @@ export class CrewTray {
     this.panel.resize(height)
   }
 
+  theme(theme: 'dark' | 'light'): void {
+    this.panel.theme(theme)
+  }
+
   hidePanel(): void {
     this.panel.hide()
   }
