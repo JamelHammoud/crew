@@ -6,6 +6,7 @@ export interface HuddleRecord {
   id: string
   ts: number
   by: string
+  byId: string
   names: string[]
   ms: number | null
 }
