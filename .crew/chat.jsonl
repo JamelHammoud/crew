@@ -17122,3 +17122,5 @@
 {"id":"78b7a0ca-9a95-4d03-aea5-fcf442921f78","ts":1785030062483,"kind":"agent.online","agentId":"ali/a5870501-29f9-482a-8e95-280a04acf660","label":"Claude Fable"}
 {"id":"180dda23-801b-4287-a496-d7e8ebe34456","ts":1785030062483,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"38736d18-f4fc-4624-b5de-e73cbba5dd0e","ts":1785030110510,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"hello","mentions":[],"mentionRefs":[],"docMentions":[],"attachments":[]}
+{"id":"d3b7ea5d-1bda-48e9-94d0-501fbbe6c023","ts":1785030113765,"kind":"message.deleted","messageId":"38736d18-f4fc-4624-b5de-e73cbba5dd0e"}
+{"id":"fcd109d5-94c2-4d49-a66b-857a76ca8074","ts":1785030116018,"kind":"message.deleted","messageId":"71af068c-0197-46eb-bb6b-6d0a4a8eadf2"}
