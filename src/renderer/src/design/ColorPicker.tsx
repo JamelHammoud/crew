@@ -1,5 +1,5 @@
 import { EyeDropperIcon } from '@heroicons/react/16/solid'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { HexAlphaColorPicker, HexColorPicker } from 'react-colorful'
 import { CREW_SWATCHES } from '../../../shared/design'
 import Tooltip from '../components/Tooltip'
@@ -13,14 +13,33 @@ function tidy(hex: string): string {
   return clean.length === 9 && clean.endsWith('ff') ? clean.slice(0, 7) : clean
 }
 
+function OpacitySlider({ color, value, onChange }: { color: string; value: number; onChange: (value: number) => void }) {
+  return (
+    <span className="design-picker__opacity" style={{ '--opacity-color': color.slice(0, 7) } as CSSProperties}>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={Math.round(value * 100)}
+        onChange={event => onChange(Number(event.target.value) / 100)}
+        aria-label="Opacity"
+      />
+    </span>
+  )
+}
+
 export default function ColorPicker({
   value,
   onChange,
-  alpha
+  alpha,
+  opacity,
+  onOpacity
 }: {
   value: string
   onChange: (value: string) => void
   alpha: boolean
+  opacity?: number
+  onOpacity?: (value: number) => void
 }) {
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
@@ -40,6 +59,7 @@ export default function ColorPicker({
   return (
     <div className="design-picker w-56 p-1 flex flex-col gap-2.5">
       <Picker color={value.slice(0, alpha ? 9 : 7)} onChange={next => onChange(tidy(next))} />
+      {opacity !== undefined && onOpacity && <OpacitySlider color={value} value={opacity} onChange={onOpacity} />}
       <div className="flex items-center gap-1">
         <span className="flex-1 min-w-0 h-8 flex items-center gap-2 rounded-full bg-fg/[0.06] px-3 focus-within:bg-fg/[0.12] transition-colors">
           <span
@@ -54,6 +74,9 @@ export default function ColorPicker({
             aria-label="Hex"
             className="w-full min-w-0 bg-transparent text-xs font-mono uppercase text-fg outline-none"
           />
+          {opacity !== undefined && onOpacity && (
+            <span className="shrink-0 text-xs tabular-nums text-fg-muted">{Math.round(opacity * 100)}%</span>
+          )}
         </span>
         {dropper && (
           <Tooltip label="Pick a color">
