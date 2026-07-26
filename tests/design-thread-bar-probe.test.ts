@@ -45,7 +45,7 @@ function boot(threads: Record<string, unknown>) {
     agents: [agent('agent:bubbles', 'Bubbles'), agent('agent:fable', 'Fable')],
     members: [],
     docs: {},
-    boards: {},
+    boards: [],
     threads,
     threadPrompts: {},
     threadDrafts: {},
