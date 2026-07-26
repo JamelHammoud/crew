@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import type { MusicItem, MusicRoom } from '../../../../shared/music'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { musicItems, type MusicItem, type MusicRoom } from '../../../../shared/music'
 import {
   MusicGlyph,
   PauseGlyph,
