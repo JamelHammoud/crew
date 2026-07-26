@@ -57,10 +57,6 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
     editor.markHistoryStoppingPoint()
     editor.updateShape({ id: shape.id, type: 'design-node', props: { ...props, ...next } })
   }
-  const move = (next: { x?: number; y?: number }) => {
-    editor.markHistoryStoppingPoint()
-    editor.updateShape({ id: shape.id, type: 'design-node', x: next.x ?? shape.x, y: next.y ?? shape.y })
-  }
   const setRadius = (at: number, value: number) => {
     const radius = [...props.radius] as Corner
     radius[at] = value
@@ -81,33 +77,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
   const uniform = props.radius.every(part => part === props.radius[0])
 
   return (
-    <div className="design-style-panel flex flex-col gap-4 p-3">
-      <input
-        value={props.name}
-        onChange={e => patch({ name: e.target.value })}
-        aria-label="Layer name"
-        className="h-7 rounded-full bg-fg/[0.06] px-3 text-xs font-semibold text-fg outline-none focus:bg-fg/[0.1]"
-      />
-
-      <Section label="Position">
-        <div className="flex gap-2">
-          <Field label="X">
-            <NumberInput value={shape.x} onChange={value => move({ x: value })} />
-          </Field>
-          <Field label="Y">
-            <NumberInput value={shape.y} onChange={value => move({ y: value })} />
-          </Field>
-        </div>
-        <div className="flex gap-2">
-          <Field label="W">
-            <NumberInput value={props.w} min={1} onChange={value => patch({ w: value })} />
-          </Field>
-          <Field label="H">
-            <NumberInput value={props.h} min={1} onChange={value => patch({ h: value })} />
-          </Field>
-        </div>
-      </Section>
-
+    <>
       <Section
         label="Corner radius"
         action={
@@ -272,7 +242,7 @@ export default function Inspector({ shape }: { shape: DesignNodeShape }) {
           </Field>
         </Section>
       )}
-    </div>
+    </>
   )
 }
 
