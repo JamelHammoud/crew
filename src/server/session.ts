@@ -334,6 +334,28 @@ export class CrewSession {
         }
       }
     }
+    // A call the host was in when it went down has a start in the log and no
+    // end. It ran until the session last said anything, so that is where it is
+    // closed, rather than being left reading as live forever. This goes before
+    // the runs below are closed off, because those are written at the time of
+    // the restart and would stretch the call out to meet them.
+    const finished = new Set<string>()
+    for (const event of this.events) {
+      if (event.kind === 'huddle.ended') finished.add(event.huddleId)
+    }
+    const lastTs = this.events.at(-1)?.ts ?? Date.now()
+    for (const event of [...this.events]) {
+      if (event.kind !== 'huddle.started' || finished.has(event.huddleId)) continue
+      const close: SessionEvent = {
+        id: randomUUID(),
+        ts: Math.max(event.ts, lastTs),
+        kind: 'huddle.ended',
+        huddleId: event.huddleId,
+        ms: Math.max(0, lastTs - event.ts)
+      }
+      this.events.push(close)
+      store.appendEvent(close)
+    }
     const ended = new Set<string>()
     for (const event of this.events) {
       if (event.kind === 'agent.end') ended.add(event.promptId)
