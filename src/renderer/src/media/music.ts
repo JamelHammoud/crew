@@ -11,8 +11,10 @@ const HUSH = 0.09
 const KEEP = 96
 
 // What the bars are read off. It is hung before the volume, so turning the music
-// down where you are sitting does not stop it dancing.
-const BINS = 256
+// down where you are sitting does not stop it dancing. The window has to be this
+// wide: a narrow one measures in steps of a few hundred hertz, and the lowest
+// band is only fifty hertz across, so the bass bar would have nothing in it.
+const BINS = 2048
 const LOW = 55
 const HIGH = 7000
 
