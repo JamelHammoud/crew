@@ -1,25 +1,18 @@
 import { useActiveStyles, useBlockNoteEditor, useSelectedBlocks } from '@blocknote/react'
-import {
-  BoldIcon,
-  ChevronDownIcon,
-  CodeBracketIcon,
-  ItalicIcon,
-  LinkIcon,
-  StrikethroughIcon,
-  UnderlineIcon
-} from '@heroicons/react/16/solid'
+import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState } from 'react'
 import type { Glyph } from '../glyph'
 import { MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
 import { DOC_BLOCKS, kindOf, shortcutLabel } from './docBlocks'
+import { BoldGlyph, CodeGlyph, ItalicGlyph, LinkGlyph, StrikeGlyph, UnderlineGlyph } from './docGlyphs'
 
 const STYLES: Array<{ style: string; label: string; shortcut: string; mark: Glyph }> = [
-  { style: 'bold', label: 'Bold', shortcut: 'Mod-B', mark: BoldIcon },
-  { style: 'italic', label: 'Italic', shortcut: 'Mod-I', mark: ItalicIcon },
-  { style: 'underline', label: 'Underline', shortcut: 'Mod-U', mark: UnderlineIcon },
-  { style: 'strike', label: 'Strikethrough', shortcut: 'Mod-Shift-S', mark: StrikethroughIcon },
-  { style: 'code', label: 'Code', shortcut: 'Mod-E', mark: CodeBracketIcon }
+  { style: 'bold', label: 'Bold', shortcut: 'Mod-B', mark: BoldGlyph },
+  { style: 'italic', label: 'Italic', shortcut: 'Mod-I', mark: ItalicGlyph },
+  { style: 'underline', label: 'Underline', shortcut: 'Mod-U', mark: UnderlineGlyph },
+  { style: 'strike', label: 'Strikethrough', shortcut: 'Mod-Shift-S', mark: StrikeGlyph },
+  { style: 'code', label: 'Code', shortcut: 'Mod-E', mark: CodeGlyph }
 ]
 
 export default function DocToolbar() {
