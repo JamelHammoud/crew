@@ -39,4 +39,40 @@ describe('theme', () => {
     applyTheme(storedTheme())
     expect(document.documentElement.classList.contains('light')).toBe(false)
   })
+
+  describe('turning it over', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+      document.documentElement.classList.remove('theming')
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('goes to the other theme and stores it', () => {
+      toggleTheme()
+      expect(storedTheme()).toBe('light')
+      toggleTheme()
+      expect(storedTheme()).toBe('dark')
+    })
+
+    it('crosses to the new colors rather than cutting to them', () => {
+      toggleTheme()
+      expect(document.documentElement.classList.contains('theming')).toBe(true)
+    })
+
+    it('takes the fade away again, so nothing lags behind it', () => {
+      toggleTheme()
+      vi.advanceTimersByTime(1000)
+      expect(document.documentElement.classList.contains('theming')).toBe(false)
+    })
+
+    it('draws the theme it boots in rather than arriving at it', () => {
+      store.set('crew.theme', 'light')
+      applyTheme(storedTheme())
+      expect(document.documentElement.classList.contains('light')).toBe(true)
+      expect(document.documentElement.classList.contains('theming')).toBe(false)
+    })
+  })
 })
