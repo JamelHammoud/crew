@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { FileChange } from '../../../shared/llm'
 import { FileTextLink, isPrivate, labelFor, PrivateChip, TextWithFileLinks, useLocated } from './fileLinks'
 import Spinner from './Spinner'
@@ -81,7 +81,7 @@ function Diff({ diff }: { diff: string }) {
   )
 }
 
-function Detail({ children }: { children: React.ReactNode }) {
+function Detail({ children }: { children: ReactNode }) {
   return <div className="mt-2 ml-[11px] border-l border-ink-700 pl-4">{children}</div>
 }
 
