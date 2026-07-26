@@ -127,6 +127,40 @@ describe('design commands', () => {
   })
 })
 
+const press = (init: Partial<KeyboardEventInit> & { key: string }) =>
+  new KeyboardEvent('keydown', { ...init, cancelable: true })
+
+describe('the shortcuts the menu names', () => {
+  it('says the same thing the key does', () => {
+    for (const command of DESIGN_COMMANDS) {
+      if (!command.keys) continue
+      expect(command.hint, command.id).toBe(chordHint(command.keys))
+      expect(commandForKey(press(chord(command.keys)), board([node('shape:a')], 'shape:a').ctx), command.id).toBeTruthy()
+    }
+  })
+
+  it('reaches the command the selection can actually do', () => {
+    const { ctx, shapes } = board([node('shape:a')], 'shape:a')
+    expect(commandForKey(press(chord({ key: 'l', meta: true, shift: true })), ctx)?.id).toBe('lock')
+    runCommand('lock', ctx)
+    expect(shapes.get('shape:a')!.isLocked).toBe(true)
+    expect(commandForKey(press(chord({ key: 'l', meta: true, shift: true })), ctx)?.id).toBe('unlock')
+  })
+
+  it('takes no keystroke that is not its own', () => {
+    const { ctx } = board([node('shape:a')], 'shape:a')
+    expect(commandForKey(press({ key: 'a', metaKey: true }), ctx)).toBe(null)
+    expect(commandForKey(press({ key: 'A', metaKey: true, shiftKey: true, altKey: true }), ctx)).toBe(null)
+    expect(commandForKey(press({ key: 'A', shiftKey: true }), ctx)).toBe(null)
+  })
+
+  it('asks for nothing while a shape is being written in', () => {
+    const made = board([node('shape:a')], 'shape:a')
+    const ctx = { ...made.ctx, editor: { ...made.editor, getEditingShapeId: () => 'shape:a' } as never }
+    expect(commandForKey(press(chord({ key: 'a', meta: true, shift: true })), ctx)).toBe(null)
+  })
+})
+
 describe('design masks', () => {
   it('masks with the bottom of the selection and takes the rest in', () => {
     const { editor, shapes } = board([node('shape:under'), node('shape:over')], 'shape:over', 'shape:under')
