@@ -58,9 +58,21 @@ describe('the toolbox', () => {
 
     expect(screen.getByText('Huddle')).toBeTruthy()
     expect(screen.getByText('Terminal')).toBeTruthy()
-    expect(screen.getAllByText('Soon')).toHaveLength(2)
     expect(screen.getByText('Music').closest('button')?.disabled).toBe(true)
     expect(screen.getByText('Files').closest('button')?.disabled).toBe(true)
+  })
+
+  it('wears no label for what is still coming, and says it on hover instead', () => {
+    vi.useFakeTimers()
+    toolbox()
+
+    expect(screen.queryByText('Coming soon')).toBeNull()
+
+    hover('Music')
+    expect(screen.getAllByText('Coming soon')).toHaveLength(1)
+
+    hover('Terminal')
+    expect(screen.queryByText('Coming soon')).toBeNull()
   })
 
   it('opens a terminal, and takes you to where it opened', () => {
