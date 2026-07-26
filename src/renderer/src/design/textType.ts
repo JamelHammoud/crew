@@ -1,28 +1,28 @@
-import type { Editor, TLShape } from 'tldraw'
+import type { Editor, TLTextShape } from 'tldraw'
 import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../shared/designNode'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 
-export function textShapeType(editor: Editor, shape: TLShape): TypeStyle {
-  const props = shape.props as Record<string, unknown>
+export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
+  const { font, size, textAlign, color } = shape.props
   const base: TypeStyle = {
     ...BASE_TYPE,
-    family: familyOf(props.font),
-    size: sizeFont(props.size),
-    align: alignOf(props.textAlign),
-    color: paletteHex(editor, props.color)
+    family: familyOf(font),
+    size: sizeFont(size),
+    align: alignOf(textAlign),
+    color: paletteHex(editor, color)
   }
-  const stored = shape.meta?.type
+  const stored = shape.meta.type
   if (!stored || typeof stored !== 'object') return base
   return cleanType({ ...base, ...(stored as object), align: base.align }) ?? base
 }
 
-export function setTextShapeType(editor: Editor, shape: TLShape, patch: Partial<TypeStyle>): void {
+export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TypeStyle>): void {
   const { align, ...type } = { ...textShapeType(editor, shape), ...patch }
   editor.markHistoryStoppingPoint()
-  editor.updateShape({
+  editor.updateShape<TLTextShape>({
     id: shape.id,
-    type: shape.type,
-    props: { textAlign: labelAlign(align) },
+    type: 'text',
+    props: { textAlign: labelAlign(align) as TLTextShape['props']['textAlign'] },
     meta: { ...shape.meta, type }
   })
 }
