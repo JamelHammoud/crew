@@ -55,6 +55,8 @@ export default function SelectionOverlay({ editor, asking }: { editor: Editor | 
       {node && rect.w > MIN_FOR_HANDLES && rect.h > MIN_FOR_HANDLES && (
         <RadiusHandles editor={editor} shape={node} rect={rect} zoom={zoom} stroke={stroke} />
       )}
+      {/* The ask bar hangs under the same edge, and a readout behind glass reads
+          as a smudge rather than a number. */}
       {!asking && (
         <span
           className="absolute -translate-x-1/2 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums text-white whitespace-nowrap"
