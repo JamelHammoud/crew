@@ -152,7 +152,8 @@ export default function RepoControls() {
         <Popover
           open={reviewOpen}
           onClose={() => setReviewOpen(false)}
-          className="w-[620px] max-w-[calc(100vw-24px)] overflow-hidden !p-0"
+          flush
+          className="w-[620px] max-w-[calc(100vw-24px)] overflow-hidden"
         >
           <RepoReview
             changes={changes}
