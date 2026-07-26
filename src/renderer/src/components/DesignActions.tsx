@@ -38,7 +38,7 @@ export default function DesignActions({
           onClick={() => setOpen(value => !value)}
           aria-label="Actions"
           aria-expanded={open}
-          className={`h-9 pl-2.5 pr-3.5 rounded-full flex items-center gap-1.5 text-sm font-semibold transition-all active:scale-95 ${
+          className={`h-9 pl-2 pr-3.5 rounded-full flex items-center gap-1.5 text-sm font-semibold transition-all active:scale-95 ${
             open ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
           }`}
         >
