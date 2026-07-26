@@ -205,6 +205,7 @@ export const useHuddle = create<HuddleState>((set, get) => {
     // blocked still gets into the call, muted, and can fix it from there.
     join: async () => {
       if (get().joined || get().joining) return
+      stopRinging()
       set({ joining: true, problem: null })
       const mic = await captureMic()
       tracks.mic = mic.track

@@ -1,6 +1,7 @@
 import { XMarkIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState } from 'react'
 import type { HuddleRoom } from '../../../../shared/huddle'
+import { stopRinging } from '../../media/sounds'
 import { useHuddle } from '../../state/huddle'
 import AvatarStack from '../AvatarStack'
 import Live from './Live'
