@@ -89,11 +89,14 @@ export const BulletListGlyph = mark(
   </>
 )
 
+// Each numeral is 3.8 tall and centred on the row it belongs to. Drawn any
+// larger the three run into one another and the last one hangs below the line
+// it is numbering, which is the only part of this the eye picks up at 16.
 export const NumberedListGlyph = mark(
   <>
-    <path d="M3.4 5.1 5 4.1v4.6" strokeWidth={NUMERAL} />
-    <path d="M3.3 10.7a1.5 1.5 0 1 1 3 0c0 1.2-3 2.2-3 3.7h3.2" strokeWidth={NUMERAL} />
-    <path d="M3.4 15.4h3.1l-1.5 1.8a1.6 1.6 0 1 1-1.4 2.4" strokeWidth={NUMERAL} />
+    <path d="M3.4 5.5 4.8 4.5v3.8" strokeWidth={NUMERAL} />
+    <path d="M3.5 11.2a1.15 1.15 0 1 1 2.3 0c0 .9-2.3 1.65-2.3 2.75h2.5" strokeWidth={NUMERAL} />
+    <path d="M3.5 15.8h2.6l-1.25 1.45a1.3 1.3 0 1 1-1.15 1.95" strokeWidth={NUMERAL} />
     {rows(9.6)}
   </>
 )
