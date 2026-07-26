@@ -4,10 +4,12 @@ import { createPortal } from 'react-dom'
 export default function Tooltip({
   label,
   disabled,
+  className,
   children
 }: {
   label: string
   disabled?: boolean
+  className?: string
   children: ReactNode
 }) {
   const anchorRef = useRef<HTMLSpanElement>(null)
