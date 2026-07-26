@@ -51,6 +51,16 @@ export default function Markdown({
     return { html: container.innerHTML, unknown }
   }, [text, resolved])
 
+  useLayoutEffect(() => {
+    const el = host.current
+    if (!el) return
+    if (drawn.current) morph(el, html, stream)
+    else {
+      el.innerHTML = html
+      drawn.current = true
+    }
+  }, [html, stream])
+
   useEffect(() => {
     if (unknown.length === 0) return
     let alive = true
