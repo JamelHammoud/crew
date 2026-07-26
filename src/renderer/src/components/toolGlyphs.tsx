@@ -103,7 +103,7 @@ export const ClipboardGlyph = glyph(
 )
 
 export const SparkGlyph = glyph(
-  <path d="M12 3.5C12.6 8.1 15.9 11.4 20.5 12 15.9 12.6 12.6 15.9 12 20.5 11.4 15.9 8.1 12.6 3.5 12 8.1 11.4 11.4 8.1 12 3.5Z" />
+  <path d="M12 3.5c1.6 3.1 5.4 6.9 8.5 8.5-3.1 1.6-6.9 5.4-8.5 8.5-1.6-3.1-5.4-6.9-8.5-8.5 3.1-1.6 6.9-5.4 8.5-8.5Z" />
 )
 
 export const QuestionGlyph = glyph(
