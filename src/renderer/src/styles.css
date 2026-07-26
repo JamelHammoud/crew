@@ -486,6 +486,34 @@ body {
   }
 }
 
+/* An answer arrives as it is written, so the words that have just landed are
+   faded up and the ones before them are already still. Several are in the air at
+   once, each a little further along than the one after it, which leaves the end
+   of the line as a soft edge that firms up rather than a block blinking in a box.
+   Opacity is the whole of it: an inline box cannot be moved without shifting the
+   line it sits in, and a word that hops as it lands is worse than one that never
+   moved. The grain is whatever the model sent, so a CLI that writes a word at a
+   time is read a word at a time and one that hands back a whole answer fades it
+   in once, instead of being dealt back out at a speed nobody chose. */
+.md-in {
+  animation: text-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes text-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-in {
+    animation-duration: 1ms;
+  }
+}
+
 /* tldraw remapped onto crew tokens so the canvas chrome reads as the rest of the app. */
 .design .tl-container {
   background: var(--design-canvas);
