@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import {
+  CollaboratorCursorOverlayUtil,
   createTLStore,
   defaultBindingUtils,
   getSnapshot,
@@ -8,6 +9,7 @@ import {
   Tldraw,
   useValue,
   type Editor,
+  type TLCollaboratorCursorOverlay,
   type TLComponents,
   type TldrawOptions,
   type TLPageId,
@@ -18,6 +20,7 @@ import {
 } from 'tldraw'
 import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
+import { CursorArrow, DESIGN_CURSORS } from '../design/cursors'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
 import SelectionOverlay from '../design/SelectionOverlay'
@@ -27,6 +30,7 @@ import { designShapeUtils } from '../design/shapeUtils'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
+import Avatar from './Avatar'
 import { avatarColors } from './avatarColor'
 import { designAssetUrls } from './designIcons'
 import Spinner from './Spinner'
@@ -34,6 +38,19 @@ import Spinner from './Spinner'
 const assetUrls = designAssetUrls()
 
 const tools = [DesignNodeTool]
+
+// crew draws everyone's cursor itself, in RemoteCursors.
+class QuietCollaboratorCursors extends CollaboratorCursorOverlayUtil {
+  isActive(): boolean {
+    return false
+  }
+
+  getOverlays(): TLCollaboratorCursorOverlay[] {
+    return []
+  }
+}
+
+const overlayUtils = [QuietCollaboratorCursors]
 
 // crew owns every panel now, so tldraw's own chrome stays out of the way.
 const components: TLComponents = {
