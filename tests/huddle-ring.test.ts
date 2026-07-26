@@ -179,6 +179,8 @@ describe('the noise a huddle makes when it starts', () => {
     pitched.length = 0
     landed.length = 0
     gains.length = 0
+    faded.length = 0
+    ends.length = 0
     filters = []
     useHuddle.setState({ room: emptyRoom(), peerId: 'me', joined: false, joining: false, confirmed: false })
   })
