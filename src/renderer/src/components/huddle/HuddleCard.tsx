@@ -32,9 +32,24 @@ export default function HuddleCard({ record }: { record: HuddleRecord }) {
       ? 'Ended'
       : `Lasted ${formatSpan(record.ms)}`
 
+  const deletable = record.byId === selfId && !live
+
   return (
-    <FeedCard author={record.by} ts={record.ts} title="Huddle">
-      <div className="w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3">
+    <>
+      <FeedCard
+        author={record.by}
+        ts={record.ts}
+        title="Huddle"
+        onContextMenu={
+          deletable
+            ? event => {
+                event.preventDefault()
+                setMenuAt({ x: event.clientX, y: event.clientY })
+              }
+            : undefined
+        }
+      >
+        <div className="w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3">
         {live ? <Live /> : <SignalOffGlyph className="w-4 h-4 text-fg-muted shrink-0" />}
         <AvatarStack names={names} />
         <span className="text-base font-semibold text-fg truncate">{nameList(names)}</span>
