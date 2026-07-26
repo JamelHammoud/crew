@@ -19,6 +19,13 @@ export const DesignBoardContext = createContext<{ current: string; select: (id: 
   select: () => {}
 })
 
+// Rename lives in the layer list, so a Rename picked anywhere else asks for it
+// here rather than growing a second field of its own.
+export const DesignRenameContext = createContext<{
+  requested: string | null
+  request: (id: string | null) => void
+}>({ requested: null, request: () => {} })
+
 export function BoardSwitcher() {
   const { current, select } = useContext(DesignBoardContext)
   const boards = useCrew(s => s.boards)
