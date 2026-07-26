@@ -4,9 +4,10 @@ import { createElement } from 'react'
 import { DefaultColorStyle, type Editor, type TLShape, type TLTextShape } from 'tldraw'
 import { describe, expect, it } from 'vitest'
 
-const { paintColor, setTextShapeType, textShapeType, typePaint } = await import(
+const { paintColor, setTextShapeType, textShapeType, typeMeasure, typePaint } = await import(
   '../src/renderer/src/design/textType'
 )
+const { DesignTextUtil } = await import('../src/renderer/src/design/TextUtil')
 const { viewOf } = await import('../src/renderer/src/design/useNodeView')
 const { default: Inspector } = await import('../src/renderer/src/design/Inspector')
 
