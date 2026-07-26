@@ -175,6 +175,12 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
+  it('says sound is back in one bubble rather than a figure', () => {
+    playSound('sound.on')
+    expect(started.length).toBeGreaterThan(0)
+    expect(new Set(started).size).toBe(1)
+  })
+
   it('keeps two different sounds independent', () => {
     playSound('send')
     const first = started.length
