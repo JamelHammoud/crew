@@ -70,7 +70,7 @@ function applyIcon(theme: IconTheme): void {
     app.dock?.setIcon(appIcon(theme))
     return
   }
-  for (const win of BrowserWindow.getAllWindows()) win.setIcon(appIcon(theme))
+  for (const win of appWindows()) win.setIcon(appIcon(theme))
 }
 
 // Without an application menu the standard clipboard accelerators (copy, cut,
