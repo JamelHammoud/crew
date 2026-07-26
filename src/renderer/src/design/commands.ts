@@ -1,8 +1,7 @@
-import type { Editor, TLShape, TLShapeId } from 'tldraw'
+import { createShapeId, type Editor, type TLShape, type TLShapeId } from 'tldraw'
 import { holdsChildren, NO_LAYOUT, nodeShapeOf } from '../../../shared/designNode'
 import type { Glyph } from '../components/glyph'
 import {
-  ArrowGlyph,
   AutoLayoutGlyph,
   BackwardGlyph,
   DeselectGlyph,
