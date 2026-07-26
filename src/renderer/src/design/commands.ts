@@ -409,8 +409,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'show',
     label: 'Show',
+    hint: chordHint(HIDE),
     group: 'state',
     Icon: EyeGlyph,
+    keys: HIDE,
     when: ctx => some(ctx) && selection(ctx.editor).every(shape => hidden(shape)),
     run: ctx => setHidden(ctx.editor, selection(ctx.editor), false)
   },
