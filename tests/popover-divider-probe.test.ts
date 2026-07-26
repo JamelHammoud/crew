@@ -48,8 +48,7 @@ describe('a popover', () => {
   })
 
   it('lets a divider bleed back through exactly that padding', () => {
-    render(createElement(MenuDivider))
-    const rule = document.querySelector('div') as HTMLElement
+    const rule = render(createElement(MenuDivider)).container.firstElementChild as HTMLElement
     const padding = shown({ children: 'hello' }).className.match(/(?:^|\s)p-([\d.]+)/)![1]
     expect(rule.className).toContain(`-mx-${padding}`)
   })
