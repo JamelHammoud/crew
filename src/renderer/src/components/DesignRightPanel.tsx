@@ -3,7 +3,7 @@ import { useState } from 'react'
 import DesignChat, { useBoardThreads } from './DesignChat'
 import { PanelButton } from './DesignControls'
 
-export default function DesignRightPanel({ boardId, onClose }: { boardId: string; onClose: () => void }) {
+export default function DesignRightPanel({ boardId }: { boardId: string }) {
   const [composeNew, setComposeNew] = useState(false)
   const boardThreads = useBoardThreads(boardId)
 
