@@ -25,8 +25,7 @@ export function maskCandidate(editor: Editor): MaskNode | null {
   const shapes = editor.getSelectedShapes()
   if (shapes.length < 2 || !sameParent(shapes)) return null
   const bottom = bottomFirst(editor, shapes)[0]
-  if (!isNode(bottom) || bottom.props.mask) return null
-  return holdsChildren(nodeShapeOf((bottom.props as { shape: unknown }).shape)) || true ? bottom : null
+  return isNode(bottom) && !bottom.props.mask ? bottom : null
 }
 
 export function maskOf(editor: Editor): MaskNode | null {
