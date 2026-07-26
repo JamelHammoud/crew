@@ -45,7 +45,7 @@ const events: SessionEvent[] = [
   }
 ]
 
-function boot(withMessage = true) {
+function boot(withMessage = true, log: SessionEvent[] = events) {
   useCrew.setState({
     connection: 'online',
     selfId: 'jamel',
