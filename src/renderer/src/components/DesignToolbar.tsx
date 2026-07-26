@@ -56,7 +56,7 @@ export default function DesignToolbar({
       <div
         role="toolbar"
         aria-label="Design tools"
-        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-3 pointer-events-auto"
+        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-1.5 pointer-events-auto"
       >
         {TOOL_GROUPS.map(group => (
           <Group
@@ -112,7 +112,7 @@ function Group({
           aria-label={shown.label}
           aria-pressed={active}
           className={`h-9 grid place-items-center transition-transform active:scale-95 ${
-            hasMenu ? 'w-7 pl-1' : 'w-10'
+            hasMenu ? 'w-8 pl-2' : 'w-10 px-2'
           }`}
         >
           <shown.Icon className="w-6 h-6" />

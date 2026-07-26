@@ -96,12 +96,14 @@ function hit(ctx: AudioContext, s: Strike): Sounding {
     env.connect(body)
     osc.start(start)
     osc.stop(start + life + 0.02)
+    sources.push(osc)
   })
 
-  if (s.rasp) scrape(ctx, s.rasp, bus, start)
+  if (s.rasp) sources.push(scrape(ctx, s.rasp, bus, start))
+  return { bus, sources }
 }
 
-function scrape(ctx: AudioContext, rasp: Rasp, bus: GainNode, start: number): void {
+function scrape(ctx: AudioContext, rasp: Rasp, bus: GainNode, start: number): AudioBufferSourceNode {
   const source = ctx.createBufferSource()
   const band = ctx.createBiquadFilter()
   const env = ctx.createGain()
