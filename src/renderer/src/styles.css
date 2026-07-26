@@ -477,7 +477,6 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .thinking-mark[data-state='thinking'] .thinking-dot,
-  .thinking-mark[data-state='thinking'] .thinking-ring,
   .word-swap {
     animation: none;
   }
