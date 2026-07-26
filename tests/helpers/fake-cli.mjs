@@ -11,6 +11,17 @@ const rest = process.argv.slice(3).join(' ')
 const lines = []
 if (rest) lines.push(`TEXT flags: ${rest}`)
 if (withThinking) lines.push('THINK weighing the options')
+if (withStreamedThinking) {
+  lines.push('THINKSTART 0')
+  lines.push('THINKDELTA 0 weighing ')
+  lines.push('THINKDELTA 0 the options')
+  lines.push('THINKSTOP 0')
+  // A block that arrives with nothing in it, the way a model that is asked to
+  // keep its reasoning to itself sends one.
+  lines.push('THINKSTART 1')
+  lines.push('THINKDELTA 1 ')
+  lines.push('THINKSTOP 1')
+}
 if (withOutput) {
   lines.push('ACT t2 tool Bash ls -la')
   lines.push('OUT t2 total 8 drwxr-xr-x 4 jamel staff 128 src')
