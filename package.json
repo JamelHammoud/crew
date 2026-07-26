@@ -13,6 +13,9 @@
     "files": [
       "out/**"
     ],
+    "asarUnpack": [
+      "**/node_modules/node-pty/**"
+    ],
     "mac": {
       "target": "dmg",
       "category": "public.app-category.productivity",
