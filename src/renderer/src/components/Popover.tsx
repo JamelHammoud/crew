@@ -1,3 +1,4 @@
+import { CheckIcon, ChevronRightIcon } from '@heroicons/react/16/solid'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -7,6 +8,8 @@ export function Popover({
   align = 'end',
   side = 'bottom',
   at,
+  flush,
+  maxHeight,
   className = '',
   children
 }: {
@@ -15,11 +18,15 @@ export function Popover({
   align?: 'start' | 'end'
   side?: 'top' | 'bottom'
   at?: { x: number; y: number }
+  flush?: boolean
+  maxHeight?: number
   className?: string
   children: ReactNode
 }) {
   const holderRef = useRef<HTMLSpanElement>(null)
   const popRef = useRef<HTMLDivElement>(null)
+  const placedRef = useRef<'top' | 'bottom' | null>(null)
+  const sizeRef = useRef<{ w: number; h: number } | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
 
@@ -27,6 +34,8 @@ export function Popover({
     if (!open) {
       setRect(null)
       setSize(null)
+      sizeRef.current = null
+      placedRef.current = null
       return
     }
     if (at) {
@@ -37,12 +46,28 @@ export function Popover({
     if (anchor) setRect(anchor.getBoundingClientRect())
   }, [open, at])
 
+  const measure = (): void => {
+    const el = popRef.current
+    if (!el) return
+    const last = sizeRef.current
+    if (last && last.w === el.offsetWidth && last.h === el.offsetHeight) return
+    sizeRef.current = { w: el.offsetWidth, h: el.offsetHeight }
+    setSize(sizeRef.current)
+  }
+
+  useLayoutEffect(() => {
+    if (rect) measure()
+  })
+
   useLayoutEffect(() => {
     const el = popRef.current
-    if (rect && el) setSize({ w: el.offsetWidth, h: el.offsetHeight })
+    if (!rect || !el || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [rect])
 
-  const style = ((): CSSProperties | null => {
+  const spot = ((): CSSProperties | null => {
     if (!rect) return null
     if (!size) return { left: 0, top: 0, visibility: 'hidden' }
     if (at) {
@@ -54,16 +79,22 @@ export function Popover({
     }
     let left = align === 'start' ? rect.left : rect.right - size.w
     left = Math.max(8, Math.min(left, window.innerWidth - size.w - 8))
-    let top = side === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
-    if (side === 'bottom' && top + size.h > window.innerHeight - 8 && rect.top - 8 - size.h >= 8) {
-      top = rect.top - 8 - size.h
-    }
-    if (side === 'top' && top < 8 && rect.bottom + 8 + size.h <= window.innerHeight - 8) {
-      top = rect.bottom + 8
-    }
+    const fits = (choice: 'top' | 'bottom') =>
+      choice === 'bottom' ? rect.bottom + 8 + size.h <= window.innerHeight - 8 : rect.top - 8 - size.h >= 8
+    const other = side === 'bottom' ? 'top' : 'bottom'
+    const placed = placedRef.current ?? (fits(side) || !fits(other) ? side : other)
+    placedRef.current = placed
+    let top = placed === 'bottom' ? rect.bottom + 8 : rect.top - 8 - size.h
     top = Math.max(8, Math.min(top, window.innerHeight - size.h - 8))
     return { left, top }
   })()
+
+  const style: CSSProperties | null = spot && {
+    ...spot,
+    maxHeight: Math.min(maxHeight ?? Infinity, window.innerHeight - 16),
+    overflowY: 'auto',
+    overflowX: 'hidden'
+  }
 
   useEffect(() => {
     if (!open) return
@@ -95,7 +126,11 @@ export function Popover({
       {open &&
         style &&
         createPortal(
-          <div ref={popRef} style={style} className={`glass fixed z-50 rounded-2xl p-1.5 animate-pop ${className}`}>
+          <div
+            ref={popRef}
+            style={style}
+            className={`glass fixed z-50 rounded-2xl animate-pop overscroll-contain ${flush ? '' : 'p-1.5'} ${className}`}
+          >
             {children}
           </div>,
           document.body
@@ -113,24 +148,77 @@ export function MenuItem({
   label,
   hint,
   danger,
-  onClick
+  active,
+  checked,
+  onClick,
+  onHover
 }: {
   icon?: ReactNode
   label: string
   hint?: string
   danger?: boolean
+  active?: boolean
+  checked?: boolean
   onClick: () => void
+  onHover?: () => void
 }) {
   return (
     <button
       onClick={onClick}
+      onPointerEnter={onHover}
+      data-active={active ? '' : undefined}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors ${
-        danger ? 'text-danger hover:bg-danger/10' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
+        danger
+          ? 'text-danger hover:bg-danger/10 data-active:bg-danger/10'
+          : 'text-fg/70 hover:text-fg hover:bg-fg/5 data-active:text-fg data-active:bg-fg/5'
       }`}
     >
       {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
-      <span className="flex-1">{label}</span>
-      {hint && <span className="text-xs text-fg-muted">{hint}</span>}
+      <span className="flex-1 truncate">{label}</span>
+      {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
+      {checked && <CheckIcon className="w-4 h-4 shrink-0 text-fg" />}
     </button>
+  )
+}
+
+export function SubMenu({
+  icon,
+  label,
+  maxHeight,
+  children
+}: {
+  icon?: ReactNode
+  label: string
+  maxHeight?: number
+  children: ReactNode
+}) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [at, setAt] = useState<{ x: number; y: number } | null>(null)
+
+  const show = () => {
+    const rect = rowRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setAt({ x: rect.right + 6, y: rect.top - 6 })
+    setOpen(true)
+  }
+
+  return (
+    <div ref={rowRef} onPointerEnter={show} onPointerLeave={() => setOpen(false)} className="relative">
+      <div
+        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors ${
+          open ? 'text-fg bg-fg/5' : 'text-fg/70'
+        }`}
+      >
+        {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
+        <span className="flex-1 truncate">{label}</span>
+        <ChevronRightIcon className="w-3.5 h-3.5 shrink-0 text-fg/40" />
+      </div>
+      {open && at && (
+        <Popover open onClose={() => setOpen(false)} at={at} maxHeight={maxHeight}>
+          {children}
+        </Popover>
+      )}
+    </div>
   )
 }

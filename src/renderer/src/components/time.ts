@@ -6,6 +6,18 @@ export function formatElapsed(ms: number): string {
   return `${Math.floor(minutes / 60)}h ${minutes % 60}m`
 }
 
+// How long something ran, in the words someone would use out loud.
+export function formatSpan(ms: number): string {
+  const minutes = Math.round(Math.max(0, ms) / 60000)
+  if (minutes < 1) return 'under a minute'
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'}`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  const hour = `${hours} hour${hours === 1 ? '' : 's'}`
+  if (rest === 0) return hour
+  return `${hour} ${rest} minute${rest === 1 ? '' : 's'}`
+}
+
 export function formatClock(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000))
   const seconds = `${total % 60}`.padStart(2, '0')

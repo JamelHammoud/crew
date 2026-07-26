@@ -6,9 +6,19 @@ import type { OutputParser, Provider } from '../../src/runner/providers/types'
 export const fakeCliPath = fileURLToPath(new URL('./fake-cli.mjs', import.meta.url))
 export const fakeSteerCliPath = fileURLToPath(new URL('./fake-steer-cli.mjs', import.meta.url))
 
+const delta = (rest: string): { index: number; text: string } => {
+  const space = rest.indexOf(' ')
+  return { index: Number(rest.slice(0, space)), text: rest.slice(space + 1) }
+}
+
 export const parseFakeLine: OutputParser = line => {
   if (line.startsWith('TEXT ')) return [{ text: line.slice(5) }]
   if (line.startsWith('THINK ')) return [{ thinking: line.slice(6) }]
+  if (line.startsWith('THINKSTART ')) return [{ thinkingStart: { index: Number(line.slice(11)) } }]
+  if (line.startsWith('TEXTSTART ')) return [{ textStart: { index: Number(line.slice(10)) } }]
+  if (line.startsWith('BLOCKSTOP ')) return [{ blockStop: { index: Number(line.slice(10)) } }]
+  if (line.startsWith('THINKDELTA ')) return [{ thinkingDelta: delta(line.slice(11)) }]
+  if (line.startsWith('TEXTDELTA ')) return [{ textDelta: delta(line.slice(10)) }]
   if (line.startsWith('ACT ')) {
     const [, id, kind, ...rest] = line.split(' ')
     return [
@@ -25,6 +35,22 @@ export const parseFakeLine: OutputParser = line => {
   }
   if (line.startsWith('END ')) {
     return [{ activity: { id: line.slice(4), kind: 'tool' as const, name: '', status: 'finished' as const } }]
+  }
+  // A result arrives without the name it was called under, the way every real
+  // CLI reports one.
+  if (line.startsWith('OUT ')) {
+    const [, id, ...rest] = line.split(' ')
+    return [
+      {
+        activity: {
+          id,
+          kind: 'tool' as const,
+          name: '',
+          status: 'finished' as const,
+          output: rest.join(' ')
+        }
+      }
+    ]
   }
   if (line === 'RESULT') return [{ turnEnd: true }]
   return []

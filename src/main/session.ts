@@ -97,6 +97,10 @@ export class AppSession {
     return this.live
   }
 
+  projectFolder(): string | null {
+    return this.folder
+  }
+
   recentJoins(): RecentJoin[] {
     return this.savedStore()?.recentJoins() ?? []
   }

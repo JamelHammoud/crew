@@ -42,6 +42,14 @@ describe('design selection overlay', () => {
     expect(container.querySelectorAll('button')).toHaveLength(0)
   })
 
+  it('stands the size down while the ask bar is hanging off the same edge', () => {
+    const { container } = render(
+      createElement(SelectionOverlay, { editor: editorIn({ active: true }), asking: true })
+    )
+    expect(container.textContent).not.toContain('200 × 160')
+    expect(container.querySelectorAll('button')).toHaveLength(4)
+  })
+
   it('hides them while text is being edited', () => {
     const { container } = render(
       createElement(SelectionOverlay, { editor: editorIn({ active: true, editing: 'shape:card' }) })

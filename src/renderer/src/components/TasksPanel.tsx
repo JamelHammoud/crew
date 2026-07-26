@@ -20,7 +20,15 @@ import { useAutoResize } from './useAutoResize'
 import useScrollEdges from './useScrollEdges'
 import { Popover } from './Popover'
 import { StateIcon } from './ThreadCard'
-import { describeStep, endPreview, lastEnd, stripMention, threadState, type ThreadState } from './thread'
+import {
+  describeStep,
+  endPreview,
+  lastEnd,
+  stripMention,
+  threadState,
+  threadWorking,
+  type ThreadState
+} from './thread'
 import Tooltip from './Tooltip'
 
 interface Row {
@@ -178,13 +186,14 @@ export default function TasksPanel({
     }
   }, [open])
 
+  // Every thread the session knows about, not the ones whose start event is
+  // still in the log: the log is trimmed as it grows, and reading the list off
+  // it dropped older threads from the panel while they still counted as work.
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = []
-    for (const e of events) {
-      if (e.kind !== 'thread.started' || !threads[e.threadId]) continue
-      const thread = threads[e.threadId]
+    for (const thread of Object.values(threads)) {
       const promptId = threadPrompts[thread.id]
-      const working = Boolean(promptId) || (queues[thread.id]?.length ?? 0) > 0
+      const working = threadWorking(thread.id, threadPrompts, queues)
       const detail = promptId
         ? describeStep((steps[promptId] ?? []).at(-1))
         : endPreview(lastEnd(thread.id, events))
@@ -568,7 +577,8 @@ export default function TasksPanel({
         open={picker !== null}
         onClose={() => setPicker(null)}
         at={picker?.at}
-        className="w-64 max-h-56 overflow-y-auto"
+        maxHeight={224}
+        className="w-64"
       >
         {online.length === 0 ? (
           <p className="px-3 py-2 text-sm text-fg-muted whitespace-nowrap">No agents online</p>

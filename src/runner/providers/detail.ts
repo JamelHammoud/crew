@@ -1,13 +1,26 @@
 import type { FileChange } from '../../shared/llm'
 
+// A command speaks for itself, and the card under it is a terminal, so what was
+// run beats the summary the model wrote of it. Everything else falls back to
+// the description, which is all some tools give.
+const DETAIL_KEYS = ['command', 'description', 'query', 'pattern', 'url', 'file_path', 'path', 'prompt']
+
+const todoDetail = (todos: unknown): string | undefined => {
+  if (!Array.isArray(todos)) return undefined
+  const entries = todos.filter((todo): todo is Record<string, unknown> => Boolean(todo) && typeof todo === 'object')
+  const current = entries.find(todo => todo['status'] === 'in_progress') ?? entries[0]
+  const text = current?.['activeForm'] ?? current?.['content'] ?? current?.['title']
+  return typeof text === 'string' && text.trim() ? truncate(text) : undefined
+}
+
 export function activityDetail(input: unknown): string | undefined {
   if (!input || typeof input !== 'object') return undefined
   const record = input as Record<string, unknown>
-  for (const key of ['description', 'prompt', 'command', 'pattern', 'file_path', 'path']) {
+  for (const key of DETAIL_KEYS) {
     const value = record[key]
     if (typeof value === 'string' && value.trim()) return truncate(value)
   }
-  return truncate(JSON.stringify(record))
+  return todoDetail(record['todos'] ?? record['plan'] ?? record['items']) ?? truncate(JSON.stringify(record))
 }
 
 function truncate(text: string): string {

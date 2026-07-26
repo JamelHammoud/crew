@@ -6,7 +6,8 @@ import {
   SignalIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
-  SunIcon
+  SunIcon,
+  UserGroupIcon
 } from '@heroicons/react/16/solid'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, useState } from 'react'
@@ -17,6 +18,7 @@ import { setSounds, useSounds } from '../state/sound'
 import { useCrew } from '../state/store'
 import { applyTheme, useTheme } from '../state/theme'
 import Avatar from './Avatar'
+import Badge from './Badge'
 import { CrewMark } from './CrewMark'
 import Pill from './Pill'
 import PresenceStack from './PresenceStack'
@@ -26,13 +28,14 @@ import { MenuDivider, MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'agents' | 'docs' | 'design'
 
+export type NavTab = Exclude<Tab, 'agents'>
+
 export const TOP_BAR_H = 70
 
 const COMPACT_WIDTH = 760
 
-const TABS: Array<{ id: Tab; label: string }> = [
+const TABS: Array<{ id: NavTab; label: string }> = [
   { id: 'chat', label: 'Chat' },
-  { id: 'agents', label: 'Crew' },
   { id: 'docs', label: 'Docs' },
   { id: 'design', label: 'Design' }
 ]
@@ -69,6 +72,15 @@ export default function TopBar({
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  const standing =
+    connection === 'reconnecting'
+      ? 'Reconnecting'
+      : connection === 'connecting'
+        ? 'Connecting'
+        : joinLink
+          ? 'Hosting'
+          : 'Joined'
 
   const copyLink = async () => {
     if (!joinLink) return
@@ -125,14 +137,10 @@ export default function TopBar({
             }`}
           >
             <CheckCircleIcon className="w-[22px] h-[22px]" strokeWidth={1.8} />
-            {waiting > 0 && (
-              <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 rounded-full bg-fg text-ink-900 text-xs font-bold flex items-center justify-center ring-2 ring-ink-900">
-                {waiting > 9 ? '9+' : waiting}
-              </span>
-            )}
+            <Badge count={waiting} className="absolute top-0 right-0" />
           </button>
         </Tooltip>
-        <span className="w-px h-5 bg-fg/[0.07]" />
+        <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />
         <PresenceStack />
         <div className="relative">
           <button
@@ -144,17 +152,25 @@ export default function TopBar({
           >
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
-          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-44">
-            <div className="px-3 pt-2 pb-1.5">
-              <p className="text-sm font-semibold text-fg">{selfName}</p>
-              <p className="text-xs text-fg-muted">{joinLink ? 'Hosting' : 'Joined'}</p>
-              {import.meta.env.DEV && (
-                <div className="mt-1.5">
-                  <Pill>DEV mode</Pill>
-                </div>
-              )}
+          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-56">
+            <div className="flex items-center gap-2.5 px-3 py-2">
+              <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-fg truncate">{selfName}</p>
+                <p className="text-xs text-fg/45">{standing}</p>
+              </div>
+              {import.meta.env.DEV && <Pill glass>DEV</Pill>}
             </div>
             <MenuDivider />
+            <MenuItem
+              icon={<UserGroupIcon />}
+              label="Crew"
+              active={tab === 'agents'}
+              onClick={() => {
+                setMenuOpen(false)
+                onTab('agents')
+              }}
+            />
             <MenuItem
               icon={<SignalIcon />}
               label={huddleJoined ? 'Leave huddle' : huddleSize > 0 ? 'Join huddle' : 'Huddle'}
@@ -173,6 +189,7 @@ export default function TopBar({
                 onClick={() => void copyLink()}
               />
             )}
+            <MenuDivider />
             <MenuItem
               icon={theme === 'dark' ? <SunIcon /> : <MoonIcon />}
               label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
@@ -183,6 +200,7 @@ export default function TopBar({
               label={sounds ? 'Mute sounds' : 'Unmute sounds'}
               onClick={() => setSounds(!sounds)}
             />
+            <MenuDivider />
             <MenuItem
               icon={<ArrowRightStartOnRectangleIcon />}
               label="Leave"

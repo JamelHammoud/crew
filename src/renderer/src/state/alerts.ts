@@ -2,7 +2,7 @@ import type { AgentAlert } from '../../../shared/alerts'
 import type { SessionEvent } from '../../../shared/events'
 import { relabelMentions, type PooledAgent } from '../../../shared/llm'
 import type { QueuedItem } from '../../../shared/protocol'
-import { stripMention } from '../components/thread'
+import { stripMention, threadWorking } from '../components/thread'
 import type { ThreadMeta } from './store'
 
 export interface ReviewState {
@@ -16,12 +16,11 @@ export interface AlertState extends ReviewState {
   openThreadId: string | null
 }
 
+// The badge is the count of the tasks panel's "Needs review" list, so both read
+// the same rule: open, with nothing running or queued behind it.
 export const reviewCount = (state: ReviewState): number =>
   Object.values(state.threads).filter(
-    thread =>
-      thread.status === 'open' &&
-      !state.threadPrompts[thread.id] &&
-      (state.queues[thread.id]?.length ?? 0) === 0
+    thread => thread.status === 'open' && !threadWorking(thread.id, state.threadPrompts, state.queues)
   ).length
 
 // Nothing is worth a banner while the person is already reading the thread it

@@ -1,167 +1,199 @@
 import { ChevronRightIcon } from '@heroicons/react/16/solid'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { FileChange } from '../../../shared/llm'
-import { FileTextLink, isPrivate, labelFor, PrivateChip, TextWithFileLinks, useLocated } from './fileLinks'
-import Spinner from './Spinner'
+import { useBrowser } from '../state/browser'
+import Counts from './Counts'
+import {
+  FileTextLink,
+  isPrivate,
+  labelFor,
+  openable,
+  parseFileRef,
+  PrivateChip,
+  targetFor,
+  TextWithFileLinks,
+  useLocated
+} from './fileLinks'
+import Markdown from './Markdown'
+import StepCode from './StepCode'
+import StepDiff from './StepDiff'
 import type { ThreadItem } from './thread'
+import ThinkingMark from './ThinkingMark'
+import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
 
 export function FilePathLink({
   path,
+  diff,
   className,
   again
 }: {
   path: string
+  diff?: string | null
   className?: string
   again?: unknown
 }) {
   useLocated([path], again)
   if (isPrivate(path)) return <PrivateChip />
   return (
-    <FileTextLink path={path} className={className}>
+    <FileTextLink path={path} diff={diff} className={className}>
       {labelFor(path, '', path)}
     </FileTextLink>
   )
 }
 
-function Marker({ running }: { running: boolean }) {
-  if (running) return <Spinner size={12} className="text-fg-secondary" />
-  return <span className="w-1.5 h-1.5 mx-[3px] rounded-full bg-ink-500 shrink-0" />
-}
-
-function Chevron({ open }: { open: boolean }) {
+export function Mark({ icon: Icon, running }: { icon: ToolIcon; running: boolean }) {
   return (
-    <ChevronRightIcon
-      className={`w-3.5 h-3.5 shrink-0 text-fg-faint group-hover:text-fg-muted transition-transform duration-200 ${
-        open ? 'rotate-90' : ''
+    <Icon
+      className={`w-[18px] h-[18px] shrink-0 transition-colors ${
+        running ? 'text-fg pulse-soft' : 'text-fg-muted group-hover:text-fg-secondary'
       }`}
     />
   )
 }
 
-export function Counts({ added, removed, size = 'xs' }: { added: number; removed: number; size?: 'xs' | 'sm' }) {
-  if (!added && !removed) return null
+export function Chevron({ open }: { open: boolean }) {
   return (
-    <span className={`shrink-0 font-mono ${size === 'sm' ? 'text-sm' : 'text-xs'}`}>
-      {added > 0 && <span className="text-positive">+{added}</span>}
-      {added > 0 && removed > 0 && ' '}
-      {removed > 0 && <span className="text-danger">−{removed}</span>}
+    <ChevronRightIcon
+      className={`w-3.5 h-3.5 shrink-0 text-fg-faint transition-all duration-200 ${
+        open ? 'rotate-90 opacity-100' : 'opacity-0 group-hover:opacity-100'
+      }`}
+    />
+  )
+}
+
+const SUBJECT = 'truncate text-xs text-fg-faint'
+export const SUBJECT_MONO = `${SUBJECT} mono-inline`
+
+export const rowClass = (expandable: boolean): string =>
+  `group flex items-center gap-2.5 max-w-full text-sm text-left -ml-2 pl-2 pr-3 py-1 rounded-full transition-colors ${
+    expandable ? 'hover:bg-ink-hover' : 'cursor-default'
+  }`
+
+export function Label({ action, running, swap }: { action: ToolAction; running: boolean; swap?: boolean }) {
+  const word = running ? action.run : action.done
+  return (
+    <span
+      className={`shrink-0 transition-colors ${
+        running ? 'text-fg-secondary' : 'text-fg-muted group-hover:text-fg-secondary'
+      }`}
+    >
+      {swap ? (
+        <span key={word} className="word-swap inline-block">
+          {word}
+        </span>
+      ) : (
+        word
+      )}
     </span>
   )
 }
 
-function Diff({ diff }: { diff: string }) {
-  return (
-    <p className="text-xs font-mono leading-5 whitespace-pre-wrap break-all">
-      {diff.split('\n').map((line, index) => (
-        <span
-          key={index}
-          className={`block ${
-            line.startsWith('+') ? 'text-positive' : line.startsWith('-') ? 'text-danger' : 'text-fg-muted'
-          }`}
-        >
-          {line}
-        </span>
-      ))}
-    </p>
-  )
+function Detail({ children }: { children: ReactNode }) {
+  return <div className="mt-2 space-y-2">{children}</div>
 }
 
-function FileRows({ files, done }: { files: FileChange[]; done: boolean }) {
-  return (
-    <div className="mt-2 ml-[5px] border-l border-ink-700 pl-4 space-y-3">
-      {files.map(file => (
-        <div key={file.path}>
-          <span className="flex items-center gap-2 text-xs font-mono">
-            <FilePathLink path={file.path} className="text-fg-secondary truncate" again={done} />
-            <Counts added={file.added} removed={file.removed} />
-          </span>
-          {file.diff && (
-            <div className="mt-1.5">
-              <Diff diff={file.diff} />
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  )
+// A row that already shows everything it has is not worth a chevron. A path or
+// a link opens where it points instead, and only what a row cannot hold opens
+// underneath it.
+const ROW_ROOM = 90
+
+const crowded = (detail: string): boolean => detail.length > ROW_ROOM || detail.includes('\n')
+
+const linkIn = (detail: string): string | null => {
+  const one = detail.trim()
+  return /^https?:\/\/\S+$/.test(one) ? one : null
 }
 
-export default function StepRow({ item }: { item: ThreadItem }) {
+function useOpener(detail: string, files: FileChange[]): (() => void) | null {
+  const url = files.length > 0 ? null : linkIn(detail)
+  const ref = files.length > 0 || url ? null : parseFileRef(detail)
+  useLocated(ref ? [ref.path] : [])
+  if (url) return () => useBrowser.getState().openUrl(url)
+  if (ref && openable(ref.path)) return () => useBrowser.getState().openFile(targetFor(ref.path), ref.line)
+  return null
+}
+
+// A blank line between thoughts is a paragraph, not an empty row of its own.
+
+export const stepFiles = (item: ThreadItem): FileChange[] => item.files ?? []
+
+export const stepTotals = (files: FileChange[]): { added: number; removed: number } =>
+  files.reduce((acc, file) => ({ added: acc.added + file.added, removed: acc.removed + file.removed }), {
+    added: 0,
+    removed: 0
+  })
+
+export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; linked?: boolean; inGroup?: boolean }) {
   const [open, setOpen] = useState<boolean | null>(null)
+  const thinking = item.kind === 'thinking'
+  const action = thinking ? THINKING : toolAction(item.name, item.subagent)
+  const files = stepFiles(item)
+  const totals = stepTotals(files)
+  const detail = thinking ? '' : (item.detail ?? '')
+  const opens = useOpener(detail, files)
+  const expandable =
+    thinking || files.length > 0 || (!opens && Boolean(detail) && (!action.prose || crowded(detail)))
+  const expanded = open ?? (thinking ? item.streaming : false)
+  const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
-  if (item.kind === 'tool') {
-    const files = item.files ?? []
-    const totals = files.reduce(
-      (acc, file) => ({ added: acc.added + file.added, removed: acc.removed + file.removed }),
-      { added: 0, removed: 0 }
-    )
-    const expanded = open ?? false
-    const expandable = files.length > 0 || Boolean(item.detail)
-    return (
-      <div className="pl-14 animate-rise">
-        <button
-          onClick={() => expandable && setOpen(!expanded)}
-          className={`group flex items-center gap-2.5 text-sm w-full text-left ${
-            expandable ? '' : 'cursor-default'
-          }`}
-        >
-          <Marker running={item.streaming} />
-          <span className={`shrink-0 ${item.streaming ? 'text-fg-secondary' : 'text-fg-muted'}`}>
-            {item.subagent ? `${item.name} (agent)` : item.name}
-          </span>
-          {files.length > 0 ? (
-            <>
-              {files.length === 1 ? (
-                <FilePathLink
-                  path={files[0].path}
-                  className="text-fg-faint truncate font-mono text-xs"
-                  again={!item.streaming}
-                />
-              ) : (
-                <span className="text-fg-faint truncate font-mono text-xs">{`${files.length} files`}</span>
-              )}
-              <Counts added={totals.added} removed={totals.removed} />
-            </>
-          ) : (
-            item.detail && !expanded && (
-              <span className="text-fg-faint truncate font-mono text-xs">
-                <TextWithFileLinks text={item.detail} inline again={!item.streaming} />
-              </span>
-            )
-          )}
-        </button>
-        {expanded &&
-          (files.length > 0 ? (
-            <FileRows files={files} done={!item.streaming} />
-          ) : (
-            item.detail && (
-              <p
-                onClick={() => setOpen(false)}
-                className="text-xs font-mono text-fg-muted leading-5 mt-2 ml-[5px] whitespace-pre-wrap break-all border-l border-ink-700 pl-4 cursor-pointer"
-              >
-                <TextWithFileLinks text={item.detail} inline again={!item.streaming} />
-              </p>
-            )
-          ))}
-      </div>
-    )
-  }
-
-  const expanded = open ?? item.streaming
   return (
-    <div className="pl-14 animate-rise">
+    <div className={`animate-rise ${inGroup ? '' : 'pl-14'} ${linked ? '-mt-3' : ''}`}>
       <button
-        onClick={() => setOpen(!expanded)}
-        className="group flex items-center gap-2.5 text-sm text-fg-muted hover:text-fg-secondary transition-colors"
+        onClick={() => (opens ? opens() : expandable && setOpen(!expanded))}
+        className={rowClass(Boolean(opens) || expandable)}
       >
-        <Marker running={item.streaming} />
-        <span>Thinking</span>
-        <Chevron open={expanded} />
+        {thinking ? (
+          <ThinkingMark running={item.streaming} />
+        ) : (
+          <Mark icon={action.icon} running={item.streaming} />
+        )}
+        <Label action={action} running={item.streaming} swap={thinking} />
+        {files.length > 0 && (
+          <>
+            {files.length === 1 ? (
+              <FilePathLink
+                path={files[0].path}
+                diff={files[0].diff}
+                className={SUBJECT_MONO}
+                again={!item.streaming}
+              />
+            ) : (
+              <span className={SUBJECT_MONO}>{`${files.length} files`}</span>
+            )}
+            <Counts added={totals.added} removed={totals.removed} className="mono-inline" />
+          </>
+        )}
+        {subject && (
+          <span className={action.prose ? SUBJECT : SUBJECT_MONO}>
+            <TextWithFileLinks text={subject} inline again={!item.streaming} />
+          </span>
+        )}
+        {expandable && <Chevron open={expanded} />}
       </button>
-      {expanded && (
-        <p className="text-sm text-fg-muted leading-6 mt-2 ml-[5px] whitespace-pre-wrap border-l border-ink-700 pl-4">
-          <TextWithFileLinks text={item.text.trim()} inline />
-        </p>
+      {expanded && files.length > 0 && (
+        <Detail>
+          {files.map(file => (
+            <StepDiff key={file.path} file={file} again={!item.streaming} />
+          ))}
+        </Detail>
+      )}
+      {expanded && files.length === 0 && (thinking || detail) && (
+        <Detail>
+          {thinking ? (
+            <div onClick={() => setOpen(false)} className="cursor-pointer">
+              <Markdown text={item.text} className="md-quiet" stream={item.streaming} />
+            </div>
+          ) : action.prose ? (
+            <p
+              onClick={() => setOpen(false)}
+              className="whitespace-pre-wrap cursor-pointer text-fg-muted text-xs leading-5"
+            >
+              <TextWithFileLinks text={detail} inline again={!item.streaming} />
+            </p>
+          ) : (
+            <StepCode text={detail} prompt={action.terminal} output={action.terminal ? item.output : undefined} />
+          )}
+        </Detail>
       )}
     </div>
   )

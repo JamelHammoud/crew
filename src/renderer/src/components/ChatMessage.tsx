@@ -1,4 +1,4 @@
-import { ArrowUturnLeftIcon, PencilIcon, TrashIcon } from '@heroicons/react/16/solid'
+import { PencilIcon, TrashIcon } from '@heroicons/react/16/solid'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
@@ -10,6 +10,7 @@ import Pill from './Pill'
 import { MenuItem, Popover } from './Popover'
 import { usePresence } from './presence'
 import { jumpToMessage, replyTargetLabel } from './reply'
+import ReplyQuote from './ReplyQuote'
 import Tooltip from './Tooltip'
 import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
@@ -87,17 +88,16 @@ export default function ChatMessage({
             type="button"
             aria-label="Go to the message this replies to"
             onClick={() => jumpToMessage(item.replyTo!.targetId)}
-            className="mt-2 flex w-full min-w-0 items-center gap-2 border-l-2 border-ink-600 py-0.5 pl-3 pr-2 text-left transition-colors hover:border-ink-500"
+            className="mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 text-left transition-colors hover:bg-fg/[0.1] active:scale-[0.99]"
           >
-            <ArrowUturnLeftIcon className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
-            <span className="min-w-0">
-              <span
-                className={`block text-xs font-semibold ${item.replyTo.authorId === selfId && !item.self ? 'text-fg' : 'text-fg-muted'}`}
-              >
-                {replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
-              </span>
-              <span className="mt-0.5 block truncate text-sm text-fg-faint">{item.replyTo.text}</span>
-            </span>
+            <ReplyQuote
+              targetId={item.replyTo.targetId}
+              authorId={item.replyTo.authorId}
+              authorName={item.replyTo.authorName}
+              label={replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
+              text={item.replyTo.text}
+              strong={item.replyTo.authorId === selfId && !item.self}
+            />
           </button>
         )}
         {editing ? (
@@ -134,17 +134,21 @@ export default function ChatMessage({
           </div>
         ) : item.kind === 'reply' ? (
           <div className={item.error ? 'text-base text-danger mt-1.5' : 'mt-1.5'}>
-            {item.error ? item.text : <Markdown text={item.text || '…'} />}
+            {item.error ? item.text : <Markdown text={item.text || '…'} stream={item.streaming} />}
           </div>
         ) : (
           item.text && (
             <p className="text-base text-fg leading-[22px] whitespace-pre-wrap mt-1">
-              <MentionText text={item.text} mentionRefs={item.mentionRefs} docMentions={item.docMentions} />
+              <MentionText
+                text={item.text}
+                mentionRefs={item.mentionRefs}
+                docMentions={item.docMentions}
+                boardMentions={item.boardMentions}
+              />
             </p>
           )
         )}
         {item.attachments && <MessageImages attachments={item.attachments} />}
-        {item.streaming && <span className="inline-block w-2 h-4 bg-fg-muted animate-pulse mt-1 rounded-sm" />}
         {item.reactionTargetId && !editing && (
           <MessageReactions
             targetId={item.reactionTargetId}

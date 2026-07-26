@@ -1,6 +1,7 @@
 import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges } from './detail'
+import { resultText } from './output'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task', 'Agent', 'Subagent'])
@@ -51,7 +52,15 @@ export const parseGrokLine: OutputParser = line => {
     }
   } else if (msg?.type === 'tool.result') {
     if (callId) {
-      out.push({ activity: { id: callId, kind: 'tool' as const, name: '', status: 'finished' as const } })
+      out.push({
+        activity: {
+          id: callId,
+          kind: 'tool' as const,
+          name: '',
+          status: 'finished' as const,
+          output: resultText(msg.output ?? msg.result ?? msg.content)
+        }
+      })
     }
   } else if (msg?.type === 'error') {
     if (str(msg.message).trim()) out.push({ error: msg.message })

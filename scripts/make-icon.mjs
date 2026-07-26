@@ -272,19 +272,26 @@ ${drawing}
 const MARK = { width: 2 * (STEP + RADIUS), height: 2 * RADIUS }
 const MARK_DISCS = [STEP + RADIUS + STEP, STEP + RADIUS, RADIUS]
 
-function mark() {
-  const cuts = MARK_DISCS.flatMap((x, index) => [
+// The menu bar holds the same mark, sized to sit beside the system's own icons
+// and padded out to the shape the bar reserves for it.
+const TRAY = { width: 30, height: 12 }
+const TRAY_BOX = { width: round((MARK.height * TRAY.width) / TRAY.height), height: MARK.height }
+
+function mark({ box, ink }) {
+  const shift = round((box.width - MARK.width) / 2)
+  const middle = round(box.height / 2)
+  const cuts = MARK_DISCS.map(x => x + shift).flatMap((x, index) => [
     ...(index === 0
       ? []
-      : [`    <circle cx="${x}" cy="${RADIUS}" r="${RADIUS + GAP}" fill="#000000" />`]),
-    `    <circle cx="${x}" cy="${RADIUS}" r="${RADIUS}" fill="#ffffff" />`
+      : [`    <circle cx="${x}" cy="${middle}" r="${RADIUS + GAP}" fill="#000000" />`]),
+    `    <circle cx="${x}" cy="${middle}" r="${RADIUS}" fill="#ffffff" />`
   ])
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${MARK.width} ${MARK.height}" width="${MARK.width}" height="${MARK.height}">
-  <mask id="crew-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="${MARK.width}" height="${MARK.height}">
-    <rect x="0" y="0" width="${MARK.width}" height="${MARK.height}" fill="#000000" />
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${box.width} ${box.height}" width="${box.width}" height="${box.height}">
+  <mask id="crew-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="${box.width}" height="${box.height}">
+    <rect x="0" y="0" width="${box.width}" height="${box.height}" fill="#000000" />
 ${cuts.join('\n')}
   </mask>
-  <rect x="0" y="0" width="${MARK.width}" height="${MARK.height}" fill="currentColor" mask="url(#crew-mark)" />
+  <rect x="0" y="0" width="${box.width}" height="${box.height}" fill="${ink}" mask="url(#crew-mark)" />
 </svg>
 `
 }
@@ -302,13 +309,13 @@ const CHROME = [
   }
 })
 
-function raster(source, size, out) {
+function raster(source, width, height, out) {
   if (!CHROME) throw new Error('needs Chrome or Chromium to rasterise the icon')
   const work = mkdtempSync(path.join(tmpdir(), 'crew-icon-'))
   const page = path.join(work, 'icon.html')
   writeFileSync(
     page,
-    `<html><body style="margin:0"><img src="data:image/svg+xml;base64,${Buffer.from(source).toString('base64')}" width="${size}" height="${size}"></body></html>`
+    `<html><body style="margin:0"><img src="data:image/svg+xml;base64,${Buffer.from(source).toString('base64')}" width="${width}" height="${height}"></body></html>`
   )
   execFileSync(CHROME, [
     '--headless',
@@ -316,7 +323,7 @@ function raster(source, size, out) {
     '--hide-scrollbars',
     '--force-device-scale-factor=1',
     '--default-background-color=00000000',
-    `--window-size=${size},${size}`,
+    `--window-size=${width},${height}`,
     `--screenshot=${out}`,
     page
   ])
@@ -327,13 +334,18 @@ const dark = svg(THEMES.dark)
 const light = svg(THEMES.light)
 const devDark = svg(THEMES.devDark, true)
 const devLight = svg(THEMES.devLight, true)
+const logo = mark({ box: MARK, ink: 'currentColor' })
+// Black on nothing: macOS reads a template image by its alpha alone and tints
+// it to whatever the menu bar is wearing.
+const trayMark = mark({ box: TRAY_BOX, ink: '#000000' })
 
 mkdirSync(resources, { recursive: true })
 writeFileSync(path.join(resources, 'icon.svg'), dark)
 writeFileSync(path.join(resources, 'icon-light.svg'), light)
 writeFileSync(path.join(resources, 'icon-dev.svg'), devDark)
 writeFileSync(path.join(resources, 'icon-dev-light.svg'), devLight)
-writeFileSync(path.join(resources, 'crew-logo.svg'), mark())
+writeFileSync(path.join(resources, 'crew-logo.svg'), logo)
+writeFileSync(path.join(resources, 'tray.svg'), trayMark)
 
 writeFileSync(
   path.join(root, 'src/renderer/src/components/crew-mark.ts'),
@@ -355,12 +367,20 @@ for (const [name, size] of [
   ['icon_512x512', 512],
   ['icon_512x512@2x', 1024]
 ]) {
-  raster(dark, size, path.join(iconset, `${name}.png`))
+  raster(dark, size, size, path.join(iconset, `${name}.png`))
 }
 execFileSync('iconutil', ['-c', 'icns', iconset, '-o', path.join(resources, 'icon.icns')])
 rmSync(iconset, { recursive: true, force: true })
 
-raster(dark, 1024, path.join(resources, 'icon.png'))
+raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
+
+function encode(source, width, height, key) {
+  const out = path.join(tmpdir(), `crew-icon-${key}.png`)
+  raster(source, width, height, out)
+  const data = readFileSync(out).toString('base64')
+  rmSync(out, { force: true })
+  return data
+}
 
 const embedded = {}
 for (const [key, source] of [
@@ -369,10 +389,7 @@ for (const [key, source] of [
   ['DEV_DARK_ICON', devDark],
   ['DEV_LIGHT_ICON', devLight]
 ]) {
-  const out = path.join(tmpdir(), `crew-icon-${key}.png`)
-  raster(source, 512, out)
-  embedded[key] = readFileSync(out).toString('base64')
-  rmSync(out, { force: true })
+  embedded[key] = encode(source, 512, 512, key)
 }
 
 writeFileSync(
@@ -382,6 +399,13 @@ writeFileSync(
     .join('\n')
 )
 
+// Drawn at twice the size the menu bar asks for, so it stays sharp on a retina
+// display and the bar halves it everywhere else.
+writeFileSync(
+  path.join(root, 'src/main/tray-png.ts'),
+  `export const TRAY_WIDTH = ${TRAY.width}\n\nexport const TRAY_HEIGHT = ${TRAY.height}\n\nexport const TRAY_ICON = '${encode(trayMark, TRAY.width * 2, TRAY.height * 2, 'TRAY')}'\n`
+)
+
 console.log(
-  'wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, crew-logo.svg, icon.icns, icon.png, src/main/icon-png.ts and src/renderer/src/components/crew-mark.ts'
+  'wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, crew-logo.svg, tray.svg, icon.icns, icon.png, src/main/icon-png.ts, src/main/tray-png.ts and src/renderer/src/components/crew-mark.ts'
 )

@@ -1,6 +1,7 @@
 import { XMarkIcon } from '@heroicons/react/16/solid'
 import { useEffect, useState } from 'react'
 import type { HuddleRoom } from '../../../../shared/huddle'
+import { stopRinging } from '../../media/sounds'
 import { useHuddle } from '../../state/huddle'
 import AvatarStack from '../AvatarStack'
 import Live from './Live'
@@ -40,7 +41,10 @@ export default function HuddleBanner() {
           {joining ? 'Joining' : 'Join'}
         </button>
         <button
-          onClick={() => setHidden(room.startedAt)}
+          onClick={() => {
+            stopRinging()
+            setHidden(room.startedAt)
+          }}
           aria-label="Dismiss"
           className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors active:scale-95"
         >

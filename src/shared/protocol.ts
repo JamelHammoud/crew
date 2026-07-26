@@ -79,6 +79,7 @@ export type ClientMessage =
   | { type: 'design.rename'; boardId: string; name: string }
   | { type: 'design.delete'; boardId: string }
   | { type: 'design.open'; boardId: string }
+  | { type: 'design.peek'; boardId: string }
   | { type: 'design.init'; boardId: string; document: DesignDocument }
   | { type: 'design.apply'; boardId: string; put?: unknown[]; remove?: string[] }
   | {
@@ -129,6 +130,7 @@ export type ServerMessage =
       document: DesignDocument | null
       presence: DesignPresence[]
     }
+  | { type: 'design.preview'; boardId: string; document: DesignDocument | null }
   | { type: 'design.changes'; boardId: string; put?: unknown[]; remove?: string[] }
   | { type: 'design.presence'; boardId: string; presence: DesignPresence }
   | {
@@ -140,6 +142,7 @@ export type ServerMessage =
       settings: AgentSettings
       attachments?: Attachment[]
       designBoard?: DesignBoardMeta
+      designBoards?: DesignBoardMeta[]
     }
   | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[] }
   | { type: 'cancel'; promptId: string }

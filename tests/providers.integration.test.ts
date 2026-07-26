@@ -10,6 +10,7 @@ import { makeFakeProvider, fakeCliPath } from './helpers/fake-provider'
 import { commandExists, makeCliProvider } from '../src/runner/providers/cli'
 import { builtinProviders } from '../src/runner/providers/detect'
 import { installCommand, runInstall } from '../src/runner/providers/install'
+import { commandOutput, resultText } from '../src/runner/providers/output'
 import { crewPath, resolveCommand, searchDirs } from '../src/runner/providers/path'
 import type { Provider } from '../src/runner/providers/types'
 import { AppSession } from '../src/main/session'
@@ -44,6 +45,25 @@ describe('fake provider contract', () => {
     expect(steps.filter(s => s.status === 'done').length).toBe(2)
   })
 
+  // A reply held back until its block closes is a run that says "Starting" for
+  // as long as it takes to write, however fast the words arrive.
+  it('posts the reply as it is written, under one step, and only once', async () => {
+    const provider = makeFakeProvider({ FAKE_CLI_TEXT_STREAM: '1' })
+    const steps: Array<{ id: string; text?: string; status: string }> = []
+    const run = provider.start('answer', repo, {
+      onStep: step => {
+        if (step.kind === 'text') steps.push({ id: step.id, text: step.text, status: step.status })
+      }
+    })
+    const { text } = await run.done
+    expect(steps).toEqual([
+      { id: 'b0', text: 'the answer ', status: 'running' },
+      { id: 'b0', text: 'in pieces', status: 'running' },
+      { id: 'b0', text: undefined, status: 'done' }
+    ])
+    expect(text).toBe('the answer in pieces')
+  })
+
   it('reports thinking as its own step', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_THINK: '1' })
     const thoughts: string[] = []
@@ -55,6 +75,21 @@ describe('fake provider contract', () => {
     const { text } = await run.done
     expect(thoughts).toEqual(['weighing the options'])
     expect(text).not.toContain('weighing the options')
+  })
+
+  // Every tool hands back its whole result, and a file read would fill the log
+  // the crew syncs, so only a command keeps what it printed.
+  it('keeps what a command printed and drops the rest', async () => {
+    const provider = makeFakeProvider({ FAKE_CLI_OUTPUT: '1' })
+    const outputs = new Map<string, string | undefined>()
+    const run = provider.start('work', repo, {
+      onStep: step => {
+        if (step.kind === 'tool' && step.status === 'done') outputs.set(step.id, step.output)
+      }
+    })
+    await run.done
+    expect(outputs.get('tt2')).toBe('total 8 drwxr-xr-x 4 jamel staff 128 src')
+    expect(outputs.get('tt3')).toBeUndefined()
   })
 
   it('rejects with stderr on failure', async () => {
@@ -104,7 +139,7 @@ describe('kimi parser matches the real CLI format', () => {
     expect(subagent[0].activity?.kind).toBe('subagent')
 
     expect(parseKimiLine('{"role":"tool","tool_call_id":"tool_123","content":"AGENTS.md"}')).toEqual([
-      { activity: { id: 'tool_123', kind: 'tool', name: '', status: 'finished' } }
+      { activity: { id: 'tool_123', kind: 'tool', name: '', status: 'finished', output: 'AGENTS.md' } }
     ])
 
     expect(parseKimiLine('{"role":"meta","type":"session.resume_hint"}')).toEqual([])
@@ -134,7 +169,14 @@ describe('claude parser matches the real CLI format', () => {
     const result = parseClaudeLine(
       '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"toolu_1","content":"done"}]}}'
     )
-    expect(result).toEqual([{ activity: { id: 'toolu_1', kind: 'tool', name: '', status: 'finished' } }])
+    expect(result).toEqual([
+      { activity: { id: 'toolu_1', kind: 'tool', name: '', status: 'finished', output: 'done' } }
+    ])
+
+    const blocks = parseClaudeLine(
+      '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"toolu_1","content":[{"type":"text","text":"two files"}]}]}}'
+    )
+    expect(blocks[0].activity?.output).toBe('two files')
 
     const thinking = parseClaudeLine(
       '{"type":"assistant","message":{"content":[{"type":"thinking","thinking":"let me check"},{"type":"text","text":"ok"}]}}'
@@ -149,6 +191,38 @@ describe('claude parser matches the real CLI format', () => {
       { turnEnd: true },
       { tokens: 12 }
     ])
+  })
+})
+
+describe('a step says what it is about', () => {
+  const detail = (name: string, input: unknown): string | undefined =>
+    parseClaudeLine(
+      JSON.stringify({
+        type: 'assistant',
+        message: { content: [{ type: 'tool_use', id: 't1', name, input }] }
+      })
+    )[0].activity?.detail
+
+  it('shows the thing asked for rather than the arguments it came in', () => {
+    expect(detail('WebSearch', { query: 'pooling llms' })).toBe('pooling llms')
+    expect(detail('WebFetch', { url: 'https://crew.dev/docs', prompt: 'summarize' })).toBe('https://crew.dev/docs')
+    expect(detail('Grep', { pattern: 'AgentIcon', path: 'src' })).toBe('AgentIcon')
+  })
+
+  it('shows what was run rather than the summary written of it', () => {
+    expect(detail('Bash', { command: 'yarn test --run', description: 'Run the full test suite' })).toBe(
+      'yarn test --run'
+    )
+    expect(detail('Task', { description: 'Explore the repo', prompt: 'look around' })).toBe('Explore the repo')
+  })
+
+  it('shows the step someone is on rather than the whole list', () => {
+    const todos = [
+      { content: 'Read the icons', status: 'completed' },
+      { content: 'Draw the rows', activeForm: 'Drawing the rows', status: 'in_progress' }
+    ]
+    expect(detail('TodoWrite', { todos })).toBe('Drawing the rows')
+    expect(detail('TodoWrite', { todos: [{ content: 'Read the icons', status: 'pending' }] })).toBe('Read the icons')
   })
 })
 
@@ -181,10 +255,17 @@ describe('codex parser matches the real CLI format', () => {
     ])
     const done = parse({
       type: 'item.completed',
-      item: { id: 'i3', type: 'command_execution', command: 'ls -la', exit_code: 0 }
+      item: {
+        id: 'i3',
+        type: 'command_execution',
+        command: 'ls -la',
+        aggregated_output: 'total 8\ndrwxr-xr-x  4 jamel  staff  128 src',
+        exit_code: 0
+      }
     })
     expect(done[0].activity?.id).toBe('i3')
     expect(done[0].activity?.status).toBe('finished')
+    expect(done[0].activity?.output).toBe('total 8\ndrwxr-xr-x  4 jamel  staff  128 src')
   })
 
   it('labels file changes, mcp calls, and web searches', () => {
@@ -237,13 +318,43 @@ describe('grok parser matches the documented streaming-json format', () => {
     expect(sub[0].activity?.detail).toBe('explore')
 
     expect(parse({ type: 'tool.result', id: 'c1', output: 'done' })).toEqual([
-      { activity: { id: 'c1', kind: 'tool', name: '', status: 'finished' } }
+      { activity: { id: 'c1', kind: 'tool', name: '', status: 'finished', output: 'done' } }
     ])
+    expect(parse({ type: 'tool.result', id: 'c1', content: 'done' })[0].activity?.output).toBe('done')
   })
 
   it('reports tokens and errors', () => {
     expect(parse({ type: 'session.end', usage: { output_tokens: 7 } })).toEqual([{ tokens: 7 }])
     expect(parse({ type: 'error', message: 'Not signed in.' })).toEqual([{ error: 'Not signed in.' }])
+  })
+})
+
+describe('what a command printed', () => {
+  it('drops the colors and the cursor moves a terminal would have eaten', () => {
+    expect(commandOutput('\u001b[32mpassed\u001b[0m')).toBe('passed')
+    expect(commandOutput('one\u001b[2Ktwo')).toBe('onetwo')
+    expect(commandOutput('  \n\n  ')).toBeUndefined()
+    expect(commandOutput(undefined)).toBeUndefined()
+  })
+
+  it('keeps both ends of a long run, since a failure is at the end', () => {
+    const lines = Array.from({ length: 200 }, (_, i) => `line ${i + 1}`)
+    const kept = commandOutput(lines.join('\n'))!.split('\n')
+    expect(kept[0]).toBe('line 1')
+    expect(kept[kept.length - 1]).toBe('line 200')
+    expect(kept.length).toBeLessThan(45)
+    expect(kept.some(line => line.includes('left out'))).toBe(true)
+  })
+
+  it('holds a size a synced log can carry, however wide the lines', () => {
+    const wide = Array.from({ length: 200 }, () => 'x'.repeat(2000)).join('\n')
+    expect(commandOutput(wide)!.length).toBeLessThanOrEqual(4000)
+  })
+
+  it('reads a result given as content blocks the same as a plain string', () => {
+    expect(resultText([{ type: 'text', text: 'first' }, { type: 'text', text: 'second' }])).toBe('first\nsecond')
+    expect(resultText('plain')).toBe('plain')
+    expect(resultText({ nope: true })).toBeUndefined()
   })
 })
 

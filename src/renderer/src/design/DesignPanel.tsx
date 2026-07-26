@@ -1,4 +1,6 @@
+import { useContext, useEffect, useRef } from 'react'
 import { useEditor, useValue, type TLShape } from 'tldraw'
+import { DesignRenameContext } from '../components/DesignPanels'
 import Appearance from './Appearance'
 import { glyphForShape } from './glyphs'
 import Inspector from './Inspector'
@@ -26,7 +28,18 @@ export default function DesignPanel() {
 
 function SelectionHeader({ shapes }: { shapes: TLShape[] }) {
   const editor = useEditor()
+  const { requested, request } = useContext(DesignRenameContext)
+  const nameRef = useRef<HTMLInputElement>(null)
   const only = shapes.length === 1 ? shapes[0] : null
+
+  useEffect(() => {
+    if (!only || requested !== only.id) return
+    request(null)
+    requestAnimationFrame(() => {
+      nameRef.current?.focus()
+      nameRef.current?.select()
+    })
+  }, [only, requested, request])
 
   if (!only) {
     return (
@@ -42,6 +55,7 @@ function SelectionHeader({ shapes }: { shapes: TLShape[] }) {
       <Glyph className="w-4 h-4 shrink-0 text-fg-muted" />
       {canRename(only) ? (
         <input
+          ref={nameRef}
           value={layerName(only)}
           onChange={event => renameShape(editor, only, event.target.value)}
           aria-label="Layer name"

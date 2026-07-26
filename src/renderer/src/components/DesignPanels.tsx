@@ -19,6 +19,13 @@ export const DesignBoardContext = createContext<{ current: string; select: (id: 
   select: () => {}
 })
 
+// The design panel header already holds the name field, so a Rename picked
+// anywhere else asks for that one rather than growing a second of its own.
+export const DesignRenameContext = createContext<{
+  requested: string | null
+  request: (id: string | null) => void
+}>({ requested: null, request: () => {} })
+
 export function BoardSwitcher() {
   const { current, select } = useContext(DesignBoardContext)
   const boards = useCrew(s => s.boards)

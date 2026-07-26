@@ -1,16 +1,18 @@
-import { ArrowUpIcon, ArrowUturnLeftIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { ArrowUpIcon } from '@heroicons/react/20/solid'
 import { StopIcon } from '@heroicons/react/16/solid'
 import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
 import { useCrew } from '../state/store'
 import { AttachButton, AttachmentTray } from './Attachments'
 import Emoji from './Emoji'
 import { tokenizeEmoji } from './emojiTokens'
-import { tokenizeMentions } from './mentionTokens'
-import { replyTargetLabel } from './reply'
+import { tokenizeMentions, writtenRefs } from './mentionTokens'
+import ReplyPreview from './ReplyPreview'
 import Tooltip from './Tooltip'
 import type { ThreadItem } from './thread'
 
-function EmojiText({ text }: { text: string }) {
+// The textarea keeps its own glyph under the caret, so the sheet is painted
+// over it rather than in place of it.
+function EmojiHighlight({ text }: { text: string }) {
   const tokens = useMemo(() => tokenizeEmoji(text), [text])
   return (
     <>
@@ -34,7 +36,11 @@ function MentionHighlights({ value }: { value: string }) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(() => tokenizeMentions(value, agents, members, docs), [agents, docs, members, value])
+  const boards = useCrew(s => s.boards)
+  const tokens = useMemo(
+    () => tokenizeMentions(value, agents, members, writtenRefs(value, docs, boards)),
+    [agents, boards, docs, members, value]
+  )
   return (
     <>
       {tokens.map((token, index) => {
@@ -45,7 +51,7 @@ function MentionHighlights({ value }: { value: string }) {
             </span>
           )
         }
-        if (token.kind === 'doc') {
+        if (token.kind === 'ref') {
           return (
             <span
               key={index}
@@ -55,7 +61,7 @@ function MentionHighlights({ value }: { value: string }) {
             </span>
           )
         }
-        return <EmojiText key={index} text={token.text} />
+        return <EmojiHighlight key={index} text={token.text} />
       })}
       {'\u200b'}
     </>
@@ -97,27 +103,9 @@ export default function Composer({
   return (
     <div className="relative">
       {children}
-      {replyTo && (
-        <div className="mx-3 mb-2 flex min-w-0 items-center gap-3 rounded-card border border-ink-700 bg-ink-800 px-3 py-2.5 shadow-[0_8px_24px_rgb(0_0_0/0.2)]">
-          <ArrowUturnLeftIcon className="h-4 w-4 shrink-0 text-fg-secondary" />
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-fg">{replyTargetLabel(replyTo.author, replyTo.self, replyTo.self)}</p>
-            <p className="mt-0.5 truncate text-sm text-fg-muted">{replyTo.text}</p>
-          </div>
-          <Tooltip label="Cancel reply">
-            <button
-              type="button"
-              aria-label="Cancel reply"
-              onClick={onCancelReply}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-fg-muted transition-all hover:bg-fg/[0.06] hover:text-fg active:scale-95"
-            >
-              <XMarkIcon className="h-4 w-4" />
-            </button>
-          </Tooltip>
-        </div>
-      )}
+      {replyTo && <ReplyPreview replyTo={replyTo} onCancel={onCancelReply} />}
       <div
-        className="bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"
+        className="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"
         onClick={() => inputRef.current?.focus()}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
@@ -156,7 +144,7 @@ export default function Composer({
               <button
                 onClick={onStop}
                 aria-label="Stop"
-                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95"
+                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-transform duration-150 cursor-pointer hover:scale-105 active:scale-95"
               >
                 <StopIcon className="w-4 h-4" />
               </button>
@@ -167,7 +155,7 @@ export default function Composer({
                 onClick={onSend}
                 disabled={!canSend}
                 aria-label={sendLabel}
-                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
+                className="w-10 h-10 rounded-full bg-fg text-ink-900 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"
               >
                 <ArrowUpIcon className="w-5 h-5" />
               </button>

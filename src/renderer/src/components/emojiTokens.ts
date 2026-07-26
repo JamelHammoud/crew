@@ -2,7 +2,9 @@ import { lookupEmoji, type EmojiEntry } from './emojiData'
 
 export type EmojiToken = { kind: 'text'; text: string } | { kind: 'emoji'; text: string; entry: EmojiEntry }
 
-const PICTOGRAPHIC = /\p{Extended_Pictographic}/u
+// A flag is a pair of letters and a keycap is a digit, so neither counts as a
+// picture. They are on the sheet all the same.
+const PICTOGRAPHIC = /[\p{Extended_Pictographic}\p{Regional_Indicator}\u{20E3}]/u
 const VARIATION = /\uFE0F/g
 const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 

@@ -1,4 +1,5 @@
 import type { Attachment } from './attachments'
+import type { BoardMentionRef } from './design'
 import type { DocMentionRef } from './docs'
 import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { MemberMentionRef } from './people'
@@ -45,6 +46,7 @@ export type SessionEvent =
       mentionRefs?: AgentMentionRef[]
       memberMentionRefs?: MemberMentionRef[]
       docMentions?: DocMentionRef[]
+      boardMentions?: BoardMentionRef[]
       threadId?: string
       attachments?: Attachment[]
       replyTo?: MessageReply
@@ -59,6 +61,7 @@ export type SessionEvent =
       mentionRefs?: AgentMentionRef[]
       memberMentionRefs?: MemberMentionRef[]
       docMentions?: DocMentionRef[]
+      boardMentions?: BoardMentionRef[]
     }
   | {
       id: string
@@ -114,6 +117,11 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'agent.online'; agentId: string; label: string }
   | { id: string; ts: number; kind: 'agent.offline'; agentId: string; label: string }
   | { id: string; ts: number; kind: 'agent.updated'; agentId: string; settings: AgentSettings }
+  // The record of a call, not the call itself. Who started it, who came, and
+  // how long it ran. Nothing about the media or the handshake is ever written.
+  | { id: string; ts: number; kind: 'huddle.started'; huddleId: string; byId: string; byName: string }
+  | { id: string; ts: number; kind: 'huddle.joined'; huddleId: string; memberId: string; name: string }
+  | { id: string; ts: number; kind: 'huddle.ended'; huddleId: string; ms: number }
   | { id: string; ts: number; kind: 'doc'; page: string; text: string; title?: string; byName: string }
   | { id: string; ts: number; kind: 'doc.titled'; page: string; title: string; byName: string }
   | { id: string; ts: number; kind: 'doc.renamed'; from: string; to: string; title?: string; byName: string }

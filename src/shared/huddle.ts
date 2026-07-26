@@ -9,6 +9,9 @@ export interface HuddlePeer {
 }
 
 export interface HuddleRoom {
+  // The call the chat block was written for, so a block can tell whether the
+  // call it names is the one happening right now.
+  id: string | null
   peers: HuddlePeer[]
   startedAt: number | null
 }
@@ -28,7 +31,7 @@ export const ICE_SERVERS: RTCIceServer[] = [
 ]
 
 export function emptyRoom(): HuddleRoom {
-  return { peers: [], startedAt: null }
+  return { id: null, peers: [], startedAt: null }
 }
 
 // Exactly one side of a pair is polite, and that side is the one that gives way
@@ -43,6 +46,13 @@ export function peerIn(room: HuddleRoom, peerId: string): HuddlePeer | undefined
 
 export function sharingPeer(room: HuddleRoom): HuddlePeer | undefined {
   return room.peers.find(peer => peer.sharing)
+}
+
+// Whoever starts a call is already standing in the room that starts it, so a
+// call that turns up without them in it is a call being made to them.
+export function startedWithout(before: HuddleRoom, after: HuddleRoom, selfPeerId: string): boolean {
+  if (before.peers.length > 0 || after.peers.length === 0) return false
+  return peerIn(after, selfPeerId) === undefined
 }
 
 export function huddleTitle(room: HuddleRoom, selfPeerId: string): string {

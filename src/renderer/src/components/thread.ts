@@ -1,10 +1,12 @@
 import type { Attachment } from '../../../shared/attachments'
+import type { BoardMentionRef } from '../../../shared/design'
 import type { DocMentionRef } from '../../../shared/docs'
 import type { MessageReply, SessionEvent } from '../../../shared/events'
 import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../../shared/llm'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
+import { toolAction } from './toolActions'
 
 // A thread's standing as a task. 'done' and 'archived' record explicit calls a
 // person made; 'working', 'ready', and 'failed' are read off the run history.
@@ -18,6 +20,12 @@ export const THREAD_STATE_LABELS: Record<ThreadState, string> = {
   done: 'Done',
   archived: 'Archived'
 }
+
+export const threadWorking = (
+  threadId: string,
+  threadPrompts: Record<string, string>,
+  queues: Record<string, unknown[]>
+): boolean => Boolean(threadPrompts[threadId]) || (queues[threadId]?.length ?? 0) > 0
 
 export function threadState(thread: ThreadMeta, events: SessionEvent[], running: boolean): ThreadState {
   if (running) return 'working'
@@ -65,11 +73,13 @@ export interface ThreadItem {
   error?: string
   name?: string
   detail?: string
+  output?: string
   subagent?: boolean
   files?: FileChange[]
   attachments?: Attachment[]
   mentionRefs?: AgentMentionRef[]
   docMentions?: DocMentionRef[]
+  boardMentions?: BoardMentionRef[]
   route?: MessageRoute
   reactionTargetId?: string
   reactions?: ReactionGroup[]
@@ -81,11 +91,42 @@ export interface ThreadItem {
 // 'steered'), or it is still waiting for a turn of its own ('queued').
 export type MessageRoute = 'queued' | 'steering' | 'steered'
 
+// A run of the same tool over and over is one line of news, not ten. Only a run
+// long enough to be clutter is folded up; a pair stays where a reader can see it.
+const GROUP_MIN = 3
+
+export interface StepBlock {
+  key: string
+  ts: number
+  items: ThreadItem[]
+}
+
+const sameStep = (a: ThreadItem, b: ThreadItem): boolean => {
+  if (a.kind !== 'tool' || b.kind !== 'tool' || a.promptId !== b.promptId) return false
+  const one = toolAction(a.name, a.subagent)
+  const two = toolAction(b.name, b.subagent)
+  return one.icon === two.icon && one.done === two.done
+}
+
+export function stepBlocks(items: ThreadItem[]): StepBlock[] {
+  const runs: ThreadItem[][] = []
+  for (const item of items) {
+    const last = runs[runs.length - 1]
+    if (last && sameStep(last[last.length - 1], item)) last.push(item)
+    else runs.push([item])
+  }
+  return runs.flatMap(run =>
+    run.length >= GROUP_MIN
+      ? [{ key: run[0].key, ts: run[0].ts, items: run }]
+      : run.map(item => ({ key: item.key, ts: item.ts, items: [item] }))
+  )
+}
+
 export function describeStep(step: AgentStep | undefined): string {
   if (!step) return 'Starting'
   if (step.kind === 'thinking') return 'Thinking'
   if (step.kind === 'text') return 'Writing'
-  if (step.status === 'running') return step.kind === 'subagent' ? `${step.name} (agent)` : (step.name ?? 'Working')
+  if (step.status === 'running') return toolAction(step.name, step.kind === 'subagent').run
   return 'Thinking'
 }
 
@@ -103,6 +144,7 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
       promptId,
       name: step.name || 'Working',
       detail: step.detail,
+      output: step.output,
       files: step.files,
       subagent: step.kind === 'subagent'
     }
@@ -167,6 +209,7 @@ export function buildThread(
         attachments: event.attachments,
         mentionRefs: event.mentionRefs,
         docMentions: event.docMentions,
+        boardMentions: event.boardMentions,
         replyTo: event.replyTo,
         route: routeBadge(route, started, ended),
         reactionTargetId: event.authorId === 'crew' ? undefined : messageReactionTarget(event.id),

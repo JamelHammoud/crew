@@ -38,7 +38,7 @@ export interface DesignToolGroup {
 export const TOOL_GROUPS: DesignToolGroup[] = [
   {
     id: 'pointer',
-    label: 'Pointer',
+    label: 'Move tools',
     tools: [
       { id: 'select', label: 'Move', shortcut: 'V', Icon: CursorGlyph },
       { id: 'hand', label: 'Hand', shortcut: 'H', Icon: HandGlyph }
@@ -46,17 +46,17 @@ export const TOOL_GROUPS: DesignToolGroup[] = [
   },
   {
     id: 'frame',
-    label: 'Frame',
+    label: 'Region tools',
     tools: [{ id: 'frame', label: 'Frame', shortcut: 'F', Icon: FrameGlyph }]
   },
   {
     id: 'shape',
-    label: 'Shape',
+    label: 'Shape tools',
     tools: [
       { id: 'node:rect', label: 'Rectangle', shortcut: 'R', Icon: RectangleGlyph },
-      { id: 'node:ellipse', label: 'Ellipse', shortcut: 'O', Icon: EllipseGlyph },
       { id: 'line', label: 'Line', shortcut: 'L', Icon: LineGlyph },
       { id: 'arrow', label: 'Arrow', shortcut: 'Shift L', Icon: ArrowGlyph },
+      { id: 'node:ellipse', label: 'Ellipse', shortcut: 'O', Icon: EllipseGlyph },
       { id: 'node:triangle', label: 'Triangle', shortcut: '', Icon: TriangleGlyph },
       { id: 'node:diamond', label: 'Diamond', shortcut: '', Icon: DiamondGlyph },
       { id: 'node:pentagon', label: 'Pentagon', shortcut: '', Icon: PentagonGlyph },
@@ -66,7 +66,7 @@ export const TOOL_GROUPS: DesignToolGroup[] = [
   },
   {
     id: 'pen',
-    label: 'Pen',
+    label: 'Creation tools',
     tools: [
       { id: 'draw', label: 'Pencil', shortcut: 'Shift P', Icon: PencilGlyph },
       { id: 'highlight', label: 'Highlighter', shortcut: 'Shift H', Icon: HighlighterGlyph },

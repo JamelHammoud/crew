@@ -76,7 +76,7 @@ function SizePicker({ onPick }: { onPick: (size: number) => void }) {
       >
         <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-      <Popover open={open} onClose={() => setOpen(false)} align="end" className="w-20 max-h-72 overflow-y-auto">
+      <Popover open={open} onClose={() => setOpen(false)} align="end" maxHeight={288} className="w-20">
         {SIZES.map(size => (
           <MenuItem
             key={size}

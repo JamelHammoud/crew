@@ -7,7 +7,7 @@ export type { ThemedToken }
 
 const MAX_CHARS = 200_000
 
-const themeNames: Record<Theme, string> = {
+export const THEME_NAMES: Record<Theme, string> = {
   dark: 'github-dark-default',
   light: 'github-light-default'
 }
@@ -87,6 +87,40 @@ const filenames: Record<string, string> = {
   makefile: 'make'
 }
 
+export const LANGUAGE_NAMES: Record<string, string> = {
+  typescript: 'TypeScript',
+  tsx: 'TSX',
+  javascript: 'JavaScript',
+  jsx: 'JSX',
+  json: 'JSON',
+  css: 'CSS',
+  html: 'HTML',
+  markdown: 'Markdown',
+  yaml: 'YAML',
+  toml: 'TOML',
+  shellscript: 'Shell',
+  python: 'Python',
+  rust: 'Rust',
+  go: 'Go',
+  java: 'Java',
+  c: 'C',
+  cpp: 'C++',
+  ruby: 'Ruby',
+  php: 'PHP',
+  swift: 'Swift',
+  kotlin: 'Kotlin',
+  sql: 'SQL',
+  xml: 'XML',
+  diff: 'Diff',
+  docker: 'Dockerfile',
+  make: 'Makefile'
+}
+
+export function aliasesFor(lang: string): string[] {
+  const from = (table: Record<string, string>) => Object.keys(table).filter(key => table[key] === lang)
+  return [...from(extensions), ...from(filenames)]
+}
+
 export function languageFor(path: string): string | null {
   const name = (path.split('/').pop() ?? '').toLowerCase()
   const byName = filenames[name]
@@ -120,6 +154,19 @@ async function withLanguage(lang: string): Promise<HighlighterCore> {
   return highlighter
 }
 
+export function shikiCore(): Promise<HighlighterCore> {
+  return core()
+}
+
+export async function loadLanguage(lang: string): Promise<void> {
+  if (!languages[lang]) return
+  try {
+    await withLanguage(lang)
+  } catch {
+    return
+  }
+}
+
 export async function highlightLines(
   path: string,
   text: string,
@@ -129,7 +176,7 @@ export async function highlightLines(
   if (!lang || text.length > MAX_CHARS) return null
   try {
     const highlighter = await withLanguage(lang)
-    return highlighter.codeToTokensBase(text, { lang, theme: themeNames[theme] })
+    return highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] })
   } catch {
     return null
   }

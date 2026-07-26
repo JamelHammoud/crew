@@ -1,16 +1,26 @@
 import { ComputerDesktopIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import { useMemo, type ReactNode } from 'react'
-import type { DocMentionRef } from '../../../shared/docs'
+import type { BoardMentionRef } from '../../../shared/design'
+import { docExcerpt, type DocMentionRef } from '../../../shared/docs'
 import type { AgentMentionRef, PooledAgent } from '../../../shared/llm'
 import { relabelMentions, visibleSettingFields } from '../../../shared/llm'
 import type { MemberInfo } from '../../../shared/protocol'
+import type { CrewRefKind } from '../../../shared/refs'
+import { FrameGlyph } from '../design/glyphs'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
+import BoardPreview from './BoardPreview'
 import { TextWithFileLinks } from './fileLinks'
 import HoverCard from './HoverCard'
-import { tokenizeMentions } from './mentionTokens'
+import { localizeDoc } from './images'
+import Markdown from './Markdown'
+import { tokenizeMentions, writtenRefs } from './mentionTokens'
 import Pill from './Pill'
+
+function CardRule({ className = '', children }: { className?: string; children: ReactNode }) {
+  return <div className={`-mx-3 mt-2.5 border-t border-fg/[0.06] px-3 pt-2.5 ${className}`}>{children}</div>
+}
 
 function AgentCardContent({ agent }: { agent: PooledAgent }) {
   const settings = visibleSettingFields(agent.fields, agent.settings)
@@ -33,14 +43,14 @@ function AgentCardContent({ agent }: { agent: PooledAgent }) {
         {agent.ownerName}'s PC
       </span>
       {settings.length > 0 && (
-        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] space-y-1.5">
+        <CardRule className="space-y-1.5">
           {settings.map(row => (
             <span key={row.label} className="flex items-center justify-between text-xs">
               <span className="text-fg-muted">{row.label}</span>
               <span className="text-fg-secondary">{row.value}</span>
             </span>
           ))}
-        </span>
+        </CardRule>
       )}
     </>
   )
@@ -62,84 +72,122 @@ export function AgentName({
   )
 }
 
+function MentionChip({ self = false, children }: { self?: boolean; children: ReactNode }) {
+  const tint = self
+    ? 'text-attention bg-attention/20 hover:bg-attention/30'
+    : 'text-fg bg-fg/10 hover:bg-fg/[0.16]'
+  return <strong className={`font-semibold cursor-default rounded-md px-1 py-0.5 transition-colors ${tint}`}>{children}</strong>
+}
+
 export function AgentMention({ agent, children }: { agent: PooledAgent; children: ReactNode }) {
   return (
     <AgentName agent={agent}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-1 py-0.5 bg-fg/10 transition-colors hover:bg-fg/[0.16]">
-        {children}
-      </strong>
+      <MentionChip>{children}</MentionChip>
     </AgentName>
   )
 }
 
 function MemberMention({ member, children }: { member: MemberInfo; children: ReactNode }) {
+  const selfId = useCrew(s => s.selfId)
   return (
     <MemberName id={member.id} name={member.name}>
-      <strong className="font-semibold text-fg cursor-default rounded-md px-1 py-0.5 bg-fg/10 transition-colors hover:bg-fg/[0.16]">
-        {children}
-      </strong>
+      <MentionChip self={member.id === selfId}>{children}</MentionChip>
     </MemberName>
   )
 }
 
 function DocCardContent({ page }: { page: string }) {
   const doc = useCrew(s => s.docs[page])
+  const httpBase = useCrew(s => s.httpBase)
   if (!doc) return null
-  const snippet = doc.text.trim().slice(0, 280)
+  const excerpt = docExcerpt(doc.text)
   return (
     <>
       <span className="flex items-center gap-2">
         <DocumentTextIcon className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
         <span className="text-sm font-semibold text-fg truncate">{doc.title}</span>
       </span>
-      {snippet && (
-        <span className="block mt-2.5 pt-2.5 border-t border-fg/[0.06] text-xs text-fg-muted whitespace-pre-wrap line-clamp-4">
-          {snippet}
-        </span>
+      {excerpt && (
+        <CardRule>
+          <Markdown className="md-peek max-h-40 overflow-hidden" text={localizeDoc(excerpt, httpBase)} />
+        </CardRule>
       )}
     </>
   )
 }
 
-export function DocMention({ page, children }: { page: string | null; children: ReactNode }) {
+function BoardCardContent({ boardId }: { boardId: string }) {
+  const board = useCrew(s => s.boards.find(b => b.id === boardId))
+  if (!board) return null
+  return (
+    <>
+      <span className="flex items-center gap-2">
+        <FrameGlyph className="w-4 h-4 shrink-0 text-sky-300 light:text-sky-700" />
+        <span className="text-sm font-semibold text-fg truncate">{board.name}</span>
+      </span>
+      <BoardPreview boardId={boardId} />
+    </>
+  )
+}
+
+export function RefMention({
+  refKind,
+  target,
+  children
+}: {
+  refKind: CrewRefKind
+  target: string | null
+  children: ReactNode
+}) {
   const openDoc = useCrew(s => s.openDoc)
+  const openBoard = useCrew(s => s.openBoard)
+  const Icon = refKind === 'board' ? FrameGlyph : DocumentTextIcon
   const pill = (
     <span
       onClick={
-        page
+        target
           ? event => {
               event.stopPropagation()
-              openDoc(page)
+              if (refKind === 'board') openBoard(target)
+              else openDoc(target)
             }
           : undefined
       }
-      className={`font-medium rounded-md px-1 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
-        page ? 'cursor-pointer' : 'cursor-default'
+      className={`inline-flex items-center gap-1 align-baseline font-medium rounded-md px-1.5 py-0.5 text-sky-300 bg-sky-400/15 transition-colors hover:bg-sky-400/25 light:text-sky-700 light:bg-sky-500/10 light:hover:bg-sky-500/20 ${
+        target ? 'cursor-pointer' : 'cursor-default'
       }`}
     >
+      <Icon className="w-3.5 h-3.5 shrink-0 -mt-px" />
       {children}
     </span>
   )
-  if (!page) return pill
-  return <HoverCard content={<DocCardContent page={page} />}>{pill}</HoverCard>
+  if (!target) return pill
+  return (
+    <HoverCard content={refKind === 'board' ? <BoardCardContent boardId={target} /> : <DocCardContent page={target} />}>
+      {pill}
+    </HoverCard>
+  )
 }
 
 export function MentionText({
   text,
   mentionRefs,
-  docMentions
+  docMentions,
+  boardMentions
 }: {
   text: string
   mentionRefs?: AgentMentionRef[]
   docMentions?: DocMentionRef[]
+  boardMentions?: BoardMentionRef[]
 }) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
-  const tokens = useMemo(
-    () => tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, members, docs, docMentions),
-    [agents, docs, docMentions, members, mentionRefs, text]
-  )
+  const boards = useCrew(s => s.boards)
+  const tokens = useMemo(() => {
+    const refs = writtenRefs(text, docs, boards, docMentions, boardMentions)
+    return tokenizeMentions(relabelMentions(text, mentionRefs, agents), agents, members, refs)
+  }, [agents, boardMentions, boards, docMentions, docs, members, mentionRefs, text])
   return (
     <>
       {tokens.map((token, index) => {
@@ -157,11 +205,11 @@ export function MentionText({
             </MemberMention>
           )
         }
-        if (token.kind === 'doc') {
+        if (token.kind === 'ref') {
           return (
-            <DocMention key={index} page={token.page}>
-              {token.text}
-            </DocMention>
+            <RefMention key={index} refKind={token.ref.kind} target={token.ref.target}>
+              {token.text.slice(1)}
+            </RefMention>
           )
         }
         return <TextWithFileLinks key={index} text={token.text} />

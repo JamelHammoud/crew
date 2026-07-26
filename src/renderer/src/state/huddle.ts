@@ -1,8 +1,9 @@
 import { create } from 'zustand'
-import { emptyRoom, peerIn, sharingPeer, type HuddleRoom } from '../../../shared/huddle'
+import { emptyRoom, peerIn, sharingPeer, startedWithout, type HuddleRoom } from '../../../shared/huddle'
 import type { MediaKind } from '../../../shared/media'
-import { playSound } from '../media/sounds'
-import { captureCamera, captureMic, captureScreen, stop } from '../media/capture'
+import { playSound, startRinging, stopRinging } from '../media/sounds'
+import { captureCamera, captureMic, captureScreen, deviceOf, stop } from '../media/capture'
+import { rememberInput, storedInput, type InputKind } from '../media/devices'
 import { HuddleMesh } from '../media/mesh'
 import type { SlotStreams, SlotTracks } from '../media/peer'
 import { SpeakingMonitor } from '../media/speaking'
@@ -28,6 +29,8 @@ export interface HuddleState {
   picking: boolean
   speaking: string[]
   problem: MediaKind | null
+  micId: string | null
+  cameraId: string | null
   localCamera: MediaStream | null
   localScreen: MediaStream | null
   remote: Record<string, SlotStreams>
@@ -36,6 +39,7 @@ export interface HuddleState {
   leave: () => void
   toggleMic: () => Promise<void>
   toggleCamera: () => Promise<void>
+  pickInput: (kind: InputKind, id: string) => Promise<void>
   share: (sourceId: string) => Promise<void>
   stopSharing: () => void
   setPicking: (picking: boolean) => void
@@ -87,6 +91,11 @@ export const useHuddle = create<HuddleState>((set, get) => {
     monitor.watch(get().peerId, own)
   }
 
+  // What is asked for and what the machine hands over are not always the same
+  // device, so the one actually running is what the menu ticks.
+  const running = (track: MediaStreamTrack | null, asked: string | null): string | null =>
+    (track && deviceOf(track)) || asked
+
   const announce = () => {
     const { micOn, cameraOn, sharing } = get()
     sendHuddle({ type: 'huddle.update', muted: !micOn, camera: cameraOn, sharing })
@@ -117,6 +126,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
     })
   }
 
+  // The first room a client is told about is the room as it already stands, so
+  // nothing rings for a call that was under way before this window opened.
+  let told = false
+
   onHuddle(msg => {
     if (msg.type === 'huddle.signal') {
       mesh.accept(msg.from, msg.signal)
@@ -127,6 +140,10 @@ export const useHuddle = create<HuddleState>((set, get) => {
     const self = get().peerId
     const mine = peerIn(msg.room, self)
     set({ room: msg.room, confirmed: get().confirmed || mine !== undefined })
+    const calling = told && !get().joined && !get().joining && startedWithout(before, msg.room, self)
+    told = true
+    if (calling) startRinging()
+    else if (mine || msg.room.peers.length === 0) stopRinging()
     // Once the server has shown this client in the room, a roster without it is
     // the call saying it moved on. Before that, it is only a roster that has not
     // caught up with the join yet.
@@ -158,9 +175,13 @@ export const useHuddle = create<HuddleState>((set, get) => {
     const before = connection
     connection = state.connection
     if (before === connection) return
-    if (connection === 'home' && get().joined) {
-      teardown()
-      set({ room: emptyRoom() })
+    if (connection === 'home') {
+      told = false
+      stopRinging()
+      if (get().joined) {
+        teardown()
+        set({ room: emptyRoom() })
+      }
       return
     }
     if (connection === 'online' && get().joined) {
@@ -184,6 +205,8 @@ export const useHuddle = create<HuddleState>((set, get) => {
     picking: false,
     speaking: [],
     problem: null,
+    micId: storedInput('microphone'),
+    cameraId: storedInput('camera'),
     localCamera: null,
     localScreen: null,
     remote: {},
@@ -193,11 +216,19 @@ export const useHuddle = create<HuddleState>((set, get) => {
     // blocked still gets into the call, muted, and can fix it from there.
     join: async () => {
       if (get().joined || get().joining) return
+      stopRinging()
       set({ joining: true, problem: null })
-      const mic = await captureMic()
+      const mic = await captureMic(get().micId)
       tracks.mic = mic.track
       const peerId = get().peerId
-      set({ joined: true, joining: false, confirmed: false, micOn: mic.track !== null, problem: mic.problem })
+      set({
+        joined: true,
+        joining: false,
+        confirmed: false,
+        micOn: mic.track !== null,
+        micId: running(mic.track, get().micId),
+        problem: mic.problem
+      })
       sendHuddle({ type: 'huddle.join', peerId, muted: mic.track === null, camera: false })
       mesh.sync(peerId, get().room.peers.map(peer => peer.peerId))
       publish()
@@ -221,9 +252,9 @@ export const useHuddle = create<HuddleState>((set, get) => {
         announce()
         return
       }
-      const mic = await captureMic()
+      const mic = await captureMic(get().micId)
       tracks.mic = mic.track
-      set({ micOn: mic.track !== null, problem: mic.problem })
+      set({ micOn: mic.track !== null, micId: running(mic.track, get().micId), problem: mic.problem })
       publish()
       announce()
     },
@@ -238,15 +269,46 @@ export const useHuddle = create<HuddleState>((set, get) => {
         announce()
         return
       }
-      const camera = await captureCamera()
+      const camera = await captureCamera(get().cameraId)
       tracks.camera = camera.track
       set({
         cameraOn: camera.track !== null,
+        cameraId: running(camera.track, get().cameraId),
         localCamera: camera.track ? new MediaStream([camera.track]) : null,
         problem: camera.problem
       })
       publish()
       announce()
+    },
+
+    // The choice is kept whether or not anything is running on it, so a
+    // microphone picked while muted is the one that comes back on. A device that
+    // is live is swapped into the slot it already holds, and the one it replaces
+    // is only stopped once the new one is in, so nothing renegotiates and there
+    // is no gap in what the others hear.
+    pickInput: async (kind, id) => {
+      rememberInput(kind, id)
+      if (kind === 'microphone') set({ micId: id })
+      else set({ cameraId: id })
+      const live = kind === 'microphone' ? get().micOn : get().cameraOn
+      if (!get().joined || !live) return
+      const next = kind === 'microphone' ? await captureMic(id) : await captureCamera(id)
+      const chosen = kind === 'microphone' ? get().micId : get().cameraId
+      if (chosen !== id) {
+        stop(next.track)
+        return
+      }
+      if (!next.track) {
+        set({ problem: next.problem })
+        return
+      }
+      const slot = kind === 'microphone' ? 'mic' : 'camera'
+      const before = tracks[slot]
+      tracks[slot] = next.track
+      if (kind === 'microphone') set({ micId: running(next.track, id), problem: null })
+      else set({ cameraId: running(next.track, id), localCamera: new MediaStream([next.track]), problem: null })
+      publish()
+      stop(before)
     },
 
     share: async sourceId => {

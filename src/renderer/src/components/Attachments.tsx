@@ -1,6 +1,7 @@
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useRef } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
+import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { previewSrc } from './images'
 import Tooltip from './Tooltip'
@@ -10,19 +11,23 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   const detach = useCrew(s => s.detach)
   if (!pending || pending.length === 0) return null
   return (
-    <div className="flex flex-wrap gap-2 mb-2">
+    <div className="flex flex-wrap gap-2 mb-3">
       {pending.map(item => (
-        <div key={item.id} className="relative group animate-pop">
-          <img
-            src={previewSrc(item)}
-            alt={item.name}
-            className="h-16 w-16 object-cover rounded-xl border border-fg/10"
-          />
-          <Tooltip label={`Remove ${item.name}`}>
+        <div key={item.id} className="relative group animate-pop flex">
+          <Tooltip label={item.name}>
+            <button
+              onClick={() => useBrowser.getState().openImage(previewSrc(item), item.name)}
+              aria-label={`Open ${item.name}`}
+              className="block h-16 w-16 rounded-xl overflow-hidden border border-fg/10 transition-all duration-150 hover:border-fg/25 active:scale-95"
+            >
+              <img src={previewSrc(item)} alt={item.name} className="block h-full w-full object-cover" />
+            </button>
+          </Tooltip>
+          <Tooltip label="Remove" className="absolute -top-1.5 -right-1.5">
             <button
               onClick={() => detach(attachmentKey, item.id)}
               aria-label={`Remove ${item.name}`}
-              className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full glass flex items-center justify-center text-fg-secondary opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
+              className="h-5 w-5 rounded-full glass flex items-center justify-center text-fg/70 opacity-0 group-hover:opacity-100 hover:text-fg transition-opacity"
             >
               <XMarkIcon className="w-3 h-3" />
             </button>
@@ -33,7 +38,18 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   )
 }
 
-export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
+const ATTACH_SIZES = {
+  md: 'w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600',
+  sm: 'w-7 h-7'
+} as const
+
+export function AttachButton({
+  attachmentKey,
+  size = 'md'
+}: {
+  attachmentKey: string
+  size?: keyof typeof ATTACH_SIZES
+}) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
   const attach = useCrew(s => s.attach)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -56,9 +72,9 @@ export function AttachButton({ attachmentKey }: { attachmentKey: string }) {
           onClick={() => inputRef.current?.click()}
           disabled={full}
           aria-label="Add an image"
-          className="w-10 h-10 rounded-full border border-ink-600 flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:border-ink-500 hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:border-ink-600 shrink-0"
+          className={`${ATTACH_SIZES[size]} rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0`}
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />
         </button>
       </Tooltip>
     </>

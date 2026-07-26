@@ -10,7 +10,7 @@ import StepRow from '../src/renderer/src/components/StepRow'
 import type { ThreadItem } from '../src/renderer/src/components/thread'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import type { PathLocation, RepoFile } from '../src/shared/files'
-import type { AgentStep } from '../src/shared/llm'
+import type { AgentStep, FileChange } from '../src/shared/llm'
 
 if (!Element.prototype.getAnimations) {
   Element.prototype.getAnimations = () => []
@@ -30,6 +30,23 @@ const repo: Record<string, RepoFile> = {
     kind: 'file',
     path: 'src/app.ts',
     text: 'const one = 1\nconst two = 2\nconst three = 3',
+    truncated: false
+  },
+  'src/panel.ts': {
+    kind: 'file',
+    path: 'src/panel.ts',
+    text: [
+      'export function panel() {',
+      '  const label = "hi"',
+      '  return label',
+      '}',
+      '',
+      'export function other() {',
+      '  return 2',
+      '}',
+      '',
+      'export const last = 9'
+    ].join('\n'),
     truncated: false
   },
   'big.log': { kind: 'file', path: 'big.log', text: 'line one\nline two', truncated: true },
@@ -283,6 +300,218 @@ describe('changed file lists', () => {
   })
 })
 
+describe('changed lines', () => {
+  const EDIT = ['- export function old() {', '-   return 1', '- }', '+ export function other() {', '+   return 2', '+ }'].join(
+    '\n'
+  )
+  const LAST = ['- export const last = 8', '+ export const last = 9'].join('\n')
+
+  const toolItem = (files: FileChange[]): ThreadItem => ({
+    key: 'p1:t1',
+    ts: 0,
+    kind: 'tool',
+    author: 'Claude',
+    self: false,
+    text: '',
+    streaming: false,
+    name: 'Edit',
+    files
+  })
+
+  const panelText = (): string => {
+    const file = repo['src/panel.ts']
+    return file.kind === 'file' ? file.text : ''
+  }
+
+  const marked = (): string[] =>
+    [...document.querySelectorAll('[data-line]')]
+      .filter(row => row.className.includes('bg-positive'))
+      .map(row => row.getAttribute('data-line') ?? '')
+
+  const taken = (): string[] =>
+    [...document.querySelectorAll('[data-gone]')].map(row => row.lastElementChild?.textContent ?? '')
+
+  const editor = (): HTMLTextAreaElement =>
+    screen.getByRole('textbox', { name: 'File contents' }) as HTMLTextAreaElement
+
+  const openDiff = async (): Promise<void> => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(2))
+  }
+
+  const retype = (from: string, to: string): void => {
+    const area = editor()
+    fireEvent.change(area, { target: { value: area.value.replace(from, to) } })
+  }
+
+  it('opens the file where the change landed and marks the lines that replaced it', async () => {
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7'])
+  })
+
+  it('takes you back to the change when you open the same file again', async () => {
+    await openDiff()
+    const seen: Element[] = []
+    Element.prototype.scrollIntoView = function (this: Element) {
+      seen.push(this)
+    }
+    try {
+      fireEvent.click(screen.getByText('src/panel.ts'))
+      await waitFor(() => expect(seen.some(row => row.getAttribute('data-line') === '6')).toBe(true))
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView
+    }
+  })
+
+  it('shows the lines that were replaced above the new ones', async () => {
+    await openDiff()
+    expect(taken()).toEqual(['export function old() {', '  return 1'])
+    const rows = [...document.querySelectorAll('[data-row]')]
+    expect(rows.findIndex(row => row.hasAttribute('data-gone'))).toBe(5)
+    expect(rows[5].firstElementChild?.textContent).toBe('−')
+  })
+
+  it('tints the words that changed inside a line', async () => {
+    await openDiff()
+    const line = document.querySelector('[data-line="6"]') as HTMLElement
+    const green = [...line.querySelectorAll('span')].filter(span => span.className.includes('bg-positive'))
+    expect(green.map(span => span.textContent)).toEqual(['other'])
+    const red = [...document.querySelectorAll('[data-gone]')[0].querySelectorAll('span')].filter(span =>
+      span.className.includes('bg-danger')
+    )
+    expect(red.map(span => span.textContent)).toEqual(['old'])
+  })
+
+  it('lets you type while the change is showing and works the diff out again', async () => {
+    await openDiff()
+    expect(editor().value.split('\n').length).toBe(12)
+    retype('  return label', '  return LABEL')
+    await waitFor(() => expect(marked()).toEqual(['3', '6', '7']))
+    expect(taken()).toEqual(['  return label', 'export function old() {', '  return 1'])
+  })
+
+  it('drops a change from the diff when you put the line back', async () => {
+    await openDiff()
+    retype('export function other() {', 'export function old() {')
+    await waitFor(() => expect(marked()).toEqual(['7']))
+    expect(taken()).toEqual(['  return 1'])
+  })
+
+  it('joins the line above when you rub out under a block that was taken out', async () => {
+    await openDiff()
+    const area = editor()
+    const at = area.value.indexOf('export function other() {')
+    fireEvent.change(area, { target: { value: area.value.slice(0, at - 1) + area.value.slice(at) } })
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(9))
+    expect(document.querySelector('[data-line="5"]')?.textContent).toContain('export function other() {')
+  })
+
+  it('keeps the caret out of the lines that were taken out', async () => {
+    await openDiff()
+    const area = editor()
+    area.focus()
+    const block = area.value.indexOf('export function old() {')
+    const below = area.value.indexOf('export function other() {')
+    area.setSelectionRange(block + 4, block + 4)
+    document.dispatchEvent(new Event('selectionchange'))
+    expect(area.selectionStart).toBe(below)
+    area.setSelectionRange(below + 2, below + 2)
+    document.dispatchEvent(new Event('selectionchange'))
+    area.setSelectionRange(block + 4, block + 4)
+    document.dispatchEvent(new Event('selectionchange'))
+    expect(area.selectionStart).toBe(block - 1)
+  })
+
+  it('leaves the page and the diff where they were when you click into the file', async () => {
+    await openDiff()
+    const body = document.querySelector('.overflow-auto') as HTMLElement
+    body.scrollTop = 100
+    const row = document.querySelector('[data-line="6"]') as HTMLElement
+    fireEvent.mouseDown(row)
+    fireEvent.click(row)
+    expect(body.scrollTop).toBe(100)
+    expect(taken().length).toBe(2)
+    expect(useBrowser.getState().tabs[0].diff).toBe(EDIT)
+  })
+
+  it('saves the file without the lines that were taken out', async () => {
+    const written: string[] = []
+    window.crew = {
+      ...window.crew,
+      writeFile: async (path: string, text: string) => {
+        written.push(text)
+        return { kind: 'file', path, text, truncated: false }
+      }
+    } as unknown as CrewBridge
+    await openDiff()
+    retype('  return 2', '  return 22')
+    fireEvent.click(await screen.findByText('Save'))
+    await waitFor(() => expect(written.length).toBe(1))
+    expect(written[0]).toBe(panelText().replace('  return 2', '  return 22'))
+    expect(written[0]).not.toContain('return 1')
+  })
+
+  it('hides the changes and puts them back', async () => {
+    await openDiff()
+    fireEvent.click(screen.getByText('Hide changes'))
+    await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(0))
+    expect(marked()).toEqual([])
+    fireEvent.click(screen.getByText('Show changes'))
+    await waitFor(() => expect(document.querySelectorAll('[data-gone]').length).toBe(2))
+    expect(marked()).toEqual(['6', '7'])
+  })
+
+  it('marks every place a file was touched across the steps behind it', async () => {
+    const steps: AgentStep[] = [
+      { id: 't1', kind: 'tool', status: 'done', ts: 0, name: 'Edit', files: [{ path: 'src/panel.ts', added: 3, removed: 3, diff: EDIT }] },
+      { id: 't2', kind: 'tool', status: 'done', ts: 1, name: 'Edit', files: [{ path: 'src/panel.ts', added: 1, removed: 1, diff: LAST }] }
+    ]
+    render(createElement(FilesChanged, { steps }))
+    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7', '10'])
+  })
+
+  it('marks the lines that are still there when the rest moved on', async () => {
+    const stale = ['+ export function other() {', '+   return 2', '+ }', '+ ', '+ export const gone = 0'].join('\n')
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 5, removed: 0, diff: stale }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual(['6', '7', '8'])
+  })
+
+  it('marks nothing when the whole file was written', async () => {
+    const file = repo['src/panel.ts']
+    const whole = (file.kind === 'file' ? file.text : '')
+      .split('\n')
+      .map(line => `+ ${line}`)
+      .join('\n')
+    render(createElement(StepRow, { item: toolItem([{ path: 'src/panel.ts', added: 10, removed: 0, diff: whole }]) }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual([])
+  })
+
+  it('leaves a file named in prose unmarked', async () => {
+    render(createElement(TextWithFileLinks, { text: 'have a look at src/panel.ts' }))
+    fireEvent.click(await screen.findByText('src/panel.ts'))
+    expect(useBrowser.getState().tabs[0].diff).toBeNull()
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(10))
+    expect(marked()).toEqual([])
+  })
+})
+
 describe('steps and thinking', () => {
   const item = (patch: Partial<ThreadItem>): ThreadItem => ({
     key: 'p1:s1',
@@ -314,7 +543,7 @@ describe('steps and thinking', () => {
   it('opens a file an agent named while thinking, without the backticks', async () => {
     const thought = 'Next I will read `src/app.ts:3` and then src/other.ts'
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: thought }) }))
-    fireEvent.click(screen.getByText('Thinking'))
+    fireEvent.click(screen.getByText('Thought'))
     const link = await screen.findByText('src/app.ts:3')
     expect(document.body.textContent).not.toContain('`')
     expect(document.body.textContent).toContain('src/other.ts')
@@ -333,7 +562,7 @@ describe('steps and thinking', () => {
 
   it('hides a thought about a file on someone else’s computer', async () => {
     render(createElement(StepRow, { item: item({ kind: 'thinking', text: 'I saved /Users/ali/Desktop/notes.md' }) }))
-    fireEvent.click(screen.getByText('Thinking'))
+    fireEvent.click(screen.getByText('Thought'))
     await screen.findByText('Private file')
     expect(document.body.textContent).not.toContain('/Users/ali')
   })

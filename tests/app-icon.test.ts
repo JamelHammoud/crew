@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { fromSource } from '../src/main/from-source'
+import { fromSource, wearsBlueprint } from '../src/main/from-source'
 import { DARK_ICON, DEV_DARK_ICON, DEV_LIGHT_ICON, LIGHT_ICON } from '../src/main/icon-png'
 import {
   MARK_CUT,
@@ -221,6 +221,37 @@ describe('picking an icon', () => {
     expect(fromSource('/Applications/Crew.app/Contents/Resources/app')).toBe(false)
     expect(fromSource('C:\\Program Files\\Crew\\resources\\app.asar')).toBe(false)
     expect(fromSource('/opt/Crew/resources/app.asar')).toBe(false)
+  })
+
+  it('follows where the app is loaded from when nothing asks otherwise', () => {
+    expect(wearsBlueprint('/Users/someone/Repositories/crew', {})).toBe(true)
+    expect(wearsBlueprint('/Applications/Crew.app/Contents/Resources/app.asar', {})).toBe(false)
+  })
+
+  it('hands over the shipping icon when asked, so it can be seen without installing', () => {
+    const source = '/Users/someone/Repositories/crew'
+
+    for (const asked of ['1', 'true', 'yes']) {
+      expect(wearsBlueprint(source, { CREW_SHIPPING_ICON: asked })).toBe(false)
+    }
+  })
+
+  it('asks for it from yarn start, which runs the built app the way it ships', () => {
+    const scripts = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).scripts
+    const [, asked] = scripts.start.match(/CREW_SHIPPING_ICON=(\S+)/) ?? []
+
+    expect(wearsBlueprint('/Users/someone/Repositories/crew', { CREW_SHIPPING_ICON: asked })).toBe(
+      false
+    )
+    expect(scripts.preview).not.toContain('CREW_SHIPPING_ICON')
+  })
+
+  it('keeps the blueprint when the ask is turned off rather than unset', () => {
+    const source = '/Users/someone/Repositories/crew'
+
+    for (const asked of ['', '0', 'false']) {
+      expect(wearsBlueprint(source, { CREW_SHIPPING_ICON: asked })).toBe(true)
+    }
   })
 })
 
