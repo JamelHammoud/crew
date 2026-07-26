@@ -89,8 +89,8 @@ export const CodeGlyph = mark(
 export const DividerGlyph = mark(
   <>
     <path d="M4 12h16" />
-    <path d="M7 6.6h10" strokeWidth={1.4} strokeOpacity={0.45} />
-    <path d="M7 17.4h10" strokeWidth={1.4} strokeOpacity={0.45} />
+    <path d="M6.8 7.2h10.4" strokeWidth={1.3} strokeOpacity={0.3} />
+    <path d="M6.8 16.8h10.4" strokeWidth={1.3} strokeOpacity={0.3} />
   </>
 )
 

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import { CHECK_PATH, DOT_R, RING_R, THINKING_DOTS } from './toolGlyphs'
 
 const [LEFT, MIDDLE, RIGHT] = THINKING_DOTS
