@@ -78,7 +78,13 @@ export default function Toolbox({
       panel: true,
       run: () => useBrowser.getState().openFiles()
     },
-    { id: 'music', name: 'Music', mark: MusicGlyph, soon: true }
+    {
+      id: 'music',
+      name: 'Music',
+      mark: MusicGlyph,
+      panel: true,
+      run: () => useBrowser.getState().openMusic()
+    }
   ]
 
   const press = (run: (() => void) | undefined, panel: boolean) => {
