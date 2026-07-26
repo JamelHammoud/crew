@@ -155,9 +155,12 @@ export default function DesignCanvas({
         return { ...prev, [presence.userId]: presence }
       })
       if (presence.kind === 'agent') return
+      // What someone has selected outlives their cursor leaving the board, so
+      // this record only goes when they do.
       const id = InstancePresenceRecordType.createId(presence.userId)
+      const at = presence.cursor ?? { x: 0, y: 0 }
       store.mergeRemoteChanges(() => {
-        if (presence.pageId === null || !presence.cursor) {
+        if (presence.pageId === null) {
           if (store.has(id)) store.remove([id])
           return
         }
@@ -168,7 +171,7 @@ export default function DesignCanvas({
               userId: presence.userId as TLUserId,
               userName: presence.name,
               color: cursorColor(avatarHue(presence.name)),
-              cursor: { x: presence.cursor.x, y: presence.cursor.y, type: 'default', rotation: 0 },
+              cursor: { x: at.x, y: at.y, type: 'default', rotation: 0 },
               selectedShapeIds: presence.selection as TLShapeId[],
               currentPageId: presence.pageId as TLPageId,
               lastActivityTimestamp: Date.now()
