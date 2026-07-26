@@ -47,10 +47,14 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
+const tile = (name: string) => screen.getByText(name).closest('button')!.parentElement!
+
 const hover = (name: string) => {
-  fireEvent.mouseEnter(screen.getByText(name).closest('button')!.parentElement!)
+  fireEvent.mouseEnter(tile(name))
   act(() => vi.advanceTimersByTime(400))
 }
+
+const unhover = (name: string) => act(() => void fireEvent.mouseLeave(tile(name)))
 
 describe('the toolbox', () => {
   it('holds the built-in tools, with the ones still coming turned off', () => {
