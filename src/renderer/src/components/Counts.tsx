@@ -11,7 +11,7 @@ export default function Counts({
 }) {
   if (!added && !removed) return null
   return (
-    <span className={`shrink-0 ${className} ${size === 'sm' ? 'text-sm' : 'text-xs'}`}>
+    <span className={`shrink-0 ${className} ${size === 'sm' ? 'text-sm' : 'text-xs'} tabular-nums`}>
       {added > 0 && <span className="text-positive">+{added}</span>}
       {added > 0 && removed > 0 && ' '}
       {removed > 0 && <span className="text-danger">−{removed}</span>}
