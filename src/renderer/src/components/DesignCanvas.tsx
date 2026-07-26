@@ -256,6 +256,7 @@ export default function DesignCanvas({
   const onMount = useCallback(
     (mounted: Editor) => {
       applyDesignDefaults(mounted)
+      applyDesignCursors(mounted.getContainer())
       mounted.user.updateUserPreferences({ isSnapMode: true, colorScheme: 'light' })
       const stopRounding = keepWholePixels(mounted)
       setEditor(mounted)
