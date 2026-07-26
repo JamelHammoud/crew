@@ -484,7 +484,8 @@ export class CrewSession {
       tools: [...this.tools.values()],
       boards: this.boardList(),
       huddle: this.huddleRoom(),
-      music: this.musicRoom()
+      music: this.musicRoom(),
+      musicUploads: [...this.uploads.values()]
     }
   }
 
@@ -618,6 +619,12 @@ export class CrewSession {
         break
       case 'music.off':
         if (meta.role === 'ui') this.handleMusicOff()
+        break
+      case 'music.add':
+        if (meta.role === 'ui') this.handleMusicAdd(member, msg.name, msg.mime, msg.seconds, msg.data)
+        break
+      case 'music.remove':
+        if (meta.role === 'ui') this.handleMusicRemove(member, msg.trackId)
         break
       case 'queue.edit':
         if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
