@@ -14,7 +14,13 @@ function combo(shortcut: string): { key: string; shift: boolean } | null {
   return { key: parts[parts.length - 1].toLowerCase(), shift: parts.includes('Shift') }
 }
 
-export default function DesignToolbar() {
+export default function DesignToolbar({
+  onAsk,
+  onRename
+}: {
+  onAsk: () => void
+  onRename: (shape: TLShape) => void
+}) {
   const editor = useEditor()
   const [defaults, setDefaults] = useState<Record<string, string>>(FIRST)
   const [menu, setMenu] = useState<string | null>(null)
@@ -65,6 +71,8 @@ export default function DesignToolbar() {
             onPick={toolId => remember(group.id, toolId)}
           />
         ))}
+        <span className="w-px h-5 bg-fg/10 mx-1 shrink-0" />
+        <DesignActions onAsk={onAsk} onRename={onRename} />
       </div>
     </div>
   )
