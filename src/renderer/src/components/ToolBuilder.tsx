@@ -245,7 +245,7 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
                   picked={agentId === null}
                   onClick={() => setAgentId(null)}
                 />
-                {here.map(agent => (
+                {choices.map(agent => (
                   <Who
                     key={agent.id}
                     name={agent.label}
