@@ -40,8 +40,6 @@ const peer = (peerId: string, name: string, extra: Partial<HuddlePeer> = {}): Hu
   ...extra
 })
 
-// A slot holds a stream from the moment the connection does, and the track in
-// it stays muted until the other end starts sending.
 const slot = (id: string, sending: boolean): MediaStream => {
   const track = Object.assign(new EventTarget(), { kind: 'video', muted: !sending, readyState: 'live' })
   return { id, getVideoTracks: () => [track], getTracks: () => [track] } as unknown as MediaStream
