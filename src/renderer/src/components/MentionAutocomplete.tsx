@@ -46,11 +46,12 @@ export function useMentionAutocomplete(
           : []),
         ...mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent' as const, agent }))
       ]
-    if (query?.trigger === '#') return docCandidates(docs, query.text).map(doc => ({ kind: 'doc', doc }))
+    if (query?.trigger === '#')
+      return refCandidates(crewRefs(docs, boards), query.text).map(ref => ({ kind: 'ref', ref }))
     if (query?.trigger === ':')
       return searchEmoji(query.text, EMOJI_MATCHES).map(entry => ({ kind: 'emoji', entry }))
     return []
-  }, [agents, docs, includeMembers, members, query])
+  }, [agents, boards, docs, includeMembers, members, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const onChange = (next: string) => {
