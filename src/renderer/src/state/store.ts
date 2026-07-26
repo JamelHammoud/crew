@@ -493,6 +493,9 @@ export const useCrew = create<CrewState>((set, get) => {
         for (const listener of huddleListeners) {
           listener({ type: 'huddle.room', room: msg.snapshot.huddle ?? emptyRoom() })
         }
+        for (const listener of musicListeners) {
+          listener({ type: 'music.room', room: msg.snapshot.music ?? emptyMusic() })
+        }
         break
       }
       case 'queue.state':
