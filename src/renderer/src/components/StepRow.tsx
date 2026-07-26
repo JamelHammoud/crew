@@ -17,6 +17,7 @@ import {
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
 import type { ThreadItem } from './thread'
+import ThinkingMark from './ThinkingMark'
 import { THINKING, toolAction, type ToolAction, type ToolIcon } from './toolActions'
 
 export function FilePathLink({
