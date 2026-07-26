@@ -113,7 +113,7 @@ export const MUSIC_TUNES = [
     mood: 'still',
     bpm: 72,
     beats: 32,
-    colors: ['#dbeafe', '#a8c8ec', '#f0f7ff', '#3f5f8a']
+    colors: ['#8fd8ff', '#c9b6ff', '#5ce1e6', '#eaf8ff', '#1c3a63']
   },
   {
     id: 'boss-fight',
@@ -121,7 +121,7 @@ export const MUSIC_TUNES = [
     mood: 'fierce',
     bpm: 160,
     beats: 32,
-    colors: ['#ff3b5c', '#7c1f3d', '#ffb020', '#1a0b1f']
+    colors: ['#ff0a54', '#c400ff', '#ff8500', '#ffe14d', '#1a0010']
   },
   {
     id: 'lobby',
