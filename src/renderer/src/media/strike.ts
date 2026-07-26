@@ -34,8 +34,6 @@ export function playStrikes(strikes: Strike[]): () => void {
   }
 }
 
-// Everything a strike makes hangs off its own bus, the reverb send included, so
-// taking that one gain down to nothing is the whole phrase gone.
 function hush(ctx: AudioContext, sounding: Sounding[]): void {
   const now = ctx.currentTime
   const end = now + HUSH
