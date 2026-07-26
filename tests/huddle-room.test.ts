@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { fitTiles } from '../src/renderer/src/components/huddle/tiles'
 import { formatClock } from '../src/renderer/src/components/time'
-import { emptyRoom, huddleTitle, politeToward, sharingPeer, type HuddlePeer } from '../src/shared/huddle'
+import {
+  emptyRoom,
+  huddleTitle,
+  politeToward,
+  sharingPeer,
+  type HuddlePeer,
+  type HuddleRoom
+} from '../src/shared/huddle'
+
+const room = (...peers: HuddlePeer[]): HuddleRoom => ({ id: 'call-1', peers, startedAt: 1 })
 
 const peer = (peerId: string, name: string, extra: Partial<HuddlePeer> = {}): HuddlePeer => ({
   peerId,
