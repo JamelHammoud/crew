@@ -33,6 +33,20 @@ export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Part
   })
 }
 
+export function typeMeasure(type: TypeStyle, maxWidth: number | null) {
+  const ink = textInkStyle(type)
+  return {
+    fontFamily: fontStack(type.family),
+    fontSize: type.size,
+    fontStyle: type.italic ? 'italic' : 'normal',
+    fontWeight: String(type.weight),
+    lineHeight: type.lineHeight,
+    maxWidth,
+    padding: '0px',
+    otherStyles: { 'letter-spacing': `${ink.letterSpacing}`, 'text-transform': `${ink.textTransform}` }
+  }
+}
+
 export function typePaint(type: TypeStyle): Paint {
   const alpha = type.color.length === 9 ? parseInt(type.color.slice(7, 9), 16) / 255 : 1
   return { type: 'solid', color: type.color.slice(0, 7), opacity: alpha, visible: true }
