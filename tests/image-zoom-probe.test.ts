@@ -129,6 +129,13 @@ describe('image zoom', () => {
     expect(offsetOf(image)).toEqual({ x: -20, y: -10 })
   })
 
+  it('keeps the entrance animation off the picture it moves', () => {
+    const { frame, image } = view()
+
+    expect(image.className).not.toMatch(/animate-/)
+    expect(frame.className).toMatch(/animate-rise/)
+  })
+
   it('goes back to the fit when another picture opens', () => {
     const { frame, image, container } = view()
 
