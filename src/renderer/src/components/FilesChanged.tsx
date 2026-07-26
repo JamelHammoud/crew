@@ -6,12 +6,13 @@ import { Counts, FilePathLink } from './StepRow'
 export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
   const [open, setOpen] = useState(false)
   const files = useMemo(() => {
-    const map = new Map<string, { added: number; removed: number }>()
+    const map = new Map<string, { added: number; removed: number; diff: string }>()
     for (const step of steps) {
       for (const file of step.files ?? []) {
-        const entry = map.get(file.path) ?? { added: 0, removed: 0 }
+        const entry = map.get(file.path) ?? { added: 0, removed: 0, diff: '' }
         entry.added += file.added
         entry.removed += file.removed
+        if (file.diff) entry.diff = entry.diff ? `${entry.diff}\n\n${file.diff}` : file.diff
         map.set(file.path, entry)
       }
     }
@@ -48,7 +49,7 @@ export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
         <div className="px-4 py-2.5 space-y-1.5">
           {files.map(([path, file]) => (
             <div key={path} className="flex items-center gap-3 text-xs font-mono">
-              <FilePathLink path={path} className="text-fg-secondary truncate flex-1" />
+              <FilePathLink path={path} diff={file.diff} className="text-fg-secondary truncate flex-1" />
               <Counts added={file.added} removed={file.removed} />
             </div>
           ))}
