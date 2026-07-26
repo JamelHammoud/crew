@@ -110,6 +110,17 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - The art is drawn on the grid the arrow came in on and scaled down from there, and `aimed` works out the shift that lands the point it aims from, the tip of the arrow or the middle of everything else, on a whole pixel. That pixel is the hotspot, and `ARROW_TIP` is the same number the remote arrow is offset by, so a cursor is where it says it is on either machine. Never move the art without moving both.
 - Everyone else's cursor is the same arrow in their own color, drawn by crew in `RemoteCursors` with a glass name tag, a pet for an agent and an avatar for a person. tldraw draws its own on the canvas, where a generated pet cannot go, so `CursorsDrawnByCrew` stands that overlay down. The presence record still goes into the store, because that is what marks what someone has selected.
 
+## Docs
+
+A page of the crew's own writing, block by block, in a BlockNote editor crew draws all the chrome for. Every panel BlockNote ships is turned off in `DocEditor` and replaced: `DocSlashMenu` for what `/` opens, `DocToolbar` for a selection, `DocSideMenu` for the gutter, `DocEmojiMenu` for `:`. They are crew's own glass menus, the same rows the mention menu uses.
+
+- A doc is a markdown file the crew syncs, so the editor only offers blocks markdown can carry. `DOC_BLOCKS` in `docBlocks.ts` is that list, one entry holding the title, the mark, the aliases and the shortcut, and both the slash menu and the turn into menu read it. A toggle list is left out on purpose: it comes back from markdown as a bulleted list, and a block that quietly changes on the next sync is worse than one that was never offered. `tests/doc-blocks-probe.test.ts` puts every entry through a round trip, so nothing can be added that the file cannot hold.
+- The marks are drawn in `docGlyphs.tsx`, the same 24 grid as the other glyphs at a heavier 2 stroke, because they sit in a menu of their own rather than beside Heroicons. `glyph()` takes the weight.
+- Code blocks are lit by the same shiki crew already uses for a diff, through `docCode.ts`. It hands BlockNote a highlighter that always asks for both themes at once, so a block carries `--shiki-light` and `--shiki-dark` and flips with the app instead of being highlighted again. The languages, their names and their aliases all come from `highlight.ts`, so a fence written as `ts` or `bash` lands on the same grammar the rest of the app uses.
+- Placeholders, the language names and every label are crew's words, held in `docSchema.ts` as a dictionary over BlockNote's own.
+- A block being dragged is a small card, not a copy of the block at full width. `.bn-drag-preview` in `styles.css` is the only handle on it, because BlockNote clones the block into the body where nothing else can reach it.
+- Clicking below the last line puts the cursor at the end. That is bottom padding on the editor rather than a spacer under it, so the click lands inside the document.
+
 ## What an agent did
 
 A step in a thread says what happened in plain words, wearing a mark of its own.
