@@ -4,10 +4,22 @@ import { docCandidates, type DocRef } from '../../../shared/docs'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
+import Emoji from './Emoji'
+import { emojiForShortcode, searchEmoji, type EmojiEntry } from './emojiData'
+import { rememberEmoji } from './emojiRecents'
 
-export type MentionItem = { kind: 'agent'; agent: PooledAgent } | { kind: 'doc'; doc: DocRef }
+export type MentionItem =
+  | { kind: 'agent'; agent: PooledAgent }
+  | { kind: 'doc'; doc: DocRef }
+  | { kind: 'emoji'; entry: EmojiEntry }
 
-type Query = { trigger: '@' | '#'; text: string }
+type Query = { trigger: '@' | '#' | ':'; text: string }
+
+const MENTION_QUERY = /(?:^|\s)([@#])([^@#]*)$/
+const EMOJI_QUERY = /(?:^|\s):([A-Za-z0-9_+-]{2,})$/
+const EMOJI_CLOSED = /(?:^|\s):([A-Za-z0-9_+-]+):$/
+const EMOJI_TAIL = /:[A-Za-z0-9_+-]*$/
+const EMOJI_MATCHES = 9
 
 export function useMentionAutocomplete(
   value: string,
