@@ -10,7 +10,7 @@ import type { ReactionEmoji } from '../../../shared/reactions'
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
-import { finishedAlert } from './alerts'
+import { finishedAlert, memberMentionAlert } from './alerts'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
@@ -175,7 +175,8 @@ export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     const cue = soundFor(event, get().selfId)
     if (cue) playSound(cue)
-    const alert = finishedAlert(event, get(), document.hasFocus())
+    const focused = document.hasFocus()
+    const alert = finishedAlert(event, get(), focused) ?? memberMentionAlert(event, get().selfId, focused)
     if (alert) void window.crew?.notify?.(alert)
     if (event.kind === 'message.deleted') {
       set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
