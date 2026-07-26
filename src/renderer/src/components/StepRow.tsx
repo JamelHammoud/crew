@@ -82,7 +82,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
   const action = thinking ? THINKING : toolAction(item.name, item.subagent)
   const files = stepFiles(item)
   const totals = stepTotals(files)
-  const expandable = thinking || files.some(file => file.diff) || Boolean(item.detail)
+  const expandable = thinking || files.length > 1 || files.some(file => file.diff) || Boolean(item.detail)
   const expanded = open ?? (thinking ? item.streaming : false)
   const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
