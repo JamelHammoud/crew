@@ -4,7 +4,7 @@ import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 
 const { FIT, panBy, pinchFactor, settle, zoomBy, zoomPercent } = await import(
-  '../src/renderer/src/components/imageZoom'
+  '../src/renderer/src/components/zoom'
 )
 const ImageView = (await import('../src/renderer/src/components/ImageView')).default
 
@@ -19,7 +19,7 @@ function view() {
   Object.defineProperty(HTMLDivElement.prototype, 'clientWidth', { configurable: true, value: 800 })
   Object.defineProperty(HTMLDivElement.prototype, 'clientHeight', { configurable: true, value: 600 })
   const { container } = render(createElement(ImageView, { src: 'crew.png', alt: 'crew.png' }))
-  const frame = container.querySelector('[data-image-frame]') as HTMLElement
+  const frame = container.querySelector('[data-zoom-frame]') as HTMLElement
   frame.getBoundingClientRect = () => ({ left: 0, top: 0, width: 800, height: 600 }) as DOMRect
   const image = container.querySelector('img') as HTMLImageElement
   fireEvent.load(image)
