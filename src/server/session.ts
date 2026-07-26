@@ -1873,7 +1873,8 @@ export class CrewSession {
       text: this.buildPrompt(agent, next, reactions),
       settings: agent.settings,
       attachments: next.attachments,
-      designBoard: this.boardOf(thread)
+      designBoard: this.boardOf(thread),
+      designBoards: this.referencedBoards(next)
     })
   }
 
