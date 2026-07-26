@@ -127,13 +127,13 @@ describe('auto sync', () => {
     const sync = new GitSync(a)
     syncs.push(sync)
 
-    const pass = sync.syncNow()
-    expect(sync.syncNow()).toBe(pass)
-    expect(sync.syncNow()).toBe(pass)
-    await pass
+    const burst = new Set<Promise<void>>()
+    for (let i = 0; i < 200; i++) burst.add(sync.syncNow())
+    expect(burst.size).toBe(1)
+    await Promise.all(burst)
 
     const next = sync.syncNow()
-    expect(next).not.toBe(pass)
+    expect(burst.has(next)).toBe(false)
     await next
   })
 
