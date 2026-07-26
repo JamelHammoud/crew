@@ -33,6 +33,7 @@ const bridge = {
   screenSources: (): Promise<ScreenSource[]> => ipcRenderer.invoke('media:sources'),
   pickScreenSource: (id: string | null): Promise<void> => ipcRenderer.invoke('media:pickSource', id),
   openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
+  copyImage: (src: string): Promise<boolean> => ipcRenderer.invoke('clipboard:image', src),
   readFile: (path: string): Promise<RepoFile | null> => ipcRenderer.invoke('file:read', path),
   writeFile: (path: string, text: string): Promise<RepoFile | null> =>
     ipcRenderer.invoke('file:write', path, text),

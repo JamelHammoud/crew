@@ -73,10 +73,11 @@ function Label({ children }: { children: ReactNode }) {
 
 // One tile, whatever is behind it. Lit white while it is the thing happening,
 // filled quietly when it is waiting, barely there when it cannot be pressed.
+// A tile that is not ready yet says so on hover rather than wearing a label, and
+// it warms from the group, since a disabled button never matches its own hover.
 function Tile({
   mark: Mark,
   name,
-  note,
   active,
   soon,
   onClick,
@@ -84,32 +85,28 @@ function Tile({
 }: {
   mark: Glyph
   name: string
-  note?: string
   active?: boolean
   soon?: boolean
   onClick?: () => void
   children?: ReactNode
 }) {
   const look = soon
-    ? 'bg-fg/[0.03] text-fg/30'
+    ? 'bg-fg/[0.03] text-fg/30 group-hover:bg-fg/[0.06] group-hover:text-fg/50'
     : active
       ? 'bg-fg text-ink-900'
       : 'bg-fg/[0.05] text-fg/70 hover:bg-fg/[0.09] hover:text-fg'
   return (
     <div className="group relative">
-      <button
-        onClick={onClick}
-        disabled={soon}
-        className={`w-full h-[82px] px-1.5 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
-      >
-        <Mark className="w-[22px] h-[22px]" />
-        <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
-      </button>
-      {note && (
-        <span className="absolute top-1.5 right-1.5 pointer-events-none">
-          <Pill glass>{note}</Pill>
-        </span>
-      )}
+      <Tooltip label="Coming soon" disabled={!soon} className="w-full">
+        <button
+          onClick={onClick}
+          disabled={soon}
+          className={`w-full h-[82px] px-1.5 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
+        >
+          <Mark className="w-[22px] h-[22px]" />
+          <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
+        </button>
+      </Tooltip>
       {children}
     </div>
   )
