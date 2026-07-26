@@ -22,7 +22,7 @@
   "agents": [
     {
       "id": "ali/claude",
-      "label": "Claude 2",
+      "label": "Fable",
       "provider": "claude",
       "ownerId": "60b55620-a113-478c-9935-77bd360c6f40",
       "ownerName": "ALI",
@@ -445,14 +445,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785032522829,
+        "fetchedAt": 1785032822843,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 59,
+            "percent": 60,
             "severity": "normal",
-            "resetsAt": 1785033000039,
+            "resetsAt": 1785033000076,
             "active": true
           },
           {
@@ -460,7 +460,7 @@
             "label": "Weekly (all models)",
             "percent": 12,
             "severity": "normal",
-            "resetsAt": 1785535200039,
+            "resetsAt": 1785535199076,
             "active": false
           },
           {

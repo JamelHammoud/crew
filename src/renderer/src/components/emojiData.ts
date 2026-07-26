@@ -11,6 +11,7 @@ interface SourceEmoji {
   category: string
   sort_order: number
   has_img_twitter: boolean
+  skin_variations?: Record<string, { unified: string; sheet_x: number; sheet_y: number; has_img_twitter: boolean }>
 }
 
 export interface EmojiEntry {
