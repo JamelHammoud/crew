@@ -37,6 +37,11 @@ export function panBy(view: View, dx: number, dy: number, image: Box, frame: Box
   return settle({ scale: view.scale, x: view.x - dx, y: view.y - dy }, image, frame)
 }
 
+export const containBox = (natural: Box, frame: Box): Box => {
+  const scale = Math.min(frame.width / natural.width, frame.height / natural.height)
+  return { width: natural.width * scale, height: natural.height * scale }
+}
+
 export const pinchFactor = (deltaY: number): number => Math.exp(-deltaY / 100)
 
 export const zoomPercent = (scale: number, ratio: number): number => Math.round(scale * ratio * 100)
