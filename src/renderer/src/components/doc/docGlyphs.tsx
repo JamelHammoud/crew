@@ -58,7 +58,7 @@ export const Heading1Glyph = mark(
 export const Heading2Glyph = mark(
   <>
     {HEADING}
-    <path d="M15.5 12.3a2.2 2.2 0 1 1 4.4 0c0 1.7-4.4 3.3-4.4 5.7h4.6" strokeWidth={NUMERAL} />
+    <path d="M15.5 12.3a2.2 2.2 0 1 1 4.4 0c0 1.7-4.4 3.3-4.4 5.7h4.4" strokeWidth={NUMERAL} />
   </>
 )
 
@@ -94,9 +94,9 @@ export const BulletListGlyph = mark(
 // it is numbering, which is the only part of this the eye picks up at 16.
 export const NumberedListGlyph = mark(
   <>
-    <path d="M3.4 5.5 4.8 4.5v3.8" strokeWidth={NUMERAL} />
-    <path d="M3.5 11.2a1.15 1.15 0 1 1 2.3 0c0 .9-2.3 1.65-2.3 2.75h2.5" strokeWidth={NUMERAL} />
-    <path d="M3.5 15.8h2.6l-1.25 1.45a1.3 1.3 0 1 1-1.15 1.95" strokeWidth={NUMERAL} />
+    <path d="M3.9 5.5 5.3 4.5v3.8" strokeWidth={NUMERAL} />
+    <path d="M4 11.2a1.15 1.15 0 1 1 2.3 0c0 .9-2.3 1.65-2.3 2.75h2.5" strokeWidth={NUMERAL} />
+    <path d="M4 15.8h2.6l-1.25 1.45a1.3 1.3 0 1 1-1.15 1.95" strokeWidth={NUMERAL} />
     {rows(9.6)}
   </>
 )
@@ -106,8 +106,8 @@ export const NumberedListGlyph = mark(
 // menu wears. Two, drawn larger, is what carries the idea.
 export const TodoGlyph = mark(
   <>
-    <path d="m3.4 7.4 1.9 1.9 3.4-3.8" />
-    <path d="m3.4 16.4 1.9 1.9 3.4-3.8" />
+    <path d="m3.9 7.4 1.9 1.9 3.4-3.8" />
+    <path d="m3.9 16.4 1.9 1.9 3.4-3.8" />
     <path d="M12.2 7.6H20" />
     <path d="M12.2 16.6H20" />
   </>
