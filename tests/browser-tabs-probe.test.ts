@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { fireEvent, render } from '@testing-library/react'
+import { act, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -18,32 +18,36 @@ beforeEach(() => {
 
 const pillFor = (root: HTMLElement, id: string) => root.querySelector(`[data-tab="${id}"]`)
 
+const openTwo = () => {
+  useBrowser.getState().openUrl('https://example.com/one')
+  useBrowser.getState().openUrl('https://example.com/two')
+}
+
 describe('the tab strip', () => {
   it('brings a newly opened tab into view', () => {
     useBrowser.getState().openUrl('https://example.com/one')
     const { container } = render(createElement(BrowserPanel))
+    scrolled.length = 0
 
-    useBrowser.getState().openFile('/repo/src/deep/file.ts')
+    act(() => useBrowser.getState().openUrl('https://example.com/two'))
     const opened = useBrowser.getState().tabs[1]!
 
     expect(scrolled).toContain(pillFor(container, opened.id))
   })
 
   it('brings a tab that was picked from somewhere else into view', () => {
-    useBrowser.getState().openUrl('https://example.com/one')
-    useBrowser.getState().openUrl('https://example.com/two')
+    openTwo()
     const { container } = render(createElement(BrowserPanel))
     const first = useBrowser.getState().tabs[0]!
     scrolled.length = 0
 
-    useBrowser.getState().selectTab(first.id)
+    act(() => useBrowser.getState().selectTab(first.id))
 
     expect(scrolled).toContain(pillFor(container, first.id))
   })
 
   it('leaves a tab that is not the active one alone', () => {
-    useBrowser.getState().openUrl('https://example.com/one')
-    useBrowser.getState().openUrl('https://example.com/two')
+    openTwo()
     const { container } = render(createElement(BrowserPanel))
     const first = useBrowser.getState().tabs[0]!
 
@@ -51,21 +55,18 @@ describe('the tab strip', () => {
   })
 
   it('closes one tab from its own menu', () => {
-    useBrowser.getState().openUrl('https://example.com/one')
-    useBrowser.getState().openUrl('https://example.com/two')
+    openTwo()
     const { container, getByText } = render(createElement(BrowserPanel))
-    const first = useBrowser.getState().tabs[0]!
+    const [first, second] = useBrowser.getState().tabs
 
-    fireEvent.contextMenu(pillFor(container, first.id)!)
+    fireEvent.contextMenu(pillFor(container, first!.id)!)
     fireEvent.click(getByText('Close tab'))
 
-    expect(useBrowser.getState().tabs.map(t => t.id)).toEqual([useBrowser.getState().tabs[0]!.id])
-    expect(useBrowser.getState().tabs.some(t => t.id === first.id)).toBe(false)
+    expect(useBrowser.getState().tabs.map(t => t.id)).toEqual([second!.id])
   })
 
   it('closes every tab from the same menu', () => {
-    useBrowser.getState().openUrl('https://example.com/one')
-    useBrowser.getState().openUrl('https://example.com/two')
+    openTwo()
     const { container, getByText } = render(createElement(BrowserPanel))
     const first = useBrowser.getState().tabs[0]!
 
@@ -74,5 +75,12 @@ describe('the tab strip', () => {
 
     expect(useBrowser.getState().tabs).toEqual([])
     expect(useBrowser.getState().activeTabId).toBeNull()
+  })
+
+  it('leaves the tab menu closed until a right click asks for it', () => {
+    openTwo()
+    const { queryByText } = render(createElement(BrowserPanel))
+
+    expect(queryByText('Close all tabs')).toBeNull()
   })
 })
