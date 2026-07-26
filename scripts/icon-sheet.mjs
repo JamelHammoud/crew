@@ -17,7 +17,8 @@ const out = path.join(root, 'icon-sheet.html')
 const SETS = [
   { title: 'Crew icons', from: 'src/renderer/src/icons/index.ts', audit: true },
   { title: 'Thread steps', from: 'src/renderer/src/components/toolGlyphs.tsx', audit: true },
-  { title: 'Doc blocks', from: 'src/renderer/src/components/doc/docGlyphs.tsx', audit: false }
+  { title: 'Doc blocks', from: 'src/renderer/src/components/doc/docGlyphs.tsx', audit: false },
+  { title: 'Design canvas', from: 'src/renderer/src/design/glyphs.tsx', audit: true }
 ]
 
 const LIVE = 19.5
