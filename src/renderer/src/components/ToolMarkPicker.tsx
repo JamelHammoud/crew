@@ -37,11 +37,11 @@ export default function ToolMarkPicker({
               onClick={() => onPick(choice)}
               aria-label={choice}
               aria-pressed={mark === choice}
-              className={`h-11 rounded-field flex items-center justify-center transition-all duration-150 active:scale-90 ${
+              className={`aspect-square rounded-field flex items-center justify-center transition-all duration-150 active:scale-90 ${
                 mark === choice ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg hover:bg-fg/[0.06]'
               }`}
             >
-              <ToolMarkView mark={choice} className="w-5 h-5" />
+              <ToolMarkView mark={choice} className="w-[22px] h-[22px]" />
             </button>
           ))}
         </div>

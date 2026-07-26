@@ -206,6 +206,12 @@ export function isUploadFile(file: string): boolean {
   return UPLOAD_FILE.test(file)
 }
 
+export function mimeForMusic(file: string): string {
+  const extension = file.split('.').pop() ?? ''
+  const found = Object.entries(AUDIO_TYPES).find(([, value]) => value === extension)
+  return found ? found[0] : 'application/octet-stream'
+}
+
 export function uploadUrl(httpBase: string, file: string): string {
   return `${httpBase}/music/${file}`
 }
