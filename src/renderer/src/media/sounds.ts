@@ -183,10 +183,6 @@ export function stopRinging(): void {
   ringing = null
 }
 
-export function callRing(): Ring {
-  return CALL
-}
-
 export function soundFor(event: SessionEvent, selfId: string): SoundName | null {
   if (event.kind === 'message') {
     if (event.authorId === selfId || event.authorId === SYSTEM_AUTHOR_ID) return null
