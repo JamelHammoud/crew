@@ -9,7 +9,10 @@ export type ToolAction =
   | { kind: 'web'; url: string; external?: boolean }
   | { kind: 'terminal'; command?: string }
   | { kind: 'file'; path: string }
+  | { kind: 'doc'; page: string }
+  | { kind: 'board'; boardId: string }
   | { kind: 'prompt'; text: string; agentId?: string }
+  | { kind: 'copy'; text: string }
 
 export const TOOL_MARKS = [
   'globe',
