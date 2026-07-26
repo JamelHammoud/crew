@@ -134,7 +134,7 @@ export function Segmented<T extends string>({
           key={option.value}
           onClick={() => onChange(option.value)}
           aria-pressed={value === option.value}
-          className={`flex-1 h-8 rounded-[6px] text-xs font-semibold transition-colors ${
+          className={`flex-1 h-8 rounded-[7px] text-xs font-semibold transition-colors ${
             value === option.value ? 'bg-fg text-ink-900' : 'text-fg/45 hover:text-fg'
           }`}
         >
