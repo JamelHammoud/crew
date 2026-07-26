@@ -84,6 +84,34 @@ describe('the user menu', () => {
     }
   })
 
+  it('says nothing when you mute, and says so when you turn sound back on', () => {
+    show()
+    openMenu()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mute sounds' }))
+    expect(heard).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Unmute sounds' }))
+    expect(heard).toHaveBeenCalledWith('sound.on')
+  })
+
+  it('turns the word over with the mark it wears', () => {
+    show()
+    openMenu()
+    const row = screen.getByRole('button', { name: 'Mute sounds' })
+    expect(row.querySelector('.word-swap')).toBe(null)
+
+    fireEvent.click(row)
+    const turned = screen.getByRole('button', { name: 'Unmute sounds' })
+    expect(turned.querySelectorAll('.word-swap').length).toBe(2)
+  })
+
+  it('leaves a row that never changes its word still', () => {
+    show()
+    openMenu()
+    expect(screen.getByRole('button', { name: 'Crew' }).querySelector('.word-swap')).toBe(null)
+  })
+
   it('sets Leave apart from what comes before it', () => {
     show()
     openMenu()
