@@ -146,13 +146,14 @@ const bloom = (parts: Parts, roll: () => number): Layer[] => {
   const layers: Layer[] = palette.map((color, i) => {
     const angle = (i / palette.length + turn) * Math.PI * 2
     const reach = 0.26 + roll() * 0.24
+    const size = (color === parts.ground ? GROUND_REACH : 1) * (0.6 + roll() * 0.55)
     return {
       image: field(
         color,
         0.5 + Math.cos(angle) * reach,
         0.5 + Math.sin(angle) * reach,
-        0.6 + roll() * 0.55,
-        0.6 + roll() * 0.55,
+        size,
+        size * (0.85 + roll() * 0.4),
         40 + roll() * 26,
         1
       ),
