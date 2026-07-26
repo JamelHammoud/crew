@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { EditorContext, type Editor } from 'tldraw'
 import DesignCanvas from '../components/DesignCanvas'
 import { HeaderButton } from '../components/DesignControls'

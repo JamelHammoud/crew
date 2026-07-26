@@ -254,6 +254,12 @@ export default function DesignCanvas({
     if (ready && editor) applyDesignDefaults(editor)
   }, [ready, editor])
 
+  useEffect(() => {
+    if (!ready || !editor) return
+    restoreView(editor, boardId)
+    return watchView(editor, boardId)
+  }, [ready, editor, boardId])
+
   const selected = useValue(
     'design selected color',
     () => (editor ? selectionStroke(editor) : null),
