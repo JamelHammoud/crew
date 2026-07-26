@@ -96,6 +96,17 @@ describe('readRepoFile', () => {
   })
 })
 
+describe('repoPathOf', () => {
+  it('tells a path in the project from one that only starts like it', () => {
+    const root = makeRepo()
+    expect(repoPathOf(root, 'src/app/main.ts')).toBe('src/app/main.ts')
+    expect(repoPathOf(root, './readme.md')).toBe('readme.md')
+    expect(repoPathOf(root, path.join(root, 'src/app/main.ts'))).toBe('src/app/main.ts')
+    expect(repoPathOf(root, '/tmp/preview.mjs')).toBeNull()
+    expect(repoPathOf(root, '~/preview.mjs')).toBeNull()
+  })
+})
+
 describe('readLocalFile', () => {
   it('reads a file from this computer that is nowhere near the project', async () => {
     const outside = tmpDir('outside')
