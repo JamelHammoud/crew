@@ -60,8 +60,8 @@ export const MARK_LIMIT = 16
 // One emoji, however many code points it takes to say it: a face is one, a face
 // with a skin tone is three, and a flag or a family is a run of them joined up.
 // A keycap starts on a digit, so it is asked for on its own.
-const EMOJI = /^\p{Extended_Pictographic}[\p{Extended_Pictographic}‍️\u{1f3fb}-\u{1f3ff}]*$/u
-const KEYCAP = /^[0-9#*]️?⃣$/
+const EMOJI = /^\p{Extended_Pictographic}[\p{Extended_Pictographic}\u200d\ufe0f\u{1f3fb}-\u{1f3ff}]*$/u
+const KEYCAP = /^[0-9#*]\ufe0f?\u{20e3}$/u
 
 // A mark is one of the app's own or one emoji. A name from a newer build, or a
 // line of text where a mark goes, comes back as the default rather than as a
