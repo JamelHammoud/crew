@@ -1,6 +1,7 @@
 import { BrowserWindow, screen, type Rectangle } from 'electron'
 import { emptyPresence, type PresenceSnapshot } from '../shared/presence'
 import { panelSpot } from './tray-position'
+import { createPanelOptions } from './window-options'
 
 export interface PanelPage {
   preload: string
