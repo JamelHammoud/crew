@@ -1343,3 +1343,18 @@ body.light { background:#fff; color:#111 } body.light figure { background:#f2f2f
   <label><input type="checkbox" onchange="document.body.classList.toggle('light')"> light</label>
   <span>square 17 &middot; circle 18.5 &middot; live 19.5</span>
 </div>
+<script>
+// Read off the address rather than switched on afterwards, so a screenshot of
+// this page is taken of its first paint. A window that is not in front is not
+// repainted, and anything changed after it has drawn once never lands.
+const asked = new URLSearchParams(location.hash.slice(1))
+if (asked.has('keys')) document.body.classList.add('keys')
+if (asked.has('light')) document.body.classList.add('light')
+if (asked.has('only')) {
+  const [set, from, count] = asked.get('only').split(',').map(Number)
+  const style = document.createElement('style')
+  style.textContent = 'section:not(:nth-of-type(' + (set + 1) + ')), .bar, p.lede { display:none }'
+    + '.grid figure:nth-child(-n+' + from + '), .grid figure:nth-child(n+' + (from + count + 1) + ') { display:none }'
+  document.head.appendChild(style)
+}
+</script>
