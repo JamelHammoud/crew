@@ -66,6 +66,7 @@ function sharing(): void {
 // chosen inside the app rather than the one the system is wearing.
 function applyIcon(theme: IconTheme): void {
   iconTheme = theme
+  tray.theme(theme)
   if (process.platform === 'darwin') {
     app.dock?.setIcon(appIcon(theme))
     return
