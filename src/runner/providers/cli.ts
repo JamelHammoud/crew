@@ -200,42 +200,54 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         hooks.onTokens(tokens)
       }
 
+      const openBlock = (kind: 'thinking' | 'text', index: number) => {
+        streams[kind].ids.set(index, `b${blocks++}`)
+      }
+
+      const streamBlock = (kind: 'thinking' | 'text', index: number, chunk: string) => {
+        const stream = streams[kind]
+        let id = stream.ids.get(index)
+        if (!id) {
+          id = `b${blocks++}`
+          stream.ids.set(index, id)
+        }
+        if (kind === 'text') text += (text && !stream.open.has(id) ? '\n' : '') + chunk
+        stream.streamed = true
+        stream.open.add(id)
+        written += chunk.length
+        hooks.onStep({ id, kind, text: chunk, status: 'running' })
+      }
+
+      const closeBlock = (index: number) => {
+        for (const kind of ['thinking', 'text'] as const) {
+          const stream = streams[kind]
+          const id = stream.ids.get(index)
+          if (!id) continue
+          stream.ids.delete(index)
+          if (stream.open.delete(id)) hooks.onStep({ id, kind, status: 'done' })
+        }
+      }
+
       const handleLine = (line: string) => {
         if (!line.trim()) return
         raw += (raw ? '\n' : '') + line
         for (const out of opts.parser!(line)) {
-          if (out.thinkingStart) {
-            thinkingBlocks.set(out.thinkingStart.index, `b${blocks++}`)
-          }
+          if (out.thinkingStart) openBlock('thinking', out.thinkingStart.index)
+          if (out.textStart) openBlock('text', out.textStart.index)
           // A model that is asked not to show its reasoning still sends the
           // blocks, with an empty string where the words would be. Those are
           // not steps: a run that thinks in silence should look like it is
           // working, not open an empty card. Waiting for text is also what
           // leaves the complete block at the end of the message free to stand
           // in, on a CLI that only ever sends it that way.
-          if (out.thinkingDelta?.text) {
-            let id = thinkingBlocks.get(out.thinkingDelta.index)
-            if (!id) {
-              id = `b${blocks++}`
-              thinkingBlocks.set(out.thinkingDelta.index, id)
-            }
-            streamedThinking = true
-            thinkingWritten.add(id)
-            written += out.thinkingDelta.text.length
-            hooks.onStep({ id, kind: 'thinking', text: out.thinkingDelta.text, status: 'running' })
-          }
-          if (out.thinkingStop) {
-            const id = thinkingBlocks.get(out.thinkingStop.index)
-            thinkingBlocks.delete(out.thinkingStop.index)
-            if (id && thinkingWritten.delete(id)) {
-              hooks.onStep({ id, kind: 'thinking', status: 'done' })
-            }
-          }
-          if (out.thinking && !streamedThinking) {
+          if (out.thinkingDelta?.text) streamBlock('thinking', out.thinkingDelta.index, out.thinkingDelta.text)
+          if (out.textDelta?.text) streamBlock('text', out.textDelta.index, out.textDelta.text)
+          if (out.blockStop) closeBlock(out.blockStop.index)
+          if (out.thinking && !streams.thinking.streamed) {
             written += out.thinking.length
             hooks.onStep({ id: `b${blocks++}`, kind: 'thinking', text: out.thinking, status: 'done' })
           }
-          if (out.text) {
+          if (out.text && !streams.text.streamed) {
             text += (text ? '\n' : '') + out.text
             written += out.text.length
             hooks.onStep({ id: `b${blocks++}`, kind: 'text', text: out.text, status: 'done' })
