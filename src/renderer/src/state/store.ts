@@ -487,6 +487,7 @@ export const useCrew = create<CrewState>((set, get) => {
         set({ boards: msg.boards })
         break
       case 'design.snapshot':
+      case 'design.preview':
       case 'design.changes':
       case 'design.presence':
         for (const listener of designListeners) listener(msg)
