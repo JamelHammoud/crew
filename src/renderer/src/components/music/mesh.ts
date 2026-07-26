@@ -123,6 +123,20 @@ const partsOf = (colors: readonly string[], roll: () => number): Parts => {
 // another down a list.
 const shuffle = (parts: Parts): string[] => [parts.light, ...parts.fields, parts.ground]
 
+// A layout that takes fewer lobes than the palette has still takes the two ends
+// of it. Slicing off the front left the ground behind every time, and a picture
+// mixed from the middle of a palette is the flat one this started as.
+const ends = (parts: Parts, count: number): string[] => {
+  const middle = shuffle(parts).slice(1, -1)
+  const held = [parts.light, ...middle.slice(0, Math.max(0, count - 2)), parts.ground]
+  return held.slice(0, count)
+}
+
+// The deep end is the widest lobe of any cover. It is what everything brighter
+// stands on, so it needs the room, and it is the one thing keeping these from
+// reading as a set of pastels.
+const GROUND_REACH = 1.25
+
 // Lobes ringing the middle, each solid where it is thickest, all of them wide
 // enough to overlap their neighbours. This is the one that reads as the colors
 // pushing against each other.
