@@ -2,27 +2,13 @@ import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import type { PathLocation } from '../shared/files'
-import { statRepoFile } from './files'
+import { insideRoot, statRepoFile } from './files'
 
-const HOME_PATH = /^(?:~|\/Users\/[^/]+|\/home\/[^/]+|[A-Za-z]:\/Users\/[^/]+)(?:\/|$)/
 const WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/
 const MIRROR_SEGMENTS = 8
-const CASELESS = process.platform === 'darwin' || process.platform === 'win32'
 const ON_WINDOWS = process.platform === 'win32'
 
 const slashed = (text: string): string => text.split('\\').join('/')
-
-function insideOf(root: string, absolute: string): string | null {
-  const from = CASELESS ? root.toLowerCase() : root
-  const to = CASELESS ? absolute.toLowerCase() : absolute
-  const relative = path.relative(from, to)
-  if (relative.startsWith('..') || path.isAbsolute(relative)) return null
-  return absolute
-    .slice(root.length)
-    .replace(/^[/\\]+/, '')
-    .split(path.sep)
-    .join('/')
-}
 
 // Agents on other computers keep the project somewhere else, so the same file
 // arrives with a different prefix. The tail of the path still matches.
