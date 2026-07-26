@@ -156,7 +156,6 @@ export default function BrowserPanel() {
           <Tooltip label="Show in folder">
             <button
               onClick={() => void window.crew.revealFile(active.path)}
-              disabled={!active.path}
               aria-label="Show in folder"
               className={iconButton}
             >

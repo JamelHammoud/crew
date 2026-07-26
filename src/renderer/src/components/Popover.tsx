@@ -167,6 +167,15 @@ export function MenuItem({
   onClick: () => void
   onHover?: () => void
 }) {
+  // A row that is a toggle renames itself under the pointer that just pressed
+  // it, and the mark it wears changes with the word. Both turn over together, so
+  // the two read as one change rather than as two things blinking. Keyed on the
+  // label, which is what remounts them, and armed only once the label has really
+  // changed: opening a menu is not a change, and every row fading in behind the
+  // popover's own pop is two animations for one action.
+  const opened = useRef(label)
+  const swap = opened.current === label ? '' : 'word-swap'
+
   return (
     <button
       onClick={onClick}
@@ -178,8 +187,14 @@ export function MenuItem({
           : 'text-fg/70 hover:text-fg hover:bg-fg/5 data-active:text-fg data-active:bg-fg/5'
       }`}
     >
-      {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
-      <span className="flex-1 truncate">{label}</span>
+      {icon && (
+        <span key={label} className={`${swap} w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4`}>
+          {icon}
+        </span>
+      )}
+      <span key={label} className={`${swap} flex-1 truncate`}>
+        {label}
+      </span>
       {hint && <span className="text-xs text-fg/40 tabular-nums shrink-0">{hint}</span>}
       {checked && <CheckGlyph className="w-4 h-4 shrink-0 text-fg" />}
     </button>
