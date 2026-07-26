@@ -1,6 +1,6 @@
 import { lookupEmoji, SHEET_GRID, SHEET_URL } from './emojiData'
 
-export default function Emoji({ char, size = 18 }: { char: string; size?: number }) {
+export default function Emoji({ char, size = 18 }: { char: string; size?: number | string }) {
   const entry = lookupEmoji(char)
   if (!entry) {
     return (
