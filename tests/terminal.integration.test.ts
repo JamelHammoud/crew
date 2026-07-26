@@ -153,12 +153,10 @@ describe.skipIf(!unix)('a terminal tab', () => {
     made.close('tab-8')
     made.open('tab-8', process.cwd(), { cols: 80, rows: 24 }, heard.sink)
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    expect(made.count()).toBe(1)
-    expect(heard.exits).not.toContain('tab-8')
-
     made.write('tab-8', 'echo still-listening\r')
     await until(() => heard.text().includes('still-listening\r\n'), 'the second shell to answer')
+    expect(made.count()).toBe(1)
+    expect(heard.exits).not.toContain('tab-8')
   })
 
   it('keeps two terminals apart', async () => {
