@@ -156,11 +156,17 @@ describe('the ask bar', () => {
     expect(document.body.textContent).not.toContain('Card')
   })
 
-  it('stands under the shape it is asking about, in the stage’s own coordinates', () => {
+  it('stands centered under the shape it is asking about, in the stage’s own coordinates', () => {
     const { view } = boot()
     const bar = view.container.querySelector('.animate-pop') as HTMLElement
-    expect(bar.style.left).toBe('40px')
+    expect(bar.style.left).toBe('30px')
     expect(bar.style.top).toBe('112px')
+  })
+
+  it('centers on a wide shape rather than lining up with its left edge', () => {
+    const { view } = boot(['shape:a'], { bounds: { minX: 500, minY: 400, maxX: 1100, maxY: 480 } })
+    const bar = view.container.querySelector('.animate-pop') as HTMLElement
+    expect(bar.style.left).toBe('180px')
   })
 
   it('stands above a shape whose bottom edge is off the stage', () => {
