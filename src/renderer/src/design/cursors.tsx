@@ -87,8 +87,8 @@ export const DESIGN_CURSORS = {
   '--tl-cursor-move': arrow,
   '--tl-cursor-text': beam,
   '--tl-cursor-cross': crosshair,
-  '--tl-cursor-grab': hand(OPEN_HAND, 'grab'),
-  '--tl-cursor-grabbing': hand(CLOSED_HAND, 'grabbing')
+  '--tl-cursor-grab': hand(OPEN_HAND, OPEN_HAND_PLACE, 'grab'),
+  '--tl-cursor-grabbing': hand(CLOSED_HAND, CLOSED_HAND_PLACE, 'grabbing')
 } satisfies Partial<Record<`--tl-cursor-${TLCursorType}`, string>>
 
 export const ARROW_TIP = { x: AT_TIP.x, y: AT_TIP.y }
