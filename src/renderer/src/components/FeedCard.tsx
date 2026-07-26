@@ -26,7 +26,7 @@ export default function FeedCard({
   const presence = usePresence(author)
 
   return (
-    <div className="flex gap-4 animate-rise" onContextMenu={onContextMenu}>
+    <div className="flex items-start gap-4 animate-rise" onContextMenu={onContextMenu}>
       <Avatar name={author} presence={presence} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="flex items-baseline gap-2.5">
