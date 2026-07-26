@@ -1,28 +1,57 @@
+import type { ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './styles.css'
+import type { CrewTool } from '../../shared/toolbox'
 import ToolBuilder from './components/ToolBuilder'
-import Toolbox from './components/Toolbox'
+import ToolMarkPicker from './components/ToolMarkPicker'
 import { useCrew } from './state/store'
+import './styles.css'
 
 useCrew.setState({
-  tools: [
-    { id: 't1', name: 'Figma', mark: 'globe', action: { kind: 'web', url: 'https://figma.com' }, createdBy: 'Jamel', ts: 1 },
-    { id: 't2', name: 'Ship it', mark: '🚀', action: { kind: 'terminal', command: 'yarn dist' }, createdBy: 'Jamel', ts: 2 }
-  ],
+  tools: [],
   agents: [
-    { id: 'a1', label: 'Fable', provider: 'claude', ownerId: 'o', ownerName: 'Jamel', status: 'idle', runs: {}, settings: {}, fields: [] },
-    { id: 'a2', label: 'Bubbles', provider: 'claude', ownerId: 'o', ownerName: 'Jamel', status: 'idle', runs: {}, settings: {}, fields: [] }
+    { id: 'a1', label: 'Fable', provider: 'claude', ownerId: 'o', ownerName: 'Jamel', status: 'idle', runs: {} },
+    { id: 'a2', label: 'Bubbles', provider: 'claude', ownerId: 'o', ownerName: 'Jamel', status: 'idle', runs: {} }
   ]
 } as never)
 
-function Card({ children }: { children: React.ReactNode }) {
+const made = (mark: string, name: string, action: CrewTool['action']): CrewTool => ({
+  id: 'x',
+  name,
+  mark,
+  action,
+  createdBy: 'Jamel',
+  ts: 1
+})
+
+function Card({ children }: { children: ReactNode }) {
   return <div className="glass w-[304px] rounded-2xl overflow-hidden self-start">{children}</div>
 }
 
 createRoot(document.getElementById('root')!).render(
-  <div className="min-h-screen bg-ink-900 p-6 flex gap-6 items-start">
-    <Card><ToolBuilder tool={null} onDone={() => {}} /></Card>
-    <div id="slot2" />
-    <Toolbox open={false} onClose={() => {}} onChat={() => {}} />
+  <div className="min-h-screen bg-ink-900 p-8 flex flex-wrap gap-8 items-start">
+    <Card>
+      <ToolBuilder tool={null} onDone={() => {}} />
+    </Card>
+    <Card>
+      <ToolBuilder
+        tool={made('\u{1F680}', 'Ship it', { kind: 'terminal', command: 'yarn build\nyarn dist' })}
+        onDone={() => {}}
+      />
+    </Card>
+    <Card>
+      <ToolBuilder tool={made('doc', 'Notes', { kind: 'file', path: 'docs/notes.md' })} onDone={() => {}} />
+    </Card>
+    <Card>
+      <ToolBuilder
+        tool={made('chat', 'Tests', { kind: 'prompt', text: 'Run the tests and fix what fails', agentId: 'a2' })}
+        onDone={() => {}}
+      />
+    </Card>
+    <Card>
+      <ToolMarkPicker mark="star" onPick={() => {}} onBack={() => {}} />
+    </Card>
+    <Card>
+      <ToolMarkPicker mark="\u{1F680}" onPick={() => {}} onBack={() => {}} />
+    </Card>
   </div>
 )
