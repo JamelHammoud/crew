@@ -139,11 +139,7 @@ const peer = (peerId: string, name: string): HuddlePeer => ({
   joinedAt: 1
 })
 
-<<<<<<< HEAD
-const room = (...peers: HuddlePeer[]): HuddleRoom => ({ peers, startedAt: 10 })
-=======
 const room = (...peers: HuddlePeer[]): HuddleRoom => ({ id: 'call-1', peers, startedAt: 10 })
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
 const arrives = (next: HuddleRoom): void => wire.deliver?.({ type: 'huddle.room', room: next })
 
 const backToHome = (): void => {

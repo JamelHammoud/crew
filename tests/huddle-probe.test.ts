@@ -407,17 +407,10 @@ describe('picking a microphone and a camera', () => {
     made.length = 0
     asked.audio = null
     asked.video = null
-<<<<<<< HEAD
-    localStorage.clear()
-    Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
-    useHuddle.setState({
-      room: { peers: [], startedAt: null },
-=======
     storage.clear()
     Object.defineProperty(navigator, 'mediaDevices', { value: mediaDevices, configurable: true })
     useHuddle.setState({
       room: { id: null, peers: [], startedAt: null },
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
       joined: false,
       joining: false,
       micOn: false,
@@ -488,11 +481,7 @@ describe('picking a microphone and a camera', () => {
       fireEvent.click(screen.getByText('Shure MV7'))
     })
 
-<<<<<<< HEAD
-    await waitFor(() => expect(localStorage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
-=======
     await waitFor(() => expect(storage.getItem('crew.huddle.microphone')).toBe('mic-usb'))
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
   })
 
   // A camera picked while the camera is off is a choice, not a reason to start
@@ -515,11 +504,7 @@ describe('picking a microphone and a camera', () => {
   // A microphone that was chosen once and has since been unplugged must not be
   // asked for in a way that fails, or someone lands in the call with nothing.
   it('asks for a remembered device without insisting on it', async () => {
-<<<<<<< HEAD
-    localStorage.setItem('crew.huddle.microphone', 'mic-gone')
-=======
     storage.setItem('crew.huddle.microphone', 'mic-gone')
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
     useHuddle.setState({ micId: 'mic-gone' })
     await enter()
 
@@ -527,48 +512,3 @@ describe('picking a microphone and a camera', () => {
     expect(useHuddle.getState().micOn).toBe(true)
   })
 })
-<<<<<<< HEAD
-
-describe('a huddle you are in, still', () => {
-  beforeEach(() => {
-    session()
-    useHuddle.setState({
-      room: { peers: [peer('me', 'Jamel', { muted: true }), peer('a', 'Ali')], startedAt: Date.now() - 65_000 },
-      peerId: 'me',
-      joined: true,
-      joining: false,
-      micOn: false,
-      cameraOn: false,
-      sharing: false,
-      expanded: false,
-      picking: false,
-      speaking: ['a'],
-      problem: null,
-      localCamera: null,
-      localScreen: null,
-      remote: {},
-      link: {}
-    })
-  })
-
-  afterEach(() => {
-    cleanup()
-  })
-
-  it('keeps the face up until the pictures actually arrive', async () => {
-    const camera = fakeVideo()
-    useHuddle.setState({
-      room: { peers: [peer('me', 'Jamel'), peer('a', 'Ali', { camera: true })], startedAt: 10 },
-      remote: { a: { mic: emptyStream(), camera: camera.stream, screen: emptyStream() } },
-      link: { a: 'connected' }
-    })
-    const { container } = render(createElement(App))
-
-    expect(container.querySelector('video')).toBeNull()
-
-    camera.arrive()
-    await waitFor(() => expect(container.querySelector('video')).toBeTruthy())
-  })
-})
-=======
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b

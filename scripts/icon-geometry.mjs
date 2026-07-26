@@ -265,13 +265,6 @@ export function measure(markup, stroke = 1.5) {
       ink += length * weight
       area = Math.abs(area / 2)
       if (shape.filled) ink += area
-<<<<<<< HEAD
-      const shut = Math.hypot(run[0][0] - run.at(-1)[0], run[0][1] - run.at(-1)[1]) < 0.01
-      // How far this run gets from end to end, which is what a chevron, a plus
-      // or a cross is really asking to be measured on.
-      reach = Math.max(reach, Math.hypot(hi[0] - lo[0], hi[1] - lo[1]))
-      if (shut && area >= ENCLOSING && area > (body?.area ?? 0))
-=======
       // How far this run gets from end to end, which is what a chevron, a plus
       // or a cross is really asking to be measured on. The run's own box would
       // count the bend as reach and read a tick as half again its length.
@@ -282,18 +275,10 @@ export function measure(markup, stroke = 1.5) {
       // chevron is that their ends come back near each other.
       const encloses = area >= ENCLOSING && gap < 0.45 * length
       if (encloses && area > (body?.area ?? 0))
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
         body = { area, width: hi[0] - lo[0], height: hi[1] - lo[1] }
     }
   }
   if (minX === Infinity) return null
-<<<<<<< HEAD
-  return {
-    x: minX,
-    y: minY,
-    width: maxX - minX,
-    height: maxY - minY,
-=======
   const width = maxX - minX
   const height = maxY - minY
   return {
@@ -301,20 +286,12 @@ export function measure(markup, stroke = 1.5) {
     y: minY,
     width,
     height,
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
     // The centre of the art, which is what has to agree with the centre of the
     // box. A shape a quarter unit low reads low in every row it sits in.
     cx: (minX + maxX) / 2,
     cy: (minY + maxY) / 2,
     ink,
     reach,
-<<<<<<< HEAD
-    // The largest thing the art encloses, and how round it is. A circle fills
-    // 79% of its own box and a rectangle fills all of it, which is enough to
-    // tell a ring from a panel without being told.
-    body,
-    round: body ? body.area / (body.width * body.height) < 0.88 : false
-=======
     body,
     // A circle fills 79% of its own box where a rectangle fills all of it, which
     // tells a ring from a panel without being told. It only counts when the ring
@@ -326,6 +303,5 @@ export function measure(markup, stroke = 1.5) {
         body.width >= 0.9 * width &&
         body.height >= 0.9 * height
     )
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
   }
 }

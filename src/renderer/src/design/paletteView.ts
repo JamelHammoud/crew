@@ -1,10 +1,6 @@
 import type { Editor, TLShape, TLTextShape } from 'tldraw'
 import { BASE_TYPE, type Stroke, type TypeStyle } from '../../../shared/designNode'
-<<<<<<< HEAD
-import { paintColor, setTextShapeType, textShapeType, typePaint } from './textType'
-=======
 import { autoLineHeight, paintColor, setTextShapeType, textShapeType, typePaint } from './textType'
->>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
 import {
   alignOf,
   dashStyle,
@@ -22,11 +18,7 @@ import {
 } from './palette'
 import { emptyView, type NodeView } from './nodeView'
 
-<<<<<<< HEAD
-function textShapeView(editor: Editor, shape: TLShape): NodeView {
-=======
 function textShapeView(editor: Editor, shape: TLTextShape): NodeView {
->>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
   const view = emptyView(shape.id)
   const type = textShapeType(editor, shape)
   const set = (patch: Partial<TypeStyle>) => setTextShapeType(editor, shape, patch)
@@ -43,10 +35,7 @@ function textShapeView(editor: Editor, shape: TLTextShape): NodeView {
   view.text = {
     value: type,
     set,
-<<<<<<< HEAD
-=======
     autoLine: autoLineHeight(editor),
->>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
     fields: {
       size: true,
       weight: true,
@@ -63,11 +52,7 @@ function textShapeView(editor: Editor, shape: TLTextShape): NodeView {
 }
 
 export function paletteView(editor: Editor, shape: TLShape): NodeView {
-<<<<<<< HEAD
-  if (shape.type === 'text') return textShapeView(editor, shape)
-=======
   if (shape.type === 'text') return textShapeView(editor, shape as TLTextShape)
->>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
   const props = shape.props as Record<string, unknown>
   const has = (key: string) => key in props
   const view = emptyView(shape.id)
