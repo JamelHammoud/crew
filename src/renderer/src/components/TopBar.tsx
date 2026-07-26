@@ -193,7 +193,7 @@ export default function TopBar({
             <Toolbox
               open={toolboxOpen}
               onClose={() => setToolboxOpen(false)}
-              onSidePanel={() => {
+              onChat={() => {
                 if (tab !== 'chat') onTab('chat')
               }}
             />
