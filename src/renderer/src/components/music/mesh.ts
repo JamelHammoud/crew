@@ -228,28 +228,11 @@ export function meshOf(item: MusicItem, size: number): Mesh {
   const roll = stream(seedOf(item.id))
   const parts = partsOf(item.colors, roll)
   const layout = LAYOUTS[Math.floor(roll() * LAYOUTS.length)]
-  // Where the light lands, and the corner it falls away into. They are laid on
-  // opposite each other, so every cover has a bright end and a deep one however
-  // its layout came out: a picture with no deep in it reads as soft whatever
-  // colors are in it, and a picture with no bright reads as a wash.
-  //
-  // Both are plain color over plain color. The highlight used to be screened,
-  // which is the one blend that reaches white, and over a palette whose
-  // brightest color is already bright it turned every cover into the same pale
-  // thing. Nothing here blends any more, and the range comes from the palette
-  // carrying its own light and its own ground.
-  const from = roll()
-  const layers: Layer[] = [
-    {
-      image: field(lift(parts.light, 0.3), 0.16 + from * 0.68, 0.1 + roll() * 0.34, 0.44, 0.4, 8, 0.9),
-      blend: 'normal'
-    },
-    {
-      image: field(parts.ground, 0.84 - from * 0.68, 0.82 + roll() * 0.24, 0.82, 0.72, 22, 0.9),
-      blend: 'normal'
-    },
-    ...layout(parts, roll)
-  ]
+  // The layout is the whole picture. Nothing is added over the top of it, so no
+  // two covers share a lit corner or a shaded one, and every layer in it is a
+  // plain color over a plain color. Blending was tried and every mode that
+  // reaches white or black takes the palette with it.
+  const layers = layout(parts, roll)
   return {
     backgroundColor: parts.ground,
     backgroundImage: layers.map(one => one.image).join(', '),
