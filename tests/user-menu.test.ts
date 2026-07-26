@@ -15,8 +15,17 @@ vi.mock('../src/renderer/src/media/sounds', async importOriginal => {
 
 const heard = playSound as unknown as ReturnType<typeof vi.fn>
 
+const store = new Map<string, string>()
+
 beforeEach(() => {
   heard.mockClear()
+  store.clear()
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, value),
+    removeItem: (key: string) => void store.delete(key),
+    clear: () => store.clear()
+  })
   setSounds(true)
   vi.stubGlobal(
     'ResizeObserver',
