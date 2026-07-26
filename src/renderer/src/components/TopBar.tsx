@@ -177,7 +177,10 @@ export default function TopBar({
           <div className="relative flex items-center">
             <Tooltip label="Toolbox" disabled={toolboxOpen}>
               <button
-                onClick={() => setToolboxOpen(open => !open)}
+                onClick={() => {
+                  if (!toolboxOpen) playSound('toolbox.open')
+                  setToolboxOpen(open => !open)
+                }}
                 aria-label="Toolbox"
                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
                   toolboxOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
@@ -196,7 +199,10 @@ export default function TopBar({
           </div>
           <Tooltip label="Tasks">
             <button
-              onClick={onToggleTasks}
+              onClick={() => {
+                if (!tasksOpen) playSound('tasks.open')
+                onToggleTasks()
+              }}
               aria-label="Tasks"
               className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
                 tasksOpen ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
