@@ -21,6 +21,7 @@ export function Popover({
   const holderRef = useRef<HTMLSpanElement>(null)
   const popRef = useRef<HTMLDivElement>(null)
   const placedRef = useRef<'top' | 'bottom' | null>(null)
+  const sizeRef = useRef<{ w: number; h: number } | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
 
@@ -28,6 +29,7 @@ export function Popover({
     if (!open) {
       setRect(null)
       setSize(null)
+      sizeRef.current = null
       placedRef.current = null
       return
     }
