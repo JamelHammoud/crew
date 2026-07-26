@@ -28,7 +28,7 @@ export function commandOutput(raw: unknown): string | undefined {
   const kept = () => [...head, elide(lines.length - head.length - tail.length), ...tail].join('\n')
   while (kept().length > MAX_CHARS && tail.length > 1) tail = tail.slice(1)
   while (kept().length > MAX_CHARS && head.length > 1) head.pop()
-  return clip(kept())
+  return kept()
 }
 
 // Claude and Kimi hand back either a plain string or the content blocks the
