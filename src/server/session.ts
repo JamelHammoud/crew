@@ -1573,6 +1573,7 @@ export class CrewSession {
       status: step.status,
       name: step.name || existing?.name,
       detail: step.detail ?? existing?.detail,
+      output: step.output ?? existing?.output,
       files: step.files ?? existing?.files,
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
