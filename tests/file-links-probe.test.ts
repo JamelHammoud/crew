@@ -403,6 +403,15 @@ describe('changed lines', () => {
     expect(taken()).toEqual(['  return 1'])
   })
 
+  it('joins the line above when you rub out under a block that was taken out', async () => {
+    await openDiff()
+    const area = editor()
+    const at = area.value.indexOf('export function other() {')
+    fireEvent.change(area, { target: { value: area.value.slice(0, at - 1) + area.value.slice(at) } })
+    await waitFor(() => expect(document.querySelectorAll('[data-line]').length).toBe(9))
+    expect(document.querySelector('[data-line="5"]')?.textContent).toContain('export function other() {')
+  })
+
   it('keeps the caret out of the lines that were taken out', async () => {
     await openDiff()
     const area = editor()
