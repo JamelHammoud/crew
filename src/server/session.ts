@@ -1190,6 +1190,15 @@ export class CrewSession {
     })
   }
 
+  // A peek is a snapshot nobody joins. It answers the one socket that asked and
+  // never touches presence, so a preview of a board someone is drawing on
+  // cannot reload the board under them.
+  private handleDesignPeek(ws: WebSocket, boardId: string): void {
+    const board = this.designs.get(boardId)
+    if (!board) return
+    this.send(ws, { type: 'design.preview', boardId, document: board.document })
+  }
+
   // The first person to open a fresh board sends the starting document, so the
   // server never has to know how to build one. Everyone else loads it from the
   // snapshot broadcast here.
