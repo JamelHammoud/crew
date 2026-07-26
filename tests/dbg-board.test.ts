@@ -22,9 +22,20 @@ describe('debug', () => {
     await ui.waitFor(m => m.type === 'design.boards' && m.boards.some(b => b.id === 'flow-1abc'))
     const fake = agentId('jamel', 'fake')
     ui.chat('take a look at #Flow @Fake', [fake])
-    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
-    const first = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
-    console.log('FIRST OK', first.ok, (first.text ?? '').slice(0, 200))
+    let started: Started
+    try {
+      started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    } catch (err) {
+      console.log('NO THREAD', ui.events.map(e => e.kind).join(','))
+      throw err
+    }
+    try {
+      const first = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
+      console.log('FIRST OK', first.ok, (first.text ?? '').slice(0, 300))
+    } catch (err) {
+      console.log('NO END', JSON.stringify(ui.events.map(e => [e.kind, (e as any).text?.slice(0,120), (e as any).error]), null, 1))
+      throw err
+    }
     ui.send({ type: 'design.rename', boardId: 'flow-1abc', name: 'Checkout' })
     await ui.waitFor(m => m.type === 'design.boards' && m.boards.some(b => b.name === 'Checkout'))
     ui.chat('carry on', [fake], started.threadId)
