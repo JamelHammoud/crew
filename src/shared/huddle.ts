@@ -9,6 +9,9 @@ export interface HuddlePeer {
 }
 
 export interface HuddleRoom {
+  // The call the chat block was written for, so a block can tell whether the
+  // call it names is the one happening right now.
+  id: string | null
   peers: HuddlePeer[]
   startedAt: number | null
 }
