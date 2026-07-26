@@ -56,7 +56,7 @@ export default function DesignToolbar({
       <div
         role="toolbar"
         aria-label="Design tools"
-        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-2 pointer-events-auto"
+        className="glass glass-strong rounded-full h-12 flex items-center gap-1 px-3 pointer-events-auto"
       >
         {TOOL_GROUPS.map(group => (
           <Group
