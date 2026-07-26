@@ -1,6 +1,7 @@
 import { useValue, type Editor } from 'tldraw'
 import type { Corner, DesignNodeProps } from '../../../shared/designNode'
 import type { DesignNodeShape } from './DesignNodeUtil'
+import { selectionChromeVisible } from './selectionChrome'
 import { selectionStroke } from './selectionColor'
 
 interface Rect {
