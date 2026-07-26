@@ -812,21 +812,29 @@ body {
 }
 
 .md-peek {
-  @apply text-xs leading-[1.55] text-fg-muted;
+  @apply text-[13px] leading-[1.6] text-fg-secondary;
+}
+
+.md-peek h1 {
+  @apply text-sm;
+}
+
+.md-peek h2,
+.md-peek h3 {
+  @apply text-[13px];
 }
 
 .md-peek h1,
 .md-peek h2,
 .md-peek h3 {
-  @apply text-xs text-fg-secondary mt-2 mb-0.5;
+  @apply mt-2.5 mb-1;
 }
 
 .md-peek p,
 .md-peek ul,
 .md-peek ol,
-.md-peek pre,
 .md-peek blockquote {
-  @apply my-1;
+  @apply my-1.5;
 }
 
 .md-peek ul,
@@ -835,19 +843,19 @@ body {
 }
 
 .md-peek code {
-  @apply text-[11px] px-1 py-0;
+  @apply text-[11px];
 }
 
 .md-peek pre {
-  @apply p-2 rounded-lg my-1.5;
+  @apply my-1.5 rounded-lg p-2;
 }
 
 .md-peek .table-scroll {
-  @apply my-1.5 rounded-lg;
+  @apply my-2 rounded-lg;
 }
 
 .md-peek table {
-  @apply text-xs;
+  @apply text-[11px];
 }
 
 .md-peek th,
@@ -856,5 +864,29 @@ body {
 }
 
 .md-peek img {
-  @apply rounded-lg my-1.5;
+  @apply my-1.5 rounded-lg;
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  @apply relative overflow-hidden bg-fg/[0.04];
+}
+
+.skeleton::after {
+  @apply absolute inset-0;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.07), transparent);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.light .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.05), transparent);
 }
