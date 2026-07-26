@@ -275,6 +275,34 @@ describe('the noise a huddle makes when it starts', () => {
     expect(started.length).toBe(0)
   })
 
+  it('cuts the phrase that is already sounding, rather than only the turns to come', () => {
+    arrives(emptyRoom())
+    arrives(room(peer('a', 'Ali')))
+
+    expect(lastSound()).toBeGreaterThan(1)
+
+    arrives(emptyRoom())
+
+    expect(lastSound()).toBeLessThan(0.5)
+    expect(takenToNothing()).toBe(CALL.phrase.length)
+  })
+
+  it('goes quiet the moment you answer, mid phrase', async () => {
+    arrives(emptyRoom())
+    arrives(room(peer('a', 'Ali')))
+    await useHuddle.getState().join()
+
+    expect(lastSound()).toBeLessThan(0.5)
+  })
+
+  it('fades what it cuts rather than chopping it', () => {
+    arrives(emptyRoom())
+    arrives(room(peer('a', 'Ali')))
+    stopRinging()
+
+    expect(lastSound()).toBeGreaterThan(0)
+  })
+
   it('stops when you leave the session', () => {
     arrives(emptyRoom())
     arrives(room(peer('a', 'Ali')))
