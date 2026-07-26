@@ -328,30 +328,28 @@ export default function Toolbox({
               />
             ))}
           </div>
-          <Rule />
-          {tools.length === 0 ? (
-            <p className="px-4 py-3.5 text-xs leading-relaxed text-fg/45">
-              Build your own tools. A tool is one button that opens a page or runs a command.
-            </p>
-          ) : (
-            <div className="p-2.5 grid grid-cols-3 gap-1.5">
-              {tools.map(tool => (
-                <Tile
-                  key={tool.id}
-                  mark={markFor(tool.mark)}
-                  name={tool.name}
-                  onClick={() => press(() => runTool(tool.action), true)}
-                >
-                  <button
-                    onClick={() => setBuilding({ tool })}
-                    aria-label={`Edit ${tool.name}`}
-                    className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90 group-hover:opacity-100 focus-visible:opacity-100"
+          {tools.length > 0 && (
+            <>
+              <Rule />
+              <div className="p-2.5 grid grid-cols-3 gap-1.5">
+                {tools.map(tool => (
+                  <Tile
+                    key={tool.id}
+                    mark={markFor(tool.mark)}
+                    name={tool.name}
+                    onClick={() => press(() => runTool(tool.action), true)}
                   >
-                    <PencilGlyph className="w-3 h-3" />
-                  </button>
-                </Tile>
-              ))}
-            </div>
+                    <button
+                      onClick={() => setBuilding({ tool })}
+                      aria-label={`Edit ${tool.name}`}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 opacity-0 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90 group-hover:opacity-100 focus-visible:opacity-100"
+                    >
+                      <PencilGlyph className="w-3 h-3" />
+                    </button>
+                  </Tile>
+                ))}
+              </div>
+            </>
           )}
         </>
       )}
