@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useEditor, useValue } from 'tldraw'
-import { PanelButton } from '../components/DesignControls'
 import type { Corner, DesignNodeProps } from '../../../shared/designNode'
+import { PanelButton } from '../components/DesignControls'
 import type { DesignNodeShape } from './DesignNodeUtil'
 import { CornerGlyph, CornersGlyph, OpacityGlyph } from './glyphs'
-import { MixedInput, NumberInput, Row, Section, SubLabel } from './InspectorFields'
+import { MixedInput, NumberInput, Section, SubLabel } from './InspectorFields'
 
 const CORNERS: Array<{ at: number; label: string; spin: string }> = [
   { at: 0, label: 'Top left', spin: '' },
@@ -18,6 +18,8 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
   const opacity = useValue('design opacity', () => editor.getSharedOpacity(), [editor])
   const [perCorner, setPerCorner] = useState(false)
   const value = opacity.type === 'shared' ? opacity.value : 1
+  const props = node ? (node.props as DesignNodeProps) : null
+  const uniform = props ? props.radius.every(part => part === props.radius[0]) : true
 
   const setOpacity = (next: number) => {
     editor.run(() => {
@@ -26,8 +28,6 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
     })
   }
 
-  const props = node?.props as DesignNodeProps | undefined
-  const uniform = props ? props.radius.every(part => part === props.radius[0]) : true
   const setRadius = (radius: Corner) => {
     if (!node || !props) return
     editor.markHistoryStoppingPoint()
@@ -43,58 +43,50 @@ export default function Appearance({ node }: { node: DesignNodeShape | null }) {
 
   return (
     <Section title="Appearance">
-      <Row>
+      <div className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
         <SubLabel>Opacity</SubLabel>
-        {props && <SubLabel>Corner radius</SubLabel>}
-      </Row>
-      <div className="flex items-start gap-2">
-        <div className="flex-1 min-w-0 grid grid-cols-1 gap-2">
-          <NumberInput
-            icon={<OpacityGlyph className="w-4 h-4" />}
-            value={Math.round(value * 100)}
-            min={10}
-            max={100}
-            suffix="%"
-            onChange={next => setOpacity(next / 100)}
-          />
-        </div>
-        {props && (
-          <div className="flex-1 min-w-0 flex flex-col gap-2">
-            {uniform ? (
-              <NumberInput
-                icon={<CornersGlyph className="w-4 h-4" />}
-                value={props.radius[0]}
-                min={0}
-                onChange={setAll}
-              />
-            ) : (
-              <MixedInput label="Corner radius" icon={<CornersGlyph className="w-4 h-4" />} onChange={setAll} />
-            )}
-          </div>
+        {props ? <SubLabel>Corner radius</SubLabel> : <span />}
+        <span />
+
+        <NumberInput
+          icon={<OpacityGlyph className="w-4 h-4" />}
+          value={Math.round(value * 100)}
+          min={10}
+          max={100}
+          suffix="%"
+          onChange={next => setOpacity(next / 100)}
+        />
+        {props ? (
+          uniform ? (
+            <NumberInput icon={<CornersGlyph className="w-4 h-4" />} value={props.radius[0]} min={0} onChange={setAll} />
+          ) : (
+            <MixedInput label="Corner radius" icon={<CornersGlyph className="w-4 h-4" />} onChange={setAll} />
+          )
+        ) : (
+          <span />
         )}
-        {props && (
-          <PanelButton
-            label="Each corner"
-            active={perCorner}
-            onClick={() => setPerCorner(open => !open)}
-          >
+        {props ? (
+          <PanelButton label="Each corner" active={perCorner} onClick={() => setPerCorner(open => !open)}>
             <CornerGlyph className="w-4 h-4" />
           </PanelButton>
+        ) : (
+          <span />
         )}
-      </div>
-      {props && perCorner && (
-        <Row>
-          {CORNERS.map(corner => (
-            <NumberInput
-              key={corner.at}
-              icon={<CornerGlyph className={`w-4 h-4 ${corner.spin}`} />}
-              value={props.radius[corner.at]}
-              min={0}
-              onChange={next => setOne(corner.at, next)}
-            />
+
+        {props &&
+          perCorner &&
+          CORNERS.map((corner, index) => (
+            <span key={corner.at} className={index % 2 === 0 ? 'contents' : 'contents'}>
+              <NumberInput
+                icon={<CornerGlyph className={`w-4 h-4 ${corner.spin}`} />}
+                value={props.radius[corner.at]}
+                min={0}
+                onChange={next => setOne(corner.at, next)}
+              />
+              {index % 2 === 1 && <span />}
+            </span>
           ))}
-        </Row>
-      )}
+      </div>
     </Section>
   )
 }
