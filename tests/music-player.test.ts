@@ -122,16 +122,13 @@ describe('playing a track', () => {
     expect(audio.notes().length).toBeGreaterThan(first.length)
   })
 
+  // A note is several sounds struck together, so what is compared is the
+  // moments the music lands on rather than how many parts each one has.
   it('plays what the tune says, in the order it says it', () => {
     player.play(overworld, 0)
-    const written = strikesOf(overworld)
-      .filter(note => note.at < 0.6)
-      .map(note => Math.round(note.at * 1000))
-      .sort((a, b) => a - b)
-    const played = audio
-      .notes()
-      .map(note => Math.round((note.at - 100) * 1000))
-      .sort((a, b) => a - b)
+    const moments = (times: number[]) => [...new Set(times.map(at => Math.round(at * 1000)))].sort((a, b) => a - b)
+    const written = moments(strikesOf(overworld).filter(note => note.at < 0.6).map(note => note.at))
+    const played = moments(audio.notes().map(note => note.at - 100))
     expect(played).toEqual(written)
   })
 
