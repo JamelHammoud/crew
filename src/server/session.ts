@@ -604,6 +604,12 @@ export class CrewSession {
       case 'huddle.delete':
         if (meta.role === 'ui') this.handleDeleteHuddle(member, msg.huddleId)
         break
+      case 'music.set':
+        if (meta.role === 'ui') this.handleMusicSet(member, msg.trackId, msg.playing, msg.at)
+        break
+      case 'music.off':
+        if (meta.role === 'ui') this.handleMusicOff()
+        break
       case 'queue.edit':
         if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
         break
