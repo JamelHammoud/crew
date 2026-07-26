@@ -164,6 +164,32 @@ function DocRow({
   )
 }
 
+function EmojiRow({
+  entry,
+  active,
+  onClick,
+  onMouseEnter
+}: {
+  entry: EmojiEntry
+  active: boolean
+  onClick: () => void
+  onMouseEnter: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      aria-label={`:${entry.shortName}:`}
+      className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
+        active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
+      }`}
+    >
+      <Emoji char={entry.char} size={18} />
+      <span className="flex-1 truncate">:{entry.shortName}:</span>
+    </button>
+  )
+}
+
 export function MentionMenu({
   matches,
   activeIndex,
