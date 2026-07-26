@@ -511,5 +511,3 @@ export function shapesUnder(editor: Editor, point: { x: number; y: number }): TL
     .filter(shape => !shape.isLocked)
     .reverse()
 }
-
-export { ArrowGlyph }
