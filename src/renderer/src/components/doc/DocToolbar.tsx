@@ -53,7 +53,7 @@ export default function DocToolbar() {
   if (link !== null)
     return (
       <div className="glass flex h-9 w-80 items-center gap-1.5 rounded-full pl-3 pr-1.5 animate-pop">
-        <LinkIcon className="w-4 h-4 shrink-0 text-fg-muted" />
+        <LinkGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
         <input
           ref={inputRef}
           value={link}
@@ -140,7 +140,7 @@ export default function DocToolbar() {
           aria-label="Link"
           className="w-7 h-7 rounded-full grid place-items-center text-fg-secondary hover:text-fg hover:bg-fg/[0.08] transition-all active:scale-95"
         >
-          <LinkIcon className="w-4 h-4" />
+          <LinkGlyph className="w-4 h-4" />
         </button>
       </Tooltip>
     </div>
