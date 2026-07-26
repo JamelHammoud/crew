@@ -100,7 +100,6 @@ function ellipseRing(w: number, h: number): UnitPoint[] {
   return points
 }
 
-// The outline a node clips its children to, in the node's own coordinates.
 export function nodeOutline(shape: NodeShape, w: number, h: number, radius: Corner): UnitPoint[] {
   if (shape === 'ellipse') return ellipseRing(w, h)
   const points = nodePolygon(shape)
