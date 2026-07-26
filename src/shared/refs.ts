@@ -9,8 +9,6 @@ export interface CrewRef {
   title: string
 }
 
-// One # names one thing. Docs are added first, so a board sharing a doc's
-// title is left out rather than making the same word mean two things.
 export function crewRefs(docs: Record<string, DocPage>, boards: DesignBoardMeta[]): CrewRef[] {
   const taken = new Set<string>()
   const refs: CrewRef[] = []
