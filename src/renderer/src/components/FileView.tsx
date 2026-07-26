@@ -133,7 +133,7 @@ function CodeBody({
       <div aria-hidden={editable || undefined}>
         {lines.map((content, index) => {
           const number = index + 1
-          const marked = tab.line === number
+          const marked = tab.line === number || marks?.lines.has(number) === true
           return (
             <div key={number} data-line={number} className={`flex px-4 ${marked ? 'bg-fg/[0.07]' : ''}`}>
               <span

@@ -103,7 +103,7 @@ describe('picking a board in the composer', () => {
     expect(screen.getByText('#Landing')).toBeTruthy()
     expect(screen.getByText('#Plan')).toBeTruthy()
 
-    fireEvent.change(input, { target: { value: '#lan', selectionStart: 4, selectionEnd: 4 } })
+    fireEvent.change(input, { target: { value: '#land', selectionStart: 5, selectionEnd: 5 } })
     expect(screen.queryByText('#Plan')).toBeNull()
     fireEvent.keyDown(input, { key: 'Enter' })
     expect(input.value).toBe('#Landing ')
