@@ -1,41 +1,41 @@
+import type { Glyph } from './glyph'
 import {
-  BellIcon,
-  BoltIcon,
-  BookmarkSquareIcon,
-  BookOpenIcon,
-  CheckCircleIcon,
-  ClipboardDocumentListIcon,
-  ClockIcon,
-  CodeBracketIcon,
-  CommandLineIcon,
-  DocumentMagnifyingGlassIcon,
-  DocumentPlusIcon,
-  DocumentTextIcon,
-  EllipsisHorizontalIcon,
-  EyeIcon,
-  FlagIcon,
-  FolderOpenIcon,
-  GlobeAltIcon,
-  HashtagIcon,
-  LinkIcon,
-  ListBulletIcon,
-  MagnifyingGlassIcon,
-  PaperAirplaneIcon,
-  PencilSquareIcon,
-  PhotoIcon,
-  PuzzlePieceIcon,
-  QuestionMarkCircleIcon,
-  SignalIcon,
-  SparklesIcon,
-  Square3Stack3DIcon,
-  Squares2X2Icon,
-  StopCircleIcon,
-  VideoCameraIcon,
-  WrenchScrewdriverIcon
-} from '@heroicons/react/16/solid'
-import type { ComponentType } from 'react'
+  BellGlyph,
+  BoltGlyph,
+  BookmarkGlyph,
+  BoxGlyph,
+  BranchGlyph,
+  ChecklistGlyph,
+  ClipboardGlyph,
+  ClockGlyph,
+  CodeGlyph,
+  DoneGlyph,
+  EditGlyph,
+  FilesGlyph,
+  FlagGlyph,
+  FlowGlyph,
+  FolderGlyph,
+  GlobeGlyph,
+  ImageGlyph,
+  NotebookGlyph,
+  OutputGlyph,
+  PageGlyph,
+  PlaneGlyph,
+  PlugGlyph,
+  PostsGlyph,
+  QuestionGlyph,
+  ReadGlyph,
+  SearchGlyph,
+  ShellGlyph,
+  SignalGlyph,
+  SparkGlyph,
+  StopGlyph,
+  ThinkingGlyph,
+  VideoGlyph,
+  WriteGlyph
+} from './toolGlyphs'
 
-export type ToolIcon = ComponentType<{ className?: string }>
+export type ToolIcon = Glyph
 
 export interface ToolAction {
   icon: ToolIcon
@@ -44,10 +44,10 @@ export interface ToolAction {
   prose?: boolean
 }
 
-const AGENT: ToolAction = { icon: SparklesIcon, run: 'Asking an agent', done: 'Asked an agent', prose: true }
-const WORKING: ToolAction = { icon: WrenchScrewdriverIcon, run: 'Working', done: 'Working', prose: true }
+const AGENT: ToolAction = { icon: SparkGlyph, run: 'Asking an agent', done: 'Asked an agent', prose: true }
+const WORKING: ToolAction = { icon: BoxGlyph, run: 'Working', done: 'Working', prose: true }
 
-export const THINKING: ToolAction = { icon: EllipsisHorizontalIcon, run: 'Thinking', done: 'Thinking', prose: true }
+export const THINKING: ToolAction = { icon: ThinkingGlyph, run: 'Thinking', done: 'Thinking', prose: true }
 
 const TABLE: Array<[string, ToolAction]> = [
   ['read readfile viewfile view cat openfile readmediafile', { icon: DocumentTextIcon, run: 'Reading', done: 'Read' }],
