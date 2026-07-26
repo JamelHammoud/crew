@@ -92,9 +92,8 @@ const linkIn = (detail: string): string | null => {
 }
 
 function useOpener(detail: string, files: FileChange[]): (() => void) | null {
-  const alone = files.length === 1 && !files[0].diff ? files[0].path : null
-  const url = alone ? null : linkIn(detail)
-  const ref = alone ? { path: alone, line: null } : url ? null : parseFileRef(detail)
+  const url = files.length > 0 ? null : linkIn(detail)
+  const ref = files.length > 0 || url ? null : parseFileRef(detail)
   useLocated(ref ? [ref.path] : [])
   if (url) return () => useBrowser.getState().openUrl(url)
   if (ref && openable(ref.path)) return () => useBrowser.getState().openFile(targetFor(ref.path), ref.line)
