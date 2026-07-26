@@ -1,5 +1,6 @@
 export interface ChangedLines {
-  lines: Set<number>
+  added: Set<number>
+  removed: Map<number, string[]>
   first: number
 }
 
@@ -13,6 +14,11 @@ interface Hit {
   run: number
 }
 
+interface Hunk {
+  removed: string[]
+  added: string[]
+}
+
 const norm = (line: string): string => line.trimEnd()
 
 function trimEnds(block: string[]): string[] {
@@ -23,19 +29,24 @@ function trimEnds(block: string[]): string[] {
   return block.slice(start, end)
 }
 
-function addedBlocks(diff: string): string[][] {
-  const blocks: string[][] = []
-  let block: string[] = []
-  for (const line of diff.split('\n')) {
-    if (line.startsWith('+')) {
-      block.push(line.startsWith('+ ') ? line.slice(2) : line.slice(1))
+function hunksOf(diff: string): Hunk[] {
+  const hunks: Hunk[] = []
+  let current: Hunk | null = null
+  for (const raw of diff.split('\n')) {
+    const sign = raw[0]
+    if (sign !== '+' && sign !== '-') {
+      current = null
       continue
     }
-    if (block.length) blocks.push(block)
-    block = []
+    const line = raw.startsWith(`${sign} `) ? raw.slice(2) : raw.slice(1)
+    if (!current || (sign === '-' && current.added.length > 0)) {
+      current = { removed: [], added: [] }
+      hunks.push(current)
+    }
+    if (sign === '-') current.removed.push(line)
+    else current.added.push(line)
   }
-  if (block.length) blocks.push(block)
-  return blocks.map(trimEnds).filter(block => block.length > 0)
+  return hunks
 }
 
 function runFrom(lines: string[], block: string[], start: number): number {
@@ -79,12 +90,22 @@ function locateAll(lines: string[], block: string[]): Range[] {
 export function changedLines(text: string, diff: string | null | undefined): ChangedLines | null {
   if (!diff) return null
   const lines = text.split('\n')
-  const found = addedBlocks(diff).flatMap(block => locateAll(lines, block))
-  if (found.length === 0) return null
-  const marked = new Set<number>()
-  for (const range of found) {
-    for (let line = range.from; line <= range.to; line += 1) marked.add(line)
+  const added = new Set<number>()
+  const removed = new Map<number, string[]>()
+  for (const hunk of hunksOf(diff)) {
+    const block = trimEnds(hunk.added)
+    if (block.length === 0) continue
+    const ranges = locateAll(lines, block)
+    if (ranges.length === 0) continue
+    for (const range of ranges) {
+      for (let line = range.from; line <= range.to; line += 1) added.add(line)
+    }
+    const gone = trimEnds(hunk.removed)
+    if (gone.length === 0) continue
+    const at = ranges[0].from
+    removed.set(at, [...(removed.get(at) ?? []), ...gone])
   }
-  if (marked.size >= lines.filter(line => line.trim()).length) return null
-  return { lines: marked, first: Math.min(...found.map(range => range.from)) }
+  if (added.size === 0) return null
+  if (removed.size === 0 && added.size >= lines.filter(line => line.trim()).length) return null
+  return { added, removed, first: Math.min(...added) }
 }
