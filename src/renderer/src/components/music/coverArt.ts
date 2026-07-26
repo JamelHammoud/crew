@@ -120,7 +120,15 @@ void main() {
   float behind = smeared(p - across);
   float crease = abs(ahead - behind) / 0.024;
 
-  float level = clamp((here + uLift) * uReach, 0.0, 1.0);
+  // One end of the picture brighter than the other, which every photograph of
+  // this kind has and no amount of noise gives you: noise has no far side.
+  float tilt = dot(vUv - 0.5, uTilt);
+
+  float level = clamp((here - 0.5) * uReach + 0.5 + uLift + tilt, 0.0, 1.0);
+  // Held toward the middle of the ramp, so a cover is mostly one or two of its
+  // colors with the others arriving at the edges. Swept end to end it reads as a
+  // sample card of the palette rather than as a picture of anything.
+  level = level * level * (3.0 - 2.0 * level);
   vec3 color = ramp(level);
 
   // The lit edge is the top of the ramp brought in, never white. White is what
