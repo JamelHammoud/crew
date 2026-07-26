@@ -111,7 +111,8 @@ describe('design panel', () => {
     expect(sections(container)).toEqual(['Typography', 'Fill'])
     expect(view.text?.value.size).toBe(36)
     expect(view.text?.value.align).toBe('center')
-    expect(view.text?.fields.weight).toBe(false)
+    expect(view.text?.fields.weight).toBe(true)
+    expect(view.text?.fields.family).toBe('all')
   })
 
   it('shows a frame its background and nothing it cannot hold', () => {
