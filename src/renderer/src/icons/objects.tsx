@@ -116,3 +116,15 @@ export const GroupGlyph = glyph(
 export const CloudGlyph = glyph(
   <path d="M17.3 18.6H7.5a4.9 4.9 0 0 1-.9-9.72 6.2 6.2 0 0 1 11.85 1.55A4.2 4.2 0 0 1 17.3 18.6Z" />
 )
+
+// Two figures rather than three: the one in front is whole and the one behind
+// keeps only what is not hidden by it. Four marks, because two of anything is
+// two objects, and the pair is read as a pair rather than as four shapes.
+export const PeopleGlyph = glyph(
+  <>
+    <circle cx="9" cy="7.9" r="3.55" />
+    <path d="M2.6 19.5v-.9a5.5 5.5 0 0 1 5.5-5.5h1.8a5.5 5.5 0 0 1 5.5 5.5v.9" />
+    <circle cx="17.6" cy="8.6" r="2.8" />
+    <path d="M17 13.4a4.4 4.4 0 0 1 4.4 4.4v1.7" />
+  </>
+)
