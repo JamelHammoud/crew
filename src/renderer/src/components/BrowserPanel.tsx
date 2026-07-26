@@ -3,6 +3,7 @@ import {
   ArrowPathIcon,
   ArrowRightIcon,
   ArrowTopRightOnSquareIcon,
+  CommandLineIcon,
   DocumentTextIcon,
   GlobeAltIcon,
   PhotoIcon,
@@ -15,7 +16,9 @@ import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
 import ImageView from './ImageView'
+import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
+import TerminalView from './TerminalView'
 import Tooltip from './Tooltip'
 
 function normalizeUrl(input: string): string {
