@@ -1566,13 +1566,74 @@ export class CrewSession {
     return {
       trackId: music.track.id,
       playing: music.playing,
-      at: wrapAt(music.from + run, music.track),
+      at: wrapAt(music.from + run, music.track.seconds),
       by: music.by
     }
   }
 
   private broadcastMusic(): void {
     this.broadcast({ type: 'music.room', room: this.musicRoom() })
+  }
+
+  private broadcastShelf(): void {
+    this.broadcast({ type: 'music.shelf', uploads: [...this.uploads.values()] })
+  }
+
+  // A track of the crew's own. The bytes are kept beside the session the way an
+  // attachment is, and everyone plays their own copy of the file rather than
+  // listening down the wire to whoever added it.
+  private handleMusicAdd(member: Member, name: string, mime: string, seconds: number, data: string): void {
+    const extension = audioExtension(mime)
+    if (!extension || this.uploads.size >= MAX_UPLOADS) return
+    if (!Number.isFinite(seconds) || seconds <= 0 || seconds > MAX_UPLOAD_SECONDS) return
+    const bytes = Buffer.from(data ?? '', 'base64')
+    if (bytes.length === 0 || bytes.length > MAX_UPLOAD_BYTES) return
+    const trackId = randomUUID()
+    const file = `${trackId}.${extension}`
+    try {
+      this.store.saveMusic(file, bytes)
+    } catch {
+      return
+    }
+    const upload: MusicUpload = {
+      id: trackId,
+      name: cleanUploadName(name ?? ''),
+      file,
+      seconds,
+      by: member.name.slice(0, BY_LIMIT),
+      ts: Date.now()
+    }
+    this.uploads.set(trackId, upload)
+    this.emit({
+      id: randomUUID(),
+      ts: upload.ts,
+      kind: 'music.added',
+      trackId,
+      name: upload.name,
+      file,
+      seconds,
+      byName: upload.by
+    })
+    this.broadcastShelf()
+  }
+
+  // Taking a track off the shelf while it is playing stops it, or everyone is
+  // left holding a position in something that is no longer there.
+  private handleMusicRemove(member: Member, trackId: string): void {
+    const upload = this.uploads.get(trackId)
+    if (!upload) return
+    this.uploads.delete(trackId)
+    this.store.deleteMusic(upload.file)
+    if (this.music?.track.id === trackId) {
+      this.music = null
+      this.broadcastMusic()
+    }
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'music.removed', trackId, byName: member.name })
+    this.broadcastShelf()
+  }
+
+  musicPath(file: string): string | null {
+    return this.store.musicPath(file)
   }
 
   // Anyone can put something on, and anyone can take it off again. A track
