@@ -771,6 +771,7 @@ export class CrewSession {
       mentionRefs: this.agentRefs(entry.mentions, entry.text),
       memberMentionRefs: this.memberRefs(entry.text),
       docMentions: entry.docMentions,
+      boardMentions: entry.boardMentions,
       threadId: entry.threadId,
       attachments: entry.attachments,
       replyTo: entry.replyTo
