@@ -103,6 +103,44 @@ export const CollapseGlyph = glyph(
 // Worn at an opacity, as a tile that is not ready for pressing is, two stacked
 // strokes paint twice and the join comes out darker than the mark around it. One
 // element is painted once, whatever it crosses.
+// The transport marks are solid for the reason stop is: they stand in a button
+// that is already a circle, and an outlined triangle inside one reads as a
+// second ring. Every corner is turned, so a triangle sits in the same family as
+// everything else rather than pointing out of it.
+export const PlayGlyph = glyph(
+  <path
+    d="M4.75 4.95Q4.75 2.75 6.7 3.85L18.85 10.9Q20.75 12 18.85 13.1L6.7 20.15Q4.75 21.25 4.75 19.05Z"
+    fill="currentColor"
+    stroke="none"
+  />
+)
+
+export const PauseGlyph = glyph(
+  <path
+    d="M6.55 3.5h1.5a1.75 1.75 0 0 1 1.75 1.75v13.5a1.75 1.75 0 0 1-1.75 1.75h-1.5a1.75 1.75 0 0 1-1.75-1.75V5.25A1.75 1.75 0 0 1 6.55 3.5ZM15.95 3.5h1.5a1.75 1.75 0 0 1 1.75 1.75v13.5a1.75 1.75 0 0 1-1.75 1.75h-1.5a1.75 1.75 0 0 1-1.75-1.75V5.25A1.75 1.75 0 0 1 15.95 3.5Z"
+    fill="currentColor"
+    stroke="none"
+  />
+)
+
+// The bar is a stadium rather than a rounded rectangle: it is only as wide as
+// two of its own corners, so there is no straight edge left to draw.
+export const SkipNextGlyph = glyph(
+  <path
+    d="M4.6 6.15Q4.6 4.3 6 5.2L14.95 11.1Q16.35 12 14.95 12.9L6 18.8Q4.6 19.7 4.6 17.85ZM18.85 4.3a1.25 1.25 0 0 1 1.25 1.25v12.9a1.25 1.25 0 0 1-2.5 0V5.55a1.25 1.25 0 0 1 1.25-1.25Z"
+    fill="currentColor"
+    stroke="none"
+  />
+)
+
+export const SkipBackGlyph = glyph(
+  <path
+    d="M19.4 6.15Q19.4 4.3 18 5.2L9.05 11.1Q7.65 12 9.05 12.9L18 18.8Q19.4 19.7 19.4 17.85ZM5.15 4.3a1.25 1.25 0 0 1 1.25 1.25v12.9a1.25 1.25 0 0 1-2.5 0V5.55a1.25 1.25 0 0 1 1.25-1.25Z"
+    fill="currentColor"
+    stroke="none"
+  />
+)
+
 export const MusicGlyph = glyph(
   <path d="M9.25 18.25a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0M19.75 16.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0M9.25 18.25V5l10.5-1.75V16.5" />
 )
