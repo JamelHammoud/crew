@@ -132,24 +132,73 @@ export function MenuItem({
   label,
   hint,
   danger,
-  onClick
+  active,
+  onClick,
+  onHover
 }: {
   icon?: ReactNode
   label: string
   hint?: string
   danger?: boolean
+  active?: boolean
   onClick: () => void
+  onHover?: () => void
 }) {
   return (
     <button
       onClick={onClick}
+      onPointerEnter={onHover}
+      data-active={active ? '' : undefined}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left whitespace-nowrap transition-colors ${
-        danger ? 'text-danger hover:bg-danger/10' : 'text-fg-secondary hover:text-fg hover:bg-fg/5'
+        danger
+          ? 'text-danger hover:bg-danger/10 data-active:bg-danger/10'
+          : 'text-fg/70 hover:text-fg hover:bg-fg/5 data-active:text-fg data-active:bg-fg/5'
       }`}
     >
       {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
       <span className="flex-1">{label}</span>
-      {hint && <span className="text-xs text-fg-muted">{hint}</span>}
+      {hint && <span className="text-xs text-fg/40 tabular-nums">{hint}</span>}
     </button>
+  )
+}
+
+// A row that opens a second panel beside it, the way a menu nests in Figma.
+export function SubMenu({
+  icon,
+  label,
+  children
+}: {
+  icon?: ReactNode
+  label: string
+  children: ReactNode
+}) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [at, setAt] = useState<{ x: number; y: number } | null>(null)
+
+  const show = () => {
+    const rect = rowRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setAt({ x: rect.right + 6, y: rect.top - 6 })
+    setOpen(true)
+  }
+
+  return (
+    <div ref={rowRef} onPointerEnter={show} onPointerLeave={() => setOpen(false)} className="relative">
+      <div
+        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors ${
+          open ? 'text-fg bg-fg/5' : 'text-fg/70'
+        }`}
+      >
+        {icon && <span className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
+        <span className="flex-1">{label}</span>
+        <ChevronRightIcon className="w-3.5 h-3.5 shrink-0 text-fg/40" />
+      </div>
+      {open && at && (
+        <Popover open onClose={() => setOpen(false)} at={at}>
+          {children}
+        </Popover>
+      )}
+    </div>
   )
 }
