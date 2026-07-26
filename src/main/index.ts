@@ -39,10 +39,28 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
 const terminals = new Map<number, Terminals>()
-let tray: Tray | null = null
+const tray = new CrewTray({
+  page: {
+    preload: path.join(dirname, '../preload/preload.mjs'),
+    devUrl: process.env['ELECTRON_RENDERER_URL'],
+    file: path.join(dirname, '../renderer/index.html')
+  },
+  openWindow: () => openWindow(),
+  quit: () => app.quit()
+})
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
+
+// The tray panel is a window like any other as far as Electron is concerned,
+// so everything that means "the app's own windows" asks for these.
+function appWindows(): BrowserWindow[] {
+  return BrowserWindow.getAllWindows().filter(win => !tray.owns(win))
+}
+
+function sharing(): void {
+  tray.update({ sharing: session.current() !== null })
+}
 
 // The icon is a white mark on black, or the inverse, so it follows the theme
 // chosen inside the app rather than the one the system is wearing.
