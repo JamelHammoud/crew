@@ -65,7 +65,7 @@ export function Label({ action, running }: { action: ToolAction; running: boolea
 }
 
 function Detail({ children }: { children: ReactNode }) {
-  return <div className="mt-2 mb-1 ml-[9px] border-l border-ink-700 pl-4 space-y-2">{children}</div>
+  return <div className="mt-1.5 mb-1 space-y-2">{children}</div>
 }
 
 export const stepFiles = (item: ThreadItem): FileChange[] => item.files ?? []
