@@ -20,6 +20,7 @@ import 'tldraw/tldraw.css'
 import type { DesignPresence } from '../../../shared/design'
 import { applyDesignDefaults } from '../design/defaults'
 import { DesignNodeTool } from '../design/DesignNodeTool'
+import SelectionOverlay from '../design/SelectionOverlay'
 import { designShapeUtils } from '../design/shapeUtils'
 import { onDesign, useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
@@ -75,6 +76,8 @@ export default function DesignCanvas({
   const [agentCursors, setAgentCursors] = useState<Record<string, DesignPresence>>({})
   const selfIdRef = useRef(selfId)
   selfIdRef.current = selfId
+  const editorRef = useRef<Editor | null>(null)
+  editorRef.current = editor
   const lightRef = useRef(theme === 'light')
   lightRef.current = theme === 'light'
 
@@ -171,6 +174,7 @@ export default function DesignCanvas({
           initDesign(boardId, { store: document.store as Record<string, unknown>, schema: document.schema })
         }
         for (const presence of msg.presence) applyPresence(presence)
+        if (editorRef.current) applyDesignDefaults(editorRef.current)
         listen()
         setReady(true)
         return
@@ -254,6 +258,7 @@ export default function DesignCanvas({
         getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
+      <SelectionOverlay editor={editor} />
       <AgentCursors editor={editor} cursors={Object.values(agentCursors)} />
       {!ready && (
         <div className="absolute inset-0 bg-ink-950 light:bg-ink-800 flex items-center justify-center">
