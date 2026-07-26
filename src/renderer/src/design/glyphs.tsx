@@ -433,13 +433,6 @@ export const ZoomOneGlyph = glyph(
   </>
 )
 
-export const SparkGlyph = glyph(
-  <>
-    <path d="M12 3.5c0 4 1.5 5.5 5.5 5.5-4 0-5.5 1.5-5.5 5.5 0-4-1.5-5.5-5.5-5.5 4 0 5.5-1.5 5.5-5.5Z" />
-    <path d="M17.5 15c0 2.2.8 3 3 3-2.2 0-3 .8-3 3 0-2.2-.8-3-3-3 2.2 0 3-.8 3-3Z" />
-  </>
-)
-
 export const StyleGlyph = glyph(
   <>
     <path d="M12 4 6 20h12L12 4Z" />
