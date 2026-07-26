@@ -7,6 +7,7 @@ import { BoardSwitcher, DesignBoardContext, DesignZoom } from '../components/Des
 import DesignRightPanel from '../components/DesignRightPanel'
 import DesignToolbar from '../components/DesignToolbar'
 import { PanelLeftGlyph, PanelRightGlyph } from '../design/glyphs'
+import { lastBoard, lastPanels, rememberBoard, rememberPanels } from '../design/viewMemory'
 import { TOP_BAR_H } from '../components/TopBar'
 import { useCrew } from '../state/store'
 
