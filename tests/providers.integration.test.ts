@@ -213,10 +213,17 @@ describe('codex parser matches the real CLI format', () => {
     ])
     const done = parse({
       type: 'item.completed',
-      item: { id: 'i3', type: 'command_execution', command: 'ls -la', exit_code: 0 }
+      item: {
+        id: 'i3',
+        type: 'command_execution',
+        command: 'ls -la',
+        aggregated_output: 'total 8\ndrwxr-xr-x  4 jamel  staff  128 src',
+        exit_code: 0
+      }
     })
     expect(done[0].activity?.id).toBe('i3')
     expect(done[0].activity?.status).toBe('finished')
+    expect(done[0].activity?.output).toBe('total 8\ndrwxr-xr-x  4 jamel  staff  128 src')
   })
 
   it('labels file changes, mcp calls, and web searches', () => {

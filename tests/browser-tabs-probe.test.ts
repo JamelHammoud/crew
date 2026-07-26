@@ -13,6 +13,7 @@ beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn(function (this: Element) {
     scrolled.push(this)
   })
+  window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
   useBrowser.setState({ tabs: [], activeTabId: null })
 })
 
