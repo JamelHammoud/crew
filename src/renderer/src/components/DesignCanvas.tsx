@@ -102,6 +102,7 @@ export default function DesignCanvas({
   selfIdRef.current = selfId
   const editorRef = useRef<Editor | null>(null)
   editorRef.current = editor
+  const lastSpot = useRef<Record<string, DesignPresence>>({})
 
   const store = useMemo(() => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
 
