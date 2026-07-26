@@ -129,7 +129,7 @@ export const MUSIC_TUNES = [
     mood: 'patient',
     bpm: 112,
     beats: 32,
-    colors: ['#a3d9c9', '#f6e7b4', '#7fb3d5', '#37605c']
+    colors: ['#2ee6a8', '#ffe066', '#3aa8ff', '#d8ffe8', '#0d3b45']
   },
   {
     id: 'credits',
@@ -137,7 +137,7 @@ export const MUSIC_TUNES = [
     mood: 'fond',
     bpm: 100,
     beats: 32,
-    colors: ['#ffd6a5', '#b8e0ff', '#ffadad', '#4b3f72']
+    colors: ['#ff7eb6', '#ffb86b', '#8f7bff', '#ffe9c4', '#2b1259']
   }
 ] as const satisfies readonly MusicTune[]
 
