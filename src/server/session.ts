@@ -623,7 +623,7 @@ export class CrewSession {
         mentions,
         mentionRefs: this.agentRefs(mentions, trimmed),
         memberMentionRefs: this.memberRefs(trimmed),
-        docMentions: this.docMentionRefs(trimmed),
+        ...this.refsOf(trimmed),
         attachments,
         replyTo
       })
