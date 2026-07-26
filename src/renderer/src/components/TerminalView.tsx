@@ -78,12 +78,7 @@ export default function TerminalView({ tab, active }: { tab: BrowserTab; active:
     })
     window.crew.openTerminal(tab.id, { cols: term.cols, rows: term.rows })
 
-    const observer =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(() => {
-            if (host.clientWidth > 0 && host.clientHeight > 0) fit.fit()
-          })
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => fitTo(host, fit))
     observer?.observe(host)
 
     return () => {
