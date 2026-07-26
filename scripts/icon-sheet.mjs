@@ -23,10 +23,7 @@ const SETS = [
 const LIVE = 19.5
 const SQUARE = 17
 const CIRCLE = 18.5
-<<<<<<< HEAD
-=======
 const LINE = 15
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
 
 const ENTRY = (files) => `
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -116,14 +113,9 @@ function report(rows) {
 const svg = (markup, px) =>
   markup.replace('<svg', `<svg width="${px}" height="${px}"`).replace(/class="[^"]*"/, '')
 
-<<<<<<< HEAD
-const flag = (row) =>
-  row.over > 0.01 ? 'over' : Math.abs(row.off) > 8 || Math.abs(row.weight) > 45 ? 'watch' : ''
-=======
 const astray = (row) => !row.capped && Math.abs(row.off) > 8
 
 const flag = (row) => (row.over > 0.01 ? 'over' : astray(row) || row.drift > 0.5 ? 'watch' : '')
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
 
 function page(sets) {
   const cards = sets
@@ -137,15 +129,9 @@ function page(sets) {
   </div>
   <div class="real">${svg(row.markup, 24)}${svg(row.markup, 20)}${svg(row.markup, 16)}</div>
   <figcaption>${row.name.replace(/Glyph$/, '')}</figcaption>
-<<<<<<< HEAD
-  <dl><dt>box</dt><dd>${row.size.toFixed(1)} / ${row.target}</dd>
-      <dt>size</dt><dd class="${Math.abs(row.off) > 8 ? 'bad' : ''}">${row.off > 0 ? '+' : ''}${row.off.toFixed(1)}%</dd>
-      <dt>ink</dt><dd class="${Math.abs(row.weight) > 45 ? 'bad' : ''}">${row.weight > 0 ? '+' : ''}${row.weight.toFixed(0)}%</dd>
-=======
   <dl><dt>${row.family}</dt><dd>${row.size.toFixed(1)} / ${row.target}${row.capped ? ' cap' : ''}</dd>
       <dt>size</dt><dd class="${astray(row) ? 'bad' : ''}">${row.off > 0 ? '+' : ''}${row.off.toFixed(1)}%</dd>
       <dt>ink</dt><dd>${row.weight > 0 ? '+' : ''}${row.weight.toFixed(0)}%</dd>
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
       <dt>centre</dt><dd class="${row.drift > 0.5 ? 'bad' : ''}">${row.drift.toFixed(2)}</dd></dl>
 </figure>`
         )
@@ -201,11 +187,7 @@ await writeFile(out, page(sets))
 
 for (const set of sets) {
   const over = set.rows.filter(row => row.over > 0.01)
-<<<<<<< HEAD
-  const off = set.rows.filter(row => Math.abs(row.off) > 8)
-=======
   const off = set.rows.filter(astray)
->>>>>>> 9b808c2445c04db2104d77fd2e988f3a7827267b
   console.log(`\n${set.title}  ${set.rows.length} icons`)
   console.log(`  outside the live area  ${over.length ? over.map(r => r.name).join(', ') : 'none'}`)
   console.log(

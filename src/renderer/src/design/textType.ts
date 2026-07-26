@@ -4,13 +4,10 @@ import { fontStack } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
 
-<<<<<<< HEAD
-=======
 export function autoLineHeight(editor: Editor): number {
   return editor.getCurrentTheme().lineHeight ?? BASE_TYPE.lineHeight
 }
 
->>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
 export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
   const { font, size, textAlign, color } = shape.props
   const drawn = familyOf(font)
@@ -18,10 +15,7 @@ export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
     ...BASE_TYPE,
     family: drawn === 'draw' ? 'sans' : drawn,
     size: sizeFont(size),
-<<<<<<< HEAD
-=======
     lineHeight: autoLineHeight(editor),
->>>>>>> b5e370e03e8307bddd15310fa217c67e621b2a39
     align: alignOf(textAlign),
     color: paletteHex(editor, color)
   }
