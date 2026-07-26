@@ -41,7 +41,7 @@ export function DocSlashMenu({ items, selectedIndex, onItemClick }: SuggestionMe
         return (
           <div key={item.title}>
             {label && (
-              <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg-faint">
+              <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg/45">
                 {label}
               </p>
             )}
@@ -49,13 +49,13 @@ export function DocSlashMenu({ items, selectedIndex, onItemClick }: SuggestionMe
               data-selected={selected}
               onClick={() => onItemClick?.(item)}
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm text-left transition-colors ${
-                selected ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.06] hover:text-fg'
+                selected ? 'bg-fg/[0.08] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
               }`}
             >
-              <item.mark className="w-4 h-4 shrink-0 text-fg-muted" />
+              <item.mark className="w-4 h-4 shrink-0 text-fg/55" />
               <span className="flex-1 truncate">{item.title}</span>
               {item.shortcut && (
-                <span className="text-xs text-fg-muted shrink-0">{shortcutLabel(item.shortcut)}</span>
+                <span className="text-xs text-fg/45 shrink-0">{shortcutLabel(item.shortcut)}</span>
               )}
             </button>
           </div>

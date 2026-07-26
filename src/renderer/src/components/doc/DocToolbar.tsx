@@ -54,7 +54,7 @@ export default function DocToolbar() {
   if (link !== null)
     return (
       <div className="glass flex h-9 w-80 items-center gap-1.5 rounded-full pl-3 pr-1.5 animate-pop">
-        <LinkGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
+        <LinkGlyph className="w-4 h-4 shrink-0 text-fg/55" />
         <input
           ref={inputRef}
           value={link}
@@ -71,7 +71,7 @@ export default function DocToolbar() {
             }
           }}
           placeholder="Paste a link"
-          className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg-faint outline-none"
+          className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg/40 outline-none"
         />
         <button
           onClick={commitLink}
@@ -91,11 +91,11 @@ export default function DocToolbar() {
             onClick={() => setTurnOpen(open => !open)}
             aria-expanded={turnOpen}
             className={`flex h-7 items-center gap-1 pl-2.5 pr-1.5 rounded-full text-sm transition-colors ${
-              turnOpen ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:text-fg hover:bg-fg/[0.06]'
+              turnOpen ? 'bg-fg/[0.08] text-fg' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.06]'
             }`}
           >
             <span className="whitespace-nowrap">{kind.title}</span>
-            <ChevronDownIcon className={`w-3.5 h-3.5 text-fg-muted transition-transform ${turnOpen ? 'rotate-180' : ''}`} />
+            <ChevronDownIcon className={`w-3.5 h-3.5 text-fg/45 transition-transform ${turnOpen ? 'rotate-180' : ''}`} />
           </button>
           <Popover open={turnOpen} onClose={() => setTurnOpen(false)} align="start" className="min-w-48">
             {DOC_BLOCKS.filter(option => option.convert).map(option => (
@@ -125,7 +125,7 @@ export default function DocToolbar() {
               aria-label={item.label}
               aria-pressed={active}
               className={`w-7 h-7 rounded-full grid place-items-center transition-all active:scale-95 ${
-                active ? 'bg-fg text-ink-900' : 'text-fg-secondary hover:text-fg hover:bg-fg/[0.08]'
+                active ? 'bg-fg text-ink-900' : 'text-fg/70 hover:text-fg hover:bg-fg/[0.08]'
               }`}
             >
               <item.mark className="w-4 h-4" />
@@ -139,7 +139,7 @@ export default function DocToolbar() {
           onMouseDown={event => event.preventDefault()}
           onClick={openLink}
           aria-label="Link"
-          className="w-7 h-7 rounded-full grid place-items-center text-fg-secondary hover:text-fg hover:bg-fg/[0.08] transition-all active:scale-95"
+          className="w-7 h-7 rounded-full grid place-items-center text-fg/70 hover:text-fg hover:bg-fg/[0.08] transition-all active:scale-95"
         >
           <LinkGlyph className="w-4 h-4" />
         </button>
