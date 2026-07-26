@@ -160,7 +160,7 @@ function terminalsFor(sender: WebContents): Terminals {
 // known, rather than when somebody asks for a tab and watches it blink.
 function warmTerminals(): void {
   const folder = session.projectFolder()
-  for (const win of BrowserWindow.getAllWindows()) {
+  for (const win of appWindows()) {
     if (!win.webContents.isDestroyed()) terminalsFor(win.webContents).warm(folder)
   }
 }
