@@ -414,9 +414,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'lock',
     label: 'Lock',
-    hint: '⇧⌘L',
+    hint: chordHint(LOCK),
     group: 'state',
     Icon: LockGlyph,
+    keys: LOCK,
     when: ctx => selection(ctx.editor).some(shape => !shape.isLocked),
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('lock')
