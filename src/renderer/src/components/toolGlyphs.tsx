@@ -35,8 +35,8 @@ export const NotebookGlyph = glyph(
 
 export const ShellGlyph = glyph(
   <>
-    <path d="m4.5 6 7.3 6-7.3 6" />
-    <path d="M14 18h5.5" />
+    <path d="m4.2 5.5 7.8 6.5-7.8 6.5" />
+    <path d="M14.3 18.5h5.5" />
   </>
 )
 
