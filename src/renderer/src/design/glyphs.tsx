@@ -34,10 +34,6 @@ export const PentagonGlyph = glyph(<path d="M12 3.5 20.1 9.4 17 18.9H7L3.9 9.4Z"
 
 export const HexagonGlyph = glyph(<path d="M7.75 4.65h8.5L20.5 12l-4.25 7.35h-8.5L3.5 12Z" />)
 
-export const StarGlyph = StarIcon
-
-export const CloudGlyph = CloudIcon
-
 export const XBoxGlyph = glyph(
   <>
     <rect x="4" y="4" width="16" height="16" rx="2.5" />
@@ -60,8 +56,6 @@ export const ArrowGlyph = glyph(
     <path d="M12.25 5H19v6.75" />
   </>
 )
-
-export const PencilGlyph = PencilIcon
 
 export const HighlighterGlyph = glyph(
   <>
@@ -531,11 +525,11 @@ const TYPE_GLYPHS: Record<string, Glyph> = {
   note: NoteGlyph,
   line: LineGlyph,
   arrow: ArrowGlyph,
-  image: PhotoIcon,
-  video: FilmIcon,
-  group: RectangleGroupIcon,
-  embed: LinkIcon,
-  bookmark: LinkIcon
+  image: PhotoGlyph,
+  video: FilmGlyph,
+  group: GroupGlyph,
+  embed: LinkGlyph,
+  bookmark: LinkGlyph
 }
 
 const NODE_GLYPHS: Record<NodeShape, Glyph> = {
