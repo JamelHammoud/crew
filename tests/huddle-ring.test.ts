@@ -164,6 +164,10 @@ const loudest = (): number => {
   return peak
 }
 
+const lastSound = (): number => (ends.length === 0 ? 0 : Math.max(...ends))
+
+const takenToNothing = (): number => faded.filter(value => value === 0).length
+
 describe('the noise a huddle makes when it starts', () => {
   beforeEach(() => {
     vi.useFakeTimers()
