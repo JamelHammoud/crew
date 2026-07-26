@@ -107,7 +107,7 @@ describe('seeing a reply', () => {
     fireEvent.click(screen.getByLabelText('Reply'))
     expect(screen.getByText('Replying to yourself')).toBeTruthy()
 
-    const composer = screen.getByPlaceholderText('Send a message, @ an agent to start a thread, or / for a command')
+    const composer = screen.getByRole('textbox')
     fireEvent.change(composer, { target: { value: 'Still broken.' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
