@@ -1733,7 +1733,7 @@ export class CrewSession {
       authorId: member.id,
       threadId,
       mentions: route?.mentions ?? [agent.id],
-      docMentions: this.docMentionRefs(text),
+      ...this.refsOf(text),
       attachments,
       messageId: route?.messageId ?? randomUUID(),
       replyTo: route?.replyTo
