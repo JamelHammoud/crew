@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { applyTheme, storedTheme } from '../src/renderer/src/state/theme'
+import { applyTheme, storedTheme, toggleTheme } from '../src/renderer/src/state/theme'
 
 const store = new Map<string, string>()
 vi.stubGlobal('localStorage', {

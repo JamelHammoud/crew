@@ -10,7 +10,7 @@ import {
   type ThreadStatus,
   type Todo
 } from '../../../shared/events'
-import type { CrewTool, ToolAction, ToolMark } from '../../../shared/toolbox'
+import type { CrewTool, ToolAction } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
@@ -126,8 +126,8 @@ interface CrewState {
   removeTodo: (todoId: string) => void
   checkTodo: (todoId: string, checked: boolean) => void
   doTodo: (todoId: string, agentId?: string) => void
-  addTool: (name: string, mark: ToolMark, action: ToolAction) => void
-  editTool: (toolId: string, name: string, mark: ToolMark, action: ToolAction) => void
+  addTool: (name: string, mark: string, action: ToolAction) => void
+  editTool: (toolId: string, name: string, mark: string, action: ToolAction) => void
   removeTool: (toolId: string) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string, title?: string) => void
