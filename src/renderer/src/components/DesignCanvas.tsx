@@ -228,17 +228,13 @@ export default function DesignCanvas({
   }, [ready, editor, boardId, sendDesignPresence])
 
   useEffect(() => {
-    editor?.user.updateUserPreferences({ colorScheme: theme === 'light' ? 'light' : 'dark' })
-  }, [editor, theme])
-
-  useEffect(() => {
     if (ready && editor) applyDesignDefaults(editor)
   }, [ready, editor])
 
   const onMount = useCallback(
     (mounted: Editor) => {
       applyDesignDefaults(mounted)
-      mounted.user.updateUserPreferences({ isSnapMode: true })
+      mounted.user.updateUserPreferences({ isSnapMode: true, colorScheme: 'light' })
       setEditor(mounted)
       onEditor?.(mounted)
       return () => onEditor?.(null)
