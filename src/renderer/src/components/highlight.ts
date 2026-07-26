@@ -154,6 +154,19 @@ async function withLanguage(lang: string): Promise<HighlighterCore> {
   return highlighter
 }
 
+export function shikiCore(): Promise<HighlighterCore> {
+  return core()
+}
+
+export async function loadLanguage(lang: string): Promise<void> {
+  if (!languages[lang]) return
+  try {
+    await withLanguage(lang)
+  } catch {
+    return
+  }
+}
+
 export async function highlightLines(
   path: string,
   text: string,
