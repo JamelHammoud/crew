@@ -134,13 +134,15 @@ export class AppSession {
   }
 
   async readFile(target: string): Promise<RepoFile | null> {
-    if (!this.folder) return null
-    return readRepoFile(this.folder, target)
+    const inRepo = this.folder ? repoPathOf(this.folder, target) : null
+    if (this.folder && inRepo !== null) return readRepoFile(this.folder, inRepo)
+    return readLocalFile(target)
   }
 
   async writeFile(target: string, text: string): Promise<RepoFile | null> {
-    if (!this.folder) return null
-    return writeRepoFile(this.folder, target, text)
+    const inRepo = this.folder ? repoPathOf(this.folder, target) : null
+    if (this.folder && inRepo !== null) return writeRepoFile(this.folder, inRepo, text)
+    return writeLocalFile(target, text)
   }
 
   async locatePath(target: string): Promise<PathLocation> {
@@ -148,8 +150,7 @@ export class AppSession {
   }
 
   resolveFile(target: string): string | null {
-    if (!this.folder) return null
-    return resolveRepoPath(this.folder, target)
+    return absolutePathOf(this.folder, target)
   }
 
   async resume(): Promise<CurrentSession | null> {

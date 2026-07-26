@@ -32,10 +32,9 @@ const pending = new Map<string, Promise<PathLocation>>()
 
 const suffixOf = (text: string): string => text.match(SUFFIX_RE)?.[1] ?? ''
 
-// A file can appear after a pull, so only answers that will not change are
-// kept for good.
-const settled = (location: PathLocation): boolean =>
-  location.kind === 'local' || (location.kind === 'repo' && location.exists)
+// A file can appear after a pull, or after an agent writes it, so only answers
+// that will not change are kept for good.
+const settled = (location: PathLocation): boolean => location.kind !== 'private' && location.exists
 
 export function locationOf(path: string): PathLocation | null {
   const entry = located.get(path)
@@ -70,7 +69,7 @@ function locate(path: string): Promise<PathLocation> {
 function shifts(path: string, location: PathLocation): boolean {
   if (location.kind === 'private') return true
   if (location.kind === 'repo') return location.exists || location.path !== path
-  return false
+  return location.exists
 }
 
 export async function locatePaths(paths: string[]): Promise<boolean> {
