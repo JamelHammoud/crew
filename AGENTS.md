@@ -6,6 +6,8 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 - `yarn dev` — run the app
 - `yarn build` — build main, preload, and renderer
+- `yarn start` — run the built app, wearing the icon it ships with
+- `yarn preview` — the same run, wearing the blueprint
 - `yarn test` — integration tests (vitest)
 - `yarn tsc --noEmit` — typecheck
 - `yarn dist` — build a mac dmg
