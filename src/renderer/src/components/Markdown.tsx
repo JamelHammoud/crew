@@ -43,7 +43,7 @@ export default function Markdown({
   const [resolved, setResolved] = useState(0)
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
-    container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false }) as string)
+    container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks: true }) as string)
     markTasks(container)
     wrapTables(container)
     const unknown = linkifyFiles(container)
