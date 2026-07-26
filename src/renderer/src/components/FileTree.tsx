@@ -61,6 +61,7 @@ function Folder({ tab, path, name, depth }: { tab: BrowserTab; path: string; nam
     <>
       <button
         onClick={() => useBrowser.getState().toggleFolder(tab.id, path)}
+        data-folder={path}
         aria-expanded={open}
         style={{ paddingLeft: indent(depth) }}
         className={`${row} ${quiet}`}
