@@ -104,6 +104,38 @@ describe('type on a text shape', () => {
   })
 })
 
+describe('what the canvas draws and measures text with', () => {
+  const styled = { family: 'Inter', size: 48, weight: 700, spacing: 2, transform: 'upper', italic: true }
+
+  it('measures with the style, not with the four sizes tldraw ships', () => {
+    const type = textShapeType(fakeEditor([]), text({}, { type: styled }))
+    const opts = typeMeasure(type, null)
+    expect(opts.fontFamily).toContain('"Inter"')
+    expect(opts.fontSize).toBe(48)
+    expect(opts.fontWeight).toBe('700')
+    expect(opts.fontStyle).toBe('italic')
+    expect(opts.otherStyles['letter-spacing']).toBe('2px')
+    expect(opts.otherStyles['text-transform']).toBe('uppercase')
+    expect(opts.maxWidth).toBeNull()
+  })
+
+  it('hands the same style to what gets painted', () => {
+    const editor = fakeEditor([])
+    const util = new DesignTextUtil(editor)
+    const values = util.options.getCustomDisplayValues(editor, text({}, { type: styled }), {} as never, 'light')
+    expect(values.fontFamily).toContain('"Inter"')
+    expect(values.fontSize).toBe(48)
+    expect(values.fontWeight).toBe('700')
+    expect(values.fontStyle).toBe('italic')
+    expect(values.lineHeight).toBe(1.35)
+  })
+
+  it('stands in for tldraw's own text shape, outline off', () => {
+    expect(DesignTextUtil.type).toBe('text')
+    expect(new DesignTextUtil(fakeEditor([])).options.showTextOutline).toBe(false)
+  })
+})
+
 describe('the panel a text shape gets', () => {
   function panelFor(shape: TLShape, edits: Edit[] = []) {
     const view = viewOf(fakeEditor(edits), shape)
