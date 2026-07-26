@@ -147,7 +147,9 @@ export default function EmojiPicker({
               <p className="flex h-7 items-center px-2 text-xs font-medium uppercase tracking-wide text-fg/45">
                 {results.length > 0 ? 'Results' : 'No emoji found'}
               </p>
-              <div className="grid grid-cols-9">{results.map(cell)}</div>
+              <div className="grid" style={grid}>
+                {results.map(cell)}
+              </div>
             </div>
           ) : (
             sections.map(section => {
