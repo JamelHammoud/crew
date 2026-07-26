@@ -189,12 +189,3 @@ export default function FileTree({ tab }: { tab: BrowserTab }) {
     </aside>
   )
 }
-
-export function TreeEmpty() {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6">
-      <FolderGlyph className="w-8 h-8 text-fg-faint" />
-      <p className="text-sm text-fg-muted">Pick a file from the project</p>
-    </div>
-  )
-}
