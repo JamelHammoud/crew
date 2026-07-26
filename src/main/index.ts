@@ -4,20 +4,18 @@ import {
   dialog,
   ipcMain,
   Menu,
-  nativeImage,
-  nativeTheme,
   powerSaveBlocker,
   shell,
-  Tray,
   type MenuItemConstructorOptions,
-  type NativeImage,
   type WebContents
 } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { setBadge, showAlert } from './alerts'
 import type { AgentAlert } from '../shared/alerts'
+import type { Present } from '../shared/presence'
 import { appIcon, type IconTheme } from './icon'
+import { CrewTray } from './tray'
 import {
   askForMedia,
   installDisplayMedia,
