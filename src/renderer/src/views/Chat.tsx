@@ -78,6 +78,10 @@ export default function Chat() {
       if (e.kind === 'thread.started' && threads[e.threadId]?.status === 'open') {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
+      if (e.kind === 'huddle.started') {
+        const record = huddles.get(e.huddleId)
+        if (record) list.push({ kind: 'huddle', key: e.id, ts: e.ts, record })
+      }
     }
     return list
   }, [agents, events, threads, selfId])

@@ -129,9 +129,9 @@ function page(sets) {
   </div>
   <div class="real">${svg(row.markup, 24)}${svg(row.markup, 20)}${svg(row.markup, 16)}</div>
   <figcaption>${row.name.replace(/Glyph$/, '')}</figcaption>
-  <dl><dt>box</dt><dd>${row.size.toFixed(1)} / ${row.target}</dd>
-      <dt>size</dt><dd class="${Math.abs(row.off) > 8 ? 'bad' : ''}">${row.off > 0 ? '+' : ''}${row.off.toFixed(1)}%</dd>
-      <dt>ink</dt><dd class="${Math.abs(row.weight) > 45 ? 'bad' : ''}">${row.weight > 0 ? '+' : ''}${row.weight.toFixed(0)}%</dd>
+  <dl><dt>${row.family}</dt><dd>${row.size.toFixed(1)} / ${row.target}${row.capped ? ' cap' : ''}</dd>
+      <dt>size</dt><dd class="${astray(row) ? 'bad' : ''}">${row.off > 0 ? '+' : ''}${row.off.toFixed(1)}%</dd>
+      <dt>ink</dt><dd>${row.weight > 0 ? '+' : ''}${row.weight.toFixed(0)}%</dd>
       <dt>centre</dt><dd class="${row.drift > 0.5 ? 'bad' : ''}">${row.drift.toFixed(2)}</dd></dl>
 </figure>`
         )
