@@ -122,7 +122,7 @@ export default function Chat() {
         <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
           {feed.length === 0 && (
             <p className="text-base text-fg-muted mt-16 text-center">
-              Say hi, or mention an agent with @ to start a thread.
+              Say hi, or mention someone with @.
             </p>
           )}
           {feed.map((entry, index) => {
@@ -169,7 +169,7 @@ export default function Chat() {
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
-              placeholder="Send a message, @ an agent to start a thread, or / for a command"
+              placeholder="Send a message, @ someone, or / for a command"
               inputRef={inputRef}
               onChange={mention.onChange}
               onKeyDown={onKeyDown}

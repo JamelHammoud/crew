@@ -148,7 +148,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const targets = draftMentions.length > 0 ? draftMentions : [thread.agentId]
   const canSteer =
     Boolean(activePromptId) && steerable && runningAgentId !== undefined && targets.includes(runningAgentId)
-  const placeholder = 'Send a message or @ another agent'
+  const placeholder = 'Send a message or @ someone'
   const state = threadState(thread, threadEvents, Boolean(activePromptId))
   const statusAction =
     thread.status === 'open'
