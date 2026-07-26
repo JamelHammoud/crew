@@ -211,6 +211,7 @@ export const DESIGN_NODE_GUIDE = [
   ``,
   `  {"op":"set","id":"shape:abc","radius":[20,20,0,0],"fills":[{"type":"linear","angle":160,"stops":[{"color":"#1e293b","at":0},{"color":"#0f172a","at":1}],"opacity":1}]}`,
   ``,
+  `Shapes: rect, ellipse, triangle, diamond, pentagon, hexagon, star. A node is a rect unless you say otherwise, and only a rect takes a corner radius or auto layout.`,
   `Paints: solid, linear, radial. Fills are a stack, first paint is on top.`,
   `Effects: shadow, inner-shadow, layer-blur, background-blur.`,
   `Radius takes one number or four: [topLeft, topRight, bottomRight, bottomLeft].`,
