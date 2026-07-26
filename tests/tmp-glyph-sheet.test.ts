@@ -104,8 +104,8 @@ describe('sheet', () => {
     out.push(chevron(x + 28 + wide('Edited') + 10 + wide('StepRow.tsx', 11) + 76, y + 9, true))
     y += 26
 
-    const cardX = x + 26
-    const cardW = 560
+    const cardX = x
+    const cardW = 586
     const lines: Array<[string, 'gone' | 'new' | 'same']> = [
       ['function Marker({ running }: { running: boolean }) {', 'gone'],
       ['  if (running) return <Spinner size={12} />', 'gone'],
