@@ -113,18 +113,14 @@ export default function DesignAskBar({
   if (!open) return null
 
   const key = `ask:${boardId}`
-  const at = askAnchor(target ?? aimed.current.box, stage, { w: size?.w || BAR.w, h: size?.h || BAR.h })
+  const at = askAnchor(target, stage, { w: size?.w || BAR.w, h: size?.h || BAR.h })
+  const ready = text.trim().length > 0 || staged > 0
 
   const send = () => {
-    if (!text.trim() || !agent) return
+    if (!ready || !agent) return
     const thread = threadFor(threads, agent.id)
-    sendChat(
-      askPrompt(agent.label, text, layers.length > 0 ? layers : aimed.current.layers),
-      thread,
-      thread ? undefined : boardId,
-      undefined,
-      [agent.id]
-    )
+    moveAttachments(key, thread ?? boardId)
+    sendChat(askPrompt(agent.label, text, layers), thread, thread ? undefined : boardId, undefined, [agent.id])
     onSent?.()
     onClose()
   }
