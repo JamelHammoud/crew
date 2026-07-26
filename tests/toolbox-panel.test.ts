@@ -258,14 +258,67 @@ describe('the toolbox', () => {
     expect(save?.disabled).toBe(true)
 
     // A command is optional, so naming it is enough once it runs one.
-    fireEvent.click(screen.getByText('Run a command'))
+    does('Run a command')
     expect(save?.disabled).toBe(false)
 
     // A file with no path and an ask with nothing in it are not tools.
-    fireEvent.click(screen.getByText('Open a file'))
+    does('Open a file')
     expect(save?.disabled).toBe(true)
     does('Ask an agent')
     expect(save?.disabled).toBe(true)
+  })
+
+  it('builds a tool that opens a doc, and one that opens a board', () => {
+    toolbox([], [], {
+      docs: { notes: { title: 'Notes', text: '' } },
+      boards: [{ id: 'b1', name: 'Onboarding' }]
+    })
+    build()
+
+    name('Notes')
+    does('Open a doc')
+    fireEvent.click(screen.getByText('Notes', { selector: 'span' }))
+    fireEvent.click(screen.getByText('Add to toolbox'))
+
+    expect(sent).toEqual([
+      { type: 'tool.add', name: 'Notes', mark: 'star', action: { kind: 'doc', page: 'notes' } }
+    ])
+
+    sent.length = 0
+    build()
+    name('Board')
+    does('Open a board')
+    fireEvent.click(screen.getByText('Onboarding'))
+    fireEvent.click(screen.getByText('Add to toolbox'))
+
+    expect(sent).toEqual([
+      { type: 'tool.add', name: 'Board', mark: 'star', action: { kind: 'board', boardId: 'b1' } }
+    ])
+  })
+
+  it('builds a tool that copies something, and leaves the toolbox open to say so', () => {
+    toolbox()
+    build()
+
+    name('Join link')
+    does('Copy something')
+    fireEvent.change(screen.getByPlaceholderText('The bit everyone keeps looking up'), {
+      target: { value: 'crew://join/abc' }
+    })
+    fireEvent.click(screen.getByText('Add to toolbox'))
+
+    expect(sent).toEqual([
+      { type: 'tool.add', name: 'Join link', mark: 'star', action: { kind: 'copy', text: 'crew://join/abc' } }
+    ])
+
+    cleanup()
+    const written: string[] = []
+    Object.assign(navigator, { clipboard: { writeText: (text: string) => void written.push(text) } })
+    toolbox([tool({ id: 'tool-7', name: 'Join link', mark: 'clipboard', action: { kind: 'copy', text: 'crew://join/abc' } })])
+
+    fireEvent.click(screen.getByText('Join link'))
+    expect(written).toEqual(['crew://join/abc'])
+    expect(screen.getByText('Copied')).toBeTruthy()
   })
 
   it('edits and removes a tool that is already there', () => {
