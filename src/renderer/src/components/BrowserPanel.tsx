@@ -8,6 +8,7 @@ import {
   GlobeAltIcon,
   PhotoIcon,
   PlusIcon,
+  XCircleIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
