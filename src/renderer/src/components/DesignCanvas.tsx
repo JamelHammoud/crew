@@ -28,10 +28,9 @@ import { keepWholePixels } from '../design/wholePixels'
 import { selectionStroke } from '../design/selectionColor'
 import { designShapeUtils } from '../design/shapeUtils'
 import { onDesign, useCrew } from '../state/store'
-import { useTheme } from '../state/theme'
 import AgentIcon, { petHue } from './AgentIcon'
 import Avatar from './Avatar'
-import { avatarColors } from './avatarColor'
+import { avatarHue } from './avatarColor'
 import { designAssetUrls } from './designIcons'
 import Spinner from './Spinner'
 
@@ -88,7 +87,6 @@ export default function DesignCanvas({
   const applyDesign = useCrew(s => s.applyDesign)
   const sendDesignPresence = useCrew(s => s.sendDesignPresence)
   const selfId = useCrew(s => s.selfId)
-  const theme = useTheme()
   const [editor, setEditor] = useState<Editor | null>(null)
   const [ready, setReady] = useState(false)
   const [cursors, setCursors] = useState<Record<string, DesignPresence>>({})
