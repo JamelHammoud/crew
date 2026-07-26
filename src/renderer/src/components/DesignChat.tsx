@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { mentionsIn } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
 import Composer from './Composer'
+import DesignThreadBar from './DesignThreadBar'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import RunStatus from './RunStatus'
 import ScrollFade from './ScrollFade'
@@ -98,23 +99,16 @@ export default function DesignChat({ boardId }: { boardId: string }) {
 
   return (
     <div className="flex-1 min-w-0 min-h-0 flex flex-col">
-      {boardThreads.length > 1 && (
-        <div className="flex flex-wrap gap-1.5 px-3 pb-2 shrink-0">
-          {boardThreads.map(thread => (
-            <button
-              key={thread.id}
-              onClick={() => {
-                setPicked(thread.id)
-                onComposeNew(false)
-              }}
-              className={`h-7 px-3 rounded-full text-xs font-semibold max-w-full truncate transition-colors ${
-                thread.id === threadId ? 'bg-fg text-ink-900' : 'bg-fg/[0.06] text-fg-muted hover:text-fg'
-              }`}
-            >
-              {thread.title || 'Untitled'}
-            </button>
-          ))}
-        </div>
+      {boardThreads.length > 0 && (
+        <DesignThreadBar
+          threads={boardThreads}
+          current={threadId}
+          onPick={id => {
+            setPicked(id)
+            setComposeNew(false)
+          }}
+          onNew={() => setComposeNew(true)}
+        />
       )}
       <div className="relative flex-1 min-w-0 min-h-0">
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
