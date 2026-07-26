@@ -63,11 +63,14 @@ nobody's set solves that.
   eyes and mouth on the smile, the little tab on the clipboard.
 - **Turn every corner.** A sharp point beside a rounded set reads as a different
   family, so even the warning triangle has its corners turned at 1.5.
-- **A negated icon crosses, it does not break.** One `SLASH`, the same angle and
-  length wherever it lands. Breaking the shape underneath has to be solved per
-  shape against a background the icon cannot know, and at 16px the gap reads as a
-  rendering fault. `SpeakerOff` is the one exception: it drops the waves for a
-  cross, because a slash over three arcs is four marks arguing.
+- **A negated icon crosses, it does not break, and it keeps every mark it had.**
+  One `SLASH`, the same angle and length wherever it lands, over the whole form.
+  Breaking the shape underneath has to be solved per shape against a background
+  the icon cannot know, and at 16px the gap reads as a rendering fault. Dropping
+  a mark to make room for the slash is the other way to get it wrong: the icon
+  changes size and position the moment it is turned off, in the row it was just
+  drawn in. `SpeakerOff` is the whole speaker plus the slash for exactly that
+  reason, waves and all.
 
 ## Naming
 
