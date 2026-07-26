@@ -2,7 +2,6 @@
 import { cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import type { CrewBridge } from '../src/renderer/src/types'
 
 const { useBrowser, DEFAULT_WIDTH } = await import('../src/renderer/src/state/browser')
 const SidePanel = (await import('../src/renderer/src/components/SidePanel')).default
