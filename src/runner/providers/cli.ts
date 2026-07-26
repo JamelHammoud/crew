@@ -111,10 +111,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let written = 0
       let reported = 0
       let sent = 0
-      const thinkingBlocks = new Map<number, string>()
-      const thinkingWritten = new Set<string>()
+      const streams = {
+        thinking: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false },
+        text: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false }
+      }
       const toolNames = new Map<string, string>()
-      let streamedThinking = false
 
       const idleMs = opts.idleTimeoutMs ?? IDLE_TIMEOUT_MS
       let idleTimer: NodeJS.Timeout | null = null
