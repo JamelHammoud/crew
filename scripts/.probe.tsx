@@ -11,31 +11,31 @@ const xy = (p: number[]) => `${round(p[0])} ${round(p[1])}`
 // apart from one another.
 const arch = ({
   cy,
-  mid,
+  rx,
+  ry,
   bar,
   spanOut,
   spanIn
 }: {
   cy: number
-  mid: number
+  rx: number
+  ry: number
   bar: number
   spanOut: number
   spanIn: number
 }) => {
-  const out = mid + bar / 2
-  const inn = mid - bar / 2
-  const on = (r: number, span: number, side: number) => {
+  const on = (grow: number, span: number, side: number) => {
     const rad = (span * Math.PI) / 180
-    return [12 + r * side * Math.sin(rad), cy - r * Math.cos(rad)]
+    return [12 + (rx + grow) * side * Math.sin(rad), cy - (ry + grow) * Math.cos(rad)]
   }
-  const O = (side: number) => on(out, spanOut, side)
-  const I = (side: number) => on(inn, spanIn, side)
+  const O = (side: number) => on(bar / 2, spanOut, side)
+  const I = (side: number) => on(-bar / 2, spanIn, side)
   const cap = round(Math.hypot(O(1)[0] - I(1)[0], O(1)[1] - I(1)[1]) / 2)
   return [
     `M${xy(O(-1))}`,
-    `A${out} ${out} 0 1 1 ${xy(O(1))}`,
+    `A${round(rx + bar / 2)} ${round(ry + bar / 2)} 0 1 1 ${xy(O(1))}`,
     `A${cap} ${cap} 0 0 1 ${xy(I(1))}`,
-    `A${inn} ${inn} 0 1 0 ${xy(I(-1))}`,
+    `A${round(rx - bar / 2)} ${round(ry - bar / 2)} 0 1 0 ${xy(I(-1))}`,
     `A${cap} ${cap} 0 0 1 ${xy(O(-1))}`,
     'Z'
   ].join('')
@@ -44,10 +44,10 @@ const arch = ({
 const filled = (d: string) => glyph(<path d={d} fill="currentColor" stroke="none" />)
 const outlined = (d: string) => glyph(<path d={d} />)
 
-const FLARE_A = arch({ cy: 13.4, mid: 7, bar: 3.2, spanOut: 122, spanIn: 104 })
-const FLARE_B = arch({ cy: 13.2, mid: 7, bar: 3.2, spanOut: 128, spanIn: 100 })
-const FLARE_C = arch({ cy: 13.6, mid: 7, bar: 3, spanOut: 118, spanIn: 106 })
-const FLARE_D = arch({ cy: 13.2, mid: 6.9, bar: 2.8, spanOut: 130, spanIn: 98 })
+const WIDE_A = arch({ cy: 13.5, rx: 8, ry: 6.4, bar: 3.2, spanOut: 118, spanIn: 100 })
+const WIDE_B = arch({ cy: 13.3, rx: 8, ry: 6.4, bar: 3.2, spanOut: 124, spanIn: 96 })
+const WIDE_C = arch({ cy: 13.6, rx: 8.2, ry: 6.2, bar: 3, spanOut: 115, spanIn: 102 })
+const ROUND_D = arch({ cy: 13.2, rx: 6.9, ry: 6.9, bar: 2.8, spanOut: 130, spanIn: 98 })
 
 const DIAGONAL =
   'M10.06 5.25A3.4 3.4 0 0 0 5.25 10.06Q8.18 15.82 13.94 18.75A3.4 3.4 0 0 0 18.75 13.94Q7.33 16.67 10.06 5.25Z'
@@ -55,12 +55,11 @@ const DIAGONAL =
 const CANDIDATES: { label: string; glyph: Glyph }[] = [
   { label: 'now', glyph: HangupGlyph },
   { label: 'diagonal', glyph: filled(DIAGONAL) },
-  { label: 'flare 122/104', glyph: filled(FLARE_A) },
-  { label: 'flare 128/100', glyph: filled(FLARE_B) },
-  { label: 'flare 118/106', glyph: filled(FLARE_C) },
-  { label: 'flare 130/98', glyph: filled(FLARE_D) },
-  { label: 'flare A outlined', glyph: outlined(FLARE_A) },
-  { label: 'flare B outlined', glyph: outlined(FLARE_B) }
+  { label: 'wide 118/100', glyph: filled(WIDE_A) },
+  { label: 'wide 124/96', glyph: filled(WIDE_B) },
+  { label: 'wide thin bar', glyph: filled(WIDE_C) },
+  { label: 'round 130/98', glyph: filled(ROUND_D) },
+  { label: 'wide A outlined', glyph: outlined(WIDE_A) }
 ]
 
 function Button({ children, danger }: { children: ReactNode; danger?: boolean }) {
