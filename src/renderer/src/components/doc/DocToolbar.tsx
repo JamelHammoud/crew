@@ -23,7 +23,7 @@ const STYLES: Array<{ style: string; label: string; shortcut: string; mark: Glyp
 ]
 
 export default function DocToolbar() {
-  const editor = useBlockNoteEditor()
+  const editor = useBlockNoteEditor<any, any, any>()
   const styles = useActiveStyles() as Record<string, unknown>
   const blocks = useSelectedBlocks()
   const [turnOpen, setTurnOpen] = useState(false)
