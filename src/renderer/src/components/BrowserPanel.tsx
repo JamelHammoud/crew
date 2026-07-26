@@ -7,6 +7,7 @@ import {
   CloseGlyph,
   DocGlyph,
   ExternalLinkGlyph,
+  FolderGlyph,
   GlobeGlyph,
   PhotoGlyph,
   PlusGlyph,
