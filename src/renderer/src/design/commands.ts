@@ -440,7 +440,6 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'rename',
     label: 'Rename',
-    hint: '⌘R',
     group: 'state',
     Icon: RenameGlyph,
     when: ctx => {
