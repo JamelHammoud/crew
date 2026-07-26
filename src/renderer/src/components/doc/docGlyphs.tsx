@@ -60,32 +60,37 @@ const HEADING = (
 export const Heading1Glyph = mark(
   <>
     {HEADING}
-    <path d="M19.6 18v-7.6l-2.2 1.8" strokeWidth={NUMERAL} />
+    <path d="M19.6 18.4v-7.6l-2.2 1.8" strokeWidth={NUMERAL} />
   </>
 )
 
 export const Heading2Glyph = mark(
   <>
     {HEADING}
-    <path d="M15.5 12.3a2.2 2.2 0 1 1 4.4 0c0 1.7-4.4 3.3-4.4 5.7h4.4" strokeWidth={NUMERAL} />
+    <path d="M15.5 12.7a2.2 2.2 0 1 1 4.4 0c0 1.7-4.4 3.3-4.4 5.7h4.4" strokeWidth={NUMERAL} />
   </>
 )
 
 export const Heading3Glyph = mark(
   <>
     {HEADING}
-    <path d="M15.6 11.3a2.1 2.1 0 1 1 1.7 3.3h-.5" strokeWidth={NUMERAL} />
-    <path d="M16.8 14.6a2.1 2.1 0 1 1-1.3 3.4" strokeWidth={NUMERAL} />
+    <path d="M15.6 11.7a2.1 2.1 0 1 1 1.7 3.3h-.5" strokeWidth={NUMERAL} />
+    <path d="M16.8 15a2.1 2.1 0 1 1-1.3 3.4" strokeWidth={NUMERAL} />
   </>
 )
 
-// A rule with quoted text beside it. Two lines against a full height bar read as
-// an equals sign that has lost its left end, because there is nothing above the
-// first line or below the second for the bar to be holding.
+// The quotation mark itself. A bar with lines beside it is what a quote block
+// looks like on the page, but in a menu it is the same silhouette as the two
+// lists two rows below it, and a marker with lines beside it is what a list is.
+// Punctuation is solid in every face it is set in, so this is solid too: a
+// counter that small closes up at 16 anyway, and filled it cannot smudge.
+const comma = (cx: number, cy: number, r: number) =>
+  `M${cx - r} ${cy}A${r} ${r} 0 0 1 ${cx + r} ${cy}C${cx + r} ${cy + 1.9} ${cx + 0.4} ${cy + 3.3} ${cx - 1.6} ${cy + 4.2}C${cx - 0.5} ${cy + 2.5} ${cx - r} ${cy + 1.4} ${cx - r} ${cy}Z`
+
 export const QuoteGlyph = mark(
   <>
-    <path d="M4.4 5.6v12.8" />
-    {rows(9.6, 16.4)}
+    <path d={comma(8.8, 11, 2.2)} fill="currentColor" stroke="none" />
+    <path d={comma(15.2, 11, 2.2)} fill="currentColor" stroke="none" />
   </>
 )
 
@@ -93,42 +98,42 @@ const bullet = (y: number) => <circle key={y} cx="5.1" cy={y} r="1.15" fill="cur
 
 export const BulletListGlyph = mark(
   <>
-    {ROWS.map(bullet)}
-    {rows(9.6)}
+    {THREE.map(bullet)}
+    {rows(THREE, 9.6)}
   </>
 )
 
-// Each numeral is 3.8 tall and centred on the row it belongs to. Drawn any
-// larger the three run into one another and the last one hangs below the line
-// it is numbering, which is the only part of this the eye picks up at 16.
+// Two rows, and the numerals drawn at the weight of the lines they number. Three
+// of them was a column of 3.8 tall digits at a lighter weight, and a digit that
+// small is a smudge rather than a number: it is the one marker in the menu that
+// has to be read as what it is.
 export const NumberedListGlyph = mark(
   <>
-    <path d="M3.9 5.5 5.3 4.5v3.8" strokeWidth={NUMERAL} />
-    <path d="M4 11.2a1.15 1.15 0 1 1 2.3 0c0 .9-2.3 1.65-2.3 2.75h2.5" strokeWidth={NUMERAL} />
-    <path d="M4 15.8h2.6l-1.25 1.45a1.3 1.3 0 1 1-1.15 1.95" strokeWidth={NUMERAL} />
-    {rows(9.6)}
+    <path d="M3.6 6.2 5.7 4.8v5.6" />
+    <path d="M3.7 15.3a1.7 1.7 0 1 1 3.4 0c0 1.3-3.4 2.5-3.4 4.2h3.7" />
+    {rows(PAIR, 10.6)}
   </>
 )
 
-// Two rows rather than three. A check is a turn where a bullet and a numeral are
-// a single mark, and three of them down the side is a scribble at the size the
-// menu wears. Two, drawn larger, is what carries the idea.
+// A check is a turn where a bullet is a dot, so it stands on the pair of rows
+// rather than the three. Three of them down the side is a scribble at the size
+// the menu wears.
 export const TodoGlyph = mark(
   <>
     <path d="m3.9 7.4 1.9 1.9 3.4-3.8" />
     <path d="m3.9 16.4 1.9 1.9 3.4-3.8" />
-    <path d="M12.2 7.6H20" />
-    <path d="M12.2 16.6H20" />
+    {rows(PAIR, 12.2)}
   </>
 )
 
-// The slash between the brackets, because a bare pair of chevrons is two thin
-// marks with the middle of the box empty, and the middle is where the eye lands.
+// Two chevrons and nothing between them. They are drawn closer together than a
+// pair of brackets would sit, because the middle of the box is where the eye
+// lands and a wide gap there reads as two marks rather than one. Closer still
+// and the two turn into a diamond at 16.
 export const CodeGlyph = mark(
   <>
-    <path d="m8.4 7.4-4.4 4.6 4.4 4.6" />
-    <path d="m13.4 5.6-2.8 12.8" />
-    <path d="m15.6 7.4 4.4 4.6-4.4 4.6" />
+    <path d="m9.8 6.8-5 5.2 5 5.2" />
+    <path d="m14.2 6.8 5 5.2-5 5.2" />
   </>
 )
 
