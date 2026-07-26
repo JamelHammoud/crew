@@ -28,7 +28,7 @@
   "scripts": {
     "dev": "node scripts/name-electron.mjs && electron-vite dev",
     "build": "electron-vite build",
-    "start": "electron-vite preview",
+    "start": "CREW_SHIPPING_ICON=1 electron-vite preview",
     "preview": "electron-vite preview",
     "test": "vitest run",
     "media-check": "node scripts/media-check.mjs",
