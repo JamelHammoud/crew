@@ -288,6 +288,7 @@ app.whenReady().then(() => {
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
+  ipcMain.handle('clipboard:image', (_event, src: string) => copyImage(src))
   ipcMain.handle('file:read', (_event, target: string) => session.readFile(target))
   ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
   ipcMain.handle('file:locate', (_event, target: string) => session.locatePath(target))
