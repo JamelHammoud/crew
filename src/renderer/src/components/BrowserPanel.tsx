@@ -5,13 +5,16 @@ import {
   ArrowTopRightOnSquareIcon,
   DocumentTextIcon,
   GlobeAltIcon,
+  PhotoIcon,
   PlusIcon,
   XMarkIcon
 } from '@heroicons/react/16/solid'
 import { useEffect, useState, type KeyboardEvent } from 'react'
+import { isImageUrl } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
+import ImageView from './ImageView'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
 
@@ -24,8 +27,13 @@ function normalizeUrl(input: string): string {
   return `https://${trimmed}`
 }
 
+export const showsImage = (tab: BrowserTab): boolean => tab.kind === 'web' && isImageUrl(tab.initialUrl)
+
+const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
+
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
+  if (showsImage(tab)) return imageName(tab.initialUrl)
   if (tab.title) return tab.title
   if (!tab.url) return 'New tab'
   try {
