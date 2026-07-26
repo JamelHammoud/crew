@@ -1368,6 +1368,43 @@ body {
   @apply my-1.5 rounded-lg;
 }
 
+/* A thought is written in the same hand as an answer, so it is read by the same
+   renderer and arrives with the same fade. The model marks its reasoning up as
+   it goes, and set as plain text those marks were left lying on the page as
+   asterisks. Quieter is the whole of the difference: smaller, muted and italic,
+   with the mono kept upright, since a slanted mono reads as a mistake. */
+.md-quiet {
+  @apply text-sm leading-6 italic text-fg-muted;
+}
+
+.md-quiet h1,
+.md-quiet h2,
+.md-quiet h3 {
+  @apply text-sm text-fg-secondary mt-3 mb-1;
+}
+
+.md-quiet strong {
+  @apply text-fg-secondary font-semibold;
+}
+
+.md-quiet p,
+.md-quiet blockquote {
+  @apply my-2;
+}
+
+.md-quiet ul,
+.md-quiet ol {
+  @apply my-2 pl-4;
+}
+
+.md-quiet code {
+  @apply not-italic text-[11px];
+}
+
+.md-quiet pre {
+  @apply not-italic my-2 rounded-lg p-2;
+}
+
 .tl-text-measure {
   position: absolute !important;
   visibility: hidden !important;
