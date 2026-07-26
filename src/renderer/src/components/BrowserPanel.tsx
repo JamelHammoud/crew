@@ -35,6 +35,7 @@ export const showsImage = (tab: BrowserTab): boolean => tab.kind === 'web' && is
 const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
 
 function tabLabel(tab: BrowserTab): string {
+  if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return imageName(tab.initialUrl)
   if (tab.title) return tab.title
