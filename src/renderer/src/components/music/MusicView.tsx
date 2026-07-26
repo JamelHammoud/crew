@@ -54,7 +54,7 @@ export default function MusicView() {
   const adding = useMusic(s => s.adding)
   const selfName = useCrew(s => s.selfName)
   const sounds = useSounds()
-  const items = useMusic.getState().items()
+  const items = useMemo(() => musicItems(uploads), [uploads])
   const track = items.find(one => one.id === room.trackId) ?? null
   const at = useAt(room, room.playing && track !== null)
   // Where the bar is being dragged to, which is what it shows until the crew
