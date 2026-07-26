@@ -156,7 +156,7 @@ export default function DesignChat({
         <Composer
           attachmentKey={key}
           value={text}
-          placeholder={threadId ? 'Send a message or @ another agent' : 'Ask an agent to design something'}
+          placeholder={threadId ? 'Send a message or @ someone' : 'Ask an agent to design something'}
           inputRef={inputRef}
           onChange={mention.onChange}
           onKeyDown={onKeyDown}

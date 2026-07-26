@@ -28,7 +28,8 @@ const EMOJI_MATCHES = 9
 export function useMentionAutocomplete(
   value: string,
   setValue: (text: string) => void,
-  inputRef: RefObject<HTMLTextAreaElement>
+  inputRef: RefObject<HTMLTextAreaElement>,
+  includeMembers = true
 ) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
@@ -39,14 +40,16 @@ export function useMentionAutocomplete(
   const matches = useMemo<MentionItem[]>(() => {
     if (query?.trigger === '@')
       return [
-        ...memberMentionCandidates(members, query.text).map(member => ({ kind: 'member' as const, member })),
+        ...(includeMembers
+          ? memberMentionCandidates(members, query.text).map(member => ({ kind: 'member' as const, member }))
+          : []),
         ...mentionCandidates(agents, query.text).map(agent => ({ kind: 'agent' as const, agent }))
       ]
     if (query?.trigger === '#') return docCandidates(docs, query.text).map(doc => ({ kind: 'doc', doc }))
     if (query?.trigger === ':')
       return searchEmoji(query.text, EMOJI_MATCHES).map(entry => ({ kind: 'emoji', entry }))
     return []
-  }, [agents, docs, members, query])
+  }, [agents, docs, includeMembers, members, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const onChange = (next: string) => {
