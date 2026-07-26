@@ -201,19 +201,22 @@ export default function DesignAskBar({
                     onClose()
                   }
                 }}
+                onPaste={event => void attach(key, event.clipboardData.files)}
                 placeholder="Ask for a change"
                 aria-label="Ask for a change"
-                className="flex-1 min-w-0 h-8 bg-transparent text-sm text-fg placeholder:text-fg/35 outline-none"
+                className="flex-1 min-w-0 h-8 bg-transparent text-sm text-fg placeholder:text-fg/40 outline-none"
               />
               <AttachButton attachmentKey={key} size="sm" />
-              <button
-                onClick={send}
-                disabled={!text.trim()}
-                aria-label="Send"
-                className="w-8 h-8 shrink-0 rounded-full bg-fg text-ink-900 grid place-items-center transition-all active:scale-95 disabled:opacity-25"
-              >
-                <ArrowUpIcon className="w-4 h-4" />
-              </button>
+              <Tooltip label="Send">
+                <button
+                  onClick={send}
+                  disabled={!ready}
+                  aria-label="Send"
+                  className="w-8 h-8 shrink-0 rounded-full bg-fg text-ink-900 grid place-items-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg/40 disabled:scale-100"
+                >
+                  <ArrowUpIcon className="w-4 h-4" />
+                </button>
+              </Tooltip>
             </div>
           </>
         )}
