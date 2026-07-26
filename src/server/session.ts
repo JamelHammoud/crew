@@ -574,7 +574,7 @@ export class CrewSession {
     const trimmed = command.text
     const attachments = this.saveAttachments(incoming)
     if (!trimmed && attachments.length === 0) return
-    const replyTo = this.replyReference(replyTargetId, threadId)
+    const replyTo = this.replyReference(replyTargetId)
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread) return
