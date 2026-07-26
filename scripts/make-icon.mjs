@@ -334,13 +334,18 @@ const dark = svg(THEMES.dark)
 const light = svg(THEMES.light)
 const devDark = svg(THEMES.devDark, true)
 const devLight = svg(THEMES.devLight, true)
+const logo = mark({ box: MARK, ink: 'currentColor' })
+// Black on nothing: macOS reads a template image by its alpha alone and tints
+// it to whatever the menu bar is wearing.
+const trayMark = mark({ box: TRAY_BOX, ink: '#000000' })
 
 mkdirSync(resources, { recursive: true })
 writeFileSync(path.join(resources, 'icon.svg'), dark)
 writeFileSync(path.join(resources, 'icon-light.svg'), light)
 writeFileSync(path.join(resources, 'icon-dev.svg'), devDark)
 writeFileSync(path.join(resources, 'icon-dev-light.svg'), devLight)
-writeFileSync(path.join(resources, 'crew-logo.svg'), mark())
+writeFileSync(path.join(resources, 'crew-logo.svg'), logo)
+writeFileSync(path.join(resources, 'tray.svg'), trayMark)
 
 writeFileSync(
   path.join(root, 'src/renderer/src/components/crew-mark.ts'),
