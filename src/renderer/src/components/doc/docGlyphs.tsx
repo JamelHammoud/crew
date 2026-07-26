@@ -109,8 +109,8 @@ export const BulletListGlyph = mark(
 // has to be read as what it is.
 export const NumberedListGlyph = mark(
   <>
-    <path d="M3.6 6.2 5.7 4.8v5.6" />
-    <path d="M3.7 15.3a1.7 1.7 0 1 1 3.4 0c0 1.3-3.4 2.5-3.4 4.2h3.7" />
+    <path d="M4 6.2 6.1 4.8v5.6" />
+    <path d="M4.1 15.3a1.7 1.7 0 1 1 3.4 0c0 1.3-3.4 2.5-3.4 4.2h3.7" />
     {rows(PAIR, 10.6)}
   </>
 )
