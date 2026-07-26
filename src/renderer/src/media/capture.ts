@@ -18,12 +18,26 @@ async function allowed(kind: 'microphone' | 'camera'): Promise<boolean> {
   return bridge.askForMedia(kind).catch(() => false)
 }
 
-export async function captureMic(): Promise<CaptureResult> {
+// A device that was chosen once and has since been unplugged is asked for as an
+// ideal rather than an exact one, so the request falls back to whatever is there
+// instead of failing and leaving someone with no microphone at all.
+const wanted = (deviceId: string | null | undefined) => (deviceId ? { deviceId: { ideal: deviceId } } : {})
+
+export function deviceOf(track: MediaStreamTrack): string | null {
+  return track.getSettings?.().deviceId ?? null
+}
+
+export async function captureMic(deviceId?: string | null): Promise<CaptureResult> {
   const media = devices()
   if (!media || !(await allowed('microphone'))) return failed('microphone')
   try {
     const stream = await media.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        ...wanted(deviceId)
+      }
     })
     const [track] = stream.getAudioTracks()
     return track ? ok(track) : failed('microphone')
@@ -32,12 +46,17 @@ export async function captureMic(): Promise<CaptureResult> {
   }
 }
 
-export async function captureCamera(): Promise<CaptureResult> {
+export async function captureCamera(deviceId?: string | null): Promise<CaptureResult> {
   const media = devices()
   if (!media || !(await allowed('camera'))) return failed('camera')
   try {
     const stream = await media.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30 },
+        ...wanted(deviceId)
+      }
     })
     const [track] = stream.getVideoTracks()
     if (!track) return failed('camera')
