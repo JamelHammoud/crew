@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
 import { PanelButton } from '../components/DesignControls'
 import {
@@ -8,6 +9,7 @@ import {
   AlignRightGlyph,
   AlignTopGlyph,
   AngleGlyph,
+  ConstrainGlyph,
   FlipHorizontalGlyph,
   FlipVerticalGlyph,
   type Glyph
@@ -39,6 +41,7 @@ function alignWithin(editor: Editor, shape: TLShape, op: Align): void {
 
 export default function Transform() {
   const editor = useEditor()
+  const [locked, setLocked] = useState(false)
   const shapes = useValue('design selected shapes', () => editor.getSelectedShapes(), [editor])
   const only = shapes.length === 1 ? shapes[0] : null
   const size = only ? sizeOf(only) : null
@@ -59,7 +62,10 @@ export default function Transform() {
   const resize = (next: { w?: number; h?: number }) => {
     if (!only || !size) return
     editor.markHistoryStoppingPoint()
-    editor.resizeShape(only.id, { x: (next.w ?? size.w) / size.w, y: (next.h ?? size.h) / size.h })
+    const scale = next.w !== undefined ? next.w / size.w : (next.h ?? size.h) / size.h
+    const x = next.w !== undefined ? scale : locked ? scale : 1
+    const y = next.h !== undefined ? scale : locked ? scale : 1
+    editor.resizeShape(only.id, { x, y })
   }
 
   const spin = (degrees: number) => {
@@ -133,10 +139,17 @@ export default function Transform() {
       {size && (
         <Section title="Layout">
           <SubLabel>Dimensions</SubLabel>
-          <Row>
+          <div className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
             <NumberInput label="W" value={size.w} min={1} onChange={value => resize({ w: value })} />
             <NumberInput label="H" value={size.h} min={1} onChange={value => resize({ h: value })} />
-          </Row>
+            <PanelButton
+              label={locked ? 'Free size' : 'Keep proportions'}
+              active={locked}
+              onClick={() => setLocked(value => !value)}
+            >
+              <ConstrainGlyph className="w-4 h-4" />
+            </PanelButton>
+          </div>
         </Section>
       )}
     </>
