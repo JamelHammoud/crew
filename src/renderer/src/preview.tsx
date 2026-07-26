@@ -47,7 +47,7 @@ function Sheet({ title, children }: { title: string; children: React.ReactNode }
   return (
     <div>
       <p className="mb-2 text-xs text-fg-muted">{title}</p>
-      <div className="glass rounded-2xl w-[304px] overflow-hidden">{children}</div>
+      <div className="glass rounded-2xl w-[344px] overflow-hidden">{children}</div>
     </div>
   )
 }
@@ -81,7 +81,7 @@ createRoot(document.getElementById('root')!).render(
       <Sheet title="Choose a mark, emoji">
         <ToolMarkPicker mark="🚀" onPick={noop} onBack={noop} />
       </Sheet>
-      <div className="w-[304px] h-[420px]">
+      <div className="w-[344px] h-[560px]">
         <p className="mb-2 text-xs text-fg-muted">Toolbox</p>
         <Toolbox open onClose={noop} onChat={noop} />
       </div>

@@ -39,20 +39,22 @@ export default function DesignThreadBar({
   ) : null
 
   return (
-    <div className="h-12 shrink-0 flex items-center gap-1 pl-2 pr-2">
+    <div className="h-12 shrink-0 flex items-center gap-1 px-2">
       <div className="relative flex-1 min-w-0">
         {threads.length > 1 || !thread ? (
           <button
-            onClick={() => setOpen(true)}
+            onClick={() => setOpen(o => !o)}
             aria-label="Pick a thread"
-            className="w-full h-8 flex items-center gap-2 rounded-full pl-1 pr-2.5 transition-colors hover:bg-fg/[0.06]"
+            className={`w-full ${ROW} rounded-full transition-colors ${open ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.06]'}`}
           >
             {mark}
             <Name text={label} />
-            <ChevronDownGlyph className="w-3.5 h-3.5 shrink-0 text-fg-muted" />
+            <ChevronDownGlyph
+              className={`w-3.5 h-3.5 shrink-0 text-fg-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            />
           </button>
         ) : (
-          <div className="h-8 flex items-center gap-2 pl-1 pr-2.5">
+          <div className={ROW}>
             {mark}
             <Name text={label} />
           </div>
