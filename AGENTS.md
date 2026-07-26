@@ -171,5 +171,5 @@ Only `.crew/session.json` resolves itself, by keeping the local copy. Logs endin
 ## Rules for agents working here
 
 - `src/server`, `src/runner`, and `src/shared` must never import electron. Tests import them directly.
-- Run `yarn test` and `yarn tsc --noEmit` before considering a change done.
+- Run `yarn tsc --noEmit` and the tests that cover what you touched before considering a change done. Name them: `yarn test tests/huddle.integration.test.ts`. There are over a hundred suites and the whole run takes a long time, so never finish a change by running `yarn test` on its own. Run the full suite only when someone asks for it.
 - People keep more than one crew window open on the same folder, and that is supported. Never kill or quit a running instance to get a quiet repo. Work with it running, and expect your edits to be committed under you while you work.
