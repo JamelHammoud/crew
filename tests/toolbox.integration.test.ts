@@ -60,6 +60,29 @@ describe('toolbox', () => {
     expect(host.session.snapshot().tools).toHaveLength(0)
   })
 
+  it('carries a file, an ask and a page opened outside, and an emoji for a mark', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+
+    sam.send({ type: 'tool.add', name: 'Notes', mark: '🚀', action: { kind: 'file', path: '  docs/notes.md  ' } })
+    const file = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Notes')) as Added
+    expect(file.mark).toBe('🚀')
+    expect(file.action).toEqual({ kind: 'file', path: 'docs/notes.md' })
+
+    sam.send({
+      type: 'tool.add',
+      name: 'Tests',
+      mark: 'chat',
+      action: { kind: 'prompt', text: '  Run the tests  ', agentId: 'agent-1' }
+    })
+    const ask = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Tests')) as Added
+    expect(ask.action).toEqual({ kind: 'prompt', text: 'Run the tests', agentId: 'agent-1' })
+
+    sam.send({ type: 'tool.add', name: 'Docs', mark: 'globe', action: { kind: 'web', url: 'crew.dev', external: true } })
+    const page = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Docs')) as Added
+    expect(page.action).toEqual({ kind: 'web', url: 'https://crew.dev', external: true })
+  })
+
   it('turns away a tool that could not be pressed', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
