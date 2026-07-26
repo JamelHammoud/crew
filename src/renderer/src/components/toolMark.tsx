@@ -59,11 +59,12 @@ const GLYPHS: Record<ToolMark, Glyph> = {
 export const glyphFor = (mark: string): Glyph | null =>
   (TOOL_MARKS as readonly string[]).includes(mark) ? GLYPHS[mark as ToolMark] : null
 
-// A mark is one of the app's own drawings or an emoji, and everywhere a tool is
-// shown it is shown through here, so the two are always the same size and sit
-// on the same middle.
-export default function ToolMarkView({ mark, size }: { mark: string; size: number }) {
+// A mark is one of the app's own drawings or an emoji, and every tool is shown
+// through here, so the two are always the same size. The size is the one the
+// class already carries, which is where a glyph reads its own weight from, so
+// the drawing and the picture are never asked for separately.
+export default function ToolMarkView({ mark, className = 'w-4 h-4' }: { mark: string; className?: string }) {
   const Glyph = glyphFor(mark)
-  if (Glyph) return <Glyph style={{ width: size, height: size }} />
-  return <Emoji char={mark} size={size} />
+  if (Glyph) return <Glyph className={className} />
+  return <Emoji char={mark} size={wornAt(className)} />
 }
