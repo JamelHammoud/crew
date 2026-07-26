@@ -5,7 +5,7 @@ import {
   PencilIcon,
   TrashIcon
 } from '@heroicons/react/20/solid'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { QUICK_REACTIONS, type ReactionEmoji } from '../../../shared/reactions'
 import { useCrew } from '../state/store'
 import Emoji from './Emoji'
