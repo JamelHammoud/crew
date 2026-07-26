@@ -15,7 +15,7 @@ function wrapTables(container: HTMLElement) {
   }
 }
 
-export default function Markdown({ text }: { text: string }) {
+export default function Markdown({ text, className = '' }: { text: string; className?: string }) {
   const [resolved, setResolved] = useState(0)
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
@@ -57,5 +57,5 @@ export default function Markdown({ text }: { text: string }) {
     if (ref) useBrowser.getState().openFile(targetFor(ref.path), ref.line)
   }
 
-  return <div className="md" onClick={onClick} dangerouslySetInnerHTML={{ __html: html }} />
+  return <div className={`md ${className}`} onClick={onClick} dangerouslySetInnerHTML={{ __html: html }} />
 }
