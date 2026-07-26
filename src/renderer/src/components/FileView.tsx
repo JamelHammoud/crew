@@ -4,6 +4,7 @@ import type { FileEntry, RepoFile } from '../../../shared/files'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useTheme } from '../state/theme'
 import { highlightLines, type ThemedToken } from './highlight'
+import ImageView from './ImageView'
 import Spinner from './Spinner'
 
 const MAX_LINES = 5000
@@ -296,15 +297,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             onKeys={onEditorKeys}
           />
         )}
-        {data?.kind === 'image' && (
-          <div className="absolute inset-0 flex items-center justify-center p-6">
-            <img
-              src={data.url}
-              alt={data.path}
-              className="max-w-full max-h-full object-contain rounded-card animate-rise"
-            />
-          </div>
-        )}
+        {data?.kind === 'image' && <ImageView src={data.url} alt={data.path} />}
         {data?.kind === 'missing' && (
           <Empty
             icon={<DocumentIcon className="w-8 h-8 text-fg-faint" />}
