@@ -71,6 +71,8 @@ function makeTab(url = ''): BrowserTab {
     command: null,
     back: [],
     forward: [],
+    tree: false,
+    open: [],
     generation: 0
   }
 }
