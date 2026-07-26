@@ -49,15 +49,12 @@ export default function TrayPanel(): ReactElement {
 
   return (
     <div ref={boxRef} className="p-1.5">
-      <div className="flex items-center gap-2.5 px-3 pt-2 pb-1.5">
+      <div className="flex items-center px-3 pt-2 pb-1.5">
         <CrewMark className="h-3 w-auto text-fg" />
-        <span className="text-xs text-fg-muted">
-          {state.sharing ? 'Sharing your agents' : 'Not in a session'}
-        </span>
         <Badge count={waiting} className="ml-auto" />
       </div>
       <MenuDivider />
-      <div className="overflow-y-auto" style={{ maxHeight: LIST }}>
+      <div className="overflow-y-auto overflow-x-hidden" style={{ maxHeight: LIST }}>
         <Here state={state} />
       </div>
       <MenuDivider />
@@ -70,7 +67,7 @@ export default function TrayPanel(): ReactElement {
       )}
       <MenuItem
         icon={<ArrowTopRightOnSquareIcon />}
-        label="Open crew"
+        label="Open Crew"
         onClick={() => window.crew.openWindow()}
       />
     </div>
