@@ -190,6 +190,23 @@ A step in a thread says what happened in plain words, wearing a mark of its own.
 - What a step says it did is what it did, not the summary the model wrote of it. `detail.ts` reads `command` before `description`, so a shell step shows the command itself.
 - The panel a step opens carries no rail or bracket. It is a card, or it is plain text, sitting under the row that opened it.
 
+## Music
+
+Something to put on while the crew works. It is a tab in the side panel called Music, opened from the toolbox or the New button, and what is playing is playing for everyone: one loop, one place in it, and anyone can press anything.
+
+- Crew plays two things and nothing else. Its own tunes, which are numbers rather than files, and a track somebody in the crew added themselves. There is no service behind it and nothing to fetch from the internet.
+- A tune is written out as rows of steps in `songs.ts`, read by `tunes.ts`, and struck through the same bubble the rest of the app's sounds are made of. A note is its name, a dot is a rest, a dash holds the one before it, an x is a drum. `voices.ts` is the whole kit: the low one, the tune, the spark, and three with the tuning taken out of them for time.
+- A row shorter than the loop is laid down again inside it, so a drum is written once and a melody is written out. A note nobody can spell comes back as nothing and is dropped, which is silence rather than a wrong note, so `tests/music-player.test.ts` spells every token of every song.
+- What is playing is never written down. It rides in the session snapshot and in `music.room`, the way a call does, so a morning of skipping tracks is not something the crew scrolls past later. A session coming back up has nothing on.
+- The shelf is the other way round. A track somebody added lasts, so it goes in the log as `music.added`, is replayed on the way back up, and is left off the shelf if its file has gone. Both kinds are trimmed out of the snapshot's own event list, the way the toolbox is.
+- The file itself is kept beside the session in `.crew/music` and served over http by the host, exactly as an attachment is. Everyone plays their own copy from `/music/<file>`: nothing streams from whoever added it, and there is no second copy of the audio in the log.
+- Nobody is told a moment on somebody else's clock. The host says where in the loop it is right now, and each machine takes it from there on its own audio clock. A machine already within a third of a second of the crew leaves its music alone rather than jumping, or every message that changed nothing would be a hiccup in everyone's speakers.
+- Volume is yours alone, and so is mute. Both are in `localStorage`, neither is ever sent, and the player keeps its place with everyone else's whatever you do to them.
+- The controls belong to the people here. `music.set`, `music.off`, `music.add` and `music.remove` are all refused from a runner, since an agent's machine is connected the whole time it is joined.
+- The bars are the music's own loudness, band by band, low on the left and high on the right. Where it is playing they are read off an `AnalyserNode` hung before the volume, so turning it down where you sit does not stop them dancing. Where it is not, they are drawn from `levels.ts`, which works the same curve out of the notes themselves, so a machine with the sound off watches what everyone else watches. The analyser's window has to be wide: a narrow one measures in steps of a few hundred hertz and the lowest band is fifty across, which leaves the bass bar empty.
+- Bars are written straight onto the elements in `Bars.tsx` rather than held in state. It runs every frame, and a render a frame would cost the whole panel.
+- A cover is a mesh gradient mixed from the track's own four colors, laid out from its id so it is the same picture on everyone's screen and no two tracks look alike. It is blurred on a layer larger than the tile, blended rather than stacked, and grained, since a gradient with no grain in it reads as CSS. A track somebody added takes a palette from `paletteFor`, so it has a cover too.
+
 ## Terminals
 
 A terminal is one of the things the side panel can hold, beside a web page and a file. The New button asks which. It is the real thing: a pty running the login shell, started the way Terminal and Windows Terminal start it, in the project folder.
