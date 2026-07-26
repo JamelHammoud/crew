@@ -62,7 +62,7 @@ function TodoEditor({
   const [value, setValue] = useState(initial)
   const inputRef = useAutoResize(value)
   const wrapRef = useRef<HTMLDivElement>(null)
-  const mention = useMentionAutocomplete(value, setValue, inputRef)
+  const mention = useMentionAutocomplete(value, setValue, inputRef, false)
 
   const commit = () => {
     const trimmed = value.trim()
