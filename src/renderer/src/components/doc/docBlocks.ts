@@ -26,14 +26,14 @@ export interface DocBlockKind {
   convert: boolean
 }
 
-const TABLE: PartialBlock = {
+const TABLE = {
   type: 'table',
   content: {
     type: 'tableContent',
     headerRows: 1,
     rows: [{ cells: ['', '', ''] }, { cells: ['', '', ''] }, { cells: ['', '', ''] }]
-  } as PartialBlock['content']
-}
+  }
+} as PartialBlock
 
 export const DOC_BLOCKS: DocBlockKind[] = [
   {
