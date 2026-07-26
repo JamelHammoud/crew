@@ -24,6 +24,7 @@ import {
 import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
+import Pill from './Pill'
 import { Popover } from './Popover'
 import Tooltip from './Tooltip'
 
@@ -102,11 +103,13 @@ function Tile({
         className={`w-full h-[82px] px-1.5 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-150 enabled:active:scale-95 disabled:cursor-default ${look}`}
       >
         <Mark className="w-[22px] h-[22px]" />
-        <span className="w-full text-center leading-none">
-          <span className="block truncate text-xs font-medium">{name}</span>
-          {note && <span className="block mt-1 text-xs text-fg/25">{note}</span>}
-        </span>
+        <span className="w-full truncate text-center text-xs font-medium leading-none">{name}</span>
       </button>
+      {note && (
+        <span className="absolute top-1.5 right-1.5 pointer-events-none">
+          <Pill glass>{note}</Pill>
+        </span>
+      )}
       {children}
     </div>
   )
