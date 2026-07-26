@@ -57,11 +57,11 @@ export default function Design() {
         <div className="h-full flex flex-col" style={{ paddingTop: TOP_BAR_H - HEADER_LIFT }}>
           <div className="app-drag relative z-50 h-10 shrink-0 flex items-center gap-1 px-2">
             <HeaderButton
-              label={leftOpen ? 'Hide layers' : 'Show layers'}
-              pressed={leftOpen}
-              onClick={() => setLeftOpen(value => !value)}
+              label={panels.left ? 'Hide layers' : 'Show layers'}
+              pressed={panels.left}
+              onClick={() => setPanels(value => ({ ...value, left: !value.left }))}
             >
-              <PanelLeftGlyph className={`${GLYPH} ${leftOpen ? '' : 'scale-x-[-1]'}`} />
+              <PanelLeftGlyph className={`${GLYPH} ${panels.left ? '' : 'scale-x-[-1]'}`} />
             </HeaderButton>
             <BoardSwitcher />
             <div className="ml-auto flex items-center gap-1">
