@@ -36,13 +36,13 @@ const offsetOf = (image: HTMLImageElement): { x: number; y: number } => {
 
 describe('image zoom', () => {
   it('zooms in and out around the pointer', () => {
-    const at = { x: 100, y: 50 }
-    const zoomed = zoomBy(FIT, 2, at, IMAGE, FRAME)
-    expect(zoomed.scale).toBe(2)
-    expect(zoomed.x).toBe(-100)
-    expect(zoomed.y).toBe(-50)
+    const at = { x: 100, y: 20 }
+    const zoomed = zoomBy(FIT, 4, at, IMAGE, FRAME)
+    expect(zoomed.scale).toBe(4)
+    expect(zoomed.x).toBe(-300)
+    expect(zoomed.y).toBe(-60)
 
-    const back = zoomBy(zoomed, 0.5, at, IMAGE, FRAME)
+    const back = zoomBy(zoomed, 0.25, at, IMAGE, FRAME)
     expect(back).toEqual(FIT)
   })
 
