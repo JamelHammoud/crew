@@ -146,13 +146,17 @@ describe('starting a huddle', () => {
     cleanup()
   })
 
-  it('offers a huddle from the toolbox and nowhere else', () => {
+  it('offers a huddle from the toolbox', () => {
     render(createElement(App))
     openToolbox()
 
     expect(screen.getByText('Huddle')).toBeTruthy()
+  })
 
+  it('keeps the huddle out of the profile menu', () => {
+    render(createElement(App))
     fireEvent.click(screen.getByLabelText('Profile menu'))
+
     expect(screen.queryByText(/huddle/i)).toBeNull()
   })
 
