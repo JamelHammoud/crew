@@ -209,8 +209,8 @@ export const BoxGlyph = glyph(
 
 // The resting frame of the ellipsis ThinkingMark animates, and the ring it grows
 // into on the way to the check. One set of numbers, whichever draws them.
-export const THINKING_DOTS = [5.4, 12, 18.6]
-export const DOT_R = 1.7
+export const THINKING_DOTS = [4.9, 12, 19.1]
+export const DOT_R = 2.5
 export const RING_R = 8.5
 
 export const ThinkingGlyph = glyph(
