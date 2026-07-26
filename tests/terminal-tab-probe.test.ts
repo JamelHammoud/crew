@@ -28,19 +28,17 @@ if (!globalThis.ResizeObserver) {
 type Opened = { id: string; cols: number; rows: number }
 
 const opened: Opened[] = []
-const typed: string[] = []
 const closed: string[] = []
 let sendData: (id: string, chunk: string) => void = () => undefined
 let sendExit: (id: string) => void = () => undefined
 
 beforeEach(() => {
   opened.length = 0
-  typed.length = 0
   closed.length = 0
   useBrowser.setState({ tabs: [], activeTabId: null })
   window.crew = {
     openTerminal: (id: string, size: { cols: number; rows: number }) => opened.push({ id, ...size }),
-    writeTerminal: (_id: string, data: string) => typed.push(data),
+    writeTerminal: () => undefined,
     resizeTerminal: () => undefined,
     closeTerminal: (id: string) => closed.push(id),
     onTerminalData: (listener: (id: string, chunk: string) => void) => {
