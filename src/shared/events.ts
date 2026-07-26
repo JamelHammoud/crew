@@ -61,6 +61,7 @@ export type SessionEvent =
       mentionRefs?: AgentMentionRef[]
       memberMentionRefs?: MemberMentionRef[]
       docMentions?: DocMentionRef[]
+      boardMentions?: BoardMentionRef[]
     }
   | {
       id: string
