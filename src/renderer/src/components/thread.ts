@@ -6,6 +6,7 @@ import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
+import { toolAction } from './toolActions'
 
 // A thread's standing as a task. 'done' and 'archived' record explicit calls a
 // person made; 'working', 'ready', and 'failed' are read off the run history.
@@ -93,7 +94,7 @@ export function describeStep(step: AgentStep | undefined): string {
   if (!step) return 'Starting'
   if (step.kind === 'thinking') return 'Thinking'
   if (step.kind === 'text') return 'Writing'
-  if (step.status === 'running') return step.kind === 'subagent' ? `${step.name} (agent)` : (step.name ?? 'Working')
+  if (step.status === 'running') return toolAction(step.name, step.kind === 'subagent').run
   return 'Thinking'
 }
 
