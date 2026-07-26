@@ -9,7 +9,8 @@ import {
   SignalGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
-  SunGlyph
+  SunGlyph,
+  ToolboxGlyph
 } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
@@ -23,6 +24,7 @@ import { CrewMark } from './CrewMark'
 import Pill from './Pill'
 import PresenceStack from './PresenceStack'
 import TabIcon from './TabIcon'
+import Toolbox from './Toolbox'
 import Tooltip from './Tooltip'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 
