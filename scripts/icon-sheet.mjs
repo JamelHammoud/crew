@@ -187,7 +187,7 @@ await writeFile(out, page(sets))
 
 for (const set of sets) {
   const over = set.rows.filter(row => row.over > 0.01)
-  const off = set.rows.filter(row => Math.abs(row.off) > 8)
+  const off = set.rows.filter(astray)
   console.log(`\n${set.title}  ${set.rows.length} icons`)
   console.log(`  outside the live area  ${over.length ? over.map(r => r.name).join(', ') : 'none'}`)
   console.log(

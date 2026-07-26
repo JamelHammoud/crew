@@ -135,7 +135,7 @@ export default function Chat() {
             </p>
           )}
           {feed.map((entry, index) => {
-            const tsOf = (e: Feed) => (e.kind === 'card' ? e.ts : e.item.ts)
+            const tsOf = (e: Feed) => (e.kind === 'msg' ? e.item.ts : e.ts)
             const ts = tsOf(entry)
             const prev = index > 0 ? tsOf(feed[index - 1]) : undefined
             return (
