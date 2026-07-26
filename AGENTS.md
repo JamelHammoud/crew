@@ -66,7 +66,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 
 ## Huddles
 
-Voice, video and screen share, started from the user popover menu. The host relays the handshake and nothing else. The media itself goes machine to machine, everyone to everyone, so there is no server to run and no stream passing through the host.
+Voice, video and screen share, started from the toolbox. The host relays the handshake and nothing else. The media itself goes machine to machine, everyone to everyone, so there is no server to run and no stream passing through the host.
 
 - The call is never written down. It rides in the session snapshot and in `huddle.*` messages, never in the event log, so no peer id, no handshake and nothing about the media is ever committed or replayed. `src/server/session.ts` holds it in memory, keyed by connection, because two windows on one folder are one member but two people in the call.
 - The record of a call is written down, and it is a different thing: `huddle.started`, `huddle.joined` and `huddle.ended` in the log, carrying who started it, who came, and how long it ran. Nothing live goes in them, and someone who comes back to the same call is named once. The chat block folds the three back into one card, and it knows whether the call it names is the one happening now by matching the room's own `id`. A start with no end reads as live forever, so a session coming back up closes any call it finds still open.
