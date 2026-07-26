@@ -60,7 +60,9 @@ export default function EmojiPicker({
       top += height
       return placed
     })
-  }, [])
+  }, [columns])
+
+  const grid = { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
 
   const results = useMemo(() => searchEmoji(query), [query])
   const searching = query.trim().length > 0
