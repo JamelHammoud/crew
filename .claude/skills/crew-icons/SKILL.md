@@ -46,6 +46,18 @@ Two things follow from this that are easy to get wrong:
   is nowhere left to put the height, so it takes the cap and sits a few percent
   light. Breaking the frame is worse. The same goes for a triangle: half its box
   is empty, so it takes the full 19.5 and is still light. Accept it.
+- **A letterform is held to the cap height of the letters beside it, not to a
+  keyline.** A pilcrow, a B, an H with a numeral: these are read as type rather
+  than as shapes, and the eye lines them up on their tops and their baselines. A
+  ¶ grown until sqrt(w · h) reaches 17 stands half again as tall as the H under
+  it in the same menu. The audit has no family for this and will report a
+  letterform as small. That reading is correct and the mark is still right.
+
+A capped shape is only excused from the keyline for the side that is capped. The
+hangup handset sat at 19 by 9, hit the cap on its width, and was never asked
+about its height, so a mark 19% under the solid keyline passed the audit for
+months and read in the app as a dash. When the long side is at 19, check the
+short one by hand against target² / 19.
 
 Round the art to a quarter unit. Half units for straight edges. Do not chase
 pixel alignment, a 24 grid drawn at 16 lands nowhere near whole pixels and
