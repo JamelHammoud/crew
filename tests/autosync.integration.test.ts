@@ -147,11 +147,13 @@ describe('auto sync', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === agentId('jamel', 'fake'))
 
     for (let i = 0; i < 200; i++) void sync.syncNow()
+    await commitAndPush(a, 'late.ts', 'export const late = true\n', 'add late')
 
     const asked = Date.now()
     ui.chat('hello @Fake', [agentId('jamel', 'fake')])
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.agentId === agentId('jamel', 'fake'))
     expect(Date.now() - asked).toBeLessThan(6000)
+    expect(fs.existsSync(path.join(b, 'late.ts'))).toBe(true)
   })
 
   it('leaves a plain folder alone and still runs prompts', async () => {
