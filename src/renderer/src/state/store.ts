@@ -91,7 +91,7 @@ interface CrewState {
   setThreadDraft: (threadId: string, text: string) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
-  sendChat: (text: string, threadId?: string, boardId?: string, replyTo?: string) => void
+  sendChat: (text: string, threadId?: string, boardId?: string, replyTo?: string, aimedAt?: string[]) => void
   createBoard: (name: string) => string
   renameBoard: (boardId: string, name: string) => void
   deleteBoard: (boardId: string) => void
