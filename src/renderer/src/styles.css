@@ -1065,6 +1065,34 @@ body {
   max-height: inherit;
 }
 
+.bn-drag-preview {
+  width: fit-content;
+  max-width: 340px;
+  max-height: 76px;
+  overflow: hidden;
+  padding: 6px 14px;
+  border: 1px solid var(--glass-line);
+  border-radius: 12px;
+  background: var(--color-ink-800);
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.45);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-fg);
+}
+
+.bn-drag-preview [data-content-type='heading'] {
+  --level: 1.15em;
+}
+
+.bn-drag-preview .bn-block-content {
+  padding-block: 0;
+}
+
+.bn-drag-preview .bn-block-group .bn-block-group {
+  display: none;
+}
+
 .doc-side {
   padding-top: 5px;
 }
