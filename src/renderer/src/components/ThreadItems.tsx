@@ -1,15 +1,24 @@
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
 import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
+import StepGroup from './StepGroup'
 import StepRow from './StepRow'
-import type { ThreadItem } from './thread'
+import { stepBlocks, type StepBlock, type ThreadItem } from './thread'
 import { isNewDay } from './time'
 
-const follows = (previous: ThreadItem | undefined, item: ThreadItem): boolean =>
-  previous !== undefined &&
-  (previous.kind === 'tool' || previous.kind === 'thinking') &&
-  previous.promptId === item.promptId &&
-  !isNewDay(previous.ts, item.ts)
+const isStep = (item: ThreadItem | undefined): boolean => item?.kind === 'tool' || item?.kind === 'thinking'
+
+const follows = (previous: StepBlock | undefined, block: StepBlock): boolean => {
+  const before = previous?.items[previous.items.length - 1]
+  const item = block.items[0]
+  return (
+    before !== undefined &&
+    isStep(before) &&
+    isStep(item) &&
+    before.promptId === item.promptId &&
+    !isNewDay(before.ts, item.ts)
+  )
+}
 
 export default function ThreadItems({
   items,
@@ -18,18 +27,25 @@ export default function ThreadItems({
   items: ThreadItem[]
   onReply?: (item: ThreadItem) => void
 }) {
+  const blocks = useMemo(() => stepBlocks(items), [items])
+
   return (
     <>
-      {items.map((item, index) => (
-        <Fragment key={item.key}>
-          {isNewDay(items[index - 1]?.ts, item.ts) && <DayDivider ts={item.ts} />}
-          {item.kind === 'tool' || item.kind === 'thinking' ? (
-            <StepRow item={item} linked={follows(items[index - 1], item)} />
-          ) : (
-            <ChatMessage item={item} onReply={onReply} />
-          )}
-        </Fragment>
-      ))}
+      {blocks.map((block, index) => {
+        const item = block.items[0]
+        return (
+          <Fragment key={block.key}>
+            {isNewDay(blocks[index - 1]?.ts, block.ts) && <DayDivider ts={block.ts} />}
+            {block.items.length > 1 ? (
+              <StepGroup items={block.items} linked={follows(blocks[index - 1], block)} />
+            ) : isStep(item) ? (
+              <StepRow item={item} linked={follows(blocks[index - 1], block)} />
+            ) : (
+              <ChatMessage item={item} onReply={onReply} />
+            )}
+          </Fragment>
+        )
+      })}
     </>
   )
 }
