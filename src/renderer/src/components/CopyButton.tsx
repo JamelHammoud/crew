@@ -2,11 +2,19 @@ import { useState } from 'react'
 import { FilesGlyph } from './toolGlyphs'
 import Tooltip from './Tooltip'
 
-export default function CopyButton({ text, className = '' }: { text: string; className?: string }) {
+export default function CopyButton({
+  text,
+  label = 'Copy',
+  className = ''
+}: {
+  text: string
+  label?: string
+  className?: string
+}) {
   const [copied, setCopied] = useState(false)
   return (
     <span className={className}>
-      <Tooltip label={copied ? 'Copied' : 'Copy'}>
+      <Tooltip label={copied ? 'Copied' : label}>
         <button
           onClick={event => {
             event.stopPropagation()
