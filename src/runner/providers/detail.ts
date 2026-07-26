@@ -1,6 +1,9 @@
 import type { FileChange } from '../../shared/llm'
 
-const DETAIL_KEYS = ['description', 'command', 'query', 'pattern', 'url', 'file_path', 'path', 'prompt']
+// A command speaks for itself, and the card under it is a terminal, so what was
+// run beats the summary the model wrote of it. Everything else falls back to
+// the description, which is all some tools give.
+const DETAIL_KEYS = ['command', 'description', 'query', 'pattern', 'url', 'file_path', 'path', 'prompt']
 
 const todoDetail = (todos: unknown): string | undefined => {
   if (!Array.isArray(todos)) return undefined
