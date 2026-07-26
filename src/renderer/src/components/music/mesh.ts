@@ -217,14 +217,24 @@ export function meshOf(item: MusicItem, size: number): Mesh {
   const roll = stream(seedOf(item.id))
   const parts = partsOf(item.colors, roll)
   const layout = LAYOUTS[Math.floor(roll() * LAYOUTS.length)]
-  // A small highlight where the light lands, laid on plainly. It used to be
-  // screened, which is the one blend that reaches white: over a palette whose
-  // brightest color is already bright, screening it turned every cover into the
-  // same pale wash. Every layer here is now a plain color over a plain color,
-  // and the range comes from the palette carrying a deep ground of its own.
+  // Where the light lands, and the corner it falls away into. They are laid on
+  // opposite each other, so every cover has a bright end and a deep one however
+  // its layout came out: a picture with no deep in it reads as soft whatever
+  // colors are in it, and a picture with no bright reads as a wash.
+  //
+  // Both are plain color over plain color. The highlight used to be screened,
+  // which is the one blend that reaches white, and over a palette whose
+  // brightest color is already bright it turned every cover into the same pale
+  // thing. Nothing here blends any more, and the range comes from the palette
+  // carrying its own light and its own ground.
+  const from = roll()
   const layers: Layer[] = [
     {
-      image: field(lift(parts.light, 0.32), 0.18 + roll() * 0.64, 0.12 + roll() * 0.38, 0.42, 0.38, 6, 0.85),
+      image: field(lift(parts.light, 0.3), 0.16 + from * 0.68, 0.1 + roll() * 0.34, 0.44, 0.4, 8, 0.9),
+      blend: 'normal'
+    },
+    {
+      image: field(parts.ground, 0.84 - from * 0.68, 0.82 + roll() * 0.24, 0.82, 0.72, 22, 0.9),
       blend: 'normal'
     },
     ...layout(parts, roll)
@@ -237,7 +247,7 @@ export function meshOf(item: MusicItem, size: number): Mesh {
     // picture loses a little of itself on the way through. Putting it back
     // afterwards is what keeps a blurred mesh as saturated as what it was built
     // from.
-    filter: `blur(${(size * (1 + OVER * 2) * BLUR).toFixed(1)}px) saturate(1.35)`
+    filter: `blur(${(size * (1 + OVER * 2) * BLUR).toFixed(1)}px) saturate(1.3)`
   }
 }
 
