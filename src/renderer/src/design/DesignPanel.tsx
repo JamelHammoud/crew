@@ -1,4 +1,6 @@
+import { useContext, useEffect, useRef } from 'react'
 import { useEditor, useValue, type TLShape } from 'tldraw'
+import { DesignRenameContext } from '../components/DesignPanels'
 import Appearance from './Appearance'
 import { glyphForShape } from './glyphs'
 import Inspector from './Inspector'
