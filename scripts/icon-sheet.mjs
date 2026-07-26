@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
-import { measure } from './icon-geometry.mjs'
+import { formOf, measure } from './icon-geometry.mjs'
 
 // Draws every icon crew owns onto one page, at the sizes it is really worn at,
 // and measures each one against the keyline it is supposed to sit on. An icon
@@ -25,6 +25,9 @@ const LIVE = 19.5
 const SQUARE = 17
 const CIRCLE = 18.5
 const LINE = 15
+const DIAGONAL = 19.5
+const SOLID = 15
+const SLASH = 'm3.9 3.9 16.2 16.2'
 
 const ENTRY = (files) => `
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -80,8 +83,20 @@ async function collect() {
 // line is measured on how far it reaches instead.
 const CAP = 18.5
 
-function keyline(box) {
-  if (!box.body) return { family: 'line', target: LINE, size: Math.max(box.width, box.height, box.reach) }
+const solid = markup =>
+  (markup.match(/<(path|rect|circle|ellipse|line)\b/g) ?? []).length === 1 &&
+  markup.includes('fill="currentColor"')
+
+function keyline(box, markup) {
+  if (solid(markup)) return { family: 'solid', target: SOLID, size: Math.sqrt(box.width * box.height) }
+  if (!box.body) {
+    // A single run laid corner to corner of its own box is a diagonal rather than
+    // a rule, and a diagonal reaches a good deal further for the same size.
+    const across = Math.hypot(box.width, box.height)
+    if (Math.abs(box.reach - across) < 0.5 && Math.abs(box.width - box.height) < 2)
+      return { family: 'diagonal', target: DIAGONAL, size: box.reach }
+    return { family: 'line', target: LINE, size: Math.max(box.width, box.height, box.reach) }
+  }
   if (box.round && Math.abs(box.width - box.height) < 1.2)
     return { family: 'round', target: CIRCLE, size: (box.width + box.height) / 2 }
   return { family: 'shape', target: SQUARE, size: Math.sqrt(box.width * box.height) }
@@ -89,7 +104,7 @@ function keyline(box) {
 
 function report(rows) {
   const scored = rows.map(row => {
-    const { family, target, size } = keyline(row.box)
+    const { family, target, size } = keyline(row.box, row.markup)
     return {
       ...row,
       family,
@@ -182,7 +197,7 @@ const drawn = await collect()
 const sets = SETS.map((set, i) => ({
   title: set.title,
   audit: set.audit,
-  rows: report(drawn[i].map(icon => ({ ...icon, box: measure(icon.markup) })).filter(icon => icon.box))
+  rows: report(drawn[i].map(icon => ({ ...icon, box: measure(formOf(icon.markup, SLASH)) })).filter(icon => icon.box))
 }))
 
 await writeFile(out, page(sets))
