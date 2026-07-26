@@ -8,7 +8,7 @@ import {
 } from 'tldraw'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
-import { textShapeType } from './textType'
+import { textShapeType, typeMeasure } from './textType'
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
