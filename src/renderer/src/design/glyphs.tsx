@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline'
 import type { ComponentType, ReactNode } from 'react'
 import type { TLShape } from 'tldraw'
+import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 
 export type Glyph = ComponentType<{ className?: string }>
 
