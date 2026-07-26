@@ -212,8 +212,10 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const discard = () => {
     if (!file) return
-    caret.current = 0
+    const area = areaRef.current
+    caret.current = area ? toDoc(rows, area.selectionStart) : 0
     setDoc(file.text)
+    setTick(count => count + 1)
     setSaveFailed(false)
   }
 
