@@ -18,6 +18,7 @@ import type { RecentJoin } from '../shared/recent'
 import { AgentStore } from './agents-store'
 import {
   absolutePathOf,
+  listRepoFiles,
   readLocalFile,
   readRepoFile,
   repoPathOf,
