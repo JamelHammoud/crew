@@ -140,7 +140,15 @@ export default function DesignAskBar({
       onPointerDown={event => event.stopPropagation()}
       onKeyDown={event => event.stopPropagation()}
     >
-      <div className="glass glass-strong rounded-shell px-2 py-2">
+      <div
+        className="glass glass-strong rounded-shell px-2 py-2 cursor-text"
+        onClick={() => inputRef.current?.focus()}
+        onDragOver={event => event.preventDefault()}
+        onDrop={event => {
+          event.preventDefault()
+          void attach(key, event.dataTransfer.files)
+        }}
+      >
         {!agent ? (
           <p className="px-2 py-1.5 text-sm text-fg/45">No agents are here to ask right now.</p>
         ) : (
@@ -150,10 +158,15 @@ export default function DesignAskBar({
               <span className="relative shrink-0">
                 <Tooltip label={`Ask ${agent.label}`} disabled={switching}>
                   <button
-                    onClick={() => setSwitching(value => !value)}
+                    onClick={event => {
+                      event.stopPropagation()
+                      setSwitching(value => !value)
+                    }}
                     aria-label="Pick an agent"
                     aria-expanded={switching}
-                    className="w-8 h-8 rounded-full grid place-items-center transition-transform active:scale-95 hover:bg-fg/[0.06]"
+                    className={`rounded-full grid place-items-center transition-all cursor-pointer active:scale-95 ring-fg/25 ${
+                      switching ? 'ring-2' : 'hover:ring-2'
+                    }`}
                   >
                     <AgentIcon seed={agent.id} size="sm" />
                   </button>
