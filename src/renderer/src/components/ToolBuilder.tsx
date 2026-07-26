@@ -125,15 +125,20 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
 
       <div className="p-2.5 space-y-3">
         <div className="flex items-end gap-2">
-          <Tooltip label="Choose a mark">
-            <button
-              onClick={() => setPicking(true)}
-              aria-label="Choose a mark"
-              className="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center bg-fg/[0.05] text-fg/70 transition-all duration-150 hover:bg-fg/[0.09] hover:text-fg active:scale-95"
-            >
-              <ToolMarkView mark={mark} className="w-[26px] h-[26px]" />
-            </button>
-          </Tooltip>
+          <span className="group relative flex shrink-0">
+            <Tooltip label="Choose a mark">
+              <button
+                onClick={() => setPicking(true)}
+                aria-label="Choose a mark"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center bg-fg/[0.05] text-fg/70 transition-all duration-150 hover:bg-fg/[0.09] hover:text-fg active:scale-95"
+              >
+                <ToolMarkView mark={mark} className="w-[26px] h-[26px]" />
+              </button>
+            </Tooltip>
+            <span className="pointer-events-none absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center bg-fg text-ink-900 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+              <PencilGlyph className="w-3 h-3" />
+            </span>
+          </span>
           <div className="flex-1 min-w-0">
             <Field label="Name">
               <input
