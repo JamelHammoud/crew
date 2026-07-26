@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-import { readFileSync, readdirSync } from 'node:fs'
 import { cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -7,11 +6,14 @@ import { MenuDivider, Popover } from '../src/renderer/src/components/Popover'
 
 afterEach(cleanup)
 
-const source = (file: string) => readFileSync(`${process.cwd()}/${file}`, 'utf8')
+const fs = (): typeof import('node:fs') => require('node:fs')
+
+const source = (file: string) => fs().readFileSync(`${process.cwd()}/${file}`, 'utf8')
 
 const renderer = 'src/renderer/src'
 
-const files = readdirSync(`${process.cwd()}/${renderer}`, { recursive: true })
+const files = fs()
+  .readdirSync(`${process.cwd()}/${renderer}`, { recursive: true })
   .map(String)
   .filter(name => name.endsWith('.tsx'))
   .map(name => `${renderer}/${name}`)
