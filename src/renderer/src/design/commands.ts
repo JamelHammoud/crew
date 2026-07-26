@@ -157,6 +157,59 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
     }
   },
   {
+    id: 'copy-png',
+    label: 'Copy as PNG',
+    hint: '⇧⌘C',
+    group: 'clipboard',
+    Icon: ImageGlyph,
+    terms: 'image export',
+    when: some,
+    run: ctx => void copyAs(ctx.editor, ids(ctx.editor), { format: 'png' }).catch(() => {})
+  },
+  {
+    id: 'copy-svg',
+    label: 'Copy as SVG',
+    group: 'clipboard',
+    Icon: ImageGlyph,
+    terms: 'vector export',
+    when: some,
+    run: ctx => void copyAs(ctx.editor, ids(ctx.editor), { format: 'svg' }).catch(() => {})
+  },
+  {
+    id: 'copy-style',
+    label: 'Copy properties',
+    hint: '⌥⌘C',
+    group: 'clipboard',
+    Icon: StyleGlyph,
+    terms: 'style fill stroke',
+    when: ctx => only(ctx)?.type === 'design-node',
+    run: ctx => {
+      const shape = only(ctx)
+      if (!shape) return
+      const props = shape.props as Record<string, unknown>
+      heldStyle = Object.fromEntries(STYLE_KEYS.filter(key => key in props).map(key => [key, props[key]]))
+    }
+  },
+  {
+    id: 'paste-style',
+    label: 'Paste properties',
+    hint: '⌥⌘V',
+    group: 'clipboard',
+    Icon: StyleGlyph,
+    terms: 'style fill stroke',
+    when: ctx => heldStyle !== null && selection(ctx.editor).some(shape => shape.type === 'design-node'),
+    run: ctx => {
+      if (!heldStyle) return
+      ctx.editor.run(() => {
+        ctx.editor.markHistoryStoppingPoint('paste properties')
+        for (const shape of selection(ctx.editor)) {
+          if (shape.type !== 'design-node') continue
+          ctx.editor.updateShape({ id: shape.id, type: 'design-node', props: { ...heldStyle } })
+        }
+      })
+    }
+  },
+  {
     id: 'duplicate',
     label: 'Duplicate',
     hint: '⌘D',
