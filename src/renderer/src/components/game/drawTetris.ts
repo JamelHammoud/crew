@@ -11,6 +11,12 @@ export function paintTetris(canvas: HTMLCanvasElement, game: Tetris): void {
   const top = (height - size * ROWS) / 2
   ctx.clearRect(0, 0, width, height)
 
+  // Every game stands on a field of one shape and this board is another, so the
+  // well is sunk into it rather than left to be guessed from where the grid
+  // happens to stop.
+  ctx.fillStyle = WELL
+  ctx.fillRect(left, top, size * COLS, size * ROWS)
+
   ctx.strokeStyle = LINE
   ctx.lineWidth = 1
   for (let x = 1; x < COLS; x++) {
