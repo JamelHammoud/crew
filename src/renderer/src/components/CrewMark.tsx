@@ -22,10 +22,9 @@ const FIELD = {
   height: MARK_HEIGHT + BLEED * 2
 }
 
-export function CrewMark({ className = '', run }: { className?: string; run?: number }) {
+export function CrewMark({ className = '', live = false }: { className?: string; live?: boolean }) {
   const raw = useId()
   const id = raw.replace(/[^a-zA-Z0-9-]/g, '')
-  const live = run !== undefined
   const last = MARK_DISCS.length - 1
   const field = live ? FIELD : BOX
 
