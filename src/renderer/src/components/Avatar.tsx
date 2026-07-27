@@ -45,7 +45,13 @@ export default function Avatar({
       style={px ? { width: px, height: px, fontSize: Math.round(px * 0.36) } : undefined}
     >
       {src ? (
-        <img src={src} alt="" draggable={false} className="w-full h-full rounded-full object-cover select-none" />
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          className="w-full h-full rounded-full object-cover select-none"
+          style={{ backgroundColor: colors.background }}
+        />
       ) : (
         <span
           className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
