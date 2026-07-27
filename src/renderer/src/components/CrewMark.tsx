@@ -74,14 +74,7 @@ export function CrewMark({
           <g
             key={cx}
             className={live ? 'crew-disc' : undefined}
-            style={
-              live
-                ? ({
-                    transformOrigin: `${cx}px ${MARK_RADIUS}px`,
-                    '--disc': last - index
-                  } as CSSProperties)
-                : undefined
-            }
+            style={live ? ({ '--disc': last - index } as CSSProperties) : undefined}
           >
             {index > 0 && <circle cx={cx} cy={MARK_RADIUS} r={MARK_CUT} fill="#000000" />}
             <circle cx={cx} cy={MARK_RADIUS} r={MARK_RADIUS} fill="#ffffff" />
