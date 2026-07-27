@@ -30,7 +30,7 @@ const score = (name: string, gameId: string, points: number, ts = 1): GameScore 
 
 const TAB = 'tab-1'
 
-const titleNow = (): string => useBrowser.getState().tabs[0]?.title ?? ''
+const openNow = (): string | null => useBrowser.getState().tabs[0]?.game ?? null
 
 const panel = (scores: GameScore[] = [], selfName = 'sam') => {
   useCrew.setState({
