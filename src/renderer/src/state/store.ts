@@ -386,7 +386,11 @@ export const useCrew = create<CrewState>((set, get) => {
         case 'todo.checked':
           return {
             events,
-            todos: state.todos.map(t => (t.id === event.todoId ? { ...t, checked: event.checked } : t))
+            todos: state.todos.map(t =>
+              t.id === event.todoId
+                ? { ...t, checked: event.checked, checkedTs: event.checked ? event.ts : undefined }
+                : t
+            )
           }
         // A started todo lives on as its thread; the thread.started event
         // arrives on its own just before this one.

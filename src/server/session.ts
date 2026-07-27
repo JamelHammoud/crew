@@ -864,8 +864,10 @@ export class CrewSession {
   private handleTodoCheck(member: Member, todoId: string, checked: boolean): void {
     const todo = this.todos.get(todoId)
     if (!todo || todo.checked === checked) return
+    const ts = Date.now()
     todo.checked = checked
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'todo.checked', todoId, checked, byName: member.name })
+    todo.checkedTs = checked ? ts : undefined
+    this.emit({ id: randomUUID(), ts, kind: 'todo.checked', todoId, checked, byName: member.name })
   }
 
   private handleToolAdd(member: Member, name: string, mark: string, action: ToolAction): void {
