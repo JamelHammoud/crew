@@ -76,7 +76,7 @@ describe('window chrome', () => {
   it('puts the inset back when the window leaves fullscreen', () => {
     setFullScreen(true)
     topBar()
-    setFullScreen(false)
+    act(() => setFullScreen(false))
 
     expect(screen.getByRole('banner').firstElementChild!.className).toContain('mac:pl-[64px]')
   })
