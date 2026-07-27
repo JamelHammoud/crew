@@ -1657,10 +1657,11 @@ export class CrewSession {
     const playlist = this.ownPlaylist(member, playlistId)
     if (!playlist) return
     if (on && !itemFor(trackId, [...this.uploads.values()])) return
-    const held = playlist.trackIds.filter(id => id !== trackId)
-    if (on && held.length >= MAX_PLAYLIST_TRACKS) return
-    if (held.length === playlist.trackIds.length && !on) return
-    playlist.trackIds = on ? [...held, trackId] : held
+    if (on && playlist.trackIds.length >= MAX_PLAYLIST_TRACKS) return
+    // A track already in a list stays where it is rather than jumping to the
+    // end, and one that was never in it is nothing to take out.
+    if (playlist.trackIds.includes(trackId) === (on === true)) return
+    playlist.trackIds = on ? [...playlist.trackIds, trackId] : playlist.trackIds.filter(id => id !== trackId)
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
