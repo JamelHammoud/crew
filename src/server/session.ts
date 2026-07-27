@@ -97,6 +97,7 @@ import { Store } from './store'
 interface Member {
   id: string
   name: string
+  avatar?: string
   connections: Set<WebSocket>
 }
 

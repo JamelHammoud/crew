@@ -132,6 +132,7 @@ export type ClientMessage =
 export type ServerMessage =
   | { type: 'welcome'; selfId: string; snapshot: SessionSnapshot }
   | { type: 'event'; event: SessionEvent }
+  | { type: 'member.avatar'; memberId: string; file: string | null }
   | { type: 'queue.state'; threadId: string; items: QueuedItem[] }
   | { type: 'agent.added'; agent: PooledAgent }
   | { type: 'agent.removed'; agentId: string }
