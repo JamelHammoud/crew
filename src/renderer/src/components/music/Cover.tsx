@@ -58,8 +58,8 @@ export default function Cover({
         <canvas
           ref={tile}
           aria-hidden
-          style={{ inset: `${-BLEED * 100}%` }}
-          className={`absolute w-auto h-auto ${playing ? 'animate-drift' : ''}`}
+          style={OVERSIZE}
+          className={`absolute ${playing ? 'animate-drift' : ''}`}
         />
       ) : (
         <span
