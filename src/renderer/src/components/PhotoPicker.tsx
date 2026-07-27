@@ -1,20 +1,21 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { IMAGE_TYPES } from '../../../shared/attachments'
-import type { PooledAgent } from '../../../shared/llm'
 import { PhotoGlyph, TrashGlyph, UploadGlyph } from '../icons'
-import AgentIcon from './AgentIcon'
 import { MenuItem, Popover } from './Popover'
 
 const ACCEPT = Object.keys(IMAGE_TYPES).join(',')
 
-export default function AgentPhoto({
-  agent,
-  presence,
-  onChange
+// The face itself is the control. Hover it and the camera comes up: with no
+// photo on yet that opens the picker straight away, and with one on it opens
+// the two things you can do to it.
+export default function PhotoPicker({
+  has,
+  onChange,
+  children
 }: {
-  agent: PooledAgent
-  presence: 'online' | 'offline'
+  has: boolean
   onChange: (file: File | null) => void
+  children: ReactNode
 }) {
   const [menu, setMenu] = useState(false)
   const picker = useRef<HTMLInputElement>(null)
@@ -26,10 +27,10 @@ export default function AgentPhoto({
 
   return (
     <span className="relative inline-flex shrink-0">
-      <AgentIcon seed={agent.id} presence={presence} />
+      {children}
       <button
-        onClick={() => (agent.avatar ? setMenu(true) : pick())}
-        aria-label={agent.avatar ? 'Change photo' : 'Add a photo'}
+        onClick={() => (has ? setMenu(true) : pick())}
+        aria-label={has ? 'Change photo' : 'Add a photo'}
         className="absolute inset-0 rounded-full flex items-center justify-center bg-ink-900/70 text-fg opacity-0 transition-all duration-150 hover:opacity-100 focus-visible:opacity-100 active:scale-95"
       >
         <PhotoGlyph className="w-4 h-4" />
