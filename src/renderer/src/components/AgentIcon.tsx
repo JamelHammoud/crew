@@ -116,13 +116,13 @@ export default function AgentIcon({
   const bg = light ? `oklch(0.93 0.05 ${pet.hue})` : `oklch(0.3 0.055 ${pet.hue})`
   const body = light ? `oklch(0.62 0.16 ${pet.hue})` : `oklch(0.76 0.15 ${pet.hue})`
   return (
-    <span className={`${SIZES[size]} relative inline-block shrink-0 ${className}`}>
+    <span className={`${SIZES[size]} relative inline-block align-middle shrink-0 ${className}`}>
       {src ? (
         <img
           src={src}
           alt=""
           draggable={false}
-          className="w-full h-full rounded-full bg-ink-800 object-cover select-none"
+          className="block w-full h-full rounded-full object-cover select-none"
         />
       ) : (
         <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>
