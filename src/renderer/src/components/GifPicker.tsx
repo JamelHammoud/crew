@@ -89,7 +89,6 @@ export default function GifPicker({
           setPage(result.page)
           setMore(result.more)
           setLoading(false)
-          scrollRef.current?.scrollTo({ top: 0 })
         })
         .catch(() => {
           if (asked.current !== token) return
