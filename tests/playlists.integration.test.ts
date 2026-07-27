@@ -263,3 +263,86 @@ describe('playlists', () => {
     expect(held[0]).toMatchObject({ name: 'Ours', trackIds: [] })
   })
 })
+
+// The app's own lists, made of its own tunes. They are the same for every crew,
+// they belong to nobody, and there is nothing about one for anyone to change.
+describe("the app's own lists", () => {
+  const lofi = MUSIC_SETS.find(set => set.name === 'Ambient Lofi') as MusicPlaylist
+
+  it('is a handful of slow ones, each about a minute round', () => {
+    expect(lofi).toBeTruthy()
+    const items = playlistItems(lofi)
+    // A list of these is read in one sitting, so it is a handful rather than an
+    // afternoon, and every id on it answers to something really on the shelf.
+    expect(items).toHaveLength(lofi.trackIds.length)
+    expect(items.length).toBeGreaterThanOrEqual(5)
+    expect(items.length).toBeLessThanOrEqual(10)
+    expect(new Set(lofi.trackIds).size).toBe(lofi.trackIds.length)
+
+    for (const item of items) {
+      // About a minute, which is what the doubled loop at half the pace buys.
+      expect(item.seconds).toBeGreaterThan(55)
+      expect(item.seconds).toBeLessThan(65)
+      // And slow enough to be ambient rather than a fast one filed under one.
+      expect(item.bpm).toBeLessThan(70)
+      expect(tuneFor(item.id)?.beats).toBe(64)
+    }
+  })
+
+  it('belongs to nobody, whoever is asking', () => {
+    expect(isMusicSet(lofi.id)).toBe(true)
+    expect(isMusicSet('nobodys')).toBe(false)
+    expect(isMusicSet(null)).toBe(false)
+    expect(lofi.by).toBe('')
+    // Without the empty owner a member with no name yet owns the lot, so the
+    // delete and the take out would both be on the page.
+    expect(isMine(lofi, 'sam')).toBe(false)
+    expect(isMine(lofi, '')).toBe(false)
+    // It is found by id whether or not the crew has any lists of its own.
+    expect(playlistFor(lofi.id)).toMatchObject({ name: 'Ambient Lofi' })
+    expect(playlistFor(lofi.id, [{ id: 'l1', name: 'Mine', by: 'sam', trackIds: [], ts: 0 }])?.by).toBe('')
+  })
+
+  it('plays through rather than falling into the shelf', () => {
+    const ids = lofi.trackIds
+    expect(trackAfter(ids[0], 1, [], lofi)).toBe(ids[1])
+    expect(trackAfter(ids[1], -1, [], lofi)).toBe(ids[0])
+    expect(trackAfter(ids[ids.length - 1], 1, [], lofi)).toBe(ids[0])
+    expect(trackAfter(ids[0], -1, [], lofi)).toBe(ids[ids.length - 1])
+  })
+
+  it('is one the host will play and nobody can write in', async () => {
+    const host = await startHost()
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+
+    try {
+      // Putting one on from the list is remembered as coming from it, the way a
+      // crew's own list is, so Next walks it on every machine here.
+      sam.send({ type: 'music.set', trackId: lofi.trackIds[1], playing: true, at: 0, playlistId: lofi.id })
+      const playing = await sam.waitFor(m => m.type === 'music.room' && roomOf(m).trackId === lofi.trackIds[1])
+      expect(roomOf(playing).playlistId).toBe(lofi.id)
+
+      const late = await TestUi.connect(host.url, 'jo', host.code)
+      const welcome = await late.waitFor(m => m.type === 'welcome')
+      expect(welcome.type === 'welcome' ? welcome.snapshot.music?.playlistId : null).toBe(lofi.id)
+      late.close()
+
+      // Writing in it, or deleting it, does nothing at all, and it is never one
+      // of the crew's own lists however hard it is asked for.
+      sam.send({ type: 'playlist.track', playlistId: lofi.id, trackId: 'arcade', on: true })
+      sam.send({ type: 'playlist.track', playlistId: lofi.id, trackId: lofi.trackIds[0], on: false })
+      sam.send({ type: 'playlist.remove', playlistId: lofi.id })
+      await new Promise(r => setTimeout(r, 250))
+      expect(host.session.snapshot().musicPlaylists).toEqual([])
+      expect(playlistItems(lofi).length).toBe(lofi.trackIds.length)
+
+      // It belongs to nobody, so nothing about it is written down either.
+      const revived = new CrewSession(host.store).snapshot()
+      expect(revived.musicPlaylists).toEqual([])
+      expect(revived.events.some(e => e.kind.startsWith('playlist.'))).toBe(false)
+    } finally {
+      sam.close()
+      await host.close()
+    }
+  })
+})
