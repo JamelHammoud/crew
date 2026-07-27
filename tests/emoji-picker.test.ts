@@ -59,6 +59,17 @@ describe('emoji reactions', () => {
     expect(JSON.parse(storage.getItem('crew.emoji.recent') ?? '[]')[0]).toBe('🎉')
   })
 
+  it('opens with the search field already holding the caret', () => {
+    mount()
+    fireEvent.click(screen.getByLabelText('More reactions'))
+    const search = screen.getByPlaceholderText('Search emoji')
+
+    expect(document.activeElement).toBe(search)
+
+    fireEvent.change(document.activeElement as HTMLElement, { target: { value: 'tada' } })
+    expect(screen.getByLabelText('React with :tada:')).toBeTruthy()
+  })
+
   it('reaches emoji the quick row never had', () => {
     const reactToMessage = mount()
     fireEvent.click(screen.getByLabelText('More reactions'))
