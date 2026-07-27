@@ -9,9 +9,7 @@ import {
   PeopleGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
-  SunGlyph,
-  TrashGlyph,
-  UploadGlyph
+  SunGlyph
 } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
