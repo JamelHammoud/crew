@@ -1,11 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
 import { findMusic, musicItems, type MusicItem } from '../../../../shared/music'
-import { PlusGlyph, TrashGlyph } from '../../icons'
+import { PlusGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import Spinner from '../Spinner'
-import Tooltip from '../Tooltip'
-import AddToPlaylist from './AddToPlaylist'
-import TrackRow, { rowActionQuiet } from './TrackRow'
+import TrackRow from './TrackRow'
 
 // Everything the crew can play: the app's own tunes and whatever anyone has put
 // on the shelf. Putting something on from here plays the shelf through rather
@@ -29,7 +27,7 @@ export default function Songs({ query }: { query: string }) {
   }
 
   return (
-    <ul className="p-2">
+    <ul className="p-2 flex flex-col gap-1">
       {items.map(one => (
         <TrackRow
           key={one.id}
@@ -37,22 +35,6 @@ export default function Songs({ query }: { query: string }) {
           on={one.id === room.trackId}
           playing={room.playing}
           onPlay={() => put(one)}
-          actions={
-            <>
-              <AddToPlaylist trackId={one.id} />
-              {one.file && (
-                <Tooltip label="Remove">
-                  <button
-                    onClick={() => useMusic.getState().remove(one.id)}
-                    aria-label={`Remove ${one.name}`}
-                    className={rowActionQuiet}
-                  >
-                    <TrashGlyph className="w-4 h-4" />
-                  </button>
-                </Tooltip>
-              )}
-            </>
-          }
         />
       ))}
 
