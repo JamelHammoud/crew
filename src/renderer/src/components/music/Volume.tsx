@@ -21,9 +21,9 @@ export default function Volume() {
           onClick={() => setOpen(was => !was)}
           aria-label="Volume"
           aria-expanded={open}
-          className={`${roundButton} w-8 h-8 ${open ? 'text-fg bg-fg/[0.06]' : ''}`}
+          className={`${roundButton} w-7 h-7 ${open ? 'text-fg bg-fg/[0.06]' : ''}`}
         >
-          {muted ? <SpeakerOffGlyph className="w-[18px] h-[18px]" /> : <SpeakerGlyph className="w-[18px] h-[18px]" />}
+          {muted ? <SpeakerOffGlyph className="w-4 h-4" /> : <SpeakerGlyph className="w-4 h-4" />}
         </button>
       </Tooltip>
       <Popover open={open} onClose={() => setOpen(false)} side="top" className="w-52">
