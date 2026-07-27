@@ -148,7 +148,12 @@ describe('a cover has depth in it', () => {
     // hardest edge in the frame wearing the most unlike color, and it reads as
     // pasted on however good the rest of it is. The furthest thing is the one
     // that carries it.
-    const skyHue = (item: MusicItem): number => hueOf(item.colors[4])
+    //
+    // One gold against a blue sky and two blues beside it, so which color is
+    // the odd one is not a matter of degree. Read off the real palettes this
+    // says nothing: several of them stand every petal against the sky on
+    // purpose, the way a pink flower does against a blue one, and there the
+    // nearest petal has nowhere unlike to be.
     const hueOfLinear = (color: [number, number, number]): number => {
       const back = (one: number): number => (one <= 0.0031308 ? one * 12.92 : 1.055 * Math.pow(one, 1 / 2.4) - 0.055)
       const [r, g, b] = color.map(back)
@@ -160,13 +165,20 @@ describe('a cover has depth in it', () => {
         high === r ? (g - b) / range + (g < b ? 6 : 0) : high === g ? (b - r) / range + 2 : (r - g) / range + 4
       return turn * 60
     }
-    for (const item of items) {
-      const art = coverArt(item)
+    const sky = hueOf('#2f9dfa')
+    // Every cast, and the ones holding more petals than the palette holds
+    // colors are the point: cycled, those come back round to the odd one out
+    // and hand it to the sharpest petal in the frame.
+    for (let i = 0; i < 200; i++) {
+      const art = coverArt({
+        ...items[0],
+        id: `odd-${i}`,
+        colors: ['#ffc23d', '#6fe9ff', '#a8d4ff', '#f4fdff', '#2f9dfa']
+      })
       if (art.petals.length < 2) continue
-      const sky = skyHue(item)
       const furthest = apart(hueOfLinear(art.petals[0].color), sky)
       const nearest = apart(hueOfLinear(art.petals[art.petals.length - 1].color), sky)
-      expect(furthest, `${item.name} put its odd color in front`).toBeGreaterThanOrEqual(nearest)
+      expect(nearest, `${art.cast} with ${art.petals.length} put its odd color in front`).toBeLessThan(furthest)
     }
   })
 
