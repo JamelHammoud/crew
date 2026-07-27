@@ -17,7 +17,9 @@ function Field({ readyAfterMs }: { readyAfterMs: number | null }) {
   return createElement('input', { ref, disabled: !ready, placeholder: 'Search' })
 }
 
-const frames = (count: number) => act(() => void vi.advanceTimersByTime(count * 16))
+const frames = (count: number) => {
+  for (let i = 0; i < count; i += 1) act(() => void vi.advanceTimersByTime(16))
+}
 
 afterEach(() => {
   cleanup()
