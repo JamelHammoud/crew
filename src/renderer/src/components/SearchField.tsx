@@ -9,27 +9,18 @@ export default function SearchField({
   value,
   onChange,
   placeholder,
-  onBack,
-  onKeyDown,
-  backLabel = 'Back'
+  onKeyDown
 }: {
   value: string
   onChange: (value: string) => void
   placeholder: string
-  onBack?: () => void
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
-  backLabel?: string
 }) {
   const ref = useAutoFocus<HTMLInputElement>()
 
   return (
     <div className="flex h-12 shrink-0 items-center gap-1.5 border-b border-fg/[0.06] px-2.5">
-      {onBack && (
-        <button type="button" onClick={onBack} aria-label={backLabel} className={`${QUIET} h-8 w-8`}>
-          <ChevronLeftGlyph className="h-4 w-4" />
-        </button>
-      )}
-      <SearchGlyph className={`h-4 w-4 shrink-0 text-fg/35 ${onBack ? '' : 'ml-1.5'}`} />
+      <SearchGlyph className="ml-1.5 h-4 w-4 shrink-0 text-fg/35" />
       <input
         ref={ref}
         value={value}
