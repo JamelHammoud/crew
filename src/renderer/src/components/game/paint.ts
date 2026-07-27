@@ -100,3 +100,50 @@ export function outline(
   ctx.lineWidth = Math.max(1, size * 0.08)
   ctx.stroke()
 }
+
+const LIP = { height: 12, out: 4 }
+
+// A pipe is drawn past the top and the bottom of the world rather than up to
+// them, so its rounded corners are only ever the two that face the gap.
+export function pipe(ctx: CanvasRenderingContext2D, x: number, gap: number, floor: number): void {
+  const top = gap - PIPE.gap / 2
+  const bottom = gap + PIPE.gap / 2
+  ctx.fillStyle = PIPE_COLOR
+  roundRect(ctx, x, -12, PIPE.width, top + 12, 5)
+  ctx.fill()
+  roundRect(ctx, x, bottom, PIPE.width, floor - bottom + 12, 5)
+  ctx.fill()
+  ctx.fillStyle = PIPE_LIP
+  roundRect(ctx, x - LIP.out, top - LIP.height, PIPE.width + LIP.out * 2, LIP.height, 4)
+  ctx.fill()
+  roundRect(ctx, x - LIP.out, bottom, PIPE.width + LIP.out * 2, LIP.height, 4)
+  ctx.fill()
+}
+
+// The bird tips with what it is doing rather than staying level, so a fall reads
+// as a fall and a flap reads as one without anything else being drawn.
+export function bird(ctx: CanvasRenderingContext2D, x: number, y: number, vy: number): void {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.rotate(Math.max(-0.5, Math.min(0.9, vy / 420)))
+  ctx.beginPath()
+  ctx.arc(0, 0, BIRD.r, 0, Math.PI * 2)
+  ctx.fillStyle = BIRD_COLOR
+  ctx.fill()
+  ctx.beginPath()
+  ctx.moveTo(BIRD.r * 0.6, -1)
+  ctx.lineTo(BIRD.r * 1.55, 1)
+  ctx.lineTo(BIRD.r * 0.6, 3.2)
+  ctx.closePath()
+  ctx.fillStyle = BIRD_WING
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(-2, 1.5, BIRD.r * 0.55, BIRD.r * 0.4, -0.3, 0, Math.PI * 2)
+  ctx.fillStyle = BIRD_WING
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(BIRD.r * 0.35, -BIRD.r * 0.35, 1.6, 0, Math.PI * 2)
+  ctx.fillStyle = '#2b2f45'
+  ctx.fill()
+  ctx.restore()
+}
