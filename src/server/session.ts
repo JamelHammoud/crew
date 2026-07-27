@@ -1599,7 +1599,8 @@ export class CrewSession {
       trackId: music.track.id,
       playing: music.playing,
       at: wrapAt(music.from + run, music.track.seconds),
-      by: music.by
+      by: music.by,
+      playlistId: music.playlistId
     }
   }
 
@@ -1609,6 +1610,68 @@ export class CrewSession {
 
   private broadcastShelf(): void {
     this.broadcast({ type: 'music.shelf', uploads: [...this.uploads.values()] })
+  }
+
+  // A playlist is read back against what is really on the shelf, so a track
+  // somebody took off is out of everyone's lists as well.
+  private playlistList(): MusicPlaylist[] {
+    const known = new Set(musicItems([...this.uploads.values()]).map(item => item.id))
+    return [...this.playlists.values()].map(playlist => ({
+      ...playlist,
+      trackIds: playlist.trackIds.filter(id => known.has(id))
+    }))
+  }
+
+  private broadcastPlaylists(): void {
+    this.broadcast({ type: 'music.playlists', playlists: this.playlistList() })
+  }
+
+  private handlePlaylistAdd(member: Member, name: string): void {
+    if (this.playlists.size >= MAX_PLAYLISTS || typeof name !== 'string') return
+    const playlistId = randomUUID()
+    const clean = cleanPlaylistName(name)
+    const by = member.name.slice(0, BY_LIMIT)
+    const ts = Date.now()
+    this.playlists.set(playlistId, { id: playlistId, name: clean, by, trackIds: [], ts })
+    this.emit({ id: randomUUID(), ts, kind: 'playlist.added', playlistId, name: clean, byName: by })
+    this.broadcastPlaylists()
+  }
+
+  // A list belongs to whoever wrote it. Everyone can play it, and nobody else
+  // can write in it.
+  private ownPlaylist(member: Member, playlistId: string): MusicPlaylist | null {
+    const playlist = this.playlists.get(playlistId)
+    if (!playlist || !isMine(playlist, member.name)) return null
+    return playlist
+  }
+
+  private handlePlaylistRemove(member: Member, playlistId: string): void {
+    if (!this.ownPlaylist(member, playlistId)) return
+    this.playlists.delete(playlistId)
+    if (this.music?.playlistId === playlistId) this.music.playlistId = null
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'playlist.removed', playlistId, byName: member.name })
+    this.broadcastPlaylists()
+  }
+
+  private handlePlaylistTrack(member: Member, playlistId: string, trackId: string, on: boolean): void {
+    const playlist = this.ownPlaylist(member, playlistId)
+    if (!playlist) return
+    if (on && !itemFor(trackId, [...this.uploads.values()])) return
+    if (on && playlist.trackIds.length >= MAX_PLAYLIST_TRACKS) return
+    // A track already in a list stays where it is rather than jumping to the
+    // end, and one that was never in it is nothing to take out.
+    if (playlist.trackIds.includes(trackId) === (on === true)) return
+    playlist.trackIds = on ? [...playlist.trackIds, trackId] : playlist.trackIds.filter(id => id !== trackId)
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'playlist.track',
+      playlistId,
+      trackId,
+      on: on === true,
+      byName: member.name
+    })
+    this.broadcastPlaylists()
   }
 
   // A track of the crew's own. The bytes are kept beside the session the way an
