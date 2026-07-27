@@ -232,12 +232,12 @@ export function emptyMusic(): MusicRoom {
 // same for the same track: everyone's list looks alike, and two uploads are told
 // apart at a glance.
 const SHELVES: ReadonlyArray<readonly [string, string, string, string, string]> = [
-  ['#ff8fa8', '#ffdcc4', '#8fd4e8', '#fff2e8', '#f56b8a'],
-  ['#8ce68f', '#dcffd0', '#ffd98f', '#f2fff4', '#7fd4f0'],
-  ['#8fb8ff', '#dce8ff', '#ffc9a8', '#f4f8ff', '#4f8ef5'],
-  ['#c48fff', '#f0dcff', '#9ff0d8', '#faf2ff', '#a87ae8'],
-  ['#ffc85c', '#ffedbd', '#8fc4f0', '#fff8e6', '#f5943c'],
-  ['#5fe0f0', '#c9f4ff', '#ffbf9f', '#eefbff', '#3fa8e0']
+  ['#ff8fa8', '#ffc09f', '#8fd4e8', '#fff2e8', '#f56b8a'],
+  ['#8ce68f', '#a0e88f', '#ffd98f', '#f2fff4', '#7fd4f0'],
+  ['#8fb8ff', '#b0c9f5', '#ffc9a8', '#f4f8ff', '#4f8ef5'],
+  ['#c48fff', '#d4b0ff', '#9ff0d8', '#faf2ff', '#a87ae8'],
+  ['#ffc85c', '#ffd07a', '#8fc4f0', '#fff8e6', '#f5943c'],
+  ['#5fe0f0', '#94e0f5', '#ffbf9f', '#eefbff', '#3fa8e0']
 ]
 
 export function paletteFor(seed: string): readonly string[] {
