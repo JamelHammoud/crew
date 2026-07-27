@@ -57,10 +57,20 @@ function Tile({
         onLoad={() => setLoaded(true)}
         className={`block h-full w-full object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
-      <InsetRing className="ring-1 ring-fg/10 ring-inset transition-[box-shadow] duration-150 group-hover:ring-2 group-hover:ring-fg/70" />
-      {sending && (
+      <InsetRing
+        className={
+          refused
+            ? 'ring-2 ring-danger ring-inset'
+            : 'ring-1 ring-fg/10 ring-inset transition-[box-shadow] duration-150 group-hover:ring-2 group-hover:ring-fg/70'
+        }
+      />
+      {(sending || refused) && (
         <span className="absolute inset-0 flex items-center justify-center bg-ink-900/60">
-          <Spinner size={20} className="text-fg" />
+          {sending ? (
+            <Spinner size={20} className="text-fg" />
+          ) : (
+            <WarningGlyph role="img" aria-label="Would not send" className="h-5 w-5 text-danger" />
+          )}
         </span>
       )}
     </button>
