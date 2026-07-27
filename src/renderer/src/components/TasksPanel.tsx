@@ -406,6 +406,7 @@ export default function TasksPanel({
           <span className="block text-base text-fg-muted line-through whitespace-pre-wrap break-words">{todo.text}</span>
           <span className="block text-sm text-fg-faint truncate">Done by hand</span>
         </span>
+        {dayStamp(ts)}
       </div>
       <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <span className="absolute right-full inset-y-0 w-10 bg-gradient-to-l from-ink-hover to-transparent pointer-events-none" />
