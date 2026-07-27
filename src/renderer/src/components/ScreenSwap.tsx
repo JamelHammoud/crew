@@ -87,6 +87,7 @@ export default function ScreenSwap({
         {layers.map(gone => (
           <div
             key={gone ? gone.screen : screen}
+            data-screen={gone ? gone.screen : screen}
             aria-hidden={gone ? true : undefined}
             className={`absolute inset-0 [--screen-travel:24px] ${
               gone
