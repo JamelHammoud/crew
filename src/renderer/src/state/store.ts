@@ -174,6 +174,7 @@ interface CrewState {
   addTool: (name: string, mark: string, action: ToolAction) => void
   editTool: (toolId: string, name: string, mark: string, action: ToolAction) => void
   removeTool: (toolId: string) => void
+  postScore: (gameId: string, score: number) => void
   cancelPrompt: (promptId: string) => void
   updateDoc: (page: string, text: string, title?: string) => void
   retitleDoc: (page: string, title: string) => void
@@ -209,6 +210,7 @@ const EMPTY = {
   threadPrompts: {},
   todos: [],
   tools: [],
+  scores: [],
   boards: [],
   openThreadId: null,
   docsTarget: null,
