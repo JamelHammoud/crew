@@ -22,7 +22,14 @@ const item = (slug: string, title: string, width = 200, height = 200) => ({
   }
 })
 
-const page = (items: unknown[], hasNext = false) => ({
+interface Answer {
+  ok: boolean
+  status: number
+  json?: () => Promise<unknown>
+  blob?: () => Promise<Blob>
+}
+
+const page = (items: unknown[], hasNext = false): Answer => ({
   ok: true,
   status: 200,
   json: async () => ({ result: true, data: { data: items, current_page: 1, per_page: 24, has_next: hasNext } })
@@ -30,7 +37,7 @@ const page = (items: unknown[], hasNext = false) => ({
 
 let asked: string[] = []
 
-const answer = vi.fn(async (url: string) => {
+const answer = vi.fn(async (url: string): Promise<Answer> => {
   asked.push(url)
   if (url.endsWith('.gif')) {
     return { ok: true, status: 200, blob: async () => new Blob([GIF_BYTES], { type: 'image/gif' }) }
