@@ -104,7 +104,7 @@ export default function Toolbox({
     },
     {
       id: 'game',
-      name: 'Game',
+      name: 'Games',
       mark: GameGlyph,
       panel: true,
       run: () => useBrowser.getState().openGame()
