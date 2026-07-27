@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import {
   findPlaylists,
   isMine,
+  MUSIC_SETS,
   playlistItems,
   PLAYLIST_NAME_LIMIT,
   type MusicPlaylist
@@ -64,7 +65,8 @@ function Section({
   )
 }
 
-// Everyone's lists, yours first and then a section for each person who made one.
+// The app's own lists first, then yours, then a section for each person who made
+// one.
 export default function Playlists({
   query,
   naming,
