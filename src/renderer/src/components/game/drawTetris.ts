@@ -51,16 +51,18 @@ export function paintTetris(canvas: HTMLCanvasElement, game: Tetris): void {
   }
 
   const piece = game.falling
-  if (!piece) return
-  // Where the piece would land, drawn as an outline. Without it a stack four
-  // deep is guesswork in a panel this narrow.
-  const rest = restY(game)
-  for (const [cx, cy] of piece.cells) {
-    const y = rest + cy
-    if (y >= 0) outline(ctx, left + (piece.x + cx) * size, top + y * size, size, GHOST)
+  if (piece) {
+    // Where the piece would land, drawn as an outline. Without it a stack four
+    // deep is guesswork in a panel this narrow.
+    const rest = restY(game)
+    for (const [cx, cy] of piece.cells) {
+      const y = rest + cy
+      if (y >= 0) outline(ctx, left + (piece.x + cx) * size, top + y * size, size, GHOST)
+    }
+    for (const [cx, cy] of piece.cells) {
+      const y = piece.y + cy
+      if (y >= 0) block(ctx, left + (piece.x + cx) * size, top + y * size, size, BLOCKS[piece.kind])
+    }
   }
-  for (const [cx, cy] of piece.cells) {
-    const y = piece.y + cy
-    if (y >= 0) block(ctx, left + (piece.x + cx) * size, top + y * size, size, BLOCKS[piece.kind])
-  }
+  ctx.restore()
 }
