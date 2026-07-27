@@ -4,8 +4,10 @@ import {
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode
+  type ReactNode,
+  type RefObject
 } from 'react'
+import InsetRing from '../InsetRing'
 import { FIELD } from './paint'
 
 // The keys the game is played with. They are taken off the page while the field
@@ -17,7 +19,7 @@ type Box = { width: number; height: number }
 // The field keeps its own shape whatever the panel is doing, so it is measured
 // rather than left to the box around it: a canvas told to fill a box it does not
 // have the shape of comes out stretched, and the game is drawn in world units.
-function useBox(ref: React.RefObject<HTMLDivElement | null>): Box {
+function useBox(ref: RefObject<HTMLDivElement | null>): Box {
   const [box, setBox] = useState<Box>({ width: 0, height: 0 })
   useLayoutEffect(() => {
     const el = ref.current
@@ -81,6 +83,9 @@ export function Field({
           style={{ background: FIELD }}
         >
           {children}
+          {/* Drawn inside the field rather than around it, since the field is
+              artwork and a ring outside it is cropped by the card it sits in. */}
+          <InsetRing className="ring-1 ring-inset ring-white/10" />
           {overlay}
         </div>
       </div>
@@ -88,11 +93,33 @@ export function Field({
   )
 }
 
-export function Stat({ label, value }: { label: string; value: string }) {
+// The line over the field: what you have now, set large, and what the best round
+// was, set quietly beside it. It is type rather than a row of filled boxes,
+// which is how the rest of the app says a number.
+export function Score({
+  value,
+  unit,
+  best,
+  children
+}: {
+  value: number
+  unit: string
+  best: number
+  children?: ReactNode
+}) {
   return (
-    <div className="flex-1 min-w-0 px-3 py-1.5 rounded-field bg-fg/[0.05]">
-      <span className="block text-xs font-medium text-fg-muted">{label}</span>
-      <span className="block truncate text-sm font-semibold text-fg tabular-nums">{value}</span>
+    <div className="shrink-0 flex items-baseline gap-2">
+      <span className="text-lg font-semibold text-fg tabular-nums leading-none">
+        {value.toLocaleString()}
+      </span>
+      <span className="text-xs text-fg-muted">{unit}</span>
+      <span className="ml-auto flex items-baseline gap-1.5 text-xs text-fg-muted">
+        {children}
+        <span>Best</span>
+        <span className="text-sm font-medium text-fg-secondary tabular-nums">
+          {best.toLocaleString()}
+        </span>
+      </span>
     </div>
   )
 }
@@ -112,14 +139,16 @@ export function Overlay({
   onStart: () => void
 }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/45 backdrop-blur-[2px]">
-      <span className="text-base font-semibold text-white">{title}</span>
-      {note && <span className="text-sm text-white/60">{note}</span>}
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 backdrop-blur-[3px]">
+      <div className="flex flex-col items-center gap-1 animate-rise">
+        <span className="text-base font-semibold text-white">{title}</span>
+        {note && <span className="text-xs text-white/55">{note}</span>}
+      </div>
       <button
         onClick={onStart}
         onPointerDown={event => event.stopPropagation()}
         onMouseDown={event => event.preventDefault()}
-        className="h-9 px-5 rounded-full bg-white text-sm font-semibold text-[#141a2b] transition-transform duration-150 hover:scale-[1.03] active:scale-95"
+        className="h-9 px-5 rounded-full bg-white text-sm font-semibold text-[#141a2b] transition-transform duration-150 hover:scale-[1.04] active:scale-95"
       >
         {label}
       </button>
