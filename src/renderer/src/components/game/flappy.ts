@@ -74,8 +74,10 @@ const hits = (game: Flappy): boolean => {
 export function tick(game: Flappy, dt: number, rand: Rand = Math.random): Flappy {
   if (game.over) return game
   if (!game.started) return game
-  const vy = game.vy + GRAVITY * dt
-  const y = game.y + vy * dt
+  const fell = game.vy + GRAVITY * dt
+  const rose = game.y + fell * dt
+  const y = Math.max(rose, BIRD.r)
+  const vy = y > rose ? 0 : fell
   const moved = game.pipes.map(pipe => ({ ...pipe, x: pipe.x - SPEED * dt }))
   const scored = moved.filter(pipe => !pipe.passed && pipe.x + PIPE.width < BIRD.x - BIRD.r).length
   for (const pipe of moved) if (pipe.x + PIPE.width < BIRD.x - BIRD.r) pipe.passed = true
