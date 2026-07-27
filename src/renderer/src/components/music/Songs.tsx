@@ -10,7 +10,7 @@ import TrackRow, { rowActionQuiet } from './TrackRow'
 // Everything the crew can play: the app's own tunes and whatever anyone has put
 // on the shelf. Putting something on from here plays the shelf through rather
 // than any one list.
-export default function Songs({ query, onNewPlaylist }: { query: string; onNewPlaylist: () => void }) {
+export default function Songs({ query }: { query: string }) {
   const room = useMusic(s => s.room)
   const uploads = useMusic(s => s.uploads)
   const adding = useMusic(s => s.adding)
@@ -39,9 +39,9 @@ export default function Songs({ query, onNewPlaylist }: { query: string; onNewPl
           onPlay={() => put(one)}
           actions={
             <>
-              <AddToPlaylist trackId={one.id} onNew={onNewPlaylist} />
+              <AddToPlaylist trackId={one.id} />
               {one.file && (
-                <Tooltip label="Take off the shelf">
+                <Tooltip label="Remove">
                   <button
                     onClick={() => useMusic.getState().remove(one.id)}
                     aria-label={`Remove ${one.name}`}
