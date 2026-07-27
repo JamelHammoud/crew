@@ -1,0 +1,88 @@
+// @vitest-environment jsdom
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import GameView from '../src/renderer/src/components/game/GameView'
+import { useCrew } from '../src/renderer/src/state/store'
+import type { GameScore } from '../src/shared/games'
+import type { ClientMessage } from '../src/shared/protocol'
+
+Element.prototype.getAnimations ??= () => []
+globalThis.ResizeObserver ??= class {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+} as never
+
+const sent: ClientMessage[] = []
+
+const score = (name: string, gameId: string, points: number, ts = 1): GameScore => ({
+  gameId,
+  name,
+  score: points,
+  ts
+})
+
+const panel = (scores: GameScore[] = [], selfName = 'sam') => {
+  useCrew.setState({
+    scores,
+    selfName,
+    members: [],
+    postScore: (gameId, points) => sent.push({ type: 'game.score', gameId, score: points })
+  })
+  return render(createElement(GameView, {}))
+}
+
+beforeEach(() => {
+  sent.length = 0
+})
+
+afterEach(cleanup)
+
+describe('the games panel', () => {
+  it('lists the games, and says what the best score on each is', () => {
+    panel([score('ali', 'tetris', 2400)])
+
+    expect(screen.getByText('Tetris')).toBeTruthy()
+    expect(screen.getByText('Flappy Bird')).toBeTruthy()
+    expect(screen.getByText('2,400 by ali')).toBeTruthy()
+    expect(screen.getByText('No scores yet')).toBeTruthy()
+  })
+
+  it('opens a game on its own board, and comes back out of it', () => {
+    panel([score('ali', 'tetris', 2400), score('sam', 'tetris', 900)])
+
+    fireEvent.click(screen.getByText('Tetris'))
+    expect(screen.getByText('High scores')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
+
+    fireEvent.click(screen.getByLabelText('All games'))
+    expect(screen.getByText('Flappy Bird')).toBeTruthy()
+  })
+
+  // The board is a table of people, best first, with your own row marked.
+  it('boards everyone who has played, best first', () => {
+    panel([score('ali', 'tetris', 2400), score('sam', 'tetris', 900), score('ali', 'flappy', 6)])
+    fireEvent.click(screen.getByText('Tetris'))
+
+    const names = [...document.body.querySelectorAll('ol li')].map(row => row.textContent)
+    expect(names).toHaveLength(2)
+    expect(names[0]).toContain('ali')
+    expect(names[1]).toContain('sam')
+    expect(names[1]).toContain('You')
+  })
+
+  it('shows your own best on the game you are playing', () => {
+    panel([score('sam', 'tetris', 900)])
+    fireEvent.click(screen.getByText('Tetris'))
+
+    expect(screen.getByText('Best').parentElement?.textContent).toContain('900')
+  })
+
+  it('starts on nobody having played', () => {
+    panel([])
+    fireEvent.click(screen.getByText('Flappy Bird'))
+
+    expect(screen.getByText('Nobody has played yet')).toBeTruthy()
+  })
+})
