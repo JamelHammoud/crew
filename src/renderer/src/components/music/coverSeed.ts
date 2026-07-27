@@ -148,12 +148,12 @@ const CASTS: Record<CoverCast, Recipe> = {
   // Long leaves sweeping across the frame at much the same angle, the front one
   // sharp and the rest falling away behind it.
   blades: {
-    count: [4, 6],
-    half: [0.09, 0.19],
+    count: [3, 5],
+    half: [0.07, 0.16],
     along: [1.1, 2.2],
     taper: [0.45, 0.9],
     bend: [-0.55, 0.55],
-    scatter: 0.4,
+    scatter: 0.52,
     swing: 0.28,
     near: 0.015,
     far: 0.24,
@@ -166,12 +166,12 @@ const CASTS: Record<CoverCast, Recipe> = {
   // Broad lobes overlapping in the middle of the frame, the way a flower fills
   // one. The nearest is barely in focus and the rest are almost fog.
   petals: {
-    count: [3, 5],
-    half: [0.2, 0.42],
+    count: [3, 4],
+    half: [0.16, 0.32],
     along: [0.5, 1.0],
     taper: [0.25, 0.6],
     bend: [-0.9, 0.9],
-    scatter: 0.34,
+    scatter: 0.46,
     swing: 0.85,
     near: 0.03,
     far: 0.3,
@@ -185,7 +185,7 @@ const CASTS: Record<CoverCast, Recipe> = {
   // behind it. The lit edge along its spine is the whole picture.
   stem: {
     count: [2, 3],
-    half: [0.1, 0.24],
+    half: [0.08, 0.2],
     along: [1.2, 2.4],
     taper: [0.5, 1.1],
     bend: [-0.4, 0.4],
@@ -202,12 +202,12 @@ const CASTS: Record<CoverCast, Recipe> = {
   // Enormous, and so far out of focus that nothing in the frame has an edge at
   // all. It is the softest of them, and the color is the whole of it.
   veil: {
-    count: [2, 4],
-    half: [0.3, 0.62],
+    count: [2, 3],
+    half: [0.24, 0.44],
     along: [0.8, 1.6],
     taper: [0.2, 0.5],
     bend: [-1.2, 1.2],
-    scatter: 0.42,
+    scatter: 0.5,
     swing: 1.1,
     near: 0.16,
     far: 0.42,
@@ -220,8 +220,8 @@ const CASTS: Record<CoverCast, Recipe> = {
   // Thin fronds fanning out of one corner, all from the same root, spread right
   // through the depth so the near ones cut across the far ones.
   spray: {
-    count: [5, 6],
-    half: [0.05, 0.12],
+    count: [4, 6],
+    half: [0.04, 0.1],
     along: [1.3, 2.4],
     taper: [0.7, 1.3],
     bend: [-0.3, 0.3],
@@ -241,11 +241,11 @@ const CASTS: Record<CoverCast, Recipe> = {
   // two standing on it to say how close the big one is.
   bloom: {
     count: [3, 4],
-    half: [0.12, 0.55],
+    half: [0.1, 0.36],
     along: [0.7, 1.8],
     taper: [0.3, 0.8],
     bend: [-0.7, 0.7],
-    scatter: 0.3,
+    scatter: 0.44,
     swing: 0.95,
     near: 0.012,
     far: 0.4,
@@ -281,7 +281,7 @@ export function coverArt(item: MusicItem): CoverArt {
   // The far side of the sky is the near side carrying a little of the light,
   // which is what a sky does over the width of a frame this small. Mixing in
   // one of the petal colors instead would put a second object in the sky.
-  const skyTo = mixed(sky, light, 0.28 + roll() * 0.34)
+  const skyTo = mixed(sky, light, 0.1 + roll() * 0.22)
   const skyAngle = roll() * Math.PI * 2
   const sunAngle = roll() * Math.PI * 2
   const lie = roll() * Math.PI * 2
@@ -304,7 +304,7 @@ export function coverArt(item: MusicItem): CoverArt {
     // track's colors are in the picture instead of one of them three times.
     const own = toLinear(colors[i % 3])
     petals.push({
-      color: mixed(own, light, roll() * 0.3),
+      color: mixed(own, light, roll() * 0.16),
       at,
       lie: [Math.cos(angle), Math.sin(angle)],
       bend: between(recipe.bend, roll()),
@@ -317,9 +317,10 @@ export function coverArt(item: MusicItem): CoverArt {
       phase: roll() * Math.PI * 2,
       blur: recipe.near + (recipe.far - recipe.near) * (1 - depth),
       // The nearer it is the harder its edge catches the light. A rim on a
-      // shape with no edge left is a bright smudge in the middle of nothing.
-      rim: between(recipe.rim, roll()) * (1 - depth * 0.75),
-      shine: 0.2 + roll() * 0.5,
+      // shape with no edge left is a bright smudge in the middle of nothing,
+      // and the far ones are the shapes with no edge left.
+      rim: between(recipe.rim, roll()) * (0.2 + depth * 0.8),
+      shine: 0.1 + roll() * 0.28,
       halo: between(recipe.halo, roll())
     })
   }
@@ -337,7 +338,7 @@ export function coverArt(item: MusicItem): CoverArt {
     light,
     sun: [Math.cos(sunAngle), Math.sin(sunAngle)],
     petals,
-    bloom: 0.18 + roll() * 0.4,
-    haze: roll() * 0.12
+    bloom: 0.1 + roll() * 0.2,
+    haze: roll() * 0.04
   }
 }

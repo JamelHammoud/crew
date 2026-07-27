@@ -157,7 +157,7 @@ void main() {
     bleed += max(0.0, smoothstep(-wider, wider, field) - cover) * glow.y * skin.w;
   }
 
-  color += uLight * clamp(bleed, 0.0, 1.5) * uBloom;
+  color += uLight * clamp(bleed, 0.0, 0.9) * uBloom;
   color = mix(color, uLight, uHaze);
 
   // Back to the numbers a screen wants. Everything above is in linear light.
