@@ -19,7 +19,7 @@ import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { mentionsIn } from '../../../shared/llm'
 import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
-import { useCrew } from '../state/store'
+import { pendingCount, useCrew } from '../state/store'
 
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
@@ -40,7 +40,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const closeThread = useCrew(s => s.closeThread)
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
-  const pendingCount = useCrew(s => (s.pending[threadId] ?? []).length)
   const agents = useCrew(s => s.agents)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
