@@ -11,6 +11,7 @@ import {
   type ThreadStatus,
   type Todo
 } from '../../../shared/events'
+import type { GameScore } from '../../../shared/games'
 import type { CrewTool, ToolAction } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
 import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../shared/music'
