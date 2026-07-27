@@ -129,6 +129,7 @@ interface CrewState {
   threadPrompts: Record<string, string>
   todos: Todo[]
   tools: CrewTool[]
+  scores: GameScore[]
   boards: DesignBoardMeta[]
   openThreadId: string | null
   docsTarget: string | null
