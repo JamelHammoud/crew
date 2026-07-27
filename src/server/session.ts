@@ -664,6 +664,9 @@ export class CrewSession {
       case 'agent.avatar':
         if (meta.role === 'ui') this.handleAvatar(member, msg.agentId, msg.image)
         break
+      case 'member.avatar':
+        if (meta.role === 'ui') this.handleMemberAvatar(member, msg.image)
+        break
       case 'agent.remove':
         if (meta.role === 'ui') this.handleRemove(msg.agentId)
         break
