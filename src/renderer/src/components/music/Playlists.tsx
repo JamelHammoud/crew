@@ -128,6 +128,7 @@ export default function Playlists({
         </li>
       )}
 
+      <Section title="Crew's own" playlists={sets} onOpen={onOpen} />
       <Section title="Yours" playlists={mine} onOpen={onOpen} />
       {names.map(who => (
         <Section
@@ -138,7 +139,7 @@ export default function Playlists({
         />
       ))}
 
-      {found.length === 0 && (
+      {found.length + sets.length === 0 && (
         <li className="px-3 py-6 text-center text-sm text-fg-muted">
           {query.trim() ? 'No playlists by that name' : 'No playlists yet'}
         </li>
