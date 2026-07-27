@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import {
   BIRD,
-  GROUND,
   PIPE,
-  WORLD,
+  SKY_HEIGHT,
+  SKY_WIDTH,
+  birdX,
   flap,
+  floor,
   newFlappy,
+  skyWidth,
   tick,
+  widen,
   type Flappy
 } from '../src/renderer/src/components/game/flappy'
 import {
