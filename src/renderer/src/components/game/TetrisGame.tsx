@@ -31,7 +31,7 @@ export default function TetrisGame({
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Tetris>(() => newTetris())
   const [phase, setPhase] = useState<Phase>('ready')
-  const [width, setWidth] = useState(0)
+  const [box, setBox] = useState<Box>({ width: 0, height: 0 })
   const since = useRef(0)
   // What the game really is right now. A key pressed between two frames has to
   // land on the game the next frame reads, or the frame overwrites it with the
