@@ -130,6 +130,18 @@ export default function PlaylistView({
           </li>
         )}
       </ul>
+
+      <PlaylistName
+        open={naming}
+        title="Rename playlist"
+        action="Rename"
+        name={playlist.name}
+        onClose={() => setNaming(false)}
+        onSubmit={name => {
+          useMusic.getState().renamePlaylist(playlist.id, name)
+          return true
+        }}
+      />
     </div>
   )
 }
