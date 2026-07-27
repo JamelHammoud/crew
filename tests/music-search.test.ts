@@ -34,7 +34,14 @@ describe('searching the music', () => {
   it('finds a track by its name, however it was typed', () => {
     expect(names('night bus')).toEqual(['Night Bus'])
     expect(names('NIGHT')).toEqual(['Night Bus'])
-    expect(names('  bus  ')).toEqual(['Night Bus'])
+    expect(names('  night  ')).toEqual(['Night Bus'])
+  })
+
+  it('lands inside a word rather than waiting for the whole of it', () => {
+    // Part of a word is enough, so the list narrows while it is being typed
+    // rather than after the last letter. Arcade is here because it is busy.
+    expect(names('bus')).toEqual(['Arcade', 'Night Bus'])
+    expect(names('sunri')).toEqual(['Sunrise'])
   })
 
   it('finds a track by what it is like and by who it came from', () => {
