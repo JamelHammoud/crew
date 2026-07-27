@@ -29,6 +29,7 @@ const DRIFT = 0.35
 export interface MusicState {
   room: MusicRoom
   uploads: MusicUpload[]
+  playlists: MusicPlaylist[]
   // The moment the room landed here, so the bar keeps moving on a machine that
   // is not playing anything: muted, or with the app's sounds turned off.
   since: number
