@@ -38,6 +38,8 @@ interface Row {
   detail: string
 }
 
+type DoneEntry = { ts: number; row: Row; todo?: never } | { ts: number; todo: Todo; row?: never }
+
 interface RowAction {
   icon: ReactNode
   label: string
