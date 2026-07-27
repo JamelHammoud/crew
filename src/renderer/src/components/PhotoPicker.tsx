@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { IMAGE_TYPES } from '../../../shared/attachments'
-import { TrashGlyph, UploadGlyph } from '../icons'
+import { PhotoGlyph, TrashGlyph, UploadGlyph } from '../icons'
 import { MenuItem, Popover } from './Popover'
 
 const ACCEPT = Object.keys(IMAGE_TYPES).join(',')
@@ -34,7 +34,7 @@ export default function PhotoPicker({
         aria-label={has ? 'Change photo' : 'Add a photo'}
         className="absolute inset-0 rounded-full flex items-center justify-center bg-ink-900/70 text-fg opacity-0 transition-all duration-150 hover:opacity-100 focus-visible:opacity-100 active:scale-95"
       >
-        <UploadGlyph className="w-4 h-4" />
+        <PhotoGlyph className="w-4 h-4" />
       </button>
       <Popover open={menu} onClose={() => setMenu(false)} align="start">
         <MenuItem icon={<UploadGlyph />} label="Change photo" onClick={pick} />
