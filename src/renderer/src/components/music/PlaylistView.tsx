@@ -80,7 +80,16 @@ export default function PlaylistView({
                     <MoreGlyph className="w-[18px] h-[18px]" />
                   </button>
                 </Tooltip>
-                <Popover open={menu} onClose={() => setMenu(false)} align="start" className="min-w-44">
+                <Popover open={menu} onClose={() => setMenu(false)} align="start" className="min-w-48">
+                  <MenuItem
+                    icon={<PencilGlyph />}
+                    label="Rename playlist"
+                    onClick={() => {
+                      setMenu(false)
+                      setNaming(true)
+                    }}
+                  />
+                  <MenuDivider />
                   <MenuItem
                     icon={<TrashGlyph />}
                     danger
