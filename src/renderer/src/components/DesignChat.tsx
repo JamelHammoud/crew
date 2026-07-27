@@ -74,7 +74,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
   const draftMentions = useMemo(() => mentionsIn(text, agents), [text, agents])
 
   const send = () => {
-    if (!text.trim() && pendingCount === 0) return
+    if (!text.trim() && pendingCount(key) === 0) return
     if (!threadId && draftMentions.length === 0) return
     sendChat(text, threadId ?? undefined, threadId ? undefined : boardId, replyTo?.reactionTargetId)
     setReplyTo(null)
