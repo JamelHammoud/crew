@@ -122,7 +122,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   }, [items, overlayHeight, follow])
 
   const send = () => {
-    if (!text.trim() && pendingCount === 0) return
+    if (!text.trim() && pendingCount(threadId) === 0) return
     sendChat(text, threadId, undefined, replyTo?.reactionTargetId)
     setReplyTo(null)
     mention.close()
