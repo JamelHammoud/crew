@@ -8,9 +8,6 @@ import { gifFile, type Gif } from './gifs'
 import { MenuItem, Popover } from './Popover'
 import Tooltip from './Tooltip'
 
-// Choosing a GIF is a screen inside this popover rather than one of its own. A
-// popover opened from inside a popover is outside the first one's box, so the
-// click that picks a GIF would close the menu under it.
 type Screen = 'menu' | 'gif'
 
 export default function AddMenu({ attachmentKey, onSend }: { attachmentKey: string; onSend: () => void }) {
@@ -26,9 +23,6 @@ export default function AddMenu({ attachmentKey, onSend }: { attachmentKey: stri
     setOpen(true)
   }
 
-  // A GIF goes straight out. It is picked whole rather than written around, so
-  // there is nothing left to say once it has been chosen, and the message it
-  // lands in is the one the composer was already aimed at.
   const pick = async (gif: Gif) => {
     await attach(attachmentKey, [await gifFile(gif)])
     setOpen(false)
