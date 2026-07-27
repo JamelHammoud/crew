@@ -1769,6 +1769,9 @@ export class CrewSession {
     }
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'music.removed', trackId, byName: member.name })
     this.broadcastShelf()
+    // It is out of everyone's lists as well, so they are said again rather than
+    // left holding a row that plays nothing.
+    this.broadcastPlaylists()
   }
 
   musicPath(file: string): string | null {
