@@ -103,7 +103,13 @@ void main() {
   // that says at a glance that a picture was made rather than taken.
   float run = clamp(dot(p - 0.5, uSkyLie) + 0.5, 0.0, 1.0);
   vec3 color = mix(uSky, uSkyTo, run);
+  // Two scales of it, not one. A single field over the whole frame moves the sky
+  // slowly from one side to the other and reads as another ramp; a coarse one
+  // and a finer one crossing it are what give the quiet half of a cover
+  // something to look at, which matters most on the pictures that hold three big
+  // shapes and nothing else.
   color = mix(color, uSkyTo, coarse * 0.3);
+  color = mix(color, uSky, middle * 0.16);
 
   float bleed = 0.0;
 
