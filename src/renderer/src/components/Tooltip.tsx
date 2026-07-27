@@ -1,13 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
+// A tooltip that is a line of text is a line of text: it never wraps and wears
+// the padding of a pill. One handed something drawn instead is a small card,
+// with a width to wrap inside, so the two never have to fight over a class.
 export default function Tooltip({
   label,
   disabled,
   className,
   children
 }: {
-  label: string
+  label: ReactNode
   disabled?: boolean
   className?: string
   children: ReactNode
@@ -80,7 +83,11 @@ export default function Tooltip({
           <span
             ref={tipRef}
             style={style}
-            className="glass fixed z-50 block rounded-lg px-2.5 py-1.5 text-xs font-medium text-fg-secondary whitespace-nowrap animate-pop pointer-events-none"
+            className={`glass fixed z-50 block animate-pop pointer-events-none ${
+              typeof label === 'string'
+                ? 'rounded-lg px-2.5 py-1.5 text-xs font-medium text-fg-secondary whitespace-nowrap'
+                : 'rounded-2xl p-2.5 max-w-[280px]'
+            }`}
           >
             {label}
           </span>,
