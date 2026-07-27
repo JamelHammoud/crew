@@ -90,6 +90,43 @@ describe('music', () => {
     expect(host.session.snapshot().music?.at).toBeCloseTo(5, 1)
   })
 
+  // A track ends and the next one follows it. The host is the one clock the crew
+  // reads, so it is the host that walks the shelf on rather than whichever
+  // machine notices the end first.
+  it('plays on to the next track, and holds the one that is looping', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    const pat = await TestUi.connect(host.url, 'pat', host.code)
+    uis.push(sam, pat)
+
+    const ends = (id: string): number => (itemFor(id)?.seconds ?? 0) - 0.2
+
+    sam.send({ type: 'music.set', trackId: 'overworld', playing: true, at: ends('overworld') })
+    const next = await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId === 'arcade')
+    expect(roomOf(next)).toMatchObject({ playing: true, at: 0, loop: false })
+
+    // Looping is the crew's, not this window's, and it holds the track where it
+    // is rather than walking on.
+    sam.send({ type: 'music.loop', loop: true })
+    await pat.waitFor(m => m.type === 'music.room' && roomOf(m).loop)
+    sam.send({ type: 'music.set', trackId: 'sprint', playing: true, at: ends('sprint') })
+    await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId === 'sprint')
+    await new Promise(r => setTimeout(r, 500))
+    // The setting rides across a track being put on, and nothing has moved.
+    expect(host.session.snapshot().music).toMatchObject({ trackId: 'sprint', loop: true })
+
+    // Turned off again, the one that was looping plays on like any other.
+    sam.send({ type: 'music.loop', loop: false })
+    sam.send({ type: 'music.set', trackId: 'sprint', playing: true, at: ends('sprint') })
+    const after = await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId !== 'sprint')
+    expect(roomOf(after).trackId).toBe('bubble-bath')
+
+    // A track that is paused at its end sits there rather than walking on.
+    sam.send({ type: 'music.set', trackId: 'lobby', playing: false, at: ends('lobby') })
+    await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId === 'lobby')
+    await new Promise(r => setTimeout(r, 400))
+    expect(host.session.snapshot().music?.trackId).toBe('lobby')
+  })
+
   // The whole point of it being in the snapshot rather than the log: nobody has
   // to scroll past a morning of somebody skipping tracks.
   it('never writes down what is playing', async () => {
