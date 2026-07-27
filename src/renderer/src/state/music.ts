@@ -261,11 +261,22 @@ export const useMusic = create<MusicState>((set, get) => {
     makePlaylist: name =>
       new Promise(resolve => {
         const playlistId = globalThis.crypto.randomUUID()
+        const clean = cleanPlaylistName(name)
+        const had = new Set(get().playlists.map(one => one.id))
+        // The id asked for, or, on a host older than this window, whichever list
+        // of that name has just turned up under your own name.
+        const landed = (playlists: MusicPlaylist[]): string | null =>
+          playlists.find(
+            one =>
+              one.id === playlistId ||
+              (!had.has(one.id) && one.name === clean && isMine(one, useCrew.getState().selfName))
+          )?.id ?? null
         const stop = useMusic.subscribe(state => {
-          if (!state.playlists.some(one => one.id === playlistId)) return
+          const made = landed(state.playlists)
+          if (!made) return
           stop()
           clearTimeout(timer)
-          resolve(playlistId)
+          resolve(made)
         })
         const timer = setTimeout(() => {
           stop()
