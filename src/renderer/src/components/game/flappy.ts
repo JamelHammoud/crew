@@ -17,10 +17,10 @@ const SPEED = 96
 // A pipe's gap never opens right at the ceiling or right on the ground: there
 // has to be somewhere to fly to.
 const MARGIN = 40
-// A panel dragged to nothing is still a game. Under this the pipes arrive before
-// anyone can read them, so the sky stops narrowing and the picture is the one
-// thing that keeps shrinking.
-const NARROWEST = 150
+// Narrower than the narrowest panel anyone can drag, so it never stands between
+// the sky and the field. It is only here because a box measured at nothing would
+// otherwise put the bird and the first pipe in the same place.
+const NARROWEST = 120
 
 // How wide the sky is for a field of a given shape. It is worked out from the
 // height so the scale is the same both ways: a bird is a circle in a panel of
@@ -30,7 +30,7 @@ export const skyWidth = (width: number, height: number): number =>
 
 // The bird stands a third of the way in, wherever the far edge is, so the room a
 // wider panel buys is runway ahead of it rather than a longer wait behind.
-export const birdX = (width: number): number => width * 0.32
+export const birdX = (width: number): number => width * 0.3
 
 export interface Pipe {
   x: number
