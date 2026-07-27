@@ -536,6 +536,7 @@ export const useCrew = create<CrewState>((set, get) => {
           queues: msg.snapshot.queues ?? {},
           todos: msg.snapshot.todos ?? [],
           tools: msg.snapshot.tools ?? [],
+          scores: msg.snapshot.gameScores ?? [],
           boards: msg.snapshot.boards ?? [],
           steps,
           tokens,
