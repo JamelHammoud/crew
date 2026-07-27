@@ -49,6 +49,16 @@ describe('agent photos in the crew tab', () => {
     expect(section().querySelector('svg[viewBox="0 0 100 100"]')).toBeNull()
   })
 
+  it('keeps the circle a circle under a photo that is cut out', () => {
+    seed({ ...agent, avatar: 'a-photo.png' })
+    render(createElement(Dashboard))
+
+    const face = section().querySelector('img') as HTMLImageElement
+    expect(face.className).toContain('rounded-full')
+    expect(face.className).toContain('bg-ink-800')
+    expect(face.className).toContain('object-cover')
+  })
+
   it('takes a photo off and lands back on the generated icon', () => {
     const setAgentAvatar = seed({ ...agent, avatar: 'a-photo.png' })
     const { rerender } = render(createElement(Dashboard))
