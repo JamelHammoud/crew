@@ -11,12 +11,20 @@ const BLOBS = [
   { color: '#ffffff', cx: 158, cy: 24, r: 118, dx: 30, dy: 44, ds: 1.22, dur: '6.8s', lag: '-3.4s' }
 ]
 
-const SWEEP_X = 700
+const BLEED = 180
+
+const FIELD = {
+  x: -BLEED,
+  y: -BLEED,
+  width: MARK_WIDTH + BLEED * 2,
+  height: MARK_HEIGHT + BLEED * 2
+}
 
 export function CrewMark({ className = '', run }: { className?: string; run?: number }) {
   const raw = useId()
   const id = raw.replace(/[^a-zA-Z0-9-]/g, '')
   const live = run !== undefined
+  const last = MARK_DISCS.length - 1
 
   return (
     <svg
@@ -42,16 +50,8 @@ export function CrewMark({ className = '', run }: { className?: string; run?: nu
         </defs>
       )}
 
-      <mask
-        key={run}
-        id={id}
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width={MARK_WIDTH}
-        height={MARK_HEIGHT}
-      >
-        <rect x="0" y="0" width={MARK_WIDTH} height={MARK_HEIGHT} fill="#000000" />
+      <mask key={run} id={id} maskUnits="userSpaceOnUse" {...(live ? FIELD : { x: 0, y: 0, width: MARK_WIDTH, height: MARK_HEIGHT })}>
+        <rect {...(live ? FIELD : { x: 0, y: 0, width: MARK_WIDTH, height: MARK_HEIGHT })} fill="#000000" />
         {MARK_DISCS.map((cx, index) => (
           <g
             key={cx}
@@ -60,7 +60,7 @@ export function CrewMark({ className = '', run }: { className?: string; run?: nu
               live
                 ? ({
                     transformOrigin: `${cx}px ${MARK_RADIUS}px`,
-                    '--disc': index
+                    '--disc': last - index
                   } as CSSProperties)
                 : undefined
             }
@@ -72,11 +72,14 @@ export function CrewMark({ className = '', run }: { className?: string; run?: nu
       </mask>
 
       <g mask={`url(#${id})`}>
-        <rect x="0" y="0" width={MARK_WIDTH} height={MARK_HEIGHT} fill="currentColor" />
+        <rect
+          {...(live ? FIELD : { x: 0, y: 0, width: MARK_WIDTH, height: MARK_HEIGHT })}
+          fill="currentColor"
+        />
         {live && (
           <>
             <g className="crew-mesh">
-              <rect x="0" y="0" width={MARK_WIDTH} height={MARK_HEIGHT} fill={SKY} />
+              <rect {...FIELD} fill={SKY} />
               {BLOBS.map((blob, index) => (
                 <circle
                   key={blob.color}
@@ -98,20 +101,13 @@ export function CrewMark({ className = '', run }: { className?: string; run?: nu
               ))}
             </g>
             <g key={run}>
-              <rect
-                className="crew-flash"
-                x="0"
-                y="0"
-                width={MARK_WIDTH}
-                height={MARK_HEIGHT}
-                fill="#ffffff"
-              />
+              <rect className="crew-flash" {...FIELD} fill="#ffffff" />
               <ellipse
                 className="crew-sweep"
-                cx={SWEEP_X}
+                cx={-96}
                 cy={MARK_RADIUS}
                 rx="96"
-                ry="200"
+                ry="220"
                 fill={`url(#${id}-sweep)`}
               />
             </g>
