@@ -184,7 +184,10 @@ function createWindow(): void {
     return { action: 'deny' }
   })
   const syncWindowShape = () =>
-    win.webContents.send('window:fullscreen', win.isFullScreen() || win.isMaximized())
+    win.webContents.send('window:shape', {
+      square: win.isFullScreen() || win.isMaximized(),
+      full: win.isFullScreen()
+    })
   win.on('maximize', syncWindowShape)
   win.on('unmaximize', syncWindowShape)
   win.on('enter-full-screen', syncWindowShape)
