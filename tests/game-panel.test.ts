@@ -97,6 +97,19 @@ describe('the games panel', () => {
     expect(screen.getByText('points')).toBeTruthy()
   })
 
+  // The tab up the panel says what you are playing, and is the tab's own name
+  // again the moment you come out of a game.
+  it('names the tab after the game it is standing in', () => {
+    panel()
+    expect(titleNow()).toBe('')
+
+    fireEvent.click(screen.getByText('Flappy Bird'))
+    expect(titleNow()).toBe('Flappy Bird')
+
+    fireEvent.click(screen.getByLabelText('Back'))
+    expect(titleNow()).toBe('')
+  })
+
   // With nobody on it there is no board, rather than a card saying so over the
   // field somebody is about to play on.
   it('draws no board at all before anyone has played', () => {
