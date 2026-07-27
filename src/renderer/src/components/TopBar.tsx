@@ -19,7 +19,7 @@ import { toggleTheme, useTheme } from '../state/theme'
 import { useFullScreen } from '../state/windowShape'
 import Avatar from './Avatar'
 import Badge from './Badge'
-import { CrewMark } from './CrewMark'
+import CrewLogo from './CrewLogo'
 import PhotoPicker from './PhotoPicker'
 import Pill from './Pill'
 import PresenceStack from './PresenceStack'
@@ -121,8 +121,8 @@ export default function TopBar({
       style={{ height: TOP_BAR_H }}
       className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
     >
-      <span className={full ? '' : 'mac:pl-[64px]'}>
-        <CrewMark className="h-[18px] w-auto text-fg" />
+      <span className={`flex items-center ${full ? '' : 'mac:pl-[64px]'}`}>
+        <CrewLogo />
       </span>
 
       <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">
