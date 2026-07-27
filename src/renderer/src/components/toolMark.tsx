@@ -51,6 +51,7 @@ const GLYPHS: Record<ToolMark, Glyph> = {
   photo: PhotoGlyph,
   film: FilmGlyph,
   music: MusicGlyph,
+  play: PlayGlyph,
   speaker: SpeakerGlyph,
   desktop: DesktopGlyph,
   cloud: CloudGlyph,
@@ -58,6 +59,11 @@ const GLYPHS: Record<ToolMark, Glyph> = {
   chat: ChatGlyph,
   people: PeopleGlyph,
   star: StarGlyph,
+  spark: SparkGlyph,
+  bolt: BoltGlyph,
+  group: GroupGlyph,
+  pencil: PencilGlyph,
+  sun: SunGlyph,
   clock: ClockGlyph,
   eye: EyeGlyph
 }
