@@ -82,26 +82,22 @@ export class Store {
   }
 
   appendEvent(event: SessionEvent): void {
-    fs.appendFileSync(path.join(this.root, 'chat.jsonl'), JSON.stringify(event) + '\n')
+    appendChatLine(this.root, JSON.stringify(event) + '\n')
   }
 
   loadEvents(): SessionEvent[] {
-    let raw: string
-    try {
-      raw = fs.readFileSync(path.join(this.root, 'chat.jsonl'), 'utf8')
-    } catch {
-      return []
-    }
     const events: SessionEvent[] = []
-    for (const line of raw.split('\n')) {
-      if (!line.trim()) continue
+    const seen = new Set<string>()
+    for (const line of readChatLines(this.root)) {
+      if (seen.has(line)) continue
+      seen.add(line)
       try {
         events.push(JSON.parse(line))
       } catch {
         continue
       }
     }
-    return events
+    return events.sort((a, b) => a.ts - b.ts)
   }
 
   loadDocs(): Record<string, DocPage> {
