@@ -93,6 +93,7 @@ export const useMusic = create<MusicState>((set, get) => {
     const track = itemFor(room.trackId, get().uploads)
     if (!track || !room.playing || !soundsOn()) {
       player.stop()
+      set({ trouble: null })
       return
     }
     const inStep = player.running() && player.trackId === track.id
@@ -100,9 +101,13 @@ export const useMusic = create<MusicState>((set, get) => {
     const tune = tuneFor(track.id)
     if (tune) {
       player.play(tune, room.at)
+      set({ trouble: null })
     } else if (track.file) {
       const url = uploadUrl(useCrew.getState().httpBase, track.file)
-      void player.playFile(track.id, url, track.seconds, room.at)
+      set({ trouble: null })
+      void player.playFile(track.id, url, track.seconds, room.at).then(result => {
+        if (result === 'unplayable') set({ trouble: 'This track will not play here' })
+      })
     }
     player.setVolume(level())
   }
