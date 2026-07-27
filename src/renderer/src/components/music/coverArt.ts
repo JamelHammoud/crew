@@ -87,12 +87,23 @@ float fbm(vec2 p) {
 void main() {
   vec2 p = vUv;
 
+  // The three fields every outline in the picture is pushed about by, drawn
+  // once, coarse to fine. They are up here rather than inside the loop below on
+  // purpose: a graphics driver unrolls a loop that reads a uniform by its
+  // counter, so a single noise call written inside it is really one per petal,
+  // and on a Mac that is enough to take the shader compiler down with it. What
+  // the loop gets is three numbers it can mix, which is the same variety for a
+  // fraction of the work.
+  float coarse = fbm(p * 1.2 + 4.0);
+  float middle = fbm(p * 2.6 + 19.0);
+  float fine = fbm(p * 5.4 + 33.0);
+
   // The sky. It runs from one color to another across the frame and is mottled
   // on top of that, because a straight ramp behind everything is the one thing
   // that says at a glance that a picture was made rather than taken.
   float run = clamp(dot(p - 0.5, uSkyLie) + 0.5, 0.0, 1.0);
   vec3 color = mix(uSky, uSkyTo, run);
-  color = mix(color, uSkyTo, fbm(p * 1.7 + 3.1) * 0.3);
+  color = mix(color, uSkyTo, coarse * 0.3);
 
   float bleed = 0.0;
 
