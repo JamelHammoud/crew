@@ -119,7 +119,7 @@ export default function TopBar({
       style={{ height: TOP_BAR_H }}
       className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
     >
-      <span className="mac:pl-[64px]">
+      <span className={full ? '' : 'mac:pl-[64px]'}>
         <CrewMark className="h-[18px] w-auto text-fg" />
       </span>
 
