@@ -30,8 +30,9 @@ import { useAutoResize } from './useAutoResize'
 
 const GROWN = 108
 
-// The kinds that hold words a blank can be written into, so the one line about
-// braces is shown where it is worth something and nowhere else.
+// The kinds that hold words a blank can be written into, so the one line that
+// says so is shown where it is worth something and nowhere else. It is written
+// in braces itself, which is the whole of the explaining it needs.
 const WORDY: ToolKind[] = ['web', 'terminal', 'file', 'prompt', 'say', 'todo', 'note', 'copy']
 
 // A pill for who a tool asks. Anyone is a choice of its own rather than an empty
