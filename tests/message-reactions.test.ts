@@ -211,6 +211,70 @@ describe('message reaction controls', () => {
     }
   })
 
+  it('stands an add reaction button at the end of the row, and only once something is there', () => {
+    useCrew.setState({ reactToMessage: vi.fn() })
+    const { rerender } = render(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
+    )
+    expect(screen.queryByLabelText('Add reaction')).toBeNull()
+
+    rerender(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [{ emoji: '🔥', count: 1, names: ['Ali'], self: false }],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
+    )
+
+    const add = screen.getByLabelText('Add reaction')
+    const row = add.closest('div') as HTMLElement
+    expect(row.lastElementChild?.contains(add)).toBe(true)
+    expect([...row.querySelectorAll('button')].at(-1)).toBe(add)
+    expect(add.className).toContain('group-hover/message:opacity-100')
+  })
+
+  it('reacts from the row button and holds it up while its picker is open', () => {
+    const reactToMessage = vi.fn()
+    useCrew.setState({ reactToMessage })
+    render(
+      createElement(
+        'div',
+        { className: 'group/message' },
+        createElement(MessageReactions, {
+          targetId: 'message:m1',
+          reactions: [{ emoji: '🔥', count: 1, names: ['Ali'], self: false }],
+          deletable: false,
+          onDelete: () => {}
+        })
+      )
+    )
+
+    const add = screen.getByLabelText('Add reaction')
+    fireEvent.click(add)
+    expect(add.className).toContain('opacity-100')
+    expect(add.className).not.toContain('opacity-0')
+
+    fireEvent.change(screen.getByPlaceholderText('Search emoji'), { target: { value: 'tada' } })
+    fireEvent.click(screen.getByLabelText('React with :tada:'))
+
+    expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🎉')
+    expect(screen.queryByPlaceholderText('Search emoji')).toBeNull()
+  })
+
   it('keeps a reaction on the exact agent reply block it targets', () => {
     const events: SessionEvent[] = [
       {
