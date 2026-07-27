@@ -248,9 +248,9 @@ export default function TasksPanel({
 
   // The two kinds of done task stand in one list, newest first, so the date
   // beside each row is what the order reads as.
-  const doneEntries = [
-    ...done.map(row => ({ row, todo: undefined, ts: lastMessageAt[row.thread.id] ?? 0 })),
-    ...checkedTodos.map(todo => ({ row: undefined, todo, ts: checkedAt[todo.id] ?? todo.ts }))
+  const doneEntries: DoneEntry[] = [
+    ...done.map(row => ({ row, ts: lastMessageAt[row.thread.id] ?? 0 })),
+    ...checkedTodos.map(todo => ({ todo, ts: checkedAt[todo.id] ?? todo.ts }))
   ].sort((a, b) => b.ts - a.ts)
   const noMatches =
     q !== '' &&
