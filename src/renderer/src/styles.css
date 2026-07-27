@@ -25,6 +25,8 @@
   --color-danger: #f87171;
   --color-attention: #fbbf24;
 
+  --color-selection: rgb(255 255 255 / 0.16);
+
   --text-xs: 11px;
   --text-xs--line-height: 16px;
   --text-sm: 13px;
