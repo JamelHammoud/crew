@@ -244,6 +244,17 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       rasp: { hz: 3400, q: 2.8, gain: 0.04, length: 0.004 }
     }
   ],
+  // Three discs arriving, so three bubbles, panned the way they land and rising
+  // through A major. The low one and the sparks come in under the light, once
+  // the last of them is home.
+  'crew.mark': [
+    bubble(TUNE, NOTE.a4, 0, 0.34, 0.32),
+    bubble(TUNE, NOTE.cs5, 0.09, 0.34, 0),
+    bubble(TUNE, NOTE.e5, 0.18, 0.5, -0.32),
+    bubble(DEEP, NOTE.a3, 0.19, 0.9, 0),
+    bubble(SPARK, NOTE.a5, 0.21, 0.52, -0.14),
+    bubble(SPARK, NOTE.cs6, 0.29, 0.6, 0.16)
+  ],
   'task.done': [
     {
       hz: 1567.98,
