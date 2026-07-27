@@ -155,7 +155,7 @@ export const MUSIC_TUNES = [
   },
   // The slow ones. They run twice the length of the rest, at half the pace, so
   // each is about a minute round rather than half of one, and they are the whole
-  // of the Ambient Lofi list below.
+  // of the app's own list below.
   {
     id: 'slow-morning',
     name: 'Slow Morning',
@@ -268,7 +268,7 @@ export interface MusicPlaylist {
 export const MUSIC_SETS: readonly MusicPlaylist[] = [
   {
     id: 'set-ambient-lofi',
-    name: 'Ambient Lofi',
+    name: 'Crew',
     by: '',
     trackIds: [
       'slow-morning',
