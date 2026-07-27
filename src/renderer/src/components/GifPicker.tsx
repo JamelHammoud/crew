@@ -104,8 +104,7 @@ export default function GifPicker({
     const token = ++asked.current
     setLoading(true)
     setFailed(false)
-    setTrouble(false)
-    setNamed(null)
+    setRefused(null)
     if (scrollRef.current) scrollRef.current.scrollTop = 0
     const timer = setTimeout(
       () => {
@@ -151,9 +150,9 @@ export default function GifPicker({
   const send = (gif: Gif) => {
     if (sending) return
     setSending(gif.id)
-    setTrouble(false)
+    setRefused(null)
     void onPick(gif)
-      .catch(() => setTrouble(true))
+      .catch(() => setRefused(gif.id))
       .finally(() => setSending(null))
   }
 
