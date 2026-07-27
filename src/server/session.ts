@@ -52,6 +52,7 @@ import {
   emptyMusic,
   isMine,
   isMusicSet,
+  isPlaylistId,
   itemFor,
   MAX_PLAYLIST_TRACKS,
   MAX_PLAYLISTS,
