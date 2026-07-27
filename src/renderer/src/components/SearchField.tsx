@@ -1,5 +1,5 @@
 import { type KeyboardEvent } from 'react'
-import { ChevronLeftGlyph, CloseGlyph, SearchGlyph } from '../icons'
+import { CloseGlyph, SearchGlyph } from '../icons'
 import { useAutoFocus } from './useAutoFocus'
 
 const QUIET =
