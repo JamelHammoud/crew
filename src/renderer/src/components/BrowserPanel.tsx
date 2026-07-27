@@ -37,7 +37,7 @@ function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'music') return 'Music'
   // A games tab says which game you are in, and keeps the same mark whichever
   // one that is. Out of a game it is the tab's own name again.
-  if (tab.kind === 'game') return tab.title || 'Games'
+  if (tab.kind === 'game') return gameFor(tab.game ?? '')?.name ?? 'Games'
   if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
