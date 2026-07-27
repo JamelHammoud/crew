@@ -1,31 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { musicItems, type MusicItem, type MusicRoom } from '../../../../shared/music'
+import { useEffect, useState } from 'react'
+import type { MusicRoom } from '../../../../shared/music'
 import {
+  ChevronLeftGlyph,
   MusicGlyph,
   PauseGlyph,
   PlayGlyph,
-  PlusGlyph,
+  SearchGlyph,
   SkipBackGlyph,
   SkipNextGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
-  StopGlyph,
-  TrashGlyph
+  StopGlyph
 } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useMusic } from '../../state/music'
 import { setSounds, useSounds } from '../../state/sound'
 import { useCrew } from '../../state/store'
 import Slider from '../Slider'
-import Spinner from '../Spinner'
 import Tooltip from '../Tooltip'
-import Bars from './Bars'
 import Cover from './Cover'
-
-const clock = (seconds: number): string => {
-  const whole = Math.max(0, Math.floor(seconds))
-  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`
-}
+import Playlists from './Playlists'
+import PlaylistView from './PlaylistView'
+import { clock } from './say'
+import Songs from './Songs'
 
 // Where the loop has got to, read as fast as the screen draws. Nothing is asked
 // for while it is standing still, since a paused loop is where it was left.
@@ -46,33 +43,46 @@ function useAt(room: MusicRoom, playing: boolean): number {
 const round =
   'w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95'
 
+const TABS = [
+  { id: 'songs', label: 'Songs' },
+  { id: 'playlists', label: 'Playlists' }
+] as const
+
 export default function MusicView() {
   const room = useMusic(s => s.room)
   const uploads = useMusic(s => s.uploads)
+  const playlists = useMusic(s => s.playlists)
   const volume = useMusic(s => s.volume)
   const muted = useMusic(s => s.muted)
-  const adding = useMusic(s => s.adding)
   const trouble = useMusic(s => s.trouble)
   const selfName = useCrew(s => s.selfName)
   const sounds = useSounds()
-  const items = useMemo(() => musicItems(uploads), [uploads])
-  const track = items.find(one => one.id === room.trackId) ?? null
+  const track = useMusic.getState().track()
   const at = useAt(room, room.playing && track !== null)
   // Where the bar is being dragged to, which is what it shows until the crew
   // has been told, so it does not spring back under your own finger.
   const [scrub, setScrub] = useState<number | null>(null)
-  const [addTrouble, setAddTrouble] = useState<string | null>(null)
-  const picker = useRef<HTMLInputElement>(null)
+  const [tab, setTab] = useState<'songs' | 'playlists'>('songs')
+  const [openId, setOpenId] = useState<string | null>(null)
+  const [naming, setNaming] = useState(false)
+  const [query, setQuery] = useState('')
   useEffect(() => setScrub(null), [room])
 
-  const put = (one: MusicItem) => {
-    if (one.id === room.trackId) useMusic.getState().toggle()
-    else useMusic.getState().put(one.id)
+  // A list somebody deleted while you were reading it takes you back to the
+  // shelf of lists rather than leaving you on a page about nothing.
+  const open = playlists.find(playlist => playlist.id === openId) ?? null
+
+  const go = (playlistId: string | null) => {
+    setQuery('')
+    setOpenId(playlistId)
+    if (playlistId) setTab('playlists')
   }
 
-  const take = async (file: File | undefined) => {
-    if (!file) return
-    setAddTrouble(await useMusic.getState().add(file))
+  const newPlaylist = () => {
+    setQuery('')
+    setOpenId(null)
+    setTab('playlists')
+    setNaming(true)
   }
 
   return (
@@ -149,87 +159,49 @@ export default function MusicView() {
 
       <div className="h-px bg-ink-700" />
 
-      <ul className="p-2">
-        {items.map(one => {
-          const on = one.id === room.trackId
-          return (
-            <li key={one.id}>
+      <div className="px-3 pt-3 flex items-center gap-2">
+        {open ? (
+          <Tooltip label="All playlists">
+            <button onClick={() => go(null)} aria-label="All playlists" className={`${round} w-8 h-8`}>
+              <ChevronLeftGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
+        ) : (
+          <div className="shrink-0 flex items-center gap-1">
+            {TABS.map(one => (
               <button
-                onClick={() => put(one)}
-                aria-pressed={on}
-                className={`group w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 ${
-                  on ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
+                key={one.id}
+                onClick={() => setTab(one.id)}
+                aria-pressed={tab === one.id}
+                className={`h-8 px-3 rounded-full text-xs font-medium transition-colors duration-150 ${
+                  tab === one.id ? 'bg-fg/[0.08] text-fg' : 'text-fg-muted hover:text-fg hover:bg-fg/[0.04]'
                 }`}
               >
-                <Cover item={one} size={40} playing={on && room.playing} className="w-10 h-10 shrink-0 rounded-[10px]">
-                  {on && (
-                    // A scrim under the bars, because a cover can be any color
-                    // and white on yellow is not a bar at all.
-                    <span className="absolute inset-0 flex items-end p-[7px] text-white bg-gradient-to-t from-black/55 to-transparent">
-                      <Bars count={4} className="h-3/4 w-full justify-between" barClassName="w-[3px]" />
-                    </span>
-                  )}
-                </Cover>
-                <span className="flex-1 min-w-0">
-                  <span className={`block truncate text-sm ${on ? 'text-fg font-medium' : 'text-fg-secondary'}`}>
-                    {one.name}
-                  </span>
-                  <span className="block truncate text-xs text-fg-muted">
-                    {one.by ? `${one.mood}, from ${one.by}` : one.mood}
-                  </span>
-                </span>
-                <span className="shrink-0 w-9 text-right text-xs tabular-nums text-fg-faint">
-                  {clock(one.seconds)}
-                </span>
-                {one.file && (
-                  <Tooltip label="Take off the shelf">
-                    <span
-                      role="button"
-                      aria-label={`Remove ${one.name}`}
-                      onClick={event => {
-                        event.stopPropagation()
-                        useMusic.getState().remove(one.id)
-                      }}
-                      className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg-faint opacity-0 group-hover:opacity-100 transition-all duration-150 hover:text-fg hover:bg-fg/10 active:scale-95"
-                    >
-                      <TrashGlyph className="w-4 h-4" />
-                    </span>
-                  </Tooltip>
-                )}
+                {one.label}
               </button>
-            </li>
-          )
-        })}
-        <li>
-          <button
-            onClick={() => picker.current?.click()}
-            disabled={adding}
-            className="w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.04] disabled:opacity-50"
-          >
-            <span className="w-10 h-10 shrink-0 rounded-xl border border-dashed border-fg/15 flex items-center justify-center text-fg-faint">
-              {adding ? <Spinner size={16} /> : <PlusGlyph className="w-4 h-4" />}
-            </span>
-            <span className="flex-1 min-w-0">
-              <span className="block text-sm text-fg-secondary">
-                {adding ? 'Putting it on the shelf' : 'Add a track'}
-              </span>
-              <span className="block truncate text-xs text-fg-muted">
-                {addTrouble ?? 'An audio file from this machine, for everyone here'}
-              </span>
-            </span>
-          </button>
+            ))}
+          </div>
+        )}
+        <div className="relative flex flex-1 min-w-0">
+          <SearchGlyph className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-faint pointer-events-none" />
           <input
-            ref={picker}
-            type="file"
-            accept="audio/*"
-            className="hidden"
-            onChange={event => {
-              void take(event.target.files?.[0])
-              event.target.value = ''
-            }}
+            value={query}
+            onChange={event => setQuery(event.target.value)}
+            placeholder="Search"
+            aria-label="Search music"
+            spellCheck={false}
+            className="w-full h-8 pl-8 pr-3 rounded-full bg-fg/[0.06] text-sm text-fg placeholder:text-fg-faint outline-none transition-colors focus:bg-fg/[0.08]"
           />
-        </li>
-      </ul>
+        </div>
+      </div>
+
+      {open ? (
+        <PlaylistView playlist={open} query={query} />
+      ) : tab === 'songs' ? (
+        <Songs query={query} onNewPlaylist={newPlaylist} />
+      ) : (
+        <Playlists query={query} naming={naming} onNaming={setNaming} onOpen={go} />
+      )}
 
       <div className="mt-auto">
         {!sounds && (
