@@ -688,7 +688,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleMusicRemove(member, msg.trackId)
         break
       case 'playlist.add':
-        if (meta.role === 'ui') this.handlePlaylistAdd(member, msg.name)
+        if (meta.role === 'ui') this.handlePlaylistAdd(member, msg.name, msg.playlistId)
         break
       case 'playlist.remove':
         if (meta.role === 'ui') this.handlePlaylistRemove(member, msg.playlistId)
@@ -1681,9 +1681,9 @@ export class CrewSession {
     this.broadcast({ type: 'music.playlists', playlists: this.playlistList() })
   }
 
-  private handlePlaylistAdd(member: Member, name: string): void {
+  private handlePlaylistAdd(member: Member, name: string, asked?: string): void {
     if (this.playlists.size >= MAX_PLAYLISTS || typeof name !== 'string') return
-    const playlistId = randomUUID()
+    const playlistId = isPlaylistId(asked) && !this.playlists.has(asked) ? asked : randomUUID()
     const clean = cleanPlaylistName(name)
     const by = member.name.slice(0, BY_LIMIT)
     const ts = Date.now()
