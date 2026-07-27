@@ -9,6 +9,13 @@ export interface MemberMentionRef {
   name: string
 }
 
+// A message carries the name of whoever wrote it rather than their id, and the
+// host keys people by name too, so a face is matched the same way.
+export function memberPhoto(members: Array<{ name: string; avatar?: string }>, name: string): string | undefined {
+  const key = name.trim().toLowerCase()
+  return members.find(member => member.name.trim().toLowerCase() === key)?.avatar
+}
+
 export function memberMentionCandidates<T extends MentionableMember>(members: T[], query: string | null): T[] {
   if (query === null) return []
   const q = query.toLowerCase()
