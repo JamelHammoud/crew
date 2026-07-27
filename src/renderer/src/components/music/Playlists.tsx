@@ -82,6 +82,7 @@ export default function Playlists({
   const selfName = useCrew(s => s.selfName)
   const [name, setName] = useState('')
   const found = useMemo(() => findPlaylists(playlists, query), [playlists, query])
+  const sets = useMemo(() => findPlaylists(MUSIC_SETS, query), [query])
   const mine = found.filter(playlist => isMine(playlist, selfName))
   const theirs = found.filter(playlist => !isMine(playlist, selfName))
   const names = [...new Set(theirs.map(playlist => playlist.by))].sort((a, b) => a.localeCompare(b))
