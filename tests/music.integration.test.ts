@@ -3,6 +3,7 @@ import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
 import type { ServerMessage } from '../src/shared/protocol'
+import { readChatLines } from '../src/server/chatLog'
 import { CrewSession } from '../src/server/session'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 
@@ -102,8 +103,7 @@ describe('music', () => {
 
     expect(sam.events.some(e => e.kind.startsWith('music.'))).toBe(false)
     expect(host.session.snapshot().events.some(e => e.kind.startsWith('music.'))).toBe(false)
-    const log = path.join(host.repoPath, '.crew', 'chat.jsonl')
-    const written = fs.existsSync(log) ? fs.readFileSync(log, 'utf8') : ''
+    const written = readChatLines(path.join(host.repoPath, '.crew')).join('\n')
     expect(written).not.toContain('sprint')
 
     // And a session coming back up has nothing on, rather than a track it
