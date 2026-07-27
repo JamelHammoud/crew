@@ -303,6 +303,44 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(first)
   })
 
+  const hear = (name: 'tasks.open' | 'task.done'): Heard & { rings: number } => {
+    started.length = 0
+    stopped.length = 0
+    landed.length = 0
+    filters = []
+    clock += 500
+    playSound(name)
+    expect(started.length).toBeGreaterThan(0)
+    return {
+      at: [...started],
+      hz: [...landed],
+      scrapes: filters.filter(f => f.type === 'bandpass').map(f => f.hz[0]),
+      root: Math.min(...landed),
+      rings: Math.max(...stopped) - Math.max(...started)
+    }
+  }
+
+  it('checks a task off in more than one movement', () => {
+    expect(new Set(hear('task.done').at).size).toBeGreaterThan(1)
+  })
+
+  it('strikes something rather than sounding a bare tone', () => {
+    expect(hear('task.done').scrapes.length).toBeGreaterThan(0)
+  })
+
+  it('rings on after the last strike lands, rather than clicking shut', () => {
+    const done = hear('task.done')
+    const open = hear('tasks.open')
+    expect(done.rings).toBeGreaterThan(0.5)
+    expect(done.rings).toBeGreaterThan(open.rings * 2)
+  })
+
+  it('settles onto something low rather than ending up in the air', () => {
+    const done = hear('task.done')
+    const open = hear('tasks.open')
+    expect(done.root).toBeLessThan(open.root)
+  })
+
   it('says nothing when sounds are muted', () => {
     setSounds(false)
     playSound('send')
