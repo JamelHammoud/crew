@@ -81,7 +81,7 @@ describe('git sync', () => {
     expect(idsB).toContain('from-a')
     expect(idsB).toContain('from-b')
 
-    const rawA = fs.readFileSync(path.join(a, '.crew', 'chat.jsonl'), 'utf8')
+    const rawA = readChatLines(path.join(a, '.crew')).join('\n')
     expect(rawA).not.toContain('<<<<<<<')
   })
 
@@ -148,7 +148,7 @@ describe('git sync', () => {
     const status = await git(b, ['status', '--porcelain'])
     const committed = await git(b, ['show', '--pretty=format:', '--name-only', 'HEAD'])
     expect(status.trim()).toBe('')
-    expect(committed).toContain('.crew/chat.jsonl')
+    expect(committed).toContain('.crew/chat/')
     expect(committed).toContain('project.ts')
     expect((await sync.status()).changed).toBe(0)
     await git(a, ['pull'])
