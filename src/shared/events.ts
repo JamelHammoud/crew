@@ -114,6 +114,18 @@ export type SessionEvent =
       byName: string
     }
   | { id: string; ts: number; kind: 'music.removed'; trackId: string; byName: string }
+  | { id: string; ts: number; kind: 'playlist.added'; playlistId: string; name: string; byName: string }
+  | { id: string; ts: number; kind: 'playlist.removed'; playlistId: string; byName: string }
+  | {
+      id: string
+      ts: number
+      kind: 'playlist.track'
+      playlistId: string
+      trackId: string
+      // Whether the track went in or came out.
+      on: boolean
+      byName: string
+    }
   | {
       id: string
       ts: number
