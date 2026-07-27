@@ -216,6 +216,10 @@ const DESIGN_SAVE_MS = 500
 const DESIGN_CURSOR_STEP_MS = 140
 const DESIGN_CURSOR_STEPS_MAX = 25
 
+// A person is one row per game however they happen to be capitalised, since a
+// member is keyed by their name in lower case everywhere else here too.
+const scoreKey = (gameId: string, name: string): string => `${gameId}\n${name.toLowerCase()}`
+
 export class CrewSession {
   readonly code: string
   private createdAt: number
