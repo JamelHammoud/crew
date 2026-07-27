@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { MusicItem, MusicRoom } from '../../../../shared/music'
-import { PauseGlyph, PlayGlyph, SkipBackGlyph, SkipNextGlyph, StopGlyph } from '../../icons'
+import { PauseGlyph, PlayGlyph, RepeatGlyph, SkipBackGlyph, SkipNextGlyph, StopGlyph } from '../../icons'
 import { playSound } from '../../media/sounds'
 import { useMusic } from '../../state/music'
 import { setSounds, useSounds } from '../../state/sound'
@@ -8,6 +8,7 @@ import Slider from '../Slider'
 import Tooltip from '../Tooltip'
 import { quietPill, roundButton, solidButton } from './buttons'
 import Cover from './Cover'
+import { meshOf } from './mesh'
 import { clock } from './say'
 import Volume from './Volume'
 
@@ -29,6 +30,11 @@ function useAt(room: MusicRoom, playing: boolean): number {
 
 // The bar at the foot of the panel, and it is only there while something is on.
 // Nothing playing is nothing to say, so the list gets the whole panel.
+//
+// It stands on the same gutter the rows above it do, and it is lit by the cover
+// of whatever is playing: the same picture, blurred past anything you could name
+// and held under a quarter of its own strength, so the foot of the panel carries
+// the color of the track rather than a second grey.
 export default function NowPlaying({ track }: { track: MusicItem }) {
   const room = useMusic(s => s.room)
   const trouble = useMusic(s => s.trouble)
@@ -42,9 +48,11 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
   const shown = scrub !== null ? scrub * track.seconds : at
 
   return (
-    <div className="shrink-0 bg-ink-800">
+    <div className="shrink-0 relative isolate overflow-hidden bg-ink-800">
+      <span aria-hidden style={meshOf(track, 220)} className="absolute -inset-10 -z-10 opacity-[0.22]" />
+
       {!sounds && (
-        <div className="px-3 pt-3 flex items-center gap-3">
+        <div className="px-4 pt-3 flex items-center gap-3">
           <p className="flex-1 text-xs text-fg-secondary">Sound is off, so you will not hear this.</p>
           <button
             onClick={() => {
@@ -58,37 +66,39 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
         </div>
       )}
 
-      <div className="px-3 pt-3 flex items-center gap-2">
-        <Cover item={track} size={44} playing={room.playing} className="w-11 h-11 shrink-0 rounded-xl" />
+      <div className="px-4 pt-3.5 flex items-center gap-3">
+        <Cover item={track} size={48} playing={room.playing} className="w-12 h-12 shrink-0 rounded-xl" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-fg">{track.name}</p>
           <p className={`truncate text-xs ${trouble ? 'text-danger' : 'text-fg-muted'}`}>
             {trouble ?? (track.by ? `${track.mood} · ${track.by}` : track.mood)}
           </p>
         </div>
-        <Tooltip label="Back">
-          <button onClick={() => useMusic.getState().skip(-1)} aria-label="Back" className={`${roundButton} w-8 h-8`}>
-            <SkipBackGlyph className="w-[18px] h-[18px]" />
-          </button>
-        </Tooltip>
-        <Tooltip label={room.playing ? 'Pause' : 'Play'}>
-          <button
-            onClick={() => useMusic.getState().toggle()}
-            aria-label={room.playing ? 'Pause' : 'Play'}
-            className={`${solidButton} w-10 h-10`}
-          >
-            {room.playing ? <PauseGlyph className="w-[18px] h-[18px]" /> : <PlayGlyph className="w-[18px] h-[18px]" />}
-          </button>
-        </Tooltip>
-        <Tooltip label="Next">
-          <button onClick={() => useMusic.getState().skip(1)} aria-label="Next" className={`${roundButton} w-8 h-8`}>
-            <SkipNextGlyph className="w-[18px] h-[18px]" />
-          </button>
-        </Tooltip>
+        <div className="shrink-0 flex items-center gap-0.5">
+          <Tooltip label="Back">
+            <button onClick={() => useMusic.getState().skip(-1)} aria-label="Back" className={`${roundButton} w-8 h-8`}>
+              <SkipBackGlyph className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
+          <Tooltip label={room.playing ? 'Pause' : 'Play'}>
+            <button
+              onClick={() => useMusic.getState().toggle()}
+              aria-label={room.playing ? 'Pause' : 'Play'}
+              className={`${solidButton} w-10 h-10 shadow-lg shadow-black/20`}
+            >
+              {room.playing ? <PauseGlyph className="w-[18px] h-[18px]" /> : <PlayGlyph className="w-[18px] h-[18px]" />}
+            </button>
+          </Tooltip>
+          <Tooltip label="Next">
+            <button onClick={() => useMusic.getState().skip(1)} aria-label="Next" className={`${roundButton} w-8 h-8`}>
+              <SkipNextGlyph className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
+        </div>
       </div>
 
-      <div className="px-3 pt-2 pb-3 flex items-center gap-2">
-        <span className="shrink-0 w-8 text-xs tabular-nums text-fg-muted">{clock(shown)}</span>
+      <div className="px-4 pt-3 pb-3.5 flex items-center gap-2">
+        <span className="shrink-0 text-[11px] tabular-nums text-fg-faint">{clock(shown)}</span>
         <Slider
           label="Track position"
           value={scrub ?? at / track.seconds}
@@ -96,17 +106,29 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
           onChange={setScrub}
           onCommit={share => useMusic.getState().seek(share * track.seconds)}
         />
-        <span className="shrink-0 w-8 text-right text-xs tabular-nums text-fg-muted">{clock(track.seconds)}</span>
-        <Volume />
-        <Tooltip label="Turn it off">
-          <button
-            onClick={() => useMusic.getState().off()}
-            aria-label="Turn it off"
-            className={`${roundButton} w-8 h-8`}
-          >
-            <StopGlyph className="w-4 h-4" />
-          </button>
-        </Tooltip>
+        <span className="shrink-0 text-[11px] tabular-nums text-fg-faint">{clock(track.seconds)}</span>
+        <span className="shrink-0 flex items-center gap-0.5 pl-1">
+          <Tooltip label={room.loop ? 'Play on to the next' : 'Repeat this track'}>
+            <button
+              onClick={() => useMusic.getState().setLoop(!room.loop)}
+              aria-label={room.loop ? 'Play on to the next' : 'Repeat this track'}
+              aria-pressed={room.loop}
+              className={`${roundButton} w-7 h-7 ${room.loop ? 'text-fg bg-fg/10' : ''}`}
+            >
+              <RepeatGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
+          <Volume />
+          <Tooltip label="Turn it off">
+            <button
+              onClick={() => useMusic.getState().off()}
+              aria-label="Turn it off"
+              className={`${roundButton} w-7 h-7`}
+            >
+              <StopGlyph className="w-4 h-4" />
+            </button>
+          </Tooltip>
+        </span>
       </div>
     </div>
   )
