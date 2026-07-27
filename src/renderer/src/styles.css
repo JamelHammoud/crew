@@ -483,8 +483,15 @@ body {
    fraction of a pixel wide, which reads as a hairline flashing at the end of
    the mark. From the right it starts in open space and is only ever carved once
    it is big enough for the gap to be the gap. */
+/* A disc turns about its own middle, and it finds that middle from its own box
+   rather than from a point counted off the viewport. Counted off the viewport
+   it is wrong by however much room the box was given, which drifts the disc as
+   it grows and slides the bite the disc in front takes out of it, and where the
+   two arcs cross at a shallow angle that leaves a tapering hairline. Both
+   circles in a group share a centre, so the group's own box is that centre. */
 .crew-disc {
-  transform-box: view-box;
+  transform-box: fill-box;
+  transform-origin: center;
   animation: crew-join 540ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--disc) * 90ms) both;
 }
 
