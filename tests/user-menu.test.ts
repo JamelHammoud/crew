@@ -123,18 +123,12 @@ describe('the user menu', () => {
     expect(screen.getByRole('button', { name: 'Crew' }).querySelector('.word-swap')).toBe(null)
   })
 
-  it('is the way to your own photo, and only says remove once there is one', () => {
-    const setMyPhoto = vi.fn()
-    useCrew.setState({ selfId: 'jamel', members: [{ id: 'jamel', name: 'Jamel', connected: true }], setMyPhoto })
+  it('never says photo in words: your face is where a photo is changed', () => {
+    useCrew.setState({ selfId: 'jamel', members: [{ id: 'jamel', name: 'Jamel', connected: true }] })
     show()
     openMenu()
-    expect(screen.getByRole('button', { name: 'Add a photo' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Remove photo' })).toBeNull()
-
-    act(() => useCrew.setState({ members: [{ id: 'jamel', name: 'Jamel', connected: true, avatar: 'me.png' }] }))
-    expect(screen.getByRole('button', { name: 'Change photo' })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Remove photo' }))
-    expect(setMyPhoto).toHaveBeenCalledWith(null)
+    const menu = document.querySelector('.glass.fixed') as HTMLElement
+    expect(menu.textContent).not.toMatch(/photo/i)
   })
 
   it('sets Leave apart from what comes before it', () => {
