@@ -260,7 +260,6 @@ The plus button in the composer opens a menu, upload a file or pick a GIF, and p
 - The grid's padding and the gap between tiles are the same number, so the gutter reads evenly all round rather than as a frame of one width holding a grid of another.
 - The scrollbar is off. A grid two columns wide is narrow enough that ten points of it comes out of the tiles, and the bar sits over the pictures at the one edge where they are already tight.
 - Nothing is drawn around the outside of a tile. A GIF is a picture with any color at its edge, so what marks the one under the pointer is an `InsetRing` in white, and it turns up hard enough to be seen over a photograph. Growing the tile instead is what it was, and a tile that grows in a masonry column grows underneath the one after it.
-- The footer says the same thing in every state, so the box never changes height while it is being used. It names the GIF under the pointer, says that picking one sends it when nothing is, and holds the line about a send that failed. Hung under the grid only when something went wrong, that line moves the whole popover the moment it appears.
 
 ## Terminals
 
