@@ -244,9 +244,9 @@ const packed = (art: CoverArt): Record<string, Float32Array> => {
   art.petals.slice(0, MAX_PETALS).forEach((petal, i) => {
     rows.uAt.set([petal.at[0], petal.at[1], petal.lie[0], petal.lie[1]], i * 4)
     rows.uShape.set([petal.half, petal.along, petal.taper, petal.bend], i * 4)
-    rows.uEdge.set([petal.ruffle, petal.grain, petal.blur, petal.rim], i * 4)
+    rows.uEdge.set([petal.ruffle, petal.fine, petal.blur, petal.rim], i * 4)
     rows.uSkin.set([petal.color[0], petal.color[1], petal.color[2], 1], i * 4)
-    rows.uGlow.set([petal.shine, petal.halo, 0, 0], i * 4)
+    rows.uGlow.set([petal.shine, petal.halo, petal.phase, petal.lobe], i * 4)
   })
   return rows
 }
