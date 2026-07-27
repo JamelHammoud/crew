@@ -60,6 +60,8 @@ import {
   MAX_UPLOAD_SECONDS,
   MAX_UPLOADS,
   musicItems,
+  playlistFor,
+  trackAfter,
   wrapAt,
   type MusicItem,
   type MusicPlaylist,
@@ -686,6 +688,9 @@ export class CrewSession {
         break
       case 'music.off':
         if (meta.role === 'ui') this.handleMusicOff()
+        break
+      case 'music.loop':
+        if (meta.role === 'ui') this.handleMusicLoop(msg.loop)
         break
       case 'music.add':
         if (meta.role === 'ui') this.handleMusicAdd(member, msg.name, msg.mime, msg.seconds, msg.data)
@@ -1814,10 +1819,7 @@ export class CrewSession {
     if (!upload) return
     this.uploads.delete(trackId)
     this.store.deleteMusic(upload.file)
-    if (this.music?.track.id === trackId) {
-      this.music = null
-      this.broadcastMusic()
-    }
+    if (this.music?.track.id === trackId) this.handleMusicOff()
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'music.removed', trackId, byName: member.name })
     this.broadcastShelf()
     // It is out of everyone's lists as well, so they are said again rather than
