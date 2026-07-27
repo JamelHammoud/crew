@@ -1,6 +1,7 @@
 import AgentCard from '../components/AgentCard'
 import Avatar from '../components/Avatar'
 import CreateAgent from '../components/CreateAgent'
+import PhotoPicker from '../components/PhotoPicker'
 import Pill from '../components/Pill'
 import { useCrew } from '../state/store'
 
