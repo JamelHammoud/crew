@@ -102,7 +102,7 @@ export const MUSIC_TUNES = [
     mood: 'murky',
     bpm: 92,
     beats: 32,
-    colors: ['#4fe0d0', '#b0fff2', '#9ff58f', '#eafffb', '#2a9fc4']
+    colors: ['#4fe0d0', '#7ff0dc', '#8fe87f', '#eafffb', '#2a9fc4']
   },
   {
     id: 'sunrise',
@@ -110,7 +110,7 @@ export const MUSIC_TUNES = [
     mood: 'hopeful',
     bpm: 104,
     beats: 32,
-    colors: ['#ffcf5c', '#ffd2e0', '#ffa87f', '#fff8ea', '#4fa8f5']
+    colors: ['#ffcf5c', '#ffb8cd', '#ffa87f', '#fff8ea', '#4fa8f5']
   },
   {
     id: 'snowfield',
@@ -118,7 +118,7 @@ export const MUSIC_TUNES = [
     mood: 'still',
     bpm: 72,
     beats: 32,
-    colors: ['#dceeff', '#ffffff', '#ffe8d0', '#fbfdff', '#a8cdf0']
+    colors: ['#b5d8f5', '#8fb5e0', '#ffcb94', '#fbfdff', '#a8cdf0']
   },
   {
     id: 'boss-fight',
