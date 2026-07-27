@@ -464,6 +464,113 @@ body {
   }
 }
 
+/* The three discs arrive the way faces do when people join, back one first and
+   the front one landing last on top of the pile. It is the mask that moves, so
+   each disc carries its own bite with it and the gaps stay the width they are
+   however far into its arrival a disc has got. */
+.crew-disc {
+  transform-box: view-box;
+  animation: crew-join 540ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--disc) * 90ms) both;
+}
+
+@keyframes crew-join {
+  0% {
+    opacity: 0;
+    transform: translateX(64px) scale(0.32);
+  }
+  55% {
+    opacity: 1;
+    transform: translateX(0) scale(1.09);
+  }
+  78% {
+    transform: scale(0.975);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Light through glass. The mark is white until it is touched, and then the
+   discs are windows onto a mesh that runs cool to warm across the whole of it,
+   so each one holds a different part of the same field rather than a tint of
+   its own. It arrives quickly and takes its time leaving. */
+.crew-mesh {
+  opacity: 0;
+  transition: opacity 520ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.crew-logo[data-lit] .crew-mesh {
+  opacity: 1;
+  transition-duration: 200ms;
+}
+
+.crew-blob {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Nothing drifts while the mark is at rest, or four loops run forever behind an
+   element nobody is looking at. */
+.crew-logo[data-lit] .crew-blob {
+  animation: crew-blob var(--dur) ease-in-out var(--lag) infinite alternate;
+}
+
+@keyframes crew-blob {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(var(--ds));
+  }
+}
+
+.crew-flash {
+  animation: crew-flash 420ms ease-out 190ms both;
+}
+
+@keyframes crew-flash {
+  0% {
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.crew-sweep {
+  transform-box: view-box;
+  animation: crew-sweep 640ms cubic-bezier(0.33, 0, 0.2, 1) 120ms both;
+}
+
+@keyframes crew-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(180px);
+  }
+  22% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-880px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crew-disc,
+  .crew-blob,
+  .crew-flash,
+  .crew-sweep {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+    animation-iteration-count: 1;
+  }
+}
+
 /* Every design surface reads from these, and each one is built from a crew token. */
 .design {
   --design-canvas: var(--color-ink-950);
