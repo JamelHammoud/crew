@@ -1823,6 +1823,20 @@ export class CrewSession {
     this.broadcastPlaylists()
   }
 
+  // A round somebody played. Only a score that beats their own is written down:
+  // the board holds their best, so anything under it is a game they played
+  // rather than something the crew keeps.
+  private handleGameScore(member: Member, gameId: string, score: number): void {
+    const clean = cleanGameScore(gameId, score)
+    if (clean === null) return
+    const held = [...this.scores.values()]
+    if (!beats(held, gameId, member.name, clean)) return
+    const ts = Date.now()
+    this.scores.set(scoreKey(gameId, member.name), { gameId, name: member.name, score: clean, ts })
+    this.emit({ id: randomUUID(), ts, kind: 'game.score', gameId, score: clean, byName: member.name })
+    this.broadcast({ type: 'game.scores', scores: [...this.scores.values()] })
+  }
+
   // A track of the crew's own. The bytes are kept beside the session the way an
   // attachment is, and everyone plays their own copy of the file rather than
   // listening down the wire to whoever added it.
