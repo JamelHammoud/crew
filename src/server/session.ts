@@ -256,6 +256,8 @@ export class CrewSession {
   private uploads = new Map<string, MusicUpload>()
   // The lists people wrote for themselves, written down for the same reason.
   private playlists = new Map<string, MusicPlaylist>()
+  // The leaderboard: one row per person per game, their best and nothing else.
+  private scores = new Map<string, GameScore>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
