@@ -75,7 +75,7 @@ function MentionHighlights({ value, selection }: { value: string; selection: Sel
             </span>
           )
         }
-        return <EmojiHighlight key={index} text={token.text} />
+        return <EmojiHighlight key={index} text={token.text} at={start} selection={selection} />
       })}
       {'\u200b'}
     </>
