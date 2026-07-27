@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { QUICK_REACTIONS, type ReactionEmoji } from '../../../shared/reactions'
-import { MoreGlyph, PencilGlyph, SmileGlyph, TrashGlyph, UndoGlyph } from '../icons'
+import { MoreGlyph, PencilGlyph, TrashGlyph, UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import Emoji from './Emoji'
-import EmojiPicker from './EmojiPicker'
 import { rememberEmoji } from './emojiRecents'
 import { MenuItem, Popover } from './Popover'
 import type { ReactionGroup } from './reactionGroups'
+import ReactionPickerButton from './ReactionPickerButton'
 import ReactionTip from './ReactionTip'
 import Tooltip from './Tooltip'
+
+const PILL = 'flex h-7 items-center rounded-full transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95'
 
 export default function MessageReactions({
   targetId,
@@ -27,10 +29,10 @@ export default function MessageReactions({
 }) {
   const reactToMessage = useCrew(state => state.reactToMessage)
   const tray = useRef<HTMLDivElement>(null)
-  const [pickerOpen, setPickerOpen] = useState(false)
+  const [picker, setPicker] = useState<'tray' | 'row' | null>(null)
   const [actionsOpen, setActionsOpen] = useState(false)
   const [dismissed, setDismissed] = useState(false)
-  const menuOpen = pickerOpen || actionsOpen
+  const menuOpen = picker === 'tray' || actionsOpen
   const selected = new Set(reactions.filter(reaction => reaction.self).map(reaction => reaction.emoji))
 
   useEffect(() => {
