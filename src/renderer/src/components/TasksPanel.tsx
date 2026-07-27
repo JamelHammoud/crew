@@ -250,7 +250,7 @@ export default function TasksPanel({
   // beside each row is what the order reads as.
   const doneEntries: DoneEntry[] = [
     ...done.map(row => ({ row, ts: lastMessageAt[row.thread.id] ?? 0 })),
-    ...checkedTodos.map(todo => ({ todo, ts: checkedAt[todo.id] ?? todo.ts }))
+    ...checkedTodos.map(todo => ({ todo, ts: todo.checkedTs ?? checkedAt[todo.id] ?? todo.ts }))
   ].sort((a, b) => b.ts - a.ts)
   const noMatches =
     q !== '' &&
