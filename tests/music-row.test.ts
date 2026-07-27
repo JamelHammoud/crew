@@ -9,8 +9,8 @@ import { useCrew } from '../src/renderer/src/state/store'
 import { emptyMusic, type MusicUpload } from '../src/shared/music'
 
 // What a row says, and what it keeps for the menu at the end of it. A row is the
-// name of the track and nothing else, so whose it is has somewhere to be said in
-// words rather than in a line of small grey text under every song there is.
+// name of the track and nothing else, so whose it is is said in words in the
+// menu rather than in a line of small grey text under every song there is.
 
 Element.prototype.getAnimations ??= () => []
 
@@ -24,6 +24,8 @@ const upload: MusicUpload = {
 }
 
 const panel = () => render(createElement(MusicView))
+
+const rowFor = (name: RegExp): HTMLElement => screen.getByRole('button', { name })
 
 const menuFor = (name: string) => fireEvent.click(screen.getByRole('button', { name: `More for ${name}` }))
 
@@ -50,18 +52,13 @@ describe('a song in the list', () => {
   it('says its name and nothing under it', () => {
     panel()
 
-    const row = screen.getByRole('button', { name: /Night Bus/ })
-
-    expect(row.textContent).toBe('Night Bus')
+    expect(rowFor(/^Night Bus$/).textContent).toBe('Night Bus')
   })
 
   it('says nothing under an upload either, whoever added it', () => {
     panel()
 
-    const row = screen.getByRole('button', { name: /Rooftop Take/ })
-
-    expect(row.textContent).toBe('Rooftop Take')
-    expect(row.textContent).not.toContain('Ali Hammoud')
+    expect(rowFor(/^Rooftop Take$/).textContent).toBe('Rooftop Take')
   })
 
   it('names whoever added it in the menu', () => {
@@ -72,7 +69,7 @@ describe('a song in the list', () => {
     expect(screen.getByText('Ali Hammoud')).toBeTruthy()
   })
 
-  it('calls one of the app's own built-in', () => {
+  it('calls one of the app own tunes built-in', () => {
     panel()
     menuFor('Night Bus')
 
@@ -86,7 +83,7 @@ describe('the bar at the foot of the panel', () => {
     useMusic.setState({ room: { ...emptyMusic(), trackId: 'night-bus', playing: true } })
     panel()
 
-    expect(screen.getByText('Night Bus')).toBeTruthy()
+    expect(screen.getAllByText('Night Bus').length).toBe(2)
     expect(screen.queryByText('mellow')).toBeNull()
   })
 
