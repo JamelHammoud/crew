@@ -22,6 +22,7 @@ export default function FlappyGame({
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Flappy>(() => newFlappy())
   const [phase, setPhase] = useState<Phase>('ready')
+  const [width, setWidth] = useState(0)
   // What the game really is right now. A flap between two frames has to land on
   // the game the next frame reads, or the frame overwrites it with the state it
   // started from and the flap is simply lost.
@@ -50,7 +51,7 @@ export default function FlappyGame({
 
   useEffect(() => {
     if (canvas.current) paintFlappy(canvas.current, game)
-  }, [game])
+  }, [game, width])
 
   useEffect(() => {
     onLive(phase === 'playing' ? game.score : null)
@@ -74,6 +75,7 @@ export default function FlappyGame({
         onKeyDown={name => {
           if (name === ' ' || name === 'ArrowUp' || name === 'Enter') press()
         }}
+        onSize={setWidth}
         onPress={press}
         overlay={
           phase === 'playing' ? null : phase === 'over' ? (

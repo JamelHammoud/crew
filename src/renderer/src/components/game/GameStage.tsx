@@ -36,12 +36,19 @@ export function Field({
   ratio,
   onKeyDown,
   onPress,
+  onSize,
   overlay,
   children
 }: {
   ratio: number
   onKeyDown: (key: string) => void
   onPress: () => void
+  // The field is only as big as the panel left it, and it lands at nothing on
+  // the first render and at its real size a beat later. A game that is not
+  // running has no loop to repaint it, so it is told when the size changed and
+  // paints again: without this the board keeps the one pixel it was drawn at
+  // and is stretched over the whole field.
+  onSize: (width: number) => void
   overlay?: ReactNode
   children: ReactNode
 }) {
@@ -57,6 +64,10 @@ export function Field({
 
   const width = Math.min(box.width, box.height * ratio)
   const height = width / ratio
+
+  useEffect(() => {
+    onSize(width)
+  }, [width, onSize])
 
   const key = (event: ReactKeyboardEvent) => {
     if (PLAYED.has(event.key)) event.preventDefault()
