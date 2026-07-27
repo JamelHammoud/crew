@@ -51,7 +51,7 @@ function Section({
   if (playlists.length === 0) return null
   return (
     <>
-      <li className="px-3 pt-3 pb-1 text-xs text-fg-muted">{title}</li>
+      <li className="px-2 pt-4 pb-1 text-xs font-medium text-fg-muted">{title}</li>
       {playlists.map(playlist => (
         <Row key={playlist.id} playlist={playlist} onOpen={() => onOpen(playlist.id)} />
       ))}
