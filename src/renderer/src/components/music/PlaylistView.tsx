@@ -41,7 +41,7 @@ export default function PlaylistView({ playlist, query }: { playlist: MusicPlayl
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold text-fg">{playlist.name}</h3>
           <p className="truncate text-xs text-fg-muted">
-            {mine ? tracks(items.length) : `${tracks(items.length)}, by ${playlist.by}`}
+            {playlist.by && !mine ? `${tracks(items.length)}, by ${playlist.by}` : tracks(items.length)}
           </p>
         </div>
         {mine && (
