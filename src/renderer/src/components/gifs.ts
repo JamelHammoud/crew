@@ -69,7 +69,7 @@ function read(item: Record<string, unknown>): Gif | null {
   }
 }
 
-export const gifsReady = (): boolean => KEY.length > 0
+export const gifsReady = (): boolean => key().length > 0
 
 async function load(path: string, page: number, extra: Record<string, string> = {}): Promise<GifPage> {
   const query = new URLSearchParams({
@@ -79,7 +79,7 @@ async function load(path: string, page: number, extra: Record<string, string> = 
     content_filter: 'medium',
     ...extra
   })
-  const res = await fetch(`${BASE}/${KEY}/gifs/${path}?${query}`)
+  const res = await fetch(`${BASE}/${key()}/gifs/${path}?${query}`)
   if (!res.ok) throw new Error(`GIFs answered ${res.status}`)
   const body = (await res.json()) as { data?: { data?: unknown[]; has_next?: boolean } }
   const items = Array.isArray(body.data?.data) ? body.data.data : []
