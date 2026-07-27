@@ -11,8 +11,12 @@ const src = await readFile(root + '/src/renderer/src/components/music/coverArt.t
 const full = src.match(/const FRAGMENT = `([\s\S]*?)`\n/)[1].replace('${MAX_PETALS}', '7')
 
 const variants = {
-  full,
+  full1: full,
+  full2: full,
+  full3: full,
+  _unused: full,
   skyOnly: full.replace(/void main\(\) \{[\s\S]*$/, 'void main() { gl_FragColor = vec4(uSky, 1.0); }\n'),
+  zzz: full,
   noLoop: full.replace(/  for \(int i = 0; i < MAX; i\+\+\) \{[\s\S]*?\n  \}\n/, '\n'),
   loopTrivial: full.replace(
     /  for \(int i = 0; i < MAX; i\+\+\) \{[\s\S]*?\n  \}\n/,
