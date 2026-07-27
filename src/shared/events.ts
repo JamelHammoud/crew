@@ -206,6 +206,19 @@ export function huddleRecordId(event: SessionEvent): string | undefined {
   return undefined
 }
 
+// A reply carries the words it was quoting rather than a pointer to them, so a
+// message being deleted has to reach every reply that quoted it. The host does
+// this as a delete lands and again when the log is read back, and each member
+// does it to their own copy, so all three read the same way.
+export function markDeletedReplies(events: SessionEvent[], targets: Set<string>): SessionEvent[] {
+  if (targets.size === 0) return events
+  return events.map(event =>
+    event.kind === 'message' && event.replyTo && !event.replyTo.deleted && targets.has(event.replyTo.targetId)
+      ? { ...event, replyTo: { ...event.replyTo, deleted: true } }
+      : event
+  )
+}
+
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
   const lasting = events.filter(e => !EPHEMERAL_KINDS.has(e.kind))
   let count = 0
