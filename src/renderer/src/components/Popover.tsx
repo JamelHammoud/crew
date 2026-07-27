@@ -184,16 +184,11 @@ export function Popover({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
-    const onScroll = (event: Event) => {
-      if (!within(event.target as Node)) onClose()
-    }
     window.addEventListener('pointerdown', onPointerDown)
     window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => {
       window.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('scroll', onScroll, { capture: true })
     }
   }, [open, onClose, at])
 
