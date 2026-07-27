@@ -78,7 +78,7 @@ export const MUSIC_TUNES = [
     mood: 'wistful',
     bpm: 76,
     beats: 32,
-    colors: ['#a8d4ff', '#e4eeff', '#f0c8d8', '#f6faff', '#7fa8e0']
+    colors: ['#a8d4ff', '#b0cdf0', '#f0aec4', '#f6faff', '#7fa8e0']
   },
   {
     id: 'sprint',
@@ -86,7 +86,7 @@ export const MUSIC_TUNES = [
     mood: 'hurried',
     bpm: 168,
     beats: 32,
-    colors: ['#ffc23d', '#ffe6a8', '#8fe0ff', '#fff6e0', '#ff5a2e']
+    colors: ['#ffc23d', '#ffd47a', '#8fe0ff', '#fff6e0', '#ff5a2e']
   },
   {
     id: 'bubble-bath',
@@ -94,7 +94,7 @@ export const MUSIC_TUNES = [
     mood: 'silly',
     bpm: 108,
     beats: 32,
-    colors: ['#ff9ed8', '#ffe0f2', '#ffc48f', '#fff4fa', '#7fe8d0']
+    colors: ['#ff9ed8', '#ffb8e0', '#ffc48f', '#fff4fa', '#7fe8d0']
   },
   {
     id: 'deep-dive',
