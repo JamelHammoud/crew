@@ -119,7 +119,7 @@ export function Overlay({
         onClick={onStart}
         onPointerDown={event => event.stopPropagation()}
         onMouseDown={event => event.preventDefault()}
-        className="h-9 px-5 rounded-full bg-white text-sm font-semibold text-ink-900 transition-transform duration-150 hover:scale-[1.03] active:scale-95"
+        className="h-9 px-5 rounded-full bg-white text-sm font-semibold text-[#141a2b] transition-transform duration-150 hover:scale-[1.03] active:scale-95"
       >
         {label}
       </button>
