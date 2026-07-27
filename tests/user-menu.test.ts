@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
@@ -131,7 +131,7 @@ describe('the user menu', () => {
     expect(screen.getByRole('button', { name: 'Add a photo' })).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Remove photo' })).toBeNull()
 
-    useCrew.setState({ members: [{ id: 'jamel', name: 'Jamel', connected: true, avatar: 'me.png' }] })
+    act(() => useCrew.setState({ members: [{ id: 'jamel', name: 'Jamel', connected: true, avatar: 'me.png' }] }))
     expect(screen.getByRole('button', { name: 'Change photo' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Remove photo' }))
     expect(setMyPhoto).toHaveBeenCalledWith(null)
