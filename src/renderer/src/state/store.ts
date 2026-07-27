@@ -12,7 +12,7 @@ import {
 } from '../../../shared/events'
 import type { CrewTool, ToolAction } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
-import { emptyMusic, type MusicUpload } from '../../../shared/music'
+import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../shared/music'
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import type { ReactionEmoji } from '../../../shared/reactions'
@@ -535,6 +535,7 @@ export const useCrew = create<CrewState>((set, get) => {
           listener({ type: 'huddle.room', room: msg.snapshot.huddle ?? emptyRoom() })
         }
         for (const listener of shelfListeners) listener(msg.snapshot.musicUploads ?? [])
+        for (const listener of playlistListeners) listener(msg.snapshot.musicPlaylists ?? [])
         for (const listener of musicListeners) {
           listener({ type: 'music.room', room: msg.snapshot.music ?? emptyMusic() })
         }
@@ -851,7 +852,4 @@ export const useCrew = create<CrewState>((set, get) => {
     closeThread: () => set({ openThreadId: null }),
     openDoc: page => set({ docsTarget: page }),
     clearDocsTarget: () => set({ docsTarget: null }),
-    openBoard: boardId => set({ designTarget: boardId }),
-    clearDesignTarget: () => set({ designTarget: null })
-  }
-})
+    openBoard: boardId => set({
