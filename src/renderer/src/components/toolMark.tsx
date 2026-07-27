@@ -1,6 +1,7 @@
 import { TOOL_MARKS, type ToolMark } from '../../../shared/toolbox'
 import {
   ArchiveGlyph,
+  BoltGlyph,
   ChatGlyph,
   ChecklistGlyph,
   ClipboardGlyph,
@@ -13,15 +14,20 @@ import {
   FilmGlyph,
   FolderGlyph,
   GlobeGlyph,
+  GroupGlyph,
   LinkGlyph,
   MusicGlyph,
+  PencilGlyph,
   PeopleGlyph,
   PhotoGlyph,
+  PlayGlyph,
   PromptGlyph,
   SearchGlyph,
   SignalGlyph,
+  SparkGlyph,
   SpeakerGlyph,
   StarGlyph,
+  SunGlyph,
   TerminalGlyph,
   WindowGlyph,
   type Glyph
