@@ -809,11 +809,14 @@ export const useCrew = create<CrewState>((set, get) => {
         socket.send({ type: 'agent.avatar', agentId, image: null })
         return
       }
-      const [picked] = imagesFrom([file])
-      if (!picked) return
-      void readImages([picked], 0).then(([image]) => {
-        if (image) socket.send({ type: 'agent.avatar', agentId, image: { name: image.name, mime: image.mime, data: image.data } })
-      })
+      readPhoto(file, image => socket.send({ type: 'agent.avatar', agentId, image }))
+    },
+    setMyPhoto: file => {
+      if (!file) {
+        socket.send({ type: 'member.avatar', image: null })
+        return
+      }
+      readPhoto(file, image => socket.send({ type: 'member.avatar', image }))
     },
     removeAgent: agentId => {
       socket.send({ type: 'agent.remove', agentId })
