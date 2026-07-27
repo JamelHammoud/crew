@@ -26,8 +26,16 @@ function layer(element: Element | null) {
 function faces() {
   useCrew.setState({ members: [{ id: 'jamel', name: 'Jamel', connected: true }], agents: [], httpBase: '' })
   return [
-    createElement(PhotoPicker, { has: false, onChange: vi.fn() }, createElement(Avatar, { name: 'Jamel', presence: 'online' })),
-    createElement(PhotoPicker, { has: false, onChange: vi.fn() }, createElement(AgentIcon, { seed: 'jamel/claude', presence: 'online' }))
+    createElement(PhotoPicker, {
+      has: false,
+      onChange: vi.fn(),
+      children: createElement(Avatar, { name: 'Jamel', presence: 'online' })
+    }),
+    createElement(PhotoPicker, {
+      has: false,
+      onChange: vi.fn(),
+      children: createElement(AgentIcon, { seed: 'jamel/claude', presence: 'online' })
+    })
   ]
 }
 
