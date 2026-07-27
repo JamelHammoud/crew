@@ -1,4 +1,4 @@
-import type { MusicItem } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/music'
 
 // A cover is a mesh gradient mixed from the track's own colors. It is built out
 // of solid fields of color laid over each other and blurred, rather than out of
@@ -260,9 +260,9 @@ export interface Mesh {
 // picture away. This is the whole reason a cover in the list read as one color.
 const BLUR = 0.09
 
-export function meshOf(item: MusicItem, size: number): Mesh {
-  const roll = stream(seedOf(item.id))
-  const parts = partsOf(item.colors, roll)
+export function meshOf(subject: CoverSubject, size: number): Mesh {
+  const roll = stream(seedOf(subject.id))
+  const parts = partsOf(subject.colors, roll)
   const layout = LAYOUTS[Math.floor(roll() * LAYOUTS.length)]
   // Two veils over the color, lying within a few degrees of each other so they
   // read as petals overlapping rather than as a weave. One is drawn in the light

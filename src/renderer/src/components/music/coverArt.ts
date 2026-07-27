@@ -1,4 +1,4 @@
-import type { MusicItem } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/music'
 import { coverArt, MAX_PETALS, type CoverArt } from './coverSeed'
 
 // The cover generator. It photographs the scene `coverSeed.ts` describes: a sky,
@@ -330,10 +330,10 @@ const paint = (art: CoverArt): HTMLCanvasElement | null => {
 // anything about the room changes.
 const kept = new Map<string, HTMLCanvasElement>()
 
-export function coverFor(item: MusicItem): HTMLCanvasElement | null {
-  const had = kept.get(item.id)
+export function coverFor(subject: CoverSubject): HTMLCanvasElement | null {
+  const had = kept.get(subject.id)
   if (had) return had
-  const drawn = paint(coverArt(item))
+  const drawn = paint(coverArt(subject))
   if (!drawn) return null
   const copy = document.createElement('canvas')
   copy.width = SIDE
@@ -341,7 +341,7 @@ export function coverFor(item: MusicItem): HTMLCanvasElement | null {
   const flat = copy.getContext('2d')
   if (!flat) return null
   flat.drawImage(drawn, 0, 0)
-  kept.set(item.id, copy)
+  kept.set(subject.id, copy)
   return copy
 }
 
