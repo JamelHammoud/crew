@@ -82,15 +82,19 @@ describe('the games panel', () => {
     fireEvent.click(screen.getByText('Tetris'))
     expect(document.body.querySelectorAll('ol li')).toHaveLength(1)
 
+
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     expect(document.body.querySelectorAll('ol li')).toHaveLength(0)
     expect(screen.getByText('points')).toBeTruthy()
   })
 
-  it('starts on nobody having played', () => {
+  // With nobody on it there is no board, rather than a card saying so over the
+  // field somebody is about to play on.
+  it('draws no board at all before anyone has played', () => {
     panel([])
     fireEvent.click(screen.getByText('Flappy Bird'))
 
-    expect(screen.getByText('Nobody has played yet')).toBeTruthy()
+    expect(document.body.querySelectorAll('ol')).toHaveLength(0)
+    expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
   })
 })
