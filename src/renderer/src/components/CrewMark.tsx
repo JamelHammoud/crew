@@ -52,7 +52,7 @@ export function CrewMark({ className = '', live = false }: { className?: string;
         </defs>
       )}
 
-      <mask key={run} id={id} maskUnits="userSpaceOnUse" {...field}>
+      <mask id={id} maskUnits="userSpaceOnUse" {...field}>
         <rect {...field} fill="#000000" />
         {MARK_DISCS.map((cx, index) => (
           <g
