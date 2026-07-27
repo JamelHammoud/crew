@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { findPlaylists, isMine, MUSIC_SETS, playlistItems, type MusicPlaylist } from '../../../../shared/music'
-import { ChevronRightGlyph } from '../../icons'
+import { PlusGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
 import NewPlaylist from './NewPlaylist'
@@ -18,7 +18,7 @@ function Row({ playlist, onOpen }: { playlist: MusicPlaylist; onOpen: () => void
       <button
         onClick={onOpen}
         className={`w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 ${
-          on ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
+          on ? 'bg-fg/[0.07]' : 'hover:bg-fg/[0.04]'
         }`}
       >
         <PlaylistCover
@@ -33,7 +33,6 @@ function Row({ playlist, onOpen }: { playlist: MusicPlaylist; onOpen: () => void
           </span>
           <span className="block truncate text-xs text-fg-muted">{tracks(items.length)}</span>
         </span>
-        <ChevronRightGlyph className="w-4 h-4 shrink-0 text-fg-faint" />
       </button>
     </li>
   )
@@ -51,7 +50,7 @@ function Section({
   if (playlists.length === 0) return null
   return (
     <>
-      <li className="px-2 pt-4 pb-1 text-xs font-medium text-fg-muted">{title}</li>
+      <li className="px-2 pt-3 pb-0.5 text-xs font-medium text-fg-muted">{title}</li>
       {playlists.map(playlist => (
         <Row key={playlist.id} playlist={playlist} onOpen={() => onOpen(playlist.id)} />
       ))}
@@ -64,6 +63,7 @@ function Section({
 export default function Playlists({ query, onOpen }: { query: string; onOpen: (playlistId: string) => void }) {
   const playlists = useMusic(s => s.playlists)
   const selfName = useCrew(s => s.selfName)
+  const [naming, setNaming] = useState(false)
   const found = useMemo(() => findPlaylists(playlists, query), [playlists, query])
   const sets = useMemo(() => findPlaylists(MUSIC_SETS, query), [query])
   const mine = found.filter(playlist => isMine(playlist, selfName))
@@ -71,8 +71,20 @@ export default function Playlists({ query, onOpen }: { query: string; onOpen: (p
   const names = [...new Set(theirs.map(playlist => playlist.by))].sort((a, b) => a.localeCompare(b))
 
   return (
-    <ul className="p-2">
-      {!query.trim() && <NewPlaylist onMade={onOpen} />}
+    <ul className="p-2 flex flex-col gap-1">
+      {!query.trim() && (
+        <li>
+          <button
+            onClick={() => setNaming(true)}
+            className="w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.04]"
+          >
+            <span className="w-10 h-10 shrink-0 rounded-[10px] border border-dashed border-fg/15 flex items-center justify-center text-fg-faint">
+              <PlusGlyph className="w-4 h-4" />
+            </span>
+            <span className="flex-1 min-w-0 text-sm text-fg-secondary">New playlist</span>
+          </button>
+        </li>
+      )}
 
       <Section title="Crew's own" playlists={sets} onOpen={onOpen} />
       <Section title="Yours" playlists={mine} onOpen={onOpen} />
@@ -83,6 +95,8 @@ export default function Playlists({ query, onOpen }: { query: string; onOpen: (p
       {query.trim() && found.length + sets.length === 0 && (
         <li className="px-3 py-6 text-center text-sm text-fg-muted">No playlists found</li>
       )}
+
+      <NewPlaylist open={naming} onClose={() => setNaming(false)} onMade={onOpen} />
     </ul>
   )
 }
