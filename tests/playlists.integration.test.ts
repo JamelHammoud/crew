@@ -174,7 +174,7 @@ describe('playlists', () => {
     sam.send({ type: 'playlist.track', playlistId: list.id, trackId: 'star-road', on: true })
     sam.send({ type: 'playlist.track', playlistId: list.id, trackId: 'snowfield', on: true })
     sam.send({ type: 'playlist.track', playlistId: list.id, trackId: 'star-road', on: false })
-    await sam.waitFor(m => m.type === 'music.playlists' && listsOf(m)[0]?.trackIds.length === 1)
+    await sam.waitFor(m => m.type === 'music.playlists' && listsOf(m)[0]?.trackIds.join() === 'snowfield')
 
     const dropped = await madeBy(sam, 'Dropped')
     sam.send({ type: 'playlist.remove', playlistId: dropped.id })
