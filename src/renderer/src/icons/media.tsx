@@ -34,14 +34,19 @@ export const CameraOffGlyph = glyph(
   </>
 )
 
+// A little horn with one big round note coming out of it. Two thin arcs was the
+// technical drawing of a loudspeaker, and at 16px the pair reads as hatching
+// rather than as sound: one arc carried far enough out to be its own shape says
+// the same thing and leaves the slash somewhere to go. Everything else about it
+// is plumper than it was, a deep mouth and corners turned at 2, because this
+// mark sits beside a play button and a pet.
 const CONE =
-  'M4 9.5h3.25L12.5 5.25a.75.75 0 0 1 1.25.6v12.3a.75.75 0 0 1-1.25.6L7.25 14.5H4a1.25 1.25 0 0 1-1.25-1.25v-2.5A1.25 1.25 0 0 1 4 9.5Z'
+  'M4.75 9.5h2.5l4.35-4.6a1.5 1.5 0 0 1 1.9 1.2v11.8a1.5 1.5 0 0 1-1.9 1.2L7.25 14.5H4.75a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2Z'
 
 const SPEAKER_ART = (
   <>
     <path d={CONE} />
-    <path d="M17 9.5a3.5 3.5 0 0 1 0 5" />
-    <path d="M19.5 6.75a7.25 7.25 0 0 1 0 10.5" />
+    <path d="M17 7.75a4.25 4.25 0 0 1 0 8.5" />
   </>
 )
 
