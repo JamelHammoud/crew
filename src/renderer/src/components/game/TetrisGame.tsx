@@ -52,26 +52,36 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Tetris>(() => newTetris())
   const [phase, setPhase] = useState<Phase>('ready')
-  const held = useRef(game)
   const since = useRef(0)
-  held.current = game
-
-  const start = useCallback(() => {
-    setGame(newTetris())
-    since.current = 0
-    setPhase('playing')
+  // What the game really is right now. A key pressed between two frames has to
+  // land on the game the next frame reads, or the frame overwrites it with the
+  // state it started from and the press is simply lost.
+  const held = useRef(game)
+  const put = useCallback((next: Tetris) => {
+    held.current = next
+    setGame(next)
   }, [])
 
+  const start = useCallback(() => {
+    put(newTetris())
+    since.current = 0
+    setPhase('playing')
+  }, [put])
+
   useGameLoop(
-    useCallback(dt => {
-      const now = held.current
-      since.current += dt * 1000
-      if (since.current >= fallMs(now)) {
-        since.current = 0
-        setGame(fall(now))
-      }
-      if (canvas.current) paintTetris(canvas.current, held.current)
-    }, []),
+    useCallback(
+      dt => {
+        const now = held.current
+        since.current += dt * 1000
+        const next = since.current >= fallMs(now) ? fall(now) : now
+        if (next !== now) {
+          since.current = 0
+          put(next)
+        }
+        if (canvas.current) paintTetris(canvas.current, next)
+      },
+      [put]
+    ),
     phase === 'playing'
   )
 
@@ -92,16 +102,16 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
       if (name === ' ' || name === 'Enter') start()
       return
     }
-    if (name === 'ArrowLeft') setGame(moveBy(held.current, -1))
-    if (name === 'ArrowRight') setGame(moveBy(held.current, 1))
-    if (name === 'ArrowUp') setGame(turn(held.current))
+    if (name === 'ArrowLeft') put(moveBy(held.current, -1))
+    if (name === 'ArrowRight') put(moveBy(held.current, 1))
+    if (name === 'ArrowUp') put(turn(held.current))
     if (name === 'ArrowDown') {
       since.current = 0
-      setGame(softDrop(held.current))
+      put(softDrop(held.current))
     }
     if (name === ' ') {
       since.current = 0
-      setGame(hardDrop(held.current))
+      put(hardDrop(held.current))
     }
   }
 
