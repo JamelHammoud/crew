@@ -220,6 +220,8 @@ export default function TasksPanel({
     return at
   }, [events])
 
+  // A todo carries when it was checked, so this only covers one checked by a
+  // host still running the code that did not write it down.
   const checkedAt = useMemo(() => {
     const at: Record<string, number> = {}
     for (const e of events) {
