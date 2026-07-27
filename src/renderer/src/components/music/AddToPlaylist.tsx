@@ -55,11 +55,13 @@ export default function AddToPlaylist({
 }) {
   return (
     <>
-      <div className="flex items-center gap-1.5 px-1 pb-2">
+      {/* The way back stands in the column the covers stand in, so the screen
+          under it lines up with the one it came from. */}
+      <div className="flex items-center gap-2.5 px-2 pt-0.5 pb-2">
         <button
           onClick={onBack}
           aria-label="Back"
-          className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg/70 transition-colors hover:text-fg hover:bg-fg/10"
+          className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg/70 transition-colors hover:text-fg hover:bg-fg/10"
         >
           <ChevronLeftGlyph className="w-4 h-4" />
         </button>
