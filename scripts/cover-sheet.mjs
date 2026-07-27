@@ -13,7 +13,7 @@ import electron from 'electron'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
-const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'resources/covers.png')
+const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'cover-sheet.png')
 
 const ENTRY = `
 import { musicItems } from '../src/shared/music'
