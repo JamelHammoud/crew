@@ -81,6 +81,14 @@ app.whenReady().then(async () => {
 const dir = await mkdtemp(path.join(tmpdir(), 'crew-cors-'))
 const plain = await serve(false)
 const cors = await serve(true)
+// A page of its own origin, the way the dev renderer is served.
+const pageHost = await new Promise((resolve) => {
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'content-type': 'text/html' })
+    res.end(PAGE)
+  })
+  server.listen(0, '127.0.0.1', () => resolve(server))
+})
 await writeFile(path.join(dir, 'page.html'), PAGE)
 await writeFile(path.join(dir, 'main.js'), MAIN)
 await writeFile(path.join(dir, 'package.json'), JSON.stringify({ name: 'cors-check', main: 'main.js' }))
