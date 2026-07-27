@@ -113,6 +113,7 @@ export type ClientMessage =
   | { type: 'huddle.delete'; huddleId: string }
   | { type: 'music.set'; trackId: string; playing: boolean; at: number; playlistId?: string | null }
   | { type: 'music.off' }
+  | { type: 'music.loop'; loop: boolean }
   | { type: 'music.add'; name: string; mime: string; seconds: number; data: string }
   | { type: 'music.remove'; trackId: string }
   | { type: 'playlist.add'; name: string; playlistId?: string }
