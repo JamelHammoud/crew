@@ -143,40 +143,43 @@ const fly = (game: Flappy, seconds: number, flaps: number[] = []): Flappy => {
   return held
 }
 
+const started = (rand: () => number): Flappy => newFlappy(SKY_WIDTH, rand)
+const bird = birdX(SKY_WIDTH)
+
 describe('flappy bird', () => {
   it('holds the bird up until it is flapped', () => {
-    const game = newFlappy(rand)
+    const game = started(rand)
     const waited = fly(game, 2)
     expect(waited.y).toBe(game.y)
     expect(waited.over).toBe(false)
   })
 
   it('falls once it has been flapped, and a flap sends it up', () => {
-    const game = flap(newFlappy(rand))
+    const game = flap(started(rand))
     expect(fly(game, 0.1).y).toBeLessThan(game.y)
     const fallen = fly(game, 0.6)
     expect(flap(fallen).vy).toBeLessThan(fallen.vy)
   })
 
   it('ends on the ground', () => {
-    const game = fly(flap(newFlappy(rand)), 4)
+    const game = fly(flap(started(rand)), 4)
     expect(game.over).toBe(true)
-    expect(game.y + BIRD.r).toBeLessThanOrEqual(WORLD.height - GROUND + 0.01)
+    expect(game.y + BIRD.r).toBeLessThanOrEqual(floor + 0.01)
   })
 
   // The ceiling is a wall rather than a way to die.
   it('stops at the ceiling rather than ending there', () => {
     const flaps = Array.from({ length: 40 }, (_, i) => i * 4)
-    const game = fly(flap(newFlappy(rand)), 3, flaps)
+    const game = fly(flap(started(rand)), 3, flaps)
     expect(game.y).toBeGreaterThanOrEqual(BIRD.r - 0.01)
     expect(game.pipes.length).toBeGreaterThan(0)
   })
 
   it('scores a pipe once it is behind the bird', () => {
     const start: Flappy = {
-      ...newFlappy(rand),
+      ...started(rand),
       started: true,
-      pipes: [{ x: BIRD.x - BIRD.r - PIPE.width + 1, gap: 160, passed: false }]
+      pipes: [{ x: bird - BIRD.r - PIPE.width + 1, gap: 160, passed: false }]
     }
     expect(start.score).toBe(0)
     const past = tick(start, 1 / 60, rand)
@@ -186,23 +189,52 @@ describe('flappy bird', () => {
 
   it('ends on a pipe it flew into', () => {
     const start: Flappy = {
-      ...newFlappy(rand),
+      ...started(rand),
       started: true,
       y: 40,
-      pipes: [{ x: BIRD.x - PIPE.width / 2, gap: 240, passed: false }]
+      pipes: [{ x: bird - PIPE.width / 2, gap: 240, passed: false }]
     }
     expect(tick(start, 1 / 60, rand).over).toBe(true)
   })
 
   it('lays down another pipe as the last one comes in', () => {
-    const flown = fly(flap(newFlappy(rand)), 1.5, [0, 20, 40, 60, 80])
+    const flown = fly(flap(started(rand)), 1.5, [0, 20, 40, 60, 80])
     expect(flown.pipes.length).toBeGreaterThanOrEqual(2)
     for (const pipe of flown.pipes) expect(pipe.gap).toBeGreaterThan(0)
   })
 
   it('nothing moves once it is over', () => {
-    const over: Flappy = { ...newFlappy(rand), over: true }
+    const over: Flappy = { ...started(rand), over: true }
     expect(tick(over, 1 / 60, rand)).toBe(over)
     expect(flap(over)).toBe(over)
+  })
+
+  // The sky is as tall as it always is and as wide as the field, so the picture
+  // is never stretched: a wide panel is more runway ahead of the bird, and a
+  // narrow one is less.
+  it('takes its width from the shape of the field', () => {
+    expect(skyWidth(480, 720)).toBeCloseTo(240)
+    expect(skyWidth(960, 720)).toBeCloseTo(480)
+    expect(birdX(480)).toBeLessThan(birdX(960))
+    // Nothing to measure yet is the size a still is drawn at rather than a sky
+    // of no width at all, which would stand the bird on the first pipe.
+    expect(skyWidth(0, 0)).toBe(SKY_WIDTH)
+  })
+
+  it('starts its pipes off the far edge, wherever that edge is', () => {
+    const wide = newFlappy(480, rand)
+    expect(wide.width).toBe(480)
+    for (const pipe of wide.pipes) expect(pipe.x).toBeGreaterThan(480)
+    expect(newFlappy(SKY_WIDTH, rand).y).toBe(SKY_HEIGHT / 2 - (SKY_HEIGHT - floor) / 2)
+  })
+
+  // The panel can be dragged mid-round, and the round carries on in the sky it
+  // now has rather than in the one it started in.
+  it('carries a running round into a panel of another width', () => {
+    const game = flap(newFlappy(240, rand))
+    const wider = widen(game, 400)
+    expect(wider.width).toBe(400)
+    expect(wider.pipes).toBe(game.pipes)
+    expect(widen(wider, 400)).toBe(wider)
   })
 })
