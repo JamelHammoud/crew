@@ -18,6 +18,10 @@ const BINS = 2048
 const LOW = 55
 const HIGH = 7000
 
+// What became of a track somebody added. A file that will not load is the one
+// worth saying out loud: it is silence that looks exactly like music playing.
+export type FileResult = 'playing' | 'dropped' | 'unplayable'
+
 const buffers = new Map<string, Promise<AudioBuffer>>()
 
 async function bufferFor(ctx: AudioContext, url: string): Promise<AudioBuffer> {
