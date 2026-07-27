@@ -430,7 +430,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785137511124,
+        "fetchedAt": 1785137811163,
         "windows": [
           {
             "key": "session",
@@ -716,7 +716,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785137511124,
+        "fetchedAt": 1785137811163,
         "windows": [
           {
             "key": "session",
