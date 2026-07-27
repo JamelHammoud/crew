@@ -9,18 +9,23 @@ const dir = await mkdtemp(path.join(tmpdir(), 'dbg-'))
 await writeFile(path.join(root,'scripts/.dbg-entry.ts'), `
 import { musicItems } from '../src/shared/music'
 import { coverArt } from '../src/renderer/src/components/music/coverSeed'
-window.D = { musicItems, coverArt }
+import { coverFor } from '../src/renderer/src/components/music/coverArt'
+window.D = { musicItems, coverArt, coverFor }
 `)
 await build({entryPoints:[path.join(root,'scripts/.dbg-entry.ts')],bundle:true,format:'iife',outfile:path.join(dir,'d.js'),logLevel:'error'})
 await writeFile(path.join(dir,'d.html'), `<!doctype html><html><body><script src="d.js"></script><script>
 window.probe = () => {
+  const item = window.D.musicItems([])[0];
+  const art = window.D.coverFor(item);
+  let px = 'null';
+  if (art) { const g = art.getContext('2d'); const d = g.getImageData(256,256,1,1).data; px = [d[0],d[1],d[2],d[3]].join(','); }
   const c = document.createElement('canvas'); c.width=64;c.height=64;
   const gl = c.getContext('webgl', {antialias:false, preserveDrawingBuffer:true});
   if (!gl) return {no:'no context'};
   const src = window.FRAG;
   const sh = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(sh, src); gl.compileShader(sh);
-  return { ok: gl.getShaderParameter(sh, gl.COMPILE_STATUS), log: gl.getShaderInfoLog(sh),
+  return { art: !!art, px, ok: gl.getShaderParameter(sh, gl.COMPILE_STATUS), log: gl.getShaderInfoLog(sh),
            maxFragVec: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
            renderer: gl.getParameter(gl.RENDERER) };
 }
