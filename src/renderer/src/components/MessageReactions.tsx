@@ -10,7 +10,7 @@ import ReactionPickerButton from './ReactionPickerButton'
 import ReactionTip from './ReactionTip'
 import Tooltip from './Tooltip'
 
-const PILL = 'flex h-7 items-center rounded-full transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95'
+const PILL = 'flex h-7 items-center rounded-full transition-[transform,background-color,color,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95'
 
 export default function MessageReactions({
   targetId,
