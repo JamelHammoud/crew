@@ -44,6 +44,7 @@ import {
   type HuddleRoom,
   type HuddleSignal
 } from '../shared/huddle'
+import { beats, cleanGameScore, type GameScore } from '../shared/games'
 import {
   audioExtension,
   BY_LIMIT,
