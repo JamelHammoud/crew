@@ -47,6 +47,12 @@
      watched, and only ever a transform, so nothing is painted twice. */
   --animate-drift: drift 19s ease-in-out infinite;
 
+  /* One screen inside a card giving way to another. It travels the way you are
+     going, so going deeper comes in from the right and coming back comes in from
+     the left, and the card's own height is what carries the rest of it. */
+  --animate-screen: screen-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-screen-back: screen-back 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
   @keyframes pop {
     from {
       opacity: 0;
@@ -62,6 +68,28 @@
     from {
       opacity: 0;
       transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes screen-in {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes screen-back {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
     }
     to {
       opacity: 1;
