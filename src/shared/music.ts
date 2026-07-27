@@ -70,7 +70,7 @@ export const MUSIC_TUNES = [
     mood: 'cosy',
     bpm: 88,
     beats: 32,
-    colors: ['#ffb15c', '#ffe0bd', '#bcd8e8', '#fff5e6', '#f59440']
+    colors: ['#ffb15c', '#ffcb8f', '#9fcbe0', '#fff5e6', '#f59440']
   },
   {
     id: 'rain-check',
