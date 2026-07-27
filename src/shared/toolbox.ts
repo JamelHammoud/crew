@@ -171,5 +171,11 @@ export function cleanTool(
     if (toolIds.length === 0) return null
     return built({ kind: 'chain', toolIds })
   }
+  if (action?.kind === 'chain') {
+    const ids = Array.isArray(action.toolIds) ? action.toolIds : []
+    const toolIds = [...new Set(ids.filter(id => typeof id === 'string' && id.trim() !== ''))].slice(0, STEP_LIMIT)
+    if (toolIds.length === 0) return null
+    return built({ kind: 'chain', toolIds })
+  }
   return null
 }
