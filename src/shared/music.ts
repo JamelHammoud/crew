@@ -182,6 +182,18 @@ export interface MusicItem {
   by?: string
 }
 
+// A list somebody made for themselves, out of what is already on the shelf. It
+// holds ids rather than tracks, so a playlist is the order it was written in and
+// nothing else. Unlike what is playing, this lasts.
+export interface MusicPlaylist {
+  id: string
+  name: string
+  // Whoever made it. Only they can change it, and everyone can play it.
+  by: string
+  trackIds: string[]
+  ts: number
+}
+
 // What everyone connected is hearing. It rides in the session snapshot and in
 // music.room, never in the event log, so putting something on is not a thing the
 // crew has to scroll past later.
@@ -193,6 +205,10 @@ export interface MusicRoom {
   at: number
   // Whoever last put a hand on it.
   by: string
+  // The playlist this track was put on from, if it came from one. It is what
+  // Next and Back walk along, so a playlist plays through rather than falling
+  // back into the shelf after its first track.
+  playlistId: string | null
 }
 
 export const BY_LIMIT = 40
@@ -200,6 +216,9 @@ export const UPLOAD_NAME_LIMIT = 60
 export const MAX_UPLOAD_BYTES = 24 * 1024 * 1024
 export const MAX_UPLOADS = 40
 export const MAX_UPLOAD_SECONDS = 60 * 60
+export const PLAYLIST_NAME_LIMIT = 40
+export const MAX_PLAYLISTS = 60
+export const MAX_PLAYLIST_TRACKS = 200
 
 const UPLOAD_FILE = /^[a-z0-9-]+\.(mp3|m4a|ogg|wav|flac)$/
 
@@ -234,7 +253,7 @@ export function uploadUrl(httpBase: string, file: string): string {
 }
 
 export function emptyMusic(): MusicRoom {
-  return { trackId: null, playing: false, at: 0, by: '' }
+  return { trackId: null, playing: false, at: 0, by: '', playlistId: null }
 }
 
 // An upload has no picture of its own, so it is given one that is always the
