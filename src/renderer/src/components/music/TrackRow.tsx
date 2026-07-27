@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import type { MusicItem } from '../../../../shared/music'
 import Bars from './Bars'
-import { clock } from './clock'
 import Cover from './Cover'
+import { clock } from './say'
 
 // What a row can do sits beside the row rather than inside it. A button within a
 // button is not a button, and a menu opened from one would hand its clicks back
