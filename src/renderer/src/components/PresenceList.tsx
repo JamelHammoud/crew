@@ -8,7 +8,7 @@ export function Face({ who, size = 'md' }: { who: Present; size?: 'sm' | 'md' })
   return who.agent ? (
     <AgentIcon seed={who.id} size={size} photo={who.photo} />
   ) : (
-    <Avatar name={who.name} size={size} />
+    <Avatar name={who.name} size={size} photo={who.photo} />
   )
 }
 
