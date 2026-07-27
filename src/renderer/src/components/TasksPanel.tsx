@@ -255,7 +255,16 @@ export default function TasksPanel({
     inProgress.length + needsReview.length + done.length + archived.length === 0 &&
     pendingTodos.length + checkedTodos.length === 0
 
-  const item = (row: Row, action?: RowAction) => {
+  const dayStamp = (ts: number) =>
+    ts > 0 && (
+      <span className="h-[22px] shrink-0 flex items-center">
+        <Tooltip label={formatFullTime(ts)}>
+          <span className="text-sm text-fg-faint">{formatShortDay(ts)}</span>
+        </Tooltip>
+      </span>
+    )
+
+  const item = (row: Row, action?: RowAction, ts?: number) => {
     const agent = agents.find(a => a.id === row.thread.agentId)
     return (
     <div key={row.thread.id} className="group relative">
