@@ -43,7 +43,7 @@ function GamePlay({ game, onLive }: { game: GameInfo; onLive: (score: number | n
   const board = <Leaderboard game={game} />
 
   return (
-    <div className="absolute inset-0 flex flex-col px-4 pt-1 pb-4">
+    <div className="absolute inset-0 flex flex-col px-4 pt-3 pb-4">
       {game.id === 'tetris' ? (
         <TetrisGame onScore={onScore} onLive={onLive}>
           {board}
