@@ -61,7 +61,7 @@ export default function MusicView() {
   // Where the bar is being dragged to, which is what it shows until the crew
   // has been told, so it does not spring back under your own finger.
   const [scrub, setScrub] = useState<number | null>(null)
-  const [trouble, setTrouble] = useState<string | null>(null)
+  const [addTrouble, setAddTrouble] = useState<string | null>(null)
   const picker = useRef<HTMLInputElement>(null)
   useEffect(() => setScrub(null), [room])
 
@@ -72,7 +72,7 @@ export default function MusicView() {
 
   const take = async (file: File | undefined) => {
     if (!file) return
-    setTrouble(await useMusic.getState().add(file))
+    setAddTrouble(await useMusic.getState().add(file))
   }
 
   return (
