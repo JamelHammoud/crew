@@ -30,7 +30,7 @@ export const MUSIC_TUNES = [
     mood: 'bouncy',
     bpm: 132,
     beats: 32,
-    colors: ['#6fe9ff', '#d8f2ff', '#7fb3ff', '#f4fdff', '#2f9dfa']
+    colors: ['#6fe9ff', '#d8f2ff', '#7cf0a8', '#f4fdff', '#2f9dfa']
   },
   {
     id: 'arcade',
@@ -38,7 +38,7 @@ export const MUSIC_TUNES = [
     mood: 'busy',
     bpm: 150,
     beats: 32,
-    colors: ['#ff7ac8', '#ffd9ef', '#c48bff', '#fff0fa', '#ff3fae']
+    colors: ['#ff7ac8', '#ffd9ef', '#8fd8ff', '#fff0fa', '#ff3fae']
   },
   {
     id: 'tide-pool',
@@ -46,7 +46,7 @@ export const MUSIC_TUNES = [
     mood: 'floating',
     bpm: 84,
     beats: 32,
-    colors: ['#5fe6c8', '#c9fff0', '#7ce0ff', '#f4fffb', '#9fe9dd']
+    colors: ['#5fe6c8', '#c9fff0', '#ffe0b0', '#f4fffb', '#9fe9dd']
   },
   {
     id: 'night-bus',
@@ -54,7 +54,7 @@ export const MUSIC_TUNES = [
     mood: 'mellow',
     bpm: 96,
     beats: 32,
-    colors: ['#b98cff', '#ffc9ec', '#8f9bff', '#f6efff', '#8a7cf0']
+    colors: ['#b98cff', '#ffc9ec', '#ffc98f', '#f6efff', '#8a7cf0']
   },
   {
     id: 'star-road',
@@ -62,7 +62,7 @@ export const MUSIC_TUNES = [
     mood: 'soaring',
     bpm: 120,
     beats: 32,
-    colors: ['#9fc4ff', '#e8f0ff', '#b9a8ff', '#f7faff', '#5b9bf5']
+    colors: ['#9fc4ff', '#e8f0ff', '#ffe9a8', '#f7faff', '#5b9bf5']
   },
   {
     id: 'hearth',
@@ -70,7 +70,7 @@ export const MUSIC_TUNES = [
     mood: 'cosy',
     bpm: 88,
     beats: 32,
-    colors: ['#ffb15c', '#ffe0bd', '#ff8f6b', '#fff5e6', '#f59440']
+    colors: ['#ffb15c', '#ffe0bd', '#bcd8e8', '#fff5e6', '#f59440']
   },
   {
     id: 'rain-check',
@@ -78,7 +78,7 @@ export const MUSIC_TUNES = [
     mood: 'wistful',
     bpm: 76,
     beats: 32,
-    colors: ['#a8d4ff', '#e4eeff', '#bcc4f0', '#f6faff', '#7fa8e0']
+    colors: ['#a8d4ff', '#e4eeff', '#f0c8d8', '#f6faff', '#7fa8e0']
   },
   {
     id: 'sprint',
@@ -86,7 +86,7 @@ export const MUSIC_TUNES = [
     mood: 'hurried',
     bpm: 168,
     beats: 32,
-    colors: ['#ffc23d', '#ffe6a8', '#ff8a5c', '#fff6e0', '#ff5a2e']
+    colors: ['#ffc23d', '#ffe6a8', '#8fe0ff', '#fff6e0', '#ff5a2e']
   },
   {
     id: 'bubble-bath',
@@ -102,7 +102,7 @@ export const MUSIC_TUNES = [
     mood: 'murky',
     bpm: 92,
     beats: 32,
-    colors: ['#4fe0d0', '#b0fff2', '#5cc4ff', '#eafffb', '#2a9fc4']
+    colors: ['#4fe0d0', '#b0fff2', '#9ff58f', '#eafffb', '#2a9fc4']
   },
   {
     id: 'sunrise',
@@ -118,7 +118,7 @@ export const MUSIC_TUNES = [
     mood: 'still',
     bpm: 72,
     beats: 32,
-    colors: ['#dceeff', '#ffffff', '#c8cff5', '#fbfdff', '#a8cdf0']
+    colors: ['#dceeff', '#ffffff', '#ffe8d0', '#fbfdff', '#a8cdf0']
   },
   {
     id: 'boss-fight',
@@ -126,7 +126,7 @@ export const MUSIC_TUNES = [
     mood: 'fierce',
     bpm: 160,
     beats: 32,
-    colors: ['#ffb03d', '#ffd9c4', '#ff6f9c', '#fff2e6', '#f5462e']
+    colors: ['#ffb03d', '#ffd9c4', '#a8b0ff', '#fff2e6', '#f5462e']
   },
   {
     id: 'lobby',
@@ -142,7 +142,7 @@ export const MUSIC_TUNES = [
     mood: 'fond',
     bpm: 100,
     beats: 32,
-    colors: ['#ff9ec4', '#ffe2ee', '#c9a8ff', '#fff4f8', '#b08ce8']
+    colors: ['#ff9ec4', '#ffe2ee', '#ffd9a8', '#fff4f8', '#b08ce8']
   }
 ] as const satisfies readonly MusicTune[]
 
@@ -232,12 +232,12 @@ export function emptyMusic(): MusicRoom {
 // same for the same track: everyone's list looks alike, and two uploads are told
 // apart at a glance.
 const SHELVES: ReadonlyArray<readonly [string, string, string, string, string]> = [
-  ['#ff8fa8', '#ffdcc4', '#ffb85c', '#fff2e8', '#f56b8a'],
-  ['#8ce68f', '#dcffd0', '#5fe6c4', '#f2fff4', '#7fd4f0'],
-  ['#8fb8ff', '#dce8ff', '#a8a8f5', '#f4f8ff', '#4f8ef5'],
-  ['#c48fff', '#f0dcff', '#ff9ed8', '#faf2ff', '#a87ae8'],
-  ['#ffc85c', '#ffedbd', '#ffa06b', '#fff8e6', '#f5943c'],
-  ['#5fe0f0', '#c9f4ff', '#7fc4ff', '#eefbff', '#3fa8e0']
+  ['#ff8fa8', '#ffdcc4', '#8fd4e8', '#fff2e8', '#f56b8a'],
+  ['#8ce68f', '#dcffd0', '#ffd98f', '#f2fff4', '#7fd4f0'],
+  ['#8fb8ff', '#dce8ff', '#ffc9a8', '#f4f8ff', '#4f8ef5'],
+  ['#c48fff', '#f0dcff', '#9ff0d8', '#faf2ff', '#a87ae8'],
+  ['#ffc85c', '#ffedbd', '#8fc4f0', '#fff8e6', '#f5943c'],
+  ['#5fe0f0', '#c9f4ff', '#ffbf9f', '#eefbff', '#3fa8e0']
 ]
 
 export function paletteFor(seed: string): readonly string[] {
