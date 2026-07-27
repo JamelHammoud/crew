@@ -52,12 +52,12 @@ function MentionHighlights({ value, selection }: { value: string; selection: Sel
   const docs = useCrew(s => s.docs)
   const boards = useCrew(s => s.boards)
   const tokens = useMemo(
-    () => tokenizeMentions(value, agents, members, writtenRefs(value, docs, boards)),
+    () => spanned(tokenizeMentions(value, agents, members, writtenRefs(value, docs, boards)), 0),
     [agents, boards, docs, members, value]
   )
   return (
     <>
-      {tokens.map((token, index) => {
+      {tokens.map(({ token, start }, index) => {
         if (token.kind === 'agent' || token.kind === 'member') {
           return (
             <span key={index} className="rounded-md pl-0.5 -ml-0.5 py-0.5 bg-fg/10">
