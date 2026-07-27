@@ -302,8 +302,14 @@ export const MUSIC_SETS: readonly MusicSet[] = [
   }
 ]
 
+// The app's own list by its id, which is also how anything asks whether a list
+// is one of them at all.
+export function musicSet(playlistId: string | null | undefined): MusicSet | null {
+  return MUSIC_SETS.find(set => set.id === playlistId) ?? null
+}
+
 export function isMusicSet(playlistId: string | null | undefined): boolean {
-  return MUSIC_SETS.some(set => set.id === playlistId)
+  return musicSet(playlistId) !== null
 }
 
 const PLAYLIST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
