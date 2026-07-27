@@ -40,7 +40,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
-  useCrew.setState({ selfName: '', joinLink: null, connection: 'booting' })
+  useCrew.setState({ selfName: '', joinLink: null, connection: 'booting', members: [] })
 })
 
 const show = (onTab = vi.fn()) => {
