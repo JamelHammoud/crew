@@ -98,7 +98,8 @@ const child = spawn(electron, [dir], {
   env: {
     ...process.env,
     PLAIN_URL: `http://127.0.0.1:${plain.address().port}/music/x.wav`,
-    CORS_URL: `http://127.0.0.1:${cors.address().port}/music/x.wav`
+    CORS_URL: `http://127.0.0.1:${cors.address().port}/music/x.wav`,
+    PAGE_URL: `http://localhost:${pageHost.address().port}/`
   }
 })
 let out = ''
@@ -109,5 +110,6 @@ child.stdout.on('data', (d) => {
 child.stderr.on('data', (d) => process.stderr.write(d))
 await new Promise((resolve) => child.on('exit', resolve))
 plain.close()
+pageHost.close()
 cors.close()
 await rm(dir, { recursive: true, force: true })
