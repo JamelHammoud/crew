@@ -91,12 +91,14 @@ export default function MusicView() {
           <p className="text-sm text-fg-secondary truncate">
             {track ? `${track.mood}, on a loop` : 'Pick something to put on'}
           </p>
-          <p className="text-xs text-fg-muted truncate">
-            {track && room.by
-              ? room.by === selfName
-                ? 'You put this on'
-                : `${room.by} put this on`
-              : 'Everyone here hears it'}
+          <p className={`text-xs truncate ${track && trouble ? 'text-danger' : 'text-fg-muted'}`}>
+            {track && trouble
+              ? trouble
+              : track && room.by
+                ? room.by === selfName
+                  ? 'You put this on'
+                  : `${room.by} put this on`
+                : 'Everyone here hears it'}
           </p>
         </div>
       </div>
