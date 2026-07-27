@@ -31,7 +31,7 @@ const HEARTBEAT_MS = 20000
 // stay shut, or a page in somebody's browser could reach them.
 const MEDIA_HEADERS = {
   'cache-control': 'public, max-age=31536000, immutable',
-  'x-disabled-for-check': 'yes'
+  'access-control-allow-origin': '*'
 }
 
 function serveAttachment(session: CrewSession, file: string, res: http.ServerResponse): void {
