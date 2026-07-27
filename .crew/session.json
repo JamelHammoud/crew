@@ -431,7 +431,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785153412900,
+        "fetchedAt": 1785153712933,
         "windows": [
           {
             "key": "session",
@@ -445,7 +445,7 @@
             "label": "Weekly (all models)",
             "percent": 39,
             "severity": "normal",
-            "resetsAt": 1785535200251,
+            "resetsAt": 1785535200219,
             "active": true
           },
           {
@@ -716,7 +716,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785153412900,
+        "fetchedAt": 1785153712933,
         "windows": [
           {
             "key": "session",
@@ -730,7 +730,7 @@
             "label": "Weekly (all models)",
             "percent": 39,
             "severity": "normal",
-            "resetsAt": 1785535200251,
+            "resetsAt": 1785535200219,
             "active": true
           },
           {
