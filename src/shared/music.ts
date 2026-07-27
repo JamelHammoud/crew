@@ -235,14 +235,21 @@ export interface MusicUpload {
   ts: number
 }
 
+// Everything a cover is worked out from: an id, which decides the picture, and
+// the five colors it is photographed in. A track carries both, and so does the
+// app's own list, which is the one list with a picture of its own rather than
+// the covers of what is inside it.
+export interface CoverSubject {
+  id: string
+  colors: readonly string[]
+}
+
 // A tune and an upload are one thing to everything downstream: a row in the
 // list, a cover, and something the player can be handed.
-export interface MusicItem {
-  id: string
+export interface MusicItem extends CoverSubject {
   name: string
   mood: string
   seconds: number
-  colors: readonly string[]
   bpm: number
   // Only an upload has one. A tune is played out of its own notes.
   file?: string
