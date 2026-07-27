@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { findMusic, isMine, playlistItems, type MusicPlaylist } from '../../../../shared/music'
-import { MoreGlyph, PauseGlyph, PlayGlyph, TrashGlyph } from '../../icons'
+import { MoreGlyph, PauseGlyph, PencilGlyph, PlayGlyph, TrashGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
-import { MenuItem, Popover } from '../Popover'
+import { MenuDivider, MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
 import { quietPill, roundButton, solidButton } from './buttons'
 import PlaylistCover from './PlaylistCover'
+import PlaylistName from './PlaylistName'
 import { span, tracks } from './say'
 import TrackRow from './TrackRow'
 
@@ -25,6 +26,7 @@ export default function PlaylistView({
   const uploads = useMusic(s => s.uploads)
   const selfName = useCrew(s => s.selfName)
   const [menu, setMenu] = useState(false)
+  const [naming, setNaming] = useState(false)
   const items = useMemo(() => playlistItems(playlist, uploads), [playlist, uploads])
   const shown = useMemo(() => findMusic(items, query), [items, query])
   const on = room.playlistId === playlist.id && room.trackId !== null
