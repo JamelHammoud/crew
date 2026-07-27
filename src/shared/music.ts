@@ -288,6 +288,16 @@ export function isMusicSet(playlistId: string | null | undefined): boolean {
   return MUSIC_SETS.some(set => set.id === playlistId)
 }
 
+const PLAYLIST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Whoever asks for a list names its id, so the window that made it can open it
+// the moment it lands rather than hunting through the shelf for a name that two
+// people could have written at once. Anything but a plain uuid is refused and
+// the host names it instead.
+export function isPlaylistId(id: unknown): id is string {
+  return typeof id === 'string' && PLAYLIST_ID.test(id)
+}
+
 // A list by its id, the app's own before the crew's. Next and Back walk whatever
 // this hands back, so a set that cannot be found here plays as one track and
 // then falls into the shelf.

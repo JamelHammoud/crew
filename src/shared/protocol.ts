@@ -115,7 +115,7 @@ export type ClientMessage =
   | { type: 'music.off' }
   | { type: 'music.add'; name: string; mime: string; seconds: number; data: string }
   | { type: 'music.remove'; trackId: string }
-  | { type: 'playlist.add'; name: string }
+  | { type: 'playlist.add'; name: string; playlistId?: string }
   | { type: 'playlist.remove'; playlistId: string }
   | { type: 'playlist.track'; playlistId: string; trackId: string; on: boolean }
   | { type: 'queue.edit'; promptId: string; text: string }
