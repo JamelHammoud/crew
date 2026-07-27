@@ -155,7 +155,7 @@ const CASTS: Record<CoverCast, Recipe> = {
     bend: [-0.55, 0.55],
     scatter: 0.52,
     swing: 0.28,
-    near: 0.015,
+    near: 0.008,
     far: 0.24,
     ruffle: [0.04, 0.1],
     fine: [0.35, 0.75],
@@ -191,7 +191,7 @@ const CASTS: Record<CoverCast, Recipe> = {
     bend: [-0.4, 0.4],
     scatter: 0.26,
     swing: 0.5,
-    near: 0.008,
+    near: 0.005,
     far: 0.34,
     ruffle: [0.03, 0.08],
     fine: [0.45, 0.9],
@@ -203,7 +203,7 @@ const CASTS: Record<CoverCast, Recipe> = {
   // all. It is the softest of them, and the color is the whole of it.
   veil: {
     count: [2, 3],
-    half: [0.24, 0.44],
+    half: [0.2, 0.38],
     along: [0.8, 1.6],
     taper: [0.2, 0.5],
     bend: [-1.2, 1.2],
@@ -241,13 +241,13 @@ const CASTS: Record<CoverCast, Recipe> = {
   // two standing on it to say how close the big one is.
   bloom: {
     count: [3, 4],
-    half: [0.1, 0.36],
+    half: [0.09, 0.3],
     along: [0.7, 1.8],
     taper: [0.3, 0.8],
     bend: [-0.7, 0.7],
     scatter: 0.44,
     swing: 0.95,
-    near: 0.012,
+    near: 0.007,
     far: 0.4,
     ruffle: [0.05, 0.14],
     fine: [0.15, 0.6],
@@ -320,7 +320,7 @@ export function coverArt(item: MusicItem): CoverArt {
       // shape with no edge left is a bright smudge in the middle of nothing,
       // and the far ones are the shapes with no edge left.
       rim: between(recipe.rim, roll()) * (0.2 + depth * 0.8),
-      shine: 0.1 + roll() * 0.28,
+      shine: 0.06 + roll() * 0.17,
       halo: between(recipe.halo, roll())
     })
   }
