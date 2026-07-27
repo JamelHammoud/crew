@@ -57,6 +57,8 @@ export default function TopBar({
   const connection = useCrew(s => s.connection)
   const joinLink = useCrew(s => s.joinLink)
   const selfName = useCrew(s => s.selfName)
+  const hasPhoto = useCrew(s => Boolean(s.members.find(m => m.id === s.selfId)?.avatar))
+  const setMyPhoto = useCrew(s => s.setMyPhoto)
   const leave = useCrew(s => s.leave)
   const waiting = useCrew(reviewCount)
   const [menuOpen, setMenuOpen] = useState(false)
