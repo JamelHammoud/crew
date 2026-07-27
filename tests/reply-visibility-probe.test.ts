@@ -107,6 +107,31 @@ describe('seeing a reply', () => {
     expect(thumbnails.some(node => node.getAttribute('src') === 'http://localhost:7788/attachments/shot.png')).toBe(true)
   })
 
+  it('says the message is gone when the one it answers was deleted', () => {
+    const answer: SessionEvent = {
+      id: 'answer',
+      ts: 2,
+      kind: 'message',
+      authorId: 'jamel',
+      authorName: 'Jamel',
+      text: 'On it.',
+      mentions: [],
+      replyTo: {
+        targetId: 'message:mine',
+        authorId: 'ali',
+        authorName: 'ALI',
+        text: 'Can someone look at the reply button?',
+        deleted: true
+      }
+    }
+    openChat([answer])
+
+    expect(screen.getByText('Deleted message')).toBeTruthy()
+    expect(screen.queryByText('Can someone look at the reply button?')).toBeNull()
+    expect(screen.queryByLabelText('Go to the message this replies to')).toBeNull()
+    expect(screen.getByText('Replying to you')).toBeTruthy()
+  })
+
   it('names your own message as yourself when you reply to it', () => {
     const sendChat = vi.fn((text: string, _threadId?: string, _boardId?: string, replyTo?: string) => {
       useCrew.setState(state => ({
