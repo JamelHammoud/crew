@@ -73,6 +73,22 @@ export const FilmGlyph = glyph(
   </>
 )
 
+// A picture that moves, so it is the same screen the photo stands on with a play
+// in the middle of it rather than a drawing of its own. Solid, the way the sun in
+// the photo is: an outlined triangle this small closes its counter at 16 and
+// comes out a smudge, and its corners are turned so it reads as one of these
+// rather than as a shard sitting inside one.
+export const GifGlyph = glyph(
+  <>
+    <rect {...SCREEN} />
+    <path
+      d="M9 9.25Q9 8.5 9.75 9L14.25 11.5Q15 12 14.25 12.5L9.75 15Q9 15.5 9 14.75Z"
+      fill="currentColor"
+      stroke="none"
+    />
+  </>
+)
+
 export const WindowGlyph = glyph(
   <>
     <rect {...SCREEN} />
