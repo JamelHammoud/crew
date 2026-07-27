@@ -103,7 +103,7 @@ export function Popover({
       return
     }
     if (at) {
-      const el = document.elementFromPoint(at.x, at.y) as HTMLElement | null
+      const el = document.elementFromPoint?.(at.x, at.y) as HTMLElement | null
       trackRef.current = el && !within(el) ? { el, from: el.getBoundingClientRect() } : null
     }
     setRect(spotNow())
