@@ -128,6 +128,8 @@ export const useMusic = create<MusicState>((set, get) => {
     settle()
   })
 
+  onMusicPlaylists(playlists => set({ playlists }))
+
   onSounds(() => settle())
 
   // Leaving the session takes the music with it. Nothing is playing for a crew
