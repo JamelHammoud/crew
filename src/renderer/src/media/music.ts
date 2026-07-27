@@ -88,6 +88,7 @@ export class MusicPlayer {
     source.connect(this.bus as GainNode)
     source.start(ctx.currentTime, Math.min(at, Math.max(0, buffer.duration - 0.01)))
     this.file = source
+    return 'playing'
   }
 
   stop(): void {
