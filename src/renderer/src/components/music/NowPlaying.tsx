@@ -33,8 +33,12 @@ function useAt(room: MusicRoom, playing: boolean): number {
 //
 // It is glass with a margin round it, so the list runs on underneath rather than
 // stopping at a shelf, and it is lit by the cover of whatever is playing: the
-// same picture, blurred past anything you could name and held at a fifth of its
-// own strength, so the foot of the panel carries the color of the track.
+// same picture, blurred past anything you could name and held at an eighth of
+// its own strength, so the foot of the panel carries the color of the track.
+//
+// That light is painted over the tint rather than under it, so the glass it
+// stands on is `glass-lit`, which is deeper and thinner than the rest: the bar
+// keeps the track's color without reading brighter than the list it floats over.
 export default function NowPlaying({ track }: { track: MusicItem }) {
   const room = useMusic(s => s.room)
   const trouble = useMusic(s => s.trouble)

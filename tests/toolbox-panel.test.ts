@@ -375,10 +375,10 @@ describe('the toolbox', () => {
     expect(useBrowser.getState().tabs).toHaveLength(0)
   })
 
-  it('puts a list on for everyone, and only ever lets you into a call', () => {
+  it('puts a list on for everyone, from the top and carrying the list', () => {
     toolbox([
       tool({ id: 'm', name: 'Focus', mark: 'music', action: { kind: 'music', playlistId: 'set-ambient-lofi' } }),
-      tool({ id: 'h', name: 'Standup', mark: 'signal', action: { kind: 'huddle' } })
+      tool({ id: 't', name: 'That one', mark: 'play', action: { kind: 'music', trackId: 'slow-morning' } })
     ])
 
     // A list plays from the top and carries the list with it.
@@ -386,15 +386,10 @@ describe('the toolbox', () => {
     expect(played).toEqual([{ trackId: 'slow-morning', playlistId: 'set-ambient-lofi' }])
     expect(screen.getByText('Playing')).toBeTruthy()
 
-    fireEvent.click(screen.getByText('Standup'))
-    expect(joins).toBe(1)
-
-    // Pressing it again while the call is on is not a way to hang up on everyone.
-    useHuddle.setState({ joined: true })
-    cleanup()
-    toolbox([tool({ id: 'h', name: 'Standup', mark: 'signal', action: { kind: 'huddle' } })])
-    fireEvent.click(screen.getByText('Standup'))
-    expect(joins).toBe(1)
+    // A track named on its own belongs to no list.
+    fireEvent.click(screen.getByText('That one'))
+    expect(played[1]).toEqual({ trackId: 'slow-morning', playlistId: null })
+    expect(switched).toBe(0)
   })
 
   it('runs a chain in the order it was built, and a pair that name each other stops', () => {
