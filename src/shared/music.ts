@@ -268,15 +268,26 @@ export interface MusicPlaylist {
   ts: number
 }
 
+// The app's own list is the one playlist with a picture of its own, so it
+// carries a palette the way a track does. A crew's list is whatever was put in
+// it and wears the covers of that; this one is the app's, and it is always the
+// same list, so it is photographed once and the mark stands in it.
+export interface MusicSet extends MusicPlaylist {
+  colors: readonly string[]
+}
+
 // The app's own lists, made of its own tunes. A crew's playlists are theirs to
 // write in and are written down as they are made; these belong to nobody, so
 // they are here rather than in the log, they are the same for every crew, and
 // there is nothing about one for anyone to change.
-export const MUSIC_SETS: readonly MusicPlaylist[] = [
+export const MUSIC_SETS: readonly MusicSet[] = [
   {
     id: 'set-ambient-lofi',
     name: 'Crew',
     by: '',
+    // Cool near the lens and warm behind it, against the blue the mark has
+    // stood on since the first build ran from source.
+    colors: ['#7fd8ff', '#a893ff', '#ffb07a', '#eef6ff', '#3f7ff5'],
     trackIds: [
       'slow-morning',
       'dust-motes',

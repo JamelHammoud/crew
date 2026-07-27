@@ -36,13 +36,8 @@ export default function TrackRow({
             </span>
           )}
         </Cover>
-        <span className="flex-1 min-w-0">
-          <span className={`block truncate text-sm ${on ? 'text-fg font-medium' : 'text-fg-secondary'}`}>
-            {item.name}
-          </span>
-          <span className="block truncate text-xs text-fg-muted">
-            {item.by ? `${item.mood}, from ${item.by}` : item.mood}
-          </span>
+        <span className={`flex-1 min-w-0 truncate text-sm ${on ? 'text-fg font-medium' : 'text-fg-secondary'}`}>
+          {item.name}
         </span>
       </button>
       <TrackMenu item={item} within={within} />
