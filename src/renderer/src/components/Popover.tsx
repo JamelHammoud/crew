@@ -223,6 +223,7 @@ export function MenuItem({
   danger,
   active,
   checked,
+  into,
   onClick,
   onHover
 }: {
@@ -232,6 +233,9 @@ export function MenuItem({
   danger?: boolean
   active?: boolean
   checked?: boolean
+  // A row that opens a screen inside the same card rather than doing the thing
+  // it names. The chevron is what says so before it is pressed.
+  into?: boolean
   onClick: () => void
   onHover?: () => void
 }) {
