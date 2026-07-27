@@ -675,6 +675,15 @@ export class CrewSession {
       case 'music.remove':
         if (meta.role === 'ui') this.handleMusicRemove(member, msg.trackId)
         break
+      case 'playlist.add':
+        if (meta.role === 'ui') this.handlePlaylistAdd(member, msg.name)
+        break
+      case 'playlist.remove':
+        if (meta.role === 'ui') this.handlePlaylistRemove(member, msg.playlistId)
+        break
+      case 'playlist.track':
+        if (meta.role === 'ui') this.handlePlaylistTrack(member, msg.playlistId, msg.trackId, msg.on)
+        break
       case 'queue.edit':
         if (meta.role === 'ui') this.handleQueueEdit(member, msg.promptId, msg.text)
         break
