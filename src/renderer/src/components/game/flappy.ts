@@ -1,4 +1,4 @@
-// Flappy Bird, as numbers. The sky is as tall as it always is and as wide as the
+// Birdie, as numbers. The sky is as tall as it always is and as wide as the
 // room it is given, the way a side view is: a wide panel holds more runway ahead
 // of the bird rather than a stretched picture of the same one, and a test can fly
 // the whole thing without drawing any of it.

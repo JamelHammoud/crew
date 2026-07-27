@@ -89,7 +89,7 @@ describe('the tab strip', () => {
     expect(pillFor(container, games.id)?.textContent).toContain('Games')
 
     act(() => useBrowser.getState().updateTab(games.id, { game: 'flappy' }))
-    expect(pillFor(container, games.id)?.textContent).toContain('Flappy Bird')
+    expect(pillFor(container, games.id)?.textContent).toContain('Birdie')
   })
 
   it('leaves the tab menu closed until a right click asks for it', () => {
