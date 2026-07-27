@@ -121,12 +121,8 @@ export default function CreateAgent() {
         <PlusGlyph className="w-4 h-4" />
         Add agent
       </button>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-black/50 light:bg-black/25" onClick={() => setOpen(false)} />
-          <div className="glass relative w-full max-w-md rounded-card p-6 space-y-5 animate-pop">
-            <h3 className="text-base font-semibold text-fg">Add an agent</h3>
-            <div className="flex flex-wrap gap-2">
+      <Modal open={open} onClose={() => setOpen(false)} title="Add an agent" className="space-y-5">
+        <div className="flex flex-wrap gap-2">
               <Select
                 label="Provider"
                 value={provider}
