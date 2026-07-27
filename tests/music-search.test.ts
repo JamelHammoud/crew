@@ -7,6 +7,7 @@ import {
   type MusicPlaylist,
   type MusicUpload
 } from '../src/shared/music'
+import { span, tracks } from '../src/renderer/src/components/music/say'
 
 // What the search bar in the music panel does. A row says three things about
 // itself, the name, the word for what it is like, and whoever it came from, and
@@ -80,5 +81,17 @@ describe('searching the music', () => {
     expect(isMine(lists[0], 'Ali')).toBe(true)
     expect(isMine(lists[0], '  ali ')).toBe(true)
     expect(isMine(lists[0], 'Jamel')).toBe(false)
+  })
+
+  // What a playlist says about itself under its name. A clock reads as a place
+  // in something, so how long the list runs is said in words instead.
+  it('says how many tracks a list holds and how long it runs', () => {
+    expect(tracks(0)).toBe('No tracks')
+    expect(tracks(1)).toBe('1 track')
+    expect(tracks(6)).toBe('6 tracks')
+    expect(span(0)).toBe('0 sec')
+    expect(span(42.4)).toBe('42 sec')
+    expect(span(90)).toBe('2 min')
+    expect(span(60 * 12)).toBe('12 min')
   })
 })
