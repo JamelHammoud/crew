@@ -32,6 +32,28 @@ const started = (threadId: string): SessionEvent => ({
   byName: 'Jamel'
 })
 
+const said = (threadId: string, ts: number): SessionEvent => ({
+  id: `m-${threadId}-${ts}`,
+  ts,
+  kind: 'message',
+  authorId: 'jamel',
+  authorName: 'Jamel',
+  text: 'one more thing',
+  mentions: [],
+  threadId
+})
+
+const todo = (id: string, text: string, extra: Partial<Todo> = {}): Todo => ({
+  id,
+  text,
+  createdBy: 'Jamel',
+  ts: 1,
+  checked: true,
+  ...extra
+})
+
+const day = (ts: number): number => Date.now() - ts * 86_400_000
+
 const panel = () =>
   render(createElement(TasksPanel, { open: true, onClose: () => {}, onOpenThread: () => {} }))
 
