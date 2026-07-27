@@ -351,7 +351,7 @@ const ends = (
   bend: number,
   run: number
 ): { along: number; bend: number } => {
-  const along = run
+  const along = Math.min(run, runOf(at, lie))
   let bent = bend
   for (let i = 0; i < 18; i++) {
     if (seen(tipOf(at, lie, across, bent, along)) || seen(tipOf(at, lie, across, bent, -along))) break
