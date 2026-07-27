@@ -57,6 +57,17 @@ export default function ChatMessage({
   if (item.kind === 'note') {
     return <p className="text-xs text-fg-muted text-center animate-rise">{item.text}</p>
   }
+  const quote = item.replyTo && (
+    <ReplyQuote
+      targetId={item.replyTo.targetId}
+      authorId={item.replyTo.authorId}
+      authorName={item.replyTo.authorName}
+      label={replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
+      text={item.replyTo.text}
+      strong={item.replyTo.authorId === selfId && !item.self}
+      deleted={item.replyTo.deleted}
+    />
+  )
   return (
     <div
       data-message={item.reactionTargetId}
@@ -90,23 +101,19 @@ export default function ChatMessage({
             )}
           </div>
         </div>
-        {item.replyTo && (
-          <button
-            type="button"
-            aria-label="Go to the message this replies to"
-            onClick={() => jumpToMessage(item.replyTo!.targetId)}
-            className="mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 text-left transition-colors hover:bg-fg/[0.1] active:scale-[0.99]"
-          >
-            <ReplyQuote
-              targetId={item.replyTo.targetId}
-              authorId={item.replyTo.authorId}
-              authorName={item.replyTo.authorName}
-              label={replyTargetLabel(item.replyTo.authorName, item.replyTo.authorId === selfId, item.self)}
-              text={item.replyTo.text}
-              strong={item.replyTo.authorId === selfId && !item.self}
-            />
-          </button>
-        )}
+        {item.replyTo &&
+          (item.replyTo.deleted ? (
+            <div className={`${QUOTE_ROW} cursor-default`}>{quote}</div>
+          ) : (
+            <button
+              type="button"
+              aria-label="Go to the message this replies to"
+              onClick={() => jumpToMessage(item.replyTo!.targetId)}
+              className={`${QUOTE_ROW} text-left transition-colors hover:bg-fg/[0.1] active:scale-[0.99]`}
+            >
+              {quote}
+            </button>
+          ))}
         {editing ? (
           <div className="mt-1.5">
             <textarea
