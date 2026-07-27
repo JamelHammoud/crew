@@ -86,8 +86,10 @@ const bridge = {
       ipcRenderer.off('terminal:exit', handler)
     }
   },
-  onFullScreen: (listener: (full: boolean) => void): void => {
-    ipcRenderer.on('window:fullscreen', (_event, full: boolean) => listener(full))
+  onWindowShape: (listener: (shape: { square: boolean; full: boolean }) => void): void => {
+    ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean }) =>
+      listener(shape)
+    )
   },
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))
