@@ -41,7 +41,7 @@ export default function Avatar({
   const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
   return (
     <span
-      className={`${px ? '' : SIZES[size]} relative inline-block shrink-0`}
+      className={`${px ? '' : SIZES[size]} relative inline-block align-middle shrink-0`}
       style={px ? { width: px, height: px, fontSize: Math.round(px * 0.36) } : undefined}
     >
       {src ? (
@@ -49,7 +49,7 @@ export default function Avatar({
           src={src}
           alt=""
           draggable={false}
-          className="w-full h-full rounded-full bg-ink-800 object-cover select-none"
+          className="block w-full h-full rounded-full object-cover select-none"
         />
       ) : (
         <span
