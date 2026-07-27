@@ -1,3 +1,5 @@
+import { attachmentFileUrl } from '../../../shared/attachments'
+import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import { avatarColors, avatarInitial } from './avatarColor'
 
@@ -19,7 +21,8 @@ export default function Avatar({
   name,
   size = 'md',
   px,
-  presence
+  presence,
+  photo
 }: {
   name: string
   size?: keyof typeof SIZES
@@ -27,19 +30,29 @@ export default function Avatar({
   // that grows with the window.
   px?: number
   presence?: 'online' | 'offline'
+  // For the tray panel, which is handed the picture rather than the session it
+  // came from.
+  photo?: string
 }) {
   const colors = avatarColors(name, useTheme() === 'light')
+  const file = useCrew(state => memberPhoto(state.members, name))
+  const httpBase = useCrew(state => state.httpBase)
+  const src = photo ?? (file && httpBase ? attachmentFileUrl(httpBase, file) : undefined)
   return (
     <span
       className={`${px ? '' : SIZES[size]} relative inline-block shrink-0`}
       style={px ? { width: px, height: px, fontSize: Math.round(px * 0.36) } : undefined}
     >
-      <span
-        className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
-        style={{ backgroundColor: colors.background, color: colors.color }}
-      >
-        {avatarInitial(name)}
-      </span>
+      {src ? (
+        <img src={src} alt="" draggable={false} className="w-full h-full rounded-full object-cover select-none" />
+      ) : (
+        <span
+          className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
+          style={{ backgroundColor: colors.background, color: colors.color }}
+        >
+          {avatarInitial(name)}
+        </span>
+      )}
       {presence && (
         <span
           className={`${DOTS[size]} absolute bottom-0 right-0 rounded-full ring-ink-900 transition-colors ${

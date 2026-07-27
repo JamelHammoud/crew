@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { httpBaseFrom, MAX_ATTACHMENTS } from '../../../shared/attachments'
+import { httpBaseFrom, MAX_ATTACHMENTS, type OutgoingAttachment } from '../../../shared/attachments'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import {
@@ -209,6 +209,17 @@ const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: 
   ...(active[agentId] ?? []).filter(id => id !== promptId),
   promptId
 ]
+
+// A photo is one picture, read the same way whether it goes on a person or on
+// one of their agents. Anything that is not an image the app can carry is
+// dropped here rather than sent for the host to refuse.
+const readPhoto = (file: File, send: (image: OutgoingAttachment) => void): void => {
+  const [picked] = imagesFrom([file])
+  if (!picked) return
+  void readImages([picked], 0).then(([image]) => {
+    if (image) send({ name: image.name, mime: image.mime, data: image.data })
+  })
+}
 
 const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]): Record<string, AgentStep[]> => {
   const live = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
@@ -809,11 +820,14 @@ export const useCrew = create<CrewState>((set, get) => {
         socket.send({ type: 'agent.avatar', agentId, image: null })
         return
       }
-      const [picked] = imagesFrom([file])
-      if (!picked) return
-      void readImages([picked], 0).then(([image]) => {
-        if (image) socket.send({ type: 'agent.avatar', agentId, image: { name: image.name, mime: image.mime, data: image.data } })
-      })
+      readPhoto(file, image => socket.send({ type: 'agent.avatar', agentId, image }))
+    },
+    setMyPhoto: file => {
+      if (!file) {
+        socket.send({ type: 'member.avatar', image: null })
+        return
+      }
+      readPhoto(file, image => socket.send({ type: 'member.avatar', image }))
     },
     removeAgent: agentId => {
       socket.send({ type: 'agent.remove', agentId })
