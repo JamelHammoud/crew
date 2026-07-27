@@ -1,4 +1,5 @@
 import { attachmentFileUrl } from '../../../shared/attachments'
+import { memberPhoto } from '../../../shared/people'
 import { useCrew } from '../state/store'
 import { useTheme } from '../state/theme'
 import { avatarColors, avatarInitial } from './avatarColor'
