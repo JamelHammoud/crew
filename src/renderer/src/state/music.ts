@@ -142,6 +142,7 @@ export const useMusic = create<MusicState>((set, get) => {
     volume: stored(VOLUME_KEY, 0.7),
     muted: globalThis.localStorage?.getItem(MUTED_KEY) === 'on',
     adding: false,
+    trouble: null,
 
     track: () => itemFor(get().room.trackId, get().uploads),
 
