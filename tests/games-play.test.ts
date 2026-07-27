@@ -98,7 +98,9 @@ describe('tetris', () => {
 
   it('is over when the next piece has nowhere to stand', () => {
     const start = newTetris(rand)
-    const game = withBoard(start, (_, y) => (y > 1 ? 'I' : null))
+    // One column left open, or the whole stack is a run of full rows and clears
+    // itself the moment anything lands on it.
+    const game = withBoard(start, (x, y) => (y > 1 && x < COLS - 1 ? 'I' : null))
     const landed = hardDrop(game, rand)
     expect(landed.over).toBe(true)
     expect(landed.falling).toBeNull()
