@@ -7,6 +7,12 @@ export const roundButton =
 export const solidButton =
   'shrink-0 rounded-full flex items-center justify-center bg-fg text-ink-900 transition-all duration-150 hover:bg-fg/90 active:scale-95'
 
+// The same button, standing on glass. Nothing on a floating panel is set in a
+// solid grey: the panel lifts with whatever is scrolling under it, and a grey
+// that reads on the panel behind vanishes over a cover.
+export const barButton =
+  'shrink-0 rounded-full flex items-center justify-center text-fg/70 transition-all duration-150 hover:text-fg hover:bg-fg/10 active:scale-95'
+
 export const quietPill =
   'shrink-0 rounded-full flex items-center justify-center bg-fg/[0.08] text-fg text-xs font-medium transition-all duration-150 hover:bg-fg/[0.12] active:scale-95'
 
