@@ -12,7 +12,9 @@ vi.mock('../src/renderer/src/media/sounds', () => ({
 
 const { default: CrewLogo } = await import('../src/renderer/src/components/CrewLogo')
 const { CrewMark } = await import('../src/renderer/src/components/CrewMark')
-const { MARK_DISCS, MARK_WIDTH } = await import('../src/renderer/src/components/crew-mark')
+const { MARK_DISCS, MARK_HEIGHT, MARK_RADIUS, MARK_WIDTH } = await import(
+  '../src/renderer/src/components/crew-mark'
+)
 
 beforeEach(() => {
   played.length = 0
