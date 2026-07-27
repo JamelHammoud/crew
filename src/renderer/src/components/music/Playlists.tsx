@@ -22,6 +22,7 @@ function Row({ playlist, who, onOpen }: { playlist: MusicPlaylist; who: string; 
         }`}
       >
         <PlaylistCover
+          playlist={playlist}
           items={items}
           size={40}
           playing={on && room.playing}

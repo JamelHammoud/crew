@@ -50,6 +50,7 @@ export default function PlaylistView({
     <div className="pb-2">
       <header className="px-4 pt-3 pb-4 flex items-start gap-3.5">
         <PlaylistCover
+          playlist={playlist}
           items={items}
           size={76}
           playing={on && room.playing}
