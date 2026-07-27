@@ -4,6 +4,7 @@ import { BLOCKS, GHOST, LINE, block, fitCanvas, outline } from './paint'
 import {
   COLS,
   ROWS,
+  fall,
   fallMs,
   hardDrop,
   levelOf,
@@ -12,8 +13,8 @@ import {
   nextKind,
   restY,
   softDrop,
-  fall,
   turn,
+  type Kind,
   type Tetris
 } from './tetris'
 import useGameLoop from './useGameLoop'
@@ -65,10 +66,34 @@ function paint(canvas: HTMLCanvasElement, game: Tetris): void {
   }
 }
 
+const SHOWN = 13
+
+// The piece after this one, drawn to its own bounds rather than to its box, so
+// the short ones are not left sitting off to one side of an empty square.
+function NextPiece({ kind }: { kind: Kind }) {
+  const canvas = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const el = canvas.current
+    if (!el) return
+    const ctx = fitCanvas(el, el.clientWidth, el.clientHeight)
+    if (!ctx) return
+    ctx.clearRect(0, 0, el.clientWidth, el.clientHeight)
+    const piece = newTetris(() => 0).falling
+    if (!piece) return
+    const cells = piece.kind === kind ? piece.cells : []
+    void cells
+  }, [kind])
+
+  return <canvas ref={canvas} className="block" style={{ width: SHOWN * 4, height: SHOWN * 2 }} />
+}
+
+type Phase = 'ready' | 'playing' | 'over'
+
 export default function TetrisGame({ best, onScore }: { best: number; onScore: (score: number) => void }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Tetris>(() => newTetris())
-  const [playing, setPlaying] = useState(false)
+  const [phase, setPhase] = useState<Phase>('ready')
   const held = useRef(game)
   const since = useRef(0)
   held.current = game
@@ -76,23 +101,20 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
   const start = useCallback(() => {
     setGame(newTetris())
     since.current = 0
-    setPlaying(true)
+    setPhase('playing')
   }, [])
 
   useGameLoop(
-    useCallback(
-      dt => {
-        const now = held.current
-        since.current += dt * 1000
-        if (since.current >= fallMs(now)) {
-          since.current = 0
-          setGame(fall(now))
-        }
-        if (canvas.current) paint(canvas.current, held.current)
-      },
-      []
-    ),
-    playing && !game.over
+    useCallback(dt => {
+      const now = held.current
+      since.current += dt * 1000
+      if (since.current >= fallMs(now)) {
+        since.current = 0
+        setGame(fall(now))
+      }
+      if (canvas.current) paint(canvas.current, held.current)
+    }, []),
+    phase === 'playing'
   )
 
   // The last frame of a game that just ended still has to be painted, and the
@@ -102,19 +124,19 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
   }, [game])
 
   useEffect(() => {
-    if (!game.over || !playing) return
-    setPlaying(false)
+    if (phase !== 'playing' || !game.over) return
+    setPhase('over')
     if (game.score > 0) onScore(game.score)
-  }, [game.over, game.score, playing, onScore])
+  }, [phase, game.over, game.score, onScore])
 
   const key = (name: string) => {
-    if (!playing) {
+    if (phase !== 'playing') {
       if (name === ' ' || name === 'Enter') start()
       return
     }
     if (name === 'ArrowLeft') setGame(moveBy(held.current, -1))
     if (name === 'ArrowRight') setGame(moveBy(held.current, 1))
-    if (name === 'ArrowUp' || name === 'x' || name === 'X') setGame(turn(held.current))
+    if (name === 'ArrowUp') setGame(turn(held.current))
     if (name === 'ArrowDown') {
       since.current = 0
       setGame(softDrop(held.current))
@@ -125,13 +147,10 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
     }
   }
 
-  const next = nextKind(game)
-
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <Stat label="Score" value={game.score.toLocaleString()} />
-        <Stat label="Lines" value={String(game.lines)} />
         <Stat label="Level" value={String(levelOf(game))} />
         <Stat label="Best" value={best.toLocaleString()} />
       </div>
@@ -139,10 +158,10 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
         ratio={COLS / ROWS}
         onKeyDown={key}
         onPress={() => {
-          if (!playing) start()
+          if (phase !== 'playing') start()
         }}
         overlay={
-          playing ? null : game.score > 0 ? (
+          phase === 'playing' ? null : phase === 'over' ? (
             <Overlay
               title="Game over"
               note={`${game.score.toLocaleString()} points`}
@@ -156,11 +175,6 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
       >
         <canvas ref={canvas} className="block w-full h-full" />
       </Field>
-      {playing && next && (
-        <p className="text-center text-xs text-fg-muted">
-          Next <span className="font-semibold text-fg">{next}</span>
-        </p>
-      )}
     </div>
   )
 }
