@@ -1797,7 +1797,10 @@ export class CrewSession {
       from: wrapAt(typeof at === 'number' ? at : 0, track.seconds),
       since: Date.now(),
       by: member.name.slice(0, BY_LIMIT),
-      playlistId: playlistId && this.playlists.has(playlistId) ? playlistId : null
+      // One of the app's own lists is in nobody's map, so it is asked for by
+      // name rather than looked up, or Next would fall out of it after a track.
+      playlistId:
+        playlistId && (this.playlists.has(playlistId) || isMusicSet(playlistId)) ? playlistId : null
     }
     this.broadcastMusic()
   }
