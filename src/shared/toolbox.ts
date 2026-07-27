@@ -137,5 +137,39 @@ export function cleanTool(
     const ask = { kind: 'prompt' as const, text }
     return built(action.agentId ? { ...ask, agentId: action.agentId } : ask)
   }
+  if (action?.kind === 'say') {
+    const text = action.text?.trim().slice(0, PROMPT_LIMIT)
+    if (!text) return null
+    return built({ kind: 'say', text })
+  }
+  if (action?.kind === 'todo') {
+    const text = action.text?.trim().slice(0, PROMPT_LIMIT)
+    if (!text) return null
+    const task = { kind: 'todo' as const, text }
+    return built(action.agentId ? { ...task, agentId: action.agentId } : task)
+  }
+  if (action?.kind === 'note') {
+    const page = action.page?.trim().slice(0, KEY_LIMIT)
+    const text = action.text?.trim().slice(0, PROMPT_LIMIT)
+    if (!page || !text) return null
+    return built({ kind: 'note', page, text })
+  }
+  if (action?.kind === 'music') {
+    const trackId = action.trackId?.trim().slice(0, KEY_LIMIT)
+    const playlistId = action.playlistId?.trim().slice(0, KEY_LIMIT)
+    if (!trackId && !playlistId) return null
+    return built({
+      kind: 'music',
+      ...(trackId ? { trackId } : {}),
+      ...(playlistId ? { playlistId } : {})
+    })
+  }
+  if (action?.kind === 'huddle') return built({ kind: 'huddle' })
+  if (action?.kind === 'chain') {
+    const ids = Array.isArray(action.toolIds) ? action.toolIds : []
+    const toolIds = [...new Set(ids.filter(id => typeof id === 'string' && id.trim() !== ''))].slice(0, STEP_LIMIT)
+    if (toolIds.length === 0) return null
+    return built({ kind: 'chain', toolIds })
+  }
   return null
 }
