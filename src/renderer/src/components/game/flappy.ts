@@ -57,9 +57,11 @@ export function flap(game: Flappy): Flappy {
   return { ...game, started: true, vy: FLAP }
 }
 
+// The ceiling is a wall rather than a way to die. Flying off the top of the
+// screen ends nothing in the game this is: the pipes above still catch a bird
+// that tries to go over them, which is what it is really being kept out of.
 const hits = (game: Flappy): boolean => {
   if (game.y + BIRD.r >= floor) return true
-  if (game.y - BIRD.r <= 0) return true
   return game.pipes.some(pipe => {
     const near = BIRD.x + BIRD.r > pipe.x && BIRD.x - BIRD.r < pipe.x + PIPE.width
     if (!near) return false
