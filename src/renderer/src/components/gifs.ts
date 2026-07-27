@@ -31,9 +31,6 @@ interface Media {
 
 type Sizes = Record<string, Record<string, Media | undefined> | undefined>
 
-// The grid wants the small copy and the message wants the large one, and both
-// fall back down the sizes rather than coming back empty: a GIF the service only
-// holds one copy of is still a GIF.
 const PREVIEW = ['sm', 'xs', 'md', 'hd']
 const SEND = ['md', 'sm', 'hd', 'xs']
 
@@ -87,8 +84,6 @@ export const trendingGifs = (page = 1): Promise<GifPage> => load('trending', pag
 
 export const searchGifs = (query: string, page = 1): Promise<GifPage> => load('search', page, { q: query })
 
-// The message carries the picture itself rather than a link to it, the way every
-// other image in the chat does, so it is still there when the service is not.
 export async function gifFile(gif: Gif): Promise<File> {
   const res = await fetch(gif.file)
   if (!res.ok) throw new Error(`GIF answered ${res.status}`)
