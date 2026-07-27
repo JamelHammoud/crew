@@ -123,6 +123,7 @@ export default function AgentIcon({
           alt=""
           draggable={false}
           className="w-full h-full rounded-full object-cover select-none"
+          style={{ backgroundColor: bg }}
         />
       ) : (
         <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>
