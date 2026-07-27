@@ -7,6 +7,7 @@ import { ArrowUpGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import AgentIcon from './AgentIcon'
 import { AttachButton, AttachmentTray } from './Attachments'
+import { clickToFocus } from './clickToFocus'
 import { MenuItem, Popover } from './Popover'
 import Tooltip from './Tooltip'
 import { useAutoResize } from './useAutoResize'
@@ -149,7 +150,7 @@ export default function DesignAskBar({
     >
       <div
         className="glass glass-strong rounded-card p-1.5 cursor-text"
-        onClick={() => inputRef.current?.focus()}
+        onClick={clickToFocus(inputRef)}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
           event.preventDefault()
