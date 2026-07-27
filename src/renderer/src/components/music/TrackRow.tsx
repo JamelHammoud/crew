@@ -45,8 +45,8 @@ export default function TrackRow({
           </span>
         </span>
       </button>
-      <span className="shrink-0 text-xs tabular-nums text-fg-faint">{clock(item.seconds)}</span>
       <TrackMenu item={item} within={within} />
+      <span className="shrink-0 text-xs tabular-nums text-fg-faint">{clock(item.seconds)}</span>
     </li>
   )
 }
