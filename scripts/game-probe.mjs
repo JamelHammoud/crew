@@ -42,7 +42,8 @@ const PAGE = `<!doctype html><html><body style="margin:0;background:#141414">
 <div id="marks" style="display:flex;gap:28px;padding:24px;color:#fff;align-items:center"></div>
 <div id="tiles" style="display:flex;gap:20px;padding:0 24px 24px;align-items:flex-start"></div>
 <script>
-const { marks, drawCover, paintTetris } = window.Probe
+const P = window.Probe
+const { marks, drawCover, paintTetris, paintFlappy } = P
 document.getElementById('marks').innerHTML = marks
   .map(m => '<div style="display:flex;flex-direction:column;gap:10px;align-items:center">' + m.at48 + m.at22 + m.at16 + '</div>')
   .join('')
@@ -57,14 +58,22 @@ for (const [id, w, h] of [['tetris', 84, 54], ['flappy', 84, 54], ['tetris', 252
   drawCover(id, ctx, w, h)
   tiles.appendChild(c)
 }
+let game = P.newTetris()
+for (let i = 0; i < 14; i++) game = P.hardDrop(P.moveBy(game, (i % 5) - 2))
 const board = document.createElement('canvas')
-board.width = 300; board.height = 600
-board.style.width = '150px'; board.style.height = '300px'
+board.style.width = '160px'; board.style.height = '320px'
+board.style.background = '#141a2b'
 board.style.borderRadius = '14px'
-const bctx = board.getContext('2d')
-bctx.setTransform(2, 0, 0, 2, 0, 0)
-paintTetris(bctx, 150, 300)
 tiles.appendChild(board)
+paintTetris(board, game)
+
+let bird = P.flap(P.newFlappy())
+for (let i = 0; i < 90; i++) bird = P.tick(bird, 1 / 60)
+const sky = document.createElement('canvas')
+sky.style.width = '213px'; sky.style.height = '320px'
+sky.style.borderRadius = '14px'
+tiles.appendChild(sky)
+paintFlappy(sky, bird)
 </script>
 </body></html>`
 
