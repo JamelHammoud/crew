@@ -101,6 +101,13 @@ export default function Toolbox({
       on: playing,
       panel: true,
       run: () => useBrowser.getState().openMusic()
+    },
+    {
+      id: 'game',
+      name: 'Game',
+      mark: GameGlyph,
+      panel: true,
+      run: () => useBrowser.getState().openGame()
     }
   ]
 
