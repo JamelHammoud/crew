@@ -236,6 +236,17 @@ Something to put on while the crew works. It is a tab in the side panel called M
 - The shader counts the same number of petals every time, because a card cannot be handed a shorter loop, so an empty slot still runs. Fill one with numbers that mean something rather than leaving it at nought: a petal blurred by nothing asks the card to fade an edge from a point to the same point, which has no answer, and what comes back is not a number and spreads through everything it touches.
 - `yarn covers` draws every cover on one page. A generator like this cannot be judged from its numbers, and `tests/music-cover.test.ts` only holds the rules above, never the look.
 
+## GIFs
+
+The plus button in the composer opens a menu, upload a file or pick a GIF, and picking one sends it straight out. `AddMenu.tsx` is the menu and `GifPicker.tsx` is a screen inside the same popover rather than a popover of its own.
+
+- Klipy is the only service left to build this on. Google closed the Tenor API to everyone in June 2026 and Giphy stopped being free, so there is one choice and `gifs.ts` reads it.
+- The key is a client key rather than a secret, and it sits in `CREW_KEY` in `gifs.ts` so it rides in the repo the crew already shares. That is what gets everyone who joined GIFs without being handed anything of their own, the same way they get the toolbox and the songs. `VITE_KLIPY_KEY` overrides it for a machine that would rather keep it out of the project.
+- The grid takes the small copy and the message takes the large one, and both fall back down the sizes rather than coming back empty, since a GIF the service only holds one copy of is still a GIF.
+- The message carries the picture itself rather than a link to it, the way every other image in the chat does, so it is still there when the service is not. The CDN answers a cross origin fetch, which is the whole of what makes that possible.
+- A GIF is attached and sent in the same breath, so every send guard reads the attachment count live rather than off the last render. Read from state it is a render behind, and the send is refused for having nothing in it.
+- A GIF that fails to send leaves the grid where it is. Only the send failed.
+
 ## Terminals
 
 A terminal is one of the things the side panel can hold, beside a web page and a file. The New button asks which. It is the real thing: a pty running the login shell, started the way Terminal and Windows Terminal start it, in the project folder.
