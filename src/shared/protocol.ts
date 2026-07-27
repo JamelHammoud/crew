@@ -24,6 +24,9 @@ export interface MemberInfo {
   id: string
   name: string
   connected: boolean
+  // The file a photo was saved under, absent for someone who has not put one on
+  // and is still drawn as their initial.
+  avatar?: string
 }
 
 export interface QueuedItem {
