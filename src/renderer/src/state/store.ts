@@ -859,3 +859,9 @@ export const useCrew = create<CrewState>((set, get) => {
     clearDesignTarget: () => set({ designTarget: null })
   }
 })
+
+// What is waiting to be sent, read at the moment it is asked for. A picked GIF is
+// attached and sent in the same breath, and a count held from the last render is
+// still nought at that point, so a guard reading one would refuse to send the
+// thing that was just picked.
+export const pendingCount = (key: string): number => useCrew.getState().pending[key]?.length ?? 0

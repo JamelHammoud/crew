@@ -34,7 +34,6 @@ export default function Chat() {
   const openThread = useCrew(s => s.openThread)
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
-  const pendingCount = useCrew(s => (s.pending[CHAT_KEY] ?? []).length)
   const agents = useCrew(s => s.agents)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
