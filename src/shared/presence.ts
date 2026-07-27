@@ -39,13 +39,20 @@ export function presentNow(
   agents: PooledAgent[],
   selfId: string,
   activePrompts: Record<string, string[]> = {},
-  photoOf: (agent: PooledAgent) => string | undefined = () => undefined
+  photoOf: (file: string) => string | undefined = () => undefined
 ): Present[] {
   const threadsOf = (agent: PooledAgent): number => (activePrompts[agent.id] ?? []).length
+  const photo = (file?: string): string | undefined => (file ? photoOf(file) : undefined)
   return [
     ...members
       .filter(member => member.connected && member.id !== selfId)
-      .map(member => ({ id: member.id, name: member.name, agent: false, threads: 0 })),
+      .map(member => ({
+        id: member.id,
+        name: member.name,
+        agent: false,
+        threads: 0,
+        photo: photo(member.avatar)
+      })),
     ...agents
       .filter(agent => threadsOf(agent) > 0 || agent.status === 'busy')
       .map(agent => ({
@@ -53,7 +60,7 @@ export function presentNow(
         name: agent.label,
         agent: true,
         threads: threadsOf(agent),
-        photo: photoOf(agent)
+        photo: photo(agent.avatar)
       }))
   ]
 }

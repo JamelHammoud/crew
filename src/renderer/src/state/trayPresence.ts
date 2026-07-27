@@ -13,8 +13,8 @@ const same = (a: Present[], b: Present[]): boolean =>
   )
 
 export function presenceNow(state: ReturnType<typeof useCrew.getState>): Present[] {
-  return presentNow(state.members, state.agents, state.selfId, state.activePrompts, agent =>
-    agent.avatar && state.httpBase ? attachmentFileUrl(state.httpBase, agent.avatar) : undefined
+  return presentNow(state.members, state.agents, state.selfId, state.activePrompts, file =>
+    state.httpBase ? attachmentFileUrl(state.httpBase, file) : undefined
   )
 }
 
