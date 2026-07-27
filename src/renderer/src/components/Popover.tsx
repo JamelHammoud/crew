@@ -21,6 +21,12 @@ type Nest = { add: (el: HTMLElement) => void; drop: (el: HTMLElement) => void }
 
 const NestContext = createContext<Nest | null>(null)
 
+// A popover follows what it was opened on rather than closing when the page
+// under it moves. The thread scrolls itself while an agent works, and a menu
+// that goes down with it is a menu that vanishes mid-aim.
+const sameSpot = (a: DOMRect, b: DOMRect): boolean =>
+  a.left === b.left && a.top === b.top && a.width === b.width && a.height === b.height
+
 export function Popover({
   open,
   onClose,
