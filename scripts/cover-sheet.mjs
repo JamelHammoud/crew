@@ -15,10 +15,12 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'cover-sheet.png')
 
-const ENTRY = `
-import { musicItems } from '../src/shared/music'
-import { coverFor } from '../src/renderer/src/components/music/coverArt'
-import { coverArt } from '../src/renderer/src/components/music/coverSeed'
+// Written into the temp folder and pointed at the repo by absolute path, so a
+// run of this leaves nothing behind in a tree that commits itself.
+const entry = (where) => `
+import { musicItems } from '${where}/src/shared/music'
+import { coverFor } from '${where}/src/renderer/src/components/music/coverArt'
+import { coverArt } from '${where}/src/renderer/src/components/music/coverSeed'
 window.CrewCovers = { musicItems, coverFor, coverArt }
 `
 
@@ -72,7 +74,6 @@ const MAIN = `import { app, BrowserWindow } from 'electron'
 import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
-app.disableHardwareAcceleration === undefined || null
 app.whenReady().then(async () => {
   const window = new BrowserWindow({ show: false, width: 1600, height: 1200, webPreferences: { nodeIntegration: true, contextIsolation: false, offscreen: false } })
   await window.loadFile(path.join(import.meta.dirname, 'covers.html'))
@@ -88,9 +89,9 @@ app.whenReady().then(async () => {
 
 const dir = await mkdtemp(path.join(tmpdir(), 'crew-covers-'))
 try {
-  await writeFile(path.join(root, 'scripts/.cover-entry.ts'), ENTRY)
+  await writeFile(path.join(dir, 'entry.ts'), entry(root))
   await build({
-    entryPoints: [path.join(root, 'scripts/.cover-entry.ts')],
+    entryPoints: [path.join(dir, 'entry.ts')],
     bundle: true,
     format: 'iife',
     outfile: path.join(dir, 'covers.js'),
@@ -131,5 +132,4 @@ try {
   )
 } finally {
   await rm(dir, { recursive: true, force: true })
-  await rm(path.join(root, 'scripts/.cover-entry.ts'), { force: true })
 }
