@@ -5,6 +5,7 @@ import type { Kind } from './tetris'
 // the design canvas pins its palette: the field is the same deep blue in a light
 // window as in a dark one, and nothing in here follows the theme.
 export const FIELD = '#141a2b'
+export const WELL = 'rgba(0, 0, 0, 0.28)'
 export const LINE = 'rgba(255, 255, 255, 0.05)'
 export const GHOST = 'rgba(255, 255, 255, 0.16)'
 

@@ -1,4 +1,4 @@
-import { BLOCKS, GHOST, LINE, block, fitCanvas, outline } from './paint'
+import { BLOCKS, GHOST, LINE, WELL, block, fitCanvas, outline } from './paint'
 import { COLS, ROWS, restY, type Tetris } from './tetris'
 
 export function paintTetris(canvas: HTMLCanvasElement, game: Tetris): void {
