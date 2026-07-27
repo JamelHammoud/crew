@@ -37,13 +37,29 @@ describe('the mark in the top left', () => {
     expect(played).toEqual(['crew.mark', 'crew.mark', 'crew.mark'])
   })
 
-  it('draws the discs again on every press, so the arrival replays', () => {
+  it('replays the arrival without redrawing anything, so a hover cannot feed itself', () => {
+    const replayed: string[] = []
+    const held = { name: 'crew-join', cancel: () => void replayed.push('cancel'), play: () => void replayed.push('play') }
+    const drift = { name: 'crew-blob', cancel: () => void replayed.push('no'), play: () => void replayed.push('no') }
     const { container } = render(createElement(CrewLogo))
     const first = container.querySelector('mask')
-    fireEvent.click(logo())
-    const second = container.querySelector('mask')
-    expect(first).not.toBe(null)
-    expect(second).not.toBe(first)
+    const button = logo()
+    button.getAnimations = () =>
+      [held, drift].map(one => ({ animationName: one.name, cancel: one.cancel, play: one.play })) as never
+    fireEvent.click(button)
+    expect(replayed).toEqual(['cancel', 'play'])
+    expect(container.querySelector('mask')).toBe(first)
+  })
+
+  it('counts one arrival per crossing, however many times the pointer says it is over', () => {
+    render(createElement(CrewLogo))
+    fireEvent.pointerEnter(logo())
+    fireEvent.pointerEnter(logo())
+    fireEvent.pointerEnter(logo())
+    expect(played).toEqual(['crew.mark'])
+    fireEvent.pointerLeave(logo())
+    fireEvent.pointerEnter(logo())
+    expect(played).toEqual(['crew.mark', 'crew.mark'])
   })
 
   it('lights the mesh while the pointer is over it and lets it go after', () => {
