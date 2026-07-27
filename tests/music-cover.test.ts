@@ -143,6 +143,38 @@ describe('a cover has depth in it', () => {
     }
   })
 
+  it('brings every petal to a point somewhere inside the frame', () => {
+    // Run far enough that both tapers happen off the edge, and what is left in
+    // the tile is a band of one width crossing it corner to corner: the one
+    // shape that says at a glance that a picture was made rather than taken. One
+    // tip is enough, and it has to be, since a leaf that runs out of the frame
+    // at one end is what a photograph taken this close looks like.
+    //
+    // The bend is the half of it that is easy to miss. A tip is not where the
+    // spine points: the spine is carried sideways the whole way out, so a petal
+    // with plenty of bend leaves the picture long before its own length says it
+    // should, and capping the length alone lets those straight back in.
+    const tipOf = (petal: CoverPetal, run: number): [number, number] => {
+      const across = [-petal.lie[1], petal.lie[0]]
+      return [
+        petal.at[0] + petal.lie[0] * run - across[0] * petal.bend * run * run,
+        petal.at[1] + petal.lie[1] * run - across[1] * petal.bend * run * run
+      ]
+    }
+    const seen = (spot: [number, number]): boolean => spot.every(one => one > 0 && one < 1)
+    let bent = 0
+    for (const art of drawn) {
+      for (const petal of art.petals) {
+        if (Math.abs(petal.bend) > 1) bent++
+        expect(
+          seen(tipOf(petal, petal.along)) || seen(tipOf(petal, -petal.along)),
+          `${art.cast} left a petal crossing the frame with neither tip in it`
+        ).toBe(true)
+      }
+    }
+    expect(bent, 'nothing drawn was bent enough to carry its own tip off the frame').toBeGreaterThan(0)
+  })
+
   it('keeps the odd color out of the front of the picture', () => {
     // A color picked to stand against the sky, handed the nearest slot, is the
     // hardest edge in the frame wearing the most unlike color, and it reads as
