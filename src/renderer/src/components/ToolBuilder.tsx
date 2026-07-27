@@ -370,40 +370,152 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
           </Field>
         )}
 
-        {kind === 'prompt' && (
-          <>
-            <div>
-              <Label>Who it asks</Label>
-              <div className="flex flex-wrap gap-1">
+        {(kind === 'prompt' || kind === 'todo') && (
+          <div>
+            <Label>{kind === 'prompt' ? 'Who it asks' : "Who it's for"}</Label>
+            <div className="flex flex-wrap gap-1">
+              <Who
+                name="Anyone"
+                mark={<PeopleGlyph className="w-5 h-5 p-0.5" />}
+                picked={agentId === null}
+                onClick={() => setAgentId(null)}
+              />
+              {choices.map(agent => (
                 <Who
-                  name="Anyone"
-                  mark={<PeopleGlyph className="w-5 h-5 p-0.5" />}
-                  picked={agentId === null}
-                  onClick={() => setAgentId(null)}
+                  key={agent.id}
+                  name={agent.label}
+                  mark={<AgentIcon seed={agent.id} size="xs" />}
+                  picked={agentId === agent.id}
+                  onClick={() => setAgentId(agent.id)}
                 />
-                {choices.map(agent => (
-                  <Who
-                    key={agent.id}
-                    name={agent.label}
-                    mark={<AgentIcon seed={agent.id} size="xs" />}
-                    picked={agentId === agent.id}
-                    onClick={() => setAgentId(agent.id)}
-                  />
-                ))}
-              </div>
+              ))}
             </div>
-            <Field label="What to ask">
+          </div>
+        )}
+
+        {kind === 'prompt' && (
+          <Field label="What to ask">
+            <textarea
+              ref={askRef}
+              rows={2}
+              value={ask}
+              onChange={e => setAsk(e.target.value)}
+              placeholder="Run the tests and fix what fails"
+              className={AREA}
+            />
+          </Field>
+        )}
+
+        {kind === 'say' && (
+          <Field label="What to say">
+            <textarea
+              ref={sayRef}
+              rows={2}
+              value={say}
+              onChange={e => setSay(e.target.value)}
+              placeholder="Heading out, back in an hour"
+              className={AREA}
+            />
+          </Field>
+        )}
+
+        {kind === 'todo' && (
+          <Field label="What to add">
+            <textarea
+              ref={taskRef}
+              rows={2}
+              value={task}
+              onChange={e => setTask(e.target.value)}
+              placeholder="Look at what came in overnight"
+              className={AREA}
+            />
+          </Field>
+        )}
+
+        {kind === 'note' && (
+          <>
+            <Pick label="Which doc" empty="No docs yet">
+              {Object.entries(docs).map(([key, doc]) => (
+                <Row
+                  key={key}
+                  mark={<DocGlyph className="w-[18px] h-[18px]" />}
+                  title={doc.title || 'Untitled'}
+                  active={page === key}
+                  onClick={() => setPage(key)}
+                />
+              ))}
+            </Pick>
+            <Field label="What to write">
               <textarea
-                ref={askRef}
+                ref={lineRef}
                 rows={2}
-                value={ask}
-                onChange={e => setAsk(e.target.value)}
-                placeholder="Run the tests and fix what fails"
+                value={line}
+                onChange={e => setLine(e.target.value)}
+                placeholder="Shipped, and what went with it"
                 className={AREA}
               />
             </Field>
           </>
         )}
+
+        {kind === 'music' && (
+          <Pick label="What to play" empty="Nothing on the shelf yet">
+            {[
+              ...lists.map(list => (
+                <Row
+                  key={list.id}
+                  mark={<MusicGlyph className="w-[18px] h-[18px]" />}
+                  title={list.name}
+                  note={`${list.trackIds.length} ${list.trackIds.length === 1 ? 'track' : 'tracks'}`}
+                  active={playlistId === list.id}
+                  onClick={() => {
+                    setPlaylistId(list.id)
+                    setTrackId('')
+                  }}
+                />
+              )),
+              ...tracks.map(track => (
+                <Row
+                  key={track.id}
+                  mark={<PlayGlyph className="w-[18px] h-[18px]" />}
+                  title={track.name}
+                  note={track.mood}
+                  active={trackId === track.id}
+                  onClick={() => {
+                    setTrackId(track.id)
+                    setPlaylistId('')
+                  }}
+                />
+              ))
+            ]}
+          </Pick>
+        )}
+
+        {kind === 'chain' && (
+          <Pick label="Which tools, in the order you pick them" empty="Build a tool or two first">
+            {steps.map(step => (
+              <Row
+                key={step.id}
+                mark={<ToolMarkView mark={step.mark} className="w-[18px] h-[18px]" />}
+                title={step.name}
+                note={kindOf(step.action.kind).title}
+                active={toolIds.includes(step.id)}
+                order={toolIds.indexOf(step.id) + 1 || undefined}
+                onClick={() =>
+                  setToolIds(held =>
+                    held.includes(step.id)
+                      ? held.filter(id => id !== step.id)
+                      : held.length < STEP_LIMIT
+                        ? [...held, step.id]
+                        : held
+                  )
+                }
+              />
+            ))}
+          </Pick>
+        )}
+
+        {WORDY.includes(kind) && <Hint>{'A word in braces, like {branch}, is asked for when you press it.'}</Hint>}
       </div>
 
       <Footer>
