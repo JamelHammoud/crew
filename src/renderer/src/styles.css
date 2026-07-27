@@ -574,6 +574,9 @@ body {
   22% {
     opacity: 0.9;
   }
+  80% {
+    opacity: 0;
+  }
   100% {
     opacity: 0;
     transform: translateX(880px);
