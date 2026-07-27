@@ -43,10 +43,10 @@ await build({
   platform: 'node',
   format: 'esm',
   external: ['ws', 'node-pty', 'electron'],
-  outfile: path.join(dir, 'host.mjs')
+  outfile: path.join(root, 'scripts/tmp-host.mjs')
 })
 
-const { startHost } = await import(path.join(dir, 'host.mjs'))
+const { startHost } = await import(path.join(root, 'scripts/tmp-host.mjs'))
 const host = await startHost(repo)
 
 // Add a track the way a member does, over the socket.
