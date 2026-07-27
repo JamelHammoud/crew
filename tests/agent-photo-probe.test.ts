@@ -37,16 +37,16 @@ afterEach(cleanup)
 
 // The People section holds faces of its own, so every query here is asked of
 // the agents rather than of the page.
-const agents = () => within(screen.getByRole('heading', { name: 'Agents' }).closest('section') as HTMLElement)
+const section = () => screen.getByRole('heading', { name: 'Agents' }).closest('section') as HTMLElement
+const agents = () => within(section())
 
 describe('agent photos in the crew tab', () => {
   it('shows the uploaded photo in place of the generated icon', () => {
     seed({ ...agent, avatar: 'a-photo.png' })
     render(createElement(Dashboard))
 
-    const image = agents().getByRole('img', { hidden: true }) as HTMLImageElement
-    expect(image.getAttribute('src')).toBe('http://10.0.0.2:2739/attachments/a-photo.png')
-    expect(agents().queryByRole('presentation', { hidden: true })).toBeNull()
+    expect(section().querySelector('img')?.getAttribute('src')).toBe('http://10.0.0.2:2739/attachments/a-photo.png')
+    expect(section().querySelector('svg[viewBox="0 0 100 100"]')).toBeNull()
   })
 
   it('takes a photo off and lands back on the generated icon', () => {
@@ -59,8 +59,8 @@ describe('agent photos in the crew tab', () => {
 
     useCrew.setState({ agents: [agent] })
     rerender(createElement(Dashboard))
-    expect(agents().queryByRole('img', { hidden: true })).toBeNull()
-    expect(agents().getByRole('presentation', { hidden: true })).toBeTruthy()
+    expect(section().querySelector('img')).toBeNull()
+    expect(section().querySelector('svg[viewBox="0 0 100 100"]')).toBeTruthy()
   })
 
   it('offers the upload straight away when there is no photo, and only to the owner', () => {
