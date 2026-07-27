@@ -75,10 +75,7 @@ export function CrewMark({ className = '', run }: { className?: string; run?: nu
       </mask>
 
       <g mask={`url(#${id})`}>
-        <rect
-          {...(live ? FIELD : { x: 0, y: 0, width: MARK_WIDTH, height: MARK_HEIGHT })}
-          fill="currentColor"
-        />
+        <rect {...field} fill="currentColor" />
         {live && (
           <>
             <g className="crew-mesh">
