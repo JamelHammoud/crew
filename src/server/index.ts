@@ -58,10 +58,7 @@ function serveMusic(session: CrewSession, file: string, res: http.ServerResponse
     res.end()
     return
   }
-  res.writeHead(200, {
-    'content-type': mimeForMusic(file),
-    'cache-control': 'public, max-age=31536000, immutable'
-  })
+  res.writeHead(200, { 'content-type': mimeForMusic(file), ...MEDIA_HEADERS })
   fs.createReadStream(full)
     .on('error', () => res.end())
     .pipe(res)
