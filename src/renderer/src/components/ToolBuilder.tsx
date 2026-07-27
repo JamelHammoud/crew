@@ -1,19 +1,38 @@
 import { useState, type ReactNode } from 'react'
-import { DEFAULT_MARK, NAME_LIMIT, type CrewTool, type ToolAction } from '../../../shared/toolbox'
+import { MUSIC_SETS, musicItems } from '../../../shared/music'
+import { DEFAULT_MARK, NAME_LIMIT, STEP_LIMIT, type CrewTool, type ToolAction } from '../../../shared/toolbox'
 import { agentsHere } from '../design/askAgent'
 import { FrameGlyph } from '../design/glyphs'
-import { DocGlyph, PeopleGlyph, PencilGlyph, TrashGlyph } from '../icons'
+import { DocGlyph, MusicGlyph, PeopleGlyph, PencilGlyph, PlayGlyph, TrashGlyph } from '../icons'
+import { useMusic } from '../state/music'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import ToolMarkPicker from './ToolMarkPicker'
 import ToolMarkView from './toolMark'
-import { AREA, Empty, Field, FIELD, Footer, HeaderButton, Label, Primary, Row, Segmented, SheetHeader } from './toolboxParts'
+import {
+  AREA,
+  Empty,
+  Field,
+  FIELD,
+  Footer,
+  HeaderButton,
+  Hint,
+  Label,
+  Primary,
+  Row,
+  Segmented,
+  SheetHeader
+} from './toolboxParts'
 import ToolKindPicker from './ToolKindPicker'
 import { kindOf, type ToolKind } from './toolKinds'
 import Tooltip from './Tooltip'
 import { useAutoResize } from './useAutoResize'
 
 const GROWN = 108
+
+// The kinds that hold words a blank can be written into, so the one line about
+// braces is shown where it is worth something and nowhere else.
+const WORDY: ToolKind[] = ['web', 'terminal', 'file', 'prompt', 'say', 'todo', 'note', 'copy']
 
 // A pill for who a tool asks. Anyone is a choice of its own rather than an empty
 // one: a tool built here is pressed on everyone's machine, and the agent it
