@@ -8,6 +8,7 @@ import {
   DocGlyph,
   ExternalLinkGlyph,
   FolderGlyph,
+  GameGlyph,
   GlobeGlyph,
   MusicGlyph,
   PhotoGlyph,
@@ -19,6 +20,7 @@ import {
 import { useBrowser, type BrowserTab } from '../state/browser'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
+import GameView from './game/GameView'
 import ImageView from './ImageView'
 import MusicView from './music/MusicView'
 import { MenuItem, Popover } from './Popover'
@@ -33,6 +35,7 @@ const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/
 
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'music') return 'Music'
+  if (tab.kind === 'game') return 'Games'
   if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
@@ -113,6 +116,14 @@ export default function BrowserPanel() {
               onClick={() => {
                 setNewOpen(false)
                 useBrowser.getState().openMusic()
+              }}
+            />
+            <MenuItem
+              icon={<GameGlyph />}
+              label="Games"
+              onClick={() => {
+                setNewOpen(false)
+                useBrowser.getState().openGame()
               }}
             />
           </Popover>
@@ -243,6 +254,7 @@ export default function BrowserPanel() {
             <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
         {active && active.kind === 'music' && <MusicView />}
+        {active && active.kind === 'game' && <GameView />}
         {active && active.kind === 'web' && !active.initialUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <GlobeGlyph className="w-8 h-8 text-fg-faint" />
@@ -284,6 +296,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           <Spinner size={14} className="text-fg-muted" />
         ) : tab.kind === 'music' ? (
           <MusicGlyph className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'game' ? (
+          <GameGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'terminal' ? (
           <TerminalGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'file' ? (
