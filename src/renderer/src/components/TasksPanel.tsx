@@ -242,7 +242,9 @@ export default function TasksPanel({
   const byRecency = (a: Row, b: Row) =>
     (lastMessageAt[b.thread.id] ?? 0) - (lastMessageAt[a.thread.id] ?? 0)
   const inProgress = visible.filter(r => r.state === 'working' && r.thread.status !== 'archived')
-  const needsReview = visible.filter(r => r.state === 'ready' || r.state === 'failed')
+  const needsReview = visible
+    .filter(r => r.state === 'ready' || r.state === 'failed')
+    .sort(byRecency)
   const done = visible.filter(r => r.state === 'done')
   const archived = visible.filter(r => r.thread.status === 'archived').sort(byRecency)
   const pendingTodos = todos.filter(t => !t.checked && (!q || todoMatches(t)))
