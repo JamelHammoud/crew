@@ -10,20 +10,12 @@ const root = path.resolve(here, '..')
 const out = path.join(root, 'game-probe.png')
 
 const entry = `
-import { renderToStaticMarkup } from 'react-dom/server'
-import { createElement } from 'react'
-import { GameGlyph, MusicGlyph, SignalGlyph, TerminalGlyph, FolderGlyph, ToolboxGlyph } from '${root}/src/renderer/src/icons'
 import { drawCover } from '${root}/src/renderer/src/components/game/GameCover'
 import { paintTetris } from '${root}/src/renderer/src/components/game/drawTetris'
 import { paintFlappy } from '${root}/src/renderer/src/components/game/drawFlappy'
 import { newTetris, hardDrop, moveBy } from '${root}/src/renderer/src/components/game/tetris'
 import { newFlappy, tick, flap } from '${root}/src/renderer/src/components/game/flappy'
 window.Probe = {
-  marks: [GameGlyph, SignalGlyph, TerminalGlyph, FolderGlyph, MusicGlyph, ToolboxGlyph].map(Icon => ({
-    at16: renderToStaticMarkup(createElement(Icon, { className: 'w-4 h-4' })),
-    at22: renderToStaticMarkup(createElement(Icon, { className: 'w-[22px] h-[22px]' })),
-    at48: renderToStaticMarkup(createElement(Icon, { className: 'w-12 h-12' }))
-  })),
   drawCover,
   paintTetris,
   paintFlappy,
@@ -38,14 +30,11 @@ window.Probe = {
 
 const PAGE = `<!doctype html><html><body style="margin:0;background:#141414">
 <script src="probe.js"></script>
-<div id="marks" style="display:flex;gap:28px;padding:24px;color:#fff;align-items:center"></div>
+<div id="marks" style="display:flex;gap:28px;padding:24px;color:#fff;align-items:center">__MARKS__</div>
 <div id="tiles" style="display:flex;gap:20px;padding:0 24px 24px;align-items:flex-start"></div>
 <script>
 const P = window.Probe
-const { marks, drawCover, paintTetris, paintFlappy } = P
-document.getElementById('marks').innerHTML = marks
-  .map(m => '<div style="display:flex;flex-direction:column;gap:10px;align-items:center">' + m.at48 + m.at22 + m.at16 + '</div>')
-  .join('')
+const { drawCover, paintTetris, paintFlappy } = P
 const tiles = document.getElementById('tiles')
 for (const [id, w, h] of [['tetris', 84, 54], ['flappy', 84, 54], ['tetris', 252, 162], ['flappy', 252, 162]]) {
   const c = document.createElement('canvas')
@@ -67,7 +56,10 @@ tiles.appendChild(board)
 paintTetris(board, game)
 
 let bird = P.flap(P.newFlappy())
-for (let i = 0; i < 90; i++) bird = P.tick(bird, 1 / 60)
+for (let i = 0; i < 150; i++) {
+  if (i % 22 === 0) bird = P.flap(bird)
+  bird = P.tick(bird, 1 / 60)
+}
 const sky = document.createElement('canvas')
 sky.style.width = '213px'; sky.style.height = '320px'
 sky.style.borderRadius = '14px'
@@ -81,7 +73,7 @@ import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 app.whenReady().then(async () => {
-  const window = new BrowserWindow({ show: false, width: 1100, height: 560, webPreferences: { nodeIntegration: true, contextIsolation: false } })
+  const window = new BrowserWindow({ show: false, width: 1320, height: 640, webPreferences: { nodeIntegration: true, contextIsolation: false } })
   await window.loadFile(path.join(import.meta.dirname, 'probe.html'))
   await new Promise(done => setTimeout(done, 400))
   const image = await window.webContents.capturePage()
@@ -89,6 +81,23 @@ app.whenReady().then(async () => {
   app.quit()
 })
 `
+
+const { renderToStaticMarkup } = await import('react-dom/server')
+const { createElement } = await import('react')
+const icons = await import(path.join(root, 'src/renderer/src/icons/index.ts')).catch(() => null)
+
+const marks = () => {
+  if (!icons) return ''
+  const names = ['GameGlyph', 'SignalGlyph', 'TerminalGlyph', 'FolderGlyph', 'MusicGlyph', 'ToolboxGlyph']
+  return names
+    .map(name => {
+      const Icon = icons[name]
+      const at = size =>
+        renderToStaticMarkup(createElement(Icon, { className: `w-[${size}px] h-[${size}px]` }))
+      return `<div style="display:flex;flex-direction:column;gap:10px;align-items:center">${at(48)}${at(22)}${at(16)}</div>`
+    })
+    .join('')
+}
 
 const dir = await mkdtemp(path.join(root, 'node_modules', '.crew-game-probe-'))
 try {
@@ -103,7 +112,7 @@ try {
     loader: { '.js': 'jsx', '.ts': 'ts', '.tsx': 'tsx' },
     define: { 'process.env.NODE_ENV': '"production"' }
   })
-  await writeFile(path.join(dir, 'probe.html'), PAGE)
+  await writeFile(path.join(dir, 'probe.html'), PAGE.replace('__MARKS__', marks()))
   await writeFile(path.join(dir, 'main.mjs'), MAIN)
   await writeFile(
     path.join(dir, 'package.json'),
