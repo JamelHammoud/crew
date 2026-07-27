@@ -139,7 +139,12 @@ void main() {
 
     // How much petal there is at this pixel: deep through the middle, and thin
     // at the outline and at both tips, which is where the shape runs out.
-    float thick = smoothstep(0.0, 0.07 + edge.z * 2.0, field);
+    //
+    // Measured against its own width rather than against its blur. A far petal
+    // is a wide soft thing, and held to a scale the blur sets, the middle of one
+    // never counts as thick at all: the whole shape goes half transparent and
+    // what should be the softest object in the picture becomes the faintest.
+    float thick = smoothstep(0.0, max(0.04, wide * 0.8), field);
 
     // A real petal is thin enough at its rim to be seen through, so it lets go
     // of what is behind it there instead of cutting it off. That is what takes
