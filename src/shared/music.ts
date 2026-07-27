@@ -126,7 +126,7 @@ export const MUSIC_TUNES = [
     mood: 'fierce',
     bpm: 160,
     beats: 32,
-    colors: ['#ffb03d', '#ffd9c4', '#a8b0ff', '#fff2e6', '#f5462e']
+    colors: ['#ffb03d', '#ffb894', '#a8b0ff', '#fff2e6', '#f5462e']
   },
   {
     id: 'lobby',
@@ -134,7 +134,7 @@ export const MUSIC_TUNES = [
     mood: 'patient',
     bpm: 112,
     beats: 32,
-    colors: ['#a8f05c', '#e0ffc4', '#5fe8b0', '#f6ffea', '#6fc0f5']
+    colors: ['#a8f05c', '#b0e87f', '#5fe8b0', '#f6ffea', '#6fc0f5']
   },
   {
     id: 'credits',
