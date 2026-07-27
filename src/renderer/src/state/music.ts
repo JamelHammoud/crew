@@ -56,6 +56,7 @@ export interface MusicState {
   skip: (step: number) => void
   seek: (at: number) => void
   off: () => void
+  setLoop: (loop: boolean) => void
   add: (file: File) => Promise<string | null>
   remove: (trackId: string) => void
   makePlaylist: (name: string) => Promise<string | null>
@@ -235,6 +236,10 @@ export const useMusic = create<MusicState>((set, get) => {
     },
 
     off: () => sendMusic({ type: 'music.off' }),
+
+    // Everyone hears the same loop, so whether it comes round again is the
+    // crew's to set rather than this window's.
+    setLoop: loop => sendMusic({ type: 'music.loop', loop }),
 
     // Adding a track hands the file to the host, which keeps it beside the
     // session. What comes back is what everyone else will play.
