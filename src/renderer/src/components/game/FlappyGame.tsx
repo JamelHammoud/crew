@@ -71,7 +71,6 @@ export default function FlappyGame({
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
       <Field
-        ratio={WORLD.width / WORLD.height}
         onKeyDown={name => {
           if (name === ' ' || name === 'ArrowUp' || name === 'Enter') press()
         }}
@@ -92,7 +91,6 @@ export default function FlappyGame({
       >
         <canvas ref={canvas} className="block w-full h-full" />
       </Field>
-      {phase !== 'playing' && children}
     </div>
   )
 }

@@ -104,7 +104,6 @@ export default function TetrisGame({
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
       <Field
-        ratio={COLS / ROWS}
         onKeyDown={key}
         onSize={setWidth}
         onPress={() => {
@@ -125,7 +124,6 @@ export default function TetrisGame({
       >
         <canvas ref={canvas} className="block w-full h-full" />
       </Field>
-      {phase !== 'playing' && children}
     </div>
   )
 }
