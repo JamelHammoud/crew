@@ -1,17 +1,20 @@
 import type { MusicItem } from '../../../../shared/music'
-import { coverArt, type CoverArt } from './coverSeed'
+import { coverArt, MAX_PETALS, type CoverArt } from './coverSeed'
 
-// The cover generator. A cover is a picture of a thing too close to the lens to
-// be in focus: a field of noise pushed around until it folds into petals, smeared
-// along one direction the way a blurred edge smears, lit where two of those folds
-// cross, and read through the track's own colors.
+// The cover generator. It photographs the scene `coverSeed.ts` describes: a sky,
+// a few petals standing at different distances in front of it, and a light off
+// one side.
 //
-// It is drawn rather than stacked out of gradients. A gradient has no direction
-// to it and no edge inside it, so a stack of them can only ever be soft blobs
-// meeting softly, which is a tint of a picture and not the picture. Everything
-// that gives these their texture, the smear, the spine where two ribbons cross,
-// the mixing done in linear light, is a thing a fragment shader does per pixel
-// and CSS cannot do at all.
+// Every petal is laid down whole, in its own color, blurred by its own distance,
+// over whatever is already there. That is the one thing a stack of gradients
+// cannot do, and it is the difference between a picture and a tint: a gradient
+// has no inside and no edge, so the best a stack of them manages is soft blobs
+// meeting softly, and everything that reads as a photograph here comes from a
+// shape being in front of another one.
+//
+// It is a fragment shader because all of it is per pixel: which petal is in
+// front here, how soft its edge is here, which way the light rakes across it
+// here, and how far it bleeds into the sky beside it.
 
 const VERTEX = `
 attribute vec2 aSpot;
@@ -26,16 +29,25 @@ const FRAGMENT = `
 precision highp float;
 varying vec2 vUv;
 
+const int MAX = ${MAX_PETALS};
+
 uniform float uSeed;
-uniform vec3 uRamp[5];
-uniform float uWarp;
-uniform float uScale;
-uniform vec2 uLie;
-uniform float uSmear;
-uniform float uSpine;
-uniform float uLift;
-uniform float uReach;
-uniform vec2 uTilt;
+uniform vec3 uSky;
+uniform vec3 uSkyTo;
+uniform vec2 uSkyLie;
+uniform vec3 uLight;
+uniform vec2 uSun;
+uniform float uBloom;
+uniform float uHaze;
+
+// A petal, packed four numbers at a time. Held one uniform per number it runs
+// past what the smallest machine promises to give a fragment shader, and a cover
+// that fails to compile on one machine is a grey box on that person's screen.
+uniform vec4 uAt[MAX];    // where the spine passes, and the way it lies
+uniform vec4 uShape[MAX]; // half width, how far it runs, how pointed, how bent
+uniform vec4 uEdge[MAX];  // how ruffled, how coarsely, how blurred, how lit
+uniform vec4 uSkin[MAX];  // its color, and whether it is in the picture at all
+uniform vec4 uGlow[MAX];  // how the light rakes it, how far it bleeds
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21) + uSeed);
@@ -56,10 +68,9 @@ float vnoise(vec2 p) {
 
 const mat2 TURN = mat2(0.8, 0.6, -0.6, 0.8);
 
-// Three octaves, and the second and third are quiet. A thing held right up to a
-// lens has two or three shapes in it and no detail at all: the fine octaves that
-// make good landscape noise are exactly what turns one of these into marbled
-// fabric, which is a texture but not this one.
+// Three octaves, and the last two are quiet. This only ever pushes an outline
+// about or mottles a sky, and both of those are big slow things: the fine
+// octaves that make good landscape noise would turn a petal into a doily.
 float fbm(vec2 p) {
   float sum = 0.0;
   float amp = 0.62;
@@ -68,87 +79,78 @@ float fbm(vec2 p) {
     sum += amp * vnoise(p);
     total += amp;
     p = TURN * p * 2.0;
-    amp *= 0.42;
+    amp *= 0.45;
   }
   return sum / total;
-}
-
-// The field itself, pushed around by two rounds of noise. Once is a wobble.
-// Twice is what folds a smooth field into shapes with lobes and creases, which
-// is where anything petal shaped in here comes from.
-float folded(vec2 p) {
-  vec2 first = vec2(fbm(p), fbm(p + vec2(5.2, 1.3)));
-  vec2 second = vec2(fbm(p + uWarp * first + vec2(1.7, 9.2)), fbm(p + uWarp * first + vec2(8.3, 2.8)));
-  return fbm(p + uWarp * second);
-}
-
-// The same field read several times along one direction and averaged, which is
-// what a smear is. It is done to the field rather than to the finished picture,
-// so the colors stay their own colors: blurring the picture afterwards would
-// average the colors too and give back the flat wash this is drawn to avoid.
-float smeared(vec2 p) {
-  float sum = 0.0;
-  float total = 0.0;
-  for (int i = 0; i < 13; i++) {
-    float step = (float(i) - 6.0) / 6.0;
-    float weight = exp(-step * step * 1.7);
-    sum += folded(p + uLie * step * uSmear) * weight;
-    total += weight;
-  }
-  return sum / total;
-}
-
-vec3 ramp(float t) {
-  t = clamp(t, 0.0, 1.0) * 4.0;
-  vec3 held = uRamp[0];
-  held = mix(held, uRamp[1], smoothstep(0.0, 1.0, clamp(t, 0.0, 1.0)));
-  held = mix(held, uRamp[2], smoothstep(0.0, 1.0, clamp(t - 1.0, 0.0, 1.0)));
-  held = mix(held, uRamp[3], smoothstep(0.0, 1.0, clamp(t - 2.0, 0.0, 1.0)));
-  held = mix(held, uRamp[4], smoothstep(0.0, 1.0, clamp(t - 3.0, 0.0, 1.0)));
-  return held;
 }
 
 void main() {
-  vec2 p = vUv * uScale;
-  float here = smeared(p);
+  vec2 p = vUv;
 
-  // Across the smear rather than along it, because that is the only direction a
-  // smeared edge still has an edge in. Where the field changes fastest across
-  // the lie of the smear is where one petal passes in front of another, and a
-  // lens leaves a bright line there.
-  vec2 across = vec2(-uLie.y, uLie.x) * 0.012;
-  float ahead = smeared(p + across);
-  float behind = smeared(p - across);
-  float crease = abs(ahead - behind) / 0.024;
+  // The sky. It runs from one color to another across the frame and is mottled
+  // on top of that, because a straight ramp behind everything is the one thing
+  // that says at a glance that a picture was made rather than taken.
+  float run = clamp(dot(p - 0.5, uSkyLie) + 0.5, 0.0, 1.0);
+  vec3 color = mix(uSky, uSkyTo, run);
+  color = mix(color, uSkyTo, fbm(p * 1.7 + 3.1) * 0.3);
 
-  // One end of the picture brighter than the other, which every photograph of
-  // this kind has and no amount of noise gives you: noise has no far side.
-  float tilt = dot(vUv - 0.5, uTilt);
+  float bleed = 0.0;
 
-  float level = clamp((here - 0.5) * uReach + 0.5 + uLift + tilt, 0.0, 1.0);
-  // Held toward the middle of the ramp, so a cover is mostly one or two of its
-  // colors with the others arriving at the edges. Swept end to end it reads as a
-  // sample card of the palette rather than as a picture of anything.
-  level = level * level * (3.0 - 2.0 * level);
-  vec3 color = ramp(level);
+  for (int i = 0; i < MAX; i++) {
+    vec4 skin = uSkin[i];
+    vec4 at = uAt[i];
+    vec4 shape = uShape[i];
+    vec4 edge = uEdge[i];
+    vec4 glow = uGlow[i];
 
-  // The lit edge is the top of the ramp brought in, never white. White is what
-  // turns a photograph into a highlight sticker, and it leaves the palette.
-  color = mix(color, uRamp[4], clamp(crease * uSpine, 0.0, 1.0) * 0.55);
+    vec2 lie = at.zw;
+    vec2 across = vec2(-lie.y, lie.x);
+    vec2 rel = p - at.xy;
+    // Along the spine and across it, with the spine curved by how far along it
+    // we are. A petal that runs dead straight is a stripe.
+    float along = dot(rel, lie);
+    float side = dot(rel, across) + shape.w * along * along;
 
-  // Light bleeding out of the bright parts into what is beside them, which is
-  // what an out of focus lens does and what keeps these from reading as flat
-  // regions of color with a soft join.
-  float bloom = smoothstep(0.55, 1.0, level);
-  color += uRamp[4] * bloom * 0.16;
+    // Fat in the middle and pointed at the ends, which is the whole outline of
+    // a petal. Anything past the ends has no width at all and so is not there.
+    float reach = clamp(abs(along) / max(shape.y, 0.001), 0.0, 1.0);
+    float wide = shape.x * pow(max(0.0, 1.0 - reach * reach), shape.z);
+    float ruffle = (fbm(p * edge.y + float(i) * 7.3) - 0.5) * edge.x;
+    float field = wide + ruffle - abs(side);
+
+    // Its own blur, and nothing else's. This is the depth of field: the front
+    // one comes up hard against the sky and the back ones have no edge left.
+    float cover = smoothstep(-edge.z, edge.z, field) * skin.w;
+
+    // The light raking across its face, so a petal is lighter on the side it is
+    // lit from. Flat, they read as paper cut-outs.
+    float lit = clamp(0.5 + (side / max(wide, 0.02)) * dot(across, uSun) * 0.5, 0.0, 1.0);
+    vec3 face = mix(skin.rgb, uLight, lit * glow.x);
+
+    // The lit edge, on the side of the outline that faces the light. It is the
+    // palette's own light rather than white, so a highlight stays in the family
+    // instead of bleaching a hole in the picture.
+    float rim = cover * (1.0 - cover) * 4.0;
+    float facing = max(0.0, -sign(side) * dot(across, uSun));
+    face = mix(face, uLight, clamp(rim * facing * edge.w, 0.0, 1.0));
+
+    color = mix(color, face, cover);
+
+    // What it throws into whatever is beside it. A bright thing held this close
+    // to a lens does not stop at its own outline.
+    float wider = edge.z + 0.16;
+    bleed += max(0.0, smoothstep(-wider, wider, field) - cover) * glow.y * skin.w;
+  }
+
+  color += uLight * clamp(bleed, 0.0, 1.5) * uBloom;
+  color = mix(color, uLight, uHaze);
 
   // Back to the numbers a screen wants. Everything above is in linear light.
   color = pow(clamp(color, 0.0, 1.0), vec3(1.0 / 2.2));
 
-  // Grain, and it goes on last so it is grain on the picture rather than
-  // something the picture was built out of.
-  float grain = hash(gl_FragCoord.xy * 0.37) - 0.5;
-  color += grain * 0.016;
+  // Grain, last, so it is grain on the photograph rather than something the
+  // photograph was built out of.
+  color += (hash(gl_FragCoord.xy * 0.41) - 0.5) * 0.018;
 
   gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
@@ -157,7 +159,7 @@ void main() {
 // One canvas and one context for every cover there will ever be. A context per
 // cover runs a browser out of them at around sixteen, and the list holds more
 // tracks than that.
-const SIDE = 320
+const SIDE = 512
 
 interface Rig {
   canvas: HTMLCanvasElement
@@ -178,6 +180,9 @@ const compile = (gl: WebGLRenderingContext, kind: number, source: string): WebGL
   }
   return shader
 }
+
+const PACKED = ['uAt', 'uShape', 'uEdge', 'uSkin', 'uGlow']
+const PLAIN = ['uSeed', 'uSky', 'uSkyTo', 'uSkyLie', 'uLight', 'uSun', 'uBloom', 'uHaze']
 
 const build = (): Rig | null => {
   const canvas = document.createElement('canvas')
@@ -204,16 +209,31 @@ const build = (): Rig | null => {
   gl.vertexAttribPointer(spot, 2, gl.FLOAT, false, 0, 0)
   gl.viewport(0, 0, SIDE, SIDE)
 
-  const named = ['uSeed', 'uWarp', 'uScale', 'uLie', 'uSmear', 'uSpine', 'uLift', 'uReach', 'uTilt']
   const spots: Record<string, WebGLUniformLocation | null> = {}
-  for (const name of named) spots[name] = gl.getUniformLocation(program, name)
-  for (let i = 0; i < 5; i++) spots[`uRamp${i}`] = gl.getUniformLocation(program, `uRamp[${i}]`)
+  for (const name of PLAIN) spots[name] = gl.getUniformLocation(program, name)
+  for (const name of PACKED) spots[name] = gl.getUniformLocation(program, `${name}[0]`)
   return { canvas, gl, spots }
 }
 
 const rigged = (): Rig | null => {
   if (rig === undefined) rig = build()
   return rig
+}
+
+// The five packed rows, filled out to the length the shader always runs. A slot
+// the picture does not use carries a zero where it says whether it is there,
+// which is what takes it out: a shader cannot be handed a shorter loop.
+const packed = (art: CoverArt): Record<string, Float32Array> => {
+  const rows: Record<string, Float32Array> = {}
+  for (const name of PACKED) rows[name] = new Float32Array(MAX_PETALS * 4)
+  art.petals.slice(0, MAX_PETALS).forEach((petal, i) => {
+    rows.uAt.set([petal.at[0], petal.at[1], petal.lie[0], petal.lie[1]], i * 4)
+    rows.uShape.set([petal.half, petal.along, petal.taper, petal.bend], i * 4)
+    rows.uEdge.set([petal.ruffle, petal.grain, petal.blur, petal.rim], i * 4)
+    rows.uSkin.set([petal.color[0], petal.color[1], petal.color[2], 1], i * 4)
+    rows.uGlow.set([petal.shine, petal.halo, 0, 0], i * 4)
+  })
+  return rows
 }
 
 const paint = (art: CoverArt): HTMLCanvasElement | null => {
@@ -223,18 +243,15 @@ const paint = (art: CoverArt): HTMLCanvasElement | null => {
   // The seed is a big number and a shader works in floats, so it is brought
   // down to something a float holds exactly rather than handed over whole.
   gl.uniform1f(spots.uSeed, (art.seed % 65536) / 64)
-  gl.uniform1f(spots.uWarp, art.warp)
-  gl.uniform1f(spots.uScale, art.scale)
-  gl.uniform2f(spots.uLie, art.lie[0], art.lie[1])
-  gl.uniform1f(spots.uSmear, art.smear)
-  gl.uniform1f(spots.uSpine, art.spine)
-  gl.uniform1f(spots.uLift, art.lift)
-  gl.uniform1f(spots.uReach, art.reach)
-  gl.uniform2f(spots.uTilt, art.tilt[0], art.tilt[1])
-  for (let i = 0; i < 5; i++) {
-    const color = art.ramp[Math.min(i, art.ramp.length - 1)]
-    gl.uniform3f(spots[`uRamp${i}`], color[0], color[1], color[2])
-  }
+  gl.uniform3f(spots.uSky, art.sky[0], art.sky[1], art.sky[2])
+  gl.uniform3f(spots.uSkyTo, art.skyTo[0], art.skyTo[1], art.skyTo[2])
+  gl.uniform2f(spots.uSkyLie, art.skyLie[0], art.skyLie[1])
+  gl.uniform3f(spots.uLight, art.light[0], art.light[1], art.light[2])
+  gl.uniform2f(spots.uSun, art.sun[0], art.sun[1])
+  gl.uniform1f(spots.uBloom, art.bloom)
+  gl.uniform1f(spots.uHaze, art.haze)
+  const rows = packed(art)
+  for (const name of PACKED) gl.uniform4fv(spots[name], rows[name])
   gl.drawArrays(gl.TRIANGLES, 0, 3)
   return held.canvas
 }
