@@ -49,7 +49,6 @@ export default function DesignChat({ boardId }: { boardId: string }) {
   const threadId = composeNew ? null : picked && threads[picked] ? picked : fallback
   const key = threadId ?? boardId
   const text = threadDrafts[key] ?? ''
-  const pendingCount = useCrew(s => (s.pending[key] ?? []).length)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { pinnedRef, onScroll } = useStickToBottom(scrollRef)

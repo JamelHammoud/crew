@@ -1,6 +1,25 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode
+} from 'react'
 import { createPortal } from 'react-dom'
 import { CheckGlyph, ChevronRightGlyph } from '../icons'
+
+// A popover opened from inside a popover is a sibling of it in the body rather
+// than a child, so the one underneath counts every click on it as a click
+// outside and closes, taking the one on top down with it. Each popover tells the
+// ones it stands inside where it is, all the way up, so a click anywhere in the
+// stack is a click inside every popover in it.
+type Nest = { add: (el: HTMLElement) => void; drop: (el: HTMLElement) => void }
+
+const NestContext = createContext<Nest | null>(null)
 
 export function Popover({
   open,
