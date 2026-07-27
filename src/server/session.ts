@@ -351,7 +351,10 @@ export class CrewSession {
       }
       if (event.kind === 'todo.checked') {
         const todo = this.todos.get(event.todoId)
-        if (todo) todo.checked = event.checked
+        if (todo) {
+          todo.checked = event.checked
+          todo.checkedTs = event.checked ? event.ts : undefined
+        }
       }
       if (event.kind === 'todo.removed' || event.kind === 'todo.started') {
         this.todos.delete(event.todoId)
