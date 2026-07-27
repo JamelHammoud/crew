@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, type ReactElement } from 'react'
 import { MARK_CUT, MARK_DISCS, MARK_HEIGHT, MARK_RADIUS, MARK_WIDTH } from '../crew-mark'
 
 // The mark, standing in a photograph rather than printed on one. It is the same
@@ -38,7 +38,7 @@ export default function CrewGlass({ className = '' }: { className?: string }) {
 
   // Each disc is cut only by the discs standing in front of it. One mask for the
   // whole stack reopens the gaps.
-  const discs = (fill: string, mask = true): JSX.Element[] =>
+  const discs = (fill: string): ReactElement[] =>
     AT.map((x, index) => (
       <circle
         key={index}
@@ -46,7 +46,7 @@ export default function CrewGlass({ className = '' }: { className?: string }) {
         cy={MIDDLE}
         r={MARK_RADIUS}
         fill={fill}
-        mask={mask ? paint(`cut-${index}`) : undefined}
+        mask={paint(`cut-${index}`)}
       />
     ))
 
