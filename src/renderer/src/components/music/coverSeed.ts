@@ -56,9 +56,14 @@ export interface CoverPetal {
   along: number
   // How pointed the ends are. Low is a paddle, high is a blade.
   taper: number
-  // How far the outline is pushed about, and how coarsely.
+  // How far the outline is pushed about, and how fine the push is: nought is
+  // the coarsest of the fields the shader draws, one is the finest.
   ruffle: number
-  grain: number
+  fine: number
+  // A wobble of its own along its length, so two petals pushed about by the
+  // same field are still two outlines.
+  lobe: number
+  phase: number
   // How far it is from the lens, said as the softness of its own edge. This is
   // the only thing that makes one shape sit behind another rather than beside
   // it, and it is why they are not all blurred by one amount at the end.
@@ -130,7 +135,8 @@ interface Recipe {
   near: number
   far: number
   ruffle: [number, number]
-  grain: [number, number]
+  fine: [number, number]
+  lobe: [number, number]
   rim: [number, number]
   halo: [number, number]
   // Where the shapes hang off, when the picture has a corner it grows from.
@@ -152,7 +158,8 @@ const CASTS: Record<CoverCast, Recipe> = {
     near: 0.015,
     far: 0.24,
     ruffle: [0.04, 0.1],
-    grain: [1.4, 2.8],
+    fine: [0.35, 0.75],
+    lobe: [0.04, 0.14],
     rim: [0.3, 0.75],
     halo: [0.1, 0.28]
   },
@@ -169,7 +176,8 @@ const CASTS: Record<CoverCast, Recipe> = {
     near: 0.03,
     far: 0.3,
     ruffle: [0.06, 0.16],
-    grain: [0.9, 2.0],
+    fine: [0.1, 0.5],
+    lobe: [0.06, 0.2],
     rim: [0.35, 0.9],
     halo: [0.16, 0.4]
   },
@@ -186,7 +194,8 @@ const CASTS: Record<CoverCast, Recipe> = {
     near: 0.008,
     far: 0.34,
     ruffle: [0.03, 0.08],
-    grain: [1.6, 3.2],
+    fine: [0.45, 0.9],
+    lobe: [0.03, 0.1],
     rim: [0.7, 1.15],
     halo: [0.12, 0.3]
   },
@@ -203,14 +212,15 @@ const CASTS: Record<CoverCast, Recipe> = {
     near: 0.16,
     far: 0.42,
     ruffle: [0.08, 0.2],
-    grain: [0.7, 1.6],
+    fine: [0.0, 0.35],
+    lobe: [0.08, 0.24],
     rim: [0.05, 0.3],
     halo: [0.25, 0.5]
   },
   // Thin fronds fanning out of one corner, all from the same root, spread right
   // through the depth so the near ones cut across the far ones.
   spray: {
-    count: [5, 7],
+    count: [5, 6],
     half: [0.05, 0.12],
     along: [1.3, 2.4],
     taper: [0.7, 1.3],
@@ -220,7 +230,8 @@ const CASTS: Record<CoverCast, Recipe> = {
     near: 0.01,
     far: 0.26,
     ruffle: [0.02, 0.06],
-    grain: [2.0, 3.6],
+    fine: [0.6, 1.0],
+    lobe: [0.02, 0.08],
     rim: [0.4, 0.9],
     halo: [0.08, 0.22],
     from: [0.5, 0.5],
@@ -239,7 +250,8 @@ const CASTS: Record<CoverCast, Recipe> = {
     near: 0.012,
     far: 0.4,
     ruffle: [0.05, 0.14],
-    grain: [1.0, 2.4],
+    fine: [0.15, 0.6],
+    lobe: [0.05, 0.18],
     rim: [0.3, 0.8],
     halo: [0.18, 0.42]
   }
@@ -255,7 +267,7 @@ const FALLBACK = ['#6fe9ff', '#d8f2ff', '#7fb3ff', '#f4fdff', '#2f9dfa']
 // The most a cover can hold. The shader runs this many every time and leaves out
 // the ones the picture does not use, because a loop a graphics card can count
 // has to be counted the same way for every cover.
-export const MAX_PETALS = 7
+export const MAX_PETALS = 6
 
 export function coverArt(item: MusicItem): CoverArt {
   const seed = seedOf(item.id)
@@ -300,7 +312,9 @@ export function coverArt(item: MusicItem): CoverArt {
       along: between(recipe.along, roll()),
       taper: between(recipe.taper, roll()),
       ruffle: between(recipe.ruffle, roll()),
-      grain: between(recipe.grain, roll()),
+      fine: between(recipe.fine, roll()),
+      lobe: between(recipe.lobe, roll()),
+      phase: roll() * Math.PI * 2,
       blur: recipe.near + (recipe.far - recipe.near) * (1 - depth),
       // The nearer it is the harder its edge catches the light. A rim on a
       // shape with no edge left is a bright smudge in the middle of nothing.
