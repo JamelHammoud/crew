@@ -8,13 +8,14 @@ import {
   uploadUrl,
   wrapAt,
   type MusicItem,
+  type MusicPlaylist,
   type MusicRoom,
   type MusicUpload
 } from '../../../shared/music'
 import { levelsAt } from '../media/levels'
 import { MusicPlayer } from '../media/music'
 import { tuneLevels } from '../media/tunes'
-import { onMusic, onMusicShelf, sendMusic, useCrew } from './store'
+import { onMusic, onMusicPlaylists, onMusicShelf, sendMusic, useCrew } from './store'
 import { onSounds, soundsOn } from './sound'
 
 const VOLUME_KEY = 'crew.music.volume'
@@ -28,6 +29,7 @@ const DRIFT = 0.35
 export interface MusicState {
   room: MusicRoom
   uploads: MusicUpload[]
+  playlists: MusicPlaylist[]
   // The moment the room landed here, so the bar keeps moving on a machine that
   // is not playing anything: muted, or with the app's sounds turned off.
   since: number
