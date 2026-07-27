@@ -6,7 +6,7 @@ import { useMusic } from '../../state/music'
 import { setSounds, useSounds } from '../../state/sound'
 import Slider from '../Slider'
 import Tooltip from '../Tooltip'
-import { quietPill, roundButton, solidButton } from './buttons'
+import { barButton, quietPill, solidButton } from './buttons'
 import Cover from './Cover'
 import { meshOf } from './mesh'
 import { clock } from './say'
@@ -28,13 +28,13 @@ function useAt(room: MusicRoom, playing: boolean): number {
   return at
 }
 
-// The bar at the foot of the panel, and it is only there while something is on.
-// Nothing playing is nothing to say, so the list gets the whole panel.
+// The bar floats at the foot of the panel, and it is only there while something
+// is on. Nothing playing is nothing to say, so the list gets the whole panel.
 //
-// It stands on the same gutter the rows above it do, and it is lit by the cover
-// of whatever is playing: the same picture, blurred past anything you could name
-// and held under a quarter of its own strength, so the foot of the panel carries
-// the color of the track rather than a second grey.
+// It is glass with a margin round it, so the list runs on underneath rather than
+// stopping at a shelf, and it is lit by the cover of whatever is playing: the
+// same picture, blurred past anything you could name and held at a fifth of its
+// own strength, so the foot of the panel carries the color of the track.
 export default function NowPlaying({ track }: { track: MusicItem }) {
   const room = useMusic(s => s.room)
   const trouble = useMusic(s => s.trouble)
@@ -48,12 +48,12 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
   const shown = scrub !== null ? scrub * track.seconds : at
 
   return (
-    <div className="shrink-0 relative isolate overflow-hidden bg-ink-800">
-      <span aria-hidden style={meshOf(track, 220)} className="absolute -inset-10 -z-10 opacity-[0.22]" />
+    <div className="glass absolute inset-x-3 bottom-3 isolate overflow-hidden rounded-card animate-rise">
+      <span aria-hidden style={meshOf(track, 220)} className="absolute -inset-10 -z-10 opacity-20" />
 
       {!sounds && (
-        <div className="px-4 pt-3 flex items-center gap-3">
-          <p className="flex-1 text-xs text-fg-secondary">Sound is off, so you will not hear this.</p>
+        <div className="px-3.5 pt-3 flex items-center gap-3">
+          <p className="flex-1 text-xs text-fg/70">Sound is off, so you will not hear this.</p>
           <button
             onClick={() => {
               setSounds(true)
@@ -66,17 +66,17 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
         </div>
       )}
 
-      <div className="px-4 pt-3.5 flex items-center gap-3">
+      <div className="px-3.5 pt-3.5 flex items-center gap-3">
         <Cover item={track} size={48} playing={room.playing} className="w-12 h-12 shrink-0 rounded-xl" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-fg">{track.name}</p>
-          <p className={`truncate text-xs ${trouble ? 'text-danger' : 'text-fg-muted'}`}>
+          <p className={`truncate text-xs ${trouble ? 'text-danger' : 'text-fg/45'}`}>
             {trouble ?? (track.by ? `${track.mood} · ${track.by}` : track.mood)}
           </p>
         </div>
         <div className="shrink-0 flex items-center gap-0.5">
           <Tooltip label="Back">
-            <button onClick={() => useMusic.getState().skip(-1)} aria-label="Back" className={`${roundButton} w-8 h-8`}>
+            <button onClick={() => useMusic.getState().skip(-1)} aria-label="Back" className={`${barButton} w-8 h-8`}>
               <SkipBackGlyph className="w-[18px] h-[18px]" />
             </button>
           </Tooltip>
@@ -90,15 +90,15 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
             </button>
           </Tooltip>
           <Tooltip label="Next">
-            <button onClick={() => useMusic.getState().skip(1)} aria-label="Next" className={`${roundButton} w-8 h-8`}>
+            <button onClick={() => useMusic.getState().skip(1)} aria-label="Next" className={`${barButton} w-8 h-8`}>
               <SkipNextGlyph className="w-[18px] h-[18px]" />
             </button>
           </Tooltip>
         </div>
       </div>
 
-      <div className="px-4 pt-3 pb-3.5 flex items-center gap-2">
-        <span className="shrink-0 text-[11px] tabular-nums text-fg-faint">{clock(shown)}</span>
+      <div className="px-3.5 pt-3 pb-3 flex items-center gap-2">
+        <span className="shrink-0 text-[11px] tabular-nums text-fg/45">{clock(shown)}</span>
         <Slider
           label="Track position"
           value={scrub ?? at / track.seconds}
@@ -106,25 +106,21 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
           onChange={setScrub}
           onCommit={share => useMusic.getState().seek(share * track.seconds)}
         />
-        <span className="shrink-0 text-[11px] tabular-nums text-fg-faint">{clock(track.seconds)}</span>
+        <span className="shrink-0 text-[11px] tabular-nums text-fg/45">{clock(track.seconds)}</span>
         <span className="shrink-0 flex items-center gap-0.5 pl-1">
           <Tooltip label={room.loop ? 'Play on to the next' : 'Repeat this track'}>
             <button
               onClick={() => useMusic.getState().setLoop(!room.loop)}
               aria-label={room.loop ? 'Play on to the next' : 'Repeat this track'}
               aria-pressed={room.loop}
-              className={`${roundButton} w-7 h-7 ${room.loop ? 'text-fg bg-fg/10' : ''}`}
+              className={`${barButton} w-7 h-7 ${room.loop ? 'text-fg bg-fg/10' : ''}`}
             >
               <RepeatGlyph className="w-4 h-4" />
             </button>
           </Tooltip>
           <Volume />
           <Tooltip label="Turn it off">
-            <button
-              onClick={() => useMusic.getState().off()}
-              aria-label="Turn it off"
-              className={`${roundButton} w-7 h-7`}
-            >
+            <button onClick={() => useMusic.getState().off()} aria-label="Turn it off" className={`${barButton} w-7 h-7`}>
               <StopGlyph className="w-4 h-4" />
             </button>
           </Tooltip>
