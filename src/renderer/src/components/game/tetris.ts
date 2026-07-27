@@ -23,6 +23,11 @@ const SHAPES: Record<Kind, { size: number; cells: Cell[] }> = {
   Z: { size: 3, cells: [[0, 0], [1, 0], [1, 1], [2, 1]] }
 }
 
+export const shapeOf = (kind: Kind): { size: number; cells: Cell[] } => ({
+  size: SHAPES[kind].size,
+  cells: SHAPES[kind].cells.map(([x, y]) => [x, y] as Cell)
+})
+
 export interface Falling {
   kind: Kind
   size: number
