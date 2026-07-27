@@ -9,7 +9,9 @@ import {
   PeopleGlyph,
   SpeakerGlyph,
   SpeakerOffGlyph,
-  SunGlyph
+  SunGlyph,
+  TrashGlyph,
+  UploadGlyph
 } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
@@ -297,6 +299,7 @@ export default function TopBar({
               }}
             />
           </Popover>
+          {photo.input}
         </div>
       </div>
     </header>
