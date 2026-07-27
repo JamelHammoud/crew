@@ -79,32 +79,16 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
             )}
           </>
         ) : (
-          <>
-            <button
-              onClick={() => setScreen('main')}
-              className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-sm font-medium text-fg/70 transition-colors hover:text-fg hover:bg-fg/5"
-            >
-              <ChevronLeftGlyph className="w-4 h-4 shrink-0" />
-              <span className="flex-1 text-left">Add to playlist</span>
-            </button>
-            <MenuDivider />
-            {mine.map(playlist => (
-              <MenuItem
-                key={playlist.id}
-                label={playlist.name}
-                checked={playlist.trackIds.includes(item.id)}
-                onClick={() => file(playlist.id, !playlist.trackIds.includes(item.id))}
-              />
-            ))}
-            <MenuItem
-              icon={<PlusGlyph />}
-              label="New playlist"
-              onClick={() => {
-                shut()
-                setNaming(true)
-              }}
-            />
-          </>
+          <AddToPlaylist
+            item={item}
+            playlists={mine}
+            onBack={() => setScreen('main')}
+            onPick={file}
+            onNew={() => {
+              shut()
+              setNaming(true)
+            }}
+          />
         )}
       </Popover>
       <NewPlaylist
