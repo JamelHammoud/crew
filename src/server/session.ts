@@ -533,7 +533,8 @@ export class CrewSession {
       boards: this.boardList(),
       huddle: this.huddleRoom(),
       music: this.musicRoom(),
-      musicUploads: [...this.uploads.values()]
+      musicUploads: [...this.uploads.values()],
+      musicPlaylists: this.playlistList()
     }
   }
 
@@ -663,7 +664,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleDeleteHuddle(member, msg.huddleId)
         break
       case 'music.set':
-        if (meta.role === 'ui') this.handleMusicSet(member, msg.trackId, msg.playing, msg.at)
+        if (meta.role === 'ui') this.handleMusicSet(member, msg.trackId, msg.playing, msg.at, msg.playlistId)
         break
       case 'music.off':
         if (meta.role === 'ui') this.handleMusicOff()
