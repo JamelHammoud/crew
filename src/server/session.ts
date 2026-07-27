@@ -489,7 +489,8 @@ export class CrewSession {
       members: [...this.members.values()].map(m => ({
         id: m.id,
         name: m.name,
-        connected: m.connections.size > 0
+        connected: m.connections.size > 0,
+        avatar: m.avatar
       })),
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: trimEvents(this.events, SNAPSHOT_EVENT_LIMIT),
@@ -2665,7 +2666,7 @@ export class CrewSession {
     this.store.saveSession({
       code: this.code,
       createdAt: this.createdAt,
-      members: [...this.members.values()].map(m => ({ id: m.id, name: m.name })),
+      members: [...this.members.values()].map(m => ({ id: m.id, name: m.name, avatar: m.avatar })),
       agents: [...this.agents.values()].map(({ runner, running, runs, dropTimer, ...agent }) => agent),
       removedAgents: [...this.removedAgents]
     })
