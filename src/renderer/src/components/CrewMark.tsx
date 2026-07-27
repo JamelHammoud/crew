@@ -13,6 +13,8 @@ const BLOBS = [
 
 const BLEED = 180
 
+const BOX = { x: 0, y: 0, width: MARK_WIDTH, height: MARK_HEIGHT }
+
 const FIELD = {
   x: -BLEED,
   y: -BLEED,
@@ -25,6 +27,7 @@ export function CrewMark({ className = '', run }: { className?: string; run?: nu
   const id = raw.replace(/[^a-zA-Z0-9-]/g, '')
   const live = run !== undefined
   const last = MARK_DISCS.length - 1
+  const field = live ? FIELD : BOX
 
   return (
     <svg
