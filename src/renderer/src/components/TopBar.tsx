@@ -243,7 +243,7 @@ export default function TopBar({
               label={myPhoto ? 'Change photo' : 'Add a photo'}
               onClick={() => {
                 setMenuOpen(false)
-                photoInput.current?.click()
+                photo.open()
               }}
             />
             {myPhoto && (
