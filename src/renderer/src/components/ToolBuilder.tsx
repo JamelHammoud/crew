@@ -515,7 +515,7 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
           </Pick>
         )}
 
-        {WORDY.includes(kind) && <Hint>{'A word in braces, like {branch}, is asked for when you press it.'}</Hint>}
+        {WORDY.includes(kind) && <Hint>{'Anything in {braces} is asked for first.'}</Hint>}
       </div>
 
       <Footer>
