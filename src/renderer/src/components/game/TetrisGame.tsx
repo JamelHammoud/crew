@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { paintTetris } from './drawTetris'
 import { Field, Overlay, Stat } from './GameStage'
-import { BLOCKS, GHOST, LINE, block, fitCanvas, outline } from './paint'
+import { BLOCKS, block, fitCanvas } from './paint'
 import {
   COLS,
   ROWS,
@@ -11,60 +12,13 @@ import {
   moveBy,
   newTetris,
   nextKind,
-  restY,
+  shapeOf,
   softDrop,
   turn,
   type Kind,
   type Tetris
 } from './tetris'
 import useGameLoop from './useGameLoop'
-
-function paint(canvas: HTMLCanvasElement, game: Tetris): void {
-  const width = canvas.clientWidth
-  const height = canvas.clientHeight
-  const ctx = fitCanvas(canvas, width, height)
-  if (!ctx) return
-  const size = Math.min(width / COLS, height / ROWS)
-  const left = (width - size * COLS) / 2
-  const top = (height - size * ROWS) / 2
-  ctx.clearRect(0, 0, width, height)
-
-  ctx.strokeStyle = LINE
-  ctx.lineWidth = 1
-  for (let x = 1; x < COLS; x++) {
-    ctx.beginPath()
-    ctx.moveTo(left + x * size, top)
-    ctx.lineTo(left + x * size, top + ROWS * size)
-    ctx.stroke()
-  }
-  for (let y = 1; y < ROWS; y++) {
-    ctx.beginPath()
-    ctx.moveTo(left, top + y * size)
-    ctx.lineTo(left + COLS * size, top + y * size)
-    ctx.stroke()
-  }
-
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      const kind = game.board[y * COLS + x]
-      if (kind) block(ctx, left + x * size, top + y * size, size, BLOCKS[kind])
-    }
-  }
-
-  const piece = game.falling
-  if (!piece) return
-  // Where the piece would land, drawn as an outline. Without it a stack four
-  // deep is guesswork in a panel this narrow.
-  const rest = restY(game)
-  for (const [cx, cy] of piece.cells) {
-    const y = rest + cy
-    if (y >= 0) outline(ctx, left + (piece.x + cx) * size, top + y * size, size, GHOST)
-  }
-  for (const [cx, cy] of piece.cells) {
-    const y = piece.y + cy
-    if (y >= 0) block(ctx, left + (piece.x + cx) * size, top + y * size, size, BLOCKS[piece.kind])
-  }
-}
 
 const SHOWN = 11
 const NEXT_BOX = { width: SHOWN * 4, height: SHOWN * 2 }
@@ -116,7 +70,7 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
         since.current = 0
         setGame(fall(now))
       }
-      if (canvas.current) paint(canvas.current, held.current)
+      if (canvas.current) paintTetris(canvas.current, held.current)
     }, []),
     phase === 'playing'
   )
@@ -124,7 +78,7 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
   // The last frame of a game that just ended still has to be painted, and the
   // loop has already stopped by then.
   useEffect(() => {
-    if (canvas.current) paint(canvas.current, game)
+    if (canvas.current) paintTetris(canvas.current, game)
   }, [game])
 
   useEffect(() => {
