@@ -18,7 +18,6 @@ const asked: Array<{ text: string; aimedAt?: string[] }> = []
 const tasks: Array<{ text: string; agentId?: string }> = []
 const written: Array<{ page: string; text: string }> = []
 const played: Array<{ trackId: string; playlistId: string | null }> = []
-let joins = 0
 let copied: string[] = []
 
 const tool = (extra: Partial<CrewTool> = {}): CrewTool => ({
