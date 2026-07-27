@@ -149,7 +149,7 @@ export default function MessageReactions({
         )}
       </div>
       {reactions.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
           {reactions.map(reaction => (
             <Tooltip key={reaction.emoji} label={<ReactionTip reaction={reaction} />}>
               <button
@@ -157,7 +157,7 @@ export default function MessageReactions({
                 aria-label={`${reaction.emoji}, ${reaction.count} ${reaction.count === 1 ? 'reaction' : 'reactions'}`}
                 aria-pressed={reaction.self}
                 onClick={() => react(reaction.emoji)}
-                className={`flex h-7 items-center gap-1.5 rounded-full px-2 transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95 ${
+                className={`${PILL} gap-1.5 px-2 ${
                   reaction.self
                     ? 'bg-fg/15 text-fg hover:bg-fg/20'
                     : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
@@ -168,6 +168,26 @@ export default function MessageReactions({
               </button>
             </Tooltip>
           ))}
+          <ReactionPickerButton
+            label="Add reaction"
+            align="start"
+            open={picker === 'row'}
+            onToggle={() => {
+              setActionsOpen(false)
+              setPicker(open => (open === 'row' ? null : 'row'))
+            }}
+            onClose={() => setPicker(null)}
+            selected={selected}
+            onPick={emoji => {
+              react(emoji)
+              setPicker(null)
+            }}
+            className={`${PILL} w-8 justify-center bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg ${
+              picker === 'row'
+                ? 'opacity-100'
+                : 'pointer-events-none opacity-0 group-hover/message:pointer-events-auto group-hover/message:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100'
+            }`}
+          />
         </div>
       )}
     </>
