@@ -567,7 +567,7 @@ export default function TasksPanel({
                             { icon: <UndoGlyph className="w-4 h-4" />, label: 'Reopen', status: 'open' },
                             entry.ts
                           )
-                        : checkedItem(entry.todo!, entry.ts)
+                        : checkedItem(entry.todo, entry.ts)
                     )}
                 </section>
               )}
