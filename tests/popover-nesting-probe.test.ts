@@ -14,12 +14,19 @@ const stack = () => {
       'div',
       null,
       h('button', null, 'anchor'),
-      h(
-        Popover,
-        { open: true, onClose: onOuter },
-        h('span', { 'data-testid': 'under' }, 'under'),
-        h(Popover, { open: true, onClose: onInner }, h('span', { 'data-testid': 'over' }, 'over'))
-      )
+      h(Popover, {
+        open: true,
+        onClose: onOuter,
+        children: [
+          h('span', { key: 'under', 'data-testid': 'under' }, 'under'),
+          h(Popover, {
+            key: 'over',
+            open: true,
+            onClose: onInner,
+            children: h('span', { 'data-testid': 'over' }, 'over')
+          })
+        ]
+      })
     )
   )
   return { onOuter, onInner }
