@@ -2,10 +2,14 @@ import { MAX_ATTACHMENT_BYTES } from '../../../shared/attachments'
 
 // Klipy is what a GIF picker can still be built on. Tenor closed its API to
 // everyone in June 2026 and Giphy stopped being free, so the choice is one
-// service and this is it. The key is a client key, and it rides in the repo the
-// crew already shares, which is how everyone who joined gets GIFs without being
-// handed anything of their own. One free key from partner.klipy.com goes here.
-const KEY = ''
+// service and this is it. The key is a client key rather than a secret, and
+// written here it rides in the repo the crew already shares, which is how
+// everyone who joined gets GIFs without being handed anything of their own. One
+// free key from partner.klipy.com goes here, or in VITE_KLIPY_KEY for a machine
+// that would rather keep it out of the project.
+const CREW_KEY = ''
+
+const key = (): string => (import.meta.env.VITE_KLIPY_KEY as string | undefined) || CREW_KEY
 
 const BASE = 'https://api.klipy.com/api/v1'
 const PER_PAGE = 24
