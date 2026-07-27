@@ -87,7 +87,8 @@ export function Popover({
       return anchor ? anchor.getBoundingClientRect() : null
     }
     const track = trackRef.current
-    if (!track?.el.isConnected) return null
+    if (!track) return new DOMRect(at.x, at.y, 0, 0)
+    if (!track.el.isConnected) return null
     const now = track.el.getBoundingClientRect()
     return new DOMRect(at.x + now.left - track.from.left, at.y + now.top - track.from.top, 0, 0)
   }
