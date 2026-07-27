@@ -67,7 +67,7 @@ export default function ScreenSwap({
     return () => clearTimeout(timer)
   }, [leaving])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const el = inner.current
     if (fill || !el) return
     const measure = () => setHeight(el.offsetHeight)
@@ -87,10 +87,12 @@ export default function ScreenSwap({
         {layers.map(gone => (
           <div
             key={gone ? gone.screen : screen}
+            aria-hidden={gone ? true : undefined}
             className={`absolute inset-0 ${
-              gone ? (gone.back ? 'animate-screen-out-back' : 'animate-screen-out') : arriving
+              gone
+                ? `pointer-events-none ${gone.back ? 'animate-screen-out-back' : 'animate-screen-out'}`
+                : arriving
             }`}
-            {...(gone ? { 'aria-hidden': true, inert: '' } : null)}
           >
             {gone ? gone.node : children}
           </div>

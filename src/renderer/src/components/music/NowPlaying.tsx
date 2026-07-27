@@ -52,8 +52,12 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
   const shown = scrub !== null ? scrub * track.seconds : at
 
   return (
-    <div className="glass absolute inset-x-3 bottom-3 isolate overflow-hidden rounded-card animate-rise">
-      <span aria-hidden style={meshOf(track, 220)} className="absolute -inset-10 -z-10 opacity-20" />
+    <div className="glass glass-lit absolute inset-x-3 bottom-3 isolate overflow-hidden rounded-card animate-rise">
+      <span
+        aria-hidden
+        style={meshOf(track, 220)}
+        className="absolute -inset-10 -z-10 opacity-[0.12] light:opacity-[0.16]"
+      />
 
       {!sounds && (
         <div className="px-3.5 pt-3 flex items-center gap-3">
