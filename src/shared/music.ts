@@ -328,8 +328,26 @@ export function wrapAt(at: number, seconds: number): number {
   return round < 0 ? round + seconds : round
 }
 
-export function trackAfter(id: string | null, step: number, uploads: readonly MusicUpload[] = []): string {
+// The tracks a playlist holds, in the order it holds them. An id nothing answers
+// to is left out rather than offered as a row that plays nothing, which is what
+// a playlist looks like once somebody takes one of its tracks off the shelf.
+export function playlistItems(
+  playlist: MusicPlaylist | null | undefined,
+  uploads: readonly MusicUpload[] = []
+): MusicItem[] {
+  if (!playlist) return []
   const items = musicItems(uploads)
+  return playlist.trackIds.map(id => items.find(item => item.id === id)).filter((item): item is MusicItem => !!item)
+}
+
+export function trackAfter(
+  id: string | null,
+  step: number,
+  uploads: readonly MusicUpload[] = [],
+  within: MusicPlaylist | null = null
+): string {
+  const items = within ? playlistItems(within, uploads) : musicItems(uploads)
+  if (items.length === 0) return musicItems(uploads)[0].id
   const at = items.findIndex(item => item.id === id)
   const next = (at + step + items.length) % items.length
   return items[at === -1 ? 0 : next].id
@@ -338,4 +356,35 @@ export function trackAfter(id: string | null, step: number, uploads: readonly Mu
 export function cleanUploadName(name: string): string {
   const trimmed = name.trim().replace(/\.[a-z0-9]{1,5}$/i, '').slice(0, UPLOAD_NAME_LIMIT)
   return trimmed || 'Untitled'
+}
+
+export function cleanPlaylistName(name: string): string {
+  return name.trim().replace(/\s+/g, ' ').slice(0, PLAYLIST_NAME_LIMIT) || 'Untitled'
+}
+
+// What was typed, matched against everything a row says: the name, the word for
+// what it is like, and whoever it came from. Every word has to land somewhere,
+// so a second word narrows the list rather than widening it.
+const words = (query: string): string[] => query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+
+export function findMusic(items: readonly MusicItem[], query: string): MusicItem[] {
+  const asked = words(query)
+  if (asked.length === 0) return [...items]
+  return items.filter(item => {
+    const said = `${item.name} ${item.mood} ${item.by ?? ''}`.toLowerCase()
+    return asked.every(word => said.includes(word))
+  })
+}
+
+export function findPlaylists(playlists: readonly MusicPlaylist[], query: string): MusicPlaylist[] {
+  const asked = words(query)
+  if (asked.length === 0) return [...playlists]
+  return playlists.filter(playlist => {
+    const said = `${playlist.name} ${playlist.by}`.toLowerCase()
+    return asked.every(word => said.includes(word))
+  })
+}
+
+export function isMine(playlist: MusicPlaylist, name: string): boolean {
+  return playlist.by.toLowerCase() === name.trim().toLowerCase()
 }
