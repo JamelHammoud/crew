@@ -107,11 +107,19 @@ export default function Toolbox({
   }
 
   const pressTool = (tool: CrewTool) => {
-    runTool(tool.action)
-    if (!staysOpen(tool.action)) return press(undefined, opensPanel(tool.action))
-    setCopied(tool.id)
+    const slots = toolSlots(tool.action)
+    if (slots.length > 0) return setFilling({ tool, slots })
+    fireTool(tool)
+  }
+
+  const fireTool = (tool: CrewTool, answers: Record<string, string> = {}) => {
+    runTool(tool.action, answers)
+    setFilling(null)
+    const word = saidAfter(tool.action)
+    if (!word) return press(undefined, opensPanel(tool.action))
+    setSaid({ toolId: tool.id, word })
     clearTimeout(timer.current)
-    timer.current = setTimeout(() => setCopied(null), SAID)
+    timer.current = setTimeout(() => setSaid(null), SAID)
   }
 
   return (
