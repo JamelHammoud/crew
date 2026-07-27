@@ -1,6 +1,20 @@
 import type { ToolAction } from '../../../shared/toolbox'
 import { FrameGlyph } from '../design/glyphs'
-import { ChatGlyph, ClipboardGlyph, DocGlyph, FileGlyph, GlobeGlyph, TerminalGlyph, type Glyph } from '../icons'
+import {
+  ChatGlyph,
+  ChecklistGlyph,
+  ClipboardGlyph,
+  DocGlyph,
+  FileGlyph,
+  GlobeGlyph,
+  GroupGlyph,
+  MusicGlyph,
+  PencilGlyph,
+  SignalGlyph,
+  SparkGlyph,
+  TerminalGlyph,
+  type Glyph
+} from '../icons'
 
 export type ToolKind = ToolAction['kind']
 
@@ -13,7 +27,13 @@ export const TOOL_KINDS: Array<{ kind: ToolKind; title: string; note: string; ma
   { kind: 'file', title: 'Open a file', note: 'Anything in the project', mark: FileGlyph },
   { kind: 'doc', title: 'Open a doc', note: 'One of the pages the crew writes', mark: DocGlyph },
   { kind: 'board', title: 'Open a board', note: 'One of the boards the crew draws on', mark: FrameGlyph },
-  { kind: 'prompt', title: 'Ask an agent', note: 'Puts the work in the chat', mark: ChatGlyph },
+  { kind: 'prompt', title: 'Ask an agent', note: 'Puts the work in the chat', mark: SparkGlyph },
+  { kind: 'say', title: 'Say something', note: 'Posts a message in the chat', mark: ChatGlyph },
+  { kind: 'todo', title: 'Add a task', note: "Puts it on the crew's list", mark: ChecklistGlyph },
+  { kind: 'note', title: 'Write in a doc', note: 'Adds a line to the end of a page', mark: PencilGlyph },
+  { kind: 'music', title: 'Put music on', note: 'Plays it for everyone here', mark: MusicGlyph },
+  { kind: 'huddle', title: 'Start a huddle', note: 'Opens the call and lets everyone in', mark: SignalGlyph },
+  { kind: 'chain', title: 'Do several things', note: 'Runs your other tools in order', mark: GroupGlyph },
   { kind: 'copy', title: 'Copy something', note: 'Puts what you write on the clipboard', mark: ClipboardGlyph }
 ]
 
