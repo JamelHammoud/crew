@@ -2419,6 +2419,22 @@ export class CrewSession {
     this.persistMeta()
   }
 
+  // Your own face, and nobody else's: the message carries no id, so the only
+  // member it can reach is the one who sent it. Taking the photo off puts back
+  // the initial, which comes from the name.
+  private handleMemberAvatar(member: Member, image: OutgoingAttachment | null): void {
+    if (image) {
+      const saved = this.saveAttachment(image.mime, image.name, Buffer.from(image.data, 'base64'))
+      if (!saved) return
+      member.avatar = saved.file
+    } else {
+      if (!member.avatar) return
+      delete member.avatar
+    }
+    this.broadcast({ type: 'member.avatar', memberId: member.id, file: member.avatar ?? null })
+    this.persistMeta()
+  }
+
   // Only the owner sets a photo on their own agent. Taking the photo off puts
   // back the generated icon, which comes from the agent id and never changes.
   private handleAvatar(member: Member, id: string, image: OutgoingAttachment | null): void {
