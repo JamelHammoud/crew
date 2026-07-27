@@ -75,6 +75,7 @@ export type MusicClientMessage = Extract<
     type:
       | 'music.set'
       | 'music.off'
+      | 'music.loop'
       | 'music.add'
       | 'music.remove'
       | 'playlist.add'
