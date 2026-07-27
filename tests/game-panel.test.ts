@@ -63,16 +63,17 @@ describe('the games panel', () => {
     expect(screen.getByText('Flappy Bird')).toBeTruthy()
   })
 
-  // The board is a table of people, best first, with your own row marked.
-  it('boards everyone who has played, best first', () => {
+  // The board is a table of people, best first, and it holds only the game it
+  // is standing on. Your own row is the bright one, which is all the marking it
+  // needs over artwork.
+  it('boards everyone who has played that game, best first', () => {
     panel([score('ali', 'tetris', 2400), score('sam', 'tetris', 900), score('ali', 'flappy', 6)])
     fireEvent.click(screen.getByText('Tetris'))
 
-    const names = [...document.body.querySelectorAll('ol li')].map(row => row.textContent)
-    expect(names).toHaveLength(2)
-    expect(names[0]).toContain('ali')
-    expect(names[1]).toContain('sam')
-    expect(names[1]).toContain('You')
+    const rows = [...document.body.querySelectorAll('ol li')]
+    expect(rows.map(row => row.textContent)).toEqual(['1Aali2,400', '2Ssam900'])
+    expect(rows[1].querySelector('.text-white')).toBeTruthy()
+    expect(rows[0].querySelector('.text-white')).toBeNull()
   })
 
   // A board of high scores beside a game being played is something to read
