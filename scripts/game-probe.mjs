@@ -121,6 +121,7 @@ try {
     define: { 'process.env.NODE_ENV': '"production"' }
   })
   const { sheet } = await import(path.join(dir, 'marks.mjs'))
+  console.log('marks', sheet().length)
   await writeFile(path.join(dir, 'probe.html'), PAGE.replace('__MARKS__', sheet()))
   await writeFile(path.join(dir, 'main.mjs'), MAIN)
   await writeFile(
