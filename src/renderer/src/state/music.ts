@@ -157,6 +157,8 @@ export const useMusic = create<MusicState>((set, get) => {
 
     items: () => musicItems(get().uploads),
 
+    playlist: playlistId => get().playlists.find(one => one.id === playlistId) ?? null,
+
     // Where the loop has got to. The player's own clock while it is playing, and
     // where the room said it was plus however long ago that was when it is not.
     position: () => {
