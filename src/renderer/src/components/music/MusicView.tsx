@@ -52,6 +52,7 @@ export default function MusicView() {
   const volume = useMusic(s => s.volume)
   const muted = useMusic(s => s.muted)
   const adding = useMusic(s => s.adding)
+  const trouble = useMusic(s => s.trouble)
   const selfName = useCrew(s => s.selfName)
   const sounds = useSounds()
   const items = useMemo(() => musicItems(uploads), [uploads])
