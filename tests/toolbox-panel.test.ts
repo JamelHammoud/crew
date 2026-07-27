@@ -39,7 +39,7 @@ let switched = 0
 const toolbox = (
   tools: CrewTool[] = [],
   agents: PooledAgent[] = [],
-  written: { docs?: Record<string, { title: string; text: string }>; boards?: Array<{ id: string; name: string }> } = {}
+  held: { docs?: Record<string, { title: string; text: string }>; boards?: Array<{ id: string; name: string }> } = {}
 ) => {
   useCrew.setState({
     tools,
