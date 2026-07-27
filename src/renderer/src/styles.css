@@ -50,8 +50,16 @@
   /* One screen inside a card giving way to another. It travels the way you are
      going, so going deeper comes in from the right and coming back comes in from
      the left, and the card's own height is what carries the rest of it. */
-  --animate-screen: screen-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  --animate-screen-back: screen-back 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-screen: screen-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-screen-back: screen-back 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  /* The screen being left. A card lets it go where it stands, because the card's
+     own height is already moving and there is nothing behind it to see. A panel
+     is a fixed box, so the one leaving has to be watched out or the new screen
+     arrives over a hole. It goes the way it came, and it goes quicker than the
+     new one arrives, so the two are never both at full strength. */
+  --animate-screen-out: screen-out 0.14s ease-out both;
+  --animate-screen-out-back: screen-out-back 0.14s ease-out both;
 
   @keyframes pop {
     from {
