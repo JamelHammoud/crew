@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { huddleTitle, sharingPeer } from '../../../../shared/huddle'
 import { useHuddle } from '../../state/huddle'
+import { useFullScreen } from '../../state/windowShape'
 import AvatarStack from '../AvatarStack'
 import Spinner from '../Spinner'
 import { formatClock } from '../time'
