@@ -67,16 +67,22 @@
     }
   }
 
+  /* It breathes rather than pushes in. Every number here is spent against the
+     margin the cover is laid in past its tile with, and a turn is the dearest
+     of the three: a degree of rotation costs about as much of that margin as a
+     whole percent of travel does, which is why there is so little of it. The
+     scale never drops under one, so the resting frame is the picture at its own
+     size rather than a crop of it. */
   @keyframes drift {
     0%,
     100% {
       transform: scale(1) translate(0, 0) rotate(0deg);
     }
     33% {
-      transform: scale(1.08) translate(2.5%, -3%) rotate(4deg);
+      transform: scale(1.03) translate(1.6%, -1.8%) rotate(1.2deg);
     }
     66% {
-      transform: scale(1.05) translate(-3%, 2%) rotate(-3deg);
+      transform: scale(1.02) translate(-1.8%, 1.4%) rotate(-1deg);
     }
   }
 }
