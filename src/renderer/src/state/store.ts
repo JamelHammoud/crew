@@ -852,4 +852,7 @@ export const useCrew = create<CrewState>((set, get) => {
     closeThread: () => set({ openThreadId: null }),
     openDoc: page => set({ docsTarget: page }),
     clearDocsTarget: () => set({ docsTarget: null }),
-    openBoard: boardId => set({
+    openBoard: boardId => set({ designTarget: boardId }),
+    clearDesignTarget: () => set({ designTarget: null })
+  }
+})
