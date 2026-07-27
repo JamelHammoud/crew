@@ -191,6 +191,10 @@ export function Row({
       </span>
       {chevron ? (
         <ChevronRightGlyph className="w-4 h-4 shrink-0 text-fg/30" />
+      ) : order ? (
+        <span className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center bg-fg text-ink-900 text-[10px] font-semibold">
+          {order}
+        </span>
       ) : (
         active && <CheckGlyph className="w-4 h-4 shrink-0" />
       )}
@@ -200,6 +204,10 @@ export function Row({
 
 export function Empty({ children }: { children: ReactNode }) {
   return <p className="px-1 py-3 text-center text-xs text-fg/35">{children}</p>
+}
+
+export function Hint({ children }: { children: ReactNode }) {
+  return <p className="px-0.5 text-xs leading-4 text-fg/35">{children}</p>
 }
 
 // One tile: a tool in the toolbox, built in or built here. Lit white while the
