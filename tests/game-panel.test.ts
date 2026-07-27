@@ -53,14 +53,13 @@ describe('the games panel', () => {
     expect(screen.getByText('No scores yet')).toBeTruthy()
   })
 
-  it('opens a game on its own board, and comes back out of it', () => {
+  it('opens a game on its own field, and comes back out of it', () => {
     panel([score('ali', 'tetris', 2400), score('sam', 'tetris', 900)])
 
     fireEvent.click(screen.getByText('Tetris'))
-    expect(screen.getByText('High scores')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
 
-    fireEvent.click(screen.getByLabelText('All games'))
+    fireEvent.click(screen.getByLabelText('Back'))
     expect(screen.getByText('Flappy Bird')).toBeTruthy()
   })
 
@@ -76,11 +75,15 @@ describe('the games panel', () => {
     expect(names[1]).toContain('You')
   })
 
-  it('shows your own best on the game you are playing', () => {
-    panel([score('sam', 'tetris', 900)])
+  // A board of high scores beside a game being played is something to read
+  // instead of the game, so it stands down the moment a game starts.
+  it('takes the board away while a game is running', () => {
+    panel([score('ali', 'tetris', 2400)])
     fireEvent.click(screen.getByText('Tetris'))
+    expect(document.body.querySelectorAll('ol li')).toHaveLength(1)
 
-    expect(screen.getByText('Best').parentElement?.textContent).toContain('900')
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    expect(document.body.querySelectorAll('ol li')).toHaveLength(0)
   })
 
   it('starts on nobody having played', () => {
