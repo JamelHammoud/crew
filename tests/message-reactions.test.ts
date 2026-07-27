@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
+import { reactionName, reactorLine } from '../src/renderer/src/components/ReactionTip'
 import { reactionGroups } from '../src/renderer/src/components/reactionGroups'
 import { buildThread } from '../src/renderer/src/components/thread'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -152,6 +153,62 @@ describe('message reaction controls', () => {
     expect(reactionGroups(events, 'ali').get('message:m1')).toEqual([
       { emoji: '👍', count: 1, names: ['Ali'], self: true }
     ])
+  })
+
+  it('names you first in a group you reacted to', () => {
+    const reaction = (memberId: string, memberName: string, ts: number): SessionEvent => ({
+      id: `r${ts}`,
+      ts,
+      kind: 'message.reaction',
+      targetId: 'message:m1',
+      targetAuthorId: 'ali',
+      targetAuthorName: 'Ali',
+      memberId,
+      memberName,
+      emoji: '🔥',
+      active: true
+    })
+
+    expect(
+      reactionGroups([reaction('ali', 'Ali', 1), reaction('jamel', 'Jamel', 2)], 'jamel').get('message:m1')
+    ).toEqual([{ emoji: '🔥', count: 2, names: ['Jamel', 'Ali'], self: true }])
+  })
+
+  it('names the reaction and everyone who sent it, and counts off a crowd', () => {
+    expect(reactorLine({ names: ['Ali'], self: false })).toBe('Ali')
+    expect(reactorLine({ names: ['Jamel', 'Ali'], self: true })).toBe('You and Ali')
+    expect(reactorLine({ names: ['Ali', 'Ben', 'Cat', 'Dee'], self: false })).toBe('Ali, Ben, Cat and Dee')
+    expect(reactorLine({ names: ['Jamel', 'Ali', 'Ben', 'Cat', 'Dee'], self: true })).toBe(
+      'You, Ali, Ben and 2 others'
+    )
+    expect(reactionName('🔥')).toBe(':fire:')
+  })
+
+  it('shows the reaction, its name and who reacted on hover', () => {
+    vi.useFakeTimers()
+    try {
+      useCrew.setState({ reactToMessage: vi.fn() })
+      render(
+        createElement(
+          'div',
+          { className: 'group/message' },
+          createElement(MessageReactions, {
+            targetId: 'message:m1',
+            reactions: [{ emoji: '🔥', count: 2, names: ['Jamel', 'Ali'], self: true }],
+            deletable: false,
+            onDelete: () => {}
+          })
+        )
+      )
+
+      fireEvent.mouseEnter(screen.getByLabelText('🔥, 2 reactions').parentElement as HTMLElement)
+      act(() => vi.advanceTimersByTime(400))
+
+      expect(screen.getByText('You and Ali')).toBeTruthy()
+      expect(screen.getByText(/reacted with/).textContent).toBe('reacted with :fire:')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('keeps a reaction on the exact agent reply block it targets', () => {

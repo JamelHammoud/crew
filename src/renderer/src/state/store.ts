@@ -268,7 +268,8 @@ export const useCrew = create<CrewState>((set, get) => {
                 mentionRefs: event.mentionRefs ?? e.mentionRefs,
                 memberMentionRefs: event.memberMentionRefs ?? e.memberMentionRefs,
                 docMentions: event.docMentions ?? e.docMentions,
-                boardMentions: event.boardMentions ?? e.boardMentions
+                boardMentions: event.boardMentions ?? e.boardMentions,
+                editedTs: event.ts
               }
             : e
         )

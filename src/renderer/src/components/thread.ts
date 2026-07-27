@@ -84,6 +84,7 @@ export interface ThreadItem {
   reactionTargetId?: string
   reactions?: ReactionGroup[]
   replyTo?: MessageReply
+  editedTs?: number
 }
 
 // How a message reached the agent, shown on the message itself: it was folded
