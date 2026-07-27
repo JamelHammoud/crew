@@ -299,3 +299,4 @@
 {"id":"df4c9a31-63a9-45e6-8628-1c4983c13a51","ts":1785131178760,"kind":"tool.edited","toolId":"a003a9f8-f078-419f-80ad-a15cd11fcfa4","name":"Jamel","mark":"🍌","action":{"kind":"web","url":"https://jamelhammoud.com"},"byName":"Jamel"}
 {"id":"2f8b38a9-145d-4d72-aa82-9461030c7082","ts":1785131228955,"kind":"huddle.started","huddleId":"bb72357a-eac5-4340-b815-a1d5ad44b004","byId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","byName":"Jamel"}
 {"id":"08e668e6-6724-471b-b5ec-c8cf7e6e303f","ts":1785131232717,"kind":"huddle.ended","huddleId":"bb72357a-eac5-4340-b815-a1d5ad44b004","ms":3762}
+{"id":"fd193a04-ef42-4aeb-b9ed-76e59956f325","ts":1785131235178,"kind":"huddle.deleted","huddleId":"bb72357a-eac5-4340-b815-a1d5ad44b004"}
