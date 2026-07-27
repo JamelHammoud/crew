@@ -143,6 +143,46 @@ describe('a cover has depth in it', () => {
     }
   })
 
+  it('keeps the odd color out of the front of the picture', () => {
+    // A color picked to stand against the sky, handed the nearest slot, is the
+    // hardest edge in the frame wearing the most unlike color, and it reads as
+    // pasted on however good the rest of it is. The furthest thing is the one
+    // that carries it.
+    const skyHue = (item: MusicItem): number => hueOf(item.colors[4])
+    const hueOfLinear = (color: [number, number, number]): number => {
+      const back = (one: number): number => (one <= 0.0031308 ? one * 12.92 : 1.055 * Math.pow(one, 1 / 2.4) - 0.055)
+      const [r, g, b] = color.map(back)
+      const high = Math.max(r, g, b)
+      const low = Math.min(r, g, b)
+      const range = high - low
+      if (range === 0) return 0
+      const turn =
+        high === r ? (g - b) / range + (g < b ? 6 : 0) : high === g ? (b - r) / range + 2 : (r - g) / range + 4
+      return turn * 60
+    }
+    for (const item of items) {
+      const art = coverArt(item)
+      if (art.petals.length < 2) continue
+      const sky = skyHue(item)
+      const furthest = apart(hueOfLinear(art.petals[0].color), sky)
+      const nearest = apart(hueOfLinear(art.petals[art.petals.length - 1].color), sky)
+      expect(furthest, `${item.name} put its odd color in front`).toBeGreaterThanOrEqual(nearest)
+    }
+  })
+
+  it('puts the air in front of the things that are far off', () => {
+    // A thing further off is seen through more of whatever the sky is made of,
+    // so it takes the sky's color as it goes back. Without it the far shapes
+    // carry their color at full strength and sit on the picture rather than in
+    // it. Handed one color three times, the difference is the air alone.
+    const one = { ...items[0], id: 'air-probe', colors: ['#ff7a3c', '#ff7a3c', '#ff7a3c', '#fff5e6', '#2f9dfa'] }
+    const art = coverArt(one)
+    expect(art.petals.length).toBeGreaterThan(1)
+    const toSky = (color: [number, number, number]): number =>
+      Math.hypot(color[0] - art.sky[0], color[1] - art.sky[1], color[2] - art.sky[2])
+    expect(toSky(art.petals[0].color)).toBeLessThan(toSky(art.petals[art.petals.length - 1].color))
+  })
+
   it('hands the shader nothing it cannot use', () => {
     // Everything below is multiplied by something else in the shader, so one
     // number that is not a number takes the whole cover with it and the tile
