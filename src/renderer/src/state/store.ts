@@ -70,11 +70,21 @@ export type MusicServerMessage = Extract<ServerMessage, { type: 'music.room' }>
 
 export type MusicClientMessage = Extract<
   ClientMessage,
-  { type: 'music.set' | 'music.off' | 'music.add' | 'music.remove' }
+  {
+    type:
+      | 'music.set'
+      | 'music.off'
+      | 'music.add'
+      | 'music.remove'
+      | 'playlist.add'
+      | 'playlist.remove'
+      | 'playlist.track'
+  }
 >
 
 const musicListeners = new Set<(msg: MusicServerMessage) => void>()
 const shelfListeners = new Set<(uploads: MusicUpload[]) => void>()
+const playlistListeners = new Set<(playlists: MusicPlaylist[]) => void>()
 
 export function onMusic(listener: (msg: MusicServerMessage) => void): () => void {
   musicListeners.add(listener)
@@ -84,6 +94,11 @@ export function onMusic(listener: (msg: MusicServerMessage) => void): () => void
 export function onMusicShelf(listener: (uploads: MusicUpload[]) => void): () => void {
   shelfListeners.add(listener)
   return () => shelfListeners.delete(listener)
+}
+
+export function onMusicPlaylists(listener: (playlists: MusicPlaylist[]) => void): () => void {
+  playlistListeners.add(listener)
+  return () => playlistListeners.delete(listener)
 }
 
 export function sendMusic(msg: MusicClientMessage): void {
