@@ -239,6 +239,24 @@ export default function TopBar({
             </div>
             <MenuDivider />
             <MenuItem
+              icon={<UploadGlyph />}
+              label={myPhoto ? 'Change photo' : 'Add a photo'}
+              onClick={() => {
+                setMenuOpen(false)
+                photoInput.current?.click()
+              }}
+            />
+            {myPhoto && (
+              <MenuItem
+                icon={<TrashGlyph />}
+                label="Remove photo"
+                onClick={() => {
+                  setMenuOpen(false)
+                  setMyPhoto(null)
+                }}
+              />
+            )}
+            <MenuItem
               icon={<PeopleGlyph />}
               label="Crew"
               active={tab === 'agents'}
