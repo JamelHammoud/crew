@@ -48,6 +48,31 @@ export function Popover({
   const sizeRef = useRef<{ w: number; h: number } | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
+  const outer = useContext(NestContext)
+  const inner = useRef(new Set<HTMLElement>())
+  const nest = useMemo<Nest>(
+    () => ({
+      add: el => {
+        inner.current.add(el)
+        outer?.add(el)
+      },
+      drop: el => {
+        inner.current.delete(el)
+        outer?.drop(el)
+      }
+    }),
+    [outer]
+  )
+
+  useEffect(() => {
+    const el = popRef.current
+    if (!el || !outer) return
+    outer.add(el)
+    return () => outer.drop(el)
+  })
+
+  const within = (target: Node): boolean =>
+    Boolean(popRef.current?.contains(target)) || [...inner.current].some(el => el.contains(target))
 
   useLayoutEffect(() => {
     if (!open) {
