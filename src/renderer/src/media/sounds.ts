@@ -186,6 +186,58 @@ const STRIKES: Record<StrikeName, Strike[]> = {
       wet: 0.42,
       rasp: { hz: 3400, q: 2.8, gain: 0.04, length: 0.004 }
     }
+  ],
+  'task.done': [
+    {
+      hz: 1567.98,
+      at: 0,
+      length: 0.05,
+      gain: 0.22,
+      partials: [1, 3.4],
+      bend: 1.3,
+      bendTime: 0.005,
+      tone: 7600,
+      wet: 0.16,
+      rasp: { hz: 5600, q: 2.4, gain: 0.42, length: 0.01 }
+    },
+    {
+      hz: 880,
+      at: 0.02,
+      length: 0.22,
+      gain: 0.42,
+      partials: [1, 2.92, 5.1],
+      bend: 0.88,
+      bendTime: 0.022,
+      detune: 6,
+      tone: 3000,
+      wet: 0.2,
+      rasp: { hz: 2100, q: 2.4, gain: 0.12, length: 0.006 }
+    },
+    {
+      hz: 1174.66,
+      at: 0.105,
+      length: 0.62,
+      gain: 0.36,
+      partials: [1, 2.92, 5.1],
+      bend: 1.05,
+      bendTime: 0.016,
+      detune: 5,
+      tone: 4400,
+      wet: 0.36,
+      rasp: { hz: 2800, q: 2.6, gain: 0.06, length: 0.005 }
+    },
+    {
+      hz: 293.66,
+      at: 0.105,
+      length: 0.95,
+      gain: 0.3,
+      partials: [1, 2.04],
+      bend: 0.74,
+      bendTime: 0.06,
+      tone: 1400,
+      wet: 0.24,
+      rasp: { hz: 700, q: 0.9, gain: 0.05, length: 0.01 }
+    }
   ]
 }
 

@@ -10,6 +10,7 @@ import { isUploadFile } from '../shared/music'
 export interface PersistedMember {
   id: string
   name: string
+  avatar?: string
 }
 
 export interface PersistedSession {
