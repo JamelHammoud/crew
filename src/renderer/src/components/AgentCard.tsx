@@ -43,18 +43,18 @@ export default function AgentCard({
     setDraft(null)
   }
 
+  const face = <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
+
   return (
     <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
           {onAvatar ? (
-            <AgentPhoto
-              agent={agent}
-              presence={agent.status === 'offline' ? 'offline' : 'online'}
-              onChange={onAvatar}
-            />
+            <PhotoPicker has={Boolean(agent.avatar)} onChange={onAvatar}>
+              {face}
+            </PhotoPicker>
           ) : (
-            <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
+            face
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
