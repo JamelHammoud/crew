@@ -11,6 +11,7 @@ Pool LLMs with friends. One person hosts a session, others join from a link, and
 - `yarn test tests/<name>.test.ts` — one suite (vitest), which is how tests are normally run
 - `yarn test` — the whole suite, which takes a long time. Only when asked for it
 - `yarn tsc --noEmit` — typecheck
+- `yarn covers` — draw every music cover on one page
 - `yarn dist` — build a mac dmg
 
 ## Writing
