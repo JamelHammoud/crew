@@ -45,9 +45,10 @@ export function CrewMark({
 
   return (
     <svg
-      viewBox={`0 0 ${MARK_WIDTH} ${MARK_HEIGHT}`}
+      viewBox={view}
       role="img"
       aria-label="crew"
+      style={height === undefined ? undefined : { height: (height * STAGE) / MARK_HEIGHT }}
       className={live ? `crew-mark ${className}` : className}
     >
       {live && (
