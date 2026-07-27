@@ -74,6 +74,25 @@ describe('a palette is a thing photographed in good light', () => {
     }
   })
 
+  it('has nothing washed out in it either', () => {
+    // The same mistake at the other end, and it was in every palette here. The
+    // first three colors are the things in the frame, and a thing has a color:
+    // pale enough and there is none left in it, so it stops being the light on a
+    // petal and becomes a hole cut in the picture, brighter than everything
+    // around it and made of nothing. One track had a plain white for its middle
+    // color and every other one had a near white, which is why a cover's pale
+    // shape read as belonging to a different picture.
+    //
+    // The fourth is the light and is meant to be near white, and the sky is
+    // whatever it is, so neither is asked to hold a color of its own here.
+    for (const [name, colors] of palettes) {
+      for (const color of colors.slice(0, 3)) {
+        expect(lumaOf(color), `${name} has ${color}, which is nearly white`).toBeLessThan(0.87)
+        expect(chromaOf(color), `${name} has ${color}, which has no color left`).toBeGreaterThan(0.24)
+      }
+    }
+  })
+
   it('gives the sky a color rather than a grey', () => {
     // The sky is most of the frame, so it carries the picture. Drained of
     // color it takes the whole cover down with it however bright the petals are.
