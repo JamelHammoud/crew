@@ -35,38 +35,42 @@ function seed(one: PooledAgent, setAgentAvatar = vi.fn()) {
 
 afterEach(cleanup)
 
+// The People section holds faces of its own, so every query here is asked of
+// the agents rather than of the page.
+const agents = () => within(screen.getByRole('heading', { name: 'Agents' }).closest('section') as HTMLElement)
+
 describe('agent photos in the crew tab', () => {
   it('shows the uploaded photo in place of the generated icon', () => {
     seed({ ...agent, avatar: 'a-photo.png' })
-    const { container } = render(createElement(Dashboard))
+    render(createElement(Dashboard))
 
-    const image = container.querySelector('img')
-    expect(image?.getAttribute('src')).toBe('http://10.0.0.2:2739/attachments/a-photo.png')
-    expect(container.querySelector('svg[viewBox="0 0 100 100"]')).toBeNull()
+    const image = agents().getByRole('img', { hidden: true }) as HTMLImageElement
+    expect(image.getAttribute('src')).toBe('http://10.0.0.2:2739/attachments/a-photo.png')
+    expect(agents().queryByRole('presentation', { hidden: true })).toBeNull()
   })
 
   it('takes a photo off and lands back on the generated icon', () => {
     const setAgentAvatar = seed({ ...agent, avatar: 'a-photo.png' })
-    const { container, rerender } = render(createElement(Dashboard))
+    const { rerender } = render(createElement(Dashboard))
 
-    fireEvent.click(screen.getByLabelText('Change photo'))
+    fireEvent.click(agents().getByLabelText('Change photo'))
     fireEvent.click(screen.getByText('Remove photo'))
     expect(setAgentAvatar).toHaveBeenCalledWith(agent.id, null)
 
     useCrew.setState({ agents: [agent] })
     rerender(createElement(Dashboard))
-    expect(container.querySelector('img')).toBeNull()
-    expect(container.querySelector('svg[viewBox="0 0 100 100"]')).toBeTruthy()
+    expect(agents().queryByRole('img', { hidden: true })).toBeNull()
+    expect(agents().getByRole('presentation', { hidden: true })).toBeTruthy()
   })
 
   it('offers the upload straight away when there is no photo, and only to the owner', () => {
     seed(agent)
     const { rerender } = render(createElement(Dashboard))
-    expect(screen.getByLabelText('Add a photo')).toBeTruthy()
+    expect(agents().getByLabelText('Add a photo')).toBeTruthy()
 
     useCrew.setState({ agents: [{ ...agent, ownerId: 'ali', ownerName: 'ALI' }] })
     rerender(createElement(Dashboard))
-    expect(screen.queryByLabelText('Add a photo')).toBeNull()
-    expect(screen.queryByLabelText('Change photo')).toBeNull()
+    expect(agents().queryByLabelText('Add a photo')).toBeNull()
+    expect(agents().queryByLabelText('Change photo')).toBeNull()
   })
 })
