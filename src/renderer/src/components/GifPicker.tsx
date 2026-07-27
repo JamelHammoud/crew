@@ -114,7 +114,11 @@ export default function GifPicker({
         setPage(result.page)
         setMore(result.more)
       })
-      .catch(() => {})
+      // A page that did not arrive is put back rather than swallowed, so the
+      // next scroll asks for it again instead of the list quietly ending early.
+      .catch(() => {
+        if (asked.current === token) setMore(true)
+      })
   }
 
   // One GIF that would not come down says so on a line of its own. The grid
