@@ -4,6 +4,7 @@ import Emoji from './Emoji'
 import { EMOJI_CATEGORIES, lookupEmoji, searchEmoji, type EmojiEntry } from './emojiData'
 import { recentEmoji } from './emojiRecents'
 import Tooltip from './Tooltip'
+import { useAutoFocus } from './useAutoFocus'
 
 const CELL = 34
 const HEADER = 28
@@ -38,6 +39,7 @@ export default function EmojiPicker({
   hint?: string
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const searchRef = useAutoFocus<HTMLInputElement>()
   const [query, setQuery] = useState('')
   const [scrollTop, setScrollTop] = useState(0)
   const [active, setActive] = useState('recent')
