@@ -43,8 +43,12 @@ export const ATTACH_SIZES = {
   sm: 'w-7 h-7'
 } as const
 
+// A button that opens something stays lit for as long as what it opened is up,
+// so the panel on screen always has the control it came out of standing under
+// it. It is the same `data-active` a menu row wears, rather than a state of its
+// own written at the one call site that needed it.
 export const PLUS_BUTTON =
-  'rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0'
+  'rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0'
 
 // The file dialog is opened from the plus in the ask bar and from a row in the
 // composer's own menu, so the input itself lives in one place and both reach it
