@@ -74,13 +74,11 @@ export default function Playlists({ query, onOpen }: { query: string; onOpen: (p
         </li>
       )}
 
-      <Section title="Crew's own" playlists={sets} onOpen={onOpen} />
-      <Section title="Yours" playlists={mine} onOpen={onOpen} />
-      {names.map(who => (
-        <Section key={who} title={who} playlists={theirs.filter(playlist => playlist.by === who)} onOpen={onOpen} />
+      {rows.map(({ playlist, who }) => (
+        <Row key={playlist.id} playlist={playlist} who={who} onOpen={() => onOpen(playlist.id)} />
       ))}
 
-      {query.trim() && found.length + sets.length === 0 && (
+      {query.trim() && rows.length === 0 && (
         <li className="px-3 py-6 text-center text-sm text-fg-muted">No playlists found</li>
       )}
 
