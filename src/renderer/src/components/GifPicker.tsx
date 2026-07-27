@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import { SearchGlyph } from '../icons'
 import { gifsReady, searchGifs, trendingGifs, type Gif } from './gifs'
+import InsetRing from './InsetRing'
+import SearchField from './SearchField'
 import Skeleton from './Skeleton'
 import Spinner from './Spinner'
 
 const COLUMNS = 2
 const TYPING = 250
 const NEAR_END = 240
+const HINT = 'Picking one sends it'
+const WAITING = [
+  [0.78, 1.24, 0.86, 1.12],
+  [1.16, 0.82, 1.3, 0.72]
+]
 
-// Tiles are laid out by how tall they will come out rather than dealt round the
-// columns in turn, so two portrait GIFs never stack under one another and leave
-// the other column short. The ratio is all it takes: the tiles are the same
-// width, so height is height over width.
 function columns(gifs: Gif[]): Gif[][] {
   const held: Gif[][] = Array.from({ length: COLUMNS }, () => [])
   const tall = new Array(COLUMNS).fill(0)
@@ -23,14 +25,26 @@ function columns(gifs: Gif[]): Gif[][] {
   return held
 }
 
-function Tile({ gif, sending, onPick }: { gif: Gif; sending: boolean; onPick: () => void }) {
+function Tile({
+  gif,
+  sending,
+  onPick,
+  onShow
+}: {
+  gif: Gif
+  sending: boolean
+  onPick: () => void
+  onShow: () => void
+}) {
   const [loaded, setLoaded] = useState(false)
   return (
     <button
       type="button"
       onClick={onPick}
+      onPointerEnter={onShow}
+      onFocus={onShow}
       aria-label={`Send ${gif.title}`}
-      className="relative block w-full overflow-hidden rounded-xl transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] active:scale-95"
+      className="group relative block w-full cursor-pointer overflow-hidden rounded-tile bg-fg/[0.04] transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.97]"
       style={{ aspectRatio: `${gif.width} / ${gif.height}` }}
     >
       {!loaded && (
@@ -45,7 +59,7 @@ function Tile({ gif, sending, onPick }: { gif: Gif; sending: boolean; onPick: ()
         onLoad={() => setLoaded(true)}
         className={`block h-full w-full object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
-      <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-fg/10" />
+      <InsetRing className="ring-1 ring-fg/10 ring-inset transition-[box-shadow] duration-150 group-hover:ring-fg/30" />
       {sending && (
         <span className="absolute inset-0 flex items-center justify-center bg-ink-900/60">
           <Spinner size={20} className="text-fg" />
@@ -57,9 +71,11 @@ function Tile({ gif, sending, onPick }: { gif: Gif; sending: boolean; onPick: ()
 
 export default function GifPicker({
   onPick,
+  onBack,
   className = 'h-[420px] w-[380px]'
 }: {
   onPick: (gif: Gif) => Promise<void>
+  onBack?: () => void
   className?: string
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -72,6 +88,7 @@ export default function GifPicker({
   const [failed, setFailed] = useState(false)
   const [sending, setSending] = useState<string | null>(null)
   const [trouble, setTrouble] = useState(false)
+  const [named, setNamed] = useState<string | null>(null)
 
   const wanted = query.trim()
 
@@ -80,23 +97,28 @@ export default function GifPicker({
     const token = ++asked.current
     setLoading(true)
     setFailed(false)
+    setTrouble(false)
+    setNamed(null)
     if (scrollRef.current) scrollRef.current.scrollTop = 0
-    const timer = setTimeout(() => {
-      const run = wanted ? searchGifs(wanted) : trendingGifs()
-      run
-        .then(result => {
-          if (asked.current !== token) return
-          setGifs(result.gifs)
-          setPage(result.page)
-          setMore(result.more)
-          setLoading(false)
-        })
-        .catch(() => {
-          if (asked.current !== token) return
-          setFailed(true)
-          setLoading(false)
-        })
-    }, wanted ? TYPING : 0)
+    const timer = setTimeout(
+      () => {
+        const run = wanted ? searchGifs(wanted) : trendingGifs()
+        run
+          .then(result => {
+            if (asked.current !== token) return
+            setGifs(result.gifs)
+            setPage(result.page)
+            setMore(result.more)
+            setLoading(false)
+          })
+          .catch(() => {
+            if (asked.current !== token) return
+            setFailed(true)
+            setLoading(false)
+          })
+      },
+      wanted ? TYPING : 0
+    )
     return () => clearTimeout(timer)
   }, [wanted])
 
@@ -114,16 +136,11 @@ export default function GifPicker({
         setPage(result.page)
         setMore(result.more)
       })
-      // A page that did not arrive is put back rather than swallowed, so the
-      // next scroll asks for it again instead of the list quietly ending early.
       .catch(() => {
         if (asked.current === token) setMore(true)
       })
   }
 
-  // One GIF that would not come down says so on a line of its own. The grid
-  // behind it arrived and is still good, so replacing it with the failure would
-  // take away the other GIFs over the one that went wrong.
   const send = (gif: Gif) => {
     if (sending) return
     setSending(gif.id)
@@ -141,48 +158,56 @@ export default function GifPicker({
         ? 'No GIFs found'
         : null
 
+  const foot = trouble ? 'That GIF would not send' : (named ?? (note ? '' : HINT))
+
   return (
     <div className={`flex flex-col ${className}`}>
-      <div className="px-3 pt-3 pb-2">
-        <div className="relative">
-          <SearchGlyph className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg/45" />
-          <input
-            autoFocus
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder="Search GIFs"
-            className="h-9 w-full rounded-full bg-fg/6 pl-9 pr-3 text-sm text-fg outline-none transition-colors placeholder:text-fg/40 focus:bg-fg/10"
-          />
-        </div>
-      </div>
-      <div ref={scrollRef} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+      <SearchField
+        value={query}
+        onChange={setQuery}
+        placeholder="Search GIFs"
+        onBack={onBack}
+        backLabel="Back to the menu"
+      />
+      <div
+        ref={scrollRef}
+        onScroll={onScroll}
+        onPointerLeave={() => setNamed(null)}
+        className="min-h-0 flex-1 overflow-y-auto p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {note ? (
-          <p className="flex h-full items-center justify-center text-sm text-fg/45">{note}</p>
+          <p className="flex h-full items-center justify-center text-sm text-fg/40">{note}</p>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex gap-2.5">
             {loading
-              ? Array.from({ length: COLUMNS }, (_, column) => (
-                  <div key={column} className="flex min-w-0 flex-1 flex-col gap-2">
-                    {[1.1, 0.7, 1.35, 0.85].map((ratio, row) => (
+              ? WAITING.map((ratios, column) => (
+                  <div key={column} className="flex min-w-0 flex-1 flex-col gap-2.5">
+                    {ratios.map((ratio, row) => (
                       <span key={row} className="relative block w-full" style={{ aspectRatio: `1 / ${ratio}` }}>
-                        <Skeleton className="h-full w-full rounded-xl" />
+                        <Skeleton className="h-full w-full rounded-tile" />
                       </span>
                     ))}
                   </div>
                 ))
               : columns(gifs).map((held, column) => (
-                  <div key={column} className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div key={column} className="flex min-w-0 flex-1 flex-col gap-2.5">
                     {held.map(gif => (
-                      <Tile key={gif.id} gif={gif} sending={sending === gif.id} onPick={() => send(gif)} />
+                      <Tile
+                        key={gif.id}
+                        gif={gif}
+                        sending={sending === gif.id}
+                        onPick={() => send(gif)}
+                        onShow={() => setNamed(gif.title)}
+                      />
                     ))}
                   </div>
                 ))}
           </div>
         )}
       </div>
-      {trouble && (
-        <p className="border-t border-fg/8 px-4 py-2.5 text-sm text-fg/45">That GIF would not send</p>
-      )}
+      <div className="flex h-11 shrink-0 items-center border-t border-fg/[0.06] px-4">
+        <p className={`truncate text-sm ${trouble ? 'text-fg/70' : 'text-fg/45'}`}>{foot}</p>
+      </div>
     </div>
   )
 }
