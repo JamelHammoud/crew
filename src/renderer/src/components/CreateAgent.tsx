@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AgentSettings, ProviderCapability } from '../../../shared/llm'
 import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
 import { PlusGlyph } from '../icons'
+import Modal from './Modal'
 import Select from './Select'
 import Spinner from './Spinner'
 
