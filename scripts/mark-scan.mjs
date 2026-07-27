@@ -108,11 +108,14 @@ app.whenReady().then(() => {
       const x0 = Math.round(row.left * scale)
       const x1 = Math.round((row.left + row.width) * scale)
       const thin = []
+      let litTotal = 0
       for (let y = y0; y < y1; y++) {
         const lum = []
         for (let x = x0; x < x1; x++) {
           const [r, g, b] = at(x, y)
-          lum.push(0.2126 * r + 0.7152 * g + 0.0722 * b)
+          const v = 0.2126 * r + 0.7152 * g + 0.0722 * b
+          if (v > LIT) litTotal++
+          lum.push(v)
         }
         let run = 0
         for (let i = 0; i <= lum.length; i++) {
@@ -127,7 +130,7 @@ app.whenReady().then(() => {
       }
       const worst = thin.sort((a, b) => b.peak - a.peak).slice(0, 4)
       console.log(
-        String(row.at).padStart(4) + 'ms  hairlines: ' + thin.length +
+        String(row.at).padStart(4) + 'ms  lit ' + litTotal + '  hairlines: ' + thin.length +
         (worst.length ? '  worst ' + worst.map(t => 'x' + t.x + ' y' + t.y + ' w' + t.run + ' lum' + t.peak).join(', ') : '')
       )
     }
