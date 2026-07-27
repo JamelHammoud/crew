@@ -88,6 +88,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 app.whenReady().then(async () => {
   const w = new BrowserWindow({show:false, webPreferences:{nodeIntegration:true,contextIsolation:false}})
+  w.webContents.on('console-message', (e) => { const t = (e && e.message) || ''; if (t) console.log('CONSOLE ' + t) })
   await w.loadFile(path.join(import.meta.dirname,'d.html'))
   const frag = readFileSync(process.env.FRAG_FILE,'utf8')
   await w.webContents.executeJavaScript('window.FRAG = ' + JSON.stringify(frag))
