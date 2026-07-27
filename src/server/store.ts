@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { isAttachmentFile } from '../shared/attachments'
+import { appendChatLine, readChatLines } from './chatLog'
 import { BOARD_ID, type DesignDocument } from '../shared/design'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
