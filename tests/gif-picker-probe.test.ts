@@ -170,6 +170,16 @@ describe('the GIF picker', () => {
     await waitFor(() => expect(screen.queryByPlaceholderText('Search GIFs')).toBeNull())
   })
 
+  it('keeps the grid and says so on its own line when one GIF will not come down', async () => {
+    await openPicker()
+    answer.mockImplementationOnce(async () => ({ ok: false, status: 502 }))
+    fireEvent.click(screen.getByLabelText('Send Hello'))
+
+    expect(await screen.findByText('That GIF would not send')).not.toBeNull()
+    expect(screen.getByLabelText('Send Bye')).not.toBeNull()
+    expect(useCrew.getState().pending[CHAT_KEY] ?? []).toHaveLength(0)
+  })
+
   it('says so plainly when nothing comes back', async () => {
     answer.mockImplementationOnce(async () => page([]))
     openMenu()

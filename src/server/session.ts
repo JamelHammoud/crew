@@ -315,7 +315,8 @@ export class CrewSession {
           ...e,
           text: edit.text,
           mentionRefs: edit.mentionRefs ?? e.mentionRefs,
-          docMentions: edit.docMentions ?? e.docMentions
+          docMentions: edit.docMentions ?? e.docMentions,
+          editedTs: edit.ts
         }
       })
     for (const event of this.events) {
@@ -1924,12 +1925,14 @@ export class CrewSession {
     if (this.emittedMessages.has(found.entry.messageId)) {
       const message = this.events.find(e => e.kind === 'message' && e.id === found.entry.messageId)
       if (message && message.kind === 'message') {
+        const ts = Date.now()
         message.text = trimmed
         message.docMentions = docMentions
         message.boardMentions = boardMentions
+        message.editedTs = ts
         this.emit({
           id: randomUUID(),
-          ts: Date.now(),
+          ts,
           kind: 'message.edited',
           messageId: message.id,
           text: trimmed,

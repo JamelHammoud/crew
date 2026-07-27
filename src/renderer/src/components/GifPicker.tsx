@@ -176,6 +176,9 @@ export default function GifPicker({
           </div>
         )}
       </div>
+      {trouble && (
+        <p className="border-t border-fg/8 px-4 py-2.5 text-sm text-fg/45">That GIF would not send</p>
+      )}
     </div>
   )
 }
