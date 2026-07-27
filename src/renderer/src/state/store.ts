@@ -251,7 +251,12 @@ export const useCrew = create<CrewState>((set, get) => {
     const alert = finishedAlert(event, get(), focused) ?? memberMentionAlert(event, get().selfId, focused)
     if (alert) void window.crew?.notify?.(alert)
     if (event.kind === 'message.deleted') {
-      set(state => ({ events: state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)) }))
+      set(state => ({
+        events: markDeletedReplies(
+          state.events.filter(e => !(e.kind === 'message' && e.id === event.messageId)),
+          new Set([messageReactionTarget(event.messageId)])
+        )
+      }))
       return
     }
     if (event.kind === 'huddle.deleted') {
