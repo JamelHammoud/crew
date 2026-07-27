@@ -85,6 +85,26 @@ describe('the mark in the top left', () => {
     expect(order.map(one => one.place)).toEqual(['0', '1', '2'])
   })
 
+  it('stands the mark in a box with room round it, so an overshooting disc is never cut flat', () => {
+    const { container } = render(createElement(CrewLogo))
+    const [x, y, width, height] = (container.querySelector('svg')?.getAttribute('viewBox') ?? '')
+      .split(' ')
+      .map(Number)
+    const reach = MARK_RADIUS * 1.09 - MARK_RADIUS
+    expect(x).toBeLessThanOrEqual(-reach)
+    expect(y).toBeLessThanOrEqual(-reach)
+    expect(x + width).toBeGreaterThanOrEqual(MARK_WIDTH + reach)
+    expect(y + height).toBeGreaterThanOrEqual(MARK_HEIGHT + reach)
+  })
+
+  it('keeps the mark the size it was asked for, whatever room the box takes', () => {
+    const { container } = render(createElement(CrewLogo))
+    const svg = container.querySelector('svg') as SVGSVGElement
+    const height = Number.parseFloat(svg.style.height)
+    const view = (svg.getAttribute('viewBox') ?? '').split(' ').map(Number)
+    expect((height * MARK_HEIGHT) / view[3]).toBeCloseTo(18, 5)
+  })
+
   it('draws past its own edges, so nothing arriving is cut off', () => {
     const { container } = render(createElement(CrewLogo))
     const mask = container.querySelector('mask')
