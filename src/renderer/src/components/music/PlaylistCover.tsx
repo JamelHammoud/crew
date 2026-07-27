@@ -1,21 +1,36 @@
-import type { MusicItem } from '../../../../shared/music'
+import { musicSet, type MusicItem, type MusicPlaylist } from '../../../../shared/music'
 import { MusicGlyph } from '../../icons'
 import Cover from './Cover'
+import CrewGlass from './CrewGlass'
 
-// A list has no picture of its own, so it wears the pictures of what is in it:
-// four in a square once there are four, the first one on its own until then, and
-// an empty tile while there is nothing to show.
+// A list somebody made has no picture of its own, so it wears the pictures of
+// what is in it: four in a square once there are four, the first one on its own
+// until then, and an empty tile while there is nothing to show.
+//
+// The app's own list is the one that does have a picture of its own. It is
+// always the same list, so it is photographed like a track, out of its own
+// colors, and the mark stands in it as glass rather than being printed on top.
 export default function PlaylistCover({
+  playlist,
   items,
   size,
   playing = false,
   className = ''
 }: {
+  playlist: MusicPlaylist
   items: readonly MusicItem[]
   size: number
   playing?: boolean
   className?: string
 }) {
+  const set = musicSet(playlist.id)
+  if (set) {
+    return (
+      <Cover item={set} size={size} playing={playing} className={className}>
+        <CrewGlass className="absolute inset-0 w-full h-full" />
+      </Cover>
+    )
+  }
   if (items.length >= 4) {
     return (
       <span className={`grid grid-cols-2 grid-rows-2 overflow-hidden ${className}`}>
