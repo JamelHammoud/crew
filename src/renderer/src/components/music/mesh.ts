@@ -116,25 +116,25 @@ interface Layer {
 }
 
 // The first three colors are the fields, the fourth is the light, the last is
-// the ground. Which of the three leads is rolled from the id, so two tracks
+// the sky. Which of the three leads is rolled from the id, so two tracks
 // handed the same palette are still two different pictures.
 interface Parts {
   fields: string[]
   light: string
-  ground: string
+  sky: string
 }
 
 const partsOf = (colors: readonly string[], roll: () => number): Parts => {
   const list = colors.length > 0 ? colors : ['#7b5cff', '#22d3ee', '#ff5fa2', '#ffd6f5', '#150b33']
-  const ground = list[list.length - 1]
+  const sky = list[list.length - 1]
   const light = list[Math.max(0, list.length - 2)]
   const core = list.slice(0, Math.max(1, list.length - 2))
   const by = Math.floor(roll() * core.length)
-  return { fields: core.map((_, i) => core[(i + by) % core.length]), light, ground }
+  return { fields: core.map((_, i) => core[(i + by) % core.length]), light, sky }
 }
 
 // Every color the track has, in the order they are laid down: the light, the
-// three fields, and the ground. A cover uses all five, so the picture carries
+// three fields, and the sky. A cover uses all five, so the picture carries
 // the palette's whole range rather than the middle of it. The bright end and the
 // deep end are both lobes like any other, standing wherever the id puts them.
 //
@@ -144,24 +144,24 @@ const partsOf = (colors: readonly string[], roll: () => number): Parts => {
 // worse than a flat one: the whole job of these is telling one track from
 // another down a list.
 // The fields come first, so they are the lobes on top and the picture is made of
-// the colors the palette is actually about. The light and the ground go under
+// the colors the palette is actually about. The light and the sky go under
 // them as the two ends. Laid the other way round the palest color in the palette
 // is the one covering everything, which is how a hot pink track came out white.
-const shuffle = (parts: Parts): string[] => [...parts.fields, parts.light, parts.ground]
+const shuffle = (parts: Parts): string[] => [...parts.fields, parts.light, parts.sky]
 
 // A layout that takes fewer lobes than the palette has still takes both ends of
-// it. Slicing off the tail left the ground behind every time, and a picture
+// it. Slicing off the tail left the sky behind every time, and a picture
 // mixed from the middle of a palette is the flat one this started as.
 const ends = (parts: Parts, count: number): string[] => [
   ...parts.fields.slice(0, Math.max(0, count - 2)),
   parts.light,
-  parts.ground
+  parts.sky
 ]
 
 // The deep end is the widest lobe of any cover. It is what everything brighter
 // stands on, so it needs the room, and it is the one thing keeping these from
 // reading as a set of pastels.
-const GROUND_REACH = 1.25
+const SKY_REACH = 1.25
 
 // Lobes ringing the middle, each solid where it is thickest, all of them wide
 // enough to overlap their neighbours. This is the one that reads as the colors
@@ -172,7 +172,7 @@ const bloom = (parts: Parts, roll: () => number): Layer[] => {
   const layers: Layer[] = palette.map((color, i) => {
     const angle = (i / palette.length + turn) * Math.PI * 2
     const reach = 0.26 + roll() * 0.24
-    const size = (color === parts.ground ? GROUND_REACH : 1) * (0.6 + roll() * 0.55)
+    const size = (color === parts.sky ? SKY_REACH : 1) * (0.6 + roll() * 0.55)
     return {
       image: field(
         color,
@@ -197,7 +197,7 @@ const rays = (parts: Parts, roll: () => number): Layer[] => {
   const turn = roll()
   const layers: Layer[] = palette.map((color, i) => {
     const angle = (i / palette.length + turn) * Math.PI * 2
-    const size = (color === parts.ground ? GROUND_REACH : 1) * (0.62 + roll() * 0.42)
+    const size = (color === parts.sky ? SKY_REACH : 1) * (0.62 + roll() * 0.42)
     return {
       image: field(
         color,
@@ -211,7 +211,7 @@ const rays = (parts: Parts, roll: () => number): Layer[] => {
       blend: 'normal'
     }
   })
-  const spokes = [...parts.fields, parts.light, parts.fields[0], parts.ground, parts.fields[1 % parts.fields.length]]
+  const spokes = [...parts.fields, parts.light, parts.fields[0], parts.sky, parts.fields[1 % parts.fields.length]]
   layers.push({ image: fan(spokes, 0.1 + roll() * 0.8, 0.1 + roll() * 0.8, roll() * 360), blend: 'normal' })
   return layers
 }
@@ -224,7 +224,7 @@ const drape = (parts: Parts, roll: () => number): Layer[] => {
   const turn = roll()
   const layers: Layer[] = palette.map((color, i) => {
     const angle = (i / palette.length + turn) * Math.PI * 2
-    const size = (color === parts.ground ? GROUND_REACH : 1) * (0.58 + roll() * 0.42)
+    const size = (color === parts.sky ? SKY_REACH : 1) * (0.58 + roll() * 0.42)
     return {
       image: field(
         color,
@@ -239,7 +239,7 @@ const drape = (parts: Parts, roll: () => number): Layer[] => {
     }
   })
   layers.push({
-    image: sweep([parts.fields[0], parts.light, parts.fields[1 % parts.fields.length], parts.ground], roll() * 360),
+    image: sweep([parts.fields[0], parts.light, parts.fields[1 % parts.fields.length], parts.sky], roll() * 360),
     blend: 'normal'
   })
   return layers
@@ -280,7 +280,7 @@ export function meshOf(item: MusicItem, size: number): Mesh {
     ...layout(parts, roll)
   ]
   return {
-    backgroundColor: parts.ground,
+    backgroundColor: parts.sky,
     backgroundImage: layers.map(one => one.image).join(', '),
     backgroundBlendMode: layers.map(one => one.blend).join(', '),
     // Blurring mixes colors, and a mix of two colors lands between them, so the
