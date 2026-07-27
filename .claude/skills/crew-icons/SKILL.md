@@ -13,6 +13,14 @@ The look is: outlined, geometric but soft, plump rather than skinny, and never
 more than three marks. It should look like it was drawn by someone who liked the
 thing they were drawing.
 
+Fun rather than serious. Playful, round-ish, and read at a glance when it is
+worn at 16. The toolbox and the check in a circle are the measure of it: a thing
+with a shape of its own, drawn generously, rather than the technical diagram of
+one. Where a stock icon carries a detail because the pictogram always had it, the
+detail is what to cut: the speaker lost one of its two waves and grew a deeper
+mouth for exactly that reason, since a pair of thin arcs at 16 is hatching rather
+than sound.
+
 ## The frame
 
 24 grid. 1.5 stroke. Round caps, round joins. `fill="none"`, `currentColor`.
