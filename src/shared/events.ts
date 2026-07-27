@@ -32,6 +32,7 @@ export interface MessageReply {
   authorId: string
   authorName: string
   text: string
+  deleted?: boolean
 }
 
 export type SessionEvent =
