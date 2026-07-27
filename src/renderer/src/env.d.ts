@@ -52,7 +52,7 @@ declare global {
     onTerminalData(listener: (id: string, chunk: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string) => void): () => void
-    onFullScreen(listener: (full: boolean) => void): void
+    onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
   }
 
