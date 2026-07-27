@@ -60,11 +60,6 @@ export function CrewMark({
               <stop offset="1" stopColor={blob.color} stopOpacity="0" />
             </radialGradient>
           ))}
-          <radialGradient id={`${id}-sweep`}>
-            <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" />
-            <stop offset="0.5" stopColor="#ffffff" stopOpacity="0.4" />
-            <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
-          </radialGradient>
         </defs>
       )}
 
