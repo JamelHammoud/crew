@@ -334,7 +334,12 @@ export function coverArt(item: MusicItem): CoverArt {
     // track's colors are in the picture instead of one of them three times, and
     // they are handed out furthest first, so the odd color out is the one at
     // the back.
-    const own = toLinear(order[i % order.length])
+    //
+    // Spread across the depth rather than cycled. Cycled, a picture holding
+    // more petals than the palette holds colors comes back round to the odd one
+    // out and hands it to the sharpest petal in the frame, which is the one
+    // place it must never go.
+    const own = toLinear(order[Math.min(Math.floor((i * order.length) / count), order.length - 1)])
     petals.push({
       // Then the air in front of it. A thing further off is seen through more
       // of whatever the sky is made of, so it takes on the sky's color as it
