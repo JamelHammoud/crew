@@ -65,10 +65,7 @@ export default function AddToPlaylist({
         >
           <ChevronLeftGlyph className="w-4 h-4" />
         </button>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-fg">Add to playlist</span>
-          <span className="block truncate text-[11px] text-fg/40">{item.name}</span>
-        </span>
+        <span className="min-w-0 flex-1 text-sm font-medium text-fg">Add to playlist</span>
       </div>
 
       {playlists.map(playlist => (
