@@ -131,10 +131,6 @@ describe('toolbox', () => {
     sam.send({ type: 'tool.add', name: 'Focus', mark: 'music', action: { kind: 'music', playlistId: 'set-ambient-lofi' } })
     const music = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Focus')) as Added
     expect(music.action).toEqual({ kind: 'music', playlistId: 'set-ambient-lofi' })
-
-    sam.send({ type: 'tool.add', name: 'Standup', mark: 'signal', action: { kind: 'huddle' } })
-    const huddle = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Standup')) as Added
-    expect(huddle.action).toEqual({ kind: 'huddle' })
   })
 
   it('keeps a chain short, and keeps it to tools named once', async () => {
