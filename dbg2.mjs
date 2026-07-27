@@ -12,11 +12,8 @@ const full = src.match(/const FRAGMENT = `([\s\S]*?)`\n/)[1].replace('${MAX_PETA
 
 const variants = {
   full1: full,
-  full2: full,
-  full3: full,
-  _unused: full,
   skyOnly: full.replace(/void main\(\) \{[\s\S]*$/, 'void main() { gl_FragColor = vec4(uSky, 1.0); }\n'),
-  zzz: full,
+
   noLoop: full.replace(/  for \(int i = 0; i < MAX; i\+\+\) \{[\s\S]*?\n  \}\n/, '\n'),
   loopTrivial: full.replace(
     /  for \(int i = 0; i < MAX; i\+\+\) \{[\s\S]*?\n  \}\n/,
@@ -87,6 +84,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 app.whenReady().then(async () => {
   const w = new BrowserWindow({ show: false, webPreferences: { nodeIntegration: true, contextIsolation: false } })
+  w.webContents.on('console-message', (...a) => { console.log('CONSOLE ' + JSON.stringify(a.map(x => (x && x.message) || (typeof x === 'string' ? x : undefined)).filter(Boolean))) })
   await w.loadFile(path.join(import.meta.dirname, 'p.html'))
   const variants = JSON.parse(readFileSync(path.join(import.meta.dirname, 'v.json'), 'utf8'))
   const r = await w.webContents.executeJavaScript('window.run(' + JSON.stringify(variants) + ')')
@@ -102,6 +100,5 @@ child.stdout.on('data', d => (text += d))
 child.stderr.on('data', d => (text += d))
 setTimeout(() => child.kill('SIGKILL'), 60_000)
 child.on('exit', () => {
-  const line = text.split('\n').find(l => l.startsWith('BISECT'))
-  console.log(line || text.slice(-1500))
+  console.log(text.split('\n').filter(l => l.startsWith('BISECT') || l.startsWith('CONSOLE')).join('\n') || text.slice(-1500))
 })
