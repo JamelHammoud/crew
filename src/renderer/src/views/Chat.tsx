@@ -15,7 +15,7 @@ import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
-import { CHAT_KEY, useCrew, type ThreadMeta } from '../state/store'
+import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import { messageReactionTarget } from '../../../shared/reactions'
 
 type Feed =
