@@ -239,10 +239,17 @@ export default function TasksPanel({
     (lastMessageAt[b.thread.id] ?? 0) - (lastMessageAt[a.thread.id] ?? 0)
   const inProgress = visible.filter(r => r.state === 'working' && r.thread.status !== 'archived')
   const needsReview = visible.filter(r => r.state === 'ready' || r.state === 'failed')
-  const done = visible.filter(r => r.state === 'done').sort(byRecency)
+  const done = visible.filter(r => r.state === 'done')
   const archived = visible.filter(r => r.thread.status === 'archived').sort(byRecency)
   const pendingTodos = todos.filter(t => !t.checked && (!q || todoMatches(t)))
   const checkedTodos = todos.filter(t => t.checked && (!q || todoMatches(t)))
+
+  // The two kinds of done task stand in one list, newest first, so the date
+  // beside each row is what the order reads as.
+  const doneEntries = [
+    ...done.map(row => ({ row, todo: undefined, ts: lastMessageAt[row.thread.id] ?? 0 })),
+    ...checkedTodos.map(todo => ({ row: undefined, todo, ts: checkedAt[todo.id] ?? todo.ts }))
+  ].sort((a, b) => b.ts - a.ts)
   const noMatches =
     q !== '' &&
     inProgress.length + needsReview.length + done.length + archived.length === 0 &&
