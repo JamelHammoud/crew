@@ -464,16 +464,11 @@ body {
   }
 }
 
-/* A disc overshoots its own edge on the way in and the light runs past both
-   ends of the mark, so the drawing is wider than the mark and the box it stands
-   in never cuts it. Every rect inside it is drawn to the same bleed.
-
-   None of that paint may take the pointer. Overflowing content is still hit
-   tested, so the light crossing under the cursor counts as arriving at the
-   button and leaving it again, over and over, for as long as it travels. The
-   button's own box is the whole of what can be hovered. */
+/* None of the mark's paint may take the pointer. The light travelling under the
+   cursor would otherwise count as arriving at the button and leaving it again,
+   over and over, for as long as it travels. The button's own box is the whole
+   of what can be hovered. */
 .crew-mark {
-  overflow: visible;
   pointer-events: none;
 }
 
