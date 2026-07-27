@@ -40,7 +40,6 @@ const serve = (cors) =>
   })
 
 const PAGE = `<!doctype html><html><body><script>
-const { ipcRenderer } = require('electron')
 window.tryFetch = async (url) => {
   try {
     const res = await fetch(url)
@@ -53,7 +52,7 @@ window.tryFetch = async (url) => {
 </script></body></html>`
 
 const MAIN = `
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow } = require('electron')
 const path = require('path')
 app.commandLine.appendSwitch('headless')
 app.whenReady().then(async () => {
@@ -61,12 +60,20 @@ app.whenReady().then(async () => {
     show: false,
     webPreferences: { nodeIntegration: true, contextIsolation: false }
   })
-  await win.loadFile(path.join(__dirname, 'page.html'))
   const plain = process.env.PLAIN_URL
   const cors = process.env.CORS_URL
-  const a = await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(plain) + ')')
-  const b = await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(cors) + ')')
-  console.log('RESULT ' + JSON.stringify({ plain: a, withCors: b }))
+  const out = {}
+  await win.loadFile(path.join(__dirname, 'page.html'))
+  out.fileOrigin = {
+    plain: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(plain) + ')'),
+    withCors: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(cors) + ')')
+  }
+  await win.loadURL(process.env.PAGE_URL)
+  out.httpOrigin = {
+    plain: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(plain) + ')'),
+    withCors: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(cors) + ')')
+  }
+  console.log('RESULT ' + JSON.stringify(out))
   app.quit()
 })
 `
