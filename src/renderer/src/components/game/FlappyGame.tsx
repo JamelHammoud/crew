@@ -10,63 +10,8 @@ import {
   type Flappy
 } from './flappy'
 import { Field, Overlay, Stat } from './GameStage'
-import {
-  BIRD_COLOR,
-  BIRD_WING,
-  GROUND_COLOR,
-  PIPE_COLOR,
-  PIPE_LIP,
-  SKY,
-  fitCanvas,
-  roundRect
-} from './paint'
+import { GROUND_COLOR, SKY, bird, fitCanvas, pipe } from './paint'
 import useGameLoop from './useGameLoop'
-
-const LIP = { height: 12, out: 4 }
-
-function bird(ctx: CanvasRenderingContext2D, y: number, vy: number): void {
-  // The bird tips with what it is doing rather than staying level: a fall reads
-  // as a fall, and a flap reads as one, without anything else being drawn.
-  const tilt = Math.max(-0.5, Math.min(0.9, vy / 420))
-  ctx.save()
-  ctx.translate(BIRD.x, y)
-  ctx.rotate(tilt)
-  ctx.beginPath()
-  ctx.arc(0, 0, BIRD.r, 0, Math.PI * 2)
-  ctx.fillStyle = BIRD_COLOR
-  ctx.fill()
-  ctx.beginPath()
-  ctx.ellipse(-2, 1.5, BIRD.r * 0.55, BIRD.r * 0.4, -0.3, 0, Math.PI * 2)
-  ctx.fillStyle = BIRD_WING
-  ctx.fill()
-  ctx.beginPath()
-  ctx.moveTo(BIRD.r * 0.6, -1)
-  ctx.lineTo(BIRD.r * 1.5, 1)
-  ctx.lineTo(BIRD.r * 0.6, 3)
-  ctx.closePath()
-  ctx.fillStyle = BIRD_WING
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(BIRD.r * 0.35, -BIRD.r * 0.35, 1.6, 0, Math.PI * 2)
-  ctx.fillStyle = '#2b2f45'
-  ctx.fill()
-  ctx.restore()
-}
-
-function pipe(ctx: CanvasRenderingContext2D, x: number, gap: number, floor: number): void {
-  const top = gap - PIPE.gap / 2
-  const bottom = gap + PIPE.gap / 2
-  ctx.fillStyle = PIPE_COLOR
-  roundRect(ctx, x, -12, PIPE.width, top + 12, 5)
-  ctx.fill()
-  roundRect(ctx, x, bottom, PIPE.width, floor - bottom + 12, 5)
-  ctx.fill()
-  ctx.fillStyle = PIPE_LIP
-  roundRect(ctx, x - LIP.out, top - LIP.height, PIPE.width + LIP.out * 2, LIP.height, 4)
-  ctx.fill()
-  roundRect(ctx, x - LIP.out, bottom, PIPE.width + LIP.out * 2, LIP.height, 4)
-  ctx.fill()
-}
 
 function paint(canvas: HTMLCanvasElement, game: Flappy): void {
   const width = canvas.clientWidth
