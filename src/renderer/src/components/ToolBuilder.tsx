@@ -89,9 +89,12 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const agents = useCrew(s => s.agents)
   const docs = useCrew(s => s.docs)
   const boards = useCrew(s => s.boards)
+  const tools = useCrew(s => s.tools)
   const addTool = useCrew(s => s.addTool)
   const editTool = useCrew(s => s.editTool)
   const removeTool = useCrew(s => s.removeTool)
+  const uploads = useMusic(s => s.uploads)
+  const playlists = useMusic(s => s.playlists)
   const [screen, setScreen] = useState<'form' | 'mark' | 'kind'>('form')
   const [name, setName] = useState(tool?.name ?? '')
   const [mark, setMark] = useState<string>(tool?.mark ?? DEFAULT_MARK)
@@ -100,14 +103,29 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const [external, setExternal] = useState(tool?.action.kind === 'web' && Boolean(tool.action.external))
   const [command, setCommand] = useState(tool?.action.kind === 'terminal' ? (tool.action.command ?? '') : '')
   const [path, setPath] = useState(tool?.action.kind === 'file' ? tool.action.path : '')
-  const [page, setPage] = useState(tool?.action.kind === 'doc' ? tool.action.page : '')
+  const [page, setPage] = useState(
+    tool?.action.kind === 'doc' || tool?.action.kind === 'note' ? tool.action.page : ''
+  )
   const [boardId, setBoardId] = useState(tool?.action.kind === 'board' ? tool.action.boardId : '')
   const [copy, setCopy] = useState(tool?.action.kind === 'copy' ? tool.action.text : '')
   const [ask, setAsk] = useState(tool?.action.kind === 'prompt' ? tool.action.text : '')
-  const [agentId, setAgentId] = useState(tool?.action.kind === 'prompt' ? (tool.action.agentId ?? null) : null)
+  const [agentId, setAgentId] = useState(
+    tool?.action.kind === 'prompt' || tool?.action.kind === 'todo' ? (tool.action.agentId ?? null) : null
+  )
+  const [say, setSay] = useState(tool?.action.kind === 'say' ? tool.action.text : '')
+  const [task, setTask] = useState(tool?.action.kind === 'todo' ? tool.action.text : '')
+  const [line, setLine] = useState(tool?.action.kind === 'note' ? tool.action.text : '')
+  const [trackId, setTrackId] = useState(tool?.action.kind === 'music' ? (tool.action.trackId ?? '') : '')
+  const [playlistId, setPlaylistId] = useState(
+    tool?.action.kind === 'music' ? (tool.action.playlistId ?? '') : ''
+  )
+  const [toolIds, setToolIds] = useState<string[]>(tool?.action.kind === 'chain' ? tool.action.toolIds : [])
   const commandRef = useAutoResize(command, GROWN)
   const askRef = useAutoResize(ask, GROWN)
   const copyRef = useAutoResize(copy, GROWN)
+  const sayRef = useAutoResize(say, GROWN)
+  const taskRef = useAutoResize(task, GROWN)
+  const lineRef = useAutoResize(line, GROWN)
 
   // An agent that has gone quiet is still worth showing while it is the one the
   // tool names, or opening a tool to change its wording would quietly take the
