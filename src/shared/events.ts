@@ -24,6 +24,7 @@ export interface Todo {
   createdBy: string
   ts: number
   checked: boolean
+  checkedTs?: number
 }
 
 export interface MessageReply {
