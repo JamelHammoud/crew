@@ -4,6 +4,7 @@ import { MinusGlyph, MoreGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
+import ScreenSwap from '../ScreenSwap'
 import Tooltip from '../Tooltip'
 import AddToPlaylist from './AddToPlaylist'
 import { quietRowButton } from './buttons'
@@ -56,42 +57,43 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
       <Popover open={open} onClose={shut} className="w-64" maxHeight={340}>
         <ScreenSwap screen={screen} depth={screen === 'main' ? 0 : 1}>
           {screen === 'main' ? (
-          <>
-            <MenuItem icon={<PlusGlyph />} label="Add to playlist" into onClick={() => setScreen('lists')} />
-            {inside && (
-              <MenuItem
-                icon={<MinusGlyph />}
-                label="Remove from this playlist"
-                onClick={() => file(inside.id, false)}
-              />
-            )}
-            {item.file && (
-              <>
-                <MenuDivider />
+            <>
+              <MenuItem icon={<PlusGlyph />} label="Add to playlist" into onClick={() => setScreen('lists')} />
+              {inside && (
                 <MenuItem
-                  icon={<TrashGlyph />}
-                  danger
-                  label="Delete track"
-                  onClick={() => {
-                    useMusic.getState().remove(item.id)
-                    shut()
-                  }}
+                  icon={<MinusGlyph />}
+                  label="Remove from this playlist"
+                  onClick={() => file(inside.id, false)}
                 />
-              </>
-            )}
-          </>
-        ) : (
-          <AddToPlaylist
-            item={item}
-            playlists={mine}
-            onBack={() => setScreen('main')}
-            onPick={file}
-            onNew={() => {
-              shut()
-              setNaming(true)
-            }}
-          />
-        )}
+              )}
+              {item.file && (
+                <>
+                  <MenuDivider />
+                  <MenuItem
+                    icon={<TrashGlyph />}
+                    danger
+                    label="Delete track"
+                    onClick={() => {
+                      useMusic.getState().remove(item.id)
+                      shut()
+                    }}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <AddToPlaylist
+              item={item}
+              playlists={mine}
+              onBack={() => setScreen('main')}
+              onPick={file}
+              onNew={() => {
+                shut()
+                setNaming(true)
+              }}
+            />
+          )}
+        </ScreenSwap>
       </Popover>
       <NewPlaylist
         open={naming}
