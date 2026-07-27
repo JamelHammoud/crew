@@ -305,27 +305,59 @@ const SEEN = 0.03
 const seen = (spot: [number, number]): boolean =>
   spot[0] > SEEN && spot[0] < 1 - SEEN && spot[1] > SEEN && spot[1] < 1 - SEEN
 
-// How long it may run. A petal has to come to a point somewhere inside the
-// frame: run far enough that both tapers happen off the edge and what is left in
-// the tile is a band of one width crossing it corner to corner, which is the one
-// shape that says at a glance that a picture was made rather than taken.
+// A little further in than being seen asks for, so a length worked out against
+// this leaves the tip somewhere the bend can still carry it about without
+// pushing it out of the picture.
+const ROOM = 0.05
+
+// How far the spine may run and still come to a point inside the picture, taken
+// the longer way along itself. It is worked out rather than searched for: the
+// frame is a box and the spine is a line, so the two places the line crosses the
+// box are the whole of the answer. Reading it the longer way is what allows a
+// petal to leave the frame at its other end, which is what one held this close
+// to a lens does.
+const runOf = (at: [number, number], lie: [number, number]): number => {
+  let enter = -Infinity
+  let exit = Infinity
+  for (let axis = 0; axis < 2; axis++) {
+    const step = lie[axis]
+    if (Math.abs(step) < 1e-6) continue
+    const near = (ROOM - at[axis]) / step
+    const far = (1 - ROOM - at[axis]) / step
+    enter = Math.max(enter, Math.min(near, far))
+    exit = Math.min(exit, Math.max(near, far))
+  }
+  return Math.max(exit, -enter)
+}
+
+// The length a petal may run, and the bend it may carry while running it. A
+// petal has to come to a point somewhere inside the frame: run far enough that
+// both tapers happen off the edge and what is left in the tile is a band of one
+// width crossing it corner to corner, which is the one shape that says at a
+// glance that a picture was made rather than taken.
 //
-// One tip is enough, and it has to be. A leaf that runs out of the picture at
-// one end is what a photograph taken this close looks like; a leaf held wholly
-// inside the frame at both ends is a drawing of a leaf.
+// The length is the line above. The bend is the half that cannot be solved in
+// one line, because it carries the tip sideways the whole way out and by more
+// the further out it goes, so a petal with plenty of bend leaves the picture long
+// before its own length says it should. It is walked down instead, and that ends
+// because straightening one always brings it back to the length that was solved
+// for. Shrinking the length instead is what does not end: both tips draw in
+// toward the point the spine passes through, and on a spine that passes outside
+// the frame there is nothing there to draw in to.
 const ends = (
   at: [number, number],
   lie: [number, number],
   across: [number, number],
   bend: number,
   run: number
-): number => {
-  let held = run
-  for (let i = 0; i < 12 && held > 0.18; i++) {
-    if (seen(tipOf(at, lie, across, bend, held)) || seen(tipOf(at, lie, across, bend, -held))) break
-    held *= 0.88
+): { along: number; bend: number } => {
+  const along = Math.min(run, runOf(at, lie))
+  let bent = bend
+  for (let i = 0; i < 18; i++) {
+    if (seen(tipOf(at, lie, across, bent, along)) || seen(tipOf(at, lie, across, bent, -along))) break
+    bent *= 0.7
   }
-  return held
+  return { along, bend: bent }
 }
 
 const between = (range: [number, number], roll: number): number => range[0] + roll * (range[1] - range[0])
