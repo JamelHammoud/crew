@@ -212,7 +212,7 @@ export default function MusicView() {
                 {adding ? 'Putting it on the shelf' : 'Add a track'}
               </span>
               <span className="block truncate text-xs text-fg-muted">
-                {trouble ?? 'An audio file from this machine, for everyone here'}
+                {addTrouble ?? 'An audio file from this machine, for everyone here'}
               </span>
             </span>
           </button>
