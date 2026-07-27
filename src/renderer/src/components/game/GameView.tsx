@@ -37,17 +37,21 @@ function GameRow({ game, onOpen }: { game: GameInfo; onOpen: (gameId: string) =>
   )
 }
 
-function GamePlay({ game }: { game: GameInfo }) {
+function GamePlay({ game, onLive }: { game: GameInfo; onLive: (score: number | null) => void }) {
   const postScore = useCrew(s => s.postScore)
   const onScore = useCallback((score: number) => postScore(game.id, score), [game.id, postScore])
   const board = <Leaderboard game={game} />
 
   return (
-    <div className="absolute inset-0 flex flex-col px-4 pt-2 pb-4">
+    <div className="absolute inset-0 flex flex-col px-4 pt-1 pb-4">
       {game.id === 'tetris' ? (
-        <TetrisGame onScore={onScore}>{board}</TetrisGame>
+        <TetrisGame onScore={onScore} onLive={onLive}>
+          {board}
+        </TetrisGame>
       ) : (
-        <FlappyGame onScore={onScore}>{board}</FlappyGame>
+        <FlappyGame onScore={onScore} onLive={onLive}>
+          {board}
+        </FlappyGame>
       )}
     </div>
   )
@@ -55,17 +59,23 @@ function GamePlay({ game }: { game: GameInfo }) {
 
 export default function GameView() {
   const [openId, setOpenId] = useState<string | null>(null)
+  const [live, setLive] = useState<number | null>(null)
   const open = openId ? gameFor(openId) : null
+
+  const go = (gameId: string | null) => {
+    setLive(null)
+    setOpenId(gameId)
+  }
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div className="shrink-0 px-4 pt-3 pb-1 flex items-center">
+      <div className="shrink-0 h-11 px-4 pt-3 pb-1 flex items-center gap-2">
         <ScreenSwap screen={open ? 'one' : 'all'} depth={open ? 1 : 0}>
           {open ? (
             <div className="flex items-center gap-1">
               <Tooltip label="Back">
                 <button
-                  onClick={() => setOpenId(null)}
+                  onClick={() => go(null)}
                   aria-label="Back"
                   className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
                 >
@@ -78,12 +88,20 @@ export default function GameView() {
             <h3 className="h-8 pl-1 flex items-center text-sm font-semibold text-fg">Game</h3>
           )}
         </ScreenSwap>
+        {/* What you have this round, on the one line the panel already has,
+            rather than on a row of its own over the field. */}
+        {open && live !== null && (
+          <span className="ml-auto flex items-baseline gap-1.5">
+            <span className="text-sm font-semibold text-fg tabular-nums">{live.toLocaleString()}</span>
+            <span className="text-xs text-fg-muted">{open.unit}</span>
+          </span>
+        )}
       </div>
 
       <div className="relative flex-1 min-h-0">
         <ScreenSwap screen={open ? `game:${open.id}` : 'all'} depth={open ? 1 : 0} fill>
           {open ? (
-            <GamePlay game={open} />
+            <GamePlay game={open} onLive={setLive} />
           ) : (
             <div className="absolute inset-0 overflow-y-auto [scrollbar-width:thin] px-2 pb-4">
               {GAMES.map(one => (
