@@ -317,6 +317,7 @@ export function coverArt(item: MusicItem): CoverArt {
 
   const petals: CoverPetal[] = []
   const count = whole(recipe.count, roll())
+  const order = byDistance(colors, colors[4])
   for (let i = 0; i < count; i++) {
     // Spread through the depth end to end rather than rolled, so a picture
     // always has a near thing and a far thing in it. Rolled, half the covers
