@@ -451,6 +451,18 @@ export class CrewSession {
           playlist.trackIds = event.on ? [...held, event.trackId] : held
         }
       }
+      // The log holds every score anyone ever beat their own with, so reading
+      // it back keeps the last one standing rather than the highest: they went
+      // in in the order they were played, and each one already beat the one
+      // before it.
+      if (event.kind === 'game.score') {
+        this.scores.set(scoreKey(event.gameId, event.byName), {
+          gameId: event.gameId,
+          name: event.byName,
+          score: event.score,
+          ts: event.ts
+        })
+      }
       if (event.kind === 'thread.agent') {
         const thread = this.threads.get(event.threadId)
         if (thread) {
@@ -561,7 +573,8 @@ export class CrewSession {
       huddle: this.huddleRoom(),
       music: this.musicRoom(),
       musicUploads: [...this.uploads.values()],
-      musicPlaylists: this.playlistList()
+      musicPlaylists: this.playlistList(),
+      gameScores: [...this.scores.values()]
     }
   }
 
