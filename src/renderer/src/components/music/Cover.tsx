@@ -29,6 +29,7 @@ const OVERSIZE = {
   width: `${(1 + BLEED * 2) * 100}%`,
   height: `${(1 + BLEED * 2) * 100}%`
 }
+
 export default function Cover({
   item,
   size,
