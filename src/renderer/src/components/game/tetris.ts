@@ -58,9 +58,12 @@ const shuffled = (rand: Rand): Kind[] => {
   return bag
 }
 
+// The bag is topped up as it is drawn from rather than once it is empty, so the
+// piece after this one is always something the panel can show.
 const drawn = (bag: Kind[], rand: Rand): { kind: Kind; bag: Kind[] } => {
   const held = bag.length > 0 ? bag : shuffled(rand)
-  return { kind: held[0], bag: held.slice(1) }
+  const rest = held.slice(1)
+  return { kind: held[0], bag: rest.length > 0 ? rest : shuffled(rand) }
 }
 
 const spawned = (kind: Kind): Falling => {
