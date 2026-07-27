@@ -83,7 +83,10 @@ export default function ScreenSwap({
   if (fill) {
     const layers = leaving ? [leaving, null] : [null]
     return (
-      <div className="absolute inset-0">
+      // Clipped, because a screen on its way in or out stands past the edge of
+      // the box for as long as it is travelling, and the panel it is in is not
+      // the end of the window.
+      <div className="absolute inset-0 overflow-hidden">
         {layers.map(gone => (
           <div
             key={gone ? gone.screen : screen}

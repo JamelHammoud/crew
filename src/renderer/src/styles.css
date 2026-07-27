@@ -151,6 +151,18 @@
   }
 }
 
+/* A screen still gives way to the next one, it just does not travel to get
+   there. Every one of these lands on the element's own styles, so cutting the
+   time short leaves each screen exactly where it was going to stand. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-screen,
+  .animate-screen-back,
+  .animate-screen-out,
+  .animate-screen-out-back {
+    animation-duration: 1ms;
+  }
+}
+
 @keyframes message-flash {
   0%,
   55% {
