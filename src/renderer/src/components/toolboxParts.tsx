@@ -155,6 +155,7 @@ export function Row({
   note,
   active,
   chevron,
+  order,
   onClick
 }: {
   mark: ReactNode
@@ -162,6 +163,7 @@ export function Row({
   note?: string
   active?: boolean
   chevron?: boolean
+  order?: number
   onClick: () => void
 }) {
   return (
