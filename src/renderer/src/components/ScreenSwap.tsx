@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 // How long the screen being left is held on for. The one arriving is what sets
 // it, since it is the slower of the two.

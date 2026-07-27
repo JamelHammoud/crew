@@ -485,16 +485,16 @@ describe('the toolbox', () => {
     ])
   })
 
-  it('builds a huddle with nothing else to say, and will not build the rest empty', () => {
+  it('builds a terminal with nothing else to say, and will not build the rest empty', () => {
     toolbox()
     build()
 
     const save = () => screen.getByText('Add to toolbox').closest('button')
-    name('Standup')
-    does('Start a huddle')
+    name('Shell')
+    does('Run a command')
     expect(save()?.disabled).toBe(false)
     fireEvent.click(save() as HTMLButtonElement)
-    expect(sent).toEqual([{ type: 'tool.add', name: 'Standup', mark: 'star', action: { kind: 'huddle' } }])
+    expect(sent).toEqual([{ type: 'tool.add', name: 'Shell', mark: 'star', action: { kind: 'terminal', command: '' } }])
 
     build()
     name('Nothing')
