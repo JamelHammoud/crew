@@ -15,8 +15,8 @@ export default function FlappyGame({
   // What the header says while a game is running, the way it does in the other
   // game.
   onLive: (score: number | null) => void
-  // What stands under the field while nobody is playing, the way it does in the
-  // other game.
+  // The board, which stands on the overlay over the field rather than under it:
+  // under it, the field changes size the moment a game starts.
   children: ReactNode
 }) {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -83,9 +83,13 @@ export default function FlappyGame({
               note={game.score === 1 ? '1 pipe' : `${game.score} pipes`}
               label="Play again"
               onStart={start}
-            />
+            >
+              {children}
+            </Overlay>
           ) : (
-            <Overlay title="Flappy Bird" note="Space or click to flap" label="Play" onStart={start} />
+            <Overlay note="Space or click to flap" label="Play" onStart={start}>
+              {children}
+            </Overlay>
           )
         }
       >

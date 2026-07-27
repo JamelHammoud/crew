@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintTetris } from './drawTetris'
 import { Field, Overlay } from './GameStage'
 import {
-  COLS,
-  ROWS,
   fall,
   fallMs,
   hardDrop,
@@ -26,8 +24,8 @@ export default function TetrisGame({
   // What the header says while a game is running, and nothing at all when one
   // is not: the score belongs on the one line the panel already has.
   onLive: (score: number | null) => void
-  // What stands under the field while nobody is playing. A board of high scores
-  // beside a game being played is something to read instead of the game.
+  // The board, which stands on the overlay over the field rather than under it:
+  // under it, the field changes size the moment a game starts.
   children: ReactNode
 }) {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -116,9 +114,13 @@ export default function TetrisGame({
               note={`${game.score.toLocaleString()} points`}
               label="Play again"
               onStart={start}
-            />
+            >
+              {children}
+            </Overlay>
           ) : (
-            <Overlay title="Tetris" note="Arrows to move, space to drop" label="Play" onStart={start} />
+            <Overlay note="Arrows to move, space to drop" label="Play" onStart={start}>
+              {children}
+            </Overlay>
           )
         }
       >
