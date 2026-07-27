@@ -64,6 +64,9 @@ window.probe = () => {
     rows.uSkin.push(...(q?[q.color[0],q.color[1],q.color[2],1]:[0,0,0,0]));
     rows.uGlow.push(...(q?[q.shine,q.halo,0,0]:[0,0,0,0])); }
   for (const k of Object.keys(rows)) g2.uniform4fv(g2.getUniformLocation(p3, k+'[0]'), new Float32Array(rows[k]));
+  g2.validateProgram(p3);
+  const valid = g2.getProgramParameter(p3, g2.VALIDATE_STATUS);
+  const validLog = g2.getProgramInfoLog(p3);
   const errBefore = g2.getError();
   g2.drawArrays(g2.TRIANGLES,0,3);
   const errAfter = g2.getError();
@@ -71,7 +74,7 @@ window.probe = () => {
   const flatc = document.createElement('canvas'); flatc.width=64; flatc.height=64;
   const f2 = flatc.getContext('2d'); f2.drawImage(c,0,0);
   const via = f2.getImageData(32,32,1,1).data;
-  return { linked, linkLog, errBefore, errAfter, realRead: [...raw2].join(','), minRead: [...raw].join(','), minCopy: [...via].join(','), art: !!art, px, err: gl.getError() };
+  return { valid, validLog, linked, linkLog, errBefore, errAfter, realRead: [...raw2].join(','), minRead: [...raw].join(','), minCopy: [...via].join(','), art: !!art, px, err: gl.getError() };
   const src = window.FRAG;
   const sh = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(sh, src); gl.compileShader(sh);
