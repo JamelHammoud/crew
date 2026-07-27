@@ -136,7 +136,7 @@ export default function AgentIcon({
       )}
       {presence && (
         <span
-          className={`${DOTS[size]} absolute bottom-0 right-0 rounded-full ring-ink-900 transition-colors ${
+          className={`${DOTS[size]} absolute bottom-0 right-0 z-10 rounded-full ring-ink-900 transition-colors ${
             presence === 'online' ? 'bg-positive' : 'bg-ink-500'
           }`}
         />
