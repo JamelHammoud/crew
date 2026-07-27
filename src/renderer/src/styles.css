@@ -105,6 +105,28 @@
     }
   }
 
+  @keyframes screen-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+  }
+
+  @keyframes screen-out-back {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+  }
+
   /* It breathes rather than pushes in. Every number here is spent against the
      margin the cover is laid in past its tile with, and a turn is the dearest
      of the three: a degree of rotation costs about as much of that margin as a
