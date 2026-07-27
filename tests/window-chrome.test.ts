@@ -26,8 +26,19 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
+  setFullScreen(false)
   vi.unstubAllGlobals()
 })
+
+const topBar = () =>
+  render(
+    createElement(TopBar, {
+      tab: 'chat',
+      onTab: () => {},
+      tasksOpen: false,
+      onToggleTasks: () => {}
+    })
+  )
 
 describe('window chrome', () => {
   it('marks the document on macOS so the stoplight inset applies', () => {
