@@ -1045,7 +1045,10 @@ export class CrewSession {
     if (event.kind !== 'message' || event.authorId !== member.id) return
     this.events.splice(index, 1)
     const targetId = messageReactionTarget(messageId)
-    this.events = this.events.filter(e => e.kind !== 'message.reaction' || e.targetId !== targetId)
+    this.events = markDeletedReplies(
+      this.events.filter(e => e.kind !== 'message.reaction' || e.targetId !== targetId),
+      new Set([targetId])
+    )
     const tombstone: SessionEvent = { id: randomUUID(), ts: Date.now(), kind: 'message.deleted', messageId }
     this.store.appendEvent(tombstone)
     this.broadcast({ type: 'event', event: tombstone })
