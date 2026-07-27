@@ -4,7 +4,7 @@ import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
 import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
-import type { MusicRoom, MusicUpload } from './music'
+import type { MusicPlaylist, MusicRoom, MusicUpload } from './music'
 import type { ReactionEmoji } from './reactions'
 import type { CrewTool, ToolAction } from './toolbox'
 
@@ -111,10 +111,13 @@ export type ClientMessage =
   | { type: 'huddle.update'; muted?: boolean; camera?: boolean; sharing?: boolean }
   | { type: 'huddle.signal'; to: string; signal: HuddleSignal }
   | { type: 'huddle.delete'; huddleId: string }
-  | { type: 'music.set'; trackId: string; playing: boolean; at: number }
+  | { type: 'music.set'; trackId: string; playing: boolean; at: number; playlistId?: string | null }
   | { type: 'music.off' }
   | { type: 'music.add'; name: string; mime: string; seconds: number; data: string }
   | { type: 'music.remove'; trackId: string }
+  | { type: 'playlist.add'; name: string }
+  | { type: 'playlist.remove'; playlistId: string }
+  | { type: 'playlist.track'; playlistId: string; trackId: string; on: boolean }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
