@@ -92,7 +92,7 @@ export default function FlappyGame({
         )
       }
     >
-    <canvas ref={canvas} className="block w-full h-full" />
+      <canvas ref={canvas} className="block w-full h-full" />
     </Field>
   )
 }
