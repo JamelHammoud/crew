@@ -88,7 +88,7 @@ export default function ScreenSwap({
           <div
             key={gone ? gone.screen : screen}
             aria-hidden={gone ? true : undefined}
-            className={`absolute inset-0 ${
+            className={`absolute inset-0 [--screen-travel:24px] ${
               gone
                 ? `pointer-events-none ${gone.back ? 'animate-screen-out-back' : 'animate-screen-out'}`
                 : arriving
