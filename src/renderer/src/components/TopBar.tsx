@@ -224,7 +224,7 @@ export default function TopBar({
           <button
             onClick={() => setMenuOpen(open => !open)}
             aria-label="Profile menu"
-            className={`block rounded-full transition-all duration-150 hover:ring-2 hover:ring-fg/15 active:scale-95 ${
+            className={`flex rounded-full transition-all duration-150 hover:ring-2 hover:ring-fg/15 active:scale-95 ${
               menuOpen ? 'ring-2 ring-fg/25' : ''
             }`}
           >
