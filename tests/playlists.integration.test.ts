@@ -1,6 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
-import { trackAfter, type MusicPlaylist } from '../src/shared/music'
+import {
+  isMine,
+  isMusicSet,
+  MUSIC_SETS,
+  playlistFor,
+  playlistItems,
+  trackAfter,
+  tuneFor,
+  type MusicPlaylist
+} from '../src/shared/music'
 import type { ServerMessage } from '../src/shared/protocol'
 import { CrewSession } from '../src/server/session'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
