@@ -177,6 +177,26 @@ describe('playlists', () => {
     expect(trackAfter(null, 1, [], empty)).toBeTruthy()
   })
 
+  // And the end of a track walks the same way a press of Next does, so a list
+  // left alone plays itself through in its own order.
+  it('walks the list it came from when a track ends', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    const pat = await TestUi.connect(host.url, 'pat', host.code)
+    uis.push(sam, pat)
+
+    const list = await madeBy(sam, 'Two')
+    sam.send({ type: 'playlist.track', playlistId: list.id, trackId: 'lobby', on: true })
+    sam.send({ type: 'playlist.track', playlistId: list.id, trackId: 'credits', on: true })
+    await pat.waitFor(m => m.type === 'music.playlists' && named(m, 'Two')?.trackIds.length === 2)
+
+    const ends = (tuneFor('lobby')?.beats ?? 0) * (60 / (tuneFor('lobby')?.bpm ?? 1)) - 0.2
+    sam.send({ type: 'music.set', trackId: 'lobby', playing: true, at: ends, playlistId: list.id })
+    const next = await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId === 'credits')
+    // The list comes with it, so the one after that is the top of the list again
+    // rather than whatever the shelf holds next.
+    expect(roomOf(next).playlistId).toBe(list.id)
+  })
+
   it('drops a track from every list when it leaves the shelf', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     const pat = await TestUi.connect(host.url, 'pat', host.code)
