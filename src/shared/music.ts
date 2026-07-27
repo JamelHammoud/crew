@@ -142,7 +142,7 @@ export const MUSIC_TUNES = [
     mood: 'fond',
     bpm: 100,
     beats: 32,
-    colors: ['#ff9ec4', '#ffe2ee', '#ffd9a8', '#fff4f8', '#b08ce8']
+    colors: ['#ff9ec4', '#ffbcd8', '#ffc98f', '#fff4f8', '#b08ce8']
   }
 ] as const satisfies readonly MusicTune[]
 
