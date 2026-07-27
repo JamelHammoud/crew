@@ -1,30 +1,43 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { playSound } from '../media/sounds'
 import { CrewMark } from './CrewMark'
 
+const ONCE = new Set(['crew-join', 'crew-flash', 'crew-sweep'])
+
 export default function CrewLogo({ className = '' }: { className?: string }) {
   const [lit, setLit] = useState(false)
-  const [run, setRun] = useState(0)
+  const box = useRef<HTMLButtonElement>(null)
+  const over = useRef(false)
 
   const strike = () => {
-    setRun(count => count + 1)
+    for (const animation of box.current?.getAnimations?.({ subtree: true }) ?? []) {
+      if (!ONCE.has((animation as CSSAnimation).animationName)) continue
+      animation.cancel()
+      animation.play()
+    }
     playSound('crew.mark')
   }
 
   return (
     <button
+      ref={box}
       type="button"
       aria-label="Crew"
       data-lit={lit || undefined}
       onPointerEnter={() => {
+        if (over.current) return
+        over.current = true
         setLit(true)
         strike()
       }}
-      onPointerLeave={() => setLit(false)}
+      onPointerLeave={() => {
+        over.current = false
+        setLit(false)
+      }}
       onClick={strike}
-      className={`crew-logo app-no-drag flex items-center rounded-full px-1 py-1.5 transition-transform duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg/20 ${className}`}
+      className={`crew-logo app-no-drag flex items-center rounded-full px-1.5 py-2 transition-transform duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg/20 ${className}`}
     >
-      <CrewMark className="h-[18px] w-auto text-fg" run={run} />
+      <CrewMark className="h-[18px] w-auto text-fg" live />
     </button>
   )
 }

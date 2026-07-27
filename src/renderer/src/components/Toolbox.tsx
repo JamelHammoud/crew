@@ -3,6 +3,7 @@ import type { CrewTool } from '../../../shared/toolbox'
 import {
   CheckGlyph,
   FolderGlyph,
+  GameGlyph,
   MusicGlyph,
   PencilGlyph,
   PlusGlyph,
@@ -126,7 +127,7 @@ export default function Toolbox({
   }
 
   return (
-    <Popover open={open} onClose={onClose} align="center" flush className="w-[344px]">
+    <Popover open={open} onClose={onClose} align="center" flush className="w-[262px]">
       {building ? (
         <ToolBuilder tool={building.tool} onDone={() => setBuilding(null)} />
       ) : filling ? (
