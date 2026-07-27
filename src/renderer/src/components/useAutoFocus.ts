@@ -2,10 +2,6 @@ import { useEffect, useRef, type RefObject } from 'react'
 
 const TRIES = 10
 
-// A field inside a popover mounts hidden for the pass the popover measures
-// itself in, and a hidden element cannot take focus, so React's own autoFocus
-// is spent on nothing. This asks again on each frame until the field really has
-// it, which is the frame the popover is placed on.
 export function useAutoFocus<T extends HTMLElement>(): RefObject<T> {
   const ref = useRef<T>(null)
 
@@ -22,5 +18,5 @@ export function useAutoFocus<T extends HTMLElement>(): RefObject<T> {
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  return ref as RefObject<T>
+  return ref
 }
