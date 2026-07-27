@@ -489,6 +489,9 @@ export function findPlaylists(playlists: readonly MusicPlaylist[], query: string
   })
 }
 
+// One of the app's own lists is nobody's, so it is never yours however you are
+// named. Without the first line a member with no name yet owns the lot.
 export function isMine(playlist: MusicPlaylist, name: string): boolean {
+  if (!playlist.by) return false
   return playlist.by.toLowerCase() === name.trim().toLowerCase()
 }
