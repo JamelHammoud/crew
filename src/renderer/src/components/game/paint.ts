@@ -101,48 +101,63 @@ export function outline(
   ctx.stroke()
 }
 
-const LIP = { height: 12, out: 4 }
-
 // A pipe is drawn past the top and the bottom of the world rather than up to
-// them, so its rounded corners are only ever the two that face the gap.
-export function pipe(ctx: CanvasRenderingContext2D, x: number, gap: number, floor: number): void {
-  const top = gap - PIPE.gap / 2
-  const bottom = gap + PIPE.gap / 2
+// them, so its rounded corners are only ever the two that face the gap. Its size
+// is asked for rather than read off the world, because the same drawing paints
+// the still on the game's own row at a size the world knows nothing about.
+export function pipe(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  gap: number,
+  floor: number,
+  width = PIPE.width,
+  opening = PIPE.gap
+): void {
+  const top = gap - opening / 2
+  const bottom = gap + opening / 2
+  const lip = { height: width * 0.3, out: width * 0.1 }
+  const over = width * 0.3
   ctx.fillStyle = PIPE_COLOR
-  roundRect(ctx, x, -12, PIPE.width, top + 12, 5)
+  roundRect(ctx, x, -over, width, top + over, width * 0.12)
   ctx.fill()
-  roundRect(ctx, x, bottom, PIPE.width, floor - bottom + 12, 5)
+  roundRect(ctx, x, bottom, width, floor - bottom + over, width * 0.12)
   ctx.fill()
   ctx.fillStyle = PIPE_LIP
-  roundRect(ctx, x - LIP.out, top - LIP.height, PIPE.width + LIP.out * 2, LIP.height, 4)
+  roundRect(ctx, x - lip.out, top - lip.height, width + lip.out * 2, lip.height, width * 0.1)
   ctx.fill()
-  roundRect(ctx, x - LIP.out, bottom, PIPE.width + LIP.out * 2, LIP.height, 4)
+  roundRect(ctx, x - lip.out, bottom, width + lip.out * 2, lip.height, width * 0.1)
   ctx.fill()
 }
 
 // The bird tips with what it is doing rather than staying level, so a fall reads
 // as a fall and a flap reads as one without anything else being drawn.
-export function bird(ctx: CanvasRenderingContext2D, x: number, y: number, vy: number): void {
+export function bird(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  vy: number,
+  r = BIRD.r
+): void {
   ctx.save()
   ctx.translate(x, y)
   ctx.rotate(Math.max(-0.5, Math.min(0.9, vy / 420)))
   ctx.beginPath()
-  ctx.arc(0, 0, BIRD.r, 0, Math.PI * 2)
+  ctx.arc(0, 0, r, 0, Math.PI * 2)
   ctx.fillStyle = BIRD_COLOR
   ctx.fill()
   ctx.beginPath()
-  ctx.moveTo(BIRD.r * 0.6, -1)
-  ctx.lineTo(BIRD.r * 1.55, 1)
-  ctx.lineTo(BIRD.r * 0.6, 3.2)
+  ctx.moveTo(r * 0.6, -r * 0.1)
+  ctx.lineTo(r * 1.55, r * 0.1)
+  ctx.lineTo(r * 0.6, r * 0.36)
   ctx.closePath()
   ctx.fillStyle = BIRD_WING
   ctx.fill()
   ctx.beginPath()
-  ctx.ellipse(-2, 1.5, BIRD.r * 0.55, BIRD.r * 0.4, -0.3, 0, Math.PI * 2)
+  ctx.ellipse(-r * 0.22, r * 0.17, r * 0.55, r * 0.4, -0.3, 0, Math.PI * 2)
   ctx.fillStyle = BIRD_WING
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(BIRD.r * 0.35, -BIRD.r * 0.35, 1.6, 0, Math.PI * 2)
+  ctx.arc(r * 0.35, -r * 0.35, r * 0.18, 0, Math.PI * 2)
   ctx.fillStyle = '#2b2f45'
   ctx.fill()
   ctx.restore()
