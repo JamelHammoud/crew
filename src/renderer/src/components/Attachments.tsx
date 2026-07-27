@@ -38,10 +38,35 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
   )
 }
 
-const ATTACH_SIZES = {
+export const ATTACH_SIZES = {
   md: 'w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600',
   sm: 'w-7 h-7'
 } as const
+
+export const PLUS_BUTTON =
+  'rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0'
+
+// The file dialog is opened from the plus in the ask bar and from a row in the
+// composer's own menu, so the input itself lives in one place and both reach it
+// through the same handle.
+export function useImagePicker(attachmentKey: string) {
+  const attach = useCrew(s => s.attach)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const input = (
+    <input
+      ref={inputRef}
+      type="file"
+      accept="image/png,image/jpeg,image/gif,image/webp"
+      multiple
+      className="hidden"
+      onChange={event => {
+        void attach(attachmentKey, event.target.files)
+        event.target.value = ''
+      }}
+    />
+  )
+  return { input, choose: () => inputRef.current?.click() }
+}
 
 export function AttachButton({
   attachmentKey,
@@ -51,28 +76,17 @@ export function AttachButton({
   size?: keyof typeof ATTACH_SIZES
 }) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
-  const attach = useCrew(s => s.attach)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const { input, choose } = useImagePicker(attachmentKey)
   const full = count >= MAX_ATTACHMENTS
   return (
     <>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/gif,image/webp"
-        multiple
-        className="hidden"
-        onChange={event => {
-          void attach(attachmentKey, event.target.files)
-          event.target.value = ''
-        }}
-      />
+      {input}
       <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}>
         <button
-          onClick={() => inputRef.current?.click()}
+          onClick={choose}
           disabled={full}
           aria-label="Add an image"
-          className={`${ATTACH_SIZES[size]} rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0`}
+          className={`${ATTACH_SIZES[size]} ${PLUS_BUTTON}`}
         >
           <PlusGlyph className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />
         </button>
