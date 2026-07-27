@@ -100,32 +100,30 @@ export default function TetrisGame({
   }
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <Field
-        onKeyDown={key}
-        onSize={setWidth}
-        onPress={() => {
-          if (phase !== 'playing') start()
-        }}
-        overlay={
-          phase === 'playing' ? null : phase === 'over' ? (
-            <Overlay
-              title="Game over"
-              note={`${game.score.toLocaleString()} points`}
-              label="Play again"
-              onStart={start}
-            >
-              {children}
-            </Overlay>
-          ) : (
-            <Overlay note="Arrows to move, space to drop" label="Play" onStart={start}>
-              {children}
-            </Overlay>
-          )
-        }
-      >
-        <canvas ref={canvas} className="block w-full h-full" />
-      </Field>
-    </div>
+    <Field
+      onKeyDown={key}
+      onSize={setWidth}
+      onPress={() => {
+        if (phase !== 'playing') start()
+      }}
+      overlay={
+        phase === 'playing' ? null : phase === 'over' ? (
+          <Overlay
+            title="Game over"
+            note={`${game.score.toLocaleString()} points`}
+            label="Play again"
+            onStart={start}
+          >
+            {children}
+          </Overlay>
+        ) : (
+          <Overlay note="Arrows to move, space to drop" label="Play" onStart={start}>
+            {children}
+          </Overlay>
+        )
+      }
+    >
+    <canvas ref={canvas} className="block w-full h-full" />
+    </Field>
   )
 }

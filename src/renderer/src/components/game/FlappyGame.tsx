@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintFlappy } from './drawFlappy'
-import { WORLD, flap, newFlappy, tick, type Flappy } from './flappy'
+import { flap, newFlappy, tick, type Flappy } from './flappy'
 import { Field, Overlay } from './GameStage'
 import useGameLoop from './useGameLoop'
 
@@ -69,32 +69,30 @@ export default function FlappyGame({
   }
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <Field
-        onKeyDown={name => {
-          if (name === ' ' || name === 'ArrowUp' || name === 'Enter') press()
-        }}
-        onSize={setWidth}
-        onPress={press}
-        overlay={
-          phase === 'playing' ? null : phase === 'over' ? (
-            <Overlay
-              title="Game over"
-              note={game.score === 1 ? '1 pipe' : `${game.score} pipes`}
-              label="Play again"
-              onStart={start}
-            >
-              {children}
-            </Overlay>
-          ) : (
-            <Overlay note="Space or click to flap" label="Play" onStart={start}>
-              {children}
-            </Overlay>
-          )
-        }
-      >
-        <canvas ref={canvas} className="block w-full h-full" />
-      </Field>
-    </div>
+    <Field
+      onKeyDown={name => {
+        if (name === ' ' || name === 'ArrowUp' || name === 'Enter') press()
+      }}
+      onSize={setWidth}
+      onPress={press}
+      overlay={
+        phase === 'playing' ? null : phase === 'over' ? (
+          <Overlay
+            title="Game over"
+            note={game.score === 1 ? '1 pipe' : `${game.score} pipes`}
+            label="Play again"
+            onStart={start}
+          >
+            {children}
+          </Overlay>
+        ) : (
+          <Overlay note="Space or click to flap" label="Play" onStart={start}>
+            {children}
+          </Overlay>
+        )
+      }
+    >
+    <canvas ref={canvas} className="block w-full h-full" />
+    </Field>
   )
 }
