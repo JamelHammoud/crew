@@ -6,9 +6,9 @@ import { MenuItem, Popover } from './Popover'
 const ACCEPT = Object.keys(IMAGE_TYPES).join(',')
 
 // The face itself is the control, and it is the only one: nothing anywhere
-// says photo in words. Hover it and the camera comes up, which opens the file
-// dialog while there is no photo on, and the two things you can do to one when
-// there is.
+// says photo in words. Hover it and the upload mark comes up, which opens the
+// file dialog while there is no photo on, and the two things you can do to one
+// when there is. The scrim stops under the presence dot, which stands above it.
 export default function PhotoPicker({
   has,
   onChange,
@@ -34,7 +34,7 @@ export default function PhotoPicker({
         aria-label={has ? 'Change photo' : 'Add a photo'}
         className="absolute inset-0 rounded-full flex items-center justify-center bg-ink-900/70 text-fg opacity-0 transition-all duration-150 hover:opacity-100 focus-visible:opacity-100 active:scale-95"
       >
-        <PhotoGlyph className="w-4 h-4" />
+        <UploadGlyph className="w-4 h-4" />
       </button>
       <Popover open={menu} onClose={() => setMenu(false)} align="start">
         <MenuItem icon={<UploadGlyph />} label="Change photo" onClick={pick} />
