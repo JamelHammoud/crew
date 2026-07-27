@@ -1,13 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { findMusic, isMine, playlistItems, type MusicPlaylist } from '../../../../shared/music'
-import { MinusGlyph, PauseGlyph, PlayGlyph, TrashGlyph } from '../../icons'
+import { MoreGlyph, PauseGlyph, PlayGlyph, TrashGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
+import { MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
-import { quietPill, solidButton } from './buttons'
+import { quietPill, roundButton, solidButton } from './buttons'
 import PlaylistCover from './PlaylistCover'
-import { tracks } from './say'
-import TrackRow, { rowAction, rowActionQuiet } from './TrackRow'
+import { span, tracks } from './say'
+import TrackRow from './TrackRow'
 
 // One list, played through. A track put on from in here carries the list with
 // it, so Next and Back walk the list rather than the whole shelf.
@@ -23,10 +24,15 @@ export default function PlaylistView({
   const room = useMusic(s => s.room)
   const uploads = useMusic(s => s.uploads)
   const selfName = useCrew(s => s.selfName)
+  const [menu, setMenu] = useState(false)
   const items = useMemo(() => playlistItems(playlist, uploads), [playlist, uploads])
   const shown = useMemo(() => findMusic(items, query), [items, query])
   const on = room.playlistId === playlist.id && room.trackId !== null
   const mine = isMine(playlist, selfName)
+  const runs = items.reduce((total, item) => total + item.seconds, 0)
+  const said = [playlist.by && !mine ? playlist.by : '', tracks(items.length), items.length ? span(runs) : '']
+    .filter(Boolean)
+    .join(' · ')
 
   const play = () => {
     if (on) useMusic.getState().toggle()
@@ -40,43 +46,58 @@ export default function PlaylistView({
 
   return (
     <div className="pb-2">
-      <div className="px-4 pt-3 pb-2 flex items-center gap-3">
+      <header className="px-4 pt-3 pb-4 flex items-start gap-3.5">
         <PlaylistCover
           items={items}
-          size={48}
+          size={76}
           playing={on && room.playing}
-          className="w-12 h-12 shrink-0 rounded-xl"
+          className="w-[76px] h-[76px] shrink-0 rounded-2xl"
         />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold text-fg">{playlist.name}</h3>
-          <p className="truncate text-xs text-fg-muted">
-            {playlist.by && !mine ? `${playlist.by} · ${tracks(items.length)}` : tracks(items.length)}
-          </p>
+          <h3 className="text-lg font-semibold leading-snug text-fg break-words line-clamp-2">{playlist.name}</h3>
+          <p className="mt-0.5 truncate text-xs text-fg-muted">{said}</p>
+          <div className="mt-3 flex items-center gap-1">
+            <Tooltip label={on && room.playing ? 'Pause' : 'Play'}>
+              <button
+                onClick={play}
+                disabled={items.length === 0}
+                aria-label={on && room.playing ? 'Pause' : 'Play'}
+                className={`${solidButton} w-9 h-9 disabled:opacity-25`}
+              >
+                {on && room.playing ? <PauseGlyph className="w-4 h-4" /> : <PlayGlyph className="w-4 h-4" />}
+              </button>
+            </Tooltip>
+            {mine && (
+              <span className="relative flex">
+                <Tooltip label="More" disabled={menu}>
+                  <button
+                    onClick={() => setMenu(was => !was)}
+                    aria-label="More for this playlist"
+                    aria-expanded={menu}
+                    aria-haspopup="menu"
+                    className={`${roundButton} w-9 h-9 ${menu ? 'text-fg bg-fg/[0.06]' : ''}`}
+                  >
+                    <MoreGlyph className="w-[18px] h-[18px]" />
+                  </button>
+                </Tooltip>
+                <Popover open={menu} onClose={() => setMenu(false)} align="start" className="min-w-44">
+                  <MenuItem
+                    icon={<TrashGlyph />}
+                    danger
+                    label="Delete playlist"
+                    onClick={() => {
+                      setMenu(false)
+                      useMusic.getState().dropPlaylist(playlist.id)
+                    }}
+                  />
+                </Popover>
+              </span>
+            )}
+          </div>
         </div>
-        {mine && (
-          <Tooltip label="Delete this playlist">
-            <button
-              onClick={() => useMusic.getState().dropPlaylist(playlist.id)}
-              aria-label="Delete this playlist"
-              className={rowAction}
-            >
-              <TrashGlyph className="w-4 h-4" />
-            </button>
-          </Tooltip>
-        )}
-        <Tooltip label={on && room.playing ? 'Pause' : 'Play'}>
-          <button
-            onClick={play}
-            disabled={items.length === 0}
-            aria-label={on && room.playing ? 'Pause' : 'Play'}
-            className={`${solidButton} w-9 h-9 disabled:opacity-30`}
-          >
-            {on && room.playing ? <PauseGlyph className="w-4 h-4" /> : <PlayGlyph className="w-4 h-4" />}
-          </button>
-        </Tooltip>
-      </div>
+      </header>
 
-      <ul className="p-2 pt-0">
+      <ul className="p-2 pt-0 flex flex-col gap-1">
         {shown.map(item => (
           <TrackRow
             key={item.id}
@@ -84,24 +105,12 @@ export default function PlaylistView({
             on={item.id === room.trackId && on}
             playing={room.playing}
             onPlay={() => put(item.id)}
-            actions={
-              mine && (
-                <Tooltip label="Take it out">
-                  <button
-                    onClick={() => useMusic.getState().holdTrack(playlist.id, item.id, false)}
-                    aria-label={`Take ${item.name} out`}
-                    className={rowActionQuiet}
-                  >
-                    <MinusGlyph className="w-4 h-4" />
-                  </button>
-                </Tooltip>
-              )
-            }
+            within={playlist}
           />
         ))}
         {shown.length === 0 && (
-          <li className="px-3 py-6 flex flex-col items-center gap-3">
-            <p className="text-sm text-fg-muted">{query.trim() ? 'No tracks found' : 'Nothing in here yet'}</p>
+          <li className="px-3 py-8 flex flex-col items-center gap-3">
+            <p className="text-sm text-fg-muted">{query.trim() ? 'No tracks found' : 'No tracks yet'}</p>
             {!query.trim() && mine && (
               <button onClick={onSongs} className={`${quietPill} h-8 px-3.5`}>
                 Add tracks
