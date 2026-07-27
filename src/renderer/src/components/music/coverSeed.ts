@@ -1,4 +1,4 @@
-import type { MusicItem } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/music'
 
 // What a cover is, before anything is drawn. It is a photograph of a few petals
 // held right up to the lens: a sky behind them, a handful of shapes standing at
@@ -372,13 +372,13 @@ const FALLBACK = ['#6fe9ff', '#d8f2ff', '#7fb3ff', '#f4fdff', '#2f9dfa']
 // has to be counted the same way for every cover.
 export const MAX_PETALS = 6
 
-export function coverArt(item: MusicItem): CoverArt {
-  const seed = seedOf(item.id)
+export function coverArt(subject: CoverSubject): CoverArt {
+  const seed = seedOf(subject.id)
   const roll = stream(seed)
   const cast = COVER_CASTS[Math.floor(roll() * COVER_CASTS.length)]
   const recipe = CASTS[cast]
 
-  const colors = item.colors.length >= 5 ? item.colors : FALLBACK
+  const colors = subject.colors.length >= 5 ? subject.colors : FALLBACK
   const light = toLinear(colors[3])
   const sky = toLinear(colors[4])
   // The far side of the sky is the near side carrying a little of the light,

@@ -19,6 +19,9 @@ import NewPlaylist from './NewPlaylist'
 // The lists are a screen inside this menu rather than a menu hanging off it.
 // One card is one thing to aim at, and it is asked for rather than opening
 // itself under the pointer on the way past.
+//
+// Whose the track is stands at the head of it, since the row says nothing but
+// the name. One of the app's own is nobody's, so it says so instead.
 export default function TrackMenu({ item, within }: { item: MusicItem; within?: MusicPlaylist }) {
   const playlists = useMusic(s => s.playlists)
   const selfName = useCrew(s => s.selfName)
