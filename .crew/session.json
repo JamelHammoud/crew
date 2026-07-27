@@ -431,34 +431,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785159113555,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 39,
-            "severity": "normal",
-            "resetsAt": 1785535200153,
-            "active": true
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785159413586,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       }
     },
     {
@@ -716,34 +694,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785159113555,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 39,
-            "severity": "normal",
-            "resetsAt": 1785535200153,
-            "active": true
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785159413586,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       },
       "avatar": "a6acfa93-41c8-4291-9c3b-516cf5006d98.webp"
     }
