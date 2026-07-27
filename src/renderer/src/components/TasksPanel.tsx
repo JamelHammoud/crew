@@ -552,28 +552,21 @@ export default function TasksPanel({
                   )}
                 </section>
               )}
-              {(done.length > 0 || checkedTodos.length > 0) && (
+              {doneEntries.length > 0 && (
                 <section>
-                  {toggleHeading('Done', done.length + checkedTodos.length, showDone || q !== '', () =>
+                  {toggleHeading('Done', doneEntries.length, showDone || q !== '', () =>
                     setShowDone(v => !v)
                   )}
                   {(showDone || q !== '') &&
-                    [
-                      ...done.map(row => ({
-                        ts: lastMessageAt[row.thread.id] ?? 0,
-                        node: item(row, {
-                          icon: <UndoGlyph className="w-4 h-4" />,
-                          label: 'Reopen',
-                          status: 'open' as const
-                        })
-                      })),
-                      ...checkedTodos.map(todo => ({
-                        ts: checkedAt[todo.id] ?? todo.ts,
-                        node: checkedItem(todo)
-                      }))
-                    ]
-                      .sort((a, b) => b.ts - a.ts)
-                      .map(entry => entry.node)}
+                    doneEntries.map(entry =>
+                      entry.row
+                        ? item(
+                            entry.row,
+                            { icon: <UndoGlyph className="w-4 h-4" />, label: 'Reopen', status: 'open' },
+                            entry.ts
+                          )
+                        : checkedItem(entry.todo!, entry.ts)
+                    )}
                 </section>
               )}
               {archived.length > 0 && (
