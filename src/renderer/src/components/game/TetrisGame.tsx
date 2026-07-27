@@ -69,7 +69,7 @@ export default function TetrisGame({
   // loop has already stopped by then.
   useEffect(() => {
     if (canvas.current) paintTetris(canvas.current, game)
-  }, [game, width])
+  }, [game, box])
 
   useEffect(() => {
     onLive(phase === 'playing' ? game.score : null)
