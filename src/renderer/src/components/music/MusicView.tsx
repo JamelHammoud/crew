@@ -85,9 +85,17 @@ export default function MusicView() {
             <Playlists query={query} onOpen={go} />
           )}
         </div>
-        {/* The bar is what stands at the foot of the panel while something is
-            on, so the fade under it would only be a second edge behind glass. */}
         <ScrollFade edges={{ top: edges.top, bottom: track ? true : edges.bottom }} />
+        {/* A taller fade while the bar is up. The list runs on under the glass,
+            and it has to be gone by the time it would show in the margin the bar
+            floats in, or a row reappears under it a moment after passing behind
+            it. */}
+        {track && (
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink-900 from-30% to-transparent pointer-events-none"
+          />
+        )}
         {track && <NowPlaying track={track} />}
       </div>
     </div>
