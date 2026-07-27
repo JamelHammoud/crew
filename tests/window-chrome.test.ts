@@ -5,6 +5,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { applyPlatform, onMac } from '../src/renderer/src/state/platform'
+import { fullScreen, setFullScreen } from '../src/renderer/src/state/windowShape'
 
 const MAC = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 crew/1.0'
 const WINDOWS = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 crew/1.0'
