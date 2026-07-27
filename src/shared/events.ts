@@ -118,6 +118,7 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'music.removed'; trackId: string; byName: string }
   | { id: string; ts: number; kind: 'playlist.added'; playlistId: string; name: string; byName: string }
   | { id: string; ts: number; kind: 'playlist.removed'; playlistId: string; byName: string }
+  | { id: string; ts: number; kind: 'playlist.renamed'; playlistId: string; name: string; byName: string }
   | {
       id: string
       ts: number
@@ -193,6 +194,7 @@ const EPHEMERAL_KINDS = new Set([
   // months ago is still a list.
   'playlist.added',
   'playlist.removed',
+  'playlist.renamed',
   'playlist.track'
 ])
 
