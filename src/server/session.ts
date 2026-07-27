@@ -50,6 +50,7 @@ import {
   cleanUploadName,
   emptyMusic,
   isMine,
+  isMusicSet,
   itemFor,
   MAX_PLAYLIST_TRACKS,
   MAX_PLAYLISTS,
