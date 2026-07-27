@@ -117,6 +117,8 @@ export function Overlay({
       {note && <span className="text-sm text-white/60">{note}</span>}
       <button
         onClick={onStart}
+        onPointerDown={event => event.stopPropagation()}
+        onMouseDown={event => event.preventDefault()}
         className="h-9 px-5 rounded-full bg-white text-sm font-semibold text-ink-900 transition-transform duration-150 hover:scale-[1.03] active:scale-95"
       >
         {label}
