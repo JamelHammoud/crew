@@ -77,7 +77,8 @@ await build({
   outfile: path.join(dir, 'mark.js'),
   format: 'iife',
   jsx: 'automatic',
-  absWorkingDir: root
+  absWorkingDir: root,
+  nodePaths: [path.join(root, 'node_modules')]
 })
 await writeFile(path.join(dir, 'index.html'), PAGE(rules, tall))
 
