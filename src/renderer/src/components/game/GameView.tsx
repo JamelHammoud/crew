@@ -58,20 +58,18 @@ function GamePlay({ game, onLive }: { game: GameInfo; onLive: (score: number | n
   )
 }
 
+// Which game is open rides on the tab rather than in here, so the tab up the
+// panel is named after it the way a web tab is named after its page, and a look
+// at another tab leaves you where you were rather than back at the top of the
+// list.
 export default function GameView({ tabId }: { tabId: string }) {
-  const [openId, setOpenId] = useState<string | null>(null)
+  const openId = useBrowser(s => s.tabs.find(tab => tab.id === tabId)?.game ?? null)
   const [live, setLive] = useState<number | null>(null)
   const open = openId ? gameFor(openId) : null
 
-  // The tab up the panel says what you are playing rather than what it holds,
-  // the way a web tab is named after the page and not after the web.
-  useEffect(() => {
-    useBrowser.getState().updateTab(tabId, { title: open?.name ?? '' })
-  }, [tabId, open])
-
   const go = (gameId: string | null) => {
     setLive(null)
-    setOpenId(gameId)
+    useBrowser.getState().updateTab(tabId, { game: gameId })
   }
 
   return (
