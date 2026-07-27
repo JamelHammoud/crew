@@ -105,7 +105,7 @@ export default function GameView() {
           ) : (
             <div className="absolute inset-0 overflow-y-auto [scrollbar-width:thin] px-2 pb-4">
               {GAMES.map(one => (
-                <GameRow key={one.id} game={one} onOpen={setOpenId} />
+                <GameRow key={one.id} game={one} onOpen={go} />
               ))}
             </div>
           )}
