@@ -56,7 +56,7 @@ export default function Songs({ query }: { query: string }) {
         />
       ))}
 
-      {items.length === 0 && <li className="px-3 py-6 text-center text-sm text-fg-muted">Nothing by that name</li>}
+      {items.length === 0 && <li className="px-3 py-6 text-center text-sm text-fg-muted">No tracks found</li>}
 
       {!query.trim() && (
         <li>
@@ -65,14 +65,12 @@ export default function Songs({ query }: { query: string }) {
             disabled={adding}
             className="w-full h-14 px-2 rounded-2xl flex items-center gap-3 text-left transition-colors duration-150 hover:bg-fg/[0.04] disabled:opacity-50"
           >
-            <span className="w-10 h-10 shrink-0 rounded-xl border border-dashed border-fg/15 flex items-center justify-center text-fg-faint">
+            <span className="w-10 h-10 shrink-0 rounded-[10px] border border-dashed border-fg/15 flex items-center justify-center text-fg-faint">
               {adding ? <Spinner size={16} /> : <PlusGlyph className="w-4 h-4" />}
             </span>
             <span className="flex-1 min-w-0">
-              <span className="block text-sm text-fg-secondary">{adding ? 'Putting it on the shelf' : 'Add a track'}</span>
-              <span className="block truncate text-xs text-fg-muted">
-                {addTrouble ?? 'An audio file from this machine, for everyone here'}
-              </span>
+              <span className="block text-sm text-fg-secondary">{adding ? 'Adding' : 'Add a track'}</span>
+              {addTrouble && <span className="block truncate text-xs text-danger">{addTrouble}</span>}
             </span>
           </button>
           <input
