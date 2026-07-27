@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { isMine, type MusicItem, type MusicPlaylist } from '../../../../shared/music'
-import { ChevronLeftGlyph, MinusGlyph, MoreGlyph, PlusGlyph, TrashGlyph } from '../../icons'
+import { MinusGlyph, MoreGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
+import AddToPlaylist from './AddToPlaylist'
 import { quietRowButton } from './buttons'
 import NewPlaylist from './NewPlaylist'
 
