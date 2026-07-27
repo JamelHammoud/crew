@@ -1,19 +1,30 @@
-import { BLOCKS, GHOST, LINE, WELL, block, fitCanvas, outline } from './paint'
+import { BLOCKS, GHOST, LINE, WELL, block, fitCanvas, outline, roundRect } from './paint'
 import { COLS, ROWS, restY, type Tetris } from './tetris'
+
+// The field is the whole of the room the panel leaves and this board is one
+// shape whatever that room is, so the well keeps a surround of its own. Run edge
+// to edge it stops being a well and becomes the field.
+const surround = (width: number, height: number): number =>
+  Math.min(24, Math.round(Math.min(width, height) * 0.05))
 
 export function paintTetris(canvas: HTMLCanvasElement, game: Tetris): void {
   const width = canvas.clientWidth
   const height = canvas.clientHeight
   const ctx = fitCanvas(canvas, width, height)
   if (!ctx) return
-  const size = Math.min(width / COLS, height / ROWS)
+  const pad = surround(width, height)
+  const size = Math.min((width - pad * 2) / COLS, (height - pad * 2) / ROWS)
   const left = (width - size * COLS) / 2
   const top = (height - size * ROWS) / 2
   ctx.clearRect(0, 0, width, height)
 
-  // Every game stands on a field of one shape and this board is another, so the
-  // well is sunk into it rather than left to be guessed from where the grid
-  // happens to stop.
+  // Sunk into the field rather than left to be guessed from where the grid
+  // happens to stop, and everything the game draws is clipped to it, so a stack
+  // that reaches the top corner is cut by the well rather than standing outside
+  // it.
+  ctx.save()
+  roundRect(ctx, left, top, size * COLS, size * ROWS, Math.min(14, size * 0.4))
+  ctx.clip()
   ctx.fillStyle = WELL
   ctx.fillRect(left, top, size * COLS, size * ROWS)
 
