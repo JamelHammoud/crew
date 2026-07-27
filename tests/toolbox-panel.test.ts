@@ -354,6 +354,180 @@ describe('the toolbox', () => {
     expect(screen.getByText('Copied')).toBeTruthy()
   })
 
+  it('says something in the chat, adds a task, and writes a line in a doc', () => {
+    toolbox(
+      [
+        tool({ id: 's', name: 'Heads up', mark: 'chat', action: { kind: 'say', text: 'Pushing now' } }),
+        tool({ id: 't', name: 'Overnight', mark: 'checklist', action: { kind: 'todo', text: 'Read what came in', agentId: 'a1' } }),
+        tool({ id: 'n', name: 'Log it', mark: 'pencil', action: { kind: 'note', page: 'journal', text: 'Shipped' } })
+      ],
+      [],
+      { docs: { journal: { title: 'Journal', text: 'Monday\n' } } }
+    )
+
+    fireEvent.click(screen.getByText('Heads up'))
+    expect(asked).toEqual([{ text: 'Pushing now', aimedAt: undefined }])
+    expect(screen.getByText('Sent')).toBeTruthy()
+
+    fireEvent.click(screen.getByText('Overnight'))
+    expect(tasks).toEqual([{ text: 'Read what came in', agentId: 'a1' }])
+    expect(screen.getByText('Added')).toBeTruthy()
+
+    // A line lands at the end of what is already there, with the page kept.
+    fireEvent.click(screen.getByText('Log it'))
+    expect(written).toEqual([{ page: 'journal', text: 'Monday\n\nShipped' }])
+    expect(screen.getByText('Written')).toBeTruthy()
+    // Everything here leaves you where you were.
+    expect(switched).toBe(0)
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+  })
+
+  it('puts a list on for everyone, and only ever lets you into a call', () => {
+    toolbox([
+      tool({ id: 'm', name: 'Focus', mark: 'music', action: { kind: 'music', playlistId: 'set-ambient-lofi' } }),
+      tool({ id: 'h', name: 'Standup', mark: 'signal', action: { kind: 'huddle' } })
+    ])
+
+    // A list plays from the top and carries the list with it.
+    fireEvent.click(screen.getByText('Focus'))
+    expect(played).toEqual([{ trackId: 'slow-morning', playlistId: 'set-ambient-lofi' }])
+    expect(screen.getByText('Playing')).toBeTruthy()
+
+    fireEvent.click(screen.getByText('Standup'))
+    expect(joins).toBe(1)
+
+    // Pressing it again while the call is on is not a way to hang up on everyone.
+    useHuddle.setState({ joined: true })
+    cleanup()
+    toolbox([tool({ id: 'h', name: 'Standup', mark: 'signal', action: { kind: 'huddle' } })])
+    fireEvent.click(screen.getByText('Standup'))
+    expect(joins).toBe(1)
+  })
+
+  it('runs a chain in the order it was built, and a pair that name each other stops', () => {
+    const dev = tool({ id: 'd', name: 'Dev', mark: 'terminal', action: { kind: 'terminal', command: 'yarn dev' } })
+    const link = tool({ id: 'l', name: 'Link', mark: 'clipboard', action: { kind: 'copy', text: 'crew://join' } })
+    toolbox([
+      dev,
+      link,
+      tool({ id: 'c', name: 'Start the day', mark: 'sun', action: { kind: 'chain', toolIds: ['l', 'd'] } })
+    ])
+
+    fireEvent.click(screen.getByText('Start the day'))
+    expect(copied).toEqual(['crew://join'])
+    expect(useBrowser.getState().tabs).toHaveLength(1)
+    expect(useBrowser.getState().tabs[0]).toMatchObject({ kind: 'terminal', command: 'yarn dev' })
+    // A chain that opens something takes you to where it opened.
+    expect(switched).toBe(1)
+
+    cleanup()
+    toolbox([
+      dev,
+      tool({ id: 'one', name: 'One', mark: 'group', action: { kind: 'chain', toolIds: ['two'] } }),
+      tool({ id: 'two', name: 'Two', mark: 'group', action: { kind: 'chain', toolIds: ['one', 'd'] } })
+    ])
+    fireEvent.click(screen.getByText('One'))
+    expect(useBrowser.getState().tabs).toHaveLength(1)
+  })
+
+  it('asks for a blank before it runs, and drops what was typed into every place it is named', () => {
+    toolbox([
+      tool({ id: 'q', name: 'Search', mark: 'search', action: { kind: 'web', url: 'https://crew.dev/search?q={what}' } })
+    ])
+
+    fireEvent.click(screen.getByText('Search'))
+    expect(useBrowser.getState().tabs).toHaveLength(0)
+    expect(screen.getByText('what')).toBeTruthy()
+
+    const blank = screen.getByText('what').parentElement!.querySelector('input') as HTMLInputElement
+    fireEvent.change(blank, { target: { value: 'pooling llms' } })
+    fireEvent.click(screen.getByText('Go'))
+
+    // What is typed goes into an address as a query rather than as it stands.
+    expect(useBrowser.getState().tabs[0]).toMatchObject({
+      kind: 'web',
+      url: 'https://crew.dev/search?q=pooling%20llms'
+    })
+  })
+
+  it('asks a chain for its blanks once, and leaves a shell variable alone', () => {
+    toolbox([
+      tool({ id: 'a', name: 'Branch', mark: 'terminal', action: { kind: 'terminal', command: 'git checkout {branch}' } }),
+      tool({ id: 'b', name: 'Tell', mark: 'chat', action: { kind: 'say', text: 'On {branch} now, from ${PWD}' } }),
+      tool({ id: 'c', name: 'Switch', mark: 'group', action: { kind: 'chain', toolIds: ['a', 'b'] } })
+    ])
+
+    fireEvent.click(screen.getByText('Switch'))
+    const blanks = screen.getAllByText('branch')
+    expect(blanks).toHaveLength(1)
+
+    fireEvent.change(blanks[0].parentElement!.querySelector('input') as HTMLInputElement, {
+      target: { value: 'ship-it' }
+    })
+    fireEvent.click(screen.getByText('Go'))
+
+    expect(useBrowser.getState().tabs[0]).toMatchObject({ command: 'git checkout ship-it' })
+    expect(asked).toEqual([{ text: 'On ship-it now, from ${PWD}', aimedAt: undefined }])
+  })
+
+  it('builds a tool that plays a list, and one that runs the tools already built', () => {
+    toolbox([tool({ id: 'tool-1', name: 'Figma' }), tool({ id: 'tool-2', name: 'Dev', mark: 'terminal' })])
+    build()
+
+    name('Focus')
+    does('Put music on')
+    fireEvent.click(screen.getByText('Ambient Lofi'))
+    fireEvent.click(screen.getByText('Add to toolbox'))
+
+    expect(sent).toEqual([
+      { type: 'tool.add', name: 'Focus', mark: 'star', action: { kind: 'music', playlistId: 'set-ambient-lofi' } }
+    ])
+
+    sent.length = 0
+    build()
+    name('Start the day')
+    does('Do several things')
+    fireEvent.click(screen.getByText('Dev'))
+    fireEvent.click(screen.getByText('Figma'))
+    fireEvent.click(screen.getByText('Add to toolbox'))
+
+    expect(sent).toEqual([
+      { type: 'tool.add', name: 'Start the day', mark: 'star', action: { kind: 'chain', toolIds: ['tool-2', 'tool-1'] } }
+    ])
+  })
+
+  it('builds a huddle with nothing else to say, and will not build the rest empty', () => {
+    toolbox()
+    build()
+
+    const save = () => screen.getByText('Add to toolbox').closest('button')
+    name('Standup')
+    does('Start a huddle')
+    expect(save()?.disabled).toBe(false)
+    fireEvent.click(save() as HTMLButtonElement)
+    expect(sent).toEqual([{ type: 'tool.add', name: 'Standup', mark: 'star', action: { kind: 'huddle' } }])
+
+    build()
+    name('Nothing')
+    does('Say something')
+    expect(save()?.disabled).toBe(true)
+    does('Add a task')
+    expect(save()?.disabled).toBe(true)
+    does('Write in a doc')
+    expect(save()?.disabled).toBe(true)
+    does('Do several things')
+    expect(save()?.disabled).toBe(true)
+  })
+
+  it('keeps a chain from naming the tool being built', () => {
+    toolbox([tool({ id: 'tool-1', name: 'Figma' })])
+    fireEvent.click(screen.getByLabelText('Edit Figma'))
+    does('Do several things')
+
+    expect(screen.queryByText('Figma')).toBeNull()
+    expect(screen.getByText('Build a tool or two first')).toBeTruthy()
+  })
+
   it('edits and removes a tool that is already there', () => {
     toolbox([tool()])
     fireEvent.click(screen.getByLabelText('Edit Figma'))
