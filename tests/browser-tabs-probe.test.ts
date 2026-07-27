@@ -78,6 +78,20 @@ describe('the tab strip', () => {
     expect(useBrowser.getState().activeTabId).toBeNull()
   })
 
+  // A games tab is named after the game it is standing in, and wears the same
+  // mark whichever one that is.
+  it('names a games tab after the game it is standing in', () => {
+    useBrowser.getState().openGame()
+    const games = useBrowser.getState().tabs[0]!
+    useBrowser.getState().openUrl('https://example.com/one')
+    const { container } = render(createElement(BrowserPanel))
+
+    expect(pillFor(container, games.id)?.textContent).toContain('Games')
+
+    act(() => useBrowser.getState().updateTab(games.id, { game: 'flappy' }))
+    expect(pillFor(container, games.id)?.textContent).toContain('Flappy Bird')
+  })
+
   it('leaves the tab menu closed until a right click asks for it', () => {
     openTwo()
     const { queryByText } = render(createElement(BrowserPanel))
