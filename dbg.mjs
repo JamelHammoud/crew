@@ -22,6 +22,21 @@ window.probe = () => {
   const c = document.createElement('canvas'); c.width=64;c.height=64;
   const gl = c.getContext('webgl', {antialias:false, preserveDrawingBuffer:true});
   if (!gl) return {no:'no context'};
+  // minimal draw: solid red triangle
+  const vs = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vs, 'attribute vec2 a; void main(){ gl_Position = vec4(a,0.,1.); }'); gl.compileShader(vs);
+  const fs2 = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fs2, 'void main(){ gl_FragColor = vec4(1.,0.,0.,1.); }'); gl.compileShader(fs2);
+  const pr = gl.createProgram(); gl.attachShader(pr,vs); gl.attachShader(pr,fs2); gl.linkProgram(pr); gl.useProgram(pr);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,3,-1,-1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr,'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  gl.viewport(0,0,64,64); gl.drawArrays(gl.TRIANGLES,0,3);
+  const raw = new Uint8Array(4); gl.readPixels(32,32,1,1,gl.RGBA,gl.UNSIGNED_BYTE,raw);
+  const flatc = document.createElement('canvas'); flatc.width=64; flatc.height=64;
+  const f2 = flatc.getContext('2d'); f2.drawImage(c,0,0);
+  const via = f2.getImageData(32,32,1,1).data;
+  return { minRead: [...raw].join(','), minCopy: [...via].join(','), art: !!art, px, err: gl.getError() };
   const src = window.FRAG;
   const sh = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(sh, src); gl.compileShader(sh);
