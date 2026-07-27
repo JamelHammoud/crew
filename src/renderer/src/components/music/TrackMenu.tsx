@@ -112,6 +112,7 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
               }}
             />
           )}
+          </div>
         </ScreenSwap>
       </Popover>
       <NewPlaylist
