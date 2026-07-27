@@ -68,6 +68,27 @@ describe('editing messages', () => {
     expect(events.some(e => e.kind === 'message.edited')).toBe(false)
   })
 
+  it('marks the message as edited, and only that one, after a restart too', async () => {
+    const alice = await TestUi.connect(host.url, 'alice', host.code)
+    uis.push(alice)
+
+    alice.chat('left alone')
+    const untouched = await alice.waitForEvent(e => e.kind === 'message' && e.text === 'left alone')
+    alice.chat('teusday')
+    const msg = await alice.waitForEvent(e => e.kind === 'message' && e.text === 'teusday')
+
+    alice.send({ type: 'chat.edit', messageId: msg.id, text: 'tuesday' })
+    const edit = await alice.waitForEvent(e => e.kind === 'message.edited')
+
+    const live = host.session.snapshot().events
+    expect(messageOf(live, msg.id)?.editedTs).toBe(edit.ts)
+    expect(messageOf(live, untouched.id)?.editedTs).toBeUndefined()
+
+    const revived = new CrewSession(host.store).snapshot().events
+    expect(messageOf(revived, msg.id)?.editedTs).toBe(edit.ts)
+    expect(messageOf(revived, untouched.id)?.editedTs).toBeUndefined()
+  })
+
   it('ignores an edit from someone who is not the author', async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
     const bob = await TestUi.connect(host.url, 'bob', host.code)
