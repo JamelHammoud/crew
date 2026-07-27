@@ -250,6 +250,12 @@ The plus button in the composer opens a menu, upload a file or pick a GIF, and p
 - The message carries the picture itself rather than a link to it, the way every other image in the chat does, so it is still there when the service is not. The CDN answers a cross origin fetch, which is the whole of what makes that possible.
 - A GIF is attached and sent in the same breath, so every send guard reads the attachment count live rather than off the last render. Read from state it is a render behind, and the send is refused for having nothing in it.
 - A GIF that fails to send leaves the grid where it is. Only the send failed.
+- The picker is a header, a grid and a footer, and the two bars are flush rows with a hairline between them and the grid, the way the Actions palette is built. A pill floating in its own padding is the shape a search takes in a panel, and a popover whose whole content is the result of that search says so with the row rather than with a box drawn around it.
+- `SearchField` is that row and it is the app's search field, wherever one is wanted. It holds the magnifier, the field, a way to clear what was typed, and, where it is a screen inside something, the way back. It takes focus when it mounts, since it is the field of a screen that just opened. Seven other places still draw one of these by hand.
+- The grid's padding and the gap between tiles are the same number, so the gutter reads evenly all round rather than as a frame of one width holding a grid of another.
+- The scrollbar is off. A grid two columns wide is narrow enough that ten points of it comes out of the tiles, and the bar sits over the pictures at the one edge where they are already tight.
+- Nothing is drawn around the outside of a tile. A GIF is a picture with any color at its edge, so what marks the one under the pointer is an `InsetRing` in white, and it turns up hard enough to be seen over a photograph. Growing the tile instead is what it was, and a tile that grows in a masonry column grows underneath the one after it.
+- The footer says the same thing in every state, so the box never changes height while it is being used. It names the GIF under the pointer, says that picking one sends it when nothing is, and holds the line about a send that failed. Hung under the grid only when something went wrong, that line moves the whole popover the moment it appears.
 
 ## Terminals
 
