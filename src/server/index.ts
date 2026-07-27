@@ -23,6 +23,17 @@ type LiveSocket = WebSocket & { isAlive: boolean }
 
 const HEARTBEAT_MS = 20000
 
+// A picture in a message is drawn by an img tag, which the browser will take
+// from anywhere. A track is read with fetch, and the answer to a fetch is not
+// handed to the page unless the host says who may read it, so a run from source,
+// where the app is served on a port of its own, was told nothing at all and
+// played silence. Only the media a member reads says this. The routes that write
+// stay shut, or a page in somebody's browser could reach them.
+const MEDIA_HEADERS = {
+  'cache-control': 'public, max-age=31536000, immutable',
+  'access-control-allow-origin': '*'
+}
+
 function serveAttachment(session: CrewSession, file: string, res: http.ServerResponse): void {
   const full = session.attachmentPath(file)
   const mime = mimeForFile(file)
@@ -31,7 +42,7 @@ function serveAttachment(session: CrewSession, file: string, res: http.ServerRes
     res.end()
     return
   }
-  res.writeHead(200, { 'content-type': mime, 'cache-control': 'public, max-age=31536000, immutable' })
+  res.writeHead(200, { 'content-type': mime, ...MEDIA_HEADERS })
   fs.createReadStream(full)
     .on('error', () => res.end())
     .pipe(res)
