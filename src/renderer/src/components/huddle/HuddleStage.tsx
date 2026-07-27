@@ -64,6 +64,7 @@ export default function HuddleStage() {
   const picking = useHuddle(s => s.picking)
   const [attach, box] = useBox()
   const now = useNow(true)
+  const full = useFullScreen()
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
