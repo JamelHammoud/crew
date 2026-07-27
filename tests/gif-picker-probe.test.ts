@@ -190,6 +190,29 @@ describe('the GIF picker', () => {
     expect(useCrew.getState().pending[CHAT_KEY] ?? []).toHaveLength(0)
   })
 
+  it('keeps the field it opened on rather than handing focus back to the composer', async () => {
+    const inputRef = createRef<HTMLTextAreaElement>() as React.RefObject<HTMLTextAreaElement>
+    render(
+      createElement(Composer, {
+        attachmentKey: CHAT_KEY,
+        value: '',
+        placeholder: 'Message the crew',
+        inputRef,
+        onChange: () => {},
+        onKeyDown: () => {},
+        onSend: () => {}
+      })
+    )
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+    fireEvent.click(screen.getByText('Pick a GIF'))
+
+    const field = await screen.findByPlaceholderText('Search GIFs')
+    field.focus()
+    fireEvent.click(field)
+
+    expect(document.activeElement).toBe(field)
+  })
+
   it('carries no way back and nothing under the grid', async () => {
     await openPicker()
 
