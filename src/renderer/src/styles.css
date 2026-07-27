@@ -556,14 +556,14 @@ body {
 @keyframes crew-sweep {
   0% {
     opacity: 0;
-    transform: translateX(180px);
+    transform: translateX(0);
   }
   22% {
     opacity: 0.9;
   }
   100% {
     opacity: 0;
-    transform: translateX(-880px);
+    transform: translateX(880px);
   }
 }
 
