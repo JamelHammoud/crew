@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintFlappy } from './drawFlappy'
-import { flap, newFlappy, tick, type Flappy } from './flappy'
-import { Field, Overlay } from './GameStage'
+import { flap, newFlappy, skyWidth, tick, widen, type Flappy } from './flappy'
+import { Field, Overlay, type Box } from './GameStage'
 import useGameLoop from './useGameLoop'
 
 type Phase = 'ready' | 'playing' | 'over'
