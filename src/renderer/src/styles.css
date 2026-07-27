@@ -322,6 +322,20 @@ body {
   background: rgb(252 252 252 / 0.975);
 }
 
+/* Glass with a light of its own behind it, the way the music bar is lit by the
+   cover of whatever is playing. That light lands on top of the tint rather than
+   under it, so a panel wearing it reads brighter than everything it floats over.
+   This one starts deeper and thinner than ordinary glass: the list comes through
+   it, and the color the track throws on it has somewhere dark to sit. Light mode
+   needs the same room in the other direction, so there it starts paler. */
+.glass-lit {
+  --glass-bg: rgb(10 10 10 / 0.6);
+}
+
+.light .glass-lit {
+  --glass-bg: rgb(255 255 255 / 0.72);
+}
+
 .top-bar-container {
   container-type: inline-size;
 }
