@@ -1,4 +1,4 @@
-import { BIRD, SKY_HEIGHT, birdX, floor, skyWidth, type Flappy } from './flappy'
+import { GROUND, SKY_HEIGHT, birdX, floor, skyWidth, type Flappy } from './flappy'
 import { GROUND_COLOR, SKY, bird, fitCanvas, pipe } from './paint'
 
 // The sky is as tall as it always is and as wide as the field, so the picture is
