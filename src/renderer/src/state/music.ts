@@ -34,6 +34,9 @@ export interface MusicState {
   volume: number
   muted: boolean
   adding: boolean
+  // What is wrong with the track that is on, if anything. A track that will not
+  // load here sounds exactly like one playing quietly, so it has to be said.
+  trouble: string | null
   track: () => MusicItem | null
   items: () => MusicItem[]
   position: () => number
