@@ -64,54 +64,54 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
               on its way in is clipped to the box it travels in and a rule that
               bleeds back through the card's own padding is cut at both ends. */}
           <div className="p-1.5">
-          {screen === 'main' ? (
-            <>
-              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-3 py-2 text-xs text-fg/45">
-                {item.by ? (
-                  <>
-                    Added by
-                    <PersonMention name={item.by} className="min-w-0 break-all" />
-                  </>
-                ) : (
-                  'Built-in'
-                )}
-              </div>
-              <MenuDivider />
-              <MenuItem icon={<PlusGlyph />} label="Add to playlist" into onClick={() => setScreen('lists')} />
-              {inside && (
-                <MenuItem
-                  icon={<MinusGlyph />}
-                  label="Remove from this playlist"
-                  onClick={() => file(inside.id, false)}
-                />
-              )}
-              {item.file && (
-                <>
-                  <MenuDivider />
+            {screen === 'main' ? (
+              <>
+                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-3 py-2 text-xs text-fg/45">
+                  {item.by ? (
+                    <>
+                      Added by
+                      <PersonMention name={item.by} className="min-w-0 break-all" />
+                    </>
+                  ) : (
+                    'Built-in'
+                  )}
+                </div>
+                <MenuDivider />
+                <MenuItem icon={<PlusGlyph />} label="Add to playlist" into onClick={() => setScreen('lists')} />
+                {inside && (
                   <MenuItem
-                    icon={<TrashGlyph />}
-                    danger
-                    label="Delete track"
-                    onClick={() => {
-                      useMusic.getState().remove(item.id)
-                      shut()
-                    }}
+                    icon={<MinusGlyph />}
+                    label="Remove from this playlist"
+                    onClick={() => file(inside.id, false)}
                   />
-                </>
-              )}
-            </>
-          ) : (
-            <AddToPlaylist
-              item={item}
-              playlists={mine}
-              onBack={() => setScreen('main')}
-              onPick={file}
-              onNew={() => {
-                shut()
-                setNaming(true)
-              }}
-            />
-          )}
+                )}
+                {item.file && (
+                  <>
+                    <MenuDivider />
+                    <MenuItem
+                      icon={<TrashGlyph />}
+                      danger
+                      label="Delete track"
+                      onClick={() => {
+                        useMusic.getState().remove(item.id)
+                        shut()
+                      }}
+                    />
+                  </>
+                )}
+              </>
+            ) : (
+              <AddToPlaylist
+                item={item}
+                playlists={mine}
+                onBack={() => setScreen('main')}
+                onPick={file}
+                onNew={() => {
+                  shut()
+                  setNaming(true)
+                }}
+              />
+            )}
           </div>
         </ScreenSwap>
       </Popover>
