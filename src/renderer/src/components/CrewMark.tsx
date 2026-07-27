@@ -11,7 +11,7 @@ const BLOBS = [
   { color: '#ffffff', cx: 158, cy: 24, r: 118, dx: 30, dy: 44, ds: 1.22, dur: '6.8s', lag: '-3.4s' }
 ]
 
-const BLEED = 180
+const BLEED = 24
 
 const ROOM = 20
 
