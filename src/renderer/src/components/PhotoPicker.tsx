@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { IMAGE_TYPES } from '../../../shared/attachments'
-import { PhotoGlyph, TrashGlyph, UploadGlyph } from '../icons'
+import { TrashGlyph, UploadGlyph } from '../icons'
 import { MenuItem, Popover } from './Popover'
 
 const ACCEPT = Object.keys(IMAGE_TYPES).join(',')
