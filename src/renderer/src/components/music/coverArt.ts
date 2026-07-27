@@ -137,10 +137,38 @@ void main() {
     // one comes up hard against the sky and the back ones have no edge left.
     float cover = smoothstep(-edge.z, edge.z, field) * skin.w;
 
-    // The light raking across its face, so a petal is lighter on the side it is
-    // lit from. Flat, they read as paper cut-outs.
-    float lit = clamp(0.5 + (side / max(wide, 0.02)) * dot(across, uSun) * 0.5, 0.0, 1.0);
-    vec3 face = mix(skin.rgb, uLight, lit * glow.x);
+    // How much petal there is at this pixel: deep through the middle, and thin
+    // at the outline and at both tips, which is where the shape runs out.
+    float thick = smoothstep(0.0, 0.07 + edge.z * 2.0, field);
+
+    // A real petal is thin enough at its rim to be seen through, so it lets go
+    // of what is behind it there instead of cutting it off. That is what takes
+    // the hardness off a near edge without blurring it: the outline stays where
+    // it is and stops being a wall. It is also what keeps the tips from ending
+    // in a line, since a tip is thin the whole way.
+    cover *= mix(0.68, 1.0, thick);
+
+    // The face, which is the whole of why one of these reads as a leaf and not
+    // as a band of paint. A petal is not one color: it is a curved surface, so
+    // it turns away from the light at both flanks and falls off toward each
+    // tip, and a normal drawn in the plane of the picture gives every part of
+    // it its own angle to the light.
+    float curve = clamp(side / max(wide, 0.02), -1.0, 1.0);
+    float run = clamp(along / max(shape.y, 0.001), -1.0, 1.0);
+    float lambert = dot(across * curve * 0.92 + lie * run * 0.55, uSun);
+
+    // Lit toward the palette's own light, and shaded toward the sky rather than
+    // toward an ink, because a leaf standing in its own shadow is still lit by
+    // the sky above it. Both are hung off the petal's own color, so the middle
+    // of it stays the color it was given.
+    vec3 face = skin.rgb;
+    face = mix(face, uLight, clamp(lambert, 0.0, 1.0) * (0.14 + glow.x));
+    face = mix(face, uSky, clamp(-lambert, 0.0, 1.0) * 0.32);
+
+    // And a little of the same field its outline is pushed about by, drawn
+    // across its face, so the color moves inside the shape the way it does on a
+    // real one. It costs nothing: it is the number the outline already used.
+    face = mix(face, mix(face, uSky, 0.3), clamp((pushed - 0.42) * 0.7, 0.0, 0.34));
 
     // The lit edge, on the side of the outline that faces the light. It is the
     // palette's own light rather than white, so a highlight stays in the family
