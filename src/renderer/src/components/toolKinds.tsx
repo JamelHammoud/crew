@@ -33,8 +33,8 @@ export const TOOL_KINDS: Array<{ kind: ToolKind; title: string; note: string; ma
   { kind: 'note', title: 'Write in a doc', note: 'Adds a line to the end of a page', mark: PencilGlyph },
   { kind: 'music', title: 'Put music on', note: 'Plays it for everyone here', mark: MusicGlyph },
   { kind: 'huddle', title: 'Start a huddle', note: 'Opens the call and lets everyone in', mark: SignalGlyph },
-  { kind: 'chain', title: 'Do several things', note: 'Runs your other tools in order', mark: GroupGlyph },
-  { kind: 'copy', title: 'Copy something', note: 'Puts what you write on the clipboard', mark: ClipboardGlyph }
+  { kind: 'copy', title: 'Copy something', note: 'Puts what you write on the clipboard', mark: ClipboardGlyph },
+  { kind: 'chain', title: 'Do several things', note: 'Runs your other tools in order', mark: GroupGlyph }
 ]
 
 export const kindOf = (kind: ToolKind): (typeof TOOL_KINDS)[number] =>
