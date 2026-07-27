@@ -72,7 +72,7 @@ export function Popover({
   })
 
   const within = (target: Node): boolean =>
-    Boolean(popRef.current?.contains(target)) || [...inner.current].some(el => el.contains(target))
+    Boolean(popRef.current?.contains(target)) || [].some(el => el.contains(target))
 
   useLayoutEffect(() => {
     if (!open) {
