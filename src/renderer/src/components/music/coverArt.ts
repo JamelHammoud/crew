@@ -178,9 +178,15 @@ void main() {
     // The lit edge, on the side of the outline that faces the light. It is the
     // palette's own light rather than white, so a highlight stays in the family
     // instead of bleaching a hole in the picture.
+    //
+    // And it never arrives whole. Let all the way through, the brightest part of
+    // a rim is the light itself and nothing of the petal, which draws a pale
+    // line around the shape: the one thing that tells the eye an outline is
+    // there, on the covers that are meant to have no hard shapes in them at all.
+    // Most of the petal's own color stays in it however hard the light is.
     float rim = cover * (1.0 - cover) * 4.0;
     float facing = max(0.0, -sign(side) * dot(across, uSun));
-    face = mix(face, uLight, clamp(rim * facing * edge.w, 0.0, 1.0));
+    face = mix(face, uLight, clamp(rim * facing * edge.w, 0.0, 0.4));
 
     color = mix(color, face, cover);
 
