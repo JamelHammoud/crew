@@ -64,13 +64,14 @@ function Tile({
             : 'ring-1 ring-fg/10 ring-inset transition-[box-shadow] duration-150 group-hover:ring-2 group-hover:ring-fg/70'
         }
       />
-      {(sending || refused) && (
-        <span className="absolute inset-0 flex items-center justify-center bg-ink-900/60">
-          {sending ? (
-            <Spinner size={20} className="text-fg" />
-          ) : (
-            <WarningGlyph role="img" aria-label="Would not send" className="h-5 w-5 text-danger" />
-          )}
+      {sending && (
+        <span className={SCRIM}>
+          <Spinner size={20} className="text-fg" />
+        </span>
+      )}
+      {refused && !sending && (
+        <span role="img" aria-label="Would not send" className={SCRIM}>
+          <WarningGlyph className="h-5 w-5 text-danger" />
         </span>
       )}
     </button>
