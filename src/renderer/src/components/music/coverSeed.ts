@@ -331,10 +331,17 @@ export function coverArt(item: MusicItem): CoverArt {
       ? [recipe.from[0] + Math.cos(lie) * -0.55 + (roll() - 0.5) * 0.1, recipe.from[1] + Math.sin(lie) * -0.55 + (roll() - 0.5) * 0.1]
       : [0.5 + Math.cos(off) * away, 0.5 + Math.sin(off) * away]
     // Petals take the palette in turn rather than at random, so all three of a
-    // track's colors are in the picture instead of one of them three times.
-    const own = toLinear(colors[i % 3])
+    // track's colors are in the picture instead of one of them three times, and
+    // they are handed out furthest first, so the odd color out is the one at
+    // the back.
+    const own = toLinear(order[i % order.length])
     petals.push({
-      color: mixed(own, light, roll() * 0.16),
+      // Then the air in front of it. A thing further off is seen through more
+      // of whatever the sky is made of, so it takes on the sky's color as it
+      // goes back: that is what settles a leaf into a photograph rather than
+      // leaving it sitting on top of one, and it is why a far shape may not
+      // carry its color at full strength.
+      color: mixed(mixed(own, light, roll() * 0.16), sky, (1 - depth) * 0.34),
       at,
       lie: [Math.cos(angle), Math.sin(angle)],
       bend: between(recipe.bend, roll()),
