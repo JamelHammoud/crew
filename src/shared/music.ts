@@ -323,6 +323,10 @@ export interface MusicRoom {
   // Next and Back walk along, so a playlist plays through rather than falling
   // back into the shelf after its first track.
   playlistId: string | null
+  // Whether the track that is on comes round again when it ends. Off, which is
+  // how it starts, the next one follows it, so putting something on plays the
+  // list through rather than the same minute over and over.
+  loop: boolean
 }
 
 export const BY_LIMIT = 40
@@ -367,7 +371,7 @@ export function uploadUrl(httpBase: string, file: string): string {
 }
 
 export function emptyMusic(): MusicRoom {
-  return { trackId: null, playing: false, at: 0, by: '', playlistId: null }
+  return { trackId: null, playing: false, at: 0, by: '', playlistId: null, loop: false }
 }
 
 // An upload has no picture of its own, so it is given one that is always the
