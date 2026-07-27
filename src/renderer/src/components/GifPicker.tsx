@@ -28,21 +28,19 @@ function columns(gifs: Gif[]): Gif[][] {
 function Tile({
   gif,
   sending,
-  onPick,
-  onShow
+  refused,
+  onPick
 }: {
   gif: Gif
   sending: boolean
+  refused: boolean
   onPick: () => void
-  onShow: () => void
 }) {
   const [loaded, setLoaded] = useState(false)
   return (
     <button
       type="button"
       onClick={onPick}
-      onPointerEnter={onShow}
-      onFocus={onShow}
       aria-label={`Send ${gif.title}`}
       className="group relative block w-full cursor-pointer overflow-hidden rounded-tile bg-fg/[0.04] transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.97]"
       style={{ aspectRatio: `${gif.width} / ${gif.height}` }}
