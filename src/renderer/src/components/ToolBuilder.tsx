@@ -151,16 +151,15 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
     if (kind === 'todo') return agentId ? { kind: 'todo', text: task, agentId } : { kind: 'todo', text: task }
     if (kind === 'note') return { kind: 'note', page, text: line }
     if (kind === 'music') return playlistId ? { kind: 'music', playlistId } : { kind: 'music', trackId }
-    if (kind === 'huddle') return { kind: 'huddle' }
     if (kind === 'chain') return { kind: 'chain', toolIds }
     if (kind === 'prompt') return agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }
     return external ? { kind: 'web', url, external: true } : { kind: 'web', url }
   }
 
-  // A command is one of the two things a tool can be built without: a terminal
-  // that opens on a prompt is a tool, and so is starting the call.
+  // A command is the one thing a tool can be built without: a terminal that
+  // opens on a prompt is a tool.
   const filled = (): boolean => {
-    if (kind === 'terminal' || kind === 'huddle') return true
+    if (kind === 'terminal') return true
     if (kind === 'note') return page !== '' && line.trim() !== ''
     if (kind === 'music') return trackId !== '' || playlistId !== ''
     if (kind === 'chain') return toolIds.length > 0
