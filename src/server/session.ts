@@ -405,6 +405,25 @@ export class CrewSession {
       if (event.kind === 'music.removed') {
         this.uploads.delete(event.trackId)
       }
+      if (event.kind === 'playlist.added') {
+        this.playlists.set(event.playlistId, {
+          id: event.playlistId,
+          name: event.name,
+          by: event.byName,
+          trackIds: [],
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'playlist.removed') {
+        this.playlists.delete(event.playlistId)
+      }
+      if (event.kind === 'playlist.track') {
+        const playlist = this.playlists.get(event.playlistId)
+        if (playlist) {
+          const held = playlist.trackIds.filter(id => id !== event.trackId)
+          playlist.trackIds = event.on ? [...held, event.trackId] : held
+        }
+      }
       if (event.kind === 'thread.agent') {
         const thread = this.threads.get(event.threadId)
         if (thread) {
@@ -514,7 +533,8 @@ export class CrewSession {
       boards: this.boardList(),
       huddle: this.huddleRoom(),
       music: this.musicRoom(),
-      musicUploads: [...this.uploads.values()]
+      musicUploads: [...this.uploads.values()],
+      musicPlaylists: this.playlistList()
     }
   }
 
@@ -644,7 +664,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleDeleteHuddle(member, msg.huddleId)
         break
       case 'music.set':
-        if (meta.role === 'ui') this.handleMusicSet(member, msg.trackId, msg.playing, msg.at)
+        if (meta.role === 'ui') this.handleMusicSet(member, msg.trackId, msg.playing, msg.at, msg.playlistId)
         break
       case 'music.off':
         if (meta.role === 'ui') this.handleMusicOff()
