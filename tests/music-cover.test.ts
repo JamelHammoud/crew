@@ -187,14 +187,22 @@ describe('a cover has depth in it', () => {
 })
 
 describe('a machine with no graphics context still gets a cover', () => {
-  it('paints every color of the track somewhere in it', () => {
+  it('paints both ends of the palette and something of its own', () => {
+    // A layout that takes fewer lobes than the palette has takes both ends and
+    // some of the middle, rather than the first few: mixed from the middle
+    // alone a cover is the flat wash this whole thing started as. So the sky
+    // and the light are the two that always have to be there, and a petal on
+    // top of them is what stops it being a two color ramp.
+    const paints = (image: string, color: string): boolean => {
+      const value = parseInt(color.slice(1), 16)
+      return image.includes(`rgb(${(value >> 16) & 255} ${(value >> 8) & 255} ${value & 255}`)
+    }
     for (const item of items) {
       const mesh = meshOf(item, 104)
-      for (const color of item.colors) {
-        const value = parseInt(color.slice(1), 16)
-        const rgb = `rgb(${(value >> 16) & 255} ${(value >> 8) & 255} ${value & 255}`
-        expect(mesh.backgroundImage, `${item.name} is missing ${color}`).toContain(rgb)
-      }
+      expect(paints(mesh.backgroundImage, item.colors[4]), `${item.name} has no sky`).toBe(true)
+      expect(paints(mesh.backgroundImage, item.colors[3]), `${item.name} has no light`).toBe(true)
+      const petals = item.colors.slice(0, 3).filter(color => paints(mesh.backgroundImage, color))
+      expect(petals.length, `${item.name} has no petal`).toBeGreaterThan(0)
     }
   })
 
