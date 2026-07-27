@@ -123,6 +123,20 @@ describe('the user menu', () => {
     expect(screen.getByRole('button', { name: 'Crew' }).querySelector('.word-swap')).toBe(null)
   })
 
+  it('is the way to your own photo, and only says remove once there is one', () => {
+    const setMyPhoto = vi.fn()
+    useCrew.setState({ selfId: 'jamel', members: [{ id: 'jamel', name: 'Jamel', connected: true }], setMyPhoto })
+    show()
+    openMenu()
+    expect(screen.getByRole('button', { name: 'Add a photo' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Remove photo' })).toBeNull()
+
+    useCrew.setState({ members: [{ id: 'jamel', name: 'Jamel', connected: true, avatar: 'me.png' }] })
+    expect(screen.getByRole('button', { name: 'Change photo' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Remove photo' }))
+    expect(setMyPhoto).toHaveBeenCalledWith(null)
+  })
+
   it('sets Leave apart from what comes before it', () => {
     show()
     openMenu()
