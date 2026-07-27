@@ -27,6 +27,10 @@ const MUTED_KEY = 'crew.music.muted'
 // changes nothing is not a hiccup in everyone's speakers.
 const DRIFT = 0.35
 
+// How long a new playlist has to come back from the host before whoever asked
+// for it stops waiting on it.
+const MADE_WAIT = 8000
+
 export interface MusicState {
   room: MusicRoom
   uploads: MusicUpload[]
