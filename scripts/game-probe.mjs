@@ -116,6 +116,7 @@ try {
     outfile: path.join(dir, 'marks.mjs'),
     format: 'esm',
     platform: 'node',
+    packages: 'external',
     loader: { '.js': 'jsx', '.ts': 'ts', '.tsx': 'tsx' },
     define: { 'process.env.NODE_ENV': '"production"' }
   })
