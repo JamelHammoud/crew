@@ -28,6 +28,10 @@ const score = (name: string, gameId: string, points: number, ts = 1): GameScore 
   ts
 })
 
+const TAB = 'tab-1'
+
+const titleNow = (): string => useBrowser.getState().tabs[0]?.title ?? ''
+
 const panel = (scores: GameScore[] = [], selfName = 'sam') => {
   useCrew.setState({
     scores,
@@ -35,11 +39,13 @@ const panel = (scores: GameScore[] = [], selfName = 'sam') => {
     members: [],
     postScore: (gameId, points) => sent.push({ type: 'game.score', gameId, score: points })
   })
-  return render(createElement(GameView, {}))
+  return render(createElement(GameView, { tabId: TAB }))
 }
 
 beforeEach(() => {
   sent.length = 0
+  useBrowser.getState().openGame()
+  useBrowser.setState(s => ({ tabs: s.tabs.map(tab => ({ ...tab, id: TAB })) }))
 })
 
 afterEach(cleanup)
