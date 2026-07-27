@@ -64,7 +64,7 @@ export default function AddMenu({ attachmentKey, onSend }: { attachmentKey: stri
             <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
           </div>
         ) : (
-          <GifPicker onPick={pick} />
+          <GifPicker onPick={pick} onBack={() => setScreen('menu')} />
         )}
       </Popover>
     </>

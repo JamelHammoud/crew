@@ -1,15 +1,9 @@
-import { useMemo, useState } from 'react'
-import {
-  findPlaylists,
-  isMine,
-  MUSIC_SETS,
-  playlistItems,
-  PLAYLIST_NAME_LIMIT,
-  type MusicPlaylist
-} from '../../../../shared/music'
-import { ChevronRightGlyph, PlusGlyph } from '../../icons'
+import { useMemo } from 'react'
+import { findPlaylists, isMine, MUSIC_SETS, playlistItems, type MusicPlaylist } from '../../../../shared/music'
+import { ChevronRightGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
+import NewPlaylist from './NewPlaylist'
 import PlaylistCover from './PlaylistCover'
 import { tracks } from './say'
 
