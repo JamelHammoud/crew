@@ -126,6 +126,13 @@ export default function Toolbox({
     <Popover open={open} onClose={onClose} align="center" flush className="w-[344px]">
       {building ? (
         <ToolBuilder tool={building.tool} onDone={() => setBuilding(null)} />
+      ) : filling ? (
+        <ToolFill
+          tool={filling.tool}
+          slots={filling.slots}
+          onBack={() => setFilling(null)}
+          onRun={answers => fireTool(filling.tool, answers)}
+        />
       ) : (
         <>
           <SheetHeader title="Toolbox" />
@@ -146,14 +153,14 @@ export default function Toolbox({
               <Tile
                 key={tool.id}
                 mark={
-                  copied === tool.id ? (
+                  said?.toolId === tool.id ? (
                     <CheckGlyph className="w-[22px] h-[22px]" />
                   ) : (
                     <ToolMarkView mark={tool.mark} className="w-[22px] h-[22px]" />
                   )
                 }
-                name={copied === tool.id ? 'Copied' : tool.name}
-                active={copied === tool.id}
+                name={said?.toolId === tool.id ? said.word : tool.name}
+                active={said?.toolId === tool.id}
                 onClick={() => pressTool(tool)}
               >
                 <button
