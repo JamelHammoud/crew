@@ -97,17 +97,27 @@ describe('the games panel', () => {
     expect(screen.getByText('points')).toBeTruthy()
   })
 
-  // The tab up the panel says what you are playing, and is the tab's own name
-  // again the moment you come out of a game.
-  it('names the tab after the game it is standing in', () => {
+  // Which game is open rides on the tab, so the pill can be named after it and
+  // so a look at another tab is not the way out of a game.
+  it('keeps the game it is standing in on the tab', () => {
     panel()
-    expect(titleNow()).toBe('')
+    expect(openNow()).toBeNull()
 
     fireEvent.click(screen.getByText('Flappy Bird'))
-    expect(titleNow()).toBe('Flappy Bird')
+    expect(openNow()).toBe('flappy')
 
     fireEvent.click(screen.getByLabelText('Back'))
-    expect(titleNow()).toBe('')
+    expect(openNow()).toBeNull()
+  })
+
+  it('comes back to the game it was left in', () => {
+    panel()
+    fireEvent.click(screen.getByText('Tetris'))
+    cleanup()
+
+    panel()
+    expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
+    expect(screen.queryByText('Stack the falling blocks')).toBeNull()
   })
 
   // With nobody on it there is no board, rather than a card saying so over the
