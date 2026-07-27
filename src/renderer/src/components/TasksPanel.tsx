@@ -292,6 +292,7 @@ export default function TasksPanel({
             {row.detail ? ` · ${row.detail}` : ''}
           </span>
         </span>
+        {ts !== undefined && dayStamp(ts)}
       </button>
       {action && (
         <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
@@ -387,7 +388,7 @@ export default function TasksPanel({
     )
   }
 
-  const checkedItem = (todo: Todo) => (
+  const checkedItem = (todo: Todo, ts: number) => (
     <div key={todo.id} className="group relative">
       <div className="px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover">
         <span className="h-[22px] shrink-0 flex items-center">
