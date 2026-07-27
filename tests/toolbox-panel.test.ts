@@ -421,6 +421,7 @@ describe('the toolbox', () => {
     expect(switched).toBe(1)
 
     cleanup()
+    useBrowser.setState({ tabs: [], activeTabId: null })
     toolbox([
       dev,
       tool({ id: 'one', name: 'One', mark: 'group', action: { kind: 'chain', toolIds: ['two'] } }),
