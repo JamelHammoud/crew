@@ -103,7 +103,7 @@ export default function Chat() {
   }
 
   const send = () => {
-    if (!text.trim() && pendingCount === 0) return
+    if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
     sendChat(text, undefined, undefined, replyTo?.reactionTargetId)
     setReplyTo(null)
     mention.close()
