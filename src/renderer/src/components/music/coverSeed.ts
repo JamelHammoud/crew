@@ -387,6 +387,16 @@ export function coverArt(item: MusicItem): CoverArt {
     // and the nearest petal gets the middle color instead of the quiet one.
     const rank = count < 2 ? order.length - 1 : Math.round((i * (order.length - 1)) / (count - 1))
     const own = toLinear(order[rank])
+    // Rolled here rather than below, so the length can be cut back to one that
+    // ends inside the frame before it is written down. They are taken in the
+    // order the petal holds them, because the numbers are drawn off one stream
+    // and reading them in another order is a different picture.
+    const lit = roll()
+    const lie: [number, number] = [Math.cos(angle), Math.sin(angle)]
+    const across: [number, number] = [-lie[1], lie[0]]
+    const bend = between(recipe.bend, roll())
+    const half = between(recipe.half, roll())
+    const along = ends(at, lie, across, bend, between(recipe.along, roll()))
     petals.push({
       // Then the air in front of it. A thing further off is seen through more
       // of whatever the sky is made of, so it takes on the sky's color as it
