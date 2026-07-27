@@ -55,8 +55,8 @@ describe('the games panel', () => {
   it('lists the games, and says what the best score on each is', () => {
     panel([score('ali', 'tetris', 2400)])
 
-    expect(screen.getByText('Tetris')).toBeTruthy()
-    expect(screen.getByText('Flappy Bird')).toBeTruthy()
+    expect(screen.getByText('Falling Blocks')).toBeTruthy()
+    expect(screen.getByText('Birdie')).toBeTruthy()
     expect(screen.getByText('2,400')).toBeTruthy()
     expect(screen.getByText('ali')).toBeTruthy()
   })
@@ -64,11 +64,11 @@ describe('the games panel', () => {
   it('opens a game on its own field, and comes back out of it', () => {
     panel([score('ali', 'tetris', 2400), score('sam', 'tetris', 900)])
 
-    fireEvent.click(screen.getByText('Tetris'))
+    fireEvent.click(screen.getByText('Falling Blocks'))
     expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
 
     fireEvent.click(screen.getByLabelText('Back'))
-    expect(screen.getByText('Flappy Bird')).toBeTruthy()
+    expect(screen.getByText('Birdie')).toBeTruthy()
   })
 
   // The board is a table of people, best first, and it holds only the game it
@@ -76,7 +76,7 @@ describe('the games panel', () => {
   // needs over artwork.
   it('boards everyone who has played that game, best first', () => {
     panel([score('ali', 'tetris', 2400), score('sam', 'tetris', 900), score('ali', 'flappy', 6)])
-    fireEvent.click(screen.getByText('Tetris'))
+    fireEvent.click(screen.getByText('Falling Blocks'))
 
     const rows = [...document.body.querySelectorAll('ol li')]
     expect(rows.map(row => row.textContent)).toEqual(['1Aali2,400', '2Ssam900'])
@@ -88,7 +88,7 @@ describe('the games panel', () => {
   // instead of the game, so it stands down the moment a game starts.
   it('takes the board away while a game is running, and says the score instead', () => {
     panel([score('ali', 'tetris', 2400)])
-    fireEvent.click(screen.getByText('Tetris'))
+    fireEvent.click(screen.getByText('Falling Blocks'))
     expect(document.body.querySelectorAll('ol li')).toHaveLength(1)
 
 
@@ -103,7 +103,7 @@ describe('the games panel', () => {
     panel()
     expect(openNow()).toBeNull()
 
-    fireEvent.click(screen.getByText('Flappy Bird'))
+    fireEvent.click(screen.getByText('Birdie'))
     expect(openNow()).toBe('flappy')
 
     fireEvent.click(screen.getByLabelText('Back'))
@@ -112,19 +112,19 @@ describe('the games panel', () => {
 
   it('comes back to the game it was left in', () => {
     panel()
-    fireEvent.click(screen.getByText('Tetris'))
+    fireEvent.click(screen.getByText('Falling Blocks'))
     cleanup()
 
     panel()
     expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
-    expect(screen.queryByText('Stack the falling blocks')).toBeNull()
+    expect(screen.queryByText('Clear a line without a gap in it')).toBeNull()
   })
 
   // With nobody on it there is no board, rather than a card saying so over the
   // field somebody is about to play on.
   it('draws no board at all before anyone has played', () => {
     panel([])
-    fireEvent.click(screen.getByText('Flappy Bird'))
+    fireEvent.click(screen.getByText('Birdie'))
 
     expect(document.body.querySelectorAll('ol')).toHaveLength(0)
     expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
