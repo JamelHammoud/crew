@@ -12,7 +12,8 @@ export default function ReplyQuote({
   authorName,
   label,
   text,
-  strong
+  strong,
+  deleted
 }: {
   targetId?: string
   authorId?: string
@@ -20,6 +21,7 @@ export default function ReplyQuote({
   label: string
   text: string
   strong?: boolean
+  deleted?: boolean
 }) {
   const agentId = useCrew(s => s.agents.find(a => a.id === authorId)?.id)
   const httpBase = useCrew(s => s.httpBase)
