@@ -610,6 +610,9 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'music.shelf':
         for (const listener of shelfListeners) listener(msg.uploads)
         break
+      case 'music.playlists':
+        for (const listener of playlistListeners) listener(msg.playlists)
+        break
     }
   }
 
