@@ -4,7 +4,7 @@ import { useMusic } from '../../state/music'
 import { Popover } from '../Popover'
 import Slider from '../Slider'
 import Tooltip from '../Tooltip'
-import { roundButton } from './buttons'
+import { barButton } from './buttons'
 
 // How loud it is where you are sitting, which is yours alone and is never sent
 // anywhere. It stands beside the bar that says where the track is, so the one
@@ -21,7 +21,7 @@ export default function Volume() {
           onClick={() => setOpen(was => !was)}
           aria-label="Volume"
           aria-expanded={open}
-          className={`${roundButton} w-7 h-7 ${open ? 'text-fg bg-fg/[0.06]' : ''}`}
+          className={`${barButton} w-7 h-7 ${open ? 'text-fg bg-fg/10' : ''}`}
         >
           {muted ? <SpeakerOffGlyph className="w-4 h-4" /> : <SpeakerGlyph className="w-4 h-4" />}
         </button>
