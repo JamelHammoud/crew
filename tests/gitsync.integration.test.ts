@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { readChatLines } from '../src/server/chatLog'
 import { GitSync } from '../src/server/git'
 import { Store } from '../src/server/store'
 import { clone, git, initBare, initRepo } from './helpers/git'
