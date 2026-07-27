@@ -478,9 +478,16 @@ body {
 }
 
 /* The three discs arrive the way faces do when people join a session, left to
-   right, each one coming out from behind the one that landed before it. It is
-   the mask that moves, so a disc carries its own bite with it and the gaps stay
-   the width they are however far into its arrival a disc has got. */
+   right, each one sliding in from its own right and settling into the stack. It
+   is the mask that moves, so a disc carries its own bite with it and the gaps
+   stay the width they are however far into its arrival a disc has got.
+
+   It slides in from the right and never from the left, whichever way round the
+   queue runs. A disc coming from the left starts life inside the bite the disc
+   in front has already taken out of it, so what arrives first is a crescent a
+   fraction of a pixel wide, which reads as a hairline flashing at the end of
+   the mark. From the right it starts in open space and is only ever carved once
+   it is big enough for the gap to be the gap. */
 .crew-disc {
   transform-box: view-box;
   animation: crew-join 540ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--disc) * 90ms) both;
@@ -489,18 +496,18 @@ body {
 @keyframes crew-join {
   0% {
     opacity: 0;
-    transform: translateX(-64px) scale(0.32);
+    transform: translateX(64px) scale(0.32);
   }
   55% {
     opacity: 1;
     transform: translateX(0) scale(1.09);
   }
   78% {
-    transform: scale(0.975);
+    transform: translateX(0) scale(0.975);
   }
   100% {
     opacity: 1;
-    transform: none;
+    transform: translateX(0) scale(1);
   }
 }
 
