@@ -17,7 +17,6 @@ export type ToolAction =
   | { kind: 'todo'; text: string; agentId?: string }
   | { kind: 'note'; page: string; text: string }
   | { kind: 'music'; trackId?: string; playlistId?: string }
-  | { kind: 'huddle' }
   | { kind: 'chain'; toolIds: string[] }
 
 export const TOOL_MARKS = [
@@ -164,7 +163,6 @@ export function cleanTool(
       ...(playlistId ? { playlistId } : {})
     })
   }
-  if (action?.kind === 'huddle') return built({ kind: 'huddle' })
   if (action?.kind === 'chain') {
     const ids = Array.isArray(action.toolIds) ? action.toolIds : []
     const toolIds = [...new Set(ids.filter(id => typeof id === 'string' && id.trim() !== ''))].slice(0, STEP_LIMIT)
