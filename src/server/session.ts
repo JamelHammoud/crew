@@ -242,7 +242,12 @@ export class CrewSession {
     since: number
     by: string
     playlistId: string | null
+    loop: boolean
   } | null = null
+  // What is waiting for the track that is on to end. The host is the one clock
+  // everyone reads, so it is the one that walks the list on rather than whichever
+  // machine notices first and tells the others.
+  private musicTimer: ReturnType<typeof setTimeout> | null = null
   // The shelf the crew filled itself. Unlike what is playing, this is written
   // down: a track somebody added is still there tomorrow.
   private uploads = new Map<string, MusicUpload>()
