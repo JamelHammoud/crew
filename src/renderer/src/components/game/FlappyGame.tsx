@@ -60,7 +60,7 @@ export default function FlappyGame({
 
   useEffect(() => {
     if (canvas.current) paintFlappy(canvas.current, game)
-  }, [game, width])
+  }, [game, box])
 
   useEffect(() => {
     onLive(phase === 'playing' ? game.score : null)
@@ -82,7 +82,7 @@ export default function FlappyGame({
       onKeyDown={name => {
         if (name === ' ' || name === 'ArrowUp' || name === 'Enter') press()
       }}
-      onSize={setWidth}
+      onSize={setBox}
       onPress={press}
       overlay={
         phase === 'playing' ? null : phase === 'over' ? (
