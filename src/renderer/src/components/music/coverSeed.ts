@@ -335,11 +335,16 @@ export function coverArt(item: MusicItem): CoverArt {
     // they are handed out furthest first, so the odd color out is the one at
     // the back.
     //
-    // Spread across the depth rather than cycled. Cycled, a picture holding
-    // more petals than the palette holds colors comes back round to the odd one
-    // out and hands it to the sharpest petal in the frame, which is the one
-    // place it must never go.
-    const own = toLinear(order[Math.min(Math.floor((i * order.length) / count), order.length - 1)])
+    // Stretched across the depth rather than cycled, and pinned at both ends,
+    // so the furthest petal is always the odd color out and the nearest is
+    // always the one that belongs however many petals there are. Cycled, a
+    // picture holding more petals than the palette holds colors comes back
+    // round to the odd one out and hands it to the sharpest petal in the frame,
+    // which is the one place it must never go. Taken as a share of the way
+    // through, a picture holding fewer never reaches the end of the palette,
+    // and the nearest petal gets the middle color instead of the quiet one.
+    const rank = count < 2 ? order.length - 1 : Math.round((i * (order.length - 1)) / (count - 1))
+    const own = toLinear(order[rank])
     petals.push({
       // Then the air in front of it. A thing further off is seen through more
       // of whatever the sky is made of, so it takes on the sky's color as it
