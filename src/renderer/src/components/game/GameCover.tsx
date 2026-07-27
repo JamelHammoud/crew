@@ -43,6 +43,15 @@ const DRAW: Record<string, (ctx: CanvasRenderingContext2D, width: number, height
   flappy
 }
 
+export function drawCover(
+  gameId: string,
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+): void {
+  DRAW[gameId]?.(ctx, width, height)
+}
+
 export default function GameCover({
   gameId,
   width,
@@ -62,7 +71,7 @@ export default function GameCover({
     const ctx = fitCanvas(el, width, height)
     if (!ctx) return
     ctx.clearRect(0, 0, width, height)
-    DRAW[gameId]?.(ctx, width, height)
+    drawCover(gameId, ctx, width, height)
   }, [gameId, width, height])
 
   return <canvas ref={canvas} style={{ width, height }} className={`block shrink-0 ${className}`} />
