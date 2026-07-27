@@ -56,13 +56,24 @@ describe('the mark in the top left', () => {
     expect(logo().dataset.lit).toBe(undefined)
   })
 
-  it('hands each disc its place in the queue, back one first', () => {
+  it('hands each disc its place in the queue, left to right', () => {
     const { container } = render(createElement(CrewLogo))
-    const discs = [...container.querySelectorAll('.crew-disc')]
+    const discs = [...container.querySelectorAll('.crew-disc')] as SVGGElement[]
     expect(discs.length).toBe(MARK_DISCS.length)
-    discs.forEach((disc, index) => {
-      expect((disc as SVGGElement).style.getPropertyValue('--disc')).toBe(String(index))
-    })
+    const order = discs
+      .map(disc => ({
+        at: Number(disc.querySelector('circle')?.getAttribute('cx')),
+        place: disc.style.getPropertyValue('--disc')
+      }))
+      .sort((a, b) => a.at - b.at)
+    expect(order.map(one => one.place)).toEqual(['0', '1', '2'])
+  })
+
+  it('draws past its own edges, so nothing arriving is cut off', () => {
+    const { container } = render(createElement(CrewLogo))
+    const mask = container.querySelector('mask')
+    expect(Number(mask?.getAttribute('x'))).toBeLessThan(0)
+    expect(Number(mask?.getAttribute('width'))).toBeGreaterThan(MARK_WIDTH)
   })
 
   it('leaves the plain mark plain, so the one in the menu bar carries none of it', () => {
