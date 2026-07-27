@@ -279,7 +279,6 @@ export default function TopBar({
               }}
             />
           </Popover>
-          {photo.input}
         </div>
       </div>
     </header>
