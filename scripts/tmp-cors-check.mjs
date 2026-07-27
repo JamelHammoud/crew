@@ -3,9 +3,17 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import http from 'node:http'
+import { fileURLToPath } from 'node:url'
+import { build } from 'esbuild'
 import electron from 'electron'
+import WebSocket from 'ws'
 
-// Does a renderer at another origin get to read a track off the host?
+// The real host, read by a renderer served on a port of its own, which is what a
+// run from source is. A fake cannot answer this: only the browser decides
+// whether the answer to a fetch is handed to the page.
+
+const here = path.dirname(fileURLToPath(import.meta.url))
+const root = path.resolve(here, '..')
 
 const wav = () => {
   const rate = 8000
@@ -26,62 +34,56 @@ const wav = () => {
   return out
 }
 
-const bytes = wav()
+const dir = await mkdtemp(path.join(tmpdir(), 'crew-cors-'))
+const repo = path.join(dir, 'repo')
 
-const serve = (cors) =>
-  new Promise((resolve) => {
-    const server = http.createServer((req, res) => {
-      const headers = { 'content-type': 'audio/wav', 'cache-control': 'public, max-age=31536000, immutable' }
-      if (cors) headers['access-control-allow-origin'] = '*'
-      res.writeHead(200, headers)
-      res.end(bytes)
-    })
-    server.listen(0, '127.0.0.1', () => resolve(server))
+await build({
+  entryPoints: [path.join(root, 'scripts/tmp-host-entry.mjs')],
+  bundle: true,
+  platform: 'node',
+  format: 'esm',
+  external: ['ws', 'node-pty', 'electron'],
+  outfile: path.join(dir, 'host.mjs')
+})
+
+const { startHost } = await import(path.join(dir, 'host.mjs'))
+const host = await startHost(repo)
+
+// Add a track the way a member does, over the socket.
+const ws = new WebSocket(`ws://127.0.0.1:${host.port}/ws`)
+const file = await new Promise((resolve) => {
+  ws.on('open', () => {
+    ws.send(JSON.stringify({ type: 'hello', role: 'ui', name: 'ali', code: host.code }))
+    ws.send(
+      JSON.stringify({
+        type: 'music.add',
+        name: 'Long Drive',
+        mime: 'audio/wav',
+        seconds: 12,
+        data: wav().toString('base64')
+      })
+    )
   })
+  ws.on('message', (raw) => {
+    const msg = JSON.parse(String(raw))
+    if (msg.type === 'music.shelf' && msg.uploads.length) resolve(msg.uploads[0].file)
+  })
+})
 
 const PAGE = `<!doctype html><html><body><script>
-window.tryFetch = async (url) => {
+window.tryPlay = async (url) => {
   try {
     const res = await fetch(url)
-    const buf = await res.arrayBuffer()
-    return { ok: true, status: res.status, bytes: buf.byteLength }
+    const bytes = await res.arrayBuffer()
+    const ctx = new AudioContext()
+    const buffer = await ctx.decodeAudioData(bytes)
+    return { ok: true, seconds: Math.round(buffer.duration * 100) / 100 }
   } catch (err) {
     return { ok: false, error: String(err) }
   }
 }
 </script></body></html>`
 
-const MAIN = `
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
-app.commandLine.appendSwitch('headless')
-app.whenReady().then(async () => {
-  const win = new BrowserWindow({
-    show: false,
-    webPreferences: { nodeIntegration: true, contextIsolation: false }
-  })
-  const plain = process.env.PLAIN_URL
-  const cors = process.env.CORS_URL
-  const out = {}
-  await win.loadFile(path.join(__dirname, 'page.html'))
-  out.fileOrigin = {
-    plain: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(plain) + ')'),
-    withCors: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(cors) + ')')
-  }
-  await win.loadURL(process.env.PAGE_URL)
-  out.httpOrigin = {
-    plain: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(plain) + ')'),
-    withCors: await win.webContents.executeJavaScript('window.tryFetch(' + JSON.stringify(cors) + ')')
-  }
-  console.log('RESULT ' + JSON.stringify(out))
-  app.quit()
-})
-`
-
-const dir = await mkdtemp(path.join(tmpdir(), 'crew-cors-'))
-const plain = await serve(false)
-const cors = await serve(true)
-// A page of its own origin, the way the dev renderer is served.
 const pageHost = await new Promise((resolve) => {
   const server = http.createServer((req, res) => {
     res.writeHead(200, { 'content-type': 'text/html' })
@@ -89,6 +91,24 @@ const pageHost = await new Promise((resolve) => {
   })
   server.listen(0, '127.0.0.1', () => resolve(server))
 })
+
+const MAIN = `
+const { app, BrowserWindow } = require('electron')
+const path = require('path')
+app.commandLine.appendSwitch('headless')
+app.whenReady().then(async () => {
+  const win = new BrowserWindow({ show: false })
+  const track = process.env.TRACK_URL
+  const out = {}
+  await win.loadFile(path.join(__dirname, 'page.html'))
+  out.installed = await win.webContents.executeJavaScript('window.tryPlay(' + JSON.stringify(track) + ')')
+  await win.loadURL(process.env.PAGE_URL)
+  out.fromSource = await win.webContents.executeJavaScript('window.tryPlay(' + JSON.stringify(track) + ')')
+  console.log('RESULT ' + JSON.stringify(out))
+  app.quit()
+})
+`
+
 await writeFile(path.join(dir, 'page.html'), PAGE)
 await writeFile(path.join(dir, 'main.js'), MAIN)
 await writeFile(path.join(dir, 'package.json'), JSON.stringify({ name: 'cors-check', main: 'main.js' }))
@@ -97,19 +117,16 @@ const child = spawn(electron, [dir], {
   stdio: ['ignore', 'pipe', 'pipe'],
   env: {
     ...process.env,
-    PLAIN_URL: `http://127.0.0.1:${plain.address().port}/music/x.wav`,
-    CORS_URL: `http://127.0.0.1:${cors.address().port}/music/x.wav`,
+    TRACK_URL: `http://127.0.0.1:${host.port}/music/${file}`,
     PAGE_URL: `http://localhost:${pageHost.address().port}/`
   }
 })
-let out = ''
-child.stdout.on('data', (d) => {
-  out += d
-  process.stdout.write(d)
-})
+child.stdout.on('data', (d) => process.stdout.write(d))
 child.stderr.on('data', (d) => process.stderr.write(d))
 await new Promise((resolve) => child.on('exit', resolve))
-plain.close()
+
+ws.close()
+await host.close()
 pageHost.close()
-cors.close()
 await rm(dir, { recursive: true, force: true })
+process.exit(0)
