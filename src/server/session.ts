@@ -1760,6 +1760,23 @@ export class CrewSession {
     this.broadcastPlaylists()
   }
 
+  private handlePlaylistRename(member: Member, playlistId: string, name: string): void {
+    const playlist = this.ownPlaylist(member, playlistId)
+    if (!playlist || typeof name !== 'string') return
+    const clean = cleanPlaylistName(name)
+    if (clean === playlist.name) return
+    playlist.name = clean
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'playlist.renamed',
+      playlistId,
+      name: clean,
+      byName: member.name
+    })
+    this.broadcastPlaylists()
+  }
+
   private handlePlaylistTrack(member: Member, playlistId: string, trackId: string, on: boolean): void {
     const playlist = this.ownPlaylist(member, playlistId)
     if (!playlist) return
