@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { MUSIC_TUNES, musicItems, paletteFor, type MusicItem } from '../src/shared/music'
+import { coverArt, COVER_CASTS, MAX_PETALS } from '../src/renderer/src/components/music/coverSeed'
 import { meshOf } from '../src/renderer/src/components/music/mesh'
 
 const SHELVES = [0, 1, 2, 3, 4, 5].map(i => `shelf-${i}-track`)
@@ -9,9 +10,23 @@ const palettes: Array<[string, readonly string[]]> = [
   ...SHELVES.map(seed => [seed, paletteFor(seed)] as [string, readonly string[]])
 ]
 
-const hueOf = (hex: string): number => {
+const rgbOf = (hex: string): [number, number, number] => {
   const value = parseInt(hex.slice(1), 16)
-  const [r, g, b] = [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255]
+  return [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255]
+}
+
+const lumaOf = (hex: string): number => {
+  const [r, g, b] = rgbOf(hex)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+const chromaOf = (hex: string): number => {
+  const [r, g, b] = rgbOf(hex)
+  return Math.max(r, g, b) - Math.min(r, g, b)
+}
+
+const hueOf = (hex: string): number => {
+  const [r, g, b] = rgbOf(hex)
   const high = Math.max(r, g, b)
   const low = Math.min(r, g, b)
   const range = high - low
@@ -20,12 +35,9 @@ const hueOf = (hex: string): number => {
   return turn * 60
 }
 
-// The smallest slice of the wheel every color in a palette fits inside, which is
-// the largest gap between two of them taken off the whole turn.
-const arcOf = (colors: readonly string[]): number => {
-  const hues = colors.map(hueOf).sort((one, two) => one - two)
-  const gaps = hues.map((hue, i) => (i === 0 ? hue + 360 - hues[hues.length - 1] : hue - hues[i - 1]))
-  return 360 - Math.max(...gaps)
+const apart = (one: number, two: number): number => {
+  const gap = Math.abs(one - two) % 360
+  return gap > 180 ? 360 - gap : gap
 }
 
 const uploads = SHELVES.map((seed, i) => ({
@@ -43,19 +55,139 @@ const items: MusicItem[] = musicItems(uploads)
 const centers = (image: string): Array<[number, number]> =>
   [...image.matchAll(/at ([\d.]+)% ([\d.]+)%/g)].map(one => [Number(one[1]), Number(one[2])])
 
-describe('a cover is mixed from the whole palette', () => {
-  it('gives every track five colors to mix from', () => {
+describe('a palette is a thing photographed in good light', () => {
+  it('gives every track five colors', () => {
     for (const [name, colors] of palettes) expect(colors.length, name).toBe(5)
   })
 
-  it('keeps a palette inside one arc of the wheel, so nothing blurs to mud', () => {
-    // Two colors from opposite sides of the wheel average to grey, and a mesh is
-    // nothing but the average of its colors wherever two of them meet. Every
-    // palette staying on one arc is what keeps a blurred cover chromatic.
-    for (const [name, colors] of palettes) expect(arcOf(colors), name).toBeLessThanOrEqual(120)
+  it('has nothing dark in it anywhere', () => {
+    // The one that matters. A near black in a palette lands as a bruise in the
+    // corner of every tile that palette is used for, and since every palette
+    // used to carry one, every cover had the same bruise in it and they all
+    // read as the same picture in different colors.
+    for (const [name, colors] of palettes) {
+      for (const color of colors) {
+        expect(lumaOf(color), `${name} has ${color}`).toBeGreaterThan(0.3)
+        const [r, g, b] = rgbOf(color)
+        expect(Math.max(r, g, b), `${name} has ${color}`).toBeGreaterThan(0.6)
+      }
+    }
   })
 
-  it('paints every color of the track somewhere in its cover', () => {
+  it('gives the sky a color rather than a grey', () => {
+    // The sky is most of the frame, so it carries the picture. Drained of
+    // color it takes the whole cover down with it however bright the petals are.
+    for (const [name, colors] of palettes) expect(chromaOf(colors[4]), name).toBeGreaterThan(0.15)
+  })
+
+  it('stands something against the sky that is not the sky', () => {
+    // A green leaf on a blue sky is what makes one of these read as a
+    // photograph. All five colors from one arc of the wheel is a tint of a
+    // picture: there is nothing in the frame, only weather.
+    for (const [name, colors] of palettes) {
+      const sky = hueOf(colors[4])
+      const petals = colors.slice(0, 3).filter(one => chromaOf(one) > 0.05)
+      const far = Math.max(...petals.map(one => apart(hueOf(one), sky)))
+      expect(far, name).toBeGreaterThan(45)
+    }
+  })
+})
+
+describe('a cover is the same picture wherever it is drawn', () => {
+  it('works out one track the same way twice', () => {
+    for (const item of items) expect(coverArt(item)).toEqual(coverArt(item))
+  })
+
+  it('gives no two tracks the same picture', () => {
+    const seen = new Set(items.map(item => JSON.stringify(coverArt(item))))
+    expect(seen.size).toBe(items.length)
+  })
+
+  it('reaches every kind of picture it can draw', () => {
+    // Six casts that nothing ever picks are six casts nobody has looked at.
+    const ids = Array.from({ length: 400 }, (_, i) => `probe-${i}`)
+    const casts = new Set(ids.map(id => coverArt({ ...items[0], id }).cast))
+    expect([...casts].sort()).toEqual([...COVER_CASTS].sort())
+  })
+})
+
+describe('a cover has depth in it', () => {
+  const drawn = Array.from({ length: 400 }, (_, i) => coverArt({ ...items[0], id: `probe-${i}` }))
+
+  it('never asks for more petals than the shader runs', () => {
+    // The shader counts the same number of petals every time, because a
+    // graphics card cannot be handed a shorter loop. One more than it counts is
+    // a petal that is simply not in the picture.
+    for (const art of drawn) {
+      expect(art.petals.length).toBeGreaterThan(0)
+      expect(art.petals.length).toBeLessThanOrEqual(MAX_PETALS)
+    }
+  })
+
+  it('puts something near the lens and something far from it', () => {
+    // Rolled rather than spread, half the covers come out with everything at
+    // one distance, and a picture with one distance in it is a flat one.
+    for (const art of drawn) {
+      if (art.petals.length < 2) continue
+      const blurs = art.petals.map(petal => petal.blur)
+      expect(Math.max(...blurs) / Math.min(...blurs)).toBeGreaterThan(2)
+    }
+  })
+
+  it('lays them down back to front', () => {
+    // The blurriest is the furthest away, so it goes down first and everything
+    // else covers it. In any other order the near things are behind the fog.
+    for (const art of drawn) {
+      const blurs = art.petals.map(petal => petal.blur)
+      expect(blurs).toEqual([...blurs].sort((one, two) => two - one))
+    }
+  })
+
+  it('hands the shader nothing it cannot use', () => {
+    // Everything below is multiplied by something else in the shader, so one
+    // number that is not a number takes the whole cover with it and the tile
+    // comes out empty.
+    for (const art of drawn) {
+      const numbers = [
+        art.bloom,
+        art.haze,
+        ...art.sky,
+        ...art.skyTo,
+        ...art.light,
+        ...art.sun,
+        ...art.skyLie,
+        ...art.petals.flatMap(petal => [
+          ...petal.color,
+          ...petal.at,
+          ...petal.lie,
+          petal.bend,
+          petal.half,
+          petal.along,
+          petal.taper,
+          petal.ruffle,
+          petal.fine,
+          petal.lobe,
+          petal.phase,
+          petal.blur,
+          petal.rim,
+          petal.shine,
+          petal.halo
+        ])
+      ]
+      for (const one of numbers) expect(Number.isFinite(one)).toBe(true)
+      // A petal blurred by nothing asks the card to fade an edge from a point to
+      // the same point, which has no answer.
+      for (const petal of art.petals) expect(petal.blur).toBeGreaterThan(0)
+      for (const channel of art.petals.flatMap(petal => petal.color)) {
+        expect(channel).toBeGreaterThanOrEqual(0)
+        expect(channel).toBeLessThanOrEqual(1)
+      }
+    }
+  })
+})
+
+describe('a machine with no graphics context still gets a cover', () => {
+  it('paints every color of the track somewhere in it', () => {
     for (const item of items) {
       const mesh = meshOf(item, 104)
       for (const color of item.colors) {
@@ -65,20 +197,12 @@ describe('a cover is mixed from the whole palette', () => {
       }
     }
   })
-})
 
-describe('a cover is the same picture wherever it is drawn', () => {
-  it('draws one track the same way twice', () => {
+  it('draws one track the same way twice, and no two tracks alike', () => {
     for (const item of items) expect(meshOf(item, 104)).toEqual(meshOf(item, 104))
+    expect(new Set(items.map(item => meshOf(item, 104).backgroundImage)).size).toBe(items.length)
   })
 
-  it('draws no two tracks the same way', () => {
-    const seen = new Set(items.map(item => meshOf(item, 104).backgroundImage))
-    expect(seen.size).toBe(items.length)
-  })
-})
-
-describe('a cover fills the tile it is given', () => {
   it('keeps every light inside the picture', () => {
     // The mesh is painted on a layer half again as big as the tile, so the tile
     // is only the middle two thirds of it. A light placed by the edge of that
