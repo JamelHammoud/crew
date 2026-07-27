@@ -15,6 +15,8 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'mark-frames.png')
 const tall = Number(process.argv[3] ?? 120)
+const zoom = Number(process.argv[5] ?? 1)
+const pane = process.argv[6] ? process.argv[6].split('x').map(Number) : [1400, 900]
 const times = process.argv[4]
   ? process.argv[4].split(',').map(Number)
   : [0, 40, 90, 140, 180, 220, 260, 300, 360, 420, 480, 560, 640, 720, 820, 940]
@@ -28,10 +30,11 @@ window.CrewMarkParts = { createElement, createRoot, CrewMark }
 
 const PAGE = (rules, height, at) => `<!doctype html><html><head><style>
 body { margin: 0; background: #141414; font-family: system-ui; color: #707070; }
-.strip { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; }
+.strip { display: flex; flex-direction: column; gap: 6px; padding: 8px; }
 .cell { position: relative; }
-.cell span { position: absolute; left: 2px; top: 2px; font-size: 10px; }
-.crew-logo { display: flex; align-items: center; color: #fff; padding: 14px; }
+.cell { display: flex; align-items: center; gap: 6px; }
+.cell span { font-size: 9px; width: 34px; }
+.crew-logo { display: flex; align-items: center; color: #fff; padding: 4px 10px; }
 svg { display: block; }
 ${rules}
 </style></head><body><div class="strip" id="strip"></div><script src="mark.js"></script><script>
@@ -48,8 +51,8 @@ for (const ms of AT) {
   holder.dataset.lit = 'true'
   const label = document.createElement('span')
   label.textContent = ms + 'ms'
-  cell.appendChild(holder)
   cell.appendChild(label)
+  cell.appendChild(holder)
   strip.appendChild(cell)
   createRoot(holder).render(createElement(CrewMark, { live: true, height: ${height} }))
   holder.dataset.at = String(ms)
@@ -91,14 +94,19 @@ const fs = require('fs')
 app.commandLine.appendSwitch('force-device-scale-factor', '2')
 app.whenReady().then(() => {
   const win = new BrowserWindow({
-    width: 1400,
-    height: 900,
+    width: ${pane[0]},
+    height: ${pane[1]},
     show: false,
     backgroundColor: '#141414',
     webPreferences: { nodeIntegration: true, contextIsolation: false }
   })
   ipcMain.on('shot', async () => {
-    const image = await win.webContents.capturePage()
+    let image = await win.webContents.capturePage()
+    const zoom = ${zoom}
+    if (zoom > 1) {
+      const size = image.getSize()
+      image = image.resize({ width: size.width * zoom, height: size.height * zoom, quality: 'best' })
+    }
     fs.writeFileSync(${JSON.stringify(out)}, image.toPNG())
     app.exit(0)
   })
