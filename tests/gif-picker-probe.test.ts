@@ -170,22 +170,33 @@ describe('the GIF picker', () => {
     await waitFor(() => expect(screen.queryByPlaceholderText('Search GIFs')).toBeNull())
   })
 
-  it('keeps the grid and says so on its own line when one GIF will not come down', async () => {
+  it('keeps the grid and marks the one tile when a GIF will not come down', async () => {
     await openPicker()
     answer.mockImplementationOnce(async () => ({ ok: false, status: 502 }))
     fireEvent.click(screen.getByLabelText('Send Hello'))
 
-    expect(await screen.findByText('That GIF would not send')).not.toBeNull()
+    const marked = await screen.findByLabelText('Would not send')
+    expect(screen.getByLabelText('Send Hello').contains(marked)).toBe(true)
     expect(screen.getByLabelText('Send Bye')).not.toBeNull()
     expect(useCrew.getState().pending[CHAT_KEY] ?? []).toHaveLength(0)
   })
 
-  it('goes back to the menu it was opened from', async () => {
+  it('carries no way back and nothing under the grid', async () => {
     await openPicker()
-    fireEvent.click(screen.getByLabelText('Back to the menu'))
 
-    expect(screen.getByText('Upload a file')).not.toBeNull()
-    expect(screen.queryByPlaceholderText('Search GIFs')).toBeNull()
+    expect(screen.queryByLabelText('Back to the menu')).toBeNull()
+    expect(screen.queryByText('Picking one sends it')).toBeNull()
+  })
+
+  it('takes the mark off the tile once the search moves on', async () => {
+    await openPicker()
+    answer.mockImplementationOnce(async () => ({ ok: false, status: 502 }))
+    fireEvent.click(screen.getByLabelText('Send Hello'))
+    await screen.findByLabelText('Would not send')
+
+    fireEvent.change(screen.getByPlaceholderText('Search GIFs'), { target: { value: 'lol' } })
+    await screen.findByLabelText('Send Laughing cat')
+    expect(screen.queryByLabelText('Would not send')).toBeNull()
   })
 
   it('offers a way to clear what was typed, and puts what is trending back', async () => {
@@ -198,15 +209,6 @@ describe('the GIF picker', () => {
     fireEvent.click(screen.getByLabelText('Clear search'))
     await screen.findByLabelText('Send Hello')
     expect((screen.getByPlaceholderText('Search GIFs') as HTMLInputElement).value).toBe('')
-  })
-
-  it('says that picking sends, and names the one under the pointer instead', async () => {
-    await openPicker()
-    expect(screen.getByText('Picking one sends it')).not.toBeNull()
-
-    fireEvent.pointerEnter(screen.getByLabelText('Send Bye'))
-    expect(screen.getByText('Bye')).not.toBeNull()
-    expect(screen.queryByText('Picking one sends it')).toBeNull()
   })
 
   it('says so plainly when nothing comes back', async () => {
