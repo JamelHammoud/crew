@@ -58,18 +58,34 @@ describe('window chrome', () => {
   })
 
   it('gates the mark inset on the mac class instead of applying it everywhere', () => {
-    render(
-      createElement(TopBar, {
-        tab: 'chat',
-        onTab: () => {},
-        tasksOpen: false,
-        onToggleTasks: () => {}
-      })
-    )
+    topBar()
 
     const inset = screen.getByRole('banner').firstElementChild!
 
     expect(inset.className).toContain('mac:pl-[64px]')
     expect(inset.className).not.toMatch(/(^|\s)pl-/)
+  })
+
+  it('drops the inset in fullscreen, where there are no stoplights to clear', () => {
+    setFullScreen(true)
+    topBar()
+
+    expect(screen.getByRole('banner').firstElementChild!.className).not.toContain('pl-[64px]')
+  })
+
+  it('puts the inset back when the window leaves fullscreen', () => {
+    setFullScreen(true)
+    topBar()
+    setFullScreen(false)
+
+    expect(screen.getByRole('banner').firstElementChild!.className).toContain('mac:pl-[64px]')
+  })
+
+  it('reads zoomed and fullscreen apart, since only one takes the stoplights', () => {
+    setFullScreen(false)
+    expect(fullScreen()).toBe(false)
+
+    setFullScreen(true)
+    expect(fullScreen()).toBe(true)
   })
 })
