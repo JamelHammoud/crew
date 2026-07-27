@@ -79,9 +79,16 @@ export default function ChatMessage({
             </span>
           </MemberName>
           {item.self && <Pill>You</Pill>}
-          <Tooltip label={formatFullTime(item.ts)}>
-            <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
-          </Tooltip>
+          <div className="flex items-baseline gap-1.5">
+            <Tooltip label={formatFullTime(item.ts)}>
+              <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
+            </Tooltip>
+            {item.editedTs !== undefined && (
+              <Tooltip label={`Edited ${formatFullTime(item.editedTs)}`}>
+                <span className="text-sm text-fg-faint cursor-default">(edited)</span>
+              </Tooltip>
+            )}
+          </div>
         </div>
         {item.replyTo && (
           <button
