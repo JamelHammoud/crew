@@ -78,9 +78,7 @@ export default function NowPlaying({ track }: { track: MusicItem }) {
         <Cover item={track} size={48} playing={room.playing} className="w-12 h-12 shrink-0 rounded-xl" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-fg">{track.name}</p>
-          <p className={`truncate text-xs ${trouble ? 'text-danger' : 'text-fg/45'}`}>
-            {trouble ?? (track.by ? `${track.mood} · ${track.by}` : track.mood)}
-          </p>
+          {trouble && <p className="truncate text-xs text-danger">{trouble}</p>}
         </div>
         <div className="shrink-0 flex items-center gap-0.5">
           <Tooltip label="Back">
