@@ -257,6 +257,35 @@ const CASTS: Record<CoverCast, Recipe> = {
   }
 }
 
+const hueOf = (hex: string): number => {
+  const [r, g, b] = rgbOf(hex)
+  const high = Math.max(r, g, b)
+  const low = Math.min(r, g, b)
+  const range = high - low
+  if (range === 0) return 0
+  const turn = high === r ? (g - b) / range + (g < b ? 6 : 0) : high === g ? (b - r) / range + 2 : (r - g) / range + 4
+  return turn * 60
+}
+
+const apart = (one: number, two: number): number => {
+  const gap = Math.abs(one - two) % 360
+  return gap > 180 ? 360 - gap : gap
+}
+
+// The petals in the order they are handed out, which runs from the one least
+// like the sky to the one most like it. Depth is handed out in the same order,
+// so the odd color out is the furthest away and the sharpest thing in the frame
+// is the one that already belongs.
+//
+// It is the whole difference between a leaf and a sticker. A color chosen to
+// stand against the sky, given the nearest slot, arrives as the hardest edge in
+// the picture wearing the most unlike color, and it reads as pasted on however
+// good the rest of it is.
+const byDistance = (colors: readonly string[], sky: string): string[] => {
+  const from = hueOf(sky)
+  return colors.slice(0, 3).sort((one, two) => apart(hueOf(two), from) - apart(hueOf(one), from))
+}
+
 const between = (range: [number, number], roll: number): number => range[0] + roll * (range[1] - range[0])
 
 const whole = (range: [number, number], roll: number): number =>
