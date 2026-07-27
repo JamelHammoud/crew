@@ -33,6 +33,7 @@ export default function TetrisGame({
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Tetris>(() => newTetris())
   const [phase, setPhase] = useState<Phase>('ready')
+  const [width, setWidth] = useState(0)
   const since = useRef(0)
   // What the game really is right now. A key pressed between two frames has to
   // land on the game the next frame reads, or the frame overwrites it with the
@@ -70,7 +71,7 @@ export default function TetrisGame({
   // loop has already stopped by then.
   useEffect(() => {
     if (canvas.current) paintTetris(canvas.current, game)
-  }, [game])
+  }, [game, width])
 
   useEffect(() => {
     onLive(phase === 'playing' ? game.score : null)
@@ -105,6 +106,7 @@ export default function TetrisGame({
       <Field
         ratio={COLS / ROWS}
         onKeyDown={key}
+        onSize={setWidth}
         onPress={() => {
           if (phase !== 'playing') start()
         }}
