@@ -210,6 +210,17 @@ describe('playing a track', () => {
     expect(player.running()).toBe(false)
   })
 
+  // Silence that looks like music playing is the worst of both, so a track that
+  // will not load here says so rather than leaving the panel dancing.
+  it('says so when a track will not load, rather than playing nothing', async () => {
+    vi.stubGlobal('fetch', async () => {
+      throw new Error('nothing there')
+    })
+    expect(await player.playFile('gone', 'http://host/music/gone.mp3', 12, 0)).toBe('unplayable')
+    expect(player.running()).toBe(false)
+    expect(player.trackId).toBe(null)
+  })
+
   it('drops a file that lands after the crew has moved on', async () => {
     const held: { release: (() => void) | null } = { release: null }
     vi.stubGlobal('fetch', async () => {
