@@ -10,7 +10,15 @@ import TrackRow, { rowAction, rowActionQuiet } from './TrackRow'
 
 // One list, played through. A track put on from in here carries the list with
 // it, so Next and Back walk the list rather than the whole shelf.
-export default function PlaylistView({ playlist, query }: { playlist: MusicPlaylist; query: string }) {
+export default function PlaylistView({
+  playlist,
+  query,
+  onSongs
+}: {
+  playlist: MusicPlaylist
+  query: string
+  onSongs: () => void
+}) {
   const room = useMusic(s => s.room)
   const uploads = useMusic(s => s.uploads)
   const selfName = useCrew(s => s.selfName)
@@ -41,7 +49,7 @@ export default function PlaylistView({ playlist, query }: { playlist: MusicPlayl
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold text-fg">{playlist.name}</h3>
           <p className="truncate text-xs text-fg-muted">
-            {playlist.by && !mine ? `${tracks(items.length)}, by ${playlist.by}` : tracks(items.length)}
+            {playlist.by && !mine ? `${playlist.by} · ${tracks(items.length)}` : tracks(items.length)}
           </p>
         </div>
         {mine && (
@@ -91,12 +99,13 @@ export default function PlaylistView({ playlist, query }: { playlist: MusicPlayl
           />
         ))}
         {shown.length === 0 && (
-          <li className="px-3 py-6 text-center text-sm text-fg-muted">
-            {query.trim()
-              ? 'Nothing in here by that name'
-              : mine
-                ? 'Nothing in here yet. Add tracks from Songs.'
-                : 'Nothing in here yet'}
+          <li className="px-3 py-6 flex flex-col items-center gap-3">
+            <p className="text-sm text-fg-muted">{query.trim() ? 'No tracks found' : 'Nothing in here yet'}</p>
+            {!query.trim() && mine && (
+              <button onClick={onSongs} className={`${quietPill} h-8 px-3.5`}>
+                Add tracks
+              </button>
+            )}
           </li>
         )}
       </ul>
