@@ -152,6 +152,73 @@ export const MUSIC_TUNES = [
     bpm: 100,
     beats: 32,
     colors: ['#ff9ec4', '#ffbcd8', '#ffc98f', '#fff4f8', '#b08ce8']
+  },
+  // The slow ones. They run twice the length of the rest, at half the pace, so
+  // each is about a minute round rather than half of one, and they are the whole
+  // of the Ambient Lofi list below.
+  {
+    id: 'slow-morning',
+    name: 'Slow Morning',
+    mood: 'unhurried',
+    bpm: 66,
+    beats: 64,
+    colors: ['#ffb87a', '#f5a05f', '#7fd0bc', '#fff3e4', '#7fb8f0']
+  },
+  {
+    id: 'dust-motes',
+    name: 'Dust Motes',
+    mood: 'drifting',
+    bpm: 62,
+    beats: 64,
+    colors: ['#c9a0f0', '#f0a8c8', '#ffcf8f', '#faf0ff', '#9f9ce8']
+  },
+  {
+    id: 'second-coffee',
+    name: 'Second Coffee',
+    mood: 'easy',
+    bpm: 68,
+    beats: 64,
+    colors: ['#e8a86a', '#ffc98f', '#8fd8a8', '#fff6e8', '#6fc4e0']
+  },
+  {
+    id: 'paper-lamp',
+    name: 'Paper Lamp',
+    mood: 'warm',
+    bpm: 64,
+    beats: 64,
+    colors: ['#ffc46a', '#f09a7a', '#8fb8f0', '#fff4e0', '#7f9ae8']
+  },
+  {
+    id: 'window-seat',
+    name: 'Window Seat',
+    mood: 'idle',
+    bpm: 60,
+    beats: 64,
+    colors: ['#8fc9e8', '#94dca8', '#ffb894', '#f2fbff', '#8fbde0']
+  },
+  {
+    id: 'cassette',
+    name: 'Cassette',
+    mood: 'worn',
+    bpm: 67,
+    beats: 64,
+    colors: ['#f0b087', '#e89a94', '#8fdcc4', '#fff2e8', '#6fbcb0']
+  },
+  {
+    id: 'rooftop',
+    name: 'Rooftop',
+    mood: 'hazy',
+    bpm: 65,
+    beats: 64,
+    colors: ['#ff9eb0', '#ffcb8f', '#94d4f0', '#fff2f2', '#8f94e0']
+  },
+  {
+    id: 'long-shadows',
+    name: 'Long Shadows',
+    mood: 'faded',
+    bpm: 63,
+    beats: 64,
+    colors: ['#ffb07a', '#c9a8f0', '#8fd0e8', '#fff0e6', '#8f8ce0']
   }
 ] as const satisfies readonly MusicTune[]
 
