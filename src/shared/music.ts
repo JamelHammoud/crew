@@ -10,11 +10,16 @@ export interface MusicTune {
   bpm: number
   // How long the loop is, in beats. The tune is written against these two.
   beats: number
-  // The five colors the cover is mixed from. The first three are the fields it
-  // is built out of, the fourth is the light that falls on it, and the last is
-  // the ground underneath. They are the tune heard as a picture, so a fast one
-  // is hot and a slow one is deep, and none of them are quiet: a mesh mixed
-  // from soft colors comes out of the blur as one flat color.
+  // The five colors the cover is made of. The first three are the petals, the
+  // fourth is the light along their lit edges, and the last is the sky they
+  // stand against. They are the tune heard as a picture, so a fast one is hot
+  // and a slow one is cool.
+  //
+  // None of them is dark. A cover is a thing photographed close up in good
+  // light, and the darkest place in a picture like that is a color in shade,
+  // never an ink: a near black anywhere in the palette lands as a bruise in the
+  // corner of the tile, and every cover carrying one reads as the same picture.
+  // The sky is the one to watch, since it is the color most of the frame is.
   colors: readonly [string, string, string, string, string]
 }
 
