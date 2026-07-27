@@ -1,14 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  BIRD,
-  GROUND,
-  PIPE,
-  WORLD,
-  flap,
-  newFlappy,
-  tick,
-  type Flappy
-} from './flappy'
+import { BIRD, GROUND, WORLD, flap, newFlappy, tick, type Flappy } from './flappy'
 import { Field, Overlay, Stat } from './GameStage'
 import { GROUND_COLOR, SKY, bird, fitCanvas, pipe } from './paint'
 import useGameLoop from './useGameLoop'
