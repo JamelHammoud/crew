@@ -108,7 +108,7 @@ describe('playlists', () => {
 
     // Whoever wrote it can do all three.
     sam.send({ type: 'playlist.track', playlistId: mine.id, trackId: 'arcade', on: false })
-    await sam.waitFor(m => m.type === 'music.playlists' && listsOf(m)[0]?.trackIds.length === 0)
+    await waitUntil(() => host.session.snapshot().musicPlaylists?.[0].trackIds.length === 0)
     sam.send({ type: 'playlist.remove', playlistId: mine.id })
     const gone = await pat.waitFor(m => m.type === 'music.playlists' && listsOf(m).length === 0)
     expect(listsOf(gone)).toEqual([])
