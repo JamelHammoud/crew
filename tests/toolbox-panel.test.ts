@@ -4,6 +4,8 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Toolbox from '../src/renderer/src/components/Toolbox'
 import { useBrowser } from '../src/renderer/src/state/browser'
+import { useHuddle } from '../src/renderer/src/state/huddle'
+import { useMusic } from '../src/renderer/src/state/music'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { PooledAgent } from '../src/shared/llm'
 import type { ClientMessage } from '../src/shared/protocol'
@@ -13,6 +15,11 @@ Element.prototype.getAnimations ??= () => []
 
 const sent: ClientMessage[] = []
 const asked: Array<{ text: string; aimedAt?: string[] }> = []
+const tasks: Array<{ text: string; agentId?: string }> = []
+const written: Array<{ page: string; text: string }> = []
+const played: Array<{ trackId: string; playlistId: string | null }> = []
+let joins = 0
+let copied: string[] = []
 
 const tool = (extra: Partial<CrewTool> = {}): CrewTool => ({
   id: 'tool-1',
