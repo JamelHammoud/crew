@@ -16,6 +16,62 @@ type StrikeName =
 
 export type SoundName = ChimeName | StrikeName
 
+type Voice = Omit<Strike, 'hz' | 'at' | 'length'>
+
+// The same bubble the rest of the app is made of, in three sizes: a low one
+// holding the chord, the one that carries the tune, and a small bright one.
+const DEEP: Voice = {
+  gain: 0.5,
+  partials: [1, 2.04],
+  bend: 0.72,
+  bendTime: 0.055,
+  tone: 1500,
+  wet: 0.12,
+  rasp: { hz: 620, q: 0.9, gain: 0.06, length: 0.008 }
+}
+
+const TUNE: Voice = {
+  gain: 0.62,
+  partials: [1, 2.04, 4.1],
+  bend: 0.86,
+  bendTime: 0.025,
+  detune: 4,
+  tone: 2400,
+  wet: 0.26,
+  rasp: { hz: 1100, q: 0.9, gain: 0.07, length: 0.008 }
+}
+
+const SPARK: Voice = {
+  gain: 0.24,
+  partials: [1, 3.02],
+  bend: 0.9,
+  bendTime: 0.02,
+  tone: 5200,
+  wet: 0.42,
+  rasp: { hz: 2600, q: 1.2, gain: 0.07, length: 0.007 }
+}
+
+const NOTE = {
+  e3: 164.81,
+  fs3: 185,
+  a3: 220,
+  a4: 440,
+  b4: 493.88,
+  cs5: 554.37,
+  e5: 659.25,
+  fs5: 739.99,
+  a5: 880,
+  cs6: 1108.73
+}
+
+const bubble = (voice: Voice, hz: number, at: number, length: number, pan = 0): Strike => ({
+  ...voice,
+  hz,
+  at,
+  length,
+  pan
+})
+
 const CHIMES: Record<ChimeName, Note[]> = {
   send: [
     { hz: 1174.66, at: 0, length: 0.09, gain: 0.55 },
