@@ -1003,9 +1003,21 @@ body {
   border-color: var(--color-fg);
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:checked::after {
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input::after {
   content: '';
-  @apply absolute left-1/2 top-1/2 h-[3px] w-[7px] -translate-x-1/2 -translate-y-[70%] -rotate-45 border-b-2 border-l-2 border-ink-900;
+  @apply absolute inset-0 scale-50 opacity-0;
+  background: var(--color-ink-900);
+  mask-image: var(--check-mark);
+  mask-size: 22px;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  transition:
+    opacity 0.12s,
+    transform 0.12s;
+}
+
+.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:checked::after {
+  @apply scale-100 opacity-100;
 }
 
 .doc .bn-editor .bn-block-content[data-content-type='checkListItem'][data-checked='true'] .bn-inline-content {
@@ -1369,7 +1381,12 @@ body {
 
 .md .md-check[data-checked]::after {
   content: '';
-  @apply absolute left-1/2 top-1/2 h-[3px] w-[7px] -translate-x-1/2 -translate-y-[70%] -rotate-45 border-b-2 border-l-2 border-ink-900;
+  @apply absolute inset-0;
+  background: var(--color-ink-900);
+  mask-image: var(--check-mark);
+  mask-size: 22px;
+  mask-position: center;
+  mask-repeat: no-repeat;
 }
 
 .md-peek {
