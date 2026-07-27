@@ -129,6 +129,9 @@ export type SessionEvent =
       on: boolean
       byName: string
     }
+  // Somebody's best at one of the games, and only ever their best. A round that
+  // beat nothing is never written down.
+  | { id: string; ts: number; kind: 'game.score'; gameId: string; score: number; byName: string }
   | {
       id: string
       ts: number
@@ -195,7 +198,10 @@ const EPHEMERAL_KINDS = new Set([
   'playlist.added',
   'playlist.removed',
   'playlist.renamed',
-  'playlist.track'
+  'playlist.track',
+  // A high score is a row on a board rather than a moment in the chat, so it
+  // rides in the snapshot and nobody scrolls past it.
+  'game.score'
 ])
 
 // The call one event belongs to, for the three that make up the record of a
