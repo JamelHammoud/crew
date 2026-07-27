@@ -13,9 +13,11 @@ export interface GameInfo {
   unit: string
 }
 
+// The id is what a score is filed under, so it outlives whatever the game is
+// called: a name can be changed without anyone's best round going with it.
 export const GAMES: readonly GameInfo[] = [
-  { id: 'tetris', name: 'Tetris', note: 'Stack the falling blocks', unit: 'points' },
-  { id: 'flappy', name: 'Flappy Bird', note: 'Fly through the gaps', unit: 'pipes' }
+  { id: 'tetris', name: 'Falling Blocks', note: 'Clear a line without a gap in it', unit: 'points' },
+  { id: 'flappy', name: 'Birdie', note: 'Fly through the gaps', unit: 'pipes' }
 ]
 
 export const gameFor = (gameId: string): GameInfo | null =>
