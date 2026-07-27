@@ -19,6 +19,16 @@ import { GRAIN, meshOf } from './mesh'
 // The fallback needs none of this. Its own layer is already half again as big as
 // the tile, because that is where the blur in `mesh.ts` spills to.
 const BLEED = 0.05
+
+// Said as a size and a corner rather than as four insets. A canvas is a replaced
+// element, so it takes its own pixel size wherever its width is left to itself,
+// and four insets on one of those are read as a suggestion.
+const OVERSIZE = {
+  left: `${-BLEED * 100}%`,
+  top: `${-BLEED * 100}%`,
+  width: `${(1 + BLEED * 2) * 100}%`,
+  height: `${(1 + BLEED * 2) * 100}%`
+}
 export default function Cover({
   item,
   size,
