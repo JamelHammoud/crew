@@ -61,82 +61,27 @@ function Section({
 
 // The app's own lists first, then yours, then a section for each person who made
 // one.
-export default function Playlists({
-  query,
-  naming,
-  onNaming,
-  onOpen
-}: {
-  query: string
-  naming: boolean
-  onNaming: (open: boolean) => void
-  onOpen: (playlistId: string) => void
-}) {
+export default function Playlists({ query, onOpen }: { query: string; onOpen: (playlistId: string) => void }) {
   const playlists = useMusic(s => s.playlists)
   const selfName = useCrew(s => s.selfName)
-  const [name, setName] = useState('')
   const found = useMemo(() => findPlaylists(playlists, query), [playlists, query])
   const sets = useMemo(() => findPlaylists(MUSIC_SETS, query), [query])
   const mine = found.filter(playlist => isMine(playlist, selfName))
   const theirs = found.filter(playlist => !isMine(playlist, selfName))
   const names = [...new Set(theirs.map(playlist => playlist.by))].sort((a, b) => a.localeCompare(b))
 
-  const make = () => {
-    const asked = name.trim()
-    setName('')
-    onNaming(false)
-    if (asked) useMusic.getState().makePlaylist(asked)
-  }
-
   return (
     <ul className="p-2">
-      {!query.trim() && (
-        <li className="h-14 px-2 rounded-2xl flex items-center gap-3">
-          <span className="w-10 h-10 shrink-0 rounded-xl border border-dashed border-fg/15 flex items-center justify-center text-fg-faint">
-            <PlusGlyph className="w-4 h-4" />
-          </span>
-          {naming ? (
-            <input
-              autoFocus
-              value={name}
-              maxLength={PLAYLIST_NAME_LIMIT}
-              placeholder="Name it"
-              aria-label="Name the playlist"
-              onChange={event => setName(event.target.value)}
-              onBlur={make}
-              onKeyDown={event => {
-                if (event.key === 'Enter') make()
-                if (event.key === 'Escape') {
-                  setName('')
-                  onNaming(false)
-                }
-              }}
-              className="flex-1 min-w-0 h-9 px-3.5 rounded-full bg-fg/[0.06] text-sm text-fg placeholder:text-fg-faint outline-none transition-colors focus:bg-fg/[0.08]"
-            />
-          ) : (
-            <button onClick={() => onNaming(true)} className="flex-1 min-w-0 h-full text-left">
-              <span className="block text-sm text-fg-secondary">New playlist</span>
-              <span className="block truncate text-xs text-fg-muted">Yours to fill, for everyone to play</span>
-            </button>
-          )}
-        </li>
-      )}
+      {!query.trim() && <NewPlaylist onMade={onOpen} />}
 
       <Section title="Crew's own" playlists={sets} onOpen={onOpen} />
       <Section title="Yours" playlists={mine} onOpen={onOpen} />
       {names.map(who => (
-        <Section
-          key={who}
-          title={who}
-          playlists={theirs.filter(playlist => playlist.by === who)}
-          onOpen={onOpen}
-        />
+        <Section key={who} title={who} playlists={theirs.filter(playlist => playlist.by === who)} onOpen={onOpen} />
       ))}
 
-      {found.length + sets.length === 0 && (
-        <li className="px-3 py-6 text-center text-sm text-fg-muted">
-          {query.trim() ? 'No playlists by that name' : 'No playlists yet'}
-        </li>
+      {query.trim() && found.length + sets.length === 0 && (
+        <li className="px-3 py-6 text-center text-sm text-fg-muted">No playlists found</li>
       )}
     </ul>
   )
