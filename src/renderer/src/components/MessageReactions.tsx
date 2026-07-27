@@ -162,7 +162,7 @@ export default function MessageReactions({
       {reactions.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {reactions.map(reaction => (
-            <Tooltip key={reaction.emoji} label={reactionLabel(reaction.names)}>
+            <Tooltip key={reaction.emoji} label={<ReactionTip reaction={reaction} />}>
               <button
                 type="button"
                 aria-label={`${reaction.emoji}, ${reaction.count} ${reaction.count === 1 ? 'reaction' : 'reactions'}`}

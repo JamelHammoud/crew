@@ -71,6 +71,7 @@ export default function GifPicker({
   const [loading, setLoading] = useState(gifsReady())
   const [failed, setFailed] = useState(false)
   const [sending, setSending] = useState<string | null>(null)
+  const [trouble, setTrouble] = useState(false)
 
   const wanted = query.trim()
 
@@ -116,11 +117,15 @@ export default function GifPicker({
       .catch(() => {})
   }
 
+  // One GIF that would not come down says so on a line of its own. The grid
+  // behind it arrived and is still good, so replacing it with the failure would
+  // take away the other GIFs over the one that went wrong.
   const send = (gif: Gif) => {
     if (sending) return
     setSending(gif.id)
+    setTrouble(false)
     void onPick(gif)
-      .catch(() => setFailed(true))
+      .catch(() => setTrouble(true))
       .finally(() => setSending(null))
   }
 

@@ -52,8 +52,6 @@ export type SessionEvent =
       threadId?: string
       attachments?: Attachment[]
       replyTo?: MessageReply
-      // When it was last rewritten. The edit itself is a separate event that is
-      // folded away on the way back in, so this is what survives to say so.
       editedTs?: number
     }
   | { id: string; ts: number; kind: 'message.deleted'; messageId: string }

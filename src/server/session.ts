@@ -1076,9 +1076,11 @@ export class CrewSession {
     event.boardMentions = boardMentions
     event.mentionRefs = mentionRefs
     event.memberMentionRefs = memberMentionRefs
+    const ts = Date.now()
+    event.editedTs = ts
     this.emit({
       id: randomUUID(),
-      ts: Date.now(),
+      ts,
       kind: 'message.edited',
       messageId,
       text: trimmed,

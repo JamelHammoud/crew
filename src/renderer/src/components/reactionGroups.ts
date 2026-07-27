@@ -26,12 +26,17 @@ export function reactionGroups(events: SessionEvent[], selfId: string): Map<stri
   return new Map(
     [...targets].map(([targetId, groups]) => [
       targetId,
-      [...groups].map(([emoji, members]) => ({
-        emoji,
-        count: members.length,
-        names: members.map(member => member.name),
-        self: members.some(member => member.id === selfId)
-      }))
+      [...groups].map(([emoji, members]) => {
+        // Your own name leads, so what reads the group can say You without
+        // having to guess which of the names is yours.
+        const ordered = [...members].sort((a, b) => Number(b.id === selfId) - Number(a.id === selfId))
+        return {
+          emoji,
+          count: ordered.length,
+          names: ordered.map(member => member.name),
+          self: ordered.some(member => member.id === selfId)
+        }
+      })
     ])
   )
 }
