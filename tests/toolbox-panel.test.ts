@@ -61,17 +61,11 @@ beforeEach(() => {
   tasks.length = 0
   written.length = 0
   played.length = 0
-  joins = 0
   copied = []
   switched = 0
   useBrowser.setState({ tabs: [], activeTabId: null })
   useMusic.setState({ uploads: [], playlists: [], put: (trackId, playlistId = null) => void played.push({ trackId, playlistId }) })
-  useHuddle.setState({
-    joined: false,
-    join: async () => {
-      joins += 1
-    }
-  })
+  useHuddle.setState({ joined: false })
   Object.assign(navigator, { clipboard: { writeText: (text: string) => void copied.push(text) } })
 })
 
