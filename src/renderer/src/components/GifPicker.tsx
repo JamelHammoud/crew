@@ -165,7 +165,7 @@ export default function GifPicker({
         : null
 
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={`flex flex-col overflow-hidden rounded-[inherit] ${className}`}>
       <SearchField value={query} onChange={setQuery} placeholder="Search GIFs" />
       <div
         ref={scrollRef}
