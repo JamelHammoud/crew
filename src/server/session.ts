@@ -226,10 +226,19 @@ export class CrewSession {
   private huddleNamed = new Set<string>()
   // What is playing, and the moment it was last set, so the position can be
   // worked out for whoever asks. Held in memory the way a call is.
-  private music: { track: MusicItem; playing: boolean; from: number; since: number; by: string } | null = null
+  private music: {
+    track: MusicItem
+    playing: boolean
+    from: number
+    since: number
+    by: string
+    playlistId: string | null
+  } | null = null
   // The shelf the crew filled itself. Unlike what is playing, this is written
   // down: a track somebody added is still there tomorrow.
   private uploads = new Map<string, MusicUpload>()
+  // The lists people wrote for themselves, written down for the same reason.
+  private playlists = new Map<string, MusicPlaylist>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
