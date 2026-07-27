@@ -129,6 +129,28 @@ describe('the user menu', () => {
     openMenu()
     const menu = document.querySelector('.glass.fixed') as HTMLElement
     expect(menu.textContent).not.toMatch(/photo/i)
+    expect(within(menu).getByLabelText('Add a photo')).toBeTruthy()
+  })
+
+  it('changes your face from the one it opens on, and stays open while you do it', () => {
+    const setMyPhoto = vi.fn()
+    useCrew.setState({
+      selfId: 'jamel',
+      members: [{ id: 'jamel', name: 'Jamel', connected: true, avatar: 'me.png' }],
+      httpBase: 'http://10.0.0.2:2739',
+      setMyPhoto
+    })
+    show()
+    openMenu()
+    const menu = document.querySelector('.glass.fixed') as HTMLElement
+
+    fireEvent.click(within(menu).getByLabelText('Change photo'))
+    const row = screen.getByText('Remove photo')
+    fireEvent.pointerDown(row)
+    fireEvent.click(row)
+
+    expect(setMyPhoto).toHaveBeenCalledWith(null)
+    expect(screen.getByRole('button', { name: 'Leave' })).toBeTruthy()
   })
 
   it('sets Leave apart from what comes before it', () => {
