@@ -16,6 +16,7 @@ export default function Dashboard() {
   const updateAgentSetting = useCrew(s => s.updateAgentSetting)
   const renameAgent = useCrew(s => s.renameAgent)
   const setAgentAvatar = useCrew(s => s.setAgentAvatar)
+  const setMyPhoto = useCrew(s => s.setMyPhoto)
   const removeAgent = useCrew(s => s.removeAgent)
 
   return (
@@ -24,16 +25,26 @@ export default function Dashboard() {
         <section>
           <h2 className="text-sm font-semibold text-fg-muted mb-4">People</h2>
           <div className="space-y-1">
-            {members.map(member => (
-              <div
-                key={member.id}
-                className="flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-fg/[0.03]"
-              >
-                <Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />
-                <span className="text-base font-semibold text-fg">{member.name}</span>
-                {member.id === selfId && <Pill>You</Pill>}
-              </div>
-            ))}
+            {members.map(member => {
+              const you = member.id === selfId
+              const face = <Avatar name={member.name} presence={member.connected ? 'online' : 'offline'} />
+              return (
+                <div
+                  key={member.id}
+                  className="flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-fg/[0.03]"
+                >
+                  {you ? (
+                    <PhotoPicker has={Boolean(member.avatar)} onChange={setMyPhoto}>
+                      {face}
+                    </PhotoPicker>
+                  ) : (
+                    face
+                  )}
+                  <span className="text-base font-semibold text-fg">{member.name}</span>
+                  {you && <Pill>You</Pill>}
+                </div>
+              )
+            })}
           </div>
         </section>
 
