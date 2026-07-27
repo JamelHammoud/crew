@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { GAMES, boardFor, gameFor, type GameInfo } from '../../../../shared/games'
 import { ChevronLeftGlyph } from '../../icons'
 import { useBrowser } from '../../state/browser'
