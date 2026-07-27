@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintTetris } from './drawTetris'
-import { Field, Overlay, Score } from './GameStage'
-import { BLOCKS, block, fitCanvas } from './paint'
+import { Field, Overlay } from './GameStage'
 import {
   COLS,
   ROWS,
@@ -10,48 +9,23 @@ import {
   hardDrop,
   moveBy,
   newTetris,
-  nextKind,
-  shapeOf,
   softDrop,
   turn,
-  type Kind,
   type Tetris
 } from './tetris'
 import useGameLoop from './useGameLoop'
-
-const SHOWN = 9
-const NEXT_BOX = { width: SHOWN * 4, height: SHOWN * 2 }
-
-// The piece after this one, drawn to its own bounds rather than to its box, so
-// the short ones are not left sitting off to one side of an empty square.
-function NextPiece({ kind }: { kind: Kind | null }) {
-  const canvas = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    const el = canvas.current
-    if (!el) return
-    const ctx = fitCanvas(el, NEXT_BOX.width, NEXT_BOX.height)
-    if (!ctx) return
-    ctx.clearRect(0, 0, NEXT_BOX.width, NEXT_BOX.height)
-    if (!kind) return
-    const cells = shapeOf(kind).cells
-    const xs = cells.map(([x]) => x)
-    const ys = cells.map(([, y]) => y)
-    const left = (NEXT_BOX.width - (Math.max(...xs) - Math.min(...xs) + 1) * SHOWN) / 2 - Math.min(...xs) * SHOWN
-    const top = (NEXT_BOX.height - (Math.max(...ys) - Math.min(...ys) + 1) * SHOWN) / 2 - Math.min(...ys) * SHOWN
-    for (const [x, y] of cells) block(ctx, left + x * SHOWN, top + y * SHOWN, SHOWN, BLOCKS[kind])
-  }, [kind])
-
-  return <canvas ref={canvas} className="block" style={NEXT_BOX} />
-}
 
 type Phase = 'ready' | 'playing' | 'over'
 
 export default function TetrisGame({
   onScore,
+  onLive,
   children
 }: {
   onScore: (score: number) => void
+  // What the header says while a game is running, and nothing at all when one
+  // is not: the score belongs on the one line the panel already has.
+  onLive: (score: number | null) => void
   // What stands under the field while nobody is playing. A board of high scores
   // beside a game being played is something to read instead of the game.
   children: ReactNode
@@ -99,6 +73,10 @@ export default function TetrisGame({
   }, [game])
 
   useEffect(() => {
+    onLive(phase === 'playing' ? game.score : null)
+  }, [phase, game.score, onLive])
+
+  useEffect(() => {
     if (phase !== 'playing' || !game.over) return
     setPhase('over')
     if (game.score > 0) onScore(game.score)
@@ -124,14 +102,6 @@ export default function TetrisGame({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <Score value={game.score} unit="points">
-        {phase === 'playing' && (
-          <>
-            <span className="text-xs text-fg-muted">Next</span>
-            <NextPiece kind={nextKind(game)} />
-          </>
-        )}
-      </Score>
       <Field
         ratio={COLS / ROWS}
         onKeyDown={key}
