@@ -29,6 +29,7 @@ window.Probe = {
 `
 
 const PAGE = `<!doctype html><html><body style="margin:0;background:#141414">
+<style>#marks svg { width: 100%; height: 100%; display: block }</style>
 <script src="probe.js"></script>
 <div id="marks" style="display:flex;gap:28px;padding:24px;color:#fff;align-items:center">__MARKS__</div>
 <div id="tiles" style="display:flex;gap:20px;padding:0 24px 24px;align-items:flex-start"></div>
@@ -89,7 +90,10 @@ import * as icons from '${root}/src/renderer/src/icons'
 export const sheet = () =>
   ['GameGlyph', 'SignalGlyph', 'TerminalGlyph', 'FolderGlyph', 'MusicGlyph', 'ToolboxGlyph']
     .map(name => [48, 22, 16]
-      .map(size => renderToStaticMarkup(createElement(icons[name], { className: 'w-[' + size + 'px] h-[' + size + 'px]' })))
+      .map(size =>
+        '<span style="display:block;width:' + size + 'px;height:' + size + 'px">' +
+        renderToStaticMarkup(createElement(icons[name], { className: 'w-[' + size + 'px] h-[' + size + 'px]' })) +
+        '</span>')
       .join(''))
     .map(art => '<div style="display:flex;flex-direction:column;gap:10px;align-items:center">' + art + '</div>')
     .join('')
