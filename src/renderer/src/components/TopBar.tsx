@@ -67,6 +67,7 @@ export default function TopBar({
   const [copied, setCopied] = useState(false)
   const theme = useTheme()
   const sounds = useSounds()
+  const full = useFullScreen()
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
   const [collapsedNav, setCollapsedNav] = useState(false)
