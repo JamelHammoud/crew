@@ -38,7 +38,7 @@ window.probe = () => {
   const g2 = c2.getContext('webgl', {antialias:false, preserveDrawingBuffer:true});
   const v2 = g2.createShader(g2.VERTEX_SHADER);
   g2.shaderSource(v2, 'attribute vec2 aSpot; varying vec2 vUv; void main(){ vUv = aSpot*0.5+0.5; gl_Position = vec4(aSpot,0.,1.); }'); g2.compileShader(v2);
-  const f3 = g2.createShader(g2.FRAGMENT_SHADER); g2.shaderSource(f3, window.FRAG); g2.compileShader(f3);
+  const f3 = g2.createShader(g2.FRAGMENT_SHADER); g2.shaderSource(f3, window.VARIANT || window.FRAG); g2.compileShader(f3);
   const p3 = g2.createProgram(); g2.attachShader(p3,v2); g2.attachShader(p3,f3); g2.linkProgram(p3);
   const linked = g2.getProgramParameter(p3, g2.LINK_STATUS);
   const linkLog = g2.getProgramInfoLog(p3);
@@ -92,8 +92,20 @@ app.whenReady().then(async () => {
   await w.loadFile(path.join(import.meta.dirname,'d.html'))
   const frag = readFileSync(process.env.FRAG_FILE,'utf8')
   await w.webContents.executeJavaScript('window.FRAG = ' + JSON.stringify(frag))
-  const r = await w.webContents.executeJavaScript('window.probe()')
-  console.log('PROBE ' + JSON.stringify(r))
+  const full = readFileSync(process.env.FRAG_FILE,'utf8')
+  const cuts = {
+    full: full,
+    noLoop: full.replace(/  for \(int i = 0; i < MAX; i\+\+\) \{[\s\S]*?\n  \}\n/, '\n'),
+    noFbm: full.replace(/fbm\(([^;]*?)\)/g, '0.5'),
+    skyOnly: full.replace(/void main\(\) \{[\s\S]*$/, 'void main() { gl_FragColor = vec4(uSky, 1.0); }\n')
+  }
+  const out = {}
+  for (const [name, src] of Object.entries(cuts)) {
+    await w.webContents.executeJavaScript('window.VARIANT = ' + JSON.stringify(src))
+    const one = await w.webContents.executeJavaScript('window.probe()')
+    out[name] = { err: one.errAfter, read: one.realRead, linked: one.linked }
+  }
+  console.log('PROBE ' + JSON.stringify(out))
   app.exit(0)
 }).catch(e => { console.log('PROBE_FAIL '+e.stack); app.exit(1) })
 `)
