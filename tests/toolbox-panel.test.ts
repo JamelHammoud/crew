@@ -44,12 +44,14 @@ const toolbox = (
   useCrew.setState({
     tools,
     agents,
-    docs: (written.docs ?? {}) as never,
-    boards: (written.boards ?? []) as never,
+    docs: (held.docs ?? {}) as never,
+    boards: (held.boards ?? []) as never,
     addTool: (name, mark, action) => sent.push({ type: 'tool.add', name, mark, action }),
     editTool: (toolId, name, mark, action) => sent.push({ type: 'tool.edit', toolId, name, mark, action }),
     removeTool: toolId => sent.push({ type: 'tool.remove', toolId }),
-    sendChat: (text, _threadId, _boardId, _replyTo, aimedAt) => asked.push({ text, aimedAt })
+    sendChat: (text, _threadId, _boardId, _replyTo, aimedAt) => asked.push({ text, aimedAt }),
+    addTodo: (text, agentId) => tasks.push({ text, agentId }),
+    updateDoc: (page, text) => void written.push({ page, text })
   })
   return render(createElement(Toolbox, { open: true, onClose: () => {}, onChat: () => void (switched += 1) }))
 }
@@ -57,8 +59,21 @@ const toolbox = (
 beforeEach(() => {
   sent.length = 0
   asked.length = 0
+  tasks.length = 0
+  written.length = 0
+  played.length = 0
+  joins = 0
+  copied = []
   switched = 0
   useBrowser.setState({ tabs: [], activeTabId: null })
+  useMusic.setState({ uploads: [], playlists: [], put: (trackId, playlistId = null) => void played.push({ trackId, playlistId }) })
+  useHuddle.setState({
+    joined: false,
+    join: async () => {
+      joins += 1
+    }
+  })
+  Object.assign(navigator, { clipboard: { writeText: (text: string) => void copied.push(text) } })
 })
 
 afterEach(() => {
