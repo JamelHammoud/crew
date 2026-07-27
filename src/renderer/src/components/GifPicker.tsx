@@ -79,6 +79,7 @@ export default function GifPicker({
     const token = ++asked.current
     setLoading(true)
     setFailed(false)
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
     const timer = setTimeout(() => {
       const run = wanted ? searchGifs(wanted) : trendingGifs()
       run
