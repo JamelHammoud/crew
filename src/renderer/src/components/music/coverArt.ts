@@ -125,9 +125,13 @@ void main() {
     // Fat in the middle and pointed at the ends, which is the whole outline of
     // a petal. Anything past the ends has no width at all and so is not there.
     float reach = clamp(abs(along) / max(shape.y, 0.001), 0.0, 1.0);
-    float wide = shape.x * pow(max(0.0, 1.0 - reach * reach), shape.z);
-    float ruffle = (fbm(p * edge.y + float(i) * 7.3) - 0.5) * edge.x;
-    float field = wide + ruffle - abs(side);
+    // Its own wobble along its length, so two petals pushed about by the same
+    // field are still two different outlines.
+    float lobe = 1.0 + glow.w * sin(along * 5.3 + glow.z);
+    float wide = shape.x * pow(max(0.0, 1.0 - reach * reach), shape.z) * lobe;
+    // Coarse to fine, picked out of the three fields by how fine this one is.
+    float pushed = mix(mix(coarse, middle, clamp(edge.y * 2.0, 0.0, 1.0)), fine, clamp(edge.y * 2.0 - 1.0, 0.0, 1.0));
+    float field = wide + (pushed - 0.5) * edge.x - abs(side);
 
     // Its own blur, and nothing else's. This is the depth of field: the front
     // one comes up hard against the sky and the back ones have no edge left.
