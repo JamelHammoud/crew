@@ -465,7 +465,7 @@ describe('the toolbox', () => {
 
     name('Focus')
     does('Put music on')
-    fireEvent.click(screen.getByText('Ambient Lofi'))
+    fireEvent.click(screen.getByText('Crew'))
     fireEvent.click(screen.getByText('Add to toolbox'))
 
     expect(sent).toEqual([

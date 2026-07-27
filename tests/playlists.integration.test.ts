@@ -344,7 +344,7 @@ describe('playlists', () => {
 // The app's own lists, made of its own tunes. They are the same for every crew,
 // they belong to nobody, and there is nothing about one for anyone to change.
 describe("the app's own lists", () => {
-  const lofi = MUSIC_SETS.find(set => set.name === 'Ambient Lofi') as MusicPlaylist
+  const lofi = MUSIC_SETS.find(set => set.name === 'Crew') as MusicPlaylist
 
   it('is a handful of slow ones, each about a minute round', () => {
     expect(lofi).toBeTruthy()
@@ -376,7 +376,7 @@ describe("the app's own lists", () => {
     expect(isMine(lofi, 'sam')).toBe(false)
     expect(isMine(lofi, '')).toBe(false)
     // It is found by id whether or not the crew has any lists of its own.
-    expect(playlistFor(lofi.id)).toMatchObject({ name: 'Ambient Lofi' })
+    expect(playlistFor(lofi.id)).toMatchObject({ name: 'Crew' })
     expect(playlistFor(lofi.id, [{ id: 'l1', name: 'Mine', by: 'sam', trackIds: [], ts: 0 }])?.by).toBe('')
   })
 
