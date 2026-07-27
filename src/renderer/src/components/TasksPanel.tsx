@@ -29,6 +29,7 @@ import {
   threadWorking,
   type ThreadState
 } from './thread'
+import { formatFullTime, formatShortDay } from './time'
 import Tooltip from './Tooltip'
 
 interface Row {
