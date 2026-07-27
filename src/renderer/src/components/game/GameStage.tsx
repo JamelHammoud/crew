@@ -14,6 +14,14 @@ import { FIELD } from './paint'
 // has focus, or the arrows scroll the panel out from under whoever is playing.
 const PLAYED = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Spacebar'])
 
+// Every game stands on the same field, whatever shape its own world is, so the
+// panel looks the same from one game to the next and the side panel is filled
+// rather than nearly filled. It is the shape of the room the panel leaves: the
+// width it has, against the height under the tab bar and the one line of chrome
+// over the field. A game whose world is another shape is centered in it, which
+// is what a well with a surround around it already looks like.
+export const FIELD_RATIO = 2 / 3
+
 type Box = { width: number; height: number }
 
 // The field keeps its own shape whatever the panel is doing, so it is measured
@@ -33,14 +41,12 @@ function useBox(ref: RefObject<HTMLDivElement | null>): Box {
 }
 
 export function Field({
-  ratio,
   onKeyDown,
   onPress,
   onSize,
   overlay,
   children
 }: {
-  ratio: number
   onKeyDown: (key: string) => void
   onPress: () => void
   // The field is only as big as the panel left it, and it lands at nothing on
@@ -62,8 +68,8 @@ export function Field({
     stage.current?.focus({ preventScroll: true })
   }, [])
 
-  const width = Math.min(box.width, box.height * ratio)
-  const height = width / ratio
+  const width = Math.min(box.width, box.height * FIELD_RATIO)
+  const height = width / FIELD_RATIO
 
   useEffect(() => {
     onSize(width)
