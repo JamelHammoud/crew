@@ -56,6 +56,8 @@ export interface SessionSnapshot {
   music?: MusicRoom
   // What the crew has put on the shelf itself. Unlike the room, this lasts.
   musicUploads?: MusicUpload[]
+  // The lists people have written for themselves. These last too.
+  musicPlaylists?: MusicPlaylist[]
 }
 
 export type ClientMessage =
