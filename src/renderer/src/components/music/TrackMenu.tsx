@@ -54,7 +54,8 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
         </button>
       </Tooltip>
       <Popover open={open} onClose={shut} className="w-64" maxHeight={340}>
-        {screen === 'main' ? (
+        <ScreenSwap screen={screen} depth={screen === 'main' ? 0 : 1}>
+          {screen === 'main' ? (
           <>
             <MenuItem icon={<PlusGlyph />} label="Add to playlist" into onClick={() => setScreen('lists')} />
             {inside && (
