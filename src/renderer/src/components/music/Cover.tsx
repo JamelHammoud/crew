@@ -8,6 +8,17 @@ import { GRAIN, meshOf } from './mesh'
 // without being drawn twice. A machine with no graphics context to give falls
 // back to the stack of gradients in `mesh.ts`, which is the same palette and the
 // same seed, softer.
+
+// A picture that moves has to be bigger than the box it moves in. The canvas is
+// laid in past all four edges by this much and the drift stays inside the
+// margin, so there is picture under every corner at every frame of it. Held
+// flush to the tile, the rotation alone walks the corners in: a square turned
+// four degrees has to be scaled by 1.067 before it covers its own box again, and
+// what showed in the gap was the panel behind the cover.
+//
+// The fallback needs none of this. Its own layer is already half again as big as
+// the tile, because that is where the blur in `mesh.ts` spills to.
+const BLEED = 0.05
 export default function Cover({
   item,
   size,
