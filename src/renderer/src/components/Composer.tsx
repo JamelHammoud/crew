@@ -3,6 +3,7 @@ import { ArrowUpGlyph, StopGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AddMenu from './AddMenu'
 import { AttachmentTray } from './Attachments'
+import { clickToFocus } from './clickToFocus'
 import Emoji from './Emoji'
 import { tokenizeEmoji } from './emojiTokens'
 import { tokenizeMentions, writtenRefs } from './mentionTokens'
@@ -106,7 +107,7 @@ export default function Composer({
       {replyTo && <ReplyPreview replyTo={replyTo} onCancel={onCancelReply} />}
       <div
         className="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"
-        onClick={() => inputRef.current?.focus()}
+        onClick={clickToFocus(inputRef)}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
           event.preventDefault()
