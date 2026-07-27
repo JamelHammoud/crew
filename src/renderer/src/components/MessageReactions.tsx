@@ -7,12 +7,8 @@ import EmojiPicker from './EmojiPicker'
 import { rememberEmoji } from './emojiRecents'
 import { MenuItem, Popover } from './Popover'
 import type { ReactionGroup } from './reactionGroups'
+import ReactionTip from './ReactionTip'
 import Tooltip from './Tooltip'
-
-const reactionLabel = (names: string[]) => {
-  if (names.length === 1) return `${names[0]} reacted`
-  return `${names.slice(0, -1).join(', ')} and ${names.at(-1)} reacted`
-}
 
 export default function MessageReactions({
   targetId,
