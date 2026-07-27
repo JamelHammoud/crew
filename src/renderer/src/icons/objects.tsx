@@ -139,6 +139,21 @@ export const ChatGlyph = glyph(
   </>
 )
 
+// A pad, held. The shoulders are square across the top and the grips hang off
+// the bottom corners with the middle drawn up between them, which is the one
+// line that tells this from a rounded box with a plus in it. The cross and the
+// pair of buttons are where a hand expects them, and the buttons are filled for
+// the reason the sun in the photo is: a 2 ring at that size is a smudge, and a
+// dot is a dot.
+export const GameGlyph = glyph(
+  <>
+    <path d="M6 4.5h12a3.5 3.5 0 0 1 3.5 3.5c0 5-.3 8.5-1.6 10.6-.7 1.3-2.5 1.3-3.3 0-.8-1.4-1.8-2.5-3-2.9-.5-.15-1-.2-1.6-.2s-1.1.05-1.6.2c-1.2.4-2.2 1.5-3 2.9-.8 1.3-2.6 1.3-3.3 0C2.8 16.5 2.5 13 2.5 8A3.5 3.5 0 0 1 6 4.5Z" />
+    <path d="M8.25 8.4v3.9M6.3 10.35h3.9" />
+    <circle cx="15.6" cy="11.35" r="1.05" fill="currentColor" stroke="none" />
+    <circle cx="18.05" cy="9.05" r="1.05" fill="currentColor" stroke="none" />
+  </>
+)
+
 export const DesktopGlyph = glyph(
   <>
     <rect x="2.5" y="4.5" width="19" height="13" rx="3" />
