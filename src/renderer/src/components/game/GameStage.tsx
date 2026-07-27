@@ -14,32 +14,38 @@ import { FIELD } from './paint'
 // has focus, or the arrows scroll the panel out from under whoever is playing.
 const PLAYED = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Spacebar'])
 
-// Every game stands on the same field, whatever shape its own world is, so the
-// panel looks the same from one game to the next and the side panel is filled
-// rather than nearly filled. It is the shape of the room the panel leaves: the
-// width it has, against the height under the tab bar and the one line of chrome
-// over the field. A game whose world is another shape is centered in it, which
-// is what a well with a surround around it already looks like.
-export const FIELD_RATIO = 2 / 3
+export type Box = { width: number; height: number }
 
-type Box = { width: number; height: number }
+const SAME = (box: Box, width: number, height: number): boolean =>
+  box.width === width && box.height === height
 
-// The field keeps its own shape whatever the panel is doing, so it is measured
-// rather than left to the box around it: a canvas told to fill a box it does not
-// have the shape of comes out stretched, and the game is drawn in world units.
+// The field is the room the panel leaves, so it is measured rather than guessed
+// at: a game is drawn in world units and has to be told the size it is really
+// standing at. Nothing here changes unless the numbers do, so a game repaints
+// when the panel is dragged and at no other time.
 function useBox(ref: RefObject<HTMLDivElement | null>): Box {
   const [box, setBox] = useState<Box>({ width: 0, height: 0 })
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    const watch = new ResizeObserver(() => setBox({ width: el.clientWidth, height: el.clientHeight }))
+    const read = (): void => {
+      const width = el.clientWidth
+      const height = el.clientHeight
+      setBox(old => (SAME(old, width, height) ? old : { width, height }))
+    }
+    const watch = new ResizeObserver(read)
     watch.observe(el)
-    setBox({ width: el.clientWidth, height: el.clientHeight })
+    read()
     return () => watch.disconnect()
   }, [ref])
   return box
 }
 
+// Every game takes the whole of the room the panel leaves. A world with a shape
+// of its own is centered in it and sinks its own well into the field, which is
+// what Tetris does; one that scrolls takes the room as its width, which is what
+// Flappy does. Pinning the field itself to one shape is what left a band of dead
+// panel over and under it, and no shape can fill a panel anyone can drag.
 export function Field({
   onKeyDown,
   onPress,
@@ -49,18 +55,16 @@ export function Field({
 }: {
   onKeyDown: (key: string) => void
   onPress: () => void
-  // The field is only as big as the panel left it, and it lands at nothing on
-  // the first render and at its real size a beat later. A game that is not
-  // running has no loop to repaint it, so it is told when the size changed and
-  // paints again: without this the board keeps the one pixel it was drawn at
-  // and is stretched over the whole field.
-  onSize: (width: number) => void
+  // The field lands at nothing on the first render and at its real size a beat
+  // later, and a game that is not running has no loop to paint it again. So it
+  // is told the size it has: without this the board keeps the one pixel it was
+  // first drawn at and is stretched over the whole field.
+  onSize: (box: Box) => void
   overlay?: ReactNode
   children: ReactNode
 }) {
-  const outer = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
-  const box = useBox(outer)
+  const box = useBox(stage)
 
   // A game is played with the keyboard, so the field takes focus as it arrives
   // rather than waiting for somebody to work out that it wants a click first.
@@ -68,12 +72,9 @@ export function Field({
     stage.current?.focus({ preventScroll: true })
   }, [])
 
-  const width = Math.min(box.width, box.height * FIELD_RATIO)
-  const height = width / FIELD_RATIO
-
   useEffect(() => {
-    onSize(width)
-  }, [width, onSize])
+    onSize(box)
+  }, [box, onSize])
 
   const key = (event: ReactKeyboardEvent) => {
     if (PLAYED.has(event.key)) event.preventDefault()
@@ -81,31 +82,19 @@ export function Field({
   }
 
   return (
-    <div ref={outer} className="relative flex-1 min-h-0 w-full">
-      <div
-        className="absolute"
-        style={{
-          width,
-          height,
-          left: (box.width - width) / 2,
-          top: (box.height - height) / 2
-        }}
-      >
-        <div
-          ref={stage}
-          tabIndex={0}
-          onKeyDown={key}
-          onPointerDown={onPress}
-          className="relative w-full h-full rounded-card overflow-hidden outline-none cursor-pointer"
-          style={{ background: FIELD }}
-        >
-          {children}
-          {/* Drawn inside the field rather than around it, since the field is
-              artwork and a ring outside it is cropped by the card it sits in. */}
-          <InsetRing className="ring-1 ring-inset ring-white/10" />
-          {overlay}
-        </div>
-      </div>
+    <div
+      ref={stage}
+      tabIndex={0}
+      onKeyDown={key}
+      onPointerDown={onPress}
+      className="relative flex-1 min-h-0 w-full rounded-card overflow-hidden outline-none cursor-pointer"
+      style={{ background: FIELD }}
+    >
+      {children}
+      {/* Drawn inside the field rather than around it, since the field is
+          artwork and a ring outside it is cropped by the card it sits in. */}
+      <InsetRing className="ring-1 ring-inset ring-white/10" />
+      {overlay}
     </div>
   )
 }
