@@ -310,3 +310,7 @@
 {"id":"2bd81ca7-13af-41b9-be37-d64849a0372d","ts":1785149290961,"kind":"game.score","gameId":"flappy","score":2,"byName":"ALI"}
 {"id":"0da43c64-8281-4be7-ae83-68a8c65bfacd","ts":1785149353030,"kind":"game.score","gameId":"flappy","score":39,"byName":"ALI"}
 {"id":"4ba48e61-8715-40d1-a7f3-d9a13fd4cade","ts":1785149672762,"kind":"game.score","gameId":"tetris","score":179,"byName":"ALI"}
+{"id":"448002a8-1e24-40fc-bd61-0b7abedeec5a","ts":1785186597962,"kind":"agent.offline","agentId":"ali/claude","label":"Fable"}
+{"id":"14ff9044-4e27-450c-b8bb-eea8fe72818e","ts":1785186597967,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"966ea7c9-5cae-4f52-9760-733c0f876b9e","ts":1785186597967,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"57a597c3-ac6c-4f76-a5ae-316ff8112918","ts":1785186597967,"kind":"agent.offline","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
