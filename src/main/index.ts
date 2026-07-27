@@ -194,6 +194,7 @@ function createWindow(): void {
   win.on('leave-full-screen', syncWindowShape)
   installContextMenu(win)
   installDisplayMedia(win.webContents.session)
+  win.webContents.on('did-finish-load', syncWindowShape)
   win.webContents.once('did-finish-load', () => {
     warmTerminals()
     tray.warm()
