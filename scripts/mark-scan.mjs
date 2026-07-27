@@ -101,14 +101,35 @@ app.whenReady().then(() => {
       const i = (y * stride + x) * 4
       return [bmp[i + 2], bmp[i + 1], bmp[i]]
     }
+    const LIT = 24
     for (const row of rows) {
-      const y = Math.round((row.top + row.height / 2) * scale)
+      const y0 = Math.round(row.top * scale)
+      const y1 = Math.round((row.top + row.height) * scale)
       const x0 = Math.round(row.left * scale)
       const x1 = Math.round((row.left + row.width) * scale)
-      const line = []
-      for (let x = x0; x < x1; x++) line.push(at(x, y))
-      const lum = line.map(([r, g, b]) => Math.round(0.2126 * r + 0.7152 * g + 0.0722 * b))
-      console.log(String(row.at).padStart(4) + 'ms ' + lum.map(v => String(v).padStart(3)).join(' '))
+      const thin = []
+      for (let y = y0; y < y1; y++) {
+        const lum = []
+        for (let x = x0; x < x1; x++) {
+          const [r, g, b] = at(x, y)
+          lum.push(0.2126 * r + 0.7152 * g + 0.0722 * b)
+        }
+        let run = 0
+        for (let i = 0; i <= lum.length; i++) {
+          const lit = i < lum.length && lum[i] > LIT
+          if (lit) { run++; continue }
+          if (run > 0 && run <= 2) {
+            const peak = Math.max(...lum.slice(i - run, i))
+            if (peak > 40) thin.push({ y: y - y0, x: i - run, run, peak: Math.round(peak) })
+          }
+          run = 0
+        }
+      }
+      const worst = thin.sort((a, b) => b.peak - a.peak).slice(0, 4)
+      console.log(
+        String(row.at).padStart(4) + 'ms  hairlines: ' + thin.length +
+        (worst.length ? '  worst ' + worst.map(t => 'x' + t.x + ' y' + t.y + ' w' + t.run + ' lum' + t.peak).join(', ') : '')
+      )
     }
     app.exit(0)
   })
