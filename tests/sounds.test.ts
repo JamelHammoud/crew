@@ -76,7 +76,7 @@ class FakeAudioContext {
       buffer: null,
       connect: () => {},
       start: (at: number) => void started.push(at),
-      stop: () => {}
+      stop: (at: number) => void stopped.push(at)
     }
   }
   createBuffer(channels: number, frames: number): unknown {
