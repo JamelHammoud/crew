@@ -83,10 +83,14 @@
     }
   }
 
+  /* How far a screen travels. A card is a small box and a screen of it moves the
+     few pixels that say which way you went, while a panel is the size of the
+     window and the same few pixels there are not a movement at all, so the box
+     it happens in says how far. */
   @keyframes screen-in {
     from {
       opacity: 0;
-      transform: translateX(10px);
+      transform: translateX(var(--screen-travel, 10px));
     }
     to {
       opacity: 1;
@@ -97,7 +101,7 @@
   @keyframes screen-back {
     from {
       opacity: 0;
-      transform: translateX(-10px);
+      transform: translateX(calc(var(--screen-travel, 10px) * -1));
     }
     to {
       opacity: 1;
@@ -112,7 +116,7 @@
     }
     to {
       opacity: 0;
-      transform: translateX(-10px);
+      transform: translateX(calc(var(--screen-travel, 10px) * -1));
     }
   }
 
@@ -123,7 +127,7 @@
     }
     to {
       opacity: 0;
-      transform: translateX(10px);
+      transform: translateX(var(--screen-travel, 10px));
     }
   }
 
