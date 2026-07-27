@@ -6,6 +6,7 @@ import { applyPlatform } from './state/platform'
 import { useCrew } from './state/store'
 import { applyTheme, showTheme, storedTheme } from './state/theme'
 import { publishPresence } from './state/trayPresence'
+import { setFullScreen } from './state/windowShape'
 import TrayPanel from './views/TrayPanel'
 import './styles.css'
 
