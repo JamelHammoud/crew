@@ -35,9 +35,12 @@ interface Builtin {
 
 const SAID = 1200
 
-// Both halves of the toolbox stand on the same four columns, so the app's own
-// hand and the crew's own tools are the same button in the same grid.
-const GRID = 'p-2.5 grid grid-cols-4 gap-1.5'
+// Both halves of the toolbox stand on the same three columns, so the app's own
+// hand and the crew's own tools are the same button in the same grid. The panel
+// is as wide as three of them and nothing more: a tile is the size it always
+// was, and the width of the toolbox is worked out from that rather than the
+// other way round.
+const GRID = 'p-2.5 grid grid-cols-3 gap-1.5'
 
 export default function Toolbox({
   open,
