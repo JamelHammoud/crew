@@ -238,7 +238,7 @@ function cleanUploadName(name) {
 var HEARTBEAT_MS = 2e4;
 var MEDIA_HEADERS = {
   "cache-control": "public, max-age=31536000, immutable",
-  "access-control-allow-origin": "*"
+  "x-disabled-for-check": "yes"
 };
 function serveAttachment(session, file, res) {
   const full = session.attachmentPath(file);
