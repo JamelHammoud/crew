@@ -15,6 +15,10 @@ export type BrowserTab = {
   diff: string | null
   // What a terminal tab was opened to run, typed into the shell once it is up.
   command: string | null
+  // Which game a games tab is standing in, or null for the list of them. It
+  // rides on the tab so the pill can say what you are playing and so a look at
+  // another tab does not put you back at the top of the list.
+  game: string | null
   back: string[]
   forward: string[]
   // Whether the file tree is standing beside the file, and which folders in it
