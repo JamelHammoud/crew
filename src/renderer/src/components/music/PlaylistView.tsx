@@ -4,6 +4,7 @@ import { MinusGlyph, PauseGlyph, PlayGlyph, TrashGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
 import Tooltip from '../Tooltip'
+import { quietPill, solidButton } from './buttons'
 import PlaylistCover from './PlaylistCover'
 import { tracks } from './say'
 import TrackRow, { rowAction, rowActionQuiet } from './TrackRow'
@@ -68,7 +69,7 @@ export default function PlaylistView({
             onClick={play}
             disabled={items.length === 0}
             aria-label={on && room.playing ? 'Pause' : 'Play'}
-            className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center bg-fg text-ink-900 transition-all duration-150 hover:bg-fg/90 active:scale-95 disabled:opacity-30"
+            className={`${solidButton} w-9 h-9 disabled:opacity-30`}
           >
             {on && room.playing ? <PauseGlyph className="w-4 h-4" /> : <PlayGlyph className="w-4 h-4" />}
           </button>
