@@ -578,7 +578,11 @@ export default function TasksPanel({
                   )}
                   {(showArchived || q !== '') &&
                     archived.map(row =>
-                      item(row, { icon: <UnarchiveGlyph className="w-4 h-4" />, label: 'Unarchive', status: 'open' })
+                      item(
+                        row,
+                        { icon: <UnarchiveGlyph className="w-4 h-4" />, label: 'Unarchive', status: 'open' },
+                        lastMessageAt[row.thread.id] ?? 0
+                      )
                     )}
                 </section>
               )}
