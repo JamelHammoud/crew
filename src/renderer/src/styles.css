@@ -563,33 +563,10 @@ body {
   }
 }
 
-.crew-sweep {
-  transform-box: view-box;
-  animation: crew-sweep 640ms cubic-bezier(0.33, 0, 0.2, 1) 120ms both;
-}
-
-@keyframes crew-sweep {
-  0% {
-    opacity: 0;
-    transform: translateX(0);
-  }
-  22% {
-    opacity: 0.9;
-  }
-  80% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(880px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .crew-disc,
   .crew-blob,
-  .crew-flash,
-  .crew-sweep {
+  .crew-flash {
     animation-duration: 1ms;
     animation-delay: 0ms;
     animation-iteration-count: 1;
