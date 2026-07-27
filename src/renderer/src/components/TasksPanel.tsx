@@ -268,7 +268,7 @@ export default function TasksPanel({
       </span>
     )
 
-  const item = (row: Row, action?: RowAction, ts?: number) => {
+  const item = (row: Row, action?: RowAction, ts = 0) => {
     const agent = agents.find(a => a.id === row.thread.agentId)
     return (
     <div key={row.thread.id} className="group relative">
