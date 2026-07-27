@@ -102,6 +102,64 @@ describe('toolbox', () => {
     expect(copy.action).toEqual({ kind: 'copy', text: '  crew://join  ' })
   })
 
+  it('carries what a tool does beyond opening something', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+
+    sam.send({ type: 'tool.add', name: 'Heads up', mark: 'chat', action: { kind: 'say', text: '  Pushing now  ' } })
+    const said = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Heads up')) as Added
+    expect(said.action).toEqual({ kind: 'say', text: 'Pushing now' })
+
+    sam.send({
+      type: 'tool.add',
+      name: 'Overnight',
+      mark: 'checklist',
+      action: { kind: 'todo', text: '  Read what came in  ', agentId: 'agent-1' }
+    })
+    const task = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Overnight')) as Added
+    expect(task.action).toEqual({ kind: 'todo', text: 'Read what came in', agentId: 'agent-1' })
+
+    sam.send({
+      type: 'tool.add',
+      name: 'Log it',
+      mark: 'pencil',
+      action: { kind: 'note', page: '  journal  ', text: '  Shipped  ' }
+    })
+    const note = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Log it')) as Added
+    expect(note.action).toEqual({ kind: 'note', page: 'journal', text: 'Shipped' })
+
+    sam.send({ type: 'tool.add', name: 'Focus', mark: 'music', action: { kind: 'music', playlistId: 'set-ambient-lofi' } })
+    const music = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Focus')) as Added
+    expect(music.action).toEqual({ kind: 'music', playlistId: 'set-ambient-lofi' })
+
+    sam.send({ type: 'tool.add', name: 'Standup', mark: 'signal', action: { kind: 'huddle' } })
+    const huddle = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Standup')) as Added
+    expect(huddle.action).toEqual({ kind: 'huddle' })
+  })
+
+  it('keeps a chain short, and keeps it to tools named once', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+
+    sam.send({
+      type: 'tool.add',
+      name: 'Start the day',
+      mark: 'sun',
+      action: { kind: 'chain', toolIds: ['a', 'a', '  ', 'b'] }
+    })
+    const chain = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Start the day')) as Added
+    expect(chain.action).toEqual({ kind: 'chain', toolIds: ['a', 'b'] })
+
+    sam.send({
+      type: 'tool.add',
+      name: 'Everything',
+      mark: 'group',
+      action: { kind: 'chain', toolIds: Array.from({ length: 30 }, (_, at) => `tool-${at}`) }
+    })
+    const long = (await sam.waitForEvent(e => e.kind === 'tool.added' && e.name === 'Everything')) as Added
+    expect((long.action as { toolIds: string[] }).toolIds).toHaveLength(12)
+  })
+
   it('turns away a tool that could not be pressed', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
