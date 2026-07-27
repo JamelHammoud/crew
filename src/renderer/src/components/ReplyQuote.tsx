@@ -35,17 +35,23 @@ export default function ReplyQuote({
       <span className={`min-w-0 shrink-0 truncate text-sm font-semibold ${strong ? 'text-fg' : 'text-fg-secondary'}`}>
         {label}
       </span>
-      {image && httpBase && (
-        <img
-          src={attachmentUrl(httpBase, image)}
-          alt={image.name}
-          className="h-5 w-5 shrink-0 rounded-md border border-fg/10 object-cover"
-        />
-      )}
-      {text && (
-        <span className="min-w-0 flex-1 truncate text-sm text-fg-muted">
-          <EmojiText text={text} />
-        </span>
+      {deleted ? (
+        <span className="min-w-0 flex-1 truncate text-sm italic text-fg-faint">Deleted message</span>
+      ) : (
+        <>
+          {image && httpBase && (
+            <img
+              src={attachmentUrl(httpBase, image)}
+              alt={image.name}
+              className="h-5 w-5 shrink-0 rounded-md border border-fg/10 object-cover"
+            />
+          )}
+          {text && (
+            <span className="min-w-0 flex-1 truncate text-sm text-fg-muted">
+              <EmojiText text={text} />
+            </span>
+          )}
+        </>
       )}
     </span>
   )
