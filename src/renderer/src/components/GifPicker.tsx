@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { WarningGlyph } from '../icons'
 import { gifsReady, searchGifs, trendingGifs, type Gif } from './gifs'
 import InsetRing from './InsetRing'
 import SearchField from './SearchField'
@@ -8,7 +9,6 @@ import Spinner from './Spinner'
 const COLUMNS = 2
 const TYPING = 250
 const NEAR_END = 240
-const HINT = 'Picking one sends it'
 const WAITING = [
   [0.78, 1.24, 0.86, 1.12],
   [1.16, 0.82, 1.3, 0.72]
