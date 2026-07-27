@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { CrewSession } from '../src/server/session'
+import type { MessageReply, SessionEvent } from '../src/shared/events'
+import { messageReactionTarget } from '../src/shared/reactions'
 import { startHost, TestUi, type TestHost } from './helpers/session'
+
+const quotedIn = (events: SessionEvent[], messageId: string): MessageReply | undefined => {
+  const found = events.find(e => e.kind === 'message' && e.id === messageId)
+  return found?.kind === 'message' ? found.replyTo : undefined
+}
 
 describe('deleting messages', () => {
   let host: TestHost
