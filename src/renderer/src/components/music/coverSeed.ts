@@ -286,6 +286,48 @@ const byDistance = (colors: readonly string[], sky: string): string[] => {
   return colors.slice(0, 3).sort((one, two) => apart(hueOf(two), from) - apart(hueOf(one), from))
 }
 
+// Where a tip lands, which is not where the spine points: the spine is bent, so
+// it is carried sideways by the bend the whole way out, and a petal with a lot
+// of bend leaves the picture long before its own length says it should.
+const tipOf = (
+  at: [number, number],
+  lie: [number, number],
+  across: [number, number],
+  bend: number,
+  run: number
+): [number, number] => [
+  at[0] + lie[0] * run - across[0] * bend * run * run,
+  at[1] + lie[1] * run - across[1] * bend * run * run
+]
+
+const SEEN = 0.03
+
+const seen = (spot: [number, number]): boolean =>
+  spot[0] > SEEN && spot[0] < 1 - SEEN && spot[1] > SEEN && spot[1] < 1 - SEEN
+
+// How long it may run. A petal has to come to a point somewhere inside the
+// frame: run far enough that both tapers happen off the edge and what is left in
+// the tile is a band of one width crossing it corner to corner, which is the one
+// shape that says at a glance that a picture was made rather than taken.
+//
+// One tip is enough, and it has to be. A leaf that runs out of the picture at
+// one end is what a photograph taken this close looks like; a leaf held wholly
+// inside the frame at both ends is a drawing of a leaf.
+const ends = (
+  at: [number, number],
+  lie: [number, number],
+  across: [number, number],
+  bend: number,
+  run: number
+): number => {
+  let held = run
+  for (let i = 0; i < 12 && held > 0.18; i++) {
+    if (seen(tipOf(at, lie, across, bend, held)) || seen(tipOf(at, lie, across, bend, -held))) break
+    held *= 0.88
+  }
+  return held
+}
+
 const between = (range: [number, number], roll: number): number => range[0] + roll * (range[1] - range[0])
 
 const whole = (range: [number, number], roll: number): number =>
