@@ -27,7 +27,7 @@ function paint(canvas: HTMLCanvasElement, game: Flappy): void {
   for (const one of game.pipes) pipe(ctx, one.x, one.gap, floor)
   ctx.fillStyle = GROUND_COLOR
   ctx.fillRect(0, floor, WORLD.width, GROUND)
-  bird(ctx, game.y, game.vy)
+  bird(ctx, BIRD.x, game.y, game.vy)
   ctx.restore()
 }
 
