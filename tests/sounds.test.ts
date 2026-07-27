@@ -11,6 +11,7 @@ vi.stubGlobal('localStorage', {
 })
 
 const started: number[] = []
+const stopped: number[] = []
 const pitched: number[] = []
 const landed: number[] = []
 let filters: { type: string; hz: number[] }[] = []
@@ -49,7 +50,7 @@ class FakeAudioContext {
       detune: new FakeParam(),
       connect: () => {},
       start: (at: number) => void started.push(at),
-      stop: () => {}
+      stop: (at: number) => void stopped.push(at)
     }
   }
   createGain(): unknown {
