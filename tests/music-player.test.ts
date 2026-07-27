@@ -233,7 +233,7 @@ describe('playing a track', () => {
     player.play(overworld, 0)
     const playing = audio.notes().length
     held.release?.()
-    await loading
+    expect(await loading).toBe('dropped')
     expect(player.trackId).toBe(overworld.id)
     expect(audio.notes().length).toBe(playing)
   })
