@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { paintTetris } from './drawTetris'
-import { Field, Overlay, Stat } from './GameStage'
+import { Field, Overlay, Score } from './GameStage'
 import { BLOCKS, block, fitCanvas } from './paint'
 import {
   COLS,
@@ -20,7 +20,7 @@ import {
 } from './tetris'
 import useGameLoop from './useGameLoop'
 
-const SHOWN = 11
+const SHOWN = 9
 const NEXT_BOX = { width: SHOWN * 4, height: SHOWN * 2 }
 
 // The piece after this one, drawn to its own bounds rather than to its box, so
@@ -117,15 +117,11 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <div className="flex items-stretch gap-1.5">
-        <Stat label="Score" value={game.score.toLocaleString()} />
-        <Stat label="Level" value={String(levelOf(game))} />
-        <Stat label="Best" value={best.toLocaleString()} />
-        <div className="shrink-0 px-2.5 py-1.5 rounded-field bg-fg/[0.05] flex flex-col items-center gap-0.5">
-          <span className="text-xs font-medium text-fg-muted">Next</span>
-          <NextPiece kind={phase === 'playing' ? nextKind(game) : null} />
-        </div>
-      </div>
+      <Score value={game.score} unit="points" best={best}>
+        <span>Level</span>
+        <span className="text-sm font-medium text-fg-secondary tabular-nums">{levelOf(game)}</span>
+        <span className="px-1.5 text-fg-faint">·</span>
+      </Score>
       <Field
         ratio={COLS / ROWS}
         onKeyDown={key}
@@ -147,6 +143,17 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
       >
         <canvas ref={canvas} className="block w-full h-full" />
       </Field>
+      {/* The piece after this one, on the line under the field rather than over
+          the board: a chip floating in the corner of a Tetris field covers the
+          rows that decide the game. */}
+      <div className="shrink-0 h-[18px] flex items-center justify-center gap-2">
+        {phase === 'playing' && (
+          <>
+            <span className="text-xs text-fg-muted">Next</span>
+            <NextPiece kind={nextKind(game)} />
+          </>
+        )}
+      </div>
     </div>
   )
 }

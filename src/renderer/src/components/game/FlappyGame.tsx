@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { paintFlappy } from './drawFlappy'
 import { WORLD, flap, newFlappy, tick, type Flappy } from './flappy'
-import { Field, Overlay, Stat } from './GameStage'
+import { Field, Overlay, Score } from './GameStage'
 import useGameLoop from './useGameLoop'
 
 type Phase = 'ready' | 'playing' | 'over'
@@ -53,10 +53,7 @@ export default function FlappyGame({ best, onScore }: { best: number; onScore: (
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <div className="flex items-center gap-1.5">
-        <Stat label="Pipes" value={String(game.score)} />
-        <Stat label="Best" value={String(best)} />
-      </div>
+      <Score value={game.score} unit={game.score === 1 ? 'pipe' : 'pipes'} best={best} />
       <Field
         ratio={WORLD.width / WORLD.height}
         onKeyDown={name => {
