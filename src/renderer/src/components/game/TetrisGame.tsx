@@ -66,26 +66,30 @@ function paint(canvas: HTMLCanvasElement, game: Tetris): void {
   }
 }
 
-const SHOWN = 13
+const SHOWN = 11
+const NEXT_BOX = { width: SHOWN * 4, height: SHOWN * 2 }
 
 // The piece after this one, drawn to its own bounds rather than to its box, so
 // the short ones are not left sitting off to one side of an empty square.
-function NextPiece({ kind }: { kind: Kind }) {
+function NextPiece({ kind }: { kind: Kind | null }) {
   const canvas = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const el = canvas.current
     if (!el) return
-    const ctx = fitCanvas(el, el.clientWidth, el.clientHeight)
+    const ctx = fitCanvas(el, NEXT_BOX.width, NEXT_BOX.height)
     if (!ctx) return
-    ctx.clearRect(0, 0, el.clientWidth, el.clientHeight)
-    const piece = newTetris(() => 0).falling
-    if (!piece) return
-    const cells = piece.kind === kind ? piece.cells : []
-    void cells
+    ctx.clearRect(0, 0, NEXT_BOX.width, NEXT_BOX.height)
+    if (!kind) return
+    const cells = shapeOf(kind).cells
+    const xs = cells.map(([x]) => x)
+    const ys = cells.map(([, y]) => y)
+    const left = (NEXT_BOX.width - (Math.max(...xs) - Math.min(...xs) + 1) * SHOWN) / 2 - Math.min(...xs) * SHOWN
+    const top = (NEXT_BOX.height - (Math.max(...ys) - Math.min(...ys) + 1) * SHOWN) / 2 - Math.min(...ys) * SHOWN
+    for (const [x, y] of cells) block(ctx, left + x * SHOWN, top + y * SHOWN, SHOWN, BLOCKS[kind])
   }, [kind])
 
-  return <canvas ref={canvas} className="block" style={{ width: SHOWN * 4, height: SHOWN * 2 }} />
+  return <canvas ref={canvas} className="block" style={NEXT_BOX} />
 }
 
 type Phase = 'ready' | 'playing' | 'over'
