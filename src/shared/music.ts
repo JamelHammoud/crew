@@ -30,7 +30,7 @@ export const MUSIC_TUNES = [
     mood: 'bouncy',
     bpm: 132,
     beats: 32,
-    colors: ['#22e0ff', '#00a2ff', '#3d6bff', '#9af0ff', '#07226b']
+    colors: ['#6fe9ff', '#d8f2ff', '#7fb3ff', '#f4fdff', '#2f9dfa']
   },
   {
     id: 'arcade',
@@ -38,7 +38,7 @@ export const MUSIC_TUNES = [
     mood: 'busy',
     bpm: 150,
     beats: 32,
-    colors: ['#ff2d78', '#ff2df0', '#a02dff', '#ff7ab8', '#26004d']
+    colors: ['#ff7ac8', '#ffd9ef', '#c48bff', '#fff0fa', '#ff3fae']
   },
   {
     id: 'tide-pool',
@@ -46,7 +46,7 @@ export const MUSIC_TUNES = [
     mood: 'floating',
     bpm: 84,
     beats: 32,
-    colors: ['#00e0c6', '#00c2ff', '#2affb0', '#7cffe4', '#023f4f']
+    colors: ['#5fe6c8', '#c9fff0', '#7ce0ff', '#f4fffb', '#9fe9dd']
   },
   {
     id: 'night-bus',
@@ -54,7 +54,7 @@ export const MUSIC_TUNES = [
     mood: 'mellow',
     bpm: 96,
     beats: 32,
-    colors: ['#7b5cff', '#b44dff', '#ff5fd0', '#d9a6ff', '#150b3d']
+    colors: ['#b98cff', '#ffc9ec', '#8f9bff', '#f6efff', '#8a7cf0']
   },
   {
     id: 'star-road',
@@ -62,7 +62,7 @@ export const MUSIC_TUNES = [
     mood: 'soaring',
     bpm: 120,
     beats: 32,
-    colors: ['#38d0ff', '#6b8cff', '#a06bff', '#7ce4ff', '#161046']
+    colors: ['#9fc4ff', '#e8f0ff', '#b9a8ff', '#f7faff', '#5b9bf5']
   },
   {
     id: 'hearth',
@@ -70,7 +70,7 @@ export const MUSIC_TUNES = [
     mood: 'cosy',
     bpm: 88,
     beats: 32,
-    colors: ['#ff7a3c', '#ffb703', '#ff4d3c', '#ffd66b', '#4a1508']
+    colors: ['#ffb15c', '#ffe0bd', '#ff8f6b', '#fff5e6', '#f59440']
   },
   {
     id: 'rain-check',
@@ -78,7 +78,7 @@ export const MUSIC_TUNES = [
     mood: 'wistful',
     bpm: 76,
     beats: 32,
-    colors: ['#4ac8ff', '#5b8cff', '#7f8cff', '#a8dcff', '#0e1f4a']
+    colors: ['#a8d4ff', '#e4eeff', '#bcc4f0', '#f6faff', '#7fa8e0']
   },
   {
     id: 'sprint',
@@ -86,7 +86,7 @@ export const MUSIC_TUNES = [
     mood: 'hurried',
     bpm: 168,
     beats: 32,
-    colors: ['#ff1f4b', '#ff6b00', '#ffb800', '#ff8a7a', '#4a0016']
+    colors: ['#ffc23d', '#ffe6a8', '#ff8a5c', '#fff6e0', '#ff5a2e']
   },
   {
     id: 'bubble-bath',
@@ -94,7 +94,7 @@ export const MUSIC_TUNES = [
     mood: 'silly',
     bpm: 108,
     beats: 32,
-    colors: ['#ff8fe0', '#ff5fb8', '#e07aff', '#ff9fdc', '#5c0f4a']
+    colors: ['#ff9ed8', '#ffe0f2', '#ffc48f', '#fff4fa', '#7fe8d0']
   },
   {
     id: 'deep-dive',
@@ -102,7 +102,7 @@ export const MUSIC_TUNES = [
     mood: 'murky',
     bpm: 92,
     beats: 32,
-    colors: ['#00c2a8', '#0090ff', '#00e0ff', '#5ce8ff', '#02182e']
+    colors: ['#4fe0d0', '#b0fff2', '#5cc4ff', '#eafffb', '#2a9fc4']
   },
   {
     id: 'sunrise',
@@ -110,7 +110,7 @@ export const MUSIC_TUNES = [
     mood: 'hopeful',
     bpm: 104,
     beats: 32,
-    colors: ['#ff3d8a', '#ff8a3c', '#ffcf4d', '#ff85b0', '#5c0a3a']
+    colors: ['#ffcf5c', '#ffd2e0', '#ffa87f', '#fff8ea', '#4fa8f5']
   },
   {
     id: 'snowfield',
@@ -118,7 +118,7 @@ export const MUSIC_TUNES = [
     mood: 'still',
     bpm: 72,
     beats: 32,
-    colors: ['#8fd8ff', '#a8b6ff', '#5ce1e6', '#a8e8ff', '#16305e']
+    colors: ['#dceeff', '#ffffff', '#c8cff5', '#fbfdff', '#a8cdf0']
   },
   {
     id: 'boss-fight',
@@ -126,7 +126,7 @@ export const MUSIC_TUNES = [
     mood: 'fierce',
     bpm: 160,
     beats: 32,
-    colors: ['#ff0a54', '#ff3d00', '#ff8500', '#ff6b8a', '#33000f']
+    colors: ['#ffb03d', '#ffd9c4', '#ff6f9c', '#fff2e6', '#f5462e']
   },
   {
     id: 'lobby',
@@ -134,7 +134,7 @@ export const MUSIC_TUNES = [
     mood: 'patient',
     bpm: 112,
     beats: 32,
-    colors: ['#8ce65c', '#2ee6a8', '#00d9c4', '#c8ff8f', '#0d3b3f']
+    colors: ['#a8f05c', '#e0ffc4', '#5fe8b0', '#f6ffea', '#6fc0f5']
   },
   {
     id: 'credits',
@@ -142,7 +142,7 @@ export const MUSIC_TUNES = [
     mood: 'fond',
     bpm: 100,
     beats: 32,
-    colors: ['#a06bff', '#ff7eb6', '#d46bff', '#ffb8d9', '#2b0f52']
+    colors: ['#ff9ec4', '#ffe2ee', '#c9a8ff', '#fff4f8', '#b08ce8']
   }
 ] as const satisfies readonly MusicTune[]
 
