@@ -32,14 +32,11 @@ const tetris = (ctx: CanvasRenderingContext2D, width: number, height: number): v
 const flappy = (ctx: CanvasRenderingContext2D, width: number, height: number): void => {
   ctx.fillStyle = SKY
   ctx.fillRect(0, 0, width, height)
-  const floor = height - height * 0.16
-  ctx.save()
-  ctx.translate(width - PIPE.width * 0.9, 0)
-  pipe(ctx, 0, height * 0.42, floor)
-  ctx.restore()
+  const floor = height * 0.84
+  pipe(ctx, width * 0.66, height * 0.4, floor, width * 0.24, height * 0.42)
   ctx.fillStyle = GROUND_COLOR
   ctx.fillRect(0, floor, width, height - floor)
-  bird(ctx, width * 0.3, height * 0.46, -120)
+  bird(ctx, width * 0.3, height * 0.46, -120, height * 0.14)
 }
 
 const DRAW: Record<string, (ctx: CanvasRenderingContext2D, width: number, height: number) => void> = {
