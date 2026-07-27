@@ -52,11 +52,14 @@ export default function Toolbox({
   const joined = useHuddle(s => s.joined)
   const playing = useMusic(s => s.room.playing)
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
-  const [copied, setCopied] = useState<string | null>(null)
+  const [filling, setFilling] = useState<{ tool: CrewTool; slots: string[] } | null>(null)
+  const [said, setSaid] = useState<{ toolId: string; word: string } | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
-    if (!open) setBuilding(null)
+    if (open) return
+    setBuilding(null)
+    setFilling(null)
   }, [open])
 
   useEffect(() => () => clearTimeout(timer.current), [])
