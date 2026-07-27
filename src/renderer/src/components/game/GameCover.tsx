@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { PIPE } from './flappy'
 import { BLOCKS, FIELD, GROUND_COLOR, SKY, bird, block, fitCanvas, pipe } from './paint'
 import type { Kind } from './tetris'
 
