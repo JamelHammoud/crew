@@ -241,6 +241,15 @@ const rigged = (): Rig | null => {
 const packed = (art: CoverArt): Record<string, Float32Array> => {
   const rows: Record<string, Float32Array> = {}
   for (const name of PACKED) rows[name] = new Float32Array(MAX_PETALS * 4)
+  // An empty slot still runs, so it is filled with numbers that mean something
+  // rather than left at nought. A petal no wider than nothing is invisible
+  // either way, but one blurred by nothing asks the card to fade an edge from a
+  // point to the same point, which has no answer: what comes back is not a
+  // number, and it spreads through everything it is multiplied by afterwards.
+  for (let i = 0; i < MAX_PETALS; i++) {
+    rows.uShape.set([0, 1, 1, 0], i * 4)
+    rows.uEdge.set([0, 0.5, 0.1, 0], i * 4)
+  }
   art.petals.slice(0, MAX_PETALS).forEach((petal, i) => {
     rows.uAt.set([petal.at[0], petal.at[1], petal.lie[0], petal.lie[1]], i * 4)
     rows.uShape.set([petal.half, petal.along, petal.taper, petal.bend], i * 4)
