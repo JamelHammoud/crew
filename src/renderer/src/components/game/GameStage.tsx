@@ -93,33 +93,19 @@ export function Field({
   )
 }
 
-// The line over the field: what you have now, set large, and what the best round
-// was, set quietly beside it. It is type rather than a row of filled boxes,
-// which is how the rest of the app says a number.
-export function Score({
-  value,
-  unit,
-  best,
-  children
-}: {
-  value: number
-  unit: string
-  best: number
-  children?: ReactNode
-}) {
+// The one line over the field while a game is running, and the whole of what is
+// on screen besides the game itself: what you have now, and for Tetris the piece
+// after this one. The best score is not here, because the board under the field
+// says it whenever there is anything to say and a game being played is not the
+// moment for it.
+export function Score({ value, unit, children }: { value: number; unit: string; children?: ReactNode }) {
   return (
-    <div className="shrink-0 flex items-baseline gap-2">
+    <div className="shrink-0 h-6 flex items-center gap-2">
       <span className="text-lg font-semibold text-fg tabular-nums leading-none">
         {value.toLocaleString()}
       </span>
       <span className="text-xs text-fg-muted">{unit}</span>
-      <span className="ml-auto flex items-baseline gap-1.5 text-xs text-fg-muted">
-        {children}
-        <span>Best</span>
-        <span className="text-sm font-medium text-fg-secondary tabular-nums">
-          {best.toLocaleString()}
-        </span>
-      </span>
+      {children && <span className="ml-auto flex items-center gap-2">{children}</span>}
     </div>
   )
 }
