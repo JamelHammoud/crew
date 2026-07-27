@@ -16,6 +16,8 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
+const QUOTE_ROW = 'mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5'
+
 export default function ChatMessage({
   item,
   editable = false,
