@@ -96,9 +96,9 @@ describe('the toolbox', () => {
   // Both halves stand on the same three columns, so the app's own hand and the
   // crew's own tools are the same button in the same grid.
   it('stands on three columns', () => {
-    const { container } = toolbox([tool()])
+    toolbox([tool()])
 
-    const grids = [...container.querySelectorAll('.grid')]
+    const grids = [...document.body.querySelectorAll('.grid')]
     expect(grids).toHaveLength(2)
     for (const grid of grids) expect(grid.className).toContain('grid-cols-3')
   })
