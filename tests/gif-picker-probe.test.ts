@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.stubEnv('VITE_KLIPY_KEY', 'crew-test-key')
 
+Element.prototype.getAnimations ??= () => []
+
 const { useCrew, CHAT_KEY, pendingCount } = await import('../src/renderer/src/state/store')
 const AddMenu = (await import('../src/renderer/src/components/AddMenu')).default
 
