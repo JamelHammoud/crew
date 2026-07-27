@@ -1661,12 +1661,46 @@ export class CrewSession {
       playing: music.playing,
       at: wrapAt(music.from + run, music.track.seconds),
       by: music.by,
-      playlistId: music.playlistId
+      playlistId: music.playlistId,
+      loop: music.loop
     }
   }
 
   private broadcastMusic(): void {
     this.broadcast({ type: 'music.room', room: this.musicRoom() })
+  }
+
+  // A track that is playing has an end, and the next one follows it. Only a
+  // looping track is left to come round on its own, which is what the loop
+  // control is for.
+  private armMusic(): void {
+    if (this.musicTimer) clearTimeout(this.musicTimer)
+    this.musicTimer = null
+    const music = this.music
+    if (!music || !music.playing || music.loop || music.track.seconds <= 0) return
+    const left = Math.max(0, music.track.seconds - music.from) * 1000
+    this.musicTimer = setTimeout(() => this.playOn(), left)
+    this.musicTimer.unref?.()
+  }
+
+  // Where Next goes when nobody pressed it. A list plays along its own order and
+  // the shelf plays along the shelf, and both come round to the top again.
+  private playOn(): void {
+    const music = this.music
+    if (!music) return
+    const uploads = [...this.uploads.values()]
+    const next = itemFor(trackAfter(music.track.id, 1, uploads, this.musicPlaylist(music.playlistId)), uploads)
+    if (!next) {
+      this.handleMusicOff()
+      return
+    }
+    this.music = { ...music, track: next, from: 0, since: Date.now() }
+    this.broadcastMusic()
+    this.armMusic()
+  }
+
+  private musicPlaylist(playlistId: string | null): MusicPlaylist | null {
+    return playlistFor(playlistId, this.playlistList())
   }
 
   private broadcastShelf(): void {
