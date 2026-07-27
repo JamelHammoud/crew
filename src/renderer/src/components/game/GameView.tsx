@@ -58,10 +58,16 @@ function GamePlay({ game, onLive }: { game: GameInfo; onLive: (score: number | n
   )
 }
 
-export default function GameView() {
+export default function GameView({ tabId }: { tabId: string }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [live, setLive] = useState<number | null>(null)
   const open = openId ? gameFor(openId) : null
+
+  // The tab up the panel says what you are playing rather than what it holds,
+  // the way a web tab is named after the page and not after the web.
+  useEffect(() => {
+    useBrowser.getState().updateTab(tabId, { title: open?.name ?? '' })
+  }, [tabId, open])
 
   const go = (gameId: string | null) => {
     setLive(null)
