@@ -89,7 +89,7 @@ describe('the toolbox', () => {
   it('holds the built-in tools, every one of them live', () => {
     toolbox()
 
-    for (const built of ['Huddle', 'Terminal', 'Files', 'Music', 'Game'])
+    for (const built of ['Huddle', 'Terminal', 'Files', 'Music', 'Games'])
       expect(screen.getByText(built).closest('button')?.disabled).toBe(false)
   })
 
@@ -105,7 +105,7 @@ describe('the toolbox', () => {
 
   it('opens the games, and takes you to where they opened', () => {
     toolbox()
-    fireEvent.click(screen.getByText('Game'))
+    fireEvent.click(screen.getByText('Games'))
 
     expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'game' })])
     expect(switched).toBe(1)
