@@ -43,7 +43,7 @@ export default function Cover({
       setDrawn(false)
       return
     }
-    const grid = Math.round(size * Math.min(3, window.devicePixelRatio || 1))
+    const grid = Math.round(size * (1 + BLEED * 2) * Math.min(3, window.devicePixelRatio || 1))
     box.width = grid
     box.height = grid
     const flat = box.getContext('2d')
@@ -58,7 +58,8 @@ export default function Cover({
         <canvas
           ref={tile}
           aria-hidden
-          className={`absolute inset-0 w-full h-full ${playing ? 'animate-drift' : ''}`}
+          style={{ inset: `${-BLEED * 100}%` }}
+          className={`absolute w-auto h-auto ${playing ? 'animate-drift' : ''}`}
         />
       ) : (
         <span
