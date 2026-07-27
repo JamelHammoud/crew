@@ -73,7 +73,10 @@ export default function MusicView() {
       </div>
 
       <div className="relative flex-1 min-h-0">
-        <div ref={scroller} className="absolute inset-0 overflow-y-auto [scrollbar-width:thin]">
+        <div
+          ref={scroller}
+          className={`absolute inset-0 overflow-y-auto [scrollbar-width:thin] ${track ? 'pb-32' : ''}`}
+        >
           {open ? (
             <PlaylistView playlist={open} query={query} onSongs={songs} />
           ) : tab === 'songs' ? (
@@ -82,10 +85,11 @@ export default function MusicView() {
             <Playlists query={query} onOpen={go} />
           )}
         </div>
-        <ScrollFade edges={edges} />
+        {/* The bar is what stands at the foot of the panel while something is
+            on, so the fade under it would only be a second edge behind glass. */}
+        <ScrollFade edges={{ top: edges.top, bottom: track ? true : edges.bottom }} />
+        {track && <NowPlaying track={track} />}
       </div>
-
-      {track && <NowPlaying track={track} />}
     </div>
   )
 }
