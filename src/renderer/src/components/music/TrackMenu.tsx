@@ -62,11 +62,13 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
         <ScreenSwap screen={screen} depth={screen === 'main' ? 0 : 1}>
           {screen === 'main' ? (
             <>
-              <div className="flex items-center gap-2 px-3 py-2 text-xs text-fg/45">
+              <div className="flex items-center gap-1.5 px-3 py-2 text-xs text-fg/45">
                 {item.by ? (
                   <>
                     Added by
-                    <PersonChip name={item.by} />
+                    <span className="min-w-0 truncate text-fg">
+                      <PersonMention name={item.by} />
+                    </span>
                   </>
                 ) : (
                   'Built-in'
