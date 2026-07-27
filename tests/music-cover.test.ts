@@ -154,32 +154,37 @@ describe('a cover has depth in it', () => {
     // says nothing: several of them stand every petal against the sky on
     // purpose, the way a pink flower does against a blue one, and there the
     // nearest petal has nowhere unlike to be.
-    const hueOfLinear = (color: [number, number, number]): number => {
-      const back = (one: number): number => (one <= 0.0031308 ? one * 12.92 : 1.055 * Math.pow(one, 1 / 2.4) - 0.055)
-      const [r, g, b] = color.map(back)
-      const high = Math.max(r, g, b)
-      const low = Math.min(r, g, b)
-      const range = high - low
-      if (range === 0) return 0
-      const turn =
-        high === r ? (g - b) / range + (g < b ? 6 : 0) : high === g ? (b - r) / range + 2 : (r - g) / range + 4
-      return turn * 60
+    // The nearest petal is the one the air is not in front of, so its color is
+    // its own color and the source it was handed can be read straight back off
+    // it. Comparing hues instead says nothing the moment two petals are handed
+    // the same color, which is exactly the case this is here to catch.
+    const petalColors = ['#ffc23d', '#6fe9ff', '#a8d4ff']
+    const sky = '#2f9dfa'
+    const linear = (one: number): number => (one <= 0.04045 ? one / 12.92 : Math.pow((one + 0.055) / 1.055, 2.4))
+    const toLinear = (hex: string): [number, number, number] => {
+      const [r, g, b] = rgbOf(hex)
+      return [linear(r), linear(g), linear(b)]
     }
-    const sky = hueOf('#2f9dfa')
+    const nearestSource = (color: [number, number, number]): string => {
+      const gaps = petalColors.map(one => {
+        const [r, g, b] = toLinear(one)
+        return Math.hypot(color[0] - r, color[1] - g, color[2] - b)
+      })
+      return petalColors[gaps.indexOf(Math.min(...gaps))]
+    }
+    const least = [...petalColors].sort((one, two) => apart(hueOf(one), hueOf(sky)) - apart(hueOf(two), hueOf(sky)))[0]
     // Every cast, and the ones holding more petals than the palette holds
     // colors are the point: cycled, those come back round to the odd one out
     // and hand it to the sharpest petal in the frame.
+    let wide = 0
     for (let i = 0; i < 200; i++) {
-      const art = coverArt({
-        ...items[0],
-        id: `odd-${i}`,
-        colors: ['#ffc23d', '#6fe9ff', '#a8d4ff', '#f4fdff', '#2f9dfa']
-      })
+      const art = coverArt({ ...items[0], id: `odd-${i}`, colors: [...petalColors, '#f4fdff', sky] })
       if (art.petals.length < 2) continue
-      const furthest = apart(hueOfLinear(art.petals[0].color), sky)
-      const nearest = apart(hueOfLinear(art.petals[art.petals.length - 1].color), sky)
-      expect(nearest, `${art.cast} with ${art.petals.length} put its odd color in front`).toBeLessThan(furthest)
+      if (art.petals.length > petalColors.length) wide++
+      const front = art.petals[art.petals.length - 1]
+      expect(nearestSource(front.color), `${art.cast} with ${art.petals.length} put its odd color in front`).toBe(least)
     }
+    expect(wide, 'nothing drawn held more petals than colors').toBeGreaterThan(0)
   })
 
   it('puts the air in front of the things that are far off', () => {
