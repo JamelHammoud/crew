@@ -75,6 +75,15 @@ describe('the plus button on the composer', () => {
     expect(upload.querySelector('svg')!.innerHTML).not.toBe(gif.querySelector('svg')!.innerHTML)
   })
 
+  it('stays lit for as long as the menu it opened is up', () => {
+    openMenu()
+    const button = screen.getByLabelText('Add to your message')
+    expect(button.getAttribute('data-active')).toBe('')
+
+    fireEvent.click(button)
+    expect(button.getAttribute('data-active')).toBeNull()
+  })
+
   it('holds the tooltip back while the menu it opens is up', () => {
     vi.useFakeTimers()
     render(createElement(AddMenu, { attachmentKey: CHAT_KEY, onSend: vi.fn() }))
