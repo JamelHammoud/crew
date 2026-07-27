@@ -7,7 +7,7 @@ import NewPlaylist from './NewPlaylist'
 import PlaylistCover from './PlaylistCover'
 import { tracks } from './say'
 
-function Row({ playlist, onOpen }: { playlist: MusicPlaylist; onOpen: () => void }) {
+function Row({ playlist, who, onOpen }: { playlist: MusicPlaylist; who: string; onOpen: () => void }) {
   const uploads = useMusic(s => s.uploads)
   const room = useMusic(s => s.room)
   const items = useMemo(() => playlistItems(playlist, uploads), [playlist, uploads])
@@ -31,7 +31,9 @@ function Row({ playlist, onOpen }: { playlist: MusicPlaylist; onOpen: () => void
           <span className={`block truncate text-sm ${on ? 'text-fg font-medium' : 'text-fg-secondary'}`}>
             {playlist.name}
           </span>
-          <span className="block truncate text-xs text-fg-muted">{tracks(items.length)}</span>
+          <span className="block truncate text-xs text-fg-muted">
+            {who ? `${tracks(items.length)} · ${who}` : tracks(items.length)}
+          </span>
         </span>
       </button>
     </li>
