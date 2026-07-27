@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintTetris } from './drawTetris'
 import { Field, Overlay, Score } from './GameStage'
 import { BLOCKS, block, fitCanvas } from './paint'
@@ -8,7 +8,6 @@ import {
   fall,
   fallMs,
   hardDrop,
-  levelOf,
   moveBy,
   newTetris,
   nextKind,
@@ -48,7 +47,15 @@ function NextPiece({ kind }: { kind: Kind | null }) {
 
 type Phase = 'ready' | 'playing' | 'over'
 
-export default function TetrisGame({ best, onScore }: { best: number; onScore: (score: number) => void }) {
+export default function TetrisGame({
+  onScore,
+  children
+}: {
+  onScore: (score: number) => void
+  // What stands under the field while nobody is playing. A board of high scores
+  // beside a game being played is something to read instead of the game.
+  children: ReactNode
+}) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Tetris>(() => newTetris())
   const [phase, setPhase] = useState<Phase>('ready')
@@ -117,10 +124,13 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <Score value={game.score} unit="points" best={best}>
-        <span>Level</span>
-        <span className="text-sm font-medium text-fg-secondary tabular-nums">{levelOf(game)}</span>
-        <span className="px-1.5 text-fg-faint">·</span>
+      <Score value={game.score} unit="points">
+        {phase === 'playing' && (
+          <>
+            <span className="text-xs text-fg-muted">Next</span>
+            <NextPiece kind={nextKind(game)} />
+          </>
+        )}
       </Score>
       <Field
         ratio={COLS / ROWS}
@@ -143,17 +153,7 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
       >
         <canvas ref={canvas} className="block w-full h-full" />
       </Field>
-      {/* The piece after this one, on the line under the field rather than over
-          the board: a chip floating in the corner of a Tetris field covers the
-          rows that decide the game. */}
-      <div className="shrink-0 h-[18px] flex items-center justify-center gap-2">
-        {phase === 'playing' && (
-          <>
-            <span className="text-xs text-fg-muted">Next</span>
-            <NextPiece kind={nextKind(game)} />
-          </>
-        )}
-      </div>
+      {phase !== 'playing' && children}
     </div>
   )
 }
