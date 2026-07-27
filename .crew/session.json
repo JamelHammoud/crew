@@ -126,7 +126,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785149471583,
+        "fetchedAt": 1785149507536,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -215,7 +215,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785149471585,
+        "fetchedAt": 1785149507538,
         "windows": [
           {
             "key": "primary",
@@ -311,7 +311,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785149471585,
+        "fetchedAt": 1785149507538,
         "windows": [
           {
             "key": "primary",
@@ -430,7 +430,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785149212414,
+        "fetchedAt": 1785149512444,
         "windows": [
           {
             "key": "session",
@@ -444,7 +444,7 @@
             "label": "Weekly (all models)",
             "percent": 39,
             "severity": "normal",
-            "resetsAt": 1785535199784,
+            "resetsAt": 1785535199734,
             "active": true
           },
           {
@@ -602,7 +602,7 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785149471583,
+        "fetchedAt": 1785149507536,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -715,7 +715,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785149212414,
+        "fetchedAt": 1785149512444,
         "windows": [
           {
             "key": "session",
@@ -729,7 +729,7 @@
             "label": "Weekly (all models)",
             "percent": 39,
             "severity": "normal",
-            "resetsAt": 1785535199784,
+            "resetsAt": 1785535199734,
             "active": true
           },
           {
