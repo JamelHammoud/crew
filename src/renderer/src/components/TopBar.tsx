@@ -60,7 +60,7 @@ export default function TopBar({
   const waiting = useCrew(reviewCount)
   const myPhoto = useCrew(s => s.members.find(member => member.id === s.selfId)?.avatar)
   const setMyPhoto = useCrew(s => s.setMyPhoto)
-  const photoInput = useRef<HTMLInputElement>(null)
+  const photo = usePhotoInput(file => setMyPhoto(file))
   const [menuOpen, setMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
