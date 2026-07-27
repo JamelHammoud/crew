@@ -13,6 +13,12 @@ export type ToolAction =
   | { kind: 'board'; boardId: string }
   | { kind: 'prompt'; text: string; agentId?: string }
   | { kind: 'copy'; text: string }
+  | { kind: 'say'; text: string }
+  | { kind: 'todo'; text: string; agentId?: string }
+  | { kind: 'note'; page: string; text: string }
+  | { kind: 'music'; trackId?: string; playlistId?: string }
+  | { kind: 'huddle' }
+  | { kind: 'chain'; toolIds: string[] }
 
 export const TOOL_MARKS = [
   'globe',
@@ -30,6 +36,7 @@ export const TOOL_MARKS = [
   'photo',
   'film',
   'music',
+  'play',
   'speaker',
   'desktop',
   'cloud',
@@ -37,6 +44,11 @@ export const TOOL_MARKS = [
   'chat',
   'people',
   'star',
+  'spark',
+  'bolt',
+  'group',
+  'pencil',
+  'sun',
   'clock',
   'eye'
 ] as const
