@@ -32,7 +32,11 @@ const MIDDLE = BOX / 2
 const AT = MARK_DISCS.map(x => x + SHIFT)
 
 export default function CrewGlass({ className = '' }: { className?: string }) {
-  const own = useId()
+  // One cover stands in the list and another at the top of the panel at the same
+  // time, so every gradient and mask here is named for the one drawing it. The
+  // colons React hands out are taken out: a name is pointed at with `url(#name)`
+  // wherever it is used, and one of those is not a place for them.
+  const own = useId().replace(/:/g, '')
   const name = (part: string): string => `${part}-${own}`
   const paint = (part: string): string => `url(#${name(part)})`
 
