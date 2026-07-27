@@ -1,7 +1,6 @@
 import { fillSlots, slotsIn, STEP_LIMIT, type CrewTool, type ToolAction } from '../../../shared/toolbox'
 import { agentToAsk, askPrompt } from '../design/askAgent'
 import { useBrowser } from '../state/browser'
-import { useHuddle } from '../state/huddle'
 import { useMusic } from '../state/music'
 import { useCrew } from '../state/store'
 
@@ -65,12 +64,6 @@ function runStep(action: ToolAction): void {
     // rest of it rather than falling back into the shelf.
     const trackId = action.trackId ?? music.playlist(action.playlistId ?? null)?.trackIds[0]
     if (trackId) music.put(trackId, action.playlistId ?? null)
-  }
-  if (action.kind === 'huddle') {
-    const huddle = useHuddle.getState()
-    // Pressing it again while the call is on is not a way to hang up on
-    // everyone, so a tool only ever lets you in.
-    if (!huddle.joined) void huddle.join()
   }
   if (action.kind === 'prompt') {
     const { agents, sendChat } = useCrew.getState()
