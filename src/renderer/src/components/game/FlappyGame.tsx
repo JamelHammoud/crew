@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintFlappy } from './drawFlappy'
 import { WORLD, flap, newFlappy, tick, type Flappy } from './flappy'
 import { Field, Overlay, Score } from './GameStage'
@@ -6,7 +6,15 @@ import useGameLoop from './useGameLoop'
 
 type Phase = 'ready' | 'playing' | 'over'
 
-export default function FlappyGame({ best, onScore }: { best: number; onScore: (score: number) => void }) {
+export default function FlappyGame({
+  onScore,
+  children
+}: {
+  onScore: (score: number) => void
+  // What stands under the field while nobody is playing, the way it does in the
+  // other game.
+  children: ReactNode
+}) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Flappy>(() => newFlappy())
   const [phase, setPhase] = useState<Phase>('ready')
@@ -53,7 +61,7 @@ export default function FlappyGame({ best, onScore }: { best: number; onScore: (
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <Score value={game.score} unit={game.score === 1 ? 'pipe' : 'pipes'} best={best} />
+      <Score value={game.score} unit={game.score === 1 ? 'pipe' : 'pipes'} />
       <Field
         ratio={WORLD.width / WORLD.height}
         onKeyDown={name => {
@@ -75,6 +83,7 @@ export default function FlappyGame({ best, onScore }: { best: number; onScore: (
       >
         <canvas ref={canvas} className="block w-full h-full" />
       </Field>
+      {phase !== 'playing' && children}
     </div>
   )
 }
