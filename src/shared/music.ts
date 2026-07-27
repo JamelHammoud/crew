@@ -261,6 +261,43 @@ export interface MusicPlaylist {
   ts: number
 }
 
+// The app's own lists, made of its own tunes. A crew's playlists are theirs to
+// write in and are written down as they are made; these belong to nobody, so
+// they are here rather than in the log, they are the same for every crew, and
+// there is nothing about one for anyone to change.
+export const MUSIC_SETS: readonly MusicPlaylist[] = [
+  {
+    id: 'set-ambient-lofi',
+    name: 'Ambient Lofi',
+    by: '',
+    trackIds: [
+      'slow-morning',
+      'dust-motes',
+      'second-coffee',
+      'paper-lamp',
+      'window-seat',
+      'cassette',
+      'rooftop',
+      'long-shadows'
+    ],
+    ts: 0
+  }
+]
+
+export function isMusicSet(playlistId: string | null | undefined): boolean {
+  return MUSIC_SETS.some(set => set.id === playlistId)
+}
+
+// A list by its id, the app's own before the crew's. Next and Back walk whatever
+// this hands back, so a set that cannot be found here plays as one track and
+// then falls into the shelf.
+export function playlistFor(
+  playlistId: string | null | undefined,
+  playlists: readonly MusicPlaylist[] = []
+): MusicPlaylist | null {
+  return MUSIC_SETS.find(set => set.id === playlistId) ?? playlists.find(one => one.id === playlistId) ?? null
+}
+
 // What everyone connected is hearing. It rides in the session snapshot and in
 // music.room, never in the event log, so putting something on is not a thing the
 // crew has to scroll past later.
