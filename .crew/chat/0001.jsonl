@@ -40,3 +40,4 @@
 {"id":"069830ff-151b-4532-bdb6-09ec66cca9c5","ts":1785127139757,"kind":"thread.status","threadId":"5fc7059e-0c6d-4548-8ac8-57545f21df62","status":"done","byName":"Jamel"}
 {"id":"f0ebf881-f24c-410f-983d-06963d05d206","ts":1785127141700,"kind":"thread.status","threadId":"5fc7059e-0c6d-4548-8ac8-57545f21df62","status":"open","byName":"Jamel"}
 {"id":"c28d5150-5c1a-49b4-9c2d-fff896f5da99","ts":1785127259298,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"Test","mentions":[],"mentionRefs":[],"memberMentionRefs":[],"docMentions":[],"boardMentions":[],"attachments":[]}
+{"id":"26ee81f8-2abd-40cb-a3ed-5f336d11bd62","ts":1785127264579,"kind":"message.edited","messageId":"c28d5150-5c1a-49b4-9c2d-fff896f5da99","text":"Test test","mentionRefs":[],"memberMentionRefs":[],"docMentions":[],"boardMentions":[]}
