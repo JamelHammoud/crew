@@ -61,12 +61,12 @@ describe('a song in the list', () => {
     expect(rowFor(/^Rooftop Take$/).textContent).toBe('Rooftop Take')
   })
 
-  it('names whoever added it in the menu', () => {
+  it('names whoever added it in the menu, as a mention', () => {
     panel()
     menuFor('Rooftop Take')
 
     expect(screen.getByText('Added by')).toBeTruthy()
-    expect(screen.getByText('Ali Hammoud')).toBeTruthy()
+    expect(screen.getByText('@Ali Hammoud')).toBeTruthy()
   })
 
   it('calls one of the app own tunes built-in', () => {
@@ -75,6 +75,22 @@ describe('a song in the list', () => {
 
     expect(screen.getByText('Built-in')).toBeTruthy()
     expect(screen.queryByText('Added by')).toBeNull()
+  })
+
+  // The menu is a card with a screen travelling inside it, and the screen is
+  // clipped to its own box while it travels. The padding is the screen's, so a
+  // rule bleeding back through it runs the whole width rather than being cut at
+  // both ends.
+  it('draws the rule in the menu edge to edge', () => {
+    panel()
+    menuFor('Rooftop Take')
+
+    const card = document.querySelector('.glass.fixed') as HTMLElement
+    const rule = card.querySelector('.h-px') as HTMLElement
+
+    expect(card.className).not.toContain('p-1.5')
+    expect(rule.parentElement?.className).toContain('p-1.5')
+    expect(rule.className).toContain('-mx-1.5')
   })
 })
 
