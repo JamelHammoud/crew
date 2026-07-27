@@ -15,6 +15,9 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'mark-frames.png')
 const tall = Number(process.argv[3] ?? 120)
+const times = process.argv[4]
+  ? process.argv[4].split(',').map(Number)
+  : [0, 40, 90, 140, 180, 220, 260, 300, 360, 420, 480, 560, 640, 720, 820, 940]
 
 const entry = (where) => `
 import { createElement } from 'react'
