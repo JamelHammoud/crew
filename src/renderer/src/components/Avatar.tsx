@@ -49,8 +49,7 @@ export default function Avatar({
           src={src}
           alt=""
           draggable={false}
-          className="w-full h-full rounded-full object-cover select-none"
-          style={{ backgroundColor: colors.background }}
+          className="w-full h-full rounded-full bg-ink-800 object-cover select-none"
         />
       ) : (
         <span
