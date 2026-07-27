@@ -89,8 +89,26 @@ describe('the toolbox', () => {
   it('holds the built-in tools, every one of them live', () => {
     toolbox()
 
-    for (const built of ['Huddle', 'Terminal', 'Files', 'Music'])
+    for (const built of ['Huddle', 'Terminal', 'Files', 'Music', 'Game'])
       expect(screen.getByText(built).closest('button')?.disabled).toBe(false)
+  })
+
+  // Both halves stand on the same three columns, so the app's own hand and the
+  // crew's own tools are the same button in the same grid.
+  it('stands on three columns', () => {
+    const { container } = toolbox([tool()])
+
+    const grids = [...container.querySelectorAll('.grid')]
+    expect(grids).toHaveLength(2)
+    for (const grid of grids) expect(grid.className).toContain('grid-cols-3')
+  })
+
+  it('opens the games, and takes you to where they opened', () => {
+    toolbox()
+    fireEvent.click(screen.getByText('Game'))
+
+    expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'game' })])
+    expect(switched).toBe(1)
   })
 
   it('ends on an empty slot that opens the builder, with no tools built yet', () => {
