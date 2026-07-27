@@ -73,6 +73,7 @@ export const PROMPT_LIMIT = 2000
 export const COPY_LIMIT = 2000
 export const KEY_LIMIT = 200
 export const MARK_LIMIT = 16
+export const STEP_LIMIT = 12
 
 // One emoji, however many code points it takes to say it: a face is one, a face
 // with a skin tone is three, and a flag or a family is a run of them joined up.
