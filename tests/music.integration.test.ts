@@ -118,8 +118,8 @@ describe('music', () => {
     // Turned off again, the one that was looping plays on like any other.
     sam.send({ type: 'music.loop', loop: false })
     sam.send({ type: 'music.set', trackId: 'sprint', playing: true, at: ends('sprint') })
-    const after = await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId !== 'sprint')
-    expect(roomOf(after).trackId).toBe('bubble-bath')
+    const after = await pat.waitFor(m => m.type === 'music.room' && roomOf(m).trackId === 'bubble-bath')
+    expect(roomOf(after)).toMatchObject({ at: 0, loop: false })
 
     // A track that is paused at its end sits there rather than walking on.
     sam.send({ type: 'music.set', trackId: 'lobby', playing: false, at: ends('lobby') })
