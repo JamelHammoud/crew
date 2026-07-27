@@ -1850,12 +1850,25 @@ export class CrewSession {
       // One of the app's own lists is in nobody's map, so it is asked for by
       // name rather than looked up, or Next would fall out of it after a track.
       playlistId:
-        playlistId && (this.playlists.has(playlistId) || isMusicSet(playlistId)) ? playlistId : null
+        playlistId && (this.playlists.has(playlistId) || isMusicSet(playlistId)) ? playlistId : null,
+      // Looping is a setting rather than something about the track, so it stays
+      // where it was set across a skip and a pause.
+      loop: this.music?.loop === true
     }
     this.broadcastMusic()
+    this.armMusic()
+  }
+
+  private handleMusicLoop(loop: boolean): void {
+    if (!this.music) return
+    this.music.loop = loop === true
+    this.broadcastMusic()
+    this.armMusic()
   }
 
   private handleMusicOff(): void {
+    if (this.musicTimer) clearTimeout(this.musicTimer)
+    this.musicTimer = null
     if (!this.music) return
     this.music = null
     this.broadcastMusic()
