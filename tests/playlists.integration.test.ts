@@ -221,6 +221,37 @@ describe('playlists', () => {
     expect(new CrewSession(host.store).snapshot().musicPlaylists?.[0].trackIds).toEqual(['credits'])
   })
 
+  // A list can be named again, by whoever wrote it and nobody else. The name is
+  // the whole of what a list is besides its order, so it lasts the way the list
+  // itself does.
+  it('is renamed by its owner, and keeps the new name across a restart', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    const pat = await TestUi.connect(host.url, 'pat', host.code)
+    uis.push(sam, pat)
+
+    const list = await madeBy(sam, 'Frist Draft')
+    pat.send({ type: 'playlist.rename', playlistId: list.id, name: 'Theirs Now' })
+    await new Promise(r => setTimeout(r, 250))
+    expect(host.session.snapshot().musicPlaylists?.[0].name).toBe('Frist Draft')
+
+    sam.send({ type: 'playlist.rename', playlistId: list.id, name: '  First   Draft  ' })
+    const renamed = await pat.waitFor(m => m.type === 'music.playlists' && named(m, 'First Draft') !== undefined)
+    // Named the way it was made: the spaces are tidied and the id is the same
+    // list it always was, so anything pointing at it still is.
+    expect(named(renamed, 'First Draft')).toMatchObject({ id: list.id, by: 'sam' })
+
+    // An empty name is no name, so nothing happens rather than a list called
+    // Untitled turning up where one somebody named used to be.
+    sam.send({ type: 'playlist.rename', playlistId: list.id, name: '   ' })
+    await new Promise(r => setTimeout(r, 200))
+    expect(host.session.snapshot().musicPlaylists?.[0].name).toBe('First Draft')
+
+    expect(new CrewSession(host.store).snapshot().musicPlaylists?.[0]).toMatchObject({
+      id: list.id,
+      name: 'First Draft'
+    })
+  })
+
   it('keeps the lists across a restart, and stays out of the chat', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
