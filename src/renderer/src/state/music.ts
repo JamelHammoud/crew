@@ -188,7 +188,10 @@ export const useMusic = create<MusicState>((set, get) => {
       return held
     },
 
-    put: trackId => sendMusic({ type: 'music.set', trackId, playing: true, at: 0 }),
+    // A track put on from a playlist carries the list it came from, so Next and
+    // Back walk that list rather than the whole shelf.
+    put: (trackId, playlistId = null) =>
+      sendMusic({ type: 'music.set', trackId, playing: true, at: 0, playlistId }),
 
     toggle: () => {
       const room = get().room
@@ -196,19 +199,32 @@ export const useMusic = create<MusicState>((set, get) => {
         get().put(trackAfter(null, 1, get().uploads))
         return
       }
-      sendMusic({ type: 'music.set', trackId: room.trackId, playing: !room.playing, at: get().position() })
+      sendMusic({
+        type: 'music.set',
+        trackId: room.trackId,
+        playing: !room.playing,
+        at: get().position(),
+        playlistId: room.playlistId
+      })
     },
 
     skip: step => {
       const room = get().room
-      const trackId = trackAfter(room.trackId, step, get().uploads)
-      sendMusic({ type: 'music.set', trackId, playing: room.trackId ? room.playing : true, at: 0 })
+      const within = get().playlist(room.playlistId)
+      const trackId = trackAfter(room.trackId, step, get().uploads, within)
+      sendMusic({
+        type: 'music.set',
+        trackId,
+        playing: room.trackId ? room.playing : true,
+        at: 0,
+        playlistId: room.playlistId
+      })
     },
 
     seek: at => {
       const room = get().room
       if (!room.trackId) return
-      sendMusic({ type: 'music.set', trackId: room.trackId, playing: room.playing, at })
+      sendMusic({ type: 'music.set', trackId: room.trackId, playing: room.playing, at, playlistId: room.playlistId })
     },
 
     off: () => sendMusic({ type: 'music.off' }),
