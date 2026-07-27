@@ -1,16 +1,20 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintFlappy } from './drawFlappy'
 import { WORLD, flap, newFlappy, tick, type Flappy } from './flappy'
-import { Field, Overlay, Score } from './GameStage'
+import { Field, Overlay } from './GameStage'
 import useGameLoop from './useGameLoop'
 
 type Phase = 'ready' | 'playing' | 'over'
 
 export default function FlappyGame({
   onScore,
+  onLive,
   children
 }: {
   onScore: (score: number) => void
+  // What the header says while a game is running, the way it does in the other
+  // game.
+  onLive: (score: number | null) => void
   // What stands under the field while nobody is playing, the way it does in the
   // other game.
   children: ReactNode
@@ -49,6 +53,10 @@ export default function FlappyGame({
   }, [game])
 
   useEffect(() => {
+    onLive(phase === 'playing' ? game.score : null)
+  }, [phase, game.score, onLive])
+
+  useEffect(() => {
     if (phase !== 'playing' || !game.over) return
     setPhase('over')
     if (game.score > 0) onScore(game.score)
@@ -61,7 +69,6 @@ export default function FlappyGame({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <Score value={game.score} unit={game.score === 1 ? 'pipe' : 'pipes'} />
       <Field
         ratio={WORLD.width / WORLD.height}
         onKeyDown={name => {

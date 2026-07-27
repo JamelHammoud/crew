@@ -93,23 +93,6 @@ export function Field({
   )
 }
 
-// The one line over the field while a game is running, and the whole of what is
-// on screen besides the game itself: what you have now, and for Tetris the piece
-// after this one. The best score is not here, because the board under the field
-// says it whenever there is anything to say and a game being played is not the
-// moment for it.
-export function Score({ value, unit, children }: { value: number; unit: string; children?: ReactNode }) {
-  return (
-    <div className="shrink-0 h-6 flex items-center gap-2">
-      <span className="text-lg font-semibold text-fg tabular-nums leading-none">
-        {value.toLocaleString()}
-      </span>
-      <span className="text-xs text-fg-muted">{unit}</span>
-      {children && <span className="ml-auto flex items-center gap-2">{children}</span>}
-    </div>
-  )
-}
-
 // What stands over the field before a game and after one. It is the whole field
 // rather than a card in the middle of it, so the one thing to press is wherever
 // the pointer already is.

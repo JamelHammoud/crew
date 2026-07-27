@@ -37,7 +37,7 @@ export default function CrewLogo({ className = '' }: { className?: string }) {
       onClick={strike}
       className={`crew-logo app-no-drag flex items-center rounded-full px-1.5 py-2 transition-transform duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg/20 ${className}`}
     >
-      <CrewMark className="h-[18px] w-auto text-fg" live />
+      <CrewMark className="w-auto text-fg" live height={18} />
     </button>
   )
 }
