@@ -4,7 +4,8 @@
   "members": [
     {
       "id": "21d14df6-2a40-46d6-8094-a25a3c98da1f",
-      "name": "Jamel"
+      "name": "Jamel",
+      "avatar": "f3216247-f25b-466a-82bf-c3f1ffeeb8f1.png"
     },
     {
       "id": "c8e6c6a8-daa0-4678-bef8-0318224bb159",
@@ -125,14 +126,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785126761177,
+        "fetchedAt": 1785125562924,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1785137400350,
+            "resetsAt": 1785137400106,
             "active": true
           },
           {
@@ -140,7 +141,7 @@
             "label": "Weekly (all models)",
             "percent": 33,
             "severity": "normal",
-            "resetsAt": 1785499200350,
+            "resetsAt": 1785499200106,
             "active": false
           }
         ],
@@ -230,7 +231,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785127737882,
+        "fetchedAt": 1785127740899,
         "windows": [
           {
             "key": "primary",
@@ -326,7 +327,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785127737882,
+        "fetchedAt": 1785127740899,
         "windows": [
           {
             "key": "primary",
@@ -618,14 +619,14 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785126761177,
+        "fetchedAt": 1785125562924,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 100,
             "severity": "critical",
-            "resetsAt": 1785137400350,
+            "resetsAt": 1785137400106,
             "active": true
           },
           {
@@ -633,7 +634,7 @@
             "label": "Weekly (all models)",
             "percent": 33,
             "severity": "normal",
-            "resetsAt": 1785499200350,
+            "resetsAt": 1785499200106,
             "active": false
           }
         ],
