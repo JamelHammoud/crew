@@ -148,6 +148,7 @@ describe('playing a sound', () => {
 
   beforeEach(() => {
     started.length = 0
+    stopped.length = 0
     pitched.length = 0
     landed.length = 0
     filters = []
