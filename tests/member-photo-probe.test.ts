@@ -39,14 +39,15 @@ describe('a person photo in the crew tab', () => {
     expect(within(people()).getByText('A')).toBeTruthy()
   })
 
-  it('keeps the circle a circle under a photo that is cut out', () => {
+  it('leaves the picture its own transparency', () => {
     seed([{ ...jamel, avatar: 'me.png' }, ali])
     render(createElement(Dashboard))
 
     const face = people().querySelector('img') as HTMLImageElement
     expect(face.className).toContain('rounded-full')
-    expect(face.className).toContain('bg-ink-800')
     expect(face.className).toContain('object-cover')
+    expect(face.className).not.toMatch(/\bbg-/)
+    expect(face.style.backgroundColor).toBe('')
   })
 
   it('is yours to change, and nobody else here can be touched', () => {
