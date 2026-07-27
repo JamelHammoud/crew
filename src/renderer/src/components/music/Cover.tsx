@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import type { MusicItem } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/music'
 import { coverFor } from './coverArt'
 import { GRAIN, meshOf } from './mesh'
 
@@ -37,7 +37,7 @@ export default function Cover({
   className = '',
   children
 }: {
-  item: MusicItem
+  item: CoverSubject
   size: number
   playing?: boolean
   className?: string

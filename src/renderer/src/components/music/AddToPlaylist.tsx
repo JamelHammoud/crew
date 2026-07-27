@@ -26,7 +26,7 @@ function Row({
       onClick={() => onPick(!held)}
       className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-xl text-left transition-colors hover:bg-fg/5"
     >
-      <PlaylistCover items={items} size={32} className="w-8 h-8 shrink-0 rounded-lg" />
+      <PlaylistCover playlist={playlist} items={items} size={32} className="w-8 h-8 shrink-0 rounded-lg" />
       <span className="flex-1 min-w-0">
         <span className={`block truncate text-sm ${held ? 'text-fg' : 'text-fg/70'}`}>{playlist.name}</span>
         <span className="block truncate text-[11px] text-fg/40">{tracks(items.length)}</span>
