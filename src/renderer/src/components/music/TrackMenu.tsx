@@ -3,7 +3,7 @@ import { isMine, type MusicItem, type MusicPlaylist } from '../../../../shared/m
 import { MinusGlyph, MoreGlyph, PlusGlyph, TrashGlyph } from '../../icons'
 import { useMusic } from '../../state/music'
 import { useCrew } from '../../state/store'
-import PersonChip from '../PersonChip'
+import { PersonMention } from '../Mention'
 import { MenuDivider, MenuItem, Popover } from '../Popover'
 import ScreenSwap from '../ScreenSwap'
 import Tooltip from '../Tooltip'
