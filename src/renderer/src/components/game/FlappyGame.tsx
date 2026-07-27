@@ -10,21 +10,29 @@ export default function FlappyGame({ best, onScore }: { best: number; onScore: (
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Flappy>(() => newFlappy())
   const [phase, setPhase] = useState<Phase>('ready')
+  // What the game really is right now. A flap between two frames has to land on
+  // the game the next frame reads, or the frame overwrites it with the state it
+  // started from and the flap is simply lost.
   const held = useRef(game)
-  held.current = game
-
-  const start = useCallback(() => {
-    setGame(flap(newFlappy()))
-    setPhase('playing')
+  const put = useCallback((next: Flappy) => {
+    held.current = next
+    setGame(next)
   }, [])
 
+  const start = useCallback(() => {
+    put(flap(newFlappy()))
+    setPhase('playing')
+  }, [put])
+
   useGameLoop(
-    useCallback(dt => {
-      const next = tick(held.current, dt)
-      held.current = next
-      setGame(next)
-      if (canvas.current) paintFlappy(canvas.current, next)
-    }, []),
+    useCallback(
+      dt => {
+        const next = tick(held.current, dt)
+        put(next)
+        if (canvas.current) paintFlappy(canvas.current, next)
+      },
+      [put]
+    ),
     phase === 'playing'
   )
 
@@ -39,7 +47,7 @@ export default function FlappyGame({ best, onScore }: { best: number; onScore: (
   }, [phase, game.over, game.score, onScore])
 
   const press = () => {
-    if (phase === 'playing') setGame(flap(held.current))
+    if (phase === 'playing') put(flap(held.current))
     else start()
   }
 
