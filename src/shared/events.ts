@@ -186,7 +186,12 @@ const EPHEMERAL_KINDS = new Set([
   // A track somebody put on the shelf is the same: it stays on the shelf, and
   // the crew does not need to scroll past the moment it arrived.
   'music.added',
-  'music.removed'
+  'music.removed',
+  // A playlist rides in the snapshot the same way, so the list somebody wrote
+  // months ago is still a list.
+  'playlist.added',
+  'playlist.removed',
+  'playlist.track'
 ])
 
 // The call one event belongs to, for the three that make up the record of a
