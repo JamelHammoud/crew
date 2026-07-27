@@ -180,6 +180,35 @@ describe('the GIF picker', () => {
     expect(useCrew.getState().pending[CHAT_KEY] ?? []).toHaveLength(0)
   })
 
+  it('goes back to the menu it was opened from', async () => {
+    await openPicker()
+    fireEvent.click(screen.getByLabelText('Back to the menu'))
+
+    expect(screen.getByText('Upload a file')).not.toBeNull()
+    expect(screen.queryByPlaceholderText('Search GIFs')).toBeNull()
+  })
+
+  it('offers a way to clear what was typed, and puts what is trending back', async () => {
+    await openPicker()
+    expect(screen.queryByLabelText('Clear search')).toBeNull()
+
+    fireEvent.change(screen.getByPlaceholderText('Search GIFs'), { target: { value: 'lol' } })
+    await screen.findByLabelText('Send Laughing cat')
+
+    fireEvent.click(screen.getByLabelText('Clear search'))
+    await screen.findByLabelText('Send Hello')
+    expect((screen.getByPlaceholderText('Search GIFs') as HTMLInputElement).value).toBe('')
+  })
+
+  it('says that picking sends, and names the one under the pointer instead', async () => {
+    await openPicker()
+    expect(screen.getByText('Picking one sends it')).not.toBeNull()
+
+    fireEvent.pointerEnter(screen.getByLabelText('Send Bye'))
+    expect(screen.getByText('Bye')).not.toBeNull()
+    expect(screen.queryByText('Picking one sends it')).toBeNull()
+  })
+
   it('says so plainly when nothing comes back', async () => {
     answer.mockImplementationOnce(async () => page([]))
     openMenu()
