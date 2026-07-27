@@ -173,3 +173,41 @@ export function cleanTool(
   }
   return null
 }
+
+// A word in braces is a blank the tool asks for when it is pressed, so one tool
+// covers every search, every branch and every ticket rather than one for each.
+// A brace with a dollar in front of it is a shell variable and is left alone.
+const SLOT = /(?<!\$)\{([a-zA-Z0-9][\w -]{0,23})\}/g
+
+const overWords = (action: ToolAction, over: (text: string) => string): ToolAction => {
+  if (action.kind === 'web') return { ...action, url: over(action.url) }
+  if (action.kind === 'terminal') return action.command ? { ...action, command: over(action.command) } : action
+  if (action.kind === 'file') return { ...action, path: over(action.path) }
+  if (
+    action.kind === 'prompt' ||
+    action.kind === 'copy' ||
+    action.kind === 'say' ||
+    action.kind === 'todo' ||
+    action.kind === 'note'
+  )
+    return { ...action, text: over(action.text) }
+  return action
+}
+
+export function slotsIn(action: ToolAction): string[] {
+  const asked: string[] = []
+  overWords(action, text => {
+    for (const [, slot] of text.matchAll(SLOT)) if (!asked.includes(slot)) asked.push(slot)
+    return text
+  })
+  return asked
+}
+
+// What is typed goes into an address as a query rather than as it stands, so a
+// blank filled with several words is still one link.
+export function fillSlots(action: ToolAction, answers: Record<string, string>): ToolAction {
+  const held = action.kind === 'web' ? encodeURIComponent : (answer: string) => answer
+  return overWords(action, text =>
+    text.replace(SLOT, (whole, slot: string) => (answers[slot] === undefined ? whole : held(answers[slot])))
+  )
+}
