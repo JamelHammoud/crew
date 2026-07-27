@@ -403,12 +403,12 @@ export function coverArt(item: MusicItem): CoverArt {
       // goes back: that is what settles a leaf into a photograph rather than
       // leaving it sitting on top of one, and it is why a far shape may not
       // carry its color at full strength.
-      color: mixed(mixed(own, light, roll() * 0.16), sky, (1 - depth) * 0.34),
+      color: mixed(mixed(own, light, lit * 0.16), sky, (1 - depth) * 0.34),
       at,
-      lie: [Math.cos(angle), Math.sin(angle)],
-      bend: between(recipe.bend, roll()),
-      half: between(recipe.half, roll()),
-      along: between(recipe.along, roll()),
+      lie,
+      bend,
+      half,
+      along,
       taper: between(recipe.taper, roll()),
       ruffle: between(recipe.ruffle, roll()),
       fine: between(recipe.fine, roll()),
