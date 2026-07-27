@@ -156,14 +156,15 @@ export const SkipBackGlyph = glyph(
   />
 )
 
-// Two arrows chasing each other round a track. It is the one mark in the set
-// that is wide rather than square: the two runs are what enclose it, and each
-// one on its own is a bare line, so it is drawn to the width the live area
-// allows and the drops at either end are kept short. Lengthen them and the mark
-// reads as a broken box rather than as a loop going round again.
+// Two arrows chasing each other round a track, turned at 4 so the corners are
+// as fat as the rest of the set and the pair reads as a loop rather than as a
+// broken box. It is the one mark here that is wide rather than square: the two
+// runs are what enclose it, and each one on its own is a bare line, so it takes
+// the width the live area allows and the drops at either end stay short. Lengthen
+// them and the corner-to-corner run is longer than the box the set is drawn in.
 export const RepeatGlyph = glyph(
   <>
-    <path d="M2.5 10.25V9.5a3 3 0 0 1 3-3h16M19.1 4.5 21.5 6.5l-2.4 2" />
-    <path d="M21.5 13.75V14.5a3 3 0 0 1-3 3h-16M4.9 19.5 2.5 17.5l2.4-2" />
+    <path d="M2.5 10.5a4 4 0 0 1 4-4h15M18.9 4.25 21.5 6.5l-2.6 2.25" />
+    <path d="M21.5 13.5a4 4 0 0 1-4 4h-15M5.1 19.75 2.5 17.5l2.6-2.25" />
   </>
 )
