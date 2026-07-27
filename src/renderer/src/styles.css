@@ -135,6 +135,8 @@
   --color-positive: #16a34a;
   --color-danger: #dc2626;
   --color-attention: #b45309;
+
+  --color-selection: rgb(0 0 0 / 0.12);
 }
 
 html,
@@ -164,12 +166,11 @@ body {
   box-shadow: none;
 }
 
+/* The one place the band is written down. Anything that has to paint a
+   selection under an opaque patch of its own, like the emoji sheet in the
+   composer, wears it as bg-selection. */
 ::selection {
-  background: rgb(255 255 255 / 0.16);
-}
-
-.light ::selection {
-  background: rgb(0 0 0 / 0.12);
+  background: var(--color-selection);
 }
 
 ::highlight(find-match) {

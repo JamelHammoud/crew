@@ -1,35 +1,29 @@
-import type { ReactNode } from 'react'
-import type { MusicItem } from '../../../../shared/music'
+import type { MusicItem, MusicPlaylist } from '../../../../shared/music'
 import Bars from './Bars'
 import Cover from './Cover'
 import { clock } from './say'
+import TrackMenu from './TrackMenu'
 
-// What a row can do sits beside the row rather than inside it. A button within a
-// button is not a button, and a menu opened from one would hand its clicks back
-// to the row underneath, which would put the track on while you were choosing
-// where to file it.
-export const rowAction =
-  'w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-fg-faint transition-all duration-150 hover:text-fg hover:bg-fg/10 active:scale-95'
-
-export const rowActionQuiet = `${rowAction} opacity-0 group-hover:opacity-100 focus-visible:opacity-100`
-
+// One track, and the whole row is the way to play it. What the row can do sits
+// at the end of it in a slot that is always there, so nothing moves when the
+// pointer arrives.
 export default function TrackRow({
   item,
   on,
   playing,
   onPlay,
-  actions
+  within
 }: {
   item: MusicItem
   on: boolean
   playing: boolean
   onPlay: () => void
-  actions?: ReactNode
+  within?: MusicPlaylist
 }) {
   return (
     <li
       className={`group h-14 px-2 rounded-2xl flex items-center gap-3 transition-colors duration-150 ${
-        on ? 'bg-fg/[0.06]' : 'hover:bg-fg/[0.04]'
+        on ? 'bg-fg/[0.07]' : 'hover:bg-fg/[0.04]'
       }`}
     >
       <button onClick={onPlay} aria-pressed={on} className="flex-1 min-w-0 h-full flex items-center gap-3 text-left">
@@ -51,8 +45,8 @@ export default function TrackRow({
           </span>
         </span>
       </button>
-      <span className="shrink-0 w-9 text-right text-xs tabular-nums text-fg-faint">{clock(item.seconds)}</span>
-      {actions}
+      <span className="shrink-0 text-xs tabular-nums text-fg-faint">{clock(item.seconds)}</span>
+      <TrackMenu item={item} within={within} />
     </li>
   )
 }
