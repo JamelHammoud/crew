@@ -52,7 +52,7 @@ export interface MusicState {
   off: () => void
   add: (file: File) => Promise<string | null>
   remove: (trackId: string) => void
-  makePlaylist: (name: string) => void
+  makePlaylist: (name: string) => Promise<string | null>
   dropPlaylist: (playlistId: string) => void
   holdTrack: (playlistId: string, trackId: string, on: boolean) => void
   setVolume: (volume: number) => void
@@ -250,7 +250,25 @@ export const useMusic = create<MusicState>((set, get) => {
 
     remove: trackId => sendMusic({ type: 'music.remove', trackId }),
 
-    makePlaylist: name => sendMusic({ type: 'playlist.add', name }),
+    // The list is named here so that whoever asked for it can open it, and what
+    // comes back is the id once the host has really written it down. A list that
+    // never arrives comes back as nothing rather than as an id nothing answers
+    // to.
+    makePlaylist: name =>
+      new Promise(resolve => {
+        const playlistId = globalThis.crypto.randomUUID()
+        const stop = useMusic.subscribe(state => {
+          if (!state.playlists.some(one => one.id === playlistId)) return
+          stop()
+          clearTimeout(timer)
+          resolve(playlistId)
+        })
+        const timer = setTimeout(() => {
+          stop()
+          resolve(null)
+        }, MADE_WAIT)
+        sendMusic({ type: 'playlist.add', name, playlistId })
+      }),
 
     dropPlaylist: playlistId => sendMusic({ type: 'playlist.remove', playlistId }),
 
