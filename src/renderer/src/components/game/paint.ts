@@ -1,3 +1,4 @@
+import { BIRD, PIPE } from './flappy'
 import type { Kind } from './tetris'
 
 // A game is a picture rather than chrome, so its own colors are pinned the way
