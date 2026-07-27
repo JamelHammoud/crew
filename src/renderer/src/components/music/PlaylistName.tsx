@@ -65,7 +65,7 @@ export default function PlaylistName({
         onKeyDown={event => {
           if (event.key === 'Enter') void send()
         }}
-        className="mt-4 w-full h-11 px-3.5 rounded-xl bg-fg/[0.07] text-sm text-fg placeholder:text-fg/35 outline-none ring-1 ring-inset ring-fg/10 transition-colors focus:bg-fg/10 focus:ring-fg/25"
+        className="mt-4 w-full h-11 px-3.5 rounded-xl bg-fg/[0.07] text-sm text-fg placeholder:text-fg/35 outline-none border-none transition-colors focus:bg-fg/[0.11]"
       />
       {trouble && <p className="mt-3 text-sm text-danger">That did not go through. Try again.</p>}
       <div className="mt-5 flex items-center justify-end gap-2">
