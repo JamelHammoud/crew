@@ -464,10 +464,17 @@ body {
   }
 }
 
-/* The three discs arrive the way faces do when people join, back one first and
-   the front one landing last on top of the pile. It is the mask that moves, so
-   each disc carries its own bite with it and the gaps stay the width they are
-   however far into its arrival a disc has got. */
+/* A disc overshoots its own edge on the way in and the light runs past both
+   ends of the mark, so the drawing is wider than the mark and the box it stands
+   in never cuts it. Every rect inside it is drawn to the same bleed. */
+.crew-mark {
+  overflow: visible;
+}
+
+/* The three discs arrive the way faces do when people join a session, left to
+   right, each one coming out from behind the one that landed before it. It is
+   the mask that moves, so a disc carries its own bite with it and the gaps stay
+   the width they are however far into its arrival a disc has got. */
 .crew-disc {
   transform-box: view-box;
   animation: crew-join 540ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--disc) * 90ms) both;
@@ -476,7 +483,7 @@ body {
 @keyframes crew-join {
   0% {
     opacity: 0;
-    transform: translateX(64px) scale(0.32);
+    transform: translateX(-64px) scale(0.32);
   }
   55% {
     opacity: 1;

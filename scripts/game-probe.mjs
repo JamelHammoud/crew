@@ -15,7 +15,10 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { createElement } from 'react'
 import { GameGlyph, MusicGlyph, SignalGlyph, TerminalGlyph, FolderGlyph, ToolboxGlyph } from '${root}/src/renderer/src/icons'
 import { drawCover } from '${root}/src/renderer/src/components/game/GameCover'
-import { paintTetris } from '${root}/src/renderer/src/components/game/probeDraw'
+import { paintTetris } from '${root}/src/renderer/src/components/game/drawTetris'
+import { paintFlappy } from '${root}/src/renderer/src/components/game/drawFlappy'
+import { newTetris, hardDrop, moveBy } from '${root}/src/renderer/src/components/game/tetris'
+import { newFlappy, tick, flap } from '${root}/src/renderer/src/components/game/flappy'
 window.Probe = {
   marks: [GameGlyph, SignalGlyph, TerminalGlyph, FolderGlyph, MusicGlyph, ToolboxGlyph].map(Icon => ({
     at16: renderToStaticMarkup(createElement(Icon, { className: 'w-4 h-4' })),
@@ -23,7 +26,14 @@ window.Probe = {
     at48: renderToStaticMarkup(createElement(Icon, { className: 'w-12 h-12' }))
   })),
   drawCover,
-  paintTetris
+  paintTetris,
+  paintFlappy,
+  newTetris,
+  hardDrop,
+  moveBy,
+  newFlappy,
+  tick,
+  flap
 }
 `
 
