@@ -39,6 +39,10 @@ function useAt(room: MusicRoom, playing: boolean): number {
 // That light is painted over the tint rather than under it, so the glass it
 // stands on is `glass-lit`, which is deeper and thinner than the rest: the bar
 // keeps the track's color without reading brighter than the list it floats over.
+//
+// The name is the whole of what it says. The line under it is for trouble alone,
+// since silence that looks exactly like music playing is the worst of both, and
+// it is not there when there is none.
 export default function NowPlaying({ track }: { track: MusicItem }) {
   const room = useMusic(s => s.room)
   const trouble = useMusic(s => s.trouble)
