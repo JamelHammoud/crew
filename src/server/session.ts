@@ -254,7 +254,7 @@ export class CrewSession {
     this.code = persisted?.code ?? randomBytes(3).toString('hex')
     this.createdAt = persisted?.createdAt ?? Date.now()
     for (const m of persisted?.members ?? []) {
-      this.members.set(m.name.toLowerCase(), { id: m.id, name: m.name, connections: new Set() })
+      this.members.set(m.name.toLowerCase(), { id: m.id, name: m.name, avatar: m.avatar, connections: new Set() })
     }
     for (const id of persisted?.removedAgents ?? []) this.removedAgents.add(id)
     for (const a of persisted?.agents ?? []) {

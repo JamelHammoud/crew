@@ -707,6 +707,7 @@ export const useCrew = create<CrewState>((set, get) => {
       socket.send({ type: 'chat.react', targetId, emoji })
     },
     setThreadStatus: (threadId, status) => {
+      if (status === 'done') playSound('task.done')
       // Archiving keeps the old message so a newer UI can still archive on an
       // older host; the other transitions only exist on hosts that know them.
       socket.send(status === 'archived' ? { type: 'thread.archive', threadId } : { type: 'thread.status', threadId, status })
@@ -724,6 +725,7 @@ export const useCrew = create<CrewState>((set, get) => {
       socket.send({ type: 'todo.remove', todoId })
     },
     checkTodo: (todoId, checked) => {
+      if (checked) playSound('task.done')
       socket.send({ type: 'todo.check', todoId, checked })
     },
     doTodo: (todoId, agentId) => {
