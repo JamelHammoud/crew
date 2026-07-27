@@ -70,18 +70,18 @@ export class MusicPlayer {
 
   // A track somebody put there themselves. It is fetched once and kept, so
   // pressing play again is as quick as a tune.
-  async playFile(trackId: string, url: string, seconds: number, at: number): Promise<void> {
+  async playFile(trackId: string, url: string, seconds: number, at: number): Promise<FileResult> {
     const ctx = context()
-    if (!ctx) return
+    if (!ctx) return 'unplayable'
     const mine = ++this.wanted
     let buffer: AudioBuffer
     try {
       buffer = await bufferFor(ctx, url)
     } catch {
-      return
+      return mine === this.wanted ? 'unplayable' : 'dropped'
     }
-    if (mine !== this.wanted) return
-    if (!this.begin(trackId, buffer.duration || seconds, at)) return
+    if (mine !== this.wanted) return 'dropped'
+    if (!this.begin(trackId, buffer.duration || seconds, at)) return 'unplayable'
     const source = ctx.createBufferSource()
     source.buffer = buffer
     source.loop = true
