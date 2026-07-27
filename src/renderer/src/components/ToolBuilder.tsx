@@ -134,21 +134,54 @@ export default function ToolBuilder({ tool, onDone }: { tool: CrewTool | null; o
   const named = agents.find(agent => agent.id === agentId)
   const choices = named && !here.includes(named) ? [...here, named] : here
 
+  const tracks = musicItems(uploads)
+  const lists = [...MUSIC_SETS, ...playlists]
+  // A chain names the crew's other tools, never the one being built, or a press
+  // would be a tool waiting on itself.
+  const steps = tools.filter(one => one.id !== tool?.id)
+
   const action = (): ToolAction => {
     if (kind === 'terminal') return { kind: 'terminal', command }
     if (kind === 'file') return { kind: 'file', path }
     if (kind === 'doc') return { kind: 'doc', page }
     if (kind === 'board') return { kind: 'board', boardId }
     if (kind === 'copy') return { kind: 'copy', text: copy }
+    if (kind === 'say') return { kind: 'say', text: say }
+    if (kind === 'todo') return agentId ? { kind: 'todo', text: task, agentId } : { kind: 'todo', text: task }
+    if (kind === 'note') return { kind: 'note', page, text: line }
+    if (kind === 'music') return playlistId ? { kind: 'music', playlistId } : { kind: 'music', trackId }
+    if (kind === 'huddle') return { kind: 'huddle' }
+    if (kind === 'chain') return { kind: 'chain', toolIds }
     if (kind === 'prompt') return agentId ? { kind: 'prompt', text: ask, agentId } : { kind: 'prompt', text: ask }
     return external ? { kind: 'web', url, external: true } : { kind: 'web', url }
   }
 
-  // A command is the one thing a tool can be built without: a terminal that
-  // opens on a prompt is a tool.
-  const written =
-    kind === 'web' ? url : kind === 'file' ? path : kind === 'doc' ? page : kind === 'board' ? boardId : kind === 'copy' ? copy : kind === 'prompt' ? ask : ''
-  const ready = name.trim() !== '' && (kind === 'terminal' || written.trim() !== '')
+  // A command is one of the two things a tool can be built without: a terminal
+  // that opens on a prompt is a tool, and so is starting the call.
+  const filled = (): boolean => {
+    if (kind === 'terminal' || kind === 'huddle') return true
+    if (kind === 'note') return page !== '' && line.trim() !== ''
+    if (kind === 'music') return trackId !== '' || playlistId !== ''
+    if (kind === 'chain') return toolIds.length > 0
+    const written =
+      kind === 'web'
+        ? url
+        : kind === 'file'
+          ? path
+          : kind === 'doc'
+            ? page
+            : kind === 'board'
+              ? boardId
+              : kind === 'copy'
+                ? copy
+                : kind === 'say'
+                  ? say
+                  : kind === 'todo'
+                    ? task
+                    : ask
+    return written.trim() !== ''
+  }
+  const ready = name.trim() !== '' && filled()
 
   const save = () => {
     if (!ready) return
