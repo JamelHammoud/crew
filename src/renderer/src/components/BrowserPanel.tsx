@@ -35,7 +35,7 @@ const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/
 
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'music') return 'Music'
-  if (tab.kind === 'game') return 'Games'
+  if (tab.kind === 'game') return 'Game'
   if (tab.kind === 'terminal') return tab.title || 'Terminal'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
@@ -120,7 +120,7 @@ export default function BrowserPanel() {
             />
             <MenuItem
               icon={<GameGlyph />}
-              label="Games"
+              label="Game"
               onClick={() => {
                 setNewOpen(false)
                 useBrowser.getState().openGame()
