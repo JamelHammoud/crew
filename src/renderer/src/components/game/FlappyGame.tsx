@@ -22,7 +22,10 @@ export default function FlappyGame({
   const canvas = useRef<HTMLCanvasElement>(null)
   const [game, setGame] = useState<Flappy>(() => newFlappy())
   const [phase, setPhase] = useState<Phase>('ready')
-  const [width, setWidth] = useState(0)
+  const [box, setBox] = useState<Box>({ width: 0, height: 0 })
+  // The sky is as wide as the field is, so the picture is never stretched and a
+  // wider panel is more runway rather than a bigger bird.
+  const sky = skyWidth(box.width, box.height)
   // What the game really is right now. A flap between two frames has to land on
   // the game the next frame reads, or the frame overwrites it with the state it
   // started from and the flap is simply lost.
@@ -33,9 +36,15 @@ export default function FlappyGame({
   }, [])
 
   const start = useCallback(() => {
-    put(flap(newFlappy()))
+    put(flap(newFlappy(sky)))
     setPhase('playing')
-  }, [put])
+  }, [put, sky])
+
+  // The panel can be dragged mid-round, and the round carries on in the sky it
+  // now has rather than in the one it started in.
+  useEffect(() => {
+    put(widen(held.current, sky))
+  }, [sky, put])
 
   useGameLoop(
     useCallback(
