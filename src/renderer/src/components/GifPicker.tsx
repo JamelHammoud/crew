@@ -95,8 +95,7 @@ export default function GifPicker({
   const [loading, setLoading] = useState(gifsReady())
   const [failed, setFailed] = useState(false)
   const [sending, setSending] = useState<string | null>(null)
-  const [trouble, setTrouble] = useState(false)
-  const [named, setNamed] = useState<string | null>(null)
+  const [refused, setRefused] = useState<string | null>(null)
 
   const wanted = query.trim()
 
