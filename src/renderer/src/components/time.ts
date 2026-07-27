@@ -39,6 +39,17 @@ export function formatDay(ts: number): string {
   return new Date(ts).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 }
 
+export function formatShortDay(ts: number): string {
+  const date = new Date(ts)
+  const today = new Date()
+  if (date.toDateString() === today.toDateString()) return 'Today'
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+  const year = date.getFullYear() === today.getFullYear() ? undefined : 'numeric'
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year })
+}
+
 export function isNewDay(prev: number | undefined, ts: number): boolean {
   if (prev === undefined) return true
   return new Date(prev).toDateString() !== new Date(ts).toDateString()
