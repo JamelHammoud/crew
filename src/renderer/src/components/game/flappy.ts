@@ -1,10 +1,14 @@
-// Flappy Bird, as numbers. The world is a fixed size and the panel scales it, so
-// the game plays the same in a narrow side panel as in a wide one, and a test can
-// fly the whole thing without drawing any of it.
+// Flappy Bird, as numbers. The sky is as tall as it always is and as wide as the
+// room it is given, the way a side view is: a wide panel holds more runway ahead
+// of the bird rather than a stretched picture of the same one, and a test can fly
+// the whole thing without drawing any of it.
 
-export const WORLD = { width: 240, height: 360 }
+export const SKY_HEIGHT = 360
+// What the sky is before anything has been measured, and what a still is drawn
+// at.
+export const SKY_WIDTH = 240
 export const GROUND = 36
-export const BIRD = { x: 76, r: 9 }
+export const BIRD = { r: 9 }
 export const PIPE = { width: 40, gap: 104, spacing: 132 }
 
 const GRAVITY = 900
@@ -13,6 +17,20 @@ const SPEED = 96
 // A pipe's gap never opens right at the ceiling or right on the ground: there
 // has to be somewhere to fly to.
 const MARGIN = 40
+// A panel dragged to nothing is still a game. Under this the pipes arrive before
+// anyone can read them, so the sky stops narrowing and the picture is the one
+// thing that keeps shrinking.
+const NARROWEST = 150
+
+// How wide the sky is for a field of a given shape. It is worked out from the
+// height so the scale is the same both ways: a bird is a circle in a panel of
+// any width, and a pipe is the same width as the bird is tall wherever it stands.
+export const skyWidth = (width: number, height: number): number =>
+  height > 0 ? Math.max(NARROWEST, (SKY_HEIGHT * width) / height) : SKY_WIDTH
+
+// The bird stands a third of the way in, wherever the far edge is, so the room a
+// wider panel buys is runway ahead of it rather than a longer wait behind.
+export const birdX = (width: number): number => width * 0.32
 
 export interface Pipe {
   x: number
@@ -22,6 +40,10 @@ export interface Pipe {
 }
 
 export interface Flappy {
+  // How wide the sky is right now. It rides on the game rather than standing as
+  // a constant, because the field is whatever the panel left over and the panel
+  // can be dragged.
+  width: number
   y: number
   vy: number
   pipes: Pipe[]
@@ -34,23 +56,29 @@ export interface Flappy {
 
 export type Rand = () => number
 
-const floor = WORLD.height - GROUND
+export const floor = SKY_HEIGHT - GROUND
 
 const gapAt = (rand: Rand): number => MARGIN + rand() * (floor - MARGIN * 2)
 
-export function newFlappy(rand: Rand = Math.random): Flappy {
+export function newFlappy(width: number = SKY_WIDTH, rand: Rand = Math.random): Flappy {
   return {
-    y: WORLD.height / 2 - GROUND / 2,
+    width,
+    y: SKY_HEIGHT / 2 - GROUND / 2,
     vy: 0,
     pipes: [
-      { x: WORLD.width + 40, gap: gapAt(rand), passed: false },
-      { x: WORLD.width + 40 + PIPE.spacing, gap: gapAt(rand), passed: false }
+      { x: width + 40, gap: gapAt(rand), passed: false },
+      { x: width + 40 + PIPE.spacing, gap: gapAt(rand), passed: false }
     ],
     score: 0,
     started: false,
     over: false
   }
 }
+
+// The panel can be dragged while a round is running, so the sky takes the width
+// it is given and the pipes keep the place they had in it.
+export const widen = (game: Flappy, width: number): Flappy =>
+  width === game.width ? game : { ...game, width }
 
 export function flap(game: Flappy): Flappy {
   if (game.over) return game
@@ -62,8 +90,9 @@ export function flap(game: Flappy): Flappy {
 // that tries to go over them, which is what it is really being kept out of.
 const hits = (game: Flappy): boolean => {
   if (game.y + BIRD.r >= floor) return true
+  const x = birdX(game.width)
   return game.pipes.some(pipe => {
-    const near = BIRD.x + BIRD.r > pipe.x && BIRD.x - BIRD.r < pipe.x + PIPE.width
+    const near = x + BIRD.r > pipe.x && x - BIRD.r < pipe.x + PIPE.width
     if (!near) return false
     return game.y - BIRD.r < pipe.gap - PIPE.gap / 2 || game.y + BIRD.r > pipe.gap + PIPE.gap / 2
   })
@@ -78,13 +107,14 @@ export function tick(game: Flappy, dt: number, rand: Rand = Math.random): Flappy
   const rose = game.y + fell * dt
   const y = Math.max(rose, BIRD.r)
   const vy = y > rose ? 0 : fell
+  const behind = birdX(game.width) - BIRD.r
   const moved = game.pipes.map(pipe => ({ ...pipe, x: pipe.x - SPEED * dt }))
-  const scored = moved.filter(pipe => !pipe.passed && pipe.x + PIPE.width < BIRD.x - BIRD.r).length
-  for (const pipe of moved) if (pipe.x + PIPE.width < BIRD.x - BIRD.r) pipe.passed = true
+  const scored = moved.filter(pipe => !pipe.passed && pipe.x + PIPE.width < behind).length
+  for (const pipe of moved) if (pipe.x + PIPE.width < behind) pipe.passed = true
   const kept = moved.filter(pipe => pipe.x + PIPE.width > -4)
   const last = kept[kept.length - 1]
   const pipes =
-    last && last.x < WORLD.width
+    last && last.x < game.width
       ? [...kept, { x: last.x + PIPE.spacing, gap: gapAt(rand), passed: false }]
       : kept
   const next: Flappy = { ...game, y, vy, pipes, score: game.score + scored }
