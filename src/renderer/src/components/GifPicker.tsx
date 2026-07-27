@@ -9,6 +9,7 @@ import Spinner from './Spinner'
 const COLUMNS = 2
 const TYPING = 250
 const NEAR_END = 240
+const SCRIM = 'absolute inset-0 flex items-center justify-center bg-ink-900/60'
 const WAITING = [
   [0.78, 1.24, 0.86, 1.12],
   [1.16, 0.82, 1.3, 0.72]
@@ -80,11 +81,9 @@ function Tile({
 
 export default function GifPicker({
   onPick,
-  onBack,
   className = 'h-[420px] w-[380px]'
 }: {
   onPick: (gif: Gif) => Promise<void>
-  onBack?: () => void
   className?: string
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
