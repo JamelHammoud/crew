@@ -164,21 +164,12 @@ export default function GifPicker({
         ? 'No GIFs found'
         : null
 
-  const foot = trouble ? 'That GIF would not send' : (named ?? (note ? '' : HINT))
-
   return (
     <div className={`flex flex-col ${className}`}>
-      <SearchField
-        value={query}
-        onChange={setQuery}
-        placeholder="Search GIFs"
-        onBack={onBack}
-        backLabel="Back to the menu"
-      />
+      <SearchField value={query} onChange={setQuery} placeholder="Search GIFs" />
       <div
         ref={scrollRef}
         onScroll={onScroll}
-        onPointerLeave={() => setNamed(null)}
         className="min-h-0 flex-1 overflow-y-auto p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {note ? (
