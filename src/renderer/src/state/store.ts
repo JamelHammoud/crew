@@ -4,6 +4,7 @@ import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../s
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import {
   huddleRecordId,
+  markDeletedReplies,
   trimEvents,
   type SessionEvent,
   type ThreadMode,
