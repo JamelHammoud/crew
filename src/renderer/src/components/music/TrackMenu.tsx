@@ -58,17 +58,19 @@ export default function TrackMenu({ item, within }: { item: MusicItem; within?: 
           <MoreGlyph className="w-4 h-4" />
         </button>
       </Tooltip>
-      <Popover open={open} onClose={shut} className="w-64" maxHeight={340}>
+      <Popover open={open} onClose={shut} className="w-64" maxHeight={340} flush>
         <ScreenSwap screen={screen} depth={screen === 'main' ? 0 : 1}>
+          {/* The screen holds the padding rather than the card, since a screen
+              on its way in is clipped to the box it travels in and a rule that
+              bleeds back through the card's own padding is cut at both ends. */}
+          <div className="p-1.5">
           {screen === 'main' ? (
             <>
-              <div className="flex items-center gap-1.5 px-3 py-2 text-xs text-fg/45">
+              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 px-3 py-2 text-xs text-fg/45">
                 {item.by ? (
                   <>
                     Added by
-                    <span className="min-w-0 truncate text-fg">
-                      <PersonMention name={item.by} />
-                    </span>
+                    <PersonMention name={item.by} className="min-w-0 break-all" />
                   </>
                 ) : (
                   'Built-in'
