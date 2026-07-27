@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import type { MusicRoom } from '../../../../shared/music'
+import { useEffect, useMemo, useState } from 'react'
+import { itemFor, type MusicRoom } from '../../../../shared/music'
 import {
   ChevronLeftGlyph,
   MusicGlyph,
@@ -57,7 +57,7 @@ export default function MusicView() {
   const trouble = useMusic(s => s.trouble)
   const selfName = useCrew(s => s.selfName)
   const sounds = useSounds()
-  const track = useMusic.getState().track()
+  const track = useMemo(() => itemFor(room.trackId, uploads), [room.trackId, uploads])
   const at = useAt(room, room.playing && track !== null)
   // Where the bar is being dragged to, which is what it shows until the crew
   // has been told, so it does not spring back under your own finger.
