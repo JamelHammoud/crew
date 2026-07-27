@@ -74,6 +74,7 @@ describe('your own photo', () => {
 
     const again = await TestUi.connect(host.url, 'jamel', host.code)
     uis.push(again)
-    expect(again.snapshot?.members.find(m => m.name === 'jamel')?.avatar).toBe(set.file)
+    const welcome = again.messages.find(m => m.type === 'welcome') as Extract<ServerMessage, { type: 'welcome' }>
+    expect(welcome.snapshot.members.find(m => m.name === 'jamel')?.avatar).toBe(set.file)
   })
 })
