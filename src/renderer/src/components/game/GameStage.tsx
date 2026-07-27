@@ -104,26 +104,32 @@ export function Field({
   )
 }
 
-// What stands over the field before a game and after one. It is the whole field
-// rather than a card in the middle of it, so the one thing to press is wherever
-// the pointer already is.
+// What stands over the field before a game and after one: what just happened,
+// where that leaves everyone, and the one thing to press. It holds the board
+// rather than the panel under the field holding it, so the field is the same
+// size whether a game is running or not and nothing moves when one starts.
 export function Overlay({
   title,
   note,
   label,
-  onStart
+  onStart,
+  children
 }: {
-  title: string
+  title?: string
   note?: string
   label: string
   onStart: () => void
+  children?: ReactNode
 }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/50 backdrop-blur-[3px]">
-      <div className="flex flex-col items-center gap-1 animate-rise">
-        <span className="text-base font-semibold text-white">{title}</span>
-        {note && <span className="text-xs text-white/55">{note}</span>}
-      </div>
+    <div className="absolute inset-0 px-5 flex flex-col items-center justify-center gap-5 overflow-hidden bg-black/55 backdrop-blur-[3px]">
+      {(title || note) && (
+        <div className="flex flex-col items-center gap-1 animate-rise">
+          {title && <span className="text-base font-semibold text-white">{title}</span>}
+          {note && <span className="text-xs text-white/55">{note}</span>}
+        </div>
+      )}
+      {children}
       <button
         onClick={onStart}
         onPointerDown={event => event.stopPropagation()}
