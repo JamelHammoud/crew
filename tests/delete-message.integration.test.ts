@@ -42,6 +42,25 @@ describe('deleting messages', () => {
     expect(events.some(e => e.kind === 'message.deleted')).toBe(false)
   })
 
+  it('marks a reply that quoted the deleted message, and keeps it marked after a restart', async () => {
+    const alice = await TestUi.connect(host.url, 'alice', host.code)
+    const bob = await TestUi.connect(host.url, 'bob', host.code)
+    uis.push(alice, bob)
+
+    alice.chat('the meeting is at four')
+    const msg = await bob.waitForEvent(e => e.kind === 'message' && e.text === 'the meeting is at four')
+
+    bob.send({ type: 'chat.send', text: 'see you then', mentions: [], replyTo: messageReactionTarget(msg.id) })
+    const reply = await alice.waitForEvent(e => e.kind === 'message' && e.text === 'see you then')
+    expect(quotedIn(host.session.snapshot().events, reply.id)?.deleted).toBeUndefined()
+
+    alice.send({ type: 'chat.delete', messageId: msg.id })
+    await bob.waitForEvent(e => e.kind === 'message.deleted')
+
+    expect(quotedIn(host.session.snapshot().events, reply.id)?.deleted).toBe(true)
+    expect(quotedIn(new CrewSession(host.store).snapshot().events, reply.id)?.deleted).toBe(true)
+  })
+
   it('ignores a delete from someone who is not the author', async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
     const bob = await TestUi.connect(host.url, 'bob', host.code)
