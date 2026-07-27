@@ -18,7 +18,7 @@ import { GRAIN, meshOf } from './mesh'
 //
 // The fallback needs none of this. Its own layer is already half again as big as
 // the tile, because that is where the blur in `mesh.ts` spills to.
-const BLEED = 0.05
+const BLEED = 0.07
 
 // Said as a size and a corner rather than as four insets. A canvas is a replaced
 // element, so it takes its own pixel size wherever its width is left to itself,
