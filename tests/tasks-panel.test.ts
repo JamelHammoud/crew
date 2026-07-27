@@ -158,6 +158,34 @@ describe('the needs review list', () => {
     expect(needsReviewShown()).toBe(2)
   })
 
+  it('puts the thread that spoke last at the top', () => {
+    const threads = {
+      t1: thread('t1', { title: '@Bubbles fix the sync loop' }),
+      t2: thread('t2', { title: '@Bubbles draw the icon' }),
+      t3: thread('t3', { title: '@Bubbles name the tune' })
+    }
+    useCrew.setState({
+      threads,
+      threadPrompts: {},
+      queues: {},
+      steps: {},
+      todos: [],
+      events: [
+        started('t1'),
+        said('t1', day(3)),
+        started('t2'),
+        said('t2', day(0)),
+        started('t3'),
+        said('t3', day(1))
+      ]
+    })
+    panel()
+    const text = screen.getByText('Needs review').closest('section')?.textContent ?? ''
+
+    expect(text.indexOf('draw the icon')).toBeLessThan(text.indexOf('name the tune'))
+    expect(text.indexOf('name the tune')).toBeLessThan(text.indexOf('fix the sync loop'))
+  })
+
   it('leaves out a thread that is still running or has work queued behind it', () => {
     const threads = { t1: thread('t1'), t2: thread('t2'), t3: thread('t3') }
     useCrew.setState({
