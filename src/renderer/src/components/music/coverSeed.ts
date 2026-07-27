@@ -433,8 +433,9 @@ export function coverArt(item: MusicItem): CoverArt {
     const lit = roll()
     const spine: [number, number] = [Math.cos(angle), Math.sin(angle)]
     const across: [number, number] = [-spine[1], spine[0]]
+    const bent = between(recipe.bend, roll())
     const half = between(recipe.half, roll())
-    const taper = ends(at, spine, across, between(recipe.bend, roll()), between(recipe.along, roll()))
+    const { along, bend } = ends(at, spine, across, bent, between(recipe.along, roll()))
     petals.push({
       // Then the air in front of it. A thing further off is seen through more
       // of whatever the sky is made of, so it takes on the sky's color as it
