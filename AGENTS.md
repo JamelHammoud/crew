@@ -258,6 +258,21 @@ Something to put on while the crew works. It is a tab in the side panel called M
 - The shader counts the same number of petals every time, because a card cannot be handed a shorter loop, so an empty slot still runs. Fill one with numbers that mean something rather than leaving it at nought: a petal blurred by nothing asks the card to fade an edge from a point to the same point, which has no answer, and what comes back is not a number and spreads through everything it touches.
 - `yarn covers` draws every cover on one page. A generator like this cannot be judged from its numbers, and `tests/music-cover.test.ts` only holds the rules above, never the look.
 
+## Games
+
+Something to play while you wait. It is a tab in the side panel called Games, opened from the toolbox or the New button, and it holds Tetris and Flappy Bird with room for more. What lasts is the score.
+
+- `GAMES` in `src/shared/games.ts` is the whole list of what there is to play, so the panel, the leaderboard and the host all read the same table and a new game is a row in it plus the two files that draw and play it.
+- A game is numbers. `tetris.ts` and `flappy.ts` hold the whole of the rules and neither one draws anything or listens for anything: a move is a function from one game to the next, which is what lets `tests/games-play.test.ts` play both of them through without a canvas anywhere near it. Anything that has to be shuffled or has to fall takes its randomness and its step as arguments, so a test steps them exactly.
+- The drawing is beside the rules rather than inside them. `paint.ts` is the kit both games are painted with, the colors, the block, the pipe and the bird, and `drawTetris.ts` and `drawFlappy.ts` are each game's own picture. The row a game is opened from is painted with the same kit, so a row is a still of the game rather than an icon of one.
+- A game is a picture, so its colors are pinned the way the design canvas pins its palette. The field is the same deep blue in a light window as in a dark one, and the overlay over it is set in white on it rather than in the theme's own foreground.
+- The field keeps its own shape whatever the panel is doing. `Field` measures the box it is given and works the game's size out from the ratio, because a canvas told to fill a box it does not have the shape of comes out stretched and the games are drawn in world units.
+- The field takes focus as it arrives and eats the keys it is played with, or the arrows scroll the panel out from under whoever is playing.
+- A frame is worth what it really took, capped at a twentieth of a second. A window left in the background hands back one enormous step when it comes round again, and a bird moved by a second of gravity in one go is already in the ground before anyone can press anything.
+- The leaderboard is one row per person per game, their best. A score that beats nothing is a round somebody played rather than something the crew keeps, so the host only writes one down when it beats that person's own, and `game.score` is trimmed out of the snapshot's event list the way the shelf is: a high score is a row on a board, not a moment to scroll past in the chat.
+- Reading the log back keeps the last score for each person rather than the highest, because they went in in the order they were played and each one already beat the one before it.
+- The board is the crew's own, so `game.score` is refused from a runner the way the music controls are. An agent's machine is connected the whole time it is joined.
+
 ## GIFs
 
 The plus button in the composer opens a menu, upload a file or pick a GIF, and picking one sends it straight out. `AddMenu.tsx` is the menu and `GifPicker.tsx` is a screen inside the same popover rather than a popover of its own.
