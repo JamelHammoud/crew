@@ -785,5 +785,13 @@ export const SONGS: Record<MusicTuneId, Line[]> = {
   snowfield: SNOWFIELD,
   'boss-fight': BOSS_FIGHT,
   lobby: LOBBY,
-  credits: CREDITS
+  credits: CREDITS,
+  'slow-morning': SLOW_MORNING,
+  'dust-motes': DUST_MOTES,
+  'second-coffee': SECOND_COFFEE,
+  'paper-lamp': PAPER_LAMP,
+  'window-seat': WINDOW_SEAT,
+  cassette: CASSETTE,
+  rooftop: ROOFTOP,
+  'long-shadows': LONG_SHADOWS
 }
