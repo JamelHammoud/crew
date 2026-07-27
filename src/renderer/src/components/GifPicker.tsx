@@ -193,17 +193,14 @@ export default function GifPicker({
                         key={gif.id}
                         gif={gif}
                         sending={sending === gif.id}
+                        refused={refused === gif.id}
                         onPick={() => send(gif)}
-                        onShow={() => setNamed(gif.title)}
                       />
                     ))}
                   </div>
                 ))}
           </div>
         )}
-      </div>
-      <div className="flex h-11 shrink-0 items-center border-t border-fg/[0.06] px-4">
-        <p className={`truncate text-sm ${trouble ? 'text-fg/70' : 'text-fg/45'}`}>{foot}</p>
       </div>
     </div>
   )
