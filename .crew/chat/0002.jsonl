@@ -309,3 +309,4 @@
 {"id":"28e015bf-59bd-45bf-b494-c97bd48c851d","ts":1785149265266,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"2bd81ca7-13af-41b9-be37-d64849a0372d","ts":1785149290961,"kind":"game.score","gameId":"flappy","score":2,"byName":"ALI"}
 {"id":"0da43c64-8281-4be7-ae83-68a8c65bfacd","ts":1785149353030,"kind":"game.score","gameId":"flappy","score":39,"byName":"ALI"}
+{"id":"4ba48e61-8715-40d1-a7f3-d9a13fd4cade","ts":1785149672762,"kind":"game.score","gameId":"tetris","score":179,"byName":"ALI"}
