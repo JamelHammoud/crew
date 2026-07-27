@@ -180,7 +180,7 @@ export function Popover({
             style={style}
             className={`glass fixed z-50 rounded-2xl animate-pop overscroll-contain ${flush ? '' : 'p-1.5'} ${className}`}
           >
-            {children}
+            <NestContext.Provider value={nest}>{children}</NestContext.Provider>
           </div>,
           document.body
         )}
