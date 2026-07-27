@@ -59,6 +59,8 @@ export interface SessionSnapshot {
   musicUploads?: MusicUpload[]
   // The lists people have written for themselves. These last too.
   musicPlaylists?: MusicPlaylist[]
+  // Everyone's best at each game, which lasts longest of all.
+  gameScores?: GameScore[]
 }
 
 export type ClientMessage =
@@ -121,6 +123,7 @@ export type ClientMessage =
   | { type: 'playlist.remove'; playlistId: string }
   | { type: 'playlist.rename'; playlistId: string; name: string }
   | { type: 'playlist.track'; playlistId: string; trackId: string; on: boolean }
+  | { type: 'game.score'; gameId: string; score: number }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
   | { type: 'prompt.cancel'; promptId: string }
@@ -154,6 +157,7 @@ export type ServerMessage =
   | { type: 'music.room'; room: MusicRoom }
   | { type: 'music.shelf'; uploads: MusicUpload[] }
   | { type: 'music.playlists'; playlists: MusicPlaylist[] }
+  | { type: 'game.scores'; scores: GameScore[] }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
       type: 'design.snapshot'
