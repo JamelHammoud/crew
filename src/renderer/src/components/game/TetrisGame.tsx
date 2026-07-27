@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { paintTetris } from './drawTetris'
-import { Field, Overlay } from './GameStage'
+import { Field, Overlay, type Box } from './GameStage'
 import {
   fall,
   fallMs,
