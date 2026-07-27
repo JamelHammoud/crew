@@ -256,7 +256,7 @@ export default function BrowserPanel() {
             <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
         {active && active.kind === 'music' && <MusicView />}
-        {active && active.kind === 'game' && <GameView />}
+        {active && active.kind === 'game' && <GameView tabId={active.id} />}
         {active && active.kind === 'web' && !active.initialUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <GlobeGlyph className="w-8 h-8 text-fg-faint" />
