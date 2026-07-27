@@ -26,7 +26,7 @@ import { CrewMark } from '${where}/src/renderer/src/components/CrewMark'
 window.CrewMarkParts = { createElement, createRoot, CrewMark }
 `
 
-const PAGE = (rules, height) => `<!doctype html><html><head><style>
+const PAGE = (rules, height, at) => `<!doctype html><html><head><style>
 body { margin: 0; background: #141414; font-family: system-ui; color: #707070; }
 .strip { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; }
 .cell { position: relative; }
@@ -37,7 +37,7 @@ ${rules}
 </style></head><body><div class="strip" id="strip"></div><script src="mark.js"></script><script>
 const { ipcRenderer } = require('electron')
 const { createElement, createRoot, CrewMark } = window.CrewMarkParts
-const AT = [0, 40, 90, 140, 180, 220, 260, 300, 360, 420, 480, 560, 640, 720, 820, 940]
+const AT = ${JSON.stringify(at)}
 const strip = document.getElementById('strip')
 
 for (const ms of AT) {
@@ -83,7 +83,7 @@ await build({
   absWorkingDir: root,
   nodePaths: [path.join(root, 'node_modules')]
 })
-await writeFile(path.join(dir, 'index.html'), PAGE(rules, tall))
+await writeFile(path.join(dir, 'index.html'), PAGE(rules, tall, times))
 
 const main = `
 const { app, BrowserWindow, ipcMain } = require('electron')
