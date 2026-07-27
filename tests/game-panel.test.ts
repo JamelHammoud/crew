@@ -8,6 +8,10 @@ import type { GameScore } from '../src/shared/games'
 import type { ClientMessage } from '../src/shared/protocol'
 
 Element.prototype.getAnimations ??= () => []
+// jsdom draws nothing, and the covers ask for a context they will not get. The
+// drawing already stands down when there is none, so this only keeps the run
+// from printing a page of the same warning.
+HTMLCanvasElement.prototype.getContext = (() => null) as never
 globalThis.ResizeObserver ??= class {
   observe(): void {}
   unobserve(): void {}
