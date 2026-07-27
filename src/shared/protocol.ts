@@ -61,6 +61,7 @@ export interface SessionSnapshot {
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
   | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[]; running?: string[] }
+  | { type: 'member.avatar'; image: OutgoingAttachment | null }
   | {
       type: 'chat.send'
       text: string
