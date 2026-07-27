@@ -627,6 +627,9 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'music.playlists':
         for (const listener of playlistListeners) listener(msg.playlists)
         break
+      case 'game.scores':
+        set({ scores: msg.scores })
+        break
     }
   }
 
@@ -789,6 +792,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     removeTool: toolId => {
       socket.send({ type: 'tool.remove', toolId })
+    },
+    postScore: (gameId, score) => {
+      socket.send({ type: 'game.score', gameId, score })
     },
     cancelPrompt: promptId => {
       socket.send({ type: 'prompt.cancel', promptId })
