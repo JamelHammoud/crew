@@ -80,6 +80,7 @@ export type MusicClientMessage = Extract<
       | 'music.remove'
       | 'playlist.add'
       | 'playlist.remove'
+      | 'playlist.rename'
       | 'playlist.track'
   }
 >

@@ -61,6 +61,7 @@ export interface MusicState {
   remove: (trackId: string) => void
   makePlaylist: (name: string) => Promise<string | null>
   dropPlaylist: (playlistId: string) => void
+  renamePlaylist: (playlistId: string, name: string) => void
   holdTrack: (playlistId: string, trackId: string, on: boolean) => void
   setVolume: (volume: number) => void
   setMuted: (muted: boolean) => void
@@ -293,6 +294,8 @@ export const useMusic = create<MusicState>((set, get) => {
       }),
 
     dropPlaylist: playlistId => sendMusic({ type: 'playlist.remove', playlistId }),
+
+    renamePlaylist: (playlistId, name) => sendMusic({ type: 'playlist.rename', playlistId, name }),
 
     holdTrack: (playlistId, trackId, on) => sendMusic({ type: 'playlist.track', playlistId, trackId, on }),
 
