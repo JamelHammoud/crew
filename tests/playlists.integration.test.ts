@@ -99,6 +99,31 @@ describe('playlists', () => {
     expect(snapshot?.musicPlaylists?.[0]).toMatchObject({ name: 'Long Drive', trackIds: ['arcade', 'hearth'] })
   })
 
+  // Whoever asks for a list names its id, so the window that made it can open it
+  // and file a track into it as it lands, rather than hunting the shelf for a
+  // name two people could have written at once.
+  it('takes the id whoever asked for the list named', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+
+    const playlistId = randomUUID()
+    sam.send({ type: 'playlist.add', name: 'Mine', playlistId })
+    sam.send({ type: 'playlist.track', playlistId, trackId: 'arcade', on: true })
+    const landed = await sam.waitFor(m => m.type === 'music.playlists' && named(m, 'Mine')?.trackIds.length === 1)
+    expect(named(landed, 'Mine')).toMatchObject({ id: playlistId, trackIds: ['arcade'] })
+
+    // Anything but a plain id is refused and the host names the list itself.
+    sam.send({ type: 'playlist.add', name: 'Junk', playlistId: 'not-an-id' })
+    const junk = await sam.waitFor(m => m.type === 'music.playlists' && named(m, 'Junk') !== undefined)
+    expect(named(junk, 'Junk')?.id).not.toBe('not-an-id')
+
+    // So is one that is already taken, and the list holding it is left alone.
+    sam.send({ type: 'playlist.add', name: 'Twice', playlistId })
+    const twice = await sam.waitFor(m => m.type === 'music.playlists' && named(m, 'Twice') !== undefined)
+    expect(named(twice, 'Twice')?.id).not.toBe(playlistId)
+    expect(named(twice, 'Mine')).toMatchObject({ id: playlistId, trackIds: ['arcade'] })
+  })
+
   it('lets nobody but its owner write in it', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     const pat = await TestUi.connect(host.url, 'pat', host.code)
