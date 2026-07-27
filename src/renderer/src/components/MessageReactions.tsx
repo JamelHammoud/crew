@@ -96,31 +96,18 @@ export default function MessageReactions({
             </button>
           </Tooltip>
         )}
-        <span className="relative">
-          <Tooltip label="More reactions" disabled={pickerOpen}>
-            <button
-              type="button"
-              aria-label="More reactions"
-              aria-expanded={pickerOpen}
-              onClick={() => {
-                setActionsOpen(false)
-                setPickerOpen(open => !open)
-              }}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
-            >
-              <SmileGlyph className="h-4 w-4" />
-            </button>
-          </Tooltip>
-          <Popover
-            open={pickerOpen}
-            onClose={() => setPickerOpen(false)}
-            side="top"
-            flush
-            className="overflow-hidden !rounded-card"
-          >
-            <EmojiPicker selected={selected} onPick={reactFromMenu} />
-          </Popover>
-        </span>
+        <ReactionPickerButton
+          label="More reactions"
+          open={picker === 'tray'}
+          onToggle={() => {
+            setActionsOpen(false)
+            setPicker(open => (open === 'tray' ? null : 'tray'))
+          }}
+          onClose={() => setPicker(null)}
+          selected={selected}
+          onPick={reactFromMenu}
+          className="flex h-7 w-7 items-center justify-center rounded-full text-fg-secondary transition-[transform,background-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:bg-fg/8 hover:text-fg active:scale-90"
+        />
         {deletable && (
           <span className="relative">
             <Tooltip label="Message actions" disabled={actionsOpen}>
