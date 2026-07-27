@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
@@ -91,7 +90,7 @@ app.whenReady().then(async () => {
 })
 `
 
-const dir = await mkdtemp(path.join(tmpdir(), 'crew-game-probe-'))
+const dir = await mkdtemp(path.join(root, 'node_modules', '.crew-game-probe-'))
 try {
   const src = path.join(dir, 'entry.jsx')
   await writeFile(src, entry)
