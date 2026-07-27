@@ -45,9 +45,9 @@ uniform float uHaze;
 // that fails to compile on one machine is a grey box on that person's screen.
 uniform vec4 uAt[MAX];    // where the spine passes, and the way it lies
 uniform vec4 uShape[MAX]; // half width, how far it runs, how pointed, how bent
-uniform vec4 uEdge[MAX];  // how ruffled, how coarsely, how blurred, how lit
+uniform vec4 uEdge[MAX];  // how ruffled, how finely, how blurred, how lit
 uniform vec4 uSkin[MAX];  // its color, and whether it is in the picture at all
-uniform vec4 uGlow[MAX];  // how the light rakes it, how far it bleeds
+uniform vec4 uGlow[MAX];  // how the light rakes it, how far it bleeds, its own wobble
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21) + uSeed);
