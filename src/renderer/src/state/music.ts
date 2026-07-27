@@ -132,7 +132,7 @@ export const useMusic = create<MusicState>((set, get) => {
     connection = state.connection
     if (before === connection || connection !== 'home') return
     player.stop()
-    set({ room: emptyMusic(), uploads: [], since: Date.now() })
+    set({ room: emptyMusic(), uploads: [], since: Date.now(), trouble: null })
   })
 
   return {
