@@ -153,10 +153,14 @@ export default function TetrisGame({ best, onScore }: { best: number; onScore: (
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-stretch gap-1.5">
         <Stat label="Score" value={game.score.toLocaleString()} />
         <Stat label="Level" value={String(levelOf(game))} />
         <Stat label="Best" value={best.toLocaleString()} />
+        <div className="shrink-0 px-2.5 py-1.5 rounded-field bg-fg/[0.05] flex flex-col items-center gap-0.5">
+          <span className="text-xs font-medium text-fg-muted">Next</span>
+          <NextPiece kind={phase === 'playing' ? nextKind(game) : null} />
+        </div>
       </div>
       <Field
         ratio={COLS / ROWS}
