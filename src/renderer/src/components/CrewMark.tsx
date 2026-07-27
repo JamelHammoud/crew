@@ -13,6 +13,8 @@ const BLOBS = [
 
 const BLEED = 180
 
+const ROOM = 20
+
 const BOX = { x: 0, y: 0, width: MARK_WIDTH, height: MARK_HEIGHT }
 
 const FIELD = {
@@ -22,11 +24,24 @@ const FIELD = {
   height: MARK_HEIGHT + BLEED * 2
 }
 
-export function CrewMark({ className = '', live = false }: { className?: string; live?: boolean }) {
+const STAGE = MARK_HEIGHT + ROOM * 2
+
+export function CrewMark({
+  className = '',
+  live = false,
+  height
+}: {
+  className?: string
+  live?: boolean
+  height?: number
+}) {
   const raw = useId()
   const id = raw.replace(/[^a-zA-Z0-9-]/g, '')
   const last = MARK_DISCS.length - 1
   const field = live ? FIELD : BOX
+  const view = live
+    ? `${-ROOM} ${-ROOM} ${MARK_WIDTH + ROOM * 2} ${STAGE}`
+    : `0 0 ${MARK_WIDTH} ${MARK_HEIGHT}`
 
   return (
     <svg
