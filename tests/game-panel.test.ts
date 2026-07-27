@@ -44,8 +44,9 @@ const panel = (scores: GameScore[] = [], selfName = 'sam') => {
 
 beforeEach(() => {
   sent.length = 0
+  useBrowser.setState({ tabs: [], activeTabId: null })
   useBrowser.getState().openGame()
-  useBrowser.setState(s => ({ tabs: s.tabs.map(tab => ({ ...tab, id: TAB })) }))
+  useBrowser.setState(s => ({ tabs: s.tabs.map(tab => ({ ...tab, id: TAB })), activeTabId: TAB }))
 })
 
 afterEach(cleanup)
