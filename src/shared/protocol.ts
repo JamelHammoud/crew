@@ -150,6 +150,7 @@ export type ServerMessage =
   | { type: 'huddle.signal'; from: string; signal: HuddleSignal }
   | { type: 'music.room'; room: MusicRoom }
   | { type: 'music.shelf'; uploads: MusicUpload[] }
+  | { type: 'music.playlists'; playlists: MusicPlaylist[] }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
       type: 'design.snapshot'
