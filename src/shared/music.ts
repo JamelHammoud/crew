@@ -46,7 +46,7 @@ export const MUSIC_TUNES = [
     mood: 'floating',
     bpm: 84,
     beats: 32,
-    colors: ['#5fe6c8', '#c9fff0', '#ffe0b0', '#f4fffb', '#9fe9dd']
+    colors: ['#5fe6c8', '#7fecd0', '#ffcf8f', '#f4fffb', '#9fe9dd']
   },
   {
     id: 'night-bus',
@@ -54,7 +54,7 @@ export const MUSIC_TUNES = [
     mood: 'mellow',
     bpm: 96,
     beats: 32,
-    colors: ['#b98cff', '#ffc9ec', '#ffc98f', '#f6efff', '#8a7cf0']
+    colors: ['#b98cff', '#ffb0e0', '#ffc98f', '#f6efff', '#8a7cf0']
   },
   {
     id: 'star-road',
@@ -62,7 +62,7 @@ export const MUSIC_TUNES = [
     mood: 'soaring',
     bpm: 120,
     beats: 32,
-    colors: ['#9fc4ff', '#e8f0ff', '#ffe9a8', '#f7faff', '#5b9bf5']
+    colors: ['#9fc4ff', '#b0ccff', '#ffd166', '#f7faff', '#5b9bf5']
   },
   {
     id: 'hearth',
