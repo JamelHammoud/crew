@@ -40,28 +40,8 @@ function Row({ playlist, who, onOpen }: { playlist: MusicPlaylist; who: string; 
   )
 }
 
-function Section({
-  title,
-  playlists,
-  onOpen
-}: {
-  title: string
-  playlists: MusicPlaylist[]
-  onOpen: (playlistId: string) => void
-}) {
-  if (playlists.length === 0) return null
-  return (
-    <>
-      <li className="px-2 pt-3 pb-0.5 text-xs font-medium text-fg-muted">{title}</li>
-      {playlists.map(playlist => (
-        <Row key={playlist.id} playlist={playlist} onOpen={() => onOpen(playlist.id)} />
-      ))}
-    </>
-  )
-}
-
-// The app's own lists first, then yours, then a section for each person who made
-// one.
+// One list, the app's own first, then yours, then everyone else's. Whose a list
+// is rides on the row itself, so nothing is sorted into a section for it.
 export default function Playlists({ query, onOpen }: { query: string; onOpen: (playlistId: string) => void }) {
   const playlists = useMusic(s => s.playlists)
   const selfName = useCrew(s => s.selfName)
@@ -69,8 +49,14 @@ export default function Playlists({ query, onOpen }: { query: string; onOpen: (p
   const found = useMemo(() => findPlaylists(playlists, query), [playlists, query])
   const sets = useMemo(() => findPlaylists(MUSIC_SETS, query), [query])
   const mine = found.filter(playlist => isMine(playlist, selfName))
-  const theirs = found.filter(playlist => !isMine(playlist, selfName))
-  const names = [...new Set(theirs.map(playlist => playlist.by))].sort((a, b) => a.localeCompare(b))
+  const theirs = found
+    .filter(playlist => !isMine(playlist, selfName))
+    .sort((a, b) => a.by.localeCompare(b.by))
+  const rows: { playlist: MusicPlaylist; who: string }[] = [
+    ...sets.map(playlist => ({ playlist, who: '' })),
+    ...mine.map(playlist => ({ playlist, who: '' })),
+    ...theirs.map(playlist => ({ playlist, who: playlist.by }))
+  ]
 
   return (
     <ul className="p-2 flex flex-col gap-1">
