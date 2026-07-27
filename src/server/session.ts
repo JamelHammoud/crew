@@ -297,28 +297,31 @@ export class CrewSession {
     for (const event of loaded) {
       if (event.kind === 'message.edited') edits.set(event.messageId, event)
     }
-    this.events = loaded
-      .filter(
-        e =>
-          e.kind !== 'message.deleted' &&
-          e.kind !== 'message.edited' &&
-          e.kind !== 'huddle.deleted' &&
-          !(e.kind === 'message' && deleted.has(e.id)) &&
-          !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId)) &&
-          !inDeletedHuddle(e)
-      )
-      .map(e => {
-        if (e.kind !== 'message') return e
-        const edit = edits.get(e.id)
-        if (!edit) return e
-        return {
-          ...e,
-          text: edit.text,
-          mentionRefs: edit.mentionRefs ?? e.mentionRefs,
-          docMentions: edit.docMentions ?? e.docMentions,
-          editedTs: edit.ts
-        }
-      })
+    this.events = markDeletedReplies(
+      loaded
+        .filter(
+          e =>
+            e.kind !== 'message.deleted' &&
+            e.kind !== 'message.edited' &&
+            e.kind !== 'huddle.deleted' &&
+            !(e.kind === 'message' && deleted.has(e.id)) &&
+            !(e.kind === 'message.reaction' && deletedTargets.has(e.targetId)) &&
+            !inDeletedHuddle(e)
+        )
+        .map(e => {
+          if (e.kind !== 'message') return e
+          const edit = edits.get(e.id)
+          if (!edit) return e
+          return {
+            ...e,
+            text: edit.text,
+            mentionRefs: edit.mentionRefs ?? e.mentionRefs,
+            docMentions: edit.docMentions ?? e.docMentions,
+            editedTs: edit.ts
+          }
+        }),
+      deletedTargets
+    )
     for (const event of this.events) {
       if (event.kind === 'thread.started') {
         this.threads.set(event.threadId, {
