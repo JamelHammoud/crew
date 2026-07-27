@@ -20,7 +20,10 @@ else applyTheme(storedTheme())
 if (!tray) {
   void useCrew.getState().boot()
   publishPresence()
-  window.crew.onFullScreen(full => root.classList.toggle('square', full))
+  window.crew.onWindowShape(shape => {
+    root.classList.toggle('square', shape.square)
+    setFullScreen(shape.full)
+  })
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
 }
 
