@@ -151,7 +151,7 @@ void main() {
     // the hardness off a near edge without blurring it: the outline stays where
     // it is and stops being a wall. It is also what keeps the tips from ending
     // in a line, since a tip is thin the whole way.
-    cover *= mix(0.68, 1.0, thick);
+    cover *= mix(0.6, 1.0, thick);
 
     // The face, which is the whole of why one of these reads as a leaf and not
     // as a band of paint. A petal is not one color: it is a curved surface, so
