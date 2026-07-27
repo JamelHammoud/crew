@@ -41,15 +41,19 @@ export interface MusicState {
   trouble: string | null
   track: () => MusicItem | null
   items: () => MusicItem[]
+  playlist: (playlistId: string | null) => MusicPlaylist | null
   position: () => number
   levels: (count: number, into: number[]) => number[]
-  put: (trackId: string) => void
+  put: (trackId: string, playlistId?: string | null) => void
   toggle: () => void
   skip: (step: number) => void
   seek: (at: number) => void
   off: () => void
   add: (file: File) => Promise<string | null>
   remove: (trackId: string) => void
+  makePlaylist: (name: string) => void
+  dropPlaylist: (playlistId: string) => void
+  holdTrack: (playlistId: string, trackId: string, on: boolean) => void
   setVolume: (volume: number) => void
   setMuted: (muted: boolean) => void
 }
