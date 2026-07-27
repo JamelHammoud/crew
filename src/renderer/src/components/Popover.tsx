@@ -52,6 +52,7 @@ export function Popover({
   const popRef = useRef<HTMLDivElement>(null)
   const placedRef = useRef<'top' | 'bottom' | null>(null)
   const sizeRef = useRef<{ w: number; h: number } | null>(null)
+  const trackRef = useRef<{ el: HTMLElement; from: DOMRect } | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
   const outer = useContext(NestContext)
@@ -80,20 +81,41 @@ export function Popover({
   const within = (target: Node): boolean =>
     Boolean(popRef.current?.contains(target)) || [...inner.current].some(el => el.contains(target))
 
+  const spotNow = (): DOMRect | null => {
+    if (!at) {
+      const anchor = holderRef.current?.parentElement
+      return anchor ? anchor.getBoundingClientRect() : null
+    }
+    const track = trackRef.current
+    if (!track?.el.isConnected) return null
+    const now = track.el.getBoundingClientRect()
+    return new DOMRect(at.x + now.left - track.from.left, at.y + now.top - track.from.top, 0, 0)
+  }
+
   useLayoutEffect(() => {
     if (!open) {
       setRect(null)
       setSize(null)
       sizeRef.current = null
       placedRef.current = null
+      trackRef.current = null
       return
     }
     if (at) {
-      setRect(new DOMRect(at.x, at.y, 0, 0))
-      return
+      const el = document.elementFromPoint(at.x, at.y) as HTMLElement | null
+      trackRef.current = el ? { el, from: el.getBoundingClientRect() } : null
     }
-    const anchor = holderRef.current?.parentElement
-    if (anchor) setRect(anchor.getBoundingClientRect())
+    setRect(spotNow())
+  }, [open, at])
+
+  useEffect(() => {
+    if (!open || typeof requestAnimationFrame === 'undefined') return
+    let frame = requestAnimationFrame(function tick() {
+      frame = requestAnimationFrame(tick)
+      const next = spotNow()
+      if (next) setRect(current => (current && sameSpot(current, next) ? current : next))
+    })
+    return () => cancelAnimationFrame(frame)
   }, [open, at])
 
   const measure = (): void => {
