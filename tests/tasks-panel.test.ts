@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TasksPanel from '../src/renderer/src/components/TasksPanel'
 import { reviewCount } from '../src/renderer/src/state/alerts'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
-import type { SessionEvent } from '../src/shared/events'
+import type { SessionEvent, Todo } from '../src/shared/events'
 
 Element.prototype.getAnimations ??= () => []
 
