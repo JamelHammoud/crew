@@ -262,3 +262,14 @@ export function MemberName({
   }
   return <>{children}</>
 }
+
+// One person, written the way a mention in a message is. Anything holding a name
+// and nothing else, like whoever added a track, names them with this, and
+// somebody who has since left the crew still reads as their name.
+export function PersonMention({ name }: { name: string }) {
+  return (
+    <MemberName name={name}>
+      <MentionChip>@{name}</MentionChip>
+    </MemberName>
+  )
+}
