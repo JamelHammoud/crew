@@ -1,14 +1,23 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { createElement } from 'react'
+import { createElement, createRef } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.stubEnv('VITE_KLIPY_KEY', 'crew-test-key')
 
 Element.prototype.getAnimations ??= () => []
 
+class TestResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+global.ResizeObserver ??= TestResizeObserver as unknown as typeof ResizeObserver
+
 const { useCrew, CHAT_KEY, pendingCount } = await import('../src/renderer/src/state/store')
 const AddMenu = (await import('../src/renderer/src/components/AddMenu')).default
+const Composer = (await import('../src/renderer/src/components/Composer')).default
 
 const GIF_BYTES = Uint8Array.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
 
