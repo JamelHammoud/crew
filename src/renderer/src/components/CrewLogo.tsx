@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { playSound } from '../media/sounds'
 import { CrewMark } from './CrewMark'
 
-const ONCE = new Set(['crew-join', 'crew-flash', 'crew-sweep'])
+const ONCE = new Set(['crew-join', 'crew-flash'])
 
 export default function CrewLogo({ className = '' }: { className?: string }) {
   const [lit, setLit] = useState(false)
