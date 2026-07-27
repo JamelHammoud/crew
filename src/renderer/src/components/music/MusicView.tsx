@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { itemFor, type MusicRoom } from '../../../../shared/music'
+import { itemFor, playlistFor, type MusicRoom } from '../../../../shared/music'
 import {
   ChevronLeftGlyph,
   MusicGlyph,
@@ -70,7 +70,7 @@ export default function MusicView() {
 
   // A list somebody deleted while you were reading it takes you back to the
   // shelf of lists rather than leaving you on a page about nothing.
-  const open = playlists.find(playlist => playlist.id === openId) ?? null
+  const open = playlistFor(openId, playlists)
 
   const go = (playlistId: string | null) => {
     setQuery('')
