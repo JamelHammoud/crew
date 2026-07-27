@@ -85,7 +85,7 @@ export default function GameView() {
               <h3 className="text-sm font-semibold text-fg">{open.name}</h3>
             </div>
           ) : (
-            <h3 className="h-8 pl-1 flex items-center text-sm font-semibold text-fg">Game</h3>
+            <h3 className="h-8 pl-1 flex items-center text-sm font-semibold text-fg">Games</h3>
           )}
         </ScreenSwap>
         {/* What you have this round, on the one line the panel already has,
