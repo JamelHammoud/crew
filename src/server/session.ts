@@ -437,6 +437,10 @@ export class CrewSession {
       if (event.kind === 'playlist.removed') {
         this.playlists.delete(event.playlistId)
       }
+      if (event.kind === 'playlist.renamed') {
+        const playlist = this.playlists.get(event.playlistId)
+        if (playlist) playlist.name = event.name
+      }
       if (event.kind === 'playlist.track') {
         const playlist = this.playlists.get(event.playlistId)
         if (playlist) {
@@ -703,6 +707,9 @@ export class CrewSession {
         break
       case 'playlist.remove':
         if (meta.role === 'ui') this.handlePlaylistRemove(member, msg.playlistId)
+        break
+      case 'playlist.rename':
+        if (meta.role === 'ui') this.handlePlaylistRename(member, msg.playlistId, msg.name)
         break
       case 'playlist.track':
         if (meta.role === 'ui') this.handlePlaylistTrack(member, msg.playlistId, msg.trackId, msg.on)
