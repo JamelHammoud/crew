@@ -102,7 +102,7 @@ export default function TetrisGame({
   return (
     <Field
       onKeyDown={key}
-      onSize={setWidth}
+      onSize={setBox}
       onPress={() => {
         if (phase !== 'playing') start()
       }}
