@@ -164,6 +164,7 @@ interface CrewState {
   updateAgentSetting: (agentId: string, key: string, value: string) => void
   renameAgent: (agentId: string, label: string) => void
   setAgentAvatar: (agentId: string, file: File | null) => void
+  setMyPhoto: (file: File | null) => void
   removeAgent: (agentId: string) => void
   openThread: (threadId: string) => void
   closeThread: () => void
@@ -545,6 +546,11 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'agent.avatar':
         set(state => ({
           agents: state.agents.map(a => (a.id === msg.agentId ? { ...a, avatar: msg.file ?? undefined } : a))
+        }))
+        break
+      case 'member.avatar':
+        set(state => ({
+          members: state.members.map(m => (m.id === msg.memberId ? { ...m, avatar: msg.file ?? undefined } : m))
         }))
         break
       case 'agent.step':
