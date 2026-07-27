@@ -392,11 +392,11 @@ export function coverArt(item: MusicItem): CoverArt {
     // order the petal holds them, because the numbers are drawn off one stream
     // and reading them in another order is a different picture.
     const lit = roll()
-    const lie: [number, number] = [Math.cos(angle), Math.sin(angle)]
-    const across: [number, number] = [-lie[1], lie[0]]
+    const spine: [number, number] = [Math.cos(angle), Math.sin(angle)]
+    const across: [number, number] = [-spine[1], spine[0]]
     const bend = between(recipe.bend, roll())
     const half = between(recipe.half, roll())
-    const along = ends(at, lie, across, bend, between(recipe.along, roll()))
+    const along = ends(at, spine, across, bend, between(recipe.along, roll()))
     petals.push({
       // Then the air in front of it. A thing further off is seen through more
       // of whatever the sky is made of, so it takes on the sky's color as it
@@ -405,7 +405,7 @@ export function coverArt(item: MusicItem): CoverArt {
       // carry its color at full strength.
       color: mixed(mixed(own, light, lit * 0.16), sky, (1 - depth) * 0.34),
       at,
-      lie,
+      lie: spine,
       bend,
       half,
       along,
