@@ -150,14 +150,14 @@ export function Popover({
     const anchor = holderRef.current?.parentElement
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node
-      if (popRef.current?.contains(target)) return
+      if (within(target)) return
       if (at || !anchor?.contains(target)) onClose()
     }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
     const onScroll = (event: Event) => {
-      if (!popRef.current?.contains(event.target as Node)) onClose()
+      if (!within(event.target as Node)) onClose()
     }
     window.addEventListener('pointerdown', onPointerDown)
     window.addEventListener('keydown', onKeyDown)

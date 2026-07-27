@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { mentionsIn } from '../../../shared/llm'
-import { useCrew, type ThreadMeta } from '../state/store'
+import { pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import Composer from './Composer'
 import DesignThreadBar from './DesignThreadBar'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
