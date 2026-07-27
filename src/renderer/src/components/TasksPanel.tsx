@@ -296,7 +296,7 @@ export default function TasksPanel({
             {row.detail ? ` · ${row.detail}` : ''}
           </span>
         </span>
-        {ts !== undefined && dayStamp(ts)}
+        {dayStamp(ts)}
       </button>
       {action && (
         <span className="absolute inset-y-0 right-0 rounded-r-xl bg-ink-hover pl-1 pr-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
