@@ -30,7 +30,7 @@ export const MUSIC_TUNES = [
     mood: 'bouncy',
     bpm: 132,
     beats: 32,
-    colors: ['#6fe9ff', '#d8f2ff', '#7cf0a8', '#f4fdff', '#2f9dfa']
+    colors: ['#6fe9ff', '#a5dcff', '#7cf0a8', '#f4fdff', '#2f9dfa']
   },
   {
     id: 'arcade',
@@ -38,7 +38,7 @@ export const MUSIC_TUNES = [
     mood: 'busy',
     bpm: 150,
     beats: 32,
-    colors: ['#ff7ac8', '#ffd9ef', '#8fd8ff', '#fff0fa', '#ff3fae']
+    colors: ['#ff7ac8', '#ffb0dc', '#8fd8ff', '#fff0fa', '#ff3fae']
   },
   {
     id: 'tide-pool',
