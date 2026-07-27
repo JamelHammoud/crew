@@ -20,6 +20,15 @@ export interface MusicTune {
   // never an ink: a near black anywhere in the palette lands as a bruise in the
   // corner of the tile, and every cover carrying one reads as the same picture.
   // The sky is the one to watch, since it is the color most of the frame is.
+  //
+  // And none of the first three is a near white either, which is the same
+  // mistake at the other end. Those three are the things in the frame, and a
+  // thing has a color: pale enough and there is no color left in it, so it
+  // stops being the light on a petal and becomes a hole cut in the picture,
+  // brighter than everything around it and made of nothing. Every palette here
+  // carried one as its middle color, which is why the white shape in a cover
+  // read as belonging to a different picture. The fourth is the light itself and
+  // is meant to be near white.
   colors: readonly [string, string, string, string, string]
 }
 
