@@ -93,10 +93,13 @@ app.whenReady().then(() => {
   ipcMain.on('scan', async (_e, rows) => {
     const image = await win.webContents.capturePage()
     const size = image.getSize()
-    const scale = image.getScaleFactor ? 2 : 2
     const bmp = image.getBitmap()
+    const pixels = bmp.length / 4
+    const scale = Math.round(Math.sqrt(pixels / (size.width * size.height)))
+    const stride = size.width * scale
+    console.log('capture', size.width + 'x' + size.height, 'scale', scale, 'stride', stride)
     const at = (x, y) => {
-      const i = (y * size.width * scale + x) * 4
+      const i = (y * stride + x) * 4
       return [bmp[i + 2], bmp[i + 1], bmp[i]]
     }
     for (const row of rows) {
