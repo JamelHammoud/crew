@@ -160,12 +160,12 @@ describe('who is here', () => {
     expect(here[1]).toMatchObject({ agent: true, threads: 2 })
   })
 
-  it('carries the picture an agent wears, which the panel cannot look up', () => {
+  it('carries the picture a person or an agent wears, which the panel cannot look up', () => {
     const withPhoto = { ...agent('a1', 'Bubbles', 'busy'), avatar: 'pet.png' }
-    const here = presentNow([], [withPhoto], 'self', {}, one =>
-      one.avatar ? `http://host/files/${one.avatar}` : undefined
-    )
+    const person = { ...member('m1', 'Ali', true), avatar: 'ali.png' }
+    const here = presentNow([person], [withPhoto], 'self', {}, file => `http://host/files/${file}`)
 
-    expect(here[0].photo).toBe('http://host/files/pet.png')
+    expect(here[0].photo).toBe('http://host/files/ali.png')
+    expect(here[1].photo).toBe('http://host/files/pet.png')
   })
 })
