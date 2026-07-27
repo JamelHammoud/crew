@@ -13,18 +13,30 @@ import Tooltip from './Tooltip'
 import type { ThreadItem } from './thread'
 
 // The textarea keeps its own glyph under the caret, so the sheet is painted
-// over it rather than in place of it.
-function EmojiHighlight({ text }: { text: string }) {
-  const tokens = useMemo(() => tokenizeEmoji(text), [text])
+// over it rather than in place of it. The patch is opaque, which takes the band
+// the textarea draws under a selection with it, so it paints that band itself.
+function EmojiHighlight({
+  text,
+  at,
+  selection
+}: {
+  text: string
+  at: number
+  selection: SelectedRange | null
+}) {
+  const tokens = useMemo(() => spanned(tokenizeEmoji(text), at), [at, text])
   return (
     <>
-      {tokens.map((token, index) =>
+      {tokens.map(({ token, start, end }, index) =>
         token.kind === 'text' ? (
           token.text
         ) : (
           <span key={index} className="relative inline-block">
             {token.text}
             <span className="absolute inset-y-0 -inset-x-px flex items-center justify-center bg-ink-800">
+              {covers(selection, start, end) && (
+                <span className="absolute inset-y-0 inset-x-px bg-selection" />
+              )}
               <Emoji char={token.entry.char} size="1.15em" />
             </span>
           </span>
@@ -34,7 +46,7 @@ function EmojiHighlight({ text }: { text: string }) {
   )
 }
 
-function MentionHighlights({ value }: { value: string }) {
+function MentionHighlights({ value, selection }: { value: string; selection: SelectedRange | null }) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
