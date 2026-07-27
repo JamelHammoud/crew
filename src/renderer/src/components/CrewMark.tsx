@@ -99,17 +99,15 @@ export function CrewMark({ className = '', live = false }: { className?: string;
                 />
               ))}
             </g>
-            <g key={run}>
-              <rect className="crew-flash" {...FIELD} fill="#ffffff" />
-              <ellipse
-                className="crew-sweep"
-                cx={-96}
-                cy={MARK_RADIUS}
-                rx="96"
-                ry="220"
-                fill={`url(#${id}-sweep)`}
-              />
-            </g>
+            <rect className="crew-flash" {...FIELD} fill="#ffffff" />
+            <ellipse
+              className="crew-sweep"
+              cx={-96}
+              cy={MARK_RADIUS}
+              rx="96"
+              ry="220"
+              fill={`url(#${id}-sweep)`}
+            />
           </>
         )}
       </g>
