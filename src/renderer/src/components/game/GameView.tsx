@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { GAMES, bestFor, boardFor, gameFor, type GameInfo } from '../../../../shared/games'
+import { GAMES, boardFor, gameFor, type GameInfo } from '../../../../shared/games'
 import { ChevronLeftGlyph } from '../../icons'
 import { useCrew } from '../../state/store'
 import ScreenSwap from '../ScreenSwap'
@@ -9,10 +9,7 @@ import GameCover from './GameCover'
 import Leaderboard from './Leaderboard'
 import TetrisGame from './TetrisGame'
 
-const COVER = { width: 84, height: 54 }
-
-const roundButton =
-  'shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95'
+const COVER = { width: 92, height: 58 }
 
 function GameRow({ game, onOpen }: { game: GameInfo; onOpen: (gameId: string) => void }) {
   const scores = useCrew(s => s.scores)
@@ -27,31 +24,31 @@ function GameRow({ game, onOpen }: { game: GameInfo; onOpen: (gameId: string) =>
       <span className="flex-1 min-w-0">
         <span className="block truncate text-sm font-semibold text-fg">{game.name}</span>
         <span className="block truncate text-xs text-fg-muted">{game.note}</span>
-        <span className="block truncate text-xs text-fg-faint">
-          {top ? `${top.score.toLocaleString()} by ${top.name}` : 'No scores yet'}
-        </span>
       </span>
+      {top && (
+        <span className="shrink-0 pr-1 text-right">
+          <span className="block text-sm font-medium text-fg tabular-nums">
+            {top.score.toLocaleString()}
+          </span>
+          <span className="block truncate max-w-24 text-xs text-fg-faint">{top.name}</span>
+        </span>
+      )}
     </button>
   )
 }
 
 function GamePlay({ game }: { game: GameInfo }) {
-  const scores = useCrew(s => s.scores)
-  const selfName = useCrew(s => s.selfName)
   const postScore = useCrew(s => s.postScore)
-  const best = bestFor(scores, game.id, selfName)
   const onScore = useCallback((score: number) => postScore(game.id, score), [game.id, postScore])
+  const board = <Leaderboard game={game} />
 
   return (
-    <div className="absolute inset-0 flex flex-col gap-3 px-4 pt-1 pb-4">
+    <div className="absolute inset-0 flex flex-col px-4 pt-2 pb-4">
       {game.id === 'tetris' ? (
-        <TetrisGame best={best} onScore={onScore} />
+        <TetrisGame onScore={onScore}>{board}</TetrisGame>
       ) : (
-        <FlappyGame best={best} onScore={onScore} />
+        <FlappyGame onScore={onScore}>{board}</FlappyGame>
       )}
-      <div className="shrink-0 max-h-44 overflow-y-auto [scrollbar-width:thin]">
-        <Leaderboard game={game} />
-      </div>
     </div>
   )
 }
@@ -62,26 +59,24 @@ export default function GameView() {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div className="shrink-0 h-11 px-4 pt-1 flex items-center gap-2">
-        <ScreenSwap screen={open ? 'back' : 'all'} depth={open ? 1 : 0}>
-          <div className="flex items-center gap-1.5">
-            {open ? (
-              <>
-                <Tooltip label="All games">
-                  <button
-                    onClick={() => setOpenId(null)}
-                    aria-label="All games"
-                    className={`${roundButton} w-8 h-8`}
-                  >
-                    <ChevronLeftGlyph className="w-4 h-4" />
-                  </button>
-                </Tooltip>
-                <h3 className="text-sm font-semibold text-fg">{open.name}</h3>
-              </>
-            ) : (
-              <h3 className="pl-1 text-sm font-semibold text-fg">Games</h3>
-            )}
-          </div>
+      <div className="shrink-0 px-4 pt-3 pb-1 flex items-center">
+        <ScreenSwap screen={open ? 'one' : 'all'} depth={open ? 1 : 0}>
+          {open ? (
+            <div className="flex items-center gap-1">
+              <Tooltip label="Back">
+                <button
+                  onClick={() => setOpenId(null)}
+                  aria-label="Back"
+                  className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+                >
+                  <ChevronLeftGlyph className="w-4 h-4" />
+                </button>
+              </Tooltip>
+              <h3 className="text-sm font-semibold text-fg">{open.name}</h3>
+            </div>
+          ) : (
+            <h3 className="h-8 pl-1 flex items-center text-sm font-semibold text-fg">Game</h3>
+          )}
         </ScreenSwap>
       </div>
 
