@@ -1762,7 +1762,9 @@ export class CrewSession {
 
   private handlePlaylistRename(member: Member, playlistId: string, name: string): void {
     const playlist = this.ownPlaylist(member, playlistId)
-    if (!playlist || typeof name !== 'string') return
+    // A list that is already named keeps its name rather than being emptied into
+    // Untitled, which is the one way a rename can lose something.
+    if (!playlist || typeof name !== 'string' || !name.trim()) return
     const clean = cleanPlaylistName(name)
     if (clean === playlist.name) return
     playlist.name = clean
