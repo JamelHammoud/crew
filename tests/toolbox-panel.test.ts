@@ -347,12 +347,10 @@ describe('the toolbox', () => {
     ])
 
     cleanup()
-    const written: string[] = []
-    Object.assign(navigator, { clipboard: { writeText: (text: string) => void written.push(text) } })
     toolbox([tool({ id: 'tool-7', name: 'Join link', mark: 'clipboard', action: { kind: 'copy', text: 'crew://join/abc' } })])
 
     fireEvent.click(screen.getByText('Join link'))
-    expect(written).toEqual(['crew://join/abc'])
+    expect(copied).toEqual(['crew://join/abc'])
     expect(screen.getByText('Copied')).toBeTruthy()
   })
 
