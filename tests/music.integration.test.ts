@@ -144,10 +144,17 @@ describe('music', () => {
     expect(fs.existsSync(path.join(host.repoPath, '.crew', 'music', upload.file))).toBe(true)
 
     // Everyone plays their own copy, fetched from the host.
-    const res = await fetch(`${host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')}/music/${upload.file}`)
+    const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
+    const res = await fetch(`${base}/music/${upload.file}`)
     expect(res.status).toBe(200)
     expect(res.headers.get('content-type')).toBe('audio/wav')
     expect((await res.arrayBuffer()).byteLength).toBe(wavBytes(1).length)
+
+    // A track is read with fetch rather than drawn by a tag, and a fetch is only
+    // handed to the page when the host says who may read it. Without this the
+    // app served on a port of its own hears nothing at all, and says nothing
+    // either, which is what happened.
+    expect(res.headers.get('access-control-allow-origin')).toBe('*')
 
     // And it can be put on the way anything else can.
     pat.send({ type: 'music.set', trackId: upload.id, playing: true, at: 0 })
