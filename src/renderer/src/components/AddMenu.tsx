@@ -44,6 +44,7 @@ export default function AddMenu({ attachmentKey, onSend }: { attachmentKey: stri
           disabled={full}
           aria-label="Add to your message"
           aria-expanded={open}
+          data-active={open ? '' : undefined}
           className={`${ATTACH_SIZES.md} ${PLUS_BUTTON}`}
         >
           <PlusGlyph className="w-5 h-5" />
