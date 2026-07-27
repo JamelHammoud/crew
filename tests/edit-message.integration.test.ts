@@ -44,8 +44,10 @@ describe('editing messages', () => {
     return runner
   }
 
-  const messageText = (events: SessionEvent[], id: string) =>
-    (events.find(e => e.kind === 'message' && e.id === id) as Message | undefined)?.text
+  const messageOf = (events: SessionEvent[], id: string) =>
+    events.find(e => e.kind === 'message' && e.id === id) as Message | undefined
+
+  const messageText = (events: SessionEvent[], id: string) => messageOf(events, id)?.text
 
   it('rewrites the author\'s message for everyone and keeps it after a restart', async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
