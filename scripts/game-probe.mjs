@@ -82,22 +82,18 @@ app.whenReady().then(async () => {
 })
 `
 
-const { renderToStaticMarkup } = await import('react-dom/server')
-const { createElement } = await import('react')
-const icons = await import(path.join(root, 'src/renderer/src/icons/index.ts')).catch(() => null)
-
-const marks = () => {
-  if (!icons) return ''
-  const names = ['GameGlyph', 'SignalGlyph', 'TerminalGlyph', 'FolderGlyph', 'MusicGlyph', 'ToolboxGlyph']
-  return names
-    .map(name => {
-      const Icon = icons[name]
-      const at = size =>
-        renderToStaticMarkup(createElement(Icon, { className: `w-[${size}px] h-[${size}px]` }))
-      return `<div style="display:flex;flex-direction:column;gap:10px;align-items:center">${at(48)}${at(22)}${at(16)}</div>`
-    })
+const MARKS_ENTRY = `
+import { renderToStaticMarkup } from 'react-dom/server'
+import { createElement } from 'react'
+import * as icons from '${root}/src/renderer/src/icons'
+export const sheet = () =>
+  ['GameGlyph', 'SignalGlyph', 'TerminalGlyph', 'FolderGlyph', 'MusicGlyph', 'ToolboxGlyph']
+    .map(name => [48, 22, 16]
+      .map(size => renderToStaticMarkup(createElement(icons[name], { className: 'w-[' + size + 'px] h-[' + size + 'px]' })))
+      .join(''))
+    .map(art => '<div style="display:flex;flex-direction:column;gap:10px;align-items:center">' + art + '</div>')
     .join('')
-}
+`
 
 const dir = await mkdtemp(path.join(root, 'node_modules', '.crew-game-probe-'))
 try {
@@ -112,7 +108,19 @@ try {
     loader: { '.js': 'jsx', '.ts': 'ts', '.tsx': 'tsx' },
     define: { 'process.env.NODE_ENV': '"production"' }
   })
-  await writeFile(path.join(dir, 'probe.html'), PAGE.replace('__MARKS__', marks()))
+  const marksSrc = path.join(dir, 'marks.jsx')
+  await writeFile(marksSrc, MARKS_ENTRY)
+  await build({
+    entryPoints: [marksSrc],
+    bundle: true,
+    outfile: path.join(dir, 'marks.mjs'),
+    format: 'esm',
+    platform: 'node',
+    loader: { '.js': 'jsx', '.ts': 'ts', '.tsx': 'tsx' },
+    define: { 'process.env.NODE_ENV': '"production"' }
+  })
+  const { sheet } = await import(path.join(dir, 'marks.mjs'))
+  await writeFile(path.join(dir, 'probe.html'), PAGE.replace('__MARKS__', sheet()))
   await writeFile(path.join(dir, 'main.mjs'), MAIN)
   await writeFile(
     path.join(dir, 'package.json'),
