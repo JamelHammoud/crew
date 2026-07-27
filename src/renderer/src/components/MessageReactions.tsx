@@ -51,7 +51,7 @@ export default function MessageReactions({
 
   const reactFromMenu = (emoji: ReactionEmoji, byPointer = true) => {
     react(emoji)
-    setPickerOpen(false)
+    setPicker(null)
     setActionsOpen(false)
     if (byPointer) setDismissed(true)
   }
