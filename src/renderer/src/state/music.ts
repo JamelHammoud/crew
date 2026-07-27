@@ -249,6 +249,12 @@ export const useMusic = create<MusicState>((set, get) => {
 
     remove: trackId => sendMusic({ type: 'music.remove', trackId }),
 
+    makePlaylist: name => sendMusic({ type: 'playlist.add', name }),
+
+    dropPlaylist: playlistId => sendMusic({ type: 'playlist.remove', playlistId }),
+
+    holdTrack: (playlistId, trackId, on) => sendMusic({ type: 'playlist.track', playlistId, trackId, on }),
+
     setVolume: volume => {
       const held = Math.min(1, Math.max(0, volume))
       globalThis.localStorage?.setItem(VOLUME_KEY, String(held))
