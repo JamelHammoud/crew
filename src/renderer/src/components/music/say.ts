@@ -6,6 +6,6 @@ export function clock(seconds: number): string {
 }
 
 export function tracks(count: number): string {
-  if (count === 0) return 'Nothing in it yet'
+  if (count === 0) return 'No tracks'
   return count === 1 ? '1 track' : `${count} tracks`
 }
