@@ -94,9 +94,8 @@ app.whenReady().then(() => {
     const image = await win.webContents.capturePage()
     const size = image.getSize()
     const bmp = image.getBitmap()
-    const pixels = bmp.length / 4
-    const scale = Math.round(Math.sqrt(pixels / (size.width * size.height)))
-    const stride = size.width * scale
+    const scale = size.width / 200
+    const stride = size.width
     console.log('capture', size.width + 'x' + size.height, 'scale', scale, 'stride', stride)
     const at = (x, y) => {
       const i = (y * stride + x) * 4
