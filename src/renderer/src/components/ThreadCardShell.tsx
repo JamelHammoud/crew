@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react'
+import type { CommandName } from '../../../shared/commands'
 import { relabelMentions } from '../../../shared/llm'
 import { useCrew, type ThreadMeta } from '../state/store'
+import CommandChip from './CommandChip'
 import FeedCard from './FeedCard'
 import { MentionText } from './Mention'
-import Pill from './Pill'
 
 export default function ThreadCardShell({
   thread,
