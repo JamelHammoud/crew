@@ -82,7 +82,7 @@ describe('ghost threads', () => {
     sam.chat('@Fake read the readme', [fake], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     expect(thread.ghost).toBe(true)
-    // The command itself is not part of the work.
+    // The command rode beside the message, so the work is what was written.
     expect(thread.title).toBe('@Fake read the readme')
 
     const end = (await sam.waitForEvent(e => e.kind === 'agent.end')) as AgentEnd
