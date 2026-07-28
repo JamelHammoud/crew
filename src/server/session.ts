@@ -584,7 +584,7 @@ export class CrewSession {
       docs: Object.fromEntries(this.docs),
       queues: Object.fromEntries(
         [...this.threads.values()]
-          .filter(thread => thread.queue.length > 0)
+          .filter(thread => thread.queue.length > 0 && !thread.ghost)
           .map(thread => [thread.id, this.queueItems(thread)])
       ),
       todos: [...this.todos.values()],
