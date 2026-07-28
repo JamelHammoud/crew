@@ -2906,17 +2906,20 @@ export class CrewSession {
     this.persistMeta()
   }
 
-  private systemMessage(text: string, threadId?: string): void {
-    this.emit({
-      id: randomUUID(),
-      ts: Date.now(),
-      kind: 'message',
-      authorId: SYSTEM_AUTHOR_ID,
-      authorName: SYSTEM_AUTHOR_NAME,
-      text,
-      mentions: [],
-      threadId
-    })
+  private systemMessage(text: string, threadId?: string, to?: WebSocket): void {
+    this.emit(
+      {
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'message',
+        authorId: SYSTEM_AUTHOR_ID,
+        authorName: SYSTEM_AUTHOR_NAME,
+        text,
+        mentions: [],
+        threadId
+      },
+      { to }
+    )
   }
 
   // Everything a thread emits carries its id, so one question here is what
