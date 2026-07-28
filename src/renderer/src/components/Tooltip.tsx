@@ -83,7 +83,7 @@ export default function Tooltip({
           <span
             ref={tipRef}
             style={style}
-            className={`glass fixed z-50 block animate-pop pointer-events-none ${
+            className={`glass fixed z-[70] block animate-pop pointer-events-none ${
               typeof label === 'string'
                 ? 'rounded-lg px-2.5 py-1.5 text-xs font-medium text-fg-secondary whitespace-nowrap'
                 : 'rounded-2xl p-2.5 max-w-[280px]'
