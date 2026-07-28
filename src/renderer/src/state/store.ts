@@ -114,6 +114,8 @@ const EVENT_LIMIT = 500
 interface CrewState {
   connection: Connection
   joinLink: string | null
+  hosting: boolean
+  shared: boolean
   selfId: string
   selfName: string
   code: string
