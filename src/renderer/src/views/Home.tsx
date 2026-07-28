@@ -226,12 +226,14 @@ export default function Home() {
         )}
       </div>
       <div
-        className={`w-full ${WIDTH[screen]} min-h-full mx-auto py-20 flex flex-col justify-center gap-6 animate-rise transition-[max-width] duration-200 ease-out`}
+        className={`w-full ${WIDTH[screen]} min-h-full mx-auto py-20 flex flex-col justify-center transition-[max-width] duration-200 ease-out`}
       >
-        <ScreenSwap screen={screen} depth={DEPTH[screen]}>
-          {body()}
-        </ScreenSwap>
-        {error && <p className="text-sm text-danger animate-pop">{error}</p>}
+        <div className="flex flex-col gap-6 animate-rise">
+          <ScreenSwap screen={screen} depth={DEPTH[screen]}>
+            {body()}
+          </ScreenSwap>
+          {error && <p className="text-sm text-danger animate-pop">{error}</p>}
+        </div>
       </div>
     </div>
   )
