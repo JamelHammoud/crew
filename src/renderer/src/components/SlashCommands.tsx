@@ -71,7 +71,7 @@ export function SlashMenu({
       className="glass absolute bottom-full mb-2 left-0 rounded-2xl p-1.5 min-w-64 max-h-56 overflow-y-auto animate-pop z-50"
     >
       {matches.map((command, index) => {
-        const Icon = ICONS[command.name] ?? ChecklistGlyph
+        const Icon = COMMAND_MARKS[command.name]
         return (
           <button
             key={command.name}
