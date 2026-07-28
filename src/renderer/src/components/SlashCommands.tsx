@@ -14,7 +14,8 @@ export function useSlashCommands(
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const pick = (command: SlashCommand) => {
-    setValue(`/${command.name} `)
+    onCommand(command.name)
+    setValue('')
     setDismissed(null)
     setActive(0)
     inputRef.current?.focus()
