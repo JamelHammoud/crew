@@ -171,3 +171,17 @@ describe('joining pieces', () => {
     expect(join([])).toHaveLength(0)
   })
 })
+
+// An English-only model throws on a `language` or a `task` before it reads a
+// sample, so every utterance failed on the way in and the conversation sat
+// there working forever. The model crew listens with is one of those.
+describe('what the listener is told about an utterance', () => {
+  it('tells an english-only model nothing at all', () => {
+    expect(askedOf('onnx-community/whisper-base.en')).toEqual({})
+    expect(askedOf(LISTEN_MODEL)).toEqual({})
+  })
+
+  it('names the language for a model that can be told', () => {
+    expect(askedOf('onnx-community/whisper-base')).toEqual({ language: 'en', task: 'transcribe' })
+  })
+})
