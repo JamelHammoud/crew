@@ -120,7 +120,10 @@ export const useVoice = create<VoiceState>((set, get) => {
       }
       set({ phase: 'hearing', saying: '' })
     },
-    onEnd: audio => void heard(audio)
+    onEnd: audio => {
+      if (audio) return void heard(audio)
+      if (get().phase === 'hearing') set({ phase: 'listening' })
+    }
   })
 
   live = { ear, mouth }
