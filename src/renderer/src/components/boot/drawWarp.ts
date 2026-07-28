@@ -20,22 +20,24 @@ function starColor(star: Star): string {
   return MESH_COLORS[Math.floor((star.tint / TINTED) * MESH_COLORS.length) % MESH_COLORS.length]
 }
 
-// The dust the field is travelling through. It is drawn behind everything and
-// moves at a fraction of the stars, which is what gives the flight a far
-// distance as well as a near one.
-function paintClouds(ctx: CanvasRenderingContext2D, view: View, t: number, lit: number): void {
+// The cloud the field is travelling through, laid over the whole window and
+// drawn larger than it so there is always more of it to come as it drifts.
+function paintNebula(
+  ctx: CanvasRenderingContext2D,
+  cloud: CanvasImageSource,
+  view: View,
+  t: number,
+  lit: number
+): void {
   ctx.globalCompositeOperation = 'lighter'
-  for (const cloud of CLOUDS) {
-    const swing = Math.sin(t * cloud.drift * Math.PI * 2 + cloud.lag)
-    const cx = (cloud.x + swing * 0.05) * view.width
-    const cy = (cloud.y + Math.cos(t * cloud.drift * Math.PI * 2 + cloud.lag) * 0.04) * view.height
-    const r = cloud.r * Math.min(view.width, view.height)
-    const wash = ctx.createRadialGradient(cx, cy, 0, cx, cy, r)
-    wash.addColorStop(0, cloud.color)
-    wash.addColorStop(1, 'transparent')
-    ctx.globalAlpha = cloud.alpha * lit
-    ctx.fillStyle = wash
-    ctx.fillRect(0, 0, view.width, view.height)
+  for (const layer of LAYERS) {
+    const width = view.width * layer.scale
+    const height = view.height * layer.scale
+    const room = { x: width - view.width, y: height - view.height }
+    const along = (Math.sin(t * 0.055 * layer.drift + layer.turn) + 1) / 2
+    const down = (Math.cos(t * 0.041 * layer.drift + layer.turn * 2) + 1) / 2
+    ctx.globalAlpha = layer.alpha * lit
+    ctx.drawImage(cloud, -room.x * along, -room.y * down, width, height)
   }
   ctx.globalAlpha = 1
   ctx.globalCompositeOperation = 'source-over'
