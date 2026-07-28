@@ -140,6 +140,7 @@ export default function VoiceScreen() {
   const toggleMute = useVoice(s => s.toggleMute)
   const answer = useVoice(s => s.answer)
   const openThread = useCrew(s => s.openThread)
+  const full = useFullScreen()
 
   useEffect(() => {
     if (!open) return
