@@ -28,10 +28,12 @@ function drawNebula(): HTMLCanvasElement | null {
 export default function WarpField({ still }: { still: boolean }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const stars = useRef<Star[]>([])
+  const cloud = useRef<HTMLCanvasElement | null>(null)
   const age = useRef(0)
 
   useEffect(() => {
     stars.current = makeStars(STARS, Math.random)
+    cloud.current = drawNebula()
   }, [])
 
   useEffect(() => {
