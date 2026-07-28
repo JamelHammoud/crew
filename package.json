@@ -56,7 +56,7 @@
     "@discordapp/twemoji": "^16.0.1",
     "@emoji-mart/data": "^1.2.1",
     "@heroicons/react": "^2.2.0",
-    "@huggingface/transformers": "4.2.0",
+    "@huggingface/transformers": "3.8.1",
     "@mantine/core": "^8.3.11",
     "@mantine/hooks": "^8.3.11",
     "@tldraw/assets": "^5.2.5",
