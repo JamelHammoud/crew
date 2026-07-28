@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 afterEach(cleanup)
 import type { SessionEvent } from '../src/shared/events'
+import type { ClientMessage, ServerMessage, SessionSnapshot } from '../src/shared/protocol'
 
 class TestResizeObserver {
   observe(): void {}
@@ -27,6 +28,32 @@ Element.prototype.scrollIntoView = () => {}
 if (typeof globalThis.CSS === 'undefined') {
   ;(globalThis as { CSS?: unknown }).CSS = {}
 }
+localStorage.setItem('crew.sound', 'off')
+
+class FakeSocket {
+  static last: FakeSocket | null = null
+  static readonly OPEN = 1
+  readyState = 1
+  sent: ClientMessage[] = []
+  onopen: (() => void) | null = null
+  onmessage: ((e: { data: string }) => void) | null = null
+  onclose: (() => void) | null = null
+  onerror: (() => void) | null = null
+
+  constructor(readonly url: string) {
+    FakeSocket.last = this
+  }
+
+  send(raw: string): void {
+    this.sent.push(JSON.parse(raw))
+  }
+
+  close(): void {
+    this.readyState = 3
+  }
+}
+
+globalThis.WebSocket = FakeSocket as unknown as typeof WebSocket
 
 const tops = new WeakMap<HTMLElement, number>()
 let scrollHeight = 2000
@@ -57,141 +84,174 @@ const said = (n: number): SessionEvent => ({
   mentions: []
 })
 
-const recent = Array.from({ length: 8 }, (_, i) => said(100 + i))
+const started = (n: number): SessionEvent => ({
+  id: `t${n}`,
+  ts: 1_700_000_000_000 + n * 1000,
+  kind: 'thread.started',
+  threadId: `thread-${n}`,
+  agentId: 'ag',
+  agentLabel: 'Agent',
+  title: `thread ${n}`,
+  byName: 'Jamel'
+})
 
-function boot(over: Record<string, unknown> = {}) {
-  useCrew.setState({
-    connection: 'online',
-    selfId: 'jamel',
-    selfName: 'Jamel',
-    members: [{ id: 'jamel', name: 'Jamel', connected: true }],
-    agents: [],
-    events: recent,
-    eventLimit: 500,
-    moreHistory: true,
-    loadingHistory: false,
-    loadHistory: () => {},
-    docs: { main: { title: 'Main', text: '' } },
-    threads: {},
-    threadPrompts: {},
-    threadDrafts: {},
-    chatDraft: '',
-    queues: {},
-    steps: {},
-    tokens: {},
-    pending: {},
-    openThreadId: null,
-    docsTarget: null,
-    ...over
+const archived = (n: number): SessionEvent => ({
+  id: `a${n}`,
+  ts: 1_700_000_500_000,
+  kind: 'thread.archived',
+  threadId: `thread-${n}`,
+  byName: 'Jamel'
+})
+
+const snapshot = (events: SessionEvent[], moreEvents: boolean): SessionSnapshot => ({
+  code: 'abc123',
+  members: [{ id: 'jamel', name: 'Jamel', connected: true }],
+  agents: [],
+  events,
+  docs: {},
+  queues: {},
+  todos: [],
+  moreEvents
+})
+
+const deliver = (msg: ServerMessage) => act(() => FakeSocket.last?.onmessage?.({ data: JSON.stringify(msg) }))
+
+const asked = (): ClientMessage[] => (FakeSocket.last?.sent ?? []).filter(m => m.type === 'history')
+
+const held = (): string[] => useCrew.getState().events.map(e => e.id)
+
+function join(events: SessionEvent[], moreEvents = true) {
+  useCrew.getState().connect({
+    wsUrl: 'ws://127.0.0.1:7777/ws',
+    name: 'Jamel',
+    code: 'abc123',
+    link: null,
+    folder: '/tmp/crew',
+    home: 'project',
+    shared: false,
+    synced: false,
+    hosting: true
   })
+  act(() => FakeSocket.last?.onopen?.())
+  FakeSocket.last!.sent = []
+  deliver({ type: 'welcome', selfId: 'jamel', snapshot: snapshot(events, moreEvents) })
+}
+
+function open(events: SessionEvent[], moreEvents = true) {
+  join(events, moreEvents)
   const view = render(createElement(Chat))
   const feed = view.container.querySelector('.overflow-y-auto') as HTMLElement
   const spinner = () => view.container.querySelector('[role="status"]')
   return { view, feed, spinner }
 }
 
+const recent = Array.from({ length: 8 }, (_, i) => said(100 + i))
+
 describe('reaching back through the chat', () => {
+  beforeEach(() => {
+    scrollHeight = 2000
+  })
+
   it('asks for older messages when the reader comes up on the top', () => {
-    const loadHistory = vi.fn()
-    const { feed } = boot({ loadHistory })
+    const { feed } = open(recent)
 
     feed.scrollTop = 1200
     fireEvent.scroll(feed)
-    expect(loadHistory).not.toHaveBeenCalled()
+    expect(asked()).toHaveLength(0)
 
     feed.scrollTop = 100
     fireEvent.scroll(feed)
-    expect(loadHistory).toHaveBeenCalledTimes(1)
+    expect(asked()).toEqual([{ type: 'history', before: 'm100' }])
+  })
+
+  it('asks once while a page is on its way', () => {
+    const { feed } = open(recent)
+
+    feed.scrollTop = 100
+    fireEvent.scroll(feed)
+    feed.scrollTop = 60
+    fireEvent.scroll(feed)
+    expect(asked()).toHaveLength(1)
   })
 
   it('asks nobody when there is nothing older to read', () => {
-    const loadHistory = vi.fn()
-    const { feed, spinner } = boot({ loadHistory, moreHistory: false })
+    const { feed, spinner } = open(recent, false)
 
     feed.scrollTop = 0
     fireEvent.scroll(feed)
-    expect(loadHistory).not.toHaveBeenCalled()
+    expect(asked()).toHaveLength(0)
     expect(spinner()).toBeNull()
   })
 
   it('says it is working while the page is on its way', () => {
-    const { spinner, view } = boot()
+    const { feed, spinner } = open(recent)
     expect(spinner()).toBeNull()
 
-    act(() => useCrew.setState({ loadingHistory: true }))
+    feed.scrollTop = 100
+    fireEvent.scroll(feed)
     expect(spinner()).not.toBeNull()
 
-    act(() => useCrew.setState({ loadingHistory: false }))
+    deliver({ type: 'history', events: [said(98), said(99)], more: false })
     expect(spinner()).toBeNull()
-    view.unmount()
   })
 
   it('leaves the reader on the line they were reading', () => {
-    const { feed } = boot()
+    const { feed } = open(recent)
 
     feed.scrollTop = 100
     fireEvent.scroll(feed)
-    act(() => useCrew.setState({ loadingHistory: true }))
-
     scrollHeight = 3000
-    act(() => useCrew.setState({ events: [...Array.from({ length: 6 }, (_, i) => said(i)), ...recent] }))
-    act(() => useCrew.setState({ loadingHistory: false }))
+    deliver({ type: 'history', events: [said(98), said(99)], more: true })
+
     expect(feed.scrollTop).toBe(1100)
-    scrollHeight = 2000
+    expect(held()).toEqual(['m98', 'm99', ...recent.map(e => e.id)])
   })
 
-  it('reaches back again when a page had nothing this screen draws', () => {
-    const loadHistory = vi.fn()
-    const { feed } = boot({ loadHistory })
+  it('reaches back again when a page held nothing this screen draws', () => {
+    const { feed } = open(recent)
 
     feed.scrollTop = 100
     fireEvent.scroll(feed)
-    act(() => useCrew.setState({ loadingHistory: true }))
-    act(() => useCrew.setState({ loadingHistory: false }))
+    deliver({ type: 'history', events: [started(1), archived(1)], more: true })
 
-    expect(loadHistory).toHaveBeenCalledTimes(2)
+    expect(asked()).toEqual([
+      { type: 'history', before: 'm100' },
+      { type: 'history', before: 't1' }
+    ])
     expect(feed.scrollTop).toBe(100)
   })
 })
 
-describe('a page of history landing in the store', () => {
-  const thread = (n: number): SessionEvent => ({
-    id: `t${n}`,
-    ts: 1_700_000_000_000 + n * 1000,
-    kind: 'thread.started',
-    threadId: `thread-${n}`,
-    agentId: 'ag',
-    agentLabel: 'Agent',
-    title: `thread ${n}`,
-    byName: 'Jamel'
+describe('a page of history landing in the chat', () => {
+  beforeEach(() => {
+    scrollHeight = 2000
   })
 
-  it('puts what arrived above what was held, and never twice', () => {
-    boot({ events: [said(5), said(6)] })
-    act(() => useCrew.setState({ loadingHistory: true }))
-    act(() =>
-      useCrew.getState().$handle({ type: 'history', events: [said(3), said(4), said(5)], more: true })
-    )
-
-    const { events, loadingHistory, moreHistory } = useCrew.getState()
-    expect(events.map(e => e.id)).toEqual(['m3', 'm4', 'm5', 'm6'])
-    expect(loadingHistory).toBe(false)
-    expect(moreHistory).toBe(true)
+  it('never holds the same message twice', () => {
+    open(recent)
+    deliver({ type: 'history', events: [said(99), said(100)], more: true })
+    expect(held()).toEqual(['m99', ...recent.map(e => e.id)])
   })
 
-  it('brings the threads it names with it, and keeps them out of the trim', () => {
-    boot({ events: [said(9)], eventLimit: 2, threads: {} })
-    act(() => useCrew.getState().$handle({ type: 'history', events: [thread(1), said(2)], more: false }))
+  it('keeps what was read back when the next message lands', () => {
+    open(recent)
+    deliver({ type: 'history', events: [said(98), said(99)], more: false })
+    deliver({ type: 'event', event: said(200) })
 
-    expect(useCrew.getState().threads['thread-1']?.title).toBe('thread 1')
-    act(() => useCrew.getState().$handle({ type: 'event', event: said(10) }))
-    expect(useCrew.getState().events.map(e => e.id)).toEqual(['t1', 'm2', 'm9', 'm10'])
+    expect(held()).toEqual(['m98', 'm99', ...recent.map(e => e.id), 'm200'])
     expect(useCrew.getState().moreHistory).toBe(false)
   })
 
-  it('lets a thread archived since stay archived', () => {
-    boot({ events: [{ ...thread(1), kind: 'thread.archived', id: 'a1', ts: 2 } as SessionEvent], threads: {} })
-    act(() => useCrew.getState().$handle({ type: 'history', events: [thread(1)], more: false }))
+  it('brings the threads it names with it', () => {
+    open(recent)
+    deliver({ type: 'history', events: [started(1)], more: false })
+
+    expect(useCrew.getState().threads['thread-1']?.title).toBe('thread 1')
+  })
+
+  it('leaves a thread archived since it was started archived', () => {
+    open([archived(1), ...recent])
+    deliver({ type: 'history', events: [started(1)], more: false })
 
     expect(useCrew.getState().threads['thread-1']?.status).toBe('archived')
   })
