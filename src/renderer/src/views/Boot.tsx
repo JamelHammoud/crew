@@ -55,7 +55,6 @@ export default function Boot({ ready, onDone }: { ready: boolean; onDone: () => 
 
   return (
     <div
-      data-crew-lit
       data-gone={gone || undefined}
       className="crew-boot relative h-full overflow-hidden bg-ink-950 flex items-center justify-center"
     >
@@ -63,10 +62,12 @@ export default function Boot({ ready, onDone }: { ready: boolean; onDone: () => 
       <div className="app-drag absolute inset-0" />
       {arrived && (
         <div className="crew-boot-mark relative flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <CrewGlow className="w-[38rem] max-w-none shrink-0" />
+          {/* The light is lit and the mark is not, so the discs stand white in
+              front of it rather than becoming windows onto it. */}
+          <div data-crew-lit className="absolute inset-0 flex items-center justify-center">
+            <CrewGlow className="w-[46rem] max-w-none shrink-0" />
           </div>
-          <CrewMark className="relative w-auto text-fg" live height={96} />
+          <CrewMark className="relative w-auto text-fg" live height={132} />
         </div>
       )}
     </div>
