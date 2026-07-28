@@ -48,7 +48,7 @@ export default function Places({
               busy={busyKey === place.key}
               disabled={busy}
               onOpen={() => onOpen(place)}
-              onForget={place.project ? () => onForget(place) : undefined}
+              onForget={() => onForget(place)}
             />
           ))}
         </div>
