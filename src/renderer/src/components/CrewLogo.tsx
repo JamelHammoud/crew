@@ -4,7 +4,7 @@ import { CrewMark } from './CrewMark'
 
 const ONCE = new Set(['crew-join', 'crew-flash'])
 
-export default function CrewLogo({ className = '' }: { className?: string }) {
+export default function CrewLogo({ className = '', height = 18 }: { className?: string; height?: number }) {
   const [lit, setLit] = useState(false)
   const box = useRef<HTMLButtonElement>(null)
   const over = useRef(false)
