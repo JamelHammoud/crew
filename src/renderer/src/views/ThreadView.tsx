@@ -183,12 +183,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
               <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
               {replyTo && <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />}
+              {thread.ghost && <GhostBar />}
               <div
                 className={`relative bg-ink-900 border border-b-0 border-ink-700 rounded-t-[30px] pb-12 -mb-9 ${
                   thread.ghost ? 'border-dashed' : ''
                 }`}
               >
-                {thread.ghost && <GhostBar />}
                 <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
                   <Tooltip label="Back to chat">
                     <button
