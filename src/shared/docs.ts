@@ -1,3 +1,6 @@
+export const ROOT_PAGE = 'main'
+export const ROOT_TITLE = 'Genesis'
+
 export interface DocPage {
   title: string
   text: string
