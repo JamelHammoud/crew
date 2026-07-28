@@ -357,7 +357,8 @@ export class Runner {
     settings: AgentSettings,
     attachments: Attachment[],
     designBoard?: DesignBoardMeta,
-    designBoards: DesignBoardMeta[] = []
+    designBoards: DesignBoardMeta[] = [],
+    ghost = false
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
