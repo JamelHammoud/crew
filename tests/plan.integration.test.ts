@@ -55,10 +55,10 @@ describe('plan mode', () => {
     await connectRunner('jamel')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /plan tidy the readme', [fake])
+    sam.chat('@Fake tidy the readme', [fake], undefined, ['plan'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     expect(thread.mode).toBe('plan')
-    // The command itself is not part of the work.
+    // The command rode beside the message, so the work is what was written.
     expect(thread.title).toBe('@Fake tidy the readme')
 
     const plan = (await sam.waitForEvent(e => e.kind === 'thread.plan')) as ThreadPlan
