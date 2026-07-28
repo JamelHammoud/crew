@@ -1,140 +1,76 @@
 import { spawn } from 'node:child_process'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
-import electron from 'electron'
 
-// The half of a conversation no fake can stand in for: a real microphone track
-// through a real worklet, cut into utterances by the gate the app ships. A gate
-// that never opens and a gate that opens on everything both look exactly like a
-// microphone doing nothing, and neither one says a word about itself.
+// The one part of a conversation no fake can stand in for: the real model, told
+// what the app tells it, handed real speech. A listener that throws on every
+// utterance and a listener that hears nothing look exactly the same from the
+// outside, which is a microphone that appears to do nothing, and every unit
+// test passed the whole time this was broken.
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
 const SAID = 'Hey there. Can you hear me now? Tell me what is in this project.'
-
-const PAGE = `<!doctype html><html><body><script src="ear.js"></script><script>
-window.listen = async (seconds) => {
-  const said = []
-  let openedAt = 0
-  const ear = new CrewEar.VoiceEar({
-    onStart: () => { openedAt = performance.now() },
-    onEnd: audio => {
-      let peak = 0
-      for (const sample of audio || []) peak = Math.max(peak, Math.abs(sample))
-      said.push({
-        seconds: audio ? Number((audio.length / 16000).toFixed(2)) : 0,
-        held: Math.round(performance.now() - openedAt),
-        peak: Number(peak.toFixed(4)),
-        dropped: !audio
-      })
-    }
-  })
-  const problem = await ear.open()
-  if (problem) return { failed: 'the microphone never opened: ' + problem }
-  await new Promise(resolve => setTimeout(resolve, seconds * 1000))
-  const floor = ear.noiseFloor
-  ear.close()
-  return { said, floor: Number(floor.toFixed(5)) }
-}
-</script></body></html>`
-
-const MAIN = `import { app, BrowserWindow } from 'electron'
-import path from 'node:path'
-
-app.commandLine.appendSwitch('use-fake-device-for-media-stream')
-app.commandLine.appendSwitch('use-fake-ui-for-media-stream')
-app.commandLine.appendSwitch('use-file-for-fake-audio-capture', process.env.CREW_WAV)
-
-app.whenReady().then(async () => {
-  const window = new BrowserWindow({
-    show: false,
-    webPreferences: { nodeIntegration: true, contextIsolation: false }
-  })
-  window.webContents.session.setPermissionRequestHandler((_web, _kind, allow) => allow(true))
-  await window.loadFile(path.join(import.meta.dirname, 'ear.html'))
-  const seen = await window.webContents.executeJavaScript('window.listen(' + (process.env.CREW_SECONDS || 12) + ')')
-  console.log('CHECK ' + JSON.stringify(seen))
-  app.exit(0)
-}).catch(error => {
-  console.log('CHECK ' + JSON.stringify({ failed: String(error && error.message) }))
-  app.exit(1)
-})
-`
+const WORDS = ['hear', 'me', 'project']
 
 async function speech(dir) {
   const file = path.join(dir, 'said.wav')
   await new Promise((resolve, reject) => {
-    const child = spawn('say', ['-o', file, '--data-format=LEI16@16000', SAID], { stdio: 'ignore' })
+    const child = spawn('say', ['-o', file, '--data-format=LEF32@16000', SAID], { stdio: 'ignore' })
     child.on('exit', code => (code === 0 ? resolve() : reject(new Error('say could not make the speech'))))
-    child.on('error', reject)
+    child.on('error', () => reject(new Error('this check needs the say command, which is macOS only')))
   })
-  return file
+  const wav = await readFile(file)
+  let at = 12
+  while (at < wav.length - 8) {
+    const id = wav.toString('ascii', at, at + 4)
+    const size = wav.readUInt32LE(at + 4)
+    if (id === 'data') {
+      const raw = wav.subarray(at + 8, at + 8 + size)
+      return new Float32Array(raw.buffer.slice(raw.byteOffset, raw.byteOffset + Math.floor(raw.length / 4) * 4))
+    }
+    at += 8 + size + (size % 2)
+  }
+  throw new Error('the speech came out with nothing in it')
 }
 
-async function stage() {
-  const dir = await mkdtemp(path.join(tmpdir(), 'crew-voice-'))
+async function settings(dir) {
+  const file = path.join(dir, 'models.mjs')
   await build({
-    entryPoints: [path.join(root, 'src/renderer/src/media/voice/ear.ts')],
+    entryPoints: [path.join(root, 'src/renderer/src/media/voice/models.ts')],
     bundle: true,
-    format: 'iife',
-    globalName: 'CrewEar',
-    outfile: path.join(dir, 'ear.js'),
+    format: 'esm',
+    outfile: file,
     logLevel: 'error'
   })
-  await writeFile(path.join(dir, 'ear.html'), PAGE)
-  await writeFile(path.join(dir, 'main.mjs'), MAIN)
-  return dir
+  return import(file)
 }
 
-function run(dir, wav, seconds) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(electron, [path.join(dir, 'main.mjs')], {
-      env: { ...process.env, ELECTRON_ENABLE_LOGGING: '0', CREW_WAV: wav, CREW_SECONDS: String(seconds) },
-      stdio: ['ignore', 'pipe', 'pipe']
-    })
-    let out = ''
-    child.stdout.on('data', chunk => (out += chunk))
-    child.stderr.on('data', () => {})
-    const timer = setTimeout(() => {
-      child.kill('SIGKILL')
-      reject(new Error('the check never finished'))
-    }, (seconds + 40) * 1000)
-    child.on('exit', () => {
-      clearTimeout(timer)
-      const line = out.split('\n').find(text => text.startsWith('CHECK '))
-      if (!line) return reject(new Error('the check said nothing'))
-      resolve(JSON.parse(line.slice(6)))
-    })
-  })
-}
-
-const seconds = Number(process.argv[2] || 12)
-const dir = await stage()
+const dir = await mkdtemp(path.join(tmpdir(), 'crew-voice-'))
 try {
-  const wav = await speech(dir)
-  const seen = await run(dir, wav, seconds)
-  if (seen.failed) {
-    console.error(seen.failed)
+  const [audio, { LISTEN_MODEL, askedOf }] = await Promise.all([speech(dir), settings(dir)])
+  const { env, pipeline } = await import('@huggingface/transformers')
+  env.allowLocalModels = false
+  const listen = await pipeline('automatic-speech-recognition', LISTEN_MODEL, {
+    dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' }
+  })
+  const result = await listen(audio, askedOf(LISTEN_MODEL))
+  const heard = (Array.isArray(result) ? result.map(part => part.text).join(' ') : result.text) ?? ''
+  console.log(`said:  ${SAID}`)
+  console.log(`heard: ${heard.trim()}`)
+  const missed = WORDS.filter(word => !heard.toLowerCase().includes(word))
+  if (missed.length > 0) {
+    console.error(`the listener made nothing of ${missed.join(', ')}`)
     process.exit(1)
   }
-  const kept = seen.said.filter(one => !one.dropped)
-  for (const one of seen.said) {
-    console.log(
-      one.dropped
-        ? `dropped after ${one.held}ms`
-        : `heard ${one.seconds}s, peak ${one.peak}, gate held ${one.held}ms`
-    )
-  }
-  console.log(`the room sat at ${seen.floor}`)
-  if (kept.length === 0) {
-    console.error('the gate never handed over anything somebody said')
-    process.exit(1)
-  }
-  console.log(`${kept.length} utterance${kept.length === 1 ? '' : 's'} out of a real microphone`)
+  console.log('real speech, the real model, words back out')
+} catch (error) {
+  console.error(`the listener fell over: ${error.message}`)
+  process.exit(1)
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
