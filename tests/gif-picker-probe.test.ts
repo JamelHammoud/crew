@@ -125,6 +125,73 @@ describe('the plus button on the composer', () => {
   })
 })
 
+describe('the huddle in the plus menu', () => {
+  const peer = {
+    peerId: 'peer-ali',
+    memberId: 'ali',
+    name: 'Ali',
+    muted: false,
+    camera: false,
+    sharing: false,
+    joinedAt: 1
+  }
+
+  const openIn = (huddle?: boolean) => {
+    render(createElement(AddMenu, { attachmentKey: CHAT_KEY, huddle, onSend: vi.fn() }))
+    fireEvent.click(screen.getByLabelText('Add to your message'))
+  }
+
+  it('starts the call from the main chat', () => {
+    openIn(true)
+    fireEvent.click(screen.getByText('Start a huddle'))
+
+    expect(join).toHaveBeenCalledTimes(1)
+    expect(screen.queryByText('Start a huddle')).toBeNull()
+  })
+
+  it('is not offered in a thread or on a board', () => {
+    openIn()
+
+    expect(screen.queryByText('Start a huddle')).toBeNull()
+    expect(screen.getByText('Upload a file')).not.toBeNull()
+  })
+
+  it('says join rather than start when a call is already going', () => {
+    useHuddle.setState({ room: { id: 'call-1', peers: [peer], startedAt: 1 } })
+    openIn(true)
+
+    expect(screen.queryByText('Start a huddle')).toBeNull()
+    fireEvent.click(screen.getByText('Join the huddle'))
+    expect(join).toHaveBeenCalledTimes(1)
+  })
+
+  it('leaves the row out once you are in the call', () => {
+    useHuddle.setState({ room: { id: 'call-1', peers: [peer], startedAt: 1 }, joined: true })
+    openIn(true)
+
+    expect(screen.queryByText('Join the huddle')).toBeNull()
+    expect(screen.queryByText('Start a huddle')).toBeNull()
+  })
+
+  it('is still reachable with the attachments full', () => {
+    useCrew.setState({
+      pending: {
+        [CHAT_KEY]: Array.from({ length: 6 }, (_, index) => ({
+          id: `a-${index}`,
+          name: `a-${index}.png`,
+          mime: 'image/png',
+          size: 10,
+          data: ''
+        }))
+      }
+    })
+    openIn(true)
+
+    expect(screen.getByText('Start a huddle')).not.toBeNull()
+    expect(screen.queryByText('Upload a file')).toBeNull()
+  })
+})
+
 describe('the GIF picker', () => {
   it('opens inside the same popover, on what is trending, with a search of its own', async () => {
     await openPicker()
