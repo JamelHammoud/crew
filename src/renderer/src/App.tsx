@@ -22,9 +22,13 @@ export default function App() {
   const connection = useCrew(s => s.connection)
   const waiting = useCrew(reviewCount)
   // Only ever the once, on the way in. Leaving a session goes back to the list
-  // rather than back to the mark.
-  const [booted, setBooted] = useState(false)
-  const done = useCallback(() => setBooted(true), [])
+  // rather than back to the mark, and in dev a reload lands straight in the app
+  // rather than flying in again.
+  const [booted, setBooted] = useState(bootSeen)
+  const done = useCallback(() => {
+    rememberBoot()
+    setBooted(true)
+  }, [])
 
   useEffect(() => {
     void window.crew?.setBadge?.(waiting)
