@@ -37,7 +37,7 @@ describe('a crew kept on this machine', () => {
     expect(info.wsUrl).toContain('127.0.0.1')
 
     const ui = await TestUi.connect(info.wsUrl, 'sam', info.code)
-    ui.send({ type: 'chat', text: 'only me here' })
+    ui.chat('only me here')
     await ui.waitForEvent(e => e.kind === 'message' && e.text === 'only me here', 10000)
     ui.close()
 
@@ -55,7 +55,7 @@ describe('a crew kept on this machine', () => {
     const app = new AppSession(paths)
     const info = await app.startHost(repo, 'sam', { home: 'private' })
     const ui = await TestUi.connect(info.wsUrl, 'sam', info.code)
-    ui.send({ type: 'chat', text: 'kept' })
+    ui.chat('kept')
     await ui.waitForEvent(e => e.kind === 'message' && e.text === 'kept', 10000)
     ui.close()
     await app.shutdown()
@@ -105,7 +105,7 @@ describe('a crew kept on this machine', () => {
     const info = await app.startHost(plain, 'sam', { home: 'private' })
     expect(info.synced).toBe(false)
     const ui = await TestUi.connect(info.wsUrl, 'sam', info.code)
-    ui.send({ type: 'chat', text: 'no git anywhere' })
+    ui.chat('no git anywhere')
     await ui.waitForEvent(e => e.kind === 'message' && e.text === 'no git anywhere', 10000)
     ui.close()
     await app.leave()
@@ -120,7 +120,7 @@ describe('a crew kept on this machine', () => {
     const app = new AppSession(statePaths('local-share'))
     const info = await app.startHost(repo, 'sam', { home: 'private' })
     const ui = await TestUi.connect(info.wsUrl, 'sam', info.code)
-    ui.send({ type: 'chat', text: 'said before anyone arrived' })
+    ui.chat('said before anyone arrived')
     await ui.waitForEvent(e => e.kind === 'message' && e.text === 'said before anyone arrived', 10000)
 
     const open = await app.setShared(true)
