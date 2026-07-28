@@ -71,15 +71,6 @@ export default function Places({
           Join with a link
         </button>
       </div>
-
-      <button
-        onClick={onName}
-        className="group w-full rounded-2xl px-2 py-2 flex items-center gap-2.5 text-left transition-colors duration-150 hover:bg-ink-800"
-      >
-        <Avatar name={name || '?'} size="sm" />
-        <span className="min-w-0 flex-1 text-sm text-fg-secondary truncate">{name}</span>
-        <PencilGlyph className="w-3.5 h-3.5 text-fg-faint transition-colors duration-150 group-hover:text-fg-secondary" />
-      </button>
     </div>
   )
 }
