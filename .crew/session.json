@@ -127,22 +127,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785263723677,
+        "fetchedAt": 1785264016162,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 51,
+            "percent": 52,
             "severity": "normal",
-            "resetsAt": 1785272999859,
+            "resetsAt": 1785272999355,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 38,
+            "percent": 39,
             "severity": "normal",
-            "resetsAt": 1785499199859,
+            "resetsAt": 1785499199355,
             "active": false
           }
         ],
@@ -232,7 +232,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785264503731,
+        "fetchedAt": 1785264556230,
         "windows": [
           {
             "key": "primary",
@@ -328,7 +328,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785264503731,
+        "fetchedAt": 1785264556230,
         "windows": [
           {
             "key": "primary",
@@ -447,14 +447,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785264250758,
+        "fetchedAt": 1785264550783,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785266400070,
+            "resetsAt": 1785266400130,
             "active": false
           },
           {
@@ -462,7 +462,7 @@
             "label": "Weekly (all models)",
             "percent": 46,
             "severity": "normal",
-            "resetsAt": 1785535200070,
+            "resetsAt": 1785535200130,
             "active": true
           },
           {
@@ -620,22 +620,22 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785263723677,
+        "fetchedAt": 1785264016162,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 51,
+            "percent": 52,
             "severity": "normal",
-            "resetsAt": 1785272999859,
+            "resetsAt": 1785272999355,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 38,
+            "percent": 39,
             "severity": "normal",
-            "resetsAt": 1785499199859,
+            "resetsAt": 1785499199355,
             "active": false
           }
         ],
