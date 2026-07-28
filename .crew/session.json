@@ -127,14 +127,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785261323456,
+        "fetchedAt": 1785260415687,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 51,
+            "percent": 44,
             "severity": "normal",
-            "resetsAt": 1785272999619,
+            "resetsAt": 1785273000977,
             "active": true
           },
           {
@@ -142,7 +142,7 @@
             "label": "Weekly (all models)",
             "percent": 38,
             "severity": "normal",
-            "resetsAt": 1785499199619,
+            "resetsAt": 1785499199977,
             "active": false
           }
         ],
@@ -232,18 +232,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785261323690,
+        "fetchedAt": 1785261375784,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 5
+            "percent": 6
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785261316327
+        "asOf": 1785261368607
       },
       "avatar": "b1ecb2a9-f960-4ef8-8cb4-3e10cd0e6ece.png"
     },
@@ -328,18 +328,18 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785261323690,
+        "fetchedAt": 1785261375784,
         "windows": [
           {
             "key": "primary",
             "label": "730-hour limit",
-            "percent": 5
+            "percent": 6
           }
         ],
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785261316327
+        "asOf": 1785261368607
       }
     },
     {
@@ -620,14 +620,14 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785261323456,
+        "fetchedAt": 1785260415687,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 51,
+            "percent": 44,
             "severity": "normal",
-            "resetsAt": 1785272999619,
+            "resetsAt": 1785273000977,
             "active": true
           },
           {
@@ -635,7 +635,7 @@
             "label": "Weekly (all models)",
             "percent": 38,
             "severity": "normal",
-            "resetsAt": 1785499199619,
+            "resetsAt": 1785499199977,
             "active": false
           }
         ],
