@@ -13,7 +13,10 @@ export interface EarEars {
   // the agent. It arrives before the words do, because stopping the voice is
   // the one thing that cannot wait for whisper.
   onStart: () => void
-  onEnd: (audio: Float32Array, seconds: number) => void
+  // Nothing, for a cough or a chair: the gate opened and what came out of it
+  // was too short to be a word. It still has to be said, or the one waiting on
+  // it is left standing in the middle of a turn nobody is taking.
+  onEnd: (audio: Float32Array | null) => void
 }
 
 const loaded = new WeakSet<AudioContext>()
