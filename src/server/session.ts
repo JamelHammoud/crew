@@ -2594,7 +2594,7 @@ export class CrewSession {
   }
 
   private threadContext(threadId: string): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
-    return this.events
+    return this.eventsOf(threadId)
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
           (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === threadId
