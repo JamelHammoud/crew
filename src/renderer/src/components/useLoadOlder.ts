@@ -11,7 +11,9 @@ const QUIET_PAGES = 5
  * A page can hold nothing this view draws, since the log carries far more than
  * any one screen of it shows. When one lands and the scroller is no taller for
  * it, the next is asked for straight away, up to a few in a row, or reaching
- * back would take a scroll per page with nothing to show for any of them.
+ * back would take a scroll per page with nothing to show for any of them. A
+ * view with nothing to scroll asks for the same reason, since scrolling is the
+ * only other way it would ever be asked.
  */
 export function useLoadOlder(
   scrollRef: React.RefObject<HTMLDivElement | null>,
@@ -29,16 +31,19 @@ export function useLoadOlder(
       asked.current = true
       return
     }
-    if (!asked.current) return
-    asked.current = false
-    const grew = el.scrollHeight - height.current
-    if (grew > 0) {
-      el.scrollTop += grew
-      quiet.current = 0
-      return
+    const landed = asked.current
+    if (landed) {
+      asked.current = false
+      const grew = el.scrollHeight - height.current
+      if (grew > 0) {
+        el.scrollTop += grew
+        quiet.current = 0
+      } else {
+        quiet.current += 1
+      }
     }
-    quiet.current += 1
-    if (more && quiet.current < QUIET_PAGES && el.scrollTop < NEAR_TOP) load()
+    if (!more || quiet.current >= QUIET_PAGES) return
+    if (el.scrollHeight <= el.clientHeight || (landed && el.scrollTop < NEAR_TOP)) load()
   }, [load, loading, more, scrollRef])
 
   return useCallback(() => {
