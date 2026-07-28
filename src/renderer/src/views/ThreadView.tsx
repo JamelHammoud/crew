@@ -206,6 +206,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   </span>
                 </MemberName>
                 <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                  {thread.ghost && (
+                    <span className="mr-1">
+                      <Pill lg>Only you</Pill>
+                    </span>
+                  )}
                   {state === 'working' ? (
                     <>
                       <Spinner size={16} className="text-fg" />
