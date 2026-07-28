@@ -77,41 +77,41 @@ describe('what is waiting for review', () => {
 
 describe('finished alerts', () => {
   it('names the agent and the work, without repeating the mention', () => {
-    expect(finishedAlert(ended('t1'), state(), true)).toEqual({
+    expect(finishedAlert(ended('t1'), state())).toEqual({
       title: 'Bubbles finished',
       body: 'fix the sync loop',
-      threadId: 't1'
+      threadId: 't1',
+      agentId: 'a1',
+      stopped: false
     })
   })
 
   it('reads the agent name back off its id after a rename', () => {
-    const alert = finishedAlert(ended('t1'), state({ agents: [{ id: 'a1', label: 'Bubbles 2' }] }), true)
+    const alert = finishedAlert(ended('t1'), state({ agents: [{ id: 'a1', label: 'Bubbles 2' }] }))
     expect(alert?.title).toBe('Bubbles 2 finished')
   })
 
   it('says so when a run stopped short', () => {
-    expect(finishedAlert(ended('t1', false), state(), true)?.title).toBe('Bubbles stopped')
+    const alert = finishedAlert(ended('t1', false), state())
+    expect(alert?.title).toBe('Bubbles stopped')
+    expect(alert?.stopped).toBe(true)
   })
 
   it('stays quiet while that thread is on screen', () => {
-    expect(finishedAlert(ended('t1'), state({ openThreadId: 't1' }), true)).toBeNull()
-  })
-
-  it('still speaks up when the window is in the background', () => {
-    expect(finishedAlert(ended('t1'), state({ openThreadId: 't1' }), false)).not.toBeNull()
+    expect(finishedAlert(ended('t1'), state({ openThreadId: 't1' }))).toBeNull()
   })
 
   it('speaks up when another thread is on screen', () => {
     const threads = { t1: thread('t1'), t2: thread('t2') }
-    expect(finishedAlert(ended('t1'), state({ threads, openThreadId: 't2' }), true)).not.toBeNull()
+    expect(finishedAlert(ended('t1'), state({ threads, openThreadId: 't2' }))).not.toBeNull()
   })
 
   it('waits when there is more work queued behind the run', () => {
-    expect(finishedAlert(ended('t1'), state({ queues: { t1: [queued()] } }), true)).toBeNull()
+    expect(finishedAlert(ended('t1'), state({ queues: { t1: [queued()] } }))).toBeNull()
   })
 
   it('says nothing about a thread already marked done', () => {
-    expect(finishedAlert(ended('t1'), state({ threads: { t1: thread('t1', { status: 'done' }) } }), true)).toBeNull()
+    expect(finishedAlert(ended('t1'), state({ threads: { t1: thread('t1', { status: 'done' }) } }))).toBeNull()
   })
 
   it('ignores everything that is not a run ending', () => {
@@ -124,7 +124,7 @@ describe('finished alerts', () => {
       text: 'hello',
       mentions: []
     }
-    expect(finishedAlert(message, state(), false)).toBeNull()
+    expect(finishedAlert(message, state())).toBeNull()
   })
 })
 
@@ -141,17 +141,64 @@ describe('member mention alerts', () => {
     threadId: 't1'
   })
 
-  it('alerts the named member while the app is in the background', () => {
-    expect(memberMentionAlert(message(), 'ali', false)).toEqual({
+  it('alerts the named member, and carries who it came from', () => {
+    expect(memberMentionAlert(message(), 'ali', null)).toEqual({
       title: 'Jamel mentioned you',
       body: 'Can you look at this @ALI?',
-      threadId: 't1'
+      threadId: 't1',
+      from: 'Jamel'
     })
   })
 
-  it('stays quiet when the app is focused or the author tags themself', () => {
-    expect(memberMentionAlert(message(), 'ali', true)).toBeNull()
-    expect(memberMentionAlert(message('ali'), 'ali', false)).toBeNull()
+  it('stays quiet inside the thread it was said in, and for your own message', () => {
+    expect(memberMentionAlert(message(), 'ali', 't1')).toBeNull()
+    expect(memberMentionAlert(message('ali'), 'ali', null)).toBeNull()
+  })
+
+  it('still speaks up while another thread is open', () => {
+    expect(memberMentionAlert(message(), 'ali', 't2')).not.toBeNull()
+  })
+})
+
+describe('an alert in the app', () => {
+  const finished = (): AgentAlert => finishedAlert(ended('t1'), state())!
+
+  afterEach(() => {
+    act(() => clearToasts())
+  })
+
+  it('says the same thing the system banner would, with the face it is about', () => {
+    render(createElement(Toaster))
+    act(() => alertToast(finished(), () => {}))
+
+    expect(screen.getByText('Bubbles finished')).toBeTruthy()
+    expect(screen.getByText('fix the sync loop')).toBeTruthy()
+    expect(document.querySelector('.toast-card svg')).toBeTruthy()
+  })
+
+  it('opens the thread it is about', () => {
+    const opened = vi.fn()
+    render(createElement(Toaster))
+    act(() => alertToast(finished(), opened))
+
+    fireEvent.click(screen.getByText('Open'))
+    expect(opened).toHaveBeenCalledWith('t1')
+  })
+
+  it('a run that stopped short is one to notice', () => {
+    render(createElement(Toaster))
+    act(() => alertToast(finishedAlert(ended('t1', false), state())!, () => {}))
+    expect(document.querySelector('[role="alert"]')).toBeTruthy()
+  })
+
+  it('one row per thread, rewritten where it stands', () => {
+    render(createElement(Toaster))
+    act(() => {
+      alertToast(finished(), () => {})
+      alertToast({ title: 'Jamel mentioned you', body: 'take a look', threadId: 't1', from: 'Jamel' }, () => {})
+    })
+    expect(document.querySelectorAll('.toast-row').length).toBe(1)
+    expect(screen.getByText('Jamel mentioned you')).toBeTruthy()
   })
 })
 
