@@ -830,14 +830,19 @@ export class CrewSession {
       ? { planning: false, ghost: false, text: text.trim() }
       : readCommands(text.trim())
     const trimmed = command.text
-    const attachments = this.saveAttachments(incoming)
+    const hidden = threadId ? this.ghostOf(threadId) !== undefined : command.ghost
+    const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
     if (!trimmed && attachments.length === 0) return
-    const replyTo = this.replyReference(replyTargetId)
+    const replyTo = this.replyReference(ws, replyTargetId)
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread || this.hiddenFrom(ws, threadId)) return
       if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
-      const targets = [...new Set(mentions)].filter(id => this.agents.has(id))
+      const named = [...new Set(mentions)].filter(id => this.agents.has(id))
+      // An agent on somebody else's machine cannot take a ghost thread, so
+      // naming one reads the way naming an agent who is not here reads: the
+      // thread's own agent takes it.
+      const targets = hidden ? named.filter(id => this.ownAgent(member, id)) : named
       if (targets.length === 0) targets.push(thread.agentId)
       const messageId = randomUUID()
       if (!targets.includes(thread.agentId)) this.switchThreadAgent(thread, targets[0], member)
