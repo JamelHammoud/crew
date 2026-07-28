@@ -190,64 +190,65 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               >
                 {thread.ghost && <GhostBar />}
                 <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
-                <Tooltip label="Back to chat">
-                  <button
-                    onClick={closeThread}
-                    aria-label="Back to chat"
-                    className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
-                  >
-                    <ChevronLeftGlyph className="w-5 h-5" />
-                  </button>
-                </Tooltip>
-                <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0">
-                  <span className="flex items-center gap-3 min-w-0 cursor-default">
-                    {nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH && (
-                      <AgentIcon seed={thread.agentId} presence={agentPresence} />
-                    )}
-                    <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
-                  </span>
-                </MemberName>
-                <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 pr-2 shrink-0">
-                  {/* Why the answers here are one line each. Without it the
-                      thread reads as an agent being terse for no reason. */}
-                  {thread.voice && (
-                    <span className="mr-1">
-                      <Pill lg>Spoken</Pill>
-                    </span>
-                  )}
-                  {state === 'working' ? (
-                    <>
-                      <Spinner size={16} className="text-fg" />
-                      <span className="text-base font-semibold text-fg">Working</span>
-                    </>
-                  ) : (
-                    <>
-                      {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
-                      {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
-                      {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
-                      {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
-                      <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
-                        {THREAD_STATE_LABELS[state]}
-                      </span>
-                      <button
-                        onClick={() => setThreadStatus(threadId, statusAction.to)}
-                        className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
-                      >
-                        {statusAction.label}
-                      </button>
-                    </>
-                  )}
-                  {(diffTotals.added > 0 || diffTotals.removed > 0) && (
-                    <Tooltip
-                      label={`${diffTotals.added} ${diffTotals.added === 1 ? 'addition' : 'additions'} and ${diffTotals.removed} ${diffTotals.removed === 1 ? 'deletion' : 'deletions'}`}
+                  <Tooltip label="Back to chat">
+                    <button
+                      onClick={closeThread}
+                      aria-label="Back to chat"
+                      className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
                     >
-                      <span className="ml-2 cursor-default">
-                        <Pill lg>
-                          <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
-                        </Pill>
+                      <ChevronLeftGlyph className="w-5 h-5" />
+                    </button>
+                  </Tooltip>
+                  <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0">
+                    <span className="flex items-center gap-3 min-w-0 cursor-default">
+                      {nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH && (
+                        <AgentIcon seed={thread.agentId} presence={agentPresence} />
+                      )}
+                      <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+                    </span>
+                  </MemberName>
+                  <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                    {/* Why the answers here are one line each. Without it the
+                        thread reads as an agent being terse for no reason. */}
+                    {thread.voice && (
+                      <span className="mr-1">
+                        <Pill lg>Spoken</Pill>
                       </span>
-                    </Tooltip>
-                  )}
+                    )}
+                    {state === 'working' ? (
+                      <>
+                        <Spinner size={16} className="text-fg" />
+                        <span className="text-base font-semibold text-fg">Working</span>
+                      </>
+                    ) : (
+                      <>
+                        {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
+                        {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
+                        {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
+                        {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
+                        <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
+                          {THREAD_STATE_LABELS[state]}
+                        </span>
+                        <button
+                          onClick={() => setThreadStatus(threadId, statusAction.to)}
+                          className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                        >
+                          {statusAction.label}
+                        </button>
+                      </>
+                    )}
+                    {(diffTotals.added > 0 || diffTotals.removed > 0) && (
+                      <Tooltip
+                        label={`${diffTotals.added} ${diffTotals.added === 1 ? 'addition' : 'additions'} and ${diffTotals.removed} ${diffTotals.removed === 1 ? 'deletion' : 'deletions'}`}
+                      >
+                        <span className="ml-2 cursor-default">
+                          <Pill lg>
+                            <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
+                          </Pill>
+                        </span>
+                      </Tooltip>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="relative">
