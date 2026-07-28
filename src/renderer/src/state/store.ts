@@ -232,6 +232,7 @@ const EMPTY = {
   docsTarget: null,
   designTarget: null,
   chatDraft: '',
+  chatCommands: [],
   threadDrafts: {},
   pending: {}
 }
