@@ -141,10 +141,11 @@ export default function Home() {
       return (
         <YourName
           name={name}
-          first={!known}
+          first={first}
           onChange={setName}
           onDone={() => {
             keep(name.trim())
+            setFirst(false)
             setScreen('places')
           }}
         />
