@@ -127,14 +127,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785262523559,
+        "fetchedAt": 1785262819846,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 51,
             "severity": "normal",
-            "resetsAt": 1785272999747,
+            "resetsAt": 1785273000055,
             "active": true
           },
           {
@@ -142,7 +142,7 @@
             "label": "Weekly (all models)",
             "percent": 38,
             "severity": "normal",
-            "resetsAt": 1785499199748,
+            "resetsAt": 1785499200055,
             "active": false
           }
         ],
@@ -232,7 +232,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785263663671,
+        "fetchedAt": 1785263719950,
         "windows": [
           {
             "key": "primary",
@@ -328,7 +328,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785263663671,
+        "fetchedAt": 1785263719950,
         "windows": [
           {
             "key": "primary",
@@ -620,14 +620,14 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785262523559,
+        "fetchedAt": 1785262819846,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
             "percent": 51,
             "severity": "normal",
-            "resetsAt": 1785272999747,
+            "resetsAt": 1785273000055,
             "active": true
           },
           {
@@ -635,7 +635,7 @@
             "label": "Weekly (all models)",
             "percent": 38,
             "severity": "normal",
-            "resetsAt": 1785499199748,
+            "resetsAt": 1785499200055,
             "active": false
           }
         ],
