@@ -26,7 +26,10 @@ const FIELD = {
 
 const STAGE = MARK_HEIGHT + ROOM * 2
 
-function Mesh({ id }: { id: string }) {
+// `sky` is the field the blobs are lit against, and only a mesh behind a mask
+// has one. Unmasked it is a rectangle, and a blurred rectangle reads as a box
+// standing behind the mark rather than as light coming off it.
+function Mesh({ id, sky = true }: { id: string; sky?: boolean }) {
   return (
     <>
       <defs>
