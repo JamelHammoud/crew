@@ -48,7 +48,15 @@ function EmojiHighlight({
   )
 }
 
-function MentionHighlights({ value, selection }: { value: string; selection: SelectedRange | null }) {
+function MentionHighlights({
+  value,
+  selection,
+  surface
+}: {
+  value: string
+  selection: SelectedRange | null
+  surface: string
+}) {
   const agents = useCrew(s => s.agents)
   const members = useCrew(s => s.members)
   const docs = useCrew(s => s.docs)
