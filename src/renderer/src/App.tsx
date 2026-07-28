@@ -78,7 +78,7 @@ function Session() {
           {tab === 'agents' && <Dashboard />}
           {tab === 'docs' && <Docs />}
           {tab === 'design' && (
-            <Suspense fallback={<Boot />}>
+            <Suspense fallback={<Loading />}>
               <Design />
             </Suspense>
           )}
