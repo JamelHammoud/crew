@@ -158,7 +158,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   return (
     <div className="h-full flex">
       <div className="flex-1 min-w-0 relative">
-        {thread.ghost && <GhostBar />}
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
           <div className="max-w-[660px] mx-auto pt-28 space-y-5" style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}>
             <ThreadItems
