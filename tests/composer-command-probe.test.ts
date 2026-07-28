@@ -58,6 +58,17 @@ describe('commands in the composer', () => {
     expect(useCrew.getState().chatCommands).toEqual([])
   })
 
+  it('lands the same chip when the command is picked from the menu', () => {
+    const composer = open()
+
+    fireEvent.change(composer, { target: { value: '/' } })
+    fireEvent.click(screen.getByText('/ghost'))
+
+    expect(composer.value).toBe('')
+    expect(useCrew.getState().chatCommands).toEqual(['ghost'])
+    expect(screen.getByLabelText('Remove Ghost')).toBeTruthy()
+  })
+
   it('sends the command beside the message rather than in it', () => {
     const sendChat = vi.fn()
     const composer = open(sendChat)
