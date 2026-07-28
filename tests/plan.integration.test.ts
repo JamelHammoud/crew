@@ -12,6 +12,7 @@ import { testRunner } from './helpers/runner'
 type ThreadStarted = Extract<SessionEvent, { kind: 'thread.started' }>
 type ThreadPlan = Extract<SessionEvent, { kind: 'thread.plan' }>
 type AgentEnd = Extract<SessionEvent, { kind: 'agent.end' }>
+type Notice = Extract<ServerMessage, { type: 'notice' }>
 
 describe('plan mode', () => {
   let host: TestHost
