@@ -57,11 +57,15 @@ const answer = vi.fn(async (url: string): Promise<Answer> => {
   return page([item('hello-hi-662', 'Hello'), item('bye-now-11', 'Bye', 200, 300)])
 })
 
+const join = vi.fn(async () => {})
+
 beforeEach(() => {
   asked = []
   answer.mockClear()
+  join.mockClear()
   vi.stubGlobal('fetch', answer)
   useCrew.setState({ pending: {} })
+  useHuddle.setState({ room: emptyRoom(), joined: false, join })
 })
 
 afterEach(() => {
