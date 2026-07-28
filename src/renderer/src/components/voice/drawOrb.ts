@@ -1,4 +1,4 @@
-import { orbRadius, ORB_BLOBS, type OrbFace } from './orb'
+import { orbRadius, orbReach, ORB_BLOBS, type OrbFace } from './orb'
 
 // How many points the outline is read at. Fewer and the harmonics come out as a
 // polygon; the highest one turns nine times around the circle, so it needs
