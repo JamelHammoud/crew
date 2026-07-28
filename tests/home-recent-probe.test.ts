@@ -13,13 +13,17 @@ function installBridge(recentJoins: RecentJoin[]) {
   const join = vi.fn().mockResolvedValue({ wsUrl: 'ws://10.0.0.2:2739/ws' })
   const recent = vi.fn().mockResolvedValue(recentJoins)
   const projects = vi.fn().mockResolvedValue([])
+  const forgetJoin = vi.fn().mockResolvedValue(undefined)
+  const forgetProject = vi.fn().mockResolvedValue(undefined)
   window.crew = {
     recentJoins: recent,
     projects,
     join,
+    forgetJoin,
+    forgetProject,
     pickFolder: vi.fn().mockResolvedValue(null)
   } as unknown as CrewBridge
-  return { join, recent, projects }
+  return { join, recent, projects, forgetJoin, forgetProject }
 }
 
 describe('Home places', () => {
