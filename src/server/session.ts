@@ -2389,7 +2389,8 @@ export class CrewSession {
           settings: agent.settings,
           attachments: entry.attachments,
           designBoard: this.boardOf(this.threads.get(ref.threadId)),
-          designBoards: this.referencedBoards(entry)
+          designBoards: this.referencedBoards(entry),
+          ghost: this.ghostOf(ref.threadId) ? true : undefined
         })
       }
     }
