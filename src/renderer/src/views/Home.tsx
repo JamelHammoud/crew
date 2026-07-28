@@ -198,7 +198,7 @@ export default function Home() {
     <div className="relative h-full overflow-y-auto px-6">
       <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
       <div className="w-full max-w-sm min-h-full mx-auto py-16 flex flex-col justify-center gap-6 animate-rise">
-        {screen !== 'places' && (
+        {screen !== 'places' && !(screen === 'name' && first) && (
           <Tooltip label="Back" className="self-start">
             <button
               onClick={back}
