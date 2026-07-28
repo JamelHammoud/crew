@@ -188,4 +188,7 @@ export type ServerMessage =
   | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[]; ghost?: boolean }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
+  // A word to the one person it is about, and nothing anybody has to scroll past
+  // later: it is never written down and never reaches anyone else.
+  | { type: 'notice'; text: string }
   | { type: 'error'; message: string }
