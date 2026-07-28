@@ -45,9 +45,8 @@ function Round({
     <Tooltip label={label}>
       <button
         onClick={onClick}
-        disabled={disabled}
         aria-label={label}
-        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 disabled:opacity-40 ${skin}`}
+        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${skin}`}
       >
         {children}
       </button>
