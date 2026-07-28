@@ -1,22 +1,37 @@
 import { useState } from 'react'
 import { MAX_ATTACHMENTS } from '../../../shared/attachments'
-import { GifGlyph, PlusGlyph, UploadGlyph } from '../icons'
+import { GifGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
+import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
 import { ATTACH_SIZES, PLUS_BUTTON, useImagePicker } from './Attachments'
 import GifPicker from './GifPicker'
 import { gifFile, type Gif } from './gifs'
-import { MenuItem, Popover } from './Popover'
+import { MenuDivider, MenuItem, Popover } from './Popover'
 import Tooltip from './Tooltip'
 
 type Screen = 'menu' | 'gif'
 
-export default function AddMenu({ attachmentKey, onSend }: { attachmentKey: string; onSend: () => void }) {
+export default function AddMenu({
+  attachmentKey,
+  huddle,
+  onSend
+}: {
+  attachmentKey: string
+  huddle?: boolean
+  onSend: () => void
+}) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
   const attach = useCrew(s => s.attach)
+  const joined = useHuddle(s => s.joined)
+  const live = useHuddle(s => s.room.peers.length > 0)
+  const join = useHuddle(s => s.join)
   const { input, choose } = useImagePicker(attachmentKey)
   const [open, setOpen] = useState(false)
   const [screen, setScreen] = useState<Screen>('menu')
   const full = count >= MAX_ATTACHMENTS
+  // Once you are in the call the dock is on screen and holds the way out, so
+  // the row is only ever a way in.
+  const calling = huddle === true && !joined
 
   const show = () => {
     setScreen('menu')
