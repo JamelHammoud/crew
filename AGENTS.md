@@ -390,7 +390,9 @@ Opening a folder is the only way in, and there is no host and join to choose bet
 - The window going takes the thread with it: whatever it was running is stopped, its pictures are dropped and the transcript with them. The entry it stood in stays behind empty, because a run still coming back from a machine somewhere has to land somewhere sealed, or its last steps would be written down as an ordinary thread's.
 - It only ever goes to an agent on your own machine. A prompt reaches whatever machine runs the agent and the CLI there keeps its own record of it, so anywhere else the thread is hidden in the app and sitting in somebody else's folder. Naming somebody else's agent says so, to the one who asked and nobody else, and inside a thread it reads the way naming an agent who is not here reads.
 - The agent still runs a CLI, so what that CLI keeps for itself on your own machine is out of the app rather than out of the world.
-- It wears a dashed stroke wherever it is drawn, and a pill that says who can see it.
+- It wears a dashed stroke wherever it is drawn. On the card in the chat it wears the Ghost chip, beside the Plan chip if it is also a plan, and inside the thread the header keeps the pill that says who can see it: on a card the question is what was asked for, and in the thread it is who is reading.
+- A command is not text. Typing `/ghost` and a space lifts it out of the box onto a chip beside the plus, and it is sent as a field of its own, so the same word written inside a sentence is only a word and nothing is ever cut out of what somebody wrote. `commands.ts` is the whole of what a command may be and `CommandChip` is what one wears, in the composer and on the card. The host reads the field and never the message. Inside a thread the field is ignored, the way the text was.
+- The chip in the composer stands in the row the plus stands in and is that button's height and outline, because it is a control rather than a label. Backspace on an empty box takes the last one off.
 
 ## Syncing
 
