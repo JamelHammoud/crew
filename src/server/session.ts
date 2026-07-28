@@ -2425,7 +2425,7 @@ export class CrewSession {
   }
 
   private broadcastQueue(thread: Thread): void {
-    this.broadcast({ type: 'queue.state', threadId: thread.id, items: this.queueItems(thread) })
+    this.toThread(thread.id, { type: 'queue.state', threadId: thread.id, items: this.queueItems(thread) })
   }
 
   private sendSteer(agent: AgentState, promptId: string, steer: PendingSteer): void {
