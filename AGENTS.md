@@ -84,7 +84,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 
 ## The toolbox
 
-A panel of tiles under the top bar. The built-in ones are the app's own hand, a huddle, a terminal, the project files, the music, the games. The rest are the ones a crew builds for itself, and they are shared the way todos are, so everyone gets the same toolbox.
+A panel of tiles under the top bar. The built-in ones are the app's own hand, a huddle, a voice, a terminal, the project files, the music, the games. The rest are the ones a crew builds for itself, and they are shared the way todos are, so everyone gets the same toolbox.
 
 - A tool is one button: a name, a mark, and the single thing it does. It opens a page, runs a command, opens a file, a doc or a board, asks an agent, says something in the chat, adds a task, writes a line in a doc, puts music on, copies something, or runs several of the crew's own tools in a row. `cleanTool` in `src/shared/toolbox.ts` is the whole of what a tool may be, and one with no name or nothing to do comes back as null rather than as a button that sits there doing nothing.
 - Both halves stand on the same three columns, so the app's own hand and the crew's own tools are the same button in the same grid. A tile is the size it has always been and the panel is as wide as three of them and the padding, rather than the columns being cut to fit a width somebody picked: change the count and the width is worked out from the tile, never the other way round. The crew's row ends on the empty slot that opens the builder, which is the way in and the empty state both, so the panel never holds a second way to do the same thing.
