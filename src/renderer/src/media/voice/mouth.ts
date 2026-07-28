@@ -20,10 +20,15 @@ export class VoiceMouth {
   private worker: Worker | null = null
   private out: GainNode | null = null
   private live: AudioBufferSourceNode[] = []
+  private captions: Array<ReturnType<typeof setTimeout>> = []
   private nextAt = 0
   private turn = 0
   private waiting = 0
   private sealed = true
+  // The model has handed over every sentence of this turn. Playing is not the
+  // same question: a gap between two sentences empties the queue for a moment,
+  // and reading that as the end of the turn hands the microphone back mid-word.
+  private drained = true
 
   analyser: AnalyserNode | null = null
 
@@ -34,7 +39,7 @@ export class VoiceMouth {
   }
 
   get speaking(): boolean {
-    return this.waiting > 0 || !this.sealed
+    return !this.drained || this.waiting > 0
   }
 
   // A turn is opened before there is anything to say, so the first sentence the
@@ -43,6 +48,7 @@ export class VoiceMouth {
     this.silence()
     this.turn++
     this.sealed = false
+    this.drained = false
     this.hire()?.postMessage({ type: 'open', turn: this.turn, voice } satisfies SpeakIn)
   }
 
@@ -55,7 +61,6 @@ export class VoiceMouth {
     if (this.sealed) return
     this.sealed = true
     this.worker?.postMessage({ type: 'close', turn: this.turn } satisfies SpeakIn)
-    this.settle()
   }
 
   // Cut in. Everything scheduled goes, and so does everything the model has not
@@ -64,6 +69,7 @@ export class VoiceMouth {
   stop(): void {
     const was = this.speaking
     this.sealed = true
+    this.drained = true
     this.turn++
     this.worker?.postMessage({ type: 'stop' } satisfies SpeakIn)
     this.silence()
@@ -90,6 +96,8 @@ export class VoiceMouth {
       }
       source.disconnect()
     }
+    for (const timer of this.captions) globalThis.clearTimeout(timer)
+    this.captions = []
     this.live = []
     this.waiting = 0
     this.nextAt = 0
@@ -109,31 +117,23 @@ export class VoiceMouth {
     if (message.type === 'ready') return this.ears.onReady()
     if (message.type === 'failed') return this.ears.onFailed(message.message)
     if (message.turn !== this.turn) return
-    if (message.type === 'done') return this.settle()
+    if (message.type === 'done') {
+      this.drained = true
+      return this.settle()
+    }
     this.play(message.audio, message.text)
   }
 
   private play(audio: Float32Array, text: string): void {
     const ctx = context()
     if (!ctx || audio.length === 0) return
-    if (!this.out || !this.analyser) {
-      this.analyser = ctx.createAnalyser()
-      // Wide, so the lowest band is not one bin of a hundred hertz. The orb is
-      // read off this, and a bass band that never moves is an orb that only
-      // ever breathes at one end.
-      this.analyser.fftSize = 2048
-      this.analyser.smoothingTimeConstant = 0.72
-      this.out = ctx.createGain()
-      this.out.connect(this.analyser)
-      this.analyser.connect(ctx.destination)
-    }
+    this.wire(ctx)
     const buffer = ctx.createBuffer(1, audio.length, SPEAK_RATE)
     buffer.getChannelData(0).set(audio)
     const source = ctx.createBufferSource()
     source.buffer = buffer
-    source.connect(this.out)
+    source.connect(this.out!)
     const at = Math.max(ctx.currentTime + LEAD, this.nextAt)
-    const first = this.waiting === 0
     this.waiting++
     this.live.push(source)
     source.onended = () => {
@@ -143,12 +143,26 @@ export class VoiceMouth {
     }
     source.start(at)
     this.nextAt = at + buffer.duration
-    if (first) globalThis.setTimeout(() => this.ears.onSaying(text), Math.max(0, (at - ctx.currentTime) * 1000))
-    else globalThis.setTimeout(() => this.ears.onSaying(text), Math.max(0, (at - ctx.currentTime) * 1000))
+    // The caption turns over when the sentence is heard rather than when it is
+    // handed over, which on a long reply is several seconds apart.
+    this.captions.push(globalThis.setTimeout(() => this.ears.onSaying(text), Math.max(0, (at - ctx.currentTime) * 1000)))
+  }
+
+  private wire(ctx: AudioContext): void {
+    if (this.out && this.analyser) return
+    this.analyser = ctx.createAnalyser()
+    // Wide, so the lowest band is not one bin of a hundred hertz. The orb is
+    // read off this, and a bass band that never moves is an orb that only ever
+    // breathes at one end.
+    this.analyser.fftSize = 2048
+    this.analyser.smoothingTimeConstant = 0.72
+    this.out = ctx.createGain()
+    this.out.connect(this.analyser)
+    this.analyser.connect(ctx.destination)
   }
 
   private settle(): void {
-    if (this.waiting > 0 || !this.sealed) return
+    if (!this.drained || this.waiting > 0) return
     this.nextAt = 0
     this.ears.onQuiet()
   }

@@ -86,7 +86,7 @@ describe('chat replies', () => {
     fireEvent.change(composer, { target: { value: 'Yes, I can.' } })
     fireEvent.click(screen.getByLabelText('Send'))
 
-    expect(sendChat).toHaveBeenCalledWith('Yes, I can.', undefined, undefined, 'message:source-message')
+    expect(sendChat).toHaveBeenCalledWith('Yes, I can.', undefined, undefined, 'message:source-message', undefined, [])
     expect(screen.getByText('Replying to Jamel')).toBeTruthy()
     expect(screen.getAllByText('Can you take a look?')).toHaveLength(2)
   })
