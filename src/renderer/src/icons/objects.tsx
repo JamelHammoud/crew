@@ -154,6 +154,18 @@ export const GameGlyph = glyph(
   </>
 )
 
+// A dome on three lobes, with eyes. The hem is drawn on a radius wider than
+// half its own chord, so the lobes meet at a proper notch: tangent half circles
+// meet at a cusp, which is the one sharp point a set of turned corners cannot
+// carry. The eyes are filled for the reason the sun in the photo is.
+export const GhostGlyph = glyph(
+  <>
+    <path d="M4.5 20.25V10a7.5 7.5 0 0 1 15 0v10.25a3.25 3.25 0 0 1-5 0 3.25 3.25 0 0 1-5 0 3.25 3.25 0 0 1-5 0Z" />
+    <circle cx="9.4" cy="10" r="1.05" fill="currentColor" stroke="none" />
+    <circle cx="14.6" cy="10" r="1.05" fill="currentColor" stroke="none" />
+  </>
+)
+
 export const DesktopGlyph = glyph(
   <>
     <rect x="2.5" y="4.5" width="19" height="13" rx="3" />
