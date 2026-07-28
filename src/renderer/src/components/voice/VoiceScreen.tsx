@@ -27,14 +27,12 @@ function Round({
   label,
   on,
   danger,
-  disabled,
   onClick,
   children
 }: {
   label: string
   on?: boolean
   danger?: boolean
-  disabled?: boolean
   onClick: () => void
   children: React.ReactNode
 }) {
