@@ -22,6 +22,36 @@ const OPUS_MODELS = [
   { value: 'opus', label: 'Latest' }
 ]
 
+// A failure that has no message of its own still has a reason, and these are
+// the ones the CLI names rather than describes.
+const FAILURES: Record<string, string> = {
+  error_max_turns: 'Claude reached its limit of turns before it finished.',
+  error_during_execution: 'Claude stopped partway through the run.',
+  api_error: 'Claude could not reach the model.',
+  refusal: 'Claude declined to answer this one.'
+}
+
+const str = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
+
+// Claude puts what went wrong in its output rather than on stderr, and exits 1
+// with nothing printed, so without this every failure read as an exit code.
+function claudeFailure(msg: any): string {
+  return (
+    str(msg?.result) ||
+    str(msg?.error) ||
+    str(msg?.error?.message) ||
+    FAILURES[str(msg?.subtype)] ||
+    FAILURES[str(msg?.terminal_reason)] ||
+    ''
+  )
+}
+
+const apiErrorText = (content: unknown[]): string =>
+  content
+    .map(block => ((block as any)?.type === 'text' ? str((block as any).text) : ''))
+    .filter(Boolean)
+    .join('\n')
+
 export const parseClaudeLine: OutputParser = line => {
   let msg: any
   try {
