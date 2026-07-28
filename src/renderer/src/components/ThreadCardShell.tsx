@@ -31,6 +31,8 @@ export default function ThreadCardShell({
       author={thread.createdBy}
       ts={ts}
       title={<MentionText text={title} />}
+      badge={thread.ghost && <Pill>Only you</Pill>}
+      dashed={thread.ghost}
       onOpen={onOpen}
       onContextMenu={onContextMenu}
     >
