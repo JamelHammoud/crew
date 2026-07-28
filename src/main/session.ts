@@ -396,7 +396,17 @@ export class AppSession {
     })
     const url = wsUrl(target)
     this.runner.connect(url)
-    this.live = { wsUrl: url, name, code: target.code, link: null }
+    this.live = {
+      wsUrl: url,
+      name,
+      code: target.code,
+      link: null,
+      folder: repoPath,
+      home: 'folder',
+      shared: true,
+      synced: true,
+      hosting: false
+    }
     this.folder = repoPath
     this.savedStore()?.save({
       mode: 'join',
@@ -404,7 +414,7 @@ export class AppSession {
       name,
       link: makeLink(target.host, target.port, target.code)
     })
-    return { wsUrl: url }
+    return this.live
   }
 
   // Quitting the app keeps the saved session so the next launch rejoins it.
