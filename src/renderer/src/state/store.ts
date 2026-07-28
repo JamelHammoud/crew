@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { httpBaseFrom, MAX_ATTACHMENTS, type OutgoingAttachment } from '../../../shared/attachments'
+import type { CommandName } from '../../../shared/commands'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import {
