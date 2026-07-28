@@ -24,6 +24,7 @@ import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert } from './alerts'
+import { toast } from './toast'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
 
