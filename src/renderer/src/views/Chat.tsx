@@ -17,6 +17,7 @@ import { useAutoResize } from '../components/useAutoResize'
 import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store'
+import { cleanCommands, commandTyped, type CommandName } from '../../../shared/commands'
 import { messageReactionTarget } from '../../../shared/reactions'
 
 type Feed =
