@@ -28,8 +28,10 @@ describe('where a thing somebody said starts and ends', () => {
     settled(gate, 0.004)
     const words = say(gate, [...room(0.14, 40), ...room(0.004, 30)])
     expect(words).toContain('speaking')
-    expect(words.at(-1)).toBe('ended')
+    // Said once, on the frame the gap ran long enough, and never again on the
+    // silence that follows it.
     expect(words.filter(word => word === 'ended')).toHaveLength(1)
+    expect(words.slice(words.indexOf('ended') + 1).every(word => word === 'quiet')).toBe(true)
   })
 
   it('rides through the gaps inside a sentence', () => {
@@ -38,14 +40,14 @@ describe('where a thing somebody said starts and ends', () => {
     const sentence = [...room(0.14, 20), ...room(0.004, 8), ...room(0.14, 20)]
     const words = say(gate, sentence)
     expect(words).not.toContain('ended')
-    expect(say(gate, room(0.004, 30)).at(-1)).toBe('ended')
+    expect(say(gate, room(0.004, 30))).toContain('ended')
   })
 
   it('drops a cough rather than sending it', () => {
     const gate = new VoiceGate()
     settled(gate, 0.004)
     const words = say(gate, [...room(0.3, 4), ...room(0.004, 30)])
-    expect(words.at(-1)).toBe('dropped')
+    expect(words).toContain('dropped')
     expect(words).not.toContain('ended')
   })
 

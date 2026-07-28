@@ -41,8 +41,36 @@ const marks = h(
   )
 )
 
+const thread = (mode: 'plan' | 'build', ghost?: boolean, title = 'tidy up the readme and the changelog') =>
+  h(
+    'div',
+    { key: `${mode}${ghost}${title}`, className: 'max-w-[660px] w-full mx-auto' },
+    h(ThreadCardShell, {
+      thread: {
+        id: 't',
+        agentId: 'a',
+        agentLabel: 'Fable',
+        title,
+        createdBy: 'Jamel',
+        status: 'open' as const,
+        mode,
+        ghost
+      },
+      ts: 0,
+      onOpen: () => {},
+      children: h(ThreadStatusBar, {
+        thread: { id: 't', agentId: 'a', agentLabel: 'Fable', title, createdBy: 'Jamel', status: 'open', mode, ghost },
+        icon: h(ChecklistGlyph, { className: 'w-4 h-4 text-fg shrink-0' }),
+        label: 'Planning complete'
+      })
+    })
+  )
+
 const rows: ReactNode[] = [
   marks,
+  thread('plan'),
+  thread('build', true, 'read the readme'),
+  thread('plan', true),
   h(Row, { key: 'none', commands: [], value: '' }),
   h(Row, { key: 'plan', commands: ['plan'], value: '' }),
   h(Row, { key: 'both', commands: ['plan', 'ghost'], value: '' }),
