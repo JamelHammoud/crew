@@ -3048,6 +3048,14 @@ export class CrewSession {
     }
   }
 
+  // Why something did not happen, to the one who asked for it. It is a moment
+  // rather than a record, so it goes to that window and no further: nothing is
+  // written down, and nobody else scrolls past an answer to a question they
+  // never asked.
+  private notice(text: string, to: WebSocket): void {
+    this.send(to, { type: 'notice', text })
+  }
+
   private systemMessage(text: string, threadId?: string, to?: WebSocket): void {
     this.emit(
       {
