@@ -637,7 +637,7 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleEditMessage(member, msg.messageId, msg.text)
         break
       case 'chat.react':
-        if (meta.role === 'ui') this.handleReaction(member, msg.targetId, msg.emoji)
+        if (meta.role === 'ui') this.handleReaction(ws, member, msg.targetId, msg.emoji)
         break
       case 'thread.archive':
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
