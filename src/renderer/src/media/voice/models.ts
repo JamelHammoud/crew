@@ -5,6 +5,14 @@
 export const LISTEN_MODEL = 'onnx-community/whisper-base.en'
 export const SPEAK_MODEL = 'onnx-community/Kokoro-82M-v1.0-ONNX'
 
+// What the listener is told about the utterance it is being handed, which for
+// an English-only model is nothing at all. One of those carries its language in
+// the model itself and refuses to be told again: a `language` or a `task` on it
+// throws before a word is read, on every utterance, and a conversation where
+// every turn fails on the way in is a microphone that appears to do nothing.
+export const askedOf = (model: string): { language?: string; task?: string } =>
+  model.endsWith('.en') ? {} : { language: 'en', task: 'transcribe' }
+
 export const SPEAK_RATE = 24_000
 
 export interface SpeakVoice {
