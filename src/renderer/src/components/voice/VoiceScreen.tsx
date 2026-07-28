@@ -162,8 +162,14 @@ export default function VoiceScreen() {
 
   return createPortal(
     <div className="fixed inset-0 z-[70] bg-ink-900 flex flex-col animate-pop">
-      <div className="app-drag h-14 shrink-0 flex items-center justify-between px-4 mac:pl-[64px]">
-        <div className="app-no-drag flex items-center gap-2">
+      {/* The same bar the app wears, to the pixel: its height, its padding and
+          the room it leaves the traffic lights. The picker's own left padding
+          is the logo button's, so the pet lands where the mark lands. */}
+      <div
+        style={{ height: TOP_BAR_H }}
+        className="app-drag shrink-0 flex items-center justify-between px-6"
+      >
+        <div className={`app-no-drag flex items-center gap-2 ${full ? '' : 'mac:pl-[64px]'}`}>
           <Who />
           {threadId && (
             <button
