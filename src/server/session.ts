@@ -72,6 +72,7 @@ import {
 } from '../shared/music'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
+import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
   agentId,
   agentMentionRefsIn,
