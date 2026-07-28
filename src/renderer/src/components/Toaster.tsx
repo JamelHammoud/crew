@@ -26,32 +26,30 @@ function Row({ toast }: { toast: Toast }) {
 
   return (
     <div className="toast-row" data-leaving={toast.leaving ? '' : undefined}>
-      <div className="toast-slot">
-        <div
-          role={toast.tone === 'fail' ? 'alert' : 'status'}
-          onClick={() => closeToast(toast.id)}
-          className={`glass glass-strong toast-card pointer-events-auto cursor-pointer w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
-            action ? 'pl-3.5 pr-2' : 'px-3.5'
-          }`}
-        >
-          {mark && (
-            <span className="shrink-0 flex items-center justify-center w-[18px] h-[18px] [&>svg]:w-[18px] [&>svg]:h-[18px]">
-              {mark}
-            </span>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="text-sm text-fg">{toast.text}</p>
-            {toast.detail && <p className="text-xs text-fg/45 mt-0.5">{toast.detail}</p>}
-          </div>
-          {action && (
-            <button
-              onClick={press}
-              className="shrink-0 h-7 px-3 rounded-full text-xs font-semibold text-fg bg-fg/10 hover:bg-fg/[0.14] transition-colors active:scale-95"
-            >
-              {action.label}
-            </button>
-          )}
+      <div
+        role={toast.tone === 'fail' ? 'alert' : 'status'}
+        onClick={() => closeToast(toast.id)}
+        className={`glass glass-strong toast-card pointer-events-auto cursor-pointer w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
+          action ? 'pl-3.5 pr-2' : 'px-3.5'
+        }`}
+      >
+        {mark && (
+          <span className="shrink-0 flex items-center justify-center w-[18px] h-[18px] [&>svg]:w-[18px] [&>svg]:h-[18px]">
+            {mark}
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-fg">{toast.text}</p>
+          {toast.detail && <p className="text-xs text-fg/45 mt-0.5">{toast.detail}</p>}
         </div>
+        {action && (
+          <button
+            onClick={press}
+            className="shrink-0 h-7 px-3 rounded-full text-xs font-semibold text-fg bg-fg/10 hover:bg-fg/[0.14] transition-colors active:scale-95"
+          >
+            {action.label}
+          </button>
+        )}
       </div>
     </div>
   )
