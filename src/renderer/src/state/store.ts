@@ -141,6 +141,7 @@ interface CrewState {
   docsTarget: string | null
   designTarget: string | null
   chatDraft: string
+  chatCommands: CommandName[]
   threadDrafts: Record<string, string>
   httpBase: string
   pending: Record<string, PendingAttachment[]>
