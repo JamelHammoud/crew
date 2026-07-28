@@ -70,6 +70,10 @@ export default function Chat() {
   const slash = useSlashCommands(text, write, takeCommand, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, CHAT_KEY)
+  const moreHistory = useCrew(s => s.moreHistory)
+  const loadingHistory = useCrew(s => s.loadingHistory)
+  const loadHistory = useCrew(s => s.loadHistory)
+  const reachBack = useLoadOlder(scrollRef, { more: moreHistory, loading: loadingHistory, load: loadHistory })
   const working = Object.keys(threadPrompts).length > 0
   const now = useNow(working)
 
