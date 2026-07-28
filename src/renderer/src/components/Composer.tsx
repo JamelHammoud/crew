@@ -112,6 +112,7 @@ export default function Composer({
   replyTo?: ThreadItem
   onCancelReply?: () => void
   chips?: ReactNode
+  ghost?: boolean
   children?: ReactNode
 }) {
   const attach = useCrew(s => s.attach)
