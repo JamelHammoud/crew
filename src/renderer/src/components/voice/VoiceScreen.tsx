@@ -161,11 +161,7 @@ export default function VoiceScreen() {
   const roomy = cards.length === 0
 
   return createPortal(
-    // Over the app and everything it floats, and under the layer menus and
-    // tooltips stand in. A takeover drawn above that layer is opaque in front
-    // of its own popovers: every menu on this screen opens behind it, which
-    // reads as a button that does nothing.
-    <div className="fixed inset-0 z-[46] bg-ink-900 flex flex-col animate-pop">
+    <div className="fixed inset-0 z-[60] bg-ink-900 flex flex-col animate-pop">
       {/* The same bar the app wears, to the pixel: its height, its padding and
           the room it leaves the traffic lights. The picker's own left padding
           is the logo button's, so the pet lands where the mark lands. */}
