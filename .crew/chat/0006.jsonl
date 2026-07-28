@@ -397,3 +397,4 @@
 {"id":"3f781b8f-f0c2-4e64-9a29-80833edefec2","ts":1785249929432,"kind":"thread.status","threadId":"a7a1015f-103c-4cce-9660-3ff5d968404d","status":"done","byName":"Jamel"}
 {"id":"025350cb-4317-4a35-94b8-b9fccba70564","ts":1785249943459,"kind":"message.edited","messageId":"d4cfb29d-037e-4137-8f53-7690fcd1c121","text":"@ALI added:\n\n- Ghost mode\n- Voice mode\n- Boot animation\n- Singleplayer experience\n- Better error messages for Claude\n- Scrolling up reveals older chat history","mentionRefs":[],"memberMentionRefs":[{"id":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}],"docMentions":[],"boardMentions":[]}
 {"id":"dc87e558-1192-4874-babe-fea87acfb62a","ts":1785249948188,"kind":"huddle.started","huddleId":"bb0fc691-3177-4a62-812b-655e7e356ad2","byId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","byName":"Jamel"}
+{"id":"cad6a43e-b708-4026-8a36-e23efcccfed0","ts":1785249950302,"kind":"huddle.ended","huddleId":"bb0fc691-3177-4a62-812b-655e7e356ad2","ms":2114}
