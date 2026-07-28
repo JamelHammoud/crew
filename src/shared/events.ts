@@ -236,8 +236,12 @@ export function markDeletedReplies(events: SessionEvent[], targets: Set<string>)
   )
 }
 
+function lastingEvents(events: SessionEvent[]): SessionEvent[] {
+  return events.filter(e => !EPHEMERAL_KINDS.has(e.kind))
+}
+
 export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[] {
-  const lasting = events.filter(e => !EPHEMERAL_KINDS.has(e.kind))
+  const lasting = lastingEvents(events)
   let count = 0
   let start = lasting.length
   for (let i = lasting.length - 1; i >= 0; i--) {
@@ -250,4 +254,22 @@ export function trimEvents(events: SessionEvent[], limit: number): SessionEvent[
   const kept = lasting.slice(start)
   const prompts = new Set(kept.filter(e => e.kind === 'agent.start').map(e => e.promptId))
   return kept.filter(e => e.kind !== 'agent.step' || prompts.has(e.promptId))
+}
+
+// The page before the one somebody is holding, and whether anything stands
+// behind it. Named with no `before` it is the tail, which is what the snapshot
+// carries, so the same rule decides both what arrives first and what arrives
+// when the reader scrolls back into it.
+export function olderEvents(
+  events: SessionEvent[],
+  before: string | undefined,
+  limit: number
+): { events: SessionEvent[]; more: boolean } {
+  const end = before ? events.findIndex(e => e.id === before) : events.length
+  if (end <= 0) return { events: [], more: false }
+  const head = events.slice(0, end)
+  const kept = trimEvents(head, limit)
+  const first = kept[0]
+  const start = first ? head.indexOf(first) : head.length
+  return { events: kept, more: lastingEvents(head.slice(0, start)).length > 0 }
 }
