@@ -4,10 +4,6 @@ import { DesktopGlyph, FolderGlyph } from '../../icons'
 // The one question a project is ever asked, and only the first time it is
 // opened. The two stand side by side rather than stacked, because it is a
 // choice between two places and a column of rows reads as a list.
-//
-// What is true of both is said once, under them. Written into each card it was
-// the longest line on either one, and it made the two look different where they
-// are the same.
 export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home: CrewHome) => void }) {
   const options: Array<{ home: CrewHome; mark: JSX.Element; title: string; line: string }> = [
     {
