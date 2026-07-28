@@ -376,11 +376,6 @@ export class AppSession {
     return this.projectsPath
   }
 
-  private async keyFor(folder: string, home: CrewHome): Promise<string> {
-    if (home === 'folder') return ''
-    return this.savedStore()?.keyOf(folder) ?? (await projectKey(folder))
-  }
-
   async startJoin(linkRaw: string, repoPath: string, name: string): Promise<CurrentSession> {
     await this.stop()
     const target = parseLink(linkRaw)
