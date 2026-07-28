@@ -22,6 +22,8 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - UI copy is for everyone, not just engineers. Avoid engineering jargon.
 - Copy never echoes the request that produced it. Placeholders and empty states describe what the user can do in general terms, never the specifics of what was asked for or how it was built.
 - A heading stands on its own. A line under it saying the same thing again in longer words, or explaining what the field below it is for, is a row of type spent on nothing. Write a second line only when it says something the screen cannot say without it, and never one that starts by naming what the thing is.
+- Every line has to say something the screen cannot say on its own. Naming back what a person is already looking at is the obvious half of a bad line, and the flourish tacked on the end is the other: "cursors and all", "and more", "in seconds". Both are filler, and one screen of it teaches people to stop reading the words everywhere else in the app. Take the filler out, and if nothing is left standing, the screen is better with no line on it.
+- A line written from the brief reads like the brief. Copy that hands back the parts a feature was asked for, "agents you mention in board chat draw here too", is the request read aloud, and everyone can hear it. Write from what is in front of the person and what they can do next, and name none of the machinery behind it: not the panel, not the mode, not the mechanism, not the model.
 
 ## Code
 
