@@ -4,6 +4,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 // it, since it is the slower of the two.
 const GONE = 200
 
+// How long a card clips for. The screen arriving and the height moving are both
+// 200ms, and past that there is nothing travelling to cut.
+const MOVING = 260
+
 type Leaving = { screen: string; node: ReactNode; back: boolean }
 
 // One screen giving way to another. The screen that arrives travels the way you
