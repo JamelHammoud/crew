@@ -214,6 +214,7 @@ export function buildThread(
         boardMentions: event.boardMentions,
         replyTo: event.replyTo,
         editedTs: event.editedTs,
+        voice: event.voice,
         route: routeBadge(route, started, ended),
         reactionTargetId: event.authorId === 'crew' ? undefined : messageReactionTarget(event.id),
         reactions: event.authorId === 'crew' ? undefined : reactions.get(messageReactionTarget(event.id))
