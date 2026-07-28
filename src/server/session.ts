@@ -833,14 +833,17 @@ export class CrewSession {
     threadId?: string,
     incoming?: OutgoingAttachment[],
     boardId?: string,
-    replyTargetId?: string
+    replyTargetId?: string,
+    asked?: CommandName[]
   ): void {
-    // A command only opens threads, so inside one it stays plain text.
-    const command = threadId
-      ? { planning: false, ghost: false, text: text.trim() }
-      : readCommands(text.trim())
-    const trimmed = command.text
-    const hidden = threadId ? this.ghostOf(threadId) !== undefined : command.ghost
+    // A command rides beside the message rather than in it, so nothing is ever
+    // cut out of what somebody wrote. A command only opens threads, so inside
+    // one the list is ignored.
+    const commands = threadId ? [] : cleanCommands(asked)
+    const planning = commands.includes('plan')
+    const ghosting = commands.includes('ghost')
+    const trimmed = text.trim()
+    const hidden = threadId ? this.ghostOf(threadId) !== undefined : ghosting
     const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
     if (!trimmed && attachments.length === 0) return
     const replyTo = this.replyReference(ws, replyTargetId)
