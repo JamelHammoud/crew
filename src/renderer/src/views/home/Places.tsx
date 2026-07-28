@@ -31,7 +31,9 @@ export default function Places({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-mono font-semibold text-3xl text-fg select-none">Crew</h1>
+        <h1 className="-ml-1.5 flex">
+          <CrewLogo height={30} />
+        </h1>
         <p className="text-base text-fg-muted mt-2">
           {places.length > 0 ? 'Pick up where you left off.' : 'Open a project and start working.'}
         </p>
