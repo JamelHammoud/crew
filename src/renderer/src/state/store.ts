@@ -158,6 +158,7 @@ interface CrewState {
   pending: Record<string, PendingAttachment[]>
   boot: () => Promise<void>
   connect: (session: CurrentSession) => void
+  loadHistory: () => void
   share: (shared: boolean) => Promise<string | null>
   leave: () => void
   setChatDraft: (text: string) => void
