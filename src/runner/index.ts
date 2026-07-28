@@ -158,6 +158,10 @@ export class Runner {
     })
     ws.on('error', () => {})
     ws.on('close', () => {
+      // A socket that is no longer the one being held drives nothing. Without
+      // this the one left behind takes down the new one's watchdog and queues a
+      // reconnect to where the host used to be.
+      if (this.ws !== ws) return
       this.stopWatchdog()
       this.stopUsagePolling()
       this.onStatus?.('offline')
