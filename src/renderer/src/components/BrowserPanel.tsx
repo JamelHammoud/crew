@@ -335,16 +335,18 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           <GlobeGlyph className="w-4 h-4 shrink-0" />
         )}
         <span className="truncate">{tabLabel(tab)}</span>
-        <span
-          onClick={event => {
-            event.stopPropagation()
-            useBrowser.getState().closeTab(tab.id)
-          }}
-          aria-label="Close tab"
-          className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
-        >
-          <CloseGlyph className="w-3 h-3" />
-        </span>
+        {!pinned && (
+          <span
+            onClick={event => {
+              event.stopPropagation()
+              useBrowser.getState().closeTab(tab.id)
+            }}
+            aria-label="Close tab"
+            className="w-5 h-5 shrink-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-fg/10"
+          >
+            <CloseGlyph className="w-3 h-3" />
+          </span>
+        )}
       </button>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         <MenuItem
