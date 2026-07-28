@@ -94,10 +94,10 @@ describe('Home places', () => {
     render(createElement(Home))
 
     const row = await screen.findByRole('button', { name: /10\.0\.0\.2:2739/ })
-    expect(screen.queryByRole('menuitem', { name: /Remove from the list/ })).toBeNull()
+    expect(screen.queryByRole('button', { name: /Remove from the list/ })).toBeNull()
 
     fireEvent.contextMenu(row)
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Remove from the list/ }))
+    fireEvent.click(await screen.findByRole('button', { name: /Remove from the list/ }))
 
     await waitFor(() => expect(forgetJoin).toHaveBeenCalledWith(saved.link))
     await waitFor(() => expect(recent).toHaveBeenCalledTimes(2))
