@@ -17,17 +17,33 @@ export type ListenOut =
 
 const post = (message: ListenOut) => globalThis.postMessage(message)
 
+interface Fetched {
+  status: string
+  file?: string
+  loaded?: number
+  total?: number
+}
+
+// Asked for through a signature of our own. Resolving the library's own
+// overloads across every task it knows and every way each one can be quantized
+// is a union big enough that the compiler gives up describing it.
+const build = pipeline as unknown as (
+  task: 'automatic-speech-recognition',
+  model: string,
+  options: Record<string, unknown>
+) => Promise<AutomaticSpeechRecognitionPipeline>
+
 let listener: Promise<AutomaticSpeechRecognitionPipeline> | null = null
 
 const load = (): Promise<AutomaticSpeechRecognitionPipeline> => {
-  listener ??= pipeline('automatic-speech-recognition', LISTEN_MODEL, {
+  listener ??= build('automatic-speech-recognition', LISTEN_MODEL, {
     dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' },
     device: 'wasm',
-    progress_callback: report => {
+    progress_callback: (report: Fetched) => {
       if (report.status !== 'progress') return
-      post({ type: 'fetching', file: report.file, loaded: report.loaded ?? 0, total: report.total ?? 0 })
+      post({ type: 'fetching', file: report.file ?? '', loaded: report.loaded ?? 0, total: report.total ?? 0 })
     }
-  }) as Promise<AutomaticSpeechRecognitionPipeline>
+  })
   return listener
 }
 
