@@ -133,7 +133,7 @@ describe('plan mode', () => {
     expect(sam.events.filter(e => e.kind === 'thread.started').length).toBe(1)
   })
 
-  it('/plan inside a thread is ordinary text', async () => {
+  it('a plan asked for inside a thread is nothing at all', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
     await connectRunner('jamel')

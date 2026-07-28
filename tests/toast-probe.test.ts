@@ -13,6 +13,7 @@ class TestResizeObserver {
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+Element.prototype.getAnimations ??= () => []
 
 const { default: Toaster } = await import('../src/renderer/src/components/Toaster')
 const { clearToasts, holdToasts, toast, TOAST_OUT_MS } = await import('../src/renderer/src/state/toast')
