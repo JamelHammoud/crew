@@ -185,7 +185,7 @@ export class AppSession {
 
   // What opening this folder would do, so the app only asks where a crew should
   // live the first time it is opened.
-  async projectPlan(folder: string): Promise<{ home: CrewHome; tracked: boolean; known: boolean }> {
+  async projectPlan(folder: string): Promise<ProjectPlan> {
     const tracked = await isGitRepo(folder)
     const known = this.savedStore()?.projects().find(project => project.folder === folder) ?? null
     return { home: known?.home ?? (tracked ? 'folder' : 'private'), tracked, known: known !== null }
