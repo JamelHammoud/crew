@@ -1206,6 +1206,13 @@ export class CrewSession {
     return [...refs.values()]
   }
 
+  // Reading back into the history. It goes to the one person who asked for it
+  // and is never written down, and a ghost thread is not in the log to reach.
+  private sendHistory(ws: WebSocket, before: string): void {
+    const older = olderEvents(this.events, before, HISTORY_PAGE)
+    this.send(ws, { type: 'history', events: older.events, more: older.more })
+  }
+
   private handleDeleteMessage(member: Member, messageId: string): void {
     const index = this.events.findIndex(e => e.kind === 'message' && e.id === messageId)
     if (index === -1) return
