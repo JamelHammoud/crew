@@ -163,8 +163,20 @@ export default function Chat() {
 
   return (
     <div className="h-full relative">
-      <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto px-6">
+      <div
+        ref={scrollRef}
+        onScroll={() => {
+          onScroll()
+          reachBack()
+        }}
+        className="h-full overflow-y-auto px-6"
+      >
         <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
+          {moreHistory && (
+            <div className="h-6 flex items-center justify-center">
+              {loadingHistory && <Spinner size={16} className="text-fg-faint" />}
+            </div>
+          )}
           {feed.length === 0 && (
             <p className="text-base text-fg-muted mt-16 text-center">
               Say hi, or mention someone with @.
