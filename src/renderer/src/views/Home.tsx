@@ -119,8 +119,8 @@ export default function Home() {
   }
 
   const forget = async (place: Place) => {
-    if (!place.project) return
-    await window.crew.forgetProject(place.project.folder).catch(() => {})
+    if (place.project) await window.crew.forgetProject(place.project.folder).catch(() => {})
+    if (place.join) await window.crew.forgetJoin(place.join.link).catch(() => {})
     load()
   }
 
