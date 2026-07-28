@@ -248,6 +248,7 @@ app.whenReady().then(() => {
   ipcMain.handle('session:plan', (_event, folder: string) => session.projectPlan(folder))
   ipcMain.handle('session:projects', () => session.recentProjects())
   ipcMain.handle('session:forget', (_event, folder: string) => session.forgetProject(folder))
+  ipcMain.handle('session:forget-join', (_event, link: string) => session.forgetJoin(link))
   ipcMain.handle('session:share', async (_event, shared: boolean) => {
     const info = await session.setShared(shared)
     sharing()

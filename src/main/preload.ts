@@ -21,6 +21,7 @@ const bridge = {
   recentJoins: (): Promise<RecentJoin[]> => ipcRenderer.invoke('session:recent'),
   projects: (): Promise<RecentProject[]> => ipcRenderer.invoke('session:projects'),
   forgetProject: (folder: string): Promise<void> => ipcRenderer.invoke('session:forget', folder),
+  forgetJoin: (link: string): Promise<void> => ipcRenderer.invoke('session:forget-join', link),
   projectPlan: (folder: string): Promise<{ home: CrewHome; tracked: boolean; known: boolean }> =>
     ipcRenderer.invoke('session:plan', folder),
   setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
