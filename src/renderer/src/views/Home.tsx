@@ -20,7 +20,8 @@ function cleanError(err: unknown): string {
 
 export default function Home() {
   const connect = useCrew(s => s.connect)
-  const [name, setName] = useState(() => localStorage.getItem('crew.name') ?? '')
+  const [known] = useState(() => localStorage.getItem('crew.name') ?? '')
+  const [name, setName] = useState(known)
   const [folder, setFolder] = useState<string | null>(() => localStorage.getItem('crew.folder'))
   const [link, setLink] = useState(() => localStorage.getItem('crew.link') ?? '')
   const [places, setPlaces] = useState<Place[]>([])
