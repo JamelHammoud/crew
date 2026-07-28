@@ -841,11 +841,13 @@ export class CrewSession {
   ): void {
     // A command rides beside the message rather than in it, so nothing is ever
     // cut out of what somebody wrote. A command only opens threads, so inside
-    // one the list is ignored.
-    const commands = threadId ? [] : cleanCommands(asked)
+    // one the list is ignored. Talking is the exception: it says how this one
+    // message arrived, which is still true of a message sent into a thread.
+    const asking = cleanCommands(asked)
+    const commands = threadId ? [] : asking
     const planning = commands.includes('plan')
     const ghosting = commands.includes('ghost')
-    const talking = commands.includes('voice')
+    const talking = asking.includes('voice')
     const trimmed = text.trim()
     const hidden = threadId ? this.ghostOf(threadId) !== undefined : ghosting
     const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
@@ -866,7 +868,12 @@ export class CrewSession {
       for (const id of targets) {
         const agent = this.agents.get(id)
         if (!agent) continue
-        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, { messageId, mentions: targets, replyTo })
+        this.enqueuePrompt(agent, member, trimmed, threadId, attachments, {
+          messageId,
+          mentions: targets,
+          replyTo,
+          voice: talking
+        })
       }
       return
     }
