@@ -32,20 +32,29 @@ function starColor(star: Star): string {
 // drawn larger than it so there is always more of it to come as it drifts.
 function paintNebula(
   ctx: CanvasRenderingContext2D,
-  cloud: CanvasImageSource,
+  clouds: CanvasImageSource[],
   view: View,
   t: number,
+  travel: number,
   lit: number
 ): void {
   ctx.globalCompositeOperation = 'lighter'
+  const middle = { x: view.width / 2, y: view.height / 2 }
   for (const layer of LAYERS) {
-    const width = view.width * layer.scale
-    const height = view.height * layer.scale
-    const room = { x: width - view.width, y: height - view.height }
-    const along = (Math.sin(t * 0.055 * layer.drift + layer.turn) + 1) / 2
-    const down = (Math.cos(t * 0.041 * layer.drift + layer.turn * 2) + 1) / 2
+    const cloud = clouds[layer.cloud % clouds.length]
+    if (!cloud) continue
+    const grown = layer.scale * (1 + travel * RUSH) * (1 + Math.sin(t * layer.beat + layer.lag) * layer.breathe)
+    const width = view.width * grown
+    const height = view.height * grown
+    const along = (Math.sin(t * 0.19 * layer.drift + layer.lag) + 1) / 2
+    const down = (Math.cos(t * 0.14 * layer.drift + layer.lag * 2) + 1) / 2
+    ctx.save()
     ctx.globalAlpha = layer.alpha * lit
-    ctx.drawImage(cloud, -room.x * along, -room.y * down, width, height)
+    ctx.translate(middle.x, middle.y)
+    ctx.rotate(Math.sin(t * layer.spin + layer.lag) * layer.sway)
+    ctx.translate(-middle.x, -middle.y)
+    ctx.drawImage(cloud, -(width - view.width) * along, -(height - view.height) * down, width, height)
+    ctx.restore()
   }
   ctx.globalAlpha = 1
   ctx.globalCompositeOperation = 'source-over'
