@@ -7,6 +7,8 @@ const HEAD_LINES = 12
 const TAIL_LINES = 28
 const MAX_CHARS = 4000
 
+export const stripAnsi = (text: string): string => text.replace(ANSI, '')
+
 const elide = (count: number): string => `… ${count} ${count === 1 ? 'line' : 'lines'} left out`
 
 const clip = (line: string): string => (line.length > LINE_CHARS ? `${line.slice(0, LINE_CHARS)}…` : line)
