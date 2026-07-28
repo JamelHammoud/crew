@@ -173,6 +173,14 @@
   }
 }
 
+/* A run of messages from one person closes up. The room a list leaves between
+   two of them is the first one's own bottom margin, so it is the message above
+   that gives it back, and it is written here rather than as a class because a
+   plain rule wins over the space the list sets whatever the list sets it to. */
+.msg-row:has(+ .msg-run) {
+  margin-block-end: 4px;
+}
+
 /* The flash is a layer of its own behind the message, never the message's own
    animation: that property already carries the rise it arrived on, and taking
    it away made every jump land the row a second time. */
