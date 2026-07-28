@@ -2,7 +2,7 @@ import { createElement as h, type ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import CommandChip from '../src/renderer/src/components/CommandChip'
 import Composer from '../src/renderer/src/components/Composer'
-import { ChecklistGlyph, GhostGlyph, SparkleGlyph } from '../src/renderer/src/icons'
+import { ChecklistGlyph, GhostGlyph, ToolboxGlyph } from '../src/renderer/src/icons'
 import type { CommandName } from '../src/shared/commands'
 
 const ref = { current: null } as unknown as React.RefObject<HTMLTextAreaElement>
@@ -36,7 +36,7 @@ const marks = h(
       { key: size, className: 'flex items-end gap-3' },
       h(GhostGlyph, { className: size }),
       h(ChecklistGlyph, { className: size }),
-      h(SparkleGlyph, { className: size })
+      h(ToolboxGlyph, { className: size })
     )
   )
 )

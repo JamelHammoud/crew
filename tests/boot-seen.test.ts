@@ -12,6 +12,7 @@ const held = {
 beforeEach(() => {
   store.clear()
   vi.stubGlobal('sessionStorage', held)
+  vi.stubEnv('DEV', true)
 })
 
 afterEach(() => {
