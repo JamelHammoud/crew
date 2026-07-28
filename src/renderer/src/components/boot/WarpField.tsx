@@ -33,12 +33,22 @@ function drawNebula(): HTMLCanvasElement | null {
 export default function WarpField({ still }: { still: boolean }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const stars = useRef<Star[]>([])
-  const cloud = useRef<HTMLCanvasElement | null>(null)
+  const clouds = useRef<HTMLCanvasElement[]>([])
   const age = useRef(0)
+  const travel = useRef(0)
 
   useEffect(() => {
     stars.current = makeStars(STARS, Math.random)
-    cloud.current = drawNebula()
+    const first = drawNebula()
+    clouds.current = first ? [first] : []
+    let timer = 0
+    const more = () => {
+      const next = drawNebula()
+      if (next) clouds.current = [...clouds.current, next]
+      if (clouds.current.length < CLOUDS) timer = window.setTimeout(more, 0)
+    }
+    timer = window.setTimeout(more, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
