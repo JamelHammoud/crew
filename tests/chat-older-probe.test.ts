@@ -129,7 +129,7 @@ function join(events: SessionEvent[], moreEvents = true) {
     code: 'abc123',
     link: null,
     folder: '/tmp/crew',
-    home: 'project',
+    home: 'folder',
     shared: false,
     synced: false,
     hosting: true
