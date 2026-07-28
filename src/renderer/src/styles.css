@@ -536,7 +536,7 @@ body {
 
 /* Nothing drifts while the mark is at rest, or four loops run forever behind an
    element nobody is looking at. */
-.crew-logo[data-lit] .crew-blob {
+[data-crew-lit] .crew-blob {
   animation: crew-blob var(--dur) ease-in-out var(--lag) infinite alternate;
 }
 
