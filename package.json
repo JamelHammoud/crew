@@ -19,7 +19,15 @@
     "mac": {
       "target": "dmg",
       "category": "public.app-category.productivity",
-      "icon": "resources/icon.icns"
+      "icon": "resources/icon.icns",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "So you can talk in a huddle.",
+        "NSCameraUsageDescription": "So the crew can see you in a huddle.",
+        "NSLocalNetworkUsageDescription": "So you can reach a crew on this network."
+      }
     },
     "win": {
       "icon": "resources/icon.png"
