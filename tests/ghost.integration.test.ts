@@ -106,6 +106,20 @@ describe('ghost threads', () => {
     expect(revived.events.some(e => e.kind === 'message' && e.text.includes('read the readme'))).toBe(false)
   })
 
+  it('a ghost written out in a sentence is only words', async () => {
+    const sam = await connectUi('sam')
+    const pat = await connectUi('pat')
+    await connectRunner('sam')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    sam.chat('@Fake /ghost read the readme', [fake])
+    const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
+    // Nothing was cut out of it, and it is everybody's thread.
+    expect(thread.title).toBe('@Fake /ghost read the readme')
+    expect(thread.ghost).toBeUndefined()
+    await pat.waitForEvent(e => e.kind === 'thread.started' && e.threadId === thread.threadId)
+  })
+
   it('an agent picks up where the ghost thread left off', async () => {
     const sam = await connectUi('sam')
     await connectRunner('sam')
@@ -227,13 +241,15 @@ describe('ghost threads', () => {
     await connectRunner('pat', 'theirs', 'Theirs')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
+    // It is said on the one screen it is about and written down nowhere, so
+    // there is nothing for anybody to scroll past later.
     sam.chat('read the readme', [], undefined, ['ghost'])
-    const said = (await sam.waitForEvent(e => e.kind === 'message')) as Message
-    expect(said.authorId).toBe(SYSTEM_AUTHOR_ID)
+    const said = (await sam.waitFor(m => m.type === 'notice')) as Notice
     expect(said.text).toContain('No agent of yours')
     await settle()
     expect(sam.events.some(e => e.kind === 'thread.started')).toBe(false)
-    expect(pat.events.some(e => e.kind === 'message')).toBe(false)
+    expect(sam.events.some(e => e.kind === 'message')).toBe(false)
+    expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
   })
 
   it('the thread goes when the window does', async () => {
