@@ -236,3 +236,7 @@
 {"id":"bf371ab5-c4c9-4725-ad47-bd5996c35546","ts":1785214258642,"kind":"agent.step","promptId":"ce086536-bba1-4dc0-b1d1-fc51078e8013","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","agentLabel":"Bubbles","threadId":"ba31fbd7-2eed-483d-88bd-0bcaaa36891e","step":{"id":"b0","ts":1785214258018,"kind":"text","status":"done","text":"Hey Jamel. What are we working on?"}}
 {"id":"a644ea72-db66-467b-8aa0-8da7818f930b","ts":1785214259285,"kind":"thread.status","threadId":"ba31fbd7-2eed-483d-88bd-0bcaaa36891e","status":"archived","byName":"Jamel"}
 {"id":"1b3ef525-6f92-4bcc-8ef7-6473cabbbb86","ts":1785214259792,"kind":"agent.end","promptId":"ce086536-bba1-4dc0-b1d1-fc51078e8013","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","agentLabel":"Bubbles","threadId":"ba31fbd7-2eed-483d-88bd-0bcaaa36891e","ok":true,"text":"Hey Jamel. What are we working on?"}
+{"id":"5444652c-7b65-4bfe-90af-e6bcdee8e259","ts":1785214271824,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"7ce28e6c-8eef-4cd5-931e-6fa822a5ad8b","ts":1785214271825,"kind":"agent.offline","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
+{"id":"4b2d2ceb-e71f-43f0-8f41-796a850bbc56","ts":1785214271825,"kind":"agent.offline","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
+{"id":"e79d332f-15f6-485f-bc80-4816303b18ee","ts":1785214271825,"kind":"agent.offline","agentId":"jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130","label":"Thinker"}
