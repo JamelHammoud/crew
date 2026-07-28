@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react'
-import { fallbackTitle, pageCode, pageCodeOf, pageSlug, slugify, splitPageCode } from '../../../shared/docs'
+import {
+  fallbackTitle,
+  pageCode,
+  pageCodeOf,
+  pageSlug,
+  ROOT_PAGE,
+  slugify,
+  splitPageCode
+} from '../../../shared/docs'
 import DocEditor, { type DocEditorHandle } from '../components/DocEditor'
 import FindBar from '../components/FindBar'
 import { MenuItem, Popover } from '../components/Popover'
@@ -35,7 +43,7 @@ function buildTree(slugs: string[]): PageNode[] {
     return node
   }
   for (const slug of [...slugs].sort()) ensure(slug)
-  root.sort((a, b) => (a.slug === 'main' ? -1 : b.slug === 'main' ? 1 : a.slug.localeCompare(b.slug)))
+  root.sort((a, b) => (a.slug === ROOT_PAGE ? -1 : b.slug === ROOT_PAGE ? 1 : a.slug.localeCompare(b.slug)))
   return root
 }
 
@@ -47,14 +55,14 @@ export default function Docs() {
   const deleteDoc = useCrew(s => s.deleteDoc)
   const docsTarget = useCrew(s => s.docsTarget)
   const clearDocsTarget = useCrew(s => s.clearDocsTarget)
-  const [page, setPage] = useState(docsTarget ?? 'main')
+  const [page, setPage] = useState(docsTarget ?? ROOT_PAGE)
 
   useEffect(() => {
     if (!docsTarget) return
     setPage(docsTarget)
     clearDocsTarget()
   }, [docsTarget, clearDocsTarget])
-  const current = docs[page] !== undefined ? page : 'main'
+  const current = docs[page] !== undefined ? page : ROOT_PAGE
   const titleOf = (slug: string): string => docs[slug]?.title ?? fallbackTitle(slug)
   const [title, setTitle] = useState(() => titleOf(current))
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
@@ -115,7 +123,7 @@ export default function Docs() {
   }
 
   const canDrop = (target: string): boolean => {
-    if (!dragged || dragged === 'main') return false
+    if (!dragged || dragged === ROOT_PAGE) return false
     if (target === dragged || target.startsWith(`${dragged}/`)) return false
     return parentOf(dragged) !== target
   }
@@ -162,7 +170,7 @@ export default function Docs() {
       updateDoc(current, '', trimmed)
       return
     }
-    if (current === 'main') {
+    if (current === ROOT_PAGE) {
       retitleDoc(current, trimmed)
       return
     }
@@ -186,7 +194,7 @@ export default function Docs() {
     return (
       <div key={node.slug}>
         <div
-          draggable={node.slug !== 'main'}
+          draggable={node.slug !== ROOT_PAGE}
           onDragStart={e => {
             e.dataTransfer.effectAllowed = 'move'
             setDragged(node.slug)
@@ -273,7 +281,7 @@ export default function Docs() {
                 setMenu(null)
               }}
             />
-            {menu?.slug !== 'main' && (
+            {menu?.slug !== ROOT_PAGE && (
               <MenuItem
                 icon={<TrashGlyph />}
                 label="Delete page"
