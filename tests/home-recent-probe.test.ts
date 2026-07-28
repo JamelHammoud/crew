@@ -12,15 +12,17 @@ const storage = installLocalStorage()
 function installBridge(recentJoins: RecentJoin[]) {
   const join = vi.fn().mockResolvedValue({ wsUrl: 'ws://10.0.0.2:2739/ws' })
   const recent = vi.fn().mockResolvedValue(recentJoins)
+  const projects = vi.fn().mockResolvedValue([])
   window.crew = {
     recentJoins: recent,
+    projects,
     join,
     pickFolder: vi.fn().mockResolvedValue(null)
   } as unknown as CrewBridge
-  return { join, recent }
+  return { join, recent, projects }
 }
 
-describe('Home recent sessions', () => {
+describe('Home places', () => {
   beforeEach(() => {
     storage.clear()
     Element.prototype.getAnimations = vi.fn().mockReturnValue([])
@@ -32,15 +34,20 @@ describe('Home recent sessions', () => {
     vi.restoreAllMocks()
   })
 
-  it('does not show recent sessions before the first join', async () => {
-    const { recent } = installBridge([])
+  it('reads both kinds of place into the one list', async () => {
+    const { recent, projects } = installBridge([])
     render(createElement(Home))
 
     await waitFor(() => expect(recent).toHaveBeenCalledOnce())
-    expect(screen.queryByRole('region', { name: 'Recently joined' })).toBeNull()
+    expect(projects).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('button', { name: /10\.0\.0\.2/ })).toBeNull()
+    expect(screen.getByRole('button', { name: /Open a folder/ })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /Join with a link/ })).toBeTruthy()
   })
 
-  it('rejoins a saved session from its recent row', async () => {
+  // A place carries the name you were called there, and it is handed to the
+  // join rather than read back off state, which is a render behind.
+  it('rejoins a crew from its own row, under the name it was joined with', async () => {
     const saved = {
       folder: 'C:\\work\\crew-project',
       name: 'Ali',
