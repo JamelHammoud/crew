@@ -131,12 +131,19 @@ export default function Composer({
   const selection = useSelectedRange(inputRef)
   const canSend = value.trim().length > 0 || pendingCount > 0
 
+  // Nothing typed here is kept, so the box stops being a solid one: it drops to
+  // the page's own surface and wears the dashed stroke a hidden thread wears
+  // everywhere else. The border stands in both states so the row cannot shift.
+  const surface = ghost ? 'bg-ink-900' : 'bg-ink-800'
+
   return (
     <div className="relative">
       {children}
       {replyTo && <ReplyPreview replyTo={replyTo} onCancel={onCancelReply} />}
       <div
-        className="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"
+        className={`relative ${surface} border ${
+          ghost ? 'border-dashed border-ink-600' : 'border-transparent'
+        } rounded-shell p-5 flex flex-col transition-[background-color,border-color,box-shadow] duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text`}
         onClick={clickToFocus(inputRef)}
         onDragOver={event => event.preventDefault()}
         onDrop={event => {
