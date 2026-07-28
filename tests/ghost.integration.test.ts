@@ -150,8 +150,9 @@ describe('ghost threads', () => {
 
     sam.send({
       type: 'chat.send',
-      text: '@Fake /ghost look at this',
+      text: '@Fake look at this',
       mentions: [fake],
+      commands: ['ghost'],
       attachments: [{ name: 'shot.png', mime: 'image/png', data: PNG.toString('base64') }]
     })
     const sent = (await sam.waitForEvent(
