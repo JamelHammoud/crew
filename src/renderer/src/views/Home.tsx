@@ -8,7 +8,7 @@ import JoinLink from './home/JoinLink'
 import Places from './home/Places'
 import WhereTo from './home/WhereTo'
 import YourName from './home/YourName'
-import { placesOf, type Place } from './home/places'
+import { placesOf, type Place } from './home/place'
 
 type Screen = 'places' | 'name' | 'where' | 'link'
 

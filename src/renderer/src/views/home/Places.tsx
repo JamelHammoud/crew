@@ -2,7 +2,7 @@ import Avatar from '../../components/Avatar'
 import Spinner from '../../components/Spinner'
 import { DesktopGlyph, FolderGlyph, GlobeGlyph, PencilGlyph, PlusGlyph } from '../../icons'
 import PlaceRow from './PlaceRow'
-import type { Place } from './places'
+import type { Place } from './place'
 
 // The way in. Every project you have opened and every crew you have joined, in
 // one list, and the two ways to reach a new one under it.
