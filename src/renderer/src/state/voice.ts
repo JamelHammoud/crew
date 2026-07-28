@@ -121,9 +121,15 @@ export const useVoice = create<VoiceState>((set, get) => {
       // Cutting in stops the voice and nothing else. Whatever the agent is
       // doing to the project it goes on doing, because an interruption is
       // somebody talking over an answer, not somebody undoing work.
+      // Everything about the turn being cut in on goes, the question included.
+      // Left behind, it finds its own run again on the next event and waits on
+      // a reply that was dropped, which is a conversation that never speaks
+      // again.
       if (mouth.speaking) {
         promptId = null
         reply = null
+        asked = null
+        raw = ''
         mouth.stop()
       }
       set({ phase: 'hearing', saying: '' })
