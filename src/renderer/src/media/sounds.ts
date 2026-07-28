@@ -340,8 +340,20 @@ const APART = 140
 const last: Partial<Record<SoundName, number>> = {}
 let ringing: (() => void) | null = null
 
+// Voice is already a conversation, so the chat's own cues have nothing left to
+// say inside one: the turn going out and the answer coming back are both being
+// spoken out loud, and a chime into an open microphone is one more thing the
+// gate has to hear past. Everything else the app makes a noise about still does.
+const CHAT_CUES = new Set<SoundName>(['send', 'receive', 'done', 'failed'])
+let hushed = false
+
+export function hushChat(on: boolean): void {
+  hushed = on
+}
+
 export function playSound(name: SoundName): void {
   if (!soundsOn()) return
+  if (hushed && CHAT_CUES.has(name)) return
   const now = Date.now()
   if (now - (last[name] ?? -APART) < APART) return
   last[name] = now
