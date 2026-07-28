@@ -108,7 +108,26 @@ export function bandsFrom(spectrum: Uint8Array, sampleRate: number, into: number
 const toward = (held: number, want: number, dt: number, tau: number): number =>
   held + (want - held) * (1 - Math.exp(-dt / Math.max(1e-4, tau)))
 
-export function stepOrb(face: OrbFace, dt: number, read: readonly number[], lit: number, ring: number): void {
+// `still` is somebody who has asked the machine to stop moving things. It holds
+// the shape where it is and nothing else: the ring saying how far the download
+// has got, and the color saying who is talking, are things the screen is
+// telling you rather than motion for its own sake, so they carry on.
+export function stepOrb(
+  face: OrbFace,
+  dt: number,
+  read: readonly number[],
+  lit: number,
+  ring: number,
+  still = false
+): void {
+  face.lit = toward(face.lit, lit, dt, LIT_TAU)
+  face.ring = toward(face.ring, ring, dt, RING_TAU)
+  if (still) {
+    face.bands.fill(0)
+    face.level = 0
+    face.swell = 1
+    return
+  }
   let total = 0
   for (let band = 0; band < BANDS; band++) {
     const want = Math.min(1, Math.max(0, read[band] ?? 0))
@@ -120,8 +139,6 @@ export function stepOrb(face: OrbFace, dt: number, read: readonly number[], lit:
   }
   face.level = total / BANDS
   face.breath += dt * BREATH_RATE
-  face.lit = toward(face.lit, lit, dt, LIT_TAU)
-  face.ring = toward(face.ring, ring, dt, RING_TAU)
   face.swell = 1 + face.level * SWELL + Math.sin(face.breath) * REST_SWELL
 }
 
