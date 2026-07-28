@@ -237,6 +237,11 @@ export class CrewSession {
   private members = new Map<string, Member>()
   private agents = new Map<string, AgentState>()
   private threads = new Map<string, Thread>()
+  // The threads nobody else can see, keyed by thread. An entry outlives the
+  // window that opened it, emptied rather than deleted: a run still coming back
+  // from a machine somewhere has to land somewhere sealed, or its last steps
+  // would be written down as an ordinary thread's.
+  private ghosts = new Map<string, Ghost>()
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
   private events: SessionEvent[] = []
