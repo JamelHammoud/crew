@@ -60,14 +60,14 @@ export class VoiceListener {
     if (message.type === 'fetching') return this.ears.onFetching(message.file, message.loaded, message.total)
     if (message.type === 'ready') return this.ears.onReady()
     if (message.type === 'failed') {
-      if (message.id !== undefined) this.settle(message.id, '')
+      if (message.id !== undefined) this.settle(message.id, null)
       else this.ears.onFailed(message.message)
       return
     }
     this.settle(message.id, message.text)
   }
 
-  private settle(id: number, text: string): void {
+  private settle(id: number, text: string | null): void {
     const resolve = this.waiting.get(id)
     if (!resolve) return
     this.waiting.delete(id)
