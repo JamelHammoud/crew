@@ -1,0 +1,86 @@
+name: Build apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to build, like 0.2.0. Empty keeps the one in package.json.
+        type: string
+        required: false
+      release:
+        description: Put the builds on a GitHub release
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+env:
+  YARN: 4.17.1
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            label: mac
+            target: --mac --x64 --arm64
+          - os: windows-latest
+            label: windows
+            target: --win --x64
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: corepack enable && corepack prepare yarn@$YARN --activate
+
+      - run: yarn install --immutable
+
+      - if: inputs.version != ''
+        run: npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
+
+      - run: yarn build
+
+      - run: yarn electron-builder ${{ matrix.target }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crew-${{ matrix.label }}
+          if-no-files-found: error
+          path: |
+            dist/*.dmg
+            dist/*.exe
+
+  release:
+    needs: build
+    if: inputs.release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: builds
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ inputs.version }}"
+          [ -n "$version" ] || version=$(node -p "require('./package.json').version")
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" builds/*/* --clobber
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --title "Crew $version" --generate-notes builds/*/*
+          fi
