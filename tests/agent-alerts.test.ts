@@ -1,11 +1,15 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { alertToast } from '../src/renderer/src/components/alertToast'
+import Toaster from '../src/renderer/src/components/Toaster'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { finishedAlert, memberMentionAlert, reviewCount, type AlertState } from '../src/renderer/src/state/alerts'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
+import { clearToasts } from '../src/renderer/src/state/toast'
+import type { AgentAlert } from '../src/shared/alerts'
 import type { SessionEvent } from '../src/shared/events'
 import type { QueuedItem } from '../src/shared/protocol'
 
