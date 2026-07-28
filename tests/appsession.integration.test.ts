@@ -13,9 +13,16 @@ function welcomeOf(ui: TestUi): Extract<ServerMessage, { type: 'welcome' }> {
 }
 
 describe('app session', () => {
-  it('refuses a folder that is not a git repository', async () => {
-    const app = new AppSession()
-    await expect(app.startHost(tmpDir('not-git'), 'sam')).rejects.toThrow('not a git repository')
+  // A folder with no git in it is somewhere to work, so it opens on this
+  // machine with nothing to sync rather than being turned away at the door.
+  it('opens a folder that is not a git repository, kept on this machine', async () => {
+    const app = new AppSession({ projects: tmpDir('not-git-state') })
+    const plain = tmpDir('not-git')
+    const info = await app.startHost(plain, 'sam')
+    expect(info.home).toBe('private')
+    expect(info.synced).toBe(false)
+    expect(info.shared).toBe(false)
+    await app.leave()
   })
 
   it('hosts a session, shares a join link, and pools nobody until an agent is made', async () => {
