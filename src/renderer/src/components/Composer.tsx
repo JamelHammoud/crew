@@ -96,6 +96,7 @@ export default function Composer({
   replyTo,
   onCancelReply,
   chips,
+  ghost,
   children
 }: {
   attachmentKey: string
