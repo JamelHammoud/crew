@@ -2189,7 +2189,13 @@ export class CrewSession {
     const run = agent?.runs.get(promptId)
     if (!agent || !ref || !run) return
     run.tokens = Math.max(run.tokens, tokens)
-    this.broadcast({ type: 'agent.tokens', promptId, agentId: agent.id, threadId: ref.threadId, tokens: run.tokens })
+    this.toThread(ref.threadId, {
+      type: 'agent.tokens',
+      promptId,
+      agentId: agent.id,
+      threadId: ref.threadId,
+      tokens: run.tokens
+    })
   }
 
   private handleStep(meta: ConnMeta, promptId: string, step: RunStep): void {
