@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { exitReason } from './failure'
 import type { Provider } from './types'
 
 const INSTALL_TIMEOUT_MS = 5 * 60 * 1000
