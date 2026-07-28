@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 afterEach(cleanup)
 import type { SessionEvent } from '../src/shared/events'
 import type { ClientMessage, ServerMessage, SessionSnapshot } from '../src/shared/protocol'
+import { installLocalStorage } from './helpers/local-storage'
 
 class TestResizeObserver {
   observe(): void {}
@@ -28,7 +29,7 @@ Element.prototype.scrollIntoView = () => {}
 if (typeof globalThis.CSS === 'undefined') {
   ;(globalThis as { CSS?: unknown }).CSS = {}
 }
-localStorage.setItem('crew.sound', 'off')
+installLocalStorage().setItem('crew.sound', 'off')
 
 class FakeSocket {
   static last: FakeSocket | null = null
