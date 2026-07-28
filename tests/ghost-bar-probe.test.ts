@@ -30,7 +30,19 @@ const open = (ghost: boolean) => {
     selfId: 'ali',
     selfName: 'ALI',
     members: [{ id: 'ali', name: 'ALI', connected: true }],
-    agents: [{ id: 'a1', label: 'Fable', provider: 'claude', online: true, busy: false }],
+    agents: [
+      {
+        id: 'a1',
+        label: 'Fable',
+        provider: 'claude',
+        ownerId: 'ali',
+        ownerName: 'ALI',
+        status: 'idle',
+        runs: {},
+        settings: {},
+        fields: []
+      }
+    ],
     events: [],
     docs: {},
     threads: { t1: thread(ghost) },
