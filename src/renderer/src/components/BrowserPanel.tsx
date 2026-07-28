@@ -269,6 +269,7 @@ export default function BrowserPanel() {
           .map(tab => (
             <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
+        {active && active.kind === 'plan' && <PlanView threadId={active.threadId} />}
         {active && active.kind === 'music' && <MusicView />}
         {active && active.kind === 'game' && <GameView tabId={active.id} />}
         {active && active.kind === 'web' && !active.initialUrl && (
