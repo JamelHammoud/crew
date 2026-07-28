@@ -2,6 +2,8 @@ import { createElement as h, type ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import CommandChip from '../src/renderer/src/components/CommandChip'
 import Composer from '../src/renderer/src/components/Composer'
+import ThreadCardShell from '../src/renderer/src/components/ThreadCardShell'
+import ThreadStatusBar from '../src/renderer/src/components/ThreadStatusBar'
 import { ChecklistGlyph, GhostGlyph, ToolboxGlyph } from '../src/renderer/src/icons'
 import type { CommandName } from '../src/shared/commands'
 

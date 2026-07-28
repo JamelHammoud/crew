@@ -75,8 +75,10 @@ describe('where a thing somebody said starts and ends', () => {
   it('holds the floor still through a long utterance', () => {
     const gate = new VoiceGate()
     settled(gate, 0.004)
+    say(gate, room(0.2, 4))
+    expect(gate.speaking).toBe(true)
     const floor = gate.noiseFloor
-    say(gate, room(0.2, 120))
+    say(gate, room(0.2, 200))
     expect(gate.noiseFloor).toBe(floor)
   })
 
