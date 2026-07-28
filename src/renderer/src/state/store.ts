@@ -727,7 +727,7 @@ export const useCrew = create<CrewState>((set, get) => {
           pending: { ...state.pending, [from]: [], [to]: [...waiting, ...carried].slice(0, MAX_ATTACHMENTS) }
         }
       }),
-    sendChat: (text, threadId, boardId, replyTo, aimedAt) => {
+    sendChat: (text, threadId, boardId, replyTo, aimedAt, commands) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
       // A message typed in a composer says who it is for by naming them. One
