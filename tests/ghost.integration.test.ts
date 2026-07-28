@@ -205,6 +205,35 @@ describe('ghost threads', () => {
     expect(thread.agentId).toBe(agentId('sam', 'mine'))
   })
 
+  it('one of your own takes a ghost thread nobody was named for', async () => {
+    const sam = await connectUi('sam')
+    await connectRunner('sam', 'mine', 'Mine')
+    await connectRunner('sam', 'other', 'Other')
+    await waitUntil(() => sam.events.filter(e => e.kind === 'agent.online').length === 2)
+
+    sam.chat('/ghost read the readme')
+    const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
+    expect(thread.ghost).toBe(true)
+    expect([agentId('sam', 'mine'), agentId('sam', 'other')]).toContain(thread.agentId)
+    await settle()
+    expect(sam.events.some(e => e.kind === 'message' && e.authorId === SYSTEM_AUTHOR_ID)).toBe(false)
+  })
+
+  it('a ghost thread with no agent of yours here says so, to you', async () => {
+    const sam = await connectUi('sam')
+    const pat = await connectUi('pat')
+    await connectRunner('pat', 'theirs', 'Theirs')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    sam.chat('/ghost read the readme')
+    const said = (await sam.waitForEvent(e => e.kind === 'message')) as Message
+    expect(said.authorId).toBe(SYSTEM_AUTHOR_ID)
+    expect(said.text).toContain('No agent of yours')
+    await settle()
+    expect(sam.events.some(e => e.kind === 'thread.started')).toBe(false)
+    expect(pat.events.some(e => e.kind === 'message')).toBe(false)
+  })
+
   it('the thread goes when the window does', async () => {
     const sam = await connectUi('sam')
     await connectRunner('sam')
