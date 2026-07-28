@@ -72,6 +72,7 @@ export type ClientMessage =
       type: 'chat.send'
       text: string
       mentions: string[]
+      commands?: CommandName[]
       threadId?: string
       attachments?: OutgoingAttachment[]
       boardId?: string
