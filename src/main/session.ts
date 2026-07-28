@@ -82,12 +82,17 @@ export class AppSession {
   private git: GitSync | null = null
   private agentsPath: string | null = null
   private sessionPath: string | null = null
+  private projectsPath: string | null = null
   private live: CurrentSession | null = null
   private folder: string | null = null
+  // What is being hosted here, kept so the listener can be moved between
+  // loopback and the network without the session it is serving being remade.
+  private hosted: { session: CrewSession; folder: string; name: string; home: CrewHome } | null = null
 
-  constructor(paths: { agents?: string; session?: string } = {}) {
+  constructor(paths: { agents?: string; session?: string; projects?: string } = {}) {
     this.agentsPath = paths.agents ?? null
     this.sessionPath = paths.session ?? null
+    this.projectsPath = paths.projects ?? null
   }
 
   setAgentsPath(path: string): void {
@@ -96,6 +101,10 @@ export class AppSession {
 
   setSessionPath(path: string): void {
     this.sessionPath = path
+  }
+
+  setProjectsPath(path: string): void {
+    this.projectsPath = path
   }
 
   current(): CurrentSession | null {
@@ -108,6 +117,14 @@ export class AppSession {
 
   recentJoins(): RecentJoin[] {
     return this.savedStore()?.recentJoins() ?? []
+  }
+
+  recentProjects(): RecentProject[] {
+    return this.savedStore()?.projects() ?? []
+  }
+
+  forgetProject(folder: string): void {
+    this.savedStore()?.forget(folder)
   }
 
   async repoStatus(): Promise<RepoStatus> {
