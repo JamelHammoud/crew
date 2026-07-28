@@ -10,13 +10,13 @@ export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home
       home: 'folder',
       mark: <FolderGlyph className="w-5 h-5" />,
       title: 'In the project',
-      line: 'Everyone who has the project gets the crew.'
+      line: 'The chat, docs and designs all live in the project itself, under a .crew folder.'
     },
     {
       home: 'private',
       mark: <DesktopGlyph className="w-5 h-5" />,
-      title: 'Outside the project',
-      line: 'Your folder is never written to or committed.'
+      title: 'In the Crew app',
+      line: 'The chat, docs and designs are kept here on this machine, and your project folder is never written to.'
     }
   ]
 
