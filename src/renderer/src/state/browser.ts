@@ -19,6 +19,9 @@ export type BrowserTab = {
   // rides on the tab so the pill can say what you are playing and so a look at
   // another tab does not put you back at the top of the list.
   game: string | null
+  // Whose plan a plan tab holds. It is the thread the plan belongs to, and the
+  // tab stands only while that thread is the one open.
+  threadId: string
   back: string[]
   forward: string[]
   // Whether the file tree is standing beside the file, and which folders in it

@@ -36,12 +36,28 @@ export default function Chat() {
   const openThread = useCrew(s => s.openThread)
   const text = useCrew(s => s.chatDraft)
   const setChatDraft = useCrew(s => s.setChatDraft)
+  const commands = useCrew(s => s.chatCommands)
+  const setChatCommands = useCrew(s => s.setChatCommands)
   const agents = useCrew(s => s.agents)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
+  const takeCommand = (name: CommandName) => setChatCommands(cleanCommands([...commands, name]))
+
+  // A command typed out and one picked from the menu land on the same chip,
+  // because both paths into the draft come through here.
+  const write = (value: string) => {
+    const typed = commandTyped(value)
+    if (!typed) {
+      setChatDraft(value)
+      return
+    }
+    takeCommand(typed)
+    setChatDraft('')
+  }
+
   const inputRef = useAutoResize(text)
-  const mention = useMentionAutocomplete(text, setChatDraft, inputRef)
-  const slash = useSlashCommands(text, setChatDraft, inputRef)
+  const mention = useMentionAutocomplete(text, write, inputRef)
+  const slash = useSlashCommands(text, write, takeCommand, inputRef)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, CHAT_KEY)
   const working = Object.keys(threadPrompts).length > 0
