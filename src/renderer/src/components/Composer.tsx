@@ -18,11 +18,13 @@ import type { ThreadItem } from './thread'
 function EmojiHighlight({
   text,
   at,
-  selection
+  selection,
+  surface
 }: {
   text: string
   at: number
   selection: SelectedRange | null
+  surface: string
 }) {
   const tokens = useMemo(() => spanned(tokenizeEmoji(text), at), [at, text])
   return (
