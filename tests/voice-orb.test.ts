@@ -151,6 +151,66 @@ describe('the mesh the agent lights', () => {
   })
 })
 
+// The light the orb throws is the orb's own outline, blurred. Painted wider
+// than the canvas it is cut off flat at all four sides, which reads as a grey
+// square standing behind a sphere.
+describe('the light the orb throws', () => {
+  const painted = (face: ReturnType<typeof restingOrb>, size: number, base: number) => {
+    const points: number[] = []
+    let blur = 0
+    const ctx = {
+      filter: '',
+      fillStyle: '',
+      strokeStyle: '',
+      lineWidth: 0,
+      lineCap: '',
+      globalAlpha: 1,
+      globalCompositeOperation: '',
+      clearRect: () => {},
+      save: () => {},
+      restore: () => {},
+      translate: () => {},
+      beginPath: () => {},
+      closePath: () => {},
+      clip: () => {},
+      stroke: () => {},
+      arc: () => {},
+      fillRect: () => {},
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      moveTo: (x: number, y: number) => points.push(Math.hypot(x, y)),
+      quadraticCurveTo: (x: number, y: number, toX: number, toY: number) => {
+        points.push(Math.hypot(x, y), Math.hypot(toX, toY))
+      },
+      fill: () => {
+        blur = Number(/blur\(([\d.]+)px\)/.exec(String(ctx.filter))?.[1] ?? 0)
+      }
+    }
+    const before = points.length
+    drawOrb(ctx as unknown as CanvasRenderingContext2D, face, size, base, { ink: '#ffffff', ring: '#ffffff' })
+    return { furthest: Math.max(...points.slice(before)), blur }
+  }
+
+  it('stands inside the box it is drawn in, quiet or loud', () => {
+    const size = 340
+    const base = (size / 2) * 0.56
+    for (const level of [0, 0.5, 1]) {
+      const face = restingOrb()
+      settle(face, new Array(BANDS).fill(level), 1, 90)
+      const { furthest, blur } = painted(face, size, base)
+      expect(furthest + blur * 2).toBeLessThanOrEqual(size / 2)
+    }
+  })
+
+  it('stands outside the orb rather than under it', () => {
+    const face = restingOrb()
+    settle(face, new Array(BANDS).fill(0.4), 1, 90)
+    const base = 95
+    const { furthest, blur } = painted(face, 340, base)
+    expect(furthest).toBeGreaterThan(orbReach(face, base))
+    expect(blur).toBeGreaterThan(0)
+  })
+})
+
 describe('a color the app already holds, at an opacity', () => {
   it('reads the app palette', () => {
     expect(withAlpha('#2dd4ff', 0.5)).toBe('rgba(45, 212, 255, 0.5)')
