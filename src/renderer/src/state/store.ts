@@ -363,6 +363,7 @@ export const useCrew = create<CrewState>((set, get) => {
       const steps = { ...state.steps }
       const threads = { ...state.threads }
       const threadPrompts = { ...state.threadPrompts }
+      foldThread(threads, event)
       switch (event.kind) {
         case 'person.joined': {
           const member = members.find(m => m.id === event.memberId)
