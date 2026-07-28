@@ -1164,7 +1164,8 @@ export class CrewSession {
       boardMentions: entry.boardMentions,
       threadId: entry.threadId,
       attachments: entry.attachments,
-      replyTo: entry.replyTo
+      replyTo: entry.replyTo,
+      voice: entry.voice ? true : undefined
     })
   }
 
