@@ -5,6 +5,8 @@ import { DEFAULT_VOICE, SPEAK_MODEL } from './models'
 // at a time, so the first words are in the air while the last ones are still
 // being drawn, which is the whole difference between a voice and a wait.
 
+type KokoroVoice = NonNullable<Parameters<KokoroTTS['stream']>[1]>['voice']
+
 export type SpeakIn =
   | { type: 'load' }
   | { type: 'open'; turn: number; voice: string }
@@ -36,26 +38,30 @@ const load = (): Promise<KokoroTTS> => {
   return mouth
 }
 
-// One turn at a time. Anything still coming out of the model when the next turn
-// opens belongs to a sentence nobody is waiting for any more, so it is dropped
-// on the way out rather than played over the top of what is being said now.
-let turn = 0
+// One turn at a time, and the window is the only thing that numbers them. What
+// is still coming out of the model when the next turn opens belongs to a
+// sentence nobody is waiting for, so it is dropped on the way out rather than
+// played over the top of what is being said now. NOBODY is the turn a stopped
+// mouth is on, which no turn from the window ever matches.
+const NOBODY = -1
+
+let turn = NOBODY
 let splitter: TextSplitterStream | null = null
 
-async function speak(startedFor: number, voice: string): Promise<void> {
+async function run(mine: number, stream: TextSplitterStream, voice: string): Promise<void> {
   const tts = await load()
-  const stream = new TextSplitterStream()
-  splitter = stream
-  try {
-    for await (const piece of tts.stream(stream, { voice: voice as never })) {
-      if (turn !== startedFor) return
-      const audio = piece.audio.data
-      post({ type: 'said', turn: startedFor, text: piece.text, audio }, [audio.buffer])
-    }
-    if (turn === startedFor) post({ type: 'done', turn: startedFor })
-  } finally {
-    if (splitter === stream) splitter = null
+  for await (const piece of tts.stream(stream, { voice: voice as KokoroVoice })) {
+    if (turn !== mine) return
+    const audio = new Float32Array(piece.audio.data)
+    post({ type: 'said', turn: mine, text: piece.text, audio }, [audio.buffer])
   }
+  if (turn === mine) post({ type: 'done', turn: mine })
+}
+
+const hush = () => {
+  turn = NOBODY
+  splitter?.close()
+  splitter = null
 }
 
 self.onmessage = (event: MessageEvent<SpeakIn>) => {
@@ -67,17 +73,19 @@ self.onmessage = (event: MessageEvent<SpeakIn>) => {
     )
     return
   }
-  if (message.type === 'stop') {
-    turn++
-    splitter?.close()
-    splitter = null
-    return
-  }
+  if (message.type === 'stop') return hush()
   if (message.type === 'open') {
+    hush()
+    // Made here rather than inside the run, so words pushed in the same breath
+    // as the turn opens are not dropped while the model is still loading.
+    const stream = new TextSplitterStream()
     turn = message.turn
-    speak(message.turn, message.voice || DEFAULT_VOICE).catch(error =>
-      post({ type: 'failed', message: error instanceof Error ? error.message : 'The voice stopped.' })
-    )
+    splitter = stream
+    run(message.turn, stream, message.voice || DEFAULT_VOICE).catch(error => {
+      if (turn === message.turn) {
+        post({ type: 'failed', message: error instanceof Error ? error.message : 'The voice stopped.' })
+      }
+    })
     return
   }
   if (turn !== message.turn) return

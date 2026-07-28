@@ -144,7 +144,7 @@ describe('plan mode', () => {
     expect(thread.mode).toBeUndefined()
     await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
 
-    sam.chat('/plan is not a command here', [], thread.threadId)
+    sam.chat('/plan is not a command here', [], thread.threadId, ['plan'])
     await sam.waitForEvent(
       e => e.kind === 'message' && e.threadId === thread.threadId && e.text === '/plan is not a command here'
     )
