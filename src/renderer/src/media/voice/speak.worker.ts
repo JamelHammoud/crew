@@ -52,7 +52,9 @@ async function run(mine: number, stream: TextSplitterStream, voice: string): Pro
   const tts = await load()
   for await (const piece of tts.stream(stream, { voice: voice as KokoroVoice })) {
     if (turn !== mine) return
-    const audio = new Float32Array(piece.audio.data)
+    // Copied rather than handed straight over, so transferring the buffer can
+    // never detach one the model is still holding.
+    const audio = new Float32Array(piece.audio.audio)
     post({ type: 'said', turn: mine, text: piece.text, audio }, [audio.buffer])
   }
   if (turn === mine) post({ type: 'done', turn: mine })
