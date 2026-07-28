@@ -1,5 +1,5 @@
 import type { CommandName } from '../../../shared/commands'
-import { ChecklistGlyph, GhostGlyph, XGlyph } from '../icons'
+import { ChecklistGlyph, GhostGlyph, CloseGlyph } from '../icons'
 import Pill from './Pill'
 
 export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
@@ -26,7 +26,7 @@ export default function CommandChip({ name, onRemove }: { name: CommandName; onR
             aria-label={`Remove ${label}`}
             className="text-fg-muted transition-colors cursor-pointer hover:text-fg active:scale-95"
           >
-            <XGlyph className="w-3 h-3" />
+            <CloseGlyph className="w-3 h-3" />
           </button>
         )}
       </span>
