@@ -1,0 +1,119 @@
+<!doctype html><meta charset="utf8"><style>
+      :root{--ink900:#0c0d0e;--ink800:#151719;--fg:#f5f5f5;--danger:#ff6b6b}
+      body{margin:0;padding:26px;background:var(--ink900);color:var(--fg);
+        font:12px -apple-system,system-ui,sans-serif}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+      .cand{background:var(--ink800);border-radius:20px;padding:16px 18px}
+      .head{font-size:12px;font-weight:600;margin-bottom:12px}
+      .head b{color:#6f7276;font-weight:600;margin-right:6px}
+      .head span{display:block;color:#8b8f94;font-weight:400;font-size:11px;margin-top:3px}
+      .bar{display:flex;align-items:center;gap:6px;background:#0c0d0e;
+        border-radius:999px;padding:8px 10px;width:max-content}
+      .btn{width:40px;height:40px;border-radius:999px;display:inline-flex;
+        align-items:center;justify-content:center}
+      .on{background:var(--fg);color:var(--ink900)}
+      .off{background:rgb(245 245 245/.08);color:#a7abb0}
+      .danger{background:rgb(255 107 107/.15);color:var(--danger)}
+      .rule{width:1px;height:24px;background:rgb(245 245 245/.08);margin:0 4px}
+      .zooms{display:flex;align-items:center;gap:22px;margin-top:14px}
+      .z{display:inline-flex;zoom:2.6}
+      .plain{display:inline-flex;color:var(--fg);opacity:.85}
+      .dim{color:#6f7276;font-size:10px;margin-left:auto;font-variant-numeric:tabular-nums}
+    </style>
+    <div class="grid">
+    <div class="cand">
+      <div class="head"><b>1</b> Slashed handset<span>the set’s own negation, same SLASH as MicOff and CameraOff</span></div>
+      <div class="bar">
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="8.75" y="2.75" width="6.5" height="11.5" rx="3.25"></rect><path d="M5.5 11.5v.75a6.5 6.5 0 0 0 13 0v-.75"></path><path d="M12 18.75v2.5"></path></svg></span>
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="5" width="13.5" height="14" rx="3"></rect><path d="M16 10.5 20 7.65a1 1 0 0 1 1.5.85v7a1 1 0 0 1-1.5.85L16 13.5Z"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="4.5" width="19" height="13" rx="3"></rect><path d="M12 17.5v3"></path><path d="M8 20.5h8"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5"></path></svg></span>
+        <span class="rule"></span>
+        <span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M15.4 4.1a1.9 1.9 0 0 1 2.75.25L19.7 6.25a2.7 2.7 0 0 1 .45 2.7c-1.95 5-5.2 8.25-10.2 10.2a2.7 2.7 0 0 1-2.7-.45l-1.9-1.55a1.9 1.9 0 0 1-.25-2.75l1.6-1.95a1.9 1.9 0 0 1 2.4-.45l1.5.9a14.5 14.5 0 0 0 3.55-3.55l-.9-1.5a1.9 1.9 0 0 1 .45-2.4Z"></path><path d="m3.9 3.9 16.2 16.2"></path></svg></span>
+      </div>
+      <div class="zooms">
+        <span class="z"><span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M15.4 4.1a1.9 1.9 0 0 1 2.75.25L19.7 6.25a2.7 2.7 0 0 1 .45 2.7c-1.95 5-5.2 8.25-10.2 10.2a2.7 2.7 0 0 1-2.7-.45l-1.9-1.55a1.9 1.9 0 0 1-.25-2.75l1.6-1.95a1.9 1.9 0 0 1 2.4-.45l1.5.9a14.5 14.5 0 0 0 3.55-3.55l-.9-1.5a1.9 1.9 0 0 1 .45-2.4Z"></path><path d="m3.9 3.9 16.2 16.2"></path></svg></span></span>
+        <span class="plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><path d="M15.4 4.1a1.9 1.9 0 0 1 2.75.25L19.7 6.25a2.7 2.7 0 0 1 .45 2.7c-1.95 5-5.2 8.25-10.2 10.2a2.7 2.7 0 0 1-2.7-.45l-1.9-1.55a1.9 1.9 0 0 1-.25-2.75l1.6-1.95a1.9 1.9 0 0 1 2.4-.45l1.5.9a14.5 14.5 0 0 0 3.55-3.55l-.9-1.5a1.9 1.9 0 0 1 .45-2.4Z"></path><path d="m3.9 3.9 16.2 16.2"></path></svg></span>
+        <span class="dim">15.7 × 15.7</span>
+      </div>
+    </div>
+    <div class="cand">
+      <div class="head"><b>2</b> Handset going down<span>receiver rocking onto its rest</span></div>
+      <div class="bar">
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="8.75" y="2.75" width="6.5" height="11.5" rx="3.25"></rect><path d="M5.5 11.5v.75a6.5 6.5 0 0 0 13 0v-.75"></path><path d="M12 18.75v2.5"></path></svg></span>
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="5" width="13.5" height="14" rx="3"></rect><path d="M16 10.5 20 7.65a1 1 0 0 1 1.5.85v7a1 1 0 0 1-1.5.85L16 13.5Z"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="4.5" width="19" height="13" rx="3"></rect><path d="M12 17.5v3"></path><path d="M8 20.5h8"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5"></path></svg></span>
+        <span class="rule"></span>
+        <span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><g transform="rotate(-38 12 10.5)"><path d="M15.4 4.1a1.9 1.9 0 0 1 2.75.25L19.7 6.25a2.7 2.7 0 0 1 .45 2.7c-1.95 5-5.2 8.25-10.2 10.2a2.7 2.7 0 0 1-2.7-.45l-1.9-1.55a1.9 1.9 0 0 1-.25-2.75l1.6-1.95a1.9 1.9 0 0 1 2.4-.45l1.5.9a14.5 14.5 0 0 0 3.55-3.55l-.9-1.5a1.9 1.9 0 0 1 .45-2.4Z" transform="translate(0 -2.5) scale(0.86) translate(2 2)"></path></g><path d="M4.5 19.5a9 9 0 0 1 15 0"></path></svg></span>
+      </div>
+      <div class="zooms">
+        <span class="z"><span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><g transform="rotate(-38 12 10.5)"><path d="M15.4 4.1a1.9 1.9 0 0 1 2.75.25L19.7 6.25a2.7 2.7 0 0 1 .45 2.7c-1.95 5-5.2 8.25-10.2 10.2a2.7 2.7 0 0 1-2.7-.45l-1.9-1.55a1.9 1.9 0 0 1-.25-2.75l1.6-1.95a1.9 1.9 0 0 1 2.4-.45l1.5.9a14.5 14.5 0 0 0 3.55-3.55l-.9-1.5a1.9 1.9 0 0 1 .45-2.4Z" transform="translate(0 -2.5) scale(0.86) translate(2 2)"></path></g><path d="M4.5 19.5a9 9 0 0 1 15 0"></path></svg></span></span>
+        <span class="plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><g transform="rotate(-38 12 10.5)"><path d="M15.4 4.1a1.9 1.9 0 0 1 2.75.25L19.7 6.25a2.7 2.7 0 0 1 .45 2.7c-1.95 5-5.2 8.25-10.2 10.2a2.7 2.7 0 0 1-2.7-.45l-1.9-1.55a1.9 1.9 0 0 1-.25-2.75l1.6-1.95a1.9 1.9 0 0 1 2.4-.45l1.5.9a14.5 14.5 0 0 0 3.55-3.55l-.9-1.5a1.9 1.9 0 0 1 .45-2.4Z" transform="translate(0 -2.5) scale(0.86) translate(2 2)"></path></g><path d="M4.5 19.5a9 9 0 0 1 15 0"></path></svg></span>
+        <span class="dim">15.8 × 15.9</span>
+      </div>
+    </div>
+    <div class="cand">
+      <div class="head"><b>3</b> Leave (already drawn)<span>the mark the app already uses for leaving</span></div>
+      <div class="bar">
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="8.75" y="2.75" width="6.5" height="11.5" rx="3.25"></rect><path d="M5.5 11.5v.75a6.5 6.5 0 0 0 13 0v-.75"></path><path d="M12 18.75v2.5"></path></svg></span>
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="5" width="13.5" height="14" rx="3"></rect><path d="M16 10.5 20 7.65a1 1 0 0 1 1.5.85v7a1 1 0 0 1-1.5.85L16 13.5Z"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="4.5" width="19" height="13" rx="3"></rect><path d="M12 17.5v3"></path><path d="M8 20.5h8"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5"></path></svg></span>
+        <span class="rule"></span>
+        <span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M13.5 4.5H6A2.5 2.5 0 0 0 3.5 7v10A2.5 2.5 0 0 0 6 19.5h7.5"></path><path d="M10 12h10.5"></path><path d="m16.5 8 4 4-4 4"></path></svg></span>
+      </div>
+      <div class="zooms">
+        <span class="z"><span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M13.5 4.5H6A2.5 2.5 0 0 0 3.5 7v10A2.5 2.5 0 0 0 6 19.5h7.5"></path><path d="M10 12h10.5"></path><path d="m16.5 8 4 4-4 4"></path></svg></span></span>
+        <span class="plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><path d="M13.5 4.5H6A2.5 2.5 0 0 0 3.5 7v10A2.5 2.5 0 0 0 6 19.5h7.5"></path><path d="M10 12h10.5"></path><path d="m16.5 8 4 4-4 4"></path></svg></span>
+        <span class="dim">17.0 × 15.0</span>
+      </div>
+    </div>
+    <div class="cand">
+      <div class="head"><b>4</b> Door<span>the object version of leave</span></div>
+      <div class="bar">
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="8.75" y="2.75" width="6.5" height="11.5" rx="3.25"></rect><path d="M5.5 11.5v.75a6.5 6.5 0 0 0 13 0v-.75"></path><path d="M12 18.75v2.5"></path></svg></span>
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="5" width="13.5" height="14" rx="3"></rect><path d="M16 10.5 20 7.65a1 1 0 0 1 1.5.85v7a1 1 0 0 1-1.5.85L16 13.5Z"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="4.5" width="19" height="13" rx="3"></rect><path d="M12 17.5v3"></path><path d="M8 20.5h8"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5"></path></svg></span>
+        <span class="rule"></span>
+        <span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M13.75 3.5H6.75a1.5 1.5 0 0 0-1.5 1.5v14a1.5 1.5 0 0 0 1.5 1.5h7"></path><path d="M10.25 12h.01"></path><path d="M13.5 12h7"></path><path d="m17.25 8.5 3.5 3.5-3.5 3.5"></path></svg></span>
+      </div>
+      <div class="zooms">
+        <span class="z"><span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M13.75 3.5H6.75a1.5 1.5 0 0 0-1.5 1.5v14a1.5 1.5 0 0 0 1.5 1.5h7"></path><path d="M10.25 12h.01"></path><path d="M13.5 12h7"></path><path d="m17.25 8.5 3.5 3.5-3.5 3.5"></path></svg></span></span>
+        <span class="plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><path d="M13.75 3.5H6.75a1.5 1.5 0 0 0-1.5 1.5v14a1.5 1.5 0 0 0 1.5 1.5h7"></path><path d="M10.25 12h.01"></path><path d="M13.5 12h7"></path><path d="m17.25 8.5 3.5 3.5-3.5 3.5"></path></svg></span>
+        <span class="dim">15.5 × 17.0</span>
+      </div>
+    </div>
+    <div class="cand">
+      <div class="head"><b>5</b> Leaving the crew<span>the house mark, one disc stepping out</span></div>
+      <div class="bar">
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="8.75" y="2.75" width="6.5" height="11.5" rx="3.25"></rect><path d="M5.5 11.5v.75a6.5 6.5 0 0 0 13 0v-.75"></path><path d="M12 18.75v2.5"></path></svg></span>
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="5" width="13.5" height="14" rx="3"></rect><path d="M16 10.5 20 7.65a1 1 0 0 1 1.5.85v7a1 1 0 0 1-1.5.85L16 13.5Z"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="4.5" width="19" height="13" rx="3"></rect><path d="M12 17.5v3"></path><path d="M8 20.5h8"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5"></path></svg></span>
+        <span class="rule"></span>
+        <span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="6.2" cy="12" r="3.4"></circle><circle cx="11.9" cy="12" r="3.4"></circle><circle cx="19" cy="12" r="2.4"></circle></svg></span>
+      </div>
+      <div class="zooms">
+        <span class="z"><span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="6.2" cy="12" r="3.4"></circle><circle cx="11.9" cy="12" r="3.4"></circle><circle cx="19" cy="12" r="2.4"></circle></svg></span></span>
+        <span class="plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><circle cx="6.2" cy="12" r="3.4"></circle><circle cx="11.9" cy="12" r="3.4"></circle><circle cx="19" cy="12" r="2.4"></circle></svg></span>
+        <span class="dim">18.6 × 6.8</span>
+      </div>
+    </div>
+    <div class="cand">
+      <div class="head"><b>6</b> Solid handset, tilted<span>least change: keeps the solid, stops it reading as an arch</span></div>
+      <div class="bar">
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="8.75" y="2.75" width="6.5" height="11.5" rx="3.25"></rect><path d="M5.5 11.5v.75a6.5 6.5 0 0 0 13 0v-.75"></path><path d="M12 18.75v2.5"></path></svg></span>
+        <span class="btn on"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="5" width="13.5" height="14" rx="3"></rect><path d="M16 10.5 20 7.65a1 1 0 0 1 1.5.85v7a1 1 0 0 1-1.5.85L16 13.5Z"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="2.5" y="4.5" width="19" height="13" rx="3"></rect><path d="M12 17.5v3"></path><path d="M8 20.5h8"></path></svg></span>
+        <span class="btn off"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><path d="M9.5 4.5h-5v5M14.5 4.5h5v5M19.5 14.5v5h-5M4.5 14.5v5h5"></path></svg></span>
+        <span class="rule"></span>
+        <span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><g transform="rotate(135 12 12)"><path d="M4.04 17.77A9.6 8 0 1 1 19.96 17.77A2.14 2.14 0 0 1 18.36 13.8A6.4 4.8 0 1 0 5.64 13.8A2.14 2.14 0 0 1 4.04 17.77Z" fill="currentColor"></path></g></svg></span>
+      </div>
+      <div class="zooms">
+        <span class="z"><span class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><g transform="rotate(135 12 12)"><path d="M4.04 17.77A9.6 8 0 1 1 19.96 17.77A2.14 2.14 0 0 1 18.36 13.8A6.4 4.8 0 1 0 5.64 13.8A2.14 2.14 0 0 1 4.04 17.77Z" fill="currentColor"></path></g></svg></span></span>
+        <span class="plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><g transform="rotate(135 12 12)"><path d="M4.04 17.77A9.6 8 0 1 1 19.96 17.77A2.14 2.14 0 0 1 18.36 13.8A6.4 4.8 0 1 0 5.64 13.8A2.14 2.14 0 0 1 4.04 17.77Z" fill="currentColor"></path></g></svg></span>
+        <span class="dim">19.2 × 12.6</span>
+      </div>
+    </div></div>
