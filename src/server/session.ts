@@ -877,7 +877,13 @@ export class CrewSession {
       return
     }
     for (const id of ids) {
-      this.startThread(member, this.agents.get(id)!, trimmed, attachments, { boardId, mode, mentions: ids, replyTo })
+      this.startThread(member, this.agents.get(id)!, trimmed, attachments, {
+        boardId,
+        mode,
+        ghost,
+        mentions: ids,
+        replyTo
+      })
     }
   }
 
