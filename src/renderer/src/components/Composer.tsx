@@ -106,6 +106,7 @@ export default function Composer({
   onSend: () => void
   onStop?: () => void
   sendLabel?: string
+  huddle?: boolean
   replyTo?: ThreadItem
   onCancelReply?: () => void
   children?: ReactNode
