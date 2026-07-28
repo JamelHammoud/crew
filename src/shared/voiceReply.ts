@@ -21,8 +21,10 @@ const NOTHING: Sayable = { say: '', cards: [] }
 const FENCE = /^[ \t]*```/gm
 
 // A full stop after a single letter is an initial or an abbreviation, so "e.g."
-// and "J. Smith" are not the end of anything.
-const SENTENCE = /(?<![\s(][A-Za-z])[.!?…]["')\]]*(?=\s)/g
+// and "J. Smith" are not the end of anything. The second guard is what catches
+// the stop at the end of one: by then the letter before it is preceded by the
+// first stop rather than by a space.
+const SENTENCE = /(?<![\s(][A-Za-z])(?<!\.[A-Za-z])[.!?…]["')\]]*(?=\s|$)/g
 
 export function lastBoundary(text: string, from: number): number {
   let end = from
