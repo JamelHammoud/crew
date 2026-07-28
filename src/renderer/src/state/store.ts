@@ -759,6 +759,7 @@ export const useCrew = create<CrewState>((set, get) => {
           type: 'chat.send',
           text,
           mentions,
+          commands,
           threadId,
           attachments,
           boardId: threadId ? undefined : boardId,
