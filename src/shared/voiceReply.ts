@@ -44,8 +44,14 @@ export class VoiceReply {
   // Everything that has become safe to say since the last time it was asked.
   grew(raw: string): Sayable {
     const fences = [...raw.matchAll(FENCE)]
-    const safe = fences.length % 2 === 0 ? raw : raw.slice(0, fences[fences.length - 1].index)
-    const end = lastBoundary(safe, this.at)
+    const open = fences.length % 2 === 1
+    const safe = open ? raw.slice(0, fences.at(-1)!.index) : raw
+    // A line ending inside a card is a line ending, so the sentence rule alone
+    // would happily cut a whole card in half and read the front of it out. The
+    // last one to close is the earliest the reply can be picked up again.
+    const closed = open ? fences.length - 1 : fences.length
+    const shut = closed >= 2 ? lineEnd(safe, fences[closed - 1].index!) : 0
+    const end = Math.max(shut, lastBoundary(safe, Math.max(this.at, shut)))
     if (end <= this.at) return NOTHING
     return this.take(safe.slice(this.at, end), end)
   }
