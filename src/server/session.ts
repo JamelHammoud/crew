@@ -27,6 +27,7 @@ import {
 import {
   huddleRecordId,
   markDeletedReplies,
+  olderEvents,
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
   trimEvents,
@@ -219,6 +220,7 @@ interface ReactionTarget {
 type ReactionEvent = Extract<SessionEvent, { kind: 'message.reaction' }>
 
 const SNAPSHOT_EVENT_LIMIT = 500
+const HISTORY_PAGE = 200
 const CONTEXT_EVENT_LIMIT = 20
 const MAX_DOC_PROMPT_CHARS = 8000
 const TITLE_LIMIT = 80
