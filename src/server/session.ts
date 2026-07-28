@@ -2492,7 +2492,8 @@ export class CrewSession {
       promptId,
       text: steer.text,
       byName: steer.byName,
-      attachments: steer.attachments
+      attachments: steer.attachments,
+      ghost: this.ghostOf(steer.threadId) ? true : undefined
     })
   }
 
