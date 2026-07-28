@@ -341,7 +341,8 @@ export const useCrew = create<CrewState>((set, get) => {
             createdBy: event.byName,
             status: 'open',
             mode: event.mode ?? 'build',
-            boardId: event.boardId
+            boardId: event.boardId,
+            ghost: event.ghost
           }
           break
         }
