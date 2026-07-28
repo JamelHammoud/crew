@@ -29,8 +29,6 @@ export default function AddMenu({
   const [open, setOpen] = useState(false)
   const [screen, setScreen] = useState<Screen>('menu')
   const full = count >= MAX_ATTACHMENTS
-  // Once you are in the call the dock is on screen and holds the way out, so
-  // the row is only ever a way in.
   const calling = huddle === true && !joined
 
   const show = () => {
