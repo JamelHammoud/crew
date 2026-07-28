@@ -97,8 +97,12 @@ export const useVoice = create<VoiceState>((set, get) => {
     onFetching: fetched,
     onReady: woke,
     onSaying: saying => set({ saying, phase: 'speaking' }),
+    // Also from thinking, because a reply that was all card, or that had
+    // nothing in it at all, goes quiet without ever having said a word. Read
+    // as speaking only, that turn leaves the orb working forever.
     onQuiet: () => {
-      if (get().phase === 'speaking') set({ phase: 'listening', saying: '' })
+      const phase = get().phase
+      if (phase === 'speaking' || phase === 'thinking') set({ phase: 'listening', saying: '' })
     },
     onFailed: message => get().phase !== 'off' && set({ problem: message })
   })
