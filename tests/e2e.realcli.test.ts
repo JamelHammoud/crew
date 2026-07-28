@@ -50,7 +50,7 @@ describe.skipIf(!RUN)('real end to end (CREW_REAL_CLI=1)', () => {
       await initRepo(repo)
       const app = new AppSession()
       const info = await app.startHost(repo, 'verify')
-      const target = parseLink(info.link)
+      const target = parseLink(linkOf(info))
       const ui = await TestUi.connect(info.wsUrl, 'verify', target.code)
 
       const kimiId = agentId('verify', 'kimi')
@@ -84,7 +84,7 @@ describe.skipIf(!RUN)('real end to end (CREW_REAL_CLI=1)', () => {
       await initRepo(repo)
       const app = new AppSession()
       const info = await app.startHost(repo, 'verify')
-      const target = parseLink(info.link)
+      const target = parseLink(linkOf(info))
       const ui = await TestUi.connect(info.wsUrl, 'verify', target.code)
 
       const claudeId = agentId('verify', 'claude')
