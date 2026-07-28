@@ -131,6 +131,12 @@ interface CrewState {
   members: MemberInfo[]
   agents: PooledAgent[]
   events: SessionEvent[]
+  // How much of the history is held. It starts at a window of the newest and
+  // grows by whatever is read back, so scrolling into older messages does not
+  // hand them straight back to the trim.
+  eventLimit: number
+  moreHistory: boolean
+  loadingHistory: boolean
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   steps: Record<string, AgentStep[]>
