@@ -34,7 +34,7 @@ export default function YourName({
       <button
         onClick={onDone}
         disabled={!name.trim()}
-        className="w-full h-12 rounded-full bg-fg text-ink-900 text-base font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
+        className="w-full h-12 rounded-full bg-fg text-ink-900 text-base font-semibold transition-all duration-150 hover:bg-fg/90 active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
       >
         {first ? 'Continue' : 'Done'}
       </button>
