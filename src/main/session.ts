@@ -287,9 +287,10 @@ export class AppSession {
   async startHost(repoPath: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
     await this.stop()
     const tracked = await isGitRepo(repoPath)
-    const home = opts.home ?? (await this.projectPlan(repoPath)).home
+    const known = this.savedStore()?.projects().find(project => project.folder === repoPath)
+    const home = opts.home ?? known?.home ?? (tracked ? 'folder' : 'private')
     const shared = opts.share ?? home === 'folder'
-    const key = await this.keyFor(repoPath, home)
+    const key = known?.key || (await projectKey(repoPath))
     const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
     const store = new Store(base)
     const session = new CrewSession(store)
