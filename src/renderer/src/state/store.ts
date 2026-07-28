@@ -155,7 +155,14 @@ interface CrewState {
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
   moveAttachments: (from: string, to: string) => void
-  sendChat: (text: string, threadId?: string, boardId?: string, replyTo?: string, aimedAt?: string[]) => void
+  sendChat: (
+    text: string,
+    threadId?: string,
+    boardId?: string,
+    replyTo?: string,
+    aimedAt?: string[],
+    commands?: CommandName[]
+  ) => void
   createBoard: (name: string) => string
   renameBoard: (boardId: string, name: string) => void
   deleteBoard: (boardId: string) => void
