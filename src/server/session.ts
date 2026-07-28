@@ -1388,6 +1388,10 @@ export class CrewSession {
     return this.store.attachmentPath(file)
   }
 
+  attachmentBytes(file: string): Buffer | null {
+    return this.ghostFiles.get(file)?.data ?? null
+  }
+
   private assignPageCodes(): void {
     const taken = new Set([...this.docs.keys()].map(pageCodeOf))
     const pending = [...this.docs.keys()]
