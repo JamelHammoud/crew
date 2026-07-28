@@ -1,22 +1,46 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { RecentJoin } from '../shared/recent'
+import type { CrewHome } from '../shared/project'
+import type { RecentJoin, RecentProject } from '../shared/recent'
 
 export type SavedSession =
-  | { mode: 'host'; folder: string; name: string }
+  | { mode: 'host'; folder: string; name: string; home: CrewHome; shared: boolean }
   | { mode: 'join'; folder: string; name: string; link: string }
 
 interface SavedSessionData {
   active: SavedSession | null
   recentJoins: RecentJoin[]
+  projects: RecentProject[]
 }
 
 const RECENT_LIMIT = 5
+const PROJECT_LIMIT = 8
 
+function homeFrom(value: unknown): CrewHome {
+  return value === 'private' ? 'private' : 'folder'
+}
+
+// A session written before there was anywhere else for a crew to live is one
+// that lives in the folder and is shared, which is what it did.
 function sessionFrom(value: unknown): SavedSession | null {
-  const saved = value as Partial<{ mode: string; folder: string; name: string; link: string }> | null
+  const saved = value as Partial<{
+    mode: string
+    folder: string
+    name: string
+    link: string
+    home: unknown
+    shared: unknown
+  }> | null
   if (!saved || typeof saved.folder !== 'string' || typeof saved.name !== 'string') return null
-  if (saved.mode === 'host') return { mode: 'host', folder: saved.folder, name: saved.name }
+  if (saved.mode === 'host') {
+    return {
+      mode: 'host',
+      folder: saved.folder,
+      name: saved.name,
+      home: homeFrom(saved.home),
+      shared: saved.shared !== false
+    }
+  }
   if (saved.mode === 'join' && typeof saved.link === 'string') {
     return { mode: 'join', folder: saved.folder, name: saved.name, link: saved.link }
   }
@@ -42,6 +66,26 @@ function recentFrom(value: unknown): RecentJoin | null {
   }
 }
 
+function projectFrom(value: unknown): RecentProject | null {
+  const project = value as Partial<RecentProject> | null
+  if (
+    !project ||
+    typeof project.folder !== 'string' ||
+    typeof project.name !== 'string' ||
+    typeof project.key !== 'string' ||
+    typeof project.openedAt !== 'number'
+  ) {
+    return null
+  }
+  return {
+    folder: project.folder,
+    name: project.name,
+    home: homeFrom(project.home),
+    key: project.key,
+    openedAt: project.openedAt
+  }
+}
+
 export class SavedSessionStore {
   constructor(private file: string) {}
 
@@ -53,6 +97,16 @@ export class SavedSessionStore {
     return this.read().recentJoins
   }
 
+  projects(): RecentProject[] {
+    return this.read().projects
+  }
+
+  // The key a private crew was filed under is remembered by folder, so a
+  // project opened before its first commit keeps its history once it has one.
+  keyOf(folder: string): string | null {
+    return this.read().projects.find(project => project.folder === folder)?.key ?? null
+  }
+
   save(session: SavedSession): void {
     const data = this.read()
     const recentJoins =
@@ -62,16 +116,30 @@ export class SavedSessionStore {
             ...data.recentJoins.filter(recent => recent.link !== session.link)
           ].slice(0, RECENT_LIMIT)
         : data.recentJoins
-    this.write({ active: session, recentJoins })
+    this.write({ ...data, active: session, recentJoins })
+  }
+
+  remember(project: RecentProject): void {
+    const data = this.read()
+    const projects = [project, ...data.projects.filter(known => known.folder !== project.folder)].slice(
+      0,
+      PROJECT_LIMIT
+    )
+    this.write({ ...data, projects })
+  }
+
+  forget(folder: string): void {
+    const data = this.read()
+    this.write({ ...data, projects: data.projects.filter(project => project.folder !== folder) })
   }
 
   clear(): void {
     const data = this.read()
-    if (data.recentJoins.length === 0) {
+    if (data.recentJoins.length === 0 && data.projects.length === 0) {
       fs.rmSync(this.file, { force: true })
       return
     }
-    this.write({ active: null, recentJoins: data.recentJoins })
+    this.write({ ...data, active: null })
   }
 
   private read(): SavedSessionData {
@@ -79,7 +147,7 @@ export class SavedSessionStore {
     try {
       parsed = JSON.parse(fs.readFileSync(this.file, 'utf8'))
     } catch {
-      return { active: null, recentJoins: [] }
+      return { active: null, recentJoins: [], projects: [] }
     }
     const legacy = sessionFrom(parsed)
     if (legacy) {
@@ -88,15 +156,19 @@ export class SavedSessionStore {
         recentJoins:
           legacy.mode === 'join'
             ? [{ folder: legacy.folder, name: legacy.name, link: legacy.link, joinedAt: 0 }]
-            : []
+            : [],
+        projects: []
       }
     }
-    const data = parsed as Partial<{ active: unknown; recentJoins: unknown }> | null
-    if (!data) return { active: null, recentJoins: [] }
+    const data = parsed as Partial<{ active: unknown; recentJoins: unknown; projects: unknown }> | null
+    if (!data) return { active: null, recentJoins: [], projects: [] }
     const recentJoins = Array.isArray(data.recentJoins)
       ? data.recentJoins.map(recentFrom).filter((recent): recent is RecentJoin => recent !== null).slice(0, RECENT_LIMIT)
       : []
-    return { active: sessionFrom(data.active), recentJoins }
+    const projects = Array.isArray(data.projects)
+      ? data.projects.map(projectFrom).filter((project): project is RecentProject => project !== null).slice(0, PROJECT_LIMIT)
+      : []
+    return { active: sessionFrom(data.active), recentJoins, projects }
   }
 
   private write(data: SavedSessionData): void {
