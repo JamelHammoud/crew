@@ -11,6 +11,11 @@ const STARS = 460
 // than the window: a nebula has no edge for an upscale to soften.
 const CLOUD = { width: 520, height: 340 }
 
+// Two of them, because the layers have to be able to move against each other.
+// The first is drawn before anything else happens and the second on the frame
+// after, so the flight starts on time rather than waiting on both.
+const CLOUDS = 2
+
 function drawNebula(): HTMLCanvasElement | null {
   const el = document.createElement('canvas')
   el.width = CLOUD.width
