@@ -125,4 +125,15 @@ describe('the chat', () => {
       expect(screen.getByText(`${id} text`)).toBeTruthy()
     }
   })
+
+  it('keeps the time of a line under a run, and says it was edited', () => {
+    seat([])
+    const item = said('m2', 'Jamel', noon, { text: 'and one more thing', editedTs: noon + MINUTE })
+
+    render(createElement(ChatMessage, { item, linked: true }))
+
+    expect(screen.queryByText('Jamel')).toBeNull()
+    expect(screen.getByText(formatTime(noon))).toBeTruthy()
+    expect(screen.getByText('(edited)')).toBeTruthy()
+  })
 })
