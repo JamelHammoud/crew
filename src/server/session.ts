@@ -30,7 +30,6 @@ import {
   olderEvents,
   SYSTEM_AUTHOR_ID,
   SYSTEM_AUTHOR_NAME,
-  trimEvents,
   type MessageReply,
   type SessionEvent,
   type ThreadMode,
