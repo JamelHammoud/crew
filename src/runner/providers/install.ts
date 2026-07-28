@@ -41,10 +41,10 @@ export function runInstall(provider: Provider, platform: string = process.platfo
       clearTimeout(timer)
       reject(err)
     })
-    child.on('close', code => {
+    child.on('close', (code, signal) => {
       clearTimeout(timer)
       if (code === 0) resolve()
-      else reject(new Error(tail(output) || `${provider.label} installer exited with code ${code}`))
+      else reject(new Error(tail(output) || exitReason(`The ${provider.label} installer`, code, signal)))
     })
   })
 }
