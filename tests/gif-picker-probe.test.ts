@@ -16,6 +16,8 @@ class TestResizeObserver {
 global.ResizeObserver ??= TestResizeObserver as unknown as typeof ResizeObserver
 
 const { useCrew, CHAT_KEY, pendingCount } = await import('../src/renderer/src/state/store')
+const { useHuddle } = await import('../src/renderer/src/state/huddle')
+const { emptyRoom } = await import('../src/shared/huddle')
 const AddMenu = (await import('../src/renderer/src/components/AddMenu')).default
 const Composer = (await import('../src/renderer/src/components/Composer')).default
 
