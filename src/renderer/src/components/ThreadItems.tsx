@@ -3,7 +3,7 @@ import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
 import StepGroup from './StepGroup'
 import StepRow from './StepRow'
-import { stepBlocks, type StepBlock, type ThreadItem } from './thread'
+import { sameRun, stepBlocks, type StepBlock, type ThreadItem } from './thread'
 import { isNewDay } from './time'
 
 const isStep = (item: ThreadItem | undefined): boolean => item?.kind === 'tool' || item?.kind === 'thinking'
