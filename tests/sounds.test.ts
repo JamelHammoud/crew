@@ -96,7 +96,7 @@ class FakeAudioContext {
 
 vi.stubGlobal('AudioContext', FakeAudioContext)
 
-const { playSound, soundFor } = await import('../src/renderer/src/media/sounds')
+const { hushChat, playSound, soundFor } = await import('../src/renderer/src/media/sounds')
 const { setSounds } = await import('../src/renderer/src/state/sound')
 
 const message = (authorId: string): SessionEvent => ({
