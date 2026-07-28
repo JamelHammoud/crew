@@ -375,6 +375,19 @@ Opening a folder is the only way in, and there is no host and join to choose bet
 - A row carries the name you were called there, and it is handed to the join rather than read back off state. State is a render behind, which is the same mistake the GIF picker's send guard is written to avoid.
 - Taking a place off the list is a right click on it. A button fading in over the arrow was a second control standing on top of a row that has one thing to press, and it cost the arrow that says where the row goes. A project and a crew somebody invited you to both go, by folder and by link, so no row on the list is one you are stuck with.
 
+## Ghost threads
+
+`/ghost` in the chat opens a thread that belongs to the window it was typed in. Nobody else sees it, none of it is written down, and it is gone when the window is. Everything else about it is an ordinary thread: an agent takes it, it queues and it steers, and the work it does to the project is real work on real files.
+
+- It is held in memory on the host, keyed by the socket that opened it, the way a call is. Two windows on one folder are one member and two different people here, so the other one is not shown it either.
+- Every event a thread raises carries its id, and that is what lets one place decide all of this: `emit` hands a ghost's event to that one socket and puts it on the thread's own transcript instead of on the log. The three thread-scoped messages that are not events, the steps, the tokens and the queue, go through `toThread` for the same reason. Never broadcast one of those by hand.
+- That transcript is what the agent's next turn is built from. `threadContext` reads it rather than the session, so the thread has a memory without the session having one.
+- A run in flight rides in the snapshot as well as in the log, so `pooled` leaves a ghost's run out of it. Anyone connecting mid-run would otherwise be handed its steps.
+- A thread somebody else opened is not there to be written in, however its id was come by. `hiddenFrom` is that guard, on the chat, on the status and on the plan.
+- The window going takes the thread with it: whatever it was running is stopped and the transcript is dropped. The entry it stood in stays behind empty, because a run still coming back from a machine somewhere has to land somewhere sealed, or its last steps would be written down as an ordinary thread's.
+- The agent still runs on somebody's machine, so this is out of the app rather than out of the world.
+- It wears a dashed stroke wherever it is drawn, and a pill that says who can see it.
+
 ## Syncing
 
 Every machine commits its whole working tree, integrates, and pushes on a loop, host and joiner alike. Agents on different machines write to the same branch at the same time, so `GitSync` in `src/server/git.ts` has three hard rules. Each one is here because work was destroyed without it.
