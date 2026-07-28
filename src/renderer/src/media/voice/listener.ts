@@ -13,7 +13,7 @@ export interface ListenerEars {
 export class VoiceListener {
   private worker: Worker | null = null
   private next = 0
-  private waiting = new Map<number, (text: string) => void>()
+  private waiting = new Map<number, (text: string | null) => void>()
 
   constructor(private readonly ears: ListenerEars) {}
 
@@ -21,11 +21,14 @@ export class VoiceListener {
     this.hire()?.postMessage({ type: 'load' } satisfies ListenIn)
   }
 
-  hear(audio: Float32Array): Promise<string> {
+  // Nothing and null are two different answers. Nothing is a cough or a chair,
+  // which is the microphone working; null is the listener falling over, which
+  // reads exactly the same on screen unless somebody says so.
+  hear(audio: Float32Array): Promise<string | null> {
     const worker = this.hire()
-    if (!worker) return Promise.resolve('')
+    if (!worker) return Promise.resolve(null)
     const id = ++this.next
-    return new Promise<string>(resolve => {
+    return new Promise<string | null>(resolve => {
       this.waiting.set(id, resolve)
       worker.postMessage({ type: 'hear', id, audio } satisfies ListenIn, [audio.buffer])
     })
