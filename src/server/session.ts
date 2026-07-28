@@ -844,6 +844,7 @@ export class CrewSession {
     const commands = threadId ? [] : cleanCommands(asked)
     const planning = commands.includes('plan')
     const ghosting = commands.includes('ghost')
+    const talking = commands.includes('voice')
     const trimmed = text.trim()
     const hidden = threadId ? this.ghostOf(threadId) !== undefined : ghosting
     const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
