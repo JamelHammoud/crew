@@ -5,8 +5,9 @@ import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { Present, PresenceSnapshot } from '../shared/presence'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
-import type { RecentJoin } from '../shared/recent'
-import type { CurrentSession } from './session'
+import type { CrewHome } from '../shared/project'
+import type { RecentJoin, RecentProject } from '../shared/recent'
+import type { CurrentSession, OpenOptions } from './session'
 import type { TerminalSize } from './terminal'
 
 const bridge = {
