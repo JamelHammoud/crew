@@ -6,10 +6,13 @@ import { DEPTH, TRAIL, brightness, project, type Star, type View } from './warp'
 // palette the boot made up for itself.
 const TINTED = 0.22
 
-const CLOUDS = [
-  { color: MESH_COLORS[0], x: 0.3, y: 0.36, r: 0.62, alpha: 0.2, drift: 0.055, lag: 0 },
-  { color: MESH_COLORS[1], x: 0.66, y: 0.6, r: 0.7, alpha: 0.17, drift: -0.04, lag: 1.9 },
-  { color: MESH_COLORS[3], x: 0.78, y: 0.3, r: 0.5, alpha: 0.13, drift: 0.07, lag: 3.4 }
+// The cloud is drawn twice from the one picture, near and far, each drifting
+// its own way. Two of them at different sizes is what gives the flight a depth
+// the stars alone cannot: one layer over a window is wallpaper however good it
+// is, because nothing in it moves against anything else.
+const LAYERS = [
+  { scale: 1.5, drift: 0.9, turn: 1, alpha: 0.5 },
+  { scale: 2.45, drift: -1.5, turn: -1, alpha: 0.34 }
 ]
 
 function starColor(star: Star): string {
