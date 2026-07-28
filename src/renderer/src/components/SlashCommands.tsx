@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { slashCandidates, type SlashCommand } from '../../../shared/commands'
-import { ChecklistGlyph, GhostGlyph } from '../icons'
-
-const ICONS: Record<string, typeof ChecklistGlyph> = {
-  plan: ChecklistGlyph,
-  ghost: GhostGlyph
-}
+import { slashCandidates, type CommandName, type SlashCommand } from '../../../shared/commands'
+import { COMMAND_MARKS } from './CommandChip'
 
 export function useSlashCommands(
   value: string,
   setValue: (text: string) => void,
+  onCommand: (name: CommandName) => void,
   inputRef: RefObject<HTMLTextAreaElement>
 ) {
   const [dismissed, setDismissed] = useState<string | null>(null)
