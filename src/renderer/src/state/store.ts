@@ -37,6 +37,9 @@ export interface ThreadMeta {
   mode: ThreadMode
   plan?: string
   boardId?: string
+  // A thread this window opened for itself. It reaches nobody else and it is
+  // gone the moment the window is, so it is only ever built from a live event.
+  ghost?: boolean
 }
 
 export type DesignServerMessage = Extract<
