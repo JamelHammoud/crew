@@ -1,4 +1,4 @@
-export type CommandName = 'plan' | 'ghost'
+export type CommandName = 'plan' | 'ghost' | 'voice'
 
 export interface SlashCommand {
   name: CommandName
@@ -7,7 +7,8 @@ export interface SlashCommand {
 
 export const SLASH_COMMANDS: SlashCommand[] = [
   { name: 'plan', hint: 'Get a plan first, then implement it' },
-  { name: 'ghost', hint: 'Nobody else sees this thread' }
+  { name: 'ghost', hint: 'Nobody else sees this thread' },
+  { name: 'voice', hint: 'Talk to them out loud' }
 ]
 
 const NAMES = SLASH_COMMANDS.map(command => command.name)
