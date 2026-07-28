@@ -51,7 +51,7 @@ export default function VoiceOrb({ className = '' }: { className?: string }) {
     // orb in the one color the mark wears at rest, so who is talking is read
     // off it without a word anywhere saying so.
     const lit = phase === 'speaking' || phase === 'thinking' ? 1 : 0
-    stepOrb(face.current, still ? 0 : dt, read.current, lit, phase === 'waking' ? progress : 1)
+    stepOrb(face.current, dt, read.current, lit, phase === 'waking' ? progress : 1, still)
 
     const dpr = Math.min(2, globalThis.devicePixelRatio || 1)
     if (node.width !== size * dpr) {
