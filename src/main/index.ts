@@ -239,10 +239,18 @@ app.whenReady().then(() => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]
   })
-  ipcMain.handle('session:start', async (_event, folder: string, name: string) => {
-    const info = await session.startHost(folder, name)
+  ipcMain.handle('session:start', async (_event, folder: string, name: string, opts?: OpenOptions) => {
+    const info = await session.startHost(folder, name, opts ?? {})
     sharing()
     warmTerminals()
+    return info
+  })
+  ipcMain.handle('session:plan', (_event, folder: string) => session.projectPlan(folder))
+  ipcMain.handle('session:projects', () => session.recentProjects())
+  ipcMain.handle('session:forget', (_event, folder: string) => session.forgetProject(folder))
+  ipcMain.handle('session:share', async (_event, shared: boolean) => {
+    const info = await session.setShared(shared)
+    sharing()
     return info
   })
   ipcMain.handle('session:join', async (_event, link: string, folder: string, name: string) => {
