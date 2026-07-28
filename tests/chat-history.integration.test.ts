@@ -15,12 +15,29 @@ const said = (n: number): SessionEvent => ({
   mentions: []
 })
 
+const drafted = (n: number): SessionEvent => ({
+  id: `d${String(n).padStart(5, '0')}`,
+  ts: 1_700_000_000_000 + n * 1000 + 500,
+  kind: 'doc',
+  page: 'main',
+  text: `draft ${n}`,
+  byName: 'alice'
+})
+
+// A doc is written where it stands rather than scrolled past, so the log holds
+// far more than the chat ever draws. Seeding both is what keeps a page of
+// history honest about which of the two comes back.
 const seed = (repoPath: string, count: number): SessionEvent[] => {
-  const events = Array.from({ length: count }, (_, i) => said(i))
+  const messages = Array.from({ length: count }, (_, i) => said(i))
+  const written: SessionEvent[] = []
+  for (const message of messages) {
+    written.push(message)
+    if (written.length % 4 === 0) written.push(drafted(written.length))
+  }
   const dir = path.join(repoPath, '.crew', 'chat')
   fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(path.join(dir, '0001.jsonl'), events.map(e => JSON.stringify(e) + '\n').join(''))
-  return events
+  fs.writeFileSync(path.join(dir, '0001.jsonl'), written.map(e => JSON.stringify(e) + '\n').join(''))
+  return messages
 }
 
 const history = (msg: ServerMessage): { events: SessionEvent[]; more: boolean } => {
