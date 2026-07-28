@@ -84,6 +84,17 @@ export default function Toolbox({
       }
     },
     {
+      id: 'voice',
+      name: 'Voice',
+      mark: MicGlyph,
+      on: talking,
+      run: () => {
+        const voice = useVoice.getState()
+        if (voice.open) voice.end()
+        else void voice.start()
+      }
+    },
+    {
       id: 'terminal',
       name: 'Terminal',
       mark: TerminalGlyph,
