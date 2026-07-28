@@ -111,6 +111,10 @@ export class AppSession {
     this.savedStore()?.forget(folder)
   }
 
+  forgetJoin(link: string): void {
+    this.savedStore()?.forgetJoin(link)
+  }
+
   async repoStatus(): Promise<RepoStatus> {
     if (!this.git) {
       return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0 }
