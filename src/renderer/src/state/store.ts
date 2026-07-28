@@ -649,6 +649,11 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'game.scores':
         set({ scores: msg.scores })
         break
+      // The same thing said twice is one row said again rather than a second
+      // one under the first.
+      case 'notice':
+        toast(msg.text, { key: `notice:${msg.text}` })
+        break
     }
   }
 
