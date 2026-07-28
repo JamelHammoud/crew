@@ -90,27 +90,41 @@ export default function ChatMessage({
           : undefined
       }
     >
-      {agentSeed ? <AgentIcon seed={agentSeed} presence={presence} /> : <Avatar name={item.author} presence={presence} />}
-      <div className="min-w-0 flex-1 pt-0.5">
-        <div className="flex items-baseline gap-2.5">
-          <MemberName id={item.authorId} name={item.author}>
-            <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
-              {item.author}
+      {linked ? (
+        <div className="w-10 shrink-0 pt-0.5 flex justify-end">
+          <Tooltip label={formatFullTime(item.ts)}>
+            <span className="text-xs leading-[22px] tabular-nums whitespace-nowrap text-fg-faint cursor-default opacity-0 transition-opacity group-hover/message:opacity-100">
+              {formatTime(item.ts)}
             </span>
-          </MemberName>
-          {item.self && <Pill>You</Pill>}
-          <div className="flex items-baseline gap-1.5">
-            <Tooltip label={formatFullTime(item.ts)}>
-              <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
-            </Tooltip>
-            {item.editedTs !== undefined && (
-              <Tooltip label={`Edited ${formatFullTime(item.editedTs)}`}>
-                <span className="text-sm text-fg-faint cursor-default">(edited)</span>
-              </Tooltip>
-            )}
-          </div>
-          {item.voice && <Pill>Spoken</Pill>}
+          </Tooltip>
         </div>
+      ) : agentSeed ? (
+        <AgentIcon seed={agentSeed} presence={presence} />
+      ) : (
+        <Avatar name={item.author} presence={presence} />
+      )}
+      <div className="min-w-0 flex-1 pt-0.5">
+        {!linked && (
+          <div className="flex items-baseline gap-2.5">
+            <MemberName id={item.authorId} name={item.author}>
+              <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
+                {item.author}
+              </span>
+            </MemberName>
+            {item.self && <Pill>You</Pill>}
+            <div className="flex items-baseline gap-1.5">
+              <Tooltip label={formatFullTime(item.ts)}>
+                <span className="text-sm text-fg-faint cursor-default">{formatTime(item.ts)}</span>
+              </Tooltip>
+              {item.editedTs !== undefined && (
+                <Tooltip label={`Edited ${formatFullTime(item.editedTs)}`}>
+                  <span className="text-sm text-fg-faint cursor-default">(edited)</span>
+                </Tooltip>
+              )}
+            </div>
+            {item.voice && <Pill>Spoken</Pill>}
+          </div>
+        )}
         {item.replyTo &&
           (item.replyTo.deleted ? (
             <div className={`${QUOTE_ROW} cursor-default`}>{quote}</div>
