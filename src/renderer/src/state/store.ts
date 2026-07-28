@@ -700,7 +700,10 @@ export const useCrew = create<CrewState>((set, get) => {
     // session stays exactly where it is and the socket comes back on its own.
     share: async shared => {
       const info = await window.crew.setShared(shared).catch(() => null)
-      if (!info) return null
+      if (!info) {
+        toast.fail(shared ? 'Could not share the session.' : 'Could not stop sharing.')
+        return null
+      }
       set({ joinLink: info.link, shared: info.shared })
       return info.link
     },
