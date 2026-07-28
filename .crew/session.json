@@ -127,23 +127,23 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785259215586,
+        "fetchedAt": 1785260123338,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 26,
+            "percent": 41,
             "severity": "normal",
-            "resetsAt": 1785273000795,
-            "active": false
+            "resetsAt": 1785273000580,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 36,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785499200795,
-            "active": true
+            "resetsAt": 1785499199580,
+            "active": false
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
@@ -232,7 +232,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785260295676,
+        "fetchedAt": 1785260303361,
         "windows": [
           {
             "key": "primary",
@@ -328,7 +328,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785260295676,
+        "fetchedAt": 1785260303361,
         "windows": [
           {
             "key": "primary",
@@ -620,23 +620,23 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785259215586,
+        "fetchedAt": 1785260123338,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 26,
+            "percent": 41,
             "severity": "normal",
-            "resetsAt": 1785273000795,
-            "active": false
+            "resetsAt": 1785273000580,
+            "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 36,
+            "percent": 37,
             "severity": "normal",
-            "resetsAt": 1785499200795,
-            "active": true
+            "resetsAt": 1785499199580,
+            "active": false
           }
         ],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
