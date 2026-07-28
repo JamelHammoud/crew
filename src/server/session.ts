@@ -2695,7 +2695,10 @@ export class CrewSession {
     if (reactions.length > 0) {
       lines.push(``, `Reactions to your earlier messages since your last turn:`)
       for (const reaction of reactions) {
-        const text = this.reactionTarget(reaction.targetId)?.text.replace(/\s+/g, ' ').trim().slice(0, 180)
+        const text = this.reactionTarget(reaction.targetId, this.ghostOf(prompt.threadId)?.events ?? [])
+          ?.text.replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 180)
         lines.push(
           text
             ? `- ${reaction.memberName} reacted ${reaction.emoji} to your message: ${JSON.stringify(text)}`
