@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { agentsHere } from '../../design/askAgent'
-import { CheckGlyph, CloseGlyph, MicGlyph, MicOffGlyph, SpeakerGlyph } from '../../icons'
+import { CloseGlyph, LeaveGlyph, MicGlyph, MicOffGlyph, SpeakerGlyph } from '../../icons'
 import { SPEAK_VOICES } from '../../media/voice/models'
 import { useCrew } from '../../state/store'
 import { useVoice } from '../../state/voice'
@@ -221,8 +221,8 @@ export default function VoiceScreen() {
           {muted ? <MicOffGlyph className="w-6 h-6" /> : <MicGlyph className="w-6 h-6" />}
         </Round>
         <VoicePicker />
-        <Round label="Done" danger onClick={end}>
-          <CheckGlyph className="w-6 h-6" />
+        <Round label="Leave" danger onClick={end}>
+          <LeaveGlyph className="w-6 h-6" />
         </Round>
       </div>
     </div>,
