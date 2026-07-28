@@ -714,6 +714,15 @@ export const useCrew = create<CrewState>((set, get) => {
       const hello: ClientMessage = { type: 'hello', role: 'ui', name: session.name, code: session.code }
       socket.connect(session.wsUrl, hello)
     },
+    // The oldest thing held is what the next page is asked for, so one asked
+    // for twice is the same page rather than a second one.
+    loadHistory: () => {
+      const { events, moreHistory, loadingHistory } = get()
+      const oldest = events[0]
+      if (!moreHistory || loadingHistory || !oldest) return
+      set({ loadingHistory: true })
+      socket.send({ type: 'history', before: oldest.id })
+    },
     // Turning sharing on and off moves the listener and nothing else, so the
     // session stays exactly where it is and the socket comes back on its own.
     share: async shared => {
