@@ -15,6 +15,7 @@ await build({
   format: 'esm',
   jsx: 'automatic',
   outfile: out,
+  loader: { '.png': 'dataurl' },
   external: ['react', 'react-dom', 'react-dom/server', 'zustand', 'zustand/*']
 })
 
