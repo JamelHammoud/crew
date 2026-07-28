@@ -67,11 +67,11 @@ describe('the mark in the top left', () => {
   it('lights the mesh while the pointer is over it and lets it go after', () => {
     const { container } = render(createElement(CrewLogo))
     expect(container.querySelector('.crew-mesh')).not.toBe(null)
-    expect(logo().dataset.lit).toBe(undefined)
+    expect(logo().dataset.crewLit).toBe(undefined)
     fireEvent.pointerEnter(logo())
-    expect(logo().dataset.lit).toBe('true')
+    expect(logo().dataset.crewLit).toBe('true')
     fireEvent.pointerLeave(logo())
-    expect(logo().dataset.lit).toBe(undefined)
+    expect(logo().dataset.crewLit).toBe(undefined)
   })
 
   it('hands each disc its place in the queue, left to right', () => {
