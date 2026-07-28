@@ -1,4 +1,5 @@
 import Avatar from '../../components/Avatar'
+import CrewLogo from '../../components/CrewLogo'
 import Spinner from '../../components/Spinner'
 import { DesktopGlyph, FolderGlyph, GlobeGlyph, PencilGlyph, PlusGlyph } from '../../icons'
 import PlaceRow from './PlaceRow'
