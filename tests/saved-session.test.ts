@@ -10,8 +10,14 @@ describe('saved session store', () => {
     expect(store.load()).toBeNull()
     expect(store.recentJoins()).toEqual([])
 
-    store.save({ mode: 'host', folder: '/tmp/repo', name: 'sam' })
-    expect(store.load()).toEqual({ mode: 'host', folder: '/tmp/repo', name: 'sam' })
+    store.save({ mode: 'host', folder: '/tmp/repo', name: 'sam', home: 'folder', shared: true })
+    expect(store.load()).toEqual({
+      mode: 'host',
+      folder: '/tmp/repo',
+      name: 'sam',
+      home: 'folder',
+      shared: true
+    })
     expect(store.recentJoins()).toEqual([])
 
     store.save({ mode: 'join', folder: '/tmp/repo', name: 'jamel', link: 'crew://1.2.3.4:2739/abc123' })
