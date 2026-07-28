@@ -26,7 +26,7 @@ import {
   screenSources
 } from './media'
 import type { MediaKind } from '../shared/media'
-import { AppSession, type NewAgent } from './session'
+import { AppSession, type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
 import { createWindowOptions } from './window-options'
 
