@@ -117,8 +117,17 @@ describe('the shape the orb holds', () => {
   it('stands still when the machine is asked to stand still', () => {
     const face = restingOrb()
     const before = outline(face)
-    for (let i = 0; i < 60; i++) stepOrb(face, 0, new Array(BANDS).fill(1), 1, 1)
+    for (let i = 0; i < 60; i++) stepOrb(face, 1 / 60, new Array(BANDS).fill(1), 1, 1, true)
     expect(outline(face)).toEqual(before)
+  })
+
+  // Standing still is about motion. How far the download has got, and who is
+  // talking, are things the screen is saying rather than things it is doing.
+  it('still says how far it has got and who is talking while standing still', () => {
+    const face = restingOrb()
+    for (let i = 0; i < 60; i++) stepOrb(face, 1 / 60, new Array(BANDS).fill(1), 1, 0.5, true)
+    expect(face.ring).toBeGreaterThan(0.4)
+    expect(face.lit).toBeGreaterThan(0.9)
   })
 })
 
