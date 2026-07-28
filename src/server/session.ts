@@ -1010,7 +1010,8 @@ export class CrewSession {
       byName: member.name,
       boardId: thread.boardId,
       mode: thread.mode === 'plan' ? 'plan' : undefined,
-      ghost: thread.ghost ? true : undefined
+      ghost: thread.ghost ? true : undefined,
+      voice: thread.voice ? true : undefined
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments, {
       messageId: randomUUID(),
