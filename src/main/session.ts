@@ -13,8 +13,9 @@ import { CrewSession } from '../server/session'
 import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } from '../shared/llm'
+import { projectKey, type CrewHome } from '../shared/project'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
-import type { RecentJoin } from '../shared/recent'
+import type { RecentJoin, RecentProject } from '../shared/recent'
 import { AgentStore } from './agents-store'
 import {
   absolutePathOf,
