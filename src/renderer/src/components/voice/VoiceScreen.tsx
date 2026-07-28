@@ -60,36 +60,32 @@ function VoicePicker() {
   const picked = useVoice(s => s.voice)
   const pickVoice = useVoice(s => s.pickVoice)
   return (
-    <Popover
-      open={open}
-      onClose={() => setOpen(false)}
-      side="top"
-      align="center"
-      className="w-52"
-      // eslint-disable-next-line react/no-children-prop
-      children={SPEAK_VOICES.map(voice => (
-        <MenuItem
-          key={voice.id}
-          label={voice.name}
-          hint={voice.accent}
-          checked={voice.id === picked}
-          onClick={() => {
-            pickVoice(voice.id)
-            setOpen(false)
-          }}
-        />
-      ))}
-    >
+    <span className="relative flex">
       <Tooltip label="Voice" disabled={open}>
         <button
           onClick={() => setOpen(v => !v)}
           aria-label="Voice"
+          aria-expanded={open}
           className="w-14 h-14 rounded-full bg-fg/10 text-fg flex items-center justify-center transition-all duration-150 hover:bg-fg/20 active:scale-95"
         >
           <SpeakerGlyph className="w-6 h-6" />
         </button>
       </Tooltip>
-    </Popover>
+      <Popover open={open} onClose={() => setOpen(false)} side="top" align="center" className="w-52">
+        {SPEAK_VOICES.map(voice => (
+          <MenuItem
+            key={voice.id}
+            label={voice.name}
+            hint={voice.accent}
+            checked={voice.id === picked}
+            onClick={() => {
+              pickVoice(voice.id)
+              setOpen(false)
+            }}
+          />
+        ))}
+      </Popover>
+    </span>
   )
 }
 
@@ -102,29 +98,32 @@ function Who() {
   const agent = agents.find(one => one.id === agentId)
   if (!agent) return null
   return (
-    <Popover open={open} onClose={() => setOpen(false)} align="start" className="w-56">
+    <span className="relative flex">
       <Tooltip label="Talk to somebody else" disabled={open}>
         <button
           onClick={() => setOpen(v => !v)}
+          aria-expanded={open}
           className="h-10 pl-1.5 pr-4 rounded-full bg-ink-800 flex items-center gap-2.5 transition-colors duration-150 hover:bg-ink-700"
         >
           <AgentIcon seed={agent.id} size={28} />
           <span className="text-sm font-semibold text-fg">{agent.label}</span>
         </button>
       </Tooltip>
-      {here.map(one => (
-        <MenuItem
-          key={one.id}
-          icon={<AgentIcon seed={one.id} size={20} />}
-          label={one.label}
-          checked={one.id === agentId}
-          onClick={() => {
-            pickAgent(one.id)
-            setOpen(false)
-          }}
-        />
-      ))}
-    </Popover>
+      <Popover open={open} onClose={() => setOpen(false)} align="start" className="w-56">
+        {here.map(one => (
+          <MenuItem
+            key={one.id}
+            icon={<AgentIcon seed={one.id} size={20} />}
+            label={one.label}
+            checked={one.id === agentId}
+            onClick={() => {
+              pickAgent(one.id)
+              setOpen(false)
+            }}
+          />
+        ))}
+      </Popover>
+    </span>
   )
 }
 
