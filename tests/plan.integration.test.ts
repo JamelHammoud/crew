@@ -158,7 +158,7 @@ describe('plan mode', () => {
     await connectRunner('jamel')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /plan split the file', [fake])
+    sam.chat('@Fake split the file', [fake], undefined, ['plan'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     const plan = (await sam.waitForEvent(e => e.kind === 'thread.plan')) as ThreadPlan
 
