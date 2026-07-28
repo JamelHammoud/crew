@@ -751,8 +751,8 @@ export const useCrew = create<CrewState>((set, get) => {
         }))
         return
       }
-      socket.send({ type: 'chat.send', text, mentions, attachments, replyTo })
-      set(state => ({ chatDraft: '', pending: { ...state.pending, [key]: [] } }))
+      socket.send({ type: 'chat.send', text, mentions, commands, attachments, replyTo })
+      set(state => ({ chatDraft: '', chatCommands: [], pending: { ...state.pending, [key]: [] } }))
     },
     createBoard: name => {
       const boardId = `${slugify(name) || 'board'}-${boardCode()}`
