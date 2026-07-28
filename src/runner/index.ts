@@ -325,7 +325,13 @@ export class Runner {
 
   // The run may finish while the attachments are being fetched, so the ack is
   // what tells the server whether the message landed or needs re-queueing.
-  private async steer(promptId: string, text: string, byName: string, attachments: Attachment[]): Promise<void> {
+  private async steer(
+    promptId: string,
+    text: string,
+    byName: string,
+    attachments: Attachment[],
+    ghost = false
+  ): Promise<void> {
     const run = this.running.get(promptId)
     if (!run?.steer) {
       this.send({ type: 'agent.steered', promptId, ok: false })
@@ -334,7 +340,8 @@ export class Runner {
     const framed = `New message from ${byName}:\n${text}`
     let body = framed
     try {
-      body = promptWithAttachments(framed, await this.attachments.ensure(attachments, this.httpBase))
+      const local = await this.attachments.ensure(attachments, this.httpBase, ghost ? promptId : undefined)
+      body = promptWithAttachments(framed, local)
     } catch {
       // Fall back to the bare text rather than dropping the steer entirely.
     }
