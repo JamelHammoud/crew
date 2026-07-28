@@ -1213,9 +1213,9 @@ export class CrewSession {
     })
   }
 
-  private handleReaction(member: Member, targetId: string, emoji: string): void {
+  private handleReaction(ws: WebSocket, member: Member, targetId: string, emoji: string): void {
     if (!isReactionEmoji(emoji)) return
-    const target = this.reactionTarget(targetId)
+    const target = this.reactionTarget(targetId, this.ghostEventsFor(ws))
     if (!target) return
     let previous: ReactionEvent | undefined
     for (let i = this.events.length - 1; i >= 0; i--) {
