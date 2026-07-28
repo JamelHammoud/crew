@@ -350,3 +350,42 @@ describe('playing a sound', () => {
     expect(started.length).toBeGreaterThan(0)
   })
 })
+
+describe('a conversation out loud', () => {
+  let clock = 2_000_000
+  vi.spyOn(Date, 'now').mockImplementation(() => clock)
+
+  beforeEach(() => {
+    started.length = 0
+    store.clear()
+    clock += 10_000
+    hushChat(false)
+  })
+
+  const CHAT = ['send', 'receive', 'done', 'failed'] as const
+
+  it('keeps the chat quiet while somebody is talking', () => {
+    hushChat(true)
+    for (const cue of CHAT) {
+      clock += 500
+      playSound(cue)
+    }
+    expect(started.length).toBe(0)
+  })
+
+  it('still says the things that are not the chat', () => {
+    hushChat(true)
+    playSound('join')
+    expect(started.length).toBeGreaterThan(0)
+  })
+
+  it('hands the chat its voice back when the conversation ends', () => {
+    hushChat(true)
+    playSound('receive')
+    expect(started.length).toBe(0)
+    hushChat(false)
+    clock += 500
+    playSound('receive')
+    expect(started.length).toBeGreaterThan(0)
+  })
+})
