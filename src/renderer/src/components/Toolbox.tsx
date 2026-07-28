@@ -4,6 +4,7 @@ import {
   CheckGlyph,
   FolderGlyph,
   GameGlyph,
+  MicGlyph,
   MusicGlyph,
   PencilGlyph,
   PlusGlyph,
@@ -15,6 +16,7 @@ import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useMusic } from '../state/music'
 import { useCrew } from '../state/store'
+import { useVoice } from '../state/voice'
 import { Popover } from './Popover'
 import { opensPanel, runTool, saidAfter, toolSlots } from './runTool'
 import ToolBuilder from './ToolBuilder'
