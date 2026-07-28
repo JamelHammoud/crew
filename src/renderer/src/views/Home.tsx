@@ -25,7 +25,7 @@ export default function Home() {
   const [folder, setFolder] = useState<string | null>(() => localStorage.getItem('crew.folder'))
   const [link, setLink] = useState(() => localStorage.getItem('crew.link') ?? '')
   const [places, setPlaces] = useState<Place[]>([])
-  const [screen, setScreen] = useState<Screen>(() => (localStorage.getItem('crew.name') ? 'places' : 'name'))
+  const [screen, setScreen] = useState<Screen>(known ? 'places' : 'name')
   const [asking, setAsking] = useState<{ folder: string; tracked: boolean } | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
