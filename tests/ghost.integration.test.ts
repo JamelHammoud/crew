@@ -192,11 +192,12 @@ describe('ghost threads', () => {
     // The prompt would be read on the machine that runs the agent, so it is
     // refused, and only the one who asked is told.
     sam.chat('@Theirs /ghost read the readme', [agentId('pat', 'theirs')])
-    const refused = (await sam.waitForEvent(e => e.kind === 'message')) as Message
+    const refused = (await sam.waitFor(m => m.type === 'notice')) as Notice
     expect(refused.text).toContain("somebody else's machine")
     await settle()
     expect(sam.events.some(e => e.kind === 'thread.started')).toBe(false)
-    expect(pat.events.some(e => e.kind === 'message')).toBe(false)
+    expect(sam.events.some(e => e.kind === 'message')).toBe(false)
+    expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
 
     // With one agent of your own here, there is nobody to name.
     sam.chat('/ghost read the readme')
