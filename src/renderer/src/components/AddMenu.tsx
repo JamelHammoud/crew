@@ -48,7 +48,7 @@ export default function AddMenu({
       <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add to your message'} disabled={open}>
         <button
           onClick={() => (open ? setOpen(false) : show())}
-          disabled={full}
+          disabled={full && !calling}
           aria-label="Add to your message"
           aria-expanded={open}
           data-active={open ? '' : undefined}
