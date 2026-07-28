@@ -352,9 +352,6 @@ describe('playing a sound', () => {
 })
 
 describe('a conversation out loud', () => {
-  let clock = 2_000_000
-  vi.spyOn(Date, 'now').mockImplementation(() => clock)
-
   beforeEach(() => {
     started.length = 0
     store.clear()
