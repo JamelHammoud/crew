@@ -884,9 +884,15 @@ export class CrewSession {
       // A command needs someone to take it. With one agent here that is not a
       // question worth asking, and a ghost thread only ever goes to an agent of
       // your own, so one of yours takes it rather than being asked for.
-      const taker = ghosting ? (this.agentsHere(member.id)[0] ?? null) : planning ? this.soloAgent() : null
+      // Talking names nobody. The mic was pressed on an agent already picked, so
+      // whoever that was takes it the way a ghost thread's own agent does.
+      const taker = ghosting || talking ? (this.agentsHere(member.id)[0] ?? null) : planning ? this.soloAgent() : null
       if (taker) {
-        this.startThread(member, taker, trimmed, attachments, { boardId, mode, ghost, replyTo })
+        this.startThread(member, taker, trimmed, attachments, { boardId, mode, ghost, replyTo, voice: talking })
+        return
+      }
+      if (talking) {
+        this.systemMessage('No agent is here to talk to.', undefined, ws)
         return
       }
       if (ghosting) {
