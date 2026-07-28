@@ -11,7 +11,15 @@ import Spinner from '../components/Spinner'
 import ThreadCard from '../components/ThreadCard'
 import HuddleCard from '../components/huddle/HuddleCard'
 import { huddleRecords, type HuddleRecord } from '../components/huddle/log'
-import { describeStep, endPreview, lastEnd, threadState, type ThreadItem, type ThreadState } from '../components/thread'
+import {
+  describeStep,
+  endPreview,
+  lastEnd,
+  sameRun,
+  threadState,
+  type ThreadItem,
+  type ThreadState
+} from '../components/thread'
 import { reactionGroups } from '../components/reactionGroups'
 import { formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
