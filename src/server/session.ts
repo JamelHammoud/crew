@@ -627,7 +627,17 @@ export class CrewSession {
     switch (msg.type) {
       case 'chat.send':
         if (meta.role === 'ui') {
-          this.handleChat(ws, member, msg.text, msg.mentions, msg.threadId, msg.attachments, msg.boardId, msg.replyTo)
+          this.handleChat(
+            ws,
+            member,
+            msg.text,
+            msg.mentions,
+            msg.threadId,
+            msg.attachments,
+            msg.boardId,
+            msg.replyTo,
+            msg.commands
+          )
         }
         break
       case 'chat.delete':
