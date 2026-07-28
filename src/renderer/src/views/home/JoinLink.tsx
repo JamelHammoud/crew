@@ -21,20 +21,20 @@ export default function JoinLink({
 }) {
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-fg">Join a crew</h2>
-        <p className="text-sm text-fg-muted mt-1">Paste the link somebody sent you.</p>
-      </div>
+      <h2 className="text-lg font-semibold text-fg">Join a crew</h2>
       <div className="space-y-3">
-        <TextField
-          autoFocus
-          value={link}
-          onChange={e => onLink(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter') onJoin()
-          }}
-          placeholder="crew://100.64.1.2:2739/a1b2c3"
-        />
+        <div>
+          <label className="block text-sm text-fg-muted mb-2">Their link</label>
+          <TextField
+            autoFocus
+            value={link}
+            onChange={e => onLink(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') onJoin()
+            }}
+            placeholder="crew://100.64.1.2:2739/a1b2c3"
+          />
+        </div>
         <div>
           <label className="block text-sm text-fg-muted mb-2">Where your agents work</label>
           <button onClick={onPickFolder} className={`${FIELD} flex items-center gap-2.5 text-left hover:bg-ink-700`}>
