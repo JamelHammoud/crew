@@ -55,6 +55,7 @@ export default function Chat() {
     setChatDraft('')
   }
 
+  const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, write, inputRef)
   const slash = useSlashCommands(text, write, takeCommand, inputRef)
