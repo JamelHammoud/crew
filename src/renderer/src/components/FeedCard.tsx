@@ -53,10 +53,13 @@ export default function FeedCard({
             onOpen()
           }}
           className={`group mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 ${
-            onOpen ? 'cursor-pointer hover:border-ink-600' : ''
-          }`}
+            dashed ? 'border-dashed' : ''
+          } ${onOpen ? 'cursor-pointer hover:border-ink-600' : ''}`}
         >
-          <p className="px-5 py-4 text-base text-fg leading-[22px] truncate">{title}</p>
+          <div className="px-5 py-4 flex items-center gap-2.5">
+            <p className="text-base text-fg leading-[22px] truncate">{title}</p>
+            {badge && <span className="shrink-0">{badge}</span>}
+          </div>
           {children}
         </div>
       </div>
