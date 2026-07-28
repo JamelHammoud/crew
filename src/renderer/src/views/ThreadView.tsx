@@ -208,6 +208,13 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   </span>
                 </MemberName>
                 <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 pr-2 shrink-0">
+                  {/* Why the answers here are one line each. Without it the
+                      thread reads as an agent being terse for no reason. */}
+                  {thread.voice && (
+                    <span className="mr-1">
+                      <Pill lg>Spoken</Pill>
+                    </span>
+                  )}
                   {state === 'working' ? (
                     <>
                       <Spinner size={16} className="text-fg" />
