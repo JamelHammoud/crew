@@ -7,7 +7,7 @@ import { agentId } from '../src/shared/llm'
 import { parseLink } from '../src/shared/link'
 import type { ServerMessage } from '../src/shared/protocol'
 import { initRepo } from './helpers/git'
-import { TestUi, tmpDir, waitUntil } from './helpers/session'
+import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 const RUN = process.env.CREW_REAL_CLI === '1'
 
