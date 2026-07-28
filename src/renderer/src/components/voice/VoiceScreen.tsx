@@ -5,9 +5,11 @@ import { CheckGlyph, CloseGlyph, MicGlyph, MicOffGlyph, SpeakerGlyph } from '../
 import { SPEAK_VOICES } from '../../media/voice/models'
 import { useCrew } from '../../state/store'
 import { useVoice } from '../../state/voice'
+import { useFullScreen } from '../../state/windowShape'
 import AgentIcon from '../AgentIcon'
 import { MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
+import { TOP_BAR_H } from '../TopBar'
 import VoiceCards from './VoiceCards'
 import VoiceOrb from './VoiceOrb'
 
