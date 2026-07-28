@@ -99,7 +99,6 @@ function Session() {
         </div>
         <TasksPanel open={tasksOpen} onClose={() => setTasksOpen(false)} onOpenThread={openFromTasks} />
       </div>
-      {tab === 'chat' && openThreadId && <PlanPanel threadId={openThreadId} />}
       <SidePanel visible={tab === 'chat'} />
       <HuddlePanel />
     </div>
