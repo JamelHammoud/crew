@@ -41,7 +41,13 @@ export default function Chat() {
   const agents = useCrew(s => s.agents)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
-  const takeCommand = (name: CommandName) => setChatCommands(cleanCommands([...commands, name]))
+  // Voice is a mode rather than a mark on a message: a chip that made the agent
+  // answer as though it were being spoken to, with nothing speaking and nothing
+  // listening, is half of a thing. It opens the conversation instead.
+  const takeCommand = (name: CommandName) => {
+    if (name === 'voice') return void useVoice.getState().start()
+    setChatCommands(cleanCommands([...commands, name]))
+  }
 
   // A command typed out and one picked from the menu land on the same chip,
   // because both paths into the draft come through here.
