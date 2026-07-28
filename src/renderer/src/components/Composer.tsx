@@ -155,7 +155,7 @@ export default function Composer({
           />
         </div>
         <div className="flex items-center justify-between mt-2">
-          <AddMenu attachmentKey={attachmentKey} onSend={onSend} />
+          <AddMenu attachmentKey={attachmentKey} huddle={huddle} onSend={onSend} />
           {onStop && !canSend ? (
             <Tooltip label="Stop">
               <button
