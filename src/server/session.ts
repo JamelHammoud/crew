@@ -148,6 +148,7 @@ interface QueuedPrompt {
   attachments: Attachment[]
   messageId: string
   replyTo?: MessageReply
+  voice?: boolean
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
