@@ -184,6 +184,7 @@ export default function Chat() {
               onChange={mention.onChange}
               onKeyDown={onKeyDown}
               onSend={send}
+              huddle
               replyTo={replyTo ?? undefined}
               onCancelReply={() => setReplyTo(null)}
             >
