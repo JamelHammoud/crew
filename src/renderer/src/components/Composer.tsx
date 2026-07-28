@@ -95,6 +95,7 @@ export default function Composer({
   huddle,
   replyTo,
   onCancelReply,
+  chips,
   children
 }: {
   attachmentKey: string
