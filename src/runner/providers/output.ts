@@ -19,7 +19,7 @@ const clip = (line: string): string => (line.length > LINE_CHARS ? `${line.slice
 // middle rather than either end.
 export function commandOutput(raw: unknown): string | undefined {
   if (typeof raw !== 'string') return undefined
-  const clean = raw.replace(ANSI, '').replace(/[ \t]+$/gm, '').trim()
+  const clean = stripAnsi(raw).replace(/[ \t]+$/gm, '').trim()
   if (!clean) return undefined
   const lines = clean.split('\n').map(clip)
   const whole = lines.join('\n')
