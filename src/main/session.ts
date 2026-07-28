@@ -266,8 +266,8 @@ export class AppSession {
 
   // Opening a project is one thing whichever way it is answered. A crew that
   // lives in the folder syncs and stands on the network, one kept on this
-  // machine writes nothing into the project, never runs git, and is served on
-  // loopback until sharing is turned on.
+  // machine writes nothing into the project, commits nothing of its own, and is
+  // served on loopback until sharing is turned on.
   async startHost(repoPath: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
     await this.stop()
     const tracked = await isGitRepo(repoPath)
