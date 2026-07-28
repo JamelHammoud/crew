@@ -108,6 +108,7 @@ export const useVoice = create<VoiceState>((set, get) => {
     // nothing in it at all, goes quiet without ever having said a word. Read
     // as speaking only, that turn leaves the orb working forever.
     onQuiet: () => {
+      ear.guarded(false)
       const phase = get().phase
       if (phase === 'speaking' || phase === 'thinking') set({ phase: 'listening', saying: '' })
     },
