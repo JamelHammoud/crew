@@ -115,6 +115,12 @@ export const parseClaudeLine: OutputParser = line => {
     const outputTokens = msg?.usage?.output_tokens
     const out: ParsedOutput[] = [{ turnEnd: true }]
     if (typeof outputTokens === 'number') out.push({ tokens: outputTokens })
+    // is_error is what says a run failed. The subtype still reads as a success
+    // on an API error, so nothing here may go by that alone.
+    if (msg.is_error) {
+      const reason = claudeFailure(msg)
+      if (reason) out.push({ error: reason })
+    }
     return out
   }
   if (msg?.type === 'user' && Array.isArray(msg.message?.content)) {
