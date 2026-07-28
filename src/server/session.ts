@@ -2955,6 +2955,21 @@ export class CrewSession {
     this.persistMeta()
   }
 
+  // A ghost thread is the window's, so it goes when the window does: whatever it
+  // was running is stopped, and its transcript is dropped rather than left in
+  // memory for the rest of the session.
+  private dropGhosts(ws: WebSocket): void {
+    for (const [threadId, ghost] of this.ghosts) {
+      if (ghost.ws !== ws) continue
+      ghost.events.length = 0
+      const thread = this.threads.get(threadId)
+      this.threads.delete(threadId)
+      if (!thread) continue
+      thread.queue = []
+      if (thread.running) this.handleCancel(thread.running)
+    }
+  }
+
   private systemMessage(text: string, threadId?: string, to?: WebSocket): void {
     this.emit(
       {
