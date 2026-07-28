@@ -96,6 +96,22 @@ describe('plan mode', () => {
     expect(sam.events.filter(e => e.kind === 'thread.implement').length).toBe(1)
   })
 
+  it('a plan written out in a sentence is only words', async () => {
+    const sam = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(sam)
+    await connectRunner('jamel')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    sam.chat('@Fake /plan tidy the readme', [fake])
+    const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
+    // Nothing was cut out of it and no plan was asked for.
+    expect(thread.title).toBe('@Fake /plan tidy the readme')
+    expect(thread.mode).toBeUndefined()
+    await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
+    await new Promise(r => setTimeout(r, 200))
+    expect(sam.events.some(e => e.kind === 'thread.plan')).toBe(false)
+  })
+
   it('/plan without a mention goes to the only agent here, and asks when there are more', async () => {
     const sam = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(sam)
