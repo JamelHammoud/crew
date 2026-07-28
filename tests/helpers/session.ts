@@ -13,6 +13,13 @@ export function tmpDir(prefix: string): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), `crew-${prefix}-`))
 }
 
+// A session only carries a link while it is shared, so a test that means to
+// invite somebody says so here rather than reaching past the null.
+export function linkOf(session: { link: string | null }): string {
+  if (!session.link) throw new Error('This session is not shared, so there is no link to hand out.')
+  return session.link
+}
+
 export async function waitUntil(pred: () => boolean | Promise<boolean>, timeoutMs = 10000): Promise<void> {
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
