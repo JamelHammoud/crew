@@ -64,9 +64,9 @@ export default function Boot({ ready, onDone }: { ready: boolean; onDone: () => 
       {arrived && (
         <div className="crew-boot-mark relative flex items-center justify-center">
           <div className="absolute inset-0 flex items-center justify-center">
-            <CrewGlow className="w-[30rem] max-w-none shrink-0" />
+            <CrewGlow className="w-[38rem] max-w-none shrink-0" />
           </div>
-          <CrewMark className="relative w-auto text-fg" live height={72} />
+          <CrewMark className="relative w-auto text-fg" live height={96} />
         </div>
       )}
     </div>
