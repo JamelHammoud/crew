@@ -63,6 +63,13 @@ export default function BrowserPanel() {
   const activeTabId = useBrowser(s => s.activeTabId)
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
+  // The plan comes with the thread you are in and goes when you leave it.
+  const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
+
+  useEffect(() => {
+    if (planThread) useBrowser.getState().showPlan(planThread)
+    else useBrowser.getState().hidePlan()
+  }, [planThread])
 
   const reload = (tab: BrowserTab) => {
     if (showsImage(tab)) {
