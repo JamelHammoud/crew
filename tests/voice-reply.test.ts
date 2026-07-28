@@ -6,7 +6,11 @@ const fence = (body: unknown) => ['```card', JSON.stringify(body), '```'].join('
 describe('where it is safe to stop', () => {
   it('stops on a full stop and not before one', () => {
     expect(lastBoundary('Let me check the', 0)).toBe(0)
-    expect(lastBoundary('It passed. Now the', 0)).toBe(11)
+    expect(lastBoundary('It passed. Now the', 0)).toBe(10)
+  })
+
+  it('takes a stop at the end of what has arrived so far', () => {
+    expect(lastBoundary('It passed.', 0)).toBe(10)
   })
 
   it('is not fooled by an abbreviation', () => {
