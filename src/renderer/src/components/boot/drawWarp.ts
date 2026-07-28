@@ -115,10 +115,11 @@ export function paintWarp(
   speed: number,
   dt: number,
   t: number,
-  cloud: CanvasImageSource | null
+  travel: number,
+  clouds: CanvasImageSource[]
 ): void {
   ctx.clearRect(0, 0, view.width, view.height)
-  if (cloud) paintNebula(ctx, cloud, view, t, Math.min(t / 1.1, 1))
+  if (clouds.length > 0) paintNebula(ctx, clouds, view, t, travel, Math.min(t / 1.1, 1))
   paintStars(ctx, stars, view, speed, dt)
   paintVignette(ctx, view)
 }
