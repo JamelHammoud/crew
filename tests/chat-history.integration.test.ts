@@ -3,7 +3,7 @@ import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import type { ServerMessage } from '../src/shared/protocol'
-import { startHost, tmpDir, TestUi, type TestHost } from './helpers/session'
+import { startHost, tmpDir, TestUi, waitUntil, type TestHost } from './helpers/session'
 
 const said = (n: number): SessionEvent => ({
   id: `m${String(n).padStart(5, '0')}`,
