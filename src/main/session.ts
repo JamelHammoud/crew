@@ -316,7 +316,7 @@ export class AppSession {
       folder: repoPath,
       home,
       shared,
-      synced: git !== null,
+      synced: auto,
       hosting: true
     }
     this.folder = repoPath
