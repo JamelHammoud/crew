@@ -7,6 +7,7 @@ import Avatar from './Avatar'
 // the app as well, so the word arrives whether or not somebody is looking at
 // another window. It carries the face it is about and the way into the work.
 export function alertToast(alert: AgentAlert, open: (threadId: string) => void): void {
+  const thread = alert.threadId
   const face = alert.agentId ? (
     <AgentIcon seed={alert.agentId} size="xs" />
   ) : alert.from ? (
@@ -16,7 +17,7 @@ export function alertToast(alert: AgentAlert, open: (threadId: string) => void):
     tone: alert.stopped ? 'fail' : 'plain',
     detail: alert.body || undefined,
     mark: face,
-    key: alert.threadId ? `alert:${alert.threadId}` : undefined,
-    action: alert.threadId ? { label: 'Open', onPress: () => open(alert.threadId as string) } : undefined
+    key: thread ? `alert:${thread}` : undefined,
+    action: thread ? { label: 'Open', onPress: () => open(thread) } : undefined
   })
 }
