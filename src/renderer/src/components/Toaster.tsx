@@ -26,7 +26,10 @@ function Row({ toast }: { toast: Toast }) {
       <div className="toast-slot">
         <div
           role={toast.tone === 'fail' ? 'alert' : 'status'}
-          className="glass group pointer-events-auto w-80 flex items-center gap-2.5 rounded-2xl py-2.5 pl-3.5 pr-2"
+          onClick={() => closeToast(toast.id)}
+          className={`glass glass-strong toast-card pointer-events-auto cursor-pointer w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
+            action ? 'pl-3.5 pr-2' : 'px-3.5'
+          }`}
         >
           {mark && (
             <span className="shrink-0 flex items-center justify-center w-[18px] h-[18px] [&>svg]:w-[18px] [&>svg]:h-[18px]">
@@ -45,13 +48,6 @@ function Row({ toast }: { toast: Toast }) {
               {action.label}
             </button>
           )}
-          <button
-            onClick={() => closeToast(toast.id)}
-            aria-label="Close"
-            className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-fg/25 transition-all duration-150 hover:bg-fg/10 hover:text-fg/70 group-hover:text-fg/45 active:scale-95"
-          >
-            <CloseGlyph className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
     </div>
