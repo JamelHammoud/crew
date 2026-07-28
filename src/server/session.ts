@@ -887,11 +887,11 @@ export class CrewSession {
         return
       }
       if (ghosting) {
-        this.systemMessage('No agent of yours is here to take it.', undefined, ws)
+        this.notice('No agent of yours is here to take it.', ws)
         return
       }
       if (planning) {
-        this.systemMessage('Mention an agent with @ to say who should write the plan.')
+        this.notice('Mention an agent with @ to say who should write the plan.', ws)
         return
       }
       this.emit({
