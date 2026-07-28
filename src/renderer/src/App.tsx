@@ -112,6 +112,7 @@ function Session() {
       </div>
       <SidePanel visible={tab === 'chat'} />
       <HuddlePanel />
+      <VoiceScreen />
     </div>
   )
 }
