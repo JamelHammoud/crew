@@ -156,8 +156,11 @@ export default function Composer({
             className="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"
           />
         </div>
-        <div className="flex items-center justify-between mt-2">
-          <AddMenu attachmentKey={attachmentKey} huddle={huddle} onSend={onSend} />
+        <div className="flex items-center justify-between gap-2 mt-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <AddMenu attachmentKey={attachmentKey} huddle={huddle} onSend={onSend} />
+            {chips}
+          </div>
           {onStop && !canSend ? (
             <Tooltip label="Stop">
               <button
