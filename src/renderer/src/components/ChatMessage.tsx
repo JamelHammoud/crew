@@ -102,6 +102,7 @@ export default function ChatMessage({
               </Tooltip>
             )}
           </div>
+          {item.voice && <Pill>Spoken</Pill>}
         </div>
         {item.replyTo &&
           (item.replyTo.deleted ? (
