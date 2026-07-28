@@ -119,6 +119,8 @@ export const useVoice = create<VoiceState>((set, get) => {
     onEnd: audio => void heard(audio)
   })
 
+  live = { ear, mouth }
+
   const heard = async (audio: Float32Array) => {
     if (get().phase === 'off') return
     set({ phase: 'thinking' })
