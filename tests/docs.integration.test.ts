@@ -158,6 +158,26 @@ describe('doc pages', () => {
     await host.close()
   })
 
+  it('names the root page Genesis and every other page after its own slug', async () => {
+    const repoPath = tmpDir('docs-root-title')
+    const host = await startHost(repoPath)
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+
+    ui.send({ type: 'doc.update', page: 'main', text: 'home' })
+    ui.send({ type: 'doc.update', page: 'main/main', text: 'nested' })
+    ui.send({ type: 'doc.update', page: 'meeting-notes', text: 'notes' })
+    const store = new Store(repoPath)
+    await waitUntil(() => store.loadDocs()['meeting-notes']?.text === 'notes')
+
+    const docs = store.loadDocs()
+    expect(docs['main']?.title).toBe('Genesis')
+    expect(docs['main/main']?.title).toBe('Main')
+    expect(docs['meeting-notes']?.title).toBe('Meeting notes')
+
+    ui.close()
+    await host.close()
+  })
+
   it('retitles main with special characters and keeps the title on disk', async () => {
     const repoPath = tmpDir('docs-retitle')
     const host = await startHost(repoPath)
