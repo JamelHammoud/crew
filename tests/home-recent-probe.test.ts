@@ -46,6 +46,17 @@ describe('Home places', () => {
     expect(screen.getByRole('button', { name: /Join with a link/ })).toBeTruthy()
   })
 
+  // Nothing can be opened without a name to open it under, so an empty one is
+  // asked for rather than answered with a line of red under the button.
+  it('asks for a name before it offers anywhere to go', async () => {
+    storage.clear()
+    installBridge([])
+    render(createElement(Home))
+
+    expect(await screen.findByRole('heading', { name: /What should we call you/ })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /Open a folder/ })).toBeNull()
+  })
+
   // A place carries the name you were called there, and it is handed to the
   // join rather than read back off state, which is a render behind.
   it('rejoins a crew from its own row, under the name it was joined with', async () => {
