@@ -31,7 +31,7 @@ const LONGEST_MS = 30_000
 
 // Echo cancellation leaves some of the agent's own voice in the microphone, so
 // while it is talking the gate asks for more before it believes it is being
-// interrupted. Loose here and the agent talks itself到 a stop.
+// interrupted. Loose here and the agent talks itself to a stop.
 const GUARD_OVER = 2.2
 const GUARD_MS = 220
 
