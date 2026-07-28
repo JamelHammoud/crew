@@ -142,6 +142,15 @@ export function stepOrb(
   face.swell = 1 + face.level * SWELL + Math.sin(face.breath) * REST_SWELL
 }
 
+// The furthest the edge stands from the middle as the orb is right now, which
+// is what says how much room is left around it. Every harmonic at its own peak
+// at once, so it is a bound rather than a walk around the outline.
+export function orbReach(face: OrbFace, base: number): number {
+  let bend = 0
+  for (let band = 0; band < BANDS; band++) bend += WEIGHT[band] * face.bands[band]
+  return base * face.swell * (1 + bend)
+}
+
 // The edge of the orb, at one angle. Read all the way round it, this is the
 // outline; the harmonics are what make it a voice rather than a balloon.
 export function orbRadius(face: OrbFace, angle: number, base: number): number {
