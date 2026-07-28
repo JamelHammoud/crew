@@ -841,12 +841,19 @@ export class CrewSession {
     }
     const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
     const mode: ThreadMode = command.planning ? 'plan' : 'build'
+    const ghost = command.ghost ? ws : undefined
     if (ids.length === 0) {
-      // A plan needs someone to write it. With one agent here that is not a
+      // A command needs someone to take it. With one agent here that is not a
       // question worth asking.
-      const solo = command.planning ? this.soloAgent() : null
+      const solo = command.planning || command.ghost ? this.soloAgent() : null
       if (solo) {
-        this.startThread(member, solo, trimmed, attachments, { boardId, mode, replyTo })
+        this.startThread(member, solo, trimmed, attachments, { boardId, mode, ghost, replyTo })
+        return
+      }
+      // The one asking is the only one who knows a ghost thread was meant, so
+      // saying why it did not open goes to them and nowhere else.
+      if (command.ghost) {
+        this.systemMessage('Mention an agent with @ to say who should take it.', undefined, ws)
         return
       }
       if (command.planning) {
