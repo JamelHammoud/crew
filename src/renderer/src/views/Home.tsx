@@ -190,10 +190,7 @@ export default function Home() {
   // in the column, so every screen is centred on what it is really asking.
   return (
     <div className="relative h-full overflow-y-auto px-6">
-      <div
-        style={{ height: TOP_BAR_H }}
-        className="app-drag absolute top-0 inset-x-0 z-10 flex items-center justify-between px-6"
-      >
+      <div className="app-drag absolute top-0 inset-x-0 h-[70px] z-10 flex items-center justify-between px-6">
         <span className="mac:pl-[64px] flex items-center">
           {screen !== 'places' && !(screen === 'name' && first) && (
             <Tooltip label="Back">
