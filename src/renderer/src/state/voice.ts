@@ -55,6 +55,16 @@ const REST = {
 
 const storedAgent = (): string | null => globalThis.localStorage?.getItem(AGENT_KEY) ?? null
 
+// The orb is drawn off whichever of the two is making the sound right now, so
+// it is always reading real audio rather than a shape standing in for it. Held
+// out here because the drawing runs every frame and must not go through state.
+let live: { ear: VoiceEar; mouth: VoiceMouth } | null = null
+
+export function voiceAnalyser(): AnalyserNode | null {
+  if (!live) return null
+  return live.mouth.speaking ? live.mouth.analyser : live.ear.analyser
+}
+
 export const useVoice = create<VoiceState>((set, get) => {
   const fetching = new Map<string, Fetching>()
   let unwatch: (() => void) | null = null
