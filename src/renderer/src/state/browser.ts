@@ -45,6 +45,8 @@ type BrowserState = {
   openFiles(): void
   openMusic(): void
   openGame(): void
+  showPlan(threadId: string): void
+  hidePlan(): void
   toggleTree(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
