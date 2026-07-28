@@ -112,12 +112,18 @@ export class Runner {
     }
   }
 
+  // Connecting again is how a runner follows a host that has moved, so anything
+  // owed to the socket being left goes here rather than in its own close.
   connect(url: string): void {
     if (this.stopped) return
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
+    this.reconnectTimer = null
+    const previous = this.ws
     this.onStatus?.('connecting')
     this.httpBase = httpBaseFrom(url)
     const ws = new WebSocket(url)
     this.ws = ws
+    previous?.close(1000)
     this.lastSeen = Date.now()
     ws.on('open', () => {
       this.lastSeen = Date.now()
