@@ -344,6 +344,10 @@ Opening a folder is the only way in, and there is no host and join to choose bet
 - Multiplayer never needed git. Whoever joins is handed the whole session in the welcome and everything after it comes over the wire, and attachments and music come over http from the host, so a crew that syncs nothing is still a crew. Git only moves code.
 - Inviting people is the listener moving and nothing else. `setShared` closes the socket and opens it again on the same port, `0.0.0.0` instead of `127.0.0.1`, and the session, its code, its history and everyone in it stay exactly where they are. The only thing anybody sees is their own socket coming back a moment later, which it does on its own. Never remake the session to share it.
 - Sharing is off for a crew kept on this machine and on for one that lives in the folder, and either way it is one item in the profile menu. Turning it on copies the link in the same breath, because those are one action and not two.
+- The way in is a list of places rather than a form. Every project you have opened and every crew you have joined stand in one list, newest first, because picking one is the same choice whichever it is. `placesOf` in `src/renderer/src/views/home/place.ts` is that list and `PlaceRow` is the row, and where a project keeps its crew is the mark on the left rather than a word.
+- Under the list are the only two ways to reach a new one: open a folder, or join with a link. Each screen the two of them lead to is a screen inside the same column, carried by `ScreenSwap` the way the music panel carries its own, so nothing opens a second box to aim at.
+- Your name is asked once, on the way in, and after that it is a quiet row at the foot of the list. Nothing can be opened without one, so an empty name takes you to that screen rather than putting a line of red under the button.
+- A row carries the name you were called there, and it is handed to the join rather than read back off state. State is a render behind, which is the same mistake the GIF picker's send guard is written to avoid.
 
 ## Syncing
 
