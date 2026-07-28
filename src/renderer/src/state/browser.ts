@@ -204,6 +204,28 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = { ...makeTab(), kind: 'game' as const }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
+  // The plan for the thread you are in. It stands at the head of the row, it is
+  // nobody's to close, and it is only ever the one plan, so opening another
+  // thread's takes the place of the one before it.
+  showPlan: threadId => {
+    const existing = get().tabs.find(t => t.kind === 'plan')
+    if (existing?.threadId === threadId) {
+      set({ activeTabId: existing.id })
+      return
+    }
+    const tab = { ...makeTab(), kind: 'plan' as const, threadId }
+    set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'plan')], activeTabId: tab.id }))
+  },
+  hidePlan: () =>
+    set(s => {
+      const index = s.tabs.findIndex(t => t.kind === 'plan')
+      if (index < 0) return {}
+      const plan = s.tabs[index]
+      const tabs = s.tabs.filter(t => t.id !== plan.id)
+      const activeTabId =
+        s.activeTabId === plan.id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
+      return { tabs, activeTabId }
+    }),
   toggleTree: id =>
     set(s => ({
       tabs: s.tabs.map(t =>
