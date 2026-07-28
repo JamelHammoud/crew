@@ -6,6 +6,7 @@ import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
+import { isNewDay } from './time'
 import { toolAction } from './toolActions'
 
 // A thread's standing as a task. 'done' and 'archived' record explicit calls a
