@@ -611,6 +611,42 @@
         "plan": "pro",
         "error": "Claude sign-in expired. Run claude once to refresh it."
       }
+    },
+    {
+      "id": "jamel (dev)/580609af-be57-4e6d-b53c-b1a0562a47c0",
+      "label": "Kimi 2",
+      "provider": "kimi",
+      "ownerId": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
+      "ownerName": "Jamel (dev)",
+      "settings": {
+        "model": ""
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding",
+              "label": "kimi-code/kimi-for-coding"
+            },
+            {
+              "value": "kimi-code/kimi-for-coding-highspeed",
+              "label": "kimi-code/kimi-for-coding-highspeed"
+            },
+            {
+              "value": "kimi-code/k3",
+              "label": "kimi-code/k3"
+            }
+          ],
+          "default": ""
+        }
+      ],
+      "steerable": false
     }
   ],
   "removedAgents": [
