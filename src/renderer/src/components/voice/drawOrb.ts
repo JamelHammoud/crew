@@ -7,6 +7,10 @@ const STEPS = 180
 
 const RING_WIDTH = 2
 
+// How far past its own edge the light stands. Enough that the orb is not wearing
+// its glow as an outline, and near enough that the two are one shape.
+const GLOW_GROW = 1.14
+
 export interface OrbPaint {
   // What the orb is drawn in when the mesh is down, which is whatever the app
   // is set in. The mark is currentColor at rest and so is this.
