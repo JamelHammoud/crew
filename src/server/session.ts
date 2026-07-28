@@ -2936,9 +2936,15 @@ export class CrewSession {
     for (const promptId of [...agent.running]) this.finishPrompt(agent, promptId, { ok: false, error: reason })
   }
 
+  // Work in a ghost thread does not count here. Busy is the one thing about a
+  // run that reaches everyone, and an agent reading as busy with no thread
+  // anywhere to point at says a hidden one is going.
   private statusOf(agent: AgentState): AgentStatus {
     if (!agent.runner) return 'offline'
-    return agent.running.size > 0 ? 'busy' : 'idle'
+    for (const promptId of agent.running) {
+      if (!this.ghostOf(this.prompts.get(promptId)?.threadId)) return 'busy'
+    }
+    return 'idle'
   }
 
   private pooled(agent: AgentState): PooledAgent {
