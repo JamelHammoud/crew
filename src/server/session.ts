@@ -372,7 +372,8 @@ export class CrewSession {
           mode: event.mode ?? 'build',
           queue: [],
           running: null,
-          boardId: event.boardId
+          boardId: event.boardId,
+          voice: event.voice
         })
       }
       if (event.kind === 'thread.plan') {
