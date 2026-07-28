@@ -18,6 +18,7 @@ import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../share
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
+import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
