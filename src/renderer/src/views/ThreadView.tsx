@@ -254,6 +254,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   onSend={send}
                   onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
                   sendLabel={canSteer ? 'Steer' : 'Send'}
+                  ghost={thread.ghost}
                 >
                   <MentionMenu
                     matches={mention.matches}
