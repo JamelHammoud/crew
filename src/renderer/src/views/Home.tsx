@@ -1,28 +1,21 @@
 import { useEffect, useState } from 'react'
-import { parseLink } from '../../../shared/link'
-import type { RecentJoin } from '../../../shared/recent'
-import Spinner from '../components/Spinner'
-import { ArrowRightGlyph, ClockGlyph, FolderGlyph } from '../icons'
+import type { CrewHome } from '../../../shared/project'
+import ScreenSwap from '../components/ScreenSwap'
+import Tooltip from '../components/Tooltip'
+import { ChevronLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
+import JoinLink from './home/JoinLink'
+import Places from './home/Places'
+import WhereTo from './home/WhereTo'
+import YourName from './home/YourName'
+import { placesOf, type Place } from './home/places'
+
+type Screen = 'places' | 'name' | 'where' | 'link'
+
+const DEPTH: Record<Screen, number> = { places: 0, name: 1, where: 1, link: 1 }
 
 function cleanError(err: unknown): string {
   return String(err instanceof Error ? err.message : err).replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
-}
-
-const FIELD =
-  'w-full bg-ink-800 rounded-2xl px-4 py-3 text-base text-fg placeholder:text-fg-muted outline-none transition-shadow duration-200 focus:shadow-[0_0_0_1px_rgb(255_255_255/0.12)] light:focus:shadow-[0_0_0_1px_rgb(0_0_0/0.14)]'
-
-function folderName(folder: string): string {
-  return folder.split(/[\\/]/).filter(Boolean).at(-1) ?? folder
-}
-
-function serverName(link: string): string {
-  try {
-    const target = parseLink(link)
-    return `${target.host}:${target.port}`
-  } catch {
-    return link
-  }
 }
 
 export default function Home() {
@@ -30,166 +23,178 @@ export default function Home() {
   const [name, setName] = useState(() => localStorage.getItem('crew.name') ?? '')
   const [folder, setFolder] = useState<string | null>(() => localStorage.getItem('crew.folder'))
   const [link, setLink] = useState(() => localStorage.getItem('crew.link') ?? '')
-  const [recentJoins, setRecentJoins] = useState<RecentJoin[]>([])
+  const [places, setPlaces] = useState<Place[]>([])
+  const [screen, setScreen] = useState<Screen>(() => (localStorage.getItem('crew.name') ? 'places' : 'name'))
+  const [asking, setAsking] = useState<{ folder: string; tracked: boolean } | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const [busyLink, setBusyLink] = useState<string | null>(null)
+  const [busyKey, setBusyKey] = useState<string | null>(null)
 
-  useEffect(() => {
-    void window.crew
-      .recentJoins()
-      .then(setRecentJoins)
-      .catch(() => setRecentJoins([]))
-  }, [])
+  const load = () => {
+    void Promise.all([window.crew.projects().catch(() => []), window.crew.recentJoins().catch(() => [])]).then(
+      ([projects, joins]) => setPlaces(placesOf(projects, joins))
+    )
+  }
 
+  useEffect(load, [])
+
+  const keep = (): string => {
+    const trimmed = name.trim()
+    localStorage.setItem('crew.name', trimmed)
+    return trimmed
+  }
+
+  const open = async (target: string, key: string, opts?: { home: CrewHome }) => {
+    setBusy(true)
+    setBusyKey(key)
+    setError('')
+    try {
+      const who = keep()
+      localStorage.setItem('crew.folder', target)
+      connect(await window.crew.start(target, who, opts))
+    } catch (err) {
+      setError(cleanError(err))
+      setScreen('places')
+    } finally {
+      setBusy(false)
+      setBusyKey(null)
+    }
+  }
+
+  // A folder that has been opened before keeps the answer it was given, so the
+  // only time anything is asked is the first time.
   const pickFolder = async () => {
     const picked = await window.crew.pickFolder()
-    if (picked) setFolder(picked)
+    if (!picked) return
+    setFolder(picked)
+    setError('')
+    const plan = await window.crew.projectPlan(picked).catch(() => null)
+    if (plan?.known) return open(picked, `project:${picked}`)
+    setAsking({ folder: picked, tracked: plan?.tracked ?? false })
+    setScreen('where')
   }
 
-  const guard = (): string | null => {
-    if (!name.trim()) return 'Add your name first.'
-    if (!folder) return 'Pick a project folder first.'
-    return null
-  }
-
-  const start = async () => {
-    const problem = guard()
-    if (problem) return setError(problem)
+  const joinSession = async (sessionLink: string, sessionFolder: string, key: string) => {
     setBusy(true)
+    setBusyKey(key)
     setError('')
     try {
-      localStorage.setItem('crew.name', name.trim())
-      localStorage.setItem('crew.folder', folder!)
-      const info = await window.crew.start(folder!, name.trim())
-      connect(info.wsUrl, name.trim(), parseLink(info.link).code, info.link)
-    } catch (err) {
-      setError(cleanError(err))
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const joinSession = async (sessionLink: string, sessionFolder: string, sessionName: string) => {
-    setBusy(true)
-    setBusyLink(sessionLink)
-    setError('')
-    try {
-      localStorage.setItem('crew.name', sessionName)
+      const who = keep()
       localStorage.setItem('crew.folder', sessionFolder)
       localStorage.setItem('crew.link', sessionLink)
-      const info = await window.crew.join(sessionLink, sessionFolder, sessionName)
-      connect(info.wsUrl, sessionName, parseLink(sessionLink).code)
+      connect(await window.crew.join(sessionLink, sessionFolder, who))
     } catch (err) {
       setError(cleanError(err))
+      setScreen('places')
     } finally {
       setBusy(false)
-      setBusyLink(null)
+      setBusyKey(null)
     }
   }
 
-  const join = async () => {
-    const problem = guard()
-    if (problem) return setError(problem)
-    if (!link.trim()) return setError('Paste the invite link first.')
-    await joinSession(link.trim(), folder!, name.trim())
+  const openPlace = async (place: Place) => {
+    if (place.join) {
+      setName(place.join.name)
+      setLink(place.join.link)
+      setFolder(place.join.folder)
+      return joinSession(place.join.link, place.join.folder, place.key)
+    }
+    if (place.project) return open(place.project.folder, place.key)
   }
 
-  const joinRecent = async (recent: RecentJoin) => {
-    setName(recent.name)
-    setFolder(recent.folder)
-    setLink(recent.link)
-    await joinSession(recent.link, recent.folder, recent.name)
+  const forget = async (place: Place) => {
+    if (!place.project) return
+    await window.crew.forgetProject(place.project.folder).catch(() => {})
+    load()
+  }
+
+  const joinTyped = async () => {
+    if (!link.trim()) return setError('Paste the link first.')
+    if (!folder) return setError('Pick a folder for your agents to work in.')
+    await joinSession(link.trim(), folder, 'link')
+  }
+
+  const back = () => {
+    setError('')
+    setAsking(null)
+    setScreen('places')
+  }
+
+  const body = () => {
+    if (screen === 'name') {
+      return (
+        <YourName
+          name={name}
+          first={places.length === 0 && !localStorage.getItem('crew.name')}
+          onChange={setName}
+          onDone={() => {
+            keep()
+            setScreen('places')
+          }}
+        />
+      )
+    }
+    if (screen === 'where' && asking) {
+      return (
+        <WhereTo
+          folder={asking.folder}
+          tracked={asking.tracked}
+          busy={busy}
+          onPick={home => void open(asking.folder, `project:${asking.folder}`, { home })}
+        />
+      )
+    }
+    if (screen === 'link') {
+      return (
+        <JoinLink
+          link={link}
+          folder={folder}
+          busy={busy}
+          onLink={setLink}
+          onPickFolder={async () => {
+            const picked = await window.crew.pickFolder()
+            if (picked) setFolder(picked)
+          }}
+          onJoin={() => void joinTyped()}
+        />
+      )
+    }
+    return (
+      <Places
+        name={name}
+        places={places}
+        busy={busy}
+        busyKey={busyKey}
+        onOpen={place => void openPlace(place)}
+        onForget={place => void forget(place)}
+        onPick={() => void pickFolder()}
+        onJoin={() => {
+          setError('')
+          setScreen('link')
+        }}
+        onName={() => setScreen('name')}
+      />
+    )
   }
 
   return (
     <div className="relative h-full overflow-y-auto px-6">
       <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
-      <div className="w-full max-w-sm min-h-full mx-auto py-16 flex flex-col justify-center gap-8 animate-rise">
-        <div>
-          <h1 className="font-mono font-semibold text-3xl text-fg select-none">Crew</h1>
-          <p className="text-base text-fg-muted mt-2">Pool your LLMs with friends and build together.</p>
-        </div>
-
-        {recentJoins.length > 0 && (
-          <section aria-label="Recently joined" className="space-y-2">
-            <p className="text-sm text-fg-muted">Recently joined</p>
-            <div className="rounded-card bg-ink-800 p-1.5">
-              {recentJoins.map(recent => (
-                <button
-                  key={recent.link}
-                  onClick={() => void joinRecent(recent)}
-                  disabled={busy}
-                  className="group w-full rounded-2xl px-3 py-2.5 flex items-center gap-3 text-left transition-all duration-150 hover:bg-ink-700 active:scale-[0.99] disabled:opacity-50 disabled:scale-100"
-                >
-                  <span className="w-9 h-9 rounded-full bg-ink-700 flex items-center justify-center shrink-0 group-hover:bg-ink-600">
-                    <ClockGlyph className="w-4 h-4 text-fg-secondary" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-fg truncate">{serverName(recent.link)}</span>
-                    <span className="block text-xs text-fg-muted truncate">{folderName(recent.folder)}</span>
-                  </span>
-                  {busyLink === recent.link ? (
-                    <Spinner size={15} className="text-fg-muted" />
-                  ) : (
-                    <ArrowRightGlyph className="w-4 h-4 text-fg-faint group-hover:text-fg-secondary group-hover:translate-x-0.5 transition-all duration-150" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <div>
-          <label className="block text-sm text-fg-muted mb-2">Your name</label>
-          <input value={name} onChange={e => setName(e.target.value)} placeholder="Bobert" className={FIELD} />
-        </div>
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm text-fg-muted mb-2">Project folder</label>
-            <button onClick={pickFolder} className={`${FIELD} flex items-center gap-2.5 text-left hover:bg-ink-700`}>
-              <FolderGlyph className="w-5 h-5 text-fg-muted shrink-0" />
-              <span className={`truncate ${folder ? 'text-fg' : 'text-fg-muted'}`}>
-                {folder ?? 'Choose a folder tracked with git'}
-              </span>
+      <div className="w-full max-w-sm min-h-full mx-auto py-16 flex flex-col justify-center gap-6 animate-rise">
+        {screen !== 'places' && (
+          <Tooltip label="Back" className="self-start">
+            <button
+              onClick={back}
+              aria-label="Back"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted transition-colors duration-150 hover:bg-ink-800 hover:text-fg active:scale-95"
+            >
+              <ChevronLeftGlyph className="w-4 h-4" />
             </button>
-          </div>
-          <button
-            onClick={start}
-            disabled={busy}
-            className="w-full h-12 rounded-full bg-fg text-ink-900 text-base font-semibold flex items-center justify-center gap-2 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
-          >
-            {busy && <Spinner size={16} />}
-            Start a session
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3 text-sm text-fg-faint">
-          <div className="h-px bg-ink-700 flex-1" />
-          or
-          <div className="h-px bg-ink-700 flex-1" />
-        </div>
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm text-fg-muted mb-2">Invite link</label>
-            <input
-              value={link}
-              onChange={e => setLink(e.target.value)}
-              placeholder="crew://100.64.1.2:2739/a1b2c3"
-              className={FIELD}
-            />
-          </div>
-          <button
-            onClick={join}
-            disabled={busy}
-            className="w-full h-12 rounded-full border border-ink-600 text-fg text-base font-semibold transition-all duration-150 hover:border-ink-500 hover:bg-fg/[0.03] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
-          >
-            Join a session
-          </button>
-        </div>
-
+          </Tooltip>
+        )}
+        <ScreenSwap screen={screen} depth={DEPTH[screen]}>
+          {body()}
+        </ScreenSwap>
         {error && <p className="text-sm text-danger animate-pop">{error}</p>}
       </div>
     </div>
