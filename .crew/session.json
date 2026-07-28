@@ -127,22 +127,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785260123338,
+        "fetchedAt": 1785260415687,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 41,
+            "percent": 44,
             "severity": "normal",
-            "resetsAt": 1785273000580,
+            "resetsAt": 1785273000977,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 37,
+            "percent": 38,
             "severity": "normal",
-            "resetsAt": 1785499199580,
+            "resetsAt": 1785499199977,
             "active": false
           }
         ],
@@ -232,7 +232,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785260543385,
+        "fetchedAt": 1785260595711,
         "windows": [
           {
             "key": "primary",
@@ -243,7 +243,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785260535619
+        "asOf": 1785260592856
       },
       "avatar": "b1ecb2a9-f960-4ef8-8cb4-3e10cd0e6ece.png"
     },
@@ -328,7 +328,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785260543385,
+        "fetchedAt": 1785260595711,
         "windows": [
           {
             "key": "primary",
@@ -339,7 +339,7 @@
         "accountId": "5a9cd8a9-f160-46a3-bcad-641c8606427c",
         "accountLabel": "alihammoud0202@gmail.com",
         "plan": "team",
-        "asOf": 1785260535619
+        "asOf": 1785260592856
       }
     },
     {
@@ -620,22 +620,22 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785260123338,
+        "fetchedAt": 1785260415687,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 41,
+            "percent": 44,
             "severity": "normal",
-            "resetsAt": 1785273000580,
+            "resetsAt": 1785273000977,
             "active": true
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 37,
+            "percent": 38,
             "severity": "normal",
-            "resetsAt": 1785499199580,
+            "resetsAt": 1785499199977,
             "active": false
           }
         ],
