@@ -333,9 +333,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (exitTimer) clearTimeout(exitTimer)
           reject(err)
         })
-        child.on('close', code => settle(code))
-        child.on('exit', code => {
-          exitTimer = setTimeout(() => settle(code), EXIT_FLUSH_MS)
+        child.on('close', (code, signal) => settle(code, signal))
+        child.on('exit', (code, signal) => {
+          exitTimer = setTimeout(() => settle(code, signal), EXIT_FLUSH_MS)
           exitTimer.unref()
         })
       })
