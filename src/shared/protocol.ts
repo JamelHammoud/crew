@@ -179,8 +179,11 @@ export type ServerMessage =
       attachments?: Attachment[]
       designBoard?: DesignBoardMeta
       designBoards?: DesignBoardMeta[]
+      // A picture in a ghost thread is never kept beside the session, so the
+      // machine running it says where it may put one.
+      ghost?: boolean
     }
-  | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[] }
+  | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[]; ghost?: boolean }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
   | { type: 'error'; message: string }
