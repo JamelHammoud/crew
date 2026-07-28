@@ -278,9 +278,14 @@ export class AppSession {
     const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
     const store = new Store(base)
     const session = new CrewSession(store)
-    const git = home === 'folder' && tracked ? new GitSync(repoPath) : null
-    if (git) {
-      git.onLog = line => console.warn('[git]', line)
+    // Git is there for Push and Pull in any project that has it, because that
+    // is somebody's own code and their own button. Only a crew that lives in
+    // the folder runs the loop, so a project kept on this machine is never
+    // committed to under anyone.
+    const git = tracked ? new GitSync(repoPath) : null
+    const auto = git !== null && home === 'folder'
+    if (git) git.onLog = line => console.warn('[git]', line)
+    if (git && auto) {
       session.onSyncNeeded = () => git.schedule()
       git.start(AUTO_SYNC_MS)
     }
