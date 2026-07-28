@@ -908,10 +908,14 @@ export class CrewSession {
     }
   }
 
-  private soloAgent(ownerId?: string): AgentState | null {
-    const here = [...this.agents.values()].filter(
+  private agentsHere(ownerId?: string): AgentState[] {
+    return [...this.agents.values()].filter(
       agent => agent.runner && (ownerId === undefined || agent.ownerId === ownerId)
     )
+  }
+
+  private soloAgent(): AgentState | null {
+    const here = this.agentsHere()
     return here.length === 1 ? here[0] : null
   }
 
