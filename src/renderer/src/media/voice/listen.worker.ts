@@ -62,7 +62,7 @@ self.onmessage = async (event: MessageEvent<ListenIn>) => {
       return
     }
     const listen = await load()
-    const result = await listen(message.audio, { language: 'en', task: 'transcribe' })
+    const result = await listen(message.audio, askedOf(LISTEN_MODEL))
     const raw = Array.isArray(result) ? result.map(part => part.text).join(' ') : result.text
     const text = (raw ?? '').replace(/\s+/g, ' ').trim()
     post({ type: 'heard', id: message.id, text: NOTHING.test(text) ? '' : text })
