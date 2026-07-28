@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
@@ -9,8 +11,20 @@ import { testRunner } from './helpers/runner'
 
 type ThreadStarted = Extract<SessionEvent, { kind: 'thread.started' }>
 type AgentEnd = Extract<SessionEvent, { kind: 'agent.end' }>
+type Message = Extract<SessionEvent, { kind: 'message' }>
 
 const settle = () => new Promise(r => setTimeout(r, 300))
+
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64'
+)
+
+const walk = (dir: string): string[] =>
+  fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const full = path.join(dir, entry.name)
+    return entry.isDirectory() ? walk(full) : [full]
+  })
 
 describe('ghost threads', () => {
   let host: TestHost
