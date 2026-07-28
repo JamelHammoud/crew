@@ -302,7 +302,7 @@ export class AppSession {
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected, name),
-      onBeforeRun: git ? () => git.syncNow() : undefined,
+      onBeforeRun: git && auto ? () => git.syncNow() : undefined,
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
