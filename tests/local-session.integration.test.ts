@@ -135,8 +135,8 @@ describe('a crew kept on this machine', () => {
     expect(open?.home).toBe('private')
 
     const guest = await TestUi.connect(open!.wsUrl, 'jamel', open!.code)
-    await waitUntil(() => guest.events.some(e => e.kind === 'message' && e.text === 'said before anyone arrived'), 10000)
-    expect(linkOf(open!)).toContain(String(new URL(open!.wsUrl.replace('ws:', 'http:')).port))
+    expect(historyOf(guest)).toContain('said before anyone arrived')
+    expect(linkOf(open!)).toContain(open!.code)
     guest.close()
 
     const shut = await app.setShared(false)
