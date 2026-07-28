@@ -9,6 +9,7 @@ import { testRunner } from './helpers/runner'
 
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Ended = Extract<SessionEvent, { kind: 'agent.end' }>
+type Said = Extract<SessionEvent, { kind: 'message' }>
 
 // The fake CLI reads the whole prompt back, so what the agent was told is
 // readable off its reply. These are lines out of the brief itself.
