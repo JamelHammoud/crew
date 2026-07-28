@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
+import type { ServerMessage } from '../src/shared/protocol'
 import { agentId } from '../src/shared/llm'
 import { PLAN_INSTRUCTIONS } from '../src/shared/plan'
 import { CrewSession } from '../src/server/session'
@@ -127,10 +128,17 @@ describe('plan mode', () => {
     await connectRunner('pat', 'other', 'Other')
     await sam.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Other')
 
+    // The question goes to the one who asked and nowhere else: it is the app
+    // answering them, not something the crew has to read.
+    const pat = await TestUi.connect(host.url, 'pat', host.code)
+    uis.push(pat)
     sam.chat('rename the tabs', [], undefined, ['plan'])
-    await sam.waitForEvent(e => e.kind === 'message' && e.authorId === 'crew')
+    const asked = (await sam.waitFor(m => m.type === 'notice')) as Notice
+    expect(asked.text).toContain('Mention an agent')
     await new Promise(r => setTimeout(r, 200))
     expect(sam.events.filter(e => e.kind === 'thread.started').length).toBe(1)
+    expect(sam.events.some(e => e.kind === 'message')).toBe(false)
+    expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
   })
 
   it('a plan asked for inside a thread is nothing at all', async () => {
