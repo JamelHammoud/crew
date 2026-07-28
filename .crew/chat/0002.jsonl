@@ -741,3 +741,7 @@
 {"id":"b936fb41-f7ff-4664-8374-5a373c619849","ts":1785206163737,"kind":"agent.online","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
 {"id":"f065f03f-0b4e-4d4c-9db3-d006d1b8940e","ts":1785206163737,"kind":"agent.online","agentId":"jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130","label":"Thinker"}
 {"id":"af5b825a-d216-4e62-83dc-04df0ad31c3c","ts":1785206163737,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"8d405f03-b1be-4281-813b-a503d8e66e5c","ts":1785206170598,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"3a941d77-4bd5-40b8-af6c-2a348ac25cad","ts":1785206170598,"kind":"agent.offline","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
+{"id":"b56b093f-3c2d-4872-a448-0c0627cf1cd7","ts":1785206170598,"kind":"agent.offline","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
+{"id":"bf89ab4b-9d82-4c4d-96ce-a70bee230999","ts":1785206170598,"kind":"agent.offline","agentId":"jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130","label":"Thinker"}
