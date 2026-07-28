@@ -81,6 +81,11 @@ export const parseClaudeLine: OutputParser = line => {
     return []
   }
   if (msg?.type === 'assistant' && Array.isArray(msg.message?.content)) {
+    // An API error arrives as a message from the model itself. It is what went
+    // wrong rather than something the agent said, so it is reported as one.
+    if (msg.is_api_error_message) {
+      return [{ error: apiErrorText(msg.message.content) || FAILURES.api_error }]
+    }
     const out = []
     for (const block of msg.message.content) {
       if (block?.type === 'thinking' && typeof block.thinking === 'string' && block.thinking.trim()) {
