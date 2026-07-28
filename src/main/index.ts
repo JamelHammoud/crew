@@ -230,6 +230,7 @@ app.whenReady().then(() => {
   tray.install()
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
+  session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
   resumed = session.resume().then(() => {
     sharing()
     warmTerminals()
