@@ -209,6 +209,13 @@ describe('reaching back through the chat', () => {
     expect(held()).toEqual(['m98', 'm99', ...recent.map(e => e.id)])
   })
 
+  it('reaches back on its own when there is nothing to scroll', () => {
+    scrollHeight = 300
+    open(recent)
+
+    expect(asked()).toEqual([{ type: 'history', before: 'm100' }])
+  })
+
   it('reaches back again when a page held nothing this screen draws', () => {
     const { feed } = open(recent)
 
