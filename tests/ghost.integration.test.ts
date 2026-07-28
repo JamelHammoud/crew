@@ -110,7 +110,7 @@ describe('ghost threads', () => {
     expect(second.text).toContain('read the readme')
   })
 
-  it('a ghost thread is nobody else’s to write in', async () => {
+  it("a ghost thread is nobody else's to write in", async () => {
     const sam = await connectUi('sam')
     const pat = await connectUi('pat')
     await connectRunner('jamel')
