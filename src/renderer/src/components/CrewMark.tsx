@@ -46,7 +46,7 @@ function Mesh({ id, sky = true }: { id: string; sky?: boolean }) {
         ))}
       </defs>
       <g className="crew-mesh">
-        <rect {...FIELD} fill={SKY} />
+        {sky && <rect {...FIELD} fill={SKY} />}
         {BLOBS.map((blob, index) => (
           <circle
             key={blob.color}
