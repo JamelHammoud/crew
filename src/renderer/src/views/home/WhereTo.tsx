@@ -45,7 +45,6 @@ export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home
           </button>
         ))}
       </div>
-      <p className="text-xs text-fg-muted">Either way, you can invite people.</p>
     </div>
   )
 }
