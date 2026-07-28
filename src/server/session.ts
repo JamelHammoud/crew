@@ -2919,7 +2919,46 @@ export class CrewSession {
     })
   }
 
-  private emit(event: SessionEvent, opts: { persist?: boolean } = {}): void {
+  // Everything a thread emits carries its id, so one question here is what
+  // keeps a ghost thread off the log and off everyone else's screen: it is kept
+  // in memory for the one window it belongs to, and the wire is never touched.
+  private ghostOf(threadId: string | undefined): Ghost | undefined {
+    return threadId ? this.ghosts.get(threadId) : undefined
+  }
+
+  private ghostEventOf(event: SessionEvent): Ghost | undefined {
+    return this.ghostOf('threadId' in event ? event.threadId : undefined)
+  }
+
+  // The one window's copy of what a ghost thread has said, which is what an
+  // agent's next turn in it is built from. Any other thread reads the session.
+  private eventsOf(threadId: string): SessionEvent[] {
+    return this.ghostOf(threadId)?.events ?? this.events
+  }
+
+  private toThread(threadId: string, msg: ServerMessage): void {
+    const ghost = this.ghostOf(threadId)
+    if (ghost) {
+      this.send(ghost.ws, msg)
+      return
+    }
+    this.broadcast(msg)
+  }
+
+  // A thread somebody else opened as a ghost is not there to be written in,
+  // however its id was come by.
+  private hiddenFrom(ws: WebSocket, threadId: string): boolean {
+    const ghost = this.ghostOf(threadId)
+    return ghost !== undefined && ghost.ws !== ws
+  }
+
+  private emit(event: SessionEvent, opts: { persist?: boolean; to?: WebSocket } = {}): void {
+    const ghost = this.ghostEventOf(event)
+    if (ghost || opts.to) {
+      ghost?.events.push(event)
+      this.send(opts.to ?? ghost!.ws, { type: 'event', event })
+      return
+    }
     const ephemeral =
       event.kind === 'doc' ||
       event.kind === 'doc.titled' ||
