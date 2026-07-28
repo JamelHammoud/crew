@@ -172,7 +172,7 @@ export const useVoice = create<VoiceState>((set, get) => {
     set({ phase: 'thinking', cards: [], saying: '' })
     mouth.open(get().voice)
     const crew = useCrew.getState()
-    if (threadId) crew.sendChat(text, threadId)
+    if (threadId) crew.sendChat(text, threadId, undefined, undefined, undefined, ['voice'])
     else crew.sendChat(text, undefined, undefined, undefined, [agentId], ['voice'])
   }
 
