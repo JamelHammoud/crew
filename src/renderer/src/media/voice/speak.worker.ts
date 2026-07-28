@@ -98,5 +98,5 @@ self.onmessage = (event: MessageEvent<SpeakIn>) => {
   }
   if (turn !== message.turn) return
   if (message.type === 'push') splitter?.push(message.text)
-  if (message.type === 'close') seal()
+  if (message.type === 'close') splitter?.close()
 }
