@@ -202,12 +202,15 @@ export default function Chat() {
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}
-              placeholder="Send a message, @ someone, or / for a command"
+              placeholder={
+                ghost ? 'Send a message nobody else will see' : 'Send a message, @ someone, or / for a command'
+              }
               inputRef={inputRef}
               onChange={mention.onChange}
               onKeyDown={onKeyDown}
               onSend={send}
               huddle
+              ghost={ghost}
               replyTo={replyTo ?? undefined}
               onCancelReply={() => setReplyTo(null)}
               chips={commands.map(name => (
