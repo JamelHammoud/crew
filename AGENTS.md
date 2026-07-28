@@ -21,6 +21,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - Plain words. No over-selling, no narration. State things simply.
 - UI copy is for everyone, not just engineers. Avoid engineering jargon.
 - Copy never echoes the request that produced it. Placeholders and empty states describe what the user can do in general terms, never the specifics of what was asked for or how it was built.
+- A heading stands on its own. A line under it saying the same thing again in longer words, or explaining what the field below it is for, is a row of type spent on nothing. Write a second line only when it says something the screen cannot say without it, and never one that starts by naming what the thing is.
 
 ## Code
 
