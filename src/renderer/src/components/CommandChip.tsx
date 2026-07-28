@@ -1,15 +1,17 @@
 import type { CommandName } from '../../../shared/commands'
-import { ChecklistGlyph, CloseGlyph, GhostGlyph } from '../icons'
+import { ChecklistGlyph, CloseGlyph, GhostGlyph, MicGlyph } from '../icons'
 import Pill from './Pill'
 
 export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   plan: ChecklistGlyph,
-  ghost: GhostGlyph
+  ghost: GhostGlyph,
+  voice: MicGlyph
 }
 
 export const COMMAND_LABELS: Record<CommandName, string> = {
   plan: 'Plan',
-  ghost: 'Ghost'
+  ghost: 'Ghost',
+  voice: 'Voice'
 }
 
 // In the composer a command is a control standing in the row the plus stands in,
