@@ -65,10 +65,11 @@ describe('a hidden thread says so at the head of it', () => {
 
   const shell = () => screen.getByRole('textbox').closest('.rounded-shell') as HTMLElement
 
-  it('stands a white band behind the composer header rather than floating over the thread', () => {
+  it('stands a band behind the composer header rather than floating over the thread', () => {
     open(true)
     const band = screen.getByText('Ghost mode')
-    expect(band.className).toContain('bg-fg')
+    expect(band.className).toContain('bg-ink-800')
+    expect(band.className).toContain('text-fg')
     expect(band.className).not.toContain('absolute')
     expect(band.className).toContain('-mb-10')
     const header = band.nextElementSibling as HTMLElement
