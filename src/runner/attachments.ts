@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import type { Attachment } from '../shared/attachments'
 
@@ -12,8 +13,13 @@ const DOWNLOAD_TIMEOUT_MS = 30000
 export class AttachmentCache {
   constructor(private repoPath: string) {}
 
-  async ensure(attachments: Attachment[], httpBase: string): Promise<LocalAttachment[]> {
-    const dir = path.join(this.repoPath, '.crew', 'attachments')
+  // A picture the agent has to read has to be a file somewhere. For an ordinary
+  // message that is the folder beside the session, where it is already kept and
+  // where it stays. A ghost thread has nothing beside the session, so its
+  // pictures go outside the project altogether and are taken away with the run:
+  // the folder the crew syncs never holds one, on any machine.
+  async ensure(attachments: Attachment[], httpBase: string, ghostPromptId?: string): Promise<LocalAttachment[]> {
+    const dir = ghostPromptId ? this.ghostDir(ghostPromptId) : path.join(this.repoPath, '.crew', 'attachments')
     const local: LocalAttachment[] = []
     for (const attachment of attachments) {
       const full = path.join(dir, attachment.file)
@@ -26,6 +32,14 @@ export class AttachmentCache {
       local.push({ name: attachment.name, path: full })
     }
     return local
+  }
+
+  release(promptId: string): void {
+    fs.rmSync(this.ghostDir(promptId), { recursive: true, force: true })
+  }
+
+  private ghostDir(promptId: string): string {
+    return path.join(os.tmpdir(), `crew-${promptId}`)
   }
 
   private async download(url: string): Promise<Buffer | null> {
