@@ -1,24 +1,20 @@
-import Avatar from '../../components/Avatar'
 import CrewLogo from '../../components/CrewLogo'
 import Spinner from '../../components/Spinner'
-import { DesktopGlyph, FolderGlyph, GlobeGlyph, PencilGlyph, PlusGlyph } from '../../icons'
+import { DesktopGlyph, FolderGlyph, GlobeGlyph, PlusGlyph } from '../../icons'
 import PlaceRow from './PlaceRow'
 import type { Place } from './place'
 
 // The way in. Every project you have opened and every crew you have joined, in
 // one list, and the two ways to reach a new one under it.
 export default function Places({
-  name,
   places,
   busy,
   busyKey,
   onOpen,
   onForget,
   onPick,
-  onJoin,
-  onName
+  onJoin
 }: {
-  name: string
   places: Place[]
   busy: boolean
   busyKey: string | null
@@ -26,7 +22,6 @@ export default function Places({
   onForget: (place: Place) => void
   onPick: () => void
   onJoin: () => void
-  onName: () => void
 }) {
   return (
     <div className="space-y-8">
