@@ -30,14 +30,9 @@ export default function Places({
 }) {
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="-ml-1.5 flex">
-          <CrewLogo height={30} />
-        </h1>
-        <p className="text-base text-fg-muted mt-2">
-          {places.length > 0 ? 'Pick up where you left off.' : 'Open a project and start working.'}
-        </p>
-      </div>
+      <h1 className="-ml-1.5 flex">
+        <CrewLogo height={30} />
+      </h1>
 
       {places.length > 0 && (
         <div className="rounded-card bg-ink-800 p-1.5">
