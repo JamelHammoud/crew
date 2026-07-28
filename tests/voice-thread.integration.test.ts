@@ -115,6 +115,30 @@ describe('a thread somebody spoke', () => {
     expect(sam.events.some(e => e.kind === 'thread.started')).toBe(false)
   })
 
+  // A spoken thread can still be written in, so which of the two a line was is
+  // the message's own answer rather than the thread's.
+  it('marks the lines that were said and leaves the typed ones alone', async () => {
+    const sam = await ready()
+    sam.chat('what broke', [fake], undefined, ['voice'])
+    const started = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
+    const spoken = (await sam.waitForEvent(
+      e => e.kind === 'message' && e.threadId === started.threadId && e.text === 'what broke'
+    )) as Said
+    expect(spoken.voice).toBe(true)
+
+    sam.chat('and this one I typed', [], started.threadId)
+    const typed = (await sam.waitForEvent(
+      e => e.kind === 'message' && e.threadId === started.threadId && e.text === 'and this one I typed'
+    )) as Said
+    expect(typed.voice).toBeUndefined()
+
+    sam.chat('and this one I said', [], started.threadId, ['voice'])
+    const again = (await sam.waitForEvent(
+      e => e.kind === 'message' && e.threadId === started.threadId && e.text === 'and this one I said'
+    )) as Said
+    expect(again.voice).toBe(true)
+  })
+
   it('is still a spoken thread after a restart', async () => {
     const sam = await ready()
     sam.chat('remember this', [fake], undefined, ['voice'])
