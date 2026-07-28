@@ -160,9 +160,9 @@ export const GameGlyph = glyph(
 // carry. The eyes are filled for the reason the sun in the photo is.
 export const GhostGlyph = glyph(
   <>
-    <path d="M4.5 20.25V10a7.5 7.5 0 0 1 15 0v10.25a3.25 3.25 0 0 1-5 0 3.25 3.25 0 0 1-5 0 3.25 3.25 0 0 1-5 0Z" />
-    <circle cx="9.4" cy="10" r="1.05" fill="currentColor" stroke="none" />
-    <circle cx="14.6" cy="10" r="1.05" fill="currentColor" stroke="none" />
+    <path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z" />
+    <circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none" />
   </>
 )
 
