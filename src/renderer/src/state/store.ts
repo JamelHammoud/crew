@@ -513,7 +513,8 @@ export const useCrew = create<CrewState>((set, get) => {
               createdBy: event.byName,
               status: 'open',
               mode: event.mode ?? 'build',
-              boardId: event.boardId
+              boardId: event.boardId,
+              voice: event.voice
             }
           }
           if (event.kind === 'thread.plan' && threads[event.threadId]) {
