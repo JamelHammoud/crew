@@ -57,7 +57,7 @@ export default function FeedCard({
           } ${onOpen ? 'cursor-pointer hover:border-ink-600' : ''}`}
         >
           <div className="px-5 py-4 flex items-center gap-2.5">
-            <p className="min-w-0 text-base text-fg leading-[22px] truncate">{title}</p>
+            <p className="min-w-0 flex-1 text-base text-fg leading-[22px] truncate">{title}</p>
             {badge && <span className="shrink-0">{badge}</span>}
           </div>
           {children}
