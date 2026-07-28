@@ -2222,7 +2222,7 @@ export class CrewSession {
         clearTimeout(pending.timer)
         this.stepFlushes.delete(`${promptId}:${step.id}`)
       }
-      this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
+      this.toThread(ref.threadId, { type: 'agent.step', promptId, agentId: agent.id, threadId: ref.threadId, step: merged })
       this.persistStep(agent, promptId, ref.threadId, step.id)
       return
     }
