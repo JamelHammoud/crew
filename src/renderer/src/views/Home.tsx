@@ -139,10 +139,10 @@ export default function Home() {
       return (
         <YourName
           name={name}
-          first={places.length === 0 && !localStorage.getItem('crew.name')}
+          first={!known}
           onChange={setName}
           onDone={() => {
-            keep()
+            keep(name.trim())
             setScreen('places')
           }}
         />
