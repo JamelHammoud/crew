@@ -5,7 +5,7 @@
   "type": "module",
   "main": "out/main/index.js",
   "build": {
-    "appId": "app.crew",
+    "appId": "com.jamel.crew",
     "productName": "Crew",
     "directories": {
       "output": "dist"
