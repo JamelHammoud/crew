@@ -11,6 +11,10 @@ const BLOBS = [
   { color: '#ffffff', cx: 158, cy: 24, r: 118, dx: 30, dy: 44, ds: 1.22, dur: '6.8s', lag: '-3.4s' }
 ]
 
+// The mark is the one place in the app that says anything in color, so nothing
+// else invents its own. What the boot scatters through its field is this.
+export const MESH_COLORS = BLOBS.map(blob => blob.color)
+
 const BLEED = 180
 
 const ROOM = 20
