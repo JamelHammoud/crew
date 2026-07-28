@@ -679,7 +679,9 @@ export const useCrew = create<CrewState>((set, get) => {
     // session stays exactly where it is and the socket comes back on its own.
     share: async shared => {
       const info = await window.crew.setShared(shared).catch(() => null)
-      if (info) set({ joinLink: info.link, shared: info.shared })
+      if (!info) return null
+      set({ joinLink: info.link, shared: info.shared })
+      return info.link
     },
     leave: () => {
       socket.close()
