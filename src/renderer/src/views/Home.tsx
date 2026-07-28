@@ -225,7 +225,9 @@ export default function Home() {
           </Tooltip>
         )}
       </div>
-      <div className="w-full max-w-sm min-h-full mx-auto py-20 flex flex-col justify-center gap-6 animate-rise">
+      <div
+        className={`w-full ${WIDTH[screen]} min-h-full mx-auto py-20 flex flex-col justify-center gap-6 animate-rise transition-[max-width] duration-200 ease-out`}
+      >
         <ScreenSwap screen={screen} depth={DEPTH[screen]}>
           {body()}
         </ScreenSwap>
