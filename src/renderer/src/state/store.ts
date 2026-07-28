@@ -275,9 +275,13 @@ export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     const cue = soundFor(event, get().selfId)
     if (cue) playSound(cue)
-    const focused = document.hasFocus()
-    const alert = finishedAlert(event, get(), focused) ?? memberMentionAlert(event, get().selfId, focused)
-    if (alert) void window.crew?.notify?.(alert)
+    // One decision, said in two places: the app says it every time, and the
+    // system says it only when the window is not the one being looked at.
+    const alert = finishedAlert(event, get()) ?? memberMentionAlert(event, get().selfId, get().openThreadId)
+    if (alert) {
+      alertToast(alert, threadId => get().openThread(threadId))
+      if (!document.hasFocus()) void window.crew?.notify?.(alert)
+    }
     if (event.kind === 'message.deleted') {
       set(state => ({
         events: markDeletedReplies(
