@@ -26,6 +26,11 @@ const FENCE = /^[ \t]*```/gm
 // first stop rather than by a space.
 const SENTENCE = /(?<![\s(][A-Za-z])(?<!\.[A-Za-z])[.!?…]["')\]]*(?=\s|$)/g
 
+const lineEnd = (text: string, at: number): number => {
+  const line = text.indexOf('\n', at)
+  return line === -1 ? text.length : line + 1
+}
+
 export function lastBoundary(text: string, from: number): number {
   let end = from
   const line = text.lastIndexOf('\n')
