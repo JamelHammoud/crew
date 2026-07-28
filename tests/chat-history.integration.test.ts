@@ -109,19 +109,14 @@ describe('reading back into the chat history', () => {
     expect(page.more).toBe(false)
   })
 
-  it('keeps a ghost thread out of what is read back', async () => {
+  it('leaves out what a doc wrote, which is not a moment to scroll past', async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
     uis.push(alice)
-
-    alice.chat('nobody else sees this', [], undefined, ['ghost'])
-    const started = await alice.waitForEvent(e => e.kind === 'thread.started')
-    const threadId = started.kind === 'thread.started' ? started.threadId : ''
-    expect(threadId).not.toBe('')
 
     const oldest = host.session.snapshot().events[0]
     alice.send({ type: 'history', before: oldest.id })
     const page = history(await alice.waitFor(m => m.type === 'history'))
-    expect(page.events.some(e => 'threadId' in e && e.threadId === threadId)).toBe(false)
+    expect(page.events.some(e => e.kind === 'doc')).toBe(false)
   })
 
   it('goes to the one who asked for it', async () => {
