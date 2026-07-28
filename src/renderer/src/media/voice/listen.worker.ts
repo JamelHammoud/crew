@@ -1,5 +1,5 @@
 import { env, pipeline, type AutomaticSpeechRecognitionPipeline } from '@huggingface/transformers'
-import { LISTEN_MODEL } from './models'
+import { askedOf, LISTEN_MODEL } from './models'
 
 // Whisper on this machine. It runs here rather than on the window's own thread
 // because a turn of it is a second of solid arithmetic, and a second of that on
