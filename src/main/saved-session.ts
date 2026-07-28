@@ -127,6 +127,11 @@ export class SavedSessionStore {
     this.write({ ...data, projects: data.projects.filter(project => project.folder !== folder) })
   }
 
+  forgetJoin(link: string): void {
+    const data = this.read()
+    this.write({ ...data, recentJoins: data.recentJoins.filter(recent => recent.link !== link) })
+  }
+
   clear(): void {
     const data = this.read()
     if (data.recentJoins.length === 0 && data.projects.length === 0) {
