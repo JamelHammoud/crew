@@ -79,7 +79,7 @@ describe('ghost threads', () => {
     await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /ghost read the readme', [fake])
+    sam.chat('@Fake read the readme', [fake], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     expect(thread.ghost).toBe(true)
     // The command itself is not part of the work.
@@ -111,7 +111,7 @@ describe('ghost threads', () => {
     await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /ghost read the readme', [fake])
+    sam.chat('@Fake read the readme', [fake], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     await sam.waitForEvent(e => e.kind === 'agent.end')
 
@@ -130,7 +130,7 @@ describe('ghost threads', () => {
     await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /ghost read the readme', [fake])
+    sam.chat('@Fake read the readme', [fake], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     await sam.waitForEvent(e => e.kind === 'agent.end')
 
@@ -191,7 +191,7 @@ describe('ghost threads', () => {
 
     // The prompt would be read on the machine that runs the agent, so it is
     // refused, and only the one who asked is told.
-    sam.chat('@Theirs /ghost read the readme', [agentId('pat', 'theirs')])
+    sam.chat('@Theirs read the readme', [agentId('pat', 'theirs')], undefined, ['ghost'])
     const refused = (await sam.waitFor(m => m.type === 'notice')) as Notice
     expect(refused.text).toContain("somebody else's machine")
     await settle()
@@ -200,7 +200,7 @@ describe('ghost threads', () => {
     expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
 
     // With one agent of your own here, there is nobody to name.
-    sam.chat('/ghost read the readme')
+    sam.chat('read the readme', [], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     expect(thread.ghost).toBe(true)
     expect(thread.agentId).toBe(agentId('sam', 'mine'))
@@ -212,7 +212,7 @@ describe('ghost threads', () => {
     await connectRunner('sam', 'other', 'Other')
     await waitUntil(() => sam.events.filter(e => e.kind === 'agent.online').length === 2)
 
-    sam.chat('/ghost read the readme')
+    sam.chat('read the readme', [], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     expect(thread.ghost).toBe(true)
     expect([agentId('sam', 'mine'), agentId('sam', 'other')]).toContain(thread.agentId)
@@ -226,7 +226,7 @@ describe('ghost threads', () => {
     await connectRunner('pat', 'theirs', 'Theirs')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('/ghost read the readme')
+    sam.chat('read the readme', [], undefined, ['ghost'])
     const said = (await sam.waitForEvent(e => e.kind === 'message')) as Message
     expect(said.authorId).toBe(SYSTEM_AUTHOR_ID)
     expect(said.text).toContain('No agent of yours')
@@ -240,7 +240,7 @@ describe('ghost threads', () => {
     await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /ghost read the readme', [fake])
+    sam.chat('@Fake read the readme', [fake], undefined, ['ghost'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     await sam.waitForEvent(e => e.kind === 'agent.end')
 
