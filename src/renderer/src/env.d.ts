@@ -6,16 +6,21 @@ import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/l
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
 import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../../shared/repository'
-import type { RecentJoin } from '../../shared/recent'
+import type { RecentJoin, RecentProject } from '../../shared/recent'
+import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 
 declare global {
   interface CrewBridge {
     pickFolder(): Promise<string | null>
-    start(folder: string, name: string): Promise<{ link: string; wsUrl: string }>
-    join(link: string, folder: string, name: string): Promise<{ wsUrl: string }>
+    start(folder: string, name: string, opts?: OpenOptions): Promise<CurrentSession>
+    join(link: string, folder: string, name: string): Promise<CurrentSession>
     leave(): Promise<void>
-    current(): Promise<{ wsUrl: string; name: string; code: string; link: string | null } | null>
+    current(): Promise<CurrentSession | null>
     recentJoins(): Promise<RecentJoin[]>
+    projects(): Promise<RecentProject[]>
+    forgetProject(folder: string): Promise<void>
+    projectPlan(folder: string): Promise<ProjectPlan>
+    setShared(shared: boolean): Promise<CurrentSession | null>
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>
     createAgent(input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef>
