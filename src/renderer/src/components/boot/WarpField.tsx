@@ -1,9 +1,26 @@
 import { useEffect, useRef } from 'react'
 import useGameLoop from '../game/useGameLoop'
 import { paintWarp } from './drawWarp'
+import { makeNebula } from './nebula'
 import { makeStars, stepStars, viewOf, warpSpeed, type Star } from './warp'
 
 const STARS = 460
+
+// The cloud is worked out once and then only ever drawn, so its detail costs
+// nothing per frame. It is drawn stretched, which is why it is written smaller
+// than the window: a nebula has no edge for an upscale to soften.
+const CLOUD = { width: 520, height: 340 }
+
+function drawNebula(): HTMLCanvasElement | null {
+  const el = document.createElement('canvas')
+  el.width = CLOUD.width
+  el.height = CLOUD.height
+  const ctx = el.getContext('2d')
+  if (!ctx) return null
+  const cloud = makeNebula(CLOUD.width, CLOUD.height, Math.floor(Math.random() * 100000))
+  ctx.putImageData(new ImageData(cloud.pixels, cloud.width, cloud.height), 0, 0)
+  return el
+}
 
 // The flight the app opens on. It is drawn straight onto the canvas every
 // frame, never held in state, the way the music's bars are: a render a frame
