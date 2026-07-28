@@ -647,6 +647,8 @@ export const useCrew = create<CrewState>((set, get) => {
   return {
     connection: 'booting',
     joinLink: null,
+    hosting: false,
+    shared: false,
     selfId: '',
     selfName: '',
     code: '',
@@ -655,20 +657,33 @@ export const useCrew = create<CrewState>((set, get) => {
     boot: async () => {
       const info = await window.crew.current().catch(() => null)
       if (info) {
-        get().connect(info.wsUrl, info.name, info.code, info.link ?? undefined)
+        get().connect(info)
         return
       }
       if (get().connection === 'booting') set({ connection: 'home' })
     },
-    connect: (wsUrl, name, code, joinLink) => {
-      set({ connection: 'connecting', selfName: name, joinLink: joinLink ?? null, httpBase: httpBaseFrom(wsUrl) })
-      const hello: ClientMessage = { type: 'hello', role: 'ui', name, code }
-      socket.connect(wsUrl, hello)
+    connect: session => {
+      set({
+        connection: 'connecting',
+        selfName: session.name,
+        joinLink: session.link,
+        hosting: session.hosting,
+        shared: session.shared,
+        httpBase: httpBaseFrom(session.wsUrl)
+      })
+      const hello: ClientMessage = { type: 'hello', role: 'ui', name: session.name, code: session.code }
+      socket.connect(session.wsUrl, hello)
+    },
+    // Turning sharing on and off moves the listener and nothing else, so the
+    // session stays exactly where it is and the socket comes back on its own.
+    share: async shared => {
+      const info = await window.crew.setShared(shared).catch(() => null)
+      if (info) set({ joinLink: info.link, shared: info.shared })
     },
     leave: () => {
       socket.close()
       void window.crew.leave()
-      set({ connection: 'home', joinLink: null, selfId: '', code: '', ...EMPTY })
+      set({ connection: 'home', joinLink: null, hosting: false, shared: false, selfId: '', code: '', ...EMPTY })
     },
     setChatDraft: text => set({ chatDraft: text }),
     setThreadDraft: (threadId, text) =>
