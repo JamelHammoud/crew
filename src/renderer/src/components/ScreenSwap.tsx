@@ -76,6 +76,13 @@ export default function ScreenSwap({
   }, [leaving])
 
   useEffect(() => {
+    if (fill || shown.first) return
+    setMoving(true)
+    const timer = setTimeout(() => setMoving(false), MOVING)
+    return () => clearTimeout(timer)
+  }, [screen, fill, shown.first])
+
+  useEffect(() => {
     const el = inner.current
     if (fill || !el) return
     const measure = () => setHeight(el.offsetHeight)
