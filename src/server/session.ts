@@ -647,6 +647,9 @@ export class CrewSession {
           )
         }
         break
+      case 'history':
+        if (meta.role === 'ui') this.sendHistory(ws, msg.before)
+        break
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
