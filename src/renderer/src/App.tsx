@@ -30,8 +30,12 @@ export default function App() {
   }, [waiting])
 
   if (!booted) return <Boot ready={connection !== 'booting'} onDone={done} />
-  if (connection === 'home') return <Home />
-  return <Session />
+  return (
+    <>
+      {connection === 'home' ? <Home /> : <Session />}
+      <Toaster />
+    </>
+  )
 }
 
 function Loading() {
