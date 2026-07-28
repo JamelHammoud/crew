@@ -4,7 +4,7 @@ import { AppSession } from '../src/main/session'
 import { parseLink } from '../src/shared/link'
 import type { ServerMessage } from '../src/shared/protocol'
 import { initRepo } from './helpers/git'
-import { TestUi, tmpDir, waitUntil } from './helpers/session'
+import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 function welcomeOf(ui: TestUi): Extract<ServerMessage, { type: 'welcome' }> {
   const welcome = ui.messages.find(m => m.type === 'welcome')

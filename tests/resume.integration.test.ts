@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { AppSession } from '../src/main/session'
 import { parseLink } from '../src/shared/link'
 import { initRepo } from './helpers/git'
-import { TestUi, tmpDir, waitUntil } from './helpers/session'
+import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 function statePaths(prefix: string): { agents: string; session: string } {
   const dir = tmpDir(prefix)
