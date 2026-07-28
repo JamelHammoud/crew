@@ -909,9 +909,18 @@ export class CrewSession {
     }
   }
 
-  private soloAgent(): AgentState | null {
-    const here = [...this.agents.values()].filter(agent => agent.runner)
+  private soloAgent(ownerId?: string): AgentState | null {
+    const here = [...this.agents.values()].filter(
+      agent => agent.runner && (ownerId === undefined || agent.ownerId === ownerId)
+    )
     return here.length === 1 ? here[0] : null
+  }
+
+  // A prompt reaches whatever machine runs the agent, and the CLI there keeps
+  // its own record of it, so a ghost thread only ever goes to an agent of your
+  // own. Anywhere else it is somebody else's to read, whatever the app shows.
+  private ownAgent(member: Member, id: string): boolean {
+    return this.agents.get(id)?.ownerId === member.id
   }
 
   private switchThreadAgent(thread: Thread, id: string, member: Member): void {
