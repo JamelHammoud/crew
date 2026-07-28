@@ -104,3 +104,4 @@
 {"id":"b58668c5-ce9f-4137-87c8-ced257e552b7","ts":1785220164083,"kind":"thread.status","threadId":"af293ed8-e6fc-43df-85c7-3004de075775","status":"done","byName":"Jamel"}
 {"id":"d0009074-a4fc-43d0-b4a7-31d706b208d0","ts":1785220170963,"kind":"thread.status","threadId":"fd405d4e-b56e-45ce-92c9-b2962ac10eb3","status":"done","byName":"Jamel"}
 {"id":"d4cfb29d-037e-4137-8f53-7690fcd1c121","ts":1785220204618,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"@ALI added:\n\n- Ghost mode\n- Voice mode\n- Boot animation\n- Singleplayer experience\n- Better error messages for Claude","mentions":[],"mentionRefs":[],"memberMentionRefs":[{"id":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}],"docMentions":[],"boardMentions":[],"attachments":[]}
+{"id":"f73269f3-a659-40ce-b395-6723aa437336","ts":1785220207941,"kind":"message.deleted","messageId":"a3df7051-f813-43e9-b6f0-0a75ee74c85b"}
