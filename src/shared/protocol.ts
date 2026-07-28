@@ -1,4 +1,5 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
+import type { CommandName } from './commands'
 import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
 import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
