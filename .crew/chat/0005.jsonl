@@ -506,3 +506,5 @@
 {"id":"654e9163-5dec-4af4-886a-1a51edbdf7ec","ts":1785218742538,"kind":"message.route","messageId":"7ae199a1-81cc-4a30-8716-ed9debd25a40","threadId":"af293ed8-e6fc-43df-85c7-3004de075775","promptId":"33b223fb-0df9-47be-8555-53a69fec43d4","mode":"steered"}
 {"id":"78a1d869-a51d-4832-8a6b-4dc1561bc102","ts":1785218751123,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
 {"id":"9208ced7-dceb-4ffb-a5a6-e1b277939806","ts":1785218751124,"kind":"agent.offline","agentId":"jamel (dev)/580609af-be57-4e6d-b53c-b1a0562a47c0","label":"Kimi 2"}
+{"id":"58559250-f6f1-406f-b2db-fbc9d65e97d2","ts":1785218753414,"kind":"agent.online","agentId":"jamel (dev)/580609af-be57-4e6d-b53c-b1a0562a47c0","label":"Kimi 2"}
+{"id":"3b1caf57-9b92-4ca4-abfb-15af9b80f470","ts":1785218753414,"kind":"person.joined","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
