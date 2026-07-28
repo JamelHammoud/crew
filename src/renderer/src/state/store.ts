@@ -366,7 +366,7 @@ export const useCrew = create<CrewState>((set, get) => {
     }
     set(state => {
       const all = [...state.events, event]
-      const events = trimEvents(all, EVENT_LIMIT)
+      const events = trimEvents(all, state.eventLimit)
       const members = [...state.members]
       const agents = [...state.agents]
       const activePrompts = { ...state.activePrompts }
