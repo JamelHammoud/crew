@@ -40,12 +40,12 @@ export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home
             </span>
             <span className="block">
               <span className="block text-sm font-medium text-fg">{option.title}</span>
-              <span className="block text-xs text-fg-muted leading-relaxed mt-1.5">{option.line}</span>
+              <span className="block text-xs text-fg-muted leading-relaxed mt-1.5 text-balance">{option.line}</span>
             </span>
           </button>
         ))}
       </div>
-      <p className="text-xs text-fg-faint">Either way, you can invite people.</p>
+      <p className="text-xs text-fg-muted">Either way, you can invite people.</p>
     </div>
   )
 }
