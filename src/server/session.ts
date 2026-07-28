@@ -13,6 +13,7 @@ import {
   pageCode,
   pageCodeOf,
   resolveDocRef,
+  ROOT_PAGE,
   type DocMentionRef,
   type DocPage
 } from '../shared/docs'
@@ -1294,7 +1295,7 @@ export class CrewSession {
   private assignPageCodes(): void {
     const taken = new Set([...this.docs.keys()].map(pageCodeOf))
     const pending = [...this.docs.keys()]
-      .filter(page => page !== 'main' && !pageCodeOf(page))
+      .filter(page => page !== ROOT_PAGE && !pageCodeOf(page))
       .sort((a, b) => b.split('/').length - a.split('/').length)
     let titlesChanged = false
     for (const from of pending) {
@@ -1395,7 +1396,7 @@ export class CrewSession {
   }
 
   private handleDocDelete(member: Member, page: string): void {
-    if (page === 'main' || !this.docs.has(page)) return
+    if (page === ROOT_PAGE || !this.docs.has(page)) return
     try {
       this.store.deleteDoc(page)
     } catch {
@@ -2085,7 +2086,7 @@ export class CrewSession {
   }
 
   private handleDocRename(member: Member, from: string, to: string, title?: string): void {
-    if (from === to || from === 'main' || !this.docs.has(from)) return
+    if (from === to || from === ROOT_PAGE || !this.docs.has(from)) return
     if (to === from || to.startsWith(`${from}/`)) return
     try {
       this.store.renameDoc(from, to)
