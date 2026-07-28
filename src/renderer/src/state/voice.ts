@@ -151,7 +151,7 @@ export const useVoice = create<VoiceState>((set, get) => {
     // the same as a cough, and a conversation where every turn quietly failed
     // looks exactly like one nobody is answering.
     if (text === null) {
-      set({ phase: 'listening', problem: 'crew could not make out what was said.' })
+      set({ phase: 'listening', problem: 'Crew could not listen to that. Try again.' })
       return
     }
     if (!worthSending(text)) {
