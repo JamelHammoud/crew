@@ -703,6 +703,7 @@ export const useCrew = create<CrewState>((set, get) => {
       set({ connection: 'home', joinLink: null, hosting: false, shared: false, selfId: '', code: '', ...EMPTY })
     },
     setChatDraft: text => set({ chatDraft: text }),
+    setChatCommands: commands => set({ chatCommands: commands }),
     setThreadDraft: (threadId, text) =>
       set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } })),
     attach: async (key, files) => {
