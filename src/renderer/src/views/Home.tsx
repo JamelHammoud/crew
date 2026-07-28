@@ -83,7 +83,7 @@ export default function Home() {
     setError('')
     const plan = await window.crew.projectPlan(picked).catch(() => null)
     if (plan?.known) return open(picked, `project:${picked}`, name.trim())
-    setAsking({ folder: picked, tracked: plan?.tracked ?? false })
+    setAsking(picked)
     setScreen('where')
   }
 
