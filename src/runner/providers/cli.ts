@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { stripRoot, stripRootFromText } from '../../shared/files'
 import { isShellTool } from '../../shared/tools'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
+import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
 import type { InstallCommands, OutputParser, Provider, RunningPrompt } from './types'
 
