@@ -23,7 +23,7 @@ export default function CrewLogo({ className = '', height = 18 }: { className?: 
       ref={box}
       type="button"
       aria-label="Crew"
-      data-lit={lit || undefined}
+      data-crew-lit={lit || undefined}
       onPointerEnter={() => {
         if (over.current) return
         over.current = true
