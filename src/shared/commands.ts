@@ -1,5 +1,7 @@
+export type CommandName = 'plan' | 'ghost'
+
 export interface SlashCommand {
-  name: string
+  name: CommandName
   hint: string
 }
 
@@ -8,19 +10,21 @@ export const SLASH_COMMANDS: SlashCommand[] = [
   { name: 'ghost', hint: 'Nobody else sees this thread' }
 ]
 
-// A command can sit anywhere in the line, so '@name /plan tidy the readme' and
-// '/plan @name tidy the readme' both read the same way.
-function read(text: string, name: string): { found: boolean; text: string } {
-  const match = new RegExp(`(?:^|\\s)/${name}(?=\\s|$)`, 'i').exec(text)
-  if (!match) return { found: false, text }
-  const cut = text.slice(0, match.index) + text.slice(match.index + match[0].length)
-  return { found: true, text: cut.trim() }
+const NAMES = SLASH_COMMANDS.map(command => command.name)
+
+// A command is only a command while it is the whole of what has been typed, so
+// the same word inside a sentence is a word. It is lifted onto the composer from
+// here and sent beside the message, and nothing ever reads one back out of text.
+export function commandTyped(value: string): CommandName | null {
+  const match = /^\/(\S+)\s$/.exec(value)
+  if (!match) return null
+  const typed = match[1].toLowerCase()
+  return NAMES.find(name => name === typed) ?? null
 }
 
-export function readCommands(text: string): { planning: boolean; ghost: boolean; text: string } {
-  const plan = read(text, 'plan')
-  const ghost = read(plan.text, 'ghost')
-  return { planning: plan.found, ghost: ghost.found, text: ghost.text }
+export function cleanCommands(list: readonly string[] | undefined): CommandName[] {
+  const asked = new Set(list ?? [])
+  return NAMES.filter(name => asked.has(name))
 }
 
 export function slashCandidates(value: string): SlashCommand[] {
