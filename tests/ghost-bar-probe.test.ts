@@ -65,10 +65,14 @@ describe('a hidden thread says so at the head of it', () => {
 
   const shell = () => screen.getByRole('textbox').closest('.rounded-shell') as HTMLElement
 
-  it('floats the ghost bar and leaves the old pill off the header', () => {
+  it('caps the composer with a white band rather than floating over the thread', () => {
     open(true)
-    expect(screen.getByText('Ghost mode')).toBeTruthy()
-    expect(screen.queryByText('Only you')).toBeNull()
+    const band = screen.getByText('Ghost mode')
+    expect(band.className).toContain('bg-fg')
+    expect(band.className).not.toContain('absolute')
+    const header = band.closest('[class*="rounded-t-[30px]"]') as HTMLElement
+    expect(header).toBeTruthy()
+    expect(header.querySelector('[aria-label="Back to chat"]')).toBeTruthy()
   })
 
   it('carries the dashed box down into the composer', () => {
