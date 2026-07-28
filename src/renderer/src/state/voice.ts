@@ -229,6 +229,7 @@ export const useVoice = create<VoiceState>((set, get) => {
 
     start: async agentId => {
       if (get().open) return
+      hushChat(true)
       const agents = useCrew.getState().agents
       const picked = agentToAsk(agents, agentId ?? storedAgent())
       if (!picked) {
