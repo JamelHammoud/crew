@@ -24,7 +24,7 @@ describe('session resume', () => {
 
     const first = new AppSession(paths)
     const info = await first.startHost(repo, 'sam')
-    const code = parseLink(info.link).code
+    const code = parseLink(linkOf(info)).code
     expect(first.current()?.link).toBe(info.link)
     expect(first.current()?.code).toBe(code)
     await first.shutdown()
@@ -50,12 +50,12 @@ describe('session resume', () => {
 
     const host = new AppSession(statePaths('resume-join-host'))
     const info = await host.startHost(hostRepo, 'sam')
-    const target = parseLink(info.link)
+    const target = parseLink(linkOf(info))
     const ui = await TestUi.connect(info.wsUrl, 'sam', target.code)
 
     const guestPaths = statePaths('resume-join-guest')
     const guest = new AppSession(guestPaths)
-    await guest.startJoin(info.link, guestRepo, 'jamel')
+    await guest.startJoin(linkOf(info), guestRepo, 'jamel')
     const joined = await ui.waitForEvent(e => e.kind === 'person.joined' && e.name === 'jamel', 15000)
     const jamelId = joined.kind === 'person.joined' ? joined.memberId : ''
     await guest.shutdown()

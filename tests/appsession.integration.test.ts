@@ -24,7 +24,7 @@ describe('app session', () => {
     const host = new AppSession()
     const info = await host.startHost(repo, 'sam')
 
-    const target = parseLink(info.link)
+    const target = parseLink(linkOf(info))
     expect(target.port).toBeGreaterThan(0)
     expect(target.code).toMatch(/^[a-f0-9]{6}$/)
 
@@ -48,11 +48,11 @@ describe('app session', () => {
     const guest = new AppSession({ session: path.join(guestData, 'session.json') })
     const info = await host.startHost(repoHost, 'sam')
 
-    const joinInfo = await guest.startJoin(info.link, repoGuest, 'jamel')
+    const joinInfo = await guest.startJoin(linkOf(info), repoGuest, 'jamel')
     expect(guest.recentJoins()).toEqual([
-      expect.objectContaining({ folder: repoGuest, name: 'jamel', link: info.link })
+      expect.objectContaining({ folder: repoGuest, name: 'jamel', link: linkOf(info) })
     ])
-    const target = parseLink(info.link)
+    const target = parseLink(linkOf(info))
     const ui = await TestUi.connect(joinInfo.wsUrl, 'jamel', target.code)
     await waitUntil(
       () => {
