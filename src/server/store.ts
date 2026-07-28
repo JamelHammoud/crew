@@ -35,8 +35,11 @@ export interface PersistedDesign {
 export class Store {
   readonly root: string
 
-  constructor(repoPath: string) {
-    this.root = path.join(repoPath, '.crew')
+  // The folder the crew lives in. That is the project itself for a crew that
+  // rides in the repo, and a folder beside the app for one kept on this
+  // machine. Either way it holds the same `.crew`.
+  constructor(base: string) {
+    this.root = path.join(base, '.crew')
     fs.mkdirSync(path.join(this.root, 'docs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'designs'), { recursive: true })
