@@ -13,6 +13,7 @@
     --text-base--line-height: 22px;
     --text-lg: 16px;
     --text-lg--line-height: 24px;
+    --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --leading-relaxed: 1.625;
     --radius-md: 0.375rem;
@@ -39,6 +40,7 @@
     --radius-card: 20px;
     --radius-shell: 30px;
     --animate-pop: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+    --animate-rise: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
 }
 @layer base {
@@ -205,6 +207,9 @@
   .inset-y-0 {
     inset-block: 0px;
   }
+  .right-4 {
+    right: calc(var(--spacing) * 4);
+  }
   .z-10 {
     z-index: 10;
   }
@@ -225,6 +230,9 @@
   }
   .hidden {
     display: none;
+  }
+  .inline-block {
+    display: inline-block;
   }
   .inline-flex {
     display: inline-flex;
@@ -252,6 +260,12 @@
   }
   .h-12 {
     height: calc(var(--spacing) * 12);
+  }
+  .h-\[52px\] {
+    height: 52px;
+  }
+  .h-full {
+    height: 100%;
   }
   .max-h-48 {
     max-height: calc(var(--spacing) * 48);
@@ -289,8 +303,21 @@
   .min-w-0 {
     min-width: 0px;
   }
+  .flex-1 {
+    flex: 1;
+  }
   .shrink-0 {
     flex-shrink: 0;
+  }
+  .-translate-x-1 {
+    --tw-translate-x: calc(var(--spacing) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .animate-rise {
+    animation: var(--animate-rise);
+  }
+  .cursor-default {
+    cursor: default;
   }
   .cursor-pointer {
     cursor: pointer;
@@ -307,11 +334,17 @@
   .flex-col {
     flex-direction: column;
   }
+  .items-baseline {
+    align-items: baseline;
+  }
   .items-center {
     align-items: center;
   }
   .items-end {
     align-items: flex-end;
+  }
+  .items-start {
+    align-items: flex-start;
   }
   .justify-between {
     justify-content: space-between;
@@ -319,11 +352,20 @@
   .justify-center {
     justify-content: center;
   }
+  .gap-1\.5 {
+    gap: calc(var(--spacing) * 1.5);
+  }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
+  .gap-2\.5 {
+    gap: calc(var(--spacing) * 2.5);
+  }
   .gap-3 {
     gap: calc(var(--spacing) * 3);
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
   }
   .gap-6 {
     gap: calc(var(--spacing) * 6);
@@ -339,6 +381,9 @@
   .overflow-hidden {
     overflow: hidden;
   }
+  .rounded-card {
+    border-radius: var(--radius-card);
+  }
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
@@ -349,11 +394,27 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
+  .border-dashed {
+    --tw-border-style: dashed;
+    border-style: dashed;
+  }
   .border-ink-600 {
     border-color: var(--color-ink-600);
   }
+  .border-ink-700 {
+    border-color: var(--color-ink-700);
+  }
   .bg-fg {
     background-color: var(--color-fg);
+  }
+  .bg-fg\/\[0\.06\] {
+    background-color: color-mix(in srgb, #ffffff 6%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-fg) 6%, transparent);
+    }
+  }
+  .bg-ink-700 {
+    background-color: var(--color-ink-700);
   }
   .bg-ink-800 {
     background-color: var(--color-ink-800);
@@ -373,11 +434,32 @@
   .px-1 {
     padding-inline: var(--spacing);
   }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+  .px-5 {
+    padding-inline: calc(var(--spacing) * 5);
+  }
+  .py-0\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
+  }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
+  .pt-0\.5 {
+    padding-top: calc(var(--spacing) * 0.5);
+  }
   .pr-1\.5 {
     padding-right: calc(var(--spacing) * 1.5);
   }
   .pl-4 {
     padding-left: calc(var(--spacing) * 4);
+  }
+  .text-left {
+    text-align: left;
+  }
+  .align-middle {
+    vertical-align: middle;
   }
   .text-base {
     font-size: var(--text-base);
@@ -387,9 +469,24 @@
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
   }
+  .text-\[11px\] {
+    font-size: 11px;
+  }
+  .leading-\[22px\] {
+    --tw-leading: 22px;
+    line-height: 22px;
+  }
   .leading-relaxed {
     --tw-leading: var(--leading-relaxed);
     line-height: var(--leading-relaxed);
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
   }
   .break-words {
     overflow-wrap: break-word;
@@ -399,6 +496,9 @@
   }
   .text-fg {
     color: var(--color-fg);
+  }
+  .text-fg-faint {
+    color: var(--color-fg-faint);
   }
   .text-fg-muted {
     color: var(--color-fg-muted);
@@ -412,8 +512,16 @@
   .caret-fg {
     caret-color: var(--color-fg);
   }
+  .opacity-0 {
+    opacity: 0%;
+  }
   .transition-all {
     transition-property: all;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-colors {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
@@ -434,6 +542,19 @@
     --tw-outline-style: none;
     outline-style: none;
   }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  @media (hover: hover) {
+    .group-hover\:translate-x-0:is(:where(.group):hover *) {
+      --tw-translate-x: 0px;
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+    .group-hover\:opacity-100:is(:where(.group):hover *) {
+      opacity: 100%;
+    }
+  }
   .placeholder\:text-fg-muted::placeholder {
     color: var(--color-fg-muted);
   }
@@ -451,6 +572,9 @@
     .hover\:border-ink-500:hover {
       border-color: var(--color-ink-500);
     }
+    .hover\:border-ink-600:hover {
+      border-color: var(--color-ink-600);
+    }
     .hover\:bg-fg\/\[0\.06\]:hover {
       background-color: color-mix(in srgb, #ffffff 6%, transparent);
     }
@@ -461,6 +585,9 @@
     }
     .hover\:text-fg:hover {
       color: var(--color-fg);
+    }
+    .hover\:text-fg-secondary:hover {
+      color: var(--color-fg-secondary);
     }
   }
   .active\:scale-95:active {
@@ -1876,12 +2003,31 @@ body {
 .light .skeleton::after {
   background: linear-gradient(90deg, transparent, rgb(0 0 0 / 0.07), transparent);
 }
+@property --tw-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
 @property --tw-border-style {
   syntax: "*";
   inherits: false;
   initial-value: solid;
 }
 @property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
   syntax: "*";
   inherits: false;
 }
@@ -1969,10 +2115,6 @@ body {
   inherits: false;
   initial-value: 1;
 }
-@property --tw-font-weight {
-  syntax: "*";
-  inherits: false;
-}
 @keyframes pop {
   from {
     opacity: 0;
@@ -1983,11 +2125,25 @@ body {
     transform: none;
   }
 }
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-translate-z: 0;
       --tw-border-style: solid;
       --tw-leading: initial;
+      --tw-font-weight: initial;
       --tw-duration: initial;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;
@@ -2006,8 +2162,7 @@ body {
       --tw-scale-x: 1;
       --tw-scale-y: 1;
       --tw-scale-z: 1;
-      --tw-font-weight: initial;
     }
   }
 }
-</style></head><body class="bg-ink-900"><div class="flex flex-col gap-8 p-8 bg-ink-900"><div class="max-w-[660px] w-full mx-auto flex items-end gap-6 text-fg"><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"></textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span></div><span class="inline-flex "><button disabled="" aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"></textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="truncate">Plan</span><button aria-label="Remove Plan" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span></div><span class="inline-flex "><button disabled="" aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"></textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="truncate">Plan</span><button aria-label="Remove Plan" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><span class="truncate">Ghost</span><button aria-label="Remove Ghost" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span></div><span class="inline-flex "><button disabled="" aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">Have a look at the readme and tell me what is wrong with it​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]">Have a look at the readme and tell me what is wrong with it</textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><span class="truncate">Ghost</span><button aria-label="Remove Ghost" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span></div><span class="inline-flex "><button aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div></div></body></html>
+</style></head><body class="bg-ink-900"><div class="flex flex-col gap-8 p-8 bg-ink-900"><div class="max-w-[660px] w-full mx-auto flex items-end gap-6 text-fg"><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div><div class="flex items-end gap-3"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M2.5 12.75V17a2.5 2.5 0 0 0 2.5 2.5h14a2.5 2.5 0 0 0 2.5-2.5V12.75Z"></path><path d="M2.5 12.75L2.5 11A2.5 2.5 0 0 1 5 8.5L19 8.5A2.5 2.5 0 0 1 21.5 11L21.5 12.75Z"></path><path d="M8.25 8.5L8.25 7.25A2.75 2.75 0 0 1 11 4.5L13 4.5A2.75 2.75 0 0 1 15.75 7.25L15.75 8.5"></path></svg></div></div><div class="max-w-[660px] w-full mx-auto"><div class="flex items-start gap-4 animate-rise"><span class="w-10 h-10 text-sm relative inline-block align-middle shrink-0"><span class="w-full h-full rounded-full font-semibold flex items-center justify-center select-none" style="background-color:oklch(0.32 0.045 221);color:oklch(0.87 0.06 221)">J</span></span><div class="min-w-0 flex-1 pt-0.5"><div class="flex items-baseline gap-2.5"><span class="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">Jamel</span><span class="inline-flex "><span class="text-sm text-fg-faint cursor-default">4:00 PM</span></span></div><div role="button" tabindex="0" class="group mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200  cursor-pointer hover:border-ink-600"><div class="px-5 py-4 flex items-center gap-2.5"><p class="min-w-0 flex-1 text-base text-fg leading-[22px] truncate">@Fable tidy up the readme and the changelog</p><span class="shrink-0"><span class="flex items-center gap-1.5"><span class="font-medium rounded-full transition-colors text-[11px] px-2 py-0.5 bg-fg/[0.06] text-fg-muted"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg>Plan</span></span></span></span></div><div class="relative w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3 text-left"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-fg shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="text-base font-semibold shrink-0 text-fg">Planning complete</span><span class="text-base text-fg-muted truncate flex-1"></span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"><path d="m8.5 5 7 7-7 7"></path></svg></div></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="flex items-start gap-4 animate-rise"><span class="w-10 h-10 text-sm relative inline-block align-middle shrink-0"><span class="w-full h-full rounded-full font-semibold flex items-center justify-center select-none" style="background-color:oklch(0.32 0.045 221);color:oklch(0.87 0.06 221)">J</span></span><div class="min-w-0 flex-1 pt-0.5"><div class="flex items-baseline gap-2.5"><span class="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">Jamel</span><span class="inline-flex "><span class="text-sm text-fg-faint cursor-default">4:00 PM</span></span></div><div role="button" tabindex="0" class="group mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 border-dashed cursor-pointer hover:border-ink-600"><div class="px-5 py-4 flex items-center gap-2.5"><p class="min-w-0 flex-1 text-base text-fg leading-[22px] truncate">@Fable read the readme</p><span class="shrink-0"><span class="flex items-center gap-1.5"><span class="font-medium rounded-full transition-colors text-[11px] px-2 py-0.5 bg-fg/[0.06] text-fg-muted"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg>Ghost</span></span></span></span></div><div class="relative w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3 text-left"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-fg shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="text-base font-semibold shrink-0 text-fg">Planning complete</span><span class="text-base text-fg-muted truncate flex-1"></span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"><path d="m8.5 5 7 7-7 7"></path></svg></div></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="flex items-start gap-4 animate-rise"><span class="w-10 h-10 text-sm relative inline-block align-middle shrink-0"><span class="w-full h-full rounded-full font-semibold flex items-center justify-center select-none" style="background-color:oklch(0.32 0.045 221);color:oklch(0.87 0.06 221)">J</span></span><div class="min-w-0 flex-1 pt-0.5"><div class="flex items-baseline gap-2.5"><span class="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">Jamel</span><span class="inline-flex "><span class="text-sm text-fg-faint cursor-default">4:00 PM</span></span></div><div role="button" tabindex="0" class="group mt-2 border border-ink-700 rounded-card overflow-hidden transition-colors duration-200 border-dashed cursor-pointer hover:border-ink-600"><div class="px-5 py-4 flex items-center gap-2.5"><p class="min-w-0 flex-1 text-base text-fg leading-[22px] truncate">@Fable tidy up the readme and the changelog</p><span class="shrink-0"><span class="flex items-center gap-1.5"><span class="font-medium rounded-full transition-colors text-[11px] px-2 py-0.5 bg-fg/[0.06] text-fg-muted"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg>Plan</span></span><span class="font-medium rounded-full transition-colors text-[11px] px-2 py-0.5 bg-fg/[0.06] text-fg-muted"><span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 shrink-0"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg>Ghost</span></span></span></span></div><div class="relative w-full bg-ink-700 px-5 h-[52px] flex items-center gap-3 text-left"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-fg shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="text-base font-semibold shrink-0 text-fg">Planning complete</span><span class="text-base text-fg-muted truncate flex-1"></span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-fg-muted absolute right-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"><path d="m8.5 5 7 7-7 7"></path></svg></div></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"></textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span></div><span class="inline-flex "><button disabled="" aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"></textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="truncate">Plan</span><button aria-label="Remove Plan" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span></div><span class="inline-flex "><button disabled="" aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]"></textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="m4 8 2 2 3.75-4.25"></path><path d="M13 8h7"></path><path d="m4 16.25 2 2 3.75-4.25"></path><path d="M13 16.25h7"></path></svg><span class="truncate">Plan</span><button aria-label="Remove Plan" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><span class="truncate">Ghost</span><button aria-label="Remove Ghost" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span></div><span class="inline-flex "><button disabled="" aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div><div class="max-w-[660px] w-full mx-auto"><div class="relative"><div class="relative bg-ink-800 rounded-shell p-5 flex flex-col transition-shadow duration-200 focus-within:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_40px_rgb(0_0_0/0.4)] light:focus-within:shadow-[0_0_0_1px_rgb(0_0_0/0.1),0_12px_40px_rgb(0_0_0/0.1)] cursor-text"><div class="relative"><div aria-hidden="true" class="absolute inset-y-0 -inset-x-1 px-1 z-10 overflow-hidden text-base text-fg whitespace-pre-wrap break-words leading-relaxed pointer-events-none">Have a look at the readme and tell me what is wrong with it​</div><textarea rows="2" spellcheck="false" placeholder="Send a message, @ someone, or / for a command" class="relative block w-full bg-transparent text-base text-transparent caret-fg placeholder:text-fg-muted outline-none resize-none leading-relaxed max-h-48 [scrollbar-width:none]">Have a look at the readme and tell me what is wrong with it</textarea></div><div class="flex items-center justify-between gap-2 mt-2"><div class="flex items-center gap-2 min-w-0"><input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple="" class="hidden"/><span class="inline-flex "><button aria-label="Add to your message" aria-expanded="false" class="w-10 h-10 border border-ink-600 hover:border-ink-500 disabled:hover:border-ink-600 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] data-active:text-fg data-active:bg-fg/[0.06] active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 4.5v15M4.5 12h15"></path></svg></button></span><span class="hidden"></span><span class="h-10 pl-4 pr-1.5 rounded-full border border-ink-600 flex items-center gap-2 text-sm text-fg shrink-0"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M4 18.5V11a8 8 0 0 1 16 0v7.5a4.45 4.45 0 0 1-8 0 4.45 4.45 0 0 1-8 0Z"></path><circle cx="9" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.4" r="1.2" fill="currentColor" stroke="none"></circle></svg><span class="truncate">Ghost</span><button aria-label="Remove Ghost" class="w-7 h-7 -mr-0.5 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 cursor-pointer hover:text-fg hover:bg-fg/[0.06] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"></path></svg></button></span></div><span class="inline-flex "><button aria-label="Send" class="w-10 h-10 rounded-full bg-fg text-ink-800 flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95 disabled:bg-fg/10 disabled:text-fg-muted disabled:scale-100"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20V4"></path><path d="m6.5 9.5 5.5-5.5 5.5 5.5"></path></svg></button></span></div></div></div></div></div></body></html>
