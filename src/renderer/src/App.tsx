@@ -19,23 +19,18 @@ const Design = lazy(() => import('./views/Design'))
 export default function App() {
   const connection = useCrew(s => s.connection)
   const waiting = useCrew(reviewCount)
+  // Only ever the once, on the way in. Leaving a session goes back to the list
+  // rather than back to the mark.
+  const [booted, setBooted] = useState(false)
+  const done = useCallback(() => setBooted(true), [])
 
   useEffect(() => {
     void window.crew?.setBadge?.(waiting)
   }, [waiting])
 
-  if (connection === 'booting') return <Boot />
+  if (!booted) return <Boot ready={connection !== 'booting'} onDone={done} />
   if (connection === 'home') return <Home />
   return <Session />
-}
-
-function Boot() {
-  return (
-    <div className="relative h-full flex items-center justify-center">
-      <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
-      <Spinner size={20} />
-    </div>
-  )
 }
 
 function Session() {
