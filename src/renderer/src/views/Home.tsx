@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { CrewHome } from '../../../shared/project'
+import Avatar from '../components/Avatar'
 import ScreenSwap from '../components/ScreenSwap'
+import { TOP_BAR_H } from '../components/TopBar'
 import Tooltip from '../components/Tooltip'
 import { ChevronLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
