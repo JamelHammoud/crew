@@ -431,6 +431,7 @@ export class AppSession {
   private async stop(): Promise<void> {
     this.live = null
     this.folder = null
+    this.hosted = null
     this.runner?.close()
     this.runner = null
     this.git?.stop()
