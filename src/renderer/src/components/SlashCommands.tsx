@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { slashCandidates, type SlashCommand } from '../../../shared/plan'
-import { ChecklistGlyph } from '../icons'
+import { slashCandidates, type SlashCommand } from '../../../shared/commands'
+import { ChecklistGlyph, GhostGlyph } from '../icons'
 
 const ICONS: Record<string, typeof ChecklistGlyph> = {
-  plan: ChecklistGlyph
+  plan: ChecklistGlyph,
+  ghost: GhostGlyph
 }
 
 export function useSlashCommands(
