@@ -42,6 +42,8 @@ export interface ThreadMeta {
   // A thread this window opened for itself. It reaches nobody else and it is
   // gone the moment the window is, so it is only ever built from a live event.
   ghost?: boolean
+  // A thread somebody spoke rather than typed.
+  voice?: boolean
 }
 
 export type DesignServerMessage = Extract<
