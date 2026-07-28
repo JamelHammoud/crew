@@ -2236,13 +2236,13 @@ export class CrewSession {
       pending.dirty = true
       return
     }
-    this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId, step })
+    this.toThread(threadId, { type: 'agent.step', promptId, agentId: agent.id, threadId, step })
     const timer = setTimeout(() => {
       const entry = this.stepFlushes.get(key)
       this.stepFlushes.delete(key)
       const latest = agent.runs.get(promptId)?.steps.get(stepId)?.step
       if (!entry?.dirty || !latest || latest.status === 'done') return
-      this.broadcast({ type: 'agent.step', promptId, agentId: agent.id, threadId, step: latest })
+      this.toThread(threadId, { type: 'agent.step', promptId, agentId: agent.id, threadId, step: latest })
     }, this.stepFlushMs)
     timer.unref?.()
     this.stepFlushes.set(key, { timer, dirty: false })
