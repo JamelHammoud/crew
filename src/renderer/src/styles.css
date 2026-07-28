@@ -372,7 +372,24 @@ body {
 .toast-slot {
   min-height: 0;
   overflow: hidden;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
+}
+
+/* A popover is one card and throws a drop deeper than anything ever stands under
+   it. Four of them in a column is not four shadows: the drop is longer than the
+   gap between the rows, so they pool into one dark box standing behind the whole
+   stack. A toast throws a shorter, lighter one, and it is said as the same
+   variable the glass reads, so nothing here invents a second shadow. */
+.toast-card {
+  --glass-shadow:
+    0 6px 20px rgb(0 0 0 / 0.32),
+    0 1px 3px rgb(0 0 0 / 0.24);
+}
+
+.light .toast-card {
+  --glass-shadow:
+    0 6px 20px rgb(0 0 0 / 0.1),
+    0 1px 3px rgb(0 0 0 / 0.06);
 }
 
 @keyframes toast-in {
