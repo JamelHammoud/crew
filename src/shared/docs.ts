@@ -38,6 +38,7 @@ export function slugify(name: string): string {
 }
 
 export function fallbackTitle(page: string): string {
+  if (page === ROOT_PAGE) return ROOT_TITLE
   const words = splitPageCode(page.split('/').pop()!).base.replace(/-/g, ' ')
   return words.charAt(0).toUpperCase() + words.slice(1)
 }
