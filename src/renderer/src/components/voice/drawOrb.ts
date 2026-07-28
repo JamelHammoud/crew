@@ -49,8 +49,11 @@ export function drawOrb(
   ctx.translate(half, half)
 
   // The light the orb throws, drawn first and wide. It is the same field the
-  // inside is, so what spills is the color of what is behind the glass.
-  const glow = ctx.createRadialGradient(0, 0, base * 0.4, 0, 0, base * 2.1)
+  // inside is, so what spills is the color of what is behind the glass. It
+  // reaches as far as the room around the orb and never further: a fade that
+  // runs past the canvas is cut off flat at all four sides, which reads as a
+  // square of grey standing behind a sphere.
+  const glow = ctx.createRadialGradient(0, 0, base * 0.4, 0, 0, Math.min(base * 2.1, half))
   const spill = 0.1 + face.level * 0.26
   glow.addColorStop(0, withAlpha(face.lit > 0.5 ? ORB_BLOBS[0].color : paint.ink, spill))
   glow.addColorStop(1, withAlpha(paint.ink, 0))
