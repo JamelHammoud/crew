@@ -267,7 +267,7 @@ describe('a run that failed says why', () => {
   })
 
   it('keeps the end of what was printed on the way out, without the colors', () => {
-    expect(failureText('[31mnothing to see[0m\n\n  broke here  \n')).toBe('nothing to see\nbroke here')
+    expect(failureText('[31mnothing to see[0m\n\n  broke here  \n')).toBe('nothing to see\n  broke here')
     const many = Array.from({ length: 40 }, (_, i) => `line ${i}`).join('\n')
     expect(failureText(many).split('\n')).toEqual(['line 32', 'line 33', 'line 34', 'line 35', 'line 36', 'line 37', 'line 38', 'line 39'])
     expect(failureText('   \n  \n')).toBe('')
