@@ -102,4 +102,18 @@ describe('Home places', () => {
     await waitFor(() => expect(forgetJoin).toHaveBeenCalledWith(saved.link))
     await waitFor(() => expect(recent).toHaveBeenCalledTimes(2))
   })
+
+  // The way in arrives from below, and the box that fills the window is not
+  // what may carry it: padding is inside a height, so a box already the size of
+  // the scroller overflows the moment it moves, and the scrollbar that answers
+  // that takes ten pixels off the width for as long as the animation lasts.
+  it('lands the way in without a scrollbar arriving under it', async () => {
+    installBridge([])
+    const { container } = render(createElement(Home))
+
+    await waitFor(() => expect(container.querySelector('.animate-rise')).toBeTruthy())
+    for (const box of container.querySelectorAll('.animate-rise')) {
+      expect(box.classList.contains('min-h-full')).toBe(false)
+    }
+  })
 })
