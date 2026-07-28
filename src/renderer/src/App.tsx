@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import HuddlePanel from './components/huddle/HuddlePanel'
-import PlanPanel from './components/PlanPanel'
 import SidePanel from './components/SidePanel'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
