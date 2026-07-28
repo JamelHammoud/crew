@@ -16,7 +16,7 @@ export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home
       home: 'private',
       mark: <DesktopGlyph className="w-5 h-5" />,
       title: 'In the Crew app',
-      line: 'The chat, docs and designs are kept here on this machine, and your project folder is never written to.'
+      line: 'The chat, docs and designs are kept here, and nothing is added to your project.'
     }
   ]
 
