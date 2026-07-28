@@ -92,6 +92,7 @@ export default function Composer({
   onSend,
   onStop,
   sendLabel = 'Send',
+  huddle,
   replyTo,
   onCancelReply,
   children
