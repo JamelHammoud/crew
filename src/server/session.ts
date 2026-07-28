@@ -807,6 +807,7 @@ export class CrewSession {
   }
 
   private handleChat(
+    ws: WebSocket,
     member: Member,
     text: string,
     mentions: string[],
@@ -815,15 +816,17 @@ export class CrewSession {
     boardId?: string,
     replyTargetId?: string
   ): void {
-    // '/plan' only opens threads, so inside one it stays plain text.
-    const command = threadId ? { planning: false, text: text.trim() } : readPlanCommand(text.trim())
+    // A command only opens threads, so inside one it stays plain text.
+    const command = threadId
+      ? { planning: false, ghost: false, text: text.trim() }
+      : readCommands(text.trim())
     const trimmed = command.text
     const attachments = this.saveAttachments(incoming)
     if (!trimmed && attachments.length === 0) return
     const replyTo = this.replyReference(replyTargetId)
     if (threadId) {
       const thread = this.threads.get(threadId)
-      if (!thread) return
+      if (!thread || this.hiddenFrom(ws, threadId)) return
       if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
       const targets = [...new Set(mentions)].filter(id => this.agents.has(id))
       if (targets.length === 0) targets.push(thread.agentId)
