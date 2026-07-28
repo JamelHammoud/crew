@@ -89,6 +89,22 @@ export interface ThreadItem {
   voice?: boolean
 }
 
+// Somebody typing three lines in a row is one person talking, so the lines
+// after the first drop the face and the name and close up under it. Seven
+// minutes is where the run breaks, long enough to hold a train of thought and
+// short enough that coming back after lunch says the time again. A message with
+// something of its own to say keeps its head: a reply names what it answers,
+// and a spoken one says it was spoken.
+const RUN_GAP = 7 * 60 * 1000
+
+export function sameRun(before: ThreadItem | undefined, item: ThreadItem): boolean {
+  if (!before || before.kind !== 'message' || item.kind !== 'message') return false
+  if (item.replyTo || item.voice) return false
+  if ((before.authorId ?? before.author) !== (item.authorId ?? item.author)) return false
+  if (isNewDay(before.ts, item.ts)) return false
+  return item.ts - before.ts < RUN_GAP
+}
+
 // How a message reached the agent, shown on the message itself: it was folded
 // into a run already in flight ('steering' while that run lasts, then
 // 'steered'), or it is still waiting for a turn of its own ('queued').
