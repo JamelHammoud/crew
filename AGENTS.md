@@ -407,6 +407,7 @@ Opening a folder is the only way in, and there is no host and join to choose bet
 - Arming ghost turns the composer over before a word is written: the box drops to the page's own surface and takes the dashed stroke, so what is about to be hidden looks it. It wears the same thing inside the thread, under the dashed header. The border stands in both states so nothing shifts when it goes on, and the patch the composer paints behind an emoji reads the same surface, or a solid grey square stands in the field.
 - A command is not text. Typing `/ghost` and a space lifts it out of the box onto a chip beside the plus, and it is sent as a field of its own, so the same word written inside a sentence is only a word and nothing is ever cut out of what somebody wrote. `commands.ts` is the whole of what a command may be and `CommandChip` is what one wears, in the composer and on the card. The host reads the field and never the message. Inside a thread the field is ignored, the way the text was.
 - The chip in the composer stands in the row the plus stands in and is that button's height and outline, because it is a control rather than a label. Backspace on an empty box takes the last one off.
+- The plus offers no huddle while ghost is armed. A call is the whole crew by definition, so a way into one standing under a message nobody else will see is the one thing in that menu that contradicts the box it is in.
 
 ## Syncing
 
