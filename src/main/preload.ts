@@ -12,13 +12,18 @@ import type { TerminalSize } from './terminal'
 
 const bridge = {
   pickFolder: (): Promise<string | null> => ipcRenderer.invoke('folder:pick'),
-  start: (folder: string, name: string): Promise<{ link: string; wsUrl: string }> =>
-    ipcRenderer.invoke('session:start', folder, name),
-  join: (link: string, folder: string, name: string): Promise<{ wsUrl: string }> =>
+  start: (folder: string, name: string, opts?: OpenOptions): Promise<CurrentSession> =>
+    ipcRenderer.invoke('session:start', folder, name, opts),
+  join: (link: string, folder: string, name: string): Promise<CurrentSession> =>
     ipcRenderer.invoke('session:join', link, folder, name),
   leave: (): Promise<void> => ipcRenderer.invoke('session:leave'),
   current: (): Promise<CurrentSession | null> => ipcRenderer.invoke('session:current'),
   recentJoins: (): Promise<RecentJoin[]> => ipcRenderer.invoke('session:recent'),
+  projects: (): Promise<RecentProject[]> => ipcRenderer.invoke('session:projects'),
+  forgetProject: (folder: string): Promise<void> => ipcRenderer.invoke('session:forget', folder),
+  projectPlan: (folder: string): Promise<{ home: CrewHome; tracked: boolean; known: boolean }> =>
+    ipcRenderer.invoke('session:plan', folder),
+  setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
   createAgent: (input: { provider: string; name: string; settings: AgentSettings }): Promise<AgentDef> =>
