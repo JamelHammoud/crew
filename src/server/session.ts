@@ -1031,7 +1031,8 @@ export class CrewSession {
     this.enqueuePrompt(agent, member, text, threadId, attachments, {
       messageId: randomUUID(),
       mentions: [agent.id],
-      replyTo: opts.replyTo
+      replyTo: opts.replyTo,
+      voice: opts.voice
     })
     return threadId
   }
