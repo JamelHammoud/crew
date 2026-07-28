@@ -30,7 +30,7 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>(known ? 'places' : 'name')
   // Only the very first time is there nowhere to go back to.
   const [first, setFirst] = useState(!known)
-  const [asking, setAsking] = useState<{ folder: string; tracked: boolean } | null>(null)
+  const [asking, setAsking] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [busyKey, setBusyKey] = useState<string | null>(null)
