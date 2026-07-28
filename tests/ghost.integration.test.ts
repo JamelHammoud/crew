@@ -13,6 +13,7 @@ import { testRunner } from './helpers/runner'
 type ThreadStarted = Extract<SessionEvent, { kind: 'thread.started' }>
 type AgentEnd = Extract<SessionEvent, { kind: 'agent.end' }>
 type Message = Extract<SessionEvent, { kind: 'message' }>
+type Notice = Extract<ServerMessage, { type: 'notice' }>
 
 const settle = () => new Promise(r => setTimeout(r, 300))
 

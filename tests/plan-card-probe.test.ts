@@ -135,8 +135,8 @@ describe('plans in the app', () => {
     expect(panel.querySelector('.bg-gradient-to-t')?.className).toContain('opacity-100')
   })
 
-  it('offers /plan from the composer', () => {
-    useCrew.setState({ ...online, events: [], threads: {}, chatDraft: '' })
+  it('offers /plan from the composer, and lifts it out of the box', () => {
+    useCrew.setState({ ...online, events: [], threads: {}, chatDraft: '', chatCommands: [] })
 
     render(createElement(App))
     const composer = screen.getByRole('textbox')
@@ -144,6 +144,7 @@ describe('plans in the app', () => {
 
     const command = screen.getByText('/plan')
     fireEvent.click(command)
-    expect(useCrew.getState().chatDraft).toBe('/plan ')
+    expect(useCrew.getState().chatDraft).toBe('')
+    expect(useCrew.getState().chatCommands).toEqual(['plan'])
   })
 })
