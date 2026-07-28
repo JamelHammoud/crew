@@ -332,6 +332,19 @@ Files from the toolbox opens the same tab with the project standing beside it, a
 - The filter searches the whole project rather than the folders that happen to be open. `listRepoFiles` asks git what the project is made of, which leaves out everything `.gitignore` covers for free, and only a folder that is not a repository is walked by hand.
 - What was typed is matched letter by letter, in order, by `matchFiles` in `src/shared/files.ts`. A run inside the file's own name beats one spread across the folders above it, and the letters that landed are handed back so they can be picked out in the row.
 
+## Where a crew lives
+
+Opening a folder is the only way in, and there is no host and join to choose between any more. Every session is the same session: chat, agents, docs, boards, the toolbox, the music and the games, served over the same ws server. What changes is where the history is written and who can reach the socket, and those are two separate answers rather than one mode.
+
+- A project is asked one question, the first time it is opened, and never again. In the project puts `.crew` in the folder, where it goes out with the repo and everyone who has the project gets the crew. On this machine puts the same `.crew` beside the app, so nothing is ever written into the project. `projectPlan` in `src/main/session.ts` is what the app asks before it opens anything, and a folder it already knows comes back with the answer it was given, so nothing is asked twice.
+- `CrewHome` in `src/shared/project.ts` is that answer, and `Store` is handed a root rather than building one. Everything downstream hangs off `this.root`, so docs, boards, attachments and music follow without knowing which of the two they are in.
+- A crew kept on this machine is keyed on the repo's first commit, never on where the folder happens to sit. `projectKey` reads `git rev-list --max-parents=0 HEAD`, so moving a project or cloning it again finds the same history, and a folder with no commit falls back to a hash of its path and is remembered from then on.
+- Git runs when the project has git, because Push and Pull are somebody's own code and their own button. Only a crew that lives in the folder starts the loop, so a project kept on this machine is never committed to under anyone and no prompt waits on a sync. That is `auto` in `startHost`, and it is what `synced` says.
+- A folder with no git in it is somewhere to work. It opens, on this machine, with nothing to sync. Nothing is turned away at the door: `listRepoFiles` already walks a folder by hand when git fails, and `GitSync.usable()` already stands down.
+- Multiplayer never needed git. Whoever joins is handed the whole session in the welcome and everything after it comes over the wire, and attachments and music come over http from the host, so a crew that syncs nothing is still a crew. Git only moves code.
+- Inviting people is the listener moving and nothing else. `setShared` closes the socket and opens it again on the same port, `0.0.0.0` instead of `127.0.0.1`, and the session, its code, its history and everyone in it stay exactly where they are. The only thing anybody sees is their own socket coming back a moment later, which it does on its own. Never remake the session to share it.
+- Sharing is off for a crew kept on this machine and on for one that lives in the folder, and either way it is one item in the profile menu. Turning it on copies the link in the same breath, because those are one action and not two.
+
 ## Syncing
 
 Every machine commits its whole working tree, integrates, and pushes on a loop, host and joiner alike. Agents on different machines write to the same branch at the same time, so `GitSync` in `src/server/git.ts` has three hard rules. Each one is here because work was destroyed without it.
