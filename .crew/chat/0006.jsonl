@@ -406,3 +406,4 @@
 {"id":"a783ebc2-8474-40ec-9c2e-d97f68fcf8df","ts":1785249978657,"kind":"thread.status","threadId":"822941dd-4a64-4b5b-8b8b-24e6808b21f9","status":"done","byName":"Jamel"}
 {"id":"da9a1679-c250-4bad-bb2c-b46dd2af0dc2","ts":1785249979541,"kind":"thread.status","threadId":"32c8f4b4-4894-4560-9bcb-34f5b5162cba","status":"done","byName":"Jamel"}
 {"id":"56cc5186-f06f-4d16-8fba-e2c0c78033ad","ts":1785249981820,"kind":"thread.status","threadId":"fe342213-9b55-47bb-ae9b-2da9c0a3b423","status":"done","byName":"Jamel"}
+{"id":"79bf63d4-de61-4cc2-b7fb-87e7bcd55e0d","ts":1785250027144,"kind":"message","authorId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","authorName":"Jamel","text":"@ALI everything \"Crew\" for domain names was taken, so for now I bought crw.so","mentions":[],"mentionRefs":[],"memberMentionRefs":[{"id":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}],"docMentions":[],"boardMentions":[],"attachments":[]}
