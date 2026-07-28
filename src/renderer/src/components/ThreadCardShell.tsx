@@ -27,6 +27,11 @@ export default function ThreadCardShell({
   const prefix = `@${thread.agentLabel}`
   const title = written.toLowerCase().startsWith(prefix.toLowerCase()) ? written : `${prefix} ${written}`
 
+  // The card wears what was asked for, so a plan says so until it is built.
+  const chips: CommandName[] = []
+  if (thread.mode === 'plan') chips.push('plan')
+  if (thread.ghost) chips.push('ghost')
+
   return (
     <FeedCard
       author={thread.createdBy}
