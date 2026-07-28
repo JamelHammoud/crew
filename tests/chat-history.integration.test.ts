@@ -105,13 +105,16 @@ describe('reading back into the chat history', () => {
     expect(page.events.some(e => 'threadId' in e && e.threadId === threadId)).toBe(false)
   })
 
-  it('serves nobody but the app', async () => {
+  it('goes to the one who asked for it', async () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
-    uis.push(alice)
+    const bob = await TestUi.connect(host.url, 'bob', host.code)
+    uis.push(alice, bob)
     const oldest = host.session.snapshot().events[0]
 
     alice.send({ type: 'history', before: oldest.id })
     await alice.waitFor(m => m.type === 'history')
-    expect(alice.messages.filter(m => m.type === 'history')).toHaveLength(1)
+    bob.chat('still here')
+    await alice.waitForEvent(e => e.kind === 'message' && e.text === 'still here')
+    expect(bob.messages.some(m => m.type === 'history')).toBe(false)
   })
 })
