@@ -11,9 +11,9 @@ const TINTED = 0.22
 // picture churn rather than slide: one layer over a window is wallpaper however
 // good it is, because nothing in it moves against anything else.
 const LAYERS = [
-  { cloud: 0, scale: 1.5, spin: 0.09, sway: 0.19, breathe: 0.1, beat: 0.62, drift: 0.9, lag: 0, alpha: 0.34 },
-  { cloud: 1, scale: 2.4, spin: -0.13, sway: 0.14, breathe: 0.14, beat: 0.44, drift: -1.4, lag: 2.2, alpha: 0.2 },
-  { cloud: 0, scale: 3.4, spin: 0.06, sway: 0.26, breathe: 0.09, beat: 0.31, drift: 0.5, lag: 4.1, alpha: 0.12 }
+  { cloud: 0, scale: 1.5, spin: 0.09, sway: 0.19, breathe: 0.1, beat: 0.62, drift: 0.9, lag: 0, alpha: 0.17 },
+  { cloud: 1, scale: 2.4, spin: -0.13, sway: 0.14, breathe: 0.14, beat: 0.44, drift: -1.4, lag: 2.2, alpha: 0.1 },
+  { cloud: 0, scale: 3.4, spin: 0.06, sway: 0.26, breathe: 0.09, beat: 0.31, drift: 0.5, lag: 4.1, alpha: 0.06 }
 ]
 
 // How hard the flight drags the cloud past the window. It is the travel the
