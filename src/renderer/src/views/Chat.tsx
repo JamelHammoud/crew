@@ -193,7 +193,9 @@ export default function Chat() {
           {feed.map((entry, index) => {
             const tsOf = (e: Feed) => (e.kind === 'msg' ? e.item.ts : e.ts)
             const ts = tsOf(entry)
-            const prev = index > 0 ? tsOf(feed[index - 1]) : undefined
+            const before = index > 0 ? feed[index - 1] : undefined
+            const prev = before && tsOf(before)
+            const linked = entry.kind === 'msg' && before?.kind === 'msg' && sameRun(before.item, entry.item)
             return (
               <Fragment key={entry.key}>
                 {isNewDay(prev, ts) && <DayDivider ts={ts} />}
