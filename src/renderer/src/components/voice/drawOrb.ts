@@ -61,11 +61,13 @@ export function drawOrb(
   // past the canvas is cut off flat at all four sides, which is a grey square
   // standing behind a sphere.
   const spill = 0.1 + face.level * 0.26
-  const blur = Math.max(0, Math.min(base * 0.22, (half - base * GLOW_GROW) / 3))
+  const reach = orbReach(face, base)
+  const grow = Math.min(GLOW_GROW, (half * 0.94) / Math.max(1e-3, reach))
+  const blur = Math.max(base * 0.05, Math.min(base * 0.22, (half - reach * grow) / 2))
   ctx.save()
   ctx.filter = `blur(${blur}px)`
   ctx.fillStyle = withAlpha(face.lit > 0.5 ? ORB_BLOBS[0].color : paint.ink, spill)
-  outline(ctx, face, base * GLOW_GROW)
+  outline(ctx, face, base * grow)
   ctx.fill()
   ctx.restore()
 
