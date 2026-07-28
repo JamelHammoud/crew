@@ -167,8 +167,16 @@ describe('member mention alerts', () => {
 describe('an alert in the app', () => {
   const finished = (): AgentAlert => finishedAlert(ended('t1'), state())!
 
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
   afterEach(() => {
     act(() => clearToasts())
+    act(() => {
+      vi.advanceTimersByTime(TOAST_OUT_MS + 10)
+    })
+    vi.useRealTimers()
   })
 
   it('says the same thing the system banner would, with the face it is about', () => {
