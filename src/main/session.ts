@@ -30,20 +30,23 @@ import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
 import type { PathLocation, RepoFile } from '../shared/files'
 
-export interface HostInfo {
-  link: string
-  wsUrl: string
-}
-
-export interface JoinInfo {
-  wsUrl: string
-}
-
+// Where you are. One shape for every session, so a crew of one and a crew of
+// six are the same place with different answers to `shared`.
 export interface CurrentSession {
   wsUrl: string
   name: string
   code: string
   link: string | null
+  folder: string
+  home: CrewHome
+  shared: boolean
+  synced: boolean
+  hosting: boolean
+}
+
+export interface OpenOptions {
+  home?: CrewHome
+  share?: boolean
 }
 
 export interface NewAgent {
