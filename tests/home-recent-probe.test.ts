@@ -80,4 +80,26 @@ describe('Home places', () => {
     expect(storage.getItem('crew.folder')).toBe(saved.folder)
     expect(storage.getItem('crew.name')).toBe(saved.name)
   })
+
+  // Taking a row off the list is a right click on it, and the list is read
+  // again afterwards so what went is really gone.
+  it('takes a place off the list from its own context menu', async () => {
+    const saved = {
+      folder: '/tmp/crew-project',
+      name: 'Ali',
+      link: 'crew://10.0.0.2:2739/abc123',
+      joinedAt: Date.now()
+    }
+    const { forgetJoin, recent } = installBridge([saved])
+    render(createElement(Home))
+
+    const row = await screen.findByRole('button', { name: /10\.0\.0\.2:2739/ })
+    expect(screen.queryByRole('menuitem', { name: /Remove from the list/ })).toBeNull()
+
+    fireEvent.contextMenu(row)
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Remove from the list/ }))
+
+    await waitFor(() => expect(forgetJoin).toHaveBeenCalledWith(saved.link))
+    await waitFor(() => expect(recent).toHaveBeenCalledTimes(2))
+  })
 })
