@@ -26,6 +26,62 @@ const FIELD = {
 
 const STAGE = MARK_HEIGHT + ROOM * 2
 
+function Mesh({ id }: { id: string }) {
+  return (
+    <>
+      <defs>
+        {BLOBS.map((blob, index) => (
+          <radialGradient key={blob.color} id={`${id}-b${index}`}>
+            <stop offset="0" stopColor={blob.color} stopOpacity="0.95" />
+            <stop offset="0.45" stopColor={blob.color} stopOpacity="0.62" />
+            <stop offset="1" stopColor={blob.color} stopOpacity="0" />
+          </radialGradient>
+        ))}
+      </defs>
+      <g className="crew-mesh">
+        <rect {...FIELD} fill={SKY} />
+        {BLOBS.map((blob, index) => (
+          <circle
+            key={blob.color}
+            className="crew-blob"
+            cx={blob.cx}
+            cy={blob.cy}
+            r={blob.r}
+            fill={`url(#${id}-b${index})`}
+            style={
+              {
+                '--dx': `${blob.dx}px`,
+                '--dy': `${blob.dy}px`,
+                '--ds': blob.ds,
+                '--dur': blob.dur,
+                '--lag': blob.lag
+              } as CSSProperties
+            }
+          />
+        ))}
+      </g>
+    </>
+  )
+}
+
+// The light the mark splits, spilling onto whatever is behind it. It is the
+// same field the discs are windows onto, drawn without the mask and thrown
+// wide, so the boot is lit by the mark itself rather than by a second picture.
+export function CrewGlow({ className = '' }: { className?: string }) {
+  const raw = useId()
+  const id = raw.replace(/[^a-zA-Z0-9-]/g, '')
+
+  return (
+    <svg
+      viewBox={`${FIELD.x} ${FIELD.y} ${FIELD.width} ${FIELD.height}`}
+      aria-hidden
+      className={`crew-glow ${className}`}
+    >
+      <Mesh id={id} />
+    </svg>
+  )
+}
+
 export function CrewMark({
   className = '',
   live = false,
