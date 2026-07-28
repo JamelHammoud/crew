@@ -976,6 +976,7 @@ export class CrewSession {
       ghost?: WebSocket
       mentions?: string[]
       replyTo?: MessageReply
+      voice?: boolean
     } = {}
   ): string {
     const threadId = randomUUID()
