@@ -20,11 +20,11 @@ export default function JoinLink({
   onJoin: () => void
 }) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-fg">Join a crew</h2>
-      <div className="space-y-3">
+    <div className="space-y-7">
+      <h2 className="text-lg font-semibold text-fg text-center">Join a crew</h2>
+      <div className="space-y-5">
         <div>
-          <label className="block text-sm text-fg-muted mb-2">Their link</label>
+          <label className="block text-sm text-fg-muted mb-2">Join link</label>
           <TextField
             autoFocus
             value={link}
