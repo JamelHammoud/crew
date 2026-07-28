@@ -242,6 +242,11 @@ export class CrewSession {
   // from a machine somewhere has to land somewhere sealed, or its last steps
   // would be written down as an ordinary thread's.
   private ghosts = new Map<string, Ghost>()
+  // A picture sent to one of them, held by the file name the message carries
+  // and by the window it belongs to. Everything else about a ghost thread is
+  // kept in memory, and a file beside the session would be the one part of it
+  // the crew syncs.
+  private ghostFiles = new Map<string, { ws: WebSocket; mime: string; data: Buffer }>()
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
   private events: SessionEvent[] = []
