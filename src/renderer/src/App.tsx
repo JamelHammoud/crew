@@ -33,6 +33,14 @@ export default function App() {
   return <Session />
 }
 
+function Loading() {
+  return (
+    <div className="h-full flex items-center justify-center">
+      <Spinner size={20} />
+    </div>
+  )
+}
+
 function Session() {
   const [tab, setTab] = useState<Tab>('chat')
   const [tasksOpen, setTasksOpen] = useState(false)
