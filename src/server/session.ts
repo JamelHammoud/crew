@@ -1340,26 +1340,43 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'thread.status', threadId, status, byName: member.name })
   }
 
-  private saveAttachments(incoming?: OutgoingAttachment[]): Attachment[] {
+  private saveAttachments(incoming?: OutgoingAttachment[], hidden?: WebSocket): Attachment[] {
     const saved: Attachment[] = []
     for (const item of (incoming ?? []).slice(0, MAX_ATTACHMENTS)) {
-      const one = this.saveAttachment(item.mime, item.name, Buffer.from(item.data, 'base64'))
+      const data = Buffer.from(item.data, 'base64')
+      const one = hidden
+        ? this.holdAttachment(hidden, item.mime, item.name, data)
+        : this.saveAttachment(item.mime, item.name, data)
       if (one) saved.push(one)
     }
     return saved
   }
 
   saveAttachment(mime: string, name: string, data: Buffer): Attachment | null {
-    if (!isImageType(mime)) return null
-    if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
-    const id = randomUUID()
-    const file = `${id}.${extensionFor(mime)}`
+    const one = this.attachmentOf(mime, name, data)
+    if (!one) return null
     try {
-      this.store.saveAttachment(file, data)
+      this.store.saveAttachment(one.file, data)
     } catch {
       return null
     }
-    return { id, name: this.safeName(name), mime, size: data.length, file }
+    return one
+  }
+
+  // The picture on a ghost message, kept for the window that sent it and served
+  // from here rather than from the folder.
+  private holdAttachment(ws: WebSocket, mime: string, name: string, data: Buffer): Attachment | null {
+    const one = this.attachmentOf(mime, name, data)
+    if (!one) return null
+    this.ghostFiles.set(one.file, { ws, mime, data })
+    return one
+  }
+
+  private attachmentOf(mime: string, name: string, data: Buffer): Attachment | null {
+    if (!isImageType(mime)) return null
+    if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
+    const id = randomUUID()
+    return { id, name: this.safeName(name), mime, size: data.length, file: `${id}.${extensionFor(mime)}` }
   }
 
   private safeName(name: string): string {
