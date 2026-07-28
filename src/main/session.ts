@@ -280,25 +280,29 @@ export class AppSession {
     return defs.filter(def => providers.some(p => p.name === def.provider))
   }
 
-  async startHost(repoPath: string, name: string): Promise<HostInfo> {
+  // Opening a project is one thing whichever way it is answered. A crew that
+  // lives in the folder syncs and stands on the network, one kept on this
+  // machine writes nothing into the project, never runs git, and is served on
+  // loopback until sharing is turned on.
+  async startHost(repoPath: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
     await this.stop()
-    if (!(await isGitRepo(repoPath))) {
-      throw new Error('That folder is not a git repository. Pick a folder that is tracked with git.')
-    }
-    const store = new Store(repoPath)
+    const tracked = await isGitRepo(repoPath)
+    const home = opts.home ?? (await this.projectPlan(repoPath)).home
+    const shared = opts.share ?? home === 'folder'
+    const key = await this.keyFor(repoPath, home)
+    const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
+    const store = new Store(base)
     const session = new CrewSession(store)
-    const git = new GitSync(repoPath)
-    git.onLog = line => console.warn('[git]', line)
-    session.onSyncNeeded = () => git.schedule()
-    git.start(AUTO_SYNC_MS)
-    let server: CrewServer
-    try {
-      server = await createCrewServer(session, { port: PREFERRED_PORT })
-    } catch {
-      server = await createCrewServer(session, { port: 0 })
+    const git = home === 'folder' && tracked ? new GitSync(repoPath) : null
+    if (git) {
+      git.onLog = line => console.warn('[git]', line)
+      session.onSyncNeeded = () => git.schedule()
+      git.start(AUTO_SYNC_MS)
     }
+    const server = await this.listen(session, shared, PREFERRED_PORT)
     this.server = server
     this.git = git
+    this.hosted = { session, folder: repoPath, name, home }
     const detected = await detectProviders()
     // The runner knows every builtin provider so an agent created right after a
     // mid-session CLI install can run.
@@ -308,20 +312,75 @@ export class AppSession {
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected, name),
-      onBeforeRun: () => git.syncNow(),
+      onBeforeRun: git ? () => git.syncNow() : undefined,
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
     const url = `ws://127.0.0.1:${server.port()}/ws`
     this.runner.connect(url)
-    const link = makeLink(lanAddress(), server.port(), session.code)
-    this.live = { wsUrl: url, name, code: session.code, link }
+    this.live = {
+      wsUrl: url,
+      name,
+      code: session.code,
+      link: shared ? makeLink(lanAddress(), server.port(), session.code) : null,
+      folder: repoPath,
+      home,
+      shared,
+      synced: git !== null,
+      hosting: true
+    }
     this.folder = repoPath
-    this.savedStore()?.save({ mode: 'host', folder: repoPath, name })
-    return { link, wsUrl: url }
+    this.savedStore()?.save({ mode: 'host', folder: repoPath, name, home, shared })
+    this.savedStore()?.remember({ folder: repoPath, name, home, key, openedAt: Date.now() })
+    return this.live
   }
 
-  async startJoin(linkRaw: string, repoPath: string, name: string): Promise<JoinInfo> {
+  // Inviting people is the listener moving, and nothing else. The session, its
+  // code and everything in it stay where they are, so the only thing anyone
+  // here sees is their own socket coming back a moment later.
+  async setShared(shared: boolean): Promise<CurrentSession | null> {
+    const hosted = this.hosted
+    const live = this.live
+    if (!hosted || !live || !this.server || live.shared === shared) return this.live
+    const held = this.server
+    this.server = null
+    await held.close()
+    this.server = await this.listen(hosted.session, shared, held.port())
+    const port = this.server.port()
+    const url = `ws://127.0.0.1:${port}/ws`
+    this.live = {
+      ...live,
+      wsUrl: url,
+      shared,
+      link: shared ? makeLink(lanAddress(), port, hosted.session.code) : null
+    }
+    if (url !== live.wsUrl) this.runner?.connect(url)
+    this.savedStore()?.save({
+      mode: 'host',
+      folder: hosted.folder,
+      name: hosted.name,
+      home: hosted.home,
+      shared
+    })
+    return this.live
+  }
+
+  private listen(session: CrewSession, shared: boolean, port: number): Promise<CrewServer> {
+    const host = shared ? '0.0.0.0' : '127.0.0.1'
+    return createCrewServer(session, { port, host }).catch(() => createCrewServer(session, { port: 0, host }))
+  }
+
+  private projectsDir(): string {
+    if (!this.projectsPath) throw new Error('There is nowhere on this machine to keep a crew.')
+    return this.projectsPath
+  }
+
+  private async keyFor(folder: string, home: CrewHome): Promise<string> {
+    if (home === 'folder') return ''
+    return this.savedStore()?.keyOf(folder) ?? (await projectKey(folder))
+  }
+
+  async startJoin(linkRaw: string, repoPath: string, name: string): Promise<CurrentSession> {
     await this.stop()
     const target = parseLink(linkRaw)
     const detected = await detectProviders()
