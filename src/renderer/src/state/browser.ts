@@ -81,6 +81,7 @@ function makeTab(url = ''): BrowserTab {
     diff: null,
     command: null,
     game: null,
+    threadId: '',
     back: [],
     forward: [],
     tree: false,
