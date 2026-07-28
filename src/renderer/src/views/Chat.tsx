@@ -1,5 +1,6 @@
 import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
+import CommandChip from '../components/CommandChip'
 import Composer from '../components/Composer'
 import DayDivider from '../components/DayDivider'
 import JumpToBottom from '../components/JumpToBottom'
