@@ -12,6 +12,8 @@ export default function FeedCard({
   author,
   ts,
   title,
+  badge,
+  dashed,
   onOpen,
   onContextMenu,
   children
@@ -19,6 +21,8 @@ export default function FeedCard({
   author: string
   ts: number
   title: ReactNode
+  badge?: ReactNode
+  dashed?: boolean
   onOpen?: () => void
   onContextMenu?: (event: React.MouseEvent) => void
   children?: ReactNode
