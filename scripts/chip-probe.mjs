@@ -16,6 +16,17 @@ await build({
   jsx: 'automatic',
   outfile: out,
   loader: { '.png': 'dataurl' },
+  plugins: [
+    {
+      name: 'stub-theme',
+      setup(build) {
+        build.onLoad({ filter: /state\/theme\.ts$/ }, () => ({
+          contents: "export function useTheme() { return 'dark' }\nexport function setTheme() {}\nexport function applyTheme() {}\nexport const THEMES = ['dark', 'light']\n",
+          loader: 'ts'
+        }))
+      }
+    }
+  ],
   external: ['react', 'react-dom', 'react-dom/server', 'zustand', 'zustand/*']
 })
 
