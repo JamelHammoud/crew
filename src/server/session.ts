@@ -582,6 +582,7 @@ export class CrewSession {
   }
 
   snapshot(): SessionSnapshot {
+    const recent = olderEvents(this.events, undefined, SNAPSHOT_EVENT_LIMIT)
     return {
       code: this.code,
       members: [...this.members.values()].map(m => ({
@@ -591,7 +592,8 @@ export class CrewSession {
         avatar: m.avatar
       })),
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
-      events: trimEvents(this.events, SNAPSHOT_EVENT_LIMIT),
+      events: recent.events,
+      moreEvents: recent.more,
       docs: Object.fromEntries(this.docs),
       queues: Object.fromEntries(
         [...this.threads.values()]
