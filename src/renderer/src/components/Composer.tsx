@@ -35,7 +35,7 @@ function EmojiHighlight({
         ) : (
           <span key={index} className="relative inline-block">
             {token.text}
-            <span className="absolute inset-y-0 -inset-x-px flex items-center justify-center bg-ink-800">
+            <span className={`absolute inset-y-0 -inset-x-px flex items-center justify-center ${surface}`}>
               {covers(selection, start, end) && (
                 <span className="absolute inset-y-0 inset-x-px bg-selection" />
               )}
