@@ -992,7 +992,8 @@ export class CrewSession {
       queue: [],
       running: null,
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
-      ghost: opts.ghost !== undefined
+      ghost: opts.ghost !== undefined,
+      voice: opts.voice === true
     }
     this.threads.set(threadId, thread)
     // Before the first word of it is emitted, or that word goes to everyone.
