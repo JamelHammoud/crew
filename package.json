@@ -43,6 +43,7 @@
     "preview": "electron-vite preview",
     "test": "vitest run",
     "media-check": "node scripts/media-check.mjs",
+    "voice-check": "node scripts/voice-check.mjs",
     "dist": "electron-vite build && electron-builder",
     "icon": "node scripts/make-icon.mjs",
     "icons": "node scripts/icon-sheet.mjs",
