@@ -925,7 +925,8 @@ export class CrewSession {
         mode,
         ghost,
         mentions: ids,
-        replyTo
+        replyTo,
+        voice: talking
       })
     }
   }
