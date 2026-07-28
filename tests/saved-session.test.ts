@@ -53,6 +53,20 @@ describe('saved session store', () => {
     expect(new SavedSessionStore(file).load()).toBeNull()
   })
 
+  // Every row on the way in can be taken off it, a project and a crew somebody
+  // invited you to alike, so a join is forgotten by its own link.
+  it('forgets a joined session without touching the rest of the list', () => {
+    const store = new SavedSessionStore(path.join(tmpDir('saved-forget-join'), 'session.json'))
+    store.save({ mode: 'join', folder: '/tmp/one', name: 'jamel', link: 'crew://1.2.3.4:2739/one' })
+    store.save({ mode: 'join', folder: '/tmp/two', name: 'jamel', link: 'crew://1.2.3.4:2739/two' })
+
+    store.forgetJoin('crew://1.2.3.4:2739/one')
+
+    expect(store.recentJoins().map(recent => recent.link)).toEqual(['crew://1.2.3.4:2739/two'])
+    store.forgetJoin('crew://1.2.3.4:2739/nothing')
+    expect(store.recentJoins()).toHaveLength(1)
+  })
+
   it('deduplicates joined sessions by link and keeps the five newest', () => {
     const store = new SavedSessionStore(path.join(tmpDir('saved-recents'), 'session.json'))
     for (let index = 0; index < 6; index++) {
