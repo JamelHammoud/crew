@@ -21,10 +21,15 @@ const QUOTE_ROW = 'mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-ful
 export default function ChatMessage({
   item,
   editable = false,
+  linked = false,
   onReply
 }: {
   item: ThreadItem
   editable?: boolean
+  // The line before it came from the same person a moment ago, so this one is
+  // the same person still talking: no face, no name, and the time in the gutter
+  // for whoever goes looking for it.
+  linked?: boolean
   onReply?: (item: ThreadItem) => void
 }) {
   const presence = usePresence(item.author, item.authorId)
