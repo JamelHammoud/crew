@@ -57,6 +57,9 @@ export default function TopBar({
 }) {
   const connection = useCrew(s => s.connection)
   const joinLink = useCrew(s => s.joinLink)
+  const hosting = useCrew(s => s.hosting)
+  const shared = useCrew(s => s.shared)
+  const share = useCrew(s => s.share)
   const selfName = useCrew(s => s.selfName)
   const hasPhoto = useCrew(s => Boolean(s.members.find(m => m.id === s.selfId)?.avatar))
   const setMyPhoto = useCrew(s => s.setMyPhoto)
