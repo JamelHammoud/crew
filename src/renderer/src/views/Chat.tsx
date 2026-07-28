@@ -210,6 +210,13 @@ export default function Chat() {
               huddle
               replyTo={replyTo ?? undefined}
               onCancelReply={() => setReplyTo(null)}
+              chips={commands.map(name => (
+                <CommandChip
+                  key={name}
+                  name={name}
+                  onRemove={() => setChatCommands(commands.filter(held => held !== name))}
+                />
+              ))}
             >
               <MentionMenu
                 matches={mention.matches}
