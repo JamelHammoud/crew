@@ -3053,6 +3053,14 @@ export class CrewSession {
     return this.ghostOf(threadId)?.events ?? this.events
   }
 
+  private ghostEventsFor(ws: WebSocket): SessionEvent[] {
+    const seen: SessionEvent[] = []
+    for (const ghost of this.ghosts.values()) {
+      if (ghost.ws === ws) seen.push(...ghost.events)
+    }
+    return seen
+  }
+
   private toThread(threadId: string, msg: ServerMessage): void {
     const ghost = this.ghostOf(threadId)
     if (ghost) {
