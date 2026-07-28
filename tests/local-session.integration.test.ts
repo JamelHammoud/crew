@@ -122,8 +122,6 @@ describe('a crew kept on this machine', () => {
   it('lets somebody in without the session being remade, and puts it away again', async () => {
     const repo = tmpDir('local-share-repo')
     await initRepo(repo)
-    const guestRepo = tmpDir('local-share-guest')
-    await initRepo(guestRepo)
 
     const app = new AppSession(statePaths('local-share'))
     const info = await app.startHost(repo, 'sam', { home: 'private' })
