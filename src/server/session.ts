@@ -853,13 +853,15 @@ export class CrewSession {
       }
       return
     }
-    const ids = [...new Set(mentions)].filter(id => this.agents.has(id))
+    const named = [...new Set(mentions)].filter(id => this.agents.has(id))
+    const ids = command.ghost ? named.filter(id => this.ownAgent(member, id)) : named
     const mode: ThreadMode = command.planning ? 'plan' : 'build'
     const ghost = command.ghost ? ws : undefined
     if (ids.length === 0) {
       // A command needs someone to take it. With one agent here that is not a
-      // question worth asking.
-      const solo = command.planning || command.ghost ? this.soloAgent() : null
+      // question worth asking, and for a ghost thread the one here is the one
+      // on your own machine.
+      const solo = command.planning || command.ghost ? this.soloAgent(command.ghost ? member.id : undefined) : null
       if (solo) {
         this.startThread(member, solo, trimmed, attachments, { boardId, mode, ghost, replyTo })
         return
@@ -867,7 +869,13 @@ export class CrewSession {
       // The one asking is the only one who knows a ghost thread was meant, so
       // saying why it did not open goes to them and nowhere else.
       if (command.ghost) {
-        this.systemMessage('Mention an agent with @ to say who should take it.', undefined, ws)
+        this.systemMessage(
+          named.length > 0
+            ? 'That agent runs on somebody else\'s machine. Mention one of your own.'
+            : 'Mention an agent with @ to say who should take it.',
+          undefined,
+          ws
+        )
         return
       }
       if (command.planning) {
