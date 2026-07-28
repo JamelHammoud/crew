@@ -20,8 +20,10 @@ function stillness(): boolean {
 
 // The first thing the app says. It opens travelling, drops out of it, and the
 // crew lands on the other side: the three discs arrive the way they do
-// everywhere else and the light they split spills onto the field behind them.
-// Then the whole of it lifts away, once there is somewhere to be.
+// everywhere else, in white, with the light they split spilling onto the field
+// behind them. Only the light is lit, or the discs become windows onto it and
+// the mark stops being the mark. Then the whole of it lifts away, once there is
+// somewhere to be.
 export default function Boot({ ready, onDone }: { ready: boolean; onDone: () => void }) {
   const [still] = useState(stillness)
   const [arrived, setArrived] = useState(still)
