@@ -6,6 +6,7 @@ import {
   ChevronDownGlyph,
   ChevronRightGlyph,
   CloseGlyph,
+  GhostGlyph,
   PlusGlyph,
   SearchGlyph,
   TrashGlyph,
