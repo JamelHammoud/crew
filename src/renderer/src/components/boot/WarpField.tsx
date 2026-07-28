@@ -8,7 +8,7 @@ const STARS = 460
 // The flight the app opens on. It is drawn straight onto the canvas every
 // frame, never held in state, the way the music's bars are: a render a frame
 // would cost more than the picture is worth.
-export default function Warp({ still }: { still: boolean }) {
+export default function WarpField({ still }: { still: boolean }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const stars = useRef<Star[]>([])
   const age = useRef(0)

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import Warp from '../components/boot/Warp'
+import WarpField from '../components/boot/WarpField'
 import { CrewGlow, CrewMark } from '../components/CrewMark'
 import { playSound } from '../media/sounds'
 
@@ -59,7 +59,7 @@ export default function Boot({ ready, onDone }: { ready: boolean; onDone: () => 
       data-gone={gone || undefined}
       className="crew-boot relative h-full overflow-hidden bg-ink-950 flex items-center justify-center"
     >
-      <Warp still={still} />
+      <WarpField still={still} />
       <div className="app-drag absolute inset-0" />
       {arrived && (
         <div className="crew-boot-mark relative flex items-center justify-center">
