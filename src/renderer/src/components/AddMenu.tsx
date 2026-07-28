@@ -60,15 +60,32 @@ export default function AddMenu({
       <Popover open={open} onClose={() => setOpen(false)} align="start" side="top" flush>
         {screen === 'menu' ? (
           <div className="p-1.5">
-            <MenuItem
-              icon={<UploadGlyph />}
-              label="Upload a file"
-              onClick={() => {
-                setOpen(false)
-                choose()
-              }}
-            />
-            <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
+            {!full && (
+              <>
+                <MenuItem
+                  icon={<UploadGlyph />}
+                  label="Upload a file"
+                  onClick={() => {
+                    setOpen(false)
+                    choose()
+                  }}
+                />
+                <MenuItem icon={<GifGlyph />} label="Pick a GIF" onClick={() => setScreen('gif')} />
+              </>
+            )}
+            {calling && (
+              <>
+                {!full && <MenuDivider />}
+                <MenuItem
+                  icon={<SignalGlyph />}
+                  label={live ? 'Join the huddle' : 'Start a huddle'}
+                  onClick={() => {
+                    setOpen(false)
+                    void join()
+                  }}
+                />
+              </>
+            )}
           </div>
         ) : (
           <GifPicker onPick={pick} />
