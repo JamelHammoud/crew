@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import {
   CheckCircleGlyph,
   CheckGlyph,
+  GlobeGlyph,
   LeaveGlyph,
   LinkGlyph,
+  LockGlyph,
   MoreGlyph,
   MoonGlyph,
   PeopleGlyph,
