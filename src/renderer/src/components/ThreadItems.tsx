@@ -41,7 +41,7 @@ export default function ThreadItems({
             ) : isStep(item) ? (
               <StepRow item={item} linked={follows(blocks[index - 1], block)} />
             ) : (
-              <ChatMessage item={item} onReply={onReply} />
+              <ChatMessage item={item} onReply={onReply} linked={sameRun(blocks[index - 1]?.items.at(-1), item)} />
             )}
           </Fragment>
         )
