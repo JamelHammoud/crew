@@ -101,12 +101,6 @@ export class SavedSessionStore {
     return this.read().projects
   }
 
-  // The key a private crew was filed under is remembered by folder, so a
-  // project opened before its first commit keeps its history once it has one.
-  keyOf(folder: string): string | null {
-    return this.read().projects.find(project => project.folder === folder)?.key ?? null
-  }
-
   save(session: SavedSession): void {
     const data = this.read()
     const recentJoins =
