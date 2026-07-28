@@ -47,10 +47,11 @@ const load = (): Promise<AutomaticSpeechRecognitionPipeline> => {
   return listener
 }
 
-// Whisper was trained on sixty year old radio and fills silence with whatever
-// it heard most, so a room tone comes back as thank you or as a channel sign
-// off. None of those are ever a thing somebody said to an agent.
-const NOTHING = /^[\s.,!?-]*$|^(you|thanks|thank you|bye|okay|ok|so|um|uh|hmm|mm|yeah|\[.*\]|\(.*\))[\s.,!?]*$/i
+// Whisper fills silence with whatever it heard most while it was trained, so a
+// quiet room comes back as a sign off or as a note about the sound in the room.
+// Only the handful it really invents: "okay" and "yeah" belong to whoever said
+// them, and dropping those is an agent that ignores you when you agree with it.
+const NOTHING = /^[\s.,!?-]*$|^(you|thanks|thank you|bye|\[.*\]|\(.*\)|♪.*)[\s.,!?]*$/i
 
 self.onmessage = async (event: MessageEvent<ListenIn>) => {
   const message = event.data
