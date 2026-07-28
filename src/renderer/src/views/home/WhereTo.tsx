@@ -2,43 +2,50 @@ import type { CrewHome } from '../../../../shared/project'
 import { DesktopGlyph, FolderGlyph } from '../../icons'
 
 // The one question a project is ever asked, and only the first time it is
-// opened. Each option is the answer and the button both, so there is nothing to
-// confirm afterwards.
+// opened. The two stand side by side rather than stacked, because it is a
+// choice between two places and a column of rows reads as a list.
+//
+// What is true of both is said once, under them. Written into each card it was
+// the longest line on either one, and it made the two look different where they
+// are the same.
 export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home: CrewHome) => void }) {
   const options: Array<{ home: CrewHome; mark: JSX.Element; title: string; line: string }> = [
     {
       home: 'folder',
-      mark: <FolderGlyph className="w-4 h-4" />,
-      title: 'In the project folder',
-      line: 'It goes out with the project, so everyone who has it gets the crew.'
+      mark: <FolderGlyph className="w-5 h-5" />,
+      title: 'In the project',
+      line: 'Everyone who has the project gets the crew.'
     },
     {
       home: 'private',
-      mark: <DesktopGlyph className="w-4 h-4" />,
+      mark: <DesktopGlyph className="w-5 h-5" />,
       title: 'Outside the project',
-      line: 'Nothing is written into your folder and nothing is committed. You can still invite people.'
+      line: 'Your folder is never written to or committed.'
     }
   ]
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-7 text-center">
       <h2 className="text-lg font-semibold text-fg">Where should this crew be saved?</h2>
-      <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-3">
         {options.map(option => (
           <button
             key={option.home}
             onClick={() => onPick(option.home)}
             disabled={busy}
-            className="group w-full rounded-card bg-ink-800 px-5 py-4 transition-colors duration-150 hover:bg-ink-700 active:scale-[0.99] disabled:opacity-50 disabled:scale-100"
+            className="group rounded-card border border-ink-700 bg-ink-850 px-5 pt-7 pb-6 flex flex-col items-center gap-4 transition-colors duration-150 hover:border-ink-600 hover:bg-ink-800 active:scale-[0.99] disabled:opacity-50 disabled:scale-100"
           >
-            <span className="flex items-center justify-center gap-2 text-fg-secondary transition-colors duration-150 group-hover:text-fg">
+            <span className="w-12 h-12 rounded-full bg-ink-800 flex items-center justify-center text-fg-secondary transition-colors duration-150 group-hover:bg-ink-700 group-hover:text-fg">
               {option.mark}
-              <span className="text-sm font-medium text-fg">{option.title}</span>
             </span>
-            <span className="block text-xs text-fg-muted mt-1.5 leading-relaxed">{option.line}</span>
+            <span className="block">
+              <span className="block text-sm font-medium text-fg">{option.title}</span>
+              <span className="block text-xs text-fg-muted leading-relaxed mt-1.5">{option.line}</span>
+            </span>
           </button>
         ))}
       </div>
+      <p className="text-xs text-fg-faint">Either way, you can invite people.</p>
     </div>
   )
 }
