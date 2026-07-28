@@ -63,14 +63,23 @@ const open = (ghost: boolean) => {
 describe('a hidden thread says so at the head of it', () => {
   afterEach(cleanup)
 
+  const shell = () => screen.getByRole('textbox').closest('.rounded-shell') as HTMLElement
+
   it('floats the ghost bar and leaves the old pill off the header', () => {
     open(true)
     expect(screen.getByText('Ghost mode')).toBeTruthy()
     expect(screen.queryByText('Only you')).toBeNull()
   })
 
+  it('carries the dashed box down into the composer', () => {
+    open(true)
+    expect(shell().className).toContain('border-dashed')
+    expect(shell().className).toContain('bg-ink-900')
+  })
+
   it('says nothing on an ordinary thread', () => {
     open(false)
     expect(screen.queryByText('Ghost mode')).toBeNull()
+    expect(shell().className).not.toContain('border-dashed')
   })
 })
