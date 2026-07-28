@@ -67,7 +67,7 @@ describe('ghost threads', () => {
     return ui
   }
 
-  const fake = agentId('jamel', 'fake')
+  const fake = agentId('sam', 'fake')
 
   const about = (ui: TestUi, threadId: string) =>
     ui.events.filter(e => 'threadId' in e && e.threadId === threadId)
@@ -76,7 +76,7 @@ describe('ghost threads', () => {
     const sam = await connectUi('sam')
     const samSecondWindow = await connectUi('sam')
     const pat = await connectUi('pat')
-    await connectRunner('jamel')
+    await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
     sam.chat('@Fake /ghost read the readme', [fake])
@@ -108,7 +108,7 @@ describe('ghost threads', () => {
 
   it('an agent picks up where the ghost thread left off', async () => {
     const sam = await connectUi('sam')
-    await connectRunner('jamel')
+    await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
     sam.chat('@Fake /ghost read the readme', [fake])
@@ -127,7 +127,7 @@ describe('ghost threads', () => {
   it("a ghost thread is nobody else's to write in", async () => {
     const sam = await connectUi('sam')
     const pat = await connectUi('pat')
-    await connectRunner('jamel')
+    await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
     sam.chat('@Fake /ghost read the readme', [fake])
@@ -145,7 +145,7 @@ describe('ghost threads', () => {
 
   it('a picture in a ghost thread is never a file in the folder', async () => {
     const sam = await connectUi('sam')
-    await connectRunner('jamel')
+    await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
     sam.send({
@@ -204,7 +204,7 @@ describe('ghost threads', () => {
 
   it('the thread goes when the window does', async () => {
     const sam = await connectUi('sam')
-    await connectRunner('jamel')
+    await connectRunner('sam')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
     sam.chat('@Fake /ghost read the readme', [fake])
