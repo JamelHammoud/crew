@@ -72,9 +72,10 @@ export default function WarpField({ still }: { still: boolean }) {
     if (!el || !ctx) return
     age.current += dt
     const speed = warpSpeed(age.current)
+    travel.current += speed * dt
     stepStars(stars.current, speed, dt, Math.random)
     const view = viewOf(el.clientWidth, el.clientHeight)
-    paintWarp(ctx, stars.current, view, speed, dt, age.current, cloud.current)
+    paintWarp(ctx, stars.current, view, speed, dt, age.current, travel.current, clouds.current)
   }, !still)
 
   return <canvas ref={canvas} aria-hidden className="absolute inset-0 w-full h-full" />
