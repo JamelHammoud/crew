@@ -16,7 +16,10 @@ function Row({ toast }: { toast: Toast }) {
   const mark = toast.mark ?? markFor(toast.tone)
   const action = toast.action
 
-  const press = (): void => {
+  // The row itself is the way out, so a press on the button is the button's own
+  // rather than that as well.
+  const press = (event: MouseEvent): void => {
+    event.stopPropagation()
     action?.onPress()
     if (!action?.keep) closeToast(toast.id)
   }
