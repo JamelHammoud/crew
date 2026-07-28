@@ -19,6 +19,7 @@ declare global {
     recentJoins(): Promise<RecentJoin[]>
     projects(): Promise<RecentProject[]>
     forgetProject(folder: string): Promise<void>
+    forgetJoin(link: string): Promise<void>
     projectPlan(folder: string): Promise<ProjectPlan>
     setShared(shared: boolean): Promise<CurrentSession | null>
     agentCapabilities(): Promise<ProviderCapability[]>
