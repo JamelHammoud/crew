@@ -118,7 +118,7 @@ describe('plan mode', () => {
     await connectRunner('jamel')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('/plan rename the buttons')
+    sam.chat('rename the buttons', [], undefined, ['plan'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     expect(thread.agentId).toBe(fake)
     expect(thread.mode).toBe('plan')
