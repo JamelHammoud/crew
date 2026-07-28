@@ -223,3 +223,7 @@
 {"id":"2c0e2573-6ee1-43b7-8455-a661461ff747","ts":1785214015863,"kind":"agent.online","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
 {"id":"49df13fb-807c-47ca-a24d-fa5c7c806acb","ts":1785214015863,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"ccd2320c-9783-49d2-b440-ccf909e992ff","ts":1785214015863,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
+{"id":"a2b4ecf1-0393-4d8b-b01e-d4a0033adf32","ts":1785214126236,"kind":"agent.online","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
+{"id":"0adbdbe2-bfd0-4ec8-a1c5-c3c75318ec8c","ts":1785214126237,"kind":"agent.online","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
+{"id":"3292c8b7-419d-4970-b02e-b3d7f6082f02","ts":1785214126237,"kind":"agent.online","agentId":"jamel (dev)/8d671e40-dbc7-43f1-a29b-48649f961130","label":"Thinker"}
+{"id":"3dcb3f5c-467b-4bb0-9bda-b7d61b9f8dbb","ts":1785214126237,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
