@@ -81,7 +81,7 @@ describe('a crew kept on this machine', () => {
     const back = new AppSession(paths)
     const second = await back.startHost(moved, 'sam', { home: 'private' })
     const ui2 = await TestUi.connect(second.wsUrl, 'sam', second.code)
-    await waitUntil(() => ui2.events.some(e => e.kind === 'message' && e.text === 'kept'), 10000)
+    expect(historyOf(ui2)).toContain('kept')
     ui2.close()
     await back.leave()
   }, 40000)
