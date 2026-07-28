@@ -352,6 +352,62 @@ body {
   --glass-bg: rgb(255 255 255 / 0.72);
 }
 
+/* A word from the app arriving under the header. It comes in from the right and
+   opens the row it stands in, so the ones already there are pushed down rather
+   than jumped down, and it leaves the same way. The height is the row's own
+   grid-template-rows, which is the one way a box that is as tall as its text can
+   be animated open and shut. */
+.toast-row {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: toast-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.toast-row[data-leaving] {
+  animation: toast-out 0.18s ease-in both;
+}
+
+/* The gap between rows is inside what the row clips, so it closes with the row
+   rather than standing behind it while it shuts. */
+.toast-slot {
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 8px;
+}
+
+@keyframes toast-in {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes toast-out {
+  from {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-row,
+  .toast-row[data-leaving] {
+    animation-duration: 1ms;
+  }
+}
+
 .top-bar-container {
   container-type: inline-size;
 }
