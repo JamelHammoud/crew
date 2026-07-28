@@ -4,8 +4,16 @@ import { describe, expect, it } from 'vitest'
 import { AppSession } from '../src/main/session'
 import { projectKey } from '../src/shared/project'
 import { runGit } from '../src/shared/git'
+import type { ServerMessage } from '../src/shared/protocol'
 import { initRepo } from './helpers/git'
-import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
+import { linkOf, TestUi, tmpDir } from './helpers/session'
+
+// What somebody walking in is handed. History arrives in the welcome rather
+// than as events, so this is what says the crew was really there before them.
+function historyOf(ui: TestUi): string[] {
+  const welcome = ui.messages.find(m => m.type === 'welcome') as Extract<ServerMessage, { type: 'welcome' }>
+  return welcome.snapshot.events.flatMap(event => (event.kind === 'message' ? [event.text] : []))
+}
 
 function statePaths(prefix: string): { agents: string; session: string; projects: string } {
   const dir = tmpDir(prefix)
