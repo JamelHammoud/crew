@@ -142,10 +142,10 @@ describe('which sound an event makes', () => {
   })
 })
 
-describe('playing a sound', () => {
-  let clock = 1_000_000
-  vi.spyOn(Date, 'now').mockImplementation(() => clock)
+let clock = 1_000_000
+vi.spyOn(Date, 'now').mockImplementation(() => clock)
 
+describe('playing a sound', () => {
   beforeEach(() => {
     started.length = 0
     stopped.length = 0
