@@ -7,7 +7,7 @@ import { VoiceListener } from '../media/voice/listener'
 import { progressOf, rememberVoice, storedVoice, type Fetching } from '../media/voice/models'
 import { VoiceMouth } from '../media/voice/mouth'
 import { endOf, findTurn, textOf, worthSending } from '../media/voice/turn'
-import { playSound } from '../media/sounds'
+import { hushChat, playSound } from '../media/sounds'
 import { useCrew } from './store'
 
 // off       nobody is talking
