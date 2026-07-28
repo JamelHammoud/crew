@@ -867,9 +867,9 @@ export class CrewSession {
       return
     }
     const named = [...new Set(mentions)].filter(id => this.agents.has(id))
-    const ids = command.ghost ? named.filter(id => this.ownAgent(member, id)) : named
-    const mode: ThreadMode = command.planning ? 'plan' : 'build'
-    const ghost = command.ghost ? ws : undefined
+    const ids = ghosting ? named.filter(id => this.ownAgent(member, id)) : named
+    const mode: ThreadMode = planning ? 'plan' : 'build'
+    const ghost = ghosting ? ws : undefined
     if (ids.length === 0) {
       // The one asking is the only one who knows a ghost thread was meant, so
       // saying why it did not open goes to them and nowhere else. An agent was
