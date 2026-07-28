@@ -216,6 +216,7 @@ export default function Chat() {
                   <ChatMessage
                     item={entry.item}
                     editable
+                    linked={linked}
                     onReply={item => {
                       setReplyTo(item)
                       inputRef.current?.focus()
