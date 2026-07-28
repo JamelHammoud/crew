@@ -60,10 +60,16 @@ async function run(mine: number, stream: TextSplitterStream, voice: string): Pro
   if (turn === mine) post({ type: 'done', turn: mine })
 }
 
-const hush = () => {
-  turn = NOBODY
+// A stream is closed once and kokoro throws on the second, so the one that has
+// been let go of is forgotten rather than left for a later hush to close again.
+const seal = () => {
   splitter?.close()
   splitter = null
+}
+
+const hush = () => {
+  turn = NOBODY
+  seal()
 }
 
 self.onmessage = (event: MessageEvent<SpeakIn>) => {
