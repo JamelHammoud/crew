@@ -3007,6 +3007,9 @@ export class CrewSession {
   // was running is stopped, and its transcript is dropped rather than left in
   // memory for the rest of the session.
   private dropGhosts(ws: WebSocket): void {
+    for (const [file, held] of this.ghostFiles) {
+      if (held.ws === ws) this.ghostFiles.delete(file)
+    }
     for (const [threadId, ghost] of this.ghosts) {
       if (ghost.ws !== ws) continue
       ghost.events.length = 0
