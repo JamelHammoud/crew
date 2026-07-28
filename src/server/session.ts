@@ -913,7 +913,13 @@ export class CrewSession {
     agent: AgentState,
     text: string,
     attachments: Attachment[],
-    opts: { boardId?: string; mode?: ThreadMode; mentions?: string[]; replyTo?: MessageReply } = {}
+    opts: {
+      boardId?: string
+      mode?: ThreadMode
+      ghost?: WebSocket
+      mentions?: string[]
+      replyTo?: MessageReply
+    } = {}
   ): string {
     const threadId = randomUUID()
     const boardId = opts.boardId
@@ -927,9 +933,12 @@ export class CrewSession {
       mode: opts.mode ?? 'build',
       queue: [],
       running: null,
-      boardId: boardId && this.designs.has(boardId) ? boardId : undefined
+      boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
+      ghost: opts.ghost !== undefined
     }
     this.threads.set(threadId, thread)
+    // Before the first word of it is emitted, or that word goes to everyone.
+    if (opts.ghost) this.ghosts.set(threadId, { ws: opts.ghost, events: [] })
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -941,7 +950,8 @@ export class CrewSession {
       titleRefs: this.agentRefs(opts.mentions ?? [agent.id], thread.title),
       byName: member.name,
       boardId: thread.boardId,
-      mode: thread.mode === 'plan' ? 'plan' : undefined
+      mode: thread.mode === 'plan' ? 'plan' : undefined,
+      ghost: thread.ghost ? true : undefined
     })
     this.enqueuePrompt(agent, member, text, threadId, attachments, {
       messageId: randomUUID(),
