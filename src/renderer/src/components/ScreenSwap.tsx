@@ -123,7 +123,7 @@ export default function ScreenSwap({
   return (
     <div
       style={height === null ? undefined : { height }}
-      className="relative overflow-hidden transition-[height] duration-200 ease-out"
+      className={`relative transition-[height] duration-200 ease-out ${moving ? 'overflow-hidden' : 'overflow-visible'}`}
     >
       <div key={screen} ref={inner} className={arriving}>
         {children}
