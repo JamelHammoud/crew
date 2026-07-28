@@ -11,8 +11,8 @@ const TINTED = 0.22
 // the stars alone cannot: one layer over a window is wallpaper however good it
 // is, because nothing in it moves against anything else.
 const LAYERS = [
-  { scale: 1.5, drift: 0.9, turn: 1, alpha: 0.5 },
-  { scale: 2.45, drift: -1.5, turn: -1, alpha: 0.34 }
+  { scale: 1.5, drift: 0.9, turn: 1, alpha: 0.34 },
+  { scale: 2.45, drift: -1.5, turn: -1, alpha: 0.2 }
 ]
 
 function starColor(star: Star): string {
@@ -86,7 +86,7 @@ function paintVignette(ctx: CanvasRenderingContext2D, view: View): void {
     half
   )
   shade.addColorStop(0, 'rgba(0,0,0,0)')
-  shade.addColorStop(1, 'rgba(0,0,0,0.72)')
+  shade.addColorStop(1, 'rgba(0,0,0,0.86)')
   ctx.fillStyle = shade
   ctx.fillRect(0, 0, view.width, view.height)
 }

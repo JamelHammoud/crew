@@ -55,7 +55,7 @@ export function fbm(x: number, y: number, seed: number, octaves: number): number
 // humps fractal noise makes into the thin bright veins a nebula is mostly made
 // of, and the power is what pulls the space between them down to nothing.
 function ridge(value: number): number {
-  return Math.pow(1 - Math.abs(value * 2 - 1), 2.6)
+  return Math.pow(1 - Math.abs(value * 2 - 1), 3.4)
 }
 
 function channels(color: string): [number, number, number] {
@@ -84,7 +84,7 @@ function paletteAt(t: number): [number, number, number] {
 // blob-in-the-middle the filaments were drawn to get away from.
 function reach(u: number, v: number): number {
   const away = Math.hypot(u - 0.5, v - 0.5) / 0.72
-  return 0.42 + 0.58 * Math.max(0, 1 - away * away)
+  return 0.2 + 0.8 * Math.max(0, 1 - away * away)
 }
 
 export function makeNebula(width: number, height: number, seed: number): Nebula {
@@ -101,8 +101,8 @@ export function makeNebula(width: number, height: number, seed: number): Nebula 
       const field = fbm(sx + wx * WARP, sy + wy * WARP, seed, OCTAVES)
       const veins = ridge(field)
       const body = Math.pow(field, 2.2)
-      const density = (veins * 0.72 + body * 0.28) * reach(u, v)
-      const [r, g, b] = paletteAt(u * 0.72 + field * 0.28)
+      const density = (veins * 0.86 + body * 0.14) * reach(u, v)
+      const [r, g, b] = paletteAt(u * 0.44 + field * 0.56)
       const at = (y * width + x) * 4
       pixels[at] = r
       pixels[at + 1] = g
