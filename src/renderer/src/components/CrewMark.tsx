@@ -107,18 +107,6 @@ export function CrewMark({
       style={height === undefined ? undefined : { height: (height * STAGE) / MARK_HEIGHT }}
       className={live ? `crew-mark ${className}` : className}
     >
-      {live && (
-        <defs>
-          {BLOBS.map((blob, index) => (
-            <radialGradient key={blob.color} id={`${id}-b${index}`}>
-              <stop offset="0" stopColor={blob.color} stopOpacity="0.95" />
-              <stop offset="0.45" stopColor={blob.color} stopOpacity="0.62" />
-              <stop offset="1" stopColor={blob.color} stopOpacity="0" />
-            </radialGradient>
-          ))}
-        </defs>
-      )}
-
       <mask id={id} maskUnits="userSpaceOnUse" {...field}>
         <rect {...field} fill="#000000" />
         {MARK_DISCS.map((cx, index) => (
