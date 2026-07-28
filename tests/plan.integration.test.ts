@@ -127,7 +127,7 @@ describe('plan mode', () => {
     await connectRunner('pat', 'other', 'Other')
     await sam.waitForEvent(e => e.kind === 'agent.online' && e.label === 'Other')
 
-    sam.chat('/plan rename the tabs')
+    sam.chat('rename the tabs', [], undefined, ['plan'])
     await sam.waitForEvent(e => e.kind === 'message' && e.authorId === 'crew')
     await new Promise(r => setTimeout(r, 200))
     expect(sam.events.filter(e => e.kind === 'thread.started').length).toBe(1)
