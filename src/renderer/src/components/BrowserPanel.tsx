@@ -5,6 +5,7 @@ import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
   ArrowRightGlyph,
+  ChecklistGlyph,
   CloseGlyph,
   DocGlyph,
   ExternalLinkGlyph,
