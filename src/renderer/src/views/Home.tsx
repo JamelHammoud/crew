@@ -154,7 +154,7 @@ export default function Home() {
           folder={asking.folder}
           tracked={asking.tracked}
           busy={busy}
-          onPick={home => void open(asking.folder, `project:${asking.folder}`, { home })}
+          onPick={home => void open(asking.folder, `project:${asking.folder}`, name.trim(), { home })}
         />
       )
     }
