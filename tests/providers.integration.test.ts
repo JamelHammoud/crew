@@ -192,6 +192,91 @@ describe('claude parser matches the real CLI format', () => {
       { tokens: 12 }
     ])
   })
+
+  // Claude writes what went wrong into its output and exits 1 with nothing on
+  // stderr, so a failure read as an exit code until the parser picked this up.
+  it('reads the reason a run failed out of the run itself', () => {
+    expect(
+      parseClaudeLine(
+        '{"type":"result","subtype":"success","is_error":true,"terminal_reason":"api_error","api_error_status":404,"result":"There is an issue with the selected model. It may not exist or you may not have access to it."}'
+      )
+    ).toEqual([
+      { turnEnd: true },
+      { error: 'There is an issue with the selected model. It may not exist or you may not have access to it.' }
+    ])
+
+    // The subtype still reads as a success on an API error, so is_error is the
+    // only thing that says a run failed.
+    expect(parseClaudeLine('{"type":"result","subtype":"success","is_error":false,"result":"ok"}')).toEqual([
+      { turnEnd: true }
+    ])
+
+    expect(parseClaudeLine('{"type":"result","subtype":"error_max_turns","is_error":true}')).toEqual([
+      { turnEnd: true },
+      { error: 'Claude reached its limit of turns before it finished.' }
+    ])
+
+    // An API error arrives as a message from the model. It is what went wrong,
+    // not something the agent said.
+    expect(
+      parseClaudeLine(
+        '{"type":"assistant","is_api_error_message":true,"error":"model_not_found","message":{"content":[{"type":"text","text":"Credit balance is too low."}]}}'
+      )
+    ).toEqual([{ error: 'Credit balance is too low.' }])
+
+    expect(
+      parseClaudeLine('{"type":"assistant","is_api_error_message":true,"message":{"content":[]}}')
+    ).toEqual([{ error: 'Claude could not reach the model.' }])
+  })
+})
+
+describe('a run that failed says why', () => {
+  const repo = tmpDir('failures')
+
+  const failing = (script: string, label = 'Fake'): Provider =>
+    makeCliProvider({
+      name: 'failing',
+      label,
+      command: process.execPath,
+      args: () => ['-e', script],
+      parser: parseClaudeLine
+    })
+
+  it('carries the reason out of the run rather than the code it exited with', async () => {
+    const line = JSON.stringify({
+      type: 'result',
+      subtype: 'success',
+      is_error: true,
+      terminal_reason: 'api_error',
+      result: 'Claude Code is out of usage for now. It comes back at 4pm.'
+    })
+    const provider = failing(`process.stdout.write(${JSON.stringify(line + '\n')}); process.exit(1)`, 'Claude')
+    const run = provider.start('hi', repo, { onStep: () => {} })
+    await expect(run.done).rejects.toThrow('Claude Code is out of usage for now. It comes back at 4pm.')
+  })
+
+  it('puts a run that printed nothing at all in words', async () => {
+    const run = failing('process.exit(1)').start('hi', repo, { onStep: () => {} })
+    await expect(run.done).rejects.toThrow('Fake stopped without saying why (exit code 1).')
+  })
+
+  it('says the machine stopped a run rather than reporting no code at all', async () => {
+    const run = failing("process.kill(process.pid, 'SIGKILL')").start('hi', repo, { onStep: () => {} })
+    await expect(run.done).rejects.toThrow('Fake was stopped by this machine, which usually means it ran out of memory.')
+  })
+
+  it('keeps the end of what was printed on the way out, without the colors', () => {
+    expect(failureText('[31mnothing to see[0m\n\n  broke here  \n')).toBe('nothing to see\nbroke here')
+    const many = Array.from({ length: 40 }, (_, i) => `line ${i}`).join('\n')
+    expect(failureText(many).split('\n')).toEqual(['line 32', 'line 33', 'line 34', 'line 35', 'line 36', 'line 37', 'line 38', 'line 39'])
+    expect(failureText('   \n  \n')).toBe('')
+  })
+
+  it('names a command that was never there', () => {
+    expect(exitReason('Codex', 127, null)).toBe('Codex could not be found on this machine.')
+    expect(exitReason('Codex', null, 'SIGTERM')).toBe('Codex was stopped before it finished.')
+    expect(exitReason('Codex', null, null)).toBe('Codex stopped without saying why.')
+  })
 })
 
 describe('a step says what it is about', () => {
