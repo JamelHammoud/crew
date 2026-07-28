@@ -76,25 +76,27 @@ describe('reading back into the chat history', () => {
     const alice = await TestUi.connect(host.url, 'alice', host.code)
     uis.push(alice)
 
+    const pages = () => alice.messages.filter(m => m.type === 'history')
     let oldest = host.session.snapshot().events[0]
     const read: SessionEvent[] = []
     let more = true
-    let pages = 0
     while (more) {
+      const seen = pages().length
+      expect(seen).toBeLessThan(20)
       alice.send({ type: 'history', before: oldest.id })
-      const page = history(await alice.waitFor(m => m.type === 'history' && m.events[0]?.id !== read[0]?.id))
+      await waitUntil(() => pages().length > seen)
+      const page = history(pages().at(-1)!)
       expect(page.events.length).toBeGreaterThan(0)
       expect(page.events.at(-1)!.ts).toBeLessThan(oldest.ts)
       read.unshift(...page.events)
       oldest = page.events[0]
       more = page.more
-      pages++
-      expect(pages).toBeLessThan(20)
     }
 
     expect(read).toHaveLength(700)
     expect(read[0].id).toBe(written[0].id)
     expect(new Set(read.map(e => e.id)).size).toBe(read.length)
+    expect(read.every(e => e.kind === 'message')).toBe(true)
   })
 
   it('says there is nothing older once the first message is held', async () => {
