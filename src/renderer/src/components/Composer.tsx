@@ -110,6 +110,7 @@ export default function Composer({
   huddle?: boolean
   replyTo?: ThreadItem
   onCancelReply?: () => void
+  chips?: ReactNode
   children?: ReactNode
 }) {
   const attach = useCrew(s => s.attach)
