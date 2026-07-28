@@ -54,6 +54,9 @@ export type SessionEvent =
       attachments?: Attachment[]
       replyTo?: MessageReply
       editedTs?: number
+      // 'voice' says this one was said out loud rather than typed. A spoken
+      // thread can still be written in, so it is the message that carries it.
+      voice?: boolean
     }
   | { id: string; ts: number; kind: 'message.deleted'; messageId: string }
   | {
