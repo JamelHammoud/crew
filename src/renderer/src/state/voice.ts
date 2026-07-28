@@ -96,7 +96,14 @@ export const useVoice = create<VoiceState>((set, get) => {
   const mouth = new VoiceMouth({
     onFetching: fetched,
     onReady: woke,
-    onSaying: saying => set({ saying, phase: 'speaking' }),
+    // The gate asks for more while the agent is talking, because what echo
+    // cancellation leaves in the microphone is the agent's own voice and the
+    // gate cannot tell it from somebody cutting in. Loose here and the agent
+    // talks itself to a stop on its own first sentence.
+    onSaying: saying => {
+      ear.guarded(true)
+      set({ saying, phase: 'speaking' })
+    },
     // Also from thinking, because a reply that was all card, or that had
     // nothing in it at all, goes quiet without ever having said a word. Read
     // as speaking only, that turn leaves the orb working forever.
