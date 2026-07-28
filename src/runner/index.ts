@@ -373,11 +373,12 @@ export class Runner {
     const body = preamble ? `${text}\n\n${preamble}` : text
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
-      .then(() => this.execute(agent.provider, promptId, body, settings, attachments))
+      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost))
       .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
       this.accepted.delete(promptId)
+      if (ghost) this.attachments.release(promptId)
       if (this.tails.get(threadId) === next) this.tails.delete(threadId)
     })
   }
