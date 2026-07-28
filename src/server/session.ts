@@ -866,15 +866,15 @@ export class CrewSession {
         return
       }
       // A command needs someone to take it. With one agent here that is not a
-      // question worth asking, and for a ghost thread the one here is the one
-      // on your own machine.
-      const solo = command.planning || command.ghost ? this.soloAgent(command.ghost ? member.id : undefined) : null
-      if (solo) {
-        this.startThread(member, solo, trimmed, attachments, { boardId, mode, ghost, replyTo })
+      // question worth asking, and a ghost thread only ever goes to an agent of
+      // your own, so one of yours takes it rather than being asked for.
+      const taker = command.ghost ? (this.agentsHere(member.id)[0] ?? null) : command.planning ? this.soloAgent() : null
+      if (taker) {
+        this.startThread(member, taker, trimmed, attachments, { boardId, mode, ghost, replyTo })
         return
       }
       if (command.ghost) {
-        this.systemMessage('Mention an agent with @ to say who should take it.', undefined, ws)
+        this.systemMessage('No agent of yours is here to take it.', undefined, ws)
         return
       }
       if (command.planning) {
