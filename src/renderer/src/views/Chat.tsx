@@ -122,7 +122,7 @@ export default function Chat() {
 
   const send = () => {
     if (!text.trim() && pendingCount(CHAT_KEY) === 0) return
-    sendChat(text, undefined, undefined, replyTo?.reactionTargetId)
+    sendChat(text, undefined, undefined, replyTo?.reactionTargetId, undefined, commands)
     setReplyTo(null)
     mention.close()
     slash.close()
@@ -132,6 +132,11 @@ export default function Chat() {
     if (e.key === 'Escape' && replyTo) {
       e.preventDefault()
       setReplyTo(null)
+      return
+    }
+    if (e.key === 'Backspace' && !text && commands.length > 0) {
+      e.preventDefault()
+      setChatCommands(commands.slice(0, -1))
       return
     }
     if (slash.onKeyDown(e)) return
