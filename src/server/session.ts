@@ -173,6 +173,15 @@ interface Thread {
   queue: QueuedPrompt[]
   running: string | null
   boardId?: string
+  ghost?: boolean
+}
+
+// A thread only the window that opened it can see: the socket it belongs to,
+// and the transcript it is read back from. Nothing here is ever written to the
+// log or handed to anybody else.
+interface Ghost {
+  ws: WebSocket
+  events: SessionEvent[]
 }
 
 interface DesignBoard {
