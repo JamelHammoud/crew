@@ -302,7 +302,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const done = new Promise<{ text: string }>((resolve, reject) => {
         let settled = false
         let exitTimer: NodeJS.Timeout | null = null
-        const settle = (code: number | null) => {
+        const settle = (code: number | null, signal: NodeJS.Signals | null) => {
           if (settled) return
           settled = true
           clearTimers()
@@ -310,17 +310,20 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (buffer.trim()) handleLine(buffer)
           buffer = ''
           if (rawOpen) hooks.onStep({ id: 'b0', kind: 'text', status: 'done' })
+          // What the run itself said comes first, then what it printed on the
+          // way out, and only a run that said nothing at all is described.
+          const said = () => parsedError.trim() || failureText(errText)
           if (killed) {
             reject(new Error('Stopped'))
           } else if (timedOut) {
             const mins = Math.round(idleMs / 60000)
-            reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} sent no output for ${mins}m and was stopped.`))
+            reject(new Error(said() || `${opts.label} sent no output for ${mins}m and was stopped.`))
           } else if (code === 0) {
             const result = text.trim() || raw.trim()
-            if (!result && errText.trim()) reject(new Error(errText.trim()))
+            if (!result && said()) reject(new Error(said()))
             else resolve({ text: result })
           } else {
-            reject(new Error(parsedError.trim() || errText.trim() || `${opts.label} exited with code ${code}`))
+            reject(new Error(said() || exitReason(opts.label, code, signal)))
           }
         }
         child.on('error', err => {
