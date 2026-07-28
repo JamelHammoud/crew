@@ -150,6 +150,7 @@ interface CrewState {
   share: (shared: boolean) => Promise<string | null>
   leave: () => void
   setChatDraft: (text: string) => void
+  setChatCommands: (commands: CommandName[]) => void
   setThreadDraft: (threadId: string, text: string) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
