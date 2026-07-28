@@ -34,13 +34,13 @@ function Row({ toast }: { toast: Toast }) {
         }`}
       >
         {mark && (
-          <span className="shrink-0 flex items-center justify-center w-[18px] h-[18px] [&>svg]:w-[18px] [&>svg]:h-[18px]">
+          <span className="shrink-0 flex items-center justify-center w-5 h-5 [&>svg]:w-[18px] [&>svg]:h-[18px]">
             {mark}
           </span>
         )}
         <div className="min-w-0 flex-1">
           <p className="text-sm text-fg">{toast.text}</p>
-          {toast.detail && <p className="text-xs text-fg/45 mt-0.5">{toast.detail}</p>}
+          {toast.detail && <p className="text-xs text-fg/45 mt-0.5 line-clamp-2">{toast.detail}</p>}
         </div>
         {action && (
           <button
