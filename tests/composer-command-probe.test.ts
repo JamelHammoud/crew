@@ -92,6 +92,21 @@ describe('commands in the composer', () => {
     expect(sendChat).toHaveBeenCalledWith('fix this /plan later', undefined, undefined, undefined, undefined, [])
   })
 
+  it('turns the box itself over to ghost while the chip is on', () => {
+    const composer = open()
+    const shell = composer.closest('.rounded-shell') as HTMLElement
+    expect(shell.className).toContain('bg-ink-800')
+    expect(shell.className).not.toContain('border-dashed')
+
+    fireEvent.change(composer, { target: { value: '/ghost ' } })
+    expect(shell.className).toContain('bg-ink-900')
+    expect(shell.className).toContain('border-dashed')
+    expect(composer.placeholder).toBe('Send a message nobody else will see')
+
+    fireEvent.click(screen.getByLabelText('Remove Ghost'))
+    expect(shell.className).not.toContain('border-dashed')
+  })
+
   it('rubs a chip out with backspace on an empty box', () => {
     const composer = open()
 
