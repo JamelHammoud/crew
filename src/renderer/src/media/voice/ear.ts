@@ -142,6 +142,6 @@ export class VoiceEar {
     const audio = join(this.said)
     this.said = []
     this.preRoll.clear()
-    if (word === 'ended') this.ears.onEnd(audio, audio.length / HEARD_RATE)
+    this.ears.onEnd(word === 'ended' ? audio : null)
   }
 }
