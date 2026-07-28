@@ -70,7 +70,8 @@ import {
   type MusicRoom,
   type MusicUpload
 } from '../shared/music'
-import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS, readPlanCommand } from '../shared/plan'
+import { readCommands } from '../shared/commands'
+import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
 import {
   agentId,
   agentMentionRefsIn,
