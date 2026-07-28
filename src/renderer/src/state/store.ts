@@ -391,47 +391,6 @@ export const useCrew = create<CrewState>((set, get) => {
           if (agent) agent.status = 'offline'
           break
         }
-        case 'thread.started': {
-          threads[event.threadId] = {
-            id: event.threadId,
-            agentId: event.agentId,
-            agentLabel: event.agentLabel,
-            title: event.title,
-            titleRefs: event.titleRefs,
-            createdBy: event.byName,
-            status: 'open',
-            mode: event.mode ?? 'build',
-            boardId: event.boardId,
-            ghost: event.ghost,
-            voice: event.voice
-          }
-          break
-        }
-        case 'thread.plan': {
-          const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, plan: event.text }
-          break
-        }
-        case 'thread.implement': {
-          const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, mode: 'build' }
-          break
-        }
-        case 'thread.archived': {
-          const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, status: 'archived' }
-          break
-        }
-        case 'thread.status': {
-          const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, status: event.status }
-          break
-        }
-        case 'thread.agent': {
-          const thread = threads[event.threadId]
-          if (thread) threads[event.threadId] = { ...thread, agentId: event.agentId, agentLabel: event.agentLabel }
-          break
-        }
         case 'agent.start': {
           activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
           if (event.threadId) threadPrompts[event.threadId] = event.promptId
