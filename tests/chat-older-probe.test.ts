@@ -26,6 +26,7 @@ window.matchMedia = ((query: string) => ({
   dispatchEvent: () => false
 })) as typeof window.matchMedia
 Element.prototype.scrollIntoView = () => {}
+Element.prototype.getAnimations ??= () => []
 if (typeof globalThis.CSS === 'undefined') {
   ;(globalThis as { CSS?: unknown }).CSS = {}
 }
