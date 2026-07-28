@@ -48,17 +48,22 @@ export function drawOrb(
   ctx.save()
   ctx.translate(half, half)
 
-  // The light the orb throws, drawn first and wide. It is the same field the
-  // inside is, so what spills is the color of what is behind the glass. It
-  // reaches as far as the room around the orb and never further: a fade that
-  // runs past the canvas is cut off flat at all four sides, which reads as a
-  // square of grey standing behind a sphere.
-  const glow = ctx.createRadialGradient(0, 0, base * 0.4, 0, 0, Math.min(base * 2.1, half))
+  // The light the orb throws, drawn first. It is the orb's own outline stood a
+  // little further out and blurred, never a circle behind it: light carries the
+  // shape of whatever is throwing it, and a round glow around a shape that is
+  // not round reads as a smudge the orb is sitting on.
+  //
+  // It is held inside the room the box leaves, blur and all. A fade that runs
+  // past the canvas is cut off flat at all four sides, which is a grey square
+  // standing behind a sphere.
   const spill = 0.1 + face.level * 0.26
-  glow.addColorStop(0, withAlpha(face.lit > 0.5 ? ORB_BLOBS[0].color : paint.ink, spill))
-  glow.addColorStop(1, withAlpha(paint.ink, 0))
-  ctx.fillStyle = glow
-  ctx.fillRect(-half, -half, size, size)
+  const blur = Math.max(0, Math.min(base * 0.22, (half - base * GLOW_GROW) / 3))
+  ctx.save()
+  ctx.filter = `blur(${blur}px)`
+  ctx.fillStyle = withAlpha(face.lit > 0.5 ? ORB_BLOBS[0].color : paint.ink, spill)
+  outline(ctx, face, base * GLOW_GROW)
+  ctx.fill()
+  ctx.restore()
 
   outline(ctx, face, base)
   ctx.save()
