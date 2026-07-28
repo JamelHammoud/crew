@@ -132,7 +132,7 @@ export const useVoice = create<VoiceState>((set, get) => {
         raw = ''
         mouth.stop()
       }
-      set({ phase: 'hearing', saying: '' })
+      set({ phase: 'hearing', saying: '', problem: null })
     },
     onEnd: audio => {
       if (audio) return void heard(audio)
