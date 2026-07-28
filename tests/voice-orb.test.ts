@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { MESH_COLORS } from '../src/renderer/src/components/CrewMark'
-import { withAlpha } from '../src/renderer/src/components/voice/drawOrb'
+import { drawOrb, withAlpha } from '../src/renderer/src/components/voice/drawOrb'
 import {
   BANDS,
   bandsFrom,
   HARMONICS,
   ORB_BLOBS,
   orbRadius,
+  orbReach,
   restingOrb,
   stepOrb
 } from '../src/renderer/src/components/voice/orb'
