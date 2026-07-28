@@ -2,18 +2,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { bootSeen, rememberBoot } from '../src/renderer/src/components/boot/seen'
 
 const store = new Map<string, string>()
-vi.stubGlobal('sessionStorage', {
+const held = {
   getItem: (key: string) => store.get(key) ?? null,
   setItem: (key: string, value: string) => void store.set(key, value),
   removeItem: (key: string) => void store.delete(key),
   clear: () => store.clear()
+}
+
+beforeEach(() => {
+  store.clear()
+  vi.stubGlobal('sessionStorage', held)
 })
 
-beforeEach(() => store.clear())
-afterEach(() => vi.unstubAllEnvs())
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.unstubAllEnvs()
+})
 
 describe('the flight in dev', () => {
-  it('flies the first time the window is opened', () => {
+  it('flies the first time a window is opened', () => {
     expect(bootSeen()).toBe(false)
   })
 
@@ -35,7 +42,7 @@ describe('the flight in dev', () => {
     expect(store.size).toBe(0)
   })
 
-  it('says nothing where there is nowhere to remember it', () => {
+  it('holds nothing against a window with nowhere to remember it', () => {
     vi.stubGlobal('sessionStorage', undefined)
     expect(bootSeen()).toBe(false)
     expect(() => rememberBoot()).not.toThrow()
