@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import type { SessionEvent } from '../src/shared/events'
+import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
 import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
