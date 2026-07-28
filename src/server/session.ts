@@ -2888,6 +2888,9 @@ export class CrewSession {
     const { runner, running, runs, dropTimer, ...rest } = agent
     const live: Record<string, LiveRun> = {}
     for (const [promptId, run] of runs) {
+      // A run in a ghost thread is nobody's to catch up on, including the window
+      // it belongs to: that window has been watching it since it started.
+      if (this.ghostOf(this.prompts.get(promptId)?.threadId)) continue
       live[promptId] = {
         steps: [...run.steps.values()].map(entry => entry.step),
         tokens: run.tokens,
