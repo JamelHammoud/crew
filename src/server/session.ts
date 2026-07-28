@@ -874,7 +874,7 @@ export class CrewSession {
       // The one asking is the only one who knows a ghost thread was meant, so
       // saying why it did not open goes to them and nowhere else. An agent was
       // named here, so nobody else stands in for it.
-      if (command.ghost && named.length > 0) {
+      if (ghosting && named.length > 0) {
         this.systemMessage("That agent runs on somebody else's machine. Mention one of your own.", undefined, ws)
         return
       }
