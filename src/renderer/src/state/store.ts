@@ -508,36 +508,7 @@ export const useCrew = create<CrewState>((set, get) => {
         const steps: Record<string, AgentStep[]> = {}
         const tokens: Record<string, number> = {}
         for (const event of msg.snapshot.events) {
-          if (event.kind === 'thread.started') {
-            threads[event.threadId] = {
-              id: event.threadId,
-              agentId: event.agentId,
-              agentLabel: event.agentLabel,
-              title: event.title,
-              titleRefs: event.titleRefs,
-              createdBy: event.byName,
-              status: 'open',
-              mode: event.mode ?? 'build',
-              boardId: event.boardId,
-              voice: event.voice
-            }
-          }
-          if (event.kind === 'thread.plan' && threads[event.threadId]) {
-            threads[event.threadId].plan = event.text
-          }
-          if (event.kind === 'thread.implement' && threads[event.threadId]) {
-            threads[event.threadId].mode = 'build'
-          }
-          if (event.kind === 'thread.archived' && threads[event.threadId]) {
-            threads[event.threadId].status = 'archived'
-          }
-          if (event.kind === 'thread.status' && threads[event.threadId]) {
-            threads[event.threadId].status = event.status
-          }
-          if (event.kind === 'thread.agent' && threads[event.threadId]) {
-            threads[event.threadId].agentId = event.agentId
-            threads[event.threadId].agentLabel = event.agentLabel
-          }
+          foldThread(threads, event)
           if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
           if (event.kind === 'agent.start') {
             activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
