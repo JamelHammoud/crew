@@ -50,6 +50,10 @@ export default function ScreenSwap({
   // drawing it again on its way out.
   const held = useRef<ReactNode>(children)
   const [leaving, setLeaving] = useState<Leaving | null>(null)
+  // A card only clips while something is really travelling through it. Left
+  // clipping at rest it cuts whatever stands past its own edge, and a pill that
+  // grows on hover is exactly that: the button came out with flat sides.
+  const [moving, setMoving] = useState(false)
   // The direction is kept beside the screen rather than worked out each time,
   // or a render that lands mid-movement reads the depth as unchanged and turns
   // the animation round under itself.
