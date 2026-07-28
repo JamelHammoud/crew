@@ -48,7 +48,7 @@ function Row({ toast }: { toast: Toast }) {
           <button
             onClick={() => closeToast(toast.id)}
             aria-label="Close"
-            className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-fg/45 opacity-0 transition-all duration-150 hover:bg-fg/10 hover:text-fg/70 group-hover:opacity-100 focus-visible:opacity-100 active:scale-95"
+            className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-fg/25 transition-all duration-150 hover:bg-fg/10 hover:text-fg/70 group-hover:text-fg/45 active:scale-95"
           >
             <CloseGlyph className="w-3.5 h-3.5" />
           </button>
