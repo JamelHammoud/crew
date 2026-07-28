@@ -23,11 +23,13 @@ export const reviewCount = (state: ReviewState): number =>
     thread => thread.status === 'open' && !threadWorking(thread.id, state.threadPrompts, state.queues)
   ).length
 
-// Nothing is worth a banner while the person is already reading the thread it
-// came from, and a run with more waiting behind it has not finished yet.
-export function finishedAlert(event: SessionEvent, state: AlertState, watching: boolean): AgentAlert | null {
+// Nothing is said about the thread somebody already has open, since it says it
+// there, and a run with more waiting behind it has not finished yet. Whether
+// anybody is looking at the window is not part of this: the app says it either
+// way, and only the system banner waits for the window to be in the background.
+export function finishedAlert(event: SessionEvent, state: AlertState): AgentAlert | null {
   if (event.kind !== 'agent.end') return null
-  if (watching && event.threadId && state.openThreadId === event.threadId) return null
+  if (event.threadId && state.openThreadId === event.threadId) return null
   const thread = event.threadId ? state.threads[event.threadId] : undefined
   if (thread && thread.status !== 'open') return null
   if (event.threadId && (state.queues[event.threadId]?.length ?? 0) > 0) return null
@@ -36,16 +38,20 @@ export function finishedAlert(event: SessionEvent, state: AlertState, watching: 
   return {
     title: event.ok ? `${label} finished` : `${label} stopped`,
     body: stripMention(title, label) || title,
-    threadId: event.threadId
+    threadId: event.threadId,
+    agentId: event.agentId,
+    stopped: !event.ok
   }
 }
 
-export function memberMentionAlert(event: SessionEvent, selfId: string, watching: boolean): AgentAlert | null {
-  if (event.kind !== 'message' || watching || event.authorId === selfId) return null
+export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadId: string | null): AgentAlert | null {
+  if (event.kind !== 'message' || event.authorId === selfId) return null
+  if (event.threadId && event.threadId === openThreadId) return null
   if (!event.memberMentionRefs?.some(ref => ref.id === selfId)) return null
   return {
     title: `${event.authorName} mentioned you`,
     body: event.text,
-    threadId: event.threadId
+    threadId: event.threadId,
+    from: event.authorName
   }
 }
