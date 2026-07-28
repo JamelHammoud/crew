@@ -174,6 +174,7 @@ interface Thread {
   running: string | null
   boardId?: string
   ghost?: boolean
+  voice?: boolean
 }
 
 // A thread only the window that opened it can see: the socket it belongs to,
