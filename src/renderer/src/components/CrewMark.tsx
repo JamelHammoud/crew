@@ -84,7 +84,7 @@ export function CrewGlow({ className = '' }: { className?: string }) {
       aria-hidden
       className={`crew-glow ${className}`}
     >
-      <Mesh id={id} />
+      <Mesh id={id} sky={false} />
     </svg>
   )
 }
