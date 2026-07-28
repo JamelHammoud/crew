@@ -635,13 +635,17 @@ export class CrewSession {
         if (meta.role === 'ui') this.handleReaction(member, msg.targetId, msg.emoji)
         break
       case 'thread.archive':
-        if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, 'archived')
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
+          this.handleThreadStatus(member, msg.threadId, 'archived')
+        }
         break
       case 'thread.status':
-        if (meta.role === 'ui') this.handleThreadStatus(member, msg.threadId, msg.status)
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
+          this.handleThreadStatus(member, msg.threadId, msg.status)
+        }
         break
       case 'plan.implement':
-        if (meta.role === 'ui') this.handlePlanImplement(member, msg.threadId)
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) this.handlePlanImplement(member, msg.threadId)
         break
       case 'todo.add':
         if (meta.role === 'ui') this.handleTodoAdd(member, msg.text, msg.agentId)
