@@ -269,12 +269,22 @@ export default function TopBar({
                 onTab('agents')
               }}
             />
+            {hosting && !shared && (
+              <MenuItem
+                icon={copied ? <CheckGlyph /> : <GlobeGlyph />}
+                label={copied ? 'Copied' : 'Invite people'}
+                onClick={() => void invite()}
+              />
+            )}
             {joinLink && (
               <MenuItem
                 icon={copied ? <CheckGlyph /> : <LinkGlyph />}
                 label={copied ? 'Copied' : 'Invite link'}
                 onClick={() => void copyLink()}
               />
+            )}
+            {hosting && shared && (
+              <MenuItem icon={<LockGlyph />} label="Stop sharing" onClick={() => void share(false)} />
             )}
             <MenuDivider />
             <MenuItem
