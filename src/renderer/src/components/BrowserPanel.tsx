@@ -286,6 +286,8 @@ export default function BrowserPanel() {
 function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  // A plan is not yours to close. It is here because you are in the thread.
+  const pinned = tab.kind === 'plan'
 
   useEffect(() => {
     if (active) pillRef.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
@@ -299,9 +301,9 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         onClick={() => useBrowser.getState().selectTab(tab.id)}
         onContextMenu={event => {
           event.preventDefault()
-          setMenuAt({ x: event.clientX, y: event.clientY })
+          if (!pinned) setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
+        className={`group flex items-center gap-1.5 h-9 pl-3 ${pinned ? 'pr-3' : 'pr-1.5'} rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
           active
             ? 'bg-ink-800 text-fg'
             : menuAt
@@ -311,6 +313,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
       >
         {tab.loading ? (
           <Spinner size={14} className="text-fg-muted" />
+        ) : tab.kind === 'plan' ? (
+          <ChecklistGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'music' ? (
           <MusicGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'game' ? (
