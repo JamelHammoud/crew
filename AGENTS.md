@@ -334,6 +334,23 @@ Files from the toolbox opens the same tab with the project standing beside it, a
 - The filter searches the whole project rather than the folders that happen to be open. `listRepoFiles` asks git what the project is made of, which leaves out everything `.gitignore` covers for free, and only a folder that is not a repository is walked by hand.
 - What was typed is matched letter by letter, in order, by `matchFiles` in `src/shared/files.ts`. A run inside the file's own name beats one spread across the folders above it, and the letters that landed are handed back so they can be picked out in the row.
 
+## The boot
+
+The first thing the app says. It opens travelling, drops out of it, and the crew lands on the other side. `views/Boot.tsx` is the moment and `components/boot/` is what it is made of.
+
+- It happens once, on the way in, and never again. `App` holds a flag rather than reading the connection, so leaving a session goes back to the list and not back to the mark. It ends when the app is ready and the mark has landed, whichever is later: an app with nothing to load would otherwise flash the whole thing past in three frames.
+- The rules are numbers and nothing else. `warp.ts` holds the field, the speed and the projection, `nebula.ts` holds the cloud, and neither one draws anything or knows what a canvas is, the same split the games hold. `drawWarp.ts` is the picture and `WarpField.tsx` is the canvas and the loop, which is `useGameLoop`, so a frame is worth what it really took.
+- Nothing is held in state. The field is written straight onto the canvas every frame the way the music's bars are, because a render a frame would cost more than the picture is worth.
+- A star is a line from where it was to where it is, and `TRAIL` stretches that line well past one frame's travel. One frame is a few pixels however fast the field is going, so without the stretch lightspeed is a screen of dots. As the field slows the two ends of the line close up until what is left is a point, and that closing is the whole of dropping out of lightspeed.
+- The mark lands white. Only the light behind it is lit, so `data-crew-lit` goes on the glow and never on the boot itself: lit, the discs become windows onto the mesh and the mark stops being the mark. `data-crew-lit` is the one hook for this and `CrewLogo` wears it too, so the button in the top bar and the light on the way in turn the same field on.
+- `CrewGlow` is that light. It is the mesh the mark is a window onto, drawn without the mask and thrown wide, and it carries no sky: a sky is a rectangle, and a blurred rectangle reads as a box standing behind the mark rather than as light coming off it.
+- The cloud is worked out pixel by pixel, once, and then only ever drawn, so its detail costs nothing per frame. A handful of soft circles is a smudge wherever you put them. What makes a nebula read as one is filaments, and a filament is noise folded back on itself: the field is domain warped before it is read, and ridged after, which turns broad humps into thin veins with dark between them.
+- It covers the whole window. The middle is brighter than the corners by a little, never by enough to leave the edges empty, and `tests/boot-nebula.test.ts` reads the picture in tiles and holds it there.
+- It is animated by moving against itself. Layers at different sizes turn, breathe and drift their own ways, and what they are scaled by is the travel the stars have already made rather than a clock, so the cloud rushes while the field is at lightspeed and settles as it comes off it. One layer over a window is wallpaper however good it is, because nothing in it moves against anything else.
+- Two clouds are drawn, and the second one on the frame after the first, so the flight starts on time rather than waiting on both.
+- Color comes from `MESH_COLORS`, which is the mark's own mesh. The stars are white but for a few, the cloud is lit by the same table, and nothing here invents a palette of its own.
+- Reduced motion stands the flight down and lands the mark where it is.
+
 ## Where a crew lives
 
 Opening a folder is the only way in, and there is no host and join to choose between any more. Every session is the same session: chat, agents, docs, boards, the toolbox, the music and the games, served over the same ws server. What changes is where the history is written and who can reach the socket, and those are two separate answers rather than one mode.
