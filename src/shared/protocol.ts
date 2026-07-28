@@ -62,6 +62,10 @@ export interface SessionSnapshot {
   musicPlaylists?: MusicPlaylist[]
   // Everyone's best at each game, which lasts longest of all.
   gameScores?: GameScore[]
+  // Whether the log holds anything older than the events here. Absent from a
+  // host running an older build, which has nothing older to hand over, so
+  // nobody is offered a way back into history that host cannot serve.
+  moreEvents?: boolean
 }
 
 export type ClientMessage =
@@ -78,6 +82,7 @@ export type ClientMessage =
       boardId?: string
       replyTo?: string
     }
+  | { type: 'history'; before: string }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'chat.edit'; messageId: string; text: string }
   | { type: 'chat.react'; targetId: string; emoji: ReactionEmoji }
