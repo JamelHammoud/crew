@@ -89,7 +89,10 @@ export type SessionEvent =
       promptId: string
       mode: 'queued' | 'steered'
     }
-  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode }
+  // 'ghost' says the thread belongs to the one window that opened it. Nothing
+  // carrying it is ever written down or sent anywhere else, so it is only ever
+  // read live, by that window.
+  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
   | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }
   // Superseded by thread.status; still emitted-compatible and replayed so old
