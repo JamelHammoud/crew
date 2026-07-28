@@ -173,7 +173,6 @@ export default function Home() {
     }
     return (
       <Places
-        name={name}
         places={places}
         busy={busy}
         busyKey={busyKey}
@@ -184,26 +183,44 @@ export default function Home() {
           setError('')
           setScreen('link')
         }}
-        onName={() => setScreen('name')}
       />
     )
   }
 
+  // The way back and who you are are the window's own corners rather than rows
+  // in the column, so every screen is centred on what it is really asking.
   return (
     <div className="relative h-full overflow-y-auto px-6">
-      <div className="app-drag absolute top-0 inset-x-0 h-[70px]" />
-      <div className="w-full max-w-sm min-h-full mx-auto py-16 flex flex-col justify-center gap-6 animate-rise">
-        {screen !== 'places' && !(screen === 'name' && first) && (
-          <Tooltip label="Back" className="self-start">
+      <div
+        style={{ height: TOP_BAR_H }}
+        className="app-drag absolute top-0 inset-x-0 z-10 flex items-center justify-between px-6"
+      >
+        <span className="mac:pl-[64px] flex items-center">
+          {screen !== 'places' && !(screen === 'name' && first) && (
+            <Tooltip label="Back">
+              <button
+                onClick={back}
+                aria-label="Back"
+                className="app-no-drag w-8 h-8 rounded-full flex items-center justify-center text-fg-muted transition-colors duration-150 hover:bg-ink-800 hover:text-fg active:scale-95"
+              >
+                <ChevronLeftGlyph className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          )}
+        </span>
+        {screen === 'places' && name.trim() && (
+          <Tooltip label={name}>
             <button
-              onClick={back}
-              aria-label="Back"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted transition-colors duration-150 hover:bg-ink-800 hover:text-fg active:scale-95"
+              onClick={() => setScreen('name')}
+              aria-label="Your name"
+              className="app-no-drag rounded-full transition-transform duration-150 active:scale-95"
             >
-              <ChevronLeftGlyph className="w-4 h-4" />
+              <Avatar name={name} size="sm" />
             </button>
           </Tooltip>
         )}
+      </div>
+      <div className="w-full max-w-sm min-h-full mx-auto py-20 flex flex-col justify-center gap-6 animate-rise">
         <ScreenSwap screen={screen} depth={DEPTH[screen]}>
           {body()}
         </ScreenSwap>
