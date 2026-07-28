@@ -2484,7 +2484,8 @@ export class CrewSession {
       ...this.refsOf(text),
       attachments,
       messageId: route?.messageId ?? randomUUID(),
-      replyTo: route?.replyTo
+      replyTo: route?.replyTo,
+      voice: route?.voice
     }
     if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
