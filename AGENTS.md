@@ -1,6 +1,6 @@
 # crew
 
-Pool LLMs with friends. One person hosts a session, others join from a link, and everyone's local LLM CLIs become shared agents. Chat, docs, and a dashboard, synced through git.
+Pool LLMs with friends. Open a project and you are in, share it when you want somebody with you, and everyone's local LLM CLIs become shared agents. Chat, docs, and a dashboard, synced through git.
 
 ## Commands
 
