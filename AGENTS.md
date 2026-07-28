@@ -103,6 +103,18 @@ A panel of tiles under the top bar. The built-in ones are the app's own hand, a 
 - A chain is the crew's own tools, in the order they were picked, and it is built out of what is already in the toolbox rather than out of a second kind of tool nobody can see. It never names the tool being built, a tool it has already reached is passed over, so a pair that name each other is a short run rather than a locked window, and `STEP_LIMIT` is the end of it. Its blanks are asked for once across the whole run.
 - Where pressing a tool leaves you is `opensPanel`, which a chain answers for every step it holds. A page, a file and a terminal are things the side panel holds, and an ask is a message, so it takes you to the chat instead. A doc and a board have tabs of their own. Copying, saying something, adding a task, writing a line and putting a track on all leave you where you are, so `saidAfter` keeps the toolbox up and the tile says what happened rather than a panel closing over nothing.
 
+## Toasts
+
+A word from the app about what just happened, standing under the header on the right for a few seconds. `toast()` in `src/renderer/src/state/toast.ts` raises one from anywhere, in the renderer or out of a handler, and `Toaster` is the one stack, mounted once in `App` and standing in the body.
+
+- It is for a moment, never for a record. Anything somebody has to come back to belongs in the chat, in a thread, or on the row it is about, and a toast that says what a screen already says is a row of type spent on nothing.
+- The tones are plain, done, fail and busy, and each one brings its own mark: nothing, the check, the warning, the spinner. A busy one waits rather than running out, and the handle it hands back turns it over: `toast.busy('Sharing the session').done('Link copied')` is one row saying two things rather than two rows.
+- `key` is one row per thing. Asked for again under the same key it is rewritten where it stands, so the same word said twice is said once. Four rows is the whole stack, and the oldest goes when a fifth arrives.
+- The row itself is the way out, and a button on it is the button's own. Nothing runs out while it is being read: the pointer resting anywhere on the stack holds every clock in it.
+- The card wears `glass glass-strong`, the same material as anything else that floats over whatever the app happens to be showing. It says its own `--glass-shadow` rather than the popover's: a popover is one card and throws a drop deeper than the gap between rows, so four of them pool into one dark box standing behind the stack.
+- A row opens and closes on its own `grid-template-rows`, which is the one way a box as tall as its text can be animated, and nothing anywhere clips: a box that clips its card clips the shadow with it, and the card reads as standing in a hole. The card keeps its height the whole way out and the fade is what carries it off.
+- The server has a word of its own for this, `notice`, which goes to the one socket it is about and is never written down. It is what says why a command did not happen, so nobody else scrolls past an answer to a question they never asked.
+
 ## Huddles
 
 Voice, video and screen share, started from the toolbox. The host relays the handshake and nothing else. The media itself goes machine to machine, everyone to everyone, so there is no server to run and no stream passing through the host.
