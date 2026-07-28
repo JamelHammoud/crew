@@ -265,6 +265,46 @@ const readPhoto = (file: File, send: (image: OutgoingAttachment) => void): void 
   })
 }
 
+// What a thread is, read off the events that made it. One fold for all three
+// ways they arrive: the welcome, one landing live, and a page read back out of
+// the history.
+const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): void => {
+  switch (event.kind) {
+    case 'thread.started':
+      threads[event.threadId] = {
+        id: event.threadId,
+        agentId: event.agentId,
+        agentLabel: event.agentLabel,
+        title: event.title,
+        titleRefs: event.titleRefs,
+        createdBy: event.byName,
+        status: 'open',
+        mode: event.mode ?? 'build',
+        boardId: event.boardId,
+        ghost: event.ghost,
+        voice: event.voice
+      }
+      break
+    case 'thread.plan':
+      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], plan: event.text }
+      break
+    case 'thread.implement':
+      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], mode: 'build' }
+      break
+    case 'thread.archived':
+      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], status: 'archived' }
+      break
+    case 'thread.status':
+      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], status: event.status }
+      break
+    case 'thread.agent':
+      if (threads[event.threadId]) {
+        threads[event.threadId] = { ...threads[event.threadId], agentId: event.agentId, agentLabel: event.agentLabel }
+      }
+      break
+  }
+}
+
 const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]): Record<string, AgentStep[]> => {
   const live = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
   const kept = Object.keys(steps).filter(promptId => live.has(promptId))
