@@ -35,9 +35,22 @@ const MEDIA_HEADERS = {
 }
 
 function serveAttachment(session: CrewSession, file: string, res: http.ServerResponse): void {
-  const full = session.attachmentPath(file)
   const mime = mimeForFile(file)
-  if (!full || !mime) {
+  if (!mime) {
+    res.writeHead(404)
+    res.end()
+    return
+  }
+  // A picture in a ghost thread was never written down, so it is answered from
+  // memory. Everything else is a file beside the session.
+  const held = session.attachmentBytes(file)
+  if (held) {
+    res.writeHead(200, { 'content-type': mime, ...MEDIA_HEADERS })
+    res.end(held)
+    return
+  }
+  const full = session.attachmentPath(file)
+  if (!full) {
     res.writeHead(404)
     res.end()
     return
