@@ -38,6 +38,7 @@ export const showsImage = (tab: BrowserTab): boolean =>
 const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/').pop() || 'Image'
 
 function tabLabel(tab: BrowserTab): string {
+  if (tab.kind === 'plan') return 'Plan'
   if (tab.kind === 'music') return 'Music'
   // A games tab says which game you are in, and keeps the same mark whichever
   // one that is. Out of a game it is the tab's own name again.

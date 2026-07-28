@@ -37,7 +37,15 @@ export default function ThreadCardShell({
       author={thread.createdBy}
       ts={ts}
       title={<MentionText text={title} />}
-      badge={thread.ghost && <Pill>Only you</Pill>}
+      badge={
+        chips.length > 0 && (
+          <span className="flex items-center gap-1.5">
+            {chips.map(name => (
+              <CommandChip key={name} name={name} />
+            ))}
+          </span>
+        )
+      }
       dashed={thread.ghost}
       onOpen={onOpen}
       onContextMenu={onContextMenu}
