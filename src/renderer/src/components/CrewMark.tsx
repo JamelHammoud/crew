@@ -125,28 +125,7 @@ export function CrewMark({
         <rect {...field} fill="currentColor" />
         {live && (
           <>
-            <g className="crew-mesh">
-              <rect {...FIELD} fill={SKY} />
-              {BLOBS.map((blob, index) => (
-                <circle
-                  key={blob.color}
-                  className="crew-blob"
-                  cx={blob.cx}
-                  cy={blob.cy}
-                  r={blob.r}
-                  fill={`url(#${id}-b${index})`}
-                  style={
-                    {
-                      '--dx': `${blob.dx}px`,
-                      '--dy': `${blob.dy}px`,
-                      '--ds': blob.ds,
-                      '--dur': blob.dur,
-                      '--lag': blob.lag
-                    } as CSSProperties
-                  }
-                />
-              ))}
-            </g>
+            <Mesh id={id} />
             <rect className="crew-flash" {...FIELD} fill="#ffffff" />
           </>
         )}
