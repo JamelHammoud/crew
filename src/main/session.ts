@@ -188,12 +188,23 @@ export class AppSession {
     const saved = this.savedStore()?.load()
     if (!saved) return null
     try {
-      if (saved.mode === 'host') await this.startHost(saved.folder, saved.name)
-      else await this.startJoin(saved.link, saved.folder, saved.name)
+      if (saved.mode === 'host') {
+        await this.startHost(saved.folder, saved.name, { home: saved.home, share: saved.shared })
+      } else {
+        await this.startJoin(saved.link, saved.folder, saved.name)
+      }
     } catch {
       return null
     }
     return this.live
+  }
+
+  // What opening this folder would do, so the app only asks where a crew should
+  // live the first time it is opened.
+  async projectPlan(folder: string): Promise<{ home: CrewHome; tracked: boolean; known: boolean }> {
+    const tracked = await isGitRepo(folder)
+    const known = this.savedStore()?.projects().find(project => project.folder === folder) ?? null
+    return { home: known?.home ?? (tracked ? 'folder' : 'private'), tracked, known: known !== null }
   }
 
   // Every builtin provider is listed, installed or not, so the UI can offer a
