@@ -31,6 +31,7 @@ export default function ThreadCardShell({
   const chips: CommandName[] = []
   if (thread.mode === 'plan') chips.push('plan')
   if (thread.ghost) chips.push('ghost')
+  if (thread.voice) chips.push('voice')
 
   return (
     <FeedCard
