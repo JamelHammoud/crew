@@ -96,7 +96,7 @@ export type SessionEvent =
   // carrying it is ever written down or sent anywhere else, so it is only ever
   // read live, by that window.
   // 'voice' says the thread was spoken rather than typed. It rides on the
-  // thread rather than on each message, because it is what the agent is told
+  // thread as well as on each message, because it is what the agent is told
   // about how to answer, and that holds for the whole conversation.
   | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
