@@ -6,7 +6,7 @@ import {
   CollapseGlyph,
   DesktopGlyph,
   ExpandGlyph,
-  HangupGlyph,
+  LeaveGlyph,
   MicGlyph
 } from '../../icons'
 import type { InputKind } from '../../media/devices'
@@ -129,7 +129,7 @@ export default function HuddleControls() {
       </Control>
       <span className="w-px h-6 bg-fg/[0.08] mx-1" />
       <Control label="Leave" danger onClick={leave}>
-        <HangupGlyph className="w-[18px] h-[18px]" />
+        <LeaveGlyph className="w-[18px] h-[18px]" />
       </Control>
     </div>
   )
