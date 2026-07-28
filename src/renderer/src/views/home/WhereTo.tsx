@@ -22,7 +22,7 @@ export default function WhereTo({
   const rows: Array<{ home: CrewHome; mark: JSX.Element; title: string; line: string }> = [
     {
       home: 'folder',
-      mark: <FolderGlyph className="w-5 h-5" />,
+      mark: <FolderGlyph className="w-4 h-4" />,
       title: 'In the project',
       line: tracked
         ? 'Chat, docs and boards go out with the project, so everyone who has it gets the crew.'
@@ -30,7 +30,7 @@ export default function WhereTo({
     },
     {
       home: 'private',
-      mark: <DesktopGlyph className="w-5 h-5" />,
+      mark: <DesktopGlyph className="w-4 h-4" />,
       title: 'On this machine',
       line: 'Nothing is written into the project and nothing is committed. You can still invite people.'
     }
