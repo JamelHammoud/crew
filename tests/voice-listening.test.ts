@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { FRAME, HEARD_RATE, rmsOf, VoiceGate, type GateWord } from '../src/renderer/src/media/voice/gate'
+import { askedOf, LISTEN_MODEL } from '../src/renderer/src/media/voice/models'
 import { join, PreRoll, resample } from '../src/renderer/src/media/voice/resample'
 
 const MS = (FRAME / HEARD_RATE) * 1000
