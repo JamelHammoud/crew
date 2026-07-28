@@ -15,6 +15,15 @@ type Screen = 'places' | 'name' | 'where' | 'link'
 
 const DEPTH: Record<Screen, number> = { places: 0, name: 1, where: 1, link: 1 }
 
+// A column wide enough for what the screen holds. Everything is one column of
+// rows but the one question, which is two things standing beside each other.
+const WIDTH: Record<Screen, string> = {
+  places: 'max-w-sm',
+  name: 'max-w-sm',
+  where: 'max-w-lg',
+  link: 'max-w-sm'
+}
+
 function cleanError(err: unknown): string {
   return String(err instanceof Error ? err.message : err).replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
 }
