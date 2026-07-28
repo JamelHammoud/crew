@@ -875,7 +875,7 @@ export class CrewSession {
       // saying why it did not open goes to them and nowhere else. An agent was
       // named here, so nobody else stands in for it.
       if (ghosting && named.length > 0) {
-        this.systemMessage("That agent runs on somebody else's machine. Mention one of your own.", undefined, ws)
+        this.notice("That agent runs on somebody else's machine. Mention one of your own.", ws)
         return
       }
       // A command needs someone to take it. With one agent here that is not a
