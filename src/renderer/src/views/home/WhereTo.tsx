@@ -60,7 +60,6 @@ export default function WhereTo({
           </button>
         ))}
       </div>
-      <p className="text-xs text-fg-faint">This is asked once. Crew remembers the answer for this project.</p>
     </div>
   )
 }
