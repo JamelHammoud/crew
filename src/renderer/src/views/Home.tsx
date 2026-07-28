@@ -122,9 +122,10 @@ export default function Home() {
   }
 
   const joinTyped = async () => {
+    if (missingName()) return
     if (!link.trim()) return setError('Paste the link first.')
     if (!folder) return setError('Pick a folder for your agents to work in.')
-    await joinSession(link.trim(), folder, 'link')
+    await joinSession(link.trim(), folder, 'link', name.trim())
   }
 
   const back = () => {
