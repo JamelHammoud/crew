@@ -20,11 +20,13 @@ import {
   XCircleGlyph
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
+import { useCrew } from '../state/store'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
 import GameView from './game/GameView'
 import ImageView from './ImageView'
 import MusicView from './music/MusicView'
+import PlanView from './PlanView'
 import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import TerminalView from './TerminalView'
