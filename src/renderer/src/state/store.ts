@@ -564,6 +564,31 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'event':
         applyEvent(msg.event)
         break
+      // A page read back out of the history. The window grows by what arrived,
+      // so the next thing to land does not push it straight back out, and the
+      // threads it names are folded in under the ones already known, which were
+      // built from everything since.
+      case 'history':
+        set(state => {
+          const held = new Set(state.events.map(e => e.id))
+          const older = msg.events.filter(e => !held.has(e.id))
+          const events = [...older, ...state.events]
+          const rebuilt: Record<string, ThreadMeta> = {}
+          for (const event of events) foldThread(rebuilt, event)
+          const steps = { ...state.steps }
+          for (const event of older) {
+            if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
+          }
+          return {
+            events,
+            steps,
+            threads: { ...rebuilt, ...state.threads },
+            eventLimit: state.eventLimit + older.filter(e => e.kind !== 'agent.step').length,
+            moreHistory: msg.more,
+            loadingHistory: false
+          }
+        })
+        break
       case 'agent.added':
         set(state =>
           state.agents.some(a => a.id === msg.agent.id)
