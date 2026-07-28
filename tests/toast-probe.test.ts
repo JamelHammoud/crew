@@ -152,14 +152,26 @@ describe('toasts', () => {
     expect(screen.queryByText('Playlist deleted')).toBe(null)
   })
 
-  it('closes on the mark at the end of the row', () => {
+  it('the row itself is the way out', () => {
     show()
     act(() => {
       toast.fail('Could not share the session.')
     })
-    fireEvent.click(screen.getByLabelText('Close'))
+    fireEvent.click(screen.getByRole('alert'))
     tick(TOAST_OUT_MS)
     expect(rows().length).toBe(0)
+  })
+
+  it('a press on the button is the button and not the way out as well', () => {
+    show()
+    const pressed = vi.fn()
+    act(() => {
+      toast('Sharing the session', { action: { label: 'Copy link', onPress: pressed, keep: true } })
+    })
+    fireEvent.click(screen.getByText('Copy link'))
+    tick(TOAST_OUT_MS)
+    expect(pressed).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('Sharing the session')).toBeTruthy()
   })
 
   it('nothing stands in the body while there is nothing to say', () => {
