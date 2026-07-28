@@ -15,7 +15,7 @@ export const DRIFT = 0.03
 // How long the field holds at speed before it drops out of it, and how long the
 // drop takes. The mark lands on the end of that, so the two are one movement.
 export const HOLD = 0.38
-export const SETTLE = 1.15
+export const SETTLE = 0.95
 
 // How far behind itself a star is smeared. One frame's travel is a few pixels
 // and reads as a dot however fast the field is going, so the trail is stretched
