@@ -165,7 +165,10 @@ describe('ghost threads', () => {
     expect(res.status).toBe(200)
     expect(Buffer.from(await res.arrayBuffer()).equals(PNG)).toBe(true)
 
-    // And nothing in the folder the crew syncs holds it, or names it.
+    // And once the agent has read it, nothing in the folder the crew syncs
+    // holds it or names it. The machine running the agent is the other half of
+    // this: it has to put the picture on disk to be read at all.
+    await sam.waitForEvent(e => e.kind === 'agent.end')
     await settle()
     expect(fs.readdirSync(path.join(host.store.root, 'attachments'))).toEqual([])
     for (const written of walk(host.store.root)) {
