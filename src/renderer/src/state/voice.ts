@@ -133,6 +133,13 @@ export const useVoice = create<VoiceState>((set, get) => {
     set({ phase: 'thinking' })
     const text = await listener.hear(audio)
     if (get().phase === 'off') return
+    // A turn that fell over on the way in says so. Handed back as nothing it is
+    // the same as a cough, and a conversation where every turn quietly failed
+    // looks exactly like one nobody is answering.
+    if (text === null) {
+      set({ phase: 'listening', problem: 'crew could not make out what was said.' })
+      return
+    }
     if (!worthSending(text)) {
       set({ phase: 'listening' })
       return
