@@ -143,6 +143,65 @@ describe('ghost threads', () => {
     expect(sam.events.filter(e => e.kind === 'agent.start').length).toBe(1)
   })
 
+  it('a picture in a ghost thread is never a file in the folder', async () => {
+    const sam = await connectUi('sam')
+    await connectRunner('jamel')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    sam.send({
+      type: 'chat.send',
+      text: '@Fake /ghost look at this',
+      mentions: [fake],
+      attachments: [{ name: 'shot.png', mime: 'image/png', data: PNG.toString('base64') }]
+    })
+    const sent = (await sam.waitForEvent(
+      e => e.kind === 'message' && (e.attachments?.length ?? 0) > 0
+    )) as Message
+    const file = sent.attachments![0].file
+    const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
+
+    // The window it was sent from can see it.
+    const res = await fetch(`${base}/attachments/${file}`)
+    expect(res.status).toBe(200)
+    expect(Buffer.from(await res.arrayBuffer()).equals(PNG)).toBe(true)
+
+    // And nothing in the folder the crew syncs holds it, or names it.
+    await settle()
+    expect(fs.readdirSync(path.join(host.store.root, 'attachments'))).toEqual([])
+    for (const written of walk(host.store.root)) {
+      const body = fs.readFileSync(written)
+      expect(body.includes(PNG)).toBe(false)
+      expect(body.includes(file)).toBe(false)
+    }
+
+    sam.close()
+    await settle()
+    expect((await fetch(`${base}/attachments/${file}`)).status).toBe(404)
+  })
+
+  it('a ghost thread only goes to an agent on your own machine', async () => {
+    const sam = await connectUi('sam')
+    const pat = await connectUi('pat')
+    await connectRunner('sam', 'mine', 'Mine')
+    await connectRunner('pat', 'theirs', 'Theirs')
+    await waitUntil(() => sam.events.filter(e => e.kind === 'agent.online').length === 2)
+
+    // The prompt would be read on the machine that runs the agent, so it is
+    // refused, and only the one who asked is told.
+    sam.chat('@Theirs /ghost read the readme', [agentId('pat', 'theirs')])
+    const refused = (await sam.waitForEvent(e => e.kind === 'message')) as Message
+    expect(refused.text).toContain("somebody else's machine")
+    await settle()
+    expect(sam.events.some(e => e.kind === 'thread.started')).toBe(false)
+    expect(pat.events.some(e => e.kind === 'message')).toBe(false)
+
+    // With one agent of your own here, there is nobody to name.
+    sam.chat('/ghost read the readme')
+    const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
+    expect(thread.ghost).toBe(true)
+    expect(thread.agentId).toBe(agentId('sam', 'mine'))
+  })
+
   it('the thread goes when the window does', async () => {
     const sam = await connectUi('sam')
     await connectRunner('jamel')
