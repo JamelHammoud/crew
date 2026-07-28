@@ -252,6 +252,7 @@ export const useVoice = create<VoiceState>((set, get) => {
 
     end: () => {
       if (!get().open) return
+      hushChat(false)
       playSound('leave')
       unwatch?.()
       unwatch = null
