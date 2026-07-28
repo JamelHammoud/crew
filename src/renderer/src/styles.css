@@ -367,12 +367,15 @@ body {
   animation: toast-out 0.18s ease-in both;
 }
 
-/* The gap between rows is inside what the row clips, so it closes with the row
-   rather than standing behind it while it shuts. */
-.toast-slot {
-  min-height: 0;
-  overflow: hidden;
-  padding-bottom: 12px;
+/* The row closes over the card rather than cutting it down, and nothing here
+   clips: a box that clips its own card clips the shadow it throws with it, which
+   reads as a card standing in a hole. The card keeps its height and its shadow
+   the whole way out and is carried off by the fade instead. The gap between rows
+   is the card's own margin, so it is measured by the row that is closing and
+   leaves nothing behind when the row has gone. */
+.toast-row > * {
+  align-self: start;
+  margin-bottom: 12px;
 }
 
 /* A popover is one card and throws a drop deeper than anything ever stands under
