@@ -39,20 +39,27 @@ export default function Home() {
 
   useEffect(load, [])
 
-  const keep = (): string => {
-    const trimmed = name.trim()
-    localStorage.setItem('crew.name', trimmed)
-    return trimmed
+  const keep = (who: string): string => {
+    localStorage.setItem('crew.name', who)
+    return who
   }
 
-  const open = async (target: string, key: string, opts?: { home: CrewHome }) => {
+  // Nothing can be opened without a name to open it under, so asking for one is
+  // where an empty name leads rather than a line of red under the button.
+  const missingName = (): boolean => {
+    if (name.trim()) return false
+    setError('')
+    setScreen('name')
+    return true
+  }
+
+  const open = async (target: string, key: string, who: string, opts?: { home: CrewHome }) => {
     setBusy(true)
     setBusyKey(key)
     setError('')
     try {
-      const who = keep()
       localStorage.setItem('crew.folder', target)
-      connect(await window.crew.start(target, who, opts))
+      connect(await window.crew.start(target, keep(who), opts))
     } catch (err) {
       setError(cleanError(err))
       setScreen('places')
@@ -65,25 +72,25 @@ export default function Home() {
   // A folder that has been opened before keeps the answer it was given, so the
   // only time anything is asked is the first time.
   const pickFolder = async () => {
+    if (missingName()) return
     const picked = await window.crew.pickFolder()
     if (!picked) return
     setFolder(picked)
     setError('')
     const plan = await window.crew.projectPlan(picked).catch(() => null)
-    if (plan?.known) return open(picked, `project:${picked}`)
+    if (plan?.known) return open(picked, `project:${picked}`, name.trim())
     setAsking({ folder: picked, tracked: plan?.tracked ?? false })
     setScreen('where')
   }
 
-  const joinSession = async (sessionLink: string, sessionFolder: string, key: string) => {
+  const joinSession = async (sessionLink: string, sessionFolder: string, key: string, who: string) => {
     setBusy(true)
     setBusyKey(key)
     setError('')
     try {
-      const who = keep()
       localStorage.setItem('crew.folder', sessionFolder)
       localStorage.setItem('crew.link', sessionLink)
-      connect(await window.crew.join(sessionLink, sessionFolder, who))
+      connect(await window.crew.join(sessionLink, sessionFolder, keep(who)))
     } catch (err) {
       setError(cleanError(err))
       setScreen('places')
@@ -93,14 +100,19 @@ export default function Home() {
     }
   }
 
+  // A place you have been before carries the name you were called there, so
+  // going back in never waits on a render to catch up with the row you pressed.
   const openPlace = async (place: Place) => {
     if (place.join) {
       setName(place.join.name)
       setLink(place.join.link)
       setFolder(place.join.folder)
-      return joinSession(place.join.link, place.join.folder, place.key)
+      return joinSession(place.join.link, place.join.folder, place.key, place.join.name)
     }
-    if (place.project) return open(place.project.folder, place.key)
+    if (place.project) {
+      if (missingName()) return
+      return open(place.project.folder, place.key, name.trim())
+    }
   }
 
   const forget = async (place: Place) => {
