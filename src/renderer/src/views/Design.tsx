@@ -57,7 +57,7 @@ export default function Design() {
         style={{ paddingTop: TOP_BAR_H }}
       >
         <p className="text-base text-fg-muted max-w-sm">
-          Sketch screens and diagrams together. Agents you mention in board chat draw here too, cursors and all.
+          A canvas everyone here draws on. Ask an agent and you watch it draw.
         </p>
         <button
           onClick={() => setSelected(createBoard('Untitled'))}
