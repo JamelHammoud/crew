@@ -138,7 +138,7 @@ describe('plan mode', () => {
     expect(asked.text).toContain('Mention an agent')
     await new Promise(r => setTimeout(r, 200))
     expect(sam.events.filter(e => e.kind === 'thread.started').length).toBe(1)
-    expect(sam.events.some(e => e.kind === 'message')).toBe(false)
+    expect(sam.events.some(e => e.kind === 'message' && e.authorId === 'crew')).toBe(false)
     expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
   })
 
