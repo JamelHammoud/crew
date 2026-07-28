@@ -1218,9 +1218,16 @@ export class CrewSession {
     })
   }
 
+  // A reply or a reaction inside a ghost thread has to find what it points at,
+  // and that was never written to the session, so those transcripts stand at the
+  // end of the scan: the search runs backwards and every target id is its own.
   private reactionTarget(targetId: string): ReactionTarget | null {
-    for (let i = this.events.length - 1; i >= 0; i--) {
-      const event = this.events[i]
+    const events =
+      this.ghosts.size === 0
+        ? this.events
+        : [...this.events, ...[...this.ghosts.values()].flatMap(ghost => ghost.events)]
+    for (let i = events.length - 1; i >= 0; i--) {
+      const event = events[i]
       if (event.kind === 'message' && messageReactionTarget(event.id) === targetId) {
         return {
           authorId: event.authorId,
