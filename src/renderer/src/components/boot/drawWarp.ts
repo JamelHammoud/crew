@@ -6,14 +6,22 @@ import { DEPTH, TRAIL, brightness, project, type Star, type View } from './warp'
 // palette the boot made up for itself.
 const TINTED = 0.22
 
-// The cloud is drawn twice from the one picture, near and far, each drifting
-// its own way. Two of them at different sizes is what gives the flight a depth
-// the stars alone cannot: one layer over a window is wallpaper however good it
-// is, because nothing in it moves against anything else.
+// The cloud is drawn in layers, near and far, each one turning, breathing and
+// drifting its own way. Two of them moving against each other is what makes the
+// picture churn rather than slide: one layer over a window is wallpaper however
+// good it is, because nothing in it moves against anything else.
 const LAYERS = [
-  { scale: 1.5, drift: 0.9, turn: 1, alpha: 0.34 },
-  { scale: 2.45, drift: -1.5, turn: -1, alpha: 0.2 }
+  { cloud: 0, scale: 1.5, spin: 0.09, sway: 0.19, breathe: 0.1, beat: 0.62, drift: 0.9, lag: 0, alpha: 0.34 },
+  { cloud: 1, scale: 2.4, spin: -0.13, sway: 0.14, breathe: 0.14, beat: 0.44, drift: -1.4, lag: 2.2, alpha: 0.2 },
+  { cloud: 0, scale: 3.4, spin: 0.06, sway: 0.26, breathe: 0.09, beat: 0.31, drift: 0.5, lag: 4.1, alpha: 0.12 }
 ]
+
+// How hard the flight drags the cloud past the window. It is the travel the
+// stars have already made rather than a clock, so the cloud rushes while the
+// field is at lightspeed and settles as it comes off it: the two are one
+// movement, and a cloud on a clock of its own reads as a backdrop behind the
+// flight instead of the thing being flown through.
+const RUSH = 0.5
 
 function starColor(star: Star): string {
   if (star.tint > TINTED) return '#ffffff'
