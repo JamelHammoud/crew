@@ -75,7 +75,7 @@ describe('plan mode', () => {
     await connectRunner('jamel')
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Fake /plan add a dark theme', [fake])
+    sam.chat('@Fake add a dark theme', [fake], undefined, ['plan'])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
     await sam.waitForEvent(e => e.kind === 'thread.plan')
 
