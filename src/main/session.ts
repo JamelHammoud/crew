@@ -14,6 +14,7 @@ import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } from '../shared/llm'
 import { projectKey, type CrewHome } from '../shared/project'
+import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import { AgentStore } from './agents-store'
@@ -30,24 +31,7 @@ import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
 import type { PathLocation, RepoFile } from '../shared/files'
 
-// Where you are. One shape for every session, so a crew of one and a crew of
-// six are the same place with different answers to `shared`.
-export interface CurrentSession {
-  wsUrl: string
-  name: string
-  code: string
-  link: string | null
-  folder: string
-  home: CrewHome
-  shared: boolean
-  synced: boolean
-  hosting: boolean
-}
-
-export interface OpenOptions {
-  home?: CrewHome
-  share?: boolean
-}
+export type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
 
 export interface NewAgent {
   provider: string
