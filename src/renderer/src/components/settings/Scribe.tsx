@@ -17,9 +17,9 @@ import Toggle from '../Toggle'
 import { Action, Page, Row, Section } from './parts'
 
 const PRESSES = [
-  { value: 'latch', label: 'Hold, or tap to keep going' },
+  { value: 'latch', label: 'Hold it, or tap to keep going' },
   { value: 'hold', label: 'Hold it down' },
-  { value: 'toggle', label: 'Press to start and stop' }
+  { value: 'toggle', label: 'Press to start, press to stop' }
 ]
 
 const FINISHES = [
