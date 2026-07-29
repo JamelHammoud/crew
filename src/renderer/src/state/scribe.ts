@@ -51,6 +51,10 @@ export const useScribe = create<ScribeState>((set, get) => {
   // is the whole reason the take hands pieces over while somebody is still
   // talking.
   let pieces: Array<Promise<ScribeChunk[]>> = []
+  // The sound those pieces were read from, kept until the dictation has landed.
+  // A reading that fell over must not cost somebody the sentence they said, so
+  // trying again costs one press rather than saying the whole thing over.
+  let held: Array<{ audio: Float32Array; at: number }> = []
   let capped: ReturnType<typeof setTimeout> | undefined
   let loading = false
 
