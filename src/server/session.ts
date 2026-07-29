@@ -1242,6 +1242,321 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'tool.removed', toolId, byName: member.name })
   }
 
+  private handleSubagentAdd(
+    member: Member,
+    name: string,
+    brief: string,
+    opts: { provider?: string; settings?: AgentSettings }
+  ): void {
+    const clean = cleanSubagent(name, brief, opts)
+    if (!clean || this.subagents.size >= MAX_SUBAGENTS) return
+    const role: Subagent = { id: randomUUID(), ...clean, createdBy: member.name, ts: Date.now() }
+    this.subagents.set(role.id, role)
+    this.emit({
+      id: randomUUID(),
+      ts: role.ts,
+      kind: 'subagent.added',
+      roleId: role.id,
+      name: role.name,
+      brief: role.brief,
+      provider: role.provider,
+      settings: role.settings,
+      byName: member.name
+    })
+  }
+
+  private handleSubagentEdit(
+    member: Member,
+    roleId: string,
+    name: string,
+    brief: string,
+    opts: { provider?: string; settings?: AgentSettings }
+  ): void {
+    const role = this.subagents.get(roleId)
+    const clean = cleanSubagent(name, brief, opts)
+    if (!role || !clean) return
+    role.name = clean.name
+    role.brief = clean.brief
+    role.provider = clean.provider
+    role.settings = clean.settings
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'subagent.edited',
+      roleId,
+      name: role.name,
+      brief: role.brief,
+      provider: role.provider,
+      settings: role.settings,
+      byName: member.name
+    })
+  }
+
+  private handleSubagentRemove(member: Member, roleId: string): void {
+    if (!this.subagents.delete(roleId)) return
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'subagent.removed', roleId, byName: member.name })
+  }
+
+  // Somebody starting a helper by hand, on the thread they are standing in. A
+  // thread with a run going hangs it off that run, so stopping the parent stops
+  // it the way it would one the parent sent out itself.
+  private handleSubagentRun(
+    ws: WebSocket,
+    member: Member,
+    roleId: string,
+    threadId: string,
+    subject: string | undefined,
+    task: string
+  ): void {
+    const thread = this.threads.get(threadId)
+    const role = this.subagents.get(roleId)
+    if (!thread || !role) return
+    const spawned = this.spawnSubagent(
+      { threadId, promptId: thread.running ?? undefined, byName: member.name },
+      role,
+      subject ?? task,
+      task,
+      true
+    )
+    if ('error' in spawned) this.notice(spawned.error, ws)
+  }
+
+  private subagentThreads(parentThreadId: string): Thread[] {
+    return [...this.threads.values()].filter(thread => thread.parentThreadId === parentThreadId)
+  }
+
+  private subagentRunning(thread: Thread): boolean {
+    return thread.running !== null || thread.queue.length > 0
+  }
+
+  // Who runs a role: an agent of the provider it asks for, owned by whoever the
+  // parent belongs to and here, then any agent of that provider here, then the
+  // parent's own agent. A role naming nothing runs on the parent's own, which
+  // keeps the common case on one machine.
+  private runnerFor(role: Subagent, parent: AgentState): AgentState | null {
+    if (!role.provider) return parent.runner ? parent : null
+    const here = this.agentsHere().filter(agent => agent.provider === role.provider)
+    return here.find(agent => agent.ownerId === parent.ownerId) ?? here[0] ?? (parent.runner ? parent : null)
+  }
+
+  // The whole of what a parent may do. Every refusal is a sentence rather than
+  // a code, because the only thing that reads them is a model.
+  spawnSubagent(
+    from: { threadId: string; promptId?: string; byName: string },
+    role: Subagent,
+    subject: string,
+    task: string,
+    notify: boolean
+  ): { id: string; threadId: string } | { error: string } {
+    const parent = this.threads.get(from.threadId)
+    if (!parent) return { error: 'That thread is not open.' }
+    const cleanTask = task.trim().slice(0, TASK_LIMIT)
+    if (!cleanTask) return { error: 'Say what the helper should do.' }
+    if ((parent.depth ?? 0) >= DEPTH_LIMIT) return { error: 'A helper this far down cannot send out helpers of its own.' }
+    const born = this.subagentThreads(from.threadId)
+    if (born.length >= RUN_LIMIT) return { error: `This thread has already run ${RUN_LIMIT} helpers.` }
+    const out = born.filter(thread => this.subagentRunning(thread))
+    if (out.length >= FAN_LIMIT) return { error: `You already have ${FAN_LIMIT} running. Wait for one to come back.` }
+    const parentAgent = this.agents.get(parent.agentId)
+    if (!parentAgent) return { error: 'That thread has no agent on it.' }
+    const agent = this.runnerFor(role, parentAgent)
+    if (!agent) return { error: `No agent is here to run ${role.name}.` }
+    const asker: Member = { id: parentAgent.id, name: from.byName, connections: new Set() }
+    const threadId = this.startThread(asker, agent, cleanTask, [], {
+      ghost: this.ghostOf(from.threadId)?.ws,
+      subagent: {
+        parentThreadId: from.threadId,
+        parentPromptId: from.promptId ?? '',
+        role,
+        subject: (subject || cleanTask).replace(/\s+/g, ' ').trim().slice(0, SUBJECT_LIMIT),
+        depth: (parent.depth ?? 0) + 1,
+        notify
+      }
+    })
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'subagent.started',
+      threadId,
+      parentThreadId: from.threadId,
+      parentPromptId: from.promptId ?? '',
+      roleId: role.id,
+      roleName: role.name,
+      subject: this.threads.get(threadId)?.subject ?? '',
+      agentId: agent.id,
+      agentLabel: agent.label,
+      byName: from.byName
+    })
+    return { id: threadId, threadId }
+  }
+
+  // Another turn for a helper still going, which a steerable one takes mid-run
+  // for the same reason a person typing into a thread does.
+  saySubagent(threadId: string, text: string): boolean {
+    const thread = this.threads.get(threadId)
+    const trimmed = text.trim().slice(0, TASK_LIMIT)
+    if (!thread?.parentThreadId || !trimmed) return false
+    const agent = this.agents.get(thread.agentId)
+    if (!agent) return false
+    const parentAgent = this.agents.get(this.threads.get(thread.parentThreadId)?.agentId ?? '')
+    const asker: Member = {
+      id: parentAgent?.id ?? SYSTEM_AUTHOR_ID,
+      name: parentAgent?.label ?? SYSTEM_AUTHOR_NAME,
+      connections: new Set()
+    }
+    this.enqueuePrompt(agent, asker, trimmed, threadId, [], { messageId: randomUUID(), mentions: [agent.id] })
+    return true
+  }
+
+  stopSubagent(threadId: string): boolean {
+    const thread = this.threads.get(threadId)
+    if (!thread?.parentThreadId) return false
+    thread.queue = []
+    this.broadcastQueue(thread)
+    if (thread.running) this.handleCancel(thread.running)
+    return true
+  }
+
+  // Where a helper has got to, for a parent that would rather look than wait.
+  subagentState(threadId: string): {
+    id: string
+    subject: string
+    role: string
+    agent: string
+    state: 'working' | 'done' | 'failed'
+    ms: number
+    said: string
+    tokens: number
+    files: string[]
+  } | null {
+    const thread = this.threads.get(threadId)
+    if (!thread?.parentThreadId) return null
+    const events = this.eventsOf(threadId)
+    const end = [...events]
+      .reverse()
+      .find(
+        (event): event is Extract<SessionEvent, { kind: 'agent.end' }> =>
+          event.kind === 'agent.end' && event.threadId === threadId
+      )
+    const working = this.subagentRunning(thread)
+    const files = new Set<string>()
+    let tokens = 0
+    for (const event of events) {
+      if (event.kind !== 'agent.step' || event.threadId !== threadId) continue
+      for (const file of event.step.files ?? []) files.add(file.path)
+    }
+    for (const run of this.agents.get(thread.agentId)?.runs.values() ?? []) tokens += run.tokens
+    return {
+      id: threadId,
+      subject: thread.subject ?? thread.title,
+      role: this.subagents.get(thread.roleId ?? '')?.name ?? '',
+      agent: thread.agentLabel,
+      state: working ? 'working' : end?.ok === false ? 'failed' : 'done',
+      ms: Math.max(0, Date.now() - (thread.startedAt ?? Date.now())),
+      said: working ? '' : (end?.text ?? end?.error ?? ''),
+      tokens,
+      files: [...files]
+    }
+  }
+
+  // The one case where a parent has nothing of its own left to do. It is bounded
+  // rather than open, because a run with no output at all is killed for idling
+  // long before a helper doing real work would come back.
+  waitSubagents(threadIds: string[], ms: number): Promise<{ finished: string[]; pending: string[] }> {
+    const watched = threadIds.filter(id => this.threads.get(id)?.parentThreadId)
+    const settled = (): boolean => watched.every(id => !this.subagentRunning(this.threads.get(id)!))
+    const answer = (): { finished: string[]; pending: string[] } => ({
+      finished: watched.filter(id => !this.threads.get(id) || !this.subagentRunning(this.threads.get(id)!)),
+      pending: watched.filter(id => this.threads.get(id) && this.subagentRunning(this.threads.get(id)!))
+    })
+    if (watched.length === 0 || settled()) return Promise.resolve(answer())
+    return new Promise(resolve => {
+      const done = (): void => {
+        clearTimeout(wait.timer)
+        this.waits.delete(wait)
+        resolve(answer())
+      }
+      const timer = setTimeout(done, Math.min(Math.max(1000, ms), WAIT_MS))
+      timer.unref?.()
+      const wait: PendingWait = {
+        threadIds: watched,
+        timer,
+        settle: () => {
+          if (settled()) done()
+        }
+      }
+      this.waits.add(wait)
+    })
+  }
+
+  // A helper has gone quiet with nothing behind it. Its answer is held for a
+  // breath so a run of them arriving together is one interruption, then handed
+  // to whatever the parent is doing.
+  private subagentReturn(thread: Thread, ok: boolean, text: string): void {
+    const parentId = thread.parentThreadId
+    if (!parentId) return
+    for (const wait of [...this.waits]) {
+      if (wait.threadIds.includes(thread.id)) wait.settle()
+    }
+    const ms = Math.max(0, Date.now() - (thread.startedAt ?? Date.now()))
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'subagent.ended',
+      threadId: thread.id,
+      parentThreadId: parentId,
+      ok,
+      ms
+    })
+    if (thread.notify === false) return
+    const woken = this.wakes.get(parentId) ?? 0
+    if (woken >= WAKE_LIMIT) return
+    const held = this.returns.get(parentId)
+    const item: SubagentReturn = {
+      name: this.subagents.get(thread.roleId ?? '')?.name ?? thread.agentLabel,
+      subject: thread.subject ?? thread.title,
+      ok,
+      ms,
+      text
+    }
+    if (held) {
+      held.items.push(item)
+      return
+    }
+    const timer = setTimeout(() => this.deliverReturns(parentId), RETURN_COALESCE_MS)
+    timer.unref?.()
+    this.returns.set(parentId, { timer, items: [item] })
+  }
+
+  private deliverReturns(parentThreadId: string): void {
+    const held = this.returns.get(parentThreadId)
+    this.returns.delete(parentThreadId)
+    const parent = this.threads.get(parentThreadId)
+    if (!held || !parent) return
+    this.wakes.set(parentThreadId, (this.wakes.get(parentThreadId) ?? 0) + 1)
+    const stillOut = this.subagentThreads(parentThreadId)
+      .filter(thread => this.subagentRunning(thread))
+      .map(thread => this.subagents.get(thread.roleId ?? '')?.name ?? thread.agentLabel)
+    const text = returnText(held.items, stillOut)
+    const agent = this.agents.get(parent.agentId)
+    if (!agent?.runner && !agent?.dropTimer) return
+    const steer: PendingSteer = {
+      messageId: randomUUID(),
+      text,
+      byName: SYSTEM_AUTHOR_NAME,
+      authorId: SYSTEM_AUTHOR_ID,
+      threadId: parentThreadId,
+      attachments: [],
+      silent: true
+    }
+    const running = parent.running ? this.prompts.get(parent.running)?.agentId : undefined
+    if (agent.runner && parent.running && running === agent.id && agent.steerable) {
+      this.sendSteer(agent, parent.running, steer)
+      return
+    }
+    this.requeueSteer(agent, steer)
+  }
+
   // 'Do' is the moment a todo becomes real work: a thread starts with the
   // todo's text as its first prompt, and the todo itself is gone.
   private handleTodoDo(member: Member, todoId: string, agentId?: string): void {
