@@ -112,6 +112,11 @@ export interface ThreadItem {
   promptId?: string
   agentId?: string
   error?: string
+  // The mark this reads under, in place of the pet. A helper's own thread is
+  // the one place an agent's words are not the agent's: they are the helper's,
+  // so they stand under the name it was made up with and the mark drawn from
+  // its id.
+  helperSeed?: string
   name?: string
   detail?: string
   output?: string
