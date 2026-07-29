@@ -31,7 +31,7 @@ const thread = (id: string, plan?: string): ThreadMeta => ({
 beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn()
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
-  useBrowser.setState({ tabs: [], activeTabId: null, closedPlans: [] })
+  useBrowser.setState({ open: false, tabs: [], activeTabId: null, closedPlans: [] })
   useCrew.setState({ threads: {}, openThreadId: null })
 })
 
