@@ -1,6 +1,8 @@
 import { CheckGlyph } from '../../icons'
+import { setPref, usePrefs } from '../../state/prefs'
 import { applyTheme, useTheme, type Theme } from '../../state/theme'
-import { Page } from './parts'
+import Toggle from '../Toggle'
+import { Page, Row, Section } from './parts'
 
 // The window as it would be, drawn in the theme it is offering rather than in
 // the one the app is wearing, the way the design canvas pins its own palette.
