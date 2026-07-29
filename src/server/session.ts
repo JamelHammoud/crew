@@ -70,6 +70,7 @@ import {
   type MusicRoom,
   type MusicUpload
 } from '../shared/music'
+import { ASIDE_INSTRUCTIONS } from '../shared/aside'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
