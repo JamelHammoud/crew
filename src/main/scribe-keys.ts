@@ -1,6 +1,12 @@
 import { globalShortcut, systemPreferences } from 'electron'
 import { createRequire } from 'node:module'
-import { ARM_MS, fallbackCombo, type ScribeKey, type ScribeSettings } from '../shared/scribe'
+import {
+  ARM_MS,
+  fallbackCombo,
+  type ScribeKey,
+  type ScribeKeyState,
+  type ScribeSettings
+} from '../shared/scribe'
 import { ScribeLatch } from '../shared/scribeLatch'
 
 // The hotkey. A bare modifier is the only key worth dictating on and it is the
@@ -59,15 +65,6 @@ const CODES: Record<Exclude<ScribeKey, 'none'>, string[]> = {
 function codesFor(key: ScribeKey, keys: Record<string, number>): number[] {
   if (key === 'none') return []
   return CODES[key].map(name => keys[name]).filter(code => typeof code === 'number')
-}
-
-export interface ScribeKeysState {
-  // Whether the low level hook is really running. On Windows it can go quiet
-  // after the microphone opens, and on macOS it needs Accessibility, so this is
-  // said on the settings page rather than left to be guessed from a key that
-  // does nothing.
-  hooked: boolean
-  trusted: boolean
 }
 
 export class ScribeKeys {
