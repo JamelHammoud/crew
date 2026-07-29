@@ -106,8 +106,12 @@ export const useScribe = create<ScribeState>((set, get) => {
     problem: null,
     settings: defaultSettings(platform()),
 
+    // A press while the model is still coming down still records. Whisper is
+    // asked for the words either way and answers once it is here, which costs
+    // the first dictation a wait and loses none of it.
     arm: async () => {
-      if (get().phase !== 'off' && get().phase !== 'failed') return
+      const phase = get().phase
+      if (phase !== 'off' && phase !== 'failed' && phase !== 'waking') return
       pieces = []
       set({ phase: 'arming', problem: null })
       const problem = await take.start()
