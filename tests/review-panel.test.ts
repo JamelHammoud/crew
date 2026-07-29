@@ -144,6 +144,28 @@ describe('the review tab', () => {
     await waitFor(() => expect(sent).toEqual([{ do: 'discard', paths: ['src/app.ts'] }]))
   })
 
+  // Restoring a file takes it back to what the index holds, so discarding a
+  // staged change would only throw half of it away. It is unstaged first.
+  it('offers discard on what is not staged and nowhere else', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/app.ts', true, '@@ -1 +1 @@\n-a\n+b'),
+          change('src/other.ts', false, '@@ -1 +1 @@\n-a\n+b')
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+
+    fireEvent.click(await screen.findByLabelText('More for app.ts'))
+    expect(screen.queryByText('Discard')).toBeNull()
+    fireEvent.keyDown(window, { key: 'Escape' })
+
+    fireEvent.click(screen.getByLabelText('More for other.ts'))
+    expect(await screen.findByText('Discard')).not.toBeNull()
+  })
+
   it('says what has been put aside and puts it back', async () => {
     bridge(work({ stashes: [{ ref: 'stash@{0}', message: 'Half a feature', branch: 'main' }] }))
 
