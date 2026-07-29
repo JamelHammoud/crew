@@ -96,6 +96,24 @@ export const WindowGlyph = glyph(
   </>
 )
 
+// The same screen with a panel down one side of it, so a window and a window
+// with something beside it are one object wearing two insides. The divider
+// stands a third of the way in, which is the least that reads as a panel rather
+// than as a frame drawn twice at 16.
+export const PanelLeftGlyph = glyph(
+  <>
+    <rect {...SCREEN} />
+    <path d="M9 4.5v15" />
+  </>
+)
+
+export const PanelRightGlyph = glyph(
+  <>
+    <rect {...SCREEN} />
+    <path d="M15 4.5v15" />
+  </>
+)
+
 export const TerminalGlyph = glyph(
   <>
     <rect {...SCREEN} />
