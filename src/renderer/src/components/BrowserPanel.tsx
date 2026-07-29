@@ -339,6 +339,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           <SubagentMark seed={roleSeed(tab)} size={18} />
         ) : tab.kind === 'plan' ? (
           <ChecklistGlyph className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'aside' ? (
+          <QuestionGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'music' ? (
           <MusicGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'game' ? (
