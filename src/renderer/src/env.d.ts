@@ -64,6 +64,7 @@ declare global {
     applyScribe(settings: ScribeSettings): Promise<ScribeKeyState>
     scribeState(): Promise<ScribeKeyState>
     openScribePermission(): Promise<void>
+    scribeWrite(text: string): void
     scribeDone(text: string): void
     dismissScribe(): void
     resizeScribe(height: number): void
