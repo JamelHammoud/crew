@@ -22,7 +22,7 @@ import type {
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
 const DIFF_LIMIT = 200_000
 const DIFF_LINE_LIMIT = 2_000
-const UNIT = ''
+const UNIT = '\u001f'
 const AUTO_SYNC_MS = 5000
 const DEBOUNCE_MS = 2000
 
