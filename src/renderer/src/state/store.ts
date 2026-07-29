@@ -559,6 +559,7 @@ export const useCrew = create<CrewState>((set, get) => {
         const activePrompts: Record<string, string[]> = {}
         const steps: Record<string, AgentStep[]> = {}
         const tokens: Record<string, number> = {}
+        const costs: Record<string, number> = {}
         for (const event of msg.snapshot.events) {
           foldThread(threads, event)
           if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
@@ -575,6 +576,7 @@ export const useCrew = create<CrewState>((set, get) => {
           for (const [promptId, run] of Object.entries(agent.runs)) {
             for (const step of run.steps) steps[promptId] = upsertStep(steps[promptId], step)
             tokens[promptId] = run.tokens
+            if (run.cost !== undefined) costs[promptId] = run.cost
           }
         }
         set({
@@ -595,6 +597,7 @@ export const useCrew = create<CrewState>((set, get) => {
           boards: msg.snapshot.boards ?? [],
           steps,
           tokens,
+          costs,
           activePrompts,
           threads,
           threadPrompts,
