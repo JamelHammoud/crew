@@ -129,14 +129,19 @@ describe('commands in a thread', () => {
 
   it('says on the button where the message is going', () => {
     const composer = open({ mid: true })
+    const write = (value: string) => fireEvent.change(composer, { target: { value } })
+
+    write('and the changelog')
     expect(screen.getByLabelText('Steer')).toBeTruthy()
 
-    fireEvent.change(composer, { target: { value: '/queue ' } })
+    write('/queue ')
+    write('and the changelog')
     expect(screen.getByLabelText('Send')).toBeTruthy()
 
-    fireEvent.change(composer, { target: { value: '/btw ' } })
-    expect(screen.getByLabelText('Ask')).toBeTruthy()
+    write('/btw ')
     expect(composer.placeholder).toBe('Ask about this thread, off to the side')
+    write('what is this file for')
+    expect(screen.getByLabelText('Ask')).toBeTruthy()
   })
 
   it('sends the command beside the message rather than in it', () => {

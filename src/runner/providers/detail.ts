@@ -18,10 +18,13 @@ const TODO_TEXT_LIMIT = 160
 const DOING = new Set(['in_progress', 'in-progress', 'inprogress', 'running', 'active', 'started'])
 const DONE = new Set(['completed', 'complete', 'done', 'finished'])
 
-const todoStatus = (value: unknown): StepTodo['status'] => {
-  const status = typeof value === 'string' ? value.toLowerCase() : ''
+const todoStatus = (line: Record<string, unknown>): StepTodo['status'] => {
+  const raw = line['status'] ?? line['state']
+  const status = typeof raw === 'string' ? raw.toLowerCase() : ''
   if (DOING.has(status)) return 'doing'
   if (DONE.has(status)) return 'done'
+  // Codex says it with a boolean rather than a word, and has no third state.
+  if (raw === undefined && line['completed'] === true) return 'done'
   return 'todo'
 }
 
