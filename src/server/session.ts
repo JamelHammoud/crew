@@ -1089,9 +1089,10 @@ export class CrewSession {
       subagent?: {
         parentThreadId: string
         parentPromptId: string
-        role: Subagent
+        name: string
         subject: string
         depth: number
+        settings?: AgentSettings
         notify: boolean
       }
     } = {}
@@ -1115,9 +1116,10 @@ export class CrewSession {
       aside: opts.aside,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
-      roleId: sent?.role.id,
+      helper: sent?.name,
       subject: sent?.subject,
       depth: sent?.depth,
+      helperSettings: sent?.settings,
       notify: sent?.notify,
       startedAt: Date.now()
     }
@@ -1141,7 +1143,7 @@ export class CrewSession {
       aside: thread.aside,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
-      roleId: sent?.role.id,
+      helper: sent?.name,
       subject: sent?.subject,
       depth: sent?.depth
     })
@@ -1338,14 +1340,20 @@ export class CrewSession {
   // parent belongs to and here, then any agent of that provider here, then the
   // parent's own agent. A role naming nothing runs on the parent's own, which
   // keeps the common case on one machine.
-  private runnerFor(role: Subagent, parent: AgentState): AgentState | null {
+  private runnerFor(provider: string | undefined, parent: AgentState): AgentState | null {
     // Somebody who has turned helpers off never has one land on their machine,
-    // however the role is worded and whoever asked for it.
+    // whoever asked for it and whatever CLI it asked for.
     const willing = (agent: AgentState): boolean => this.helpersFor(agent.ownerId).on
     if (!willing(parent)) return null
-    if (!role.provider) return parent.runner ? parent : null
-    const here = this.agentsHere().filter(agent => agent.provider === role.provider && willing(agent))
+    if (!provider) return parent.runner ? parent : null
+    const here = this.agentsHere().filter(agent => agent.provider === provider && willing(agent))
     return here.find(agent => agent.ownerId === parent.ownerId) ?? here[0] ?? (parent.runner ? parent : null)
+  }
+
+  // The CLIs a helper could be put on, which is only ever what somebody here
+  // is actually running.
+  private spawnProviders(): string[] {
+    return [...new Set(this.agentsHere().map(agent => agent.provider))].sort()
   }
 
   // A member is keyed by name here, so who somebody is is asked once rather
