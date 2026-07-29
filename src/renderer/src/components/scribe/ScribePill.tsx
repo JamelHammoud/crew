@@ -69,6 +69,7 @@ export default function ScribePill() {
   const reading = phase === 'reading'
   const failed = phase === 'failed'
   const waking = phase === 'waking'
+  const resting = phase === 'off'
   const again = failed && keeping()
 
   // The outer box is the room the shadow lands in. It is the window that is
@@ -76,20 +77,32 @@ export default function ScribePill() {
   // nothing in that margin takes the pointer: it is empty air standing over
   // somebody else's application.
   //
+  // It is as wide as what it holds rather than as wide as the window, because
+  // the window is now the one that follows: a pill that is on screen all day
+  // may only ever swallow the clicks that land on the pill itself.
+  //
   // The pill stands in the middle of it and opens from its own middle, so it is
   // where it was put whether it is open or shut.
   return (
-    <div className="pointer-events-none flex justify-center" style={{ padding: PILL_ROOM }}>
+    <div className="pointer-events-none w-fit flex justify-center" style={{ padding: PILL_ROOM }}>
       {/* The whole of it is the handle, so it is moved by taking hold of it
           anywhere rather than by finding a strip somewhere on it to aim at. The
           cursor is the only thing that says so, which is all it needs to. */}
       <div
         onPointerDown={grab}
-        className={`group pointer-events-auto relative glass glass-pill rounded-full min-h-[52px] p-2 flex items-center animate-pop cursor-grab active:cursor-grabbing ${
-          failed ? 'w-full' : 'w-fit'
-        }`}
+        style={failed ? { width: PILL_WIDTH } : undefined}
+        className={`group pointer-events-auto relative glass glass-pill rounded-full flex items-center animate-pop cursor-grab active:cursor-grabbing ${
+          resting ? 'h-7 px-3' : 'min-h-[40px] p-1.5'
+        } ${failed ? '' : 'w-fit'}`}
       >
         <InsetRing className="border border-fg/10" />
+
+        {/* At rest it is the mark and nothing else. There is nothing to hear, so
+            a row of bars sitting at its floor would read as a microphone that
+            has stopped, and nothing to press either: the key is what starts a
+            dictation, so a button here would be a second answer to a question
+            that already has one. */}
+        {resting && <ScribeGlyph className="w-4 h-4 text-fg/45" strokeWidth={STROKE_BOLD} />}
 
         {/* The one slot there is, and the pointer is what opens it. While
             somebody is talking the bars are the whole of what the pill has to
@@ -101,17 +114,19 @@ export default function ScribePill() {
             There is nothing here that finishes a dictation: the key opened it
             and the key is what ends it, and with the words already landing there
             is nothing left to hand over. */}
-        <span
-          className={`flex h-8 shrink-0 items-center overflow-hidden transition-[width] duration-200 ease-out ${
-            failed ? 'w-10' : 'w-0 group-hover:w-10'
-          }`}
-        >
-          <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
-            <CloseGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
-          </Round>
-        </span>
+        {!resting && (
+          <span
+            className={`flex h-7 shrink-0 items-center overflow-hidden transition-[width] duration-200 ease-out ${
+              failed ? 'w-9' : 'w-0 group-hover:w-9'
+            }`}
+          >
+            <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
+              <CloseGlyph className="w-3.5 h-3.5" strokeWidth={STROKE_BOLD} />
+            </Round>
+          </span>
+        )}
 
-        {failed ? (
+        {resting ? null : failed ? (
           <p className="flex-1 min-w-0 flex items-center gap-1.5 text-xs text-fg/70 leading-tight">
             <WarningGlyph className="w-4 h-4 shrink-0 text-danger" />
             <span className="line-clamp-2">{problem ?? 'That did not work.'}</span>
