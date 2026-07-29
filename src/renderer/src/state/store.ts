@@ -19,6 +19,7 @@ import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../share
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
+import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
 import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
 import { alertToast } from '../components/alertToast'
