@@ -19,8 +19,7 @@ export function useSubagentRuns(parentThreadId: string): SubagentRun[] {
       const home = ended.get(event.threadId)
       runs.push({
         threadId: event.threadId,
-        roleId: event.roleId,
-        roleName: event.roleName,
+        name: event.name,
         subject: event.subject,
         agentId: event.agentId,
         ok: home?.ok,
