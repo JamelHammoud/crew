@@ -171,6 +171,13 @@ export default function Scribe() {
         </Row>
       </Section>
 
+      <Section
+        title="Recently said"
+        action={said.length > 0 && <Quiet label="Clear" onClick={() => forgetSaid()} />}
+      >
+        <Recent said={said} />
+      </Section>
+
       <Section title="The key">
         <Row label="Which one">
           <Select
