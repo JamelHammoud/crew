@@ -243,6 +243,8 @@ interface DesignBoard {
 
 const THREAD_STATUSES = new Set<ThreadStatus>(['open', 'done', 'archived'])
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 interface PromptRef {
   agentId: string
   threadId: string
@@ -1267,11 +1269,16 @@ export class CrewSession {
     member: Member,
     name: string,
     brief: string,
-    opts: { provider?: string; settings?: AgentSettings }
+    opts: { provider?: string; settings?: AgentSettings; roleId?: string }
   ): void {
     const clean = cleanSubagent(name, brief, opts)
     if (!clean || this.subagents.size >= MAX_SUBAGENTS) return
-    const role: Subagent = { id: randomUUID(), ...clean, createdBy: member.name, ts: Date.now() }
+    // The window that made it named the id, so the mark it was drawn with on
+    // the form is the mark it keeps. An older window and a junk id both come
+    // back as a role rather than as nothing.
+    const asked = opts.roleId
+    const id = asked && UUID.test(asked) && !this.subagents.has(asked) ? asked : randomUUID()
+    const role: Subagent = { id, ...clean, createdBy: member.name, ts: Date.now() }
     this.subagents.set(role.id, role)
     this.emit({
       id: randomUUID(),
