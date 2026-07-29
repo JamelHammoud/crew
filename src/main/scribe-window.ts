@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import { BrowserWindow, screen } from 'electron'
-import type { ScribeSettings } from '../shared/scribe'
+import { PILL_MAX, PILL_MIN, PILL_ROOM, PILL_WIDTH, type ScribeSettings } from '../shared/scribe'
 import { grown, hold, middle, restSpot, spotFrom, type Spot } from './scribe-spot'
 import type { PanelPage } from './tray-panel'
 import { createScribeOptions } from './window-options'
@@ -8,10 +8,14 @@ import { createScribeOptions } from './window-options'
 // The pill, and the window it stands in. Frameless, transparent, above
 // everything, and never focused: whatever you were typing in has to keep the
 // caret, or a dictation would land nowhere.
+//
+// The window is the pill plus PILL_ROOM on every side, so its shadow has
+// somewhere to land. Everything below is that window rather than the pill, which
+// is why the room is added back to the screen a spot is held inside.
 
-const WIDTH = 216
-const HEIGHT = 56
-const MAX_HEIGHT = 140
+const WIDTH = PILL_WIDTH + PILL_ROOM * 2
+const HEIGHT = PILL_MIN + PILL_ROOM * 2
+const MAX_HEIGHT = PILL_MAX + PILL_ROOM * 2
 
 export class ScribeWindow {
   private win: BrowserWindow | null = null
