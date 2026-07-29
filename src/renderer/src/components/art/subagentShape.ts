@@ -35,10 +35,15 @@ const OUTER: Record<ShapeKind, number> = {
   square: SQUARE
 }
 
-// More lobes at the same depth is a smaller waist between each pair, so how far
-// they may stand out comes down as they multiply. Past this the mark reads as
-// scattered dots at 18 across rather than as one shape.
-const deepest = (lobes: number): number => 0.34 - (lobes - MIN_LOBES) * 0.026
+// The narrowest a waist between two lobes may get, said as a share of the tip.
+// Under about half of it the mark stops being one shape and reads as scattered
+// dots at 18 across, which is the size most of them are worn at.
+export const MIN_WAIST = 0.52
+
+// More lobes at the same depth is a tighter waist between each pair, so how far
+// they may stand out comes down as they multiply.
+const deepest = (lobes: number): number =>
+  ((1 - MIN_WAIST) / (1 + MIN_WAIST)) * (1 - (lobes - MIN_LOBES) * 0.07)
 
 // A page of flowers is a page of flowers. The covers hold the same rule with
 // their six casts, and it is what stops every mark being the same picture in a
