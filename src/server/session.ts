@@ -942,7 +942,10 @@ export class CrewSession {
     const holding = threadId ? asking.includes('queue') : false
     const beside = threadId ? asking.includes('btw') : false
     const trimmed = text.trim()
-    const hidden = threadId ? this.ghostOf(threadId) !== undefined : ghosting
+    // A question on the side opens a ghost of its own, so a picture sent with
+    // one is held for the window the way any ghost's is, whatever the thread it
+    // was asked from does with its own.
+    const hidden = threadId ? beside || this.ghostOf(threadId) !== undefined : ghosting
     const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
     if (!trimmed && attachments.length === 0) return
     const replyTo = this.replyReference(ws, replyTargetId)
