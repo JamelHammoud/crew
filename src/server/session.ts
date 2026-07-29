@@ -303,6 +303,10 @@ const NOT_RUNNING = 'That promptId is not a run this session has going.'
 type Done = { ok: true } | { error: string }
 
 const SNAPSHOT_EVENT_LIMIT = 500
+
+// A board is a handful of lines per thread, so this is a backstop against a
+// session that has run for months rather than a size anyone should reach.
+const TICKET_HISTORY_LIMIT = 600
 const HISTORY_PAGE = 200
 const CONTEXT_EVENT_LIMIT = 20
 const MAX_DOC_PROMPT_CHARS = 8000
