@@ -26,11 +26,9 @@ import { mentionsIn } from '../../../shared/llm'
 import {
   ArchiveGlyph,
   CheckGlyph,
-  ChecklistGlyph,
   ChevronLeftGlyph,
   EyeGlyph,
-  GroupGlyph,
-  TicketGlyph,
+  PanelRightGlyph,
   WarningGlyph
 } from '../icons'
 import { useBrowser } from '../state/browser'
