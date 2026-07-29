@@ -124,6 +124,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         text: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false }
       }
       const toolNames = new Map<string, string>()
+      const tasks = taskLedger()
 
       const idleMs = opts.idleTimeoutMs ?? IDLE_TIMEOUT_MS
       let idleTimer: NodeJS.Timeout | null = null
