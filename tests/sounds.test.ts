@@ -124,6 +124,30 @@ const ended = (ok: boolean, threadId?: string): SessionEvent => ({
   threadId
 })
 
+const helperOut = (): SessionEvent => ({
+  id: 'h1',
+  ts: 1,
+  kind: 'subagent.started',
+  threadId: 'h1',
+  parentThreadId: 't1',
+  parentPromptId: 'p1',
+  name: 'Scout',
+  subject: 'reading the schema',
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  byName: 'Bubbles'
+})
+
+const helperHome = (ok = true): SessionEvent => ({
+  id: 'h2',
+  ts: 1,
+  kind: 'subagent.ended',
+  threadId: 'h1',
+  parentThreadId: 't1',
+  ok,
+  ms: 900
+})
+
 const thread = (id: string, extra: Partial<ThreadMeta> = {}): ThreadMeta => ({
   id,
   agentId: 'a1',
