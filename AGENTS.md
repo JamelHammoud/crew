@@ -104,6 +104,19 @@ A panel of tiles under the top bar. The built-in ones are the app's own hand, a 
 - A chain is the crew's own tools, in the order they were picked, and it is built out of what is already in the toolbox rather than out of a second kind of tool nobody can see. It never names the tool being built, a tool it has already reached is passed over, so a pair that name each other is a short run rather than a locked window, and `STEP_LIMIT` is the end of it. Its blanks are asked for once across the whole run.
 - Where pressing a tool leaves you is `opensPanel`, which a chain answers for every step it holds. A page, a file and a terminal are things the side panel holds, and an ask is a message, so it takes you to the chat instead. A doc and a board have tabs of their own. Copying, saying something, adding a task, writing a line and putting a track on all leave you where you are, so `saidAfter` keeps the toolbox up and the tile says what happened rather than a panel closing over nothing.
 
+## Settings
+
+A card with a rail of pages down the side, opened by your own face in the top right. Everything that is yours alone and everything the crew shares is on it, so nothing about either has a tab of its own any more.
+
+- The face is the whole way in. There is no menu between the press and the card: a list of the same things one press earlier is a list to read before getting to the thing, and it grew a row every time the app did.
+- `SETTINGS_TABS` in `src/renderer/src/components/settings/tabs.ts` is the one table of what there is. The rail and the page it opens both read it, so the word somebody picked is the word at the top of what they get. `state/settings.ts` is which page is up, held outside the tree the way a toast is, so anything can raise it and the card never stands inside whatever opened it.
+- Two groups, You and Crew. The first row wears your own face and your own name rather than a mark and a word, because the face is already what says who the page is about.
+- Pages stand beside each other rather than in front of each other, so nothing travels between them: one is simply the one that is up, and it fades. A page that slides in says you went somewhere, and picking a row in a rail is not going anywhere. It cannot move either, since a page fills a scroller and eight pixels of arrival is a scrollbar coming and going for the length of it. Each page keeps its own scroller, so one comes back where it was left.
+- The card is glass, so nothing on it is set in a solid grey. Every word and mark inside takes the foreground at an opacity, `Select` and the agent cards included, which is why those were turned over when they moved here.
+- A page is `Page`, `Section` and `Row` from `settings/parts.tsx`, and a row is what it is called on the left and what you do about it on the right. A line under the label only where it says something the row cannot say on its own.
+- The agents live here now. The way in stands at the end of the list rather than off in a corner of the page, so it is the empty state and the way in both, the way the toolbox ends its own row on the slot that opens the builder.
+- Nothing here is a second way to do something the app already does elsewhere. The huddle is the toolbox's, and the music plays from its own panel: what the settings hold of the music is the one thing that is yours alone, which is how loud it is where you sit.
+
 ## Toasts
 
 A word from the app about what just happened, standing under the header on the right for a few seconds. `toast()` in `src/renderer/src/state/toast.ts` raises one from anywhere, in the renderer or out of a handler, and `Toaster` is the one stack, mounted once in `App` and standing in the body.
