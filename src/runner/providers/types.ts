@@ -1,5 +1,21 @@
 import type { AgentSettingField, AgentSettings, AgentUsage, FileChange, RunStep, StepTodo } from '../../shared/llm'
 
+// What one call of the model cost in tokens, as the CLI reports it. Every field
+// is optional because no two CLIs report the same set.
+export interface ParsedUsage {
+  model?: string
+  input?: number
+  output?: number
+  cacheRead?: number
+  cacheWrite?: number
+  // What the CLI worked out for itself. That is the real figure rather than an
+  // estimate off a table, so it stands in for one wherever it is given.
+  cost?: number
+  // The whole turn rather than one call inside it, which is what the end of a
+  // run hands back. It is counted in place of the parts, never beside them.
+  total?: boolean
+}
+
 export interface ParsedActivity {
   id: string
   kind: 'tool' | 'subagent'
