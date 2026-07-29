@@ -188,7 +188,7 @@ export class ScribeWindow {
   private window(): BrowserWindow {
     if (this.win) return this.win
     const win = new BrowserWindow(
-      createScribeOptions(process.platform, this.page.preload, { width: WIDTH, height: HEIGHT })
+      createScribeOptions(process.platform, this.page.preload, LARGEST)
     )
     // Above a full screen app and on whichever space is in front. Never this
     // call without `skipTransformProcessType`: it turns the app into an
