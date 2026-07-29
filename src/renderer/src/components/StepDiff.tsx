@@ -88,7 +88,7 @@ export default function StepDiff({ file, again }: { file: FileChange; again?: un
         {rows.length > 0 && <CopyButton text={docText(rows)} />}
       </div>
       {rows.length > 0 && (
-        <div className="bg-ink-850 py-1.5 font-mono text-xs leading-5 overflow-x-auto">
+        <div className="select-text bg-ink-850 py-1.5 font-mono text-xs leading-5 overflow-x-auto">
           <div className="w-max min-w-full">
             {shown.map((row, index) => (
               <Line key={index} row={row} tokens={tokensFor(row)} />
