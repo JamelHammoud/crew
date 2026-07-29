@@ -7,17 +7,12 @@ import {
   LinkGlyph,
   LockGlyph,
   MoreGlyph,
-  MoonGlyph,
-  PeopleGlyph,
-  SpeakerGlyph,
-  SpeakerOffGlyph,
-  SunGlyph
+  SlidersGlyph
 } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
-import { setSounds, useSounds } from '../state/sound'
+import { openSettings } from '../state/settings'
 import { useCrew } from '../state/store'
-import { toggleTheme, useTheme } from '../state/theme'
 import { useFullScreen } from '../state/windowShape'
 import Avatar from './Avatar'
 import Badge from './Badge'
