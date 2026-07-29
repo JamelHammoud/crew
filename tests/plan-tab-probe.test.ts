@@ -4,9 +4,18 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ThreadMeta } from '../src/renderer/src/state/store'
 
+class TestResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
+const ThreadView = (await import('../src/renderer/src/views/ThreadView')).default
 
 const thread = (id: string, plan?: string): ThreadMeta => ({
   id,
