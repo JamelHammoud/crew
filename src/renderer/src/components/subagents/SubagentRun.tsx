@@ -3,9 +3,11 @@ import { pendingCount, useCrew } from '../../state/store'
 import Composer from '../Composer'
 import FilesChanged from '../FilesChanged'
 import RunStatus from '../RunStatus'
+import ScrollFade from '../ScrollFade'
 import ThreadItems from '../ThreadItems'
 import { buildThread, eventsOfThread } from '../thread'
 import { useAutoResize } from '../useAutoResize'
+import useScrollEdges from '../useScrollEdges'
 import { useStickToBottom } from '../useStickToBottom'
 
 // One helper, live. It is an ordinary thread, so the whole of this is the
