@@ -69,6 +69,7 @@ export default function ChangeRow({
         <div className="flex shrink-0 items-center pr-1.5">
           <Tooltip label={change.staged ? 'Unstage' : 'Stage'}>
             <button
+              aria-label={change.staged ? 'Unstage' : 'Stage'}
               onClick={change.staged ? onUnstage : onStage}
               className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90"
             >
@@ -78,6 +79,7 @@ export default function ChangeRow({
           <div className="relative">
             <Tooltip label="More" disabled={menu}>
               <button
+                aria-label={`More for ${name}`}
                 onClick={() => setMenu(true)}
                 className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90"
               >

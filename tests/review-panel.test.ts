@@ -150,7 +150,7 @@ describe('the review tab', () => {
     render(createElement(ReviewView))
     expect(await screen.findByText('Half a feature')).not.toBeNull()
 
-    fireEvent.click(screen.getByLabelText('More'))
+    fireEvent.click(screen.getByLabelText('More for Half a feature'))
     fireEvent.click(await screen.findByText('Put it back'))
 
     await waitFor(() => expect(sent).toEqual([{ do: 'apply', ref: 'stash@{0}' }]))

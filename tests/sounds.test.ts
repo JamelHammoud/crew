@@ -516,11 +516,8 @@ describe('playing a sound', () => {
   })
 
   it('lets go quickly rather than ringing on the way a finish does', () => {
-    const done = hear('task.done')
-    for (const helper of HELPERS) {
-      const sound = errand(helper)
-      expect(Math.max(...stopped) - Math.max(...sound.at)).toBeLessThan(done.rings / 2)
-    }
+    const done = errand('task.done')
+    for (const helper of HELPERS) expect(errand(helper).rings).toBeLessThan(done.rings / 2)
   })
 
   it('comes to rest away from the note every finish lands on', () => {

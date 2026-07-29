@@ -87,6 +87,7 @@ export default function ReviewView() {
           <div className="relative">
             <Tooltip label="More" disabled={menu}>
               <button
+                aria-label="More"
                 onClick={() => setMenu(true)}
                 className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90"
               >
