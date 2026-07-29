@@ -291,6 +291,15 @@ interface ReactionTarget {
 }
 
 type ReactionEvent = Extract<SessionEvent, { kind: 'message.reaction' }>
+type TicketAdded = Extract<SessionEvent, { kind: 'ticket.added' }>
+
+// What every route over the session's own http is refused with when the run it
+// names is not one going here. Only a model reads it, so it is a sentence.
+const NOT_RUNNING = 'That promptId is not a run this session has going.'
+
+// A call over http either happened or is refused in words, and nothing about
+// one is worth a code.
+type Done = { ok: true } | { error: string }
 
 const SNAPSHOT_EVENT_LIMIT = 500
 const HISTORY_PAGE = 200
