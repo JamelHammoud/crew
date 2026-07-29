@@ -51,6 +51,7 @@ type BrowserState = {
   openGame(): void
   showPlan(threadId: string): void
   hidePlan(): void
+  closePlan(): void
   toggleTree(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
