@@ -4,9 +4,10 @@ import { join } from 'node:path'
 import { stripRoot, stripRootFromText } from '../../shared/files'
 import { isShellTool } from '../../shared/tools'
 import { resolveSettings, type AgentSettingField, type AgentSettingOption, type AgentUsage } from '../../shared/llm'
+import { addUsage, priceOf, NO_USAGE, type TokenUsage } from '../../shared/pricing'
 import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
-import type { InstallCommands, OutputParser, Provider, RunningPrompt } from './types'
+import type { InstallCommands, OutputParser, ParsedUsage, Provider, RunningPrompt } from './types'
 
 export function commandExists(command: string, dirs?: string[]): boolean {
   return resolveCommand(command, dirs) !== null
