@@ -277,4 +277,22 @@ describe('ghost threads', () => {
     await settle()
     expect(next.events.some(e => e.kind === 'message' && e.text === 'still there?')).toBe(false)
   })
+
+  it('typing into a hidden thread says nothing to anybody', async () => {
+    const sam = await connectUi('sam')
+    const pat = await connectUi('pat')
+    await connectRunner('sam')
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    sam.chat('@Fake read the readme', [fake], undefined, ['ghost'])
+    const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as ThreadStarted
+
+    sam.send({ type: 'typing', where: thread.threadId, on: true })
+    await settle()
+    expect(pat.messages.some(m => m.type === 'typing.room')).toBe(false)
+
+    // The chat itself still says who is writing in it.
+    sam.send({ type: 'typing', on: true })
+    await pat.waitFor(m => m.type === 'typing.room' && m.typists.length === 1)
+  })
 })
