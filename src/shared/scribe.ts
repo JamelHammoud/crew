@@ -76,11 +76,11 @@ const isMac = (platform: string): boolean => platform === 'darwin'
 export const keyLabel = (key: ScribeKey, platform: string): string =>
   (isMac(platform) ? MAC_LABELS : OTHER_LABELS)[key] ?? MAC_LABELS.none
 
-// Fn on a Mac because it is the one key nothing else has a claim on, and Right
-// Control everywhere else for the same reason. Plain Control is offered because
-// the rule that any other key cancels the take makes it safe, not because it is
-// a good first answer.
-export const defaultKey = (platform: string): ScribeKey => (isMac(platform) ? 'fn' : 'right-ctrl')
+// The right hand modifier almost nothing else has a claim on, either way round.
+// Plain Control is offered because the rule that any other key cancels the take
+// makes it safe, not because it is a good first answer.
+export const defaultKey = (platform: string): ScribeKey =>
+  isMac(platform) ? 'right-option' : 'right-ctrl'
 
 export const scribeKeys = (platform: string): ScribeKey[] => (isMac(platform) ? MAC_KEYS : OTHER_KEYS)
 
