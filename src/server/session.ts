@@ -2922,6 +2922,7 @@ export class CrewSession {
       detail: step.detail ?? existing?.detail,
       output: step.output ?? existing?.output,
       files: step.files ?? existing?.files,
+      todos: step.todos ?? existing?.todos,
       text: (existing?.text ?? '') + (step.text ?? '') || undefined
     }
     run.steps.set(step.id, { step: merged, persisted: false })
