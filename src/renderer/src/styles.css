@@ -274,16 +274,22 @@ body {
    that starts anywhere near one used to paint half the chrome blue. Content asks
    for it back with select-text: what somebody wrote, what an agent said, a diff,
    a command and what it printed. Fields and anything editable are always
-   selectable, since a box to type in that cannot be selected in is broken. */
-body {
-  user-select: none;
-}
+   selectable, since a box to type in that cannot be selected in is broken.
 
-input,
-textarea,
-[contenteditable]:not([contenteditable='false']),
-.select-text {
-  user-select: text;
+   It is written in the base layer and nowhere else, so select-text and
+   select-none are ordinary utilities that win over it wherever one is used. A
+   plain rule in this file would beat both of them, whichever way round they were
+   written, which is a default nothing can turn off. */
+@layer base {
+  body {
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable]:not([contenteditable='false']) {
+    user-select: text;
+  }
 }
 
 /* The one place the band is written down. Anything that has to paint a

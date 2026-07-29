@@ -58,8 +58,8 @@ export default function ScribePill() {
   const again = failed && keeping()
 
   return (
-    <div className="p-1.5 h-full">
-      <div className="relative glass glass-strong rounded-full h-14 px-2 flex items-center gap-2 animate-pop">
+    <div className="p-1.5">
+      <div className="relative glass glass-strong rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2 animate-pop">
         <InsetRing className="border border-fg/10" />
 
         <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
