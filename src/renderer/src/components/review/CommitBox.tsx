@@ -33,9 +33,7 @@ export default function CommitBox({
         onChange={event => onMessage(event.target.value)}
         onKeyDown={keys}
         placeholder="What changed"
-        className={`w-full resize-none rounded-card border border-ink-700 bg-ink-800 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-faint focus:border-fg/20 focus:outline-none ${
-          message ? 'select-text' : ''
-        }`}
+        className="w-full resize-none rounded-card border border-ink-700 bg-ink-800 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-faint focus:border-fg/20 focus:outline-none"
       />
       <button
         onClick={onCommit}
