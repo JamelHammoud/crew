@@ -1,6 +1,6 @@
 import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
-import { activityDetail, fileChanges } from './detail'
+import { activityDetail, fileChanges, stepTodos } from './detail'
 import { kimiModels } from './kimi-models'
 import { resultText } from './output'
 import type { OutputParser, Provider } from './types'
@@ -39,7 +39,8 @@ export const parseKimiLine: OutputParser = line => {
             name,
             status: 'started' as const,
             detail: activityDetail(input),
-            files: fileChanges(name, input)
+            files: fileChanges(name, input),
+            todos: stepTodos(input)
           }
         })
       }
