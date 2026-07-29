@@ -42,7 +42,7 @@ const path = require('node:path')
 app.disableHardwareAcceleration()
 app.whenReady().then(async () => {
   const wait = ms => new Promise(r => setTimeout(r, ms))
-  const win = new BrowserWindow({ width: 700, height: 600, show: false })
+  const win = new BrowserWindow({ width: 700, height: 600, show: true })
   try {
     await win.loadFile(path.join(__dirname, 'dist/index.html'))
     await wait(600)
