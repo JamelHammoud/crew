@@ -242,9 +242,14 @@ body,
   height: 100%;
 }
 
+/* The window is never scrolled. Everything the app draws is inside #root, which
+   clips, and everything that floats stands in the body beside it: a toast being
+   pushed off to the right is content past the right edge, and without this the
+   window grows a scrollbar for the length of the gesture. */
 body {
   @apply bg-transparent text-fg font-sans antialiased;
   filter: blur(0);
+  overflow: hidden;
 }
 
 #root {

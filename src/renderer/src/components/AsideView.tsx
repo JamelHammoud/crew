@@ -17,6 +17,7 @@ export default function AsideView({ threadId }: { threadId: string }) {
   const thread = useCrew(s => s.threads[threadId])
   const promptId = useCrew(s => s.threadPrompts[threadId])
   const tokens = useCrew(s => (promptId ? (s.tokens[promptId] ?? 0) : 0))
+  const cost = useCrew(s => (promptId ? s.costs[promptId] : undefined))
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { edges } = useScrollEdges(scrollRef)
@@ -43,7 +44,7 @@ export default function AsideView({ threadId }: { threadId: string }) {
         <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-5 py-4 space-y-5">
           <ThreadItems items={items} />
           {promptId && startedAt && (
-            <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[promptId] ?? []} />
+            <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[promptId] ?? []} />
           )}
         </div>
         <ScrollFade edges={edges} />
