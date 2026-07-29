@@ -110,6 +110,10 @@ export type ClientMessage =
   // Somebody starting a helper by hand, on the thread they are standing in.
   | { type: 'subagent.run'; roleId: string; threadId: string; subject?: string; task: string }
   | { type: 'subagent.stop'; threadId: string }
+  // What one person lets helpers do on their own machine. It is kept in that
+  // window's own storage and said again on every connect, the way the volume is
+  // kept, except this one has to reach the host to be worth anything.
+  | { type: 'subagent.prefs'; on: boolean; fan: number }
   | { type: 'doc.update'; page: string; text: string; title?: string }
   | { type: 'doc.title'; page: string; title: string }
   | { type: 'doc.retitle'; page: string; title: string }

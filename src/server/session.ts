@@ -91,7 +91,9 @@ import {
 import { memberMentionRefsIn } from '../shared/people'
 import { cleanTool, type CrewTool, type ToolAction } from '../shared/toolbox'
 import {
+  cleanPrefs,
   cleanSubagent,
+  DEFAULT_PREFS,
   DEPTH_LIMIT,
   FAN_LIMIT,
   findSubagent,
@@ -104,6 +106,7 @@ import {
   TASK_LIMIT,
   WAIT_MS,
   WAKE_LIMIT,
+  type HelperPrefs,
   type Subagent,
   type SubagentReturn
 } from '../shared/subagents'
@@ -132,6 +135,10 @@ interface Member {
   name: string
   avatar?: string
   connections: Set<WebSocket>
+  // What this person lets helpers do on their machine. It rides in memory the
+  // way a call does: their window says it on every connect, so there is nothing
+  // here to write down or read back.
+  helpers?: HelperPrefs
 }
 
 interface AgentState extends Omit<PooledAgent, 'runs' | 'status'> {
@@ -1464,9 +1471,22 @@ export class CrewSession {
   // parent's own agent. A role naming nothing runs on the parent's own, which
   // keeps the common case on one machine.
   private runnerFor(role: Subagent, parent: AgentState): AgentState | null {
+    // Somebody who has turned helpers off never has one land on their machine,
+    // however the role is worded and whoever asked for it.
+    const willing = (agent: AgentState): boolean => this.helpersFor(agent.ownerId).on
+    if (!willing(parent)) return null
     if (!role.provider) return parent.runner ? parent : null
-    const here = this.agentsHere().filter(agent => agent.provider === role.provider)
+    const here = this.agentsHere().filter(agent => agent.provider === role.provider && willing(agent))
     return here.find(agent => agent.ownerId === parent.ownerId) ?? here[0] ?? (parent.runner ? parent : null)
+  }
+
+  // A member is keyed by name here, so who somebody is is asked once rather
+  // than walked for at every place that needs to know.
+  private helpersFor(ownerId: string): HelperPrefs {
+    for (const member of this.members.values()) {
+      if (member.id === ownerId) return member.helpers ?? DEFAULT_PREFS
+    }
+    return DEFAULT_PREFS
   }
 
   // The whole of what a parent may do. Every refusal is a sentence rather than
@@ -1489,6 +1509,8 @@ export class CrewSession {
     if (out.length >= FAN_LIMIT) return { error: `You already have ${FAN_LIMIT} running. Wait for one to come back.` }
     const parentAgent = this.agents.get(parent.agentId)
     if (!parentAgent) return { error: 'That thread has no agent on it.' }
+    if (!this.helpersFor(parentAgent.ownerId).on) return { error: 'Helpers are turned off on this machine.' }
+    const out = this.subagentThreads(from.threadId).filter(one => this.subagentRunning(one))
     const agent = this.runnerFor(role, parentAgent)
     if (!agent) return { error: `No agent is here to run ${role.name}.` }
     const asker: Member = { id: parentAgent.id, name: from.byName, connections: new Set() }
