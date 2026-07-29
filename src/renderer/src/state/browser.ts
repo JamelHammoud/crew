@@ -122,12 +122,12 @@ function clampWidth(width: number): number {
   return Math.min(Math.max(width, 360), max)
 }
 
-// Closing a plan is remembered against the thread it belongs to, never against
-// the tab, so it is still the same plan when it is asked for again.
-function remember(closed: string[], gone: BrowserTab[]): string[] {
-  const plan = gone.find(t => t.kind === 'plan')
-  if (!plan || closed.includes(plan.threadId)) return closed
-  return [...closed, plan.threadId]
+// Closing a plan or a board is remembered against the thread it belongs to,
+// never against the tab, so it is still the same one when it is asked for again.
+function remember(closed: string[], gone: BrowserTab[], kind: BrowserTab['kind']): string[] {
+  const tab = gone.find(t => t.kind === kind)
+  if (!tab || closed.includes(tab.threadId)) return closed
+  return [...closed, tab.threadId]
 }
 
 export const useBrowser = create<BrowserState>((set, get) => ({
@@ -354,9 +354,21 @@ export const useBrowser = create<BrowserState>((set, get) => ({
       const tabs = s.tabs.filter(t => t.id !== id)
       const activeTabId =
         s.activeTabId === id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
-      return { tabs, activeTabId, closedPlans: remember(s.closedPlans, [s.tabs[index]]) }
+      const gone = [s.tabs[index]]
+      return {
+        tabs,
+        activeTabId,
+        closedPlans: remember(s.closedPlans, gone, 'plan'),
+        closedBoards: remember(s.closedBoards, gone, 'work')
+      }
     }),
-  closeAll: () => set(s => ({ tabs: [], activeTabId: null, closedPlans: remember(s.closedPlans, s.tabs) })),
+  closeAll: () =>
+    set(s => ({
+      tabs: [],
+      activeTabId: null,
+      closedPlans: remember(s.closedPlans, s.tabs, 'plan'),
+      closedBoards: remember(s.closedBoards, s.tabs, 'work')
+    })),
   navigateTab: (id, url) =>
     set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
   navigateFile: (id, path) =>
