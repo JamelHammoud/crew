@@ -175,6 +175,7 @@ export class ScribeKeys {
   }
 
   private pressed(keycode: number): void {
+    if (ownKey(posted, Date.now())) return
     if (!this.codes.includes(keycode)) {
       this.say(this.latch.other())
       return
