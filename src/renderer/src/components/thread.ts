@@ -72,10 +72,24 @@ export function endPreview(end: Extract<SessionEvent, { kind: 'agent.end' }> | u
   return reply.replace(/\s+/g, ' ').trim().slice(0, 70)
 }
 
+// One helper a thread sent out, as it reads in the thread that sent it. The
+// chip is truth and does not need the parent to say anything: it reads its own
+// thread's state and its own latest step, so it reports whether or not the
+// agent that sent it ever mentions it.
+export interface SubagentRun {
+  threadId: string
+  roleId: string
+  roleName: string
+  subject: string
+  agentId: string
+  ok?: boolean
+  ms?: number
+}
+
 export interface ThreadItem {
   key: string
   ts: number
-  kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool'
+  kind: 'message' | 'reply' | 'note' | 'thinking' | 'tool' | 'subagent'
   author: string
   authorId?: string
   self: boolean
