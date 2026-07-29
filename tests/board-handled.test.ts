@@ -66,12 +66,14 @@ describe('what this person has dealt with', () => {
 
   it('keeps the boards last dealt with rather than the first', async () => {
     const board = await opened()
-    for (let i = 0; i < 260; i++) board.getState().answer(`thread-${i}`, 'q')
+    for (let i = 0; i < 200; i++) board.getState().answer(`thread-${i}`, 'q')
+    // The oldest of them, answered again, so it is the last dealt with.
     board.getState().answer('thread-0', 'again')
+    board.getState().answer('thread-200', 'q')
 
     const again = await opened()
-    expect(again.getState().answered['thread-1']).toBeUndefined()
-    expect(again.getState().answered['thread-0']).toEqual(['q', 'again'])
     expect(Object.keys(again.getState().answered)).toHaveLength(200)
+    expect(again.getState().answered['thread-0']).toEqual(['q', 'again'])
+    expect(again.getState().answered['thread-1']).toBeUndefined()
   })
 })
