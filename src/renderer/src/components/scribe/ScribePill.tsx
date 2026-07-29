@@ -1,4 +1,4 @@
-import { CheckGlyph, CloseGlyph, WarningGlyph } from '../../icons'
+import { CheckGlyph, CloseGlyph, RefreshGlyph, WarningGlyph } from '../../icons'
 import { BandReader } from '../../media/bands'
 import { scribeAnalyser, useScribe } from '../../state/scribe'
 import InsetRing from '../InsetRing'
@@ -49,10 +49,13 @@ export default function ScribePill() {
   const problem = useScribe(s => s.problem)
   const cancel = useScribe(s => s.cancel)
   const finish = useScribe(s => s.finish)
+  const retry = useScribe(s => s.retry)
+  const keeping = useScribe(s => s.keeping)
 
   const reading = phase === 'reading'
   const failed = phase === 'failed'
   const waking = phase === 'waking'
+  const again = failed && keeping()
 
   return (
     <div className="p-1.5 h-full">
