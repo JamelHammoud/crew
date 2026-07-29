@@ -342,5 +342,21 @@ export function buildThread(
   // into a live run would otherwise sit below steps that happened after it.
   // A stable sort by time puts every item where it actually happened while
   // keeping event-log order for same-millisecond neighbours.
-  return items.sort((a, b) => a.ts - b.ts)
+  return foldRuns(items.sort((a, b) => a.ts - b.ts))
+}
+
+// Four helpers sent out in one breath are one line and not four. The chips are
+// a way in rather than a report, so they close up the way a run of the same
+// tool does.
+function foldRuns(items: ThreadItem[]): ThreadItem[] {
+  const out: ThreadItem[] = []
+  for (const item of items) {
+    const last = out[out.length - 1]
+    if (item.kind === 'subagent' && last?.kind === 'subagent') {
+      out[out.length - 1] = { ...last, runs: [...(last.runs ?? []), ...(item.runs ?? [])] }
+      continue
+    }
+    out.push(item)
+  }
+  return out
 }
