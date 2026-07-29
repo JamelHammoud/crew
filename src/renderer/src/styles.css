@@ -896,6 +896,21 @@ textarea:placeholder-shown {
   animation: thinking-gather 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+/* Somebody at a keyboard says the same thing a thought says: a wave through the
+   same three dots, on the same clock. Standing still, they read as a sentence
+   that was abandoned rather than as one being written. */
+.typing-dots .typing-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: thinking-wave 1.25s cubic-bezier(0.4, 0, 0.2, 1) var(--dot-delay, 0ms) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing-dots .typing-dot {
+    animation: none;
+  }
+}
+
 .thinking-mark .thinking-ring {
   r: var(--ring, 1.7px);
   opacity: 0;
