@@ -197,7 +197,7 @@ export default function Scribe() {
         </Row>
         <Row
           label="Keep the microphone ready"
-          line="The first word lands whole, and your recording light is on the whole time."
+          line="Your first word is never cut off, and your recording light stays on."
         >
           <Toggle
             on={settings.ready}
