@@ -96,6 +96,38 @@ function Words({ words }: { words: ScribeWord[] }) {
   )
 }
 
+// Today it is the time of day, and anything older is the day itself. A dictation
+// from an hour ago and one from last week are found in different ways, and
+// carrying both on every row would be two figures where one is doing the work.
+const when = (at: number): string => {
+  const day = formatShortDay(at)
+  return day === 'Today' ? formatTime(at) : day
+}
+
+// The last few dictations, newest first, each one a press away from the
+// clipboard. The words are the row: they are what somebody said, so they are
+// selectable, and they are cut off after two lines rather than turning the page
+// into a transcript.
+function Recent({ said }: { said: Said[] }) {
+  if (said.length === 0) return <p className="text-sm text-fg/45 py-2">Nothing yet.</p>
+  return (
+    <div>
+      {said.map(one => (
+        <div
+          key={one.id}
+          className="flex items-start gap-3 py-1.5 border-b border-fg/[0.06] last:border-b-0"
+        >
+          <p className="flex-1 min-w-0 pt-1.5 text-sm text-fg/70 leading-snug line-clamp-2 select-text">
+            {one.text}
+          </p>
+          <span className="shrink-0 pt-1.5 text-xs text-fg/45">{when(one.at)}</span>
+          <CopyButton glass text={one.text} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function Trouble({ state }: { state: ScribeKeyState }) {
   if (!state.trusted) {
     return (
