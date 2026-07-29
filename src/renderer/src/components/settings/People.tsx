@@ -68,12 +68,14 @@ export default function People() {
         </div>
       </Section>
 
-      {hosting && (
+      {(hosting || joinLink) && (
         <Section title="Joining">
-          <Row label="Anyone with the link can join">
-            <Toggle on={shared} label="Anyone with the link can join" onChange={on => void open(on)} />
-          </Row>
-          {shared && joinLink && (
+          {hosting && (
+            <Row label="Anyone with the link can join">
+              <Toggle on={shared} label="Anyone with the link can join" onChange={on => void open(on)} />
+            </Row>
+          )}
+          {joinLink && (
             <Row label="Link" line={<span className="font-mono mono-inline break-all">{joinLink}</span>}>
               <Action label="Copy" icon={<LinkGlyph />} onClick={() => void copy(joinLink)} />
             </Row>
