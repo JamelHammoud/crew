@@ -116,10 +116,10 @@ export default function Chat() {
           }
         })
       }
-      // A question asked on the side stands in the panel it was answered in,
-      // never as a card here: it was asked to keep off the chat.
-      // A thread another one sent out is not a card in the feed. It reads
-      // inside its parent, on the row of chips the parent's run stands under.
+      // Neither of the two threads that are not the crew's work is a card here.
+      // One another thread sent out reads inside its parent, on the row of chips
+      // the parent's run stands under, and a question asked on the side stands
+      // in the panel it was answered in, which is what it was asked to do.
       if (e.kind === 'thread.started' && !e.aside && !e.parentThreadId && threads[e.threadId]?.status === 'open') {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
