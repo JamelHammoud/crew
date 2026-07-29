@@ -203,7 +203,7 @@ describe('which sound an event makes', () => {
 describe('a helper going out and coming home', () => {
   const withHelper = () => state({ threads: { t1: thread('t1'), h1: thread('h1', { parentThreadId: 't1' }) } })
 
-  it('says an errand went out, in the helper's own voice', () => {
+  it('says an errand went out, in a voice of its own', () => {
     expect(soundFor(helperOut(), 'me', withHelper())).toBe('helper.out')
   })
 
