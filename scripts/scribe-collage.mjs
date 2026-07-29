@@ -107,6 +107,11 @@ const page = `<!doctype html><meta charset="utf8"><style>
   .row.on { background: rgba(255,255,255,0.1); color: #ffffff }
   .numbers { color: #4a4a4a; font-size: 10px; text-align: center }
   svg { display: block }
+  .w-\\[64px\\] { width: 64px; height: 64px }
+  .w-12 { width: 48px; height: 48px }
+  .w-6 { width: 24px; height: 24px }
+  .w-5 { width: 20px; height: 20px }
+  .w-4 { width: 16px; height: 16px }
 </style>
 <h1>Scribe</h1>
 <p>Nine marks, at 64, 48, 24 and 16, on a tile and in the settings rail.</p>
