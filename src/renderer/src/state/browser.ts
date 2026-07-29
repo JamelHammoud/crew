@@ -137,14 +137,38 @@ function remember(closed: string[], gone: BrowserTab[], kind: BrowserTab['kind']
   return [...closed, tab.threadId]
 }
 
-export const useBrowser = create<BrowserState>((set, get) => ({
+export const useBrowser = create<BrowserState>((write, get) => {
+  // Putting something in the panel opens it, and that is written here rather
+  // than on each of the dozen ways in, so a thirteenth cannot open a tab into a
+  // panel nobody can see. It counts what arrived rather than what is there: a
+  // page that finished loading while the panel was put away is not a way in.
+  const set: typeof write = (patch, replace) => {
+    const before = get().tabs.length
+    write(patch as never, replace as never)
+    if (get().tabs.length > before) write({ open: true } as never)
+  }
+
+  // A tab that takes itself away as you move takes the panel with it when it was
+  // the only thing there. The plan and the board arrive with the thread they
+  // belong to rather than by being asked for, so a panel left standing empty
+  // behind one is a panel nobody opened.
+  const settle = () => {
+    if (get().tabs.length === 0) write({ open: false } as never)
+  }
+
+  return {
   width: DEFAULT_WIDTH,
+  open: false,
   tabs: [],
   activeTabId: null,
   closedPlans: [],
   closedBoards: [],
   setWidth: width => set({ width: clampWidth(width) }),
   resetWidth: () => set({ width: clampWidth(DEFAULT_WIDTH) }),
+  // Closing keeps what is in it, so it is a toggle rather than a way to lose
+  // three tabs by aiming at the wrong thing.
+  togglePanel: () => write({ open: !get().open }),
+  closePanel: () => write({ open: false }),
   openUrl: url => {
     const { tabs, activeTabId } = get()
     const existing = tabs.find(t => t.kind === 'web' && t.url === url)
