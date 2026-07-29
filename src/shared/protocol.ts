@@ -200,8 +200,24 @@ export type ServerMessage =
       // A picture in a ghost thread is never kept beside the session, so the
       // machine running it says where it may put one.
       ghost?: boolean
+      // The roles this run may send work out to, and how many more it may have
+      // running at once. The machine turns those into the preamble, because it
+      // is the side that knows the address.
+      subagents?: Subagent[]
+      spawnRoom?: number
     }
-  | { type: 'steer'; promptId: string; text: string; byName: string; attachments?: Attachment[]; ghost?: boolean }
+  | {
+      type: 'steer'
+      promptId: string
+      text: string
+      byName: string
+      attachments?: Attachment[]
+      ghost?: boolean
+      // A helper coming back rather than somebody talking. The host has already
+      // written the whole of what to read, so the machine hands it over as it
+      // stands instead of framing it under a name.
+      from?: { kind: 'subagent' }
+    }
   | { type: 'cancel'; promptId: string }
   | { type: 'ping' }
   // A word to the one person it is about, and nothing anybody has to scroll past
