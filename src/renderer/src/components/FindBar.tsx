@@ -70,12 +70,28 @@ export default function FindBar({
   const stepRef = useRef(step)
   stepRef.current = step
 
+  const type = (next: string) => {
+    setQuery(next)
+    setFindQuery(next)
+  }
+  const close = () => {
+    setOpen(false)
+    setFindQuery('')
+  }
+  const closeRef = useRef(close)
+  closeRef.current = close
+  const queryRef = useRef(query)
+  queryRef.current = query
+
+  useEffect(() => () => setFindQuery(''), [])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey
       if (mod && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'f') {
         e.preventDefault()
         setOpen(true)
+        setFindQuery(queryRef.current)
         requestAnimationFrame(() => {
           inputRef.current?.focus()
           inputRef.current?.select()
@@ -87,7 +103,8 @@ export default function FindBar({
         e.preventDefault()
         stepRef.current(e.shiftKey ? -1 : 1)
       } else if (e.key === 'Escape') {
-        setOpen(false)
+        e.stopPropagation()
+        closeRef.current()
       }
     }
     window.addEventListener('keydown', onKey, true)
