@@ -50,15 +50,7 @@ export default function Settings() {
                       on ? 'bg-fg/[0.08] text-fg font-medium' : 'text-fg/70 hover:text-fg hover:bg-fg/5'
                     }`}
                   >
-                    {Mark ? (
-                      <Mark className="w-[18px] h-[18px] shrink-0" />
-                    ) : (
-                      <Avatar
-                        name={selfName || '?'}
-                        px={18}
-                        presence={connection === 'online' ? 'online' : 'offline'}
-                      />
-                    )}
+                    {Mark ? <Mark className="w-[18px] h-[18px] shrink-0" /> : <Avatar name={selfName || '?'} px={18} />}
                     <span className="truncate">{tabLabel(one, selfName)}</span>
                   </button>
                 )
