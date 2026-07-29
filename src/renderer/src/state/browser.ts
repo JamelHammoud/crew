@@ -57,8 +57,9 @@ type BrowserState = {
   openMusic(): void
   openGame(): void
   openAside(threadId: string, title: string): void
-  openSubagent(threadId: string): void
+  openSubagent(threadId: string, parentThreadId: string): void
   showSubagents(parentThreadId: string): void
+  closeSubagents(parentThreadId: string): void
   showPlan(threadId: string): void
   hidePlan(): void
   closePlan(): void
