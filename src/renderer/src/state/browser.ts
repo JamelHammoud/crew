@@ -262,6 +262,24 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = { ...makeTab(), kind: 'game' as const }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    // One project, one review. Pressing it again brings the tab that is open to
+    // the front rather than opening a second copy of the same working tree, and
+    // a message half typed into the commit box is still there.
+    openReview: () => {
+      const { tabs, activeTabId } = get()
+      const existing = tabs.find(t => t.kind === 'review')
+      if (existing) {
+        set({ activeTabId: existing.id })
+        return
+      }
+      const active = tabs.find(t => t.id === activeTabId)
+      if (active && active.kind === 'web' && !active.initialUrl) {
+        set(s => ({ tabs: s.tabs.map(t => (t.id === active.id ? { ...t, kind: 'review' as const } : t)) }))
+        return
+      }
+      const tab = { ...makeTab(), kind: 'review' as const }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
     // A helper opens in a tab of its own, and opening one that is already in a
     // tab brings that tab to the front rather than opening a second copy of it.
     // Three helpers running is three things to watch, so unlike the plan these
