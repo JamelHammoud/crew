@@ -3788,6 +3788,7 @@ export class CrewSession {
       if (meta.role === 'ui') this.dropDesignPresence(member)
     }
     if (meta.role === 'ui') {
+      this.stopTyping(ws)
       this.handleHuddleLeave(ws)
       this.dropGhosts(ws)
     }
