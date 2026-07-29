@@ -248,6 +248,134 @@ export class GitSync {
     )
   }
 
+  private async act(command: RepoCommand): Promise<RepoActionResult> {
+    const status = await this.readStatus()
+    if (!status.available) {
+      return this.result(false, false, 'This project is not tracked with git.', status)
+    }
+    switch (command.do) {
+      case 'stage':
+        return this.stageAction(command.paths)
+      case 'unstage':
+        return this.unstageAction(command.paths)
+      case 'discard':
+        return this.discardAction(command.paths)
+      case 'commit':
+        return this.commitAction(command.message, command.amend === true)
+      case 'stash':
+        return this.stashAction(command.message, command.keepIndex === true)
+      case 'apply':
+        return this.stashRefAction(command.ref, 'pop')
+      case 'drop':
+        return this.stashRefAction(command.ref, 'drop')
+    }
+  }
+
+  private async stageAction(paths: string[]): Promise<RepoActionResult> {
+    const named = await this.namedPaths(paths)
+    if (!named) return this.done(false, false, 'Those changes are not there any more.')
+    const add = await runGit(['add', '--', ...named], this.repoPath)
+    if (add.code !== 0) return this.done(false, false, `Could not stage. ${gitDetail(add)}`)
+    return this.done(true, true, `Staged ${describePaths(named)}.`)
+  }
+
+  // A project with nothing committed yet has no HEAD to reset against, and
+  // reset there fails without taking anything back out of the index.
+  private async unstageAction(paths: string[]): Promise<RepoActionResult> {
+    const named = await this.namedPaths(paths)
+    if (!named) return this.done(false, false, 'Those changes are not there any more.')
+    const head = await runGit(['rev-parse', '--verify', 'HEAD'], this.repoPath)
+    const args = head.code === 0 ? ['reset', 'HEAD', '--'] : ['rm', '--cached', '--']
+    const reset = await runGit([...args, ...named], this.repoPath)
+    if (reset.code !== 0) return this.done(false, false, `Could not unstage. ${gitDetail(reset)}`)
+    return this.done(true, true, `Unstaged ${describePaths(named)}.`)
+  }
+
+  // The one verb that throws work away, so it only ever touches the paths git
+  // itself just reported and never widens past them.
+  private async discardAction(paths: string[]): Promise<RepoActionResult> {
+    const entries = await this.statusEntries()
+    const named = this.knownOf(entries, paths)
+    if (!named) return this.done(false, false, 'Those changes are not there any more.')
+    const untracked = new Set(entries.filter(entry => entry.code === '??').map(entry => entry.path))
+    const tracked = named.filter(name => !untracked.has(name))
+    if (tracked.length > 0) {
+      const restore = await runGit(['checkout', '--', ...tracked], this.repoPath)
+      if (restore.code !== 0) {
+        return this.done(false, false, `Could not undo those changes. ${gitDetail(restore)}`)
+      }
+    }
+    for (const name of named.filter(name => untracked.has(name))) {
+      const target = path.resolve(this.repoPath, name)
+      if (!insideRepo(this.repoPath, target)) continue
+      await fs.rm(target, { force: true, recursive: true }).catch(() => {})
+    }
+    return this.done(true, true, `Undid the changes to ${describePaths(named)}.`)
+  }
+
+  private async commitAction(message: string, amend: boolean): Promise<RepoActionResult> {
+    const text = message.trim()
+    if (!text) return this.done(false, false, 'Write a message for this commit first.')
+    const staged = await runGit(['diff', '--cached', '--quiet'], this.repoPath)
+    if (staged.code === 0 && !amend) {
+      return this.done(false, false, 'Stage something to commit first.')
+    }
+    const args = ['-c', 'core.editor=true', 'commit', '-m', text]
+    if (amend) args.push('--amend')
+    const commit = await runGit(args, this.repoPath)
+    if (commit.code !== 0) return this.done(false, false, `Could not commit. ${gitDetail(commit)}`)
+    return this.done(true, true, amend ? 'Amended the last commit.' : 'Committed the staged changes.')
+  }
+
+  // A stash that leaves new files behind is how work is stranded, so untracked
+  // files go with it. The session's own files stay where they are.
+  private async stashAction(message: string | undefined, keepIndex: boolean): Promise<RepoActionResult> {
+    const args = ['stash', 'push', '--include-untracked']
+    if (keepIndex) args.push('--keep-index')
+    const text = message?.trim()
+    if (text) args.push('-m', text)
+    const before = await stashCount(this.repoPath)
+    const stash = await runGit([...args, '--', ...PROJECT_PATHS], this.repoPath)
+    if (stash.code !== 0) return this.done(false, false, `Could not stash. ${gitDetail(stash)}`)
+    if ((await stashCount(this.repoPath)) === before) {
+      return this.done(true, false, 'There was nothing to put away.')
+    }
+    return this.done(true, true, 'Put your changes away.')
+  }
+
+  private async stashRefAction(ref: string, verb: 'pop' | 'drop'): Promise<RepoActionResult> {
+    const held = await this.readStashes()
+    const found = held.find(stash => stash.ref === ref)
+    if (!found) return this.done(false, false, 'That is not there any more.')
+    const result = await runGit(['stash', verb, found.ref], this.repoPath)
+    if (result.code !== 0) {
+      const detail = gitDetail(result)
+      return this.done(false, false, verb === 'pop' ? `Could not bring those changes back. ${detail}` : `Could not drop that. ${detail}`)
+    }
+    return this.done(true, true, verb === 'pop' ? 'Brought those changes back.' : 'Dropped it.')
+  }
+
+  private async done(ok: boolean, updated: boolean, message: string): Promise<RepoActionResult> {
+    return this.result(ok, updated, message, await this.readStatus())
+  }
+
+  // A path a caller made up is a path outside the project, so a command is only
+  // ever run on what git has just reported as changed.
+  private async namedPaths(paths: string[]): Promise<string[] | null> {
+    return this.knownOf(await this.statusEntries(), paths)
+  }
+
+  private knownOf(entries: StatusEntry[], paths: string[]): string[] | null {
+    if (paths.length === 0) return null
+    const known = new Set<string>()
+    for (const entry of entries) {
+      known.add(entry.path)
+      if (entry.previousPath) known.add(entry.previousPath)
+    }
+    const named = paths.filter(name => known.has(name))
+    return named.length === paths.length ? named : null
+  }
+
   private async commitWorkingTree(
     message: string,
     paths?: string[]
