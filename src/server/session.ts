@@ -3200,17 +3200,29 @@ export class CrewSession {
       .filter(Boolean)
       .join('\n')
     const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
-    const lines = [
-      `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
-      `You share a project folder and can read and edit files in it.`,
-      `You are in a focused thread. Only this thread's messages are shown here.`
-    ]
-    if (others.length > 0) {
+    const thread = this.threads.get(prompt.threadId)
+    const role = this.subagents.get(thread?.roleId ?? '')
+    // A helper sees its task and its own turns, and none of the room. It was
+    // sent out on one piece of work by somebody who could see the room, and the
+    // whole point of it is that it does not have to carry the rest.
+    const lines = thread?.parentThreadId
+      ? [
+          `You are ${agent.label}, working as ${role?.name ?? 'a helper'} on one piece of work in a crew session.`,
+          `You share a project folder and can read and edit files in it.`,
+          ``,
+          SUBAGENT_INSTRUCTIONS,
+          ...(role ? [``, `What ${role.name} is for:`, role.brief] : [])
+        ]
+      : [
+          `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
+          `You share a project folder and can read and edit files in it.`,
+          `You are in a focused thread. Only this thread's messages are shown here.`
+        ]
+    if (others.length > 0 && !thread?.parentThreadId) {
       lines.push(
         `Other agents in the session: ${others.join(', ')}. A mention like @name in a thread hands that message to the named agent, so replies from several agents can appear here.`
       )
     }
-    const thread = this.threads.get(prompt.threadId)
     if (thread?.voice) lines.push(``, VOICE_INSTRUCTIONS)
     if (thread?.mode === 'plan') lines.push(``, PLAN_INSTRUCTIONS)
     else if (thread?.plan) lines.push(``, `The plan this thread agreed on:`, thread.plan)
