@@ -3,24 +3,37 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import { useBrowser } from './state/browser'
 import { applyPlatform } from './state/platform'
+import { publishScribe } from './state/scribeSettings'
 import { useCrew } from './state/store'
 import { applyTheme, showTheme, storedTheme } from './state/theme'
 import { publishPresence } from './state/trayPresence'
 import { setFullScreen } from './state/windowShape'
+import ScribeWindow from './views/ScribeWindow'
 import TrayPanel from './views/TrayPanel'
 import './styles.css'
 
-const tray = window.location.hash === '#tray'
+// One renderer, three windows. The app itself, the panel under the menu bar, and
+// the pill that stands over whatever you are dictating into. Only the first of
+// them joins the session: the other two are this machine talking to itself.
+const WINDOWS = {
+  '#tray': TrayPanel,
+  '#scribe': ScribeWindow
+} as const
+
+const hash = window.location.hash as keyof typeof WINDOWS
+const Aside = WINDOWS[hash]
 const root = document.getElementById('root')!
 
 applyPlatform()
-// The tray panel wears the theme the app picked rather than picking one itself.
-if (tray) showTheme(storedTheme())
+// The windows beside the app wear the theme the app picked rather than picking
+// one of their own.
+if (Aside) showTheme(storedTheme())
 else applyTheme(storedTheme())
 
-if (!tray) {
+if (!Aside) {
   void useCrew.getState().boot()
   publishPresence()
+  publishScribe()
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
     setFullScreen(shape.full)
@@ -28,4 +41,4 @@ if (!tray) {
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
 }
 
-createRoot(root).render(<React.StrictMode>{tray ? <TrayPanel /> : <App />}</React.StrictMode>)
+createRoot(root).render(<React.StrictMode>{Aside ? <Aside /> : <App />}</React.StrictMode>)
