@@ -50,7 +50,7 @@ export default function SubagentChips({ runs, threadId }: { runs: SubagentRun[];
   return (
     <div className="flex flex-wrap items-center gap-1.5 px-4 py-1 select-none">
       {runs.slice(0, SHOWN).map(run => (
-        <Chip key={run.threadId} run={run} />
+        <Chip key={run.threadId} run={run} threadId={threadId} />
       ))}
       {rest > 0 && (
         <button
