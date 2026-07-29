@@ -1,5 +1,5 @@
 import type { Glyph } from '../../icons'
-import { GroupGlyph, PeopleGlyph, SpeakerGlyph, SparkGlyph, SunGlyph } from '../../icons'
+import { GroupGlyph, PeopleGlyph, ScribeGlyph, SpeakerGlyph, SparkGlyph, SunGlyph } from '../../icons'
 import type { SettingsTab } from '../../state/settings'
 
 export interface TabDef {
@@ -17,6 +17,7 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'you', label: 'You', group: 'You', mark: null },
   { id: 'appearance', label: 'Appearance', group: 'You', mark: SunGlyph },
   { id: 'sound', label: 'Sound and video', group: 'You', mark: SpeakerGlyph },
+  { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
   { id: 'helpers', label: 'Helpers', group: 'Crew', mark: GroupGlyph }
