@@ -64,7 +64,7 @@ export function useSwipeAway(onAway: () => void): SwipeAway {
       onPointerDown: event => {
         if (event.button !== 0) return
         moved.current = false
-        grab.current = { from: event.clientX, x: 0, at: performance.now(), speed: 0 }
+        grab.current = { from: event.clientX, x: 0, speed: 0, mark: { x: 0, at: performance.now() } }
         setSwiping(true)
         event.currentTarget.setPointerCapture?.(event.pointerId)
       },
