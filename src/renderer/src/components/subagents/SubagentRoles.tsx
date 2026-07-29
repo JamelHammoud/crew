@@ -6,23 +6,26 @@ import SubagentMark from '../SubagentMark'
 import { AREA, Footer, HeaderButton, Primary, SheetHeader } from '../toolboxParts'
 
 // The roles the crew has written, and the one thing you can do with one from
-// here: send it out on the thread you came from. Writing a new one is the empty
-// slot at the end, which is the way in and the empty state both.
+// here: send it out on the thread you came from. Writing a new one is the plus
+// on the bar, and the empty state says what a helper is rather than naming the
+// screen back at you.
 
-function Roster({
+export function SubagentRoster({
   onPick,
   onNew,
-  onEdit
+  onEdit,
+  onBack
 }: {
   onPick: (role: Subagent) => void
   onNew: () => void
   onEdit: (role: Subagent) => void
+  onBack: () => void
 }) {
   const roles = useCrew(state => state.subagents)
 
   return (
-    <>
-      <SheetHeader title="Helpers">
+    <div className="flex flex-col h-full">
+      <SheetHeader title="Helpers" onBack={onBack}>
         <HeaderButton label="New helper" onClick={onNew}>
           <PlusGlyph className="w-4 h-4" />
         </HeaderButton>
@@ -57,11 +60,19 @@ function Roster({
           ))
         )}
       </div>
-    </>
+    </div>
   )
 }
 
-function Brief({ role, threadId, onDone }: { role: Subagent; threadId: string; onDone: () => void }) {
+export function SubagentBrief({
+  role,
+  threadId,
+  onDone
+}: {
+  role: Subagent
+  threadId: string
+  onDone: () => void
+}) {
   const runSubagent = useCrew(state => state.runSubagent)
   const [task, setTask] = useState('')
 
@@ -86,23 +97,6 @@ function Brief({ role, threadId, onDone }: { role: Subagent; threadId: string; o
       <Footer>
         <Primary label="Send it out" disabled={!task.trim()} onClick={send} />
       </Footer>
-    </div>
-  )
-}
-
-export default function SubagentRoles({ threadId, onDone }: { threadId: string; onDone: () => void }) {
-  const [picked, setPicked] = useState<Subagent | null>(null)
-  const [editing, setEditing] = useState<Subagent | null>(null)
-  const roles = useCrew(state => state.subagents)
-  // A role deleted while you were writing a brief for it takes you back to the
-  // roster rather than leaving you on a page about nothing.
-  const role = picked && roles.some(one => one.id === picked.id) ? picked : null
-
-  if (editing) return null
-  if (role) return <Brief role={role} threadId={threadId} onDone={onDone} />
-  return (
-    <div className="flex flex-col h-full">
-      <Roster onPick={setPicked} onNew={() => setEditing(null)} onEdit={setEditing} />
     </div>
   )
 }

@@ -3306,7 +3306,12 @@ export class CrewSession {
 
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
     const people = [...this.members.values()].map(m => m.name).join(', ')
-    const context = this.threadContext(prompt.threadId)
+    const thread = this.threads.get(prompt.threadId)
+    // A question on the side is asked about a thread it is not in, so what it
+    // reads is that thread and then the question, as one run of talk.
+    const context = thread?.aside
+      ? [...this.threadContext(thread.aside), ...this.threadContext(prompt.threadId)]
+      : this.threadContext(prompt.threadId)
     const transcript = context
       .map(e => {
         if (e.kind === 'message') {
