@@ -94,6 +94,25 @@ export class GitSync {
     return this.enqueue(() => this.readChanges())
   }
 
+  stashes(): Promise<RepoStash[]> {
+    return this.enqueue(() => this.readStashes())
+  }
+
+  // What the review panel polls, so it is one read of the repo rather than
+  // three that can disagree with each other halfway through a sync.
+  work(): Promise<RepoWork> {
+    return this.enqueue(() => this.readWork())
+  }
+
+  // Every verb takes the sync lock the automatic passes take. A stage that
+  // interleaves with a pass that is committing the whole tree is how work is
+  // lost, so a busy folder is told to wait rather than run anyway.
+  run(command: RepoCommand): Promise<RepoActionResult> {
+    if (command.do === 'pull') return this.pullNow()
+    if (command.do === 'push') return this.pushNow()
+    return this.enqueue(() => this.exclusive(() => this.act(command)))
+  }
+
   pullNow(): Promise<RepoActionResult> {
     return this.enqueue(() => this.exclusive(() => this.pullAction()))
   }
