@@ -6,6 +6,7 @@ import Avatar from '../Avatar'
 import Modal from '../Modal'
 import Agents from './Agents'
 import Appearance from './Appearance'
+import Helpers from './Helpers'
 import People from './People'
 import SoundAndVideo from './SoundAndVideo'
 import You from './You'
@@ -19,6 +20,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'appearance') return <Appearance />
   if (tab === 'sound') return <SoundAndVideo />
   if (tab === 'people') return <People />
+  if (tab === 'helpers') return <Helpers />
   return <Agents />
 }
 
