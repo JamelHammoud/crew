@@ -80,6 +80,7 @@ export default function BrowserPanel() {
   const activeTabId = useBrowser(s => s.activeTabId)
   const active = tabs.find(t => t.id === activeTabId) ?? null
   const [newOpen, setNewOpen] = useState(false)
+  const opens = usePanelOpens()
   // The plan comes with the thread you are in and goes when you leave it.
   const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
 
