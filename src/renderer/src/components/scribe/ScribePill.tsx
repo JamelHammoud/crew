@@ -87,9 +87,7 @@ export default function ScribePill() {
           // stopped.
           <Levels
             count={BANDS}
-            read={(count, out) =>
-              reader.read(reading || waking ? null : scribeAnalyser(), count, out)
-            }
+            read={(count, out) => reader.read(reading ? null : scribeAnalyser(), count, out)}
             className="flex-1 min-w-0 h-6 gap-[3px] text-fg/70 justify-center"
             barClassName="w-[3px]"
           />
