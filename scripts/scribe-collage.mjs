@@ -68,7 +68,7 @@ for (const one of drawn) {
 
 const card = one => `
   <div class="card">
-    <div class="head">${one.name}<em>${NOTES[one.name] ?? ''}</em></div>
+    <div class="head">${LABEL(one.name)}<em>${NOTES[one.name] ?? ''}</em></div>
     <div class="hero">${one.big}</div>
     <div class="sizes">
       <span class="s">${one.art}</span>
