@@ -14,6 +14,7 @@ import {
   GlobeGlyph,
   GroupGlyph,
   MusicGlyph,
+  PanelRightGlyph,
   PhotoGlyph,
   PlusGlyph,
   QuestionGlyph,
