@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import RunStatus from '../src/renderer/src/components/RunStatus'
 import { setPref } from '../src/renderer/src/state/prefs'
 
+Element.prototype.getAnimations ??= () => []
+
 const store = new Map<string, string>()
 
 beforeEach(() => {
