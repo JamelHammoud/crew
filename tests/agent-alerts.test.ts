@@ -6,7 +6,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { alertToast } from '../src/renderer/src/components/alertToast'
 import Toaster from '../src/renderer/src/components/Toaster'
 import TopBar from '../src/renderer/src/components/TopBar'
-import { finishedAlert, memberMentionAlert, reviewCount, type AlertState } from '../src/renderer/src/state/alerts'
+import {
+  finishedAlert,
+  memberMentionAlert,
+  questionAlert,
+  reviewCount,
+  type AlertState
+} from '../src/renderer/src/state/alerts'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
 import { clearToasts, TOAST_OUT_MS } from '../src/renderer/src/state/toast'
 import type { AgentAlert } from '../src/shared/alerts'
@@ -141,6 +147,49 @@ describe('finished alerts', () => {
       mentions: []
     }
     expect(finishedAlert(message, state())).toBeNull()
+  })
+})
+
+describe('a question raised on the board', () => {
+  const asked = (threadId = 't1'): SessionEvent => ({
+    id: 'q1',
+    ts: 1,
+    kind: 'ticket.asked',
+    threadId,
+    askId: 'ask1',
+    ticketId: '2',
+    ask: 'Key the cache on the commit or on the path?',
+    assumed: 'the commit',
+    options: ['the commit', 'the path']
+  })
+
+  it('names the agent, carries the question, and leads to the board', () => {
+    expect(questionAlert(asked(), state(), null)).toEqual({
+      title: 'Bubbles has a question',
+      body: 'Key the cache on the commit or on the path?',
+      threadId: 't1',
+      agentId: 'a1',
+      board: true
+    })
+  })
+
+  it('reads the agent name back off its id after a rename', () => {
+    const alert = questionAlert(asked(), state({ agents: [{ id: 'a1', label: 'Bubbles 2' }] }), null)
+    expect(alert?.title).toBe('Bubbles 2 has a question')
+  })
+
+  it('stays quiet while that board is the one on screen', () => {
+    expect(questionAlert(asked(), state(), 't1')).toBeNull()
+  })
+
+  it('speaks up while another board is on screen, or the thread alone is', () => {
+    const threads = { t1: thread('t1'), t2: thread('t2') }
+    expect(questionAlert(asked(), state({ threads }), 't2')).not.toBeNull()
+    expect(questionAlert(asked(), state({ openThreadId: 't1' }), null)).not.toBeNull()
+  })
+
+  it('ignores everything that is not a question', () => {
+    expect(questionAlert(ended('t1'), state(), null)).toBeNull()
   })
 })
 
