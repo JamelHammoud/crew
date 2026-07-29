@@ -4,9 +4,7 @@ import { createPortal } from 'react-dom'
 // A card the app puts in front of everything, for the one thing it is asking
 // about. It stands in the body rather than where it was written, so a dialog
 // opened from inside a menu, a row or a panel is not clipped by it and does not
-// go down with it. It wears the deeper glass, because it can be opened over
-// anything, a board included, and a card this size on ordinary glass reads as a
-// window onto whatever is behind it rather than as the thing being asked about.
+// go down with it.
 export default function Modal({
   open,
   onClose,
