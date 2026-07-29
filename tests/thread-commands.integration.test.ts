@@ -69,7 +69,7 @@ describe('commands inside a thread', () => {
     const first = (await sam.waitForEvent(e => e.kind === 'agent.start')) as Start
     await sam.waitFor(msg => msg.type === 'agent.step' && msg.promptId === first.promptId)
 
-    sam.chat('and the changelog', [], thread.threadId, undefined, ['queue'])
+    sam.chat('and the changelog', [], thread.threadId, ['queue'])
 
     // It waits its turn and gets a run of its own, rather than being folded into
     // the one already going the way it would have been.
@@ -95,7 +95,7 @@ describe('commands inside a thread', () => {
     const first = (await sam.waitForEvent(e => e.kind === 'agent.start')) as Start
     await sam.waitFor(msg => msg.type === 'agent.step' && msg.promptId === first.promptId)
 
-    sam.chat('and the changelog', [], thread.threadId, undefined, ['steer'])
+    sam.chat('and the changelog', [], thread.threadId, ['steer'])
     const route = await sam.waitForEvent(e => e.kind === 'message.route' && e.mode === 'steered')
     expect(route.kind === 'message.route' && route.promptId).toBe(first.promptId)
     expect(sam.events.filter(e => e.kind === 'agent.start')).toHaveLength(1)
@@ -110,7 +110,7 @@ describe('commands inside a thread', () => {
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
     await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
 
-    sam.chat('what is a changelog for', [], thread.threadId, undefined, ['btw'])
+    sam.chat('what is a changelog for', [], thread.threadId, ['btw'])
     const aside = (await sam.waitForEvent(
       e => e.kind === 'thread.started' && e.threadId !== thread.threadId
     )) as Started
@@ -142,7 +142,7 @@ describe('commands inside a thread', () => {
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
     await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
 
-    sam.chat('what is a changelog for', [], thread.threadId, undefined, ['btw'])
+    sam.chat('what is a changelog for', [], thread.threadId, ['btw'])
     const aside = (await sam.waitForEvent(
       e => e.kind === 'thread.started' && e.threadId !== thread.threadId
     )) as Started
@@ -170,7 +170,7 @@ describe('commands inside a thread', () => {
     const thread = (await pat.waitForEvent(e => e.kind === 'thread.started')) as Started
     await pat.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
 
-    sam.chat('what is a changelog for', [], thread.threadId, undefined, ['btw'])
+    sam.chat('what is a changelog for', [], thread.threadId, ['btw'])
     const aside = (await sam.waitForEvent(
       e => e.kind === 'thread.started' && e.threadId !== thread.threadId
     )) as Started
@@ -188,7 +188,7 @@ describe('commands inside a thread', () => {
     pat.chat('@Fake tidy the readme', [patsFake])
     const thread = (await pat.waitForEvent(e => e.kind === 'thread.started')) as Started
 
-    sam.chat('what is a changelog for', [], thread.threadId, undefined, ['btw'])
+    sam.chat('what is a changelog for', [], thread.threadId, ['btw'])
     const notice = (await sam.waitFor(msg => msg.type === 'notice')) as Notice
     expect(notice.text).toBe('No agent of yours is here to take it.')
     await settle()
