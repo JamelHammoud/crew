@@ -904,7 +904,7 @@ export class CrewSession {
         break
       case 'agent.tokens':
         if (this.promptGone(ws, meta, msg.promptId)) break
-        this.handleTokens(meta, msg.promptId, msg.tokens)
+        this.handleTokens(meta, msg.promptId, msg.tokens, msg.cost)
         break
       case 'agent.steered':
         this.handleSteered(meta, msg.promptId, msg.ok)
