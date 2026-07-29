@@ -122,10 +122,10 @@ export default function AgentIcon({
           src={src}
           alt=""
           draggable={false}
-          className="block w-full h-full rounded-full object-cover select-none"
+          className="block w-full h-full rounded-full object-cover"
         />
       ) : (
-        <svg viewBox="0 0 100 100" className="w-full h-full rounded-full select-none" aria-hidden>
+        <svg viewBox="0 0 100 100" className="w-full h-full rounded-full" aria-hidden>
           <rect width="100" height="100" fill={bg} />
           <g transform={`rotate(${pet.tilt} 50 54)`}>
             <path d={pet.body} fill={body} stroke={body} strokeWidth={7} strokeLinejoin="round" />

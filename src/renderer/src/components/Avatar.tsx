@@ -49,11 +49,11 @@ export default function Avatar({
           src={src}
           alt=""
           draggable={false}
-          className="block w-full h-full rounded-full object-cover select-none"
+          className="block w-full h-full rounded-full object-cover"
         />
       ) : (
         <span
-          className="w-full h-full rounded-full font-semibold flex items-center justify-center select-none"
+          className="w-full h-full rounded-full font-semibold flex items-center justify-center"
           style={{ backgroundColor: colors.background, color: colors.color }}
         >
           {avatarInitial(name)}
