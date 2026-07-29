@@ -8,6 +8,7 @@ const SLOP = 6
 const AWAY = 88
 const FLICK = 0.45
 const CLEAR = 40
+const SAMPLE = 30
 
 export interface SwipeAway {
   props: {
