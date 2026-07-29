@@ -13,10 +13,10 @@ function Row({ run, onOpen }: { run: SubagentRun; onOpen: (threadId: string) => 
       onClick={() => onOpen(run.threadId)}
       className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-fg/[0.04] active:scale-[0.995]"
     >
-      <SubagentMark seed={run.roleId} size="sm" />
+      <SubagentMark seed={run.threadId} size="sm" />
       <span className="min-w-0 flex-1">
         <span className="block text-sm text-fg truncate">{run.subject}</span>
-        <span className="block text-xs text-fg-faint truncate">{run.roleName}</span>
+        <span className="block text-xs text-fg-faint truncate">{run.name}</span>
       </span>
       {state === 'working' ? (
         <Spinner size={14} className="text-fg-muted shrink-0" />

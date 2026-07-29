@@ -25,7 +25,6 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const selfId = useCrew(state => state.selfId)
   const agents = useCrew(state => state.agents)
   const thread = useCrew(state => state.threads[threadId])
-  const role = useCrew(state => state.subagents.find(one => one.id === thread?.roleId))
   const promptId = useCrew(state => state.threadPrompts[threadId])
   const tokens = useCrew(state => (promptId ? (state.tokens[promptId] ?? 0) : 0))
   const text = useCrew(state => state.threadDrafts[threadId] ?? '')
@@ -72,11 +71,11 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   return (
     <div className="absolute inset-0 flex flex-col">
       <div className="shrink-0 flex items-center gap-3 px-4 pb-3">
-        <SubagentMark seed={thread.roleId ?? threadId} size="lg" />
+        <SubagentMark seed={threadId} size="lg" />
         <div className="min-w-0 flex-1">
           <p className="text-base font-semibold text-fg truncate">{thread.subject ?? thread.title}</p>
           <p className="text-xs text-fg-faint truncate">
-            {[role?.name, thread.agentLabel].filter(Boolean).join(' · ')}
+            {[thread.helper, thread.agentLabel].filter(Boolean).join(' · ')}
           </p>
         </div>
         <div className="shrink-0 flex items-center gap-2">
