@@ -42,19 +42,11 @@ export default function TopBar({
   onToggleTasks: () => void
 }) {
   const connection = useCrew(s => s.connection)
-  const joinLink = useCrew(s => s.joinLink)
-  const hosting = useCrew(s => s.hosting)
-  const shared = useCrew(s => s.shared)
-  const share = useCrew(s => s.share)
   const selfName = useCrew(s => s.selfName)
-  const hasPhoto = useCrew(s => Boolean(s.members.find(m => m.id === s.selfId)?.avatar))
-  const setMyPhoto = useCrew(s => s.setMyPhoto)
-  const leave = useCrew(s => s.leave)
   const waiting = useCrew(reviewCount)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const settingsOpen = useSettings() !== null
   const [moreOpen, setMoreOpen] = useState(false)
   const [toolboxOpen, setToolboxOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
   const full = useFullScreen()
   const headerRef = useRef<HTMLElement>(null)
   const [compact, setCompact] = useState(false)
