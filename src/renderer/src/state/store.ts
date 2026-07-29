@@ -26,6 +26,7 @@ import { alertToast } from '../components/alertToast'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert } from './alerts'
+import { useBrowser } from './browser'
 import { toast } from './toast'
 
 export type Connection = 'booting' | 'home' | 'connecting' | 'online' | 'reconnecting'
