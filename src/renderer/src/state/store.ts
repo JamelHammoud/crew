@@ -367,9 +367,15 @@ export const useCrew = create<CrewState>((set, get) => {
     if (cue) playSound(cue)
     // One decision, said in two places: the app says it every time, and the
     // system says it only when the window is not the one being looked at.
-    const alert = finishedAlert(event, get()) ?? memberMentionAlert(event, get().selfId, get().openThreadId)
+    const alert =
+      finishedAlert(event, get()) ??
+      memberMentionAlert(event, get().selfId, get().openThreadId) ??
+      questionAlert(event, get(), boardOnScreen())
     if (alert) {
-      alertToast(alert, threadId => get().openThread(threadId))
+      alertToast(alert, threadId => {
+        get().openThread(threadId)
+        if (alert.board) useBrowser.getState().showWork(threadId)
+      })
       if (!document.hasFocus()) void window.crew?.notify?.(alert)
     }
     // A question asked on the side opens where it is answered. It is a ghost, so
