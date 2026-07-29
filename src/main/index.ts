@@ -44,14 +44,28 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
 const terminals = new Map<number, Terminals>()
+const rendererPage = {
+  preload: path.join(dirname, '../preload/preload.mjs'),
+  devUrl: process.env['ELECTRON_RENDERER_URL'],
+  file: path.join(dirname, '../renderer/index.html')
+}
 const tray = new CrewTray({
-  page: {
-    preload: path.join(dirname, '../preload/preload.mjs'),
-    devUrl: process.env['ELECTRON_RENDERER_URL'],
-    file: path.join(dirname, '../renderer/index.html')
-  },
+  page: rendererPage,
   openWindow: () => openWindow(),
   quit: () => app.quit()
+})
+const scribe = new ScribeWindow(rendererPage)
+let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
+const scribeKeys = new ScribeKeys({
+  onArm: () => {
+    scribe.show()
+    scribe.send('scribe:arm')
+  },
+  onFinish: () => scribe.send('scribe:finish'),
+  onCancel: () => {
+    scribe.send('scribe:cancel')
+    scribe.hide()
+  }
 })
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()
@@ -60,7 +74,7 @@ let iconTheme: IconTheme = 'dark'
 // The tray panel is a window like any other as far as Electron is concerned,
 // so everything that means "the app's own windows" asks for these.
 function appWindows(): BrowserWindow[] {
-  return BrowserWindow.getAllWindows().filter(win => !tray.owns(win))
+  return BrowserWindow.getAllWindows().filter(win => !tray.owns(win) && !scribe.owns(win))
 }
 
 function sharing(): void {
