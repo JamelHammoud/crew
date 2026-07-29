@@ -45,22 +45,41 @@ export function usePanelOpens(): PanelOpen[] {
     const browser = useBrowser.getState
     const rows: PanelOpen[] = []
     if (threadId && plan)
-      rows.push({ id: 'plan', label: 'Plan', mark: <ChecklistGlyph />, open: () => browser().showPlan(threadId) })
+      rows.push({
+        id: 'plan',
+        label: 'Plan',
+        mark: <ChecklistGlyph />,
+        scope: 'thread',
+        open: () => browser().showPlan(threadId)
+      })
     if (threadId && tickets)
-      rows.push({ id: 'work', label: 'Board', mark: <TicketGlyph />, open: () => browser().showWork(threadId) })
+      rows.push({
+        id: 'work',
+        label: 'Board',
+        mark: <TicketGlyph />,
+        scope: 'thread',
+        open: () => browser().showWork(threadId)
+      })
     if (threadId && helpers)
       rows.push({
         id: 'agent',
         label: 'Helpers',
         mark: <GroupGlyph />,
+        scope: 'thread',
         open: () => browser().showSubagents(threadId)
       })
     rows.push(
-      { id: 'web', label: 'Web page', mark: <GlobeGlyph />, open: () => browser().addTab() },
-      { id: 'terminal', label: 'Terminal', mark: <TerminalGlyph />, open: () => browser().addTerminal() },
-      { id: 'file', label: 'Files', mark: <FolderGlyph />, open: () => browser().openFiles() },
-      { id: 'music', label: 'Music', mark: <MusicGlyph />, open: () => browser().openMusic() },
-      { id: 'game', label: 'Games', mark: <GameGlyph />, open: () => browser().openGame() }
+      { id: 'web', label: 'Web page', mark: <GlobeGlyph />, scope: 'panel', open: () => browser().addTab() },
+      {
+        id: 'terminal',
+        label: 'Terminal',
+        mark: <TerminalGlyph />,
+        scope: 'panel',
+        open: () => browser().addTerminal()
+      },
+      { id: 'file', label: 'Files', mark: <FolderGlyph />, scope: 'panel', open: () => browser().openFiles() },
+      { id: 'music', label: 'Music', mark: <MusicGlyph />, scope: 'panel', open: () => browser().openMusic() },
+      { id: 'game', label: 'Games', mark: <GameGlyph />, scope: 'panel', open: () => browser().openGame() }
     )
     return rows
   }, [threadId, plan, tickets, helpers])
