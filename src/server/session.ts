@@ -3044,7 +3044,7 @@ export class CrewSession {
     if (!agent?.runner) return
     thread.queue.shift()
     this.broadcastQueue(thread)
-    this.emitThreadMessage(next)
+    if (!next.silent) this.emitThreadMessage(next)
     thread.running = next.promptId
     agent.running.add(next.promptId)
     agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now(), entry: next })
