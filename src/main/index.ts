@@ -321,6 +321,12 @@ app.whenReady().then(() => {
     return scribeKeys.state()
   })
   ipcMain.handle('scribe:state', () => scribeKeys.state())
+  // The one permission macOS will not let an app grant itself. Both the key and
+  // the paste need it, so the pane is opened and the person turns it on.
+  ipcMain.handle('scribe:permission', () => {
+    if (process.platform !== 'darwin') return
+    void shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility')
+  })
   ipcMain.on('scribe:done', (_event, text: string) => {
     scribeKeys.stopped()
     scribe.hide()
