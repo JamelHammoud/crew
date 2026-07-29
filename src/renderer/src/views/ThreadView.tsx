@@ -58,18 +58,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const agents = useCrew(s => s.agents)
-  const planShowing = useBrowser(s => {
-    const shown = s.tabs.find(t => t.id === s.activeTabId)
-    return shown?.kind === 'plan' && shown.threadId === threadId
-  })
-  const boardShowing = useBrowser(s => {
-    const shown = s.tabs.find(t => t.id === s.activeTabId)
-    return shown?.kind === 'work' && shown.threadId === threadId
-  })
-  const helpersShowing = useBrowser(s => {
-    const shown = s.tabs.find(t => t.id === s.activeTabId)
-    return shown?.kind === 'agent' && shown.parentThreadId === threadId
-  })
+  const panelOpen = useBrowser(s => s.open)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
