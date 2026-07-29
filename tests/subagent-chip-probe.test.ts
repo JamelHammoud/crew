@@ -82,3 +82,62 @@ describe('where a helper chip lands', () => {
     expect(eventsOfThread(events, CHILD).map(e => e.id)).toEqual(['m-2'])
   })
 })
+
+const ran = (ts: number, threadId: string): SessionEvent => ({
+  id: `start-${ts}`,
+  ts,
+  kind: 'agent.start',
+  promptId: 'p9',
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  promptText: 'do it',
+  byName: 'Bubbles',
+  threadId
+})
+
+const answered = (ts: number, threadId: string, text: string): SessionEvent => ({
+  id: `end-${ts}`,
+  ts,
+  kind: 'agent.end',
+  promptId: 'p9',
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  ok: true,
+  text,
+  threadId
+})
+
+const agents = [{ id: 'a1', label: 'Bubbles' }]
+
+describe('who a helper thread reads under', () => {
+  const events = [ran(1, CHILD), answered(2, CHILD, 'here it is')]
+  const steps = {
+    p9: [{ id: 's1', ts: 1, kind: 'thinking' as const, status: 'done' as const, text: 'weighing it' }]
+  }
+
+  it('stands under the helper rather than the machine that ran it', () => {
+    const items = buildThread(eventsOfThread(events, CHILD), steps, 'sam', agents, { name: 'Copy', seed: CHILD })
+    expect(items.map(item => item.author)).toEqual(['Copy', 'Copy'])
+    expect(items.every(item => item.helperSeed === CHILD)).toBe(true)
+  })
+
+  it('carries no agent id, so nothing looks the helper up as one', () => {
+    const items = buildThread(eventsOfThread(events, CHILD), steps, 'sam', agents, { name: 'Copy', seed: CHILD })
+    expect(items.every(item => item.authorId === undefined)).toBe(true)
+  })
+
+  it('leaves an ordinary thread standing under its agent', () => {
+    const items = buildThread(eventsOfThread(events, CHILD), steps, 'sam', agents)
+    expect(items.map(item => item.author)).toEqual(['Bubbles', 'Bubbles'])
+    expect(items.every(item => item.helperSeed === undefined)).toBe(true)
+    expect(items.every(item => item.authorId === 'a1')).toBe(true)
+  })
+
+  it('leaves what a person typed into it as theirs', () => {
+    const withSteer = [...events, said(3, CHILD, 'try again')]
+    const items = buildThread(eventsOfThread(withSteer, CHILD), steps, 'sam', agents, { name: 'Copy', seed: CHILD })
+    const message = items.find(item => item.kind === 'message')
+    expect(message?.author).toBe('Sam')
+    expect(message?.helperSeed).toBeUndefined()
+  })
+})
