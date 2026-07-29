@@ -8,6 +8,7 @@ import type { ThreadMeta } from '../state/store'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
 import { isNewDay } from './time'
 import { toolAction } from './toolActions'
+import { readWork } from '../../../shared/tickets'
 
 // A thread's standing as a task. 'done' and 'archived' record explicit calls a
 // person made; 'working', 'ready', and 'failed' are read off the run history.
@@ -197,13 +198,18 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
     }
   }
   if (!step.text) return null
+  // A card the agent wrote for the board is taken out of what is read here, the
+  // way a voice card is taken out of what is said. A step that was only a card
+  // is nothing to read rather than an empty row.
+  const written = step.kind === 'thinking' ? step.text : readWork(step.text).text
+  if (!written) return null
   return {
     key: `${promptId}:${step.id}`,
     ts: step.ts,
     kind: step.kind === 'thinking' ? 'thinking' : 'reply',
     author,
     self: false,
-    text: step.text,
+    text: written,
     streaming,
     promptId,
     reactionTargetId: agentStepReactionTarget(promptId, step.id)
@@ -324,7 +330,7 @@ export function buildThread(
           authorId: event.agentId,
           agentId: event.agentId,
           self: false,
-          text: event.ok ? (event.text ?? '') : (event.error ?? 'Something went wrong.'),
+          text: event.ok ? readWork(event.text ?? '').text : (event.error ?? 'Something went wrong.'),
           streaming: false,
           error: event.ok ? undefined : (event.error ?? 'error'),
           reactionTargetId: agentEndReactionTarget(event.promptId),
