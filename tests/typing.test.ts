@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
-import type { ServerMessage } from '../src/shared/protocol'
+import type { ClientMessage, ServerMessage } from '../src/shared/protocol'
 import { TYPING_TTL, type Typist, typingLine, typistsIn } from '../src/shared/typing'
 import { startHost, TestUi, tmpDir, waitUntil, type TestHost } from './helpers/session'
 
