@@ -47,8 +47,13 @@ export function threadFinished(event: SessionEvent, state: ReviewState): boolean
   // already done, which nobody would otherwise ever see.
   if (thread?.parentThreadId && (event.ok || state.threadPrompts[thread.parentThreadId])) return false
   // Nor is a thread with helpers still out finished: its own turn ended, but
-  // the work it sent out is its work.
-  if (event.threadId && threadWorking(event.threadId, {}, state.queues, state.threads)) return false
+  // the work it sent out is its work. Only its own run is left out of that, and
+  // it has to be left out by name: the turn that just ended is still standing in
+  // the map when this lands, so reading it back says the thread is working. An
+  // empty map was what did that once, and it took the helpers out with it, so a
+  // parent chimed while four of them were still going.
+  const others = Object.fromEntries(Object.entries(state.threadPrompts).filter(([id]) => id !== event.threadId))
+  if (event.threadId && threadWorking(event.threadId, others, state.queues, state.threads)) return false
   return true
 }
 
