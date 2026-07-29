@@ -283,7 +283,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
                 />
               )}
               {!editable && (file.truncated || long) && (
-                <p className="px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
+                <p className="select-none px-4 pt-3 text-xs text-fg-muted font-sans">Showing the beginning of this file</p>
               )}
             </div>
           )}
