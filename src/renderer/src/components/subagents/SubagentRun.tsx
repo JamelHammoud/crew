@@ -68,31 +68,6 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div className="shrink-0 flex items-center gap-3 px-4 pb-3">
-        <SubagentMark seed={threadId} size="lg" />
-        <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-fg truncate">{thread.subject ?? thread.title}</p>
-          <p className="text-xs text-fg-faint truncate">
-            {[thread.helper, thread.agentLabel].filter(Boolean).join(' · ')}
-          </p>
-        </div>
-        <div className="shrink-0 flex items-center gap-2">
-          {working ? (
-            <>
-              <Spinner size={14} className="text-fg-muted" />
-              <span className="text-xs text-fg-muted">Working</span>
-            </>
-          ) : ended?.ok === false ? (
-            <>
-              <WarningGlyph className="w-4 h-4 text-danger" />
-              <span className="text-xs text-danger">Stopped</span>
-            </>
-          ) : (
-            <span className="text-xs text-fg-faint">{ended ? formatSpan(ended.ms) : ''}</span>
-          )}
-        </div>
-      </div>
-
       <div ref={scrollRef} onScroll={onScroll} className="flex-1 min-h-0 overflow-y-auto px-4">
         <div className="space-y-4 pb-4 select-text">
           <ThreadItems items={items} />
