@@ -69,8 +69,18 @@ export default function ScribePill() {
         {failed ? (
           <p className="flex-1 min-w-0 flex items-center gap-1.5 text-xs text-fg/70 leading-tight">
             <WarningGlyph className="w-4 h-4 shrink-0 text-danger" />
-            <span className="truncate">{problem ?? 'That did not work.'}</span>
+            <span className="line-clamp-2">{problem ?? 'That did not work.'}</span>
           </p>
+        ) : waking ? (
+          // The model comes down once, ever. A bar rather than the row of bars,
+          // because there is nothing to hear yet and a flat row of dots reads as
+          // a microphone that is not working.
+          <span className="flex-1 min-w-0 h-1 rounded-full bg-fg/15 overflow-hidden">
+            <span
+              className="block h-full rounded-full bg-fg/60 transition-[width] duration-200"
+              style={{ width: `${Math.round(progress * 100)}%` }}
+            />
+          </span>
         ) : (
           // The bars settle while whisper finishes rather than freezing, so a
           // slow reading is a pill that is working rather than one that has
