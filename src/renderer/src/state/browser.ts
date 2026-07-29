@@ -354,7 +354,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
     const tab = { ...makeTab(), kind: 'work' as const, threadId }
     set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'work')], activeTabId: tab.id, closedBoards }))
   },
-  hideWork: () =>
+  hideWork: () => {
     set(s => {
       const index = s.tabs.findIndex(t => t.kind === 'work')
       if (index < 0) return {}
@@ -363,7 +363,9 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const activeTabId =
         s.activeTabId === board.id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
       return { tabs, activeTabId }
-    }),
+    })
+    settle()
+  },
   closeWork: () => {
     const board = get().tabs.find(t => t.kind === 'work')
     if (board) get().closeTab(board.id)
