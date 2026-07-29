@@ -75,11 +75,7 @@ export default function Appearance() {
           return (
             <button
               key={choice.theme}
-              onClick={() => {
-                if (on) return
-                applyTheme(choice.theme)
-                playSound('toggle')
-              }}
+              onClick={() => applyTheme(choice.theme)}
               aria-pressed={on}
               className={`rounded-card p-1.5 border text-left transition-colors duration-150 active:scale-[0.99] ${
                 on ? 'border-fg/40 bg-fg/[0.04]' : 'border-fg/10 hover:border-fg/25'
