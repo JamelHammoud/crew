@@ -16,6 +16,7 @@ class TestResizeObserver {
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+if (!Element.prototype.getAnimations) Element.prototype.getAnimations = () => []
 
 const agent: PooledAgent = {
   id: 'ali/claude',
