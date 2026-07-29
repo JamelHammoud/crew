@@ -145,21 +145,21 @@ export const useVoice = create<VoiceState>((set, get) => {
   const heard = async (audio: Float32Array) => {
     if (get().phase === 'off') return
     set({ phase: 'thinking' })
-    const text = await listener.hear(audio)
+    const heard = await listener.hear(audio)
     if (get().phase === 'off') return
     // A turn that fell over on the way in says so. Handed back as nothing it is
     // the same as a cough, and a conversation where every turn quietly failed
     // looks exactly like one nobody is answering.
-    if (text === null) {
+    if (heard === null) {
       set({ phase: 'listening', problem: 'Crew could not listen to that. Try again.' })
       return
     }
-    if (!worthSending(text)) {
+    if (!worthSending(heard.text)) {
       set({ phase: 'listening' })
       return
     }
-    set({ heard: text })
-    send(text)
+    set({ heard: heard.text })
+    send(heard.text)
   }
 
   const send = (text: string) => {
