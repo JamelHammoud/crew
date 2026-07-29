@@ -3205,7 +3205,9 @@ export class CrewSession {
     const born = this.subagentThreads(thread.id)
     const out = born.filter(one => this.subagentRunning(one)).length
     const room = Math.max(0, Math.min(FAN_LIMIT - out, RUN_LIMIT - born.length))
-    const canSend = roles.length > 0 && (thread.depth ?? 0) < DEPTH_LIMIT
+    // A question on the side answers itself. Sending work out of one would put
+    // helpers on a thread nobody can see and nobody asked for work in.
+    const canSend = roles.length > 0 && !thread.aside && (thread.depth ?? 0) < DEPTH_LIMIT
     return {
       type: 'prompt',
       promptId: entry.promptId,
