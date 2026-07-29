@@ -84,44 +84,108 @@ describe('the plan in the browser', () => {
     expect(planTab()!.threadId).toBe('t2')
   })
 
-  it('carries no close of its own', () => {
+  it('closes the way any other tab does', () => {
     render(createElement(BrowserPanel))
     open('t1', 'Step one')
-    const tab = planTab()!
 
-    act(() => useBrowser.getState().closeTab(tab.id))
+    act(() => useBrowser.getState().closeTab(planTab()!.id))
 
-    expect(planTab()?.id).toBe(tab.id)
+    expect(planTab()).toBeNull()
+    expect(useBrowser.getState().activeTabId).toBeNull()
   })
 
-  it('offers no menu to close it with', () => {
+  it('offers the menu every tab has', () => {
     const { container, queryByText } = render(createElement(BrowserPanel))
     open('t1', 'Step one')
 
     fireEvent.contextMenu(container.querySelector(`[data-tab="${planTab()!.id}"]`)!)
 
-    expect(queryByText('Close tab')).toBeNull()
+    expect(queryByText('Close tab')).not.toBeNull()
   })
 
-  it('stays standing when the rest of the tabs are closed', () => {
+  it('goes with the rest of the tabs', () => {
     render(createElement(BrowserPanel))
     open('t1', 'Step one')
     act(() => useBrowser.getState().openUrl('https://example.com/one'))
 
     act(() => useBrowser.getState().closeAll())
 
-    const tabs = useBrowser.getState().tabs
-    expect(tabs.map(t => t.kind)).toEqual(['plan'])
-    expect(useBrowser.getState().activeTabId).toBe(tabs[0]!.id)
+    expect(useBrowser.getState().tabs).toEqual([])
+    expect(useBrowser.getState().activeTabId).toBeNull()
   })
 
-  it('leaves nothing to close while it is the only thing there', () => {
+  it('stands with a close of its own while it is the only thing there', () => {
     const { queryByLabelText } = render(createElement(BrowserPanel))
     open('t1', 'Step one')
 
-    expect(queryByLabelText('Close')).toBeNull()
-
-    act(() => useBrowser.getState().openUrl('https://example.com/one'))
     expect(queryByLabelText('Close')).not.toBeNull()
+  })
+
+  it('stays away until it is asked for again', () => {
+    render(createElement(BrowserPanel))
+    open('t1', 'Step one')
+
+    act(() => useBrowser.getState().closePlan())
+    act(() => useCrew.setState({ openThreadId: null }))
+    open('t1', 'Step one')
+
+    expect(planTab()).toBeNull()
+
+    act(() => useBrowser.getState().showPlan('t1'))
+
+    expect(planTab()!.threadId).toBe('t1')
+    expect(useBrowser.getState().closedPlans).toEqual([])
+  })
+
+  it('comes up for another thread that has one of its own', () => {
+    render(createElement(BrowserPanel))
+    open('t1', 'Step one')
+    act(() => useBrowser.getState().closePlan())
+
+    act(() => useCrew.setState({ threads: { t2: thread('t2', 'Something else') }, openThreadId: 't2' }))
+
+    expect(planTab()!.threadId).toBe('t2')
+  })
+
+  it('leaves no plan standing for a thread whose plan was put away', () => {
+    render(createElement(BrowserPanel))
+    open('t1', 'Step one')
+    act(() => useBrowser.getState().closePlan())
+    act(() => useCrew.setState({ threads: { t2: thread('t2', 'Something else') }, openThreadId: 't2' }))
+
+    act(() =>
+      useCrew.setState({ threads: { t1: thread('t1', 'Step one'), t2: thread('t2', 'x') }, openThreadId: 't1' })
+    )
+
+    expect(planTab()).toBeNull()
+  })
+})
+
+describe('the way back to a plan', () => {
+  const view = (id: string) =>
+    render(createElement('div', null, createElement(ThreadView, { threadId: id }), createElement(BrowserPanel)))
+
+  it('stands in the thread and turns the plan on and off', () => {
+    open('t1', 'Step one')
+    const { getByLabelText, queryByLabelText } = view('t1')
+
+    expect(planTab()).not.toBeNull()
+    fireEvent.click(getByLabelText('Hide plan'))
+
+    expect(planTab()).toBeNull()
+    expect(useCrew.getState().openThreadId).toBe('t1')
+
+    fireEvent.click(getByLabelText('Show plan'))
+
+    expect(planTab()!.threadId).toBe('t1')
+    expect(queryByLabelText('Show plan')).toBeNull()
+  })
+
+  it('says nothing in a thread with no plan', () => {
+    open('t1')
+    const { queryByLabelText } = view('t1')
+
+    expect(queryByLabelText('Show plan')).toBeNull()
+    expect(queryByLabelText('Hide plan')).toBeNull()
   })
 })
