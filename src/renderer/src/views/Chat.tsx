@@ -28,7 +28,7 @@ import { useNow } from '../components/useNow'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import { useVoice } from '../state/voice'
-import { cleanCommands, commandTyped, type CommandName } from '../../../shared/commands'
+import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
 import { messageReactionTarget } from '../../../shared/reactions'
 
 type Feed =
