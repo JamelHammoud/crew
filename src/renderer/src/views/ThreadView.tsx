@@ -173,6 +173,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
             style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}
           >
             <ThreadItems
+              threadId={threadId}
               items={items}
               onReply={item => {
                 setReplyTo(item)
