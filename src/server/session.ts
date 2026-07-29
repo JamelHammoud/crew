@@ -1102,15 +1102,24 @@ export class CrewSession {
       mentions?: string[]
       replyTo?: MessageReply
       voice?: boolean
+      subagent?: {
+        parentThreadId: string
+        parentPromptId: string
+        role: Subagent
+        subject: string
+        depth: number
+        notify: boolean
+      }
     } = {}
   ): string {
     const threadId = randomUUID()
     const boardId = opts.boardId
+    const sent = opts.subagent
     const thread: Thread = {
       id: threadId,
       agentId: agent.id,
       agentLabel: agent.label,
-      title: this.titleFrom(text || attachments.map(a => a.name).join(', ')),
+      title: sent ? sent.subject : this.titleFrom(text || attachments.map(a => a.name).join(', ')),
       createdBy: member.name,
       status: 'open',
       mode: opts.mode ?? 'build',
@@ -1118,7 +1127,14 @@ export class CrewSession {
       running: null,
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
       ghost: opts.ghost !== undefined,
-      voice: opts.voice === true
+      voice: opts.voice === true,
+      parentThreadId: sent?.parentThreadId,
+      parentPromptId: sent?.parentPromptId,
+      roleId: sent?.role.id,
+      subject: sent?.subject,
+      depth: sent?.depth,
+      notify: sent?.notify,
+      startedAt: Date.now()
     }
     this.threads.set(threadId, thread)
     // Before the first word of it is emitted, or that word goes to everyone.
