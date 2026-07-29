@@ -19,23 +19,6 @@ export interface EarEars {
   onEnd: (audio: Float32Array | null) => void
 }
 
-const loaded = new WeakSet<AudioContext>()
-
-async function loadWorklet(ctx: AudioContext): Promise<boolean> {
-  if (loaded.has(ctx)) return true
-  if (!ctx.audioWorklet) return false
-  const url = URL.createObjectURL(new Blob([EAR_SOURCE], { type: 'application/javascript' }))
-  try {
-    await ctx.audioWorklet.addModule(url)
-    loaded.add(ctx)
-    return true
-  } catch {
-    return false
-  } finally {
-    URL.revokeObjectURL(url)
-  }
-}
-
 // The microphone, listened to for the start and end of things somebody says.
 // It stays open for the whole conversation, the agent's turn included, which is
 // what lets somebody talk over the answer rather than wait it out.
@@ -57,7 +40,7 @@ export class VoiceEar {
   async open(): Promise<MediaKind | null> {
     const ctx = context()
     if (!ctx) return 'microphone'
-    if (!(await loadWorklet(ctx))) return 'microphone'
+    if (!(await loadEarWorklet(ctx))) return 'microphone'
     const { track, problem } = await captureMic(storedInput('microphone'))
     if (!track) return problem ?? 'microphone'
     this.track = track
