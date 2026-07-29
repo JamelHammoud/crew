@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render } from '@testing-library/react'
+import { cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import ChatMessage from '../src/renderer/src/components/ChatMessage'
@@ -89,9 +89,9 @@ describe('what is selectable', () => {
         })
       })
     )
-    const row = container.querySelector('button')
+    const row = container.querySelector('button')!
     expect(selectable(row)).toBe(false)
-    row?.click()
+    fireEvent.click(row)
     const printed = Array.from(container.querySelectorAll('div')).find(el => el.textContent === 'no errors')
     expect(printed).toBeTruthy()
     expect(selectable(printed ?? null)).toBe(true)
