@@ -249,7 +249,7 @@ export class GitSync {
     )
   }
 
-  private async act(command: RepoCommand): Promise<RepoActionResult> {
+  private async act(command: LocalCommand): Promise<RepoActionResult> {
     const status = await this.readStatus()
     if (!status.available) {
       return this.result(false, false, 'This project is not tracked with git.', status)
