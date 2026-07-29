@@ -22,6 +22,7 @@ import type {
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
 const DIFF_LIMIT = 200_000
 const DIFF_LINE_LIMIT = 2_000
+const UNIT = ''
 const AUTO_SYNC_MS = 5000
 const DEBOUNCE_MS = 2000
 
@@ -722,6 +723,47 @@ function changeKind(code: string): RepoChangeKind {
   if (code.includes('D')) return 'deleted'
   if (code.includes('A')) return 'added'
   return 'modified'
+}
+
+// The porcelain code is the index and then the file on disk. A path that has
+// both is on both lists, and a conflict is neither: nothing about it is staged
+// until somebody has settled it.
+function sidesOf(entry: StatusEntry): boolean[] {
+  if (entry.code === '??' || changeKind(entry.code) === 'conflict') return [false]
+  const index = entry.code[0] ?? ' '
+  const worktree = entry.code[1] ?? ' '
+  const sides: boolean[] = []
+  if (index !== ' ' && index !== '?') sides.push(true)
+  if (worktree !== ' ') sides.push(false)
+  return sides.length > 0 ? sides : [false]
+}
+
+function sideKind(entry: StatusEntry, staged: boolean): RepoChangeKind {
+  const kind = changeKind(entry.code)
+  if (entry.code === '??' || kind === 'conflict') return kind
+  return letterKind(entry.code[staged ? 0 : 1] ?? ' ')
+}
+
+function letterKind(letter: string): RepoChangeKind {
+  if (letter === 'R') return 'renamed'
+  if (letter === 'C') return 'copied'
+  if (letter === 'D') return 'deleted'
+  if (letter === 'A') return 'added'
+  return 'modified'
+}
+
+// A stash subject is "WIP on branch: subject" or "On branch: message", and a
+// branch name can never hold a colon, so the first one is where it ends.
+function stashOf(record: string): RepoStash {
+  const [ref = '', subject = ''] = record.split(UNIT)
+  const named = /^(?:WIP on|On) ([^:]+): ?(.*)$/.exec(subject)
+  if (!named) return { ref, message: subject, branch: '' }
+  return { ref, message: named[2], branch: named[1] }
+}
+
+function insideRepo(root: string, target: string): boolean {
+  const rel = path.relative(root, target)
+  return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel)
 }
 
 function diffCounts(diff: string): { added: number; removed: number } {
