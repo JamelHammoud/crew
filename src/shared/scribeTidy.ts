@@ -66,8 +66,10 @@ const SENTENCE_CUTS = [
   'wait no',
   'actually no',
   'actually wait',
+  // "actually hold on" is a retraction and a bare "hold on" is not. "Hold on,
+  // let me check" is somebody asking for a moment, and taking the sentence
+  // before it away is the one mistake here nobody can see happening.
   'actually hold on',
-  'hold on',
   'sorry no',
   'no sorry',
   'i mean no'
