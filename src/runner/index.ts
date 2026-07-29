@@ -386,11 +386,12 @@ export class Runner {
     }
     if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
-    // Both preambles are written here rather than on the host because only this
+    // Every preamble is written here rather than on the host because only this
     // side knows the http address it reaches the server at.
     const preambles = [
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
-      subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders)
+      subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
+      tickets ? ticketPreamble(this.httpBase, promptId) : ''
     ].filter(Boolean)
     const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()
