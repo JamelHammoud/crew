@@ -218,17 +218,19 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = { ...makeTab(), kind: 'game' as const }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
-  // The plan for the thread you are in. It stands at the head of the row, it is
-  // nobody's to close, and it is only ever the one plan, so opening another
-  // thread's takes the place of the one before it.
+  // The plan for the thread you are in. It stands at the head of the row, and
+  // it is only ever the one plan, so opening another thread's takes the place
+  // of the one before it. Asking for it back is asking for it, so a plan that
+  // was put away is standing again from here.
   showPlan: threadId => {
+    const closedPlans = get().closedPlans.filter(id => id !== threadId)
     const existing = get().tabs.find(t => t.kind === 'plan')
     if (existing?.threadId === threadId) {
-      set({ activeTabId: existing.id })
+      set({ activeTabId: existing.id, closedPlans })
       return
     }
     const tab = { ...makeTab(), kind: 'plan' as const, threadId }
-    set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'plan')], activeTabId: tab.id }))
+    set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'plan')], activeTabId: tab.id, closedPlans }))
   },
   hidePlan: () =>
     set(s => {
@@ -240,6 +242,10 @@ export const useBrowser = create<BrowserState>((set, get) => ({
         s.activeTabId === plan.id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
       return { tabs, activeTabId }
     }),
+  closePlan: () => {
+    const plan = get().tabs.find(t => t.kind === 'plan')
+    if (plan) get().closeTab(plan.id)
+  },
   toggleTree: id =>
     set(s => ({
       tabs: s.tabs.map(t =>
