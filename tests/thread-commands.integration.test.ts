@@ -57,6 +57,7 @@ describe('commands inside a thread', () => {
   }
 
   const steery = agentId('sam', 'steery')
+  const samsFake = agentId('sam', 'fake')
   const patsFake = agentId('pat', 'fake')
 
   it('/queue holds a message back from a run that would have taken it', async () => {
@@ -106,7 +107,7 @@ describe('commands inside a thread', () => {
     await connectRunner('sam', false)
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Steery tidy the readme', [steery])
+    sam.chat('@Fake tidy the readme', [samsFake])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
     await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
 
@@ -138,7 +139,7 @@ describe('commands inside a thread', () => {
     await connectRunner('sam', false)
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
-    sam.chat('@Steery tidy the readme', [steery])
+    sam.chat('@Fake tidy the readme', [samsFake])
     const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
     await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
 
