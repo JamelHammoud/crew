@@ -46,6 +46,7 @@ import {
   type HuddleSignal
 } from '../shared/huddle'
 import { beats, cleanGameScore, type GameScore } from '../shared/games'
+import { TYPING_TTL, type Typist } from '../shared/typing'
 import {
   audioExtension,
   BY_LIMIT,
@@ -357,6 +358,10 @@ export class CrewSession {
   private docs = new Map<string, DocPage>()
   private designs = new Map<string, DesignBoard>()
   private designCursorTimers = new Map<string, NodeJS.Timeout[]>()
+  // Who is writing right now, keyed by the connection writing it, so two windows
+  // on one folder are two people at two keyboards. None of it is written down.
+  private typing = new Map<WebSocket, Typist & { at: number }>()
+  private typingSweep: NodeJS.Timeout | null = null
   // One huddle per session, keyed by the connection in it: two windows on the
   // same folder are the same member but two separate people in the call.
   private huddle = new Map<WebSocket, HuddlePeer>()
