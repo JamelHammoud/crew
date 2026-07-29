@@ -363,6 +363,11 @@ export const useCrew = create<CrewState>((set, get) => {
       alertToast(alert, threadId => get().openThread(threadId))
       if (!document.hasFocus()) void window.crew?.notify?.(alert)
     }
+    // A question asked on the side opens where it is answered. It is a ghost, so
+    // this only ever runs in the window that asked it.
+    if (event.kind === 'thread.started' && event.aside) {
+      useBrowser.getState().openAside(event.threadId, event.title)
+    }
     if (event.kind === 'message.deleted') {
       set(state => ({
         events: markDeletedReplies(
