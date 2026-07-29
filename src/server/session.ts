@@ -505,6 +505,29 @@ export class CrewSession {
       if (event.kind === 'tool.removed') {
         this.tools.delete(event.toolId)
       }
+      if (event.kind === 'subagent.added') {
+        this.subagents.set(event.roleId, {
+          id: event.roleId,
+          name: event.name,
+          brief: event.brief,
+          provider: event.provider,
+          settings: event.settings ?? {},
+          createdBy: event.byName,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'subagent.edited') {
+        const role = this.subagents.get(event.roleId)
+        if (role) {
+          role.name = event.name
+          role.brief = event.brief
+          role.provider = event.provider
+          role.settings = event.settings ?? {}
+        }
+      }
+      if (event.kind === 'subagent.removed') {
+        this.subagents.delete(event.roleId)
+      }
       // A track whose file has gone is left off the shelf rather than offered
       // as a row that plays nothing.
       if (event.kind === 'music.added' && this.store.musicPath(event.file)) {
