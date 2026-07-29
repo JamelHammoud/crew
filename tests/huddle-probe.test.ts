@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import App from '../src/renderer/src/App'
 import { useHuddle } from '../src/renderer/src/state/huddle'
+import { closeSettings } from '../src/renderer/src/state/settings'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { HuddlePeer } from '../src/shared/huddle'
 import type { ScreenSource } from '../src/shared/media'
@@ -145,6 +146,7 @@ describe('starting a huddle', () => {
   })
 
   afterEach(() => {
+    closeSettings()
     cleanup()
   })
 
