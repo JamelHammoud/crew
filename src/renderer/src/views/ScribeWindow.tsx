@@ -43,7 +43,7 @@ export default function ScribeWindow() {
   }, [])
 
   return (
-    <div ref={boxRef}>
+    <div ref={boxRef} className="w-fit">
       <ScribePill />
     </div>
   )
