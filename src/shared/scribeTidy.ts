@@ -254,11 +254,8 @@ const collapsed = (words: Word[]): Word[] => {
     for (let step = 0; step < run; step++) {
       const first = words[index + step]
       const second = words[index + run + step]
-      if (step === 0 && opening && capital(second.text) && !capital(first.text)) second.gap = first.gap
-      else {
-        second.text = first.text
-        if (step === 0) second.gap = first.gap
-      }
+      if (step > 0 || !opening || !capital(second.text)) second.text = first.text
+      if (step === 0) second.gap = first.gap
     }
     index += run
   }
