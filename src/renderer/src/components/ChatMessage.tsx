@@ -16,7 +16,8 @@ import MessageImages from './MessageImages'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
-const QUOTE_ROW = 'mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5'
+const QUOTE_ROW =
+  'mt-1.5 flex w-fit max-w-full min-w-0 items-center rounded-full bg-fg/[0.05] py-1 pl-2.5 pr-3.5 select-none'
 
 export default function ChatMessage({
   item,
@@ -62,7 +63,7 @@ export default function ChatMessage({
   }
 
   if (item.kind === 'note') {
-    return <p className="text-xs text-fg-muted text-center animate-rise">{item.text}</p>
+    return <p className="text-xs text-fg-muted text-center animate-rise select-none">{item.text}</p>
   }
   const quote = item.replyTo && (
     <ReplyQuote
@@ -91,7 +92,7 @@ export default function ChatMessage({
       }
     >
       {linked ? (
-        <div className="w-10 shrink-0 pt-0.5 flex justify-end">
+        <div className="w-10 shrink-0 pt-0.5 flex justify-end select-none">
           <Tooltip label={formatFullTime(item.ts)}>
             <span className="text-xs leading-[22px] tabular-nums whitespace-nowrap text-fg-faint cursor-default opacity-0 transition-opacity group-hover/message:opacity-100">
               {formatTime(item.ts)}
