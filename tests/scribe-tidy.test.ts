@@ -193,7 +193,7 @@ describe('a whole dictation, said the way people say them', () => {
       'can you have a look at the the git file when you get a minute?'
     ].join(' ')
     const meant = [
-      'Hey, I pushed the fix for the sync loop.',
+      'Hey I pushed the fix for the sync loop.',
       'It commits everything first so nothing is sitting uncommitted, and then it pulls.',
       'Can you have a look at the git file when you get a minute?'
     ].join(' ')
