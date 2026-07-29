@@ -24,6 +24,10 @@ export type PanelOpen = {
   id: string
   label: string
   mark: ReactNode
+  // Whether the row belongs to the thread you are in or to the panel itself.
+  // It is what the menu draws its one divider from, so the pair of groups is
+  // read the same way the list is ordered.
+  scope: 'thread' | 'panel'
   open: () => void
 }
 
