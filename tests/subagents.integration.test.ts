@@ -302,6 +302,41 @@ describe('subagents', () => {
     expect(ui.events.filter(e => e.kind === 'agent.start' && e.threadId === parent.threadId)).toHaveLength(1)
   })
 
+  it('sends nothing out for somebody who has turned helpers off', async () => {
+    const ui = await TestUi.connect(host.url, 'jamel', host.code)
+    uis.push(ui)
+    await connectRunner(20, 20)
+    await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
+    await addRole(ui, 'Scout')
+
+    ui.send({ type: 'subagent.prefs', on: false, fan: 4 })
+    await waitUntil(() => host.session.subagentRoles().length === 1)
+    const parent = await openParent(ui, steery)
+    const refused = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      role: 'Scout',
+      subject: 'x',
+      task: 'read the file'
+    })
+    expect(refused.status).toBe(400)
+    expect(refused.body.error).toContain('turned off')
+
+    // And it is never suggested either: the words about helpers are left off
+    // the prompt entirely, so it does not occur to the agent to try.
+    ui.send({ type: 'subagent.prefs', on: true, fan: 1 })
+    await new Promise(r => setTimeout(r, 200))
+    const again = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      role: 'Scout',
+      subject: 'x',
+      task: 'read the file'
+    })
+    expect(again.status).toBe(200)
+    const over = await post('/agents/spawn', { promptId: parent.promptId, role: 'Scout', subject: 'y', task: 'more' })
+    expect(over.status).toBe(400)
+    expect(over.body.error).toContain('1 running')
+  })
+
   it('keeps the roles in the snapshot and out of the trimmed window', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
