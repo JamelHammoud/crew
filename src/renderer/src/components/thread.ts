@@ -334,9 +334,10 @@ export function buildThread(
     if (event.kind === 'agent.start') {
       const live = !ended.has(event.promptId)
       const runSteps = steps[event.promptId] ?? []
+      const said = wroteIt(event.agentId, event.agentLabel)
       for (const step of runSteps) {
-        const item = stepItem(step, labelOf(event.agentId, event.agentLabel), event.promptId, live)
-        if (item) items.push({ ...item, agentId: event.agentId, authorId: event.agentId })
+        const item = stepItem(step, said.author, event.promptId, live)
+        if (item) items.push({ ...item, agentId: event.agentId, ...said })
       }
     }
     if (event.kind === 'agent.end') {
