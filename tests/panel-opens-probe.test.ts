@@ -169,6 +169,28 @@ describe('the panel itself', () => {
     expect(useBrowser.getState().open).toBe(false)
   })
 
+  // Nothing left in it is nothing to stand on. Opening it again is what puts
+  // Start back, so the way in is never lost by closing the last thing.
+  it('goes with the last tab out', () => {
+    act(() => useBrowser.getState().openMusic())
+    act(() => useBrowser.getState().openGame())
+
+    act(() => useBrowser.getState().closeTab(useBrowser.getState().tabs[0]!.id))
+    expect(useBrowser.getState().open).toBe(true)
+
+    act(() => useBrowser.getState().closeTab(useBrowser.getState().tabs[0]!.id))
+    expect(useBrowser.getState().open).toBe(false)
+  })
+
+  it('goes when every tab is closed at once', () => {
+    act(() => useBrowser.getState().openMusic())
+    act(() => useBrowser.getState().openGame())
+
+    act(() => useBrowser.getState().closeAll())
+
+    expect(useBrowser.getState().open).toBe(false)
+  })
+
   it('stays standing when a plan leaves something else behind', () => {
     render(createElement(BrowserPanel))
     act(() => useBrowser.getState().openMusic())
