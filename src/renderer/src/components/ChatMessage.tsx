@@ -176,7 +176,7 @@ export default function ChatMessage({
           </div>
         ) : (
           item.text && (
-            <p className={`text-base text-fg leading-[22px] whitespace-pre-wrap ${linked ? '' : 'mt-1'}`}>
+            <p className={`select-text text-base text-fg leading-[22px] whitespace-pre-wrap ${linked ? '' : 'mt-1'}`}>
               <MentionText
                 text={item.text}
                 mentionRefs={item.mentionRefs}
