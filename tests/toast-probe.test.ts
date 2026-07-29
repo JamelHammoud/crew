@@ -174,6 +174,82 @@ describe('toasts', () => {
     expect(screen.getByText('Sharing the session')).toBeTruthy()
   })
 
+  const swipe = (to: number) => {
+    const card = document.querySelector('.toast-card')!
+    fireEvent.pointerDown(card, { button: 0, pointerId: 1, clientX: 0 })
+    fireEvent.pointerMove(card, { pointerId: 1, clientX: to })
+    fireEvent.pointerUp(card, { pointerId: 1, clientX: to })
+    return card
+  }
+
+  it('a row is swiped out of the way to the right', () => {
+    show()
+    act(() => {
+      toast('Copied')
+    })
+    act(() => void swipe(140))
+    tick(TOAST_OUT_MS)
+    expect(screen.queryByText('Copied')).toBe(null)
+  })
+
+  it('a swipe that did not go far enough springs back', () => {
+    show()
+    act(() => {
+      toast('Copied')
+    })
+    const card = act(() => void swipe(24)) as unknown as Element
+    tick(TOAST_OUT_MS)
+    expect(screen.getByText('Copied')).toBeTruthy()
+    expect(document.querySelector<HTMLElement>('.toast-card')!.style.transform).toBe('translateX(0px)')
+    expect(card).toBe(undefined)
+  })
+
+  it('pulling the other way leaves it where it stands', () => {
+    show()
+    act(() => {
+      toast('Copied')
+    })
+    act(() => void swipe(-140))
+    tick(TOAST_OUT_MS)
+    expect(screen.getByText('Copied')).toBeTruthy()
+  })
+
+  it('a swipe is not a press, so nothing on the row is pressed by it', () => {
+    show()
+    const pressed = vi.fn()
+    act(() => {
+      toast('Playlist deleted', { action: { label: 'Undo', onPress: pressed, keep: true } })
+    })
+    act(() => {
+      const card = document.querySelector('.toast-card')!
+      fireEvent.pointerDown(card, { button: 0, pointerId: 1, clientX: 0 })
+      fireEvent.pointerMove(card, { pointerId: 1, clientX: 30 })
+      fireEvent.pointerUp(card, { pointerId: 1, clientX: 30 })
+      fireEvent.click(screen.getByText('Undo'))
+      fireEvent.click(card)
+    })
+    tick(TOAST_OUT_MS)
+    expect(pressed).not.toHaveBeenCalled()
+    expect(screen.getByText('Playlist deleted')).toBeTruthy()
+  })
+
+  it('the last row going under the pointer hands the clocks back', () => {
+    show()
+    act(() => {
+      toast('Copied')
+    })
+    const stack = document.querySelector('.toast-row')!.parentElement!
+    fireEvent.pointerEnter(stack)
+    act(() => void swipe(140))
+    tick(TOAST_OUT_MS)
+
+    act(() => {
+      toast('Copied again')
+    })
+    tick(4000 + TOAST_OUT_MS)
+    expect(screen.queryByText('Copied again')).toBe(null)
+  })
+
   it('nothing stands in the body while there is nothing to say', () => {
     show()
     expect(document.body.querySelector('.toast-row')).toBe(null)

@@ -149,6 +149,7 @@ interface AgentState extends Omit<PooledAgent, 'runs' | 'status'> {
 interface RunState {
   steps: Map<string, StepEntry>
   tokens: number
+  cost: number | null
   startedAt: number
   entry?: QueuedPrompt
 }
@@ -3100,7 +3101,7 @@ export class CrewSession {
     if (!next.silent) this.emitThreadMessage(next)
     thread.running = next.promptId
     agent.running.add(next.promptId)
-    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, startedAt: Date.now(), entry: next })
+    agent.runs.set(next.promptId, { steps: new Map(), tokens: 0, cost: null, startedAt: Date.now(), entry: next })
     this.prompts.set(next.promptId, { agentId: agent.id, threadId: thread.id, messageId: next.messageId })
     const reactions = this.pendingReactions(agent.id)
     this.emit({
