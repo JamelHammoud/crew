@@ -24,6 +24,7 @@ const thread = (id: string, extra: Partial<ThreadMeta> = {}): ThreadMeta => ({
   title: 'A thread',
   createdBy: 'Jamel',
   status: 'open',
+  mode: 'normal',
   ...extra
 })
 
