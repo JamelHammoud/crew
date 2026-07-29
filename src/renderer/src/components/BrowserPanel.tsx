@@ -27,6 +27,8 @@ import GameView from './game/GameView'
 import ImageView from './ImageView'
 import MusicView from './music/MusicView'
 import PlanView from './PlanView'
+import SubagentMark from './SubagentMark'
+import SubagentPanel from './subagents/SubagentPanel'
 import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
 import TerminalView from './TerminalView'
@@ -39,6 +41,9 @@ const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/
 
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'plan') return 'Plan'
+  // A helper tab says which helper you are reading, so a row of three of them
+  // is read at a glance rather than being three tabs called the same thing.
+  if (tab.kind === 'agent') return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.subject ?? 'Helper') : 'Helpers'
   if (tab.kind === 'music') return 'Music'
   // A games tab says which game you are in, and keeps the same mark whichever
   // one that is. Out of a game it is the tab's own name again.
@@ -270,6 +275,17 @@ export default function BrowserPanel() {
           .map(tab => (
             <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
+        {tabs
+          .filter(tab => tab.kind === 'agent')
+          .map(tab => (
+            <div
+              key={tab.id}
+              className="absolute inset-0"
+              style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
+            >
+              <SubagentPanel tab={tab} />
+            </div>
+          ))}
         {active && active.kind === 'plan' && <PlanView threadId={active.threadId} />}
         {active && active.kind === 'music' && <MusicView />}
         {active && active.kind === 'game' && <GameView tabId={active.id} />}
@@ -312,6 +328,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
       >
         {tab.loading ? (
           <Spinner size={14} className="text-fg-muted" />
+        ) : tab.kind === 'agent' ? (
+          <SubagentMark seed={roleSeed(tab)} size="xs" className="!w-4 !h-4" />
         ) : tab.kind === 'plan' ? (
           <ChecklistGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'music' ? (
