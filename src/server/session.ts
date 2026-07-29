@@ -91,13 +91,11 @@ import {
 import { memberMentionRefsIn } from '../shared/people'
 import { cleanTool, type CrewTool, type ToolAction } from '../shared/toolbox'
 import {
+  cleanHelperName,
   cleanPrefs,
-  cleanSubagent,
   DEFAULT_PREFS,
   DEPTH_LIMIT,
   FAN_LIMIT,
-  findSubagent,
-  MAX_SUBAGENTS,
   RETURN_COALESCE_MS,
   returnText,
   RUN_LIMIT,
@@ -107,7 +105,6 @@ import {
   WAIT_MS,
   WAKE_LIMIT,
   type HelperPrefs,
-  type Subagent,
   type SubagentReturn
 } from '../shared/subagents'
 import {
@@ -214,9 +211,12 @@ interface Thread {
   // card of its own, and it answers back into whatever the parent is doing.
   parentThreadId?: string
   parentPromptId?: string
-  roleId?: string
+  // The name the agent that sent it out made it up under, and what it is doing.
+  helper?: string
   subject?: string
   depth?: number
+  // A model the parent asked for, over whatever the agent running it is set to.
+  helperSettings?: AgentSettings
   // Whether finishing wakes the parent. Off is send-and-forget.
   notify?: boolean
   startedAt?: number
@@ -312,9 +312,6 @@ export class CrewSession {
   private ghostFiles = new Map<string, { ws: WebSocket; mime: string; data: Buffer }>()
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
-  // The roles the crew has written for its helpers, kept beside the toolbox
-  // because they are the same kind of thing: shared, lasting, and everybody's.
-  private subagents = new Map<string, Subagent>()
   // What a helper said, held from the moment it finished until whatever the
   // parent is doing can take it.
   private returns = new Map<string, PendingReturn>()
@@ -448,7 +445,7 @@ export class CrewSession {
           voice: event.voice,
           parentThreadId: event.parentThreadId,
           parentPromptId: event.parentPromptId,
-          roleId: event.roleId,
+          helper: event.helper,
           subject: event.subject,
           depth: event.depth,
           startedAt: event.ts
@@ -517,29 +514,6 @@ export class CrewSession {
       }
       if (event.kind === 'tool.removed') {
         this.tools.delete(event.toolId)
-      }
-      if (event.kind === 'subagent.added') {
-        this.subagents.set(event.roleId, {
-          id: event.roleId,
-          name: event.name,
-          brief: event.brief,
-          provider: event.provider,
-          settings: event.settings ?? {},
-          createdBy: event.byName,
-          ts: event.ts
-        })
-      }
-      if (event.kind === 'subagent.edited') {
-        const role = this.subagents.get(event.roleId)
-        if (role) {
-          role.name = event.name
-          role.brief = event.brief
-          role.provider = event.provider
-          role.settings = event.settings ?? {}
-        }
-      }
-      if (event.kind === 'subagent.removed') {
-        this.subagents.delete(event.roleId)
       }
       // A track whose file has gone is left off the shelf rather than offered
       // as a row that plays nothing.
@@ -699,7 +673,6 @@ export class CrewSession {
       ),
       todos: [...this.todos.values()],
       tools: [...this.tools.values()],
-      subagents: [...this.subagents.values()],
       boards: this.boardList(),
       huddle: this.huddleRoom(),
       music: this.musicRoom(),
@@ -794,20 +767,6 @@ export class CrewSession {
         break
       case 'tool.remove':
         if (meta.role === 'ui') this.handleToolRemove(member, msg.toolId)
-        break
-      case 'subagent.add':
-        if (meta.role === 'ui') this.handleSubagentAdd(member, msg.name, msg.brief, msg)
-        break
-      case 'subagent.edit':
-        if (meta.role === 'ui') this.handleSubagentEdit(member, msg.roleId, msg.name, msg.brief, msg)
-        break
-      case 'subagent.remove':
-        if (meta.role === 'ui') this.handleSubagentRemove(member, msg.roleId)
-        break
-      case 'subagent.run':
-        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
-          this.handleSubagentRun(ws, member, msg.roleId, msg.threadId, msg.subject, msg.task)
-        }
         break
       case 'subagent.stop':
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) this.stopSubagent(msg.threadId)
