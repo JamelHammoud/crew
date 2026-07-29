@@ -38,6 +38,7 @@ export class ScribeTake {
   private length = 0
   private sealed = 0
   private open = false
+  private keeping = false
 
   analyser: AnalyserNode | null = null
 
