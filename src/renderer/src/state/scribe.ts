@@ -95,9 +95,54 @@ export const useScribe = create<ScribeState>((set, get) => {
     }))
   }
 
+  // Written as it is said, which is only ever a paste. A dictation that goes to
+  // the clipboard has one place to land and lands there once.
+  const asSaid = (): boolean => get().settings.live && get().settings.finish === 'paste'
+
   const keep = (audio: Float32Array, at: number) => {
     held.push({ audio, at })
     pieces.push(read(audio, at))
+    if (asSaid()) void walk()
+  }
+
+  // One stretch at a time, in the order it was spoken, each one written the
+  // moment it has been read. A stretch that has gone is off both lists, so what
+  // is left is what a failure still has to answer for.
+  const walk = (): Promise<void> => {
+    walking = walking.then(async () => {
+      while (pieces.length > 0) {
+        const first = pieces[0]
+        let chunks: ScribeChunk[]
+        try {
+          chunks = await first
+        } catch {
+          // Whisper fell over. Nothing here can take back what is already on
+          // somebody's screen, so the take ends and what has not been written is
+          // kept: trying again writes the rest rather than the whole of it.
+          if (pieces[0] !== first) return
+          stop()
+          set({ phase: 'failed', problem: 'Crew could not read that.' })
+          return
+        }
+        // The dictation this stretch belonged to is over, or was thrown away.
+        if (pieces[0] !== first) return
+        pieces.shift()
+        held.shift()
+        const text = flow.next(chunks, rulesOf(get().settings))
+        if (text) window.crew.scribeWrite(text)
+      }
+    })
+    return walking
+  }
+
+  // The end of one that was written as it was said. Everything left is written,
+  // and then the pill is told it is over with nothing to hand over: the words
+  // are already where they were going.
+  const settle = async () => {
+    await walk()
+    if (get().phase !== 'reading') return
+    set({ phase: 'off', problem: null })
+    window.crew.scribeDone('')
   }
 
   const take = new ScribeTake({
