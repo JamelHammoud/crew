@@ -1,4 +1,4 @@
-import type { CoverSubject } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/art'
 import { coverArt, MAX_PETALS, type CoverArt } from './coverSeed'
 
 // The cover generator. It photographs the scene `coverSeed.ts` describes: a sky,

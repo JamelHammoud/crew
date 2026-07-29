@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { MUSIC_TUNES, musicItems, paletteFor, type MusicItem } from '../src/shared/music'
-import { coverArt, COVER_CASTS, MAX_PETALS, type CoverPetal } from '../src/renderer/src/components/music/coverSeed'
-import { meshOf } from '../src/renderer/src/components/music/mesh'
+import { coverArt, COVER_CASTS, MAX_PETALS, type CoverPetal } from '../src/renderer/src/components/art/coverSeed'
+import { meshOf } from '../src/renderer/src/components/art/mesh'
 
 const SHELVES = [0, 1, 2, 3, 4, 5].map(i => `shelf-${i}-track`)
 

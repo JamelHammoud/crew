@@ -1,4 +1,4 @@
-import type { CoverSubject } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/art'
 
 // A cover is a mesh gradient mixed from the track's own colors. It is built out
 // of solid fields of color laid over each other and blurred, rather than out of
