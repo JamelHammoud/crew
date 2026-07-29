@@ -26,11 +26,14 @@ describe('the app default for selection', () => {
   })
 
   it('shuts a field while it is showing a placeholder', () => {
-    const base = layer()
-    const at = base.indexOf(':placeholder-shown')
+    const at = styles.indexOf(':placeholder-shown')
     expect(at).toBeGreaterThan(-1)
-    expect(base.slice(at)).toMatch(/user-select:\s*none/)
-    expect(base.indexOf('input,')).toBeLessThan(at)
+    expect(styles.slice(at, at + 120)).toMatch(/user-select:\s*none/)
+  })
+
+  it('writes that one outside the layer, where an unlayered library rule cannot beat it', () => {
+    expect(layer()).not.toContain(':placeholder-shown')
+    expect(styles).toMatch(/^input:placeholder-shown,\s*\n\s*textarea:placeholder-shown\s*\{/m)
   })
 
   it('stands in the base layer, so select-text and select-none still win', () => {
