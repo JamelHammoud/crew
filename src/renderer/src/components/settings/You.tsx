@@ -1,6 +1,7 @@
 import { useCrew } from '../../state/store'
 import Avatar from '../Avatar'
 import PhotoPicker from '../PhotoPicker'
+import Pill from '../Pill'
 import { useStanding } from '../presence'
 import { Danger, Page, Row, Section } from './parts'
 
@@ -23,7 +24,10 @@ export default function You({ onDone }: { onDone: () => void }) {
           />
         </PhotoPicker>
         <div className="min-w-0">
-          <p className="text-lg font-semibold text-fg truncate">{selfName}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-lg font-semibold text-fg truncate">{selfName}</p>
+            {import.meta.env.DEV && <Pill glass>DEV</Pill>}
+          </div>
           <p className="text-sm text-fg/45">{standing}</p>
         </div>
       </div>

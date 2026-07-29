@@ -60,7 +60,7 @@ export default function People() {
                   face
                 )}
                 <span className="text-base font-semibold text-fg truncate">{member.name}</span>
-                {you && <Pill>You</Pill>}
+                {you && <Pill glass>You</Pill>}
                 {!member.connected && <span className="ml-auto text-sm text-fg/45">Away</span>}
               </div>
             )
