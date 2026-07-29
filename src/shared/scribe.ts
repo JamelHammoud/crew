@@ -65,12 +65,19 @@ export const WORD_LIMIT = 200
 export const PILL_ROOM = 32
 
 // The widest the pill ever gets, which is a failure: that is the one state that
-// holds a sentence. Every other state is narrower and stands in the middle of
-// this, so the window is sized once here rather than resized every time the pill
-// opens under the pointer.
-export const PILL_WIDTH = 176
-export const PILL_MIN = 52
-export const PILL_MAX = 140
+// holds a sentence, and it is the only one that asks for the room to hold it.
+// The window is built this wide and comes down to whatever the pill really is a
+// beat later, so nothing is ever drawn past its own window on the way up.
+export const PILL_WIDTH = 220
+
+// The pill stands on screen the whole time dictation is on, so what it is at
+// rest is the size it is nearly always at: the mark and nothing else, small
+// enough to be somewhere it can be left. It grows the moment there is something
+// to hear and comes back down after, and it grows by its top edge, so the
+// bottom of it never moves.
+export const PILL_REST = 28
+export const PILL_MIN = 40
+export const PILL_MAX = 120
 
 // The app must not hear its own paste. That keystroke goes out through the same
 // hook the key is read with, so a dictation held on Command, or on Control where
