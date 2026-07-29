@@ -395,15 +395,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'work')], activeTabId: tab.id, closedBoards }))
     },
     hideWork: () => {
-      set(s => {
-        const index = s.tabs.findIndex(t => t.kind === 'work')
-        if (index < 0) return {}
-        const board = s.tabs[index]
-        const tabs = s.tabs.filter(t => t.id !== board.id)
-        const activeTabId =
-          s.activeTabId === board.id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
-        return { tabs, activeTabId }
-      })
+      set(s => without(s, t => t.kind === 'work') ?? {})
       settle()
     },
     toggleTree: id =>
