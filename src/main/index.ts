@@ -216,6 +216,7 @@ function createWindow(): void {
   win.webContents.once('did-finish-load', () => {
     warmTerminals()
     tray.warm()
+    scribe.warm()
   })
   // Who is here is read from a window's own view of the session, so with none
   // open the tray says so rather than showing a list that stopped moving.
