@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { mentionsIn } from '../../../shared/llm'
 import { pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import Composer from './Composer'
+import TypingLine from './TypingLine'
 import DesignThreadBar from './DesignThreadBar'
 import { MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import RunStatus from './RunStatus'
@@ -137,7 +138,8 @@ export default function DesignChat({ boardId }: { boardId: string }) {
         </div>
         <ScrollFade edges={edges} />
       </div>
-      <div className="px-3 pb-4 shrink-0">
+      <div className="relative px-3 pb-4 shrink-0">
+        <TypingLine where={key} />
         <Composer
           attachmentKey={key}
           value={text}
