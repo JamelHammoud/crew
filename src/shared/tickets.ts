@@ -160,6 +160,7 @@ export function boardOf(
   const put = said.length > 0
   const entries = new Map<string, Entry>()
   const questions: Asked[] = []
+  const raised = new Set<string>()
   const touched = new Set<string>()
   let order: string[] = []
   let doing = ''
