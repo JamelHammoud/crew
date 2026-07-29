@@ -171,7 +171,7 @@ export default function ChatMessage({
             </div>
           </div>
         ) : item.kind === 'reply' ? (
-          <div className={item.error ? 'text-base text-danger mt-1.5' : 'mt-1.5'}>
+          <div className={item.error ? 'select-text text-base text-danger mt-1.5' : 'mt-1.5'}>
             {item.error ? item.text : <Markdown text={item.text || '…'} stream={item.streaming} />}
           </div>
         ) : (
