@@ -176,5 +176,13 @@ describe('the board over http', () => {
     const kinds = welcome.snapshot.events.map(event => event.kind)
     expect(kinds).toContain('thread.started')
     expect(kinds.some(isTicketEvent)).toBe(false)
+
+    // Left out of the chat, and carried in a list of its own, or a window that
+    // reloads finds every board it had emptied.
+    const said = welcome.snapshot.tickets ?? []
+    expect(said.map(event => event.kind)).toEqual(['ticket.added', 'ticket.moved'])
+    expect(boardOf([], said).tickets).toEqual([
+      { id: '1', title: 'Read how the sync loop commits', column: 'doing', decisions: [], files: [], review: '' }
+    ])
   })
 })
