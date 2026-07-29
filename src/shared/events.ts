@@ -222,6 +222,11 @@ const EPHEMERAL_KINDS = new Set([
   'tool.added',
   'tool.edited',
   'tool.removed',
+  // A role rides in the snapshot for the same reason a tool does: one written
+  // weeks ago is still a helper long after its event fell off the window.
+  'subagent.added',
+  'subagent.edited',
+  'subagent.removed',
   // A track somebody put on the shelf is the same: it stays on the shelf, and
   // the crew does not need to scroll past the moment it arrived.
   'music.added',
