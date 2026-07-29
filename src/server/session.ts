@@ -299,6 +299,16 @@ export class CrewSession {
   private ghostFiles = new Map<string, { ws: WebSocket; mime: string; data: Buffer }>()
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
+  // The roles the crew has written for its helpers, kept beside the toolbox
+  // because they are the same kind of thing: shared, lasting, and everybody's.
+  private subagents = new Map<string, Subagent>()
+  // What a helper said, held from the moment it finished until whatever the
+  // parent is doing can take it.
+  private returns = new Map<string, PendingReturn>()
+  private waits = new Set<PendingWait>()
+  // How many times each parent thread has been woken by a helper coming back,
+  // and how many it has sent out in its life.
+  private wakes = new Map<string, number>()
   private events: SessionEvent[] = []
   private docs = new Map<string, DocPage>()
   private designs = new Map<string, DesignBoard>()
