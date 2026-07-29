@@ -17,10 +17,15 @@ export interface AlertState extends ReviewState {
 }
 
 // The badge is the count of the tasks panel's "Needs review" list, so both read
-// the same rule: open, with nothing running or queued behind it.
+// the same rule: open, with nothing running or queued behind it. A helper is
+// not a task of its own, or six of them finishing puts six rows on the list and
+// six on the badge for one piece of work.
 export const reviewCount = (state: ReviewState): number =>
   Object.values(state.threads).filter(
-    thread => thread.status === 'open' && !threadWorking(thread.id, state.threadPrompts, state.queues)
+    thread =>
+      thread.status === 'open' &&
+      !thread.parentThreadId &&
+      !threadWorking(thread.id, state.threadPrompts, state.queues, state.threads)
   ).length
 
 // Nothing is said about the thread somebody already has open, since it says it
@@ -33,6 +38,13 @@ export function finishedAlert(event: SessionEvent, state: AlertState): AgentAler
   const thread = event.threadId ? state.threads[event.threadId] : undefined
   if (thread && thread.status !== 'open') return null
   if (event.threadId && (state.queues[event.threadId]?.length ?? 0) > 0) return null
+  // A helper coming home is the parent's news, and the parent says it in its
+  // own thread. The one exception is one that stopped after its parent was
+  // already done, which nobody would otherwise ever see.
+  if (thread?.parentThreadId && (event.ok || state.threadPrompts[thread.parentThreadId])) return null
+  // Nor is a thread with helpers still out finished: its own turn ended, but
+  // the work it sent out is its work.
+  if (event.threadId && threadWorking(event.threadId, {}, state.queues, state.threads)) return null
   const label = state.agents.find(agent => agent.id === event.agentId)?.label ?? event.agentLabel
   const title = relabelMentions(thread?.title ?? '', thread?.titleRefs, state.agents)
   return {

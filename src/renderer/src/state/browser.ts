@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 export type BrowserTab = {
   id: string
-  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan' | 'agent'
+  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan' | 'aside' | 'agent'
   initialUrl: string
   url: string
   title: string
