@@ -57,21 +57,36 @@ describe('holding a spot on a real screen', () => {
 })
 
 describe('growing a line', () => {
-  // The two buttons have to stay under the pointer already on the way to them,
+  // What is on the pill has to stay under the pointer already on the way to it,
   // which is what the bottom edge standing still buys.
   it('keeps the bottom edge where it was', () => {
     const box = { x: 400, y: 300, width: 216, height: 56 }
-    expect(grown(box, 96, SCREEN)).toEqual({ x: 400, y: 260 })
+    expect(grown(box, { width: 216, height: 96 }, SCREEN)).toEqual({ x: 400, y: 260 })
   })
 
-  it('keeps the left edge where it was', () => {
-    const box = { x: 400, y: 300, width: 216, height: 56 }
-    expect(grown(box, 96, SCREEN).x).toBe(400)
+  // The pill is the mark and nothing else while nobody is talking and opens out
+  // around itself the moment somebody is. Held by an edge instead, it would walk
+  // across the screen every time a dictation started.
+  it('keeps its middle when it opens out', () => {
+    const box = { x: 400, y: 300, width: 104, height: 92 }
+    const spot = grown(box, { width: 204, height: 104 }, SCREEN)
+    expect(spot.x + 204 / 2).toBe(400 + 104 / 2)
+    expect(spot.y + 104).toBe(300 + 92)
+  })
+
+  it('keeps its middle when it comes back down', () => {
+    const box = { x: 350, y: 300, width: 204, height: 104 }
+    expect(grown(box, { width: 104, height: 92 }, SCREEN).x).toBe(400)
   })
 
   it('stays on the screen when it grows against the top of it', () => {
     const box = { x: 400, y: 10, width: 216, height: 56 }
-    expect(grown(box, 140, SCREEN).y).toBeGreaterThanOrEqual(SCREEN.y)
+    expect(grown(box, { width: 216, height: 140 }, SCREEN).y).toBeGreaterThanOrEqual(SCREEN.y)
+  })
+
+  it('stays on the screen when it opens out against the side of it', () => {
+    const box = { x: 8, y: 300, width: 104, height: 92 }
+    expect(grown(box, { width: 284, height: 104 }, SCREEN).x).toBeGreaterThanOrEqual(SCREEN.x)
   })
 })
 
