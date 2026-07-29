@@ -18,6 +18,26 @@ export const MicOffGlyph = glyph(
   </>
 )
 
+// A nib standing on the line it is writing, for talking and having it written
+// down. It is not a second microphone: that one is Voice and the two stand near
+// each other, so this one has to say writing without a mouth anywhere in it.
+//
+// Everything about it is what survives at 16. The slit a real nib carries is the
+// first thing to go: the flanks close in as they fall, so by the time a slit is
+// long enough to read it has under a pixel of counter either side and the whole
+// bottom of the mark fills in as one blob. The vent hole alone says nib and it
+// sits high, where the shape is still wide enough to hold it. And the line runs
+// wider than the nib rather than under it, because a bar the same width as the
+// shape above it is a plinth: what it has to read as is a rule on a page that
+// carries on past both edges, the way the hill in the photo does.
+export const ScribeGlyph = glyph(
+  <>
+    <path d="M8.5 3H15.5A2.5 2.5 0 0 1 17.75 6.5L12 19.5 6.25 6.5A2.5 2.5 0 0 1 8.5 3Z" />
+    <circle cx="12" cy="8.5" r="1.3" fill="currentColor" stroke="none" />
+    <path d="M3 20.9h18" />
+  </>
+)
+
 const CAMERA_ART = (
   <>
     <rect x="2.5" y="5" width="13.5" height="14" rx="3" />
