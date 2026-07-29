@@ -2,7 +2,7 @@ import WebSocket from 'ws'
 import { httpBaseFrom, type Attachment } from '../shared/attachments'
 import { boardsPreamble, type DesignBoardMeta } from '../shared/design'
 import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../shared/llm'
-import { subagentPreamble, type Subagent } from '../shared/subagents'
+import { subagentPreamble } from '../shared/subagents'
 import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
@@ -292,8 +292,8 @@ export class Runner {
           msg.designBoard,
           msg.designBoards ?? [],
           msg.ghost === true,
-          msg.subagents ?? [],
-          msg.spawnRoom ?? 0
+          msg.spawnRoom ?? 0,
+          msg.spawnProviders ?? []
         )
         break
       case 'steer':
@@ -373,8 +373,8 @@ export class Runner {
     designBoard?: DesignBoardMeta,
     designBoards: DesignBoardMeta[] = [],
     ghost = false,
-    subagents: Subagent[] = [],
-    spawnRoom = 0
+    spawnRoom = 0,
+    spawnProviders: string[] = []
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -387,7 +387,7 @@ export class Runner {
     // side knows the http address it reaches the server at.
     const preambles = [
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
-      subagentPreamble(this.httpBase, promptId, subagents, spawnRoom)
+      subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders)
     ].filter(Boolean)
     const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()

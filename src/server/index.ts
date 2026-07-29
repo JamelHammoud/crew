@@ -208,10 +208,10 @@ function serveAgents(session: CrewSession, raw: string, req: http.IncomingMessag
     readJson(req, res, MAX_AGENT_BODY, body => {
       const result = session.subagentSpawn(
         said(body, 'promptId'),
-        said(body, 'role'),
+        said(body, 'name'),
         said(body, 'subject'),
         said(body, 'task'),
-        body.notify !== false
+        { provider: said(body, 'provider'), model: said(body, 'model'), notify: body.notify !== false }
       )
       sendJson(res, 'error' in result ? 400 : 200, result)
     })
