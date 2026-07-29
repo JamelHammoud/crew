@@ -46,7 +46,7 @@ export function stepTodos(input: unknown): StepTodo[] | undefined {
     if (!key) continue
     todos.push({
       text: (line[key] as string).replace(/\s+/g, ' ').trim().slice(0, TODO_TEXT_LIMIT),
-      status: todoStatus(line['status'] ?? line['state'])
+      status: todoStatus(line)
     })
   }
   return todos.length > 0 ? todos : undefined
