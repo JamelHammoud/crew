@@ -59,7 +59,8 @@ describe('what an empty panel offers', () => {
     act(() => useBrowser.getState().togglePanel())
     const { getByText } = render(createElement(BrowserPanel))
 
-    for (const label of ['Web page', 'Terminal', 'Files', 'Music', 'Games']) expect(getByText(label)).not.toBeNull()
+    for (const label of ['Web page', 'Terminal', 'Files', 'Review', 'Music', 'Games'])
+      expect(getByText(label)).not.toBeNull()
   })
 
   // What is on screen is always a tab, so the panel opened on nothing stands on

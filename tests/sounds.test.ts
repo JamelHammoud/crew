@@ -58,7 +58,7 @@ class FakeAudioContext {
     }
   }
   createGain(): unknown {
-    return { gain: new FakeParam(), connect: () => {} }
+    return { gain: new FakeParam(gains), connect: () => {} }
   }
   createBiquadFilter(): unknown {
     const entry = { type: 'lowpass', hz: [] as number[] }
