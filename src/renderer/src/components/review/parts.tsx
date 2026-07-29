@@ -1,27 +1,30 @@
 import type { ReactNode } from 'react'
 
-export function Section({ title, count, children }: { title: string; count: number; children: ReactNode }) {
+export function Section({
+  title,
+  count,
+  actions,
+  children
+}: {
+  title: string
+  count: number
+  actions?: ReactNode
+  children: ReactNode
+}) {
   return (
     <section className="space-y-1.5">
       <div className="flex h-7 items-center gap-2 px-1">
         <h3 className="text-xs font-medium text-fg-muted">{title}</h3>
         <span className="text-xs text-fg-faint">{count}</span>
         <span className="flex-1" />
-        {children}
+        {actions}
       </div>
+      {children}
     </section>
   )
 }
 
-export function SectionAction({
-  label,
-  onClick,
-  danger
-}: {
-  label: string
-  onClick: () => void
-  danger?: boolean
-}) {
+export function SectionAction({ label, onClick, danger }: { label: string; onClick: () => void; danger?: boolean }) {
   return (
     <button
       onClick={onClick}

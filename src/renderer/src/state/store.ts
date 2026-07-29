@@ -374,7 +374,10 @@ export const useCrew = create<CrewState>((set, get) => {
     if (alert) {
       alertToast(alert, threadId => {
         get().openThread(threadId)
-        if (alert.board) useBrowser.getState().showWork(threadId)
+        if (alert.board) {
+          useBrowser.getState().showWork(threadId)
+          useBrowser.getState().openPanel()
+        }
       })
       if (!document.hasFocus()) void window.crew?.notify?.(alert)
     }
