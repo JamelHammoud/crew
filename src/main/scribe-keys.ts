@@ -97,6 +97,13 @@ export class ScribeKeys {
     return { hooked: this.started, trusted: this.trusted() }
   }
 
+  // Whether the key is really down. A dictation written as it is said cannot
+  // paste while it is: the modifier being held rides along with the keystroke,
+  // and the app on the other side is handed a shortcut nobody pressed.
+  get holding(): boolean {
+    return this.latch.holding
+  }
+
   // Whatever ended the take, the key has to be told, or the next press reads as
   // the end of a dictation that is already over.
   stopped(): void {
