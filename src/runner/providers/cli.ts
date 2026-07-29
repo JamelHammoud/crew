@@ -288,7 +288,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
               detail: out.activity.detail ? stripRootFromText(cwd, out.activity.detail) : undefined,
               output: output ? stripRootFromText(cwd, output) : undefined,
               files: out.activity.files?.map(file => ({ ...file, path: stripRoot(cwd, file.path) })),
-              todos: out.activity.todos,
+              todos,
               status: out.activity.status === 'started' ? 'running' : 'done'
             })
           }
