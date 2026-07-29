@@ -116,6 +116,28 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
+  | { id: string; ts: number; kind: 'subagent.added'; roleId: string; name: string; brief: string; provider?: string; settings: AgentSettings; byName: string }
+  | { id: string; ts: number; kind: 'subagent.edited'; roleId: string; name: string; brief: string; provider?: string; settings: AgentSettings; byName: string }
+  | { id: string; ts: number; kind: 'subagent.removed'; roleId: string; byName: string }
+  // A run of a role. These two last, the way agent.start does: they are the
+  // record of work, and they are what the chips in a thread are built from.
+  // The end carries no text, because the child's answer is already in the log
+  // as that thread's own agent.end and writing it twice doubles for nothing.
+  | {
+      id: string
+      ts: number
+      kind: 'subagent.started'
+      threadId: string
+      parentThreadId: string
+      parentPromptId: string
+      roleId: string
+      roleName: string
+      subject: string
+      agentId: string
+      agentLabel: string
+      byName: string
+    }
+  | { id: string; ts: number; kind: 'subagent.ended'; threadId: string; parentThreadId: string; ok: boolean; ms: number }
   | {
       id: string
       ts: number
