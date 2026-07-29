@@ -3034,9 +3034,10 @@ export class CrewSession {
       ...this.refsOf(steer.text),
       attachments: steer.attachments,
       messageId: steer.messageId,
-      replyTo: steer.replyTo
+      replyTo: steer.replyTo,
+      silent: steer.silent
     })
-    this.routed(steer.messageId, steer.threadId, promptId, 'queued')
+    if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'queued')
     this.broadcastQueue(thread)
     this.runThread(thread)
   }
