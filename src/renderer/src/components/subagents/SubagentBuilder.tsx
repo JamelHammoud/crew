@@ -34,7 +34,7 @@ export default function SubagentBuilder({ role, onDone }: { role: Subagent | nul
   }, [agents, provider])
 
   const save = () => {
-    const settings = model ? { model } : {}
+    const settings: Record<string, string> = model ? { model } : {}
     if (role) editSubagent(role.id, name, brief, provider || undefined, settings)
     else addSubagent(name, brief, provider || undefined, settings, id)
     onDone()
