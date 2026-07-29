@@ -65,7 +65,7 @@ function Words({ words }: { words: ScribeWord[] }) {
           <TextField
             glass
             value={from}
-            placeholder="What it hears"
+            placeholder="What comes out"
             onChange={event => setFrom(event.target.value)}
             onKeyDown={event => event.key === 'Enter' && add()}
             className="flex-1 min-w-0"
