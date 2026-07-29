@@ -396,6 +396,19 @@ The plus button in the composer opens a menu, upload a file or pick a GIF, and p
 - The scrollbar is off. A grid two columns wide is narrow enough that ten points of it comes out of the tiles, and the bar sits over the pictures at the one edge where they are already tight.
 - Nothing is drawn around the outside of a tile. A GIF is a picture with any color at its edge, so what marks the one under the pointer is an `InsetRing` in white, and it turns up hard enough to be seen over a photograph. Growing the tile instead is what it was, and a tile that grows in a masonry column grows underneath the one after it.
 
+## The side panel
+
+Everything the app can stand beside the chat: a web page, a terminal, the project files, the music, the games, and the thread's own plan, board and helpers. `SidePanel` holds it and `BrowserPanel` draws it.
+
+- It is a place rather than a side effect of a tab existing. `open` on the browser store is the whole of whether it is standing, so it can be open on nothing, and putting it away keeps what is in it rather than throwing three tabs away for one press. Read off `tabs.length` it could not do either.
+- Putting something in it opens it, and that rule is written once, in the `set` the store's actions are given. It counts what arrived rather than what is there, or a page that finished loading behind a panel somebody had just put away would bring it back on its own.
+- A tab that takes itself away takes the panel with it when it was the only thing there. The plan and the board arrive with the thread they belong to rather than by being asked for, so a panel left standing empty behind one is a panel nobody opened. That is `settle` and it is the only thing that closes it without a press.
+- One button in the thread's header, wearing `PanelRightGlyph` and turning over the way the Design header's does. It was one button per thing the panel could hold, the plan, the board and the helpers, and each new one grew the row: three buttons that all did the same thing, which is show me the panel with this in it.
+- `PANEL_OPENS` in `panelOpens.tsx` is the one table of what it can hold. The menu the plus opens and the screen an empty panel shows both read it, so the words somebody picked from are the words they are shown either way, and there is one place to add to.
+- The thread's own things stand first and come and go with the thread you are in. The rest never move, so nothing under the pointer travels as you go between threads.
+- An empty panel is that table as a list, and nothing else. A line over it naming what the rows are would be the screen read back to whoever is already looking at it, and no row promises a key, because nothing in the app listens for one.
+- The close in its own corner puts the panel away and keeps the tabs, the same as the button in the thread. Closing every tab from the tab menu leaves the panel standing on that list, which is how it is found.
+
 ## Find
 
 `⌘F` opens `FindBar` over a doc and over a thread. It walks the text nodes of whatever it is handed and paints the hits through `CSS.highlights`, so nothing anywhere is re-rendered to mark a match.
