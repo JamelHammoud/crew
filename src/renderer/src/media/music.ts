@@ -1,5 +1,6 @@
 import { tuneLength, type MusicTune } from '../../../shared/music'
 import { context, convolver } from './audio'
+import { BAND_BINS, bandsFrom } from './bands'
 import { hush, strikeAt, type Sink, type Sounding, type Strike } from './strike'
 import { strikesOf } from './tunes'
 
@@ -14,9 +15,7 @@ const KEEP = 96
 // down where you are sitting does not stop it dancing. The window has to be this
 // wide: a narrow one measures in steps of a few hundred hertz, and the lowest
 // band is only fifty hertz across, so the bass bar would have nothing in it.
-const BINS = 2048
-const LOW = 55
-const HIGH = 7000
+const BINS = BAND_BINS
 
 // What became of a track somebody added. A file that will not load is the one
 // worth saying out loud: it is silence that looks exactly like music playing.
