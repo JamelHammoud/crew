@@ -161,28 +161,28 @@ export default function Scribe() {
       </Section>
 
       <Section title="Tidying">
-        <Row label="Fillers" line="Um, uh, and a you know that is standing on its own.">
+        <Row label="Fillers" line="Um, uh, you know.">
           <Toggle
             on={settings.fillers}
             label="Fillers"
             onChange={fillers => setScribeSettings({ fillers })}
           />
         </Row>
-        <Row label="Stutters" line="A word said twice on the way to the next one.">
+        <Row label="Stutters">
           <Toggle
             on={settings.stutters}
             label="Stutters"
             onChange={stutters => setScribeSettings({ stutters })}
           />
         </Row>
-        <Row label="Corrections" line="Say scratch that and what you were saying goes with it.">
+        <Row label="Corrections" line="Say scratch that and the sentence before it goes.">
           <Toggle
             on={settings.corrections}
             label="Corrections"
             onChange={corrections => setScribeSettings({ corrections })}
           />
         </Row>
-        <Row label="Punctuation" line="Marks and capitals, placed from how you said it.">
+        <Row label="Punctuation">
           <Toggle on={settings.marks} label="Punctuation" onChange={marks => setScribeSettings({ marks })} />
         </Row>
       </Section>

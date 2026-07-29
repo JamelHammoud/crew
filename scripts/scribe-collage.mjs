@@ -11,16 +11,17 @@ const root = path.resolve(here, '..')
 const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'scribe-icons.png')
 
 const NOTES = {
-  WaveRule: 'a spoken line settling into a written one',
-  WaveAngle: 'the same, drawn in strokes rather than curves',
-  WaveStop: 'and it lands on a full stop',
-  LevelRule: 'a voice standing on the line it is written to',
-  Levels: 'a voice on its own',
-  Transcript: 'said once at the top, written underneath',
-  Nib: 'what is there now',
-  NibWave: 'the nib over its own handwriting',
-  Pill: 'the thing you actually see when you hold the key'
+  AWaveRule: 'a spoken line settling into a written one',
+  BWaveAngle: 'the same, cut in strokes rather than curves',
+  CWaveStop: 'and it comes to rest on a full stop',
+  DWaveCaret: 'and it lands where the cursor is',
+  ELevelRule: 'a voice standing on the line it is written to',
+  FLevels: 'a voice on its own',
+  GTranscript: 'said across the top, written underneath',
+  HField: 'a voice inside the box you are typing in',
+  INib: 'what is there now'
 }
+const LABEL = name => name.slice(1)
 
 const ENTRY = `
 import { renderToStaticMarkup } from 'react-dom/server'
