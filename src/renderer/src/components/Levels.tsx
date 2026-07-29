@@ -15,14 +15,28 @@ const FLOOR = 0.14
 // back down, which is what makes a beat read as a hit rather than a wave.
 const FALL = 0.16
 
+// Which way a bar grows. On a floor they are quantities standing beside each
+// other, which is what a spectrum is; off a middle they are one thing getting
+// louder and quieter, which is what a voice is. It is a word here rather than a
+// class handed in, because `items-center` and `items-end` weigh the same and
+// which one wins is decided by the order Tailwind happened to write them in.
+export type LevelsFrom = 'floor' | 'middle'
+
+const ALIGN: Record<LevelsFrom, string> = {
+  floor: 'items-end',
+  middle: 'items-center'
+}
+
 export default function Levels({
   count,
   read,
+  from = 'floor',
   className = '',
   barClassName = ''
 }: {
   count: number
   read: (count: number, out: number[]) => number[]
+  from?: LevelsFrom
   className?: string
   barClassName?: string
 }) {
