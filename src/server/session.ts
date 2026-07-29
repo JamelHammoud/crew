@@ -1115,6 +1115,7 @@ export class CrewSession {
       mentions?: string[]
       replyTo?: MessageReply
       voice?: boolean
+      aside?: string
       subagent?: {
         parentThreadId: string
         parentPromptId: string
