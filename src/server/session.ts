@@ -1369,11 +1369,12 @@ export class CrewSession {
   // a code, because the only thing that reads them is a model.
   spawnSubagent(
     from: { threadId: string; promptId?: string; byName: string },
-    role: Subagent,
+    named: string,
     subject: string,
     task: string,
-    notify: boolean
+    opts: { provider?: string; model?: string; notify?: boolean } = {}
   ): { id: string; threadId: string } | { error: string } {
+    const name = cleanHelperName(named)
     const parent = this.threads.get(from.threadId)
     if (!parent) return { error: 'That thread is not open.' }
     const cleanTask = task.trim().slice(0, TASK_LIMIT)
@@ -1388,18 +1389,23 @@ export class CrewSession {
     if (!this.helpersFor(parentAgent.ownerId).on) return { error: 'Helpers are turned off on this machine.' }
     const out = born.filter(thread => this.subagentRunning(thread))
     if (out.length >= fan) return { error: `You already have ${fan} running. Wait for one to come back.` }
-    const agent = this.runnerFor(role, parentAgent)
-    if (!agent) return { error: `No agent is here to run ${role.name}.` }
+    const asked = opts.provider?.trim() || undefined
+    const agent = this.runnerFor(asked, parentAgent)
+    if (!agent) {
+      return { error: asked ? `Nobody here is running ${asked}.` : `No agent is here to run ${name}.` }
+    }
     const asker: Member = { id: parentAgent.id, name: from.byName, connections: new Set() }
+    const model = opts.model?.trim()
     const threadId = this.startThread(asker, agent, cleanTask, [], {
       ghost: this.ghostOf(from.threadId)?.ws,
       subagent: {
         parentThreadId: from.threadId,
         parentPromptId: from.promptId ?? '',
-        role,
+        name,
         subject: (subject || cleanTask).replace(/\s+/g, ' ').trim().slice(0, SUBJECT_LIMIT),
         depth: (parent.depth ?? 0) + 1,
-        notify
+        settings: model ? { model } : undefined,
+        notify: opts.notify !== false
       }
     })
     this.emit({
@@ -1409,8 +1415,7 @@ export class CrewSession {
       threadId,
       parentThreadId: from.threadId,
       parentPromptId: from.promptId ?? '',
-      roleId: role.id,
-      roleName: role.name,
+      name,
       subject: this.threads.get(threadId)?.subject ?? '',
       agentId: agent.id,
       agentLabel: agent.label,
@@ -1484,7 +1489,7 @@ export class CrewSession {
     return {
       id: threadId,
       subject: thread.subject ?? thread.title,
-      role: this.subagents.get(thread.roleId ?? '')?.name ?? '',
+      helper: thread.helper ?? '',
       agent: thread.agentLabel,
       state: working ? 'working' : end?.ok === false ? 'failed' : 'done',
       ms: Math.max(0, Date.now() - (thread.startedAt ?? Date.now())),
@@ -1552,7 +1557,7 @@ export class CrewSession {
     if (woken >= WAKE_LIMIT) return
     const held = this.returns.get(parentId)
     const item: SubagentReturn = {
-      name: this.subagents.get(thread.roleId ?? '')?.name ?? thread.agentLabel,
+      name: thread.helper ?? thread.agentLabel,
       subject: thread.subject ?? thread.title,
       ok,
       ms,
@@ -1575,7 +1580,7 @@ export class CrewSession {
     this.wakes.set(parentThreadId, (this.wakes.get(parentThreadId) ?? 0) + 1)
     const stillOut = this.subagentThreads(parentThreadId)
       .filter(thread => this.subagentRunning(thread))
-      .map(thread => this.subagents.get(thread.roleId ?? '')?.name ?? thread.agentLabel)
+      .map(thread => thread.helper ?? thread.agentLabel)
     const text = returnText(held.items, stillOut)
     const agent = this.agents.get(parent.agentId)
     if (!agent?.runner && !agent?.dropTimer) return
@@ -3091,9 +3096,10 @@ export class CrewSession {
     this.send(agent.runner, this.promptMessage(agent, thread, next, reactions))
   }
 
-  // A role's settings win over the agent's, which is the whole of "this one runs
-  // on the small model". The roles ride along so the machine can write the words
-  // about them, since it is the side that knows the address they are reached at.
+  // A model the parent pinned wins over whatever the agent running it is set
+  // to, which is the whole of "run this one on the small one". How much room is
+  // left rides along so the machine can write the words about helpers, since it
+  // is the side that knows the address they are reached at.
   private promptMessage(
     agent: AgentState,
     thread: Thread,
@@ -3114,13 +3120,13 @@ export class CrewSession {
       agentId: agent.id,
       threadId: thread.id,
       text: this.buildPrompt(agent, entry, reactions),
-      settings: role ? { ...agent.settings, ...role.settings } : agent.settings,
+      settings: thread.helperSettings ? { ...agent.settings, ...thread.helperSettings } : agent.settings,
       attachments: entry.attachments,
       designBoard: this.boardOf(thread),
       designBoards: this.referencedBoards(entry),
       ghost: this.ghostOf(thread.id) ? true : undefined,
-      subagents: canSend ? roles : undefined,
-      spawnRoom: canSend ? room : undefined
+      spawnRoom: canSend ? room : 0,
+      spawnProviders: canSend ? this.spawnProviders() : undefined
     }
   }
 
@@ -3227,17 +3233,15 @@ export class CrewSession {
       .filter(Boolean)
       .join('\n')
     const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
-    const role = this.subagents.get(thread?.roleId ?? '')
     // A helper sees its task and its own turns, and none of the room. It was
     // sent out on one piece of work by somebody who could see the room, and the
     // whole point of it is that it does not have to carry the rest.
     const lines = thread?.parentThreadId
       ? [
-          `You are ${agent.label}, working as ${role?.name ?? 'a helper'} on one piece of work in a crew session.`,
+          `You are ${agent.label}, sent out as ${thread.helper ?? 'a helper'} on one piece of work in a crew session.`,
           `You share a project folder and can read and edit files in it.`,
           ``,
-          SUBAGENT_INSTRUCTIONS,
-          ...(role ? [``, `What ${role.name} is for:`, role.brief] : [])
+          SUBAGENT_INSTRUCTIONS
         ]
       : [
           `You are ${agent.label}, one of several agents in a crew session with ${people}.`,
