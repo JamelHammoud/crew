@@ -9,12 +9,22 @@ export default function Modal({
   open,
   onClose,
   title,
+  width,
+  flush,
   className = '',
   children
 }: {
   open: boolean
   onClose: () => void
   title: string
+  // How wide the card may grow, for one that is not the size a question is. It
+  // is a number rather than a class, because a second max width written beside
+  // the one the card already wears is settled by the order Tailwind happened to
+  // write them in.
+  width?: number
+  // A card that holds its own padding and draws its own heading, like a page
+  // with a rail down the side of it.
+  flush?: boolean
   className?: string
   children: ReactNode
 }) {
