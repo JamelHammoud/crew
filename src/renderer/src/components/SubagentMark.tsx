@@ -38,11 +38,13 @@ export default function SubagentMark({
   className = ''
 }: {
   seed: string
-  size?: keyof typeof SIZES
+  // One of the boxes above, or a size of its own where a mark stands in a row
+  // built to another measure, like a tab pill.
+  size?: keyof typeof SIZES | number
   presence?: 'online' | 'offline'
   className?: string
 }) {
-  const box = SIZES[size]
+  const box = typeof size === 'number' ? size : SIZES[size]
   const tile = useRef<HTMLCanvasElement>(null)
   const [drawn, setDrawn] = useState(box >= WORTH_DRAWING)
   const clip = useId()
@@ -106,7 +108,7 @@ export default function SubagentMark({
       </svg>
       {presence && (
         <span
-          className={`${DOTS[size]} absolute bottom-0 right-0 z-10 rounded-full ring-ink-900 transition-colors ${
+          className={`${typeof size === 'number' ? DOTS.xs : DOTS[size]} absolute bottom-0 right-0 z-10 rounded-full ring-ink-900 transition-colors ${
             presence === 'online' ? 'bg-positive' : 'bg-ink-500'
           }`}
         />
