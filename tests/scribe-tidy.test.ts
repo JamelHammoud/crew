@@ -42,7 +42,7 @@ describe('what whisper heard becomes what somebody meant to write', () => {
     ['keeps a real repetition', 'very very good', 'Very very good.'],
     ['keeps a real doubled had', 'the file had had a header', 'The file had had a header.'],
     ['cuts back to the start of the sentence', "let's use redis, scratch that, let's use postgres", "Let's use postgres."],
-    ['leaves the sentence before a correction alone', "we'll use redis. [0.8] actually no, postgres", "We'll use redis. Postgres."],
+    ['takes the sentence before it when the correction opens one', "we'll use redis. [0.8] actually no, postgres", 'Postgres.'],
     ['takes the whole dictation with it', 'first the schema, scratch all that, we ship the reader', 'We ship the reader.'],
     ['starts over takes everything before it', 'open the panel, start over, open the doc', 'Open the doc.'],
     ['keeps forget that inside real use', "don't forget that the build is slow", "Don't forget that the build is slow."],
