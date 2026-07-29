@@ -65,12 +65,17 @@ const SENTENCE_CUTS = [
   'no wait',
   'wait no',
   'actually no',
+  'actually wait',
+  'actually hold on',
+  'hold on',
   'sorry no',
+  'no sorry',
   'i mean no'
 ]
 
 const WHOLE_CUTS = [
   'scratch all that',
+  'scratch all of that',
   'scratch everything',
   'strike all that',
   'delete all that',
