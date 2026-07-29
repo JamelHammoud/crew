@@ -419,6 +419,34 @@ textarea:placeholder-shown {
   background: rgb(252 252 252 / 0.975);
 }
 
+/* The dictation pill, which is the one panel in the app that floats over another
+   application rather than over Crew. Nothing can blur what is back there: a
+   backdrop filter samples the page it is drawn in, and behind this window there
+   is no page, so the tint is the whole of the material and a heavier blur buys
+   nothing at all.
+
+   So it is lit the way the app icon is lit instead: the tint falls from a lighter
+   top to a darker bottom and a rim of light catches the top edge, which is what
+   lets it sit this far off opaque without reading as a dark film laid over the
+   screen. The drop is its own and it is tighter than the popover's, because the
+   window is only PILL_ROOM larger than the pill and paint that runs past a
+   window is cut off flat. */
+.glass-pill {
+  --glass-bg: linear-gradient(rgb(44 44 44 / 0.72), rgb(18 18 18 / 0.84));
+  --glass-shadow:
+    0 8px 24px rgb(0 0 0 / 0.5),
+    0 2px 6px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+.light .glass-pill {
+  --glass-bg: linear-gradient(rgb(255 255 255 / 0.78), rgb(240 240 240 / 0.9));
+  --glass-shadow:
+    0 8px 24px rgb(0 0 0 / 0.18),
+    0 2px 6px rgb(0 0 0 / 0.1),
+    inset 0 1px 0 rgb(255 255 255 / 0.8);
+}
+
 /* Glass with a light of its own behind it, the way the music bar is lit by the
    cover of whatever is playing. That light lands on top of the tint rather than
    under it, so a panel wearing it reads brighter than everything it floats over.
