@@ -23,7 +23,7 @@ import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import { ArchiveGlyph, BoardGlyph, CheckGlyph, ChecklistGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
+import { ArchiveGlyph, TicketGlyph, CheckGlyph, ChecklistGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { pendingCount, useCrew } from '../state/store'
 
@@ -319,7 +319,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                             boardShowing ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
                           }`}
                         >
-                          <BoardGlyph className="w-4 h-4" />
+                          <TicketGlyph className="w-4 h-4" />
                         </button>
                       </Tooltip>
                     )}

@@ -3,7 +3,7 @@ import { activityDetail, fileChanges, stepTodos } from './detail'
 import type { AgentSettingField } from '../../shared/llm'
 import { resultText } from './output'
 import { claudeUsage } from './usage'
-import type { OutputParser, ParsedOutput, Provider } from './types'
+import type { OutputParser, ParsedOutput, ParsedUsage, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
 const CLAUDE_MODELS = [

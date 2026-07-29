@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { boardOf, TICKET_COLUMNS, type TicketColumn } from '../../../../shared/tickets'
-import { BoardGlyph } from '../../icons'
+import { TicketGlyph } from '../../icons'
 import { useBoard } from '../../state/board'
 import { useCrew } from '../../state/store'
 import ScrollFade from '../ScrollFade'
@@ -33,7 +33,7 @@ export default function WorkView({ threadId }: { threadId: string }) {
         <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-4 py-4 space-y-5">
           {empty && (
             <div className="h-full flex flex-col items-center justify-center gap-3">
-              <BoardGlyph className="w-8 h-8 text-fg-faint" />
+              <TicketGlyph className="w-8 h-8 text-fg-faint" />
               <p className="text-sm text-fg-muted">Nothing on the board yet</p>
             </div>
           )}
