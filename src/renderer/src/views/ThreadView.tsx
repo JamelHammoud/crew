@@ -29,6 +29,7 @@ import {
   ChecklistGlyph,
   ChevronLeftGlyph,
   EyeGlyph,
+  GroupGlyph,
   TicketGlyph,
   WarningGlyph
 } from '../icons'
