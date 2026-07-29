@@ -294,7 +294,8 @@ export class Runner {
           msg.designBoards ?? [],
           msg.ghost === true,
           msg.spawnRoom ?? 0,
-          msg.spawnProviders ?? []
+          msg.spawnProviders ?? [],
+          msg.tickets === true
         )
         break
       case 'steer':
