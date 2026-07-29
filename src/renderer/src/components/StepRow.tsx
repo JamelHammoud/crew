@@ -134,7 +134,8 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
   const opens = useOpener(detail, files)
   const expandable =
     thinking || files.length > 0 || (!opens && Boolean(detail) && (!action.prose || crowded(detail)))
-  const found = expandable && carries(useFindQuery(), stepHidden(item))
+  const query = useFindQuery()
+  const found = expandable && carries(query, stepHidden(item))
   const expanded = open ?? (found || (thinking ? item.streaming : false))
   const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
