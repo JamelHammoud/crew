@@ -16,33 +16,25 @@ export default function Agents() {
 
   return (
     <Page title="Agents">
-      <div className="flex justify-end mb-4">
-        <CreateAgent />
+      <div className="space-y-3">
+        {sorted.map(agent => {
+          const mine = agent.ownerId === selfId
+          const running = activePrompts[agent.id] ?? []
+          return (
+            <AgentCard
+              key={agent.id}
+              agent={agent}
+              threadCount={running.length}
+              onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
+              onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
+              onRename={mine ? label => renameAgent(agent.id, label) : undefined}
+              onAvatar={mine ? file => setAgentAvatar(agent.id, file) : undefined}
+              onRemove={() => removeAgent(agent.id)}
+            />
+          )
+        })}
+        <CreateAgent alone={agents.length === 0} />
       </div>
-      {agents.length === 0 ? (
-        <p className="text-base text-fg/45 pb-4">
-          Add one from your machine's LLMs, or wait for someone to bring theirs.
-        </p>
-      ) : (
-        <div className="space-y-3">
-          {sorted.map(agent => {
-            const mine = agent.ownerId === selfId
-            const running = activePrompts[agent.id] ?? []
-            return (
-              <AgentCard
-                key={agent.id}
-                agent={agent}
-                threadCount={running.length}
-                onStop={running.length > 0 ? () => running.forEach(cancelPrompt) : undefined}
-                onSetting={mine ? (key, value) => updateAgentSetting(agent.id, key, value) : undefined}
-                onRename={mine ? label => renameAgent(agent.id, label) : undefined}
-                onAvatar={mine ? file => setAgentAvatar(agent.id, file) : undefined}
-                onRemove={() => removeAgent(agent.id)}
-              />
-            )
-          })}
-        </div>
-      )}
     </Page>
   )
 }

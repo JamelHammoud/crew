@@ -1545,10 +1545,14 @@ export class CrewSession {
   // long before a helper doing real work would come back.
   waitSubagents(threadIds: string[], ms: number): Promise<{ finished: string[]; pending: string[] }> {
     const watched = threadIds.filter(id => this.threads.get(id)?.parentThreadId)
-    const settled = (): boolean => watched.every(id => !this.subagentRunning(this.threads.get(id)!))
+    const going = (id: string): boolean => {
+      const thread = this.threads.get(id)
+      return thread !== undefined && this.subagentRunning(thread)
+    }
+    const settled = (): boolean => watched.every(id => !going(id))
     const answer = (): { finished: string[]; pending: string[] } => ({
-      finished: watched.filter(id => !this.threads.get(id) || !this.subagentRunning(this.threads.get(id)!)),
-      pending: watched.filter(id => this.threads.get(id) && this.subagentRunning(this.threads.get(id)!))
+      finished: watched.filter(id => !going(id)),
+      pending: watched.filter(going)
     })
     if (watched.length === 0 || settled()) return Promise.resolve(answer())
     return new Promise(resolve => {

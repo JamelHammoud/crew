@@ -4,7 +4,6 @@ import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
 import { PlusGlyph } from '../icons'
 import Modal from './Modal'
 import Select from './Select'
-import { Action } from './settings/parts'
 import Spinner from './Spinner'
 
 function titleCase(value: string): string {
