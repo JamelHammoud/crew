@@ -974,6 +974,10 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread || this.hiddenFrom(ws, threadId)) return
+      if (beside) {
+        this.startAside(ws, member, thread, mentions, trimmed, attachments)
+        return
+      }
       if (thread.status !== 'open') this.handleThreadStatus(member, threadId, 'open')
       const named = [...new Set(mentions)].filter(id => this.agents.has(id))
       // An agent on somebody else's machine cannot take a ghost thread, so
