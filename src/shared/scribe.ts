@@ -174,6 +174,7 @@ export function cleanSettings(input: unknown, platform: string): ScribeSettings 
     corrections: bool(held.corrections, base.corrections),
     marks: bool(held.marks, base.marks),
     ready: bool(held.ready, base.ready),
+    live: bool(held.live, base.live),
     words: cleanWords(held.words)
   }
 }
