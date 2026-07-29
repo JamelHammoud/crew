@@ -31,7 +31,7 @@ const CACHE_READ = 0.1
 const CACHE_WRITE = 1.25
 
 // Dollars per million tokens, in and out.
-const RATES: Record<string, [number, number]> = {
+export const MODEL_RATES: Record<string, [number, number]> = {
   'claude-fable-5': [10, 50],
   'claude-mythos-5': [10, 50],
   'claude-opus-5': [5, 25],
