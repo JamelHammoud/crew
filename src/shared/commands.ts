@@ -13,6 +13,7 @@ export interface SlashCommand {
 
 export const SLASH_COMMANDS: SlashCommand[] = [
   { name: 'plan', where: 'chat', hint: 'Get a plan first, then implement it' },
+  { name: 'tickets', where: 'chat', hint: 'Watch the work on a board, and answer as it goes' },
   { name: 'ghost', where: 'chat', hint: 'Nobody else sees this thread' },
   { name: 'voice', where: 'chat', hint: 'Talk to them out loud' },
   { name: 'steer', where: 'thread', hint: 'Go in now, on the turn already running' },
