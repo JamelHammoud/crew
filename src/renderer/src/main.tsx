@@ -29,6 +29,7 @@ applyPlatform()
 // one of their own.
 if (Aside) showTheme(storedTheme())
 else applyTheme(storedTheme())
+if (hash === '#scribe') root.classList.add('bare')
 
 if (!Aside) {
   void useCrew.getState().boot()
