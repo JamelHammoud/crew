@@ -54,7 +54,6 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const contentRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
   const inputRef = useAutoResize(text)
-  const mention = useMentionAutocomplete(text, value => setThreadDraft(threadId, value), inputRef)
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
 
   const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
@@ -62,6 +61,33 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
   const draftMentions = useMemo(() => mentionsIn(text, agents), [text, agents])
+  const targets = draftMentions.length > 0 ? draftMentions : thread ? [thread.agentId] : []
+  const canSteer =
+    Boolean(activePromptId) && steerable && runningAgentId !== undefined && targets.includes(runningAgentId)
+
+  // A thread's command is one choice about the message being written, so one is
+  // held at a time and picking another takes the place of the one before it. The
+  // run it was picked against can end while the message is still being typed, so
+  // what stands is read back off what the thread can still do.
+  const offered = useMemo(() => threadCommands(canSteer), [canSteer])
+  const held = useCrew(s => s.threadCommands[threadId] ?? EMPTY_COMMANDS)
+  const setThreadCommands = useCrew(s => s.setThreadCommands)
+  const command = held.find(name => offered.some(one => one.name === name)) ?? null
+
+  const takeCommand = (name: CommandName) => setThreadCommands(threadId, [name])
+
+  const write = (value: string) => {
+    const typed = commandTyped(value, offered)
+    if (!typed) {
+      setThreadDraft(threadId, value)
+      return
+    }
+    takeCommand(typed)
+    setThreadDraft(threadId, '')
+  }
+
+  const mention = useMentionAutocomplete(text, write, inputRef)
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const threadSteps = useMemo(() => {
     const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
