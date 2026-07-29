@@ -27,6 +27,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const thread = useCrew(state => state.threads[threadId])
   const promptId = useCrew(state => state.threadPrompts[threadId])
   const tokens = useCrew(state => (promptId ? (state.tokens[promptId] ?? 0) : 0))
+  const cost = useCrew(state => (promptId ? state.costs[promptId] : undefined))
   const text = useCrew(state => state.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(state => state.setThreadDraft)
   const sendChat = useCrew(state => state.sendChat)
@@ -99,7 +100,12 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
         <div className="space-y-4 pb-4">
           <ThreadItems items={items} />
           {working && start?.kind === 'agent.start' && (
-            <RunStatus startedAt={start.ts} tokens={tokens} steps={promptId ? (steps[promptId] ?? []) : []} />
+            <RunStatus
+              startedAt={start.ts}
+              tokens={tokens}
+              cost={cost}
+              steps={promptId ? (steps[promptId] ?? []) : []}
+            />
           )}
           <FilesChanged steps={threadSteps} />
         </div>
