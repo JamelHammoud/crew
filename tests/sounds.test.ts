@@ -191,7 +191,7 @@ describe('the chime that says a thread landed', () => {
   })
 
   it('says nothing for a question asked on the side', () => {
-    expect(soundFor(ended(true, 't1'), 'me', state({ threads: { t1: thread('t1', { aside: true }) } }))).toBe(null)
+    expect(soundFor(ended(true, 't1'), 'me', state({ threads: { t1: thread('t1', { aside: 't0' }) } }))).toBe(null)
   })
 
   it('says nothing for a thread already marked done', () => {
