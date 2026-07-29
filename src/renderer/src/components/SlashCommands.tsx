@@ -6,11 +6,15 @@ export function useSlashCommands(
   value: string,
   setValue: (text: string) => void,
   onCommand: (name: CommandName) => void,
-  inputRef: RefObject<HTMLTextAreaElement>
+  inputRef: RefObject<HTMLTextAreaElement>,
+  offered: readonly SlashCommand[]
 ) {
   const [dismissed, setDismissed] = useState<string | null>(null)
   const [active, setActive] = useState(0)
-  const matches = useMemo(() => (value === dismissed ? [] : slashCandidates(value)), [dismissed, value])
+  const matches = useMemo(
+    () => (value === dismissed ? [] : slashCandidates(value, offered)),
+    [dismissed, offered, value]
+  )
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
 
   const pick = (command: SlashCommand) => {
