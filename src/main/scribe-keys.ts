@@ -92,7 +92,7 @@ export class ScribeKeys {
     this.register()
   }
 
-  state(): ScribeKeysState {
+  state(): ScribeKeyState {
     return { hooked: this.started, trusted: this.trusted() }
   }
 
