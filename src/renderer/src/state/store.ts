@@ -46,6 +46,9 @@ export interface ThreadMeta {
   ghost?: boolean
   // A thread somebody spoke rather than typed.
   voice?: boolean
+  // The thread a question on the side was asked from. It reads in the panel and
+  // is nobody's work, so it stands out of the chat and out of the task list.
+  aside?: string
   // A thread another one sent out. It reads inside its parent rather than as a
   // card of its own in the feed.
   parentThreadId?: string
