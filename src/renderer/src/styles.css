@@ -288,6 +288,12 @@ body {
    a command and what it printed. Fields and anything editable are always
    selectable, since a box to type in that cannot be selected in is broken.
 
+   A placeholder is the one thing in a field that nobody wrote, so a field says
+   it is selectable only once it holds something. Empty, it is a line of the
+   app's own words standing in a box, and being inside a field is what painted it
+   over on a select all. Nothing is lost by shutting it, since an empty field has
+   nothing to take away, and it opens again on the first keystroke.
+
    It is written in the base layer and nowhere else, so select-text and
    select-none are ordinary utilities that win over it wherever one is used. A
    plain rule in this file would beat both of them, whichever way round they were
@@ -301,6 +307,11 @@ body {
   textarea,
   [contenteditable]:not([contenteditable='false']) {
     user-select: text;
+  }
+
+  input:placeholder-shown,
+  textarea:placeholder-shown {
+    user-select: none;
   }
 }
 
