@@ -13,7 +13,6 @@ import {
   type Todo
 } from '../../../shared/events'
 import type { GameScore } from '../../../shared/games'
-import type { Subagent } from '../../../shared/subagents'
 import type { CrewTool, ToolAction } from '../../../shared/toolbox'
 import { emptyRoom } from '../../../shared/huddle'
 import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../shared/music'
@@ -48,6 +47,8 @@ export interface ThreadMeta {
   ghost?: boolean
   // A thread somebody spoke rather than typed.
   voice?: boolean
+  // A thread whose work is reported onto a board beside it.
+  tickets?: boolean
   // The thread a question on the side was asked from. It reads in the panel and
   // is nobody's work, so it stands out of the chat and out of the task list.
   aside?: string
@@ -55,7 +56,8 @@ export interface ThreadMeta {
   // card of its own in the feed.
   parentThreadId?: string
   parentPromptId?: string
-  roleId?: string
+  // The name the agent that sent it out made it up under, and what it is doing.
+  helper?: string
   subject?: string
   depth?: number
 }
@@ -159,7 +161,6 @@ interface CrewState {
   threadPrompts: Record<string, string>
   todos: Todo[]
   tools: CrewTool[]
-  subagents: Subagent[]
   scores: GameScore[]
   boards: DesignBoardMeta[]
   openThreadId: string | null
@@ -220,16 +221,6 @@ interface CrewState {
   addTool: (name: string, mark: string, action: ToolAction) => void
   editTool: (toolId: string, name: string, mark: string, action: ToolAction) => void
   removeTool: (toolId: string) => void
-  addSubagent: (
-    name: string,
-    brief: string,
-    provider?: string,
-    settings?: Record<string, string>,
-    roleId?: string
-  ) => void
-  editSubagent: (roleId: string, name: string, brief: string, provider?: string, settings?: Record<string, string>) => void
-  removeSubagent: (roleId: string) => void
-  runSubagent: (roleId: string, threadId: string, subject: string, task: string) => void
   stopSubagent: (threadId: string) => void
   postScore: (gameId: string, score: number) => void
   cancelPrompt: (promptId: string) => void
@@ -274,7 +265,6 @@ const EMPTY = {
   threadPrompts: {},
   todos: [],
   tools: [],
-  subagents: [],
   scores: [],
   boards: [],
   openThreadId: null,
@@ -328,10 +318,11 @@ const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): v
         boardId: event.boardId,
         ghost: event.ghost,
         voice: event.voice,
+        tickets: event.tickets,
         aside: event.aside,
         parentThreadId: event.parentThreadId,
         parentPromptId: event.parentPromptId,
-        roleId: event.roleId,
+        helper: event.helper,
         subject: event.subject,
         depth: event.depth
       }
@@ -542,30 +533,6 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         case 'tool.removed':
           return { events, tools: state.tools.filter(t => t.id !== event.toolId) }
-        case 'subagent.added': {
-          if (state.subagents.some(role => role.id === event.roleId)) return { events }
-          const role: Subagent = {
-            id: event.roleId,
-            name: event.name,
-            brief: event.brief,
-            provider: event.provider,
-            settings: event.settings ?? {},
-            createdBy: event.byName,
-            ts: event.ts
-          }
-          return { events, subagents: [...state.subagents, role] }
-        }
-        case 'subagent.edited':
-          return {
-            events,
-            subagents: state.subagents.map(role =>
-              role.id === event.roleId
-                ? { ...role, name: event.name, brief: event.brief, provider: event.provider, settings: event.settings ?? {} }
-                : role
-            )
-          }
-        case 'subagent.removed':
-          return { events, subagents: state.subagents.filter(role => role.id !== event.roleId) }
       }
       return {
         events,
@@ -622,7 +589,6 @@ export const useCrew = create<CrewState>((set, get) => {
           queues: msg.snapshot.queues ?? {},
           todos: msg.snapshot.todos ?? [],
           tools: msg.snapshot.tools ?? [],
-          subagents: msg.snapshot.subagents ?? [],
           scores: msg.snapshot.gameScores ?? [],
           boards: msg.snapshot.boards ?? [],
           steps,
@@ -943,18 +909,6 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     removeTool: toolId => {
       socket.send({ type: 'tool.remove', toolId })
-    },
-    addSubagent: (name, brief, provider, settings, roleId) => {
-      socket.send({ type: 'subagent.add', name, brief, provider, settings, roleId })
-    },
-    editSubagent: (roleId, name, brief, provider, settings) => {
-      socket.send({ type: 'subagent.edit', roleId, name, brief, provider, settings })
-    },
-    removeSubagent: roleId => {
-      socket.send({ type: 'subagent.remove', roleId })
-    },
-    runSubagent: (roleId, threadId, subject, task) => {
-      socket.send({ type: 'subagent.run', roleId, threadId, subject, task })
     },
     stopSubagent: threadId => {
       socket.send({ type: 'subagent.stop', threadId })
