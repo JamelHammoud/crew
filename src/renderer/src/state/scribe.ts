@@ -92,7 +92,6 @@ export const useScribe = create<ScribeState>((set, get) => {
   const stop = () => {
     clearTimeout(capped)
     take.close()
-    live = take
   }
 
   const drop = () => {
