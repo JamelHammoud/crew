@@ -28,6 +28,7 @@ const thread = (id: string, parentThreadId?: string): ThreadMeta => ({
   title: 'A thread',
   createdBy: 'Jamel',
   status: 'open',
+  mode: 'normal',
   parentThreadId
 })
 
