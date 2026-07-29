@@ -372,7 +372,9 @@ export class Runner {
     attachments: Attachment[],
     designBoard?: DesignBoardMeta,
     designBoards: DesignBoardMeta[] = [],
-    ghost = false
+    ghost = false,
+    subagents: Subagent[] = [],
+    spawnRoom = 0
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -381,10 +383,13 @@ export class Runner {
     }
     if (this.accepted.has(promptId)) return
     this.accepted.add(promptId)
-    // The design preamble is written here rather than on the host because only
-    // this side knows the http address it reaches the server at.
-    const preamble = boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards)
-    const body = preamble ? `${text}\n\n${preamble}` : text
+    // Both preambles are written here rather than on the host because only this
+    // side knows the http address it reaches the server at.
+    const preambles = [
+      boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
+      subagentPreamble(this.httpBase, promptId, subagents, spawnRoom)
+    ].filter(Boolean)
+    const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
       .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost))
