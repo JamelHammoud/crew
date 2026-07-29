@@ -246,7 +246,7 @@ export const useVoice = create<VoiceState>((set, get) => {
       const problem = await ear.open()
       if (get().phase === 'off') return ear.close()
       if (problem) {
-        set({ problem: 'crew could not reach your microphone. Check its permission in System Settings.' })
+        set({ problem: 'Crew could not reach your microphone. Check its permission in System Settings.' })
       }
     },
 
