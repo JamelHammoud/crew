@@ -111,3 +111,17 @@ export const MoreVerticalGlyph = glyph(
     ))}
   </>
 )
+
+// Settings, wherever they are opened from. Two rules with a knob standing at a
+// different place along each, because what is behind the row is things you set
+// rather than a machine with teeth. A knob is filled for the same reason the
+// ellipsis dots are: a ring that small closes up into a smudge at 16. It is
+// drawn under the size a ring would enclose at, so the pair stays a run of line
+// and is read against the line keyline rather than against the square.
+export const SlidersGlyph = glyph(
+  <>
+    <path d="M4.5 9h15M4.5 15h15" />
+    <circle cx="9.4" cy="9" r={1.85} fill="currentColor" stroke="none" />
+    <circle cx="15.6" cy="15" r={1.85} fill="currentColor" stroke="none" />
+  </>
+)
