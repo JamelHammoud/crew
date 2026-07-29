@@ -98,6 +98,16 @@ export default function Toolbox({
         else void voice.start()
       }
     },
+    // It opens its settings rather than starting a dictation. Coming back into
+    // the app to press a tile is not how anybody dictates into another app, so
+    // the key is the way in and this is where the key is chosen.
+    {
+      id: 'scribe',
+      name: 'Scribe',
+      mark: ScribeGlyph,
+      on: dictating,
+      run: () => openSettings('scribe')
+    },
     {
       id: 'terminal',
       name: 'Terminal',
