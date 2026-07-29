@@ -123,7 +123,7 @@ export class AppSession {
 
   async repoStatus(): Promise<RepoStatus> {
     if (!this.git) {
-      return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0 }
+      return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0, stashes: 0 }
     }
     return this.git.status()
   }
@@ -131,6 +131,21 @@ export class AppSession {
   async repoChanges(): Promise<RepoChange[]> {
     if (!this.git) return []
     return this.git.changes()
+  }
+
+  async repoWork(): Promise<RepoWork> {
+    if (!this.git) return { status: await this.repoStatus(), changes: [], stashes: [] }
+    return this.git.work()
+  }
+
+  async runRepo(command: RepoCommand): Promise<RepoActionResult> {
+    if (this.git) return this.git.run(command)
+    return {
+      ok: false,
+      updated: false,
+      message: 'Open a project first.',
+      status: await this.repoStatus()
+    }
   }
 
   async pullRepo(): Promise<RepoActionResult> {
