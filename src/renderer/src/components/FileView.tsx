@@ -24,7 +24,7 @@ const fromRoot = (path: string): boolean => path.startsWith('/')
 export function FileCrumbs({ tab }: { tab: BrowserTab }) {
   const parts = tab.path.split('/').filter(Boolean)
   return (
-    <div className="flex-1 min-w-0 h-9 mx-1 px-3.5 rounded-full bg-fg/[0.06] flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] font-mono text-[13px] whitespace-nowrap select-text">
+    <div className="flex-1 min-w-0 h-9 mx-1 px-3.5 rounded-full bg-fg/[0.06] flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] font-mono text-[13px] whitespace-nowrap">
       <button
         onClick={() => useBrowser.getState().navigateFile(tab.id, '')}
         aria-label="Project files"
