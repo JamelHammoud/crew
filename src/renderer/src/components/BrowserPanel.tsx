@@ -22,6 +22,7 @@ import {
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
+import AsideView from './AsideView'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
 import GameView from './game/GameView'
