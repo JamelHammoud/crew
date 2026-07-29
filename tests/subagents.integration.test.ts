@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
-import { DEFAULT_FAN } from '../src/shared/subagents'
 import { Runner } from '../src/runner'
 import { makeFakeProvider, makeSteerableProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
@@ -215,11 +214,12 @@ describe('subagents', () => {
     await connectRunner(6000, 4000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
-    // Asking for more than the crew's ceiling is held at the ceiling.
-    ui.send({ type: 'subagent.prefs', on: true, fan: FAN_LIMIT + 5 })
-    await new Promise(r => setTimeout(r, 200))
+    // How many at once is the owner's own answer. What the ceiling does to a
+    // number over it is cleanPrefs's own rule and is held there.
+    const fan = 2
+    ui.send({ type: 'subagent.prefs', on: true, fan })
     const parent = await openParent(ui, steery)
-    for (let i = 0; i < DEFAULT_FAN; i++) {
+    for (let i = 0; i < fan; i++) {
       const sent = await post('/agents/spawn', {
         promptId: parent.promptId,
         name: 'Scout',
@@ -237,7 +237,7 @@ describe('subagents', () => {
       task: 'one more'
     })
     expect(over.status).toBe(400)
-    expect(over.body.error).toContain(`${DEFAULT_FAN} running`)
+    expect(over.body.error).toContain(`${fan} running`)
   })
 
   it('talks to a helper that is still going, and stops one', async () => {
