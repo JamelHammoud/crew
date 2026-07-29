@@ -15,10 +15,14 @@ export const TASK_LIMIT = 8000
 // through in its life, and how many times one may be woken by a helper coming
 // back. Without the last of these a parent that spawns on every wake is a loop
 // the crew watches burn tokens all afternoon.
-export const FAN_LIMIT = 4
-export const RUN_LIMIT = 16
-export const WAKE_LIMIT = 8
+export const FAN_LIMIT = 20
+export const RUN_LIMIT = 80
+export const WAKE_LIMIT = 40
 export const DEPTH_LIMIT = 2
+
+// What a machine runs at once before anybody says otherwise. The ceiling is how
+// far the setting goes, not what a laptop should be asked to carry unasked.
+export const DEFAULT_FAN = 4
 
 // The longest a parent may park on a wait, and the breath a run of returns is
 // gathered over. Three helpers finishing together are one interruption, because
