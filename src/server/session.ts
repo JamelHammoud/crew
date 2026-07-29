@@ -3376,7 +3376,9 @@ export class CrewSession {
       ``,
       thread?.parentThreadId
         ? `Do the work above, then answer with what you found or what you changed.`
-        : `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
+        : thread?.aside
+          ? `Answer the last question from ${prompt.byName}.`
+          : `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
     )
     return lines.join('\n')
   }
