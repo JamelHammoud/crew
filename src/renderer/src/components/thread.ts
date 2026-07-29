@@ -22,11 +22,23 @@ export const THREAD_STATE_LABELS: Record<ThreadState, string> = {
   archived: 'Archived'
 }
 
+// A thread with helpers still out is not ready for review. Its own turn may
+// have ended, but the work it sent out is its work, so counting only its own
+// run would land it on the badge and raise a finished toast while three
+// agents are still going on its behalf.
 export const threadWorking = (
   threadId: string,
   threadPrompts: Record<string, string>,
-  queues: Record<string, unknown[]>
-): boolean => Boolean(threadPrompts[threadId]) || (queues[threadId]?.length ?? 0) > 0
+  queues: Record<string, unknown[]>,
+  threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>> = {}
+): boolean => {
+  if (Boolean(threadPrompts[threadId]) || (queues[threadId]?.length ?? 0) > 0) return true
+  return Object.values(threads).some(
+    thread =>
+      thread.parentThreadId === threadId &&
+      (Boolean(threadPrompts[thread.id]) || (queues[thread.id]?.length ?? 0) > 0)
+  )
+}
 
 export function threadState(thread: ThreadMeta, events: SessionEvent[], running: boolean): ThreadState {
   if (running) return 'working'
