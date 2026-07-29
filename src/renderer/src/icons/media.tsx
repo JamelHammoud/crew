@@ -18,25 +18,19 @@ export const MicOffGlyph = glyph(
   </>
 )
 
-// A nib standing on the line it is writing, for talking and having it written
-// down. It is not a second microphone: that one is Voice and the two stand near
-// each other, so this one has to say writing without a mouth anywhere in it.
+// The bars on the pill, which is the whole of what Scribe looks like while it is
+// running. It is not a second microphone: that one is Voice and the two stand
+// near each other in the toolbox, so this one is what a voice does rather than
+// what it is spoken into.
 //
-// Everything about it is what survives at 16. The slit a real nib carries is the
-// first thing to go: the flanks close in as they fall, so by the time a slit is
-// long enough to read it has under a pixel of counter either side and the whole
-// bottom of the mark fills in as one blob. The vent hole alone says nib and it
-// sits high, where the shape is still wide enough to hold it. And the line runs
-// wider than the nib rather than under it, because a bar the same width as the
-// shape above it is a plinth: what it has to read as is a rule on a page that
-// carries on past both edges, the way the hill in the photo does.
-export const ScribeGlyph = glyph(
-  <>
-    <path d="M8.5 3H15.5A2.5 2.5 0 0 1 17.75 6.5L12 19.5 6.25 6.5A2.5 2.5 0 0 1 8.5 3Z" />
-    <circle cx="12" cy="8.5" r="1.3" fill="currentColor" stroke="none" />
-    <path d="M3 20.9h18" />
-  </>
-)
+// Four bars and not five. The mark is worn at 16, where five over the same width
+// leaves under two pixels of gap and the run closes into a block. Every bar is
+// centred on the same line, which is what tells a level meter from a chart: a
+// set of bars standing on a floor is read as quantities beside each other, and
+// one growing both ways off a middle is read as loudness. The tall one stands
+// second and the rest fall away after it, because an even rise and fall is a
+// pattern and a voice is not one.
+export const ScribeGlyph = glyph(<path d="M6 9.25v5.5M10 4.5v15M14 7.5v9M18 10.25v3.5" />)
 
 const CAMERA_ART = (
   <>
