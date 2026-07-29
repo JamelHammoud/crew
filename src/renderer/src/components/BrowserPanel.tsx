@@ -24,6 +24,7 @@ import {
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
+import { usePanelOpens, type PanelOpen } from './panelOpens'
 import AsideView from './AsideView'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
