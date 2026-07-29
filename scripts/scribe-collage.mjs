@@ -125,7 +125,7 @@ const fs = require('fs')
 app.commandLine.appendSwitch('force-device-scale-factor', '2')
 app.whenReady().then(() => {
   const win = new BrowserWindow({
-    width: 1180, height: 1420, show: false, backgroundColor: '#141414',
+    width: 1000, height: 1140, show: false, backgroundColor: '#141414',
     webPreferences: { nodeIntegration: true, contextIsolation: false }
   })
   win.webContents.on('did-finish-load', () => setTimeout(async () => {
