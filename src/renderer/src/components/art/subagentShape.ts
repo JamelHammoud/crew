@@ -60,13 +60,17 @@ export function subagentShape(id: string): SubagentShape {
     lobes: Math.min(lobes, MAX_LOBES),
     depth,
     twist: seeded(id, 'twist') * Math.PI * 2,
-    radius: (kind === 'square' ? SQUARE_SIDE : ROUND) / 2
+    radius: OUTER[kind] / 2
   }
 }
 
+// The lobes stand out and in around a mean, and the furthest of them lands on
+// the keyline rather than past it. Grown outward from the mean instead, a deep
+// rosette paints past the box and is cut off flat at the four sides.
 export function radiusAt(shape: SubagentShape, angle: number): number {
   if (shape.kind !== 'rosette') return shape.radius
-  return shape.radius * (1 + shape.depth * Math.cos(shape.lobes * (angle + shape.twist)))
+  const wave = 1 + shape.depth * Math.cos(shape.lobes * (angle + shape.twist))
+  return (shape.radius * wave) / (1 + shape.depth)
 }
 
 const SAMPLES_PER_LOBE = 10

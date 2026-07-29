@@ -92,3 +92,47 @@ describe('window chrome', () => {
     expect(fullScreen()).toBe(true)
   })
 })
+
+// The window drag is flat geometry with no ladder in it, so the bar's own band
+// keeps taking clicks under whatever is drawn over it. Anything that floats
+// there cuts itself back out.
+describe('the drag the top bar takes', () => {
+  it('cuts a dialog out of it', () => {
+    render(
+      createElement(Modal, { open: true, onClose: () => {}, title: 'Rename' }, createElement('p', null, 'body'))
+    )
+
+    expect(screen.getByRole('dialog').parentElement!.className).toContain('app-no-drag')
+  })
+
+  it('cuts a menu out of it', () => {
+    const { baseElement } = render(
+      createElement(
+        Popover,
+        { open: true, onClose: () => {}, at: { x: 100, y: 30 } },
+        createElement('button', null, 'Open')
+      )
+    )
+
+    expect(baseElement.querySelector('.app-no-drag.fixed')).not.toBeNull()
+  })
+
+  it('leaves the bar itself draggable, since that is what the band is for', () => {
+    topBar()
+
+    expect(screen.getByRole('banner').className).toContain('app-drag')
+  })
+})
+
+describe('the scrim behind the tasks panel', () => {
+  it('stands under the top bar, so the bar is still there to press', () => {
+    const { container } = render(
+      createElement(TasksPanel, { open: true, onClose: () => {}, onOpenThread: () => {} })
+    )
+
+    const scrim = container.querySelector('.inset-0[class*="z-"]')!
+
+    expect(scrim.className).toContain('z-30')
+    expect(scrim.className).not.toContain('z-40')
+  })
+})
