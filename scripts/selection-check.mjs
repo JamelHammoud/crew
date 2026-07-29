@@ -119,6 +119,7 @@ try {
   }
   if (problems.length > 0) {
     for (const problem of problems) console.error(problem)
+    console.error(`what came away: ${JSON.stringify(seen.took)}`)
     process.exit(1)
   }
   console.log(`a select all took the content and none of the ${CHROME.length} pieces of chrome`)
