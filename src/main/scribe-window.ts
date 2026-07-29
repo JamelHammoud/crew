@@ -24,18 +24,8 @@ import { createScribeOptions } from './window-options'
 // is why the room is added back to the screen a spot is held inside.
 //
 // It stands there the whole time dictation is on rather than arriving with a
-// dictation, so it is only ever as big as the pill really is. Electron does not
-// pass a click through a transparent window on either platform, so every pixel
-// of window past the pill is a click of somebody else's that goes nowhere, and a
-// window that is up all day may not hold any.
-
-const SMALLEST = { width: PILL_REST + PILL_ROOM * 2, height: PILL_REST + PILL_ROOM * 2 }
-const LARGEST = { width: PILL_WIDTH + PILL_ROOM * 2, height: PILL_MAX + PILL_ROOM * 2 }
-
-const within = (size: Size): Size => ({
-  width: Math.round(Math.max(SMALLEST.width, Math.min(size.width, LARGEST.width))),
-  height: Math.round(Math.max(SMALLEST.height, Math.min(size.height, LARGEST.height)))
-})
+// dictation, so it is only ever as big as the pill really is, which is `fits`
+// and lives with the rest of the placing.
 
 export class ScribeWindow {
   private win: BrowserWindow | null = null
