@@ -360,7 +360,11 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         {tab.loading ? (
           <Spinner size={14} className="text-fg-muted" />
         ) : tab.kind === 'agent' ? (
-          <SubagentMark seed={roleSeed(tab)} size={18} />
+          tab.threadId ? (
+            <SubagentMark seed={tab.threadId} size={18} />
+          ) : (
+            <GroupGlyph className="w-4 h-4 shrink-0" />
+          )
         ) : tab.kind === 'plan' ? (
           <ChecklistGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'work' ? (
