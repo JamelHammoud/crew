@@ -295,6 +295,17 @@ export default function BrowserPanel() {
               <SubagentPanel tab={tab} />
             </div>
           ))}
+        {tabs
+          .filter(tab => tab.kind === 'aside')
+          .map(tab => (
+            <div
+              key={tab.id}
+              className="absolute inset-0"
+              style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
+            >
+              <AsideView threadId={tab.threadId} />
+            </div>
+          ))}
         {active && active.kind === 'plan' && <PlanView threadId={active.threadId} />}
         {active && active.kind === 'music' && <MusicView />}
         {active && active.kind === 'game' && <GameView tabId={active.id} />}

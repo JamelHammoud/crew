@@ -254,6 +254,10 @@ interface CrewState {
 
 const socket = new CrewSocket()
 
+// Changing what helpers may do here reaches the host at once, rather than
+// waiting for the next time the window happens to connect.
+onHelperPrefs(prefs => socket.send({ type: 'subagent.prefs', ...prefs }))
+
 const EMPTY = {
   members: [],
   agents: [],
