@@ -93,6 +93,14 @@ export default function Appearance() {
           )
         })}
       </div>
+      <Section title="While an agent works">
+        <Row label="Token count">
+          <Toggle on={prefs.tokens} label="Token count" onChange={on => setPref('tokens', on)} />
+        </Row>
+        <Row label="Estimated cost" line="What the run would come to billed by the token.">
+          <Toggle on={prefs.cost} label="Estimated cost" onChange={on => setPref('cost', on)} />
+        </Row>
+      </Section>
     </Page>
   )
 }
