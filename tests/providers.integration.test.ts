@@ -190,7 +190,7 @@ describe('claude parser matches the real CLI format', () => {
     expect(parseClaudeLine('{"type":"result","subtype":"success","result":"ok"}')).toEqual([{ turnEnd: true }])
     expect(parseClaudeLine('{"type":"result","subtype":"success","usage":{"output_tokens":12}}')).toEqual([
       { turnEnd: true },
-      { tokens: 12 }
+      { usage: { output: 12, total: true } }
     ])
   })
 
