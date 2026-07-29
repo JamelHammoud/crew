@@ -56,7 +56,7 @@ export function activityDetail(input: unknown): string | undefined {
     const value = record[key]
     if (typeof value === 'string' && value.trim()) return truncate(value)
   }
-  return todoDetail(record['todos'] ?? record['plan'] ?? record['items']) ?? truncate(JSON.stringify(record))
+  return todoDetail(record) ?? truncate(JSON.stringify(record))
 }
 
 function truncate(text: string): string {
