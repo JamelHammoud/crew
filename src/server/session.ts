@@ -73,6 +73,7 @@ import {
 import { ASIDE_INSTRUCTIONS } from '../shared/aside'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
+import { TICKET_INSTRUCTIONS } from '../shared/tickets'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
   agentId,
@@ -937,6 +938,7 @@ export class CrewSession {
     const planning = commands.includes('plan')
     const ghosting = commands.includes('ghost')
     const talking = asking.includes('voice')
+    const reporting = commands.includes('tickets')
     const holding = threadId ? asking.includes('queue') : false
     const beside = threadId ? asking.includes('btw') : false
     const trimmed = text.trim()
@@ -999,7 +1001,14 @@ export class CrewSession {
             ? this.soloAgent()
             : null
       if (taker) {
-        this.startThread(member, taker, trimmed, attachments, { boardId, mode, ghost, replyTo, voice: talking })
+        this.startThread(member, taker, trimmed, attachments, {
+          boardId,
+          mode,
+          ghost,
+          replyTo,
+          voice: talking,
+          tickets: reporting
+        })
         return
       }
       if (talking) {
@@ -3260,6 +3269,7 @@ export class CrewSession {
       )
     }
     if (thread?.voice) lines.push(``, VOICE_INSTRUCTIONS)
+    if (thread?.tickets) lines.push(``, TICKET_INSTRUCTIONS)
     if (thread?.aside) lines.push(``, ASIDE_INSTRUCTIONS)
     if (thread?.mode === 'plan') lines.push(``, PLAN_INSTRUCTIONS)
     else if (thread?.plan) lines.push(``, `The plan this thread agreed on:`, thread.plan)
