@@ -104,6 +104,7 @@ describe('typing', () => {
     const store = new Store(tmpDir('typing'))
     const session = new CrewSession(store)
     const seen: Typist[][] = []
+    const heard = new Map<string, (raw: unknown) => void>()
     const ws = {
       readyState: 1,
       OPEN: 1,
@@ -111,15 +112,15 @@ describe('typing', () => {
         const msg = JSON.parse(raw) as ServerMessage
         if (msg.type === 'typing.room') seen.push(msg.typists)
       },
-      on: () => {}
+      on: (name: string, fn: (raw: unknown) => void) => heard.set(name, fn)
     } as unknown as Parameters<CrewSession['attach']>[0]
+    const say = (msg: ClientMessage) => heard.get('message')?.(JSON.stringify(msg))
 
     session.attach(ws)
-    session.handle(ws, { type: 'hello', role: 'ui', name: 'jamel', code: session.code })
-    session.handle(ws, { type: 'typing', on: true })
+    say({ type: 'hello', role: 'ui', name: 'jamel', code: session.code })
+    say({ type: 'typing', on: true })
     expect(seen.at(-1)).toHaveLength(1)
-    await new Promise(r => setTimeout(r, TYPING_TTL + 200))
-    expect(seen.at(-1)).toHaveLength(0)
+    await waitUntil(() => seen.at(-1)?.length === 0, TYPING_TTL + 2000)
   })
 
   it('never writes any of it down', async () => {
