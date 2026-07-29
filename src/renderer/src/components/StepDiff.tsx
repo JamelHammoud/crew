@@ -94,7 +94,7 @@ export default function StepDiff({ file, again }: { file: FileChange; again?: un
               <Line key={index} row={row} tokens={tokensFor(row)} />
             ))}
             {rest > 0 && (
-              <FileTextLink path={file.path} diff={file.diff} className="block px-3 pt-1 text-fg-faint">
+              <FileTextLink path={file.path} diff={file.diff} className="block px-3 pt-1 text-fg-faint select-none">
                 {`${rest} more ${rest === 1 ? 'line' : 'lines'}`}
               </FileTextLink>
             )}
