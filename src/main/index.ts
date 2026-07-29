@@ -66,6 +66,7 @@ let scribePending: string[] = []
 const scribeKeys = new ScribeKeys({
   onArm: () => {
     scribePending = []
+    said.begin()
     scribe.show()
     scribe.send('scribe:arm')
   },
@@ -73,7 +74,7 @@ const scribeKeys = new ScribeKeys({
   onCancel: () => {
     scribePending = []
     scribe.send('scribe:cancel')
-    scribe.hide()
+    scribe.rest()
   }
 })
 
@@ -85,9 +86,21 @@ function scribeWrite(text: string): void {
 }
 
 function scribeLand(text: string): void {
+  said.add(text)
   void deliver(text, scribeSettings.finish).then(landed => {
     if (!landed.ok) scribe.send('scribe:problem', landed.problem)
   })
+}
+
+// A take that has ended, sealed into the one thing somebody said. The page that
+// holds the list is told rather than asked, so it is right while it is open.
+function scribeSaid(): void {
+  if (said.seal()) saidChanged()
+}
+
+function saidChanged(): void {
+  const list = said.all()
+  for (const win of appWindows()) win.webContents.send('scribe:said', list)
 }
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()
