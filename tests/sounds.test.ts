@@ -18,6 +18,7 @@ const stopped: number[] = []
 const pitched: number[] = []
 const landed: number[] = []
 let filters: { type: string; hz: number[] }[] = []
+let gains: number[] = []
 
 class FakeParam {
   #held = 0
