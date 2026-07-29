@@ -11,7 +11,7 @@ import { formatSpan } from './time'
 
 const SHOWN = 3
 
-function Chip({ run }: { run: SubagentRun }) {
+function Chip({ run, threadId }: { run: SubagentRun; threadId: string }) {
   const openSubagent = useBrowser(state => state.openSubagent)
   const promptId = useCrew(state => state.threadPrompts[run.threadId])
   const queued = useCrew(state => state.queues[run.threadId]?.length ?? 0)
