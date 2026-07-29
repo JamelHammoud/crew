@@ -782,6 +782,23 @@ export class CrewSession {
       case 'tool.remove':
         if (meta.role === 'ui') this.handleToolRemove(member, msg.toolId)
         break
+      case 'subagent.add':
+        if (meta.role === 'ui') this.handleSubagentAdd(member, msg.name, msg.brief, msg)
+        break
+      case 'subagent.edit':
+        if (meta.role === 'ui') this.handleSubagentEdit(member, msg.roleId, msg.name, msg.brief, msg)
+        break
+      case 'subagent.remove':
+        if (meta.role === 'ui') this.handleSubagentRemove(member, msg.roleId)
+        break
+      case 'subagent.run':
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) {
+          this.handleSubagentRun(ws, member, msg.roleId, msg.threadId, msg.subject, msg.task)
+        }
+        break
+      case 'subagent.stop':
+        if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) this.stopSubagent(msg.threadId)
+        break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
         break
