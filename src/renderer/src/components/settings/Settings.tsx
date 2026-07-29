@@ -50,7 +50,7 @@ export default function Settings() {
                     }`}
                   >
                     {Mark ? <Mark className="w-[18px] h-[18px] shrink-0" /> : <Avatar name={selfName || '?'} px={18} />}
-                    <span className="truncate">{tabLabel(one, selfName)}</span>
+                    <span className="truncate">{label}</span>
                   </button>
                 )
               })}
