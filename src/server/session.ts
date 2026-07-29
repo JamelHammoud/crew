@@ -3294,7 +3294,6 @@ export class CrewSession {
       )
     }
     if (thread?.voice) lines.push(``, VOICE_INSTRUCTIONS)
-    if (thread?.tickets) lines.push(``, TICKET_INSTRUCTIONS)
     if (thread?.aside) lines.push(``, ASIDE_INSTRUCTIONS)
     if (thread?.mode === 'plan') lines.push(``, PLAN_INSTRUCTIONS)
     else if (thread?.plan) lines.push(``, `The plan this thread agreed on:`, thread.plan)
