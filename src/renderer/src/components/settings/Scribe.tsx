@@ -146,6 +146,7 @@ function Trouble({ state }: { state: ScribeKeyState }) {
 
 export default function Scribe() {
   const settings = useScribeSettings()
+  const said = useScribeSaid()
   const [state, setState] = useState<ScribeKeyState>({ hooked: true, trusted: true })
 
   useEffect(() => {
