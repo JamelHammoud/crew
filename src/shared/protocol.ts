@@ -8,6 +8,7 @@ import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 import type { MusicPlaylist, MusicRoom, MusicUpload } from './music'
 import type { ReactionEmoji } from './reactions'
+import type { TicketEvent } from './tickets'
 import type { CrewTool, ToolAction } from './toolbox'
 
 export interface RegisteredLlm {
