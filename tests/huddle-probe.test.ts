@@ -7,6 +7,7 @@ import { useHuddle } from '../src/renderer/src/state/huddle'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { HuddlePeer } from '../src/shared/huddle'
 import type { ScreenSource } from '../src/shared/media'
+import { landed } from './helpers/boot'
 import { installLocalStorage } from './helpers/local-storage'
 
 class TestResizeObserver {
@@ -17,6 +18,7 @@ class TestResizeObserver {
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 Element.prototype.getAnimations ??= () => []
+landed()
 
 const bridge = {
   screenSources: (): Promise<ScreenSource[]> => Promise.resolve([]),
