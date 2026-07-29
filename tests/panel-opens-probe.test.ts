@@ -106,14 +106,27 @@ describe('what an empty panel offers', () => {
   })
 
   it('offers the plan, the board and the helpers of a thread that has them', () => {
-    act(() => useBrowser.getState().togglePanel())
     const { getByText } = render(createElement(BrowserPanel))
     inThread({ plan: 'Step one', tickets: true }, [spawned('t1')])
     act(() => useBrowser.getState().closeAll())
+    act(() => useBrowser.getState().togglePanel())
 
     expect(getByText('Plan')).not.toBeNull()
     expect(getByText('Board')).not.toBeNull()
     expect(getByText('Helpers')).not.toBeNull()
+  })
+
+  // The thread's own things and the panel's are two groups, and the menu says so
+  // with one rule between them rather than by the order alone.
+  it('divides the thread its own things from the panel its own', () => {
+    act(() => useBrowser.getState().togglePanel())
+    const { getByLabelText } = render(createElement(BrowserPanel))
+
+    fireEvent.click(getByLabelText('New tab'))
+    expect(document.querySelectorAll('.h-px')).toHaveLength(0)
+
+    inThread({ plan: 'Step one' })
+    expect(document.querySelectorAll('.h-px')).toHaveLength(1)
   })
 
   it('opens the helpers of the thread that sent them', () => {
