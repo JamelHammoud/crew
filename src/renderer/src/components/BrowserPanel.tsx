@@ -84,6 +84,15 @@ export default function BrowserPanel() {
   // The plan comes with the thread you are in and goes when you leave it.
   const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
 
+  // The board does the same, and only for a thread that was asked for one.
+  const boardThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.tickets ? s.openThreadId : null))
+
+  useEffect(() => {
+    const browser = useBrowser.getState()
+    if (boardThread && !browser.closedBoards.includes(boardThread)) browser.showWork(boardThread)
+    else browser.hideWork()
+  }, [boardThread])
+
   useEffect(() => {
     const browser = useBrowser.getState()
     if (planThread && !browser.closedPlans.includes(planThread)) browser.showPlan(planThread)
