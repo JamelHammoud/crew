@@ -65,6 +65,8 @@ declare global {
     scribeDone(text: string): void
     dismissScribe(): void
     resizeScribe(height: number): void
+    grabScribe(): void
+    moveScribe(x: number, y: number, settled: boolean): void
     onScribe(listener: (word: 'arm' | 'finish' | 'cancel') => void): () => void
     onScribeSettings(listener: (settings: ScribeSettings) => void): () => void
     onScribeProblem(listener: (problem: string | null) => void): () => void
