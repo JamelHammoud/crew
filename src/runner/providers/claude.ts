@@ -1,5 +1,5 @@
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
-import { activityDetail, fileChanges } from './detail'
+import { activityDetail, fileChanges, stepTodos } from './detail'
 import type { AgentSettingField } from '../../shared/llm'
 import { resultText } from './output'
 import { claudeUsage } from './usage'

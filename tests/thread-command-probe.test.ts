@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import BrowserPanel from '../src/renderer/src/components/BrowserPanel'
 import ThreadView from '../src/renderer/src/views/ThreadView'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -179,21 +180,56 @@ describe('commands in a thread', () => {
     expect(screen.getByLabelText('Send')).toBeTruthy()
   })
 
-  it('opens the panel on a question asked on the side', () => {
-    useBrowser.setState({ tabs: [], activeTabId: null })
+  it('stands a question asked on the side in the panel, under what was asked', () => {
     open()
-
-    useCrew.getState().applyTestEvent?.({
-      id: 'aside-start',
-      ts: 5,
-      kind: 'thread.started',
-      threadId: 'aside-1',
-      agentId: agent.id,
-      agentLabel: agent.label,
-      title: 'what does this file do',
-      byName: 'ALI',
-      ghost: true,
-      aside: 'thread-1'
+    useBrowser.setState({ tabs: [], activeTabId: null })
+    useCrew.setState({
+      events: [
+        started,
+        {
+          id: 'aside-start',
+          ts: 5,
+          kind: 'thread.started',
+          threadId: 'aside-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          title: 'what does this file do',
+          byName: 'ALI',
+          ghost: true,
+          aside: 'thread-1'
+        },
+        {
+          id: 'aside-end',
+          ts: 6,
+          kind: 'agent.end',
+          promptId: 'prompt-2',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          ok: true,
+          text: 'It draws the panel.',
+          threadId: 'aside-1'
+        }
+      ],
+      threads: {
+        ...useCrew.getState().threads,
+        'aside-1': {
+          id: 'aside-1',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          title: 'what does this file do',
+          createdBy: 'ALI',
+          status: 'open',
+          mode: 'build',
+          ghost: true,
+          aside: 'thread-1'
+        }
+      }
     })
+    useBrowser.getState().openAside('aside-1', 'what does this file do')
+    cleanup()
+
+    render(createElement(BrowserPanel))
+    expect(screen.getByText('what does this file do')).toBeTruthy()
+    expect(screen.getByText('It draws the panel.')).toBeTruthy()
   })
 })
