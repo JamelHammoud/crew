@@ -31,6 +31,13 @@ export function formatTokens(tokens: number): string {
   return `${(tokens / 1000).toFixed(tokens < 10000 ? 1 : 0)}k`
 }
 
+// A price stands beside a count, so it keeps its two figures and says there is
+// less than one cent rather than rounding a real run down to nothing.
+export function formatCost(cost: number): string {
+  if (cost > 0 && cost < 0.01) return '<$0.01'
+  return `$${cost.toFixed(2)}`
+}
+
 export function formatTime(ts: number): string {
   return new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
 }
