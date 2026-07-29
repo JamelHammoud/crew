@@ -16,9 +16,12 @@ const bars = Array.from({ length: 17 }, (_, i) => {
   return `<span class="w-[3px] rounded-full bg-current" style="height:${h}%"></span>`
 }).join('')
 
+// A transparent window has no page behind it, so a backdrop filter samples
+// nothing. Turning it off here is the only way to see what the pill really looks
+// like over somebody else's application.
 const pill = state => `
 <div class="pointer-events-none" style="padding:${ROOM}px">
-  <div class="pointer-events-auto relative glass glass-pill rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2">
+  <div class="pointer-events-auto relative glass glass-pill rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2" style="backdrop-filter:none;${state.bg ? `background:${state.bg}` : ''}">
     <span class="pointer-events-none absolute inset-0 rounded-[inherit] border border-fg/10"></span>
     <button class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-fg/10 text-fg/70">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${state.weight}" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5"/></svg>
