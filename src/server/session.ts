@@ -166,6 +166,10 @@ interface QueuedPrompt {
   messageId: string
   replyTo?: MessageReply
   voice?: boolean
+  // A helper coming back is not something anybody said, so it opens a turn
+  // without writing a message into the thread for people to scroll past. The
+  // chip is the record, and the chip opens onto the whole thing.
+  silent?: boolean
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
@@ -178,6 +182,7 @@ interface PendingSteer {
   threadId: string
   attachments: Attachment[]
   replyTo?: MessageReply
+  silent?: boolean
 }
 
 interface Thread {
