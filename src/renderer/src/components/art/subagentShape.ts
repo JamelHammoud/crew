@@ -106,7 +106,7 @@ export function shapePath(shape: SubagentShape, box: number = GRID): string {
     return `M ${round(half - r)} ${round(half)} a ${r} ${r} 0 1 0 ${round(r * 2)} 0 a ${r} ${r} 0 1 0 ${round(-r * 2)} 0 Z`
   }
   if (shape.kind === 'square') {
-    const side = unit(shape.radius * 2 * Math.SQRT1_2 * Math.SQRT2)
+    const side = unit(shape.radius * 2)
     const edge = half - side / 2
     // A squarer corner than the app's cards wear. This is a mark rather than a
     // surface, and a heavily rounded square at 18 across is a disc.
