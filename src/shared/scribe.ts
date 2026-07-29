@@ -127,6 +127,7 @@ export function defaultSettings(platform: string): ScribeSettings {
     corrections: true,
     marks: true,
     ready: false,
+    live: true,
     words: []
   }
 }
