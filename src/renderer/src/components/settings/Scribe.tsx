@@ -144,7 +144,7 @@ export default function Scribe() {
       </Section>
 
       <Section title="The key">
-        <Row label="Hold to talk" line={isMac() ? 'macOS keeps Fn to itself, so no app is given it.' : undefined}>
+        <Row label="Which one" line={isMac() ? 'macOS keeps Fn to itself, so no app is given it.' : undefined}>
           <Select
             value={settings.key}
             options={scribeKeys(platform()).map(key => ({
@@ -162,7 +162,9 @@ export default function Scribe() {
           />
         </Row>
         <Row label="Or press">
-          <Pill>{fallbackLabel(platform())}</Pill>
+          <Pill glass lg>
+            {fallbackLabel(platform())}
+          </Pill>
         </Row>
         {settings.on && <Trouble state={state} />}
       </Section>
