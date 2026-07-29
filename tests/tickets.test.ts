@@ -148,29 +148,26 @@ describe('the board an agent keeps', () => {
     expect(board.tickets[0].decisions).toEqual(['Read it twice'])
   })
 
-  it('gives a ticket the files that changed while it was the one being worked on', () => {
-    const board = boardOf(
-      [editStep('src/before.ts')],
-      [added('1', 'Seal a segment'), moved('1', 'doing')]
-    )
-    expect(board.tickets[0].files).toEqual([])
-    const after = boardOf(
-      [editStep('src/before.ts'), editStep('src/server/chatLog.ts')],
-      [added('1', 'Seal a segment'), moved('1', 'doing')]
-    )
-    expect(after.tickets[0].files).toEqual([])
+  it('gives a ticket only the files that changed while it was the one being worked on', () => {
+    const before = editStep('src/before.ts')
+    const events = [added('1', 'Seal a segment'), moved('1', 'doing')]
+    const during = editStep('src/server/chatLog.ts')
+    const board = boardOf([before, during], events)
+    expect(board.tickets[0].files).toEqual(['src/server/chatLog.ts'])
   })
 
   it('counts what answering a question late would cost', () => {
+    const events = [added('1', 'Cache it'), moved('1', 'doing')]
     const question = asked('q1', 'Key the cache on the commit or on the path?', 'the commit', ['the commit', 'the path'])
     const steps = [editStep('src/one.ts'), editStep('src/two.ts')]
-    const board = boardOf(steps, [added('1', 'Cache it'), moved('1', 'doing'), question])
+    const board = boardOf(steps, [...events, question])
     expect(board.questions).toHaveLength(1)
     expect(board.questions[0]).toMatchObject({
       ask: 'Key the cache on the commit or on the path?',
       assumed: 'the commit',
       options: ['the commit', 'the path'],
-      ticket: 'Cache it'
+      ticket: 'Cache it',
+      since: 2
     })
   })
 
