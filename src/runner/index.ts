@@ -341,14 +341,17 @@ export class Runner {
     text: string,
     byName: string,
     attachments: Attachment[],
-    ghost = false
+    ghost = false,
+    fromHelper = false
   ): Promise<void> {
     const run = this.running.get(promptId)
     if (!run?.steer) {
       this.send({ type: 'agent.steered', promptId, ok: false })
       return
     }
-    const framed = `New message from ${byName}:\n${text}`
+    // A helper coming back is not somebody talking, and the host has already
+    // written the whole of what to read, so it goes over as it stands.
+    const framed = fromHelper ? text : `New message from ${byName}:\n${text}`
     let body = framed
     try {
       const local = await this.attachments.ensure(attachments, this.httpBase, ghost ? promptId : undefined)

@@ -446,22 +446,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785290593492,
+        "fetchedAt": 1785290893517,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 6,
+            "percent": 8,
             "severity": "normal",
-            "resetsAt": 1785307199854,
+            "resetsAt": 1785307199827,
             "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 47,
+            "percent": 48,
             "severity": "normal",
-            "resetsAt": 1785535199854,
+            "resetsAt": 1785535200827,
             "active": true
           },
           {
