@@ -73,7 +73,18 @@ import {
 import { ASIDE_INSTRUCTIONS } from '../shared/aside'
 import { cleanCommands, type CommandName } from '../shared/commands'
 import { IMPLEMENT_PROMPT, PLAN_INSTRUCTIONS } from '../shared/plan'
-import { TICKET_INSTRUCTIONS } from '../shared/tickets'
+import {
+  ASK_LIMIT,
+  ASSUMED_LIMIT,
+  cleanColumn,
+  cleanOptions,
+  cleanTitles,
+  isTicketEvent,
+  LIST_LIMIT,
+  NOTE_LIMIT,
+  ticketLine,
+  TITLE_LIMIT
+} from '../shared/tickets'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
   agentId,
