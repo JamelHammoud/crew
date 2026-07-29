@@ -4,6 +4,7 @@ import Pill from './Pill'
 
 export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   plan: ChecklistGlyph,
+  tickets: EyeGlyph,
   ghost: GhostGlyph,
   voice: MicGlyph,
   steer: BoltGlyph,
@@ -13,6 +14,7 @@ export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
 
 export const COMMAND_LABELS: Record<CommandName, string> = {
   plan: 'Plan',
+  tickets: 'Tickets',
   ghost: 'Ghost',
   voice: 'Voice',
   steer: 'Steer',
