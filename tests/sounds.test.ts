@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ReviewState } from '../src/renderer/src/state/alerts'
+import type { ThreadMeta } from '../src/renderer/src/state/store'
 import { SYSTEM_AUTHOR_ID, type SessionEvent } from '../src/shared/events'
+import type { QueuedItem } from '../src/shared/protocol'
 
 const store = new Map<string, string>()
 vi.stubGlobal('localStorage', {
