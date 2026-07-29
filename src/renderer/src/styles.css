@@ -410,6 +410,16 @@ body {
   --glass-shadow:
     0 6px 20px rgb(0 0 0 / 0.32),
     0 1px 3px rgb(0 0 0 / 0.24);
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.18s ease-out;
+}
+
+/* A card being swiped is under the pointer and nowhere else, so it is where the
+   hand is on the frame it is there rather than easing after it. The transition
+   is what carries it the rest of the way out, or back to where it stood. */
+.toast-card[data-swiping] {
+  transition: none;
 }
 
 .light .toast-card {

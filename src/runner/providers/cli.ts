@@ -202,10 +202,16 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
 
       const reportTokens = () => {
         if (!hooks.onTokens) return
-        const tokens = Math.max(reported, Math.ceil(written / 4))
-        if (tokens === sent) return
+        const counted = whole ? addUsage(NO_USAGE, whole) : spent
+        // A CLI that says nothing about tokens still has words on screen, and
+        // four characters to the token is close enough to say something is
+        // happening rather than nothing.
+        const tokens = Math.max(counted.output, Math.ceil(written / 4))
+        const cost = whole?.cost ?? (model ? priceOf(model, counted) : null)
+        if (tokens === sent && cost === priced) return
         sent = tokens
-        hooks.onTokens(tokens)
+        priced = cost
+        hooks.onTokens(tokens, cost)
       }
 
       const openBlock = (kind: 'thinking' | 'text', index: number) => {
