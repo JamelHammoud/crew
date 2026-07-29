@@ -43,10 +43,12 @@ function computeMatches(root: HTMLElement, query: string): Range[] {
 
 export default function FindBar({
   containerRef,
-  scrollerRef
+  scrollerRef,
+  placeholder = 'Find in page'
 }: {
   containerRef: RefObject<HTMLElement | null>
   scrollerRef: RefObject<HTMLElement | null>
+  placeholder?: string
 }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
