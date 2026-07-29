@@ -146,10 +146,15 @@ export function boardOf(
   const reviewed = new Set(handled.reviewed ?? [])
   const sorted = [...steps].sort((a, b) => a.ts - b.ts)
   const said = [...events].sort((a, b) => a.ts - b.ts)
+  // A thread that has put its own tickets up is read off those alone. Anything
+  // else falls back to the list its CLI keeps for itself, which is free and
+  // needs nothing of the agent, so there are columns wherever a provider still
+  // hands its list over.
   const put = said.length > 0
-  const { entries, order } = put ? { entries: new Map<string, Entry>(), order: [] as string[] } : listedBy(sorted)
+  const entries = new Map<string, Entry>()
   const questions: Asked[] = []
   const touched = new Set<string>()
+  let order: string[] = []
   let doing = ''
 
   const at = (id: string): Entry | undefined => entries.get(id || doing)
