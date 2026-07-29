@@ -4,6 +4,7 @@ import type { DocMentionRef } from './docs'
 import type { AgentMentionRef, AgentSettings, AgentStep } from './llm'
 import type { MemberMentionRef } from './people'
 import type { ReactionEmoji } from './reactions'
+import type { TicketEvent } from './tickets'
 import type { ToolAction } from './toolbox'
 
 // 'open' means the thread still wants attention: either an agent is working or
