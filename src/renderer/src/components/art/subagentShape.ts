@@ -17,11 +17,11 @@ export interface SubagentShape {
   // The whole shape turned, so two roles with the same count are still two
   // marks.
   twist: number
-  // How far the furthest point of it stands from the middle. Equal on the ruler
-  // is not equal to the eye, which is the whole reason a circle is not 17, and
-  // this obeys the same numbers: a lobed mark is a pointy form and takes the
-  // live area the way the star does, a disc sits on the circle keyline, and a
-  // square sits on the square.
+  // Half of what the shape spans on its own keyline. Equal on the ruler is not
+  // equal to the eye, which is the whole reason a circle is not 17, and this
+  // obeys the same numbers: a lobed mark is a pointy form and takes the live
+  // area the way the star does, a disc and a hexagon sit on the circle keyline,
+  // and a square sits on the square.
   radius: number
 }
 
