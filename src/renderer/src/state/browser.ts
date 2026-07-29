@@ -40,6 +40,10 @@ export const DEFAULT_WIDTH = 480
 
 type BrowserState = {
   width: number
+  // Whether the panel is standing. It is a place rather than a side effect of a
+  // tab existing, so it can be open on nothing and say what it can hold, and so
+  // closing it is putting it away rather than throwing away what is in it.
+  open: boolean
   tabs: BrowserTab[]
   activeTabId: string | null
   // The threads whose plan was put away by hand. A plan comes up with the
