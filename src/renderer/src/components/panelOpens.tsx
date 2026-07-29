@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react'
 import {
+  BranchGlyph,
   ChecklistGlyph,
   FolderGlyph,
   GameGlyph,
