@@ -119,7 +119,23 @@ export default function CreateAgent({ alone }: { alone?: boolean }) {
 
   return (
     <>
-      <Action label="Add agent" icon={<PlusGlyph />} onClick={start} disabled={!caps} />
+      <button
+        onClick={start}
+        disabled={!caps}
+        className="group w-full flex items-center gap-3 px-5 py-4 rounded-card border border-fg/[0.09] text-left transition-colors duration-200 hover:border-fg/20 hover:bg-fg/[0.03] active:scale-[0.995] disabled:opacity-50"
+      >
+        <span className="w-10 h-10 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70 transition-colors duration-200 group-hover:bg-fg/[0.12] group-hover:text-fg">
+          <PlusGlyph className="w-[18px] h-[18px]" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-base font-semibold text-fg">Add an agent</span>
+          {alone && (
+            <span className="block text-sm text-fg/45">
+              One of your machine's LLMs, or wait for someone to bring theirs.
+            </span>
+          )}
+        </span>
+      </button>
       <Modal open={open} onClose={() => setOpen(false)} title="Add an agent" className="space-y-5">
         <div className="flex flex-wrap gap-2">
           <Select
