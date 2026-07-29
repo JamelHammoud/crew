@@ -178,6 +178,31 @@ describe('the review tab', () => {
     await waitFor(() => expect(sent).toEqual([{ do: 'apply', ref: 'stash@{0}' }]))
   })
 
+  // Staging three files is three presses in a breath and the host takes one at
+  // a time, so a press that lands mid-action waits rather than being lost.
+  it('queues presses instead of dropping them', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/one.ts', false, '@@ -1 +1 @@\n-a\n+b'),
+          change('src/two.ts', false, '@@ -1 +1 @@\n-a\n+b')
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+    const buttons = await screen.findAllByLabelText('Stage')
+    fireEvent.click(buttons[0]!)
+    fireEvent.click(buttons[1]!)
+
+    await waitFor(() =>
+      expect(sent).toEqual([
+        { do: 'stage', paths: ['src/one.ts'] },
+        { do: 'stage', paths: ['src/two.ts'] }
+      ])
+    )
+  })
+
   it('says so rather than standing empty when the project has no git', async () => {
     bridge(work({ status: { ...work().status, available: false } }))
 
