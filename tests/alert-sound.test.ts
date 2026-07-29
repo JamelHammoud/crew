@@ -37,6 +37,6 @@ describe('the sound a banner makes', () => {
   })
 
   it('still has a cue of its own for the event behind the banner', () => {
-    expect(soundFor(ended, 'jamel')).toBe('done')
+    expect(soundFor(ended, 'jamel', { threads: {}, threadPrompts: {}, queues: {} })).toBe('done')
   })
 })
