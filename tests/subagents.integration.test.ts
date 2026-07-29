@@ -202,6 +202,8 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
     await addRole(ui, 'Scout')
 
+    ui.send({ type: 'subagent.prefs', on: true, fan: FAN_LIMIT })
+    await new Promise(r => setTimeout(r, 200))
     const parent = await openParent(ui, steery)
     for (let i = 0; i < FAN_LIMIT; i++) {
       const sent = await post('/agents/spawn', {

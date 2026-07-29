@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 export type BrowserTab = {
   id: string
-  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan' | 'aside' | 'agent'
+  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan' | 'work' | 'aside' | 'agent'
   initialUrl: string
   url: string
   title: string
@@ -46,6 +46,8 @@ type BrowserState = {
   // thread it belongs to, and once it has been closed it waits to be asked for
   // rather than arriving again every time that thread is opened.
   closedPlans: string[]
+  // The threads whose board was put away by hand, the way a plan is.
+  closedBoards: string[]
   setWidth(width: number): void
   resetWidth(): void
   openUrl(url: string): void
@@ -60,6 +62,9 @@ type BrowserState = {
   showPlan(threadId: string): void
   hidePlan(): void
   closePlan(): void
+  showWork(threadId: string): void
+  hideWork(): void
+  closeWork(): void
   toggleTree(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
@@ -130,6 +135,7 @@ export const useBrowser = create<BrowserState>((set, get) => ({
   tabs: [],
   activeTabId: null,
   closedPlans: [],
+  closedBoards: [],
   setWidth: width => set({ width: clampWidth(width) }),
   resetWidth: () => set({ width: clampWidth(DEFAULT_WIDTH) }),
   openUrl: url => {
