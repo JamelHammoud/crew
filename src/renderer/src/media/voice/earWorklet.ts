@@ -30,3 +30,22 @@ class CrewEar extends AudioWorkletProcessor {
 }
 registerProcessor('${EAR_PROCESSOR}', CrewEar)
 `
+
+const loaded = new WeakSet<AudioContext>()
+
+// Added once per context and kept, because everything that listens on this
+// machine hears through the same one: the voice conversation and a dictation.
+export async function loadEarWorklet(ctx: AudioContext): Promise<boolean> {
+  if (loaded.has(ctx)) return true
+  if (!ctx.audioWorklet) return false
+  const url = URL.createObjectURL(new Blob([EAR_SOURCE], { type: 'application/javascript' }))
+  try {
+    await ctx.audioWorklet.addModule(url)
+    loaded.add(ctx)
+    return true
+  } catch {
+    return false
+  } finally {
+    URL.revokeObjectURL(url)
+  }
+}
