@@ -808,6 +808,8 @@ export const useCrew = create<CrewState>((set, get) => {
     setChatCommands: commands => set({ chatCommands: commands }),
     setThreadDraft: (threadId, text) =>
       set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } })),
+    setThreadCommands: (threadId, commands) =>
+      set(state => ({ threadCommands: { ...state.threadCommands, [threadId]: commands } })),
     attach: async (key, files) => {
       const picked = imagesFrom(files)
       if (picked.length === 0) return
