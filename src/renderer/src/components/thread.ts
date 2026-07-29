@@ -197,11 +197,7 @@ const stepItem = (step: AgentStep, author: string, promptId: string, live: boole
     }
   }
   if (!step.text) return null
-  // A card the agent wrote for the board is taken out of what is read here, the
-  // way a voice card is taken out of what is said. A step that was only a card
-  // is nothing to read rather than an empty row.
-  const written = step.kind === 'thinking' ? step.text : readWork(step.text).text
-  if (!written) return null
+  const written = step.text
   return {
     key: `${promptId}:${step.id}`,
     ts: step.ts,
@@ -329,7 +325,7 @@ export function buildThread(
           authorId: event.agentId,
           agentId: event.agentId,
           self: false,
-          text: event.ok ? readWork(event.text ?? '').text : (event.error ?? 'Something went wrong.'),
+          text: event.ok ? (event.text ?? '') : (event.error ?? 'Something went wrong.'),
           streaming: false,
           error: event.ok ? undefined : (event.error ?? 'error'),
           reactionTargetId: agentEndReactionTarget(event.promptId),
