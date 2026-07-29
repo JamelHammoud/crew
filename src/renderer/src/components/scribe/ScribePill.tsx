@@ -129,6 +129,7 @@ export default function ScribePill() {
           // read as a pill that has stopped.
           <Levels
             count={BANDS}
+            from="middle"
             read={(count, out) =>
               reading
                 ? waveBands(performance.now(), count, out)
