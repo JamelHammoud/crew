@@ -41,7 +41,8 @@ export const parseKimiLine: OutputParser = line => {
             status: 'started' as const,
             detail: activityDetail(input),
             files: fileChanges(name, input),
-            todos: stepTodos(input)
+            todos: stepTodos(input),
+            task: taskCall(name, input)
           }
         })
       }
