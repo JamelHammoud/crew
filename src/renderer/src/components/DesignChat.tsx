@@ -25,6 +25,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
   const agents = useCrew(s => s.agents)
   const threadPrompts = useCrew(s => s.threadPrompts)
   const tokens = useCrew(s => s.tokens)
+  const costs = useCrew(s => s.costs)
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const threadDrafts = useCrew(s => s.threadDrafts)
