@@ -40,7 +40,7 @@ export function stepText(item: ThreadItem): Array<string | undefined> {
 // The part of it that is not on screen while the step is closed. A search that
 // reads only what is drawn never reaches a thought, a diff, or the line a
 // command printed, which is most of what a thread is made of.
-export function stepHidden(item: ThreadItem): string[] {
+export function stepHidden(item: ThreadItem): Array<string | undefined> {
   if (item.kind === 'thinking') return [item.text]
   const files = item.files ?? []
   if (files.length === 0) return [item.detail, item.output]
