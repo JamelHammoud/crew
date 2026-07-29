@@ -199,6 +199,30 @@ interface Thread {
   boardId?: string
   ghost?: boolean
   voice?: boolean
+  // A thread another one sent out. It reads inside its parent rather than as a
+  // card of its own, and it answers back into whatever the parent is doing.
+  parentThreadId?: string
+  parentPromptId?: string
+  roleId?: string
+  subject?: string
+  depth?: number
+  // Whether finishing wakes the parent. Off is send-and-forget.
+  notify?: boolean
+  startedAt?: number
+}
+
+// A helper that has come back and not yet been handed over, held for a breath
+// so a run of them arriving together is one interruption rather than three.
+interface PendingReturn {
+  timer: NodeJS.Timeout
+  items: SubagentReturn[]
+}
+
+// A parent parked on a wait, and what it is waiting for.
+interface PendingWait {
+  threadIds: string[]
+  timer: NodeJS.Timeout
+  settle: () => void
 }
 
 // A thread only the window that opened it can see: the socket it belongs to,
