@@ -94,7 +94,7 @@ describe('the settings', () => {
     show()
     const rows = within(rail())
       .getAllByRole('button')
-      .map(row => row.textContent)
+      .map(row => row.getAttribute('aria-label'))
     expect(rows).toEqual(['Jamel', 'Appearance', 'Sound and video', 'People', 'Agents'])
     expect(within(rail()).getByText('Crew')).toBeTruthy()
     expect(page('Jamel')).toBeTruthy()
