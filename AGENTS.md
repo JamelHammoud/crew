@@ -353,6 +353,16 @@ The plus button in the composer opens a menu, upload a file or pick a GIF, and p
 - The scrollbar is off. A grid two columns wide is narrow enough that ten points of it comes out of the tiles, and the bar sits over the pictures at the one edge where they are already tight.
 - Nothing is drawn around the outside of a tile. A GIF is a picture with any color at its edge, so what marks the one under the pointer is an `InsetRing` in white, and it turns up hard enough to be seen over a photograph. Growing the tile instead is what it was, and a tile that grows in a masonry column grows underneath the one after it.
 
+## Find
+
+`⌘F` opens `FindBar` over a doc and over a thread. It walks the text nodes of whatever it is handed and paints the hits through `CSS.highlights`, so nothing anywhere is re-rendered to mark a match.
+
+- A search reaches what a step is carrying, not what the step is drawing. A folded run of reads shows one line, a thought shows the word Thought, and a command shows what it ran and not what it printed, so a search that reads the screen misses most of a thread. `find.ts` is that rule: `stepText` is everything a step holds and `stepHidden` is the part of it that is closed, and a row or a run whose hidden part is what was typed opens itself.
+- It sets the default rather than overruling. `open ?? (found || live)` is what every step wears, so a row somebody has already opened or closed keeps what they chose, and clearing the search puts the thread back the way it was.
+- The query is published from the field's own handler, never from an effect. An effect runs after the commit, so the bar would walk the page a pass before the rows that had to open for it, count them out and say nothing was found. Both land in one commit, and the counter is what says so in `tests/thread-find-probe.test.ts`.
+- The bar stands inside the column it searches rather than in the window, so a thread with the side panel open does not draw it over the panel. Whatever mounts one holds `relative`.
+- It is glass, so nothing on it is set in a solid grey.
+
 ## Terminals
 
 A terminal is one of the things the side panel can hold, beside a web page and a file. The New button asks which. It is the real thing: a pty running the login shell, started the way Terminal and Windows Terminal start it, in the project folder.
