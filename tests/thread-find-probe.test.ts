@@ -16,6 +16,9 @@ class TestResizeObserver {
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 if (!Element.prototype.getAnimations) Element.prototype.getAnimations = () => []
+if (!Range.prototype.getBoundingClientRect) {
+  Range.prototype.getBoundingClientRect = () => new DOMRect()
+}
 landed()
 afterEach(cleanup)
 
