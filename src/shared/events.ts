@@ -103,7 +103,7 @@ export type SessionEvent =
   // aside is the thread a question on the side was asked from. It is always a
   // ghost, so it is never written down, and it answers in the panel rather than
   // as a card in the chat.
-  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean; aside?: string; parentThreadId?: string; parentPromptId?: string; roleId?: string; subject?: string; depth?: number }
+  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean; aside?: string; parentThreadId?: string; parentPromptId?: string; helper?: string; subject?: string; depth?: number }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
   | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }
   // Superseded by thread.status; still emitted-compatible and replayed so old
@@ -119,9 +119,6 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
-  | { id: string; ts: number; kind: 'subagent.added'; roleId: string; name: string; brief: string; provider?: string; settings: AgentSettings; byName: string }
-  | { id: string; ts: number; kind: 'subagent.edited'; roleId: string; name: string; brief: string; provider?: string; settings: AgentSettings; byName: string }
-  | { id: string; ts: number; kind: 'subagent.removed'; roleId: string; byName: string }
   // A run of a role. These two last, the way agent.start does: they are the
   // record of work, and they are what the chips in a thread are built from.
   // The end carries no text, because the child's answer is already in the log
@@ -133,8 +130,9 @@ export type SessionEvent =
       threadId: string
       parentThreadId: string
       parentPromptId: string
-      roleId: string
-      roleName: string
+      // The name the agent made it up under, and what it is doing, both in its
+      // own words. Nothing about a helper is written down before it exists.
+      name: string
       subject: string
       agentId: string
       agentLabel: string
@@ -225,11 +223,6 @@ const EPHEMERAL_KINDS = new Set([
   'tool.added',
   'tool.edited',
   'tool.removed',
-  // A role rides in the snapshot for the same reason a tool does: one written
-  // weeks ago is still a helper long after its event fell off the window.
-  'subagent.added',
-  'subagent.edited',
-  'subagent.removed',
   // A track somebody put on the shelf is the same: it stays on the shelf, and
   // the crew does not need to scroll past the moment it arrived.
   'music.added',
