@@ -6,6 +6,9 @@ const withThinking = process.env.FAKE_CLI_THINK === '1'
 const withStreamedThinking = process.env.FAKE_CLI_THINK_STREAM === '1'
 const withStreamedText = process.env.FAKE_CLI_TEXT_STREAM === '1'
 const withOutput = process.env.FAKE_CLI_OUTPUT === '1'
+// Lines of `USAGE`/`TOTAL`, one per newline, for a run that has to report what
+// its tokens came to.
+const usage = process.env.FAKE_CLI_USAGE ?? ''
 
 const rest = process.argv.slice(3).join(' ')
 
