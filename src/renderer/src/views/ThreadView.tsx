@@ -47,6 +47,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const thread = useCrew(s => s.threads[threadId])
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
+  const cost = useCrew(s => (activePromptId ? s.costs[activePromptId] : undefined))
   const sendChat = useCrew(s => s.sendChat)
   const cancelPrompt = useCrew(s => s.cancelPrompt)
   const setThreadStatus = useCrew(s => s.setThreadStatus)
@@ -238,7 +239,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
               }}
             />
             {activePromptId && startedAt && (
-              <RunStatus startedAt={startedAt} tokens={tokens} steps={steps[activePromptId] ?? []} />
+              <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[activePromptId] ?? []} />
             )}
             <FilesChanged steps={threadSteps} />
           </div>
