@@ -1280,90 +1280,6 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'tool.removed', toolId, byName: member.name })
   }
 
-  private handleSubagentAdd(
-    member: Member,
-    name: string,
-    brief: string,
-    opts: { provider?: string; settings?: AgentSettings; roleId?: string }
-  ): void {
-    const clean = cleanSubagent(name, brief, opts)
-    if (!clean || this.subagents.size >= MAX_SUBAGENTS) return
-    // The window that made it named the id, so the mark it was drawn with on
-    // the form is the mark it keeps. An older window and a junk id both come
-    // back as a role rather than as nothing.
-    const asked = opts.roleId
-    const id = asked && UUID.test(asked) && !this.subagents.has(asked) ? asked : randomUUID()
-    const role: Subagent = { id, ...clean, createdBy: member.name, ts: Date.now() }
-    this.subagents.set(role.id, role)
-    this.emit({
-      id: randomUUID(),
-      ts: role.ts,
-      kind: 'subagent.added',
-      roleId: role.id,
-      name: role.name,
-      brief: role.brief,
-      provider: role.provider,
-      settings: role.settings,
-      byName: member.name
-    })
-  }
-
-  private handleSubagentEdit(
-    member: Member,
-    roleId: string,
-    name: string,
-    brief: string,
-    opts: { provider?: string; settings?: AgentSettings }
-  ): void {
-    const role = this.subagents.get(roleId)
-    const clean = cleanSubagent(name, brief, opts)
-    if (!role || !clean) return
-    role.name = clean.name
-    role.brief = clean.brief
-    role.provider = clean.provider
-    role.settings = clean.settings
-    this.emit({
-      id: randomUUID(),
-      ts: Date.now(),
-      kind: 'subagent.edited',
-      roleId,
-      name: role.name,
-      brief: role.brief,
-      provider: role.provider,
-      settings: role.settings,
-      byName: member.name
-    })
-  }
-
-  private handleSubagentRemove(member: Member, roleId: string): void {
-    if (!this.subagents.delete(roleId)) return
-    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'subagent.removed', roleId, byName: member.name })
-  }
-
-  // Somebody starting a helper by hand, on the thread they are standing in. A
-  // thread with a run going hangs it off that run, so stopping the parent stops
-  // it the way it would one the parent sent out itself.
-  private handleSubagentRun(
-    ws: WebSocket,
-    member: Member,
-    roleId: string,
-    threadId: string,
-    subject: string | undefined,
-    task: string
-  ): void {
-    const thread = this.threads.get(threadId)
-    const role = this.subagents.get(roleId)
-    if (!thread || !role) return
-    const spawned = this.spawnSubagent(
-      { threadId, promptId: thread.running ?? undefined, byName: member.name },
-      role,
-      subject ?? task,
-      task,
-      true
-    )
-    if ('error' in spawned) this.notice(spawned.error, ws)
-  }
-
   // Every route names a promptId, and the host takes it only while that prompt
   // is one it is running right now. A board being drawn on is a different weight
   // of thing from a shell running on somebody's laptop, so the live prompt is
@@ -1381,22 +1297,16 @@ export class CrewSession {
     return child.parentThreadId === parent.id ? child : null
   }
 
-  subagentRoles(): Subagent[] {
-    return [...this.subagents.values()]
-  }
-
   subagentSpawn(
     promptId: string,
     named: string,
     subject: string,
     task: string,
-    notify: boolean
+    opts: { provider?: string; model?: string; notify?: boolean } = {}
   ): { id: string; threadId: string } | { error: string } {
     const parent = this.askingThread(promptId)
     if (!parent) return { error: 'That promptId is not a run this session has going.' }
-    const role = findSubagent([...this.subagents.values()], named)
-    if (!role) return { error: `No role called "${named}". The roles are: ${this.roleNames() || 'none yet'}.` }
-    return this.spawnSubagent({ threadId: parent.id, promptId, byName: parent.agentLabel }, role, subject, task, notify)
+    return this.spawnSubagent({ threadId: parent.id, promptId, byName: parent.agentLabel }, named, subject, task, opts)
   }
 
   subagentSay(promptId: string, threadId: string, text: string): boolean {
@@ -1414,10 +1324,6 @@ export class CrewSession {
   subagentWait(promptId: string, threadIds: string[], ms: number): Promise<{ finished: string[]; pending: string[] }> {
     const mine = threadIds.filter(id => this.helperOf(promptId, id))
     return this.waitSubagents(mine, ms)
-  }
-
-  private roleNames(): string {
-    return [...this.subagents.values()].map(role => role.name).join(', ')
   }
 
   private subagentThreads(parentThreadId: string): Thread[] {
