@@ -10,8 +10,8 @@ import { SpeakingMonitor } from '../media/speaking'
 import { onHuddle, sendHuddle, useCrew } from './store'
 
 const PROBLEMS: Record<MediaKind, string> = {
-  microphone: 'crew could not reach your microphone. Check its permission in System Settings.',
-  camera: 'crew could not reach your camera. Check its permission in System Settings.',
+  microphone: 'Crew could not reach your microphone. Check its permission in System Settings.',
+  camera: 'Crew could not reach your camera. Check its permission in System Settings.',
   screen: 'crew could not capture your screen. Check its permission in System Settings.'
 }
 
