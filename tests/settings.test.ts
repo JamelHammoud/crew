@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Settings from '../src/renderer/src/components/settings/Settings'
@@ -66,8 +66,8 @@ const rail = () => screen.getByRole('navigation', { name: 'Settings' })
 const page = (name: string) => screen.getByRole('heading', { name })
 
 const show = (tab?: Parameters<typeof openSettings>[0]) => {
-  render(createElement(Settings))
   openSettings(tab)
+  render(createElement(Settings))
 }
 
 describe('the settings', () => {
@@ -115,7 +115,7 @@ describe('the settings', () => {
   it('holds no solid grey on the glass', () => {
     show()
     for (const tab of ['you', 'appearance', 'sound', 'people', 'agents'] as const) {
-      openSettings(tab)
+      act(() => openSettings(tab))
       for (const el of card().querySelectorAll('*')) {
         expect(el.getAttribute('class') ?? '').not.toMatch(/text-fg-(muted|faint|secondary)/)
       }
