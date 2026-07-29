@@ -196,6 +196,10 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'doc.titled'; page: string; title: string; byName: string }
   | { id: string; ts: number; kind: 'doc.renamed'; from: string; to: string; title?: string; byName: string }
   | { id: string; ts: number; kind: 'doc.deleted'; page: string; byName: string }
+  // What an agent said about its own work. The board beside a thread is folded
+  // back out of these, so they are ordinary events on the thread rather than
+  // state the host keeps, and they replay on every machine for free.
+  | TicketEvent
 
 export const SYSTEM_AUTHOR_ID = 'crew'
 export const SYSTEM_AUTHOR_NAME = 'crew'
