@@ -41,11 +41,11 @@ export interface HelperPrefs {
   fan: number
 }
 
-export const DEFAULT_PREFS: HelperPrefs = { on: true, fan: FAN_LIMIT }
+export const DEFAULT_PREFS: HelperPrefs = { on: true, fan: DEFAULT_FAN }
 
 export function cleanPrefs(prefs: Partial<HelperPrefs> | undefined | null): HelperPrefs {
   if (!prefs || typeof prefs !== 'object') return DEFAULT_PREFS
-  const fan = typeof prefs.fan === 'number' && Number.isFinite(prefs.fan) ? Math.round(prefs.fan) : FAN_LIMIT
+  const fan = typeof prefs.fan === 'number' && Number.isFinite(prefs.fan) ? Math.round(prefs.fan) : DEFAULT_FAN
   return { on: prefs.on !== false, fan: Math.min(Math.max(1, fan), FAN_LIMIT) }
 }
 
