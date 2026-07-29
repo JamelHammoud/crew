@@ -161,31 +161,41 @@ describe('the plan in the browser', () => {
   })
 })
 
-describe('the way back to a plan', () => {
+describe('the way back to the panel', () => {
   const view = (id: string) =>
     render(createElement('div', null, createElement(ThreadView, { threadId: id }), createElement(BrowserPanel)))
 
-  it('stands in the thread and turns the plan on and off', () => {
-    open('t1', 'Step one')
-    const { getByLabelText, queryByLabelText } = view('t1')
-
-    expect(planTab()).not.toBeNull()
-    fireEvent.click(getByLabelText('Hide plan'))
-
-    expect(planTab()).toBeNull()
-    expect(useCrew.getState().openThreadId).toBe('t1')
-
-    fireEvent.click(getByLabelText('Show plan'))
-
-    expect(planTab()!.threadId).toBe('t1')
-    expect(queryByLabelText('Show plan')).toBeNull()
-  })
-
-  it('says nothing in a thread with no plan', () => {
+  it('stands in every thread, whatever the thread has', () => {
     open('t1')
     const { queryByLabelText } = view('t1')
 
-    expect(queryByLabelText('Show plan')).toBeNull()
-    expect(queryByLabelText('Hide plan')).toBeNull()
+    expect(queryByLabelText('Hide panel')).not.toBeNull()
+  })
+
+  it('puts the panel away and keeps what is in it', () => {
+    open('t1', 'Step one')
+    const { getByLabelText } = view('t1')
+
+    expect(useBrowser.getState().open).toBe(true)
+    fireEvent.click(getByLabelText('Hide panel'))
+
+    expect(useBrowser.getState().open).toBe(false)
+    expect(planTab()!.threadId).toBe('t1')
+
+    fireEvent.click(getByLabelText('Show panel'))
+
+    expect(useBrowser.getState().open).toBe(true)
+    expect(planTab()!.threadId).toBe('t1')
+  })
+
+  it('opens on the rows an empty panel offers', () => {
+    open('t1', 'Step one')
+    const { getByLabelText, getByText } = view('t1')
+    act(() => useBrowser.getState().closeAll())
+
+    fireEvent.click(getByLabelText('Show panel'))
+    fireEvent.click(getByText('Plan'))
+
+    expect(planTab()!.threadId).toBe('t1')
   })
 })
