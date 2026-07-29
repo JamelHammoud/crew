@@ -145,3 +145,4 @@
 {"id":"54e5d31f-f2b5-4c39-93f8-085cc2513c6c","ts":1785323276639,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"f5bd2419-385e-48f9-869f-79ea6841efe5","ts":1785323276639,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"e8c16ec8-6650-4711-8d50-0375e6966ac3","ts":1785323276639,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"31a06003-0fad-4938-8f65-650294be50fd","ts":1785323492349,"kind":"message","authorId":"60b55620-a113-478c-9935-77bd360c6f40","authorName":"ALI","text":"@Jamel The Dev version keeps crashing","mentions":[],"mentionRefs":[],"memberMentionRefs":[{"id":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}],"docMentions":[],"boardMentions":[],"attachments":[]}
