@@ -125,7 +125,7 @@ describe('the plan in the browser', () => {
     render(createElement(BrowserPanel))
     open('t1', 'Step one')
 
-    act(() => useBrowser.getState().closePlan())
+    act(() => useBrowser.getState().closeTab(planTab()!.id))
     act(() => useCrew.setState({ openThreadId: null }))
     open('t1', 'Step one')
 
@@ -140,7 +140,7 @@ describe('the plan in the browser', () => {
   it('comes up for another thread that has one of its own', () => {
     render(createElement(BrowserPanel))
     open('t1', 'Step one')
-    act(() => useBrowser.getState().closePlan())
+    act(() => useBrowser.getState().closeTab(planTab()!.id))
 
     act(() => useCrew.setState({ threads: { t2: thread('t2', 'Something else') }, openThreadId: 't2' }))
 
@@ -150,7 +150,7 @@ describe('the plan in the browser', () => {
   it('leaves no plan standing for a thread whose plan was put away', () => {
     render(createElement(BrowserPanel))
     open('t1', 'Step one')
-    act(() => useBrowser.getState().closePlan())
+    act(() => useBrowser.getState().closeTab(planTab()!.id))
     act(() => useCrew.setState({ threads: { t2: thread('t2', 'Something else') }, openThreadId: 't2' }))
 
     act(() =>
