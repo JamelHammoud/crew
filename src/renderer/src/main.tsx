@@ -15,13 +15,13 @@ import './styles.css'
 // One renderer, three windows. The app itself, the panel under the menu bar, and
 // the pill that stands over whatever you are dictating into. Only the first of
 // them joins the session: the other two are this machine talking to itself.
-const WINDOWS = {
+const WINDOWS: Record<string, () => JSX.Element> = {
   '#tray': TrayPanel,
   '#scribe': ScribeWindow
-} as const
+}
 
-const hash = window.location.hash as keyof typeof WINDOWS
-const Aside = WINDOWS[hash]
+const hash = window.location.hash
+const Aside: (() => JSX.Element) | undefined = WINDOWS[hash]
 const root = document.getElementById('root')!
 
 applyPlatform()
