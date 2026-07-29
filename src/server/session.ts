@@ -1368,6 +1368,85 @@ export class CrewSession {
     return this.waitSubagents(mine, ms)
   }
 
+  // The board is a thread, so what a call writes is decided by the run asking
+  // rather than by anything in the body. Every one of these goes through emit,
+  // which is what keeps a ghost thread's board on its own transcript and off
+  // the log without any of it being said again here.
+  private ticketsOn(threadId: string): TicketAdded[] {
+    return this.eventsOf(threadId).filter(
+      (event): event is TicketAdded => event.kind === 'ticket.added' && event.threadId === threadId
+    )
+  }
+
+  ticketPut(promptId: string, raw: unknown): { ids: string[] } | { error: string } {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    const titles = cleanTitles(raw)
+    if (titles.length === 0) return { error: 'Say what the pieces of work are.' }
+    const already = this.ticketsOn(thread.id)
+    // An id carries on from what the thread already holds rather than starting
+    // again, so a second call is more of the same board and not a second one.
+    const seen = new Set(already.map(event => event.title.toLowerCase()))
+    const ids: string[] = []
+    let held = already.length
+    for (const title of titles) {
+      if (held >= LIST_LIMIT) break
+      if (seen.has(title.toLowerCase())) continue
+      seen.add(title.toLowerCase())
+      held++
+      const ticketId = String(held)
+      ids.push(ticketId)
+      this.emit({ id: randomUUID(), ts: Date.now(), kind: 'ticket.added', threadId: thread.id, ticketId, title })
+    }
+    return { ids }
+  }
+
+  ticketMove(promptId: string, ticketId: string, rawColumn: unknown, rawNote: unknown): Done {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    const column = cleanColumn(rawColumn)
+    if (!column) return { error: 'The columns are todo, doing, review and done.' }
+    if (!this.ticketsOn(thread.id).some(event => event.ticketId === ticketId)) {
+      return { error: 'No ticket with that id on this thread. Put the work up first.' }
+    }
+    // A note is what to look at, which is only a thing to say on the way into
+    // review. The board reads it there and nowhere else.
+    const note = ticketLine(rawNote, NOTE_LIMIT)
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'ticket.moved', threadId: thread.id, ticketId, column, note })
+    return { ok: true }
+  }
+
+  ticketDecide(promptId: string, ticketId: string, rawText: unknown): Done {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    const text = ticketLine(rawText, NOTE_LIMIT)
+    if (!text) return { error: 'Say what was decided.' }
+    // A decision naming nothing hangs off whatever is on doing, so an empty id
+    // is written as it stands rather than refused.
+    const id = ticketLine(ticketId, TICKET_TITLE_LIMIT)
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'ticket.decided', threadId: thread.id, ticketId: id, text })
+    return { ok: true }
+  }
+
+  ticketAsk(promptId: string, raw: Record<string, unknown>): Done {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    const ask = ticketLine(raw.ask, ASK_LIMIT)
+    if (!ask) return { error: 'Say what the question is.' }
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'ticket.asked',
+      threadId: thread.id,
+      askId: randomUUID(),
+      ticketId: ticketLine(raw.ticketId, TICKET_TITLE_LIMIT),
+      ask,
+      assumed: ticketLine(raw.assumed, ASSUMED_LIMIT),
+      options: cleanOptions(raw.options)
+    })
+    return { ok: true }
+  }
+
   private subagentThreads(parentThreadId: string): Thread[] {
     return [...this.threads.values()].filter(thread => thread.parentThreadId === parentThreadId)
   }
