@@ -306,7 +306,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         where the plus and the Start tab both read the one
                         table of it. It is the back button's own size, standing
                         at the other end of the same row. */}
-                    <Tooltip label={panelOpen ? 'Hide panel' : 'Show panel'}>
+                    <Tooltip label={panelOpen ? 'Hide panel' : 'Show panel'} className="ml-1">
                       <button
                         onClick={() => useBrowser.getState().togglePanel()}
                         aria-label={panelOpen ? 'Hide panel' : 'Show panel'}
