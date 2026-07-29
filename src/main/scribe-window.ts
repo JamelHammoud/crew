@@ -1,5 +1,7 @@
+import fs from 'node:fs'
 import { BrowserWindow, screen } from 'electron'
 import type { ScribeSettings } from '../shared/scribe'
+import { grown, hold, middle, restSpot, spotFrom, type Spot } from './scribe-spot'
 import type { PanelPage } from './tray-panel'
 import { createScribeOptions } from './window-options'
 
@@ -10,13 +12,19 @@ import { createScribeOptions } from './window-options'
 const WIDTH = 216
 const HEIGHT = 56
 const MAX_HEIGHT = 140
-// How far off the bottom of the screen it sits. Low enough to be out of the way
-// and high enough to clear a dock.
-const LIFT = 96
 
 export class ScribeWindow {
   private win: BrowserWindow | null = null
   private settings: ScribeSettings | null = null
+  private file: string | null = null
+  // Where it was put, which is a decision somebody made once and should not
+  // have to make again. Null until they make it, and the bottom middle of the
+  // screen until then.
+  private spot: Spot | null = null
+  // Where the pill stood when it was taken hold of. Every move is measured
+  // from here rather than from where it has got to, so a drag that runs into
+  // the edge of a screen comes back off it as the pointer does.
+  private held: Spot | null = null
 
   constructor(private readonly page: PanelPage) {}
 
@@ -30,6 +38,15 @@ export class ScribeWindow {
   // arrives a minute late.
   warm(): void {
     this.window()
+  }
+
+  remember(file: string): void {
+    this.file = file
+    try {
+      this.spot = spotFrom(JSON.parse(fs.readFileSync(file, 'utf8')))
+    } catch {
+      this.spot = null
+    }
   }
 
   show(): void {
@@ -59,13 +76,40 @@ export class ScribeWindow {
     this.send('scribe:settings', settings)
   }
 
+  // A pill that has grown a line keeps its bottom edge and its left edge. It is
+  // never placed again after it is shown: placing reads the pointer, and the
+  // pointer has moved on by the time the renderer has measured itself, which is
+  // what made the pill land somewhere different every time.
   resize(height: number): void {
     const win = this.win
     if (!win) return
     const wanted = Math.round(Math.max(HEIGHT, Math.min(height, MAX_HEIGHT)))
-    if (win.getBounds().height === wanted) return
-    win.setBounds({ ...win.getBounds(), height: wanted })
-    this.place()
+    const box = win.getBounds()
+    if (box.height === wanted) return
+    const spot = grown(box, wanted, this.workNear(middle({ ...box, height: wanted })))
+    win.setBounds({ ...spot, width: box.width, height: wanted })
+    this.spot = spot
+  }
+
+  grab(): void {
+    this.held = this.win ? { x: this.win.getBounds().x, y: this.win.getBounds().y } : null
+  }
+
+  // Dragged by however far the pointer has travelled since it took hold, and
+  // held inside whichever screen the pill is now mostly over, so it can be
+  // moved to another monitor and cannot be pushed off the edge of one.
+  drag(by: Spot, settled: boolean): void {
+    const win = this.win
+    const from = this.held
+    if (!win || !from) return
+    const box = win.getBounds()
+    const wanted = { x: from.x + by.x, y: from.y + by.y }
+    const spot = hold(wanted, box, this.workNear(middle({ ...box, ...wanted })))
+    win.setBounds({ ...box, ...spot })
+    this.spot = spot
+    if (!settled) return
+    this.held = null
+    this.write(spot)
   }
 
   close(): void {
@@ -73,18 +117,28 @@ export class ScribeWindow {
     this.win = null
   }
 
-  // The screen the pointer is on rather than the primary one, because that is
-  // the screen the app being typed into is almost certainly on.
+  private write(spot: Spot): void {
+    if (!this.file) return
+    try {
+      fs.writeFileSync(this.file, JSON.stringify(spot))
+    } catch {}
+  }
+
+  private workNear(point: Spot): Electron.Rectangle {
+    return screen.getDisplayNearestPoint(point).workArea
+  }
+
+  // Where it was left, if it was ever moved. Otherwise the bottom middle of the
+  // screen the pointer is on, which is the screen the app being typed into is
+  // almost certainly on.
   private place(): void {
     const win = this.win
     if (!win) return
-    const bounds = win.getBounds()
-    const work = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
-    win.setBounds({
-      ...bounds,
-      x: Math.round(work.x + work.width / 2 - bounds.width / 2),
-      y: Math.round(work.y + work.height - bounds.height - LIFT)
-    })
+    const box = win.getBounds()
+    const spot = this.spot
+      ? hold(this.spot, box, this.workNear(middle({ ...box, ...this.spot })))
+      : restSpot(this.workNear(screen.getCursorScreenPoint()), box)
+    win.setBounds({ ...box, ...spot })
   }
 
   private window(): BrowserWindow {
