@@ -22,11 +22,14 @@ export interface SwipeAway {
   moved: () => boolean
 }
 
+// How fast it is going is read over a window rather than off the last move. Two
+// events can land in the same fraction of a millisecond, and a few pixels over
+// nearly no time at all is a speed no hand ever moved at.
 interface Grab {
   from: number
   x: number
-  at: number
   speed: number
+  mark: { x: number; at: number }
 }
 
 export function useSwipeAway(onAway: () => void): SwipeAway {
