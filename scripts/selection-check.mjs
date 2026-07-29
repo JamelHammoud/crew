@@ -64,6 +64,7 @@ async function stage() {
     path.join(dir, 'probe.css'),
     `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\n`
   )
+  await writeFile(path.join(dir, 'probe.js'), "import './probe.css'\n")
   await writeFile(path.join(dir, 'main.cjs'), MAIN)
   return dir
 }
