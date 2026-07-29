@@ -994,7 +994,8 @@ export class CrewSession {
           messageId,
           mentions: targets,
           replyTo,
-          voice: talking
+          voice: talking,
+          holding
         })
       }
       return
