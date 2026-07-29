@@ -22,6 +22,7 @@ export default function StashRow({
       <div className="relative shrink-0">
         <Tooltip label="More" disabled={menu}>
           <button
+            aria-label={`More for ${stash.message}`}
             onClick={() => setMenu(true)}
             className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-fg/[0.06] hover:text-fg active:scale-90"
           >
