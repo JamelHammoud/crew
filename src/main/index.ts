@@ -56,6 +56,7 @@ const tray = new CrewTray({
   quit: () => app.quit()
 })
 const scribe = new ScribeWindow(rendererPage)
+const said = new ScribeHistory()
 let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
 // What a dictation has written and not yet let go of. Nothing may be pasted
 // while the key is still held down: the modifier being held is composed into the
