@@ -112,17 +112,6 @@ export default function ScribePill() {
           </Round>
         )}
       </div>
-      {/* Only ever the first time, and only while it is really coming down. A
-          ring that is always there says the model is a thing to wait for, and
-          after the first dictation it never is. */}
-      {waking && progress > 0 && progress < 1 && (
-        <div className="absolute left-5 right-5 bottom-[7px] h-[3px] rounded-full bg-fg/15 overflow-hidden">
-          <span
-            className="block h-full rounded-full bg-fg/60 transition-[width] duration-200"
-            style={{ width: `${Math.round(progress * 100)}%` }}
-          />
-        </div>
-      )}
     </div>
   )
 }
