@@ -18,7 +18,7 @@ import Spinner from '../components/Spinner'
 import Counts from '../components/Counts'
 import ThreadItems from '../components/ThreadItems'
 import Tooltip from '../components/Tooltip'
-import { buildThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '../components/thread'
+import { buildThread, eventsOfThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '../components/thread'
 import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
@@ -73,7 +73,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const inputRef = useAutoResize(text)
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
 
-  const threadEvents = useMemo(() => events.filter(e => 'threadId' in e && e.threadId === threadId), [events, threadId])
+  const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
   const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
