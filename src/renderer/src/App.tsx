@@ -93,7 +93,6 @@ function Session() {
       <div className="flex-1 min-w-0 relative">
         <main className="absolute inset-0">
           {tab === 'chat' && (openThreadId ? <ThreadView threadId={openThreadId} /> : <Chat />)}
-          {tab === 'agents' && <Dashboard />}
           {tab === 'docs' && <Docs />}
           {tab === 'design' && (
             <Suspense fallback={<Loading />}>
