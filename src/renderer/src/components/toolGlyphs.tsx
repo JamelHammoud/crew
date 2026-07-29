@@ -102,7 +102,7 @@ export const QuestionGlyph = glyph(
 // A skill is run from a list of things you can do, which is what the Actions
 // palette on the canvas is, and an agent is asked on the canvas as well as in a
 // thread. Both wear the one drawing rather than two that nearly agree.
-export { BoltGlyph, SparkGlyph, PhotoGlyph as ImageGlyph } from '../icons'
+export { BoltGlyph, BranchGlyph, SparkGlyph, PhotoGlyph as ImageGlyph } from '../icons'
 
 export const VideoGlyph = glyph(
   <>
@@ -158,16 +158,6 @@ export const FlowGlyph = glyph(
     <rect x="3.5" y="3.5" width="7.5" height="6.5" rx="2" />
     <rect x="13" y="14" width="7.5" height="6.5" rx="2" />
     <path d="M11 6.75h3.75a2 2 0 0 1 2 2V14" />
-  </>
-)
-
-export const BranchGlyph = glyph(
-  <>
-    <circle cx="7" cy="5.8" r="2.6" />
-    <circle cx="7" cy="18.2" r="2.6" />
-    <circle cx="17" cy="5.8" r="2.6" />
-    <path d="M7 8.4v7.2" />
-    <path d="M17 8.4v2a4 4 0 0 1-4 4H7" />
   </>
 )
 
