@@ -48,6 +48,11 @@ export interface SessionSnapshot {
   docs: Record<string, DocPage>
   queues: Record<string, QueuedItem[]>
   todos: Todo[]
+  // What every agent has said about its own work. A board is folded off these
+  // rather than scrolled past in the chat, so they ride here as their own list
+  // the way the todos and the shelf do, and are left out of the events above.
+  // Without this a window that reloads finds every board empty.
+  tickets?: TicketEvent[]
   // Absent from a host running an older build, which has no toolbox to send.
   tools?: CrewTool[]
   boards?: DesignBoardMeta[]
