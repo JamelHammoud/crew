@@ -55,6 +55,19 @@ const SPARK: Voice = {
   rasp: { hz: 2600, q: 1.2, gain: 0.07, length: 0.007 }
 }
 
+// A helper is an errand rather than news, so it is heard from further off than
+// anything the crew asked for: the same bubble at a fraction of the gain, well
+// back in the room, and darker, which is what distance does to a sound.
+const ERRAND: Voice = {
+  gain: 0.2,
+  partials: [1, 2.04],
+  bend: 0.92,
+  bendTime: 0.018,
+  tone: 2600,
+  wet: 0.5,
+  rasp: { hz: 1800, q: 1.4, gain: 0.03, length: 0.005 }
+}
+
 const NOTE = {
   e3: 164.81,
   fs3: 185,
