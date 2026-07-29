@@ -3,6 +3,7 @@ import type { FileChange } from '../../../shared/llm'
 import { ChevronRightGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import Counts from './Counts'
+import { carries, stepHidden, useFindQuery } from './find'
 import {
   FileTextLink,
   isPrivate,
@@ -133,7 +134,8 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
   const opens = useOpener(detail, files)
   const expandable =
     thinking || files.length > 0 || (!opens && Boolean(detail) && (!action.prose || crowded(detail)))
-  const expanded = open ?? (thinking ? item.streaming : false)
+  const found = expandable && carries(useFindQuery(), stepHidden(item))
+  const expanded = open ?? (found || (thinking ? item.streaming : false))
   const subject = files.length === 0 && item.detail && !expanded ? item.detail : ''
 
   return (

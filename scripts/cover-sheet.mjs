@@ -78,9 +78,9 @@ window.marks = () => {
   // Every shape at the three sizes a mark is worn at, against both surfaces. A
   // mark that only reads on one of them is a mark that vanishes on the other.
   const SIZES = [18, 28, 64]
-  const COLS = 12
+  const COLS = 8
   const ids = Array.from({ length: 48 }, (_, i) => 'role-' + i)
-  const CELL = 84
+  const CELL = 132
   const LABEL = 26
   const rows = Math.ceil(ids.length / COLS)
   const strip = rows * (CELL + LABEL)
