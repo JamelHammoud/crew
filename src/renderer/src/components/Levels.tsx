@@ -63,7 +63,7 @@ export default function Levels({
   }, [count])
 
   return (
-    <span className={`flex items-end ${className}`} aria-hidden>
+    <span className={`flex ${ALIGN[from]} ${className}`} aria-hidden>
       {Array.from({ length: count }, (_, band) => (
         <span
           key={band}
