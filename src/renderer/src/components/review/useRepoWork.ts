@@ -25,6 +25,7 @@ export function useRepoWork(): RepoWorkState {
   const [busy, setBusy] = useState<RepoCommand['do'] | null>(null)
   const alive = useRef(true)
   const running = useRef(false)
+  const chain = useRef<Promise<unknown>>(Promise.resolve())
 
   const read = useCallback(async () => {
     const repoWork = window.crew?.repoWork
@@ -56,23 +57,29 @@ export function useRepoWork(): RepoWorkState {
     }
   }, [read])
 
+  // Actions queue rather than drop. Staging three files is three presses in a
+  // breath, and the host takes one at a time, so a second press arriving while
+  // the first is still going has to wait its turn rather than be lost.
   const run = useCallback(
-    async (command: RepoCommand): Promise<RepoActionResult | null> => {
-      if (running.current) return null
-      const runRepo = window.crew?.runRepo
-      if (!runRepo) return null
-      running.current = true
-      setBusy(command.do)
-      try {
-        const result = await runRepo(command)
-        await read()
-        return result
-      } catch {
-        return null
-      } finally {
-        running.current = false
-        if (alive.current) setBusy(null)
-      }
+    (command: RepoCommand): Promise<RepoActionResult | null> => {
+      const next = chain.current.then(async () => {
+        const runRepo = window.crew?.runRepo
+        if (!runRepo) return null
+        running.current = true
+        setBusy(command.do)
+        try {
+          const result = await runRepo(command)
+          await read()
+          return result
+        } catch {
+          return null
+        } finally {
+          running.current = false
+          if (alive.current) setBusy(null)
+        }
+      })
+      chain.current = next.catch(() => undefined)
+      return next
     },
     [read]
   )
