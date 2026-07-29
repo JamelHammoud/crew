@@ -8,6 +8,7 @@ import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoCommand, RepoStatus, RepoWork } from '../../shared/repository'
 import type { RecentJoin, RecentProject } from '../../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
+import type { Said } from '../../shared/scribeSaid'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 
 declare global {
