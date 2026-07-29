@@ -90,6 +90,23 @@ import {
 import { memberMentionRefsIn } from '../shared/people'
 import { cleanTool, type CrewTool, type ToolAction } from '../shared/toolbox'
 import {
+  cleanSubagent,
+  DEPTH_LIMIT,
+  FAN_LIMIT,
+  findSubagent,
+  MAX_SUBAGENTS,
+  RETURN_COALESCE_MS,
+  returnText,
+  RUN_LIMIT,
+  SUBAGENT_INSTRUCTIONS,
+  SUBJECT_LIMIT,
+  TASK_LIMIT,
+  WAIT_MS,
+  WAKE_LIMIT,
+  type Subagent,
+  type SubagentReturn
+} from '../shared/subagents'
+import {
   agentEndReactionTarget,
   agentStepReactionTarget,
   isReactionEmoji,
