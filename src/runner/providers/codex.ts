@@ -1,7 +1,7 @@
 import type { AgentSettingField, FileChange } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { codexModels } from './codex-models'
-import { activityDetail } from './detail'
+import { activityDetail, stepTodos } from './detail'
 import { commandOutput } from './output'
 import { codexUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
