@@ -44,7 +44,9 @@ export default function SubagentChips({ runs, threadId }: { runs: SubagentRun[];
   const rest = runs.length - SHOWN
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 px-4 py-1 select-none">
+    // A chip stands in the column the steps stand in, so the mark lines up with
+    // theirs: the row is the step row's own pl-14 less the chip's own padding.
+    <div className="flex flex-wrap items-center gap-1.5 pl-13 pr-4 py-1 select-none">
       {runs.slice(0, SHOWN).map(run => (
         <Chip key={run.threadId} run={run} threadId={threadId} />
       ))}
