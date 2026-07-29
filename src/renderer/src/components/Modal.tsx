@@ -42,7 +42,7 @@ export default function Modal({
   if (!open) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-6">
+    <div className="app-no-drag fixed inset-0 z-[60] flex items-center justify-center px-6">
       <div className="absolute inset-0 bg-black/50 light:bg-black/25" onClick={onClose} />
       <div
         role="dialog"
