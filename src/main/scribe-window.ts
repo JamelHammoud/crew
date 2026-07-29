@@ -92,7 +92,8 @@ export class ScribeWindow {
   }
 
   grab(): void {
-    this.held = this.win ? { x: this.win.getBounds().x, y: this.win.getBounds().y } : null
+    const box = this.win?.getBounds()
+    this.held = box ? { x: box.x, y: box.y } : null
   }
 
   // Dragged by however far the pointer has travelled since it took hold, and
