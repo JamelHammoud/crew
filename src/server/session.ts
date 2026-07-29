@@ -686,6 +686,7 @@ export class CrewSession {
       ),
       todos: [...this.todos.values()],
       tools: [...this.tools.values()],
+      subagents: [...this.subagents.values()],
       boards: this.boardList(),
       huddle: this.huddleRoom(),
       music: this.musicRoom(),
