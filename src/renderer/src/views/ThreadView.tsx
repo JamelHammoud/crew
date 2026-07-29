@@ -305,6 +305,24 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         </span>
                       </Tooltip>
                     )}
+                    {thread.tickets && (
+                      <Tooltip label={boardShowing ? 'Hide board' : 'Show board'}>
+                        <button
+                          onClick={() =>
+                            boardShowing
+                              ? useBrowser.getState().closeWork()
+                              : useBrowser.getState().showWork(threadId)
+                          }
+                          aria-label={boardShowing ? 'Hide board' : 'Show board'}
+                          aria-pressed={boardShowing}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                            boardShowing ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
+                          }`}
+                        >
+                          <BoardGlyph className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                    )}
                     {thread.plan && (
                       <Tooltip label={planShowing ? 'Hide plan' : 'Show plan'}>
                         <button

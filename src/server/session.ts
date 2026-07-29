@@ -1365,8 +1365,11 @@ export class CrewSession {
     const willing = (agent: AgentState): boolean => this.helpersFor(agent.ownerId).on
     if (!willing(parent)) return null
     if (!provider) return parent.runner ? parent : null
+    // A CLI asked for by name is asked for. Falling back to the parent's own
+    // would run the work on something it explicitly did not pick, which reads
+    // as the request being ignored.
     const here = this.agentsHere().filter(agent => agent.provider === provider && willing(agent))
-    return here.find(agent => agent.ownerId === parent.ownerId) ?? here[0] ?? (parent.runner ? parent : null)
+    return here.find(agent => agent.ownerId === parent.ownerId) ?? here[0] ?? null
   }
 
   // The CLIs a helper could be put on, which is only ever what somebody here

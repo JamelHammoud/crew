@@ -170,7 +170,7 @@ describe('subagents', () => {
     expect(ui.events.filter(e => e.kind === 'agent.start' && e.threadId === parent.threadId)).toHaveLength(2)
   })
 
-  it('refuses a spawn that names a run nobody is doing, and one with no role', async () => {
+  it('refuses a spawn that names a run nobody is doing, and one with nothing to do', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
     await connectRunner(20, 20)
@@ -208,8 +208,10 @@ describe('subagents', () => {
     expect(nobody.body.error).toContain('Nobody here is running')
   })
 
-  it('holds the fan at its limit and hands the room back as helpers come home', async () => {
-    const ui = await TestUi.connect(host.url, 'sam', host.code)
+  // How many at once belongs to whoever owns the machine the agents run on, so
+  // the window saying it has to be that person's.
+  it('holds the fan where the machine that runs them says', async () => {
+    const ui = await TestUi.connect(host.url, 'jamel', host.code)
     uis.push(ui)
     await connectRunner(6000, 4000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
@@ -263,7 +265,7 @@ describe('subagents', () => {
     const look = await fetch(`${base}/agents/${child}?promptId=${parent.promptId}`).then(r => r.json())
     expect(look.state).toBe('working')
     expect(look.subject).toBe('the long one')
-    expect(look.role).toBe('Scout')
+    expect(look.helper).toBe('Scout')
 
     const stopped = await post(`/agents/${child}/stop`, { promptId: parent.promptId })
     expect(stopped.status).toBe(200)
