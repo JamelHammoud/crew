@@ -955,14 +955,17 @@ export class CrewSession {
     asked?: CommandName[]
   ): void {
     // A command rides beside the message rather than in it, so nothing is ever
-    // cut out of what somebody wrote. A command only opens threads, so inside
-    // one the list is ignored. Talking is the exception: it says how this one
-    // message arrived, which is still true of a message sent into a thread.
+    // cut out of what somebody wrote. The chat's commands open a thread, so
+    // inside one they are ignored, and a thread's are read only there. Talking
+    // is the exception: it says how this one message arrived, which is still
+    // true of a message sent into a thread.
     const asking = cleanCommands(asked)
     const commands = threadId ? [] : asking
     const planning = commands.includes('plan')
     const ghosting = commands.includes('ghost')
     const talking = asking.includes('voice')
+    const holding = threadId ? asking.includes('queue') : false
+    const beside = threadId ? asking.includes('btw') : false
     const trimmed = text.trim()
     const hidden = threadId ? this.ghostOf(threadId) !== undefined : ghosting
     const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
