@@ -116,7 +116,9 @@ export default function Chat() {
           }
         })
       }
-      if (e.kind === 'thread.started' && threads[e.threadId]?.status === 'open') {
+      // A question asked on the side stands in the panel it was answered in,
+      // never as a card here: it was asked to keep off the chat.
+      if (e.kind === 'thread.started' && !e.aside && threads[e.threadId]?.status === 'open') {
         list.push({ kind: 'card', key: e.id, ts: e.ts, thread: threads[e.threadId] })
       }
       if (e.kind === 'huddle.started') {
