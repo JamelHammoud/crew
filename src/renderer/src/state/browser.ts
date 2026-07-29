@@ -358,10 +358,6 @@ export const useBrowser = create<BrowserState>((write, get) => {
       })
       settle()
     },
-    closeWork: () => {
-      const board = get().tabs.find(t => t.kind === 'work')
-      if (board) get().closeTab(board.id)
-    },
     toggleTree: id =>
       set(s => ({
         tabs: s.tabs.map(t =>
