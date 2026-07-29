@@ -19,12 +19,14 @@ export interface AlertState extends ReviewState {
 // The badge is the count of the tasks panel's "Needs review" list, so both read
 // the same rule: open, with nothing running or queued behind it. A helper is
 // not a task of its own, or six of them finishing puts six rows on the list and
-// six on the badge for one piece of work.
+// six on the badge for one piece of work. A question asked on the side is not
+// one either: it was answered where it was asked, and there is nothing to review.
 export const reviewCount = (state: ReviewState): number =>
   Object.values(state.threads).filter(
     thread =>
       thread.status === 'open' &&
       !thread.parentThreadId &&
+      !thread.aside &&
       !threadWorking(thread.id, state.threadPrompts, state.queues, state.threads)
   ).length
 
