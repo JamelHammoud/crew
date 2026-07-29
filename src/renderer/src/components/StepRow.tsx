@@ -16,6 +16,7 @@ import {
   useLocated
 } from './fileLinks'
 import Markdown from './Markdown'
+import { selecting } from './selecting'
 import StepCode from './StepCode'
 import StepDiff from './StepDiff'
 import type { ThreadItem } from './thread'
@@ -183,13 +184,13 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
       {expanded && files.length === 0 && (thinking || detail) && (
         <Detail>
           {thinking ? (
-            <div onClick={() => setOpen(false)} className="cursor-pointer">
+            <div onClick={() => !selecting() && setOpen(false)} className="cursor-pointer">
               <Markdown text={item.text} className="md-quiet" stream={item.streaming} />
             </div>
           ) : action.prose ? (
             <p
-              onClick={() => setOpen(false)}
-              className="whitespace-pre-wrap cursor-pointer text-fg-muted text-xs leading-5"
+              onClick={() => !selecting() && setOpen(false)}
+              className="select-text whitespace-pre-wrap cursor-pointer text-fg-muted text-xs leading-5"
             >
               <TextWithFileLinks text={detail} inline again={!item.streaming} />
             </p>

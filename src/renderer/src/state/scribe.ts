@@ -103,9 +103,13 @@ export const useScribe = create<ScribeState>((set, get) => {
 
   live = take
 
+  // A machine that has chosen to live with its recording light on keeps the
+  // device, and only the keeping stops. Everywhere else the microphone really
+  // closes, so nothing is open between dictations.
   const stop = () => {
     clearTimeout(capped)
-    take.close()
+    take.record(false)
+    if (!get().settings.ready) take.close()
   }
 
   const drop = () => {
@@ -147,7 +151,7 @@ export const useScribe = create<ScribeState>((set, get) => {
       pieces = []
       held = []
       set({ phase: 'arming', problem: null })
-      const problem = await take.start()
+      const problem = take.listening ? null : await take.start()
       if (get().phase !== 'arming') return take.close()
       if (problem) {
         set({
