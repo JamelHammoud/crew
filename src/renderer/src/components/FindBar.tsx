@@ -166,21 +166,21 @@ export default function FindBar({
 
   if (!open) return null
   return (
-    <div className="glass fixed top-[78px] right-8 z-40 flex w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
-      <SearchGlyph className="w-4 h-4 text-fg-muted shrink-0 mr-1.5" />
+    <div className="glass absolute top-[78px] right-8 z-40 flex w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
+      <SearchGlyph className="w-4 h-4 text-fg/45 shrink-0 mr-1.5" />
       <input
         ref={inputRef}
         autoFocus
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={e => type(e.target.value)}
         onKeyDown={e => {
           if (e.key === 'Enter') {
             e.preventDefault()
             step(e.shiftKey ? -1 : 1)
           }
         }}
-        placeholder="Find in page"
-        className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg-faint outline-none"
+        placeholder={placeholder}
+        className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg/30 outline-none"
       />
       {query && (
         <span className="text-xs tabular-nums text-fg-muted px-1 shrink-0">
