@@ -127,7 +127,6 @@ export default function ScribePill() {
             // A failure that still has the sound offers to read it again. One
             // whose sound never arrived has nothing to try, so it says nothing
             // rather than offering a button that cannot work.
-            failed &&
             again && (
               <Round label="Try again" solid onClick={() => void retry()}>
                 <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
