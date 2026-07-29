@@ -300,9 +300,9 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         onClick={() => useBrowser.getState().selectTab(tab.id)}
         onContextMenu={event => {
           event.preventDefault()
-          if (!pinned) setMenuAt({ x: event.clientX, y: event.clientY })
+          setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        className={`group flex items-center gap-1.5 h-9 pl-3 ${pinned ? 'pr-3' : 'pr-1.5'} rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
+        className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
           active
             ? 'bg-ink-800 text-fg'
             : menuAt

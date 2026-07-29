@@ -2987,14 +2987,17 @@ export class CrewSession {
     const waiting = this.steers.get(promptId) ?? []
     waiting.push(steer)
     this.steers.set(promptId, waiting)
-    this.routed(steer.messageId, steer.threadId, promptId, 'steered')
+    // A helper coming back points at no message, so saying it was routed would
+    // fill the log with routes aimed at nothing.
+    if (!steer.silent) this.routed(steer.messageId, steer.threadId, promptId, 'steered')
     this.send(agent.runner!, {
       type: 'steer',
       promptId,
       text: steer.text,
       byName: steer.byName,
       attachments: steer.attachments,
-      ghost: this.ghostOf(steer.threadId) ? true : undefined
+      ghost: this.ghostOf(steer.threadId) ? true : undefined,
+      from: steer.silent ? { kind: 'subagent' } : undefined
     })
   }
 
