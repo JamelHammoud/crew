@@ -103,8 +103,9 @@ export function cleanOptions(raw: unknown): string[] {
 }
 
 // What this person has already dealt with. A question they answered and a
-// review they have looked at are theirs alone, so the two ride with the window
-// rather than being written down for the whole crew.
+// review they have looked at are theirs alone, so the two are kept on their own
+// machine rather than being written down for the whole crew. A question is held
+// by its words and a review by the ticket's id.
 export interface Handled {
   answered?: readonly string[]
   reviewed?: readonly string[]
