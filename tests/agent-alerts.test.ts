@@ -118,6 +118,18 @@ describe('finished alerts', () => {
     expect(finishedAlert(ended('t1'), state({ threads: { t1: thread('t1', { status: 'done' }) } }))).toBeNull()
   })
 
+  it('waits on the helpers a thread still has out, its own run aside', () => {
+    const threads = { t1: thread('t1'), h1: thread('h1', { parentThreadId: 't1' }) }
+    const running = { t1: 'p1', h1: 'p9' }
+    expect(finishedAlert(ended('t1'), state({ threads, threadPrompts: running }))).toBeNull()
+    expect(finishedAlert(ended('t1'), state({ threads, threadPrompts: { t1: 'p1' } }))).not.toBeNull()
+  })
+
+  it('leaves a helper coming home to the thread that sent it', () => {
+    const threads = { t1: thread('t1'), h1: thread('h1', { parentThreadId: 't1' }) }
+    expect(finishedAlert(ended('h1'), state({ threads }))).toBeNull()
+  })
+
   it('ignores everything that is not a run ending', () => {
     const message: SessionEvent = {
       id: 'm1',
