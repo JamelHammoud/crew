@@ -296,6 +296,7 @@ export default function BrowserPanel() {
             <p className="text-sm text-fg-muted">Search or enter a web address above</p>
           </div>
         )}
+        {tabs.length === 0 && <PanelOpens opens={opens} />}
       </div>
     </div>
   )
