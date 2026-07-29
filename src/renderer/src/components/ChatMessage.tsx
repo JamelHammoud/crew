@@ -99,6 +99,8 @@ export default function ChatMessage({
             </span>
           </Tooltip>
         </div>
+      ) : item.helperSeed ? (
+        <SubagentMark seed={item.helperSeed} />
       ) : agentSeed ? (
         <AgentIcon seed={agentSeed} presence={presence} />
       ) : (
