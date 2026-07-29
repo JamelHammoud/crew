@@ -156,7 +156,7 @@ const matches = (words: Word[], from: number, phrase: string[]): boolean => {
   for (let step = 0; step < phrase.length; step++) {
     const word = words[from + step]
     if (key(word) !== phrase[step]) return false
-    if (ends(word)) return false
+    if (step < phrase.length - 1 && ends(word)) return false
   }
   return true
 }
