@@ -28,7 +28,6 @@ function Panel({ tab }: { tab: SettingsTab }) {
 export default function Settings() {
   const tab = useSettings()
   const selfName = useCrew(s => s.selfName)
-  const connection = useCrew(s => s.connection)
 
   return (
     <Modal open={tab !== null} onClose={closeSettings} title="Settings" width={WIDTH} flush>
