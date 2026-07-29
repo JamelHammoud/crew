@@ -25,6 +25,26 @@ export function bandsFrom(
   return out
 }
 
+// How long a crest takes to cross the row.
+export const WAVE_MS = 900
+
+// A reading nothing is making. There is no voice left to hear while what somebody
+// said is being read, and a row of bars sitting at its floor reads as a
+// microphone that has stopped rather than as work still going on, so a crest
+// travels through the row instead, low to high. It is what the thinking mark says
+// with its three dots, said by a row of bars.
+export function waveBands(at: number, count: number, out: number[]): number[] {
+  for (let band = 0; band < count; band++) {
+    // One turn of the wave spans the whole row, so there is always a crest
+    // somewhere in it. Squared, because a plain cosine raises half the row
+    // together, which reads as the row breathing rather than as a wave.
+    const turn = at / WAVE_MS - band / count
+    const crest = Math.cos((turn - Math.floor(turn)) * Math.PI * 2)
+    out[band] = crest > 0 ? crest * crest : 0
+  }
+  return out
+}
+
 // A band reader hung on whatever is making the sound. The window it reads has to
 // be wide: a narrow one measures in steps of a few hundred hertz, and the lowest
 // band is fifty across, which leaves the bass bar empty.
