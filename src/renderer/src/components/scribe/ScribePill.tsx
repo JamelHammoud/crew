@@ -89,8 +89,17 @@ export default function ScribePill() {
           <span className="w-8 h-8 shrink-0 flex items-center justify-center text-fg/70">
             <Spinner size={18} />
           </span>
+        ) : failed ? (
+          // A failure that still has the sound offers to read it again. One
+          // whose sound never arrived has nothing to try, so it says nothing
+          // rather than offering a button that cannot work.
+          again && (
+            <Round label="Try again" solid onClick={() => void retry()}>
+              <RefreshGlyph className="w-4 h-4" />
+            </Round>
+          )
         ) : (
-          <Round label={failed ? 'Try again' : 'Done'} solid onClick={() => void finish()}>
+          <Round label="Done" solid onClick={() => void finish()}>
             <CheckGlyph className="w-4 h-4" />
           </Round>
         )}
