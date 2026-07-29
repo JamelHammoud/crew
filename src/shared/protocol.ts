@@ -10,6 +10,7 @@ import type { MusicPlaylist, MusicRoom, MusicUpload } from './music'
 import type { ReactionEmoji } from './reactions'
 import type { TicketEvent } from './tickets'
 import type { CrewTool, ToolAction } from './toolbox'
+import type { Typist } from './typing'
 
 export interface RegisteredLlm {
   // Absent only from machines running an older build, which have no minted id
