@@ -101,6 +101,12 @@ export type ClientMessage =
   | { type: 'tool.add'; name: string; mark: string; action: ToolAction }
   | { type: 'tool.edit'; toolId: string; name: string; mark: string; action: ToolAction }
   | { type: 'tool.remove'; toolId: string }
+  | { type: 'subagent.add'; name: string; brief: string; provider?: string; settings?: AgentSettings }
+  | { type: 'subagent.edit'; roleId: string; name: string; brief: string; provider?: string; settings?: AgentSettings }
+  | { type: 'subagent.remove'; roleId: string }
+  // Somebody starting a helper by hand, on the thread they are standing in.
+  | { type: 'subagent.run'; roleId: string; threadId: string; subject?: string; task: string }
+  | { type: 'subagent.stop'; threadId: string }
   | { type: 'doc.update'; page: string; text: string; title?: string }
   | { type: 'doc.title'; page: string; title: string }
   | { type: 'doc.retitle'; page: string; title: string }
