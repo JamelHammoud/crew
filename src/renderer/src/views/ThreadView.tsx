@@ -248,6 +248,24 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         </span>
                       </Tooltip>
                     )}
+                    {thread.plan && (
+                      <Tooltip label={planShowing ? 'Hide plan' : 'Show plan'}>
+                        <button
+                          onClick={() =>
+                            planShowing
+                              ? useBrowser.getState().closePlan()
+                              : useBrowser.getState().showPlan(threadId)
+                          }
+                          aria-label={planShowing ? 'Hide plan' : 'Show plan'}
+                          aria-pressed={planShowing}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                            planShowing ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
+                          }`}
+                        >
+                          <ChecklistGlyph className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                    )}
                   </div>
                 </div>
               </div>

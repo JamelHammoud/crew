@@ -3062,18 +3062,38 @@ export class CrewSession {
       threadId: thread.id,
       reactionIds: reactions.length > 0 ? reactions.map(reaction => reaction.id) : undefined
     })
-    this.send(agent.runner, {
+    this.send(agent.runner, this.promptMessage(agent, thread, next, reactions))
+  }
+
+  // A role's settings win over the agent's, which is the whole of "this one runs
+  // on the small model". The roles ride along so the machine can write the words
+  // about them, since it is the side that knows the address they are reached at.
+  private promptMessage(
+    agent: AgentState,
+    thread: Thread,
+    entry: QueuedPrompt,
+    reactions: ReactionEvent[]
+  ): ServerMessage {
+    const role = this.subagents.get(thread.roleId ?? '')
+    const roles = [...this.subagents.values()]
+    const born = this.subagentThreads(thread.id)
+    const out = born.filter(one => this.subagentRunning(one)).length
+    const room = Math.max(0, Math.min(FAN_LIMIT - out, RUN_LIMIT - born.length))
+    const canSend = roles.length > 0 && (thread.depth ?? 0) < DEPTH_LIMIT
+    return {
       type: 'prompt',
-      promptId: next.promptId,
+      promptId: entry.promptId,
       agentId: agent.id,
       threadId: thread.id,
-      text: this.buildPrompt(agent, next, reactions),
-      settings: agent.settings,
-      attachments: next.attachments,
+      text: this.buildPrompt(agent, entry, reactions),
+      settings: role ? { ...agent.settings, ...role.settings } : agent.settings,
+      attachments: entry.attachments,
       designBoard: this.boardOf(thread),
-      designBoards: this.referencedBoards(next),
-      ghost: this.ghostOf(thread.id) ? true : undefined
-    })
+      designBoards: this.referencedBoards(entry),
+      ghost: this.ghostOf(thread.id) ? true : undefined,
+      subagents: canSend ? roles : undefined,
+      spawnRoom: canSend ? room : undefined
+    }
   }
 
   private finishPrompt(agent: AgentState, promptId: string, result: { ok: boolean; text?: string; error?: string }): void {
