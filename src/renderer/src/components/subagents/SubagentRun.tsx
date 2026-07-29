@@ -78,7 +78,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
     <div className="absolute inset-0 flex flex-col">
       <div ref={scrollRef} onScroll={onScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4">
         <div className="space-y-4 pt-1 pb-4 select-text">
-          <ThreadItems items={items} />
+          <ThreadItems threadId={threadId} items={items} />
           {working && start?.kind === 'agent.start' && (
             <RunStatus
               startedAt={start.ts}
