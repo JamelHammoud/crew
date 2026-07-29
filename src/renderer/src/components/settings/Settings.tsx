@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { CloseGlyph } from '../../icons'
 import { closeSettings, openSettings, useSettings, type SettingsTab } from '../../state/settings'
 import { useCrew } from '../../state/store'
@@ -27,6 +28,11 @@ function Panel({ tab }: { tab: SettingsTab }) {
 export default function Settings() {
   const tab = useSettings()
   const selfName = useCrew(s => s.selfName)
+
+  // The card belongs to the session it was opened in. Left standing, leaving a
+  // crew and opening another one would land on the settings rather than on the
+  // app.
+  useEffect(() => closeSettings, [])
 
   return (
     <Modal open={tab !== null} onClose={closeSettings} title="Settings" width={WIDTH} flush>
