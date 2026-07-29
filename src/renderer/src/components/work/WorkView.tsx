@@ -26,7 +26,7 @@ export default function WorkView({ threadId }: { threadId: string }) {
   const reviewed = useBoard(s => s.reviewed[threadId])
   const scrollRef = useRef<HTMLDivElement>(null)
   const { edges } = useScrollEdges(scrollRef)
-  const board = useMemo(() => boardOf(steps, { answered, reviewed }), [steps, answered, reviewed])
+  const board = useMemo(() => boardOf(steps, said, { answered, reviewed }), [steps, said, answered, reviewed])
   const empty = board.tickets.length === 0 && board.questions.length === 0
 
   return (
