@@ -97,7 +97,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
       </div>
 
       <div ref={scrollRef} onScroll={onScroll} className="flex-1 min-h-0 overflow-y-auto px-4">
-        <div className="space-y-4 pb-4">
+        <div className="space-y-4 pb-4 select-text">
           <ThreadItems items={items} />
           {working && start?.kind === 'agent.start' && (
             <RunStatus

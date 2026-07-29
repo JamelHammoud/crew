@@ -57,9 +57,11 @@ export function VoiceCardView({ card, onPick }: { card: VoiceCard; onPick: (opti
       {card.kind === 'facts' && <Facts rows={card.rows} />}
       {card.kind === 'list' && <Items items={card.items} />}
       {card.kind === 'choice' && <Choice options={card.options} onPick={onPick} />}
-      {card.kind === 'note' && <p className="text-sm text-fg-secondary whitespace-pre-wrap">{card.text}</p>}
+      {card.kind === 'note' && (
+        <p className="text-sm text-fg-secondary whitespace-pre-wrap select-text">{card.text}</p>
+      )}
       {card.kind === 'code' && (
-        <pre className="text-xs font-mono text-fg-secondary whitespace-pre-wrap break-words overflow-x-auto">
+        <pre className="text-xs font-mono text-fg-secondary whitespace-pre-wrap break-words overflow-x-auto select-text">
           {card.text}
         </pre>
       )}

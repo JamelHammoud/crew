@@ -19,7 +19,7 @@ function Preview({ theme }: { theme: Theme }) {
     <span className="h-1.5 rounded-full" style={{ width, background: ink, opacity: weight }} />
   )
   return (
-    <span className="block rounded-[13px] overflow-hidden select-none" style={{ background: page }}>
+    <span className="block rounded-[13px] overflow-hidden" style={{ background: page }}>
       <span className="flex items-center h-8 px-3">
         <span className="flex">
           {DISCS.map(disc => (
