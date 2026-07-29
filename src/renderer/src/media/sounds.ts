@@ -15,6 +15,8 @@ type StrikeName =
   | 'tasks.open'
   | 'task.done'
   | 'crew.mark'
+  | 'helper.out'
+  | 'helper.home'
 
 export type SoundName = ChimeName | StrikeName
 
