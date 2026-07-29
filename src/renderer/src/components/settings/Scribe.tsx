@@ -8,13 +8,17 @@ import {
   type ScribeKeyState,
   type ScribeWord
 } from '../../../../shared/scribe'
+import type { Said } from '../../../../shared/scribeSaid'
 import { CloseGlyph, PlusGlyph, WarningGlyph } from '../../icons'
+import { forgetSaid, useScribeSaid } from '../../state/scribeSaid'
 import { setScribeSettings, useScribeSettings } from '../../state/scribeSettings'
+import CopyButton from '../CopyButton'
 import Pill from '../Pill'
 import Select from '../Select'
 import TextField from '../TextField'
+import { formatShortDay, formatTime } from '../time'
 import Toggle from '../Toggle'
-import { Action, Page, Row, Section } from './parts'
+import { Action, Page, Quiet, Row, Section } from './parts'
 
 const PRESSES = [
   { value: 'latch', label: 'Hold it, or tap to keep going' },
