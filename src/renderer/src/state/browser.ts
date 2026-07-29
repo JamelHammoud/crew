@@ -176,6 +176,10 @@ export const useBrowser = create<BrowserState>((write, get) => {
     // Closing keeps what is in it, so it is a toggle rather than a way to lose
     // three tabs by aiming at the wrong thing.
     togglePanel: () => write({ open: !get().open }),
+    // Standing the panel up on what is already in it. A tab that is there
+    // already is not something arriving, so asking for one by name never opens
+    // the panel on its own: only somebody pressing something does.
+    openPanel: () => write({ open: true }),
     closePanel: () => write({ open: false }),
     openUrl: url => {
       const { tabs, activeTabId } = get()
