@@ -26,7 +26,7 @@ function Chip({ run, threadId }: { run: SubagentRun; threadId: string }) {
     <button
       type="button"
       onClick={() => openSubagent(run.threadId, threadId)}
-      className="group flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-ink-700 bg-ink-800/60 transition-all active:scale-[0.98] hover:border-ink-600 hover:bg-ink-800"
+      className="group flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-ink-700 bg-ink-800/60 transition-all active:scale-[0.98] hover:border-ink-600 hover:bg-ink-700"
     >
       <SubagentMark seed={run.threadId} size="xs" className={working ? 'pulse-soft' : ''} />
       <span className="text-sm text-fg-secondary group-hover:text-fg truncate max-w-[16rem]">{run.subject}</span>
