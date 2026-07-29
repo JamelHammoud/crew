@@ -107,7 +107,8 @@ async function stage() {
     path.join(dir, 'probe.css'),
     `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\n`
   )
-  await writeFile(dir + '/probe.js', `${LIBRARY.map(name => `import '${name}'`).join('\n')}\nimport './probe.css'\n`)
+  const after = LIBRARY.map(name => `import '${name}'`).join('\n')
+  await writeFile(path.join(dir, 'probe.js'), `import './probe.css'\n${after}\n`)
   await writeFile(path.join(dir, 'main.cjs'), MAIN)
   return dir
 }
