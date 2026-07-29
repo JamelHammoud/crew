@@ -17,17 +17,17 @@ import { grab } from './grab'
 // foreground at an opacity, so it stands above the surface rather than beside
 // it, whatever the app underneath happens to be showing.
 
-// Enough of them to read as a voice rather than as a handful of dots, and they
-// stand across the whole of the room between the two buttons rather than
-// huddling in the middle of it.
-const BANDS = 17
+// Enough of them to read as a voice rather than as a handful of dots, and no
+// more than that. The pill stands over somebody else's work, so every band it
+// does not need is width taken off their window for nothing.
+const BANDS = 12
 
 // One reader for the life of the pill, because this is read every frame.
 const reader = new BandReader()
 
-// The two things the pill can be pressed. They are the only marks on it and
-// they are read at arm's length over somebody else's window, so they wear the
-// bold weight rather than the one a mark carries inside the app.
+// The marks on the pill are read at arm's length over somebody else's window,
+// so they wear the bold weight rather than the one a mark carries inside the
+// app.
 function Round({
   label,
   solid,
