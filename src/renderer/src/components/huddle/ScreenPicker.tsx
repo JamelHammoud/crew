@@ -46,7 +46,10 @@ export default function ScreenPicker() {
   const shown = (sources ?? []).filter(source => source.kind === kind)
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink-950/70 p-8" onClick={close}>
+    <div
+      className="app-no-drag fixed inset-0 z-[60] flex items-center justify-center bg-ink-950/70 p-8"
+      onClick={close}
+    >
       <div
         onClick={event => event.stopPropagation()}
         className="glass rounded-card w-full max-w-3xl max-h-full flex flex-col animate-pop overflow-hidden"

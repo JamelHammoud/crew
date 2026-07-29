@@ -97,7 +97,11 @@ export default function HoverCard({
       {children}
       {style &&
         createPortal(
-          <div ref={cardRef} style={style} className="glass fixed z-[70] rounded-2xl p-3 animate-pop cursor-default">
+          <div
+            ref={cardRef}
+            style={style}
+            className="glass app-no-drag fixed z-[70] rounded-2xl p-3 animate-pop cursor-default"
+          >
             {content}
           </div>,
           document.body
