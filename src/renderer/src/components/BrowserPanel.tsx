@@ -128,16 +128,18 @@ export default function BrowserPanel() {
             </button>
           </Tooltip>
           <Popover open={newOpen} onClose={() => setNewOpen(false)}>
-            {opens.map(one => (
-              <MenuItem
-                key={one.id}
-                icon={one.mark}
-                label={one.label}
-                onClick={() => {
-                  setNewOpen(false)
-                  one.open()
-                }}
-              />
+            {opens.map((one, index) => (
+              <Fragment key={one.id}>
+                {one.scope === 'panel' && opens[index - 1]?.scope === 'thread' && <MenuDivider />}
+                <MenuItem
+                  icon={one.mark}
+                  label={one.label}
+                  onClick={() => {
+                    setNewOpen(false)
+                    one.open()
+                  }}
+                />
+              </Fragment>
             ))}
           </Popover>
         </span>
