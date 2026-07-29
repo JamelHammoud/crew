@@ -36,6 +36,7 @@ export interface AgentStep extends RunStep {
 export interface LiveRun {
   steps: AgentStep[]
   tokens: number
+  cost?: number
   startedAt: number
 }
 
