@@ -1,4 +1,4 @@
-import type { FileChange } from '../../shared/llm'
+import type { FileChange, StepTodo } from '../../shared/llm'
 
 // A command speaks for itself, and the card under it is a terminal, so what was
 // run beats the summary the model wrote of it. Everything else falls back to
