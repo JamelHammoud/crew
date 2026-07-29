@@ -471,7 +471,7 @@ describe('playing a sound', () => {
   // for. The zeros are the envelopes opening, which every voice does.
   const levels = (): number[] => gains.filter(gain => gain > 0).filter((_, i) => i % 2 === 0)
 
-  const errand = (name: 'helper.out' | 'helper.home' | 'task.done' | 'crew.mark'): Heard & { level: number } => {
+  const errand = (name: 'helper.out' | 'helper.home' | 'task.done' | 'crew.mark'): Heard & { level: number; rings: number } => {
     started.length = 0
     stopped.length = 0
     landed.length = 0
@@ -485,7 +485,8 @@ describe('playing a sound', () => {
       hz: [...landed],
       scrapes: filters.filter(f => f.type === 'bandpass').map(f => f.hz[0]),
       root: Math.min(...landed),
-      level: Math.max(...levels())
+      level: Math.max(...levels()),
+      rings: Math.max(...stopped) - Math.max(...started)
     }
   }
 
