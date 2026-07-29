@@ -18,6 +18,13 @@ import electron from 'electron'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
+// The renderer loads these too, and every one of them is unlayered, so what they
+// say about selection beats anything in a layer however it is written. tldraw's
+// input { user-select: text } arrives with the first board somebody opens and
+// turned the placeholder rule off from then on, which is a bug that only exists
+// in a document holding both stylesheets.
+const LIBRARY = ['tldraw/tldraw.css', '@xterm/xterm/css/xterm.css', '@blocknote/mantine/style.css']
+
 const FIXTURE = [
   ['what somebody wrote', 'content', '<div class="md select-text"><p>a message somebody wrote, worth copying</p></div>'],
   ['a heading', 'chrome', '<h2 class="text-lg font-semibold text-fg">A heading</h2>'],
