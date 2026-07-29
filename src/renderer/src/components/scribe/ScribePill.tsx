@@ -14,7 +14,10 @@ import Spinner from '../Spinner'
 // foreground at an opacity, so it stands above the surface rather than beside
 // it, whatever the app underneath happens to be showing.
 
-const BANDS = 13
+// Enough of them to read as a voice rather than as a handful of dots, and they
+// stand across the whole of the room between the two buttons rather than
+// huddling in the middle of it.
+const BANDS = 17
 
 // One reader for the life of the pill, because this is read every frame.
 const reader = new BandReader()
@@ -88,7 +91,7 @@ export default function ScribePill() {
           <Levels
             count={BANDS}
             read={(count, out) => reader.read(reading ? null : scribeAnalyser(), count, out)}
-            className="flex-1 min-w-0 h-6 gap-[3px] text-fg/70 justify-center"
+            className="flex-1 min-w-0 h-6 px-1 text-fg/70 justify-between"
             barClassName="w-[3px]"
           />
         )}
