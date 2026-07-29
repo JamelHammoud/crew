@@ -32,7 +32,7 @@ function Chip({ run }: { run: SubagentRun }) {
           : 'border-transparent hover:border-ink-700 hover:bg-ink-800/60'
       }`}
     >
-      <SubagentMark seed={run.roleId} size="xs" className={working ? 'pulse-soft' : ''} />
+      <SubagentMark seed={run.threadId} size="xs" className={working ? 'pulse-soft' : ''} />
       <span className="text-sm text-fg-secondary group-hover:text-fg truncate max-w-[16rem]">{run.subject}</span>
       {failed ? (
         <WarningGlyph className="w-3.5 h-3.5 shrink-0 text-danger" />
