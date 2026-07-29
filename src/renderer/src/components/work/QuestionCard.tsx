@@ -22,7 +22,7 @@ export default function QuestionCard({
           <p className="text-sm text-fg">{question.ask}</p>
           {question.assumed && <p className="mt-0.5 text-sm text-fg-muted">Working on {question.assumed}</p>}
           {question.since > 0 && (
-            <p className="mt-0.5 text-xs text-fg-faint">
+            <p className="mt-0.5 text-xs text-fg-faint select-none">
               {question.since === 1 ? '1 file changed since' : `${question.since} files changed since`}
             </p>
           )}
