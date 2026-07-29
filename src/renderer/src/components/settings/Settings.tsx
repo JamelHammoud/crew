@@ -8,6 +8,7 @@ import Agents from './Agents'
 import Appearance from './Appearance'
 import Helpers from './Helpers'
 import People from './People'
+import Scribe from './Scribe'
 import SoundAndVideo from './SoundAndVideo'
 import You from './You'
 import { GROUPS, SETTINGS_TABS, tabLabel } from './tabs'
@@ -19,6 +20,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'you') return <You onDone={closeSettings} />
   if (tab === 'appearance') return <Appearance />
   if (tab === 'sound') return <SoundAndVideo />
+  if (tab === 'scribe') return <Scribe />
   if (tab === 'people') return <People />
   if (tab === 'helpers') return <Helpers />
   return <Agents />

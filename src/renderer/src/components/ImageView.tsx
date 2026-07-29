@@ -32,7 +32,7 @@ export default function ImageView({ src, alt }: { src: string; alt: string }) {
             draggable={false}
             onLoad={event => setNatural(event.currentTarget.naturalWidth)}
             style={{ imageRendering: scale * ratio >= PIXELATED_AT ? 'pixelated' : undefined }}
-            className={`max-w-full max-h-full object-contain select-none ${scale > 1 ? '' : 'rounded-card'}`}
+            className={`max-w-full max-h-full object-contain ${scale > 1 ? '' : 'rounded-card'}`}
           />
         )}
       </ZoomView>
