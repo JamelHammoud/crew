@@ -506,8 +506,7 @@ describe('playing a sound', () => {
   it('makes the pair one gesture, out and back over the same two notes', () => {
     const out = errand('helper.out')
     const home = errand('helper.home')
-    expect([...home.hz].sort()).toEqual([...out.hz].sort())
-    expect(home.hz).toEqual([...out.hz].reverse())
+    expect(home.notes).toEqual([...out.notes].reverse())
   })
 
   it('sits well under the sounds that mean something landed', () => {
