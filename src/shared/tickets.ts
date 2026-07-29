@@ -132,27 +132,7 @@ const entryOf = (id: string, title: string): Entry => ({
   review: ''
 })
 
-// The list a CLI keeps for itself, which is free and needs nothing of the
-// agent. It is what a thread that never touched the board gets, so there are
-// columns to read wherever a provider still hands its list over.
-const listedBy = (steps: readonly AgentStep[]): { entries: Map<string, Entry>; order: string[] } => {
-  const entries = new Map<string, Entry>()
-  let order: string[] = []
-  for (const step of steps) {
-    if (!step.todos?.length) continue
-    order = []
-    for (const todo of step.todos) {
-      const id = todo.text.toLowerCase().replace(/\s+/g, ' ').trim()
-      if (!id || order.includes(id)) continue
-      const entry = entries.get(id) ?? entryOf(id, todo.text)
-      entry.title = todo.text
-      entry.column = todo.status === 'doing' ? 'doing' : todo.status === 'done' ? 'done' : 'todo'
-      entries.set(id, entry)
-      order.push(id)
-    }
-  }
-  return { entries, order }
-}
+const keyOf = (title: string): string => title.toLowerCase().replace(/\s+/g, ' ').trim()
 
 // The whole board, folded out of what happened in the order it happened. Steps
 // and ticket events are read as one run of time, because which files a ticket
