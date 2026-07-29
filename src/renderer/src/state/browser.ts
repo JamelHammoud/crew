@@ -334,10 +334,6 @@ export const useBrowser = create<BrowserState>((write, get) => {
       })
       settle()
     },
-    closePlan: () => {
-      const plan = get().tabs.find(t => t.kind === 'plan')
-      if (plan) get().closeTab(plan.id)
-    },
     // The board for the thread you are in, held the way the plan is: one of them,
     // at the head of the row, taking the place of another thread's when you move.
     showWork: threadId => {
