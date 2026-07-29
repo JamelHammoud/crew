@@ -22,9 +22,9 @@ function Panel({ tab }: { tab: SettingsTab }) {
   return <Agents />
 }
 
-// The settings, as a rail of pages and the one that is open. Everything that is
-// yours alone and everything the crew shares stands in the same card, so the
-// menu it was opened from is a way in rather than a place things live.
+// The settings, as a rail of pages and whichever one is up. Everything that is
+// yours alone and everything the crew shares stands in this one card, which is
+// what the face in the top bar opens straight onto.
 export default function Settings() {
   const tab = useSettings()
   const selfName = useCrew(s => s.selfName)
