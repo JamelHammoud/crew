@@ -256,12 +256,11 @@ export default function TopBar({
             </div>
             <MenuDivider />
             <MenuItem
-              icon={<PeopleGlyph />}
-              label="Crew"
-              active={tab === 'agents'}
+              icon={<SlidersGlyph />}
+              label="Settings"
               onClick={() => {
                 setMenuOpen(false)
-                onTab('agents')
+                openSettings()
               }}
             />
             {hosting && !shared && (
