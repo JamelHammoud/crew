@@ -116,11 +116,13 @@ async function stage() {
 async function compile(dir) {
   const { build } = await import('vite')
   const tailwind = (await import('@tailwindcss/vite')).default
+  const resolve = createRequire(path.join(root, 'package.json')).resolve
   await build({
     root: dir,
     base: './',
     logLevel: 'silent',
     plugins: [tailwind()],
+    resolve: { alias: LIBRARY.map(name => ({ find: name, replacement: resolve(name) })) },
     build: { outDir: path.join(dir, 'dist'), emptyOutDir: true },
   })
   const assets = path.join(dir, 'dist/assets')
