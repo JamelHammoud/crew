@@ -165,21 +165,18 @@ export const useScribe = create<ScribeState>((set, get) => {
       const rest = take.rest()
       stop()
       const { audio, spoke } = trim(rest.audio, HEARD_RATE)
-      const waiting = [...pieces, ...(spoke ? [read(audio, rest.at)] : [])]
+      if (spoke) keep(audio, rest.at)
+      const waiting = pieces
       pieces = []
-      try {
-        const chunks = (await Promise.all(waiting)).flat()
-        if (get().phase !== 'reading') return
-        const text = tidy(chunks, rulesOf(get().settings))
-        set({ phase: 'off', problem: null })
-        window.crew.scribeDone(text)
-      } catch {
-        // A listener that fell over and a room that said nothing are the same
-        // empty answer, so the one that failed says so and keeps the sound,
-        // rather than reading as a key that quietly does nothing.
-        if (get().phase !== 'reading') return
-        set({ phase: 'failed', problem: 'Crew could not read that.' })
-      }
+      await land(waiting)
+    },
+
+    // The same sound, read again. Nothing is recorded twice and nothing is
+    // spoken twice.
+    retry: async () => {
+      if (get().phase !== 'failed' || held.length === 0) return
+      set({ phase: 'reading', problem: null })
+      await land(held.map(one => read(one.audio, one.at)))
     },
 
     cancel: () => {
