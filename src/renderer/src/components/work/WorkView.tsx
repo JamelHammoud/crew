@@ -20,6 +20,7 @@ const labelOf = (column: TicketColumn): string =>
 
 export default function WorkView({ threadId }: { threadId: string }) {
   const steps = useThreadSteps(threadId)
+  const said = useTicketEvents(threadId)
   const sendChat = useCrew(s => s.sendChat)
   const answered = useBoard(s => s.answered[threadId])
   const reviewed = useBoard(s => s.reviewed[threadId])
