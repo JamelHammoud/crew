@@ -18,7 +18,7 @@ export default function StashRow({
   return (
     <div className="flex h-10 items-center gap-2 rounded-card bg-ink-800 pl-3.5 pr-1.5">
       <span className="min-w-0 flex-1 truncate text-sm text-fg-secondary">{stash.message}</span>
-      {stash.branch && <span className="shrink-0 text-xs text-fg-faint">{stash.branch}</span>}
+      {stash.branch && <span className="max-w-28 shrink-0 truncate text-xs text-fg-faint">{stash.branch}</span>}
       <div className="relative shrink-0">
         <Tooltip label="More" disabled={menu}>
           <button
