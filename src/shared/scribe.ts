@@ -36,6 +36,10 @@ export interface ScribeSettings {
   // first word and costs a recording light that is lit all day, which is a real
   // trade and belongs to whoever is sitting there.
   ready: boolean
+  // Written as it is said rather than all at once at the end. There is nothing
+  // to hand over once this is on, which is why the pill has no way to finish on
+  // it: the key started the dictation and the key ends it.
+  live: boolean
   words: ScribeWord[]
 }
 
