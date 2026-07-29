@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CIRCLE, DIAGONAL, GRID, SQUARE } from '../src/renderer/src/icons/keylines'
 import {
   MAX_LOBES,
+  MIN_WAIST,
   MIN_LOBES,
   radiusAt,
   shapePath,
@@ -59,7 +60,7 @@ describe('a helper mark', () => {
       const waist = Math.min(...radii) / Math.max(...radii)
       // Below about half the mark reads as scattered dots at 18 across rather
       // than as one shape.
-      expect(waist).toBeGreaterThan(0.5)
+      expect(waist).toBeGreaterThanOrEqual(MIN_WAIST - 0.001)
     }
   })
 
