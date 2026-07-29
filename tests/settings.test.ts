@@ -4,6 +4,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Settings from '../src/renderer/src/components/settings/Settings'
+import { SETTINGS_TABS, tabLabel } from '../src/renderer/src/components/settings/tabs'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { playSound } from '../src/renderer/src/media/sounds'
 import { prefs } from '../src/renderer/src/state/prefs'
