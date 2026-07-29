@@ -76,10 +76,14 @@ export class ScribeWindow {
     this.send('scribe:settings', settings)
   }
 
-  // A pill that has grown a line keeps its bottom edge and its left edge. It is
-  // never placed again after it is shown: placing reads the pointer, and the
-  // pointer has moved on by the time the renderer has measured itself, which is
-  // what made the pill land somewhere different every time.
+  // A pill that has grown a line keeps its bottom edge and its left edge, and
+  // is never placed again. Placing reads the pointer, and the pointer has moved
+  // on by the time the renderer has measured itself, which is what made the pill
+  // land somewhere different every time it was shown.
+  //
+  // Growing is not moving, so it never writes a spot down. Only a drag does, or
+  // a pill that grew once on one screen would be pinned to it from then on by
+  // nobody's decision.
   resize(height: number): void {
     const win = this.win
     if (!win) return
@@ -88,7 +92,6 @@ export class ScribeWindow {
     if (box.height === wanted) return
     const spot = grown(box, wanted, this.workNear(middle({ ...box, height: wanted })))
     win.setBounds({ ...spot, width: box.width, height: wanted })
-    this.spot = spot
   }
 
   grab(): void {
