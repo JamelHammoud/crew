@@ -90,6 +90,9 @@ export type ClientMessage =
       replyTo?: string
     }
   | { type: 'history'; before: string }
+  // Said again every couple of seconds while somebody is still writing, and once
+  // with `on` false the moment they stop or send.
+  | { type: 'typing'; where?: string; on: boolean }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'chat.edit'; messageId: string; text: string }
   | { type: 'chat.react'; targetId: string; emoji: ReactionEmoji }
