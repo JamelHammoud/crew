@@ -92,7 +92,9 @@ describe('what is selectable', () => {
     const row = container.querySelector('button')!
     expect(selectable(row)).toBe(false)
     fireEvent.click(row)
-    const printed = Array.from(container.querySelectorAll('div')).find(el => el.textContent === 'no errors')
+    const printed = Array.from(container.querySelectorAll('div')).find(
+      el => el.children.length === 0 && el.textContent === 'no errors'
+    )
     expect(printed).toBeTruthy()
     expect(selectable(printed ?? null)).toBe(true)
   })
