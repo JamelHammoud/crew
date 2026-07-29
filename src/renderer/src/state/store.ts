@@ -686,7 +686,10 @@ export const useCrew = create<CrewState>((set, get) => {
         }))
         break
       case 'agent.tokens':
-        set(state => ({ tokens: { ...state.tokens, [msg.promptId]: msg.tokens } }))
+        set(state => ({
+          tokens: { ...state.tokens, [msg.promptId]: msg.tokens },
+          costs: msg.cost === undefined ? state.costs : { ...state.costs, [msg.promptId]: msg.cost }
+        }))
         break
       case 'design.boards':
         set({ boards: msg.boards })
