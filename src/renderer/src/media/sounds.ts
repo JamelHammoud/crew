@@ -373,11 +373,15 @@ export function stopRinging(): void {
   ringing = null
 }
 
-export function soundFor(event: SessionEvent, selfId: string): SoundName | null {
+export function soundFor(event: SessionEvent, selfId: string, state: ReviewState): SoundName | null {
   if (event.kind === 'message') {
     if (event.authorId === selfId || event.authorId === SYSTEM_AUTHOR_ID) return null
     return 'receive'
   }
-  if (event.kind === 'agent.end') return event.ok ? 'done' : 'failed'
+  // A helper coming home, an aside answering itself and a turn with more waiting
+  // behind it all end an agent without ending anything anybody asked about, and
+  // a chime for one of those is the app saying a thread landed while the thread
+  // carries on working in front of you.
+  if (event.kind === 'agent.end') return threadFinished(event, state) ? (event.ok ? 'done' : 'failed') : null
   return null
 }
