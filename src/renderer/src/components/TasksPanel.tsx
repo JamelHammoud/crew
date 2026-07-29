@@ -197,8 +197,9 @@ export default function TasksPanel({
     const list: Row[] = []
     for (const thread of Object.values(threads)) {
       // A helper is not a row of its own. It reads inside the thread that sent
-      // it, which is where somebody would go looking for it.
-      if (thread.parentThreadId) continue
+      // it, which is where somebody would go looking for it. Nor is a question
+      // asked on the side, which was answered in the panel and is nobody's work.
+      if (thread.parentThreadId || thread.aside) continue
       const promptId = threadPrompts[thread.id]
       const working = threadWorking(thread.id, threadPrompts, queues, threads)
       const detail = promptId
