@@ -21,7 +21,7 @@ import {
   type ThreadState
 } from '../components/thread'
 import { reactionGroups } from '../components/reactionGroups'
-import { formatElapsed, formatTokens, isNewDay } from '../components/time'
+import { formatCost, formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useLoadOlder } from '../components/useLoadOlder'
 import { useNow } from '../components/useNow'
@@ -143,7 +143,9 @@ export default function Chat() {
       const parts = [describeStep((steps[promptId] ?? []).at(-1))]
       if (start) parts.push(formatElapsed(now - start.ts))
       const count = tokens[promptId] ?? 0
-      if (count > 0) parts.push(`${formatTokens(count)} tokens`)
+      if (prefs.tokens && count > 0) parts.push(`${formatTokens(count)} tokens`)
+      const cost = costs[promptId]
+      if (prefs.cost && cost !== undefined && cost > 0) parts.push(formatCost(cost))
       return { state: 'working', detail: parts.join(' · ') }
     }
     return { state: threadState(thread, events, false), detail: endPreview(lastEnd(thread.id, events)) }
