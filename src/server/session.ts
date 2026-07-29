@@ -3566,6 +3566,7 @@ export class CrewSession {
       live[promptId] = {
         steps: [...run.steps.values()].map(entry => entry.step),
         tokens: run.tokens,
+        cost: run.cost ?? undefined,
         startedAt: run.startedAt
       }
     }
