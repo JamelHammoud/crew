@@ -26,7 +26,3 @@ export const GROUPS = [...new Set(SETTINGS_TABS.map(tab => tab.group))]
 export function tabLabel(tab: TabDef, selfName: string): string {
   return tab.id === 'you' ? selfName || tab.label : tab.label
 }
-
-export function tabIndex(id: SettingsTab): number {
-  return SETTINGS_TABS.findIndex(tab => tab.id === id)
-}
