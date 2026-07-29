@@ -1526,7 +1526,9 @@ export class CrewSession {
       if (event.kind !== 'agent.step' || event.threadId !== threadId) continue
       for (const file of event.step.files ?? []) files.add(file.path)
     }
-    for (const run of this.agents.get(thread.agentId)?.runs.values() ?? []) tokens += run.tokens
+    for (const [promptId, run] of this.agents.get(thread.agentId)?.runs ?? []) {
+      if (this.prompts.get(promptId)?.threadId === threadId) tokens += run.tokens
+    }
     return {
       id: threadId,
       subject: thread.subject ?? thread.title,
