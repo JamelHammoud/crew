@@ -7,6 +7,7 @@ import { resolveSettings, type AgentSettingField, type AgentSettingOption, type 
 import { addUsage, priceOf, NO_USAGE, type TokenUsage } from '../../shared/pricing'
 import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
+import { taskLedger } from './tasks'
 import type { InstallCommands, OutputParser, ParsedUsage, Provider, RunningPrompt } from './types'
 
 export function commandExists(command: string, dirs?: string[]): boolean {
