@@ -113,8 +113,7 @@ export const useScribe = create<ScribeState>((set, get) => {
   }
 
   const drop = () => {
-    clearTimeout(capped)
-    take.close()
+    stop()
     pieces = []
     held = []
     listener.forget()
