@@ -156,6 +156,7 @@ interface CrewState {
   queues: Record<string, QueuedItem[]>
   steps: Record<string, AgentStep[]>
   tokens: Record<string, number>
+  costs: Record<string, number>
   activePrompts: Record<string, string[]>
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
@@ -260,6 +261,7 @@ const EMPTY = {
   queues: {},
   steps: {},
   tokens: {},
+  costs: {},
   activePrompts: {},
   threads: {},
   threadPrompts: {},
