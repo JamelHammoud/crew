@@ -68,11 +68,8 @@ function tabLabel(tab: BrowserTab): string {
 }
 
 // A helper tab wears the mark of the helper it is reading, which is what makes
-// a row of three of them read at a glance. The list wears the thread they were
-// sent out from, so it is one picture per thread rather than a mark standing
-// for nothing.
-const roleSeed = (tab: BrowserTab): string => tab.threadId || tab.parentThreadId || tab.id
-
+// a row of three of them read at a glance. The list of them wears the same mark
+// the Helpers page in the settings does, since it is the same list.
 const iconButton =
   'w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-30 disabled:pointer-events-none'
 
