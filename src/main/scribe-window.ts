@@ -63,8 +63,13 @@ export class ScribeWindow {
     }
   }
 
+  // Placed only on the way up. Placing a pill nobody has moved reads the
+  // pointer, so a window that placed itself every time it was shown would walk
+  // to whichever screen the pointer happened to be on, and one that is up all
+  // day is shown once.
   show(): void {
     const win = this.window()
+    if (win.isVisible()) return
     this.place()
     // Never `show`, which would take the focus off the app being dictated into
     // and land the paste in the wrong place, or nowhere at all.
