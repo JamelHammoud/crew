@@ -48,9 +48,12 @@ export default function Modal({
         role="dialog"
         aria-modal
         aria-label={title}
-        className={`glass relative w-full max-w-md rounded-card p-6 animate-pop ${className}`}
+        style={width === undefined ? undefined : { maxWidth: width }}
+        className={`glass relative w-full rounded-card animate-pop ${
+          flush ? 'overflow-hidden' : 'p-6'
+        } ${width === undefined ? 'max-w-md' : ''} ${className}`}
       >
-        <h3 className="text-base font-semibold text-fg">{title}</h3>
+        {!flush && <h3 className="text-base font-semibold text-fg">{title}</h3>}
         {children}
       </div>
     </div>,
