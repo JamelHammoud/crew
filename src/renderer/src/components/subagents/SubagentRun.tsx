@@ -7,7 +7,7 @@ import RunStatus from '../RunStatus'
 import Spinner from '../Spinner'
 import SubagentMark from '../SubagentMark'
 import ThreadItems from '../ThreadItems'
-import { buildThread } from '../thread'
+import { buildThread, eventsOfThread } from '../thread'
 import { formatSpan } from '../time'
 import { useAutoResize } from '../useAutoResize'
 import { useStickToBottom } from '../useStickToBottom'
@@ -38,10 +38,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const { onScroll, follow, jumpToBottom } = useStickToBottom(scrollRef, `subagent:${threadId}`)
   const inputRef = useAutoResize(text)
 
-  const threadEvents = useMemo(
-    () => events.filter(event => 'threadId' in event && event.threadId === threadId),
-    [events, threadId]
-  )
+  const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const threadSteps = useMemo(() => {
     const ids = threadEvents.filter(event => event.kind === 'agent.start').map(event => event.promptId)
