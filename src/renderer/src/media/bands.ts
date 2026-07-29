@@ -28,16 +28,21 @@ export function bandsFrom(
 // A band reader hung on whatever is making the sound. The window it reads has to
 // be wide: a narrow one measures in steps of a few hundred hertz, and the lowest
 // band is fifty across, which leaves the bass bar empty.
-export function analyserBands(
-  analyser: AnalyserNode | null,
-  count: number,
-  out: number[]
-): number[] {
-  if (!analyser) {
-    out.fill(0)
-    return out
+//
+// It keeps its own buffer because this runs every frame, and a new array sixty
+// times a second is sixty things for the collector to come back for.
+export class BandReader {
+  private reading = new Uint8Array(0)
+
+  read(analyser: AnalyserNode | null, count: number, out: number[]): number[] {
+    if (!analyser) {
+      out.fill(0)
+      return out
+    }
+    if (this.reading.length !== analyser.frequencyBinCount) {
+      this.reading = new Uint8Array(analyser.frequencyBinCount)
+    }
+    analyser.getByteFrequencyData(this.reading)
+    return bandsFrom(this.reading, analyser.context.sampleRate, count, out)
   }
-  const reading = new Uint8Array(analyser.frequencyBinCount)
-  analyser.getByteFrequencyData(reading)
-  return bandsFrom(reading, analyser.context.sampleRate, count, out)
 }
