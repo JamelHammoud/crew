@@ -52,6 +52,7 @@ if (withStreamedText) {
   lines.push(`TEXT ${prompt}`)
   lines.push('TEXT ]')
 }
+for (const line of usage.split('\n')) if (line.trim()) lines.push(line.trim())
 
 let i = 0
 function tick() {
