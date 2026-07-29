@@ -231,6 +231,18 @@ export const useBrowser = create<BrowserState>((set, get) => ({
   // tab brings that tab to the front rather than opening a second copy of it.
   // Three helpers running is three things to watch, so unlike the plan these
   // are ordinary tabs: closable, and as many as somebody wants.
+  // A question asked on the side, opened where it is answered. Each one is its
+  // own tab rather than the one before it being written over, so a question
+  // asked while an answer is still being read leaves that answer where it is.
+  openAside: (threadId, title) => {
+    const existing = get().tabs.find(t => t.kind === 'aside' && t.threadId === threadId)
+    if (existing) {
+      set({ activeTabId: existing.id })
+      return
+    }
+    const tab = { ...makeTab(), kind: 'aside' as const, threadId, title }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
   openSubagent: threadId => {
     const existing = get().tabs.find(t => t.kind === 'agent' && t.threadId === threadId)
     if (existing) {
