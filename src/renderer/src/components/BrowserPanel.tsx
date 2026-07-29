@@ -5,6 +5,7 @@ import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
   ArrowRightGlyph,
+  BoardGlyph,
   ChecklistGlyph,
   CloseGlyph,
   DocGlyph,
@@ -29,6 +30,7 @@ import GameView from './game/GameView'
 import ImageView from './ImageView'
 import MusicView from './music/MusicView'
 import PlanView from './PlanView'
+import WorkView from './work/WorkView'
 import SubagentMark from './SubagentMark'
 import SubagentPanel from './subagents/SubagentPanel'
 import { MenuItem, Popover } from './Popover'
@@ -43,6 +45,7 @@ const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/
 
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'plan') return 'Plan'
+  if (tab.kind === 'work') return 'Board'
   // What was asked, so a row of questions is read at a glance.
   if (tab.kind === 'aside') return tab.title || 'Question'
   // A helper tab says which helper you are reading, so a row of three of them
@@ -308,6 +311,7 @@ export default function BrowserPanel() {
             </div>
           ))}
         {active && active.kind === 'plan' && <PlanView threadId={active.threadId} />}
+        {active && active.kind === 'work' && <WorkView threadId={active.threadId} />}
         {active && active.kind === 'music' && <MusicView />}
         {active && active.kind === 'game' && <GameView tabId={active.id} />}
         {active && active.kind === 'web' && !active.initialUrl && (
@@ -353,6 +357,8 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
           <SubagentMark seed={roleSeed(tab)} size={18} />
         ) : tab.kind === 'plan' ? (
           <ChecklistGlyph className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'work' ? (
+          <BoardGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'aside' ? (
           <QuestionGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'music' ? (
