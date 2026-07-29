@@ -108,10 +108,19 @@ function clampWidth(width: number): number {
   return Math.min(Math.max(width, 360), max)
 }
 
+// Closing a plan is remembered against the thread it belongs to, never against
+// the tab, so it is still the same plan when it is asked for again.
+function remember(closed: string[], gone: BrowserTab[]): string[] {
+  const plan = gone.find(t => t.kind === 'plan')
+  if (!plan || closed.includes(plan.threadId)) return closed
+  return [...closed, plan.threadId]
+}
+
 export const useBrowser = create<BrowserState>((set, get) => ({
   width: DEFAULT_WIDTH,
   tabs: [],
   activeTabId: null,
+  closedPlans: [],
   setWidth: width => set({ width: clampWidth(width) }),
   resetWidth: () => set({ width: clampWidth(DEFAULT_WIDTH) }),
   openUrl: url => {
