@@ -1505,12 +1505,13 @@ export class CrewSession {
     if ((parent.depth ?? 0) >= DEPTH_LIMIT) return { error: 'A helper this far down cannot send out helpers of its own.' }
     const born = this.subagentThreads(from.threadId)
     if (born.length >= RUN_LIMIT) return { error: `This thread has already run ${RUN_LIMIT} helpers.` }
-    const out = born.filter(thread => this.subagentRunning(thread))
-    if (out.length >= FAN_LIMIT) return { error: `You already have ${FAN_LIMIT} running. Wait for one to come back.` }
     const parentAgent = this.agents.get(parent.agentId)
     if (!parentAgent) return { error: 'That thread has no agent on it.' }
+    // How many at once is the owner's own answer, held under the crew's cap.
+    const fan = Math.min(this.helpersFor(parentAgent.ownerId).fan, FAN_LIMIT)
     if (!this.helpersFor(parentAgent.ownerId).on) return { error: 'Helpers are turned off on this machine.' }
-    const out = this.subagentThreads(from.threadId).filter(one => this.subagentRunning(one))
+    const out = born.filter(thread => this.subagentRunning(thread))
+    if (out.length >= fan) return { error: `You already have ${fan} running. Wait for one to come back.` }
     const agent = this.runnerFor(role, parentAgent)
     if (!agent) return { error: `No agent is here to run ${role.name}.` }
     const asker: Member = { id: parentAgent.id, name: from.byName, connections: new Set() }
