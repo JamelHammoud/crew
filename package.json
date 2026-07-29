@@ -14,7 +14,8 @@
       "out/**"
     ],
     "asarUnpack": [
-      "**/node_modules/node-pty/**"
+      "**/node_modules/node-pty/**",
+      "**/node_modules/uiohook-napi/**"
     ],
     "mac": {
       "target": "dmg",
@@ -24,7 +25,7 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
       "extendInfo": {
-        "NSMicrophoneUsageDescription": "So you can talk in a huddle.",
+        "NSMicrophoneUsageDescription": "So you can talk in a huddle, and dictate with Scribe.",
         "NSCameraUsageDescription": "So the crew can see you in a huddle.",
         "NSLocalNetworkUsageDescription": "So you can reach a crew on this network."
       }
@@ -44,6 +45,7 @@
     "test": "vitest run",
     "media-check": "node scripts/media-check.mjs",
     "voice-check": "node scripts/voice-check.mjs",
+    "scribe-check": "node scripts/scribe-check.mjs",
     "dist": "electron-vite build && electron-builder",
     "icon": "node scripts/make-icon.mjs",
     "icons": "node scripts/icon-sheet.mjs",
