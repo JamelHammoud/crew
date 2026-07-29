@@ -172,22 +172,31 @@ const opens = (words: Word[], from: number): boolean =>
 const closes = (words: Word[], to: number): boolean =>
   to >= words.length || words[to - 1].mark !== '' || words[to].gap >= CLAUSE_GAP
 
+// A correction is a clause of its own, marked off at both ends, which is what
+// leaves "hold on to the branch" as somebody holding on to a branch. Standing at
+// the head of a sentence it has nothing in front of it to take, so it reaches
+// back for the sentence before it, which is how people dictate: one sentence,
+// then the one that replaces it. Only ever one back, and a second correction
+// straight after takes another, since that is somebody correcting twice.
 const corrected = (words: Word[]): Word[] => {
   const out: Word[] = []
-  let sentence = 0
+  const starts = [0]
   for (let index = 0; index < words.length; ) {
-    const cut = opens(words, index) ? CUTS.find(entry => matches(words, index, entry.phrase)) : undefined
+    const cut = opens(words, index)
+      ? CUTS.find(entry => matches(words, index, entry.phrase) && closes(words, index + entry.phrase.length))
+      : undefined
     if (!cut) {
       const word = words[index]
       out.push(word)
-      if (ends(word) || (words[index + 1]?.gap ?? 0) >= SENTENCE_GAP) sentence = out.length
+      if (ends(word) || (words[index + 1]?.gap ?? 0) >= SENTENCE_GAP) starts.push(out.length)
       index += 1
       continue
     }
-    const from = cut.whole ? 0 : sentence
+    if (!cut.whole && starts.length > 1 && starts[starts.length - 1] === out.length) starts.pop()
+    if (cut.whole) starts.length = 1
+    const from = cut.whole ? 0 : starts[starts.length - 1]
     const gap = out[from]?.gap ?? words[index].gap
     out.length = from
-    sentence = from
     const next = words[index + cut.phrase.length]
     if (next) next.gap = Math.max(next.gap, gap)
     index += cut.phrase.length
