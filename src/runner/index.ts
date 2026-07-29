@@ -291,11 +291,20 @@ export class Runner {
           msg.attachments ?? [],
           msg.designBoard,
           msg.designBoards ?? [],
-          msg.ghost === true
+          msg.ghost === true,
+          msg.subagents ?? [],
+          msg.spawnRoom ?? 0
         )
         break
       case 'steer':
-        void this.steer(msg.promptId, msg.text, msg.byName, msg.attachments ?? [], msg.ghost === true)
+        void this.steer(
+          msg.promptId,
+          msg.text,
+          msg.byName,
+          msg.attachments ?? [],
+          msg.ghost === true,
+          msg.from?.kind === 'subagent'
+        )
         break
       case 'cancel': {
         const live = this.running.get(msg.promptId)
