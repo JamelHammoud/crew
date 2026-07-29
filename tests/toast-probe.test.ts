@@ -197,11 +197,10 @@ describe('toasts', () => {
     act(() => {
       toast('Copied')
     })
-    const card = act(() => void swipe(24)) as unknown as Element
+    act(() => void swipe(24))
     tick(TOAST_OUT_MS)
     expect(screen.getByText('Copied')).toBeTruthy()
     expect(document.querySelector<HTMLElement>('.toast-card')!.style.transform).toBe('translateX(0px)')
-    expect(card).toBe(undefined)
   })
 
   it('pulling the other way leaves it where it stands', () => {
