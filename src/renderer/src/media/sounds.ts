@@ -271,6 +271,15 @@ const STRIKES: Record<StrikeName, Strike[]> = {
     bubble(SPARK, NOTE.a5, 0.21, 0.52, 0.14),
     bubble(SPARK, NOTE.cs6, 0.29, 0.6, -0.16)
   ],
+  // One gesture in two directions: a helper going out travels away from the
+  // middle and up, and the same helper coming home travels back to the middle
+  // and down. Two bubbles each and nothing under them, because it is the low
+  // voice and the long tail that make a sound land, and neither of these is
+  // anything landing. Neither one ends on A, which is where the sounds that
+  // really do mean finished all come to rest, so a helper can never be heard
+  // as the thread you were waiting on.
+  'helper.out': [bubble(ERRAND, NOTE.b4, 0, 0.14, -0.04), bubble(ERRAND, NOTE.fs5, 0.055, 0.2, 0.34)],
+  'helper.home': [bubble(ERRAND, NOTE.fs5, 0, 0.14, 0.34), bubble(ERRAND, NOTE.b4, 0.055, 0.32, -0.04)],
   'task.done': [
     {
       hz: 1567.98,
