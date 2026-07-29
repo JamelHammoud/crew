@@ -21,17 +21,17 @@ const WINDOWS: Record<string, () => JSX.Element> = {
 }
 
 const hash = window.location.hash
-const Aside: (() => JSX.Element) | undefined = WINDOWS[hash]
+const Aside = WINDOWS[hash] ?? null
 const root = document.getElementById('root')!
 
 applyPlatform()
 // The windows beside the app wear the theme the app picked rather than picking
 // one of their own.
-if (Aside) showTheme(storedTheme())
-else applyTheme(storedTheme())
+if (Aside === null) applyTheme(storedTheme())
+else showTheme(storedTheme())
 if (hash === '#scribe') root.classList.add('bare')
 
-if (!Aside) {
+if (Aside === null) {
   void useCrew.getState().boot()
   publishPresence()
   publishScribe()
@@ -42,4 +42,6 @@ if (!Aside) {
   window.crew.onOpenUrl(url => useBrowser.getState().openUrl(url))
 }
 
-createRoot(root).render(<React.StrictMode>{Aside ? <Aside /> : <App />}</React.StrictMode>)
+createRoot(root).render(
+  <React.StrictMode>{Aside === null ? <App /> : <Aside />}</React.StrictMode>
+)
