@@ -211,7 +211,7 @@ describe('what arrives is only as good as what checks it', () => {
     expect(clean.finish).toBe('paste')
   })
 
-  it('takes nothing at all and hands back this machine's own', () => {
+  it('takes nothing at all and hands back what this machine would use', () => {
     expect(cleanSettings(null, 'win32')).toEqual(defaultSettings('win32'))
     expect(cleanSettings('nonsense', 'win32')).toEqual(defaultSettings('win32'))
   })

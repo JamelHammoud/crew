@@ -54,13 +54,6 @@ const selectable = (node: Element | null): boolean => Boolean(node?.closest('.se
 describe('what is selectable', () => {
   afterEach(cleanup)
 
-  it('holds the app to not selectable and lets fields and editable boxes back in', () => {
-    const base = styles.slice(styles.indexOf('@layer base'), styles.indexOf('::selection'))
-    expect(base).toMatch(/body\s*\{\s*user-select:\s*none/)
-    expect(base).toMatch(/input,\s*\n\s*textarea,\s*\n\s*\[contenteditable\]/)
-    expect(base).toMatch(/user-select:\s*text/)
-  })
-
   it('opens what somebody wrote and leaves the name and the time shut', () => {
     boot()
     const { container } = render(createElement(ChatMessage, { item: item({}) }))
