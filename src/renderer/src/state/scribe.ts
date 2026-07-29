@@ -199,6 +199,9 @@ export const useScribe = create<ScribeState>((set, get) => {
     apply: settings => {
       const clean = cleanSettings(settings, platform())
       set({ settings: clean })
+      const idle = get().phase === 'off' || get().phase === 'waking'
+      if (clean.on && clean.ready && !take.listening) void take.start()
+      else if ((!clean.on || !clean.ready) && idle && take.listening) take.close()
       // The model is fetched the moment dictation is turned on rather than the
       // first time the key is pressed, so nobody's first sentence waits on a
       // download.
