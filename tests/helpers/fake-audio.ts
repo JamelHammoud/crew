@@ -106,6 +106,15 @@ export class FakeAudio {
     }
   }
 
+  // Everything the ear and a dictation hang off the microphone. The worklet
+  // itself is never really loaded here: what a test drives is the block of
+  // samples coming back off its port.
+  audioWorklet = { addModule: (): Promise<void> => Promise.resolve() }
+
+  createMediaStreamSource(): unknown {
+    return { connect: () => {}, disconnect: () => {} }
+  }
+
   createBiquadFilter(): unknown {
     return { type: 'lowpass', frequency: new Param(), Q: new Param(), connect: () => {} }
   }
