@@ -115,6 +115,7 @@ function receiveAttachment(session: CrewSession, req: http.IncomingMessage, res:
 
 const MAX_DESIGN_BODY = 4 * 1024 * 1024
 const MAX_DESIGN_OPS = 200
+const MAX_AGENT_BODY = 256 * 1024
 const JSON_HEADERS = { 'content-type': 'application/json' }
 
 function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
