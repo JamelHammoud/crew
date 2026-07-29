@@ -82,7 +82,9 @@ export function cleanWorkCard(raw: unknown): WorkCard | null {
   return null
 }
 
-const WORK_FENCE = /^[ \t]*```[ \t]*work[ \t]*\r?\n([\s\S]*?)^[ \t]*```[ \t]*$/gim
+// The newline after the closing fence goes with it, or a card lifted out from
+// between two lines leaves a blank one behind and splits the prose in two.
+const WORK_FENCE = /^[ \t]*```[ \t]*work[ \t]*\r?\n([\s\S]*?)^[ \t]*```[ \t]*\r?\n?/gim
 
 // A card is a fenced block written beside the agent's ordinary words. It is
 // taken out of what is read in the thread, because the whole point of one is
