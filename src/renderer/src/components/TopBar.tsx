@@ -26,9 +26,9 @@ import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
 import { MenuDivider, MenuItem, Popover } from './Popover'
 
-export type Tab = 'chat' | 'agents' | 'docs' | 'design'
+export type Tab = 'chat' | 'docs' | 'design'
 
-export type NavTab = Exclude<Tab, 'agents'>
+export type NavTab = Tab
 
 export const TOP_BAR_H = 70
 
