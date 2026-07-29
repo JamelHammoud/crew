@@ -812,6 +812,9 @@ export class CrewSession {
       case 'subagent.stop':
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) this.stopSubagent(msg.threadId)
         break
+      case 'subagent.prefs':
+        if (meta.role === 'ui') member.helpers = cleanPrefs(msg)
+        break
       case 'doc.update':
         if (meta.role === 'ui') this.handleDoc(member, msg.page, msg.text, msg.title)
         break
