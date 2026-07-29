@@ -51,6 +51,9 @@ export interface SessionSnapshot {
   todos: Todo[]
   // Absent from a host running an older build, which has no toolbox to send.
   tools?: CrewTool[]
+  // The roles a crew has written for its helpers, which ride here for the same
+  // reason the toolbox does.
+  subagents?: Subagent[]
   boards?: DesignBoardMeta[]
   // A call lives only as long as the people in it, so it rides in the snapshot
   // and never in the event log.
