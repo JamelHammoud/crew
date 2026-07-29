@@ -242,6 +242,14 @@ export default function ThreadView({ threadId }: { threadId: string }) {
           <div className="bg-ink-900 px-6 pb-6">
             <div className="relative max-w-[660px] mx-auto pointer-events-auto">
               {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
+              {scrolledUp && diffTotals.files > 0 && (
+                <FilesJump
+                  files={diffTotals.files}
+                  added={diffTotals.added}
+                  removed={diffTotals.removed}
+                  onClick={jumpToBottom}
+                />
+              )}
               <QueueBar items={queuedMessages} onEdit={editQueued} onRemove={removeQueued} />
               {replyTo && <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />}
               {thread.ghost && <GhostBar />}
