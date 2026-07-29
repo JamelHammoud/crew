@@ -78,8 +78,9 @@ export function endPreview(end: Extract<SessionEvent, { kind: 'agent.end' }> | u
 // agent that sent it ever mentions it.
 export interface SubagentRun {
   threadId: string
-  roleId: string
-  roleName: string
+  // The name the agent made it up under, and what it is doing. Both are that
+  // agent's own words, written the moment it sent the work out.
+  name: string
   subject: string
   agentId: string
   ok?: boolean
@@ -261,8 +262,7 @@ export function buildThread(
         runs: [
           {
             threadId: event.threadId,
-            roleId: event.roleId,
-            roleName: event.roleName,
+            name: event.name,
             subject: event.subject,
             agentId: event.agentId,
             ok: home?.ok,
