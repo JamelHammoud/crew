@@ -169,7 +169,7 @@ describe('the way back to the panel', () => {
     open('t1')
     const { queryByLabelText } = view('t1')
 
-    expect(queryByLabelText('Hide panel')).not.toBeNull()
+    expect(queryByLabelText('Show panel')).not.toBeNull()
   })
 
   it('puts the panel away and keeps what is in it', () => {
