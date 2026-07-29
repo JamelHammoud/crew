@@ -1347,7 +1347,7 @@ export class CrewSession {
     opts: { provider?: string; model?: string; notify?: boolean } = {}
   ): { id: string; threadId: string } | { error: string } {
     const parent = this.askingThread(promptId)
-    if (!parent) return { error: 'That promptId is not a run this session has going.' }
+    if (!parent) return { error: NOT_RUNNING }
     return this.spawnSubagent({ threadId: parent.id, promptId, byName: parent.agentLabel }, named, subject, task, opts)
   }
 
