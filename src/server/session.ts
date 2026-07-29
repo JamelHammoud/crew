@@ -682,6 +682,15 @@ export class CrewSession {
     ws.on('close', code => this.detach(ws, code))
   }
 
+  // What every board is folded from. It is left out of the events a window is
+  // handed and carried here instead, so a board survives a reload the way the
+  // shelf and the todos do rather than emptying every time somebody comes back.
+  // A ghost's are never in here, because they were never written to the log.
+  private ticketHistory(): TicketEvent[] {
+    const said = this.events.filter((event): event is TicketEvent => isTicketEvent(event.kind))
+    return said.length > TICKET_HISTORY_LIMIT ? said.slice(said.length - TICKET_HISTORY_LIMIT) : said
+  }
+
   snapshot(): SessionSnapshot {
     const recent = olderEvents(this.events, undefined, SNAPSHOT_EVENT_LIMIT)
     return {
