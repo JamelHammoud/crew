@@ -154,8 +154,8 @@ export default function ScribePill() {
                 ? waveBands(performance.now(), count, out)
                 : reader.read(scribeAnalyser(), count, out)
             }
-            className="w-20 h-6 px-1 text-fg/70 justify-between"
-            barClassName="w-[3px]"
+            className="w-16 h-5 px-1 text-fg/70 justify-between"
+            barClassName="w-[2px]"
           />
         )}
 
