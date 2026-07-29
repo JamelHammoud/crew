@@ -19,6 +19,10 @@
     {
       "id": "8f24efe3-be4a-4766-afbf-fd1d84a84ca6",
       "name": "Jamel (dev)"
+    },
+    {
+      "id": "cd5dd42b-2c79-4fdb-bf49-9e85bb097cfb",
+      "name": "Jamel (Envoy)"
     }
   ],
   "agents": [
@@ -127,7 +131,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785360057072,
+        "fetchedAt": 1785359877059,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -216,7 +220,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785360057074,
+        "fetchedAt": 1785359877060,
         "windows": [
           {
             "key": "primary",
@@ -312,7 +316,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785360057074,
+        "fetchedAt": 1785359877060,
         "windows": [
           {
             "key": "primary",
@@ -431,14 +435,14 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785359947881,
+        "fetchedAt": 1785359647848,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 1,
+            "percent": 0,
             "severity": "normal",
-            "resetsAt": 1785377400325,
+            "resetsAt": 1785377399093,
             "active": false
           },
           {
@@ -446,7 +450,7 @@
             "label": "Weekly (all models)",
             "percent": 58,
             "severity": "normal",
-            "resetsAt": 1785535200325,
+            "resetsAt": 1785535199093,
             "active": true
           },
           {
@@ -604,7 +608,7 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785360057072,
+        "fetchedAt": 1785359877059,
         "windows": [],
         "accountId": "5bc2e794-f498-41c0-99f0-f10f5f65d226",
         "accountLabel": "alihammoud0202@gmail.com",
@@ -647,6 +651,143 @@
         }
       ],
       "steerable": false
+    },
+    {
+      "id": "jamel (envoy)/73bb1549-398e-4f8b-8481-99b25f8d8e56",
+      "label": "Bob",
+      "provider": "claude",
+      "ownerId": "cd5dd42b-2c79-4fdb-bf49-9e85bb097cfb",
+      "ownerName": "Jamel (Envoy)",
+      "settings": {
+        "model": "opus",
+        "opusModel": "claude-opus-5",
+        "effort": "high"
+      },
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "opus",
+              "label": "Opus"
+            },
+            {
+              "value": "sonnet",
+              "label": "Sonnet"
+            },
+            {
+              "value": "haiku",
+              "label": "Haiku"
+            },
+            {
+              "value": "fable",
+              "label": "Fable"
+            }
+          ],
+          "default": "opus"
+        },
+        {
+          "key": "opusModel",
+          "label": "Version",
+          "options": [
+            {
+              "value": "claude-opus-5",
+              "label": "Opus 5"
+            },
+            {
+              "value": "claude-opus-4-8",
+              "label": "Opus 4.8"
+            },
+            {
+              "value": "claude-opus-4-7",
+              "label": "Opus 4.7"
+            },
+            {
+              "value": "claude-opus-4-6",
+              "label": "Opus 4.6"
+            },
+            {
+              "value": "claude-opus-4-5-20251101",
+              "label": "Opus 4.5"
+            },
+            {
+              "value": "opus",
+              "label": "Latest"
+            }
+          ],
+          "default": "claude-opus-5",
+          "visibleWhen": {
+            "key": "model",
+            "value": "opus"
+          }
+        },
+        {
+          "key": "effort",
+          "label": "Thinking",
+          "options": [
+            {
+              "value": "low",
+              "label": "low"
+            },
+            {
+              "value": "medium",
+              "label": "medium"
+            },
+            {
+              "value": "high",
+              "label": "high"
+            },
+            {
+              "value": "xhigh",
+              "label": "xhigh"
+            },
+            {
+              "value": "max",
+              "label": "max"
+            }
+          ],
+          "default": "high"
+        }
+      ],
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1785360054937,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 68,
+            "severity": "normal",
+            "resetsAt": 1785361800291,
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 78,
+            "severity": "warning",
+            "resetsAt": 1785654000291,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 96,
+            "severity": "critical",
+            "resetsAt": 1785654000292,
+            "active": true
+          }
+        ],
+        "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
+        "accountLabel": "jamel@envoy.co",
+        "plan": "team"
+      }
     }
   ],
   "removedAgents": [
