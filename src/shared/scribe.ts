@@ -52,11 +52,10 @@ export const LONGEST_MS = 120_000
 
 export const WORD_LIMIT = 200
 
-const MAC_KEYS: ScribeKey[] = ['fn', 'right-option', 'right-ctrl', 'ctrl', 'meta']
-const OTHER_KEYS: ScribeKey[] = ['right-ctrl', 'ctrl', 'meta', 'right-option']
+const MAC_KEYS: ScribeKey[] = ['right-option', 'right-ctrl', 'ctrl', 'meta']
+const OTHER_KEYS: ScribeKey[] = ['right-ctrl', 'ctrl', 'right-option', 'meta']
 
 const MAC_LABELS: Record<ScribeKey, string> = {
-  fn: 'Fn',
   'right-option': 'Right Option',
   'right-ctrl': 'Right Control',
   ctrl: 'Control',
@@ -65,7 +64,6 @@ const MAC_LABELS: Record<ScribeKey, string> = {
 }
 
 const OTHER_LABELS: Record<ScribeKey, string> = {
-  fn: 'Fn',
   'right-option': 'Right Alt',
   'right-ctrl': 'Right Ctrl',
   ctrl: 'Ctrl',
