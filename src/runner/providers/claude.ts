@@ -2,6 +2,7 @@ import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import type { AgentSettingField } from '../../shared/llm'
 import { resultText } from './output'
+import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
 import { claudeUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
@@ -104,7 +105,8 @@ export const parseClaudeLine: OutputParser = line => {
             status: 'started' as const,
             detail: activityDetail(block.input),
             files: fileChanges(block.name, block.input),
-            todos: stepTodos(block.input)
+            todos: stepTodos(block.input),
+            task: taskCall(block.name, block.input)
           }
         })
       }
