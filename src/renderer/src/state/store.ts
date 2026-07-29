@@ -167,6 +167,9 @@ interface CrewState {
   chatDraft: string
   chatCommands: CommandName[]
   threadDrafts: Record<string, string>
+  // What a thread's next message was told to do. A thread's commands are one
+  // choice about the one message, so there is only ever one of them held.
+  threadCommands: Record<string, CommandName[]>
   httpBase: string
   pending: Record<string, PendingAttachment[]>
   boot: () => Promise<void>
