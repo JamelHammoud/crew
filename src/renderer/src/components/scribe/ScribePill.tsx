@@ -163,9 +163,9 @@ export default function ScribePill() {
             sound never arrived has nothing to try, so it says nothing rather
             than offering a button that cannot work. */}
         {again && (
-          <span className="ml-2 flex shrink-0">
+          <span className="ml-1.5 flex shrink-0">
             <Round label="Try again" solid onClick={() => void retry()}>
-              <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
+              <RefreshGlyph className="w-3.5 h-3.5" strokeWidth={STROKE_BOLD} />
             </Round>
           </span>
         )}
