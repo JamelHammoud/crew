@@ -7,6 +7,7 @@ import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
 import type { Present, PresenceSnapshot } from '../../shared/presence'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../../shared/repository'
 import type { RecentJoin, RecentProject } from '../../shared/recent'
+import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
 
 declare global {

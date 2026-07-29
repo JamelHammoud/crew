@@ -7,8 +7,7 @@ import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { CrewHome } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
-import type { ScribeSettings } from '../shared/scribe'
-import type { ScribeKeysState } from './scribe-keys'
+import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { CurrentSession, OpenOptions } from './session'
 import type { TerminalSize } from './terminal'
 
@@ -95,9 +94,9 @@ const bridge = {
       ipcRenderer.off('terminal:exit', handler)
     }
   },
-  applyScribe: (settings: ScribeSettings): Promise<ScribeKeysState> =>
+  applyScribe: (settings: ScribeSettings): Promise<ScribeKeyState> =>
     ipcRenderer.invoke('scribe:apply', settings),
-  scribeState: (): Promise<ScribeKeysState> => ipcRenderer.invoke('scribe:state'),
+  scribeState: (): Promise<ScribeKeyState> => ipcRenderer.invoke('scribe:state'),
   scribeDone: (text: string): void => ipcRenderer.send('scribe:done', text),
   dismissScribe: (): void => ipcRenderer.send('scribe:dismiss'),
   resizeScribe: (height: number): void => ipcRenderer.send('scribe:size', height),
