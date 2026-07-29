@@ -4,6 +4,7 @@ import { scribeAnalyser, useScribe } from '../../state/scribe'
 import InsetRing from '../InsetRing'
 import Levels from '../Levels'
 import Spinner from '../Spinner'
+import { grab } from './grab'
 
 // What is on screen while you are dictating. It floats over whatever app you
 // are typing into, which is why it is `glass-strong`: a white window behind
