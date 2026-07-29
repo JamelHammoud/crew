@@ -287,8 +287,6 @@ export default function BrowserPanel() {
 function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
-  // A plan is not yours to close. It is here because you are in the thread.
-  const pinned = tab.kind === 'plan'
 
   useEffect(() => {
     if (active) pillRef.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
