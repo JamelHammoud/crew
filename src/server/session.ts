@@ -432,7 +432,13 @@ export class CrewSession {
           queue: [],
           running: null,
           boardId: event.boardId,
-          voice: event.voice
+          voice: event.voice,
+          parentThreadId: event.parentThreadId,
+          parentPromptId: event.parentPromptId,
+          roleId: event.roleId,
+          subject: event.subject,
+          depth: event.depth,
+          startedAt: event.ts
         })
       }
       if (event.kind === 'thread.plan') {
