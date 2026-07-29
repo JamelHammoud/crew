@@ -23,7 +23,7 @@ import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import { ArchiveGlyph, CheckGlyph, ChecklistGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
+import { ArchiveGlyph, BoardGlyph, CheckGlyph, ChecklistGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { pendingCount, useCrew } from '../state/store'
 
@@ -51,6 +51,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const planShowing = useBrowser(s => {
     const shown = s.tabs.find(t => t.id === s.activeTabId)
     return shown?.kind === 'plan' && shown.threadId === threadId
+  })
+  const boardShowing = useBrowser(s => {
+    const shown = s.tabs.find(t => t.id === s.activeTabId)
+    return shown?.kind === 'work' && shown.threadId === threadId
   })
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
