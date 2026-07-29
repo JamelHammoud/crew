@@ -912,6 +912,21 @@ export const useCrew = create<CrewState>((set, get) => {
     removeTool: toolId => {
       socket.send({ type: 'tool.remove', toolId })
     },
+    addSubagent: (name, brief, provider, settings) => {
+      socket.send({ type: 'subagent.add', name, brief, provider, settings })
+    },
+    editSubagent: (roleId, name, brief, provider, settings) => {
+      socket.send({ type: 'subagent.edit', roleId, name, brief, provider, settings })
+    },
+    removeSubagent: roleId => {
+      socket.send({ type: 'subagent.remove', roleId })
+    },
+    runSubagent: (roleId, threadId, subject, task) => {
+      socket.send({ type: 'subagent.run', roleId, threadId, subject, task })
+    },
+    stopSubagent: threadId => {
+      socket.send({ type: 'subagent.stop', threadId })
+    },
     postScore: (gameId, score) => {
       socket.send({ type: 'game.score', gameId, score })
     },
