@@ -314,6 +314,11 @@ const DESIGN_SAVE_MS = 500
 const DESIGN_CURSOR_STEP_MS = 140
 const DESIGN_CURSOR_STEPS_MAX = 25
 
+// The chat's own events. A board is folded off the thread it belongs to rather
+// than scrolled past here, so what an agent said about its own work is left out
+// of what a window is handed, the way a high score and a track on the shelf are.
+const chatEvents = (events: SessionEvent[]): SessionEvent[] => events.filter(event => !isTicketEvent(event.kind))
+
 // A person is one row per game however they happen to be capitalised, since a
 // member is keyed by their name in lower case everywhere else here too.
 const scoreKey = (gameId: string, name: string): string => `${gameId}\n${name.toLowerCase()}`
@@ -688,7 +693,7 @@ export class CrewSession {
         avatar: m.avatar
       })),
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
-      events: recent.events,
+      events: chatEvents(recent.events),
       moreEvents: recent.more,
       docs: Object.fromEntries(this.docs),
       queues: Object.fromEntries(
