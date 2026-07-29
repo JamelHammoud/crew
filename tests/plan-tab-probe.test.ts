@@ -188,14 +188,18 @@ describe('the way back to the panel', () => {
     expect(planTab()!.threadId).toBe('t1')
   })
 
-  // Closing every tab leaves the panel standing on what it can hold, so the
-  // plan is one press away rather than gone with the thing that showed it.
-  it('offers the plan again on an empty panel', () => {
+  // Nothing left in it is nothing to stand on, and opening it again lands on
+  // Start, where the plan is one press away rather than gone with the tab that
+  // showed it.
+  it('offers the plan again on a panel opened empty', () => {
     open('t1', 'Step one')
-    const { getByText } = view('t1')
+    const { getByText, getByLabelText } = view('t1')
     act(() => useBrowser.getState().closeAll())
 
-    expect(useBrowser.getState().open).toBe(true)
+    expect(useBrowser.getState().open).toBe(false)
+    fireEvent.click(getByLabelText('Show panel'))
+
+    expect(getByText('Start')).not.toBeNull()
     fireEvent.click(getByText('Plan'))
 
     expect(planTab()!.threadId).toBe('t1')
