@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-export type SettingsTab = 'you' | 'appearance' | 'sound' | 'people' | 'agents'
+export type SettingsTab = 'you' | 'appearance' | 'sound' | 'people' | 'agents' | 'helpers'
 
 // Which page of the settings is open, or none. It is held here rather than in
 // the top bar so anything can raise it, the way a toast is raised, and so the
