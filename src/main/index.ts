@@ -57,17 +57,38 @@ const tray = new CrewTray({
 })
 const scribe = new ScribeWindow(rendererPage)
 let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
+// What a dictation has written and not yet let go of. Nothing may be pasted
+// while the key is still held down: the modifier being held is composed into the
+// keystroke, so the app on the other side is handed a shortcut nobody pressed
+// and the words land nowhere. Held to the end, a dictation on that key reads as
+// it always did and the rest write as they are spoken.
+let scribePending: string[] = []
 const scribeKeys = new ScribeKeys({
   onArm: () => {
+    scribePending = []
     scribe.show()
     scribe.send('scribe:arm')
   },
   onFinish: () => scribe.send('scribe:finish'),
   onCancel: () => {
+    scribePending = []
     scribe.send('scribe:cancel')
     scribe.hide()
   }
 })
+
+function scribeWrite(text: string): void {
+  scribePending.push(text)
+  if (scribeKeys.holding) return
+  scribeLand(scribePending.join(''))
+  scribePending = []
+}
+
+function scribeLand(text: string): void {
+  void deliver(text, scribeSettings.finish).then(landed => {
+    if (!landed.ok) scribe.send('scribe:problem', landed.problem)
+  })
+}
 let balloonShown = false
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
