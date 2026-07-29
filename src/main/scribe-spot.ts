@@ -51,14 +51,22 @@ export function hold(spot: Spot, pill: Size, work: Box): Spot {
   }
 }
 
-// Growing keeps the bottom edge where it is, so the two buttons stay under the
-// pointer that is reaching for them. Anchored at the top instead, a pill that
-// grows a line pushes its own check button down and out from under the finger
-// already on the way to it.
-export function grown(box: Box, height: number, work: Box): Spot {
+// Growing keeps the bottom edge where it is, so what is on the pill stays under
+// the pointer that is reaching for it. Anchored at the top instead, a pill that
+// grows a line pushes its own buttons down and out from under the finger already
+// on the way to them.
+//
+// Sideways it keeps its middle, because that is where it grows from: the pill is
+// as small as the mark while nothing is being said and opens out around itself
+// the moment there is, so held by an edge instead it would walk across the screen
+// every time somebody started talking.
+export function grown(box: Box, size: Size, work: Box): Spot {
   return hold(
-    { x: box.x, y: box.y + box.height - height },
-    { width: box.width, height },
+    {
+      x: box.x + box.width / 2 - size.width / 2,
+      y: box.y + box.height - size.height
+    },
+    size,
     work
   )
 }
