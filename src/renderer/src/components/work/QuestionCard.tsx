@@ -5,6 +5,11 @@ import { QuestionGlyph } from '../../icons'
 // A question the agent raised and answered for itself. Answering is one press,
 // answering late costs whatever was built on the assumption, and the count of
 // files changed since is what says how much that is.
+//
+// The options are the short way and never the whole of it. An agent writes them
+// from what it happened to be weighing, so the answer somebody actually has is
+// often neither one, and a row of pills with nowhere to write is a question
+// asked of you that you can only answer in its own words.
 export default function QuestionCard({
   question,
   onAnswer
