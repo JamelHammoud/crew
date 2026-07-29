@@ -62,6 +62,10 @@ function tell(): void {
 
 function put(next: Toast[]): void {
   toasts = next
+  // A pointer cannot leave a stack that is no longer there, and the last row
+  // going under it is exactly what a swipe or a press does, so an empty stack
+  // hands its own clocks back rather than holding the next word forever.
+  if (held && next.length === 0) held = false
   tell()
 }
 
