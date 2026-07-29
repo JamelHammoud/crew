@@ -7,10 +7,14 @@ import InsetRing from '../InsetRing'
 import Levels from '../Levels'
 import { grab } from './grab'
 
-// What is on screen while you are dictating. It floats over whatever app you
-// are typing into, which is why it wears `glass-pill`: nothing can blur what is
-// behind a transparent window, so that material is lit rather than blurred, and
-// the tint is the whole of it.
+// What is on screen while dictation is on. It stands there the whole time rather
+// than arriving with a dictation and leaving with it, so at rest it is the mark
+// and nothing else, small enough to be left somewhere and forgotten about, and
+// it grows only while there is something to hear.
+//
+// It floats over whatever app you are typing into, which is why it wears
+// `glass-pill`: nothing can blur what is behind a transparent window, so that
+// material is lit rather than blurred, and the tint is the whole of it.
 //
 // Nothing on it is set in a solid grey for the same reason. Every mark takes the
 // foreground at an opacity, so it stands above the surface rather than beside
