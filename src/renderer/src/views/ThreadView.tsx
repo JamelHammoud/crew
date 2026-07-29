@@ -30,6 +30,7 @@ import { pendingCount, useCrew } from '../state/store'
 const BACK_WIDTH = 40
 const AVATAR_WIDTH = 52
 const NAME_MIN_WIDTH = 96
+const EMPTY_COMMANDS: CommandName[] = []
 
 export default function ThreadView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)
