@@ -91,6 +91,15 @@ export default function BrowserPanel() {
   // The board does the same, and only for a thread that was asked for one.
   const boardThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.tickets ? s.openThreadId : null))
 
+  // The helpers a thread sent out go with the thread, so what is left in the row
+  // is about the thread you are in. Every way back to them is a press away: the
+  // chips in the thread, the button in its header, or the panel's own list.
+  const openThreadId = useCrew(s => s.openThreadId)
+
+  useEffect(() => {
+    useBrowser.getState().leaveThread(openThreadId)
+  }, [openThreadId])
+
   useEffect(() => {
     const browser = useBrowser.getState()
     if (boardThread && !browser.closedBoards.includes(boardThread)) browser.showWork(boardThread)
