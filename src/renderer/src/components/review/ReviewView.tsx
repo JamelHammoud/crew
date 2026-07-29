@@ -135,13 +135,16 @@ export default function ReviewView() {
         ) : (
           <div className="space-y-4">
             {staged.length > 0 && (
-              <div className="space-y-1.5">
-                <Section title="Staged" count={staged.length}>
+              <Section
+                title="Staged"
+                count={staged.length}
+                actions={
                   <SectionAction
                     label="Unstage all"
                     onClick={() => void send({ do: 'unstage', paths: staged.map(one => one.path) })}
                   />
-                </Section>
+                }
+              >
                 {staged.map(change => (
                   <ChangeRow
                     key={keyOf(change)}
@@ -153,28 +156,33 @@ export default function ReviewView() {
                     onDiscard={() => setAsk({ kind: 'discard', paths: [change.path], what: change.path })}
                   />
                 ))}
-              </div>
+              </Section>
             )}
 
             {loose.length > 0 && (
-              <div className="space-y-1.5">
-                <Section title="Changed" count={loose.length}>
-                  <SectionAction
-                    label="Stage all"
-                    onClick={() => void send({ do: 'stage', paths: loose.map(one => one.path) })}
-                  />
-                  <SectionAction
-                    label="Discard all"
-                    danger
-                    onClick={() =>
-                      setAsk({
-                        kind: 'discard',
-                        paths: loose.map(one => one.path),
-                        what: `${loose.length} ${loose.length === 1 ? 'file' : 'files'}`
-                      })
-                    }
-                  />
-                </Section>
+              <Section
+                title="Changed"
+                count={loose.length}
+                actions={
+                  <>
+                    <SectionAction
+                      label="Stage all"
+                      onClick={() => void send({ do: 'stage', paths: loose.map(one => one.path) })}
+                    />
+                    <SectionAction
+                      label="Discard all"
+                      danger
+                      onClick={() =>
+                        setAsk({
+                          kind: 'discard',
+                          paths: loose.map(one => one.path),
+                          what: `${loose.length} ${loose.length === 1 ? 'file' : 'files'}`
+                        })
+                      }
+                    />
+                  </>
+                }
+              >
                 {loose.map(change => (
                   <ChangeRow
                     key={keyOf(change)}
@@ -186,14 +194,11 @@ export default function ReviewView() {
                     onDiscard={() => setAsk({ kind: 'discard', paths: [change.path], what: change.path })}
                   />
                 ))}
-              </div>
+              </Section>
             )}
 
             {stashes.length > 0 && (
-              <div className="space-y-1.5">
-                <Section title="Put aside" count={stashes.length}>
-                  <span />
-                </Section>
+              <Section title="Put aside" count={stashes.length}>
                 {stashes.map(stash => (
                   <StashRow
                     key={stash.ref}
@@ -202,7 +207,7 @@ export default function ReviewView() {
                     onDrop={() => setAsk({ kind: 'drop', ref: stash.ref })}
                   />
                 ))}
-              </div>
+              </Section>
             )}
           </div>
         )}
@@ -223,7 +228,7 @@ export default function ReviewView() {
             onClick={() => setAsk(null)}
             className="h-10 rounded-full px-4 text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
           >
-            Keep them
+            {ask?.kind === 'drop' ? 'Keep it' : 'Keep them'}
           </button>
           <button
             onClick={() => void settle()}
