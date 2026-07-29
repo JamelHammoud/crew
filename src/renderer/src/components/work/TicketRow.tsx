@@ -52,7 +52,7 @@ export default function TicketRow({
       {open && (
         <div className="px-3 pb-2.5 space-y-1">
           {ticket.decisions.map((decision, index) => (
-            <p key={index} className="text-sm text-fg-secondary">
+            <p key={index} className="text-sm text-fg-secondary select-text">
               {decision}
             </p>
           ))}

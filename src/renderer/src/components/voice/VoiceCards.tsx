@@ -23,7 +23,7 @@ function Facts({ rows }: { rows: Array<{ label: string; value: string }> }) {
 
 function Items({ items }: { items: string[] }) {
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-1.5 select-text">
       {items.map((item, index) => (
         <li key={index} className="flex gap-2.5 text-sm text-fg-secondary">
           <span className="mt-[7px] w-1 h-1 rounded-full bg-fg-faint shrink-0" />
