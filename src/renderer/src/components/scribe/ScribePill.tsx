@@ -45,7 +45,7 @@ function Round({
       // its own rather than the start of a move.
       onPointerDown={event => event.stopPropagation()}
       aria-label={label}
-      className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-colors duration-150 active:scale-90 ${
+      className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-150 active:scale-90 ${
         solid ? 'bg-fg text-ink-900 hover:bg-fg/90' : 'bg-fg/10 text-fg/70 hover:bg-fg/20 hover:text-fg'
       }`}
     >
