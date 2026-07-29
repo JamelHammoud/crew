@@ -8,7 +8,6 @@ import type { HuddleRoom, HuddleSignal } from './huddle'
 import type { AgentSettingField, AgentSettings, AgentStep, AgentUsage, PooledAgent, RunStep } from './llm'
 import type { MusicPlaylist, MusicRoom, MusicUpload } from './music'
 import type { ReactionEmoji } from './reactions'
-import type { Subagent } from './subagents'
 import type { CrewTool, ToolAction } from './toolbox'
 
 export interface RegisteredLlm {
@@ -51,9 +50,6 @@ export interface SessionSnapshot {
   todos: Todo[]
   // Absent from a host running an older build, which has no toolbox to send.
   tools?: CrewTool[]
-  // The roles a crew has written for its helpers, which ride here for the same
-  // reason the toolbox does.
-  subagents?: Subagent[]
   boards?: DesignBoardMeta[]
   // A call lives only as long as the people in it, so it rides in the snapshot
   // and never in the event log.
@@ -101,14 +97,6 @@ export type ClientMessage =
   | { type: 'tool.add'; name: string; mark: string; action: ToolAction }
   | { type: 'tool.edit'; toolId: string; name: string; mark: string; action: ToolAction }
   | { type: 'tool.remove'; toolId: string }
-  // The window naming the role's own id, so the mark it was given on the form
-  // is the mark it keeps. The host takes it only if it is a plain uuid nothing
-  // else answers to, the way a playlist's is.
-  | { type: 'subagent.add'; name: string; brief: string; provider?: string; settings?: AgentSettings; roleId?: string }
-  | { type: 'subagent.edit'; roleId: string; name: string; brief: string; provider?: string; settings?: AgentSettings }
-  | { type: 'subagent.remove'; roleId: string }
-  // Somebody starting a helper by hand, on the thread they are standing in.
-  | { type: 'subagent.run'; roleId: string; threadId: string; subject?: string; task: string }
   | { type: 'subagent.stop'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that
   // window's own storage and said again on every connect, the way the volume is
@@ -207,11 +195,11 @@ export type ServerMessage =
       // A picture in a ghost thread is never kept beside the session, so the
       // machine running it says where it may put one.
       ghost?: boolean
-      // The roles this run may send work out to, and how many more it may have
-      // running at once. The machine turns those into the preamble, because it
-      // is the side that knows the address.
-      subagents?: Subagent[]
+      // How many helpers this run may still have going at once, and the CLIs it
+      // could put one on. The machine turns those into the words about helpers,
+      // because it is the side that knows the address they are reached at.
       spawnRoom?: number
+      spawnProviders?: string[]
     }
   | {
       type: 'steer'
