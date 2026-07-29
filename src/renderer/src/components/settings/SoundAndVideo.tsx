@@ -72,10 +72,11 @@ export default function SoundAndVideo() {
             }}
           />
         </Row>
-        {/* The number alone cannot say why it is nought, so the speaker beside
-            it says it and is the way back. */}
+        {/* The bar is the whole of it. A number beside it says the same thing
+            in figures, and an empty bar cannot say why it is empty, so the
+            speaker is what says muted and is the way back. */}
         <Row label="Music">
-          <div className="w-72 flex items-center gap-3">
+          <div className="w-64 flex items-center gap-3">
             <button
               onClick={() => setMuted(!muted)}
               aria-label={muted ? 'Unmute music' : 'Mute music'}
@@ -84,9 +85,6 @@ export default function SoundAndVideo() {
               {muted ? <SpeakerOffGlyph className="w-[18px] h-[18px]" /> : <SpeakerGlyph className="w-[18px] h-[18px]" />}
             </button>
             <Slider className="flex-1" value={muted ? 0 : volume} label="Music volume" onChange={setVolume} />
-            <span className="w-8 shrink-0 text-right text-sm text-fg/45 tabular-nums">
-              {Math.round((muted ? 0 : volume) * 100)}
-            </span>
           </div>
         </Row>
       </Section>
