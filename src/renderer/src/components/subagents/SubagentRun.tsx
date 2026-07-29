@@ -18,6 +18,14 @@ import { useStickToBottom } from '../useStickToBottom'
 // header row above it, RunStatus says it is working, and the words are the
 // helper's own, so a face and a name over the top of all three would be a third
 // telling of it.
+//
+// The transcript never travels sideways. A panel is half the width the thread
+// column is, so whatever stands past its edge is slack rather than something to
+// go and read, and a bar under the words that scrolls to nothing is a control
+// that does nothing. Anything in here that really has more to the right owns a
+// scroller of its own: a code fence, a diff, a terminal card and a table are all
+// overflow-x-auto inside their own box, so clipping the column costs none of it.
+// The aside holds the same rule for the same reason.
 
 export default function SubagentRun({ threadId }: { threadId: string }) {
   const events = useCrew(state => state.events)
