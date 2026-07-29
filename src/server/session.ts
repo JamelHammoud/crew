@@ -1475,7 +1475,7 @@ export class CrewSession {
   subagentState(threadId: string): {
     id: string
     subject: string
-    role: string
+    helper: string
     agent: string
     state: 'working' | 'done' | 'failed'
     ms: number
