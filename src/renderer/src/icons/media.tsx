@@ -30,7 +30,7 @@ export const MicOffGlyph = glyph(
 // one growing both ways off a middle is read as loudness. The tall one stands
 // second and the rest fall away after it, because an even rise and fall is a
 // pattern and a voice is not one.
-export const ScribeGlyph = glyph(<path d="M6 9.25v5.5M10 4.5v15M14 7.5v9M18 10.25v3.5" />)
+export const ScribeGlyph = glyph(<path d="M5.25 9.25v5.5M9.75 4.5v15M14.25 7.5v9M18.75 10.25v3.5" />)
 
 const CAMERA_ART = (
   <>
