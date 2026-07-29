@@ -57,13 +57,15 @@ export default function Settings() {
           ))}
         </nav>
 
+        {/* The pages stand beside each other rather than in front of each
+            other, so nothing travels between them: one is simply the one that
+            is up. Each keeps its own scroller, so a page comes back where it
+            was left. */}
         <div className="relative flex-1 min-w-0">
           {tab && (
-            <ScreenSwap screen={tab} depth={tabIndex(tab)} fill>
-              <div className="absolute inset-0 overflow-y-auto">
-                <Panel tab={tab} />
-              </div>
-            </ScreenSwap>
+            <div key={tab} className="absolute inset-0 overflow-y-auto animate-fade">
+              <Panel tab={tab} />
+            </div>
           )}
           <button
             onClick={closeSettings}
