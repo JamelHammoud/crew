@@ -106,7 +106,8 @@ export default function FindBar({
         stepRef.current(e.shiftKey ? -1 : 1)
       } else if (e.key === 'Escape') {
         e.stopPropagation()
-        closeRef.current()
+        setOpen(false)
+        setFindQuery('')
       }
     }
     window.addEventListener('keydown', onKey, true)
