@@ -9,6 +9,14 @@ export interface FileChange {
   diff?: string
 }
 
+// One line of the list an agent keeps for itself, kept as it was written rather
+// than folded into the one word a step says about it. Every CLI hands the whole
+// list over several times a run, and this is the only place it survives.
+export interface StepTodo {
+  text: string
+  status: 'todo' | 'doing' | 'done'
+}
+
 export interface RunStep {
   id: string
   kind: StepKind
@@ -18,6 +26,7 @@ export interface RunStep {
   detail?: string
   output?: string
   files?: FileChange[]
+  todos?: StepTodo[]
 }
 
 export interface AgentStep extends RunStep {
