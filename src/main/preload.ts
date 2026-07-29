@@ -109,7 +109,17 @@ const bridge = {
   scribeWrite: (text: string): void => ipcRenderer.send('scribe:write', text),
   scribeDone: (text: string): void => ipcRenderer.send('scribe:done', text),
   dismissScribe: (): void => ipcRenderer.send('scribe:dismiss'),
-  resizeScribe: (height: number): void => ipcRenderer.send('scribe:size', height),
+  scribeSaid: (): Promise<Said[]> => ipcRenderer.invoke('scribe:said'),
+  forgetScribeSaid: (id?: string): Promise<Said[]> => ipcRenderer.invoke('scribe:forget', id),
+  onScribeSaid: (listener: (said: Said[]) => void): (() => void) => {
+    const handler = (_event: unknown, list: Said[]) => listener(list)
+    ipcRenderer.on('scribe:said', handler)
+    return () => {
+      ipcRenderer.off('scribe:said', handler)
+    }
+  },
+  resizeScribe: (width: number, height: number): void =>
+    ipcRenderer.send('scribe:size', width, height),
   grabScribe: (): void => ipcRenderer.send('scribe:grab'),
   moveScribe: (x: number, y: number, settled: boolean): void =>
     ipcRenderer.send('scribe:drag', x, y, settled),
