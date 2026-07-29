@@ -43,6 +43,7 @@ export default function Chat() {
   const threadPrompts = useCrew(s => s.threadPrompts)
   const steps = useCrew(s => s.steps)
   const tokens = useCrew(s => s.tokens)
+  const costs = useCrew(s => s.costs)
   const sendChat = useCrew(s => s.sendChat)
   const openThread = useCrew(s => s.openThread)
   const text = useCrew(s => s.chatDraft)
