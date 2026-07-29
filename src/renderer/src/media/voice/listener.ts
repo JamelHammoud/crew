@@ -31,11 +31,11 @@ export class VoiceListener {
   // Nothing and null are two different answers. Nothing is a cough or a chair,
   // which is the microphone working; null is the listener falling over, which
   // reads exactly the same on screen unless somebody says so.
-  hear(audio: Float32Array): Promise<string | null> {
+  hear(audio: Float32Array): Promise<Heard | null> {
     const worker = this.hire()
     if (!worker) return Promise.resolve(null)
     const id = ++this.next
-    return new Promise<string | null>(resolve => {
+    return new Promise<Heard | null>(resolve => {
       this.waiting.set(id, resolve)
       worker.postMessage({ type: 'hear', id, audio } satisfies ListenIn, [audio.buffer])
     })
@@ -44,7 +44,7 @@ export class VoiceListener {
   // Everything still in flight comes back as nothing, so no caller is left
   // holding a promise that will never settle.
   forget(): void {
-    for (const resolve of this.waiting.values()) resolve('')
+    for (const resolve of this.waiting.values()) resolve({ text: '', chunks: [] })
     this.waiting.clear()
   }
 
