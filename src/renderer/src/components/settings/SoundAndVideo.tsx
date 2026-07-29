@@ -57,6 +57,7 @@ export default function SoundAndVideo() {
   const volume = useMusic(s => s.volume)
   const muted = useMusic(s => s.muted)
   const setVolume = useMusic(s => s.setVolume)
+  const setMuted = useMusic(s => s.setMuted)
 
   return (
     <Page title="Sound and video">
