@@ -7,4 +7,7 @@ export interface AgentAlert {
   agentId?: string
   from?: string
   stopped?: boolean
+  // Where the way in leads. A question lives on the board and nowhere else, so
+  // opening its thread alone would land you on a page that says nothing about it.
+  board?: boolean
 }
