@@ -95,20 +95,14 @@ function Words({ words }: { words: ScribeWord[] }) {
 function Trouble({ state }: { state: ScribeKeyState }) {
   if (!state.trusted) {
     return (
-      <Row
-        label="Accessibility is off"
-        line="Crew needs it to see the key at all, and to put the words where you are typing."
-      >
+      <Row label="Accessibility is off" line="Dictation does nothing until it is on.">
         <Action label="Open Settings" onClick={() => void window.crew.openScribePermission()} />
       </Row>
     )
   }
   if (state.hooked) return null
   return (
-    <Row
-      label="The key is not being heard"
-      line={`Use ${fallbackLabel(platform())} instead, which always works.`}
-    >
+    <Row label="Your key is not working" line={`Press ${fallbackLabel(platform())} instead.`}>
       <WarningGlyph className="w-5 h-5 text-danger" />
     </Row>
   )
