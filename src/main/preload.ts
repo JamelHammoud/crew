@@ -7,6 +7,8 @@ import type { AgentDef, AgentSettings, ProviderCapability } from '../shared/llm'
 import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
 import type { CrewHome } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
+import type { ScribeSettings } from '../shared/scribe'
+import type { ScribeKeysState } from './scribe-keys'
 import type { CurrentSession, OpenOptions } from './session'
 import type { TerminalSize } from './terminal'
 
@@ -91,6 +93,41 @@ const bridge = {
     ipcRenderer.on('terminal:exit', handler)
     return () => {
       ipcRenderer.off('terminal:exit', handler)
+    }
+  },
+  applyScribe: (settings: ScribeSettings): Promise<ScribeKeysState> =>
+    ipcRenderer.invoke('scribe:apply', settings),
+  scribeState: (): Promise<ScribeKeysState> => ipcRenderer.invoke('scribe:state'),
+  scribeDone: (text: string): void => ipcRenderer.send('scribe:done', text),
+  dismissScribe: (): void => ipcRenderer.send('scribe:dismiss'),
+  resizeScribe: (height: number): void => ipcRenderer.send('scribe:size', height),
+  onScribe: (
+    listener: (word: 'arm' | 'finish' | 'cancel') => void
+  ): (() => void) => {
+    const arm = () => listener('arm')
+    const finish = () => listener('finish')
+    const cancel = () => listener('cancel')
+    ipcRenderer.on('scribe:arm', arm)
+    ipcRenderer.on('scribe:finish', finish)
+    ipcRenderer.on('scribe:cancel', cancel)
+    return () => {
+      ipcRenderer.off('scribe:arm', arm)
+      ipcRenderer.off('scribe:finish', finish)
+      ipcRenderer.off('scribe:cancel', cancel)
+    }
+  },
+  onScribeSettings: (listener: (settings: ScribeSettings) => void): (() => void) => {
+    const handler = (_event: unknown, settings: ScribeSettings) => listener(settings)
+    ipcRenderer.on('scribe:settings', handler)
+    return () => {
+      ipcRenderer.off('scribe:settings', handler)
+    }
+  },
+  onScribeProblem: (listener: (problem: string | null) => void): (() => void) => {
+    const handler = (_event: unknown, problem: string | null) => listener(problem)
+    ipcRenderer.on('scribe:problem', handler)
+    return () => {
+      ipcRenderer.off('scribe:problem', handler)
     }
   },
   onWindowShape: (listener: (shape: { square: boolean; full: boolean }) => void): void => {
