@@ -18,10 +18,12 @@ import { build } from 'esbuild'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
+// Every rule the tidying has, said out loud in one breath. A filler, a word said
+// twice, and a correction that reaches back over the sentence in front of it.
 const SAID =
-  'So um I think we should ship it today. Actually, wait. I think we should ship it tomorrow.'
-const WANTED = ['ship', 'tomorrow']
-const UNWANTED = [' um ', ' uh ']
+  'So um I think we should we should ship it today. Actually, wait. Let us ship it tomorrow.'
+const WANTED = ['ship it tomorrow']
+const UNWANTED = [' um ', ' uh ', 'today', 'actually', 'we should we should']
 
 async function speech(dir) {
   const file = path.join(dir, 'said.wav')
