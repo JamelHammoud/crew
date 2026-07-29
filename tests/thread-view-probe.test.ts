@@ -6,6 +6,7 @@ import App from '../src/renderer/src/App'
 import { useCrew } from '../src/renderer/src/state/store'
 import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
+import { landed } from './helpers/boot'
 
 class TestResizeObserver {
   observe(): void {}
@@ -14,6 +15,7 @@ class TestResizeObserver {
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+landed()
 
 const agent: PooledAgent = {
   id: 'ali/claude',
