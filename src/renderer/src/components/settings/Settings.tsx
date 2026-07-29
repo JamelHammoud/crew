@@ -3,13 +3,12 @@ import { closeSettings, openSettings, useSettings, type SettingsTab } from '../.
 import { useCrew } from '../../state/store'
 import Avatar from '../Avatar'
 import Modal from '../Modal'
-import ScreenSwap from '../ScreenSwap'
 import Agents from './Agents'
 import Appearance from './Appearance'
 import People from './People'
 import SoundAndVideo from './SoundAndVideo'
 import You from './You'
-import { GROUPS, SETTINGS_TABS, tabIndex, tabLabel } from './tabs'
+import { GROUPS, SETTINGS_TABS, tabLabel } from './tabs'
 
 const WIDTH = 940
 const HEIGHT = 620
