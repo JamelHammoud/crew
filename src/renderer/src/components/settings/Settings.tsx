@@ -38,10 +38,12 @@ export default function Settings() {
               {SETTINGS_TABS.filter(one => one.group === group).map(one => {
                 const on = one.id === tab
                 const Mark = one.mark
+                const label = tabLabel(one, selfName)
                 return (
                   <button
                     key={one.id}
                     onClick={() => openSettings(one.id)}
+                    aria-label={label}
                     aria-current={on ? 'page' : undefined}
                     className={`w-full flex items-center gap-2.5 px-2.5 h-9 rounded-xl text-sm text-left transition-colors ${
                       on ? 'bg-fg/[0.08] text-fg font-medium' : 'text-fg/70 hover:text-fg hover:bg-fg/5'
