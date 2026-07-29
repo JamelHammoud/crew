@@ -1,5 +1,5 @@
 import { seeded } from '../../../../shared/art'
-import { CIRCLE, GRID, SOLID } from '../../icons/keylines'
+import { CIRCLE, DIAGONAL, GRID, SQUARE } from '../../icons/keylines'
 
 // The silhouette a helper's mark is seen through, worked out from its id the way
 // a cover's scene is. It is kept apart from the drawing for the same reason: a

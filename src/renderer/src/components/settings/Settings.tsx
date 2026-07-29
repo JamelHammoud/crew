@@ -66,8 +66,9 @@ export default function Settings() {
 
         {/* The pages stand beside each other rather than in front of each
             other, so nothing travels between them: one is simply the one that
-            is up. Each keeps its own scroller, so a page comes back where it
-            was left. */}
+            is up, and it fades. Picking a row in a rail is not going anywhere,
+            and a page that fills a scroller cannot move on its way in without
+            a scrollbar coming and going for the length of it. */}
         <div className="relative flex-1 min-w-0">
           {tab && (
             <div key={tab} className="absolute inset-0 overflow-y-auto animate-fade">
