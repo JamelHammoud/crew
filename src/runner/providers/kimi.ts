@@ -3,6 +3,7 @@ import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { kimiModels } from './kimi-models'
 import { resultText } from './output'
+import { usageFrom } from './tokens'
 import type { OutputParser, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Agent'])
