@@ -54,6 +54,8 @@ const toolDetail = (item: any): string | undefined => {
       return activityDetail(item.arguments)
     case 'web_search':
       return typeof item.query === 'string' ? item.query : undefined
+    case 'todo_list':
+      return activityDetail(item)
     default:
       return undefined
   }
