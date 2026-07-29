@@ -52,6 +52,25 @@ export const parseFakeLine: OutputParser = line => {
       }
     ]
   }
+  // What one call of the model cost, and what the whole turn came to. A CLI
+  // reports the parts as it goes and the total at the end, so the fake does too.
+  if (line.startsWith('USAGE ') || line.startsWith('TOTAL ')) {
+    const total = line.startsWith('TOTAL ')
+    const [model, input, output, cacheRead, cacheWrite, cost] = line.slice(6).split(' ')
+    return [
+      {
+        usage: {
+          model,
+          input: Number(input),
+          output: Number(output),
+          cacheRead: Number(cacheRead),
+          cacheWrite: Number(cacheWrite),
+          cost: cost === undefined ? undefined : Number(cost),
+          total: total || undefined
+        }
+      }
+    ]
+  }
   if (line === 'RESULT') return [{ turnEnd: true }]
   return []
 }
