@@ -160,7 +160,14 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     // A question on the side is answered in the panel and never lands here, so
     // it is not a reply to anything in the thread.
     const asking = command === 'btw'
-    sendChat(text, threadId, undefined, asking ? undefined : replyTo?.reactionTargetId, undefined, held)
+    sendChat(
+      text,
+      threadId,
+      undefined,
+      asking ? undefined : replyTo?.reactionTargetId,
+      undefined,
+      command ? [command] : undefined
+    )
     setReplyTo(null)
     mention.close()
     slash.close()
