@@ -36,7 +36,7 @@ export default function AvatarStack({
       height={face}
       viewBox={`0 0 ${width} ${face}`}
       aria-hidden
-      className="shrink-0 select-none"
+      className="shrink-0"
     >
       <defs>
         {shown.slice(0, -1).map((_, index) => (
