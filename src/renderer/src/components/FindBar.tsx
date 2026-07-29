@@ -41,6 +41,10 @@ function computeMatches(root: HTMLElement, query: string): Range[] {
   return ranges
 }
 
+const BAR_BUTTON =
+  'w-6 h-6 rounded-full flex items-center justify-center text-fg/70 hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0'
+const STEP_BUTTON = `${BAR_BUTTON} disabled:opacity-40 disabled:pointer-events-none`
+
 export default function FindBar({
   containerRef,
   scrollerRef,
@@ -183,7 +187,7 @@ export default function FindBar({
         className="flex-1 min-w-0 bg-transparent text-sm text-fg placeholder:text-fg/30 outline-none"
       />
       {query && (
-        <span className="text-xs tabular-nums text-fg-muted px-1 shrink-0">
+        <span className="text-xs tabular-nums text-fg/45 px-1 shrink-0">
           {matches.length === 0 ? '0/0' : `${active + 1}/${matches.length}`}
         </span>
       )}
@@ -192,7 +196,7 @@ export default function FindBar({
         onMouseDown={e => e.preventDefault()}
         disabled={matches.length === 0}
         aria-label="Previous match"
-        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
+        className={STEP_BUTTON}
       >
         <ChevronUpGlyph className="w-3.5 h-3.5" />
       </button>
@@ -201,15 +205,11 @@ export default function FindBar({
         onMouseDown={e => e.preventDefault()}
         disabled={matches.length === 0}
         aria-label="Next match"
-        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0 disabled:opacity-40 disabled:pointer-events-none"
+        className={STEP_BUTTON}
       >
         <ChevronDownGlyph className="w-3.5 h-3.5" />
       </button>
-      <button
-        onClick={() => setOpen(false)}
-        aria-label="Close find"
-        className="w-6 h-6 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.08] transition-colors shrink-0"
-      >
+      <button onClick={close} aria-label="Close find" className={BAR_BUTTON}>
         <CloseGlyph className="w-3.5 h-3.5" />
       </button>
     </div>
