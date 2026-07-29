@@ -1,5 +1,4 @@
 import { CheckGlyph } from '../../icons'
-import { playSound } from '../../media/sounds'
 import { applyTheme, useTheme, type Theme } from '../../state/theme'
 import { Page } from './parts'
 
