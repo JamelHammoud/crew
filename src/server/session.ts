@@ -2876,22 +2876,12 @@ export class CrewSession {
         if (running.has(promptId)) continue
         const ref = this.prompts.get(promptId)
         const entry = agent.runs.get(promptId)?.entry
-        if (!ref || !entry || !agent.runner) {
+        const thread = ref ? this.threads.get(ref.threadId) : undefined
+        if (!ref || !entry || !thread || !agent.runner) {
           this.finishPrompt(agent, promptId, { ok: false, error: `${agent.label} lost this prompt.` })
           continue
         }
-        this.send(agent.runner, {
-          type: 'prompt',
-          promptId,
-          agentId: agent.id,
-          threadId: ref.threadId,
-          text: this.buildPrompt(agent, entry, this.assignedReactions(promptId)),
-          settings: agent.settings,
-          attachments: entry.attachments,
-          designBoard: this.boardOf(this.threads.get(ref.threadId)),
-          designBoards: this.referencedBoards(entry),
-          ghost: this.ghostOf(ref.threadId) ? true : undefined
-        })
+        this.send(agent.runner, this.promptMessage(agent, thread, entry, this.assignedReactions(promptId)))
       }
     }
   }
