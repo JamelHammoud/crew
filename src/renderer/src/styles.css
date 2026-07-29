@@ -271,9 +271,15 @@ body {
 /* The dictation pill stands over whatever app is being typed into, so its window
    has no shell of its own. The glass it is drawn on is the whole of it, and a
    surface behind that glass would be Crew's own colour rather than the colour of
-   what is really back there. */
+   what is really back there.
+
+   It is as wide and as tall as the pill and no more. The window follows what is
+   measured here, and the pill is on screen the whole time dictation is on, so a
+   root that filled its window would be a band of somebody else's screen that
+   quietly takes their clicks all day. */
 #root.bare {
   @apply bg-transparent;
+  width: fit-content;
   height: auto;
   border-radius: 0;
   box-shadow: none;
