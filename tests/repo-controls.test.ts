@@ -5,6 +5,7 @@ import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import RepoControls from '../src/renderer/src/components/RepoControls'
 import TopBar from '../src/renderer/src/components/TopBar'
+import { useBrowser } from '../src/renderer/src/state/browser'
 import type { RepoStatus } from '../src/shared/repository'
 
 class TestResizeObserver {
@@ -21,7 +22,8 @@ const ready: RepoStatus = {
   branch: 'main',
   changed: 2,
   ahead: 0,
-  behind: 0
+  behind: 0,
+  stashes: 0
 }
 
 Object.defineProperty(Element.prototype, 'getAnimations', {
@@ -31,6 +33,7 @@ Object.defineProperty(Element.prototype, 'getAnimations', {
 
 afterEach(() => {
   cleanup()
+  useBrowser.getState().closeAll()
   vi.restoreAllMocks()
   vi.unstubAllEnvs()
 })
@@ -39,45 +42,26 @@ const topBar = () =>
   createElement(TopBar, { tab: 'chat' as const, onTab: () => {}, tasksOpen: false, onToggleTasks: () => {} })
 
 describe('project sync controls', () => {
-  it('opens the local diff before pushing it', async () => {
-    const status = { ...ready, changed: 1 }
-    const repoChanges = vi.fn(async () => [
-      {
-        path: 'src/app.ts',
-        kind: 'modified' as const,
-        added: 1,
-        removed: 1,
-        diff: '@@ -1 +1 @@\n-old\n+new',
-        binary: false,
-        truncated: false
-      }
-    ])
-    const pushRepo = vi.fn(async () => ({
-      ok: true,
-      updated: true,
-      message: 'Pushed the latest changes.',
-      status: { ...status, changed: 0 }
-    }))
+  it('sends the changes to the review tab rather than showing them twice', async () => {
     Object.defineProperty(window, 'crew', {
       configurable: true,
       value: {
-        repoStatus: vi.fn(async () => status),
-        repoChanges,
+        repoStatus: vi.fn(async () => ready),
         pullRepo: vi.fn(),
-        pushRepo
+        pushRepo: vi.fn()
       } as unknown as CrewBridge
     })
 
     render(createElement(RepoControls))
-    const review = await screen.findByLabelText('Review 1 change')
+    const review = await screen.findByLabelText('Review the changes')
     fireEvent.click(review)
 
-    await waitFor(() => expect(repoChanges).toHaveBeenCalledTimes(1))
-    expect(screen.getByText('src/app.ts')).toBeTruthy()
-    expect(screen.getByText('+new')).toBeTruthy()
+    const { tabs, open } = useBrowser.getState()
+    expect(open).toBe(true)
+    expect(tabs.filter(tab => tab.kind === 'review')).toHaveLength(1)
 
-    fireEvent.click(screen.getByText('Push changes'))
-    await waitFor(() => expect(pushRepo).toHaveBeenCalledTimes(1))
+    fireEvent.click(review)
+    expect(useBrowser.getState().tabs.filter(tab => tab.kind === 'review')).toHaveLength(1)
   })
 
   it('pulls changes and shows the result without leaving the app', async () => {

@@ -33,19 +33,20 @@ export default function QuestionCard({
           )}
         </div>
       </div>
-      {question.options.length > 0 ? (
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          {question.options.map(option => (
-            <button
-              key={option}
-              onClick={() => onAnswer(option)}
-              className="h-8 px-3.5 rounded-full bg-ink-700 text-sm font-medium text-fg-secondary transition-all duration-150 hover:bg-ink-600 hover:text-fg active:scale-95"
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      ) : (
+      <div className="mt-2.5 space-y-2">
+        {question.options.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {question.options.map(option => (
+              <button
+                key={option}
+                onClick={() => onAnswer(option)}
+                className="h-8 px-3.5 rounded-full bg-ink-700 text-sm font-medium text-fg-secondary transition-all duration-150 hover:bg-ink-600 hover:text-fg active:scale-95"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
         <input
           value={text}
           onChange={event => setText(event.target.value)}
@@ -55,9 +56,9 @@ export default function QuestionCard({
             setText('')
           }}
           placeholder="Answer"
-          className="mt-2.5 w-full h-9 px-3 rounded-full bg-ink-700 text-sm text-fg placeholder:text-fg-faint outline-none"
+          className="w-full h-9 px-3 rounded-full bg-ink-700 text-sm text-fg placeholder:text-fg-faint outline-none"
         />
-      )}
+      </div>
     </div>
   )
 }
