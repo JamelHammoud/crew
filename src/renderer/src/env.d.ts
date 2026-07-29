@@ -29,6 +29,8 @@ declare global {
     removeAgent(instanceId: string): Promise<void>
     repoStatus(): Promise<RepoStatus>
     repoChanges(): Promise<RepoChange[]>
+    repoWork(): Promise<RepoWork>
+    runRepo(command: RepoCommand): Promise<RepoActionResult>
     pullRepo(): Promise<RepoActionResult>
     pushRepo(): Promise<RepoActionResult>
     mediaAccess(kind: MediaKind): Promise<MediaAccess>
