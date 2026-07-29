@@ -28,7 +28,11 @@ export interface ScribeState {
   settings: ScribeSettings
   arm: () => Promise<void>
   finish: () => Promise<void>
+  retry: () => Promise<void>
   cancel: () => void
+  // Whether there is still sound here worth reading again, which is what tells a
+  // failure that can be tried from one that cannot.
+  keeping: () => boolean
   apply: (settings: ScribeSettings) => void
   said: (problem: string | null) => void
 }
@@ -184,6 +188,8 @@ export const useScribe = create<ScribeState>((set, get) => {
       set({ phase: 'off', problem: null })
       window.crew.dismissScribe()
     },
+
+    keeping: () => held.length > 0,
 
     apply: settings => {
       const clean = cleanSettings(settings, platform())
