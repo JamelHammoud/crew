@@ -9,8 +9,9 @@ import {
 import { tidy, type ScribeChunk } from '../../../shared/scribeTidy'
 import { ScribeTake } from '../media/scribe/take'
 import { trim } from '../media/scribe/trim'
-import { progressOf, type Fetching } from '../media/voice/models'
+import { HEARD_RATE } from '../media/voice/gate'
 import { VoiceListener } from '../media/voice/listener'
+import { progressOf, type Fetching } from '../media/voice/models'
 
 // off      nothing is happening
 // waking   the model is being fetched, the first time only
@@ -80,7 +81,7 @@ export const useScribe = create<ScribeState>((set, get) => {
 
   const take = new ScribeTake({
     onPiece: (audio, at) => {
-      const { audio: spoken, spoke } = trim(audio, 16000)
+      const { audio: spoken, spoke } = trim(audio, HEARD_RATE)
       if (!spoke) return
       pieces.push(read(spoken, at))
     }
@@ -131,7 +132,7 @@ export const useScribe = create<ScribeState>((set, get) => {
       set({ phase: 'reading' })
       const rest = take.rest()
       stop()
-      const { audio, spoke } = trim(rest.audio, 16000)
+      const { audio, spoke } = trim(rest.audio, HEARD_RATE)
       const waiting = [...pieces, ...(spoke ? [read(audio, rest.at)] : [])]
       pieces = []
       try {
