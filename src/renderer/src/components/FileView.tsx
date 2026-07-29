@@ -259,7 +259,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
               <DirRows tab={tab} path={data.path} entries={data.entries} />
             ))}
           {file && (
-            <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5">
+            <div className="relative min-h-full py-3 min-w-max font-mono text-xs leading-5 select-text">
               <CodeRows path={tab.path} rows={rows} gutter={gutter} line={tab.line} dirty={dirty} />
               {editable && (
                 <textarea
