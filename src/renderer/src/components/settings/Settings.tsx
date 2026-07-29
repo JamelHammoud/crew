@@ -67,15 +67,13 @@ export default function Settings() {
               </div>
             </ScreenSwap>
           )}
-          <Tooltip label="Close">
-            <button
-              onClick={closeSettings}
-              aria-label="Close settings"
-              className="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-fg hover:bg-fg/[0.07] active:scale-95"
-            >
-              <CloseGlyph className="w-[18px] h-[18px]" />
-            </button>
-          </Tooltip>
+          <button
+            onClick={closeSettings}
+            aria-label="Close settings"
+            className="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full flex items-center justify-center text-fg/45 transition-colors hover:text-fg hover:bg-fg/[0.07] active:scale-95"
+          >
+            <CloseGlyph className="w-[18px] h-[18px]" />
+          </button>
         </div>
       </div>
     </Modal>
