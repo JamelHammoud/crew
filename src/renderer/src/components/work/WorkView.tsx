@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { boardOf, TICKET_COLUMNS, type TicketColumn } from '../../../../shared/tickets'
+import { askKey, boardOf, TICKET_COLUMNS, type TicketColumn } from '../../../../shared/tickets'
 import { TicketGlyph } from '../../icons'
 import { useBoard } from '../../state/board'
 import { useCrew } from '../../state/store'
