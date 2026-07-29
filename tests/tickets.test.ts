@@ -174,7 +174,13 @@ describe('the board an agent keeps', () => {
   it('takes a question off the board for whoever answered it', () => {
     const events = [asked('q1', 'Commit or path?')]
     expect(boardOf([], events).questions).toHaveLength(1)
-    expect(boardOf([], events, { answered: ['q1'] }).questions).toEqual([])
+    expect(boardOf([], events, { answered: [askKey('Commit or path?')] }).questions).toEqual([])
+  })
+
+  it('is the same question however many times the agent raises it', () => {
+    const events = [asked('q1', 'Commit or path?'), asked('q2', 'commit  or path?')]
+    expect(boardOf([], events).questions).toHaveLength(1)
+    expect(boardOf([], events, { answered: [askKey('Commit or path?')] }).questions).toEqual([])
   })
 
   it('is nothing at all for a thread that never said anything about its work', () => {
