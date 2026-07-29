@@ -437,6 +437,20 @@ Opening a folder is the only way in, and there is no host and join to choose bet
 - A row carries the name you were called there, and it is handed to the join rather than read back off state. State is a render behind, which is the same mistake the GIF picker's send guard is written to avoid.
 - Taking a place off the list is a right click on it. A button fading in over the arrow was a second control standing on top of a row that has one thing to press, and it cost the arrow that says where the row goes. A project and a crew somebody invited you to both go, by folder and by link, so no row on the list is one you are stuck with.
 
+## Commands
+
+A word with a slash in front of it, lifted out of the box onto a chip beside the plus and sent as a field of its own. `commands.ts` is the one table of them, and `where` on each row says which composer offers it: the chat's open a thread, and a thread's are about the thread already open.
+
+- Neither set is offered where the other belongs. `commandsIn` is what a composer asks for, and both `commandTyped` and `slashCandidates` are handed that list rather than reaching for the table themselves, so the menu and the word typed out can never disagree about what there is.
+- A thread holds one at a time, because they are one choice about the one message being written. Picking another takes the place of the one before it, and what stands is read back off what the thread can still do rather than off what was picked, since the run it was picked against can end while the message is still being typed.
+- `/steer` and `/queue` are only there while there is a turn to go into. Without one every message queues and runs, so offering either would promise a choice that was never there, and the pair is left out rather than greyed.
+- `/steer` is the default said out loud, since a message for the agent already running goes into that run whenever it can take one. `/queue` is the override, and it is the only way there is to hold a message back until the turn ends.
+- `/btw` is a question asked beside a thread rather than in it. It opens in the panel, reads the thread for whatever the question needs, and says nothing back into it, so the work going on there is not interrupted and nobody scrolls past a question they never asked.
+- One is a ghost, so it runs on your own machine and nowhere else, none of it is written down, and it goes with the window. A thread somebody else's agent is on is still one you can ask about: one of yours answers it, which is `startAside`.
+- `aside` on the thread is the thread it was asked from, and `buildPrompt` reads that one and then the question, as one run of talk. It answers itself and sends no work out, because helpers on a thread nobody can see is work nobody asked for.
+- It is not the crew's work, so it is no card in the chat, no row in the task list, and no toast when it lands: the panel that opened to answer it is already on the screen.
+- Each question is its own tab, so one asked while an answer is still being read leaves that answer where it is. `AsideView` is what a tab holds, and there is no composer on it: a one-off is one question, and a second one is a second question.
+
 ## Ghost threads
 
 `/ghost` in the chat opens a thread that belongs to the window it was typed in. Nobody else sees it, none of it is written down, and it is gone when the window is. Everything else about it is an ordinary thread: an agent takes it, it queues and it steers, and the work it does to the project is real work on real files.
