@@ -32,7 +32,7 @@ const diffs = (item: ThreadItem): string[] => (item.files ?? []).map(file => fil
 
 // Everything a step is carrying. A folded run of reads draws none of it, so
 // this is what decides whether the run opens.
-export function stepText(item: ThreadItem): string[] {
+export function stepText(item: ThreadItem): Array<string | undefined> {
   if (item.kind === 'thinking') return [item.text]
   return [item.detail, item.output, ...(item.files ?? []).map(file => file.path), ...diffs(item)]
 }
