@@ -1184,6 +1184,37 @@ export class CrewSession {
     return threadId
   }
 
+  // A question asked beside a thread rather than in it. Nothing about it reaches
+  // the thread, so the work going on there is not interrupted and nobody else
+  // scrolls past a question they never asked: it is a ghost, and it reads the
+  // thread it was asked from for whatever the question needs.
+  private startAside(
+    ws: WebSocket,
+    member: Member,
+    parent: Thread,
+    mentions: string[],
+    text: string,
+    attachments: Attachment[]
+  ): void {
+    if (!text) {
+      this.notice('Ask a question to go with it.', ws)
+      return
+    }
+    // A ghost only ever runs on your own machine, so a thread somebody else's
+    // agent is on is still a thread you can ask about: one of yours answers it.
+    const named = [...new Set(mentions)].filter(id => this.ownAgent(member, id) && this.agents.has(id))
+    const mine = this.agentsHere(member.id)
+    const agent =
+      this.agents.get(named[0] ?? '') ??
+      (this.ownAgent(member, parent.agentId) ? this.agents.get(parent.agentId) : undefined) ??
+      mine[0]
+    if (!agent) {
+      this.notice('No agent of yours is here to take it.', ws)
+      return
+    }
+    this.startThread(member, agent, text, attachments, { ghost: ws, aside: parent.id })
+  }
+
   private handleTodoAdd(member: Member, text: string, agentId?: string): void {
     const trimmed = text.trim()
     if (!trimmed) return
