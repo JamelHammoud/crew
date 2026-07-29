@@ -80,7 +80,8 @@ describe('subagents', () => {
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      name: 'Scout', provider: 'fake',
+      name: 'Scout',
+      provider: 'fake',
       subject: 'read the schema',
       task: 'find every table in the schema'
     })
@@ -88,12 +89,13 @@ describe('subagents', () => {
     expect(spawned.body.threadId).toBeTruthy()
 
     const out = (await ui.waitForEvent(e => e.kind === 'subagent.started')) as SpawnStarted
-    expect(out.roleId).toBe(role.roleId)
-    expect(out.roleName).toBe('Scout')
+    // The name and the subject are the agent's own words, written the moment it
+    // sent the work out. Nothing about it existed before that.
+    expect(out.name).toBe('Scout')
     expect(out.subject).toBe('read the schema')
     expect(out.parentThreadId).toBe(parent.threadId)
     expect(out.parentPromptId).toBe(parent.promptId)
-    // The role named a provider, so it ran on that machine's agent for it
+    // It asked for a CLI by name, so it ran on that machine's agent for it
     // rather than on the one that asked.
     expect(out.agentId).toBe(fake)
 
@@ -128,7 +130,8 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     const parent = await openParent(ui, fake)
-    await post('/agents/spawn', { promptId: parent.promptId, name: 'Auditor', provider: 'fake', subject: 'check', task: 'check the tests' })
+    await post('/agents/spawn', { promptId: parent.promptId, name: 'Auditor',
+      provider: 'fake', subject: 'check', task: 'check the tests' })
     const out = (await ui.waitForEvent(e => e.kind === 'subagent.started')) as SpawnStarted
 
     const second = (await ui.waitForEvent(
@@ -152,7 +155,8 @@ describe('subagents', () => {
 
     const parent = await openParent(ui, fake)
     for (const subject of ['schema', 'tests', 'docs']) {
-      await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject, task: `look at the ${subject}` })
+      await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout',
+      provider: 'fake', subject, task: `look at the ${subject}` })
     }
     await waitUntil(() => ui.events.filter(e => e.kind === 'subagent.ended').length === 3)
 
@@ -173,16 +177,36 @@ describe('subagents', () => {
     await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
-    const dead = await post('/agents/spawn', { promptId: 'not-a-run', name: 'Scout', provider: 'fake', subject: 'x', task: 'x' })
+    const dead = await post('/agents/spawn', { promptId: 'not-a-run', name: 'Scout',
+      provider: 'fake', subject: 'x', task: 'x' })
     expect(dead.status).toBe(400)
     expect(dead.body.error).toContain('not a run')
 
     const parent = await openParent(ui, steery)
-    const nameless = await post('/agents/spawn', { promptId: parent.promptId, name: '', provider: 'fake', subject: 'x', task: 'x' })
-    expect(nameless.status).toBe(400)
-    expect(nameless.body.error).toContain('No role called')
-    const empty = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'x', task: '  ' })
+    // A helper with no name still runs: the agent wrote it, and a nameless chip
+    // is worse than one that says Helper.
+    const nameless = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: '   ',
+      provider: 'fake',
+      subject: 'x',
+      task: 'go'
+    })
+    expect(nameless.status).toBe(200)
+    expect(((await ui.waitForEvent(e => e.kind === 'subagent.started')) as SpawnStarted).name).toBe('Helper')
+
+    // Nothing to do is the one thing that is not a helper.
+    const empty = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', subject: 'x', task: '  ' })
     expect(empty.status).toBe(400)
+    const nobody = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Scout',
+      provider: 'nothing-runs-this',
+      subject: 'x',
+      task: 'go'
+    })
+    expect(nobody.status).toBe(400)
+    expect(nobody.body.error).toContain('Nobody here is running')
   })
 
   it('holds the fan at its limit and hands the room back as helpers come home', async () => {
@@ -195,18 +219,25 @@ describe('subagents', () => {
     ui.send({ type: 'subagent.prefs', on: true, fan: FAN_LIMIT + 5 })
     await new Promise(r => setTimeout(r, 200))
     const parent = await openParent(ui, steery)
-    for (let i = 0; i < FAN_LIMIT; i++) {
+    for (let i = 0; i < DEFAULT_FAN; i++) {
       const sent = await post('/agents/spawn', {
         promptId: parent.promptId,
-        name: 'Scout', provider: 'fake',
+        name: 'Scout',
+        provider: 'fake',
         subject: `job ${i}`,
         task: `do job ${i}`
       })
       expect(sent.status).toBe(200)
     }
-    const over = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'x', task: 'one more' })
+    const over = await post('/agents/spawn', {
+      promptId: parent.promptId,
+      name: 'Scout',
+      provider: 'fake',
+      subject: 'x',
+      task: 'one more'
+    })
     expect(over.status).toBe(400)
-    expect(over.body.error).toContain(`${FAN_LIMIT} running`)
+    expect(over.body.error).toContain(`${DEFAULT_FAN} running`)
   })
 
   it('talks to a helper that is still going, and stops one', async () => {
@@ -218,7 +249,8 @@ describe('subagents', () => {
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      name: 'Scout', provider: 'fake',
+      name: 'Scout',
+      provider: 'fake',
       subject: 'the long one',
       task: 'take your time'
     })
@@ -251,7 +283,8 @@ describe('subagents', () => {
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      name: 'Scout', provider: 'fake',
+      name: 'Scout',
+      provider: 'fake',
       subject: 'slow',
       task: 'take a while'
     })
@@ -277,7 +310,8 @@ describe('subagents', () => {
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      name: 'Scout', provider: 'fake',
+      name: 'Scout',
+      provider: 'fake',
       subject: 'along for the ride',
       task: 'take a while'
     })
@@ -298,11 +332,11 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
 
     ui.send({ type: 'subagent.prefs', on: false, fan: 4 })
-    await waitUntil(() => host.session.subagentRoles().length === 1)
     const parent = await openParent(ui, steery)
     const refused = await post('/agents/spawn', {
       promptId: parent.promptId,
-      name: 'Scout', provider: 'fake',
+      name: 'Scout',
+      provider: 'fake',
       subject: 'x',
       task: 'read the file'
     })
@@ -315,30 +349,16 @@ describe('subagents', () => {
     await new Promise(r => setTimeout(r, 200))
     const again = await post('/agents/spawn', {
       promptId: parent.promptId,
-      name: 'Scout', provider: 'fake',
+      name: 'Scout',
+      provider: 'fake',
       subject: 'x',
       task: 'read the file'
     })
     expect(again.status).toBe(200)
-    const over = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'y', task: 'more' })
+    const over = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout',
+      provider: 'fake', subject: 'y', task: 'more' })
     expect(over.status).toBe(400)
     expect(over.body.error).toContain('1 running')
   })
 
-  it('keeps the roles in the snapshot and out of the trimmed window', async () => {
-    const ui = await TestUi.connect(host.url, 'sam', host.code)
-    uis.push(ui)
-    const role = await addRole(ui, 'Reviewer')
-    expect(host.session.snapshot().subagents).toMatchObject([{ name: 'Reviewer', provider: 'fake', createdBy: 'sam' }])
-    expect(host.session.snapshot().events.some(e => e.kind.startsWith('subagent.'))).toBe(false)
-
-    ui.send({ type: 'subagent.edit', roleId: role.roleId, name: 'Critic', brief: 'reads a diff', provider: '' })
-    await ui.waitForEvent(e => e.kind === 'subagent.edited')
-    expect(host.session.snapshot().subagents?.[0]).toMatchObject({ name: 'Critic', brief: 'reads a diff' })
-    expect(host.session.snapshot().subagents?.[0].provider).toBeUndefined()
-
-    ui.send({ type: 'subagent.remove', roleId: role.roleId })
-    await ui.waitForEvent(e => e.kind === 'subagent.removed')
-    expect(host.session.snapshot().subagents).toHaveLength(0)
-  })
 })
