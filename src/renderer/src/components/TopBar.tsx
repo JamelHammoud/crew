@@ -180,65 +180,20 @@ export default function TopBar({
         </div>
         {!compact && <span className="w-px h-5 bg-fg/[0.07] mr-[9px]" />}
         <PresenceStack compact={compact} />
-        <div className="relative">
+        {/* Your face is the way into the settings. Everything a menu here used
+            to hold has a page of its own now, so the press goes straight to it
+            rather than through a list of the same things. */}
+        <Tooltip label="Settings" disabled={settingsOpen}>
           <button
-            onClick={() => setMenuOpen(open => !open)}
-            aria-label="Profile menu"
+            onClick={() => openSettings()}
+            aria-label="Settings"
             className={`flex rounded-full transition-all duration-150 hover:ring-2 hover:ring-fg/15 active:scale-95 ${
-              menuOpen ? 'ring-2 ring-fg/25' : ''
+              settingsOpen ? 'ring-2 ring-fg/25' : ''
             }`}
           >
             <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
           </button>
-          <Popover open={menuOpen} onClose={() => setMenuOpen(false)} className="min-w-56">
-            <div className="flex items-center gap-2.5 px-3 py-2">
-              <PhotoPicker has={hasPhoto} onChange={setMyPhoto}>
-                <Avatar name={selfName || '?'} presence={connection === 'online' ? 'online' : 'offline'} />
-              </PhotoPicker>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-fg truncate">{selfName}</p>
-                <p className="text-xs text-fg/45">{standing}</p>
-              </div>
-              {import.meta.env.DEV && <Pill glass>DEV</Pill>}
-            </div>
-            <MenuDivider />
-            <MenuItem
-              icon={<SlidersGlyph />}
-              label="Settings"
-              onClick={() => {
-                setMenuOpen(false)
-                openSettings()
-              }}
-            />
-            {hosting && !shared && (
-              <MenuItem
-                icon={copied ? <CheckGlyph /> : <GlobeGlyph />}
-                label={copied ? 'Copied' : 'Invite people'}
-                onClick={() => void invite()}
-              />
-            )}
-            {joinLink && (
-              <MenuItem
-                icon={copied ? <CheckGlyph /> : <LinkGlyph />}
-                label={copied ? 'Copied' : 'Invite link'}
-                onClick={() => void copyLink()}
-              />
-            )}
-            {hosting && shared && (
-              <MenuItem icon={<LockGlyph />} label="Stop sharing" onClick={() => void share(false)} />
-            )}
-            <MenuDivider />
-            <MenuItem
-              icon={<LeaveGlyph />}
-              label="Leave"
-              danger
-              onClick={() => {
-                setMenuOpen(false)
-                leave()
-              }}
-            />
-          </Popover>
-        </div>
+        </Tooltip>
       </div>
     </header>
   )
