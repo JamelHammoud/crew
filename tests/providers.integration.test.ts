@@ -372,7 +372,9 @@ describe('codex parser matches the real CLI format', () => {
   })
 
   it('reports tokens and surfaces failures', () => {
-    expect(parse({ type: 'turn.completed', usage: { output_tokens: 42 } })).toEqual([{ tokens: 42 }])
+    expect(parse({ type: 'turn.completed', usage: { output_tokens: 42 } })).toEqual([
+      { usage: { output: 42, total: true } }
+    ])
     expect(parse({ type: 'error', message: "You've hit your usage limit." })).toEqual([
       { error: "You've hit your usage limit." }
     ])
@@ -410,7 +412,7 @@ describe('grok parser matches the documented streaming-json format', () => {
   })
 
   it('reports tokens and errors', () => {
-    expect(parse({ type: 'session.end', usage: { output_tokens: 7 } })).toEqual([{ tokens: 7 }])
+    expect(parse({ type: 'session.end', usage: { output_tokens: 7 } })).toEqual([{ usage: { output: 7 } }])
     expect(parse({ type: 'error', message: 'Not signed in.' })).toEqual([{ error: 'Not signed in.' }])
   })
 })
