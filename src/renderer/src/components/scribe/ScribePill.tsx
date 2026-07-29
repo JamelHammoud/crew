@@ -1,4 +1,6 @@
+import { PILL_ROOM } from '../../../../shared/scribe'
 import { CheckGlyph, CloseGlyph, RefreshGlyph, WarningGlyph } from '../../icons'
+import { STROKE_BOLD } from '../../icons/keylines'
 import { BandReader } from '../../media/bands'
 import { scribeAnalyser, useScribe } from '../../state/scribe'
 import InsetRing from '../InsetRing'
@@ -7,9 +9,9 @@ import Spinner from '../Spinner'
 import { grab } from './grab'
 
 // What is on screen while you are dictating. It floats over whatever app you
-// are typing into, which is why it is `glass-strong`: a white window behind
-// ordinary glass turns the panel into pale grey, and what comes through a
-// floating panel is the color of what is behind it, never its edges.
+// are typing into, which is why it wears `glass-pill`: nothing can blur what is
+// behind a transparent window, so that material is lit rather than blurred, and
+// the tint is the whole of it.
 //
 // Nothing on it is set in a solid grey for the same reason. Every mark takes the
 // foreground at an opacity, so it stands above the surface rather than beside
