@@ -9,7 +9,15 @@ import {
   type GitResult
 } from '../shared/git'
 import { interruptedStates } from '../shared/gitState'
-import type { RepoActionResult, RepoChange, RepoChangeKind, RepoStatus } from '../shared/repository'
+import type {
+  RepoActionResult,
+  RepoChange,
+  RepoChangeKind,
+  RepoCommand,
+  RepoStash,
+  RepoStatus,
+  RepoWork
+} from '../shared/repository'
 
 const PROJECT_PATHS = ['.', ':(exclude).crew', ':(exclude).crew/**']
 const DIFF_LIMIT = 200_000
