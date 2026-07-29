@@ -218,6 +218,9 @@ export function boardOf(
       at(event.ticketId)?.decisions.push(event.text)
       continue
     }
+    const key = askKey(event.ask)
+    if (raised.has(key)) continue
+    raised.add(key)
     const entry = at(event.ticketId)
     questions.push({
       id: event.askId,
