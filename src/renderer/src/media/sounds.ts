@@ -420,5 +420,7 @@ export function soundFor(event: SessionEvent, selfId: string, state: ReviewState
   // those is the app saying a thread landed while the thread carries on working
   // in front of you.
   if (event.kind === 'agent.end') return threadFinished(event, state) ? (event.ok ? 'done' : 'failed') : null
+  // An agent asking something of you is a word arriving, and it sounds like one.
+  if (event.kind === 'ticket.asked') return 'receive'
   return null
 }
