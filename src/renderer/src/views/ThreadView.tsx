@@ -157,10 +157,14 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const send = () => {
     if (!text.trim() && pendingCount(threadId) === 0) return
-    sendChat(text, threadId, undefined, replyTo?.reactionTargetId)
+    // A question on the side is answered in the panel and never lands here, so
+    // it is not a reply to anything in the thread.
+    const asking = command === 'btw'
+    sendChat(text, threadId, undefined, asking ? undefined : replyTo?.reactionTargetId, undefined, held)
     setReplyTo(null)
     mention.close()
-    jumpToBottom()
+    slash.close()
+    if (!asking) jumpToBottom()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -169,6 +173,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
       setReplyTo(null)
       return
     }
+    if (e.key === 'Backspace' && !text && command) {
+      e.preventDefault()
+      setThreadCommands(threadId, [])
+      return
+    }
+    if (slash.onKeyDown(e)) return
     if (mention.onKeyDown(e)) return
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -178,10 +188,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
-  const targets = draftMentions.length > 0 ? draftMentions : [thread.agentId]
-  const canSteer =
-    Boolean(activePromptId) && steerable && runningAgentId !== undefined && targets.includes(runningAgentId)
-  const placeholder = 'Send a message or @ someone'
+  const placeholder =
+    command === 'btw' ? 'Ask about this thread, off to the side' : 'Send a message or @ someone'
   const state = threadState(thread, threadEvents, Boolean(activePromptId))
   const statusAction =
     thread.status === 'open'
