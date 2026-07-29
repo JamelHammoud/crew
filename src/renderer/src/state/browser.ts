@@ -55,6 +55,7 @@ type BrowserState = {
   setWidth(width: number): void
   resetWidth(): void
   togglePanel(): void
+  openPanel(): void
   closePanel(): void
   openUrl(url: string): void
   openImage(src: string, name: string): void
