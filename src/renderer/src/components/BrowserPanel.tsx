@@ -67,8 +67,9 @@ export default function BrowserPanel() {
   const planThread = useCrew(s => (s.openThreadId && s.threads[s.openThreadId]?.plan ? s.openThreadId : null))
 
   useEffect(() => {
-    if (planThread) useBrowser.getState().showPlan(planThread)
-    else useBrowser.getState().hidePlan()
+    const browser = useBrowser.getState()
+    if (planThread && !browser.closedPlans.includes(planThread)) browser.showPlan(planThread)
+    else browser.hidePlan()
   }, [planThread])
 
   const reload = (tab: BrowserTab) => {
@@ -142,7 +143,7 @@ export default function BrowserPanel() {
             />
           </Popover>
         </span>
-        {tabs.some(tab => tab.kind !== 'plan') && (
+        {tabs.length > 0 && (
           <Tooltip label="Close">
             <button
               onClick={() => useBrowser.getState().closeAll()}
