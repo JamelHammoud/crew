@@ -72,6 +72,33 @@ function keys() {
   }
 }
 
+// The verdict is printed rather than returned as an exit code, because the
+// runtime whisper runs on leaves threads behind that abort while node is tearing
+// itself down. That abort is a signal, and a signal is a check that says it
+// failed after saying every word of it passed. So the work happens in a child
+// and the parent reads the one line that says how it went.
+const VERDICT = 'scribe-check:'
+
+if (process.argv[2] !== 'run') {
+  const child = spawn(process.execPath, [fileURLToPath(import.meta.url), 'run'], {
+    stdio: ['ignore', 'pipe', 'inherit']
+  })
+  let said = ''
+  child.stdout.on('data', chunk => {
+    said += chunk
+    process.stdout.write(chunk)
+  })
+  child.on('exit', () => {
+    const line = said.split('\n').find(one => one.startsWith(VERDICT)) ?? ''
+    if (line.endsWith('passed')) process.exit(0)
+    if (!line) console.error(`${VERDICT} the check never said how it went`)
+    process.exit(1)
+  })
+} else {
+  await check()
+}
+
+async function check() {
 const dir = await mkdtemp(path.join(tmpdir(), 'crew-scribe-'))
 let bad = false
 try {
