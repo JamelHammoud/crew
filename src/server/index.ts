@@ -251,6 +251,49 @@ function serveAgents(session: CrewSession, raw: string, req: http.IncomingMessag
   return false
 }
 
+// The board beside a thread: putting the work up, moving a piece of it, naming
+// a decision and raising a question. Every one names the promptId of the run
+// asking, the same credential the helpers are reached on, and the thread it
+// writes to is read off that run rather than taken from the body.
+function serveTickets(session: CrewSession, raw: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
+  const [url] = raw.split('?')
+  if (req.method !== 'POST') return false
+  if (url === '/tickets') {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.ticketPut(said(body, 'promptId'), body.tickets)
+      sendJson(res, 'error' in result ? 400 : 200, result)
+    })
+    return true
+  }
+  // Ahead of the id, or a question would be read as a ticket called question.
+  if (url === '/tickets/question') {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.ticketAsk(said(body, 'promptId'), body)
+      sendJson(res, 'error' in result ? 400 : 200, result)
+    })
+    return true
+  }
+  // A decision naming no ticket hangs off whatever is on doing, so the id in
+  // the path may be empty.
+  const decision = /^\/tickets\/([\w-]*)\/decision$/.exec(url)
+  if (decision) {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.ticketDecide(said(body, 'promptId'), decision[1], body.text)
+      sendJson(res, 'error' in result ? 404 : 200, result)
+    })
+    return true
+  }
+  const move = /^\/tickets\/([\w-]+)$/.exec(url)
+  if (move) {
+    readJson(req, res, MAX_AGENT_BODY, body => {
+      const result = session.ticketMove(said(body, 'promptId'), move[1], body.column, body.note)
+      sendJson(res, 'error' in result ? 404 : 200, result)
+    })
+    return true
+  }
+  return false
+}
+
 export function createCrewServer(session: CrewSession, opts: CrewServerOptions = {}): Promise<CrewServer> {
   const httpServer = http.createServer((req, res) => {
     if (req.url === '/') {
