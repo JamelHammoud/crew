@@ -12,6 +12,7 @@ import {
   FolderGlyph,
   GameGlyph,
   GlobeGlyph,
+  GroupGlyph,
   MusicGlyph,
   PhotoGlyph,
   PlusGlyph,
