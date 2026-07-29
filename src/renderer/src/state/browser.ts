@@ -92,71 +92,71 @@ let seq = 0
 function makeTab(url = ''): BrowserTab {
   seq += 1
   return {
-      id: `tab-${seq}`,
-      kind: 'web',
-      initialUrl: url,
-      url,
-      title: '',
-      favicon: null,
-      loading: false,
-      canGoBack: false,
-      canGoForward: false,
-      path: '',
-      line: null,
-      diff: null,
-      command: null,
-      game: null,
-      threadId: '',
-      parentThreadId: '',
-      back: [],
-      forward: [],
-      tree: false,
-      open: [],
-      generation: 0
-    }
+    id: `tab-${seq}`,
+    kind: 'web',
+    initialUrl: url,
+    url,
+    title: '',
+    favicon: null,
+    loading: false,
+    canGoBack: false,
+    canGoForward: false,
+    path: '',
+    line: null,
+    diff: null,
+    command: null,
+    game: null,
+    threadId: '',
+    parentThreadId: '',
+    back: [],
+    forward: [],
+    tree: false,
+    open: [],
+    generation: 0
+  }
+}
+
+// Every folder on the way down to a file, so a tree opened beside one that is
+// already showing lands on it rather than back at the top of the project.
+function reveal(open: string[], path: string): string[] {
+  const parts = path.split('/').filter(Boolean).slice(0, -1)
+  const folders = parts.map((_, index) => parts.slice(0, index + 1).join('/'))
+  return [...open, ...folders.filter(folder => !open.includes(folder))]
+}
+
+function clampWidth(width: number): number {
+  const max = Math.max(360, window.innerWidth - 440)
+  return Math.min(Math.max(width, 360), max)
+}
+
+// Closing a plan or a board is remembered against the thread it belongs to,
+// never against the tab, so it is still the same one when it is asked for again.
+function remember(closed: string[], gone: BrowserTab[], kind: BrowserTab['kind']): string[] {
+  const tab = gone.find(t => t.kind === kind)
+  if (!tab || closed.includes(tab.threadId)) return closed
+  return [...closed, tab.threadId]
+}
+
+export const useBrowser = create<BrowserState>((write, get) => {
+  // Putting something in the panel opens it, and that is written here rather
+  // than on each of the dozen ways in, so a thirteenth cannot open a tab into a
+  // panel nobody can see. It counts what arrived rather than what is there: a
+  // page that finished loading while the panel was put away is not a way in.
+  const set: typeof write = (patch, replace) => {
+    const before = get().tabs.length
+    write(patch as never, replace as never)
+    if (get().tabs.length > before) write({ open: true } as never)
   }
 
-  // Every folder on the way down to a file, so a tree opened beside one that is
-  // already showing lands on it rather than back at the top of the project.
-  function reveal(open: string[], path: string): string[] {
-    const parts = path.split('/').filter(Boolean).slice(0, -1)
-    const folders = parts.map((_, index) => parts.slice(0, index + 1).join('/'))
-    return [...open, ...folders.filter(folder => !open.includes(folder))]
+  // A tab that takes itself away as you move takes the panel with it when it was
+  // the only thing there. The plan and the board arrive with the thread they
+  // belong to rather than by being asked for, so a panel left standing empty
+  // behind one is a panel nobody opened.
+  const settle = () => {
+    if (get().tabs.length === 0) write({ open: false } as never)
   }
 
-  function clampWidth(width: number): number {
-    const max = Math.max(360, window.innerWidth - 440)
-    return Math.min(Math.max(width, 360), max)
-  }
-
-  // Closing a plan or a board is remembered against the thread it belongs to,
-  // never against the tab, so it is still the same one when it is asked for again.
-  function remember(closed: string[], gone: BrowserTab[], kind: BrowserTab['kind']): string[] {
-    const tab = gone.find(t => t.kind === kind)
-    if (!tab || closed.includes(tab.threadId)) return closed
-    return [...closed, tab.threadId]
-  }
-
-  export const useBrowser = create<BrowserState>((write, get) => {
-    // Putting something in the panel opens it, and that is written here rather
-    // than on each of the dozen ways in, so a thirteenth cannot open a tab into a
-    // panel nobody can see. It counts what arrived rather than what is there: a
-    // page that finished loading while the panel was put away is not a way in.
-    const set: typeof write = (patch, replace) => {
-      const before = get().tabs.length
-      write(patch as never, replace as never)
-      if (get().tabs.length > before) write({ open: true } as never)
-    }
-
-    // A tab that takes itself away as you move takes the panel with it when it was
-    // the only thing there. The plan and the board arrive with the thread they
-    // belong to rather than by being asked for, so a panel left standing empty
-    // behind one is a panel nobody opened.
-    const settle = () => {
-      if (get().tabs.length === 0) write({ open: false } as never)
-    }
-
-    return {
+  return {
     width: DEFAULT_WIDTH,
     open: false,
     tabs: [],
