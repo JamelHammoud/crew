@@ -59,8 +59,8 @@ declare global {
     onTerminalData(listener: (id: string, chunk: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string) => void): () => void
-    applyScribe(settings: ScribeSettings): Promise<ScribeKeysState>
-    scribeState(): Promise<ScribeKeysState>
+    applyScribe(settings: ScribeSettings): Promise<ScribeKeyState>
+    scribeState(): Promise<ScribeKeyState>
     scribeDone(text: string): void
     dismissScribe(): void
     resizeScribe(height: number): void
