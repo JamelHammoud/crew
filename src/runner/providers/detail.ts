@@ -13,6 +13,43 @@ const todoDetail = (todos: unknown): string | undefined => {
   return typeof text === 'string' && text.trim() ? truncate(text) : undefined
 }
 
+const TODO_LIMIT = 24
+const TODO_TEXT_LIMIT = 160
+
+const DOING = new Set(['in_progress', 'in-progress', 'inprogress', 'running', 'active', 'started'])
+const DONE = new Set(['completed', 'complete', 'done', 'finished'])
+
+const todoStatus = (value: unknown): StepTodo['status'] => {
+  const status = typeof value === 'string' ? value.toLowerCase() : ''
+  if (DOING.has(status)) return 'doing'
+  if (DONE.has(status)) return 'done'
+  return 'todo'
+}
+
+const TODO_TEXT_KEYS = ['content', 'title', 'task', 'step', 'text', 'description', 'activeForm']
+
+// The list itself, kept beside the one line a step says about it. Every CLI
+// spells the same three states its own way and hides the list under its own
+// key, so both are read here and nowhere else.
+export function stepTodos(input: unknown): StepTodo[] | undefined {
+  if (!input || typeof input !== 'object') return undefined
+  const record = input as Record<string, unknown>
+  const raw = record['todos'] ?? record['plan'] ?? record['items'] ?? record['steps']
+  if (!Array.isArray(raw)) return undefined
+  const todos: StepTodo[] = []
+  for (const entry of raw.slice(0, TODO_LIMIT)) {
+    if (!entry || typeof entry !== 'object') continue
+    const line = entry as Record<string, unknown>
+    const key = TODO_TEXT_KEYS.find(name => typeof line[name] === 'string' && (line[name] as string).trim())
+    if (!key) continue
+    todos.push({
+      text: (line[key] as string).replace(/\s+/g, ' ').trim().slice(0, TODO_TEXT_LIMIT),
+      status: todoStatus(line['status'] ?? line['state'])
+    })
+  }
+  return todos.length > 0 ? todos : undefined
+}
+
 export function activityDetail(input: unknown): string | undefined {
   if (!input || typeof input !== 'object') return undefined
   const record = input as Record<string, unknown>
