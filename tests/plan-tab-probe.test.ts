@@ -188,12 +188,14 @@ describe('the way back to the panel', () => {
     expect(planTab()!.threadId).toBe('t1')
   })
 
-  it('opens on the rows an empty panel offers', () => {
+  // Closing every tab leaves the panel standing on what it can hold, so the
+  // plan is one press away rather than gone with the thing that showed it.
+  it('offers the plan again on an empty panel', () => {
     open('t1', 'Step one')
-    const { getByLabelText, getByText } = view('t1')
+    const { getByText } = view('t1')
     act(() => useBrowser.getState().closeAll())
 
-    fireEvent.click(getByLabelText('Show panel'))
+    expect(useBrowser.getState().open).toBe(true)
     fireEvent.click(getByText('Plan'))
 
     expect(planTab()!.threadId).toBe('t1')
