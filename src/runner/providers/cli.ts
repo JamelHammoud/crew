@@ -276,6 +276,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             const name = out.activity.name || toolNames.get(out.activity.id) || ''
             if (out.activity.name) toolNames.set(out.activity.id, out.activity.name)
             const output = isShellTool(name) ? out.activity.output : undefined
+            // A CLI with no whole-list tool says one task per call, so the list
+            // such a step carries is the run's own, folded as those land. The
+            // id of a new one is only ever in the result, which is read here
+            // rather than kept, since a result is not a step's to hold.
+            const todos = out.activity.todos ?? tasks.todos(name, out.activity)
             hooks.onStep({
               id: `t${out.activity.id}`,
               kind: out.activity.kind,
