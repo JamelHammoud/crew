@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { SessionEvent } from '../src/shared/events'
 import { agentId } from '../src/shared/llm'
-import { FAN_LIMIT } from '../src/shared/subagents'
+import { DEFAULT_FAN } from '../src/shared/subagents'
 import { Runner } from '../src/runner'
 import { makeFakeProvider, makeSteerableProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
@@ -10,7 +10,6 @@ import { testRunner } from './helpers/runner'
 type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Start = Extract<SessionEvent, { kind: 'agent.start' }>
 type End = Extract<SessionEvent, { kind: 'agent.end' }>
-type RoleAdded = Extract<SessionEvent, { kind: 'subagent.added' }>
 type SpawnStarted = Extract<SessionEvent, { kind: 'subagent.started' }>
 type SpawnEnded = Extract<SessionEvent, { kind: 'subagent.ended' }>
 
@@ -59,11 +58,6 @@ describe('subagents', () => {
     return runner
   }
 
-  async function addRole(ui: TestUi, name: string, provider = 'fake'): Promise<RoleAdded> {
-    ui.send({ type: 'subagent.add', name, brief: `${name} does one piece of work and answers.`, provider })
-    return (await ui.waitForEvent(e => e.kind === 'subagent.added' && e.name === name)) as RoleAdded
-  }
-
   const post = (path: string, body: unknown): Promise<{ status: number; body: any }> =>
     fetch(`${base}${path}`, {
       method: 'POST',
@@ -82,12 +76,11 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner()
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
-    const role = await addRole(ui, 'Scout')
 
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      role: 'Scout',
+      name: 'Scout', provider: 'fake',
       subject: 'read the schema',
       task: 'find every table in the schema'
     })
@@ -133,10 +126,9 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
-    await addRole(ui, 'Auditor')
 
     const parent = await openParent(ui, fake)
-    await post('/agents/spawn', { promptId: parent.promptId, role: 'Auditor', subject: 'check', task: 'check the tests' })
+    await post('/agents/spawn', { promptId: parent.promptId, name: 'Auditor', provider: 'fake', subject: 'check', task: 'check the tests' })
     const out = (await ui.waitForEvent(e => e.kind === 'subagent.started')) as SpawnStarted
 
     const second = (await ui.waitForEvent(
@@ -157,11 +149,10 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
-    await addRole(ui, 'Scout')
 
     const parent = await openParent(ui, fake)
     for (const subject of ['schema', 'tests', 'docs']) {
-      await post('/agents/spawn', { promptId: parent.promptId, role: 'Scout', subject, task: `look at the ${subject}` })
+      await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject, task: `look at the ${subject}` })
     }
     await waitUntil(() => ui.events.filter(e => e.kind === 'subagent.ended').length === 3)
 
@@ -181,17 +172,16 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
-    await addRole(ui, 'Scout')
 
-    const dead = await post('/agents/spawn', { promptId: 'not-a-run', role: 'Scout', subject: 'x', task: 'x' })
+    const dead = await post('/agents/spawn', { promptId: 'not-a-run', name: 'Scout', provider: 'fake', subject: 'x', task: 'x' })
     expect(dead.status).toBe(400)
     expect(dead.body.error).toContain('not a run')
 
     const parent = await openParent(ui, steery)
-    const nameless = await post('/agents/spawn', { promptId: parent.promptId, role: 'Nobody', subject: 'x', task: 'x' })
+    const nameless = await post('/agents/spawn', { promptId: parent.promptId, name: '', provider: 'fake', subject: 'x', task: 'x' })
     expect(nameless.status).toBe(400)
     expect(nameless.body.error).toContain('No role called')
-    const empty = await post('/agents/spawn', { promptId: parent.promptId, role: 'Scout', subject: 'x', task: '  ' })
+    const empty = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'x', task: '  ' })
     expect(empty.status).toBe(400)
   })
 
@@ -200,7 +190,6 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(6000, 4000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
-    await addRole(ui, 'Scout')
 
     // Asking for more than the crew's ceiling is held at the ceiling.
     ui.send({ type: 'subagent.prefs', on: true, fan: FAN_LIMIT + 5 })
@@ -209,13 +198,13 @@ describe('subagents', () => {
     for (let i = 0; i < FAN_LIMIT; i++) {
       const sent = await post('/agents/spawn', {
         promptId: parent.promptId,
-        role: 'Scout',
+        name: 'Scout', provider: 'fake',
         subject: `job ${i}`,
         task: `do job ${i}`
       })
       expect(sent.status).toBe(200)
     }
-    const over = await post('/agents/spawn', { promptId: parent.promptId, role: 'Scout', subject: 'x', task: 'one more' })
+    const over = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'x', task: 'one more' })
     expect(over.status).toBe(400)
     expect(over.body.error).toContain(`${FAN_LIMIT} running`)
   })
@@ -225,12 +214,11 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(6000, 6000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === steery)
-    await addRole(ui, 'Scout', 'steery')
 
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      role: 'Scout',
+      name: 'Scout', provider: 'fake',
       subject: 'the long one',
       task: 'take your time'
     })
@@ -259,12 +247,11 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(9000, 9000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === steery)
-    await addRole(ui, 'Scout', 'steery')
 
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      role: 'Scout',
+      name: 'Scout', provider: 'fake',
       subject: 'slow',
       task: 'take a while'
     })
@@ -286,12 +273,11 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(9000, 9000)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === steery)
-    await addRole(ui, 'Scout', 'steery')
 
     const parent = await openParent(ui, steery)
     const spawned = await post('/agents/spawn', {
       promptId: parent.promptId,
-      role: 'Scout',
+      name: 'Scout', provider: 'fake',
       subject: 'along for the ride',
       task: 'take a while'
     })
@@ -310,14 +296,13 @@ describe('subagents', () => {
     uis.push(ui)
     await connectRunner(20, 20)
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
-    await addRole(ui, 'Scout')
 
     ui.send({ type: 'subagent.prefs', on: false, fan: 4 })
     await waitUntil(() => host.session.subagentRoles().length === 1)
     const parent = await openParent(ui, steery)
     const refused = await post('/agents/spawn', {
       promptId: parent.promptId,
-      role: 'Scout',
+      name: 'Scout', provider: 'fake',
       subject: 'x',
       task: 'read the file'
     })
@@ -330,12 +315,12 @@ describe('subagents', () => {
     await new Promise(r => setTimeout(r, 200))
     const again = await post('/agents/spawn', {
       promptId: parent.promptId,
-      role: 'Scout',
+      name: 'Scout', provider: 'fake',
       subject: 'x',
       task: 'read the file'
     })
     expect(again.status).toBe(200)
-    const over = await post('/agents/spawn', { promptId: parent.promptId, role: 'Scout', subject: 'y', task: 'more' })
+    const over = await post('/agents/spawn', { promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'y', task: 'more' })
     expect(over.status).toBe(400)
     expect(over.body.error).toContain('1 running')
   })
