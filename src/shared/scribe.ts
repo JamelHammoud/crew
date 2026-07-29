@@ -63,6 +63,11 @@ export const WORD_LIMIT = 200
 // room is empty and see-through, and the shadow in `.glass-pill` is written to
 // land inside it.
 export const PILL_ROOM = 32
+
+// The widest the pill ever gets, which is a failure: that is the one state that
+// holds a sentence. Every other state is narrower and stands in the middle of
+// this, so the window is sized once here rather than resized every time the pill
+// opens under the pointer.
 export const PILL_WIDTH = 176
 export const PILL_MIN = 52
 export const PILL_MAX = 140
