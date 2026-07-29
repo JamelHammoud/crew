@@ -187,6 +187,7 @@ export class ScribeKeys {
   }
 
   private released(keycode: number): void {
+    if (ownKey(posted, Date.now())) return
     if (!this.codes.includes(keycode)) return
     clearTimeout(this.timer)
     this.say(this.latch.keyUp(Date.now()))
