@@ -366,20 +366,27 @@ app.whenReady().then(() => {
   ipcMain.on('scribe:write', (_event, text: string) => scribeWrite(text))
   ipcMain.on('scribe:done', (_event, text: string) => {
     scribeKeys.stopped()
-    scribe.hide()
+    scribe.rest()
     // Whatever was held back because the key was down goes out with it, in the
     // order it was spoken. A dictation written as it was said hands nothing over
     // here, because the words are already where they were going.
     const rest = scribePending.join('') + text
     scribePending = []
     scribeLand(rest)
+    // The take is one thing somebody said, however many stretches it landed in.
+    scribeSaid()
   })
   ipcMain.on('scribe:dismiss', () => {
     scribeKeys.stopped()
     scribePending = []
-    scribe.hide()
+    scribe.rest()
+    // Whatever had already landed was said, so it is kept. Only the sound that
+    // never got read is thrown away.
+    scribeSaid()
   })
-  ipcMain.on('scribe:size', (_event, height: number) => scribe.resize(height))
+  ipcMain.on('scribe:size', (_event, width: number, height: number) =>
+    scribe.resize({ width, height })
+  )
   // Where the pill stands is a decision somebody makes once by dragging it, so
   // it is this machine's own and is written down beside the rest of what the app
   // remembers for itself.
