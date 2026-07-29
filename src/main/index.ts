@@ -250,6 +250,7 @@ app.whenReady().then(() => {
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
   session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
+  scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
   resumed = session.resume().then(() => {
     sharing()
     warmTerminals()
@@ -338,6 +339,13 @@ app.whenReady().then(() => {
     scribe.hide()
   })
   ipcMain.on('scribe:size', (_event, height: number) => scribe.resize(height))
+  // Where the pill stands is a decision somebody makes once by dragging it, so
+  // it is this machine's own and is written down beside the rest of what the app
+  // remembers for itself.
+  ipcMain.on('scribe:grab', () => scribe.grab())
+  ipcMain.on('scribe:drag', (_event, x: number, y: number, settled: boolean) =>
+    scribe.drag({ x, y }, settled)
+  )
   ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
     showAlert(alert, () => {
       openWindow()
