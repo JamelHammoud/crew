@@ -288,6 +288,7 @@ app.whenReady().then(() => {
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
   session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
   scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
+  said.remember(path.join(app.getPath('userData'), 'scribe-said.json'))
   resumed = session.resume().then(() => {
     sharing()
     warmTerminals()
