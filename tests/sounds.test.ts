@@ -567,7 +567,7 @@ describe('a conversation out loud', () => {
     hushChat(false)
   })
 
-  const CHAT = ['send', 'receive', 'done', 'failed'] as const
+  const CHAT = ['send', 'receive', 'done', 'failed', 'helper.out', 'helper.home'] as const
 
   it('keeps the chat quiet while somebody is talking', () => {
     hushChat(true)
