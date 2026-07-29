@@ -65,9 +65,9 @@ describe('what an empty panel offers', () => {
     act(() => useBrowser.getState().togglePanel())
     const { getByText } = render(createElement(BrowserPanel))
 
-    fireEvent.click(getByText('Terminal'))
+    fireEvent.click(getByText('Music'))
 
-    expect(useBrowser.getState().tabs.map(t => t.kind)).toEqual(['terminal'])
+    expect(useBrowser.getState().tabs.map(t => t.kind)).toEqual(['music'])
   })
 
   it('stands down the moment there is something to look at', () => {
