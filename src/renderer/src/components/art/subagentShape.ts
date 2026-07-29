@@ -101,11 +101,23 @@ export function shapePath(shape: SubagentShape, box: number = GRID): string {
   }
   if (shape.kind === 'square') {
     const side = unit(shape.radius * 2)
-    const x = round(half - side / 2)
+    const edge = half - side / 2
     // A squarer corner than the app's cards wear. This is a mark rather than a
     // surface, and a heavily rounded square at 18 across is a disc.
     const r = round(side * 0.28)
-    return `M ${x} ${round(half)} a ${r} ${r} 0 0 1 ${r} ${round(-side / 2)} h ${round(side - r * 2)} a ${r} ${r} 0 0 1 ${r} ${r} v ${round(side - r * 2)} a ${r} ${r} 0 0 1 ${round(-r)} ${r} h ${round(-(side - r * 2))} a ${r} ${r} 0 0 1 ${round(-r)} ${round(-r)} Z`
+    const run = round(side - r * 2)
+    return [
+      `M ${round(edge + r)} ${round(edge)}`,
+      `h ${run}`,
+      `a ${r} ${r} 0 0 1 ${r} ${r}`,
+      `v ${run}`,
+      `a ${r} ${r} 0 0 1 ${round(-r)} ${r}`,
+      `h ${round(-run)}`,
+      `a ${r} ${r} 0 0 1 ${round(-r)} ${round(-r)}`,
+      `v ${round(-run)}`,
+      `a ${r} ${r} 0 0 1 ${r} ${round(-r)}`,
+      `Z`
+    ].join(' ')
   }
   if (shape.kind === 'hexagon') {
     const points = Array.from({ length: 6 }, (_, i) => at(shape, shape.twist + (i / 6) * Math.PI * 2, box))
