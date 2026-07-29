@@ -533,28 +533,53 @@ export class GitSync {
       branch: branch.stdout.trim(),
       changed,
       ahead,
-      behind
+      behind,
+      stashes
     }
   }
 
-  private async readChanges(): Promise<RepoChange[]> {
+  private async readWork(): Promise<RepoWork> {
+    const status = await this.readStatus()
+    if (!status.available) return { status, changes: [], stashes: [] }
+    const [changes, stashes] = await Promise.all([this.readChanges(), this.readStashes()])
+    return { status, changes, stashes }
+  }
+
+  private async readStashes(): Promise<RepoStash[]> {
+    const list = await runGit(['stash', 'list', '-z', `--format=%gd${UNIT}%gs`], this.repoPath)
+    if (list.code !== 0) return []
+    return list.stdout.split('\0').filter(Boolean).map(record => stashOf(record))
+  }
+
+  private async statusEntries(): Promise<StatusEntry[]> {
     const status = await runGit(
       ['status', '--porcelain=v1', '-z', '--untracked-files=all', '--', ...PROJECT_PATHS],
       this.repoPath
     )
     if (status.code !== 0) return []
-    const changes = await Promise.all(parseStatus(status.stdout).map(entry => this.readChange(entry)))
-    return changes.sort((a, b) => a.path.localeCompare(b.path))
+    return parseStatus(status.stdout)
   }
 
-  private async readChange(entry: StatusEntry): Promise<RepoChange> {
-    const kind = changeKind(entry.code)
-    if (entry.code === '??') return this.readNewFile(entry, kind)
-    const result = await runGit(
-      ['diff', '--no-ext-diff', '--no-color', '--unified=3', 'HEAD', '--', entry.path],
-      this.repoPath
+  // A file edited after it was staged is two changes, because the index and the
+  // file on disk hold two different diffs and the panel lists them apart.
+  private async readChanges(): Promise<RepoChange[]> {
+    const entries = await this.statusEntries()
+    const changes = await Promise.all(
+      entries.flatMap(entry => sidesOf(entry).map(staged => this.readChange(entry, staged)))
     )
-    if (result.code !== 0 && kind === 'added') return this.readNewFile(entry, kind)
+    return changes.sort(
+      (a, b) => a.path.localeCompare(b.path) || Number(b.staged) - Number(a.staged)
+    )
+  }
+
+  private async readChange(entry: StatusEntry, staged: boolean): Promise<RepoChange> {
+    const kind = sideKind(entry, staged)
+    if (entry.code === '??') return this.readNewFile(entry, kind, staged)
+    const scope = entry.previousPath ? [entry.path, entry.previousPath] : [entry.path]
+    const args = ['diff', '--no-ext-diff', '--no-color', '--unified=3']
+    if (staged) args.push('--cached')
+    const result = await runGit([...args, '--', ...scope], this.repoPath)
+    if (result.code !== 0 && kind === 'added') return this.readNewFile(entry, kind, staged)
     const diff = result.stdout
     const counts = diffCounts(diff)
     const binary = /^Binary files |^GIT binary patch/m.test(diff)
@@ -563,6 +588,7 @@ export class GitSync {
       path: entry.path,
       previousPath: entry.previousPath,
       kind,
+      staged,
       added: counts.added,
       removed: counts.removed,
       diff: preview.diff,
@@ -571,11 +597,16 @@ export class GitSync {
     }
   }
 
-  private async readNewFile(entry: StatusEntry, kind: RepoChangeKind): Promise<RepoChange> {
+  private async readNewFile(
+    entry: StatusEntry,
+    kind: RepoChangeKind,
+    staged: boolean
+  ): Promise<RepoChange> {
     const empty = {
       path: entry.path,
       previousPath: entry.previousPath,
       kind,
+      staged,
       added: 0,
       removed: 0,
       diff: '',
