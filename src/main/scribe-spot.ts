@@ -17,6 +17,37 @@ export interface Spot {
   y: number
 }
 
+// The window is the pill plus the room its shadow lands in, and it follows what
+// the pill really is: the pill is on screen the whole time dictation is on, and
+// Electron passes no click through a transparent window on either platform, so
+// every pixel of window past the pill is a click of somebody else's that goes
+// nowhere.
+//
+// The smallest it may be is the pill at rest, the largest is a failure holding
+// its sentence. Both ends are held here rather than trusted, because the size
+// comes off a page measuring itself and a window of nought or of the whole screen
+// is worse than a window of the wrong size.
+export const PILL_SMALLEST = {
+  width: PILL_REST + PILL_ROOM * 2,
+  height: PILL_REST + PILL_ROOM * 2
+}
+
+export const PILL_LARGEST = {
+  width: PILL_WIDTH + PILL_ROOM * 2,
+  height: PILL_MAX + PILL_ROOM * 2
+}
+
+export function fits(size: Size): Size {
+  return {
+    width: Math.round(
+      Math.max(PILL_SMALLEST.width, Math.min(size.width, PILL_LARGEST.width))
+    ),
+    height: Math.round(
+      Math.max(PILL_SMALLEST.height, Math.min(size.height, PILL_LARGEST.height))
+    )
+  }
+}
+
 // How far off the bottom of the screen it rests before anybody has moved it.
 // Low enough to be out of the way of what is being typed in and high enough to
 // clear a dock.
