@@ -40,7 +40,7 @@ export default function StepCode({ text, prompt, output }: { text: string; promp
             </div>
           ))}
           {rest > 0 && (
-            <p className="px-3 pt-1 text-fg-faint">{`${rest} more ${rest === 1 ? 'line' : 'lines'}`}</p>
+            <p className="px-3 pt-1 text-fg-faint select-none">{`${rest} more ${rest === 1 ? 'line' : 'lines'}`}</p>
           )}
         </div>
       </div>
