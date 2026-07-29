@@ -33,6 +33,9 @@ describe('a helper sent out of a ghost thread', () => {
   const fake = agentId('jamel', 'fake')
 
   it('is hidden from the other window, and none of it is ever written down', async () => {
+    const mine = await TestUi.connect(host.url, 'jamel', host.code)
+    const theirs = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(mine, theirs)
     const runner = testRunner({
       name: 'jamel',
       code: host.code,
@@ -47,10 +50,6 @@ describe('a helper sent out of a ghost thread', () => {
         if (status === 'online') resolve()
       }
     })
-
-    const mine = await TestUi.connect(host.url, 'jamel', host.code)
-    const theirs = await TestUi.connect(host.url, 'sam', host.code)
-    uis.push(mine, theirs)
     await mine.waitForEvent(e => e.kind === 'agent.online')
 
     mine.send({ type: 'subagent.add', name: 'Scout', brief: 'reads things', provider: 'fake' })
@@ -85,6 +84,8 @@ describe('a helper sent out of a ghost thread', () => {
   })
 
   it('goes when the window that opened the thread does', async () => {
+    const mine = await TestUi.connect(host.url, 'jamel', host.code)
+    uis.push(mine)
     const runner = testRunner({
       name: 'jamel',
       code: host.code,
@@ -99,9 +100,6 @@ describe('a helper sent out of a ghost thread', () => {
         if (status === 'online') resolve()
       }
     })
-
-    const mine = await TestUi.connect(host.url, 'jamel', host.code)
-    uis.push(mine)
     await mine.waitForEvent(e => e.kind === 'agent.online')
     mine.send({ type: 'subagent.add', name: 'Scout', brief: 'reads things', provider: 'fake' })
     await mine.waitForEvent(e => e.kind === 'subagent.added')
