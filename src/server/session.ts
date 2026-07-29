@@ -2340,6 +2340,65 @@ export class CrewSession {
     }
   }
 
+  // One person is one typist wherever they are writing, however many windows
+  // they have open on the folder.
+  private typists(): Typist[] {
+    const seen = new Map<string, Typist>()
+    for (const { id, name, where } of this.typing.values()) {
+      seen.set(`${id}:${where ?? ''}`, where === undefined ? { id, name } : { id, name, where })
+    }
+    return [...seen.values()]
+  }
+
+  private broadcastTyping(): void {
+    this.broadcast({ type: 'typing.room', typists: this.typists() })
+  }
+
+  // Nothing typed in a ghost thread ever leaves the window it was typed in, so
+  // one is not recorded at all rather than recorded and filtered on the way out.
+  private handleTyping(ws: WebSocket, member: Member, rawWhere: string | undefined, on: boolean): void {
+    const where = typeof rawWhere === 'string' && rawWhere.length > 0 ? rawWhere.slice(0, 200) : undefined
+    if (where !== undefined && this.ghostOf(where)) return
+    const before = this.typing.get(ws)
+    if (on !== true) {
+      if (!this.typing.delete(ws)) return
+      this.broadcastTyping()
+      return
+    }
+    this.typing.set(ws, { id: member.id, name: member.name, where, at: Date.now() })
+    this.armTypingSweep()
+    if (before?.where === where) return
+    this.broadcastTyping()
+  }
+
+  private stopTyping(ws: WebSocket): void {
+    if (this.typing.delete(ws)) this.broadcastTyping()
+  }
+
+  // A window that dies mid-word never says it stopped, so the host lets go of it
+  // on its own. The sweep is armed off the oldest entry and only while there is
+  // one, rather than run on a clock that ticks through every quiet afternoon.
+  private armTypingSweep(): void {
+    if (this.typingSweep) clearTimeout(this.typingSweep)
+    this.typingSweep = null
+    const oldest = Math.min(...[...this.typing.values()].map(typist => typist.at))
+    if (!Number.isFinite(oldest)) return
+    const wait = Math.max(0, oldest + TYPING_TTL - Date.now())
+    this.typingSweep = setTimeout(() => {
+      this.typingSweep = null
+      const cutoff = Date.now() - TYPING_TTL
+      let dropped = false
+      for (const [ws, typist] of [...this.typing]) {
+        if (typist.at > cutoff) continue
+        this.typing.delete(ws)
+        dropped = true
+      }
+      this.armTypingSweep()
+      if (dropped) this.broadcastTyping()
+    }, wait + 1)
+    this.typingSweep.unref?.()
+  }
+
   private huddleRoom(): HuddleRoom {
     if (this.huddle.size === 0) return emptyRoom()
     return {
