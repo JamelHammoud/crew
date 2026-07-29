@@ -52,6 +52,17 @@ export const LONGEST_MS = 120_000
 
 export const WORD_LIMIT = 200
 
+// The pill, and the room its shadow needs. A window ends where its bounds end,
+// so a drop thrown from a pill that fills its own window is cut off flat at all
+// four sides, which reads as a pale oblong standing behind the pill rather than
+// as a shadow under it. The window is the pill plus ROOM on every side, that
+// room is empty and see-through, and the shadow in `.glass-pill` is written to
+// land inside it.
+export const PILL_ROOM = 32
+export const PILL_WIDTH = 216
+export const PILL_MIN = 52
+export const PILL_MAX = 140
+
 const MAC_KEYS: ScribeKey[] = ['right-option', 'right-ctrl', 'ctrl', 'meta']
 const OTHER_KEYS: ScribeKey[] = ['right-ctrl', 'ctrl', 'right-option', 'meta']
 
