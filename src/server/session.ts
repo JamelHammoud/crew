@@ -2373,10 +2373,12 @@ export class CrewSession {
       this.broadcastTyping()
       return
     }
+    // A ping that says what was already said is only the clock being wound. It
+    // is nobody's news, so nothing goes out for it.
+    const news = before === undefined || before.where !== where
     this.typing.set(ws, { id: member.id, name: member.name, where, at: Date.now() })
     this.armTypingSweep()
-    if (before?.where === where) return
-    this.broadcastTyping()
+    if (news) this.broadcastTyping()
   }
 
   private stopTyping(ws: WebSocket): void {
