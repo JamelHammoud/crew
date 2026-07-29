@@ -677,3 +677,13 @@
 {"id":"de42dd93-8a0c-4eda-95a1-c7cc30b026d1","ts":1785299585128,"kind":"thread.status","threadId":"138b5c18-fbb6-4f34-b4af-244d90539911","status":"done","byName":"Jamel (dev)"}
 {"id":"f3fdaf86-bea2-4850-a878-cf4efc7c34c8","ts":1785299593259,"kind":"thread.status","threadId":"acc5153e-f24e-4aec-bd58-f9eb338b288f","status":"done","byName":"Jamel"}
 {"id":"7761977f-ac64-4e24-a962-6486514a958b","ts":1785299599392,"kind":"thread.status","threadId":"245e03d9-2ebc-4bb4-921d-3e45c85700b2","status":"done","byName":"Jamel"}
+{"id":"e1ec978f-8631-4aaf-b0c9-6dd03a3b21fb","ts":1785299604188,"kind":"person.left","memberId":"8f24efe3-be4a-4766-afbf-fd1d84a84ca6","name":"Jamel (dev)"}
+{"id":"823c514a-ec1f-4db9-b574-b84378efe20d","ts":1785299605298,"kind":"agent.offline","agentId":"ali/claude","label":"Fable"}
+{"id":"45635b30-6b4e-4f73-8eb5-de580a9ce2a6","ts":1785299605298,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"7d875344-d060-4605-aee8-0c3d7771675b","ts":1785299605298,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"621e005c-045f-479a-a99f-8c116197a926","ts":1785299605298,"kind":"agent.offline","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
+{"id":"8da018e8-763e-4b8d-a74f-213f002051dc","ts":1785299605299,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"52178ad0-be04-4036-8dd3-d150ff850763","ts":1785299605299,"kind":"person.left","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"2e8509b8-ec3b-4c94-8b3a-c3703f4f0ce3","ts":1785299605299,"kind":"agent.offline","agentId":"jamel/9064b828-b855-4056-8e24-596b93aacd8e","label":"Bubbles"}
+{"id":"b0b1da54-fdce-49a2-aa44-0b743a0fd3f6","ts":1785299605299,"kind":"agent.offline","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
+{"id":"2f48d1e2-789f-4d45-b5d7-d54b5e65aab8","ts":1785299605299,"kind":"agent.offline","agentId":"jamel (dev)/580609af-be57-4e6d-b53c-b1a0562a47c0","label":"Kimi 2"}
