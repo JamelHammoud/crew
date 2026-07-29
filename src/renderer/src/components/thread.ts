@@ -248,9 +248,16 @@ export function buildThread(
   events: SessionEvent[],
   steps: Record<string, AgentStep[]>,
   selfId: string,
-  agents: Array<Pick<PooledAgent, 'id' | 'label'>> = []
+  agents: Array<Pick<PooledAgent, 'id' | 'label'>> = [],
+  // Who the agent's own words read under here. Inside a helper's own thread the
+  // work is the helper's, so it carries no agent id at all: nothing looks it up
+  // as a member or as an agent, which is what leaves it standing under its own
+  // name and its own mark rather than under the machine that ran it.
+  as?: { name: string; seed: string }
 ): ThreadItem[] {
   const labelOf = (agentId: string, written: string) => agents.find(a => a.id === agentId)?.label ?? written
+  const wroteIt = (agentId: string, written: string) =>
+    as ? { author: as.name, helperSeed: as.seed } : { author: labelOf(agentId, written), authorId: agentId }
   const ended = new Set(events.filter(e => e.kind === 'agent.end').map(e => e.promptId))
   const started = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
   // The last route wins: a steer the agent turned down is re-emitted as queued.
