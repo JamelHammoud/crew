@@ -147,7 +147,7 @@ export type ClientMessage =
   | { type: 'agent.deregister'; agentId: string }
   | { type: 'agent.step'; promptId: string; step: RunStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
-  | { type: 'agent.tokens'; promptId: string; tokens: number }
+  | { type: 'agent.tokens'; promptId: string; tokens: number; cost?: number }
   | { type: 'agent.steered'; promptId: string; ok: boolean }
   | { type: 'agent.done'; promptId: string; text: string }
   | { type: 'agent.error'; promptId: string; message: string }
@@ -164,7 +164,7 @@ export type ServerMessage =
   | { type: 'agent.avatar'; agentId: string; file: string | null }
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
-  | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number }
+  | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number; cost?: number }
   | { type: 'huddle.room'; room: HuddleRoom }
   | { type: 'huddle.signal'; from: string; signal: HuddleSignal }
   | { type: 'music.room'; room: MusicRoom }
