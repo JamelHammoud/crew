@@ -1,10 +1,10 @@
 import type { CommandName } from '../../../shared/commands'
 import {
+  BoardGlyph,
   BoltGlyph,
   ChecklistGlyph,
   ClockGlyph,
   CloseGlyph,
-  EyeGlyph,
   GhostGlyph,
   MicGlyph,
   QuestionGlyph
@@ -13,7 +13,7 @@ import Pill from './Pill'
 
 export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   plan: ChecklistGlyph,
-  tickets: EyeGlyph,
+  tickets: BoardGlyph,
   ghost: GhostGlyph,
   voice: MicGlyph,
   steer: BoltGlyph,
