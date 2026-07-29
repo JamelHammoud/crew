@@ -738,6 +738,10 @@ export class CrewSession {
     member.connections.add(ws)
     this.meta.set(ws, { role: msg.role, memberKey: member.name.toLowerCase(), agentIds: [] })
     this.send(ws, { type: 'welcome', selfId: member.id, snapshot: this.snapshot() })
+    // Typing is too short lived to ride in the snapshot and too quiet to reach a
+    // window on its own: a ping only broadcasts when it changes something, so a
+    // window that arrives mid-sentence is told once and hears the rest.
+    if (msg.role === 'ui' && this.typing.size > 0) this.send(ws, { type: 'typing.room', typists: this.typists() })
     if (msg.role === 'runner') {
       for (const llm of msg.llms) this.registerAgent(ws, member, llm)
       this.reconcileRuns(this.meta.get(ws)?.agentIds ?? [], new Set(msg.running ?? []))
@@ -756,6 +760,7 @@ export class CrewSession {
     switch (msg.type) {
       case 'chat.send':
         if (meta.role === 'ui') {
+          this.stopTyping(ws)
           this.handleChat(
             ws,
             member,
