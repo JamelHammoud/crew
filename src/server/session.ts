@@ -3247,7 +3247,12 @@ export class CrewSession {
         )
       }
     }
-    lines.push(``, `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`)
+    lines.push(
+      ``,
+      thread?.parentThreadId
+        ? `Do the work above, then answer with what you found or what you changed.`
+        : `Continue as ${agent.label}. Reply to the latest message from ${prompt.byName}.`
+    )
     return lines.join('\n')
   }
 
