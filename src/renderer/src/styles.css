@@ -308,11 +308,17 @@ body {
   [contenteditable]:not([contenteditable='false']) {
     user-select: text;
   }
+}
 
-  input:placeholder-shown,
-  textarea:placeholder-shown {
-    user-select: none;
-  }
+/* The one exception, and the reason it is one: tldraw ships an unlayered
+   input { user-select: text }, and a stylesheet in no layer at all beats every
+   layer there is, whatever either side is written with. It arrives with the
+   first board anybody opens, so in the base layer this rule would be on until
+   somebody looked at a design and off from then on. Nothing ever asks for a
+   placeholder to be selectable, which is what makes it safe to write here. */
+input:placeholder-shown,
+textarea:placeholder-shown {
+  user-select: none;
 }
 
 /* The one place the band is written down. Anything that has to paint a
