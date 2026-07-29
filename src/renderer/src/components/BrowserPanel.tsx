@@ -126,52 +126,23 @@ export default function BrowserPanel() {
             </button>
           </Tooltip>
           <Popover open={newOpen} onClose={() => setNewOpen(false)}>
-            <MenuItem
-              icon={<GlobeGlyph />}
-              label="Web page"
-              onClick={() => {
-                setNewOpen(false)
-                useBrowser.getState().addTab()
-              }}
-            />
-            <MenuItem
-              icon={<TerminalGlyph />}
-              label="Terminal"
-              onClick={() => {
-                setNewOpen(false)
-                useBrowser.getState().addTerminal()
-              }}
-            />
-            <MenuItem
-              icon={<FolderGlyph />}
-              label="Files"
-              onClick={() => {
-                setNewOpen(false)
-                useBrowser.getState().openFiles()
-              }}
-            />
-            <MenuItem
-              icon={<MusicGlyph />}
-              label="Music"
-              onClick={() => {
-                setNewOpen(false)
-                useBrowser.getState().openMusic()
-              }}
-            />
-            <MenuItem
-              icon={<GameGlyph />}
-              label="Games"
-              onClick={() => {
-                setNewOpen(false)
-                useBrowser.getState().openGame()
-              }}
-            />
+            {opens.map(one => (
+              <MenuItem
+                key={one.id}
+                icon={one.mark}
+                label={one.label}
+                onClick={() => {
+                  setNewOpen(false)
+                  one.open()
+                }}
+              />
+            ))}
           </Popover>
         </span>
-        {tabs.length > 0 && (
+        {
           <Tooltip label="Close">
             <button
-              onClick={() => useBrowser.getState().closeAll()}
+              onClick={() => useBrowser.getState().closePanel()}
               aria-label="Close"
               className={`app-no-drag ${iconButton}`}
             >
