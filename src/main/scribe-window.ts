@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { BrowserWindow, screen } from 'electron'
-import { PILL_MAX, PILL_MIN, PILL_ROOM, PILL_WIDTH, type ScribeSettings } from '../shared/scribe'
-import { grown, hold, middle, restSpot, spotFrom, type Spot } from './scribe-spot'
+import { PILL_MAX, PILL_REST, PILL_ROOM, PILL_WIDTH, type ScribeSettings } from '../shared/scribe'
+import { grown, hold, middle, restSpot, spotFrom, type Size, type Spot } from './scribe-spot'
 import type { PanelPage } from './tray-panel'
 import { createScribeOptions } from './window-options'
 
@@ -12,10 +12,20 @@ import { createScribeOptions } from './window-options'
 // The window is the pill plus PILL_ROOM on every side, so its shadow has
 // somewhere to land. Everything below is that window rather than the pill, which
 // is why the room is added back to the screen a spot is held inside.
+//
+// It stands there the whole time dictation is on rather than arriving with a
+// dictation, so it is only ever as big as the pill really is. Electron does not
+// pass a click through a transparent window on either platform, so every pixel
+// of window past the pill is a click of somebody else's that goes nowhere, and a
+// window that is up all day may not hold any.
 
-const WIDTH = PILL_WIDTH + PILL_ROOM * 2
-const HEIGHT = PILL_MIN + PILL_ROOM * 2
-const MAX_HEIGHT = PILL_MAX + PILL_ROOM * 2
+const SMALLEST = { width: PILL_REST + PILL_ROOM * 2, height: PILL_REST + PILL_ROOM * 2 }
+const LARGEST = { width: PILL_WIDTH + PILL_ROOM * 2, height: PILL_MAX + PILL_ROOM * 2 }
+
+const within = (size: Size): Size => ({
+  width: Math.round(Math.max(SMALLEST.width, Math.min(size.width, LARGEST.width))),
+  height: Math.round(Math.max(SMALLEST.height, Math.min(size.height, LARGEST.height)))
+})
 
 export class ScribeWindow {
   private win: BrowserWindow | null = null
