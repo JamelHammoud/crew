@@ -116,7 +116,7 @@ describe('the way back to the helpers a thread sent out', () => {
     expect(helperTab()!.threadId).toBe(OTHER)
   })
 
-  it('says nothing about another thread's helpers', () => {
+  it('says nothing on the thread the helper itself is on', () => {
     const { queryByLabelText } = render(createElement(ThreadView, { threadId: CHILD }))
     sent(spawned(CHILD, 'reading the schema'))
 
