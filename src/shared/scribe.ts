@@ -63,9 +63,17 @@ export const WORD_LIMIT = 200
 // room is empty and see-through, and the shadow in `.glass-pill` is written to
 // land inside it.
 export const PILL_ROOM = 32
-export const PILL_WIDTH = 216
+export const PILL_WIDTH = 176
 export const PILL_MIN = 52
 export const PILL_MAX = 140
+
+// The app must not hear its own paste. That keystroke goes out through the same
+// hook the key is read with, so a dictation held on Command, or on Control where
+// Control is what pastes, would be ended by the words it was writing on the way
+// past. Anything arriving this soon after one was sent is the app's own.
+export const OWN_MS = 150
+
+export const ownKey = (sent: number, now: number): boolean => sent > 0 && now - sent < OWN_MS
 
 const MAC_KEYS: ScribeKey[] = ['right-option', 'right-ctrl', 'ctrl', 'meta']
 const OTHER_KEYS: ScribeKey[] = ['right-ctrl', 'ctrl', 'right-option', 'meta']
