@@ -114,7 +114,7 @@ export default function ChatMessage({
       <div className="min-w-0 flex-1 pt-0.5">
         {!linked && (
           <div className="flex items-baseline gap-2.5 select-none">
-            <MemberName id={item.authorId} name={item.author}>
+            <MemberName id={nameId} name={item.author}>
               <span className="text-base font-semibold text-fg-muted transition-colors hover:text-fg-secondary cursor-default">
                 {item.author}
               </span>
