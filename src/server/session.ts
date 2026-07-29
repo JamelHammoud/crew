@@ -3166,7 +3166,8 @@ export class CrewSession {
       designBoards: this.referencedBoards(entry),
       ghost: this.ghostOf(thread.id) ? true : undefined,
       spawnRoom: canSend ? room : 0,
-      spawnProviders: canSend ? this.spawnProviders() : undefined
+      spawnProviders: canSend ? this.spawnProviders() : undefined,
+      tickets: thread.tickets
     }
   }
 

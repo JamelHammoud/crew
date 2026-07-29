@@ -168,9 +168,16 @@ describe('a correction that opens a sentence takes the one before it', () => {
 describe('the other ways somebody says they meant something else', () => {
   const table: Array<[string, string, string]> = [
     ['reads actually hold on at a boundary', "we ship it today. actually hold on. we ship it tomorrow.", 'We ship it tomorrow.'],
-    ['reads hold on at a boundary', 'the branch is ready. hold on. the branch is not ready.', 'The branch is not ready.'],
     ['reads sorry no at a boundary', 'use redis, sorry no, use postgres', 'Use postgres.'],
     ['reads no sorry at a boundary', 'use redis, no sorry, use postgres', 'Use postgres.'],
+    // A bare hold on is somebody asking for a moment, not taking back what they
+    // just said, and it is common enough at the head of a sentence that reading
+    // it as a retraction would quietly eat a line nobody could see go.
+    [
+      'leaves a bare hold on alone, wherever it stands',
+      'the branch is ready. hold on. the branch is not ready.',
+      'The branch is ready. Hold on. The branch is not ready.'
+    ],
     ['keeps hold on where it opens a real sentence', 'hold on to the branch', 'Hold on to the branch.'],
     ['keeps hold on inside a sentence', 'we should hold on until Friday', 'We should hold on until Friday.'],
     ['keeps wait where the sentence carries on', 'actually wait for the build to go green', 'Actually wait for the build to go green.']
