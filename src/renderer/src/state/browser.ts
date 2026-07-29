@@ -65,13 +65,10 @@ type BrowserState = {
   openAside(threadId: string, title: string): void
   openSubagent(threadId: string, parentThreadId: string): void
   showSubagents(parentThreadId: string): void
-  closeSubagents(parentThreadId: string): void
   showPlan(threadId: string): void
   hidePlan(): void
-  closePlan(): void
   showWork(threadId: string): void
   hideWork(): void
-  closeWork(): void
   toggleTree(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
