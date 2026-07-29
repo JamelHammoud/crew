@@ -319,9 +319,7 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
           <span className="w-5 h-5 shrink-0 text-fg-muted transition-colors duration-150 group-hover:text-fg">
             {one.mark}
           </span>
-          <span className="text-sm font-medium text-fg-secondary truncate transition-colors duration-150 group-hover:text-fg">
-            {one.label}
-          </span>
+          <span className="text-sm font-medium text-fg truncate">{one.label}</span>
         </button>
       ))}
     </div>
