@@ -90,9 +90,19 @@ export class ScribeWindow {
     win.webContents.send(channel, ...args)
   }
 
+  // Dictation being on is the whole of whether the pill is on screen. It says
+  // Scribe is here and where the words will be read, which is what it is for the
+  // rest of the time, and one decision covers turning it on, a dictation ending,
+  // and one being thrown away.
   apply(settings: ScribeSettings): void {
     this.settings = settings
     this.send('scribe:settings', settings)
+    this.rest()
+  }
+
+  rest(): void {
+    if (this.settings?.on) this.show()
+    else this.hide()
   }
 
   // A pill that has grown a line keeps its bottom edge and its left edge, and
