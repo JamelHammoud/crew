@@ -144,6 +144,20 @@ describe('the settings', () => {
     expect(screen.getByRole('button', { name: /Light/ }).getAttribute('aria-pressed')).toBe('true')
   })
 
+  // The numbers are gathered whichever way these are set. All they decide is
+  // what a working run draws, so the count is on and the price is off.
+  it('shows a run its count by default and its price only when asked', () => {
+    show('appearance')
+    const count = screen.getByRole('switch', { name: 'Token count' })
+    const price = screen.getByRole('switch', { name: 'Estimated cost' })
+    expect(count.getAttribute('aria-checked')).toBe('true')
+    expect(price.getAttribute('aria-checked')).toBe('false')
+
+    fireEvent.click(price)
+    fireEvent.click(count)
+    expect(prefs()).toEqual({ tokens: false, cost: true })
+  })
+
   it('never says photo in words: your face is where a photo is changed', () => {
     show()
     expect(card().textContent).not.toMatch(/photo/i)
