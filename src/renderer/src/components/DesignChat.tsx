@@ -138,8 +138,10 @@ export default function DesignChat({ boardId }: { boardId: string }) {
         </div>
         <ScrollFade edges={edges} />
       </div>
-      <div className="relative px-3 pb-4 shrink-0">
-        <TypingLine where={key} />
+      <div className="px-3 pb-4 shrink-0">
+        <div className="relative">
+          <TypingLine where={key} />
+        </div>
         <Composer
           attachmentKey={key}
           value={text}
