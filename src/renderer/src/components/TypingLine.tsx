@@ -35,7 +35,7 @@ export default function TypingLine({ where }: { where?: string }) {
   if (here.length === 0) return null
 
   return (
-    <div className="glass absolute -top-14 left-0 z-20 flex items-center h-9 gap-1 pl-3.5 pr-2.5 rounded-full text-sm font-medium text-fg/70 animate-pop">
+    <div className="glass absolute -top-14 left-0 z-20 pointer-events-none flex items-center h-9 gap-1 pl-3.5 pr-2.5 rounded-full text-sm font-medium text-fg/70 animate-pop">
       {typingLine(here.map(typist => typist.name))}
       <TypingDots />
     </div>
