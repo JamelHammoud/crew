@@ -66,6 +66,20 @@ export function Row({
   )
 }
 
+// A word to press and nothing around it, for a control that stands beside a
+// section title rather than in a row. A pill up there would weigh more than the
+// title it is standing next to.
+export function Quiet({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="shrink-0 text-sm font-semibold text-fg/45 transition-colors hover:text-fg active:scale-95"
+    >
+      {label}
+    </button>
+  )
+}
+
 export function Danger({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button
