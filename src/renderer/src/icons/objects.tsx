@@ -117,15 +117,13 @@ export const ToolboxGlyph = glyph(
   </>
 )
 
-// Three columns hung from one line at the top, each holding a different amount.
-// A frame around them with two rules through it is a table, and what says board
-// is that the columns are separate things standing at separate heights.
-export const BoardGlyph = glyph(
-  <>
-    <rect x="3.5" y="3.5" width="5" height="17" rx="1.5" />
-    <rect x="9.5" y="3.5" width="5" height="12" rx="1.5" />
-    <rect x="15.5" y="3.5" width="5" height="14.5" rx="1.5" />
-  </>
+// One ticket, and the whole of it is the silhouette. The two bites out of the
+// sides are what tell it from every other rounded box in the set, so they are
+// deep: a notch small enough to be tasteful at 48 is gone by 16, and what is
+// left is a card. Nothing is drawn inside it, because a line across a shape this
+// size reads as two boxes rather than as a perforation.
+export const TicketGlyph = glyph(
+  <path d="M4.75 4.5H19.25A2.25 2.25 0 0 1 21.5 6.75V9.25A2.75 2.75 0 0 0 21.5 14.75V17.25A2.25 2.25 0 0 1 19.25 19.5H4.75A2.25 2.25 0 0 1 2.5 17.25V14.75A2.75 2.75 0 0 0 2.5 9.25V6.75A2.25 2.25 0 0 1 4.75 4.5Z" />
 )
 
 // The bare prompt, for a step in a thread that ran a command. No frame, because
