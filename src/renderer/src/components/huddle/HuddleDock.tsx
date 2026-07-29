@@ -43,7 +43,7 @@ export default function HuddleDock({
     >
       <div
         onPointerDown={onGrab}
-        className={`flex items-center gap-2 px-1 pt-0.5 select-none ${
+        className={`flex items-center gap-2 px-1 pt-0.5 ${
           dragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       >
