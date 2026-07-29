@@ -127,7 +127,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785285626458,
+        "fetchedAt": 1785285918982,
         "windows": [
           {
             "key": "session",
@@ -141,7 +141,7 @@
             "label": "Weekly (all models)",
             "percent": 40,
             "severity": "normal",
-            "resetsAt": 1785499199656,
+            "resetsAt": 1785499200178,
             "active": true
           }
         ],
@@ -231,7 +231,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785286406526,
+        "fetchedAt": 1785286459040,
         "windows": [
           {
             "key": "primary",
@@ -327,7 +327,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785286406526,
+        "fetchedAt": 1785286459040,
         "windows": [
           {
             "key": "primary",
@@ -446,7 +446,7 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785286393125,
+        "fetchedAt": 1785286453126,
         "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
@@ -596,7 +596,7 @@
       "avatar": "1d85f240-aae8-45c0-9441-09c87905625f.jpg",
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785285626458,
+        "fetchedAt": 1785285918982,
         "windows": [
           {
             "key": "session",
@@ -610,7 +610,7 @@
             "label": "Weekly (all models)",
             "percent": 40,
             "severity": "normal",
-            "resetsAt": 1785499199656,
+            "resetsAt": 1785499200178,
             "active": true
           }
         ],
