@@ -8,7 +8,6 @@ import {
   MusicGlyph,
   PencilGlyph,
   PlusGlyph,
-  ScribeGlyph,
   SignalGlyph,
   TerminalGlyph,
   type Glyph
