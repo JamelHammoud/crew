@@ -1,23 +1,23 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
-import { WarningGlyph } from '../../icons'
 import { pendingCount, useCrew } from '../../state/store'
 import Composer from '../Composer'
 import FilesChanged from '../FilesChanged'
 import RunStatus from '../RunStatus'
-import Spinner from '../Spinner'
-import SubagentMark from '../SubagentMark'
 import ThreadItems from '../ThreadItems'
 import { buildThread, eventsOfThread } from '../thread'
-import { formatSpan } from '../time'
 import { useAutoResize } from '../useAutoResize'
 import { useStickToBottom } from '../useStickToBottom'
-import { useRunState } from './runs'
 
 // One helper, live. It is an ordinary thread, so the whole of this is the
 // pieces a thread is already made of: its steps, its thinking, its diffs, the
 // run status, and a composer that sends into that thread and nothing else.
 // Steering falls out of that for free, because a message to a running steerable
 // agent is folded into the turn it is already in.
+//
+// Nothing here says what the screen already says. What it is doing is on the
+// header row above it, RunStatus says it is working, and the words are the
+// helper's own, so a face and a name over the top of all three would be a third
+// telling of it.
 
 export default function SubagentRun({ threadId }: { threadId: string }) {
   const events = useCrew(state => state.events)
