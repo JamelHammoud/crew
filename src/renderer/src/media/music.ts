@@ -147,17 +147,7 @@ export class MusicPlayer {
     const reading = this.reading
     if (!tap || !reading || !this.running()) return null
     tap.getByteFrequencyData(reading)
-    const nyquist = (this.ctx?.sampleRate ?? 48000) / 2
-    const per = nyquist / reading.length
-    const out = new Array<number>(count).fill(0)
-    for (let bin = 1; bin < reading.length; bin++) {
-      const hz = bin * per
-      if (hz < LOW || hz > HIGH) continue
-      const share = Math.log(hz / LOW) / Math.log(HIGH / LOW)
-      const band = Math.min(count - 1, Math.floor(share * count))
-      out[band] = Math.max(out[band], reading[bin] / 255)
-    }
-    return out
+    return bandsFrom(reading, this.ctx?.sampleRate ?? 48000, count, new Array<number>(count))
   }
 
   private begin(trackId: string, length: number, at: number): AudioContext | null {
