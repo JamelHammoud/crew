@@ -174,25 +174,10 @@ export function boardOf(
 
   const at = (id: string): Entry | undefined => entries.get(id || doing)
 
-  for (const step of sorted) {
-    for (const file of step.files ?? []) {
-      touched.add(file.path)
-      if (doing) at('')?.files.add(file.path)
-    }
-    // Everything before the first ticket went up belongs to no ticket, and the
-    // count a question carries is of the whole run rather than of one.
-    for (const event of said) {
-      if (event.ts > step.ts) break
-    }
-  }
-
   const timeline: Array<{ ts: number; step?: AgentStep; event?: TicketEvent }> = [
     ...sorted.map(step => ({ ts: step.ts, step })),
     ...said.map(event => ({ ts: event.ts, event }))
   ].sort((a, b) => a.ts - b.ts)
-
-  touched.clear()
-  entries.forEach(entry => entry.files.clear())
 
   for (const moment of timeline) {
     const { step, event } = moment
