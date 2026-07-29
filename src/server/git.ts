@@ -508,13 +508,14 @@ export class GitSync {
   private async readStatus(): Promise<RepoStatus> {
     const repo = await runGit(['rev-parse', '--is-inside-work-tree'], this.repoPath)
     if (repo.code !== 0 || repo.stdout.trim() !== 'true') {
-      return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0 }
+      return { available: false, remote: false, branch: '', changed: 0, ahead: 0, behind: 0, stashes: 0 }
     }
-    const [branch, changes, remotes, divergence] = await Promise.all([
+    const [branch, changes, remotes, divergence, stashes] = await Promise.all([
       runGit(['branch', '--show-current'], this.repoPath),
       runGit(['status', '--porcelain', '--', ...PROJECT_PATHS], this.repoPath),
       runGit(['remote'], this.repoPath),
-      runGit(['rev-list', '--left-right', '--count', 'HEAD...@{upstream}'], this.repoPath)
+      runGit(['rev-list', '--left-right', '--count', 'HEAD...@{upstream}'], this.repoPath),
+      stashCount(this.repoPath)
     ])
     const [ahead = 0, behind = 0] =
       divergence.code === 0
