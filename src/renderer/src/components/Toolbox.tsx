@@ -61,6 +61,7 @@ export default function Toolbox({
   const joined = useHuddle(s => s.joined)
   const playing = useMusic(s => s.room.playing)
   const talking = useVoice(s => s.open)
+  const dictating = useScribeSettings().on
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
   const [filling, setFilling] = useState<{ tool: CrewTool; slots: string[] } | null>(null)
   const [said, setSaid] = useState<{ toolId: string; word: string } | null>(null)
