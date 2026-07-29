@@ -60,10 +60,12 @@ export default function Chat() {
     setChatCommands(cleanCommands([...commands, name]))
   }
 
+  const offered = useMemo(() => commandsIn('chat'), [])
+
   // A command typed out and one picked from the menu land on the same chip,
   // because both paths into the draft come through here.
   const write = (value: string) => {
-    const typed = commandTyped(value)
+    const typed = commandTyped(value, offered)
     if (!typed) {
       setChatDraft(value)
       return
@@ -75,7 +77,7 @@ export default function Chat() {
   const ghost = commands.includes('ghost')
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, write, inputRef)
-  const slash = useSlashCommands(text, write, takeCommand, inputRef)
+  const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, CHAT_KEY)
   const moreHistory = useCrew(s => s.moreHistory)

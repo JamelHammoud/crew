@@ -65,7 +65,7 @@ function tabLabel(tab: BrowserTab): string {
 // parent, so it is one picture per thread rather than a mark standing for
 // nothing.
 const roleSeed = (tab: BrowserTab): string =>
-  (tab.threadId ? useCrew.getState().threads[tab.threadId]?.roleId : undefined) ?? tab.parentThreadId || tab.id
+  (tab.threadId ? useCrew.getState().threads[tab.threadId]?.roleId : undefined) ?? (tab.parentThreadId || tab.id)
 
 const iconButton =
   'w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95 disabled:opacity-30 disabled:pointer-events-none'
