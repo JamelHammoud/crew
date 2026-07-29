@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { CIRCLE, DIAGONAL, GRID, SQUARE } from '../src/renderer/src/icons/keylines'
 import {
   MAX_LOBES,
-  MIN_WAIST,
   MIN_LOBES,
+  MIN_WAIST,
   radiusAt,
   shapePath,
   subagentShape,
