@@ -28,8 +28,8 @@ function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
   const hot = isHot(window)
   return (
     <div className="flex items-center gap-3">
-      <span className="w-40 shrink-0 text-sm text-fg-secondary truncate">{window.label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-ink-700 overflow-hidden">
+      <span className="w-40 shrink-0 text-sm text-fg/70 truncate">{window.label}</span>
+      <div className="flex-1 h-1.5 rounded-full bg-fg/[0.12] overflow-hidden">
         <div
           className={`h-full rounded-full transition-[width] duration-500 ${hot ? 'bg-danger' : 'bg-fg'}`}
           style={{ width: `${Math.min(100, Math.max(0, window.percent))}%` }}
@@ -38,7 +38,7 @@ function WindowRow({ window, now }: { window: UsageWindow; now: number }) {
       <span className={`w-11 shrink-0 text-right text-sm font-semibold tabular-nums ${hot ? 'text-danger' : 'text-fg'}`}>
         {Math.round(window.percent)}%
       </span>
-      <span className="w-32 shrink-0 text-right text-xs text-fg-muted truncate">
+      <span className="w-32 shrink-0 text-right text-xs text-fg/45 truncate">
         {window.resetsAt ? formatReset(window.resetsAt, now) : ''}
       </span>
     </div>
@@ -58,18 +58,18 @@ export default function UsageFooter({ usage }: { usage: AgentUsage }) {
   const stamp =
     usage.asOf !== undefined ? `as of ${formatAgo(now - usage.asOf)}` : `updated ${formatAgo(now - usage.fetchedAt)}`
   return (
-    <div className="border-t border-ink-700">
+    <div className="border-t border-fg/[0.09]">
       <button
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
-        className="w-full flex items-center px-5 h-11 text-sm font-semibold text-fg-muted hover:text-fg-secondary transition-colors"
+        className="w-full flex items-center px-5 h-11 text-sm font-semibold text-fg/45 hover:text-fg transition-colors"
       >
         Usage
         <span className="ml-auto flex items-center gap-3">
           {!open && usage.error && <span className="font-normal">unavailable</span>}
           {!open && !usage.error && hottest && (
             <>
-              <span className="w-20 h-1.5 rounded-full bg-ink-700 overflow-hidden">
+              <span className="w-20 h-1.5 rounded-full bg-fg/[0.12] overflow-hidden">
                 <span
                   className={`block h-full rounded-full ${isHot(hottest) ? 'bg-danger' : 'bg-fg'}`}
                   style={{ width: `${Math.min(100, Math.max(0, hottest.percent))}%` }}
@@ -87,13 +87,13 @@ export default function UsageFooter({ usage }: { usage: AgentUsage }) {
         <div className="px-5 pb-4 space-y-2 animate-rise">
           {(detail || stamp) && (
             <div className="flex items-baseline gap-2 pb-1">
-              <span className="text-xs text-fg-muted truncate">{detail}</span>
-              <span className="ml-auto shrink-0 text-xs text-fg-muted">{stamp}</span>
+              <span className="text-xs text-fg/45 truncate">{detail}</span>
+              <span className="ml-auto shrink-0 text-xs text-fg/45">{stamp}</span>
             </div>
           )}
-          {usage.error && <p className="text-sm text-fg-muted">{usage.error}</p>}
+          {usage.error && <p className="text-sm text-fg/45">{usage.error}</p>}
           {!usage.error && usage.windows.length === 0 && (
-            <p className="text-sm text-fg-muted">No usage data available for this provider.</p>
+            <p className="text-sm text-fg/45">No usage data available for this provider.</p>
           )}
           {!usage.error && usage.windows.map(window => <WindowRow key={window.key} window={window} now={now} />)}
         </div>
