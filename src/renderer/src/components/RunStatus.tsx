@@ -21,7 +21,7 @@ export default function RunStatus({
   const last = steps[steps.length - 1]
 
   return (
-    <div className="flex items-center gap-2.5 text-sm pl-14 animate-rise">
+    <div className="flex items-center gap-2.5 text-sm pl-14 animate-rise select-none">
       <span className="flex items-center justify-center shrink-0 w-4 h-4">
         <Spinner size={13} className="text-fg-secondary" />
       </span>
