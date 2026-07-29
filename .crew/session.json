@@ -754,7 +754,40 @@
           "default": "high"
         }
       ],
-      "steerable": true
+      "steerable": true,
+      "usage": {
+        "provider": "claude",
+        "fetchedAt": 1785360054937,
+        "windows": [
+          {
+            "key": "session",
+            "label": "5-hour limit",
+            "percent": 68,
+            "severity": "normal",
+            "resetsAt": 1785361800291,
+            "active": false
+          },
+          {
+            "key": "weekly_all",
+            "label": "Weekly (all models)",
+            "percent": 78,
+            "severity": "warning",
+            "resetsAt": 1785654000291,
+            "active": false
+          },
+          {
+            "key": "weekly_scoped:Fable",
+            "label": "Weekly (Fable)",
+            "percent": 96,
+            "severity": "critical",
+            "resetsAt": 1785654000292,
+            "active": true
+          }
+        ],
+        "accountId": "fec9b056-f118-4d41-92cf-f9ff7c025bf6",
+        "accountLabel": "jamel@envoy.co",
+        "plan": "team"
+      }
     }
   ],
   "removedAgents": [
