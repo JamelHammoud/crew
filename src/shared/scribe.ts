@@ -6,7 +6,13 @@ import { TIDY_RULES, type TidyRules } from './scribeTidy'
 // reaches the crew, which is why every setting here lives in this window rather
 // than in the log.
 
-export type ScribeKey = 'fn' | 'right-option' | 'right-ctrl' | 'ctrl' | 'meta' | 'none'
+// Fn is not among these and cannot be. macOS keeps it below the event tap every
+// app reads, so nothing outside the system is ever told it was pressed: it is
+// not in the public hot key API, and libuiohook, which is how the rest of this
+// is heard, has no keycode for it on any platform. Right Option is the nearest
+// thing on a Mac, and it is on the built-in keyboard, which Right Control is
+// not.
+export type ScribeKey = 'right-option' | 'right-ctrl' | 'ctrl' | 'meta' | 'none'
 export type ScribePress = 'hold' | 'toggle' | 'latch'
 export type ScribeFinish = 'paste' | 'copy'
 
