@@ -53,7 +53,10 @@ export function createScribeOptions(
     maximizable: false,
     fullscreenable: false,
     skipTaskbar: !isMac,
-    focusable: !isMac,
+    // A panel on macOS takes a click without activating the app behind it, so
+    // the X and the check work while the caret stays where the dictation is
+    // going. Everywhere else the same thing is had by never being focusable.
+    ...(isMac ? { type: 'panel' as const } : { focusable: false }),
     acceptFirstMouse: true,
     title: 'Crew',
     webPreferences: {
