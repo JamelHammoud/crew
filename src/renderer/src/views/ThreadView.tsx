@@ -51,6 +51,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
   const inputRef = useAutoResize(text)
   const mention = useMentionAutocomplete(text, value => setThreadDraft(threadId, value), inputRef)
