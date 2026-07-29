@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process'
 import { mkdtemp, readdir, readFile, realpath, rm, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
