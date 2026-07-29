@@ -2,6 +2,7 @@ import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { resultText } from './output'
+import { usageFrom } from './tokens'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task', 'Agent', 'Subagent'])
@@ -66,8 +67,8 @@ export const parseGrokLine: OutputParser = line => {
   } else if (msg?.type === 'error') {
     if (str(msg.message).trim()) out.push({ error: msg.message })
   }
-  const tokens = msg?.usage?.output_tokens ?? msg?.usage?.completion_tokens
-  if (typeof tokens === 'number') out.push({ tokens })
+  const usage = usageFrom(msg?.usage, msg?.model)
+  if (usage) out.push({ usage })
   return out
 }
 
