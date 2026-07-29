@@ -117,6 +117,17 @@ export const ToolboxGlyph = glyph(
   </>
 )
 
+// Three columns hung from one line at the top, each holding a different amount.
+// A frame around them with two rules through it is a table, and what says board
+// is that the columns are separate things standing at separate heights.
+export const BoardGlyph = glyph(
+  <>
+    <rect x="3.5" y="3.5" width="5" height="17" rx="1.5" />
+    <rect x="9.5" y="3.5" width="5" height="12" rx="1.5" />
+    <rect x="15.5" y="3.5" width="5" height="14.5" rx="1.5" />
+  </>
+)
+
 // The bare prompt, for a step in a thread that ran a command. No frame, because
 // it stands in a line of text rather than in a row of objects.
 export const PromptGlyph = glyph(
