@@ -5,7 +5,7 @@ import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
   ArrowRightGlyph,
-  BoardGlyph,
+  TicketGlyph,
   ChecklistGlyph,
   CloseGlyph,
   DocGlyph,
@@ -367,7 +367,7 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
         ) : tab.kind === 'plan' ? (
           <ChecklistGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'work' ? (
-          <BoardGlyph className="w-4 h-4 shrink-0" />
+          <TicketGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'aside' ? (
           <QuestionGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'music' ? (
