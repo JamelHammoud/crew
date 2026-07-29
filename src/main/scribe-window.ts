@@ -132,8 +132,19 @@ export class ScribeWindow {
     } catch {}
   }
 
+  // The screen a spot is held inside, grown by the room around the pill. Every
+  // rule in `scribe-spot` is about where the pill may stand, and what the window
+  // carries past it is empty air: held to the real work area instead, the pill
+  // would rest a whole shadow's width in from every edge and the gap it keeps
+  // off the bottom of the screen would be the one nobody chose.
   private workNear(point: Spot): Electron.Rectangle {
-    return screen.getDisplayNearestPoint(point).workArea
+    const work = screen.getDisplayNearestPoint(point).workArea
+    return {
+      x: work.x - PILL_ROOM,
+      y: work.y - PILL_ROOM,
+      width: work.width + PILL_ROOM * 2,
+      height: work.height + PILL_ROOM * 2
+    }
   }
 
   // Where it was left, if it was ever moved. Otherwise the bottom middle of the
