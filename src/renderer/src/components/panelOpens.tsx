@@ -79,6 +79,7 @@ export function usePanelOpens(): PanelOpen[] {
         open: () => browser().addTerminal()
       },
       { id: 'file', label: 'Files', mark: <FolderGlyph />, scope: 'panel', open: () => browser().openFiles() },
+      { id: 'review', label: 'Review', mark: <BranchGlyph />, scope: 'panel', open: () => browser().openReview() },
       { id: 'music', label: 'Music', mark: <MusicGlyph />, scope: 'panel', open: () => browser().openMusic() },
       { id: 'game', label: 'Games', mark: <GameGlyph />, scope: 'panel', open: () => browser().openGame() }
     )
