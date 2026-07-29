@@ -33,28 +33,31 @@ const pill = state => `
   </div>
 </div>`
 
-const SCENES = [
-  ['a white page', '#ffffff', '#111'],
-  ['a warm page', '#f5f2e4', '#333'],
-  ['a photo', 'linear-gradient(120deg,#2b6cb0,#c05621 45%,#276749)', '#fff'],
-  ['a dark editor', '#101014', '#8b8b96']
+const TINTS = [
+  ['now, 0.97 flat', 'rgb(24 24 24 / 0.97)'],
+  ['0.90 to 0.94', 'linear-gradient(rgb(40 40 40 / 0.9), rgb(18 18 18 / 0.94))'],
+  ['0.84 to 0.90', 'linear-gradient(rgb(42 42 42 / 0.84), rgb(18 18 18 / 0.9))'],
+  ['0.72 to 0.84', 'linear-gradient(rgb(44 44 44 / 0.72), rgb(18 18 18 / 0.84))'],
+  ['0.60 to 0.74', 'linear-gradient(rgb(48 48 48 / 0.6), rgb(18 18 18 / 0.74))']
 ]
+
+const WORDS = `<div class="text-[15px] leading-7" style="color:#1b1b1b">
+  Nothing here is a near white either, which is the same mistake at the other end.
+  Those three are the things in the frame, and a thing has a color: pale enough and
+  there is none left in it, so it stops being the light on a petal and becomes a hole
+  cut in the picture, brighter than everything around it and made of nothing.
+</div>`
 
 const PAGE = `<!doctype html>
 <html><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
 <body class="font-sans">
-  <div id="root" class="bare">
-    ${SCENES.map(
-      ([say, back, ink]) => `
-    <div style="background:${back};color:${ink}" class="p-6">
-      <div class="text-sm opacity-70 mb-1">${say}</div>
-      <div class="text-sm opacity-45 leading-6">The quick brown fox jumps over the lazy dog, and the words underneath keep running so there is something for the pill to sit on top of and hide.</div>
-      <div class="flex items-center gap-4">
-        <div style="margin-left:-${ROOM}px">${pill({ weight: 2 })}</div>
-        <div class="text-xs opacity-40">weight 2</div>
-        ${pill({ weight: 2.5 })}
-        <div class="text-xs opacity-40">weight 2.5</div>
-      </div>
+  <div id="root" class="bare" style="background:#fff">
+    ${TINTS.map(
+      ([say, bg]) => `
+    <div class="px-6 pt-4 relative">
+      <div class="text-xs mb-2" style="color:#888">${say}</div>
+      ${WORDS}
+      <div class="absolute" style="left:44px;top:44px">${pill({ weight: 2.5, bg })}</div>
     </div>`
     ).join('\n')}
   </div>
