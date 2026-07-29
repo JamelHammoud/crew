@@ -67,40 +67,6 @@ export default function TopBar({
     if (!collapsedNav) setMoreOpen(false)
   }, [collapsedNav])
 
-  const standing =
-    connection === 'reconnecting'
-      ? 'Reconnecting'
-      : connection === 'connecting'
-        ? 'Connecting'
-        : !hosting
-          ? 'Joined'
-          : shared
-            ? 'Hosting'
-            : 'On this machine'
-
-  const showCopied = () => {
-    setCopied(true)
-    setTimeout(() => {
-      setCopied(false)
-      setMenuOpen(false)
-    }, 900)
-  }
-
-  const copyLink = async () => {
-    if (!joinLink) return
-    await navigator.clipboard.writeText(joinLink)
-    showCopied()
-  }
-
-  // Inviting people is one action, so the session goes onto the network and the
-  // link is on the clipboard by the time the menu says so.
-  const invite = async () => {
-    const link = await share(true)
-    if (!link) return
-    await navigator.clipboard.writeText(link)
-    showCopied()
-  }
-
   const selectTab = (next: NavTab) => {
     if (next !== tab) playSound(`tab.${next}`)
     onTab(next)

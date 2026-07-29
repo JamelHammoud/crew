@@ -272,6 +272,7 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
       serveMusic(session, decodeURIComponent(music[1]), res)
       return
     }
+    if (serveAgents(session, req.url ?? '', req, res)) return
     const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(req.url ?? '')
     if (req.method === 'POST' && designOps) {
       receiveDesignOps(session, designOps[1], req, res)
