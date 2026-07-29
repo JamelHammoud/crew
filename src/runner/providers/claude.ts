@@ -102,7 +102,8 @@ export const parseClaudeLine: OutputParser = line => {
             name: block.name,
             status: 'started' as const,
             detail: activityDetail(block.input),
-            files: fileChanges(block.name, block.input)
+            files: fileChanges(block.name, block.input),
+            todos: stepTodos(block.input)
           }
         })
       }
