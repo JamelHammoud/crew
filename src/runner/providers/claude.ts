@@ -108,14 +108,18 @@ export const parseClaudeLine: OutputParser = line => {
         })
       }
     }
-    const outputTokens = msg.message?.usage?.output_tokens
-    if (typeof outputTokens === 'number') out.push({ tokens: outputTokens })
+    const usage = usageFrom(msg.message?.usage, msg.message?.model)
+    if (usage) out.push({ usage })
     return out
   }
   if (msg?.type === 'result') {
-    const outputTokens = msg?.usage?.output_tokens
     const out: ParsedOutput[] = [{ turnEnd: true }]
-    if (typeof outputTokens === 'number') out.push({ tokens: outputTokens })
+    // The end of a turn carries what the whole of it came to, and the CLI has
+    // already priced it against the model it really used, cached prefixes and
+    // all. That figure is the run's, so nothing here works one out.
+    const usage = usageFrom(msg?.usage, msg?.model)
+    const cost = typeof msg?.total_cost_usd === 'number' ? msg.total_cost_usd : undefined
+    if (usage || cost !== undefined) out.push({ usage: { ...usage, cost, total: true } })
     // is_error is what says a run failed. The subtype still reads as a success
     // on an API error, so nothing here may go by that alone.
     if (msg.is_error) {
