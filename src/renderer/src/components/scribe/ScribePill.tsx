@@ -60,7 +60,6 @@ export default function ScribePill() {
   const progress = useScribe(s => s.progress)
   const problem = useScribe(s => s.problem)
   const cancel = useScribe(s => s.cancel)
-  const finish = useScribe(s => s.finish)
   const retry = useScribe(s => s.retry)
   const keeping = useScribe(s => s.keeping)
 
