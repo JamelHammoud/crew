@@ -98,7 +98,9 @@ export type SessionEvent =
   // 'voice' says the thread was spoken rather than typed. It rides on the
   // thread as well as on each message, because it is what the agent is told
   // about how to answer, and that holds for the whole conversation.
-  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean }
+  // The four subagent fields say a thread was sent out by another one. They are
+  // all optional, so a log written before any of this reads back unchanged.
+  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean; parentThreadId?: string; parentPromptId?: string; roleId?: string; subject?: string; depth?: number }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
   | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }
   // Superseded by thread.status; still emitted-compatible and replayed so old
