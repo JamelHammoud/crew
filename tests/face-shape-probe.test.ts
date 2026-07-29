@@ -74,7 +74,7 @@ describe('the box a face stands in', () => {
   it('is a circle where the profile button rings it', () => {
     render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn(), tasksOpen: false, onToggleTasks: vi.fn() }))
 
-    const button = screen.getByRole('button', { name: 'Profile menu' })
+    const button = screen.getByRole('button', { name: 'Settings' })
     expect(button.className).toContain('flex')
     expect(button.className).not.toMatch(/(?:^|\s)block(?:\s|$)/)
   })

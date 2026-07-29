@@ -155,9 +155,9 @@ describe('starting a huddle', () => {
     expect(screen.getByText('Huddle')).toBeTruthy()
   })
 
-  it('keeps the huddle out of the profile menu', () => {
+  it('keeps the huddle out of the settings', () => {
     render(createElement(App))
-    fireEvent.click(screen.getByLabelText('Profile menu'))
+    fireEvent.click(screen.getByLabelText('Settings'))
 
     expect(screen.queryByText(/huddle/i)).toBeNull()
   })
