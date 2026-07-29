@@ -200,6 +200,10 @@ export type ServerMessage =
       // because it is the side that knows the address they are reached at.
       spawnRoom?: number
       spawnProviders?: string[]
+      // Whether this thread keeps a board. The machine turns it into the words
+      // about one for the same reason: the board is reached over http, and only
+      // that side knows the address.
+      tickets?: boolean
     }
   | {
       type: 'steer'
