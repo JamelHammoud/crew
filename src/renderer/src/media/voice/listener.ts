@@ -71,13 +71,13 @@ export class VoiceListener {
       else this.ears.onFailed(message.message)
       return
     }
-    this.settle(message.id, message.text)
+    this.settle(message.id, { text: message.text, chunks: message.chunks })
   }
 
-  private settle(id: number, text: string | null): void {
+  private settle(id: number, heard: Heard | null): void {
     const resolve = this.waiting.get(id)
     if (!resolve) return
     this.waiting.delete(id)
-    resolve(text)
+    resolve(heard)
   }
 }
