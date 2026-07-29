@@ -83,7 +83,8 @@ import {
   LIST_LIMIT,
   NOTE_LIMIT,
   ticketLine,
-  TITLE_LIMIT as TICKET_TITLE_LIMIT
+  TITLE_LIMIT as TICKET_TITLE_LIMIT,
+  type TicketEvent
 } from '../shared/tickets'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
