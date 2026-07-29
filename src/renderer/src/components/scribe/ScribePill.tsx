@@ -114,24 +114,27 @@ export default function ScribePill() {
           />
         )}
 
-        {reading || waking ? (
-          <span className="w-8 h-8 shrink-0 flex items-center justify-center text-fg/70">
+        {/* The slot at the end stands whether or not there is anything in it.
+            The bars are the one thing on the pill that is watched, and a row of
+            them that redistributes itself the moment whisper starts finishing
+            reads as a jolt rather than as the reading it is. There is nothing to
+            press here while somebody is talking: the key opened the dictation
+            and the key is what ends it. */}
+        <span className="w-8 h-8 shrink-0 flex items-center justify-center text-fg/70">
+          {reading || waking ? (
             <Spinner size={18} />
-          </span>
-        ) : failed ? (
-          // A failure that still has the sound offers to read it again. One
-          // whose sound never arrived has nothing to try, so it says nothing
-          // rather than offering a button that cannot work.
-          again && (
-            <Round label="Try again" solid onClick={() => void retry()}>
-              <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
-            </Round>
-          )
-        ) : (
-          <Round label="Done" solid onClick={() => void finish()}>
-            <CheckGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
-          </Round>
-        )}
+          ) : (
+            // A failure that still has the sound offers to read it again. One
+            // whose sound never arrived has nothing to try, so it says nothing
+            // rather than offering a button that cannot work.
+            failed &&
+            again && (
+              <Round label="Try again" solid onClick={() => void retry()}>
+                <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
+              </Round>
+            )
+          )}
+        </span>
       </div>
     </div>
   )
