@@ -32,6 +32,10 @@ interface StatusEntry {
   previousPath?: string
 }
 
+// Pull and push are the ones that reach the remote, and they are already
+// written. What is left is everything that happens in this folder.
+type LocalCommand = Exclude<RepoCommand, { do: 'pull' } | { do: 'push' }>
+
 export class GitSync {
   private chain: Promise<void> = Promise.resolve()
   private timer: NodeJS.Timeout | null = null
