@@ -5,12 +5,11 @@ import type { FileChange, StepTodo } from '../../shared/llm'
 // the description, which is all some tools give.
 const DETAIL_KEYS = ['command', 'description', 'query', 'pattern', 'url', 'file_path', 'path', 'prompt']
 
-const todoDetail = (todos: unknown): string | undefined => {
-  if (!Array.isArray(todos)) return undefined
-  const entries = todos.filter((todo): todo is Record<string, unknown> => Boolean(todo) && typeof todo === 'object')
-  const current = entries.find(todo => todo['status'] === 'in_progress') ?? entries[0]
-  const text = current?.['activeForm'] ?? current?.['content'] ?? current?.['title']
-  return typeof text === 'string' && text.trim() ? truncate(text) : undefined
+const todoDetail = (input: unknown): string | undefined => {
+  const todos = stepTodos(input)
+  if (!todos) return undefined
+  const current = todos.find(todo => todo.status === 'doing') ?? todos.find(todo => todo.status === 'todo')
+  return current ? truncate(current.text) : undefined
 }
 
 const TODO_LIMIT = 24
