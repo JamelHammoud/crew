@@ -287,38 +287,28 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         </span>
                         <button
                           onClick={() => setThreadStatus(threadId, statusAction.to)}
-                          className="ml-1 h-8 px-3 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                          className="ml-1 h-10 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
                         >
                           {statusAction.label}
                         </button>
                       </>
                     )}
-                    {(diffTotals.added > 0 || diffTotals.removed > 0) && (
-                      <Tooltip
-                        label={`${diffTotals.added} ${diffTotals.added === 1 ? 'addition' : 'additions'} and ${diffTotals.removed} ${diffTotals.removed === 1 ? 'deletion' : 'deletions'}`}
-                      >
-                        <span className="ml-2 cursor-default">
-                          <Pill lg>
-                            <Counts added={diffTotals.added} removed={diffTotals.removed} size="sm" />
-                          </Pill>
-                        </span>
-                      </Tooltip>
-                    )}
                     {/* One button for the panel rather than one per thing the
                         panel can hold. What is in it is picked in the panel,
-                        where the plus and the empty screen both read the one
-                        table of it. */}
+                        where the plus and the Start tab both read the one
+                        table of it. It is the back button's own size, standing
+                        at the other end of the same row. */}
                     <Tooltip label={panelOpen ? 'Hide panel' : 'Show panel'}>
                       <button
                         onClick={() => useBrowser.getState().togglePanel()}
                         aria-label={panelOpen ? 'Hide panel' : 'Show panel'}
                         aria-pressed={panelOpen}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
                           panelOpen ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
                         }`}
                       >
                         <PanelRightGlyph
-                          className={`w-4 h-4 transition-transform duration-200 ${panelOpen ? '' : 'scale-x-[-1]'}`}
+                          className={`w-5 h-5 transition-transform duration-200 ${panelOpen ? '' : 'scale-x-[-1]'}`}
                         />
                       </button>
                     </Tooltip>
