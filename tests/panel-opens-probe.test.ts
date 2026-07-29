@@ -62,6 +62,19 @@ describe('what an empty panel offers', () => {
     for (const label of ['Web page', 'Terminal', 'Files', 'Music', 'Games']) expect(getByText(label)).not.toBeNull()
   })
 
+  // What is on screen is always a tab, so the panel opened on nothing stands on
+  // one of its own rather than on a screen with no name.
+  it('stands on a tab called Start', () => {
+    act(() => useBrowser.getState().togglePanel())
+    const { getByText, queryByText } = render(createElement(BrowserPanel))
+
+    expect(getByText('Start')).not.toBeNull()
+
+    act(() => useBrowser.getState().openMusic())
+
+    expect(queryByText('Start')).toBeNull()
+  })
+
   it('opens what is picked', () => {
     act(() => useBrowser.getState().togglePanel())
     const { getByText } = render(createElement(BrowserPanel))
