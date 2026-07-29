@@ -3002,7 +3002,7 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    route?: { messageId: string; mentions: string[]; replyTo?: MessageReply; voice?: boolean }
+    route?: { messageId: string; mentions: string[]; replyTo?: MessageReply; voice?: boolean; holding?: boolean }
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
