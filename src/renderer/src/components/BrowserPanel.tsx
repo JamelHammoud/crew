@@ -5,7 +5,6 @@ import { normalizeUrl } from '../../../shared/urls'
 import {
   ArrowLeftGlyph,
   ArrowRightGlyph,
-  TicketGlyph,
   ChecklistGlyph,
   CloseGlyph,
   DocGlyph,
@@ -19,6 +18,7 @@ import {
   QuestionGlyph,
   RefreshGlyph,
   TerminalGlyph,
+  TicketGlyph,
   XCircleGlyph
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
