@@ -379,15 +379,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'plan')], activeTabId: tab.id, closedPlans }))
     },
     hidePlan: () => {
-      set(s => {
-        const index = s.tabs.findIndex(t => t.kind === 'plan')
-        if (index < 0) return {}
-        const plan = s.tabs[index]
-        const tabs = s.tabs.filter(t => t.id !== plan.id)
-        const activeTabId =
-          s.activeTabId === plan.id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
-        return { tabs, activeTabId }
-      })
+      set(s => without(s, t => t.kind === 'plan') ?? {})
       settle()
     },
     // The board for the thread you are in, held the way the plan is: one of them,
