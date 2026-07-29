@@ -4,6 +4,7 @@ import { CheckCircleGlyph, WarningGlyph } from '../icons'
 import { closeToast, holdToasts, useToasts, type Toast, type ToastTone } from '../state/toast'
 import Spinner from './Spinner'
 import { TOP_BAR_H } from './TopBar'
+import { useSwipeAway } from './useSwipeAway'
 
 function markFor(tone: ToastTone): ReactNode {
   if (tone === 'done') return <CheckCircleGlyph className="text-positive" />
