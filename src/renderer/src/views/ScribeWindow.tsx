@@ -20,11 +20,16 @@ export default function ScribeWindow() {
   useEffect(() => window.crew.onScribeSettings(useScribe.getState().apply), [])
   useEffect(() => window.crew.onScribeProblem(useScribe.getState().said), [])
 
-  // The window is only ever as tall as what it holds, the way the tray panel is.
+  // The window is only ever as big as what it holds, the way the tray panel is,
+  // and both ways round rather than only in height: the pill stands over
+  // somebody else's work the whole time dictation is on, so every pixel of
+  // window past the pill is a click of theirs that goes nowhere.
   useEffect(() => {
     const box = boxRef.current
     if (!box) return
-    const observer = new ResizeObserver(() => window.crew.resizeScribe(box.offsetHeight))
+    const observer = new ResizeObserver(() =>
+      window.crew.resizeScribe(box.offsetWidth, box.offsetHeight)
+    )
     observer.observe(box)
     return () => observer.disconnect()
   }, [])
