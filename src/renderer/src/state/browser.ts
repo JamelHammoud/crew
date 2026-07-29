@@ -226,6 +226,31 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = { ...makeTab(), kind: 'game' as const }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
+  // A helper opens in a tab of its own, and opening one that is already in a
+  // tab brings that tab to the front rather than opening a second copy of it.
+  // Three helpers running is three things to watch, so unlike the plan these
+  // are ordinary tabs: closable, and as many as somebody wants.
+  openSubagent: threadId => {
+    const existing = get().tabs.find(t => t.kind === 'agent' && t.threadId === threadId)
+    if (existing) {
+      set({ activeTabId: existing.id })
+      return
+    }
+    const tab = { ...makeTab(), kind: 'agent' as const, threadId }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
+  showSubagents: parentThreadId => {
+    const existing = get().tabs.find(t => t.kind === 'agent' && t.parentThreadId === parentThreadId)
+    if (existing) {
+      set(s => ({
+        activeTabId: existing.id,
+        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, threadId: '' } : t))
+      }))
+      return
+    }
+    const tab = { ...makeTab(), kind: 'agent' as const, parentThreadId }
+    set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
   // The plan for the thread you are in. It stands at the head of the row, and
   // it is only ever the one plan, so opening another thread's takes the place
   // of the one before it. Asking for it back is asking for it, so a plan that
