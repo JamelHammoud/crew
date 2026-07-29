@@ -26,6 +26,7 @@ import { alertToast } from '../components/alertToast'
 import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert } from './alerts'
+import { helperPrefs, onHelperPrefs } from './helpers'
 import { useBrowser } from './browser'
 import { toast } from './toast'
 
@@ -577,6 +578,9 @@ export const useCrew = create<CrewState>((set, get) => {
   const handleMessage = (msg: ServerMessage) => {
     switch (msg.type) {
       case 'welcome': {
+        // Said on every connect, because the host holds it in memory and a host
+        // that has just come up knows nothing about what anyone allows.
+        socket.send({ type: 'subagent.prefs', ...helperPrefs() })
         const threads: Record<string, ThreadMeta> = {}
         const threadPrompts: Record<string, string> = {}
         const activePrompts: Record<string, string[]> = {}
