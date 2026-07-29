@@ -98,7 +98,7 @@ describe('plans in the app', () => {
     fireEvent.click(screen.getByText('Planning complete'))
     expect(screen.getByLabelText('Back to chat')).toBeTruthy()
     expect(screen.getByText('Plan')).toBeTruthy()
-    expect(screen.getByText('Not started')).toBeTruthy()
+    expect(screen.getByText('Ready for review')).toBeTruthy()
     expect(screen.getByText('Implement plan')).toBeTruthy()
     expect(screen.getAllByText('Ship it').length).toBeGreaterThan(0)
   })
