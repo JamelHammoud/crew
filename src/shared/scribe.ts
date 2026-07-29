@@ -1,4 +1,4 @@
-import { TIDY_RULES, type TidyRules, type ScribeWord } from './scribeTidy'
+import { TIDY_RULES, type TidyRules } from './scribeTidy'
 
 // Hold a key, talk, and what you said is written into whatever you were typing
 // in. All of it runs on this machine: the model, the tidying, the paste. None of
@@ -9,6 +9,13 @@ import { TIDY_RULES, type TidyRules, type ScribeWord } from './scribeTidy'
 export type ScribeKey = 'fn' | 'right-option' | 'right-ctrl' | 'ctrl' | 'meta' | 'none'
 export type ScribePress = 'hold' | 'toggle' | 'latch'
 export type ScribeFinish = 'paste' | 'copy'
+
+// A word whisper always hears wrong, and what it should have been. Cheap to
+// build and it is what makes a dictation read as yours rather than as generic.
+export interface ScribeWord {
+  from: string
+  to: string
+}
 
 export interface ScribeSettings {
   on: boolean
@@ -154,4 +161,4 @@ export function rulesOf(settings: ScribeSettings): TidyRules {
   }
 }
 
-export type { ScribeWord, TidyRules }
+export type { TidyRules }
