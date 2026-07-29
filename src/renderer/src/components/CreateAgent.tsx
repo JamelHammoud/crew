@@ -24,7 +24,11 @@ function defaultName(cap: ProviderCapability, settings: AgentSettings): string {
   return `${cap.label} ${titleCase(label)}`
 }
 
-export default function CreateAgent() {
+// The way in stands at the end of the agents rather than off in a corner of the
+// page, so it is the empty state and the way in both, the way the toolbox ends
+// its own row on the slot that opens the builder. Alone, it says where an agent
+// comes from, since there is nothing above it to say so.
+export default function CreateAgent({ alone }: { alone?: boolean }) {
   const [caps, setCaps] = useState<ProviderCapability[] | null>(null)
   const [open, setOpen] = useState(false)
   const [provider, setProvider] = useState('')
