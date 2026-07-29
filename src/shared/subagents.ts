@@ -42,6 +42,24 @@ export const DEPTH_LIMIT = 2
 export const WAIT_MS = 60000
 export const RETURN_COALESCE_MS = 1500
 
+// What one person lets helpers do on their own machine. A helper runs a real
+// CLI on somebody's laptop, and the person whose laptop it is pays for it in
+// tokens and in what it does to their files, so this is theirs rather than the
+// crew's: off means their agents never send work out and never take anybody
+// else's, and the count is how many they will have going at once.
+export interface HelperPrefs {
+  on: boolean
+  fan: number
+}
+
+export const DEFAULT_PREFS: HelperPrefs = { on: true, fan: FAN_LIMIT }
+
+export function cleanPrefs(prefs: Partial<HelperPrefs> | undefined | null): HelperPrefs {
+  if (!prefs || typeof prefs !== 'object') return DEFAULT_PREFS
+  const fan = typeof prefs.fan === 'number' && Number.isFinite(prefs.fan) ? Math.round(prefs.fan) : FAN_LIMIT
+  return { on: prefs.on !== false, fan: Math.min(Math.max(1, fan), FAN_LIMIT) }
+}
+
 export interface SubagentDraft {
   name: string
   brief: string
