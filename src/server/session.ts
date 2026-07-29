@@ -2782,18 +2782,24 @@ export class CrewSession {
     this.persistMeta()
   }
 
-  private handleTokens(meta: ConnMeta, promptId: string, tokens: number): void {
+  // The count only climbs, and the price rides with whatever the run last said
+  // rather than with the highest it ever reached: a turn that ends is priced
+  // whole by the CLI, and that figure can land under the estimate that led to
+  // it. A run that never says a price keeps the last one it gave.
+  private handleTokens(meta: ConnMeta, promptId: string, tokens: number, cost?: number): void {
     const agent = this.ownedAgent(meta, promptId)
     const ref = this.prompts.get(promptId)
     const run = agent?.runs.get(promptId)
     if (!agent || !ref || !run) return
     run.tokens = Math.max(run.tokens, tokens)
+    if (typeof cost === 'number') run.cost = cost
     this.toThread(ref.threadId, {
       type: 'agent.tokens',
       promptId,
       agentId: agent.id,
       threadId: ref.threadId,
-      tokens: run.tokens
+      tokens: run.tokens,
+      cost: run.cost ?? undefined
     })
   }
 
