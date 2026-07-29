@@ -139,17 +139,15 @@ export default function BrowserPanel() {
             ))}
           </Popover>
         </span>
-        {
-          <Tooltip label="Close">
-            <button
-              onClick={() => useBrowser.getState().closePanel()}
-              aria-label="Close"
-              className={`app-no-drag ${iconButton}`}
-            >
-              <CloseGlyph className="w-4 h-4" />
-            </button>
-          </Tooltip>
-        )}
+        <Tooltip label="Close">
+          <button
+            onClick={() => useBrowser.getState().closePanel()}
+            aria-label="Close"
+            className={`app-no-drag ${iconButton}`}
+          >
+            <CloseGlyph className="w-4 h-4" />
+          </button>
+        </Tooltip>
       </header>
 
       {active && active.kind === 'file' && (
