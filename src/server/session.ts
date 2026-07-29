@@ -3027,9 +3027,11 @@ export class CrewSession {
     }
     // A message that arrives mid-run goes straight into the run when it is for
     // the agent doing the running and that agent can take it, so it steers the
-    // work in progress instead of waiting.
+    // work in progress instead of waiting. Asking for it to wait is the one
+    // thing that overrides that, since the only way to hold a message back was
+    // to sit on it until the turn ended.
     const runningAgentId = thread.running ? this.prompts.get(thread.running)?.agentId : undefined
-    if (agent.runner && thread.running && runningAgentId === agent.id && agent.steerable) {
+    if (!route?.holding && agent.runner && thread.running && runningAgentId === agent.id && agent.steerable) {
       this.emitThreadMessage(entry)
       this.sendSteer(agent, thread.running, {
         messageId: entry.messageId,
