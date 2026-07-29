@@ -1,4 +1,11 @@
-import type { ListenIn, ListenOut } from './listen.worker'
+import type { HeardChunk, ListenIn, ListenOut } from './listen.worker'
+
+export interface Heard {
+  text: string
+  // Where each piece of it fell, in seconds. The conversation has no use for
+  // these and a dictation is half built out of them.
+  chunks: HeardChunk[]
+}
 
 export interface ListenerEars {
   onFetching: (file: string, loaded: number, total: number) => void
@@ -13,7 +20,7 @@ export interface ListenerEars {
 export class VoiceListener {
   private worker: Worker | null = null
   private next = 0
-  private waiting = new Map<number, (text: string | null) => void>()
+  private waiting = new Map<number, (heard: Heard | null) => void>()
 
   constructor(private readonly ears: ListenerEars) {}
 
