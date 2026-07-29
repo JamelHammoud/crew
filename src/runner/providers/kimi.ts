@@ -58,8 +58,8 @@ export const parseKimiLine: OutputParser = line => {
       }
     })
   }
-  const tokens = msg?.usage?.output_tokens ?? msg?.usage?.completion_tokens
-  if (typeof tokens === 'number') out.push({ tokens })
+  const usage = usageFrom(msg?.usage, msg?.model ?? msg?.message?.model)
+  if (usage) out.push({ usage })
   return out
 }
 
