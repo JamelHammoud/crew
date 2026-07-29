@@ -378,7 +378,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     selectTab: id => set({ activeTabId: id }),
-    closeTab: id =>
+    closeTab: id => {
       set(s => {
         const index = s.tabs.findIndex(t => t.id === id)
         if (index < 0) return {}
@@ -392,14 +392,18 @@ export const useBrowser = create<BrowserState>((write, get) => {
           closedPlans: remember(s.closedPlans, gone, 'plan'),
           closedBoards: remember(s.closedBoards, gone, 'work')
         }
-      }),
-    closeAll: () =>
+      })
+      settle()
+    },
+    closeAll: () => {
       set(s => ({
         tabs: [],
         activeTabId: null,
         closedPlans: remember(s.closedPlans, s.tabs, 'plan'),
         closedBoards: remember(s.closedBoards, s.tabs, 'work')
-      })),
+      }))
+      settle()
+    },
     navigateTab: (id, url) =>
       set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
     navigateFile: (id, path) =>
