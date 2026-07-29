@@ -852,6 +852,7 @@ export const useCrew = create<CrewState>((set, get) => {
         })
         set(state => ({
           threadDrafts: { ...state.threadDrafts, [key]: '' },
+          threadCommands: { ...state.threadCommands, [key]: [] },
           pending: { ...state.pending, [key]: [] }
         }))
         return
