@@ -125,20 +125,6 @@ export const NoteGlyph = glyph(
   </>
 )
 
-export const PanelLeftGlyph = glyph(
-  <>
-    <rect x="3.5" y="5" width="17" height="14" rx="3" />
-    <path d="M9.5 5v14" />
-  </>
-)
-
-export const PanelRightGlyph = glyph(
-  <>
-    <rect x="3.5" y="5" width="17" height="14" rx="3" />
-    <path d="M14.5 5v14" />
-  </>
-)
-
 export const CornerGlyph = glyph(<path d="M5 19V9.5A4.5 4.5 0 0 1 9.5 5H19" />)
 
 export const CornersGlyph = glyph(
