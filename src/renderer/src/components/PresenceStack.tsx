@@ -39,7 +39,7 @@ export default function PresenceStack({ compact = false }: { compact?: boolean }
             {rest > 0 && (
               <span
                 style={{ width: FACE, height: FACE }}
-                className="rounded-full bg-ink-700 text-fg-secondary text-sm font-semibold flex items-center justify-center select-none"
+                className="rounded-full bg-ink-700 text-fg-secondary text-sm font-semibold flex items-center justify-center"
               >
                 +{rest}
               </span>
