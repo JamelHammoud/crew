@@ -195,6 +195,18 @@ export default function Scribe() {
             onChange={finish => setScribeSettings({ finish: finish as 'paste' | 'copy' })}
           />
         </Row>
+        {/* Left out rather than greyed where there is nowhere for it to happen.
+            A dictation on its way to the clipboard has one place to land and
+            lands there once. */}
+        {settings.finish === 'paste' && (
+          <Row label="Write as you talk">
+            <Toggle
+              on={settings.live}
+              label="Write as you talk"
+              onChange={live => setScribeSettings({ live })}
+            />
+          </Row>
+        )}
         <Row
           label="Keep the microphone ready"
           line="Your first word is never cut off, and your recording light stays on."
