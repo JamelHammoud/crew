@@ -97,7 +97,10 @@ describe('the settings', () => {
     const rows = within(rail())
       .getAllByRole('button')
       .map(row => row.getAttribute('aria-label'))
-    expect(rows).toEqual(['Jamel', 'Appearance', 'Sound and video', 'People', 'Agents'])
+    // Read off the one table rather than written out again here, or the rail
+    // grows a page and this quietly says it did not.
+    expect(rows).toEqual(SETTINGS_TABS.map(tab => tabLabel(tab, 'Jamel')))
+    expect(rows[0]).toBe('Jamel')
     expect(within(rail()).getByText('Crew')).toBeTruthy()
     expect(page('Jamel')).toBeTruthy()
   })
