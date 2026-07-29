@@ -231,6 +231,21 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - It grows the way a composer does, a line at a time up to five, and it grows away from the selection: the edge nearest the shape is the one that is pinned, so the bar opens downwards under a shape and upwards above one. The size readout stands down while it is open, since the two hang off the same edge and a number behind glass is a smudge.
 - Everything on its one row is the same 28 across, the pet included, and each control sits in a box of its own rather than in the line of text a tooltip would otherwise give it.
 
+## Tickets
+
+`/tickets` opens a thread with a board beside it, in the side panel where the plan stands. It is what the work is broken down into, what is being worked on now, the questions the agent answered for itself, and what it has finished and wants a look at.
+
+- Nothing about a board is written down. The columns are the list every CLI already keeps for itself, and the rest are cards the agent writes beside its words, so `boardOf` in `src/shared/tickets.ts` reads the whole thing back off the steps a thread already holds. That is what makes a board the same on every machine, replay for free, and cost the sync loop nothing.
+- The list survives to the app. Every CLI hands the whole of it over several times a run and crew used to fold it to one word, so `stepTodos` in `src/runner/providers/detail.ts` keeps it on the step: pending, in progress and completed however a provider spells them, and Codex's boolean. That is the whole of the flow columns, with no brief and nothing for a model to cooperate with.
+- The one line a step says about a list is still narrated, "Drawing the rows", because that is what a live step reads like. A ticket is the same item named rather than narrated, "Draw the rows", which is why `activeForm` wins in one place and nowhere else.
+- A question never stops the work. The agent raises it, answers it for itself, and carries on, and the row says what it assumed. Answering costs one press, and what answering late would cost is on the row as the number of files that have changed since, so interrupting is a number rather than a feeling.
+- A decision hangs off whatever ticket was being worked on when it was written, which is read off the list rather than matched by anything the model has to get right. One written before there was a list waits for the first ticket that is picked up.
+- In review is the column that pays for the rest. Everything else is already readable in the thread, and this is the agent saying a slice is finished. Both ways out are real messages: a sentence goes back as a steer aimed at that slice, and picking the ticket up again is what the board reads as the way out of review.
+- What you have dealt with is yours rather than the crew's, so a question you answered and a review you have looked at are held in the window, in `state/board.ts`, and never written down. Two people each get their own review queue, which is what In review means.
+- A card is a fenced block and it is taken out of what is read in the thread, the way a voice card is. `readWork` does that in `components/thread.ts` for a step and for the reply, so a card is never a line of JSON in the chat, and a step that was only a card is nothing rather than an empty row.
+- The columns run in the order they want you, not the order work travels: a review, then what is being worked on, then what is next, then what is done. The panel is 480 across and a ticket is a sentence, so they are sections down the panel rather than columns across it. Four columns at 480 is 105 pixels each.
+- `TICKET_INSTRUCTIONS` is added to every prompt in the thread the way plan mode and voice add theirs, and nothing about it is ever a message. Only Claude takes a steer mid-run, so anywhere else an answer joins the queue.
+
 ## Docs
 
 A page of the crew's own writing, block by block, in a BlockNote editor crew draws all the chrome for. Every panel BlockNote ships is turned off in `DocEditor` and replaced: `DocSlashMenu` for what `/` opens, `DocToolbar` for a selection, `DocSideMenu` for the gutter, `DocEmojiMenu` for `:`. They are crew's own glass menus, the same rows the mention menu uses.
