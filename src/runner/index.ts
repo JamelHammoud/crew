@@ -421,7 +421,7 @@ export class Runner {
     }
     const run = provider.start(promptWithAttachments(text, local), this.opts.repoPath, {
       onStep: step => this.send({ type: 'agent.step', promptId, step }),
-      onTokens: tokens => this.send({ type: 'agent.tokens', promptId, tokens })
+      onTokens: (tokens, cost) => this.send({ type: 'agent.tokens', promptId, tokens, cost: cost ?? undefined })
     }, settings)
     this.running.set(promptId, run)
     try {
