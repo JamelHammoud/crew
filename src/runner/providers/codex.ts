@@ -98,7 +98,8 @@ export const parseCodexLine: OutputParser = line => {
         status: done ? ('finished' as const) : ('started' as const),
         detail: toolDetail(item),
         output: commandOutput(item.aggregated_output),
-        files: item.type === 'file_change' ? changeFiles(item.changes) : undefined
+        files: item.type === 'file_change' ? changeFiles(item.changes) : undefined,
+        todos: item.type === 'todo_list' ? stepTodos(item) : undefined
       }
     })
     return out
