@@ -328,14 +328,27 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   onKeyDown={onKeyDown}
                   onSend={send}
                   onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
-                  sendLabel={canSteer ? 'Steer' : 'Send'}
+                  sendLabel={
+                    command === 'btw' ? 'Ask' : canSteer && command !== 'queue' ? 'Steer' : 'Send'
+                  }
                   ghost={thread.ghost}
+                  chips={
+                    command && (
+                      <CommandChip name={command} onRemove={() => setThreadCommands(threadId, [])} />
+                    )
+                  }
                 >
                   <MentionMenu
                     matches={mention.matches}
                     activeIndex={mention.activeIndex}
                     onPick={mention.pick}
                     onHover={mention.setActive}
+                  />
+                  <SlashMenu
+                    matches={slash.matches}
+                    activeIndex={slash.activeIndex}
+                    onPick={slash.pick}
+                    onHover={slash.setActive}
                   />
                 </Composer>
               </div>
