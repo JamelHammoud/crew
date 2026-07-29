@@ -15,8 +15,6 @@ class TestResizeObserver {
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 
-const styles = readFileSync(new URL('../src/renderer/src/styles.css', import.meta.url), 'utf8')
-
 function boot(): void {
   useCrew.setState({
     connection: 'online',
