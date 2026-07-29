@@ -1799,7 +1799,7 @@ export class CrewSession {
   // and is never written down, and a ghost thread is not in the log to reach.
   private sendHistory(ws: WebSocket, before: string): void {
     const older = olderEvents(this.events, before, HISTORY_PAGE)
-    this.send(ws, { type: 'history', events: older.events, more: older.more })
+    this.send(ws, { type: 'history', events: chatEvents(older.events), more: older.more })
   }
 
   private handleDeleteMessage(member: Member, messageId: string): void {
