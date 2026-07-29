@@ -196,8 +196,11 @@ export default function TasksPanel({
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = []
     for (const thread of Object.values(threads)) {
+      // A helper is not a row of its own. It reads inside the thread that sent
+      // it, which is where somebody would go looking for it.
+      if (thread.parentThreadId) continue
       const promptId = threadPrompts[thread.id]
-      const working = threadWorking(thread.id, threadPrompts, queues)
+      const working = threadWorking(thread.id, threadPrompts, queues, threads)
       const detail = promptId
         ? describeStep((steps[promptId] ?? []).at(-1))
         : endPreview(lastEnd(thread.id, events))
