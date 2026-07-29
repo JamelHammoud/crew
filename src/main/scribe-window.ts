@@ -116,7 +116,7 @@ export class ScribeWindow {
   resize(size: Size): void {
     const win = this.win
     if (!win) return
-    const wanted = within(size)
+    const wanted = fits(size)
     const box = win.getBounds()
     if (box.width === wanted.width && box.height === wanted.height) return
     const spot = grown(box, wanted, this.workNear(middle({ ...box, ...wanted })))
@@ -188,7 +188,7 @@ export class ScribeWindow {
   private window(): BrowserWindow {
     if (this.win) return this.win
     const win = new BrowserWindow(
-      createScribeOptions(process.platform, this.page.preload, LARGEST)
+      createScribeOptions(process.platform, this.page.preload, PILL_LARGEST)
     )
     // Above a full screen app and on whichever space is in front. Never this
     // call without `skipTransformProcessType`: it turns the app into an
