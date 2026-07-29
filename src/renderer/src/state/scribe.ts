@@ -163,10 +163,19 @@ export const useScribe = create<ScribeState>((set, get) => {
     if (!get().settings.ready) take.close()
   }
 
-  const drop = () => {
-    stop()
+  // A walk still waiting on a read it will never be told about is left where it
+  // is rather than cancelled. It comes back to a list that is not the one it set
+  // out down and stands itself down, and the next dictation walks on its own.
+  const clear = () => {
     pieces = []
     held = []
+    flow.reset()
+    walking = Promise.resolve()
+  }
+
+  const drop = () => {
+    stop()
+    clear()
     listener.forget()
   }
 
