@@ -127,7 +127,7 @@ export default function ScribePill() {
           )
         ) : (
           <Round label="Done" solid onClick={() => void finish()}>
-            <CheckGlyph className="w-4 h-4" />
+            <CheckGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
           </Round>
         )}
       </div>
