@@ -122,7 +122,7 @@ export default function ScribePill() {
           // rather than offering a button that cannot work.
           again && (
             <Round label="Try again" solid onClick={() => void retry()}>
-              <RefreshGlyph className="w-4 h-4" />
+              <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
             </Round>
           )
         ) : (
