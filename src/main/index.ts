@@ -310,6 +310,28 @@ app.whenReady().then(() => {
   ipcMain.on('tray:size', (_event, height: number) => tray.resizePanel(height))
   ipcMain.on('tray:open', () => openWindow())
   ipcMain.on('tray:hide', () => tray.hidePanel())
+  // Everything about dictation is this machine's own, so the settings ride in
+  // the window that holds them and are handed here to be acted on. Nothing about
+  // it is written down, and nothing about it goes over the wire.
+  ipcMain.handle('scribe:apply', (_event, input: unknown) => {
+    scribeSettings = cleanSettings(input, process.platform)
+    scribeKeys.apply(scribeSettings)
+    scribe.apply(scribeSettings)
+    if (!scribeSettings.on) scribe.hide()
+    return scribeKeys.state()
+  })
+  ipcMain.handle('scribe:state', () => scribeKeys.state())
+  ipcMain.on('scribe:done', (_event, text: string) => {
+    scribeKeys.stopped()
+    scribe.hide()
+    const landed = deliver(text, scribeSettings.finish)
+    if (!landed.ok) scribe.send('scribe:problem', landed.problem)
+  })
+  ipcMain.on('scribe:dismiss', () => {
+    scribeKeys.stopped()
+    scribe.hide()
+  })
+  ipcMain.on('scribe:size', (_event, height: number) => scribe.resize(height))
   ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
     showAlert(alert, () => {
       openWindow()
