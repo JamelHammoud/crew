@@ -202,7 +202,8 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.online' && e.agentId === fake)
     await addRole(ui, 'Scout')
 
-    ui.send({ type: 'subagent.prefs', on: true, fan: FAN_LIMIT })
+    // Asking for more than the crew's ceiling is held at the ceiling.
+    ui.send({ type: 'subagent.prefs', on: true, fan: FAN_LIMIT + 5 })
     await new Promise(r => setTimeout(r, 200))
     const parent = await openParent(ui, steery)
     for (let i = 0; i < FAN_LIMIT; i++) {
