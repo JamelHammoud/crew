@@ -200,6 +200,11 @@ export class ScribeKeys {
   }
 }
 
+// When the last paste was sent. The hook hears everything the machine does,
+// its own keystrokes included, so this is what keeps a dictation from being
+// ended by the words it is writing.
+let posted = 0
+
 // The paste keystroke, sent to whatever has focus. It goes through the same hook
 // the key is read with, so there is one path on every platform rather than an
 // osascript on one and a native call on the other.
@@ -208,6 +213,7 @@ export function tapPaste(): boolean {
   if (!hook) return false
   const { uIOhook, UiohookKey } = hook
   const modifier = process.platform === 'darwin' ? UiohookKey.Meta : UiohookKey.Ctrl
+  posted = Date.now()
   try {
     uIOhook.keyTap(UiohookKey.V, [modifier])
     return true
