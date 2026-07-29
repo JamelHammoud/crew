@@ -427,12 +427,19 @@ textarea:placeholder-shown {
 
    So it is lit the way the app icon is lit instead: the tint falls from a lighter
    top to a darker bottom and a rim of light catches the top edge, which is what
-   lets it sit this far off opaque without reading as a dark film laid over the
-   screen. The drop is its own and it is tighter than the popover's, because the
-   window is only PILL_ROOM larger than the pill and paint that runs past a
-   window is cut off flat. */
+   lets it read as glass at all without a blur behind it.
+
+   How far off opaque it may sit is decided by the words underneath, and there is
+   only a little room. Nothing shows through at 0.97 and the pill is a slab; at
+   0.9 the line under it is a shape rather than a sentence, which is what frosted
+   glass over text looks like; by 0.84 the words are legible through the pill and
+   it reads as a smudge over the page rather than as something laid on it.
+
+   The drop is its own and it is tighter than the popover's, because the window is
+   only PILL_ROOM larger than the pill and paint that runs past a window is cut
+   off flat. */
 .glass-pill {
-  --glass-bg: linear-gradient(rgb(44 44 44 / 0.72), rgb(18 18 18 / 0.84));
+  --glass-bg: linear-gradient(rgb(40 40 40 / 0.9), rgb(18 18 18 / 0.94));
   --glass-shadow:
     0 8px 24px rgb(0 0 0 / 0.5),
     0 2px 6px rgb(0 0 0 / 0.35),
@@ -440,7 +447,7 @@ textarea:placeholder-shown {
 }
 
 .light .glass-pill {
-  --glass-bg: linear-gradient(rgb(255 255 255 / 0.78), rgb(240 240 240 / 0.9));
+  --glass-bg: linear-gradient(rgb(255 255 255 / 0.9), rgb(243 243 243 / 0.94));
   --glass-shadow:
     0 8px 24px rgb(0 0 0 / 0.18),
     0 2px 6px rgb(0 0 0 / 0.1),
