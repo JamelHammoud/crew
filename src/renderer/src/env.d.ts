@@ -67,7 +67,10 @@ declare global {
     scribeWrite(text: string): void
     scribeDone(text: string): void
     dismissScribe(): void
-    resizeScribe(height: number): void
+    scribeSaid(): Promise<Said[]>
+    forgetScribeSaid(id?: string): Promise<Said[]>
+    onScribeSaid(listener: (said: Said[]) => void): () => void
+    resizeScribe(width: number, height: number): void
     grabScribe(): void
     moveScribe(x: number, y: number, settled: boolean): void
     onScribe(listener: (word: 'arm' | 'finish' | 'cancel') => void): () => void
