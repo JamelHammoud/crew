@@ -66,9 +66,14 @@ export const PILL_ROOM = 32
 
 // The widest the pill ever gets, which is a failure: that is the one state that
 // holds a sentence, and it is the only one that asks for the room to hold it.
+// Everything a failure has to say is what to do about it, and a sentence clamped
+// halfway through is a pill that says something went wrong and nothing else, so
+// this is the width three readable lines want rather than the width the rest of
+// the pill would like.
+//
 // The window is built this wide and comes down to whatever the pill really is a
 // beat later, so nothing is ever drawn past its own window on the way up.
-export const PILL_WIDTH = 220
+export const PILL_WIDTH = 260
 
 // The pill stands on screen the whole time dictation is on, so what it is at
 // rest is the size it is nearly always at: the mark and nothing else, small
