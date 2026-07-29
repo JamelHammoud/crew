@@ -352,14 +352,23 @@ app.whenReady().then(() => {
     if (process.platform !== 'darwin') return
     void shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility')
   })
+  // A stretch of what somebody is saying, while they are still saying it. The
+  // pill stays where it is: a dictation is over when the key says so, not when a
+  // sentence lands.
+  ipcMain.on('scribe:write', (_event, text: string) => scribeWrite(text))
   ipcMain.on('scribe:done', (_event, text: string) => {
     scribeKeys.stopped()
     scribe.hide()
-    const landed = deliver(text, scribeSettings.finish)
-    if (!landed.ok) scribe.send('scribe:problem', landed.problem)
+    // Whatever was held back because the key was down goes out with it, in the
+    // order it was spoken. A dictation written as it was said hands nothing over
+    // here, because the words are already where they were going.
+    const rest = scribePending.join('') + text
+    scribePending = []
+    scribeLand(rest)
   })
   ipcMain.on('scribe:dismiss', () => {
     scribeKeys.stopped()
+    scribePending = []
     scribe.hide()
   })
   ipcMain.on('scribe:size', (_event, height: number) => scribe.resize(height))
