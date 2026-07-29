@@ -61,6 +61,7 @@ declare global {
     onNotificationOpen(listener: (threadId: string) => void): () => void
     applyScribe(settings: ScribeSettings): Promise<ScribeKeyState>
     scribeState(): Promise<ScribeKeyState>
+    openScribePermission(): Promise<void>
     scribeDone(text: string): void
     dismissScribe(): void
     resizeScribe(height: number): void
