@@ -389,6 +389,14 @@ export const useCrew = create<CrewState>((set, get) => {
       set(state => ({ events: state.events.filter(e => huddleRecordId(e) !== event.huddleId) }))
       return
     }
+    // What an agent said about its own work stands beside the chat's events
+    // rather than in them, the same way the host hands it over, so a board is
+    // never trimmed away by the window the messages are held in.
+    if (isTicketEvent(event.kind)) {
+      const said = event as TicketEvent
+      set(state => (state.tickets.some(one => one.id === said.id) ? {} : { tickets: [...state.tickets, said] }))
+      return
+    }
     if (event.kind === 'message.edited') {
       set(state => ({
         events: state.events.map(e =>
