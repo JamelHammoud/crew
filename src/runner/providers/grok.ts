@@ -2,6 +2,7 @@ import type { AgentSettingField } from '../../shared/llm'
 import { choices, flag, makeCliProvider, type SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { resultText } from './output'
+import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
