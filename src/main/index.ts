@@ -26,6 +26,7 @@ import {
   screenSources
 } from './media'
 import type { MediaKind } from '../shared/media'
+import type { RepoCommand } from '../shared/repository'
 import { cleanSettings, type ScribeSettings } from '../shared/scribe'
 import { ScribeKeys } from './scribe-keys'
 import { deliver } from './scribe-paste'
