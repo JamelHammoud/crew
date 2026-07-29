@@ -204,6 +204,8 @@ interface Thread {
   boardId?: string
   ghost?: boolean
   voice?: boolean
+  // Whether the work in this thread is reported onto a board beside it.
+  tickets?: boolean
   // The thread a question on the side was asked from. It is read for context and
   // nothing is ever said back into it, so the work in it carries on untouched.
   aside?: string
@@ -443,6 +445,7 @@ export class CrewSession {
           running: null,
           boardId: event.boardId,
           voice: event.voice,
+          tickets: event.tickets,
           parentThreadId: event.parentThreadId,
           parentPromptId: event.parentPromptId,
           helper: event.helper,
@@ -1085,6 +1088,7 @@ export class CrewSession {
       mentions?: string[]
       replyTo?: MessageReply
       voice?: boolean
+      tickets?: boolean
       aside?: string
       subagent?: {
         parentThreadId: string
@@ -1113,6 +1117,7 @@ export class CrewSession {
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
       ghost: opts.ghost !== undefined,
       voice: opts.voice === true,
+      tickets: opts.tickets === true,
       aside: opts.aside,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
@@ -1140,6 +1145,7 @@ export class CrewSession {
       mode: thread.mode === 'plan' ? 'plan' : undefined,
       ghost: thread.ghost ? true : undefined,
       voice: thread.voice ? true : undefined,
+      tickets: thread.tickets ? true : undefined,
       aside: thread.aside,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
