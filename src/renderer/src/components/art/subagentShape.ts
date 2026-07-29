@@ -17,21 +17,23 @@ export interface SubagentShape {
   // The whole shape turned, so two roles with the same count are still two
   // marks.
   twist: number
-  // The mean radius, which every kind holds to. That is what makes a flower and
-  // a disc weigh the same beside each other: the eye reads the average of an
-  // outline, not the furthest point of it.
+  // How far the furthest point of it stands from the middle. Equal on the ruler
+  // is not equal to the eye, which is the whole reason a circle is not 17, and
+  // this obeys the same numbers: a lobed mark is a pointy form and takes the
+  // live area the way the star does, a disc sits on the circle keyline, and a
+  // square sits on the square.
   radius: number
 }
 
 export const MIN_LOBES = 3
 export const MAX_LOBES = 8
 
-// A solid form carries its whole box as ink where an outlined one carries only
-// its edge, so it sits under the square keyline. The round family is 8.8% wider
-// than the square one at every size, which is the one thing that has to travel
-// with it or a disc reads small beside a tile.
-const ROUND = (SOLID * CIRCLE) / 17
-const SQUARE_SIDE = SOLID
+const OUTER: Record<ShapeKind, number> = {
+  rosette: DIAGONAL,
+  disc: CIRCLE,
+  hexagon: CIRCLE,
+  square: SQUARE
+}
 
 // More lobes at the same depth is a smaller waist between each pair, so how far
 // they may stand out comes down as they multiply. Past this the mark reads as
