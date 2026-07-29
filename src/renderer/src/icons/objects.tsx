@@ -209,6 +209,27 @@ export const GlobeGlyph = glyph(
   </>
 )
 
+// Two commits on a line and a third off to one side, which is the drawing
+// everyone already reads as what has changed in a project. The nodes are rings
+// rather than dots, because three filled dots on a line is the ellipsis with a
+// stalk through it. The branch leaves the trunk square and turns up on a
+// generous corner rather than peeling off along it: a curve drawn tangent to
+// the trunk spends the first third of its length inside the trunk's own stroke,
+// and at 16 the two arrive as one thick line with a hook on the end. It leaves
+// at the middle of the run, so the gap over it and the gap under it are the
+// same, which is the least either can be before the strokes close up.
+const NODE = { r: 2.5, trunk: 6.75, branch: 17.25, top: 5.5, foot: 18.5 }
+
+export const BranchGlyph = glyph(
+  <>
+    <circle cx={NODE.trunk} cy={NODE.top} r={NODE.r} />
+    <circle cx={NODE.trunk} cy={NODE.foot} r={NODE.r} />
+    <circle cx={NODE.branch} cy={NODE.top} r={NODE.r} />
+    <path d="M6.75 8v8" />
+    <path d="M6.75 12h6.5a4 4 0 0 0 4-4" />
+  </>
+)
+
 export const GroupGlyph = glyph(
   <>
     <path d="M3.5 8V6A2.5 2.5 0 0 1 6 3.5h2M16 3.5h2A2.5 2.5 0 0 1 20.5 6v2M20.5 16v2a2.5 2.5 0 0 1-2.5 2.5h-2M8 20.5H6A2.5 2.5 0 0 1 3.5 18v-2" />
