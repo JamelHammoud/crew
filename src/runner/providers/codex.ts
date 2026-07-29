@@ -107,8 +107,8 @@ export const parseCodexLine: OutputParser = line => {
   }
 
   if (msg?.type === 'turn.completed') {
-    const tokens = msg?.usage?.output_tokens
-    if (typeof tokens === 'number') out.push({ tokens })
+    const usage = usageFrom(msg?.usage, msg?.model)
+    if (usage) out.push({ usage: { ...usage, total: true } })
     return out
   }
   if (msg?.type === 'turn.failed') {
