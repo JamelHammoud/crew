@@ -95,6 +95,40 @@ describe('the helpers a thread sent out', () => {
     expect(helperTab()!.threadId).toBe('')
   })
 
+  // The thread's own things stand only while you are in it, the way its plan and
+  // its board do, so a row of tabs is about the thread on the screen.
+  it('goes when you leave the thread', () => {
+    render(createElement(BrowserPanel))
+    sent(spawned(CHILD, 'reading the schema'))
+    act(() => useBrowser.getState().openSubagent(CHILD, PARENT))
+
+    act(() => useCrew.setState({ openThreadId: null }))
+
+    expect(helperTab()).toBeNull()
+    expect(useBrowser.getState().activeTabId).toBeNull()
+    expect(useBrowser.getState().open).toBe(false)
+  })
+
+  it('leaves what the panel holds of its own where it is', () => {
+    render(createElement(BrowserPanel))
+    act(() => useBrowser.getState().openUrl('https://example.com/one'))
+    act(() => useBrowser.getState().openSubagent(CHILD, PARENT))
+
+    act(() => useCrew.setState({ openThreadId: 'somewhere-else' }))
+
+    expect(helperTab()).toBeNull()
+    expect(useBrowser.getState().tabs.map(t => t.kind)).toEqual(['web'])
+    expect(useBrowser.getState().open).toBe(true)
+  })
+
+  it('stands through a look at another tab in the same thread', () => {
+    render(createElement(BrowserPanel))
+    act(() => useBrowser.getState().openSubagent(CHILD, PARENT))
+    act(() => useBrowser.getState().openUrl('https://example.com/one'))
+
+    expect(helperTab()!.threadId).toBe(CHILD)
+  })
+
   // The one button in the thread's header shows and hides the panel. What is in
   // it is picked in the panel, so a thread that has sent a helper out has the
   // same button as one that has not.
