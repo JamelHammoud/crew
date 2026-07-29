@@ -234,17 +234,22 @@ export const useScribe = create<ScribeState>((set, get) => {
       stop()
       const { audio, spoke } = trim(rest.audio, HEARD_RATE)
       if (spoke) keep(audio, rest.at)
+      if (asSaid()) return settle()
       const waiting = pieces
       pieces = []
       await land(waiting)
     },
 
     // The same sound, read again. Nothing is recorded twice and nothing is
-    // spoken twice.
+    // spoken twice, and what was already written is not written again: only
+    // what never landed is still here to try.
     retry: async () => {
       if (get().phase !== 'failed' || held.length === 0) return
       set({ phase: 'reading', problem: null })
-      await land(held.map(one => read(one.audio, one.at)))
+      const waiting = held.map(one => read(one.audio, one.at))
+      if (!asSaid()) return land(waiting)
+      pieces = waiting
+      await settle()
     },
 
     cancel: () => {
