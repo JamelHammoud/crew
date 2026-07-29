@@ -26,6 +26,10 @@ import {
   screenSources
 } from './media'
 import type { MediaKind } from '../shared/media'
+import { cleanSettings, type ScribeSettings } from '../shared/scribe'
+import { ScribeKeys } from './scribe-keys'
+import { deliver } from './scribe-paste'
+import { ScribeWindow } from './scribe-window'
 import { AppSession, type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
 import { createWindowOptions } from './window-options'
