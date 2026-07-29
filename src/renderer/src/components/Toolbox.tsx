@@ -8,6 +8,7 @@ import {
   MusicGlyph,
   PencilGlyph,
   PlusGlyph,
+  ScribeGlyph,
   SignalGlyph,
   TerminalGlyph,
   type Glyph
@@ -15,6 +16,8 @@ import {
 import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useMusic } from '../state/music'
+import { useScribeSettings } from '../state/scribeSettings'
+import { openSettings } from '../state/settings'
 import { useCrew } from '../state/store'
 import { useVoice } from '../state/voice'
 import { Popover } from './Popover'
