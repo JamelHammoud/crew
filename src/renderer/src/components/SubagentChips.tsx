@@ -25,7 +25,7 @@ function Chip({ run, threadId }: { run: SubagentRun; threadId: string }) {
   return (
     <button
       type="button"
-      onClick={() => openSubagent(run.threadId)}
+      onClick={() => openSubagent(run.threadId, threadId)}
       className={`group flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border transition-all active:scale-[0.98] ${
         working
           ? 'border-ink-700 bg-ink-800/60 hover:bg-ink-800'
