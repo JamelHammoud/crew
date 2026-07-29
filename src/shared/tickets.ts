@@ -171,6 +171,19 @@ export function boardOf(
         touched.add(file.path)
         at('')?.files.add(file.path)
       }
+      if (put || !step.todos?.length) continue
+      order = []
+      for (const todo of step.todos) {
+        const id = keyOf(todo.text)
+        if (!id || order.includes(id)) continue
+        const entry = entries.get(id) ?? entryOf(id, todo.text)
+        entry.title = todo.text
+        entry.column = todo.status === 'doing' ? 'doing' : todo.status === 'done' ? 'done' : 'todo'
+        entries.set(id, entry)
+        order.push(id)
+      }
+      const started = step.todos.find(todo => todo.status === 'doing')
+      doing = started ? keyOf(started.text) : ''
       continue
     }
     if (!event) continue
