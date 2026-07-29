@@ -307,9 +307,22 @@ export default function BrowserPanel() {
   )
 }
 
-// What an empty panel says: the same rows the plus opens, standing where the
-// thing they open would be. A line over them naming what they are would be the
-// screen read back to whoever is already looking at it.
+// The panel opened on nothing stands on Start, so what is on screen is always a
+// tab and the last tab out is what puts the panel away. There is no close on it:
+// closing it is closing the panel, and that button is already an inch to the
+// right of it.
+function StartPill() {
+  return (
+    <span className="shrink-0 select-none flex items-center gap-1.5 h-9 px-3 rounded-full bg-ink-800 text-sm font-medium text-fg">
+      <PanelRightGlyph className="w-4 h-4 shrink-0" />
+      Start
+    </span>
+  )
+}
+
+// What Start holds: the same rows the plus opens, standing where the thing they
+// open would be. A line over them naming what they are would be the screen read
+// back to whoever is already looking at it.
 function PanelOpens({ opens }: { opens: PanelOpen[] }) {
   return (
     <div className="absolute inset-0 flex flex-col justify-center gap-2 px-4 select-none">
@@ -319,7 +332,7 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
           onClick={one.open}
           className="group w-full h-14 px-4 rounded-2xl bg-ink-800 flex items-center gap-3 text-left transition-all duration-150 hover:bg-ink-700 active:scale-[0.99]"
         >
-          <span className="w-5 h-5 shrink-0 text-fg-muted transition-colors duration-150 group-hover:text-fg">
+          <span className="w-5 h-5 shrink-0 flex items-center justify-center text-fg-muted transition-colors duration-150 group-hover:text-fg">
             {one.mark}
           </span>
           <span className="text-sm font-medium text-fg truncate">{one.label}</span>
