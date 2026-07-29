@@ -37,7 +37,7 @@ function Row({ toast }: { toast: Toast }) {
         onClick={() => {
           if (!swipe.moved()) closeToast(toast.id)
         }}
-        className={`glass glass-strong toast-card pointer-events-auto cursor-pointer select-none touch-none w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
+        className={`glass glass-strong toast-card pointer-events-auto cursor-pointer touch-none w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
           action ? 'pl-3.5 pr-2' : 'px-3.5'
         }`}
       >
