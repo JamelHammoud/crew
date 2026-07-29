@@ -8,7 +8,7 @@ import Slider from '../Slider'
 import Tooltip from '../Tooltip'
 import { barButton, quietPill, solidButton } from './buttons'
 import Cover from './Cover'
-import { meshOf } from './mesh'
+import { meshOf } from '../art/mesh'
 import { clock } from './say'
 import Volume from './Volume'
 

@@ -19,8 +19,8 @@ const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'c
 // run of this leaves nothing behind in a tree that commits itself.
 const entry = (where) => `
 import { musicItems } from '${where}/src/shared/music'
-import { coverFor } from '${where}/src/renderer/src/components/music/coverArt'
-import { coverArt } from '${where}/src/renderer/src/components/music/coverSeed'
+import { coverFor } from '${where}/src/renderer/src/components/art/coverArt'
+import { coverArt } from '${where}/src/renderer/src/components/art/coverSeed'
 window.CrewCovers = { musicItems, coverFor, coverArt }
 `
 

@@ -1,4 +1,4 @@
-import type { CoverSubject } from '../../../../shared/music'
+import type { CoverSubject } from '../../../../shared/art'
 
 // What a cover is, before anything is drawn. It is a photograph of a few petals
 // held right up to the lens: a sky behind them, a handful of shapes standing at

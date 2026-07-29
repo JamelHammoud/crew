@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { CoverSubject } from '../../../../shared/music'
-import { coverFor } from './coverArt'
-import { GRAIN, meshOf } from './mesh'
+import { coverFor } from '../art/coverArt'
+import { GRAIN, meshOf } from '../art/mesh'
 
 // The picture is drawn once at a size of its own and painted into the tile from
 // there, so the same cover can stand at the top of the panel and in the list
