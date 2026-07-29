@@ -45,6 +45,11 @@ interface Uiohook {
 // unavailable.
 let loaded: Uiohook | null | undefined
 
+// When the last paste was sent. The hook hears everything the machine does, its
+// own keystrokes included, so this is what keeps a dictation from being ended by
+// the words it is writing.
+let posted = 0
+
 function uiohook(): Uiohook | null {
   if (loaded !== undefined) return loaded
   try {
