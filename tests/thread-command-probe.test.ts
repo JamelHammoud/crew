@@ -17,6 +17,7 @@ class TestResizeObserver {
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
 if (!Element.prototype.getAnimations) Element.prototype.getAnimations = () => []
+if (!Element.prototype.scrollTo) Element.prototype.scrollTo = () => {}
 
 const agent: PooledAgent = {
   id: 'ali/claude',
