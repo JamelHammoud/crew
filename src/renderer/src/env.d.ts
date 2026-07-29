@@ -58,6 +58,14 @@ declare global {
     onTerminalData(listener: (id: string, chunk: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
     onNotificationOpen(listener: (threadId: string) => void): () => void
+    applyScribe(settings: ScribeSettings): Promise<ScribeKeysState>
+    scribeState(): Promise<ScribeKeysState>
+    scribeDone(text: string): void
+    dismissScribe(): void
+    resizeScribe(height: number): void
+    onScribe(listener: (word: 'arm' | 'finish' | 'cancel') => void): () => void
+    onScribeSettings(listener: (settings: ScribeSettings) => void): () => void
+    onScribeProblem(listener: (problem: string | null) => void): () => void
     onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
   }
