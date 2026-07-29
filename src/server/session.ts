@@ -3125,15 +3125,14 @@ export class CrewSession {
     entry: QueuedPrompt,
     reactions: ReactionEvent[]
   ): ServerMessage {
-    const role = this.subagents.get(thread.roleId ?? '')
-    const roles = [...this.subagents.values()]
     const born = this.subagentThreads(thread.id)
     const out = born.filter(one => this.subagentRunning(one)).length
-    const fan = Math.min(this.helpersFor(agent.ownerId).fan, FAN_LIMIT)
+    const prefs = this.helpersFor(agent.ownerId)
+    const fan = Math.min(prefs.fan, FAN_LIMIT)
     const room = Math.max(0, Math.min(fan - out, RUN_LIMIT - born.length))
     // A question on the side answers itself. Sending work out of one would put
     // helpers on a thread nobody can see and nobody asked for work in.
-    const canSend = roles.length > 0 && !thread.aside && (thread.depth ?? 0) < DEPTH_LIMIT
+    const canSend = prefs.on && !thread.aside && (thread.depth ?? 0) < DEPTH_LIMIT
     return {
       type: 'prompt',
       promptId: entry.promptId,
