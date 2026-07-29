@@ -239,8 +239,38 @@ export function buildThread(
     if (event.kind === 'message.route') routes.set(event.messageId, event)
   }
   const reactions = reactionGroups(events, selfId)
+  // The end of a helper is a fact about the chip that stands where it started,
+  // so it is folded onto that chip rather than landing as a row of its own.
+  const returned = new Map<string, Extract<SessionEvent, { kind: 'subagent.ended' }>>()
+  for (const event of events) {
+    if (event.kind === 'subagent.ended') returned.set(event.threadId, event)
+  }
   const items: ThreadItem[] = []
   for (const event of events) {
+    if (event.kind === 'subagent.started') {
+      const home = returned.get(event.threadId)
+      items.push({
+        key: event.id,
+        ts: event.ts,
+        kind: 'subagent',
+        author: labelOf(event.agentId, event.agentLabel),
+        authorId: event.agentId,
+        self: false,
+        text: '',
+        streaming: false,
+        runs: [
+          {
+            threadId: event.threadId,
+            roleId: event.roleId,
+            roleName: event.roleName,
+            subject: event.subject,
+            agentId: event.agentId,
+            ok: home?.ok,
+            ms: home?.ms
+          }
+        ]
+      })
+    }
     if (event.kind === 'message') {
       const route = routes.get(event.id)
       items.push({
