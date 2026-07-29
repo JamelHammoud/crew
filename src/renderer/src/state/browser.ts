@@ -250,13 +250,20 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const tab = { ...makeTab(), kind: 'aside' as const, threadId, title }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
-  openSubagent: threadId => {
-    const existing = get().tabs.find(t => t.kind === 'agent' && t.threadId === threadId)
+  // A helper is opened with the thread that sent it, never on its own. The way
+  // back out of one is one half of why, and the button in the thread's own
+  // header is the other: both ask which thread a helper tab is standing in, and
+  // a tab that only knows the helper cannot answer.
+  openSubagent: (threadId, parentThreadId) => {
+    const existing = get().tabs.find(t => t.kind === 'agent' && t.parentThreadId === parentThreadId)
     if (existing) {
-      set({ activeTabId: existing.id })
+      set(s => ({
+        activeTabId: existing.id,
+        tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, threadId } : t))
+      }))
       return
     }
-    const tab = { ...makeTab(), kind: 'agent' as const, threadId }
+    const tab = { ...makeTab(), kind: 'agent' as const, threadId, parentThreadId }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
   },
   showSubagents: parentThreadId => {
@@ -270,6 +277,10 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     }
     const tab = { ...makeTab(), kind: 'agent' as const, parentThreadId }
     set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+  },
+  closeSubagents: parentThreadId => {
+    const helpers = get().tabs.find(t => t.kind === 'agent' && t.parentThreadId === parentThreadId)
+    if (helpers) get().closeTab(helpers.id)
   },
   // The plan for the thread you are in. It stands at the head of the row, and
   // it is only ever the one plan, so opening another thread's takes the place
