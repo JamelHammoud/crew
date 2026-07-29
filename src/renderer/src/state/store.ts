@@ -161,6 +161,9 @@ interface CrewState {
   threads: Record<string, ThreadMeta>
   threadPrompts: Record<string, string>
   todos: Todo[]
+  // What the agents have said about their own work, kept apart from the chat's
+  // events because a board is folded off these rather than scrolled past.
+  tickets: TicketEvent[]
   tools: CrewTool[]
   scores: GameScore[]
   boards: DesignBoardMeta[]
