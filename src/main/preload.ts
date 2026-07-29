@@ -14,6 +14,7 @@ import type {
 import type { CrewHome } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
+import type { Said } from '../shared/scribeSaid'
 import type { CurrentSession, OpenOptions } from './session'
 import type { TerminalSize } from './terminal'
 
