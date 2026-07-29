@@ -43,6 +43,12 @@
 
   --animate-pop: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
   --animate-rise: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* One page giving way to another where neither is deeper than the other, like
+     the settings. Nothing travels: a page that slides says you went somewhere,
+     and picking a row in a rail is not going anywhere. It cannot move either,
+     because the page fills a scroller and eight pixels of arrival is a
+     scrollbar coming and going for the length of it. */
+  --animate-fade: fade 0.16s ease-out both;
   /* A cover breathing while its track plays. Slow enough to be felt rather than
      watched, and only ever a transform, so nothing is painted twice. */
   --animate-drift: drift 19s ease-in-out infinite;
