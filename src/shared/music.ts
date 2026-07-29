@@ -1,3 +1,7 @@
+import { paletteFor, type CoverSubject } from './art'
+
+export { paletteFor, type CoverSubject }
+
 // The music a crew can put on. A tune is a few numbers, and the app plays it out
 // of the same bubbles the rest of its sounds are made of. The only other thing
 // it will play is a file somebody in the crew put there themselves.
@@ -235,15 +239,6 @@ export interface MusicUpload {
   ts: number
 }
 
-// Everything a cover is worked out from: an id, which decides the picture, and
-// the five colors it is photographed in. A track carries both, and so does the
-// app's own list, which is the one list with a picture of its own rather than
-// the covers of what is inside it.
-export interface CoverSubject {
-  id: string
-  colors: readonly string[]
-}
-
 // A tune and an upload are one thing to everything downstream: a row in the
 // list, a cover, and something the player can be handed.
 export interface MusicItem extends CoverSubject {
@@ -396,24 +391,6 @@ export function uploadUrl(httpBase: string, file: string): string {
 
 export function emptyMusic(): MusicRoom {
   return { trackId: null, playing: false, at: 0, by: '', playlistId: null, loop: false }
-}
-
-// An upload has no picture of its own, so it is given one that is always the
-// same for the same track: everyone's list looks alike, and two uploads are told
-// apart at a glance.
-const SHELVES: ReadonlyArray<readonly [string, string, string, string, string]> = [
-  ['#ff8fa8', '#ffc09f', '#8fd4e8', '#fff2e8', '#f56b8a'],
-  ['#8ce68f', '#a0e88f', '#ffd98f', '#f2fff4', '#7fd4f0'],
-  ['#8fb8ff', '#b0c9f5', '#ffc9a8', '#f4f8ff', '#4f8ef5'],
-  ['#c48fff', '#d4b0ff', '#9ff0d8', '#faf2ff', '#a87ae8'],
-  ['#ffc85c', '#ffd07a', '#8fc4f0', '#fff8e6', '#f5943c'],
-  ['#5fe0f0', '#94e0f5', '#ffbf9f', '#eefbff', '#3fa8e0']
-]
-
-export function paletteFor(seed: string): readonly string[] {
-  let hash = 0
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
-  return SHELVES[hash % SHELVES.length]
 }
 
 export function tuneLength(tune: MusicTune): number {
