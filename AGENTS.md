@@ -12,6 +12,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn test` — the whole suite, which takes a long time. Only when asked for it
 - `yarn tsc --noEmit` — typecheck
 - `yarn covers` — draw every music cover on one page
+- `yarn selection-check` — select everything in a real window and see what it painted
 - `yarn dist` — build a mac dmg
 
 ## Writing
