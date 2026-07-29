@@ -3,6 +3,7 @@ import { createRequire } from 'node:module'
 import {
   ARM_MS,
   fallbackCombo,
+  ownKey,
   type ScribeKey,
   type ScribeKeyState,
   type ScribeSettings
