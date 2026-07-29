@@ -130,7 +130,7 @@ describe('a run reporting what it spent', () => {
     expect(last.cost).toBeCloseTo(30, 6)
   })
 
-  it('takes the run's own price over the one off the table', async () => {
+  it('takes the price the run gave over the one off the table', async () => {
     const said = await spend('TOTAL claude-opus-5 1000000 1000000 0 0 0.17')
     expect(said[said.length - 1].cost).toBeCloseTo(0.17, 6)
   })
