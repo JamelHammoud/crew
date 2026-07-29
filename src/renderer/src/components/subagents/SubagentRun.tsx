@@ -39,19 +39,19 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   const inputRef = useAutoResize(text)
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
-  const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
+  // The work here is the helper's, so it stands under the name the agent made it
+  // up with and the mark drawn from this run's own id.
+  const helper = thread?.helper
+  const as = useMemo(() => (helper ? { name: helper, seed: threadId } : undefined), [helper, threadId])
+  const items = useMemo(
+    () => buildThread(threadEvents, steps, selfId, agents, as),
+    [threadEvents, steps, selfId, agents, as]
+  )
   const threadSteps = useMemo(() => {
     const ids = threadEvents.filter(event => event.kind === 'agent.start').map(event => event.promptId)
     return ids.flatMap(id => steps[id] ?? [])
   }, [threadEvents, steps])
   const start = threadEvents.find(event => event.kind === 'agent.start' && event.promptId === promptId)
-  const ended = useMemo(() => {
-    for (let i = threadEvents.length - 1; i >= 0; i--) {
-      const event = threadEvents[i]
-      if (event.kind === 'subagent.ended') return event
-    }
-    return undefined
-  }, [threadEvents])
 
   useLayoutEffect(() => {
     follow()
