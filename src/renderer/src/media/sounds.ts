@@ -368,8 +368,10 @@ let ringing: (() => void) | null = null
 // Voice is already a conversation, so the chat's own cues have nothing left to
 // say inside one: the turn going out and the answer coming back are both being
 // spoken out loud, and a chime into an open microphone is one more thing the
-// gate has to hear past. Everything else the app makes a noise about still does.
-const CHAT_CUES = new Set<SoundName>(['send', 'receive', 'done', 'failed'])
+// gate has to hear past. A helper is the same, quieter: the agent is talking
+// while it sends them out, so the errands go over the top of it.
+// Everything else the app makes a noise about still does.
+const CHAT_CUES = new Set<SoundName>(['send', 'receive', 'done', 'failed', 'helper.out', 'helper.home'])
 let hushed = false
 
 export function hushChat(on: boolean): void {
