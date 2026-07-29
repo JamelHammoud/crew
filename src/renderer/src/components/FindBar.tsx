@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { ChevronDownGlyph, ChevronUpGlyph, CloseGlyph, SearchGlyph } from '../icons'
+import { setFindQuery } from './find'
 
 // Per-char lowercase that never changes string length, so match offsets stay
 // valid UTF-16 offsets into the original text nodes (e.g. 'İ'.toLowerCase() is 2 chars).
