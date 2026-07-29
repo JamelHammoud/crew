@@ -355,6 +355,15 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = { ...makeTab(), kind: 'agent' as const, parentThreadId }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    // The thread's own things stand only while you are in it, so the helpers of
+    // a thread you have left go with it the way its plan and its board do. A
+    // plan and a board are taken down by the same rule that brings them up,
+    // since both come with the thread; a helper is opened by hand and never
+    // opens itself, so leaving is the only thing that can take one down.
+    leaveThread: threadId => {
+      set(s => without(s, t => t.kind === 'agent' && t.parentThreadId !== threadId) ?? {})
+      settle()
+    },
     // The plan for the thread you are in. It stands at the head of the row, and
     // it is only ever the one plan, so opening another thread's takes the place
     // of the one before it. Asking for it back is asking for it, so a plan that

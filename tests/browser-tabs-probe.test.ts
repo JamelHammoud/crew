@@ -99,3 +99,31 @@ describe('the tab strip', () => {
     expect(queryByText('Close all tabs')).toBeNull()
   })
 })
+
+// What the app says about a question the agent raised turns on whether that
+// board is really in front of somebody, and pressing the way in has to put it
+// there whether or not the tab was already standing.
+describe('the board on screen', () => {
+  it('is the board being looked at and nothing standing behind something else', () => {
+    useBrowser.getState().showWork('t1')
+    expect(boardOnScreen()).toBe('t1')
+
+    useBrowser.getState().openUrl('https://example.com/one')
+    expect(boardOnScreen()).toBeNull()
+  })
+
+  it('is nothing at all while the panel is put away', () => {
+    useBrowser.getState().showWork('t1')
+    useBrowser.getState().closePanel()
+    expect(boardOnScreen()).toBeNull()
+  })
+
+  it('stands the panel back up on a board that is already in it', () => {
+    useBrowser.getState().showWork('t1')
+    useBrowser.getState().closePanel()
+
+    useBrowser.getState().showWork('t1')
+    useBrowser.getState().openPanel()
+    expect(boardOnScreen()).toBe('t1')
+  })
+})
