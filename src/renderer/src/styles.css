@@ -459,6 +459,10 @@ body {
   .toast-row[data-leaving] {
     animation-duration: 1ms;
   }
+
+  .toast-card {
+    transition-duration: 1ms;
+  }
 }
 
 .top-bar-container {

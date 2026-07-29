@@ -285,7 +285,11 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
               status: out.activity.status === 'started' ? 'running' : 'done'
             })
           }
-          if (typeof out.tokens === 'number') reported = Math.max(reported, out.tokens)
+          if (out.usage) {
+            if (out.usage.model) model = out.usage.model
+            if (out.usage.total) whole = out.usage
+            else spent = addUsage(spent, out.usage)
+          }
           if (out.error) parsedError = out.error
           if (out.turnEnd && opts.streamInput) onTurnEnd()
         }
