@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { BRIEF_LIMIT, NAME_LIMIT, type Subagent } from '../../../../shared/subagents'
-import { ShuffleGlyph, TrashGlyph } from '../../icons'
+import { SparkGlyph, TrashGlyph } from '../../icons'
 import { useCrew } from '../../state/store'
 import SubagentMark from '../SubagentMark'
 import Tooltip from '../Tooltip'
@@ -67,7 +67,7 @@ export default function SubagentBuilder({ role, onDone }: { role: Subagent | nul
                 aria-label="Another one"
                 className="w-8 h-8 rounded-field flex items-center justify-center text-fg/45 transition-all duration-150 hover:text-fg hover:bg-fg/[0.08] active:scale-95"
               >
-                <ShuffleGlyph className="w-4 h-4" />
+                <SparkGlyph className="w-4 h-4" />
               </button>
             </Tooltip>
           )}

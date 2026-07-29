@@ -1142,6 +1142,7 @@ export class CrewSession {
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
       ghost: opts.ghost !== undefined,
       voice: opts.voice === true,
+      aside: opts.aside,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
       roleId: sent?.role.id,
