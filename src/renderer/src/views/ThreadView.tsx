@@ -78,6 +78,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
 
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
+  // The way back to the helpers this thread sent out. The chips scroll away with
+  // the words they arrived under, so a thread that has ever sent one keeps a way
+  // in that stands still.
+  const sentHelpers = threadEvents.some(e => e.kind === 'subagent.started')
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
   const runningAgentId = runningStart?.kind === 'agent.start' ? runningStart.agentId : undefined
   const steerable = useCrew(s => s.agents.find(a => a.id === runningAgentId)?.steerable === true)
