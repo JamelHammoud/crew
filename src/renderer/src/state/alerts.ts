@@ -30,26 +30,38 @@ export const reviewCount = (state: ReviewState): number =>
       !threadWorking(thread.id, state.threadPrompts, state.queues, state.threads)
   ).length
 
-// Nothing is said about the thread somebody already has open, since it says it
-// there, and a run with more waiting behind it has not finished yet. Whether
-// anybody is looking at the window is not part of this: the app says it either
-// way, and only the system banner waits for the window to be in the background.
-export function finishedAlert(event: SessionEvent, state: AlertState): AgentAlert | null {
-  if (event.kind !== 'agent.end') return null
-  if (event.threadId && state.openThreadId === event.threadId) return null
+// A turn ending is not a thread finishing, and this is the one place that tells
+// the two apart. Everything that says a thread is done reads it: the row, the
+// system banner and the sound, so a chime can never say a thread landed where
+// the app itself says nothing landed.
+export function threadFinished(event: SessionEvent, state: ReviewState): boolean {
+  if (event.kind !== 'agent.end') return false
   const thread = event.threadId ? state.threads[event.threadId] : undefined
-  if (thread && thread.status !== 'open') return null
-  if (event.threadId && (state.queues[event.threadId]?.length ?? 0) > 0) return null
+  if (thread && thread.status !== 'open') return false
+  if (event.threadId && (state.queues[event.threadId]?.length ?? 0) > 0) return false
   // A question on the side lands in the panel that opened to answer it, which is
   // already on the screen, so a row about it says the same thing twice.
-  if (thread?.aside) return null
+  if (thread?.aside) return false
   // A helper coming home is the parent's news, and the parent says it in its
   // own thread. The one exception is one that stopped after its parent was
   // already done, which nobody would otherwise ever see.
-  if (thread?.parentThreadId && (event.ok || state.threadPrompts[thread.parentThreadId])) return null
+  if (thread?.parentThreadId && (event.ok || state.threadPrompts[thread.parentThreadId])) return false
   // Nor is a thread with helpers still out finished: its own turn ended, but
   // the work it sent out is its work.
-  if (event.threadId && threadWorking(event.threadId, {}, state.queues, state.threads)) return null
+  if (event.threadId && threadWorking(event.threadId, {}, state.queues, state.threads)) return false
+  return true
+}
+
+// Nothing is said about the thread somebody already has open, since it says it
+// there. That is the row's own clause and not the rule's: a sound is not on the
+// screen, so it still plays for the thread being read. Whether anybody is
+// looking at the window is not part of this either: the app says it every time,
+// and only the system banner waits for the window to be in the background.
+export function finishedAlert(event: SessionEvent, state: AlertState): AgentAlert | null {
+  if (event.kind !== 'agent.end') return null
+  if (!threadFinished(event, state)) return null
+  if (event.threadId && state.openThreadId === event.threadId) return null
+  const thread = event.threadId ? state.threads[event.threadId] : undefined
   const label = state.agents.find(agent => agent.id === event.agentId)?.label ?? event.agentLabel
   const title = relabelMentions(thread?.title ?? '', thread?.titleRefs, state.agents)
   return {
