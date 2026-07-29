@@ -3,7 +3,7 @@ import { useCrew } from '../state/store'
 import RunStatus from './RunStatus'
 import ScrollFade from './ScrollFade'
 import ThreadItems from './ThreadItems'
-import { buildThread } from './thread'
+import { buildThread, eventsOfThread } from './thread'
 import useScrollEdges from './useScrollEdges'
 
 // A question asked on the side, and the answer to it. It is a thread nobody
@@ -22,10 +22,7 @@ export default function AsideView({ threadId }: { threadId: string }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { edges } = useScrollEdges(scrollRef)
 
-  const threadEvents = useMemo(
-    () => events.filter(e => 'threadId' in e && e.threadId === threadId),
-    [events, threadId]
-  )
+  const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === promptId)?.ts
 
