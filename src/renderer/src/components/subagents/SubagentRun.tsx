@@ -112,7 +112,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
           value={text}
           placeholder="Say something to this one"
           inputRef={inputRef}
-          onChange={event => setThreadDraft(threadId, event.target.value)}
+          onChange={value => setThreadDraft(threadId, value)}
           onKeyDown={event => {
             if (event.key === 'Enter' && !event.shiftKey) {
               event.preventDefault()
