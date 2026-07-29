@@ -254,7 +254,7 @@ export default function Docs() {
   }
 
   return (
-    <div className="h-full flex">
+    <div className="h-full flex relative">
       <aside {...dropProps('')} className="w-64 shrink-0 flex flex-col min-h-0 pt-24 pb-6 pl-6 pr-2">
           <span className="text-sm font-semibold text-fg-muted px-3.5 mb-2">Pages</span>
           <div
