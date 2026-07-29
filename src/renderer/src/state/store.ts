@@ -20,6 +20,7 @@ import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } fr
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
 import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
+import { TYPING_PING, type Typist } from '../../../shared/typing'
 import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
 import { alertToast } from '../components/alertToast'
@@ -168,6 +169,9 @@ interface CrewState {
   tools: CrewTool[]
   scores: GameScore[]
   boards: DesignBoardMeta[]
+  // Who is writing right now. It is never written down and never in the log, so
+  // it lives here and nowhere else.
+  typists: Typist[]
   openThreadId: string | null
   docsTarget: string | null
   designTarget: string | null
@@ -188,6 +192,7 @@ interface CrewState {
   setChatCommands: (commands: CommandName[]) => void
   setThreadDraft: (threadId: string, text: string) => void
   setThreadCommands: (threadId: string, commands: CommandName[]) => void
+  setTyping: (where: string | undefined, on: boolean) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
   moveAttachments: (from: string, to: string) => void
@@ -274,6 +279,7 @@ const EMPTY = {
   tools: [],
   scores: [],
   boards: [],
+  typists: [],
   openThreadId: null,
   docsTarget: null,
   designTarget: null,
@@ -738,6 +744,9 @@ export const useCrew = create<CrewState>((set, get) => {
         break
       case 'game.scores':
         set({ scores: msg.scores })
+        break
+      case 'typing.room':
+        set({ typists: msg.typists })
         break
       // The same thing said twice is one row said again rather than a second
       // one under the first.
