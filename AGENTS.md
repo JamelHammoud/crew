@@ -139,6 +139,20 @@ A word from the app about what just happened, standing under the header on the r
 - What is already on the screen is not said again. A run finishing or a mention landing in the thread somebody has open says it there, which is the whole of what keeps this from being a toast per event. Nothing else about it is hidden: an agent finishing on another thread reads in the corner while you work in this one.
 - `alertToast` in `components/alertToast.tsx` is what turns one into a row: the agent's pet or the person's face, the work under the title, Open as the way in, and a key of the thread's own so a second word about it is written where the first one stands. Opening a thread from anywhere goes to the chat, which is `App` watching `openThreadId` rather than every caller remembering to switch the tab.
 
+## Typing
+
+Somebody at a keyboard, said over the composer they are writing in: "Jamel is typing" and the app's own ellipsis after it.
+
+- It is never written down. It rides in memory on the host and in `typing.room`, the way a call does, so an afternoon of half finished sentences is not something the crew scrolls past later. Nothing about it is an event and nothing about it reaches the log.
+- The host holds it keyed by the connection writing, because two windows on one folder are one member and two people at two keyboards, and one person is one typist on the way out however many windows they have open.
+- A window says it once every couple of seconds while the box has something in it, and says it has stopped the moment the box empties or the message goes. A ping that says what was already said is only the clock being wound, so nothing goes out for it and a keystroke is never a message.
+- A window that dies mid-word never says it stopped, so the host lets go of it on its own after `TYPING_TTL`. The sweep is armed off the oldest entry and only while there is one, rather than run on a clock that ticks through every quiet afternoon.
+- A window arriving mid-sentence is told once, straight after the welcome. Typing is too short lived to ride in the snapshot and too quiet to reach a new window on its own, since a ping only goes out when it changes something.
+- Nothing typed in a ghost thread is recorded at all, rather than recorded and filtered on the way out. A hidden thread whose typing is not hidden is a hidden thread that leaks.
+- `where` is which composer somebody is writing in, a thread's id or a board's id, and absent for the chat itself. `typistsIn` is what a line asks for, and it leaves out your own keyboard and everyone writing somewhere else.
+- The line floats over the composer rather than standing above it, so nothing under it moves when somebody starts or stops. It is glass, so nothing on it is set in a solid grey, and it shares its row with the way back to the foot of the thread.
+- The ellipsis is the app's own: the same three dots on the same grid carrying the same wave a thought carries, from `THINKING_DOTS`. Standing still they read as a sentence that was abandoned rather than as one being written.
+
 ## Huddles
 
 Voice, video and screen share, started from the toolbox. The host relays the handshake and nothing else. The media itself goes machine to machine, everyone to everyone, so there is no server to run and no stream passing through the host.
