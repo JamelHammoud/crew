@@ -1,13 +1,13 @@
 import type { CommandName } from '../../../shared/commands'
 import {
-  TicketGlyph,
   BoltGlyph,
   ChecklistGlyph,
   ClockGlyph,
   CloseGlyph,
   GhostGlyph,
   MicGlyph,
-  QuestionGlyph
+  QuestionGlyph,
+  TicketGlyph
 } from '../icons'
 import Pill from './Pill'
 

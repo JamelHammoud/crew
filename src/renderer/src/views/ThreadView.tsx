@@ -23,7 +23,15 @@ import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
 import { mentionsIn } from '../../../shared/llm'
-import { ArchiveGlyph, TicketGlyph, CheckGlyph, ChecklistGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
+import {
+  ArchiveGlyph,
+  CheckGlyph,
+  ChecklistGlyph,
+  ChevronLeftGlyph,
+  EyeGlyph,
+  TicketGlyph,
+  WarningGlyph
+} from '../icons'
 import { useBrowser } from '../state/browser'
 import { pendingCount, useCrew } from '../state/store'
 
