@@ -51,11 +51,11 @@ export const MODEL_RATES: Record<string, [number, number]> = {
 // A CLI names the model it really used, dated build and all, so a row is a
 // prefix and the longest one wins: `claude-opus-4-5-20251101` is priced by
 // `claude-opus-4-5` rather than by `claude-opus-4`.
-const KEYS = Object.keys(RATES).sort((a, b) => b.length - a.length)
+const KEYS = Object.keys(MODEL_RATES).sort((a, b) => b.length - a.length)
 
 export function rateOf(model: string): [number, number] | null {
   const key = KEYS.find(name => model.startsWith(name))
-  return key ? RATES[key] : null
+  return key ? MODEL_RATES[key] : null
 }
 
 export function priceOf(model: string, usage: TokenUsage): number | null {
