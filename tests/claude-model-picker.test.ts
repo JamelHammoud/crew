@@ -67,7 +67,7 @@ describe('claude model picker', () => {
 
     render(createElement(CreateAgent))
 
-    const add = screen.getByRole('button', { name: 'Add agent' }) as HTMLButtonElement
+    const add = screen.getByRole('button', { name: 'Add an agent' }) as HTMLButtonElement
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
 
@@ -103,7 +103,7 @@ describe('claude model picker', () => {
 
     render(createElement(CreateAgent))
 
-    const add = screen.getByRole('button', { name: 'Add agent' }) as HTMLButtonElement
+    const add = screen.getByRole('button', { name: 'Add an agent' }) as HTMLButtonElement
     await waitFor(() => expect(add.disabled).toBe(false))
     fireEvent.click(add)
     fireEvent.click(screen.getByRole('button', { name: /ModelOpus/i }))
