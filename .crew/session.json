@@ -439,35 +439,12 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785363908287,
-        "windows": [
-          {
-            "key": "session",
-            "label": "5-hour limit",
-            "percent": 3,
-            "severity": "normal",
-            "resetsAt": 1785377399939,
-            "active": false
-          },
-          {
-            "key": "weekly_all",
-            "label": "Weekly (all models)",
-            "percent": 58,
-            "severity": "normal",
-            "resetsAt": 1785535199939,
-            "active": true
-          },
-          {
-            "key": "weekly_scoped:Fable",
-            "label": "Weekly (Fable)",
-            "percent": 0,
-            "severity": "normal",
-            "active": false
-          }
-        ],
+        "fetchedAt": 1785364208310,
+        "windows": [],
         "accountId": "427bec7d-e3cd-4ff9-929b-e5152008eabb",
         "accountLabel": "devjamel@gmail.com",
-        "plan": "max"
+        "plan": "max",
+        "error": "Claude sign-in expired. Run claude once to refresh it."
       }
     },
     {
