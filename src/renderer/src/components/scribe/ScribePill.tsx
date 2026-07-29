@@ -130,7 +130,7 @@ export default function ScribePill() {
             {failed ? (
               <p className="flex-1 min-w-0 flex items-center gap-1.5 text-xs text-fg/70 leading-tight">
                 <WarningGlyph className="w-4 h-4 shrink-0 text-danger" />
-                <span className="line-clamp-2">{problem ?? 'That did not work.'}</span>
+                <span className="line-clamp-3">{problem ?? 'That did not work.'}</span>
               </p>
             ) : waking ? (
               // The model comes down once, ever. A bar rather than the row of
