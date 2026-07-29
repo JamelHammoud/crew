@@ -33,31 +33,27 @@ const pill = state => `
   </div>
 </div>`
 
-const TINTS = [
-  ['now, 0.97 flat', 'rgb(24 24 24 / 0.97)'],
-  ['0.90 to 0.94', 'linear-gradient(rgb(40 40 40 / 0.9), rgb(18 18 18 / 0.94))'],
-  ['0.84 to 0.90', 'linear-gradient(rgb(42 42 42 / 0.84), rgb(18 18 18 / 0.9))'],
-  ['0.72 to 0.84', 'linear-gradient(rgb(44 44 44 / 0.72), rgb(18 18 18 / 0.84))'],
-  ['0.60 to 0.74', 'linear-gradient(rgb(48 48 48 / 0.6), rgb(18 18 18 / 0.74))']
+const SCENES = [
+  ['a white page', '#ffffff', '#1b1b1b'],
+  ['a warm page', '#f4f1e6', '#2a2a26'],
+  ['a photo', 'linear-gradient(120deg,#2b6cb0,#c05621 45%,#276749)', '#ffffff'],
+  ['a dark editor', '#101014', '#9aa0aa']
 ]
 
-const WORDS = `<div class="text-[15px] leading-7" style="color:#1b1b1b">
-  Nothing here is a near white either, which is the same mistake at the other end.
-  Those three are the things in the frame, and a thing has a color: pale enough and
-  there is none left in it, so it stops being the light on a petal and becomes a hole
-  cut in the picture, brighter than everything around it and made of nothing.
-</div>`
+const WORDS = `Nothing here is a near white either, which is the same mistake at the
+other end. Those three are the things in the frame, and a thing has a color: pale
+enough and there is none left in it, so it stops being the light on a petal.`
 
 const PAGE = `<!doctype html>
 <html><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
 <body class="font-sans">
-  <div id="root" class="bare" style="background:#fff">
-    ${TINTS.map(
-      ([say, bg]) => `
-    <div class="px-6 pt-4 relative">
-      <div class="text-xs mb-2" style="color:#888">${say}</div>
-      ${WORDS}
-      <div class="absolute" style="left:44px;top:44px">${pill({ weight: 2.5, bg })}</div>
+  <div id="root" class="bare">
+    ${SCENES.map(
+      ([say, back, ink]) => `
+    <div class="px-6 pt-4 pb-8 relative" style="background:${back};color:${ink}">
+      <div class="text-xs mb-2 opacity-60">${say}</div>
+      <div class="text-[15px] leading-7">${WORDS}</div>
+      <div class="absolute" style="left:44px;top:44px">${pill({ weight: 2.5 })}</div>
     </div>`
     ).join('\n')}
   </div>
