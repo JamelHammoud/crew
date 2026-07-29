@@ -18,7 +18,7 @@ export default function QuestionCard({
     <div className="p-3 rounded-xl bg-ink-800">
       <div className="flex items-start gap-2.5">
         <QuestionGlyph className="w-4 h-4 mt-0.5 shrink-0 text-fg-secondary" />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 select-text">
           <p className="text-sm text-fg">{question.ask}</p>
           {question.assumed && <p className="mt-0.5 text-sm text-fg-muted">Working on {question.assumed}</p>}
           {question.since > 0 && (

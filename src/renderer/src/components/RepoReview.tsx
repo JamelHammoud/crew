@@ -30,7 +30,7 @@ function Diff({ change }: { change: RepoChange }) {
   }
   return (
     <div className="overflow-x-auto bg-ink-900/70 py-2">
-      <pre className="min-w-max text-xs font-mono leading-5">
+      <pre className="min-w-max text-xs font-mono leading-5 select-text">
         {change.diff.split('\n').map((line, index) => (
           <span key={index} className={`block min-h-5 px-3 whitespace-pre ${lineTone(line)}`}>
             {line || ' '}
