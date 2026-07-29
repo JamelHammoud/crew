@@ -59,7 +59,7 @@ describe('a list folded from one call per task', () => {
     // The first create is the whole list there is at that point.
     expect(listOn(steps, 'a1')).toEqual([{ text: 'Draw the rows', status: 'todo' }])
     // A ticket is named rather than narrated, so the subject wins over both the
-    // description and the活eForm the same call carries.
+    // description and the activeForm the same call carries.
     expect(listOn(steps, 'a4')).toEqual([
       { text: 'Draw the rows', status: 'done' },
       { text: 'Wire the panel', status: 'doing' }
@@ -123,7 +123,7 @@ describe('a list folded from one call per task', () => {
     expect(listOn(steps, 'f2')).toEqual([{ text: 'The real name', status: 'todo' }])
   })
 
-  it('is the run’s own list, so a second run starts empty', async () => {
+  it('belongs to the run, so a second run starts empty', async () => {
     const first = await run(claudeCli, [create('g1', 'Only mine'), result('g1', 'Task #1 created successfully')])
     expect(listOn(first, 'g1')).toEqual([{ text: 'Only mine', status: 'todo' }])
 
