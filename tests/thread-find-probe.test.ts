@@ -166,6 +166,9 @@ describe('finding something in a thread', () => {
     fireEvent.keyDown(window, { key: 'f', metaKey: true })
     type('hero-shot.png')
     expect(shown()).toContain('hero-shot.png')
+    // A run that opened to be found has to be counted, so the reveal lands in
+    // the commit the query does and never a pass behind it.
+    expect(shown()).toContain('1/1')
 
     fireEvent.keyDown(window, { key: 'Escape' })
     expect(shown()).not.toContain('hero-shot.png')
