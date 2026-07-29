@@ -423,15 +423,11 @@ export const useBrowser = create<BrowserState>((write, get) => {
     selectTab: id => set({ activeTabId: id }),
     closeTab: id => {
       set(s => {
-        const index = s.tabs.findIndex(t => t.id === id)
-        if (index < 0) return {}
-        const tabs = s.tabs.filter(t => t.id !== id)
-        const activeTabId =
-          s.activeTabId === id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
-        const gone = [s.tabs[index]]
+        const next = without(s, t => t.id === id)
+        if (!next) return {}
+        const gone = s.tabs.filter(t => t.id === id)
         return {
-          tabs,
-          activeTabId,
+          ...next,
           closedPlans: remember(s.closedPlans, gone, 'plan'),
           closedBoards: remember(s.closedBoards, gone, 'work')
         }
