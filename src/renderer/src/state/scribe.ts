@@ -73,8 +73,10 @@ export const useScribe = create<ScribeState>((set, get) => {
   // Shifted onto the take's own clock, because whisper times every piece from
   // the front of whatever it was handed and the gaps between pieces are what
   // the marks are placed from.
+  // A copy goes to the worker rather than the sound itself, because handing over
+  // a buffer empties the one here. Kept, the same seconds can be read again.
   const read = async (audio: Float32Array, at: number): Promise<ScribeChunk[]> => {
-    const heard = await listener.hear(audio)
+    const heard = await listener.hear(audio.slice())
     if (!heard) throw new Error('listener')
     return heard.chunks.map(chunk => ({
       text: chunk.text,
@@ -83,11 +85,15 @@ export const useScribe = create<ScribeState>((set, get) => {
     }))
   }
 
+  const keep = (audio: Float32Array, at: number) => {
+    held.push({ audio, at })
+    pieces.push(read(audio, at))
+  }
+
   const take = new ScribeTake({
     onPiece: (audio, at) => {
       const { audio: spoken, spoke } = trim(audio, HEARD_RATE)
-      if (!spoke) return
-      pieces.push(read(spoken, at))
+      if (spoke) keep(spoken, at)
     }
   })
 
@@ -101,7 +107,25 @@ export const useScribe = create<ScribeState>((set, get) => {
   const drop = () => {
     stop()
     pieces = []
+    held = []
     listener.forget()
+  }
+
+  const land = async (waiting: Array<Promise<ScribeChunk[]>>) => {
+    try {
+      const chunks = (await Promise.all(waiting)).flat()
+      if (get().phase !== 'reading') return
+      const text = tidy(chunks, rulesOf(get().settings))
+      held = []
+      set({ phase: 'off', problem: null })
+      window.crew.scribeDone(text)
+    } catch {
+      // A listener that fell over and a room that said nothing are the same
+      // empty answer, so the one that failed says so and keeps the sound,
+      // rather than reading as a key that quietly does nothing.
+      if (get().phase !== 'reading') return
+      set({ phase: 'failed', problem: 'Crew could not read that.' })
+    }
   }
 
   return {
