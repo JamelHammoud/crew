@@ -445,4 +445,5 @@ export const useBrowser = create<BrowserState>((write, get) => {
     set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, generation: t.generation + 1 } : t)) })),
   updateTab: (id, patch) =>
     set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, ...patch } : t)) }))
-}))
+  }
+})
