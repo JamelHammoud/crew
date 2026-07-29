@@ -8,6 +8,7 @@ import useScrollEdges from '../useScrollEdges'
 import { useThreadSteps } from '../useThreadSteps'
 import QuestionCard from './QuestionCard'
 import TicketRow from './TicketRow'
+import { useTicketEvents } from './useTicketEvents'
 
 // The columns run in the order they want you rather than in the order work
 // travels through them. A review is somebody being waited on, what is being
