@@ -624,3 +624,4 @@
 {"id":"ba6a9651-6c95-46b0-ad25-56c6ca4f30f3","ts":1785363985254,"kind":"huddle.started","huddleId":"a16ee7c1-e244-42f6-86b7-26a27aefe512","byId":"6b264b80-77dc-4197-81f0-61505c3be802","byName":"Ali (Mac)"}
 {"id":"1c4303b6-dcc5-4c9f-b375-e05ca10e1a8e","ts":1785363988633,"kind":"huddle.ended","huddleId":"a16ee7c1-e244-42f6-86b7-26a27aefe512","ms":3379}
 {"id":"b51bc0b3-04f7-48f6-8a09-324e6d1559e3","ts":1785363991201,"kind":"huddle.deleted","huddleId":"a16ee7c1-e244-42f6-86b7-26a27aefe512"}
+{"id":"975bccdb-bc31-426d-b8e3-599226ec9fdd","ts":1785364023142,"kind":"agent.online","agentId":"ali (mac)/9ca5734d-1fe2-4bf0-95ab-f5b51031fa3f","label":"Claude Opus 5"}
