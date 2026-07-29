@@ -145,10 +145,10 @@ export const useBrowser = create<BrowserState>((write, get) => {
     if (get().tabs.length > before) write({ open: true } as never)
   }
 
-  // A tab that takes itself away as you move takes the panel with it when it was
-  // the only thing there. The plan and the board arrive with the thread they
-  // belong to rather than by being asked for, so a panel left standing empty
-  // behind one is a panel nobody opened.
+  // Nothing left in the panel is nothing to stand on, so the last tab out takes
+  // the panel with it. That covers a tab that goes because you moved, a plan
+  // that came with a thread you have left, and every tab closed by hand.
+  // Opening it again on nothing is what the Start tab is for.
   const settle = () => {
     if (get().tabs.length === 0) write({ open: false } as never)
   }
