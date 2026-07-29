@@ -323,62 +323,24 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         </span>
                       </Tooltip>
                     )}
-                    {thread.tickets && (
-                      <Tooltip label={boardShowing ? 'Hide board' : 'Show board'}>
-                        <button
-                          onClick={() =>
-                            boardShowing
-                              ? useBrowser.getState().closeWork()
-                              : useBrowser.getState().showWork(threadId)
-                          }
-                          aria-label={boardShowing ? 'Hide board' : 'Show board'}
-                          aria-pressed={boardShowing}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-                            boardShowing ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
-                          }`}
-                        >
-                          <TicketGlyph className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                    )}
-                    {sentHelpers && (
-                      <Tooltip label={helpersShowing ? 'Hide helpers' : 'Show helpers'}>
-                        <button
-                          onClick={() =>
-                            helpersShowing
-                              ? useBrowser.getState().closeSubagents(threadId)
-                              : useBrowser.getState().showSubagents(threadId)
-                          }
-                          aria-label={helpersShowing ? 'Hide helpers' : 'Show helpers'}
-                          aria-pressed={helpersShowing}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-                            helpersShowing
-                              ? 'bg-ink-700 text-fg'
-                              : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
-                          }`}
-                        >
-                          <GroupGlyph className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                    )}
-                    {thread.plan && (
-                      <Tooltip label={planShowing ? 'Hide plan' : 'Show plan'}>
-                        <button
-                          onClick={() =>
-                            planShowing
-                              ? useBrowser.getState().closePlan()
-                              : useBrowser.getState().showPlan(threadId)
-                          }
-                          aria-label={planShowing ? 'Hide plan' : 'Show plan'}
-                          aria-pressed={planShowing}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-                            planShowing ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
-                          }`}
-                        >
-                          <ChecklistGlyph className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                    )}
+                    {/* One button for the panel rather than one per thing the
+                        panel can hold. What is in it is picked in the panel,
+                        where the plus and the empty screen both read the one
+                        table of it. */}
+                    <Tooltip label={panelOpen ? 'Hide panel' : 'Show panel'}>
+                      <button
+                        onClick={() => useBrowser.getState().togglePanel()}
+                        aria-label={panelOpen ? 'Hide panel' : 'Show panel'}
+                        aria-pressed={panelOpen}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                          panelOpen ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
+                        }`}
+                      >
+                        <PanelRightGlyph
+                          className={`w-4 h-4 transition-transform duration-200 ${panelOpen ? '' : 'scale-x-[-1]'}`}
+                        />
+                      </button>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
