@@ -49,7 +49,7 @@ export default function Modal({
         aria-modal
         aria-label={title}
         style={width === undefined ? undefined : { maxWidth: width }}
-        className={`glass relative w-full rounded-card animate-pop ${
+        className={`glass glass-strong relative w-full rounded-card animate-pop ${
           flush ? 'overflow-hidden' : 'p-6'
         } ${width === undefined ? 'max-w-md' : ''} ${className}`}
       >
