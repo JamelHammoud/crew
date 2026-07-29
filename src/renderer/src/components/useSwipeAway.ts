@@ -78,9 +78,11 @@ export function useSwipeAway(onAway: () => void): SwipeAway {
         // rather than dragging it under whatever it stands beside.
         const next = Math.max(0, travelled)
         const at = performance.now()
-        if (at > held.at) held.speed = (next - held.x) / (at - held.at)
         held.x = next
-        held.at = at
+        if (at - held.mark.at >= SAMPLE) {
+          held.speed = (next - held.mark.x) / (at - held.mark.at)
+          held.mark = { x: next, at }
+        }
         setX(next)
       },
       onPointerUp: end,

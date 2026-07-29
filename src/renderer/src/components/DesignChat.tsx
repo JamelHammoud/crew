@@ -125,6 +125,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
                 <RunStatus
                   startedAt={runningStart.ts}
                   tokens={tokens[activePromptId] ?? 0}
+                  cost={costs[activePromptId]}
                   steps={steps[activePromptId] ?? []}
                 />
               )}
