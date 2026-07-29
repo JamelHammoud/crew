@@ -282,20 +282,6 @@ export default function TopBar({
             )}
             <MenuDivider />
             <MenuItem
-              icon={theme === 'dark' ? <SunGlyph /> : <MoonGlyph />}
-              label={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-              onClick={toggleTheme}
-            />
-            <MenuItem
-              icon={sounds ? <SpeakerOffGlyph /> : <SpeakerGlyph />}
-              label={sounds ? 'Mute sounds' : 'Unmute sounds'}
-              onClick={() => {
-                setSounds(!sounds)
-                if (!sounds) playSound('sound.on')
-              }}
-            />
-            <MenuDivider />
-            <MenuItem
               icon={<LeaveGlyph />}
               label="Leave"
               danger
