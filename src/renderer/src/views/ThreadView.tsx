@@ -340,6 +340,26 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         </button>
                       </Tooltip>
                     )}
+                    {sentHelpers && (
+                      <Tooltip label={helpersShowing ? 'Hide helpers' : 'Show helpers'}>
+                        <button
+                          onClick={() =>
+                            helpersShowing
+                              ? useBrowser.getState().closeSubagents(threadId)
+                              : useBrowser.getState().showSubagents(threadId)
+                          }
+                          aria-label={helpersShowing ? 'Hide helpers' : 'Show helpers'}
+                          aria-pressed={helpersShowing}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                            helpersShowing
+                              ? 'bg-ink-700 text-fg'
+                              : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
+                          }`}
+                        >
+                          <GroupGlyph className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                    )}
                     {thread.plan && (
                       <Tooltip label={planShowing ? 'Hide plan' : 'Show plan'}>
                         <button
