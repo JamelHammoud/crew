@@ -4,6 +4,7 @@ import { resolveSettings, visibleSettingFields } from '../../../shared/llm'
 import { PlusGlyph } from '../icons'
 import Modal from './Modal'
 import Select from './Select'
+import { Action } from './settings/parts'
 import Spinner from './Spinner'
 
 function titleCase(value: string): string {
@@ -109,19 +110,12 @@ export default function CreateAgent() {
   }
 
   if (caps && caps.length === 0) {
-    return <p className="text-sm text-fg-muted">No LLM CLIs found on this machine.</p>
+    return <p className="text-sm text-fg/45">No LLM CLIs found on this machine.</p>
   }
 
   return (
     <>
-      <button
-        onClick={start}
-        disabled={!caps}
-        className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-ink-800 text-sm font-semibold text-fg-secondary transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 disabled:opacity-50"
-      >
-        <PlusGlyph className="w-4 h-4" />
-        Add agent
-      </button>
+      <Action label="Add agent" icon={<PlusGlyph />} onClick={start} disabled={!caps} />
       <Modal open={open} onClose={() => setOpen(false)} title="Add an agent" className="space-y-5">
         <div className="flex flex-wrap gap-2">
           <Select
@@ -147,7 +141,7 @@ export default function CreateAgent() {
             setNameEdited(true)
           }}
           placeholder="Agent name"
-          className="w-full bg-ink-850 border border-ink-700 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg-muted outline-none transition-colors focus:border-ink-500"
+          className="w-full bg-fg/[0.06] border border-fg/10 rounded-xl px-4 py-2.5 text-base text-fg placeholder:text-fg/40 outline-none transition-colors focus:border-fg/30"
         />
         {installing && (
           <p className="flex items-center gap-2 text-sm text-fg/45">

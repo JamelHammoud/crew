@@ -37,6 +37,10 @@ type BrowserState = {
   width: number
   tabs: BrowserTab[]
   activeTabId: string | null
+  // The threads whose plan was put away by hand. A plan comes up with the
+  // thread it belongs to, and once it has been closed it waits to be asked for
+  // rather than arriving again every time that thread is opened.
+  closedPlans: string[]
   setWidth(width: number): void
   resetWidth(): void
   openUrl(url: string): void
