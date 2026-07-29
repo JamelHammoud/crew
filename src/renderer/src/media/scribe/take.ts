@@ -73,6 +73,20 @@ export class ScribeTake {
     return this.open
   }
 
+  // Opening a device costs a few hundred milliseconds and that comes out of the
+  // front of the first word, so a machine that would rather live with its
+  // recording light on holds the device open between dictations and only turns
+  // the keeping on and off. Nothing is kept while this is off, so a microphone
+  // standing open is a microphone nothing is being heard through.
+  record(on: boolean): void {
+    this.keeping = on
+    this.gate.reset()
+    this.held = []
+    this.spare = new Float32Array(0)
+    this.length = 0
+    this.sealed = 0
+  }
+
   get seconds(): number {
     return this.length / HEARD_RATE
   }
@@ -89,6 +103,7 @@ export class ScribeTake {
 
   close(): void {
     this.open = false
+    this.keeping = false
     this.node?.port.close()
     this.node?.disconnect()
     this.sink?.disconnect()
@@ -108,7 +123,7 @@ export class ScribeTake {
   }
 
   private hear(block: Float32Array, rate: number): void {
-    if (!this.open) return
+    if (!this.open || !this.keeping) return
     const at16 = resample(block, rate, HEARD_RATE)
     const carried = this.spare.length > 0 ? join([this.spare, at16]) : at16
     const whole = Math.floor(carried.length / FRAME)
