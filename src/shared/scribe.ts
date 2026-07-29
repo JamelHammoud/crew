@@ -154,6 +154,15 @@ export function cleanSettings(input: unknown, platform: string): ScribeSettings 
   }
 }
 
+// What the key is really doing, as opposed to what it was asked to do. On
+// Windows the low level hook can go quiet once a microphone opens, and on macOS
+// it needs Accessibility, so both are said on the settings page rather than left
+// to be worked out from a key that does nothing.
+export interface ScribeKeyState {
+  hooked: boolean
+  trusted: boolean
+}
+
 export function rulesOf(settings: ScribeSettings): TidyRules {
   return {
     ...TIDY_RULES,
