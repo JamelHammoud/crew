@@ -772,6 +772,9 @@ export class CrewSession {
       case 'history':
         if (meta.role === 'ui') this.sendHistory(ws, msg.before)
         break
+      case 'typing':
+        if (meta.role === 'ui') this.handleTyping(ws, member, msg.where, msg.on)
+        break
       case 'chat.delete':
         if (meta.role === 'ui') this.handleDeleteMessage(member, msg.messageId)
         break
