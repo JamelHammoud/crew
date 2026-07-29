@@ -1,4 +1,4 @@
-import type { AgentSettingField, AgentSettings, AgentUsage, FileChange, RunStep } from '../../shared/llm'
+import type { AgentSettingField, AgentSettings, AgentUsage, FileChange, RunStep, StepTodo } from '../../shared/llm'
 
 export interface ParsedActivity {
   id: string
@@ -8,6 +8,7 @@ export interface ParsedActivity {
   detail?: string
   output?: string
   files?: FileChange[]
+  todos?: StepTodo[]
 }
 
 export interface ParsedOutput {
