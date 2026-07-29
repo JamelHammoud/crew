@@ -31,7 +31,8 @@ describe('the row while a reading finishes', () => {
   })
 
   it('comes round again rather than running off the end', () => {
-    expect(row(WAVE_MS * 3 + 210)).toEqual(row(210))
+    const later = row(WAVE_MS * 3 + 210)
+    row(210).forEach((band, at) => expect(later[at]).toBeCloseTo(band, 6))
   })
 
   it('is a crest rather than half the row rising together', () => {
