@@ -202,7 +202,8 @@ const said = (body: Record<string, unknown>, key: string): string =>
 // Sending a helper out, talking to one, and looking at where it has got to.
 // Every one of them names the promptId of the run asking, and the session takes
 // it only while that run is one it has going.
-function serveAgents(session: CrewSession, url: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
+function serveAgents(session: CrewSession, raw: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
+  const [url, query = ''] = raw.split('?')
   if (req.method === 'POST' && url === '/agents/spawn') {
     readJson(req, res, MAX_AGENT_BODY, body => {
       const result = session.subagentSpawn(
