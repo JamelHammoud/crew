@@ -113,7 +113,8 @@ export const useScribe = create<ScribeState>((set, get) => {
   }
 
   const drop = () => {
-    stop()
+    clearTimeout(capped)
+    take.close()
     pieces = []
     held = []
     listener.forget()
@@ -160,6 +161,7 @@ export const useScribe = create<ScribeState>((set, get) => {
         })
         return
       }
+      take.record(true)
       // A key somebody latched on and walked away from. It ends itself rather
       // than recording the room until the app is quit.
       capped = setTimeout(() => void get().finish(), LONGEST_MS)
