@@ -298,6 +298,32 @@ export const useBrowser = create<BrowserState>((set, get) => ({
     const plan = get().tabs.find(t => t.kind === 'plan')
     if (plan) get().closeTab(plan.id)
   },
+  // The board for the thread you are in, held the way the plan is: one of them,
+  // at the head of the row, taking the place of another thread's when you move.
+  showWork: threadId => {
+    const closedBoards = get().closedBoards.filter(id => id !== threadId)
+    const existing = get().tabs.find(t => t.kind === 'work')
+    if (existing?.threadId === threadId) {
+      set({ activeTabId: existing.id, closedBoards })
+      return
+    }
+    const tab = { ...makeTab(), kind: 'work' as const, threadId }
+    set(s => ({ tabs: [tab, ...s.tabs.filter(t => t.kind !== 'work')], activeTabId: tab.id, closedBoards }))
+  },
+  hideWork: () =>
+    set(s => {
+      const index = s.tabs.findIndex(t => t.kind === 'work')
+      if (index < 0) return {}
+      const board = s.tabs[index]
+      const tabs = s.tabs.filter(t => t.id !== board.id)
+      const activeTabId =
+        s.activeTabId === board.id ? (tabs[Math.min(index, tabs.length - 1)]?.id ?? null) : s.activeTabId
+      return { tabs, activeTabId }
+    }),
+  closeWork: () => {
+    const board = get().tabs.find(t => t.kind === 'work')
+    if (board) get().closeTab(board.id)
+  },
   toggleTree: id =>
     set(s => ({
       tabs: s.tabs.map(t =>
