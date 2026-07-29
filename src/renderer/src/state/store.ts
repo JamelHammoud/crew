@@ -278,6 +278,7 @@ const EMPTY = {
   chatDraft: '',
   chatCommands: [],
   threadDrafts: {},
+  threadCommands: {},
   pending: {}
 }
 
