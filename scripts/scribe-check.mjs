@@ -157,9 +157,5 @@ try {
 // The paste itself is not checked here and cannot be: it needs a desktop with
 // somewhere to type, and on macOS an Accessibility permission a script cannot
 // grant itself.
-//
-// Killed rather than exited. The runtime whisper runs on leaves threads behind
-// that abort while node is tearing itself down, and an abort is a signal, which
-// is a check that says it failed after saying every word of it passed.
-console.log(bad ? 'scribe-check: failed' : 'scribe-check: passed')
-process.kill(process.pid, bad ? 'SIGKILL' : 'SIGTERM')
+console.log(`${VERDICT} ${bad ? 'failed' : 'passed'}`)
+}
