@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { CurrentSession } from '../../../../shared/session'
-import { CheckGlyph, DesktopGlyph, FolderGlyph, LinkGlyph } from '../../icons'
+import { CheckGlyph, LinkGlyph } from '../../icons'
 import { useCrew } from '../../state/store'
 import { toast } from '../../state/toast'
 import Avatar from '../Avatar'
@@ -61,7 +61,6 @@ export default function People() {
                 )}
                 <span className="text-base font-semibold text-fg truncate">{member.name}</span>
                 {you && <Pill glass>You</Pill>}
-                {!member.connected && <span className="ml-auto text-sm text-fg/45">Away</span>}
               </div>
             )
           })}
@@ -92,11 +91,7 @@ export default function People() {
                 ? 'Everyone who has the project has the crew.'
                 : 'Nothing is written into the project folder.'
             }
-          >
-            <span className="w-9 h-9 rounded-full bg-fg/[0.07] flex items-center justify-center text-fg/70">
-              {inProject ? <FolderGlyph className="w-[18px] h-[18px]" /> : <DesktopGlyph className="w-[18px] h-[18px]" />}
-            </span>
-          </Row>
+          />
           <Row
             label={folderName(session.folder)}
             line={<span className="font-mono mono-inline">{folderLine(session.folder)}</span>}
