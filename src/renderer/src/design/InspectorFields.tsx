@@ -81,7 +81,7 @@ function Scrub({ label, gesture, children }: { label: string; gesture: Gesture; 
       }}
       onPointerUp={stop}
       onPointerCancel={stop}
-      className="shrink-0 flex items-center text-fg-muted cursor-ew-resize select-none touch-none transition-colors hover:text-fg"
+      className="shrink-0 flex items-center text-fg-muted cursor-ew-resize touch-none transition-colors hover:text-fg"
     >
       {children}
     </span>
