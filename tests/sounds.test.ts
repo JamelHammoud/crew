@@ -528,8 +528,7 @@ describe('playing a sound', () => {
     const A = [220, 440, 880, 1760]
     for (const helper of HELPERS) {
       const sound = errand(helper)
-      const last = sound.hz[sound.hz.length - 1]
-      expect(A.some(note => Math.abs(last - note) < 1)).toBe(false)
+      expect(sound.notes.some(note => A.some(a => Math.abs(note - a) < 1))).toBe(false)
     }
   })
 

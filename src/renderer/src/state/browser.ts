@@ -129,6 +129,22 @@ function clampWidth(width: number): number {
   return Math.min(Math.max(width, 360), max)
 }
 
+// Taking tabs out of the row and standing on whatever is left where they were.
+// The one that was up keeps its place unless it is among them, and nothing is
+// written when none of them were there.
+function without(
+  state: BrowserState,
+  gone: (tab: BrowserTab) => boolean
+): Pick<BrowserState, 'tabs' | 'activeTabId'> | null {
+  const index = state.tabs.findIndex(gone)
+  if (index < 0) return null
+  const tabs = state.tabs.filter(tab => !gone(tab))
+  const activeTabId = tabs.some(tab => tab.id === state.activeTabId)
+    ? state.activeTabId
+    : (tabs[Math.min(index, tabs.length - 1)]?.id ?? null)
+  return { tabs, activeTabId }
+}
+
 // Closing a plan or a board is remembered against the thread it belongs to,
 // never against the tab, so it is still the same one when it is asked for again.
 function remember(closed: string[], gone: BrowserTab[], kind: BrowserTab['kind']): string[] {
