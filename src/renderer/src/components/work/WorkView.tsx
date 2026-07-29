@@ -50,7 +50,7 @@ export default function WorkView({ threadId }: { threadId: string }) {
                   question={question}
                   onAnswer={answer => {
                     sendChat(`${question.ask}\n${answer}`, threadId)
-                    useBoard.getState().answer(threadId, question.id)
+                    useBoard.getState().answer(threadId, askKey(question.ask))
                   }}
                 />
               ))}
