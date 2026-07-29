@@ -248,7 +248,7 @@ export function boardOf(
         review: entry.column === 'review' ? entry.review : ''
       })),
     questions: questions
-      .filter(question => !answered.has(question.id))
+      .filter(question => !answered.has(askKey(question.ask)))
       .map(({ askedAt, ...question }) => ({ ...question, since: touched.size - askedAt }))
   }
 }
