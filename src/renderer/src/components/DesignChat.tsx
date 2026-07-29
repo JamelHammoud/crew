@@ -59,7 +59,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
 
   useEffect(() => setReplyTo(null), [threadId])
 
-  const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
+  const threadEvents = useMemo(() => (threadId ? eventsOfThread(events, threadId) : []), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const activePromptId = threadId ? threadPrompts[threadId] : undefined
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
