@@ -108,6 +108,77 @@ describe('the gaps between the words', () => {
   })
 })
 
+describe('a correction that opens a sentence takes the one before it', () => {
+  it('takes the sentence whisper had already closed', () => {
+    const chunks: ScribeChunk[] = [
+      { text: "Let's use redis.", start: 0, end: 1.5 },
+      { text: 'Scratch that.', start: 2.4, end: 3.0 },
+      { text: "Let's use postgres.", start: 3.4, end: 4.6 }
+    ]
+    expect(tidy(chunks)).toBe("Let's use postgres.")
+  })
+
+  it('still cuts back to the start of a sentence it stands inside', () => {
+    const chunks: ScribeChunk[] = [
+      { text: "let's use redis,", start: 0, end: 1.5 },
+      { text: 'scratch that,', start: 1.6, end: 2.0 },
+      { text: "let's use postgres", start: 2.1, end: 3.2 }
+    ]
+    expect(tidy(chunks)).toBe("Let's use postgres.")
+  })
+
+  it('reads actually wait as the same retraction', () => {
+    const chunks: ScribeChunk[] = [
+      { text: 'I think we should ship it today.', start: 0, end: 2.0 },
+      { text: 'Actually, wait.', start: 2.6, end: 3.2 },
+      { text: 'I think we should ship it tomorrow.', start: 3.6, end: 5.6 }
+    ]
+    expect(tidy(chunks)).toBe('I think we should ship it tomorrow.')
+  })
+
+  it('reaches back one sentence and never two', () => {
+    const spoken = 'the schema is done. the reader is next. scratch that. the writer is next.'
+    expect(written(spoken)).toBe('The schema is done. The writer is next.')
+  })
+
+  it('takes another sentence for a second correction straight after', () => {
+    const spoken = 'the schema is done. the reader is next. scratch that. scratch that. the writer is next.'
+    expect(written(spoken)).toBe('The writer is next.')
+  })
+
+  it('drops itself when there is nothing at all in front of it', () => {
+    expect(written('scratch that. the panel is fine.')).toBe('The panel is fine.')
+  })
+
+  it('gives a dictation of nothing but a correction nothing', () => {
+    expect(written('scratch that.')).toBe('')
+  })
+
+  it('still takes the whole dictation for scratch all that', () => {
+    const spoken = 'the schema is done. the reader is next. scratch all that. we ship the writer.'
+    expect(written(spoken)).toBe('We ship the writer.')
+  })
+
+  it('takes the whole dictation for scratch all of that', () => {
+    const spoken = 'first the schema, then the reader, scratch all of that, we ship the writer'
+    expect(written(spoken)).toBe('We ship the writer.')
+  })
+})
+
+describe('the other ways somebody says they meant something else', () => {
+  const table: Array<[string, string, string]> = [
+    ['reads actually hold on at a boundary', "we ship it today. actually hold on. we ship it tomorrow.", 'We ship it tomorrow.'],
+    ['reads hold on at a boundary', 'the branch is ready. hold on. the branch is not ready.', 'The branch is not ready.'],
+    ['reads sorry no at a boundary', 'use redis, sorry no, use postgres', 'Use postgres.'],
+    ['reads no sorry at a boundary', 'use redis, no sorry, use postgres', 'Use postgres.'],
+    ['keeps hold on where it opens a real sentence', 'hold on to the branch', 'Hold on to the branch.'],
+    ['keeps hold on inside a sentence', 'we should hold on until Friday', 'We should hold on until Friday.'],
+    ['keeps wait where the sentence carries on', 'actually wait for the build to go green', 'Actually wait for the build to go green.']
+  ]
+
+  for (const [name, spoken, meant] of table) it(name, () => expect(written(spoken)).toBe(meant))
+})
+
 describe('the words a crew spells its own way', () => {
   const words = [{ from: 'claude', to: 'Claude' }]
 
