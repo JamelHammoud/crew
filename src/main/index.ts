@@ -342,10 +342,18 @@ app.whenReady().then(() => {
     scribeSettings = cleanSettings(input, process.platform)
     scribeKeys.apply(scribeSettings)
     scribe.apply(scribeSettings)
-    if (!scribeSettings.on) scribe.hide()
     return scribeKeys.state()
   })
   ipcMain.handle('scribe:state', () => scribeKeys.state())
+  // What was recently said, so a dictation can be copied again after the fact.
+  // It is this machine's own, beside where the pill was left, and nothing about
+  // it is ever sent.
+  ipcMain.handle('scribe:said', () => said.all())
+  ipcMain.handle('scribe:forget', (_event, id?: string) => {
+    said.forget(id)
+    saidChanged()
+    return said.all()
+  })
   // The one permission macOS will not let an app grant itself. Both the key and
   // the paste need it, so the pane is opened and the person turns it on.
   ipcMain.handle('scribe:permission', () => {
