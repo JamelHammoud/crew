@@ -2,7 +2,7 @@ import type { MediaKind } from '../../../../shared/media'
 import { context } from '../audio'
 import { captureMic } from '../capture'
 import { storedInput } from '../devices'
-import { EAR_PROCESSOR, EAR_SOURCE } from './earWorklet'
+import { EAR_PROCESSOR, loadEarWorklet } from './earWorklet'
 import { FRAME, HEARD_RATE, rmsOf, VoiceGate } from './gate'
 import { join, PreRoll, resample } from './resample'
 
