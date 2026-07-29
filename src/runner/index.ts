@@ -376,7 +376,8 @@ export class Runner {
     designBoards: DesignBoardMeta[] = [],
     ghost = false,
     spawnRoom = 0,
-    spawnProviders: string[] = []
+    spawnProviders: string[] = [],
+    tickets = false
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
