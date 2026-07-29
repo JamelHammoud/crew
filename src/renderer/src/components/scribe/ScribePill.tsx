@@ -67,10 +67,10 @@ export default function ScribePill() {
   const again = failed && keeping()
 
   return (
-    // The room the shadow lands in. It is the window that is larger rather than
-    // the pill, so the padding is what the two agree on, and nothing in here
-    // takes the pointer: what stands in that margin is empty air over somebody
-    // else's application.
+    {/* The room the shadow lands in. It is the window that is larger rather
+        than the pill, so this padding is what the two agree on, and nothing in
+        that margin takes the pointer: it is empty air standing over somebody
+        else's application. */}
     <div className="pointer-events-none" style={{ padding: PILL_ROOM }}>
       {/* The whole of it is the handle, so it is moved by taking hold of it
           anywhere rather than by finding a strip somewhere on it to aim at. The
