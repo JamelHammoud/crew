@@ -135,6 +135,12 @@ const entryOf = (id: string, title: string): Entry => ({
 
 const keyOf = (title: string): string => title.toLowerCase().replace(/\s+/g, ' ').trim()
 
+// A question is its words on the thread rather than the id it happened to be
+// raised under. An agent raises one whenever it notices it is about to answer
+// one for itself, so the same question comes up again in a later turn, and read
+// by its id that is a second card asking what you already answered.
+export const askKey = keyOf
+
 // The whole board, folded out of what happened in the order it happened. Steps
 // and ticket events are read as one run of time, because which files a ticket
 // touched is the ones that changed while it was the one being worked on.
