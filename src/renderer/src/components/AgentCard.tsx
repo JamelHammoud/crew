@@ -46,7 +46,7 @@ export default function AgentCard({
   const face = <AgentIcon seed={agent.id} presence={agent.status === 'offline' ? 'offline' : 'online'} />
 
   return (
-    <div className="group border border-ink-700 rounded-card flex flex-col transition-colors duration-200 hover:border-ink-600 animate-rise">
+    <div className="group border border-fg/[0.09] rounded-card flex flex-col transition-colors duration-200 hover:border-fg/20 animate-rise">
       <div className="px-5 py-4 flex-1 space-y-4">
         <div className="flex items-center gap-3">
           {onAvatar ? (
@@ -68,14 +68,14 @@ export default function AgentCard({
                     if (e.key === 'Enter') commit()
                     if (e.key === 'Escape') setDraft(null)
                   }}
-                  className="w-44 h-8 bg-ink-850 border border-ink-700 rounded-full px-3.5 text-base font-semibold text-fg outline-none transition-colors focus:border-ink-500"
+                  className="w-44 h-8 bg-fg/[0.06] border border-fg/10 rounded-full px-3.5 text-base font-semibold text-fg outline-none transition-colors focus:border-fg/30"
                 />
               ) : (
                 <span className="text-base font-semibold text-fg truncate">{agent.label}</span>
               )}
-              <Pill>{agent.provider}</Pill>
+              <Pill glass>{agent.provider}</Pill>
             </div>
-            <span className="text-sm text-fg-muted">{agent.ownerName}</span>
+            <span className="text-sm text-fg/45">{agent.ownerName}</span>
           </div>
           <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             {onRename && !editing && (
@@ -83,7 +83,7 @@ export default function AgentCard({
                 <button
                   onClick={() => setDraft(agent.label)}
                   aria-label="Rename agent"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg/45 hover:text-fg hover:bg-fg/[0.08] transition-colors"
                 >
                   <PencilGlyph className="w-4 h-4" />
                 </button>
@@ -94,7 +94,7 @@ export default function AgentCard({
                 <button
                   onClick={onStop}
                   aria-label="Stop"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-fg hover:bg-fg/[0.06] transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg/45 hover:text-fg hover:bg-fg/[0.08] transition-colors"
                 >
                   <StopGlyph className="w-4 h-4" />
                 </button>
@@ -105,7 +105,7 @@ export default function AgentCard({
                 <button
                   onClick={onRemove}
                   aria-label="Remove agent"
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:text-danger hover:bg-danger/10 transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-fg/45 hover:text-danger hover:bg-danger/10 transition-colors"
                 >
                   <TrashGlyph className="w-4 h-4" />
                 </button>
@@ -129,10 +129,10 @@ export default function AgentCard({
       </div>
       {agent.usage && <UsageFooter usage={agent.usage} />}
       {status === 'busy' && (
-        <div className="bg-ink-700 px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
+        <div className="bg-fg/[0.07] px-5 h-11 flex items-center gap-2.5 rounded-b-[19px]">
           <Spinner size={14} className="text-fg" />
           <span className="text-sm font-semibold text-fg">Working</span>
-          {threadCount > 1 && <span className="text-sm text-fg-muted">on {threadCount} threads</span>}
+          {threadCount > 1 && <span className="text-sm text-fg/45">on {threadCount} threads</span>}
         </div>
       )}
     </div>
