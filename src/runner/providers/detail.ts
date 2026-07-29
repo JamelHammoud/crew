@@ -5,13 +5,6 @@ import type { FileChange, StepTodo } from '../../shared/llm'
 // the description, which is all some tools give.
 const DETAIL_KEYS = ['command', 'description', 'query', 'pattern', 'url', 'file_path', 'path', 'prompt']
 
-const todoDetail = (input: unknown): string | undefined => {
-  const todos = stepTodos(input)
-  if (!todos) return undefined
-  const current = todos.find(todo => todo.status === 'doing') ?? todos.find(todo => todo.status === 'todo')
-  return current ? truncate(current.text) : undefined
-}
-
 const TODO_LIMIT = 24
 const TODO_TEXT_LIMIT = 160
 
@@ -33,23 +26,41 @@ const TODO_TEXT_KEYS = ['content', 'title', 'task', 'step', 'text', 'description
 // The list itself, kept beside the one line a step says about it. Every CLI
 // spells the same three states its own way and hides the list under its own
 // key, so both are read here and nowhere else.
-export function stepTodos(input: unknown): StepTodo[] | undefined {
+const todoList = (input: unknown): Array<Record<string, unknown>> | undefined => {
   if (!input || typeof input !== 'object') return undefined
   const record = input as Record<string, unknown>
   const raw = record['todos'] ?? record['plan'] ?? record['items'] ?? record['steps']
   if (!Array.isArray(raw)) return undefined
-  const todos: StepTodo[] = []
-  for (const entry of raw.slice(0, TODO_LIMIT)) {
-    if (!entry || typeof entry !== 'object') continue
-    const line = entry as Record<string, unknown>
-    const key = TODO_TEXT_KEYS.find(name => typeof line[name] === 'string' && (line[name] as string).trim())
-    if (!key) continue
-    todos.push({
-      text: (line[key] as string).replace(/\s+/g, ' ').trim().slice(0, TODO_TEXT_LIMIT),
-      status: todoStatus(line)
-    })
-  }
+  const list = raw
+    .slice(0, TODO_LIMIT)
+    .filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === 'object')
+  return list.length > 0 ? list : undefined
+}
+
+const todoText = (line: Record<string, unknown>, keys: readonly string[]): string => {
+  const key = keys.find(name => typeof line[name] === 'string' && (line[name] as string).trim())
+  return key ? (line[key] as string).replace(/\s+/g, ' ').trim().slice(0, TODO_TEXT_LIMIT) : ''
+}
+
+export function stepTodos(input: unknown): StepTodo[] | undefined {
+  const list = todoList(input)
+  if (!list) return undefined
+  const todos = list
+    .map(line => ({ text: todoText(line, TODO_TEXT_KEYS), status: todoStatus(line) }))
+    .filter(todo => todo.text !== '')
   return todos.length > 0 ? todos : undefined
+}
+
+// The one line a step says about a list is the item being worked on, said the
+// way the model would say it out loud: "Drawing the rows" rather than "Draw the
+// rows". That is the only place activeForm wins, and on the board the same item
+// is a ticket, which is named rather than narrated.
+const todoDetail = (input: unknown): string | undefined => {
+  const list = todoList(input)
+  if (!list) return undefined
+  const current = list.find(line => todoStatus(line) === 'doing') ?? list.find(line => todoStatus(line) === 'todo')
+  const text = current && todoText(current, ['activeForm', ...TODO_TEXT_KEYS])
+  return text ? truncate(text) : undefined
 }
 
 export function activityDetail(input: unknown): string | undefined {
