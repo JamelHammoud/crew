@@ -82,8 +82,6 @@ export default function FindBar({
     setOpen(false)
     setFindQuery('')
   }
-  const closeRef = useRef(close)
-  closeRef.current = close
   const queryRef = useRef(query)
   queryRef.current = query
 
