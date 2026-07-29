@@ -78,6 +78,24 @@ export function finishedAlert(event: SessionEvent, state: AlertState): AgentAler
   }
 }
 
+// A question the agent raised and answered for itself. It reads on the board
+// and nowhere else, so nothing anywhere would say it while you are working in
+// another thread, and what it costs to answer late only grows. Which board is
+// on screen is the store's line, the way focus is: the rule is handed it.
+export function questionAlert(event: SessionEvent, state: AlertState, boardOnScreen: string | null): AgentAlert | null {
+  if (event.kind !== 'ticket.asked') return null
+  if (event.threadId === boardOnScreen) return null
+  const thread = state.threads[event.threadId]
+  const label = state.agents.find(agent => agent.id === thread?.agentId)?.label ?? thread?.agentLabel ?? ''
+  return {
+    title: label ? `${label} has a question` : 'A question on the board',
+    body: event.ask,
+    threadId: event.threadId,
+    agentId: thread?.agentId,
+    board: true
+  }
+}
+
 export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadId: string | null): AgentAlert | null {
   if (event.kind !== 'message' || event.authorId === selfId) return null
   if (event.threadId && event.threadId === openThreadId) return null
