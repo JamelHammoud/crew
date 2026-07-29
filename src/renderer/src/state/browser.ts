@@ -67,6 +67,7 @@ type BrowserState = {
   openAside(threadId: string, title: string): void
   openSubagent(threadId: string, parentThreadId: string): void
   showSubagents(parentThreadId: string): void
+  leaveThread(threadId: string | null): void
   showPlan(threadId: string): void
   hidePlan(): void
   showWork(threadId: string): void
