@@ -398,5 +398,7 @@ app.on('before-quit', () => {
   for (const open of terminals.values()) open.closeAll()
   terminals.clear()
   tray.close()
+  scribeKeys.close()
+  scribe.close()
   void session.shutdown()
 })
