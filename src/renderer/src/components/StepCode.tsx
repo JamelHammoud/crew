@@ -11,7 +11,7 @@ const SHOWN = 20
 function Output({ text }: { text: string }) {
   return (
     <div className="relative border-t border-ink-700">
-      <div className="max-h-60 overflow-auto py-2 font-mono text-xs leading-5">
+      <div className="select-text max-h-60 overflow-auto py-2 font-mono text-xs leading-5">
         <div className="w-max min-w-full whitespace-pre pl-3 pr-10 text-fg-muted">{text}</div>
       </div>
       <CopyButton text={text} label="Copy output" className="absolute top-1 right-1" />
@@ -27,7 +27,7 @@ export default function StepCode({ text, prompt, output }: { text: string; promp
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-ink-700 bg-ink-850">
-      <div className="overflow-x-auto py-2 font-mono text-xs leading-5">
+      <div className="select-text overflow-x-auto py-2 font-mono text-xs leading-5">
         <div className="w-max min-w-full">
           {shown.map((row, index) => (
             <div key={index} className="flex px-3">
