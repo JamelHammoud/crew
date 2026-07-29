@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react'
 
-// What a run says about itself while it works. Both of these are yours alone:
-// they sit on this machine, nothing about them is ever sent, and the crew sees
-// whatever each of them has chosen.
+// What a run says about itself while it works. The numbers are always gathered,
+// whichever of these is on: this is what is drawn and nothing else. Both are
+// yours alone, they sit on this machine, and nothing about them is ever sent.
 export interface Prefs {
   tokens: boolean
   cost: boolean
@@ -12,9 +12,8 @@ const KEY = 'crew.prefs'
 const DEFAULTS: Prefs = { tokens: true, cost: false }
 const listeners = new Set<() => void>()
 
-function read(): Prefs {
+function parse(raw: string | null): Prefs {
   try {
-    const raw = globalThis.localStorage?.getItem(KEY)
     const saved = raw ? JSON.parse(raw) : null
     return {
       tokens: typeof saved?.tokens === 'boolean' ? saved.tokens : DEFAULTS.tokens,
@@ -25,18 +24,25 @@ function read(): Prefs {
   }
 }
 
-// Held rather than read on every call, because a store that hands back a new
-// object each time is a render that asks for another one forever.
-let held = read()
+// The answer is worked out again only when what is written down has really
+// changed. A store that hands back a new object every time is a render asking
+// for another one forever, and one that reads once at load is wrong in a window
+// whose storage arrived after it.
+let seen: string | null = null
+let held: Prefs = DEFAULTS
 
 export function prefs(): Prefs {
+  const raw = globalThis.localStorage?.getItem(KEY) ?? null
+  if (raw !== seen) {
+    seen = raw
+    held = parse(raw)
+  }
   return held
 }
 
 export function setPref(key: keyof Prefs, on: boolean): void {
-  if (held[key] === on) return
-  held = { ...held, [key]: on }
-  globalThis.localStorage?.setItem(KEY, JSON.stringify(held))
+  const next = { ...prefs(), [key]: on }
+  globalThis.localStorage?.setItem(KEY, JSON.stringify(next))
   for (const listener of listeners) listener()
 }
 
