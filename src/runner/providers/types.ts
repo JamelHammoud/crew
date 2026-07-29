@@ -36,7 +36,7 @@ export interface ParsedOutput {
   textDelta?: { index: number; text: string }
   blockStop?: { index: number }
   activity?: ParsedActivity
-  tokens?: number
+  usage?: ParsedUsage
   error?: string
   turnEnd?: boolean
 }
@@ -45,7 +45,7 @@ export type OutputParser = (line: string) => ParsedOutput[]
 
 export interface RunHooks {
   onStep: (step: RunStep) => void
-  onTokens?: (tokens: number) => void
+  onTokens?: (tokens: number, cost: number | null) => void
 }
 
 export interface RunningPrompt {
