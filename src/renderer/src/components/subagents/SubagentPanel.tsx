@@ -28,16 +28,19 @@ export default function SubagentPanel({ tab }: { tab: BrowserTab }) {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div className="shrink-0 px-3 pt-3 pb-2 flex items-center gap-2">
+      <div className="shrink-0 px-3 pt-3 pb-2 min-w-0">
         <ScreenSwap screen={inside ? 'back' : 'top'} depth={inside ? 1 : 0}>
           {inside ? (
-            <Tooltip label="All helpers">
-              <button onClick={out} aria-label="All helpers" className={`${roundButton} w-8 h-8`}>
-                <ChevronLeftGlyph className="w-4 h-4" />
-              </button>
-            </Tooltip>
+            <div className="flex items-center gap-2 min-w-0 h-8">
+              <Tooltip label="All helpers">
+                <button onClick={out} aria-label="All helpers" className={`${roundButton} w-8 h-8 shrink-0`}>
+                  <ChevronLeftGlyph className="w-4 h-4" />
+                </button>
+              </Tooltip>
+              <p className="min-w-0 flex-1 text-sm text-fg truncate">{child?.subject ?? child?.title}</p>
+            </div>
           ) : (
-            <span className="text-sm font-semibold text-fg pl-1">Helpers</span>
+            <span className="flex items-center h-8 text-sm font-semibold text-fg pl-1">Helpers</span>
           )}
         </ScreenSwap>
       </div>
