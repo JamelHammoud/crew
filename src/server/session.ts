@@ -2819,6 +2819,12 @@ export class CrewSession {
 
   private handleCancel(promptId: string): void {
     const ref = this.prompts.get(promptId)
+    // Stopping a run stops the helpers it sent out. They are its work, being
+    // done somewhere else, so leaving them running would be leaving a stopped
+    // turn writing to the project.
+    for (const thread of [...this.threads.values()]) {
+      if (thread.parentPromptId === promptId) this.stopSubagent(thread.id)
+    }
     if (!ref) {
       this.closeOrphanRun(promptId)
       return
