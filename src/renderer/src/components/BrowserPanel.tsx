@@ -41,6 +41,8 @@ const imageName = (url: string): string => (url.split(/[?#]/)[0] ?? '').split('/
 
 function tabLabel(tab: BrowserTab): string {
   if (tab.kind === 'plan') return 'Plan'
+  // What was asked, so a row of questions is read at a glance.
+  if (tab.kind === 'aside') return tab.title || 'Question'
   // A helper tab says which helper you are reading, so a row of three of them
   // is read at a glance rather than being three tabs called the same thing.
   if (tab.kind === 'agent') return tab.threadId ? (useCrew.getState().threads[tab.threadId]?.subject ?? 'Helper') : 'Helpers'
