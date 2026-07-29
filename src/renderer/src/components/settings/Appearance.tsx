@@ -68,6 +68,7 @@ const CHOICES: Array<{ theme: Theme; label: string }> = [
 
 export default function Appearance() {
   const theme = useTheme()
+  const prefs = usePrefs()
 
   return (
     <Page title="Appearance">
