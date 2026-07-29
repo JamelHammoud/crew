@@ -695,6 +695,7 @@ export class CrewSession {
       agents: [...this.agents.values()].map(agent => this.pooled(agent)),
       events: chatEvents(recent.events),
       moreEvents: recent.more,
+      tickets: this.ticketHistory(),
       docs: Object.fromEntries(this.docs),
       queues: Object.fromEntries(
         [...this.threads.values()]
