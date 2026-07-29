@@ -211,7 +211,13 @@ interface CrewState {
   addTool: (name: string, mark: string, action: ToolAction) => void
   editTool: (toolId: string, name: string, mark: string, action: ToolAction) => void
   removeTool: (toolId: string) => void
-  addSubagent: (name: string, brief: string, provider?: string, settings?: Record<string, string>) => void
+  addSubagent: (
+    name: string,
+    brief: string,
+    provider?: string,
+    settings?: Record<string, string>,
+    roleId?: string
+  ) => void
   editSubagent: (roleId: string, name: string, brief: string, provider?: string, settings?: Record<string, string>) => void
   removeSubagent: (roleId: string) => void
   runSubagent: (roleId: string, threadId: string, subject: string, task: string) => void
@@ -912,8 +918,8 @@ export const useCrew = create<CrewState>((set, get) => {
     removeTool: toolId => {
       socket.send({ type: 'tool.remove', toolId })
     },
-    addSubagent: (name, brief, provider, settings) => {
-      socket.send({ type: 'subagent.add', name, brief, provider, settings })
+    addSubagent: (name, brief, provider, settings, roleId) => {
+      socket.send({ type: 'subagent.add', name, brief, provider, settings, roleId })
     },
     editSubagent: (roleId, name, brief, provider, settings) => {
       socket.send({ type: 'subagent.edit', roleId, name, brief, provider, settings })
