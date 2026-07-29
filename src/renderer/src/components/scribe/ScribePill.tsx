@@ -65,7 +65,13 @@ export default function ScribePill() {
 
   return (
     <div className="p-1.5">
-      <div className="relative glass glass-strong rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2 animate-pop">
+      {/* The whole of it is the handle, so it is moved by taking hold of it
+          anywhere rather than by finding a strip somewhere on it to aim at. The
+          cursor is the only thing that says so, which is all it needs to. */}
+      <div
+        onPointerDown={grab}
+        className="relative glass glass-strong rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2 animate-pop cursor-grab active:cursor-grabbing"
+      >
         <InsetRing className="border border-fg/10" />
 
         <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
