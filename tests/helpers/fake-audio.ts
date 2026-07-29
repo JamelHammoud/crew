@@ -100,6 +100,7 @@ export class FakeAudio {
         return held.size / 2
       },
       connect: () => {},
+      disconnect: () => {},
       getByteFrequencyData: (into: Uint8Array) => {
         for (let i = 0; i < into.length; i++) into[i] = this.heard[i] ?? 0
       }
