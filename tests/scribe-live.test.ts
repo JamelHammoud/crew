@@ -56,7 +56,8 @@ describe('writing a dictation as it is said', () => {
     const flow = new ScribeFlow()
     const chunks = [
       { text: 'open the file', start: 0, end: 1.2 },
-      { text: 'scratch that open the folder', start: 2.4, end: 4 }
+      { text: 'scratch that', start: 2.4, end: 3 },
+      { text: 'open the folder', start: 3.6, end: 4.8 }
     ]
     expect(flow.next(chunks, TIDY_RULES)).toBe('Open the folder.')
   })
