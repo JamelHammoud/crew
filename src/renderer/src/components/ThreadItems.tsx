@@ -3,6 +3,7 @@ import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
 import StepGroup from './StepGroup'
 import StepRow from './StepRow'
+import SubagentChips from './SubagentChips'
 import { sameRun, stepBlocks, type StepBlock, type ThreadItem } from './thread'
 import { isNewDay } from './time'
 
@@ -22,9 +23,13 @@ const follows = (previous: StepBlock | undefined, block: StepBlock): boolean => 
 
 export default function ThreadItems({
   items,
+  threadId = '',
   onReply
 }: {
   items: ThreadItem[]
+  // Which thread these are, so the row of helpers has somewhere to send you
+  // when there are more of them than the row shows.
+  threadId?: string
   onReply?: (item: ThreadItem) => void
 }) {
   const blocks = useMemo(() => stepBlocks(items), [items])
@@ -36,7 +41,9 @@ export default function ThreadItems({
         return (
           <Fragment key={block.key}>
             {isNewDay(blocks[index - 1]?.ts, block.ts) && <DayDivider ts={block.ts} />}
-            {block.items.length > 1 ? (
+            {item.kind === 'subagent' ? (
+              <SubagentChips runs={item.runs ?? []} threadId={threadId} />
+            ) : block.items.length > 1 ? (
               <StepGroup items={block.items} linked={follows(blocks[index - 1], block)} />
             ) : isStep(item) ? (
               <StepRow item={item} linked={follows(blocks[index - 1], block)} />
