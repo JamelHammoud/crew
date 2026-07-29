@@ -138,10 +138,28 @@ describe('review panel', () => {
     await sync.run({ do: 'stash', message: 'two' })
 
     const held = await sync.stashes()
-    const dropped = await sync.run({ do: 'drop', ref: held.find(s => s.message === 'one')!.ref })
+    const older = held.find(stash => stash.message === 'one')
+    const dropped = await sync.run({ do: 'drop', ref: older?.ref ?? '' })
 
     expect(dropped.ok).toBe(true)
     expect((await sync.stashes()).map(stash => stash.message)).toEqual(['two'])
+  })
+
+  it('unstages in a project with nothing committed yet', async () => {
+    const dir = tmpDir('repo-first')
+    made.push(dir)
+    await git(dir, ['init', '-b', 'main'])
+    const sync = new GitSync(dir)
+    write(dir, 'app.ts', 'const app = true\n')
+
+    await sync.run({ do: 'stage', paths: ['app.ts'] })
+    expect((await sync.changes()).map(change => change.staged)).toEqual([true])
+
+    const undone = await sync.run({ do: 'unstage', paths: ['app.ts'] })
+
+    expect(undone.ok).toBe(true)
+    expect((await sync.changes()).map(change => change.staged)).toEqual([false])
+    expect(read(dir, 'app.ts')).toBe('const app = true\n')
   })
 
   it('discards the paths it was given and leaves every other one alone', async () => {

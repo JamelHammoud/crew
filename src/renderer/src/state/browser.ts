@@ -135,6 +135,15 @@ function remember(closed: string[], gone: BrowserTab[], kind: BrowserTab['kind']
   return [...closed, tab.threadId]
 }
 
+// Which thread's board somebody is really looking at, or null. A tab standing
+// behind another one or behind a panel that is put away is not on the screen.
+export const boardOnScreen = (): string | null => {
+  const { open, tabs, activeTabId } = useBrowser.getState()
+  if (!open) return null
+  const tab = tabs.find(one => one.id === activeTabId)
+  return tab?.kind === 'work' ? tab.threadId : null
+}
+
 export const useBrowser = create<BrowserState>((write, get) => {
   // Putting something in the panel opens it, and that is written here rather
   // than on each of the dozen ways in, so a thirteenth cannot open a tab into a
