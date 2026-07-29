@@ -1,30 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  CheckCircleGlyph,
-  CheckGlyph,
-  GlobeGlyph,
-  LeaveGlyph,
-  LinkGlyph,
-  LockGlyph,
-  MoreGlyph,
-  SlidersGlyph
-} from '../icons'
+import { CheckCircleGlyph, MoreGlyph } from '../icons'
 import { playSound } from '../media/sounds'
 import { reviewCount } from '../state/alerts'
-import { openSettings } from '../state/settings'
+import { openSettings, useSettings } from '../state/settings'
 import { useCrew } from '../state/store'
 import { useFullScreen } from '../state/windowShape'
 import Avatar from './Avatar'
 import Badge from './Badge'
 import CrewLogo from './CrewLogo'
-import PhotoPicker from './PhotoPicker'
-import Pill from './Pill'
 import PresenceStack from './PresenceStack'
 import TabIcon from './TabIcon'
 import Toolbox from './Toolbox'
 import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
-import { MenuDivider, MenuItem, Popover } from './Popover'
+import { MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'docs' | 'design'
 
