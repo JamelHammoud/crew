@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 export type BrowserTab = {
   id: string
-  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan'
+  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan' | 'agent'
   initialUrl: string
   url: string
   title: string
@@ -19,9 +19,14 @@ export type BrowserTab = {
   // rides on the tab so the pill can say what you are playing and so a look at
   // another tab does not put you back at the top of the list.
   game: string | null
-  // Whose plan a plan tab holds. It is the thread the plan belongs to, and the
-  // tab stands only while that thread is the one open.
+  // Whose plan a plan tab holds, or which helper a helper tab is reading. A
+  // plan tab stands only while that thread is the one open; a helper tab is
+  // ordinary, and travels between the list and the one it is reading by
+  // writing its own threadId.
   threadId: string
+  // The thread whose helpers a helper tab is standing in. It rides on the tab
+  // so the way back out of one is still there after a look at another tab.
+  parentThreadId: string
   back: string[]
   forward: string[]
   // Whether the file tree is standing beside the file, and which folders in it
@@ -49,6 +54,8 @@ type BrowserState = {
   openFiles(): void
   openMusic(): void
   openGame(): void
+  openSubagent(threadId: string): void
+  showSubagents(parentThreadId: string): void
   showPlan(threadId: string): void
   hidePlan(): void
   closePlan(): void
@@ -87,6 +94,7 @@ function makeTab(url = ''): BrowserTab {
     command: null,
     game: null,
     threadId: '',
+    parentThreadId: '',
     back: [],
     forward: [],
     tree: false,
