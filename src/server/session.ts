@@ -1168,6 +1168,7 @@ export class CrewSession {
       mode: thread.mode === 'plan' ? 'plan' : undefined,
       ghost: thread.ghost ? true : undefined,
       voice: thread.voice ? true : undefined,
+      aside: thread.aside,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
       roleId: sent?.role.id,
