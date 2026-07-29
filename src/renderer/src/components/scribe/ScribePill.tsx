@@ -1,11 +1,10 @@
 import { PILL_ROOM } from '../../../../shared/scribe'
 import { CloseGlyph, RefreshGlyph, WarningGlyph } from '../../icons'
 import { STROKE_BOLD } from '../../icons/keylines'
-import { BandReader } from '../../media/bands'
+import { BandReader, waveBands } from '../../media/bands'
 import { scribeAnalyser, useScribe } from '../../state/scribe'
 import InsetRing from '../InsetRing'
 import Levels from '../Levels'
-import Spinner from '../Spinner'
 import { grab } from './grab'
 
 // What is on screen while you are dictating. It floats over whatever app you
@@ -46,7 +45,7 @@ function Round({
       // its own rather than the start of a move.
       onPointerDown={event => event.stopPropagation()}
       aria-label={label}
-      className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-150 active:scale-90 ${
+      className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-colors duration-150 active:scale-90 ${
         solid ? 'bg-fg text-ink-900 hover:bg-fg/90' : 'bg-fg/10 text-fg/70 hover:bg-fg/20 hover:text-fg'
       }`}
     >
@@ -72,20 +71,41 @@ export default function ScribePill() {
   // larger rather than the pill, so this padding is what the two agree on, and
   // nothing in that margin takes the pointer: it is empty air standing over
   // somebody else's application.
+  //
+  // The pill stands in the middle of it and opens from its own middle, so it is
+  // where it was put whether it is open or shut.
   return (
-    <div className="pointer-events-none" style={{ padding: PILL_ROOM }}>
+    <div className="pointer-events-none flex justify-center" style={{ padding: PILL_ROOM }}>
       {/* The whole of it is the handle, so it is moved by taking hold of it
           anywhere rather than by finding a strip somewhere on it to aim at. The
           cursor is the only thing that says so, which is all it needs to. */}
       <div
         onPointerDown={grab}
-        className="pointer-events-auto relative glass glass-pill rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2 animate-pop cursor-grab active:cursor-grabbing"
+        className={`group pointer-events-auto relative glass glass-pill rounded-full min-h-[52px] p-2 flex items-center animate-pop cursor-grab active:cursor-grabbing ${
+          failed ? 'w-full' : 'w-fit'
+        }`}
       >
         <InsetRing className="border border-fg/10" />
 
-        <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
-          <CloseGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
-        </Round>
+        {/* The one slot there is, and the pointer is what opens it. While
+            somebody is talking the bars are the whole of what the pill has to
+            say, and a button standing beside them the entire time is width taken
+            off somebody else's window for something almost nobody presses. The
+            eight pixels past the mark are the gap it opens with, so nothing
+            stands to the left of the bars while it is shut.
+
+            There is nothing here that finishes a dictation: the key opened it
+            and the key is what ends it, and with the words already landing there
+            is nothing left to hand over. */}
+        <span
+          className={`flex h-8 shrink-0 items-center overflow-hidden transition-[width] duration-200 ease-out ${
+            failed ? 'w-10' : 'w-0 group-hover:w-10'
+          }`}
+        >
+          <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
+            <CloseGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
+          </Round>
+        </span>
 
         {failed ? (
           <p className="flex-1 min-w-0 flex items-center gap-1.5 text-xs text-fg/70 leading-tight">
@@ -96,44 +116,39 @@ export default function ScribePill() {
           // The model comes down once, ever. A bar rather than the row of bars,
           // because there is nothing to hear yet and a flat row of dots reads as
           // a microphone that is not working.
-          <span className="flex-1 min-w-0 h-1 rounded-full bg-fg/15 overflow-hidden">
+          <span className="w-20 h-1 rounded-full bg-fg/15 overflow-hidden">
             <span
               className="block h-full rounded-full bg-fg/60 transition-[width] duration-200"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </span>
         ) : (
-          // The bars settle while whisper finishes rather than freezing, so a
-          // slow reading is a pill that is working rather than one that has
-          // stopped.
+          // The row says what is happening to it: your own voice while it is
+          // being heard, and a crest travelling through it while whisper
+          // finishes, when there is no voice left to draw and a flat row would
+          // read as a pill that has stopped.
           <Levels
             count={BANDS}
-            read={(count, out) => reader.read(reading ? null : scribeAnalyser(), count, out)}
-            className="flex-1 min-w-0 h-6 px-1 text-fg/70 justify-between"
+            read={(count, out) =>
+              reading
+                ? waveBands(performance.now(), count, out)
+                : reader.read(scribeAnalyser(), count, out)
+            }
+            className="w-20 h-6 px-1 text-fg/70 justify-between"
             barClassName="w-[3px]"
           />
         )}
 
-        {/* The slot at the end stands whether or not there is anything in it.
-            The bars are the one thing on the pill that is watched, and a row of
-            them that redistributes itself the moment whisper starts finishing
-            reads as a jolt rather than as the reading it is. There is nothing to
-            press here while somebody is talking: the key opened the dictation
-            and the key is what ends it. */}
-        <span className="w-8 h-8 shrink-0 flex items-center justify-center text-fg/70">
-          {reading || waking ? (
-            <Spinner size={18} />
-          ) : (
-            // A failure that still has the sound offers to read it again. One
-            // whose sound never arrived has nothing to try, so it says nothing
-            // rather than offering a button that cannot work.
-            again && (
-              <Round label="Try again" solid onClick={() => void retry()}>
-                <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
-              </Round>
-            )
-          )}
-        </span>
+        {/* A failure that still has the sound offers to read it again. One whose
+            sound never arrived has nothing to try, so it says nothing rather
+            than offering a button that cannot work. */}
+        {again && (
+          <span className="ml-2 flex shrink-0">
+            <Round label="Try again" solid onClick={() => void retry()}>
+              <RefreshGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
+            </Round>
+          </span>
+        )}
       </div>
     </div>
   )
