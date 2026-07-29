@@ -243,7 +243,8 @@ function serveAgents(session: CrewSession, raw: string, req: http.IncomingMessag
   }
   const look = /^\/agents\/([\w-]+)$/.exec(url)
   if (req.method === 'GET' && look) {
-    const state = session.subagentLook(said(Object.fromEntries(new URL(url, 'http://x').searchParams), 'promptId'), look[1])
+    const promptId = new URLSearchParams(query).get('promptId') ?? ''
+    const state = session.subagentLook(promptId, look[1])
     sendJson(res, state ? 200 : 404, state ?? { error: 'No helper of yours with that id.' })
     return true
   }
