@@ -129,3 +129,4 @@
 {"id":"096ebeb0-042c-421c-ace7-3d744255e148","ts":1785320590172,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
 {"id":"1fc5345a-2c30-4c65-b621-1b62bb243b9d","ts":1785320590172,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"3d16bcee-59b8-4753-bcba-5c020238af57","ts":1785320590173,"kind":"agent.offline","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
+{"id":"ab9ecef7-dc0c-4df5-aa73-4c94bce6f869","ts":1785320624470,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
