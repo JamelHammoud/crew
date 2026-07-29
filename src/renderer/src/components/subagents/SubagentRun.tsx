@@ -76,19 +76,22 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <div ref={scrollRef} onScroll={onScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4">
-        <div className="space-y-4 pt-1 pb-4 select-text">
-          <ThreadItems threadId={threadId} items={items} />
-          {working && start?.kind === 'agent.start' && (
-            <RunStatus
-              startedAt={start.ts}
-              tokens={tokens}
-              cost={cost}
-              steps={promptId ? (steps[promptId] ?? []) : []}
-            />
-          )}
-          <FilesChanged steps={threadSteps} />
+      <div className="relative flex-1 min-h-0 min-w-0">
+        <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
+          <div className="space-y-4 pt-1 pb-4 select-text">
+            <ThreadItems threadId={threadId} items={items} />
+            {working && start?.kind === 'agent.start' && (
+              <RunStatus
+                startedAt={start.ts}
+                tokens={tokens}
+                cost={cost}
+                steps={promptId ? (steps[promptId] ?? []) : []}
+              />
+            )}
+            <FilesChanged steps={threadSteps} />
+          </div>
         </div>
+        <ScrollFade edges={edges} />
       </div>
 
       <div className="shrink-0 px-4 pb-4">
