@@ -466,6 +466,91 @@ describe('playing a sound', () => {
     expect(done.root).toBeLessThan(open.root)
   })
 
+  // A strike sets its own level and then how much of it goes to the room, in
+  // that order, so the levels are every other one of the values a sound asks
+  // for. The zeros are the envelopes opening, which every voice does.
+  const levels = (): number[] => gains.filter(gain => gain > 0).filter((_, i) => i % 2 === 0)
+
+  const errand = (name: 'helper.out' | 'helper.home' | 'task.done' | 'crew.mark'): Heard & { level: number } => {
+    started.length = 0
+    stopped.length = 0
+    landed.length = 0
+    filters = []
+    gains = []
+    clock += 500
+    playSound(name)
+    expect(started.length).toBeGreaterThan(0)
+    return {
+      at: [...started],
+      hz: [...landed],
+      scrapes: filters.filter(f => f.type === 'bandpass').map(f => f.hz[0]),
+      root: Math.min(...landed),
+      level: Math.max(...levels())
+    }
+  }
+
+  const HELPERS = ['helper.out', 'helper.home'] as const
+
+  it('sends a helper out and brings it home in two different noises', () => {
+    const out = errand('helper.out')
+    const home = errand('helper.home')
+    expect(`${out.at.join(',')}|${out.hz.join(',')}`).not.toBe(`${home.at.join(',')}|${home.hz.join(',')}`)
+  })
+
+  it('makes the pair one gesture, out and back over the same two notes', () => {
+    const out = errand('helper.out')
+    const home = errand('helper.home')
+    expect([...home.hz].sort()).toEqual([...out.hz].sort())
+    expect(home.hz).toEqual([...out.hz].reverse())
+  })
+
+  it('sits well under the sounds that mean something landed', () => {
+    const landing = Math.min(errand('task.done').level, errand('crew.mark').level)
+    for (const helper of HELPERS) expect(errand(helper).level).toBeLessThan(landing / 2)
+  })
+
+  it('puts nothing low underneath, since a low voice is what makes a sound land', () => {
+    const done = errand('task.done')
+    for (const helper of HELPERS) expect(errand(helper).root).toBeGreaterThan(done.root * 1.5)
+  })
+
+  it('lets go quickly rather than ringing on the way a finish does', () => {
+    const done = hear('task.done')
+    for (const helper of HELPERS) {
+      const sound = errand(helper)
+      expect(Math.max(...stopped) - Math.max(...sound.at)).toBeLessThan(done.rings / 2)
+    }
+  })
+
+  it('comes to rest away from the note every finish lands on', () => {
+    const A = [220, 440, 880, 1760]
+    for (const helper of HELPERS) {
+      const sound = errand(helper)
+      const last = sound.hz[sound.hz.length - 1]
+      expect(A.some(note => Math.abs(last - note) < 1)).toBe(false)
+    }
+  })
+
+  it('strikes something rather than sounding a bare tone', () => {
+    for (const helper of HELPERS) expect(errand(helper).scrapes.length).toBeGreaterThan(0)
+  })
+
+  it('lets a helper go out and come home without either being swallowed', () => {
+    playSound('helper.out')
+    const first = started.length
+    playSound('helper.home')
+    expect(started.length).toBeGreaterThan(first)
+  })
+
+  it('folds a crew of helpers going out at once into one', () => {
+    playSound('helper.out')
+    const first = started.length
+    playSound('helper.out')
+    playSound('helper.out')
+    playSound('helper.out')
+    expect(started.length).toBe(first)
+  })
+
   it('says nothing when sounds are muted', () => {
     setSounds(false)
     playSound('send')
