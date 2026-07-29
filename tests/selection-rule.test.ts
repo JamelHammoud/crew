@@ -25,6 +25,14 @@ describe('the app default for selection', () => {
     expect(base.slice(base.indexOf('input,'))).toMatch(/user-select:\s*text/)
   })
 
+  it('shuts a field while it is showing a placeholder', () => {
+    const base = layer()
+    const at = base.indexOf(':placeholder-shown')
+    expect(at).toBeGreaterThan(-1)
+    expect(base.slice(at)).toMatch(/user-select:\s*none/)
+    expect(base.indexOf('input,')).toBeLessThan(at)
+  })
+
   it('stands in the base layer, so select-text and select-none still win', () => {
     expect(styles).not.toMatch(/^body\s*\{[^}]*user-select/m)
   })
