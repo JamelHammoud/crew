@@ -101,6 +101,9 @@ const bridge = {
   scribeDone: (text: string): void => ipcRenderer.send('scribe:done', text),
   dismissScribe: (): void => ipcRenderer.send('scribe:dismiss'),
   resizeScribe: (height: number): void => ipcRenderer.send('scribe:size', height),
+  grabScribe: (): void => ipcRenderer.send('scribe:grab'),
+  moveScribe: (x: number, y: number, settled: boolean): void =>
+    ipcRenderer.send('scribe:drag', x, y, settled),
   onScribe: (
     listener: (word: 'arm' | 'finish' | 'cancel') => void
   ): (() => void) => {
