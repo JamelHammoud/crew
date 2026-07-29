@@ -29,7 +29,7 @@ const CHROME = [
 ]
 
 const PAGE = `<!doctype html>
-<html class="dark"><head><meta charset="utf-8"><link rel="stylesheet" href="./probe.css"></head>
+<html class="dark"><head><meta charset="utf-8"><script type="module" src="./probe.js"></script></head>
 <body class="bg-ink-900 text-fg font-sans">
   <div id="root" class="p-4 space-y-3">
     <div class="md select-text"><p>${CONTENT}</p></div>
