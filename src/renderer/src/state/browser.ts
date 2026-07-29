@@ -308,10 +308,6 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = { ...makeTab(), kind: 'agent' as const, parentThreadId }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
-    closeSubagents: parentThreadId => {
-      const helpers = get().tabs.find(t => t.kind === 'agent' && t.parentThreadId === parentThreadId)
-      if (helpers) get().closeTab(helpers.id)
-    },
     // The plan for the thread you are in. It stands at the head of the row, and
     // it is only ever the one plan, so opening another thread's takes the place
     // of the one before it. Asking for it back is asking for it, so a plan that
