@@ -302,6 +302,30 @@ export default function BrowserPanel() {
   )
 }
 
+// What an empty panel says: the same rows the plus opens, standing where the
+// thing they open would be. A line over them naming what they are would be the
+// screen read back to whoever is already looking at it.
+function PanelOpens({ opens }: { opens: PanelOpen[] }) {
+  return (
+    <div className="absolute inset-0 flex flex-col justify-center gap-2 px-4 select-none">
+      {opens.map(one => (
+        <button
+          key={one.id}
+          onClick={one.open}
+          className="group w-full h-14 px-4 rounded-2xl bg-ink-800 flex items-center gap-3 text-left transition-all duration-150 hover:bg-ink-700 active:scale-[0.99]"
+        >
+          <span className="w-5 h-5 shrink-0 text-fg-muted transition-colors duration-150 group-hover:text-fg">
+            {one.mark}
+          </span>
+          <span className="text-sm font-medium text-fg-secondary truncate transition-colors duration-150 group-hover:text-fg">
+            {one.label}
+          </span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
