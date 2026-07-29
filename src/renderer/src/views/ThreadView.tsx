@@ -65,6 +65,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
     const shown = s.tabs.find(t => t.id === s.activeTabId)
     return shown?.kind === 'work' && shown.threadId === threadId
   })
+  const helpersShowing = useBrowser(s => {
+    const shown = s.tabs.find(t => t.id === s.activeTabId)
+    return shown?.kind === 'agent' && shown.parentThreadId === threadId
+  })
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
