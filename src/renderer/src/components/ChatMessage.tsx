@@ -186,7 +186,7 @@ export default function ChatMessage({
               />
               {linked && item.editedTs !== undefined && (
                 <Tooltip label={`Edited ${formatFullTime(item.editedTs)}`} className="ml-1.5">
-                  <span className="text-sm text-fg-faint cursor-default">(edited)</span>
+                  <span className="text-sm text-fg-faint cursor-default select-none">(edited)</span>
                 </Tooltip>
               )}
             </p>

@@ -58,7 +58,7 @@ app.whenReady().then(async () => {
 })`
 
 async function stage() {
-  const dir = await mkdtemp(path.join(tmpdir(), 'crew-selection-'))
+  const dir = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-selection-')))
   await writeFile(path.join(dir, 'index.html'), PAGE)
   await writeFile(
     path.join(dir, 'probe.css'),
