@@ -143,7 +143,7 @@ export default function FindBar({
   }, [open, query, containerRef])
 
   useEffect(() => {
-    const registry = CSS.highlights
+    const registry = globalThis.CSS?.highlights
     if (!registry) return
     if (matches.length === 0) return
     const current = new Highlight(matches[Math.min(active, matches.length - 1)])
