@@ -97,6 +97,7 @@ const bridge = {
   applyScribe: (settings: ScribeSettings): Promise<ScribeKeyState> =>
     ipcRenderer.invoke('scribe:apply', settings),
   scribeState: (): Promise<ScribeKeyState> => ipcRenderer.invoke('scribe:state'),
+  openScribePermission: (): Promise<void> => ipcRenderer.invoke('scribe:permission'),
   scribeDone: (text: string): void => ipcRenderer.send('scribe:done', text),
   dismissScribe: (): void => ipcRenderer.send('scribe:dismiss'),
   resizeScribe: (height: number): void => ipcRenderer.send('scribe:size', height),
