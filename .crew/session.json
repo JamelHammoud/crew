@@ -875,22 +875,22 @@
       "steerable": true,
       "usage": {
         "provider": "claude",
-        "fetchedAt": 1785365852622,
+        "fetchedAt": 1785365615354,
         "windows": [
           {
             "key": "session",
             "label": "5-hour limit",
-            "percent": 13,
+            "percent": 4,
             "severity": "normal",
-            "resetsAt": 1785381600926,
+            "resetsAt": 1785381599629,
             "active": false
           },
           {
             "key": "weekly_all",
             "label": "Weekly (all models)",
-            "percent": 43,
+            "percent": 42,
             "severity": "normal",
-            "resetsAt": 1785499200926,
+            "resetsAt": 1785499199629,
             "active": true
           }
         ],
@@ -980,7 +980,7 @@
       "steerable": false,
       "usage": {
         "provider": "codex",
-        "fetchedAt": 1785365852946,
+        "fetchedAt": 1785365855368,
         "windows": [
           {
             "key": "primary",
