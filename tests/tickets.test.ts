@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { AgentStep, StepTodo } from '../src/shared/llm'
 import {
+  askKey,
   boardOf,
   cleanColumn,
   cleanOptions,
