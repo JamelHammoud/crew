@@ -109,36 +109,94 @@ const message = (authorId: string): SessionEvent => ({
   mentions: []
 })
 
-const ended = (ok: boolean): SessionEvent => ({
+const ended = (ok: boolean, threadId?: string): SessionEvent => ({
   id: 'e1',
   ts: 1,
   kind: 'agent.end',
   promptId: 'p1',
   agentId: 'a1',
   agentLabel: 'Bubbles',
-  ok
+  ok,
+  threadId
+})
+
+const thread = (id: string, extra: Partial<ThreadMeta> = {}): ThreadMeta => ({
+  id,
+  agentId: 'a1',
+  agentLabel: 'Bubbles',
+  title: '@Bubbles fix the sync loop',
+  createdBy: 'Jamel',
+  status: 'open',
+  mode: 'build',
+  ...extra
+})
+
+const queued = (): QueuedItem => ({
+  promptId: 'p2',
+  authorId: 'jamel',
+  authorName: 'Jamel',
+  text: 'and then this',
+  agentId: 'a1',
+  agentLabel: 'Bubbles'
+})
+
+const state = (over: Partial<ReviewState> = {}): ReviewState => ({
+  threads: { t1: thread('t1') },
+  threadPrompts: {},
+  queues: {},
+  ...over
 })
 
 describe('which sound an event makes', () => {
   it('stays quiet for the message you just sent', () => {
-    expect(soundFor(message('me'), 'me')).toBe(null)
+    expect(soundFor(message('me'), 'me', state())).toBe(null)
   })
 
   it('plays for a message from someone else', () => {
-    expect(soundFor(message('ali'), 'me')).toBe('receive')
+    expect(soundFor(message('ali'), 'me', state())).toBe('receive')
   })
 
   it('stays quiet for notices from the app itself', () => {
-    expect(soundFor(message(SYSTEM_AUTHOR_ID), 'me')).toBe(null)
+    expect(soundFor(message(SYSTEM_AUTHOR_ID), 'me', state())).toBe(null)
   })
 
   it('tells a finished agent apart from a failed one', () => {
-    expect(soundFor(ended(true), 'me')).toBe('done')
-    expect(soundFor(ended(false), 'me')).toBe('failed')
+    expect(soundFor(ended(true, 't1'), 'me', state())).toBe('done')
+    expect(soundFor(ended(false, 't1'), 'me', state())).toBe('failed')
   })
 
   it('says nothing about events with no sound', () => {
-    expect(soundFor({ id: 's', ts: 1, kind: 'agent.online', agentId: 'a1', label: 'Bubbles' }, 'me')).toBe(null)
+    expect(soundFor({ id: 's', ts: 1, kind: 'agent.online', agentId: 'a1', label: 'Bubbles' }, 'me', state())).toBe(
+      null
+    )
+  })
+})
+
+describe('the chime that says a thread landed', () => {
+  it('says nothing for a helper coming home, since the thread carries on', () => {
+    const threads = { t1: thread('t1'), h1: thread('h1', { parentThreadId: 't1' }) }
+    expect(soundFor(ended(true, 'h1'), 'me', state({ threads }))).toBe(null)
+  })
+
+  it('says nothing for a thread whose helpers are still out', () => {
+    const threads = { t1: thread('t1'), h1: thread('h1', { parentThreadId: 't1' }) }
+    expect(soundFor(ended(true, 't1'), 'me', state({ threads, threadPrompts: { h1: 'p9' } }))).toBe(null)
+  })
+
+  it('says nothing while a message is still queued behind the turn', () => {
+    expect(soundFor(ended(true, 't1'), 'me', state({ queues: { t1: [queued()] } }))).toBe(null)
+  })
+
+  it('says nothing for a question asked on the side', () => {
+    expect(soundFor(ended(true, 't1'), 'me', state({ threads: { t1: thread('t1', { aside: true }) } }))).toBe(null)
+  })
+
+  it('says nothing for a thread already marked done', () => {
+    expect(soundFor(ended(true, 't1'), 'me', state({ threads: { t1: thread('t1', { status: 'done' }) } }))).toBe(null)
+  })
+
+  it('still plays for the thread being read, since a sound is not on the screen', () => {
+    expect(soundFor(ended(true, 't1'), 'me', state())).toBe('done')
   })
 })
 
