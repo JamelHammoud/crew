@@ -3325,7 +3325,6 @@ export class CrewSession {
       .filter(Boolean)
       .join('\n')
     const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
-    const thread = this.threads.get(prompt.threadId)
     const role = this.subagents.get(thread?.roleId ?? '')
     // A helper sees its task and its own turns, and none of the room. It was
     // sent out on one piece of work by somebody who could see the room, and the
