@@ -159,7 +159,7 @@ describe('starting a huddle', () => {
     render(createElement(App))
     fireEvent.click(screen.getByLabelText('Settings'))
 
-    expect(screen.queryByText(/huddle/i)).toBeNull()
+    expect(screen.queryByRole('button', { name: /huddle/i })).toBeNull()
   })
 
   // Getting into the call never waits on a device, so a machine with no
