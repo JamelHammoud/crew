@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import type { AgentStep, StepTodo } from '../src/shared/llm'
-import { boardOf, cleanWorkCard, readWork } from '../src/shared/tickets'
-import { stepTodos } from '../src/runner/providers/detail'
+import {
+  boardOf,
+  cleanColumn,
+  cleanOptions,
+  cleanTitles,
+  isTicketEvent,
+  LIST_LIMIT,
+  ticketPreamble,
+  type TicketEvent
+} from '../src/shared/tickets'
 
 let clock = 0
 
@@ -14,14 +22,6 @@ const todoStep = (todos: StepTodo[]): AgentStep => ({
   todos
 })
 
-const textStep = (text: string): AgentStep => ({
-  id: `b${++clock}`,
-  ts: clock,
-  kind: 'text',
-  status: 'done',
-  text
-})
-
 const editStep = (...paths: string[]): AgentStep => ({
   id: `e${++clock}`,
   ts: clock,
@@ -31,147 +31,187 @@ const editStep = (...paths: string[]): AgentStep => ({
   files: paths.map(path => ({ path, added: 1, removed: 0 }))
 })
 
-const card = (body: object): string => ['```work', JSON.stringify(body), '```'].join('\n')
+const added = (ticketId: string, title: string): TicketEvent => ({
+  id: `a${++clock}`,
+  ts: clock,
+  kind: 'ticket.added',
+  threadId: 'one',
+  ticketId,
+  title
+})
 
-describe('the list every CLI keeps', () => {
-  it('reads the three states however a provider spells them', () => {
-    expect(stepTodos({ todos: [{ content: 'Draw the rows', status: 'in_progress' }] })).toEqual([
-      { text: 'Draw the rows', status: 'doing' }
-    ])
-    expect(stepTodos({ plan: [{ step: 'Ship it', status: 'completed' }] })).toEqual([
-      { text: 'Ship it', status: 'done' }
-    ])
-    expect(stepTodos({ items: [{ text: 'Ship it', completed: true }] })).toEqual([{ text: 'Ship it', status: 'done' }])
-    expect(stepTodos({ todos: [{ content: 'Later', status: 'pending' }] })).toEqual([
-      { text: 'Later', status: 'todo' }
-    ])
+const moved = (ticketId: string, column: 'todo' | 'doing' | 'review' | 'done', note = ''): TicketEvent => ({
+  id: `m${++clock}`,
+  ts: clock,
+  kind: 'ticket.moved',
+  threadId: 'one',
+  ticketId,
+  column,
+  note
+})
+
+const decided = (ticketId: string, text: string): TicketEvent => ({
+  id: `d${++clock}`,
+  ts: clock,
+  kind: 'ticket.decided',
+  threadId: 'one',
+  ticketId,
+  text
+})
+
+const asked = (askId: string, ask: string, assumed = '', options: string[] = []): TicketEvent => ({
+  id: `q${++clock}`,
+  ts: clock,
+  kind: 'ticket.asked',
+  threadId: 'one',
+  askId,
+  ticketId: '',
+  ask,
+  assumed,
+  options
+})
+
+describe('what the host will take', () => {
+  it('refuses a ticket with no words on it and holds the list to a length', () => {
+    expect(cleanTitles(['Read the loop', '   ', 'Seal a segment'])).toEqual(['Read the loop', 'Seal a segment'])
+    expect(cleanTitles('One on its own')).toEqual(['One on its own'])
+    expect(cleanTitles([{ title: 'From an object' }])).toEqual(['From an object'])
+    expect(cleanTitles([])).toEqual([])
+    expect(cleanTitles(Array.from({ length: 40 }, (_, i) => `Ticket ${i}`))).toHaveLength(LIST_LIMIT)
   })
 
-  it('is nothing rather than an empty list when there is none', () => {
-    expect(stepTodos({ command: 'yarn test' })).toBeUndefined()
-    expect(stepTodos({ todos: [] })).toBeUndefined()
-    expect(stepTodos(undefined)).toBeUndefined()
+  it('takes only the four columns', () => {
+    expect(cleanColumn('doing')).toBe('doing')
+    expect(cleanColumn('review')).toBe('review')
+    expect(cleanColumn('blocked')).toBeNull()
+    expect(cleanColumn(2)).toBeNull()
+  })
+
+  it('keeps a handful of options and drops the empty ones', () => {
+    expect(cleanOptions(['the commit', '', 'the path'])).toEqual(['the commit', 'the path'])
+    expect(cleanOptions('the commit')).toEqual([])
+    expect(cleanOptions(['a', 'b', 'c', 'd', 'e', 'f'])).toHaveLength(4)
+  })
+
+  it('knows its own events apart from everything else in the log', () => {
+    expect(isTicketEvent('ticket.added')).toBe(true)
+    expect(isTicketEvent('ticket.asked')).toBe(true)
+    expect(isTicketEvent('agent.step')).toBe(false)
   })
 })
 
-describe('a card', () => {
-  it('comes back as null with nothing on it', () => {
-    expect(cleanWorkCard({ kind: 'question' })).toBeNull()
-    expect(cleanWorkCard({ kind: 'decision', text: '  ' })).toBeNull()
-    expect(cleanWorkCard({ kind: 'nonsense', text: 'hi' })).toBeNull()
-    expect(cleanWorkCard('question')).toBeNull()
+describe('the board an agent keeps', () => {
+  it('stands the tickets up in the order they went up', () => {
+    const board = boardOf([], [added('1', 'Read the loop'), added('2', 'Seal a segment')])
+    expect(board.tickets.map(ticket => ticket.title)).toEqual(['Read the loop', 'Seal a segment'])
+    expect(board.tickets.every(ticket => ticket.column === 'todo')).toBe(true)
   })
 
-  it('is taken out of what is read', () => {
-    const written = ['Starting on the sync loop.', card({ kind: 'decision', text: 'Kept the local copy' }), 'Done.'].join(
-      '\n'
-    )
-    const { text, cards } = readWork(written)
-    expect(text).toBe('Starting on the sync loop.\nDone.')
-    expect(cards).toEqual([{ kind: 'decision', text: 'Kept the local copy' }])
+  it('moves one as the agent says so', () => {
+    const board = boardOf([], [added('1', 'Read the loop'), added('2', 'Seal a segment'), moved('1', 'done'), moved('2', 'doing')])
+    expect(board.tickets.map(ticket => ticket.column)).toEqual(['done', 'doing'])
   })
 
-  it('leaves a broken one out rather than showing it', () => {
-    const { text, cards } = readWork(['Working.', '```work', '{not json', '```'].join('\n'))
-    expect(cards).toEqual([])
-    expect(text).toBe('Working.')
-  })
-})
-
-describe('the board', () => {
-  it('is the columns the agent already keeps', () => {
-    const board = boardOf([
-      todoStep([
-        { text: 'Read the plumbing', status: 'done' },
-        { text: 'Draw the panel', status: 'doing' },
-        { text: 'Write the test', status: 'todo' }
-      ])
-    ])
-    expect(board.tickets.map(t => [t.title, t.column])).toEqual([
-      ['Read the plumbing', 'done'],
-      ['Draw the panel', 'doing'],
-      ['Write the test', 'todo']
-    ])
-  })
-
-  it('is the last list the agent wrote', () => {
-    const board = boardOf([
-      todoStep([{ text: 'Draw the panel', status: 'doing' }]),
-      todoStep([
-        { text: 'Draw the panel', status: 'done' },
-        { text: 'Write the test', status: 'doing' }
-      ])
-    ])
-    expect(board.tickets.map(t => t.column)).toEqual(['done', 'doing'])
-  })
-
-  it('hangs a decision and the files off whatever was being worked on', () => {
-    const board = boardOf([
-      todoStep([
-        { text: 'Draw the panel', status: 'doing' },
-        { text: 'Write the test', status: 'todo' }
-      ]),
-      textStep(card({ kind: 'decision', text: 'Sections rather than columns' })),
-      editStep('src/renderer/src/components/work/WorkView.tsx')
-    ])
-    const panel = board.tickets[0]
-    expect(panel.decisions).toEqual(['Sections rather than columns'])
-    expect(panel.files).toEqual(['src/renderer/src/components/work/WorkView.tsx'])
-    expect(board.tickets[1].decisions).toEqual([])
-  })
-
-  it('keeps a decision made before there was a list to hang it off', () => {
-    const board = boardOf([
-      textStep(card({ kind: 'decision', text: 'Derived rather than written down' })),
-      todoStep([{ text: 'Draw the panel', status: 'doing' }])
-    ])
-    expect(board.tickets[0].decisions).toEqual(['Derived rather than written down'])
-  })
-
-  it('holds a reviewed ticket in review, and picking it back up is the way out', () => {
-    const steps = [
-      todoStep([{ text: 'Draw the panel', status: 'doing' }]),
-      textStep(card({ kind: 'review', note: 'The panel reads off the steps now' })),
-      todoStep([{ text: 'Draw the panel', status: 'done' }])
-    ]
-    expect(boardOf(steps)[('tickets' as const)][0].column).toBe('review')
-    expect(boardOf(steps)[('tickets' as const)][0].review).toBe('The panel reads off the steps now')
-    expect(boardOf([...steps, todoStep([{ text: 'Draw the panel', status: 'doing' }])]).tickets[0].column).toBe('doing')
-  })
-
-  it('moves a review to done for whoever has looked at it, and nobody else', () => {
-    const steps = [
-      todoStep([{ text: 'Draw the panel', status: 'doing' }]),
-      textStep(card({ kind: 'review', note: 'Have a look' }))
-    ]
-    expect(boardOf(steps, { reviewed: ['draw the panel'] }).tickets[0].column).toBe('done')
-    expect(boardOf(steps).tickets[0].column).toBe('review')
-  })
-
-  it('says what answering a question late would cost', () => {
-    const board = boardOf([
-      todoStep([{ text: 'Draw the panel', status: 'doing' }]),
-      textStep(card({ kind: 'question', ask: 'Columns or sections?', assumed: 'sections', options: ['columns', 'sections'] })),
-      editStep('a.ts', 'b.ts'),
-      editStep('b.ts', 'c.ts')
-    ])
-    expect(board.questions).toHaveLength(1)
-    expect(board.questions[0].since).toBe(3)
-    expect(board.questions[0].ticket).toBe('Draw the panel')
-    expect(board.questions[0].options).toEqual(['columns', 'sections'])
-  })
-
-  it('drops a question the reader has answered', () => {
-    const steps = [textStep(card({ kind: 'question', ask: 'Columns or sections?', assumed: 'sections' }))]
-    const asked = boardOf(steps).questions
-    expect(asked).toHaveLength(1)
-    expect(boardOf(steps, { answered: [asked[0].id] }).questions).toEqual([])
-  })
-
-  it('is empty for a thread that never drew a list', () => {
-    expect(boardOf([textStep('Had a look at the sync loop.'), editStep('src/server/git.ts')])).toEqual({
-      tickets: [],
-      questions: []
+  it('carries the line the agent wrote into review, and takes it back out when the ticket is picked up again', () => {
+    const events = [added('1', 'Seal a segment'), moved('1', 'review', 'The log seals at a megabyte')]
+    expect(boardOf([], events).tickets[0]).toMatchObject({
+      column: 'review',
+      review: 'The log seals at a megabyte'
     })
+    const back = boardOf([], [...events, moved('1', 'doing')]).tickets[0]
+    expect(back.column).toBe('doing')
+    expect(back.review).toBe('')
+  })
+
+  it('reads as done for whoever has looked at it and still in review for everyone else', () => {
+    const events = [added('1', 'Seal a segment'), moved('1', 'review', 'Have a look')]
+    expect(boardOf([], events, { reviewed: ['1'] }).tickets[0].column).toBe('done')
+    expect(boardOf([], events).tickets[0].column).toBe('review')
+  })
+
+  it('hangs a decision off whatever is being worked on when it was written', () => {
+    const board = boardOf(
+      [],
+      [
+        added('1', 'Read the loop'),
+        added('2', 'Seal a segment'),
+        moved('2', 'doing'),
+        decided('', 'Kept the local copy on a conflict')
+      ]
+    )
+    expect(board.tickets[1].decisions).toEqual(['Kept the local copy on a conflict'])
+    expect(board.tickets[0].decisions).toEqual([])
+  })
+
+  it('puts a decision on the ticket it names even when another one is being worked on', () => {
+    const board = boardOf([], [added('1', 'Read the loop'), added('2', 'Seal it'), moved('2', 'doing'), decided('1', 'Read it twice')])
+    expect(board.tickets[0].decisions).toEqual(['Read it twice'])
+  })
+
+  it('gives a ticket the files that changed while it was the one being worked on', () => {
+    const board = boardOf(
+      [editStep('src/before.ts')],
+      [added('1', 'Seal a segment'), moved('1', 'doing')]
+    )
+    expect(board.tickets[0].files).toEqual([])
+    const after = boardOf(
+      [editStep('src/before.ts'), editStep('src/server/chatLog.ts')],
+      [added('1', 'Seal a segment'), moved('1', 'doing')]
+    )
+    expect(after.tickets[0].files).toEqual([])
+  })
+
+  it('counts what answering a question late would cost', () => {
+    const question = asked('q1', 'Key the cache on the commit or on the path?', 'the commit', ['the commit', 'the path'])
+    const steps = [editStep('src/one.ts'), editStep('src/two.ts')]
+    const board = boardOf(steps, [added('1', 'Cache it'), moved('1', 'doing'), question])
+    expect(board.questions).toHaveLength(1)
+    expect(board.questions[0]).toMatchObject({
+      ask: 'Key the cache on the commit or on the path?',
+      assumed: 'the commit',
+      options: ['the commit', 'the path'],
+      ticket: 'Cache it'
+    })
+  })
+
+  it('takes a question off the board for whoever answered it', () => {
+    const events = [asked('q1', 'Commit or path?')]
+    expect(boardOf([], events).questions).toHaveLength(1)
+    expect(boardOf([], events, { answered: ['q1'] }).questions).toEqual([])
+  })
+
+  it('is nothing at all for a thread that never said anything about its work', () => {
+    expect(boardOf([editStep('src/server/git.ts')])).toEqual({ tickets: [], questions: [] })
+  })
+})
+
+describe('the list a CLI keeps for itself', () => {
+  it('stands in for a thread that never put its own tickets up', () => {
+    const board = boardOf([
+      todoStep([
+        { text: 'Draw the rows', status: 'doing' },
+        { text: 'Cover it', status: 'todo' }
+      ])
+    ])
+    expect(board.tickets.map(ticket => ticket.column)).toEqual(['doing', 'todo'])
+  })
+
+  it('gives way the moment the agent keeps a board of its own', () => {
+    const board = boardOf(
+      [todoStep([{ text: 'Whatever the CLI called it', status: 'doing' }])],
+      [added('1', 'What the agent put up')]
+    )
+    expect(board.tickets.map(ticket => ticket.title)).toEqual(['What the agent put up'])
+  })
+})
+
+describe('the words an agent is given', () => {
+  it('carries the address and the credential into every line that needs one', () => {
+    const words = ticketPreamble('http://127.0.0.1:2739', 'p-1')
+    expect(words).toContain('http://127.0.0.1:2739/tickets')
+    expect(words).toContain('"promptId":"p-1"')
+    expect(words).toContain('/tickets/question')
+    expect(words).toContain('/decision')
+    for (const column of ['todo', 'doing', 'review', 'done']) expect(words).toContain(column)
   })
 })

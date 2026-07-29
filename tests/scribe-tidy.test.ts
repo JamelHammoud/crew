@@ -271,6 +271,46 @@ describe('a whole dictation, said the way people say them', () => {
     expect(written(spoken)).toBe(meant)
   })
 
+  it('leaves the sentences either side of a correction where they are', () => {
+    const spoken = [
+      'the runner reads the prompt.',
+      '[0.9]',
+      'it hands the whole thing to the host.',
+      '[0.9]',
+      'scratch that.',
+      '[0.9]',
+      'it hands the whole thing to the CLI.',
+      '[0.9]',
+      'the host only watches.'
+    ].join(' ')
+    const meant = [
+      'The runner reads the prompt.',
+      'It hands the whole thing to the CLI.',
+      'The host only watches.'
+    ].join(' ')
+    expect(written(spoken)).toBe(meant)
+  })
+
+  it('reads back a correction the pauses alone marked off', () => {
+    const spoken = [
+      'um so the panel holds the tiles',
+      '[0.9]',
+      'the the builder sits at the end of the crew row',
+      '[0.9]',
+      'actually hold on',
+      '[0.9]',
+      'the builder sits in the empty slot',
+      '[0.9]',
+      'and that is the way in'
+    ].join(' ')
+    const meant = [
+      'So the panel holds the tiles.',
+      'The builder sits in the empty slot.',
+      'And that is the way in.'
+    ].join(' ')
+    expect(written(spoken)).toBe(meant)
+  })
+
   it('reads back a correction somebody made mid sentence', () => {
     const spoken = [
       'the host holds the call in memory [0.9] it writes the record to the log, no wait, it writes it to the session',
