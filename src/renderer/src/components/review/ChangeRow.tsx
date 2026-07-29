@@ -95,16 +95,20 @@ export default function ChangeRow({
                   openFile(change.path, null, change.diff)
                 }}
               />
-              <MenuDivider />
-              <MenuItem
-                icon={<UndoGlyph className="w-4 h-4" />}
-                label="Discard"
-                danger
-                onClick={() => {
-                  setMenu(false)
-                  onDiscard()
-                }}
-              />
+              {!change.staged && (
+                <>
+                  <MenuDivider />
+                  <MenuItem
+                    icon={<UndoGlyph className="w-4 h-4" />}
+                    label="Discard"
+                    danger
+                    onClick={() => {
+                      setMenu(false)
+                      onDiscard()
+                    }}
+                  />
+                </>
+              )}
             </Popover>
           </div>
         </div>
