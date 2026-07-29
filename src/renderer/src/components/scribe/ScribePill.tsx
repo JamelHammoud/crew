@@ -135,7 +135,7 @@ export default function ScribePill() {
           // The model comes down once, ever. A bar rather than the row of bars,
           // because there is nothing to hear yet and a flat row of dots reads as
           // a microphone that is not working.
-          <span className="w-20 h-1 rounded-full bg-fg/15 overflow-hidden">
+          <span className="w-16 h-1 rounded-full bg-fg/15 overflow-hidden">
             <span
               className="block h-full rounded-full bg-fg/60 transition-[width] duration-200"
               style={{ width: `${Math.round(progress * 100)}%` }}
