@@ -61,7 +61,7 @@ export default function MessageReactions({
       <div
         ref={tray}
         onFocus={() => setDismissed(false)}
-        className={`absolute right-0 -top-4 z-10 flex items-center gap-px rounded-full border border-ink-700 bg-ink-800 p-0.5 shadow-[0_8px_24px_rgb(0_0_0/0.24)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`absolute right-0 -top-4 z-10 flex select-none items-center gap-px rounded-full border border-ink-700 bg-ink-800 p-0.5 shadow-[0_8px_24px_rgb(0_0_0/0.24)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           menuOpen
             ? 'translate-y-0 opacity-100'
             : dismissed
@@ -149,7 +149,7 @@ export default function MessageReactions({
         )}
       </div>
       {reactions.length > 0 && (
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <div className="mt-2 flex select-none flex-wrap items-center gap-1.5">
           {reactions.map(reaction => (
             <Tooltip key={reaction.emoji} label={<ReactionTip reaction={reaction} />}>
               <button
