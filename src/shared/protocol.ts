@@ -101,7 +101,10 @@ export type ClientMessage =
   | { type: 'tool.add'; name: string; mark: string; action: ToolAction }
   | { type: 'tool.edit'; toolId: string; name: string; mark: string; action: ToolAction }
   | { type: 'tool.remove'; toolId: string }
-  | { type: 'subagent.add'; name: string; brief: string; provider?: string; settings?: AgentSettings }
+  // The window naming the role's own id, so the mark it was given on the form
+  // is the mark it keeps. The host takes it only if it is a plain uuid nothing
+  // else answers to, the way a playlist's is.
+  | { type: 'subagent.add'; name: string; brief: string; provider?: string; settings?: AgentSettings; roleId?: string }
   | { type: 'subagent.edit'; roleId: string; name: string; brief: string; provider?: string; settings?: AgentSettings }
   | { type: 'subagent.remove'; roleId: string }
   // Somebody starting a helper by hand, on the thread they are standing in.
