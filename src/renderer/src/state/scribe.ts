@@ -208,8 +208,7 @@ export const useScribe = create<ScribeState>((set, get) => {
     arm: async () => {
       const phase = get().phase
       if (phase !== 'off' && phase !== 'failed' && phase !== 'waking') return
-      pieces = []
-      held = []
+      clear()
       set({ phase: 'arming', problem: null })
       const problem = take.listening ? null : await take.start()
       if (get().phase !== 'arming') return take.close()
