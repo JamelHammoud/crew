@@ -180,6 +180,7 @@ interface CrewState {
   setChatDraft: (text: string) => void
   setChatCommands: (commands: CommandName[]) => void
   setThreadDraft: (threadId: string, text: string) => void
+  setThreadCommands: (threadId: string, commands: CommandName[]) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
   moveAttachments: (from: string, to: string) => void
