@@ -51,17 +51,22 @@ const platform = (): string =>
 
 export const useScribe = create<ScribeState>((set, get) => {
   const fetching = new Map<string, Fetching>()
-  // Every piece of the dictation that has been sent to whisper, in the order it
-  // was spoken. A long one is nearly read by the time the key is let go, which
-  // is the whole reason the take hands pieces over while somebody is still
-  // talking.
+  // Every piece of the dictation that has been sent to whisper and not yet
+  // landed, in the order it was spoken. A long one is nearly read by the time the
+  // key is let go, which is the whole reason the take hands pieces over while
+  // somebody is still talking.
   let pieces: Array<Promise<ScribeChunk[]>> = []
-  // The sound those pieces were read from, kept until the dictation has landed.
-  // A reading that fell over must not cost somebody the sentence they said, so
+  // The sound those pieces were read from, kept until they have landed. A
+  // reading that fell over must not cost somebody the sentence they said, so
   // trying again costs one press rather than saying the whole thing over.
   let held: Array<{ audio: Float32Array; at: number }> = []
   let capped: ReturnType<typeof setTimeout> | undefined
   let loading = false
+  // Writing as it is said. `flow` is the rule and `walking` is the one walk down
+  // the pieces, in order, so two stretches can never land the wrong way round
+  // however they were read.
+  const flow = new ScribeFlow()
+  let walking: Promise<void> = Promise.resolve()
 
   const listener = new VoiceListener({
     onFetching: (file, loaded, total) => {
