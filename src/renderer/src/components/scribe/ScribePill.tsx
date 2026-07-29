@@ -67,13 +67,17 @@ export default function ScribePill() {
   const again = failed && keeping()
 
   return (
-    <div className="p-1.5">
+    // The room the shadow lands in. It is the window that is larger rather than
+    // the pill, so the padding is what the two agree on, and nothing in here
+    // takes the pointer: what stands in that margin is empty air over somebody
+    // else's application.
+    <div className="pointer-events-none" style={{ padding: PILL_ROOM }}>
       {/* The whole of it is the handle, so it is moved by taking hold of it
           anywhere rather than by finding a strip somewhere on it to aim at. The
           cursor is the only thing that says so, which is all it needs to. */}
       <div
         onPointerDown={grab}
-        className="relative glass glass-strong rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2 animate-pop cursor-grab active:cursor-grabbing"
+        className="pointer-events-auto relative glass glass-pill rounded-full min-h-[52px] px-2 py-2 flex items-center gap-2 animate-pop cursor-grab active:cursor-grabbing"
       >
         <InsetRing className="border border-fg/10" />
 
