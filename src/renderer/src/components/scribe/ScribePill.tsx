@@ -82,7 +82,7 @@ export default function ScribePill() {
         <InsetRing className="border border-fg/10" />
 
         <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
-          <CloseGlyph className="w-4 h-4" />
+          <CloseGlyph className="w-4 h-4" strokeWidth={STROKE_BOLD} />
         </Round>
 
         {failed ? (
