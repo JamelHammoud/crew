@@ -41,7 +41,7 @@ export default function AsideView({ threadId }: { threadId: string }) {
   return (
     <div className="absolute inset-0 flex flex-col bg-ink-900">
       <div className="relative flex-1 min-h-0 min-w-0">
-        <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-5 py-4 space-y-5">
+        <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-5 py-4 space-y-5 select-text">
           <ThreadItems items={items} />
           {promptId && startedAt && (
             <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[promptId] ?? []} />

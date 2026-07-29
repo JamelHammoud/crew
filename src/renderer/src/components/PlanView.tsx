@@ -15,7 +15,7 @@ export default function PlanView({ threadId }: { threadId: string }) {
   return (
     <div className="absolute inset-0 flex flex-col bg-ink-900">
       <div className="relative flex-1 min-h-0 min-w-0">
-        <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-5 py-4">
+        <div ref={scrollRef} className="h-full overflow-y-auto overflow-x-hidden px-5 py-4 select-text">
           <Markdown text={thread.plan} />
         </div>
         <ScrollFade edges={edges} />
