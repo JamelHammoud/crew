@@ -9,10 +9,13 @@ import { shapePath, subagentShape } from './art/subagentShape'
 // it is a generated mark and not one of Crew's own drawings, which is the ground
 // AgentIcon already holds.
 
+// The same boxes AgentIcon takes, so a mark reserves the room a pet does and a
+// row holding both lines up. The drawing sits on its own keyline inside that,
+// the way a glyph does.
 const SIZES = {
-  xs: 18,
-  sm: 24,
-  md: 32,
+  xs: 20,
+  sm: 28,
+  md: 40,
   lg: 48
 } as const
 
