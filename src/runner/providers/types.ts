@@ -16,6 +16,16 @@ export interface ParsedUsage {
   total?: boolean
 }
 
+// One call of a tool that works a task list a task at a time. A CLI with no
+// whole-list tool never hands the list over, so the run folds it out of these.
+export interface TaskCall {
+  kind: 'create' | 'change' | 'read'
+  id: string
+  subject: string
+  description: string
+  status: string
+}
+
 export interface ParsedActivity {
   id: string
   kind: 'tool' | 'subagent'
@@ -25,6 +35,7 @@ export interface ParsedActivity {
   output?: string
   files?: FileChange[]
   todos?: StepTodo[]
+  task?: TaskCall
 }
 
 export interface ParsedOutput {
