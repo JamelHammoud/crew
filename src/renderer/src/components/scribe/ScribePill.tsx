@@ -1,5 +1,5 @@
 import { PILL_ROOM } from '../../../../shared/scribe'
-import { CheckGlyph, CloseGlyph, RefreshGlyph, WarningGlyph } from '../../icons'
+import { CloseGlyph, RefreshGlyph, WarningGlyph } from '../../icons'
 import { STROKE_BOLD } from '../../icons/keylines'
 import { BandReader } from '../../media/bands'
 import { scribeAnalyser, useScribe } from '../../state/scribe'
