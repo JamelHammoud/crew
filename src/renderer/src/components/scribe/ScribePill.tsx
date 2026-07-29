@@ -36,6 +36,9 @@ function Round({
   return (
     <button
       onClick={onClick}
+      // The pill is dragged by anywhere on it, so a button says the press is
+      // its own rather than the start of a move.
+      onPointerDown={event => event.stopPropagation()}
       aria-label={label}
       className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-all duration-150 active:scale-90 ${
         solid ? 'bg-fg text-ink-900 hover:bg-fg/90' : 'bg-fg/10 text-fg/70 hover:bg-fg/20 hover:text-fg'
