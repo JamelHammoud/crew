@@ -16,11 +16,15 @@ function markFor(tone: ToastTone): ReactNode {
 function Row({ toast }: { toast: Toast }) {
   const mark = toast.mark ?? markFor(toast.tone)
   const action = toast.action
+  // A row is pushed out of the way to the right, and what was a gesture is never
+  // a press as well: the card is the way out only when the pointer stayed put.
+  const swipe = useSwipeAway(() => closeToast(toast.id))
 
   // The row itself is the way out, so a press on the button is the button's own
   // rather than that as well.
   const press = (event: MouseEvent): void => {
     event.stopPropagation()
+    if (swipe.moved()) return
     action?.onPress()
     if (!action?.keep) closeToast(toast.id)
   }
@@ -28,9 +32,12 @@ function Row({ toast }: { toast: Toast }) {
   return (
     <div className="toast-row" data-leaving={toast.leaving ? '' : undefined}>
       <div
+        {...swipe.props}
         role={toast.tone === 'fail' ? 'alert' : 'status'}
-        onClick={() => closeToast(toast.id)}
-        className={`glass glass-strong toast-card pointer-events-auto cursor-pointer w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
+        onClick={() => {
+          if (!swipe.moved()) closeToast(toast.id)
+        }}
+        className={`glass glass-strong toast-card pointer-events-auto cursor-pointer select-none touch-none w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
           action ? 'pl-3.5 pr-2' : 'px-3.5'
         }`}
       >
