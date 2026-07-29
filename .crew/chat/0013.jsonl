@@ -135,3 +135,8 @@
 {"id":"733cb7c5-21e0-4760-b58c-ee46209e92b1","ts":1785323193728,"kind":"agent.online","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
 {"id":"8f268efb-d301-4f22-886e-a661e9b0647c","ts":1785323193728,"kind":"agent.online","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
 {"id":"9a5d5c22-38dc-4708-ae79-e26b2ddb3e34","ts":1785323193728,"kind":"person.joined","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"6b12550b-e386-4c77-a318-f6ce5c4ab735","ts":1785323241158,"kind":"person.left","memberId":"60b55620-a113-478c-9935-77bd360c6f40","name":"ALI"}
+{"id":"cea270c0-fe6b-438c-87eb-55d503474fcc","ts":1785323241159,"kind":"agent.offline","agentId":"ali/claude","label":"Fable"}
+{"id":"34604513-3708-406f-9935-d7a9707995bf","ts":1785323241159,"kind":"agent.offline","agentId":"ali/ce92104d-1a63-43b7-b470-ed723e8e2e66","label":"Codex Gpt-5.6-terra"}
+{"id":"9c2acb77-0852-4c91-a3a6-af0913578687","ts":1785323241159,"kind":"agent.offline","agentId":"ali/20890e3a-ce3f-4240-95da-1509a65df80a","label":"Codex Gpt-5.6-sol"}
+{"id":"5c193754-bf13-42a6-87a8-4c286edd3ab5","ts":1785323241159,"kind":"agent.offline","agentId":"ali/c1a92588-6267-4295-90b7-ca91391dfbc9","label":"Bubbles (Ali)"}
