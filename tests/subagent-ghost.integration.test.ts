@@ -52,16 +52,13 @@ describe('a helper sent out of a ghost thread', () => {
     })
     await mine.waitForEvent(e => e.kind === 'agent.online')
 
-    mine.send({ type: 'subagent.add', name: 'Scout', brief: 'reads things', provider: 'fake' })
-    await mine.waitForEvent(e => e.kind === 'subagent.added')
-
     mine.chat('look into this quietly @Fake', [fake], undefined, ['ghost'])
     const parent = (await mine.waitForEvent(e => e.kind === 'agent.start')) as Start
 
     const spawned = await fetch(`${base}/agents/spawn`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ promptId: parent.promptId, role: 'Scout', subject: 'quiet', task: 'read the file' })
+      body: JSON.stringify({ promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'quiet', task: 'read the file' })
     }).then(r => r.json())
     expect(spawned.threadId).toBeTruthy()
 
@@ -79,8 +76,9 @@ describe('a helper sent out of a ghost thread', () => {
     const written = host.store.loadEvents()
     expect(written.some(e => e.kind === 'subagent.started')).toBe(false)
     expect(written.some(e => 'threadId' in e && e.threadId === spawned.threadId)).toBe(false)
-    // The role itself is the crew's and is written down. Only the run is hidden.
-    expect(written.some(e => e.kind === 'subagent.added')).toBe(true)
+    // The parent's own thread is hidden too, so nothing about either of them is
+    // anywhere but in the one window's memory.
+    expect(written.some(e => e.kind === 'subagent.ended')).toBe(false)
   })
 
   it('goes when the window that opened the thread does', async () => {
@@ -101,15 +99,12 @@ describe('a helper sent out of a ghost thread', () => {
       }
     })
     await mine.waitForEvent(e => e.kind === 'agent.online')
-    mine.send({ type: 'subagent.add', name: 'Scout', brief: 'reads things', provider: 'fake' })
-    await mine.waitForEvent(e => e.kind === 'subagent.added')
-
     mine.chat('quietly @Fake', [fake], undefined, ['ghost'])
     const parent = (await mine.waitForEvent(e => e.kind === 'agent.start')) as Start
     const spawned = await fetch(`${base}/agents/spawn`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ promptId: parent.promptId, role: 'Scout', subject: 'quiet', task: 'take a while' })
+      body: JSON.stringify({ promptId: parent.promptId, name: 'Scout', provider: 'fake', subject: 'quiet', task: 'take a while' })
     }).then(r => r.json())
     await mine.waitForEvent(e => e.kind === 'agent.start' && e.threadId === spawned.threadId)
 
