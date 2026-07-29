@@ -15,7 +15,13 @@ import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } from '../shared/llm'
 import { projectKey, type CrewHome } from '../shared/project'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
-import type { RepoActionResult, RepoChange, RepoStatus } from '../shared/repository'
+import type {
+  RepoActionResult,
+  RepoChange,
+  RepoCommand,
+  RepoStatus,
+  RepoWork
+} from '../shared/repository'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import { AgentStore } from './agents-store'
 import {
