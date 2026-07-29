@@ -46,7 +46,7 @@ export const threadWorking = (
 // the plain way, a chip lands inside the helper pointing at itself and never
 // lands in the thread that has something to say about it, which is a spawn
 // that leaves no mark on screen anywhere.
-export const threadEvents = (events: SessionEvent[], threadId: string): SessionEvent[] =>
+export const eventsOfThread = (events: SessionEvent[], threadId: string): SessionEvent[] =>
   events.filter(event =>
     event.kind === 'subagent.started' || event.kind === 'subagent.ended'
       ? event.parentThreadId === threadId
