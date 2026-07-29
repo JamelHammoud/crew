@@ -1485,9 +1485,13 @@ export class CrewSession {
     return true
   }
 
+  // A helper somebody stopped does not wake anybody. Its work was called off,
+  // so waking the parent with it would open a turn on a run that was just
+  // cancelled.
   stopSubagent(threadId: string): boolean {
     const thread = this.threads.get(threadId)
     if (!thread?.parentThreadId) return false
+    thread.notify = false
     thread.queue = []
     this.broadcastQueue(thread)
     if (thread.running) this.handleCancel(thread.running)
