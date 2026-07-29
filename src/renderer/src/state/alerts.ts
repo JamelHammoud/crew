@@ -40,6 +40,9 @@ export function finishedAlert(event: SessionEvent, state: AlertState): AgentAler
   const thread = event.threadId ? state.threads[event.threadId] : undefined
   if (thread && thread.status !== 'open') return null
   if (event.threadId && (state.queues[event.threadId]?.length ?? 0) > 0) return null
+  // A question on the side lands in the panel that opened to answer it, which is
+  // already on the screen, so a row about it says the same thing twice.
+  if (thread?.aside) return null
   // A helper coming home is the parent's news, and the parent says it in its
   // own thread. The one exception is one that stopped after its parent was
   // already done, which nobody would otherwise ever see.
