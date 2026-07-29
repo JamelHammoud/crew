@@ -1342,6 +1342,62 @@ export class CrewSession {
     if ('error' in spawned) this.notice(spawned.error, ws)
   }
 
+  // Every route names a promptId, and the host takes it only while that prompt
+  // is one it is running right now. A board being drawn on is a different weight
+  // of thing from a shell running on somebody's laptop, so the live prompt is
+  // the credential: it costs one lookup, and nothing has to be handed around.
+  private askingThread(promptId: string): Thread | null {
+    const ref = this.prompts.get(promptId)
+    if (!ref) return null
+    return this.threads.get(ref.threadId) ?? null
+  }
+
+  private helperOf(promptId: string, threadId: string): Thread | null {
+    const parent = this.askingThread(promptId)
+    const child = this.threads.get(threadId)
+    if (!parent || !child) return null
+    return child.parentThreadId === parent.id ? child : null
+  }
+
+  subagentRoles(): Subagent[] {
+    return [...this.subagents.values()]
+  }
+
+  subagentSpawn(
+    promptId: string,
+    named: string,
+    subject: string,
+    task: string,
+    notify: boolean
+  ): { id: string; threadId: string } | { error: string } {
+    const parent = this.askingThread(promptId)
+    if (!parent) return { error: 'That promptId is not a run this session has going.' }
+    const role = findSubagent([...this.subagents.values()], named)
+    if (!role) return { error: `No role called "${named}". The roles are: ${this.roleNames() || 'none yet'}.` }
+    return this.spawnSubagent({ threadId: parent.id, promptId, byName: parent.agentLabel }, role, subject, task, notify)
+  }
+
+  subagentSay(promptId: string, threadId: string, text: string): boolean {
+    return this.helperOf(promptId, threadId) ? this.saySubagent(threadId, text) : false
+  }
+
+  subagentStop(promptId: string, threadId: string): boolean {
+    return this.helperOf(promptId, threadId) ? this.stopSubagent(threadId) : false
+  }
+
+  subagentLook(promptId: string, threadId: string): ReturnType<CrewSession['subagentState']> {
+    return this.helperOf(promptId, threadId) ? this.subagentState(threadId) : null
+  }
+
+  subagentWait(promptId: string, threadIds: string[], ms: number): Promise<{ finished: string[]; pending: string[] }> {
+    const mine = threadIds.filter(id => this.helperOf(promptId, id))
+    return this.waitSubagents(mine, ms)
+  }
+
+  private roleNames(): string {
+    return [...this.subagents.values()].map(role => role.name).join(', ')
+  }
+
   private subagentThreads(parentThreadId: string): Thread[] {
     return [...this.threads.values()].filter(thread => thread.parentThreadId === parentThreadId)
   }
