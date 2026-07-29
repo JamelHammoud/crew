@@ -129,16 +129,13 @@ export default function Scribe() {
   return (
     <Page title="Scribe">
       <Section>
-        <Row
-          label="Dictation"
-          line="A small model comes down the first time, and stays on this machine."
-        >
+        <Row label="Dictation" line="Nothing you say leaves this machine.">
           <Toggle on={settings.on} label="Dictation" onChange={on => setScribeSettings({ on })} />
         </Row>
       </Section>
 
       <Section title="The key">
-        <Row label="Which one" line={isMac() ? 'macOS keeps Fn to itself, so no app is given it.' : undefined}>
+        <Row label="Which one">
           <Select
             value={settings.key}
             options={scribeKeys(platform()).map(key => ({
