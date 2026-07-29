@@ -19,7 +19,8 @@ import { buildThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '
 import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { mentionsIn } from '../../../shared/llm'
-import { ArchiveGlyph, CheckGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
+import { ArchiveGlyph, CheckGlyph, ChecklistGlyph, ChevronLeftGlyph, EyeGlyph, WarningGlyph } from '../icons'
+import { useBrowser } from '../state/browser'
 import { pendingCount, useCrew } from '../state/store'
 
 const BACK_WIDTH = 40
