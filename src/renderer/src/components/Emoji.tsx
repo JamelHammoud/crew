@@ -12,6 +12,10 @@ export default function Emoji({
   size?: number | string
   className?: string
 }) {
+  // Every emoji the app draws comes through here, so this is the one place that
+  // has to hear about an emoji arriving: a name written before the crew had it is
+  // a picture the moment they do.
+  useCustomEmoji()
   // A `:name:` the crew has is its picture. One the crew has never had falls
   // through to the text below and prints the name itself, since the picture may
   // simply have been taken away and the name is the honest answer.
