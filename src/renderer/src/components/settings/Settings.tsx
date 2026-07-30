@@ -23,6 +23,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'appearance') return <Appearance />
   if (tab === 'sound') return <SoundAndVideo />
   if (tab === 'scribe') return <Scribe />
+  if (tab === 'command') return <Command />
   if (tab === 'people') return <People />
   if (tab === 'helpers') return <Helpers />
   if (tab === 'files') return <Files />
