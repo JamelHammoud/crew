@@ -23,7 +23,7 @@ import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
 import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
 import { alertToast } from '../components/alertToast'
-import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
+import { filesFrom, imagesFrom, readFiles, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert, questionAlert } from './alerts'
 import { helperPrefs, onHelperPrefs } from './helpers'
@@ -302,7 +302,7 @@ const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: 
 const readPhoto = (file: File, send: (image: OutgoingAttachment) => void): void => {
   const [picked] = imagesFrom([file])
   if (!picked) return
-  void readImages([picked], 0).then(([image]) => {
+  void readFiles([picked], 0).then(([image]) => {
     if (image) send({ name: image.name, mime: image.mime, data: image.data })
   })
 }
