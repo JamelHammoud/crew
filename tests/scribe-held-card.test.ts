@@ -120,4 +120,13 @@ describe('when the card stands in for the pill', () => {
     view.rerender(createElement(ScribePill))
     expect(screen.getByText('Copy')).toBeTruthy()
   })
+
+  // A read that fell over halfway has stretches held and a way to try for the
+  // rest, and the card would be drawn over the only way out there is.
+  it('leaves a failure its own way out, with the words still held behind it', () => {
+    useScribe.setState({ held: 'Hello.', phase: 'failed', problem: 'Crew could not read that.' })
+    render(createElement(ScribePill))
+    expect(screen.getByText('Crew could not read that.')).toBeTruthy()
+    expect(screen.queryByText('Copy')).toBeNull()
+  })
 })
