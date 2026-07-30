@@ -170,6 +170,41 @@ function appWindows(): BrowserWindow[] {
   return BrowserWindow.getAllWindows().filter(win => !tray.owns(win) && !scribe.owns(win))
 }
 
+// What has the caret inside one of our own pages, read off the page rather than
+// asked of macOS. Every window here is Chromium, and Chromium hands nothing to the
+// accessibility API until something turns its tree on, so the app was holding the
+// words back from its own composer. It never needed asking: the caret is in a
+// document we are already holding.
+//
+// A focused window is the whole of what says the app is frontmost. Electron
+// answers null for every window while somebody is in another application, so a
+// null here is the caret being somewhere macOS is the one that can say.
+//
+// The pill is left out on purpose. It never takes focus, so it can only be the
+// answer on a machine where something has gone wrong, and a dictation answered by
+// the window drawing the pill would be answered by itself.
+const FOCUSED_IN_PAGE = `(() => {
+  let el = document.activeElement
+  while (el && el.shadowRoot && el.shadowRoot.activeElement) el = el.shadowRoot.activeElement
+  if (!el) return null
+  return { tag: el.tagName || '', type: el.getAttribute('type') || '', editable: !!el.isContentEditable }
+})()`
+
+async function caretInCrew(): Promise<Landing | null> {
+  const win = BrowserWindow.getFocusedWindow()
+  if (!win || scribe.owns(win) || tray.owns(win) || win.webContents.isDestroyed()) return null
+  try {
+    const focused = await win.webContents.executeJavaScript(FOCUSED_IN_PAGE, true)
+    if (!focused) return 'none'
+    return landingInPage(focused.tag, focused.type, focused.editable)
+  } catch {
+    // A page that would not answer is our own window all the same, so the caret is
+    // here rather than anywhere macOS could be asked about. Nothing is known about
+    // it beyond that, which is the doubt that pastes.
+    return 'unknown'
+  }
+}
+
 function sharing(): void {
   tray.update({ sharing: session.current() !== null })
 }
