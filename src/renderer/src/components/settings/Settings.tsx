@@ -28,6 +28,7 @@ const platform = (): string =>
 function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'you') return <You onDone={closeSettings} />
   if (tab === 'appearance') return <Appearance />
+  if (tab === 'reactions') return <Reactions />
   if (tab === 'sound') return <SoundAndVideo />
   if (tab === 'scribe') return <Scribe />
   if (tab === 'command') return <Command />
