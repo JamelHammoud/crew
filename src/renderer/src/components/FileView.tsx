@@ -8,7 +8,7 @@ import {
   type KeyboardEvent
 } from 'react'
 import { fileSize } from '../../../shared/attachments'
-import { isMarkdown, type FileEntry, type RepoFile } from '../../../shared/files'
+import { canPreview, isHtml, type FileEntry, type RepoFile } from '../../../shared/files'
 import { DocGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
