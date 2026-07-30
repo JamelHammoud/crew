@@ -4,30 +4,9 @@ import type { AddressInfo } from 'node:net'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createCanvas, type Canvas } from '@napi-rs/canvas'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { pdfBytes } from './helpers/pdf'
 
-const pdfBytes = (): Uint8Array => {
-  const stream = 'BT /F1 24 Tf 24 96 Td (Crew) Tj ET\n0 0 0 rg 24 24 120 40 re f\n'
-  const objects = [
-    '<< /Type /Catalog /Pages 2 0 R >>',
-    '<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 160] /Resources << /Font << /F1 6 0 R >> >> /Contents 5 0 R >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 160] /Resources << >> >>',
-    `<< /Length ${stream.length} >>\nstream\n${stream}endstream`,
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'
-  ]
-
-  let body = '%PDF-1.4\n'
-  const offsets: number[] = []
-  objects.forEach((object, i) => {
-    offsets.push(body.length)
-    body += `${i + 1} 0 obj\n${object}\nendobj\n`
-  })
-  const size = objects.length + 1
-  let table = `xref\n0 ${size}\n0000000000 65535 f \n`
-  for (const offset of offsets) table += `${String(offset).padStart(10, '0')} 00000 n \n`
-  const file = `${body}${table}trailer\n<< /Size ${size} /Root 1 0 R >>\nstartxref\n${body.length}\n%%EOF\n`
-  return new Uint8Array(Buffer.from(file, 'latin1'))
-}
+const words = ['Crew pools agents', 'Second page here']
 
 const inked = (canvas: Canvas): number => {
   const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data
@@ -41,7 +20,7 @@ describe('a pdf in the panel', () => {
   let url = ''
 
   beforeAll(async () => {
-    const bytes = pdfBytes()
+    const bytes = pdfBytes(words)
     host = http.createServer((_, answer) => {
       answer.writeHead(200, { 'content-type': 'application/pdf' })
       answer.end(Buffer.from(bytes))
@@ -61,7 +40,7 @@ describe('a pdf in the panel', () => {
 
     const task = pdfjs.getDocument({ data })
     const doc = await task.promise
-    expect(doc.numPages).toBe(2)
+    expect(doc.numPages).toBe(words.length)
     await task.destroy()
   })
 
@@ -82,6 +61,21 @@ describe('a pdf in the panel', () => {
     await page.render({ canvas: canvas as unknown as HTMLCanvasElement, viewport }).promise
 
     expect(inked(canvas)).toBeGreaterThan(100)
+    await task.destroy()
+  })
+
+  it('hands over the words of each page', async () => {
+    const data = new Uint8Array(await (await fetch(url)).arrayBuffer())
+    const task = pdfjs.getDocument({ data })
+    const doc = await task.promise
+
+    for (const [at, line] of words.entries()) {
+      const page = await doc.getPage(at + 1)
+      const said = (await page.getTextContent()).items
+        .map(item => ('str' in item ? item.str : ''))
+        .join(' ')
+      expect(said).toContain(line)
+    }
     await task.destroy()
   })
 
