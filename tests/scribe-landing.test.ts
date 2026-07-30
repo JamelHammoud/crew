@@ -214,10 +214,6 @@ describe('nothing malformed is ever held back by accident', () => {
   // machine having answered properly.
   it('only holds them back on a real answer that has nowhere to type in it', () => {
     expect(landingOf('none')).toBe('none')
-    expect(landingOf(printedPage())).toBe('none')
+    expect(landingOf(`AXWebArea\n${PAGE.join(',')}`)).toBe('none')
   })
-
-  function printedPage(): string {
-    return `AXWebArea\n${PAGE.join(',')}`
-  }
 })
