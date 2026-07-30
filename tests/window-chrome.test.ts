@@ -112,11 +112,12 @@ describe('the drag the top bar takes', () => {
 
   it('cuts a menu out of it', () => {
     const { baseElement } = render(
-      createElement(
-        Popover,
-        { open: true, onClose: () => {}, at: { x: 100, y: 30 } },
-        createElement('button', null, 'Open')
-      )
+      createElement(Popover, {
+        open: true,
+        onClose: () => {},
+        at: { x: 100, y: 30 },
+        children: createElement('button', null, 'Open')
+      })
     )
 
     expect(baseElement.querySelector('.app-no-drag.fixed')).not.toBeNull()
