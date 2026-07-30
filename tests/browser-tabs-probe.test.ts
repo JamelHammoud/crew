@@ -24,6 +24,29 @@ const openTwo = () => {
   useBrowser.getState().openUrl('https://example.com/two')
 }
 
+const order = () => useBrowser.getState().tabs.map(t => t.id)
+
+// jsdom lays nothing out, so the row is given one: pills 90 wide with a gap of
+// 10, in a strip that shows all of them.
+const box = (left: number, width: number) => ({ left, width, right: left + width }) as DOMRect
+
+const laidOut = (root: HTMLElement) => {
+  const items = Array.from(root.querySelectorAll<HTMLElement>('[data-reorder]'))
+  const strip = items[0]!.parentElement!
+  strip.getBoundingClientRect = () => box(0, 1000)
+  items.forEach((item, index) => {
+    item.getBoundingClientRect = () => box(index * 100, 90)
+  })
+  return items
+}
+
+// A drag is a press, a run of moves and letting go, and where it lands is read
+// off the row's own boxes rather than off anything the pointer says it is over.
+const drag = (item: HTMLElement, from: number, by: number) => {
+  fireEvent.pointerDown(item, { button: 0, clientX: from })
+  fireEvent.pointerMove(window, { clientX: from + by })
+}
+
 describe('the tab strip', () => {
   it('brings a newly opened tab into view', () => {
     useBrowser.getState().openUrl('https://example.com/one')
