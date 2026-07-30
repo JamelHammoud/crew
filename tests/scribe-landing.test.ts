@@ -212,9 +212,11 @@ describe('nothing malformed is ever held back by accident', () => {
     for (const printed of malformed) expect(landingOf(printed)).toBe('unknown')
   })
 
-  // The one way the words are ever held back by the machine, and it is the machine
-  // having really answered: a role came back, and it is not somewhere to type.
+  // The two ways the words are ever held back by the machine, and both of them are
+  // the machine having really answered: a role came back and it is not somewhere
+  // to type, or the application said outright it has nothing open.
   it('only holds them back on a real answer that has nowhere to type in it', () => {
+    expect(landingOf('none')).toBe('none')
     expect(landingOf(`AXWebArea\n${PAGE.join(',')}`)).toBe('none')
     expect(landingOf(`AXRow\n${ROW.join(',')}`)).toBe('none')
   })
