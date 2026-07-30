@@ -623,6 +623,21 @@ The chat log is written in segments, and that is a memory rule rather than a tid
 
 A prompt waits for a sync before it starts, so the queue in front of it is what decides how long it takes an agent to say its first word. Nothing may put a pass on that queue on a clock. The loop arms the next pass once the last one has settled, and a request that arrives while a pass is already waiting is given that pass rather than one of its own, so the queue is never more than one running and one waiting. A pass on a busy folder takes longer than the interval between them, and a queue fed on a timer only ever gets longer: agents sat on "Starting" for seven minutes while the passes ahead of them drained.
 
+## Updating
+
+A new Crew is out and the app says so, on one pill in the top bar. It stands only while there is one, and pressing it is the whole update: the new Crew comes down and the app comes back on the other side. The releases on GitHub are the feed, and `electron-updater` is what reads them.
+
+- One press and no second one. Pressing starts it, the pill fills as it comes, and the app relaunches itself the moment it lands. A download that finished and then waited to be let in is a second thing to press for something already decided, and the press was for the update rather than for the half of it that fetches. Whoever pressed it wanted the new Crew, so they get it.
+- The pill is the whole of the way in. There is no row in the settings and no item in a menu, because either would be a second way to do a thing that is already one press away, and neither could say the one thing that matters, which is that there is something to press at all.
+- What the pill can say lives in `src/shared/update.ts` as a plain move from one stage to the next, and `src/main/updates.ts` is the thin part that hands `electron-updater`'s words to it. That split is the only way any of it is tested: main imports electron and a suite cannot, so `tests/update.test.ts` drives every stage by hand without a release, a network or an app anywhere near it.
+- A check that could not reach the internet says nothing at all. Only a download somebody asked for and did not get is worth a word, and that word is a toast rather than the pill, because the pill is still standing there offering the same thing again. Read the plain way, every laptop that closed its lid on a wifi network would wake to a failure it never asked for.
+- Nothing is checked from a run out of source. There is no release behind one and no signature to hold it to, so `fromSource` is the same gate the icon uses. It stops looking once it has found one, and looks again every hour until then.
+- macOS will not install an update to an app that is not signed, and nothing about a build says so on the way past. An unsigned run signs nothing, notarizes nothing, warns about neither, and produces a dmg, both zips and a whole `latest-mac.yml`, so the workflow goes green and ships a release every Mac quietly refuses. `forceCodeSigning` in `build.mac` is what turns that into a build that fails instead.
+- macOS updates from a zip and never from the dmg, so `build.mac.target` carries both. The dmg is what a person downloads once and the zip is what every update after it rides on.
+- The Windows installer is built as `Crew Setup 0.1.0.exe` and written into `latest.yml` as `Crew-Setup-0.1.0.exe`, because the feed records the name that is safe to put in a URL. electron-builder renames it as it uploads, and `--publish never` means it never gets to, so the workflow renames every file with a space in it before the release is made. Without that the app asks for a file the release does not have and the update is a quiet 404.
+- `--publish never` still writes the feed. The update files are made because there is a `publish` block in `package.json`, not because anything is being published, which is what lets both platforms build on their own runners and land on one release afterwards. Two matrix jobs publishing to one tag race each other, so nothing here ever does.
+- The release must not be a draft or a prerelease. The app asks GitHub for the latest release and GitHub does not count either of those as one.
+
 ## Rules for agents working here
 
 - `src/server`, `src/runner`, and `src/shared` must never import electron. Tests import them directly.
