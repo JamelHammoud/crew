@@ -86,12 +86,7 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
   return (
     <div className="py-2">
       {entries.map(entry => (
-        <DirRow
-          key={entry.name}
-          tab={tab}
-          path={path ? `${path}/${entry.name}` : entry.name}
-          entry={entry}
-        />
+        <DirRow key={entry.name} tab={tab} path={path ? `${path}/${entry.name}` : entry.name} entry={entry} />
       ))}
     </div>
   )
