@@ -279,7 +279,10 @@ export const useBrowser = create<BrowserState>((write, get) => {
         set({ activeTabId: existing.id })
         return
       }
-      const tab = { ...makeTab(url), kind: 'attachment' as const, title: name, mime, size }
+      // A file written to be looked at opens as the page or the picture it is,
+      // and the words it is written in are one press away. Everything else reads
+      // the one way it has, so the flag is nothing to it.
+      const tab = { ...makeTab(url), kind: 'attachment' as const, title: name, mime, size, preview: true }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     openFile: (path, line = null, diff = null) => {
