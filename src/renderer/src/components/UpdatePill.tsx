@@ -14,24 +14,31 @@ export default function UpdatePill() {
   const update = useUpdate()
   if (!updateStanding(update)) return null
   const waiting = pressDoes(update.stage) === 'none'
+  const word = WORDS[update.stage]
 
   return (
     <Tooltip label={`Crew ${update.version}`}>
       <button
         onClick={() => pressUpdate()}
         disabled={waiting}
-        className={`relative flex h-8 items-center overflow-hidden rounded-full px-3 text-xs font-medium text-fg transition-all duration-150 ${
-          waiting ? 'bg-fg/[0.06]' : 'bg-fg/[0.06] hover:bg-fg/[0.1] active:scale-95'
+        className={`relative h-8 overflow-hidden rounded-full text-xs font-semibold transition-colors duration-150 ${
+          waiting ? 'bg-fg/[0.14] text-fg' : 'bg-fg text-ink-900 hover:bg-fg/90 active:scale-95'
         }`}
       >
+        <span className="flex h-full items-center whitespace-nowrap px-3">{word}</span>
         {/* How far the new Crew has come, said by the pill filling rather than
-            by a number beside the word saying the same thing again. */}
-        <span
-          aria-hidden
-          className="absolute inset-y-0 left-0 bg-fg/[0.14] transition-[width] duration-300 ease-out"
-          style={{ width: `${update.percent}%` }}
-        />
-        <span className="relative">{WORDS[update.stage]}</span>
+            by a number beside the word saying the same thing again. The word is
+            written twice, once on each side of the fill, so it stays legible
+            over the white as it passes under it. */}
+        {waiting && (
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 overflow-hidden bg-fg text-ink-900 transition-[width] duration-300 ease-out"
+            style={{ width: `${update.percent}%` }}
+          >
+            <span className="flex h-full items-center whitespace-nowrap px-3">{word}</span>
+          </span>
+        )}
       </button>
     </Tooltip>
   )
