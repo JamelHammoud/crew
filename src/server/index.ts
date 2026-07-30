@@ -79,12 +79,12 @@ function serveMusic(session: CrewSession, file: string, res: http.ServerResponse
 
 function receiveAttachment(session: CrewSession, req: http.IncomingMessage, res: http.ServerResponse): void {
   const mime = (req.headers['content-type'] ?? '').split(';')[0].trim()
-  let name = 'image'
+  let name = 'file'
   try {
     const header = req.headers['x-attachment-name']
     if (typeof header === 'string') name = decodeURIComponent(header)
   } catch {
-    name = 'image'
+    name = 'file'
   }
   const chunks: Buffer[] = []
   let size = 0
