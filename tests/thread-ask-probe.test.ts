@@ -63,9 +63,8 @@ const open = (extra: Partial<ThreadMeta> = {}, agents: PooledAgent[] = [agent]) 
 }
 
 const askLine = (container: HTMLElement): HTMLElement | null =>
-  [...container.querySelectorAll('button')].find(el =>
-    (el.textContent ?? '').startsWith('show the thread title')
-  ) as HTMLElement | null
+  [...container.querySelectorAll('button')].find(el => (el.textContent ?? '').startsWith('show the thread title')) ??
+  null
 
 beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn()
