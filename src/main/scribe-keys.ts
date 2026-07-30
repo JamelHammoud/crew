@@ -164,7 +164,6 @@ export class ScribeKeys {
     const wanted = fallbackCombo(process.platform)
     if (this.combo === wanted) return
     this.unregister()
-    this.functionKey.stop()
     try {
       if (globalShortcut.register(wanted, () => this.say(this.latch.toggled()))) this.combo = wanted
     } catch {
@@ -183,6 +182,7 @@ export class ScribeKeys {
     if (this.latch.running) this.ears.onCancel()
     this.latch.stopped()
     this.unregister()
+    this.functionKey.stop()
     const hook = loaded
     if (hook && this.down && this.up) {
       hook.uIOhook.off('keydown', this.down)
