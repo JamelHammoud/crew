@@ -230,7 +230,7 @@ function warmTerminals(): void {
   }
 }
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow(
     createWindowOptions(process.platform, path.join(dirname, '../preload/preload.mjs'))
@@ -276,18 +276,25 @@ function createWindow(): void {
   } else {
     win.loadFile(path.join(dirname, '../renderer/index.html'))
   }
+  return win
 }
 
-function openWindow(): void {
+function openWindow(): BrowserWindow {
   tray.hidePanel()
   const win = appWindows()[0]
-  if (!win) {
-    createWindow()
-    return
-  }
+  if (!win) return createWindow()
   if (win.isMinimized()) win.restore()
   win.show()
   win.focus()
+  return win
+}
+
+function openThreadIn(win: BrowserWindow, threadId: string): void {
+  const send = () => {
+    if (!win.webContents.isDestroyed()) win.webContents.send('notification:open', threadId)
+  }
+  if (win.webContents.isLoading()) win.webContents.once('did-finish-load', send)
+  else send()
 }
 
 app.whenReady().then(() => {
