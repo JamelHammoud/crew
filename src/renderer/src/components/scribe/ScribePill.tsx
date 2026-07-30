@@ -78,7 +78,13 @@ export default function ScribePill() {
   // while somebody is still talking, and the bars are what the pill has to say
   // for as long as there is a voice to draw: a card opening over them mid sentence
   // takes away the one thing that says Scribe is still listening.
-  const holding = held.length > 0 && (resting || failed)
+  //
+  // A failure comes first even though it has words behind it, because it is the
+  // only state holding a way out of itself: a read that fell over halfway has
+  // stretches held and a Try again for the rest, and a card drawn over that would
+  // be the words so far standing where the way to the rest of them was. Closing it
+  // is what shows the card, since the words are still held.
+  const holding = held.length > 0 && resting
 
   // The outer box is the room the shadow lands in. It is the window that is
   // larger rather than the pill, so this padding is what the two agree on, and
