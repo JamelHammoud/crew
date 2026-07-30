@@ -406,9 +406,34 @@ for (const [key, source] of [
 
 writeFileSync(
   path.join(root, 'src/main/icon-png.ts'),
-  Object.entries(embedded)
+  `${Object.entries(embedded)
     .map(([name, data]) => `export const ${name} = '${data}'\n`)
-    .join('\n')
+    .join('\n')}
+export const SKIN_ICONS: Record<string, string> = {
+${skins.map(([id, source]) => `  ${id}: '${encode(source, 512, 512, id)}'`).join(',\n')}
+}
+`
+)
+
+// The picker draws the icon itself rather than a second drawing of it, so the
+// tiles go to the renderer as they are. An svg is a fraction of the png and
+// stays sharp at whatever size the page asks for.
+const uri = source => `data:image/svg+xml,${encodeURIComponent(source)}`
+
+writeFileSync(
+  path.join(root, 'src/renderer/src/components/settings/icon-art.ts'),
+  `// Written by yarn icon from scripts/make-icon.mjs. Never edited by hand.
+
+export const ICON_ART: Record<string, string> = {
+${[
+  ['dark', dark],
+  ['light', light],
+  ...skins
+]
+  .map(([id, source]) => `  ${id}: '${uri(source)}'`)
+  .join(',\n')}
+}
+`
 )
 
 // Drawn at twice the size the menu bar asks for, so it stays sharp on a retina
