@@ -168,6 +168,7 @@ let opening = openRequestOf(process.argv)
 let command = new CrewCommand(null)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
+let chosenIcon: AppIconId = DEFAULT_APP_ICON
 
 // The tray panel is a window like any other as far as Electron is concerned,
 // so everything that means "the app's own windows" asks for these.
