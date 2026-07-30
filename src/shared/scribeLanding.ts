@@ -8,12 +8,12 @@
 // 'none'    nothing with a caret, so the words are held where they can be copied
 // 'unknown' the machine would not say, which is every machine but a Mac
 //
-// Only 'none' changes what happens, and it is the one answer that has to be
-// earned. A dictation that is held when it could have been written is worse than
-// one written into nothing, because the second costs a paste and the first costs
-// the habit: the words are on screen behind a button rather than in the sentence
-// somebody was in the middle of. So anything this cannot account for is 'unknown'
-// and pastes the way it always did.
+// The two ways of being wrong do not cost the same, which is what settles every
+// rule below. Held words that could have been pasted are on screen, a press away
+// from where they were going. Pasted words that had nowhere to go are gone, and
+// the only way back is to say the whole thing again, which is the very thing this
+// exists to stop. So a doubt is held rather than pasted, and 'unknown', which is
+// every machine that will not answer at all, pastes the way it always did.
 export type Landing = 'text' | 'none' | 'unknown'
 
 // The caret's own attribute. Everything a person can type in carries it, native
