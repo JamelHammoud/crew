@@ -40,6 +40,8 @@ beforeAll(() => {
 afterEach(() => {
   cleanup()
   pressed.mockClear()
+  said.mockClear()
+  failed.mockClear()
   act(() => drive(NO_UPDATE))
 })
 

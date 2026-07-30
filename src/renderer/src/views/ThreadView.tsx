@@ -214,6 +214,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   if (!thread) return null
 
+  const ask = threadAsk(thread, agents)
+  const showPet = nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH
   const placeholder =
     command === 'btw' ? 'Ask about this thread, off to the side' : 'Send a message or @ someone'
   const state = threadState(thread, threadEvents, Boolean(activePromptId))
