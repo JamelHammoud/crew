@@ -105,7 +105,7 @@ describe('a pdf in the panel', () => {
     fireEvent.change(field, { target: { value: 'pools' } })
     await waitFor(() => expect(counted(root)).toBe('1/1'))
 
-    fireEvent.change(field, { target: { value: 'page' } })
+    fireEvent.change(field, { target: { value: 'of' } })
     await waitFor(() => expect(counted(root)).toBe('1/2'))
 
     fireEvent.change(field, { target: { value: 'nothing of the sort' } })
