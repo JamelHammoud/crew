@@ -55,9 +55,10 @@ ${ramp(at)}
 // machine of that era could not draw, so it is the thing that would give it
 // away. The frame is stepped for the same reason.
 
-const BLOCKS = 16
-const BIT_BANDS = ['#8f6dff', '#6a45f0', '#4a2bc4', '#331d94', '#231566']
-const BIT_SPARKS = ['#ff7fd8', '#5be6ff', '#ffe98f']
+const BLOCKS = 12
+const BIT_CORNER = 3
+const BIT_BANDS = ['#7ff0ff', '#3fb4f5', '#2b6be0', '#2340b4', '#1a2478']
+const BIT_SPARKS = ['#ff5fd0', '#ffe36b', '#ffffff']
 
 const bitField = ({ TILE }) => {
   const block = TILE.size / BLOCKS
