@@ -23,7 +23,15 @@ const image = (name = 'shot.png', data = PNG.toString('base64')) => ({
   data
 })
 
-describe('image attachments', () => {
+const PDF = Buffer.from('%PDF-1.4 hello')
+
+const file = (name: string, mime: string, data: Buffer = PDF) => ({
+  name,
+  mime,
+  data: data.toString('base64')
+})
+
+describe('attachments', () => {
   let host: TestHost
   let runners: Runner[] = []
   let uis: TestUi[] = []
