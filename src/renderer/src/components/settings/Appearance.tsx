@@ -122,6 +122,13 @@ export default function Appearance() {
           )
         })}
       </div>
+      <Section title="App icon">
+        <div className="grid grid-cols-3 gap-3">
+          {APP_ICONS.map(icon => (
+            <IconTile key={icon.id} icon={icon} theme={theme} on={picked === icon.id} />
+          ))}
+        </div>
+      </Section>
       <Section title="While an agent works">
         <Row label="Token count">
           <Toggle on={prefs.tokens} label="Token count" onChange={on => setPref('tokens', on)} />
