@@ -26,9 +26,11 @@ import {
 } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { useCrew } from '../state/store'
+import { markFor } from './attachmentMark'
 import { usePanelOpens, type PanelOpen } from './panelOpens'
 import { useReorder, type Reorder } from './useReorder'
 import AsideView from './AsideView'
+import AttachmentView from './attachment/AttachmentView'
 import BrowserTabView, { viewFor } from './BrowserTabView'
 import FileView, { FileCrumbs } from './FileView'
 import GameView from './game/GameView'
@@ -299,6 +301,17 @@ export default function BrowserPanel() {
           .filter(tab => tab.kind === 'terminal')
           .map(tab => (
             <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
+          ))}
+        {tabs
+          .filter(tab => tab.kind === 'attachment')
+          .map(tab => (
+            <div
+              key={tab.id}
+              className="absolute inset-0"
+              style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
+            >
+              <AttachmentView tab={tab} />
+            </div>
           ))}
         {tabs
           .filter(tab => tab.kind === 'agent')
