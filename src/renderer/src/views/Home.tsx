@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { CrewHome } from '../../../shared/project'
+import type { OpenRequest } from '../../../shared/cli'
+import type { OpenOptions } from '../../../shared/session'
 import Avatar from '../components/Avatar'
 import ScreenSwap from '../components/ScreenSwap'
 import Tooltip from '../components/Tooltip'
