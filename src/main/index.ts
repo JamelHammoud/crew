@@ -617,8 +617,11 @@ app.whenReady().then(() => {
   )
   ipcMain.on('terminal:close', (event, id: string) => terminalsFor(event.sender).close(id))
   createWindow()
+  // The window put away by a close is still there, so the dock has to bring that
+  // one back rather than ask whether there is one at all. `openWindow` opens a
+  // window when there is none, which is the other way in here.
   app.on('activate', () => {
-    if (appWindows().length === 0) createWindow()
+    openWindow()
   })
 })
 
@@ -641,6 +644,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
+  quitting = true
   for (const open of terminals.values()) open.closeAll()
   terminals.clear()
   for (const open of previews.values()) open.clear()
