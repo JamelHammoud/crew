@@ -120,6 +120,10 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'tool.added'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.edited'; toolId: string; name: string; mark: string; action: ToolAction; byName: string }
   | { id: string; ts: number; kind: 'tool.removed'; toolId: string; byName: string }
+  // How big a file the crew may send. It is one number for everyone, since the
+  // host is what turns a big one away and everything sent lands in the folder
+  // they share.
+  | { id: string; ts: number; kind: 'attachment.limit'; mb: number; byName: string }
   // A run of a role. These two last, the way agent.start does: they are the
   // record of work, and they are what the chips in a thread are built from.
   // The end carries no text, because the child's answer is already in the log
