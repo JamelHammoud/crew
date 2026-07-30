@@ -9,6 +9,7 @@ import { DocGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
 import Avatar from './Avatar'
+import { searchCustomEmoji } from './customEmojiSheet'
 import Emoji from './Emoji'
 import { emojiForShortcode, searchEmoji, type EmojiEntry } from './emojiData'
 import { rememberEmoji } from './emojiRecents'
@@ -18,6 +19,7 @@ export type MentionItem =
   | { kind: 'member'; member: MemberInfo }
   | { kind: 'ref'; ref: CrewRef }
   | { kind: 'emoji'; entry: EmojiEntry }
+  | { kind: 'custom'; emoji: CustomEmoji }
 
 type Query = { trigger: '@' | '#' | ':'; text: string }
 
