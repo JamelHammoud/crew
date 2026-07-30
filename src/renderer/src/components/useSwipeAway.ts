@@ -55,6 +55,10 @@ export function useSwipeAway(onAway: () => void): SwipeAway {
     setSwiping(false)
     event.currentTarget.releasePointerCapture?.(event.pointerId)
     if (held.x < AWAY && !(held.x > SLOP && held.speed > FLICK)) return setX(0)
+    // A flick lands well short of the distance a hand has to drift past before a
+    // release stops being a press, so a row that went is said to have moved
+    // whatever it travelled, or a brush aside is a press as well.
+    moved.current = true
     gone.current = true
     setX(held.x + event.currentTarget.offsetWidth + CLEAR)
     onAway()
