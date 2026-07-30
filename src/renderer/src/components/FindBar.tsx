@@ -48,11 +48,13 @@ const STEP_BUTTON = `${BAR_BUTTON} disabled:opacity-40 disabled:pointer-events-n
 export default function FindBar({
   containerRef,
   scrollerRef,
-  placeholder = 'Find in page'
+  placeholder = 'Find in page',
+  className = 'top-[78px] right-8'
 }: {
   containerRef: RefObject<HTMLElement | null>
   scrollerRef: RefObject<HTMLElement | null>
   placeholder?: string
+  className?: string
 }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
