@@ -33,11 +33,10 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
       return state.stage === 'none' || state.stage === 'failed'
         ? { stage: 'found', version: said.version, percent: 0 }
         : state
-    // A check that finds nothing is only ever news the first time. It never
-    // takes back one already found, or a pass made while a download is running
-    // would clear the pill out from under it.
+    // A check that finds nothing never takes back one already found, or a pass
+    // made while a download is running would clear the pill out from under it.
     case 'nothing':
-      return state.stage === 'none' ? state : state
+      return state
     case 'getting':
       return { ...state, stage: 'getting', percent: 0 }
     case 'progress':
