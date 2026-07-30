@@ -57,6 +57,9 @@ export interface SessionSnapshot {
   tickets?: TicketEvent[]
   // Absent from a host running an older build, which has no toolbox to send.
   tools?: CrewTool[]
+  // How big a file the crew may send, in megabytes. Absent from a host running
+  // an older build, whose limit is the one this shipped with.
+  attachmentMb?: number
   boards?: DesignBoardMeta[]
   // A call lives only as long as the people in it, so it rides in the snapshot
   // and never in the event log.
@@ -107,6 +110,7 @@ export type ClientMessage =
   | { type: 'tool.add'; name: string; mark: string; action: ToolAction }
   | { type: 'tool.edit'; toolId: string; name: string; mark: string; action: ToolAction }
   | { type: 'tool.remove'; toolId: string }
+  | { type: 'attachment.limit'; mb: number }
   | { type: 'subagent.stop'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that
   // window's own storage and said again on every connect, the way the volume is
