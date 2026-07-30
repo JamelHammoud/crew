@@ -67,11 +67,18 @@ export default function ScribePill() {
   const retry = useScribe(s => s.retry)
   const keeping = useScribe(s => s.keeping)
 
+  const held = useScribe(s => s.held)
+
   const reading = phase === 'reading'
   const failed = phase === 'failed'
   const waking = phase === 'waking'
   const resting = phase === 'off'
   const again = failed && keeping()
+  // Held words wait for the dictation to be over. They arrive a stretch at a time
+  // while somebody is still talking, and the bars are what the pill has to say
+  // for as long as there is a voice to draw: a card opening over them mid sentence
+  // takes away the one thing that says Scribe is still listening.
+  const holding = held.length > 0 && (resting || failed)
 
   // The outer box is the room the shadow lands in. It is the window that is
   // larger rather than the pill, so this padding is what the two agree on, and
