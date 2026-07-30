@@ -9,6 +9,7 @@ import {
   type ScribeSettings
 } from '../shared/scribe'
 import { ScribeLatch } from '../shared/scribeLatch'
+import { ScribeFunctionKey } from './scribe-function-key'
 
 // The hotkey. A bare modifier is the only key worth dictating on and it is the
 // one kind electron cannot register, because `globalShortcut` needs a real key
@@ -60,7 +61,9 @@ function uiohook(): Uiohook | null {
   return loaded
 }
 
-const CODES: Record<Exclude<ScribeKey, 'none'>, string[]> = {
+const FUNCTION_KEY = -1
+
+const CODES: Record<Exclude<ScribeKey, 'fn' | 'none'>, string[]> = {
   'right-option': ['AltRight'],
   'right-ctrl': ['CtrlRight'],
   // Either hand, because nobody thinks of the two control keys as two keys.
@@ -70,11 +73,17 @@ const CODES: Record<Exclude<ScribeKey, 'none'>, string[]> = {
 
 function codesFor(key: ScribeKey, keys: Record<string, number>): number[] {
   if (key === 'none') return []
+  if (key === 'fn') return [FUNCTION_KEY]
   return CODES[key].map(name => keys[name]).filter(code => typeof code === 'number')
 }
 
 export class ScribeKeys {
   private latch = new ScribeLatch('latch')
+  private functionKey = new ScribeFunctionKey({
+    onDown: () => this.pressed(FUNCTION_KEY),
+    onUp: () => this.released(FUNCTION_KEY),
+    onLost: () => this.lostFunctionKey()
+  })
   private codes: number[] = []
   private timer: ReturnType<typeof setTimeout> | undefined
   private started = false
@@ -95,11 +104,14 @@ export class ScribeKeys {
     const hook = uiohook()
     this.codes = hook ? codesFor(settings.key, hook.UiohookKey) : []
     this.listen(hook)
+    if (settings.key === 'fn') this.functionKey.start()
+    else this.functionKey.stop()
     this.register()
   }
 
   state(): ScribeKeyState {
-    return { hooked: this.started, trusted: this.trusted() }
+    const hooked = this.started && (this.settings?.key !== 'fn' || this.functionKey.ready)
+    return { hooked, trusted: this.trusted() }
   }
 
   // Whether the key is really down. A dictation written as it is said cannot
@@ -152,6 +164,7 @@ export class ScribeKeys {
     const wanted = fallbackCombo(process.platform)
     if (this.combo === wanted) return
     this.unregister()
+    this.functionKey.stop()
     try {
       if (globalShortcut.register(wanted, () => this.say(this.latch.toggled()))) this.combo = wanted
     } catch {
@@ -177,6 +190,12 @@ export class ScribeKeys {
     }
     this.down = null
     this.up = null
+  }
+
+  private lostFunctionKey(): void {
+    if (this.settings?.key !== 'fn') return
+    if (this.latch.running) this.ears.onCancel()
+    this.latch.stopped()
   }
 
   private pressed(keycode: number): void {

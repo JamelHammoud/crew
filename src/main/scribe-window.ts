@@ -101,7 +101,7 @@ export class ScribeWindow {
   }
 
   rest(): void {
-    if (this.settings?.on) this.show()
+    if (this.settings?.on && this.settings.always) this.show()
     else this.hide()
   }
 

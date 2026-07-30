@@ -5,7 +5,14 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
-    build: { lib: { entry: 'src/main/index.ts' } }
+    build: {
+      lib: {
+        entry: {
+          index: 'src/main/index.ts',
+          'scribe-function-key-listener': 'src/main/scribe-function-key-listener.ts'
+        }
+      }
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()],

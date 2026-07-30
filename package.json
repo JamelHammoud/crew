@@ -15,7 +15,8 @@
     ],
     "asarUnpack": [
       "**/node_modules/node-pty/**",
-      "**/node_modules/uiohook-napi/**"
+      "**/node_modules/uiohook-napi/**",
+      "**/node_modules/@koromix/koffi-*/**"
     ],
     "mac": {
       "target": "dmg",
