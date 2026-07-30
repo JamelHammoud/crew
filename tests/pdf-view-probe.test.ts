@@ -114,38 +114,41 @@ describe('a pdf in the panel', () => {
     await waitFor(() => expect(counted(root)).toBe('0/0'))
   })
 
-  it('keeps the page number out of what is searched', async () => {
+  it('stands the find bar in the top right corner', async () => {
+    const root = await shown()
+    fireEvent.keyDown(window, { key: 'f', metaKey: true })
+    const field = await waitFor(() => bar(root) as HTMLInputElement)
+    expect(field.parentElement?.className).toContain('top-4')
+    expect(field.parentElement?.className).toContain('right-4')
+  })
+
+  it('draws a page and nothing under it', async () => {
     const root = await shown()
     await waitFor(() => expect(root.querySelectorAll('[data-pdf-text]').length).toBe(words.length))
 
-    const numbers = root.querySelectorAll('.pdf-page')
-    expect(Array.from(numbers, span => span.textContent)).toEqual(['', ''])
-    expect(Array.from(numbers, span => span.getAttribute('data-page'))).toEqual(['1', '2'])
+    expect(root.querySelector('[data-page]')).toBeNull()
+    const column = root.querySelector('[data-pdf]')?.firstElementChild as HTMLElement
+    expect(column.children.length).toBe(words.length)
   })
 
-  it('draws the pages inside the app zoom view', async () => {
+  it('grows the pages themselves when it is pinched', async () => {
     const root = await shown()
-    const frame = root.querySelector('[data-zoom-frame]') as HTMLElement
-    const content = root.querySelector('[data-zoom-content]') as HTMLElement
     const scroller = root.querySelector('[data-pdf]') as HTMLElement
+    await waitFor(() => expect(paper(root).style.width).toBe(`${FIT}px`))
 
-    expect(content.contains(scroller)).toBe(true)
-    expect(content.style.transform).toContain('scale(1)')
-
-    fireEvent.wheel(frame, { deltaY: -120, ctrlKey: true, clientX: 200, clientY: 300 })
-    await waitFor(() => expect(content.style.transform).not.toContain('scale(1)'))
-    expect(scroller.getAttribute('data-pan')).toBe('')
-    expect(scroller.className).toContain('select-none')
+    fireEvent.wheel(scroller, { deltaY: -120, ctrlKey: true, clientX: 200, clientY: 300 })
+    await waitFor(() => expect(parseFloat(paper(root).style.width)).toBeGreaterThan(FIT))
+    expect(paper(root).style.height).not.toBe('0px')
   })
 
-  it('leaves a plain wheel to the pages themselves', async () => {
+  it('leaves a plain wheel to the scroller, both ways', async () => {
     const root = await shown()
-    const content = root.querySelector('[data-zoom-content]') as HTMLElement
     const scroller = root.querySelector('[data-pdf]') as HTMLElement
+    await waitFor(() => expect(paper(root).style.width).toBe(`${FIT}px`))
 
-    fireEvent.wheel(scroller, { deltaY: 400 })
-    expect(content.style.transform).toContain('scale(1)')
-    expect(scroller.className).toContain('overflow-y-auto')
+    fireEvent.wheel(scroller, { deltaY: 400, deltaX: 200 })
+    expect(paper(root).style.width).toBe(`${FIT}px`)
+    expect(scroller.className).toContain('overflow-auto')
     expect(scroller.className).toContain('select-text')
   })
 })
