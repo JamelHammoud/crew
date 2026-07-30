@@ -132,6 +132,9 @@ function reveal(open: string[], path: string): string[] {
   return [...open, ...folders.filter(folder => !open.includes(folder))]
 }
 
+const sameAddress = (a: string, b: string): boolean =>
+  Boolean(a) && a.replace(/\/+$/, '') === b.replace(/\/+$/, '')
+
 function clampWidth(width: number): number {
   const max = Math.max(360, window.innerWidth - 440)
   return Math.min(Math.max(width, 360), max)

@@ -148,9 +148,12 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const file = data?.kind === 'file' ? data : null
   const long = !!file && file.text.split('\n').length > MAX_LINES
+  const writable = !!file && !file.truncated && !long
+  // A markdown file read as the page it is written to be. The words are still
+  // whatever is in hand, so an edit made in the text is on the page as well.
   const reading = !!file && tab.preview && isMarkdown(tab.path)
-  const editable = !!file && !file.truncated && !long && !reading
-  const text = !!file && !file.truncated && !long ? doc : (file?.text ?? '')
+  const editable = writable && !reading
+  const text = writable ? doc : (file?.text ?? '')
   const baseline = hidden || reading ? null : base
 
   const rows = useMemo(() => {
