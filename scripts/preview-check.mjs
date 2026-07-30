@@ -84,6 +84,24 @@ app.whenReady().then(async () => {
 
 const EDITED = SITE.replace('<h1>Sign up</h1>', '<h1>Written just now</h1>')
 
+// A page somebody attached has no file behind it, so there is no folder to hand
+// it and everything it needs is carried inside it. It is the same words stood up
+// the same way, and the whole question is whether one with nothing to reach for
+// still draws.
+const ATTACHED = `<!doctype html>
+<html>
+  <head>
+    <title>Hello everyone</title>
+    <style>h1 { color: rgb(0, 128, 0) }</style>
+  </head>
+  <body>
+    <h1>Written just now</h1>
+    <img id="shot" src="data:image/gif;base64,${GIF}" alt="a shot" />
+    <script>document.body.dataset.ran = 'yes'</script>
+  </body>
+</html>
+`
+
 async function stage() {
   const dir = await mkdtemp(path.join(tmpdir(), 'crew-preview-'))
   const site = path.join(dir, 'site')
