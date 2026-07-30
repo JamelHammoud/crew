@@ -194,6 +194,18 @@ export default function BrowserPanel() {
             <RefreshGlyph className="w-4 h-4" />
           </button>
           <FileCrumbs tab={active} />
+          {isMarkdown(active.path) && (
+            <Tooltip label={active.preview ? 'Hide preview' : 'Show preview'}>
+              <button
+                onClick={() => useBrowser.getState().togglePreview(active.id)}
+                aria-label={active.preview ? 'Hide preview' : 'Show preview'}
+                aria-pressed={active.preview}
+                className={`${iconButton} ${active.preview ? 'text-fg bg-fg/[0.06]' : ''}`}
+              >
+                <DocGlyph className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          )}
           <Tooltip label={active.tree ? 'Hide files' : 'Show files'}>
             <button
               onClick={() => useBrowser.getState().toggleTree(active.id)}
