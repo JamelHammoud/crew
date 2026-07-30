@@ -838,6 +838,9 @@ export class CrewSession {
       case 'tool.remove':
         if (meta.role === 'ui') this.handleToolRemove(member, msg.toolId)
         break
+      case 'attachment.limit':
+        if (meta.role === 'ui') this.handleAttachmentLimit(member, msg.mb)
+        break
       case 'subagent.stop':
         if (meta.role === 'ui' && !this.hiddenFrom(ws, msg.threadId)) this.stopSubagent(msg.threadId)
         break
