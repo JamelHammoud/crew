@@ -131,6 +131,14 @@ const FILE_TYPES: Record<string, string> = {
   ...Object.fromEntries(TEXT_EXTENSIONS.map(ext => [ext, 'text/plain']))
 }
 
+// The plainest name for a type is the one that wins, so the last word on it is
+// the first one written above.
+const EXTENSION_BY_TYPE: Record<string, string> = Object.fromEntries(
+  Object.entries(FILE_TYPES)
+    .reverse()
+    .map(([ext, mime]) => [mime, ext])
+)
+
 export const DOWNLOAD_TYPE = 'application/octet-stream'
 
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
