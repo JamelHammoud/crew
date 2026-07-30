@@ -14,7 +14,9 @@ const measured = (text: string) => ({
   actualBoundingBoxAscent: 8,
   actualBoundingBoxDescent: 2
 })
-HTMLCanvasElement.prototype.getContext = (() => ({ font: '', measureText: measured })) as never
+HTMLCanvasElement.prototype.getContext = function measuring(this: HTMLCanvasElement) {
+  return { canvas: this, font: '', measureText: measured }
+} as never
 
 describe('pdfjs under jsdom', () => {
   it('opens a document', async () => {
