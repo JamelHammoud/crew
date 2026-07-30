@@ -6,11 +6,9 @@ export type SettingsTab =
   | 'reactions'
   | 'sound'
   | 'scribe'
-  | 'power'
-  | 'command'
+  | 'machine'
   | 'people'
   | 'agents'
-  | 'helpers'
   | 'emoji'
   | 'files'
 
