@@ -11,6 +11,15 @@ import { landingOf, type Landing } from '../shared/scribeLanding'
 // 'unknown' is the honest answer rather than a guess that would hold somebody's
 // words back from a field they really were in.
 
+// A focused element that is missing value is the machine declining to answer and
+// never an answer. Chromium builds its accessibility tree only once something asks
+// for it in the way it is waiting to be asked, and nothing here does, so every
+// application anybody really dictates into hands back missing value the whole time
+// their caret is sitting in a box. Setting AXManualAccessibility on the process is
+// what turns it over, and this never does: it is somebody else's application, the
+// tree costs them for as long as it is on, and Crew is already answered without
+// asking macOS anything.
+//
 // One place the script lives. `AXRole` is read as an attribute rather than
 // through System Events' own `role`, because the two disagree: a page with
 // nothing focused comes back as a group from the property and as the web area it
