@@ -26,6 +26,11 @@ export interface ScribeState {
   phase: ScribePhase
   progress: number
   problem: string | null
+  // What was said with nothing to say it into. Main is what decides this and what
+  // holds the words, so the pill is told rather than working it out: the caret
+  // belongs to another application and the clipboard belongs to the machine, and
+  // this window can reach neither.
+  held: string
   settings: ScribeSettings
   arm: () => Promise<void>
   finish: () => Promise<void>
@@ -36,6 +41,9 @@ export interface ScribeState {
   keeping: () => boolean
   apply: (settings: ScribeSettings) => void
   said: (problem: string | null) => void
+  holding: (text: string) => void
+  copy: () => void
+  letGo: () => void
 }
 
 // The bars are read off real audio every frame, so the take is held out here
@@ -200,6 +208,7 @@ export const useScribe = create<ScribeState>((set, get) => {
     phase: 'off',
     progress: 0,
     problem: null,
+    held: '',
     settings: defaultSettings(platform()),
 
     // A press while the model is still coming down still records. Whisper is
