@@ -79,6 +79,15 @@ export const PILL_REST = 28
 export const PILL_MIN = 40
 export const PILL_MAX = 120
 
+// A dictation that had nowhere to go is held on a card rather than on the pill,
+// because the words themselves are the whole of what it has to say and a pill is
+// the width of a mark. It is wider than a failure and taller than anything else
+// here, and the words scroll inside it past that height: what was said is however
+// long somebody talked for, and a card as tall as a paragraph would stand over
+// half of whatever it is floating on.
+export const HELD_WIDTH = 300
+export const HELD_MAX = 200
+
 // The app must not hear its own paste. That keystroke goes out through the same
 // hook the key is read with, so a dictation held on Command, or on Control where
 // Control is what pastes, would be ended by the words it was writing on the way
