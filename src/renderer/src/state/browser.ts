@@ -245,6 +245,14 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = { ...makeTab(), kind: 'file' as const, path, line, diff }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    // A file in a tab of its own, beside the one it was picked from rather than
+    // in place of it. It is a new tab every time, since that is what was asked
+    // for: keeping the file already showing is half the reason to ask for one,
+    // and a row that says new tab and does nothing is worse than a second tab.
+    addFileTab: path => {
+      const tab = { ...makeTab(), kind: 'file' as const, path }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
     openFiles: () => {
       const { tabs, activeTabId } = get()
       const active = tabs.find(t => t.id === activeTabId)
