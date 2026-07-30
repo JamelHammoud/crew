@@ -364,6 +364,16 @@ app.whenReady().then(() => {
   installMenu()
   tray.install()
   updates.start(!fromSource(app.getAppPath()))
+  // The command ships inside the app, so which file goes on PATH is read off
+  // this app rather than off wherever a checkout happens to be.
+  command = new CrewCommand(
+    commandScript({
+      platform: process.platform,
+      fromSource: fromSource(app.getAppPath()),
+      appPath: app.getAppPath(),
+      resourcesPath: process.resourcesPath
+    })
+  )
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
   session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
