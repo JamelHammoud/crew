@@ -5,7 +5,6 @@ import {
   dialog,
   ipcMain,
   Menu,
-  powerSaveBlocker,
   shell,
   type MenuItemConstructorOptions,
   type WebContents
@@ -13,6 +12,7 @@ import {
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { setBadge, showAlert } from './alerts'
+import { KeepAwake } from './awake'
 import type { AgentAlert } from '../shared/alerts'
 import { copyImage } from './clipboard'
 import type { Present } from '../shared/presence'
