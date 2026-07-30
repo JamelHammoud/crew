@@ -104,7 +104,9 @@ export function useMentionAutocomplete(
 
   const pick = (item: MentionItem) => {
     const caret = inputRef.current?.selectionStart ?? value.length
-    if (item.kind === 'emoji') rememberEmoji(item.entry.char)
+    // One of the crew's own goes in as the name it is written with, since that is
+    // what draws the picture wherever the message ends up.
+    const emoji = item.kind === 'emoji' || item.kind === 'custom'
     const token =
       item.kind === 'agent'
         ? `@${item.agent.label}`
@@ -112,10 +114,11 @@ export function useMentionAutocomplete(
           ? `@${item.member.name}`
           : item.kind === 'ref'
             ? `#${item.ref.title}`
-            : item.entry.char
-    const before = value
-      .slice(0, caret)
-      .replace(item.kind === 'emoji' ? EMOJI_TAIL : /[@#][^@#]*$/, token)
+            : item.kind === 'custom'
+              ? customEmojiRef(item.emoji.name)
+              : item.entry.char
+    if (emoji) rememberEmoji(token)
+    const before = value.slice(0, caret).replace(emoji ? EMOJI_TAIL : /[@#][^@#]*$/, token)
     const after = value.slice(caret)
     const gap = after.startsWith(' ') ? '' : ' '
     caretTarget.current = before.length + 1
