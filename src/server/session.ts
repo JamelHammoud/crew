@@ -3578,7 +3578,7 @@ export class CrewSession {
     const agent = this.agents.get(id)
     if (!agent || agent.ownerId !== member.id) return
     if (image) {
-      const saved = this.saveAttachment(image.mime, image.name, Buffer.from(image.data, 'base64'))
+      const saved = this.savePhoto(image.mime, image.name, Buffer.from(image.data, 'base64'))
       if (!saved) return
       agent.avatar = saved.file
     } else {
