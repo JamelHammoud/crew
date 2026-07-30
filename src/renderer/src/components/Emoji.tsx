@@ -1,5 +1,5 @@
 import { Fragment, useMemo } from 'react'
-import { lookupCustomEmojiRef } from './customEmojiSheet'
+import { lookupCustomEmojiRef, useCustomEmoji } from './customEmojiSheet'
 import { lookupEmoji, spriteStyle } from './emojiData'
 import { tokenizeEmoji } from './emojiTokens'
 
