@@ -212,6 +212,21 @@ describe('the settings', () => {
     )
   })
 
+  // The command comes with the app, so this page is the one press that puts it
+  // on PATH. The row turning over is what says it worked, so nothing else does.
+  it('puts crew on your path in one press, and says where it went', async () => {
+    window.crew.commandState = vi
+      .fn()
+      .mockResolvedValueOnce({ kind: 'missing', where: '/usr/local/bin/crew' })
+      .mockResolvedValue({ kind: 'linked', where: '/usr/local/bin/crew' })
+    show('command')
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Install' }))
+    expect(window.crew.installCommand).toHaveBeenCalled()
+    expect(await screen.findByRole('button', { name: 'Remove' })).toBeTruthy()
+    expect(within(card()).getByText('/usr/local/bin/crew')).toBeTruthy()
+  })
+
   it('never says photo in words: your face is where a photo is changed', () => {
     show()
     expect(card().textContent).not.toMatch(/photo/i)
