@@ -84,22 +84,37 @@ const bitField = ({ TILE }) => {
   return rows.join('\n')
 }
 
-// A staircase inside the tile edge: one block wide, and each corner steps in by
-// a block rather than curving, which is the whole tell.
+// A frame one block wide, and its corners step rather than curve, which is the
+// whole tell. It is the ring of blocks that are inside the stepped square with
+// something outside next to them, worked out rather than listed: a list of
+// insets closes the top and the bottom and leaves the two sides open.
 const bitFrame = ({ TILE }) => {
   const block = TILE.size / BLOCKS
-  const steps = [3, 2, 1, 1]
-  const runs = []
-  const at = (col, row) =>
-    `    <rect x="${round(TILE.x + col * block)}" y="${round(TILE.y + row * block)}" width="${round(block + 0.5)}" height="${round(block + 0.5)}" />`
-  for (let col = 0; col < BLOCKS; col++) {
-    const inset = steps[Math.min(col, BLOCKS - 1 - col)] ?? 0
-    for (const row of [inset, BLOCKS - 1 - inset]) runs.push(at(col, row))
+  const inside = (col, row) => {
+    if (col < 0 || row < 0 || col >= BLOCKS || row >= BLOCKS) return false
+    const across = Math.min(col, BLOCKS - 1 - col)
+    const down = Math.min(row, BLOCKS - 1 - row)
+    if (across >= BIT_CORNER || down >= BIT_CORNER) return true
+    const out = BIT_CORNER - across - 0.5
+    const up = BIT_CORNER - down - 0.5
+    return out * out + up * up <= BIT_CORNER * BIT_CORNER
   }
+  const runs = []
   for (let row = 0; row < BLOCKS; row++) {
-    const inset = steps[Math.min(row, BLOCKS - 1 - row)] ?? 0
-    if (inset === 0) continue
-    for (const col of [inset, BLOCKS - 1 - inset]) runs.push(at(col, row))
+    for (let col = 0; col < BLOCKS; col++) {
+      const edge =
+        inside(col, row) &&
+        [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1]
+        ].some(([dx, dy]) => !inside(col + dx, row + dy))
+      if (!edge) continue
+      runs.push(
+        `    <rect x="${round(TILE.x + col * block)}" y="${round(TILE.y + row * block)}" width="${round(block + 0.5)}" height="${round(block + 0.5)}" />`
+      )
+    }
   }
   return runs.join('\n')
 }
