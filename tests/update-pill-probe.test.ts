@@ -116,3 +116,41 @@ describe('the update pill', () => {
     expect(pressed).toHaveBeenCalled()
   })
 })
+
+// The three ways an update does not happen are three different sentences, and a
+// press that was held is worth a word every time it is pressed.
+describe('the word about an update that did not happen', () => {
+  it('says nothing at all while it is going well', () => {
+    put({ stage: 'found', version: '0.1.1' })
+    put({ stage: 'getting', percent: 40 })
+    put({ stage: 'ready', version: '0.1.1', percent: 100 })
+    expect(said).not.toHaveBeenCalled()
+    expect(failed).not.toHaveBeenCalled()
+  })
+
+  it('says a download that did not arrive', () => {
+    put({ stage: 'failed', version: '0.1.1', why: 'download', told: 1 })
+    expect(failed).toHaveBeenCalledWith('The update did not arrive', { key: 'update' })
+  })
+
+  it('says an update that came down and would not go on', () => {
+    put({ stage: 'failed', version: '0.1.1', why: 'install', told: 1 })
+    expect(failed).toHaveBeenCalledWith('Crew did not update', { key: 'update' })
+  })
+
+  it('asks for the other Crew windows rather than taking their work down', () => {
+    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 1 })
+    expect(said).toHaveBeenCalledWith('Close your other Crew windows to update', {
+      key: 'update'
+    })
+    expect(failed).not.toHaveBeenCalled()
+  })
+
+  it('says it again on the next press, and never for the same word twice', () => {
+    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 1 })
+    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 1 })
+    expect(said).toHaveBeenCalledTimes(1)
+    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 2 })
+    expect(said).toHaveBeenCalledTimes(2)
+  })
+})
