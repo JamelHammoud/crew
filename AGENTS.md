@@ -13,6 +13,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn tsc --noEmit` — typecheck
 - `yarn covers` — draw every music cover on one page
 - `yarn selection-check` — select everything in a real window and see what it painted
+- `yarn preview-check` — stand a page up in a real window and see what it reached
 - `yarn dist` — build a mac dmg
 - `crew` opens a crew on a folder from a terminal. `npm link` in this checkout puts it on PATH
 
