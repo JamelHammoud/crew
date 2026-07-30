@@ -119,12 +119,8 @@ export class Updates {
     const next = nextUpdate(this.state, said)
     if (next === this.state) return
     this.state = next
-    for (const win of this.windows()) this.tell(win)
+    for (const win of this.host.windows()) this.tell(win)
     if (next.stage === 'ready') void this.install()
-  }
-
-  private windows(): BrowserWindow[] {
-    return this.host.windows()
   }
 
   // Silent and running again on the other side, because the press was somebody
