@@ -8,7 +8,7 @@ import { rememberEmoji } from './emojiRecents'
 import { MenuItem, Popover } from './Popover'
 import type { ReactionGroup } from './reactionGroups'
 import ReactionPickerButton from './ReactionPickerButton'
-import ReactionTip, { reactionName } from './ReactionTip'
+import ReactionTip from './ReactionTip'
 import Tooltip from './Tooltip'
 
 const PILL = 'flex h-7 items-center rounded-full transition-[transform,background-color,color,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-95'
@@ -84,7 +84,7 @@ export default function MessageReactions({
           <button
             key={emoji}
             type="button"
-            aria-label={`React with ${reactionName(emoji)}`}
+            aria-label={`React with ${emojiName(emoji)}`}
             aria-pressed={selected.has(emoji)}
             onClick={event => reactFromMenu(emoji, event.detail > 0)}
             className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
