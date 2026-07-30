@@ -303,6 +303,17 @@ export default function BrowserPanel() {
             <TerminalView key={tab.id} tab={tab} active={tab.id === activeTabId} />
           ))}
         {tabs
+          .filter(tab => tab.kind === 'attachment')
+          .map(tab => (
+            <div
+              key={tab.id}
+              className="absolute inset-0"
+              style={{ visibility: tab.id === activeTabId ? 'visible' : 'hidden' }}
+            >
+              <AttachmentView tab={tab} />
+            </div>
+          ))}
+        {tabs
           .filter(tab => tab.kind === 'agent')
           .map(tab => (
             <div
