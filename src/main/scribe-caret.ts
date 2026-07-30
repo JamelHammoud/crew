@@ -52,7 +52,19 @@ end tell`
 // this whole wait sits behind somebody talking and costs the dictation nothing.
 const PATIENCE_MS = 1500
 
-export function askCaret(platform: string = process.platform): Promise<Landing> {
+// Our own windows, asked before the machine is. It answers null when the caret is
+// somewhere else entirely, which is every application but this one, and that is
+// what sends the question on to macOS.
+export type OwnCaret = () => Landing | null
+
+const elsewhere: OwnCaret = () => null
+
+export function askCaret(
+  ours: OwnCaret = elsewhere,
+  platform: string = process.platform
+): Promise<Landing> {
+  const own = ours()
+  if (own) return Promise.resolve(own)
   if (platform !== 'darwin') return Promise.resolve('unknown')
   return new Promise(answer => {
     execFile(
