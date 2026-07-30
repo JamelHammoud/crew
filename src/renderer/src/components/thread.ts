@@ -53,20 +53,29 @@ export const eventsOfThread = (events: SessionEvent[], threadId: string): Sessio
       : 'threadId' in event && event.threadId === threadId
   )
 
-// What a thread changed is what it changed and what it sent out. A helper's
-// edits are the thread's edits, the same reason a thread with helpers still out
-// is not ready for review, so a run that split every file off to helpers would
-// otherwise say nothing changed at all. Its own runs name the thread and a
-// helper's name the helper, so the family is walked down parentThreadId, and it
-// is walked all the way: a helper can send one out itself. The walk grows the
-// set until it stops growing rather than following each chain down, so a parent
-// named in a circle is a set that settles rather than a window that locks.
-export function stepsOfThread(
-  threadId: string,
+// Steps are held per run, so anything that wants a thread's own are gathered off
+// the runs that thread started, in the order they were started.
+const stepsOfRuns = (
+  ids: Set<string>,
   events: SessionEvent[],
-  steps: Record<string, AgentStep[]>,
+  steps: Record<string, AgentStep[]>
+): AgentStep[] => {
+  const out: AgentStep[] = []
+  for (const event of events) {
+    if (event.kind !== 'agent.start' || !event.threadId || !ids.has(event.threadId)) continue
+    out.push(...(steps[event.promptId] ?? []))
+  }
+  return out
+}
+
+// A thread and everything it sent out. A helper can send one out itself, so it
+// is walked all the way down, and the set is grown until it stops growing rather
+// than each chain being followed, so a parent named in a circle settles rather
+// than locking the window.
+export function threadFamily(
+  threadId: string,
   threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>>
-): AgentStep[] {
+): Set<string> {
   const family = new Set([threadId])
   for (let grew = true; grew; ) {
     grew = false
@@ -77,13 +86,30 @@ export function stepsOfThread(
       grew = true
     }
   }
-  const out: AgentStep[] = []
-  for (const event of events) {
-    if (event.kind !== 'agent.start' || !event.threadId || !family.has(event.threadId)) continue
-    out.push(...(steps[event.promptId] ?? []))
-  }
-  return out
+  return family
 }
+
+// The steps of a thread's own turns, and nothing a helper took. What a run is
+// narrating and what its list of work says are read off these, and a helper
+// keeps a list of its own: folded in, whichever of them wrote last would take
+// the columns over, which is the same mistake as letting a CLI's own list run
+// beside tickets the agent put up.
+export const stepsOfThread = (
+  threadId: string,
+  events: SessionEvent[],
+  steps: Record<string, AgentStep[]>
+): AgentStep[] => stepsOfRuns(new Set([threadId]), events, steps)
+
+// What a thread changed is what it changed and what it sent out. A helper's
+// edits are the thread's edits, the same reason a thread with helpers still out
+// is not ready for review, so a run that split every file off to helpers would
+// say nothing changed at all read the plain way.
+export const stepsOfFamily = (
+  threadId: string,
+  events: SessionEvent[],
+  steps: Record<string, AgentStep[]>,
+  threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>>
+): AgentStep[] => stepsOfRuns(threadFamily(threadId, threads), events, steps)
 
 export function threadState(thread: ThreadMeta, events: SessionEvent[], running: boolean): ThreadState {
   if (running) return 'working'
