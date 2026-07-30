@@ -9,10 +9,7 @@ export class Updates {
   private timer: ReturnType<typeof setInterval> | null = null
   private live = false
 
-  constructor(
-    private readonly windows: () => BrowserWindow[],
-    private readonly quit: () => void
-  ) {}
+  constructor(private readonly windows: () => BrowserWindow[]) {}
 
   // A run from source has no release behind it and no signature to check one
   // against, so the pill never stands there and nothing is ever fetched.
