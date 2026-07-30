@@ -12,12 +12,16 @@ export function replyTargetLabel(authorName: string, toSelf: boolean, byMe: bool
   return byMe ? 'Replying to yourself' : 'Replying to you'
 }
 
-export function replyImage(events: SessionEvent[], targetId: string | undefined): Attachment | undefined {
+// One thing off the message being replied to, and a picture is the one worth
+// showing, so it wins over a file that came with it.
+export function replyAttachment(events: SessionEvent[], targetId: string | undefined): Attachment | undefined {
   if (!targetId) return undefined
   for (let i = events.length - 1; i >= 0; i--) {
     const event = events[i]
     if (event.kind !== 'message' || messageReactionTarget(event.id) !== targetId) continue
-    return event.attachments?.find(attachment => isImageType(attachment.mime))
+    const carried = event.attachments
+    if (!carried || carried.length === 0) return undefined
+    return carried.find(attachment => isImageType(attachment.mime)) ?? carried[0]
   }
   return undefined
 }
