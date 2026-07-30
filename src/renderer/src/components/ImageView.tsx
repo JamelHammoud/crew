@@ -5,7 +5,15 @@ import ZoomView from './ZoomView'
 
 const PIXELATED_AT = 3
 
-export default function ImageView({ src, alt }: { src: string; alt: string }) {
+export default function ImageView({
+  src,
+  alt,
+  copyable = true
+}: {
+  src: string
+  alt: string
+  copyable?: boolean
+}) {
   const imageRef = useRef<HTMLImageElement>(null)
   const [natural, setNatural] = useState(0)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)

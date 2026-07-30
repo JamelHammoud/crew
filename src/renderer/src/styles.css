@@ -330,7 +330,9 @@ textarea:placeholder-shown {
 
 /* The one place the band is written down. Anything that has to paint a
    selection under an opaque patch of its own, like the emoji sheet in the
-   composer, wears it as bg-selection. */
+   composer, wears it as bg-selection. A page of paper is white whichever
+   theme the window is in, so text drawn on one takes the paper band and the
+   window's band would vanish under it. */
 ::selection {
   background: var(--color-selection);
 }
