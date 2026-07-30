@@ -34,6 +34,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'command') return <Command />
   if (tab === 'people') return <People />
   if (tab === 'helpers') return <Helpers />
+  if (tab === 'emoji') return <Emoji />
   if (tab === 'files') return <Files />
   return <Agents />
 }
