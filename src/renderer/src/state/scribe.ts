@@ -287,6 +287,15 @@ export const useScribe = create<ScribeState>((set, get) => {
     said: problem => {
       if (!problem) return
       set({ phase: 'failed', problem })
-    }
+    },
+
+    holding: text => set({ held: text }),
+
+    // Nothing is said back about either of these. The card is the whole of what
+    // is on screen, so a word about the copy would be a word written over the
+    // words it is about, and letting go takes the card down, which says it.
+    copy: () => window.crew.copyScribeHeld(),
+
+    letGo: () => window.crew.letGoScribeHeld()
   }
 })
