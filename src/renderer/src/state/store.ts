@@ -24,7 +24,7 @@ import { TYPING_PING, type Typist } from '../../../shared/typing'
 import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
 import { alertToast } from '../components/alertToast'
-import { imagesFrom, readImages, type PendingAttachment } from '../components/images'
+import { filesFrom, imagesFrom, readFiles, type PendingAttachment } from '../components/images'
 import { playSound, soundFor } from '../media/sounds'
 import { finishedAlert, memberMentionAlert, questionAlert } from './alerts'
 import { helperPrefs, onHelperPrefs } from './helpers'
@@ -328,7 +328,7 @@ const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: 
 const readPhoto = (file: File, send: (image: OutgoingAttachment) => void): void => {
   const [picked] = imagesFrom([file])
   if (!picked) return
-  void readImages([picked], 0).then(([image]) => {
+  void readFiles([picked], 0).then(([image]) => {
     if (image) send({ name: image.name, mime: image.mime, data: image.data })
   })
 }
@@ -852,9 +852,9 @@ export const useCrew = create<CrewState>((set, get) => {
       set(state => ({ threadCommands: { ...state.threadCommands, [threadId]: commands } })),
     setTyping: (where, on) => sayTyping(where, on),
     attach: async (key, files) => {
-      const picked = imagesFrom(files)
+      const picked = filesFrom(files)
       if (picked.length === 0) return
-      const added = await readImages(picked, (get().pending[key] ?? []).length)
+      const added = await readFiles(picked, (get().pending[key] ?? []).length)
       if (added.length === 0) return
       set(state => ({ pending: { ...state.pending, [key]: [...(state.pending[key] ?? []), ...added] } }))
     },
