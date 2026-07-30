@@ -294,6 +294,18 @@ function serveTickets(session: CrewSession, raw: string, req: http.IncomingMessa
   return false
 }
 
+// A page an agent wants on the screen. It names the promptId of the run asking,
+// the same credential the board and the helpers are reached on, and the thread
+// it opens in is read off that run rather than taken from the body.
+function servePage(session: CrewSession, raw: string, req: http.IncomingMessage, res: http.ServerResponse): boolean {
+  if (req.method !== 'POST' || raw.split('?')[0] !== '/page') return false
+  readJson(req, res, MAX_AGENT_BODY, body => {
+    const result = session.showPage(said(body, 'promptId'), body.url, body.title)
+    sendJson(res, 'error' in result ? 400 : 200, result)
+  })
+  return true
+}
+
 export function createCrewServer(session: CrewSession, opts: CrewServerOptions = {}): Promise<CrewServer> {
   const httpServer = http.createServer((req, res) => {
     if (req.url === '/') {
@@ -317,6 +329,7 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
     }
     if (serveAgents(session, req.url ?? '', req, res)) return
     if (serveTickets(session, req.url ?? '', req, res)) return
+    if (servePage(session, req.url ?? '', req, res)) return
     const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(req.url ?? '')
     if (req.method === 'POST' && designOps) {
       receiveDesignOps(session, designOps[1], req, res)

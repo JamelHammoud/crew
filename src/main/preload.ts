@@ -156,6 +156,15 @@ const bridge = {
       ipcRenderer.off('scribe:problem', handler)
     }
   },
+  updateState: (): Promise<UpdateState> => ipcRenderer.invoke('update:state'),
+  pressUpdate: (): Promise<void> => ipcRenderer.invoke('update:press'),
+  onUpdate: (listener: (state: UpdateState) => void): (() => void) => {
+    const handler = (_event: unknown, state: UpdateState) => listener(state)
+    ipcRenderer.on('update:state', handler)
+    return () => {
+      ipcRenderer.off('update:state', handler)
+    }
+  },
   onWindowShape: (listener: (shape: { square: boolean; full: boolean }) => void): void => {
     ipcRenderer.on('window:shape', (_event, shape: { square: boolean; full: boolean }) =>
       listener(shape)
