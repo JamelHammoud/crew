@@ -109,6 +109,26 @@ export function landingInPage(tag: string, type: string, editable: boolean): Lan
   return NOT_TYPED_IN.has(type.trim().toLowerCase()) ? 'none' : 'text'
 }
 
+// The three things the rule above is asked about, read off the page itself. It is
+// a string because it is run in the window rather than here, and it lives beside
+// the rule rather than beside the sending so a suite can put a real document
+// through the pair of them: what is read and what is made of it are the two halves
+// of one answer, and a snippet stranded in main is the half nobody can see.
+//
+// A shadow root is walked into. The document hands back the host of one rather
+// than what is inside it, so a box drawn inside a shadow root would read as the
+// element it was drawn in and the words would be held back from a real field.
+export const FOCUSED_IN_PAGE = `(() => {
+  let el = document.activeElement
+  while (el && el.shadowRoot && el.shadowRoot.activeElement) el = el.shadowRoot.activeElement
+  if (!el) return null
+  return {
+    tag: el.tagName || '',
+    type: el.getAttribute ? el.getAttribute('type') || '' : '',
+    editable: !!el.isContentEditable
+  }
+})()`
+
 // Whether what was said is held back rather than written out. Copying was already
 // the answer to wanting the words on the clipboard, so a dictation aimed there is
 // never held: it has somewhere to go and it goes there. Everything else turns on
