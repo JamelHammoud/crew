@@ -2,6 +2,7 @@ import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { useBrowser } from '../state/browser'
+import { useCustomEmoji } from './customEmojiSheet'
 import { emojifyHtml } from './emojiHtml'
 import { linkifyFiles, locatePaths, parseFileRef, targetFor } from './fileLinks'
 import { morph } from './mdMorph'
@@ -57,6 +58,7 @@ export default function Markdown({
 }) {
   const host = useRef<HTMLDivElement>(null)
   const drawn = useRef(false)
+  const sheet = useCustomEmoji()
   const [resolved, setResolved] = useState(0)
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
