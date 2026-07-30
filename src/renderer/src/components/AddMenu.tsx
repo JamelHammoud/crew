@@ -45,7 +45,7 @@ export default function AddMenu({
   return (
     <>
       {input}
-      <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add to your message'} disabled={open}>
+      <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} files` : 'Add to your message'} disabled={open}>
         <button
           onClick={() => (open ? setOpen(false) : show())}
           disabled={full && !calling}
