@@ -68,6 +68,18 @@ export function createScribeOptions(
   }
 }
 
+// On a Mac the red button puts a window away rather than takes it down. The
+// app is still running, the session is still up, and this machine's agents are
+// still the crew's, so a window that was really destroyed would throw away
+// everything on screen for a press that means come back to this later. Quitting
+// is what ends it, and that is the one time a close is let through.
+//
+// Everywhere else the close is the way out, and `window-all-closed` is where
+// what happens next is decided.
+export function closePutsAway(platform: NodeJS.Platform, quitting: boolean): boolean {
+  return platform === 'darwin' && !quitting
+}
+
 export function createWindowOptions(
   platform: NodeJS.Platform,
   preload: string
