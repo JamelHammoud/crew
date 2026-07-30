@@ -64,7 +64,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const { scrolledUp, atBottom, onScroll, jumpToBottom, follow } = useStickToBottom(scrollRef, `thread:${threadId}`)
+  const { scrolledUp, atBottom, onScroll, jumpToBottom, jumpToTop, follow } = useStickToBottom(
+    scrollRef,
+    `thread:${threadId}`
+  )
   const inputRef = useAutoResize(text)
   const agentPresence = usePresence(thread?.agentLabel ?? '', thread?.agentId)
 
