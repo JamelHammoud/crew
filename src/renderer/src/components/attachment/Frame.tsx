@@ -18,7 +18,7 @@ export function Loading() {
 }
 
 export function Note({ children }: { children: ReactNode }) {
-  return <p className="select-none px-4 py-3 text-xs text-fg-muted">{children}</p>
+  return <p className="select-none px-4 py-3 font-sans text-xs text-fg-muted">{children}</p>
 }
 
 export function Failed({ label }: { label: string }) {
