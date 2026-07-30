@@ -1,7 +1,8 @@
 import { Fragment, useMemo } from 'react'
 import { lookupCustomEmojiRef, useCustomEmoji } from './customEmojiSheet'
-import { lookupEmoji, spriteStyle } from './emojiData'
+import { emojiName, lookupEmoji, spriteStyle } from './emojiData'
 import { tokenizeEmoji } from './emojiTokens'
+import Tooltip from './Tooltip'
 
 export default function Emoji({
   char,
