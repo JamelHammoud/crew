@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { customEmojiRef, type CustomEmoji } from '../../../shared/customEmoji'
 import { mentionCandidates, type PooledAgent } from '../../../shared/llm'
 import { memberMentionCandidates } from '../../../shared/people'
 import type { MemberInfo } from '../../../shared/protocol'
