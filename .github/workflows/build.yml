@@ -65,7 +65,9 @@ jobs:
           shopt -s nullglob
           fail() { echo "$1" >&2; exit 1; }
           apps=(dist/*/Crew.app)
-          [ "${#apps[@]}" -eq 2 ] || fail "expected two mac apps, found ${#apps[@]}"
+          [ "${#apps[@]}" -eq 1 ] || fail "expected one mac app, found ${#apps[@]}"
+          [ "$(lipo -archs "${apps[0]}/Contents/MacOS/Crew")" = arm64 ] \
+            || fail "the mac app is not an arm64 build"
           for app in "${apps[@]}"; do
             codesign --verify --deep --strict "$app" || fail "$app is not signed properly"
             codesign -dvv "$app" 2>&1 | grep -q 'Authority=Developer ID Application:' \
