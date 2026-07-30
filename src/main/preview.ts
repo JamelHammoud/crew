@@ -11,6 +11,10 @@ const FOLDER = path.join(os.tmpdir(), 'crew-previews')
 // be committed and synced to everyone in the crew for the few seconds somebody
 // spends looking at it. Pages belong to the window that opened them, so closing
 // one takes its own away and leaves every other window's alone.
+//
+// A page with no file behind it, which is one somebody attached, has no folder to
+// read from and is handed no base at all, rather than being pointed at the root
+// of the disk.
 export class Previews {
   private made = new Map<string, string>()
 
