@@ -37,6 +37,7 @@ export default function ScribePill() {
   const cancel = useScribe(s => s.cancel)
   const retry = useScribe(s => s.retry)
   const keeping = useScribe(s => s.keeping)
+  const settings = useScribe(s => s.settings)
 
   const held = useScribe(s => s.held)
 
