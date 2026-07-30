@@ -5,6 +5,7 @@ import { agentId, type AgentDef, type AgentSettings, type AgentUsage } from '../
 import { pagePreamble } from '../shared/showPage'
 import { subagentPreamble } from '../shared/subagents'
 import { ticketPreamble } from '../shared/tickets'
+import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { ClientMessage, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import type { Provider, RunningPrompt } from './providers/types'
 import { AttachmentCache, promptWithAttachments } from './attachments'
@@ -124,7 +125,7 @@ export class Runner {
     const previous = this.ws
     this.onStatus?.('connecting')
     this.httpBase = httpBaseFrom(url)
-    const ws = new WebSocket(url)
+    const ws = new WebSocket(url, { maxPayload: MAX_FRAME_BYTES })
     this.ws = ws
     previous?.close(1000)
     this.lastSeen = Date.now()
