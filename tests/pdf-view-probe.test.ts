@@ -10,6 +10,8 @@ import PdfPreview from '../src/renderer/src/components/attachment/PdfPreview'
 import { PAGE_WIDTH, pdfBytes } from './helpers/pdf'
 
 const PANEL = 456
+const PAD = 12
+const FIT = PANEL - PAD * 2
 
 class Blind {
   observe(): void {}
