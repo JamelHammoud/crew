@@ -12,6 +12,14 @@ import type { TicketEvent } from './tickets'
 import type { CrewTool, ToolAction } from './toolbox'
 import type { Typist } from './typing'
 
+// A message carries its files inside it, as text, so how big a frame may be is
+// how big an attachment may be. `ws` caps a frame at a hundred megabytes of its
+// own accord, which turned every size in the picker past that into a socket
+// closing mid-send. Half a gigabyte is the real ceiling either way: base64 makes
+// a file a third longer again, and a string longer than this is one V8 cannot
+// hold, so nothing here could read the frame even if it arrived.
+export const MAX_FRAME_BYTES = 512 * 1024 * 1024
+
 export interface RegisteredLlm {
   // Absent only from machines running an older build, which have no minted id
   // yet; the host falls back to the owner name for those.

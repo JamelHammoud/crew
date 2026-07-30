@@ -180,7 +180,8 @@ function main(argv) {
   const child = spawn(launch.command, [...launch.args, openFlag(request)], {
     cwd: request.folder,
     detached: true,
-    stdio: 'ignore'
+    stdio: 'ignore',
+    env: childEnv(process.env)
   })
   child.on('error', error => {
     process.stderr.write(`crew: ${launch.command} would not start. ${error.message}\n`)
