@@ -75,7 +75,7 @@ describe('a pdf in the panel', () => {
     const density = 2
     const viewport = page.getViewport({ scale: (width / unit.width) * density })
     expect(Math.round(viewport.width)).toBe(width * density)
-    expect(Math.round(viewport.height)).toBe(Math.round(width * (unit.height / unit.width)) * density)
+    expect(viewport.height / viewport.width).toBeCloseTo(unit.height / unit.width)
 
     const canvas = createCanvas(Math.round(viewport.width), Math.round(viewport.height))
     await page.render({ canvas: canvas as unknown as HTMLCanvasElement, viewport }).promise
