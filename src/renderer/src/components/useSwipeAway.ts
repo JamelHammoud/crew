@@ -80,8 +80,9 @@ export function useSwipeAway(onAway: () => void): SwipeAway {
         const held = grab.current
         if (!held) return
         const travelled = event.clientX - held.from
-        if (!moved.current && Math.abs(travelled) < SLOP) return
-        moved.current = true
+        if (Math.abs(travelled) > DRIFT) moved.current = true
+        if (!following.current && Math.abs(travelled) < SLOP) return
+        following.current = true
         // It only goes one way, so pulling the other way holds it where it is
         // rather than dragging it under whatever it stands beside.
         const next = Math.max(0, travelled)
