@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ScribeHeld from '../src/renderer/src/components/scribe/ScribeHeld'
 import ScribePill from '../src/renderer/src/components/scribe/ScribePill'
 import { useScribe } from '../src/renderer/src/state/scribe'
+import { defaultSettings } from '../src/shared/scribe'
 
 // The card a dictation with nowhere to land is held on, as somebody standing in
 // front of it sees it: the words they just said, a way to copy them, and a way to
