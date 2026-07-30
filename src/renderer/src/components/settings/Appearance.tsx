@@ -1,7 +1,10 @@
+import { APP_ICONS, type AppIconDef } from '../../../../shared/appIcon'
 import { CheckGlyph } from '../../icons'
+import { applyAppIcon, useAppIcon } from '../../state/appIcon'
 import { setPref, usePrefs } from '../../state/prefs'
 import { applyTheme, useTheme, type Theme } from '../../state/theme'
 import Toggle from '../Toggle'
+import { ICON_ART } from './icon-art'
 import { Page, Row, Section } from './parts'
 
 // The window as it would be, drawn in the theme it is offering rather than in
