@@ -24,6 +24,7 @@ declare global {
     projects(): Promise<RecentProject[]>
     forgetProject(folder: string): Promise<void>
     forgetJoin(link: string): Promise<void>
+    opening(): Promise<OpenRequest | null>
     projectPlan(folder: string): Promise<ProjectPlan>
     setShared(shared: boolean): Promise<CurrentSession | null>
     agentCapabilities(): Promise<ProviderCapability[]>
