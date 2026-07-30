@@ -67,7 +67,9 @@ export default function Markdown({
     const unknown = linkifyFiles(container)
     emojifyHtml(container)
     return { html: container.innerHTML, unknown }
-  }, [text, resolved, images, breaks])
+    // The sheet of the crew's own is read while this is drawn, so a name written
+    // before they had that emoji is a picture the moment it arrives.
+  }, [text, resolved, images, breaks, sheet])
 
   useLayoutEffect(() => {
     const el = host.current
