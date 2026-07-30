@@ -6,6 +6,7 @@ import { scribeAnalyser, useScribe } from '../../state/scribe'
 import InsetRing from '../InsetRing'
 import Levels from '../Levels'
 import { grab } from './grab'
+import ScribeHeld from './ScribeHeld'
 
 // What is on screen while dictation is on. It stands there the whole time rather
 // than arriving with a dictation and leaving with it, so at rest it is the mark
