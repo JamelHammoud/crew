@@ -59,9 +59,13 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
   }, [tab.generation])
 
   return (
+    // A pdf is drawn by the browser's own reader rather than by a page, and a
+    // view that is not told so hands the file to the machine instead of showing
+    // it, which is a panel that opens on nothing.
     <webview
       ref={ref}
       src={tab.initialUrl}
+      plugins={true}
       className="absolute inset-0 w-full h-full"
       style={{ visibility: active ? 'visible' : 'hidden' }}
     />
