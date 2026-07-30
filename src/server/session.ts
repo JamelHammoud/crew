@@ -3409,9 +3409,11 @@ export class CrewSession {
     const transcript = context
       .map(e => {
         if (e.kind === 'message') {
-          const images = (e.attachments ?? []).map(a => `[image: ${a.name}]`).join(' ')
+          const shared = (e.attachments ?? [])
+            .map(a => `[${isImageType(a.mime) ? 'image' : 'file'}: ${a.name}]`)
+            .join(' ')
           const reply = e.replyTo ? `, replying to ${e.replyTo.authorName}: ${JSON.stringify(e.replyTo.text)}` : ''
-          return `${e.authorName}${reply}: ${[e.text, images].filter(Boolean).join(' ')}`
+          return `${e.authorName}${reply}: ${[e.text, shared].filter(Boolean).join(' ')}`
         }
         if (e.ok && e.text) return `${e.agentLabel}: ${e.text}`
         return null
