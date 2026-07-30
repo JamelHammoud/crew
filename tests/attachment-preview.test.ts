@@ -159,6 +159,32 @@ describe('what a file is drawn as', () => {
     expect(viewFor('application/octet-stream')).toBe('text')
     expect(viewFor('')).toBe('text')
   })
+
+  // A page and a vector are handed over as text, so the type is text on both and
+  // the name is the only thing that says which.
+  it('reads a page and a vector off the name', () => {
+    expect(viewFor('text/plain', 'hello.html')).toBe('page')
+    expect(viewFor('text/plain', 'one.htm')).toBe('page')
+    expect(viewFor('text/plain', 'INDEX.XHTML')).toBe('page')
+    expect(viewFor('text/plain', 'logo.svg')).toBe('vector')
+    expect(viewFor('text/plain', 'notes.txt')).toBe('text')
+    expect(viewFor('text/plain', 'html')).toBe('text')
+  })
+
+  // A name only decides it where the type has nothing left to say.
+  it('lets a type that knows what it is win over the name', () => {
+    expect(viewFor('image/png', 'shot.html')).toBe('image')
+    expect(viewFor('application/pdf', 'paper.svg')).toBe('pdf')
+  })
+
+  it('offers both ways of reading anything written to be looked at', () => {
+    expect(bothWays('text/plain', 'hello.html')).toBe(true)
+    expect(bothWays('text/plain', 'logo.svg')).toBe(true)
+    expect(bothWays('text/markdown', 'notes.md')).toBe(true)
+    expect(bothWays('text/plain', 'notes.txt')).toBe(false)
+    expect(bothWays('application/pdf', 'paper.pdf')).toBe(false)
+    expect(bothWays('image/png', 'shot.png')).toBe(false)
+  })
 })
 
 describe('opening one in the panel', () => {
