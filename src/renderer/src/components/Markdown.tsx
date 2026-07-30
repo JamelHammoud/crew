@@ -29,14 +29,26 @@ function wrapTables(container: HTMLElement) {
   }
 }
 
+// A picture the page points at by a path nothing in the app can reach, handed
+// over as itself. It lands on the drawn image rather than on the words, so a
+// path written inside a code fence is left as it was typed.
+function swapImages(container: HTMLElement, images: Record<string, string>) {
+  for (const image of Array.from(container.querySelectorAll('img'))) {
+    const found = images[image.getAttribute('src') ?? '']
+    if (found) image.setAttribute('src', found)
+  }
+}
+
 export default function Markdown({
   text,
   className = '',
-  stream = false
+  stream = false,
+  images
 }: {
   text: string
   className?: string
   stream?: boolean
+  images?: Record<string, string>
 }) {
   const host = useRef<HTMLDivElement>(null)
   const drawn = useRef(false)

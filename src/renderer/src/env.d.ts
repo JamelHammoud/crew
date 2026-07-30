@@ -10,6 +10,7 @@ import type { RecentJoin, RecentProject } from '../../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../../shared/scribe'
 import type { Said } from '../../shared/scribeSaid'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../../shared/session'
+import type { UpdateState } from '../../shared/update'
 
 declare global {
   interface CrewBridge {
@@ -77,6 +78,9 @@ declare global {
     onScribe(listener: (word: 'arm' | 'finish' | 'cancel') => void): () => void
     onScribeSettings(listener: (settings: ScribeSettings) => void): () => void
     onScribeProblem(listener: (problem: string | null) => void): () => void
+    updateState(): Promise<UpdateState>
+    pressUpdate(): Promise<void>
+    onUpdate(listener: (state: UpdateState) => void): () => void
     onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
   }
