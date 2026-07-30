@@ -182,6 +182,38 @@ export function kindOf(mime: string): AttachmentKind {
   return 'file'
 }
 
+const SHEET_TYPES = new Set([
+  'text/csv',
+  'text/tab-separated-values',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.oasis.opendocument.spreadsheet'
+])
+
+const WRITING_TYPES = new Set([
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.oasis.opendocument.text',
+  'application/rtf'
+])
+
+// How the app draws one, which is a different question from what it is. Every
+// file has an answer here, because one nobody can name still has something in
+// it: what is left over is read as its own contents rather than handed to the
+// machine with nothing shown.
+export type PreviewKind = 'image' | 'video' | 'audio' | 'pdf' | 'sheet' | 'writing' | 'archive' | 'text'
+
+export function previewOf(mime: string): PreviewKind {
+  if (mime.startsWith('image/')) return 'image'
+  if (mime.startsWith('video/')) return 'video'
+  if (mime.startsWith('audio/')) return 'audio'
+  if (mime === 'application/pdf') return 'pdf'
+  if (SHEET_TYPES.has(mime)) return 'sheet'
+  if (WRITING_TYPES.has(mime)) return 'writing'
+  if (ARCHIVE_TYPES.has(mime)) return 'archive'
+  return 'text'
+}
+
 export function fileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   const kb = bytes / 1024
