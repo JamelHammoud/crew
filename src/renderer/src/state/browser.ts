@@ -419,6 +419,7 @@ export const useBrowser = create<BrowserState>((write, get) => {
           t.id === id ? { ...t, tree: !t.tree, open: t.tree ? t.open : reveal(t.open, t.path) } : t
         )
       })),
+    togglePreview: id => set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, preview: !t.preview } : t)) })),
     toggleFolder: (id, path) =>
       set(s => ({
         tabs: s.tabs.map(t =>
