@@ -13,7 +13,7 @@ import {
 } from '../shared/update'
 
 const AGAIN_MS = 60 * 60 * 1000
-const GONE_MS = 30 * 1000
+const GONE_MS = 60 * 1000
 const LOG_CAP = 512 * 1024
 
 // The one export of this package that is a getter on its exports rather than a
