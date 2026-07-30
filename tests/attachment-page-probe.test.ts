@@ -127,6 +127,19 @@ describe('a page somebody attached', () => {
     expect(screen.getByLabelText('Show the picture')).toBeTruthy()
   })
 
+  // Copy hands a picture to the machine's clipboard, which takes a photo and
+  // nothing else, so a drawing is left without the row rather than with one that
+  // does nothing.
+  it('leaves the copy off a drawing', async () => {
+    open('two.svg', 'logo.svg')
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(drawing()).not.toBeNull())
+
+    fireEvent.contextMenu(document.querySelector('[data-image-frame]')!, { clientX: 40, clientY: 40 })
+
+    expect(screen.queryByText('Copy image')).toBeNull()
+  })
+
   it('reads a markdown file as the page, with the words a press away', async () => {
     open('three.md', 'notes.md', 'text/markdown')
     render(createElement(BrowserPanel))
