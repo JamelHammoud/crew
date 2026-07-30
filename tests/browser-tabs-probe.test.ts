@@ -241,6 +241,45 @@ describe('the tab strip', () => {
   })
 })
 
+// A page an agent showed comes up rather than waiting to be found, and asking
+// for one that is already open loads it again: it is shown because it changed.
+describe('a page an agent shows', () => {
+  it('opens it and stands the panel up', () => {
+    useBrowser.setState({ open: false })
+
+    useBrowser.getState().showPage('http://localhost:5173')
+
+    expect(useBrowser.getState().tabs.map(t => t.initialUrl)).toEqual(['http://localhost:5173'])
+    expect(useBrowser.getState().open).toBe(true)
+  })
+
+  it('loads the one that is already open rather than opening a second', () => {
+    useBrowser.getState().showPage('http://localhost:5173')
+    const tab = useBrowser.getState().tabs[0]!
+    useBrowser.getState().closePanel()
+
+    useBrowser.getState().showPage('http://localhost:5173')
+
+    const { tabs, activeTabId, open } = useBrowser.getState()
+    expect(tabs).toHaveLength(1)
+    expect(activeTabId).toBe(tab.id)
+    expect(tabs[0]!.generation).toBe(tab.generation + 1)
+    expect(open).toBe(true)
+  })
+
+  // The webview tidies an address as it loads it, so the tab reads back with a
+  // slash the agent never wrote. That is the same page, not a second one.
+  it('knows an address the webview tidied is the same address', () => {
+    useBrowser.getState().showPage('http://localhost:5173')
+    const tab = useBrowser.getState().tabs[0]!
+    useBrowser.getState().updateTab(tab.id, { url: 'http://localhost:5173/' })
+
+    useBrowser.getState().showPage('http://localhost:5173')
+
+    expect(useBrowser.getState().tabs).toHaveLength(1)
+  })
+})
+
 // What the app says about a question the agent raised turns on whether that
 // board is really in front of somebody, and pressing the way in has to put it
 // there whether or not the tab was already standing.
