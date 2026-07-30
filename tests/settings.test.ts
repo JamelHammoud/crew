@@ -7,6 +7,7 @@ import Settings from '../src/renderer/src/components/settings/Settings'
 import { SETTINGS_TABS, tabLabel } from '../src/renderer/src/components/settings/tabs'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { playSound } from '../src/renderer/src/media/sounds'
+import { awake } from '../src/renderer/src/state/awake'
 import { prefs } from '../src/renderer/src/state/prefs'
 import { closeSettings, openSettings } from '../src/renderer/src/state/settings'
 import { setScribeSettings } from '../src/renderer/src/state/scribeSettings'
@@ -49,7 +50,8 @@ beforeEach(() => {
     onScribeSaid: vi.fn().mockReturnValue(() => {}),
     scribeSaid: vi.fn().mockResolvedValue([]),
     scribeState: vi.fn().mockResolvedValue({ hooked: true, trusted: true }),
-    setTheme: vi.fn()
+    setTheme: vi.fn(),
+    keepAwake: vi.fn()
   } as unknown as typeof window.crew
   useCrew.setState({
     selfId: 'jamel',
