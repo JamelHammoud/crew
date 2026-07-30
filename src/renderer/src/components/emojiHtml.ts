@@ -1,3 +1,4 @@
+import { lookupCustomEmoji } from './customEmojiSheet'
 import { spriteStyle, type EmojiEntry } from './emojiData'
 import { tokenizeEmoji } from './emojiTokens'
 
