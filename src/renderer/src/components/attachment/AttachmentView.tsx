@@ -10,6 +10,8 @@ import VideoPreview from './VideoPreview'
 import { viewFor } from './view'
 import WritingPreview from './WritingPreview'
 
+const PdfPreview = lazy(() => import('./PdfPreview'))
+
 function Body({ url, name, mime }: { url: string; name: string; mime: string }) {
   switch (viewFor(mime)) {
     case 'image':
