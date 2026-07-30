@@ -1,5 +1,5 @@
 import type { Glyph } from '../../icons'
-import { GroupGlyph, PeopleGlyph, ScribeGlyph, SpeakerGlyph, SparkGlyph, SunGlyph } from '../../icons'
+import { FileGlyph, GroupGlyph, PeopleGlyph, ScribeGlyph, SpeakerGlyph, SparkGlyph, SunGlyph } from '../../icons'
 import type { SettingsTab } from '../../state/settings'
 
 export interface TabDef {
