@@ -45,10 +45,16 @@ describe('what the app can say about a new Crew', () => {
     expect(nextUpdate(going, { word: 'progress', percent: Number.NaN }).percent).toBe(0)
   })
 
-  it('lands ready, and nothing said after that moves it', () => {
+  it('lands ready, and nothing about a check moves it', () => {
     const state = walk([found, { word: 'getting' }, { word: 'ready', version: '0.2.0' }])
-    expect(state).toEqual({ stage: 'ready', version: '0.2.0', percent: 100 })
+    expect(state).toMatchObject({ stage: 'ready', version: '0.2.0', percent: 100, why: '' })
     expect(walk([{ word: 'error' }, { word: 'nothing' }, found], state)).toEqual(state)
+  })
+
+  it('says a newer one the moment a check finds it, and stands still otherwise', () => {
+    const state = walk([found])
+    expect(nextUpdate(state, found)).toBe(state)
+    expect(nextUpdate(state, { word: 'found', version: '0.3.0' }).version).toBe('0.3.0')
   })
 
   // A pass that could not reach the internet is nothing to say. Only a download
