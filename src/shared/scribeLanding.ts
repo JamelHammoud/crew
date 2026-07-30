@@ -66,6 +66,40 @@ export function landingFrom(role: string, attributes: readonly string[]): Landin
   return attributes.includes(CARET) ? 'text' : 'none'
 }
 
+// Crew's own boxes, which never go through the machine at all. A window here is a
+// page, and a page already knows what has the caret in it, so asking macOS about
+// our own app is asking another process to describe a box we are holding.
+//
+// It is also the one app that can be sure. Everything the machine is asked about
+// is a Chromium application answering a question it has not built the tree for, so
+// our own windows are the one place a 'none' is really earned: the caret is in
+// Crew, it is not in anything anybody can type in, and the words are held.
+//
+// An input nobody here has heard of is somewhere to type. A type is a word from a
+// standard that grows, and the ones that are not a box are the ones worth naming:
+// read the other way round, the next kind of field to be added anywhere would hold
+// somebody's words back from a box they were really in.
+const NOT_TYPED_IN = new Set([
+  'button',
+  'checkbox',
+  'color',
+  'file',
+  'hidden',
+  'image',
+  'radio',
+  'range',
+  'reset',
+  'submit'
+])
+
+export function landingInPage(tag: string, type: string, editable: boolean): Landing {
+  if (editable) return 'text'
+  const named = tag.trim().toUpperCase()
+  if (named === 'TEXTAREA') return 'text'
+  if (named !== 'INPUT') return 'none'
+  return NOT_TYPED_IN.has(type.trim().toLowerCase()) ? 'none' : 'text'
+}
+
 // Whether what was said is held back rather than written out. Copying was already
 // the answer to wanting the words on the clipboard, so a dictation aimed there is
 // never held: it has somewhere to go and it goes there. Everything else turns on
