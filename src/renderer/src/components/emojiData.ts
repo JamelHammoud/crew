@@ -108,6 +108,13 @@ export function emojiForShortcode(name: string): string | undefined {
   return byShortName.get(name.toLowerCase())?.char
 }
 
+// What somebody would type to write it again. One of the crew's own arrives as
+// its own `:name:` already, so the value stands as it is.
+export function emojiName(value: string): string {
+  const entry = lookupEmoji(value)
+  return entry ? `:${entry.shortName}:` : value
+}
+
 export function searchEmoji(query: string, limit = 108): EmojiEntry[] {
   const needle = query.trim().toLowerCase().replace(/^:|:$/g, '')
   if (!needle) return []
