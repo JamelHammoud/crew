@@ -44,9 +44,9 @@ export function AttachmentTray({ attachmentKey }: { attachmentKey: string }) {
           <Tooltip label={item.name}>
             {isImageType(item.mime) ? (
               <button
-                onClick={() => useBrowser.getState().openImage(previewSrc(item), item.name)}
+                onClick={() => open(item)}
                 aria-label={`Open ${item.name}`}
-                className={`${SLOT} block w-16 overflow-hidden transition-all duration-150 hover:border-fg/25 active:scale-95`}
+                className={`${SLOT} block w-16 overflow-hidden`}
               >
                 <img src={previewSrc(item)} alt={item.name} className="block h-full w-full object-cover" />
               </button>
