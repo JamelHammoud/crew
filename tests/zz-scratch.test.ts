@@ -21,7 +21,8 @@ describe('pdfjs under jsdom', () => {
       console.log('fetch ok', answer.ok)
       const data = new Uint8Array(await answer.arrayBuffer())
       console.log('bytes', data.length)
-      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
+      pdfjs.GlobalWorkerOptions.workerSrc = new URL('../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs', import.meta.url).href
+      console.log('src', pdfjs.GlobalWorkerOptions.workerSrc)
       const doc = await pdfjs.getDocument({ data }).promise
       console.log('pages', doc.numPages)
       const page = await doc.getPage(1)
