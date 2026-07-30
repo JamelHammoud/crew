@@ -319,7 +319,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             <Empty
               icon={<DocGlyph className="w-8 h-8 text-fg-faint" />}
               label="No preview for this file"
-              detail={`${data.path} · ${Math.max(1, Math.round(data.size / 1024))} KB`}
+              detail={`${data.path} · ${fileSize(data.size)}`}
             />
           )}
         </div>
