@@ -142,9 +142,11 @@ export function attachmentMbChoices(shared: boolean, picked: number): number[] {
   return ladder.includes(picked) ? ladder : bySize([...ladder, picked])
 }
 
+// A size somebody picks is said the way a size on a file is said, through the one
+// formatter, or the ladder and the row under a file disagree about what a
+// gigabyte is.
 export function attachmentMbLabel(mb: number): string {
-  if (mb === ATTACHMENT_UNLIMITED) return 'No limit'
-  return mb >= 1024 ? `${Number((mb / 1024).toFixed(1))} GB` : `${mb} MB`
+  return mb === ATTACHMENT_UNLIMITED ? 'No limit' : fileSize(attachmentBytes(mb))
 }
 
 export function cleanAttachmentMb(mb: unknown): number | null {

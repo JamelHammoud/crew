@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { appLaunch, openFlag, parseArgs } from '../bin/crew.mjs'
+import { appLaunch, childEnv, openFlag, parseArgs } from '../bin/crew.mjs'
 import { cleanOpenRequest, openRequestOf } from '../src/shared/cli'
 
 const CWD = '/work/site'
