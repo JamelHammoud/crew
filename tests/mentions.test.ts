@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mentionCandidates, mentionsIn, type AgentStatus } from '../src/shared/llm'
+import { memberMentionCandidates } from '../src/shared/people'
 
 const agent = (id: string, label: string, status: AgentStatus = 'idle') => ({ id, label, status })
 
