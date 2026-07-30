@@ -79,6 +79,7 @@ type BrowserState = {
   openUrl(url: string): void
   showPage(url: string): void
   openImage(src: string, name: string): void
+  openAttachment(url: string, name: string, mime: string, size?: number): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   addFileTab(path: string): void
   openFiles(): void
@@ -128,6 +129,8 @@ function makeTab(url = ''): BrowserTab {
     line: null,
     diff: null,
     command: null,
+    mime: '',
+    size: 0,
     game: null,
     threadId: '',
     parentThreadId: '',
