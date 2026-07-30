@@ -16,6 +16,24 @@ function spriteNode(doc: Document, entry: EmojiEntry): HTMLElement {
   return sprite
 }
 
+// The crew's own is a picture rather than a square of the sheet, so it stands on
+// the same line at the same size by wearing the same three values.
+function pictureNode(doc: Document, url: string): HTMLElement {
+  const picture = doc.createElement('img')
+  picture.setAttribute('aria-hidden', 'true')
+  picture.src = url
+  picture.alt = ''
+  picture.draggable = false
+  Object.assign(picture.style, {
+    display: 'inline-block',
+    width: '1.15em',
+    height: '1.15em',
+    verticalAlign: '-0.2em',
+    objectFit: 'contain'
+  })
+  return picture
+}
+
 function readableNode(doc: Document, char: string): HTMLElement {
   const span = doc.createElement('span')
   span.className = 'sr-only'
