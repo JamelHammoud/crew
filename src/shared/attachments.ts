@@ -260,7 +260,7 @@ export function fileSize(bytes: number): string {
   let size = Math.max(0, bytes)
   let unit = 0
   while (unit < UNITS.length - 1 && Math.round(size) >= 1000) {
-    size /= 1024
+    size /= 1000
     unit += 1
   }
   const said = unit > 0 && size < 10 ? size.toFixed(1) : String(Math.round(size))

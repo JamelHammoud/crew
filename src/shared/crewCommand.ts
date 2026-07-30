@@ -51,14 +51,12 @@ export function shellWord(text: string): string {
   return `'${text.split("'").join(`'\\''`)}'`
 }
 
-const quoted = shellWord
-
 export function installLine(script: string): string {
-  return `mkdir -p ${quoted(COMMAND_DIR)} && ln -sf ${quoted(script)} ${quoted(COMMAND_LINK)}`
+  return `mkdir -p ${shellWord(COMMAND_DIR)} && ln -sf ${shellWord(script)} ${shellWord(COMMAND_LINK)}`
 }
 
 export function removeLine(): string {
-  return `rm -f ${quoted(COMMAND_LINK)}`
+  return `rm -f ${shellWord(COMMAND_LINK)}`
 }
 
 // The same line again, asked for with an admin password, for the machines whose
