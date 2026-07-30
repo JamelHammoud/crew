@@ -81,7 +81,7 @@ export class GitSync {
   // committing and pushing somebody's work. This is what waits it out, and it is
   // what a quit that is about to replace the app under itself has to hold for.
   // Nothing new is started: the pass in flight commits whatever is on disk.
-  settle(): Promise<void> {
+  quiet(): Promise<void> {
     return this.chain.catch(() => {})
   }
 
