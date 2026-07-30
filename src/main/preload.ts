@@ -159,6 +159,18 @@ const bridge = {
       ipcRenderer.off('scribe:problem', handler)
     }
   },
+  // Words a dictation found nothing to write into. Main holds them and says so,
+  // and Copy is answered there for the same reason: this window never takes
+  // focus, and the clipboard is not something a page without it can reach.
+  copyScribeHeld: (): void => ipcRenderer.send('scribe:copyHeld'),
+  letGoScribeHeld: (): void => ipcRenderer.send('scribe:letGo'),
+  onScribeHeld: (listener: (text: string) => void): (() => void) => {
+    const handler = (_event: unknown, text: string) => listener(text)
+    ipcRenderer.on('scribe:held', handler)
+    return () => {
+      ipcRenderer.off('scribe:held', handler)
+    }
+  },
   updateState: (): Promise<UpdateState> => ipcRenderer.invoke('update:state'),
   pressUpdate: (): Promise<void> => ipcRenderer.invoke('update:press'),
   onUpdate: (listener: (state: UpdateState) => void): (() => void) => {
