@@ -283,22 +283,28 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                     </button>
                   </Tooltip>
                   {/* Who the thread is with, and what it is about. The ask is
-                      the thread's own name for itself and it is the one thing
-                      this row could not say, so it stands under the agent's
-                      name and lines up with it. Pressing it goes to the head of
-                      the thread, where the whole of it is written. */}
-                  <div className="min-w-0 flex-1 flex flex-col items-start">
+                      the thread's own name for itself and the one thing this row
+                      could not say, so it stands under the agent's name and
+                      starts where it starts. Pressing it goes to the head of the
+                      thread, where the whole of it is written.
+
+                      The pair is the height the row already was: the ramp sets a
+                      base line at 22 and a small one at 18, which is the 40 the
+                      pet and the way back are drawn at, so the two lines are
+                      centered on the mark beside them by the leading alone. The
+                      mark stands out here rather than inside the name, or line
+                      one is 40 on its own and the row grows by the second. */}
+                  {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} />}
+                  <div className="min-w-0 flex-1">
                     <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0 max-w-full">
-                      <span className="flex items-center gap-3 min-w-0 cursor-default">
-                        {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} />}
-                        <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+                      <span className="block text-base font-bold text-fg truncate cursor-default">
+                        {thread.agentLabel}
                       </span>
                     </MemberName>
                     {ask && nameWidth >= ASK_MIN_WIDTH && (
                       <button
                         onClick={jumpToTop}
-                        style={{ paddingLeft: showPet ? AVATAR_WIDTH : 0 }}
-                        className="max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
+                        className="block max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
                       >
                         {ask}
                       </button>
