@@ -35,9 +35,15 @@ export default function ScribeWindow() {
     return () => observer.disconnect()
   }, [])
 
+  // Escape is the way out of whatever is on screen. A card of held words is words
+  // and nothing else, so it lets go of them rather than cancelling a dictation
+  // that is already over.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') useScribe.getState().cancel()
+      if (event.key !== 'Escape') return
+      const scribe = useScribe.getState()
+      if (scribe.held) scribe.letGo()
+      else scribe.cancel()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
