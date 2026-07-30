@@ -167,6 +167,9 @@ export default function FindBar({
     if (rect.top < view.top + 110 || rect.bottom > view.bottom - 60) {
       scroller.scrollTop += rect.top + rect.height / 2 - (view.top + view.height / 2)
     }
+    if (rect.left < view.left + 24 || rect.right > view.right - 24) {
+      scroller.scrollLeft += rect.left + rect.width / 2 - (view.left + view.width / 2)
+    }
   }, [matches, active, scrollerRef])
 
   if (!open) return null
