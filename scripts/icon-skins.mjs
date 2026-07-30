@@ -408,12 +408,12 @@ ${MESH.map(
 ${spot({
   id: 'tube',
   x: ctx.CENTRE,
-  y: ctx.CENTRE + 40,
-  r: ctx.TILE.size * 0.6,
+  y: ctx.CENTRE + 30,
+  r: ctx.TILE.size * 0.62,
   colour: PHOSPHOR,
   at: [
-    [0, PHOSPHOR, 0.2],
-    [0.5, PHOSPHOR, 0.07],
+    [0, PHOSPHOR, 0.3],
+    [0.5, PHOSPHOR, 0.12],
     [1, PHOSPHOR, 0]
   ]
 })}
