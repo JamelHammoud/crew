@@ -152,7 +152,7 @@ describe('toasts', () => {
     expect(screen.queryByText('Playlist deleted')).toBe(null)
   })
 
-  it('the row itself is the way out', () => {
+  it('a row with nothing to do is taken away by a press', () => {
     show()
     act(() => {
       toast.fail('Could not share the session.')
@@ -162,7 +162,19 @@ describe('toasts', () => {
     expect(rows().length).toBe(0)
   })
 
-  it('a press on the button is the button and not the way out as well', () => {
+  it('the whole row is the way into what it is about, not the button alone', () => {
+    show()
+    const pressed = vi.fn()
+    act(() => {
+      toast('Bubbles finished', { action: { label: 'Open', onPress: pressed } })
+    })
+    fireEvent.click(screen.getByText('Bubbles finished'))
+    expect(pressed).toHaveBeenCalledTimes(1)
+    tick(TOAST_OUT_MS)
+    expect(rows().length).toBe(0)
+  })
+
+  it('a row that keeps its place says its piece and stays', () => {
     show()
     const pressed = vi.fn()
     act(() => {
@@ -172,6 +184,25 @@ describe('toasts', () => {
     tick(TOAST_OUT_MS)
     expect(pressed).toHaveBeenCalledTimes(1)
     expect(screen.getByText('Sharing the session')).toBeTruthy()
+  })
+
+  // A hand drifts while it presses, and the distance that starts a drag is short
+  // enough that an ordinary press has already crossed it. Read as a gesture, the
+  // press was thrown away and the row did nothing at all.
+  it('a press that drifted a few pixels is still a press', () => {
+    show()
+    const pressed = vi.fn()
+    act(() => {
+      toast('Bubbles finished', { action: { label: 'Open', onPress: pressed } })
+    })
+    act(() => {
+      const card = document.querySelector('.toast-card')!
+      fireEvent.pointerDown(card, { button: 0, pointerId: 1, clientX: 0 })
+      fireEvent.pointerMove(card, { pointerId: 1, clientX: 8 })
+      fireEvent.pointerUp(card, { pointerId: 1, clientX: 8 })
+      fireEvent.click(screen.getByText('Open'))
+    })
+    expect(pressed).toHaveBeenCalledTimes(1)
   })
 
   const swipe = (to: number) => {
