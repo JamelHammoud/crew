@@ -35,6 +35,11 @@ export class ScribeWindow {
   // have to make again. Null until they make it, and the bottom middle of the
   // screen until then.
   private spot: Spot | null = null
+  // Words that had nowhere to land, kept here because this is the one place both
+  // the card and the clipboard can be reached from: the card is drawn in this
+  // window and Copy is the machine's own clipboard, so holding them in the page
+  // would be holding them twice.
+  private words = ''
   // Where the pill stood when it was taken hold of. Every move is measured
   // from here rather than from where it has got to, so a drag that runs into
   // the edge of a screen comes back off it as the pointer does.
