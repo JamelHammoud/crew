@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
-import { reactionName } from '../src/renderer/src/components/ReactionTip'
+import { emojiName } from '../src/renderer/src/components/emojiData'
 import {
   addQuickReaction,
   quickReactions,
@@ -144,7 +144,7 @@ describe('the row somebody chose', () => {
 describe('the row on the tray', () => {
   it('draws the four it ships with, named the way a reaction is named', () => {
     mount()
-    expect(row()).toEqual([...QUICK_REACTIONS].map(emoji => `React with ${reactionName(emoji)}`))
+    expect(row()).toEqual([...QUICK_REACTIONS].map(emoji => `React with ${emojiName(emoji)}`))
     expect(row()[0]).toBe('React with :tada:')
   })
 
@@ -169,7 +169,7 @@ describe('the row on the tray', () => {
     setQuickReactions(TEN)
     mount()
 
-    expect(row()).toEqual(TEN.map(emoji => `React with ${reactionName(emoji)}`))
+    expect(row()).toEqual(TEN.map(emoji => `React with ${emojiName(emoji)}`))
     expect(tray().className).toContain('flex-wrap')
     expect(tray().className).toContain('justify-end')
     for (const button of tray().querySelectorAll('button')) {

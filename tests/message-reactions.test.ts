@@ -3,7 +3,8 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
-import { reactionName, reactorLine } from '../src/renderer/src/components/ReactionTip'
+import { emojiName } from '../src/renderer/src/components/emojiData'
+import { reactorLine } from '../src/renderer/src/components/ReactionTip'
 import { reactionGroups } from '../src/renderer/src/components/reactionGroups'
 import { buildThread } from '../src/renderer/src/components/thread'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -181,7 +182,7 @@ describe('message reaction controls', () => {
     expect(reactorLine({ names: ['Jamel', 'Ali', 'Ben', 'Cat', 'Dee'], self: true })).toBe(
       'You, Ali, Ben and 2 others'
     )
-    expect(reactionName('🔥')).toBe(':fire:')
+    expect(emojiName('🔥')).toBe(':fire:')
   })
 
   it('shows the reaction, its name and who reacted on hover', () => {
