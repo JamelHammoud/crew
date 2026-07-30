@@ -23,18 +23,22 @@ export interface Spot {
 // every pixel of window past the pill is a click of somebody else's that goes
 // nowhere.
 //
-// The smallest it may be is the pill at rest, the largest is a failure holding
-// its sentence. Both ends are held here rather than trusted, because the size
-// comes off a page measuring itself and a window of nought or of the whole screen
-// is worse than a window of the wrong size.
+// The smallest it may be is the pill at rest, the largest is the card a dictation
+// with nowhere to land is held on. Both ends are held here rather than trusted,
+// because the size comes off a page measuring itself and a window of nought or of
+// the whole screen is worse than a window of the wrong size.
+//
+// The largest is worked out from both of the things that can stand in this window
+// rather than from whichever is bigger today, so a failure's sentence and a card
+// of held words each get their own room and neither has to know about the other.
 export const PILL_SMALLEST = {
   width: PILL_REST + PILL_ROOM * 2,
   height: PILL_REST + PILL_ROOM * 2
 }
 
 export const PILL_LARGEST = {
-  width: PILL_WIDTH + PILL_ROOM * 2,
-  height: PILL_MAX + PILL_ROOM * 2
+  width: Math.max(PILL_WIDTH, HELD_WIDTH) + PILL_ROOM * 2,
+  height: Math.max(PILL_MAX, HELD_MAX) + PILL_ROOM * 2
 }
 
 export function fits(size: Size): Size {
