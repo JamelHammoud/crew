@@ -43,6 +43,7 @@ beforeEach(() => {
   )
   window.crew = {
     agentCapabilities: vi.fn().mockResolvedValue([]),
+    appVersion: vi.fn().mockResolvedValue('0.1.0'),
     commandState: vi.fn().mockResolvedValue({ kind: 'missing', where: '/usr/local/bin/crew' }),
     installCommand: vi.fn().mockResolvedValue({ ok: true }),
     removeCommand: vi.fn().mockResolvedValue({ ok: true }),
