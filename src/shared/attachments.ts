@@ -167,8 +167,11 @@ const ARCHIVE_TYPES = new Set([
 
 const DOCUMENT_TYPES = new Set(['application/pdf', 'application/json', 'application/msword', 'application/rtf'])
 
+// What a thing is, which is what the mark on it says. Whether the app can draw
+// it is a different question, and `isImageType` is the one that answers it: a
+// photo off a phone is a picture on the row and still a file to open.
 export function kindOf(mime: string): AttachmentKind {
-  if (isImageType(mime)) return 'image'
+  if (mime.startsWith('image/')) return 'image'
   if (mime.startsWith('video/')) return 'video'
   if (mime.startsWith('audio/')) return 'audio'
   if (ARCHIVE_TYPES.has(mime)) return 'archive'
