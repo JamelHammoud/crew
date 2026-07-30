@@ -15,7 +15,7 @@ const LABEL: Record<CommandState['kind'], string> = {
 }
 
 function Mono({ children }: { children: string }) {
-  return <span className="mono-inline font-mono select-text">{children}</span>
+  return <span className="font-mono mono-inline break-all select-text">{children}</span>
 }
 
 function line(state: CommandState) {
