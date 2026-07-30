@@ -41,9 +41,9 @@ jobs:
         with:
           node-version: 22
 
-      - run: corepack enable && corepack prepare yarn@$YARN --activate
+      - run: npm install --global yarn@$YARN
 
-      - run: yarn install --immutable
+      - run: yarn install --frozen-lockfile
 
       - if: inputs.version != ''
         run: npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
