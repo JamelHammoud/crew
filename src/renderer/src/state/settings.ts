@@ -3,12 +3,14 @@ import { useSyncExternalStore } from 'react'
 export type SettingsTab =
   | 'you'
   | 'appearance'
+  | 'reactions'
   | 'sound'
   | 'scribe'
   | 'command'
   | 'people'
   | 'agents'
   | 'helpers'
+  | 'emoji'
   | 'files'
 
 // Which page of the settings is open, or none. It is held here rather than in
