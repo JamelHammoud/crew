@@ -5,6 +5,12 @@ import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 // where it was. A gesture that travelled is not a press, so whatever it was
 // dragged from asks `moved` before it treats the click as one.
 const SLOP = 6
+// A press is not a still hand: a click on a trackpad carries a few pixels of
+// drift with it, and the distance that starts a drag is short enough that an
+// ordinary press has already crossed it. Read as a gesture, every press that
+// drifted was thrown away, which is a button that does nothing at all. So the
+// row starts following at `SLOP` and stops being a press only past `DRIFT`.
+const DRIFT = 16
 const AWAY = 88
 const FLICK = 0.45
 const CLEAR = 40
