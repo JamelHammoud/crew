@@ -245,13 +245,22 @@ export function previewOf(mime: string): PreviewKind {
   return 'text'
 }
 
+const UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
+
+// A size is read rather than counted, so it never stands in four digits of a
+// unit somebody would have said the next one up: a thousand kilobytes is a
+// megabyte to everyone looking at it. The decimal is only worth a digit under
+// ten, where it is the difference between two files, and a trailing nought is a
+// digit spent on nothing, so 1 MB, 1.4 MB, 14 MB, 140 MB.
 export function fileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  const kb = bytes / 1024
-  if (kb < 1024) return `${Math.max(1, Math.round(kb))} KB`
-  const mb = kb / 1024
-  if (mb < 1024) return `${mb.toFixed(1)} MB`
-  return `${(mb / 1024).toFixed(1)} GB`
+  let size = Math.max(0, bytes)
+  let unit = 0
+  while (unit < UNITS.length - 1 && Math.round(size) >= 1000) {
+    size /= 1024
+    unit += 1
+  }
+  const said = unit > 0 && size < 10 ? size.toFixed(1) : String(Math.round(size))
+  return `${said.replace(/\.0$/, '')} ${UNITS[unit]}`
 }
 
 export function attachmentFileUrl(httpBase: string, file: string): string {
