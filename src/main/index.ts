@@ -35,6 +35,7 @@ import { ScribeWindow } from './scribe-window'
 import { openRequestOf } from '../shared/cli'
 import { AppSession, type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
+import { Updates } from './updates'
 import { createWindowOptions } from './window-options'
 
 app.setName('Crew')
