@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { isAttachmentFile } from '../shared/attachments'
+import { isCustomEmojiFile } from '../shared/customEmoji'
 import { appendChatLine, readChatLines } from './chatLog'
 import { BOARD_ID, type DesignDocument } from '../shared/design'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
@@ -44,6 +45,7 @@ export class Store {
     fs.mkdirSync(path.join(this.root, 'attachments'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'designs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'music'), { recursive: true })
+    fs.mkdirSync(path.join(this.root, 'emoji'), { recursive: true })
   }
 
   saveAttachment(file: string, data: Buffer): void {
