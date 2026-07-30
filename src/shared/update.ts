@@ -12,9 +12,18 @@ export interface UpdateState {
   version: string
   percent: number
   why: UpdateWhy
+  // Pressing again and being held again is worth saying again, so the count of
+  // what has been said is part of the state rather than the reason alone.
+  told: number
 }
 
-export const NO_UPDATE: UpdateState = { stage: 'none', version: '', percent: 0, why: '' }
+export const NO_UPDATE: UpdateState = {
+  stage: 'none',
+  version: '',
+  percent: 0,
+  why: '',
+  told: 0
+}
 
 export type UpdateWord =
   | { word: 'found'; version: string }
