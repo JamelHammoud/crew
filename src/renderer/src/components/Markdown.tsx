@@ -58,10 +58,11 @@ export default function Markdown({
     container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks: true }) as string)
     markTasks(container)
     wrapTables(container)
+    if (images) swapImages(container, images)
     const unknown = linkifyFiles(container)
     emojifyHtml(container)
     return { html: container.innerHTML, unknown }
-  }, [text, resolved])
+  }, [text, resolved, images])
 
   useLayoutEffect(() => {
     const el = host.current
