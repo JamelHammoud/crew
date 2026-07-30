@@ -32,7 +32,7 @@ afterEach(() => {
   hold([], '')
 })
 
-describe('the crew's own emoji, drawn', () => {
+describe('an emoji the crew added, drawn', () => {
   it('reads a name off the sheet only once there is somewhere to read the picture from', () => {
     hold(SHEET, '')
     expect(lookupCustomEmoji('shipit')).toBeUndefined()
@@ -94,7 +94,7 @@ describe('the crew's own emoji, drawn', () => {
   })
 })
 
-describe('the crew's own emoji, picked', () => {
+describe('an emoji the crew added, picked', () => {
   const openPicker = (onPick = vi.fn()) => {
     render(createElement(EmojiPicker, { selected: new Set<string>(), onPick }))
     return onPick
@@ -117,7 +117,7 @@ describe('the crew's own emoji, picked', () => {
     expect(screen.getByText('Frequently used')).toBeTruthy()
   })
 
-  it('searches the crew's own ahead of the sheet', () => {
+  it('searches what the crew added ahead of the sheet', () => {
     hold([one('tada', 'c.gif')])
     const onPick = openPicker()
 
