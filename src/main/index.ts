@@ -481,6 +481,14 @@ app.whenReady().then(() => {
     // never got read is thrown away.
     scribeSaid()
   })
+  // The card a dictation with nowhere to land is held on. Copy is answered here
+  // rather than in the page, because the words are held here and the clipboard is
+  // this machine's own: a window that never takes focus cannot reach one.
+  ipcMain.on('scribe:copyHeld', () => {
+    const words = scribe.held()
+    if (words) clipboard.writeText(words)
+  })
+  ipcMain.on('scribe:letGo', () => scribe.release())
   ipcMain.on('scribe:size', (_event, width: number, height: number) =>
     scribe.resize({ width, height })
   )
