@@ -20,10 +20,6 @@
       {
         "from": "bin",
         "to": "cli/bin"
-      },
-      {
-        "from": "package.json",
-        "to": "cli/package.json"
       }
     ],
     "asarUnpack": [
