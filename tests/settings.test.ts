@@ -127,7 +127,7 @@ describe('the settings', () => {
 
   it('holds no solid grey on the glass', () => {
     show()
-    for (const tab of ['you', 'appearance', 'sound', 'people', 'agents', 'files'] as const) {
+    for (const tab of ['you', 'appearance', 'sound', 'command', 'people', 'agents', 'files'] as const) {
       act(() => openSettings(tab))
       for (const el of card().querySelectorAll('*')) {
         expect(el.getAttribute('class') ?? '').not.toMatch(/text-fg-(muted|faint|secondary)/)

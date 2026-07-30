@@ -158,11 +158,26 @@ describe('how big a file may be', () => {
   it('says a size in the words somebody would use for it', () => {
     expect(attachmentMbLabel(10)).toBe('10 MB')
     expect(attachmentMbLabel(500)).toBe('500 MB')
-    expect(attachmentMbLabel(1024)).toBe('1 GB')
-    expect(attachmentMbLabel(5120)).toBe('5 GB')
+    expect(attachmentMbLabel(1000)).toBe('1 GB')
+    expect(attachmentMbLabel(5000)).toBe('5 GB')
+    expect(attachmentMbLabel(ATTACHMENT_MB_LIMIT)).toBe('10 GB')
     expect(attachmentMbLabel(ATTACHMENT_UNLIMITED)).toBe('No limit')
-    expect(fileSize(3 * 1024 * 1024 * 1024)).toBe('3.0 GB')
-    expect(fileSize(700 * 1024 * 1024)).toBe('700.0 MB')
+  })
+
+  // A thousand of one unit is one of the next, the way the Finder counts, and
+  // nothing ever stands in four digits of the unit below it.
+  it('says a file the size the machine says it is', () => {
+    expect(fileSize(0)).toBe('0 B')
+    expect(fileSize(999)).toBe('999 B')
+    expect(fileSize(1_000)).toBe('1 KB')
+    expect(fileSize(1_500)).toBe('1.5 KB')
+    expect(fileSize(999_000)).toBe('999 KB')
+    expect(fileSize(1_000_000)).toBe('1 MB')
+    expect(fileSize(1_440_000)).toBe('1.4 MB')
+    expect(fileSize(14_400_000)).toBe('14 MB')
+    expect(fileSize(700_000_000)).toBe('700 MB')
+    expect(fileSize(999_600_000)).toBe('1 GB')
+    expect(fileSize(3_000_000_000)).toBe('3 GB')
   })
 
   it('refuses a number nobody could have meant', () => {

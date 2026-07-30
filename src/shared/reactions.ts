@@ -17,6 +17,8 @@ export function isReactionEmoji(value: string): boolean {
   return value.length > 0 && value.length <= 32 && SINGLE_EMOJI.test(value)
 }
 
+const CUSTOM_REF = /^:[a-z0-9][a-z0-9_+-]*:$/
+
 // What may stand on the row: an emoji off the sheet, or one of the crew's own
 // written as `:name:`. The list is a set rather than a sequence of anything, so a
 // repeat is dropped rather than drawn twice, and one longer than the cap is cut
