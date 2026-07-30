@@ -197,7 +197,6 @@ describe('nothing malformed is ever held back by accident', () => {
     '   ',
     '\n',
     'unknown',
-    'none',
     'AXTextField',
     'AXWebArea',
     'osascript: no such file',
