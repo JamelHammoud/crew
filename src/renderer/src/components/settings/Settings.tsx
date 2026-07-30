@@ -51,7 +51,7 @@ export default function Settings() {
           {GROUPS.map(group => (
             <div key={group} className="pt-3 first:pt-1">
               <p className="px-2.5 pb-1 text-xs font-medium text-fg/40">{group}</p>
-              {tabs.filter(one => one.group === group).map(one => {
+              {SETTINGS_TABS.filter(one => one.group === group).map(one => {
                 const on = one.id === tab
                 const Mark = one.mark
                 const label = tabLabel(one, selfName)
