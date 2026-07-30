@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { isImageUrl, isMarkdown } from '../../../shared/files'
+import { canPreview, isImageUrl } from '../../../shared/files'
 import { gameFor } from '../../../shared/games'
 import { normalizeUrl } from '../../../shared/urls'
 import {
