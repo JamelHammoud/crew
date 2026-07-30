@@ -170,6 +170,11 @@ export type SessionEvent =
       byName: string
     }
   | { id: string; ts: number; kind: 'music.removed'; trackId: string; byName: string }
+  // An emoji the crew drew themselves. The picture is kept beside the session and
+  // everyone draws their own copy, so what rides here is its name and its file.
+  | { id: string; ts: number; kind: 'emoji.added'; emojiId: string; name: string; file: string; byName: string }
+  | { id: string; ts: number; kind: 'emoji.renamed'; emojiId: string; name: string; byName: string }
+  | { id: string; ts: number; kind: 'emoji.removed'; emojiId: string; byName: string }
   | { id: string; ts: number; kind: 'playlist.added'; playlistId: string; name: string; byName: string }
   | { id: string; ts: number; kind: 'playlist.removed'; playlistId: string; byName: string }
   | { id: string; ts: number; kind: 'playlist.renamed'; playlistId: string; name: string; byName: string }

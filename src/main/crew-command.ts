@@ -24,8 +24,14 @@ interface Ran {
 function run(command: string, args: string[]): Promise<Ran> {
   return new Promise(settle => {
     execFile(command, args, (error, _out, err) => {
-      if (!error) settle({ ok: true, message: '', code: 0 })
-      else settle({ ok: false, message: `${err || ''}${error.message}`, code: error.code ?? null })
+      if (!error) {
+        settle({ ok: true, message: '', code: 0 })
+        return
+      }
+      // A command that was never there answers with a name rather than a
+      // number, which is a failure like any other and never a decision.
+      const code = typeof error.code === 'number' ? error.code : null
+      settle({ ok: false, message: `${err || ''}${error.message}`, code })
     })
   })
 }
