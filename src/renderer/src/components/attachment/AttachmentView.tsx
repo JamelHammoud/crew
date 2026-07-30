@@ -21,7 +21,11 @@ function Body({ url, name, mime }: { url: string; name: string; mime: string }) 
     case 'audio':
       return <AudioPreview url={url} />
     case 'pdf':
-      return <PdfPreview url={url} name={name} />
+      return (
+        <Suspense fallback={<Loading />}>
+          <PdfPreview url={url} name={name} />
+        </Suspense>
+      )
     case 'sheet':
       return <SheetPreview url={url} mime={mime} />
     case 'writing':

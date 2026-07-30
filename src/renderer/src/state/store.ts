@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import {
   attachmentBytes,
+  attachmentMbLabel,
   DEFAULT_ATTACHMENT_MB,
   httpBaseFrom,
   MAX_ATTACHMENTS,
@@ -878,7 +879,7 @@ export const useCrew = create<CrewState>((set, get) => {
       // A file left behind for being too big used to go quietly, which reads as
       // a drop that did nothing.
       if (picked.length < [...(files ?? [])].length) {
-        toast.fail(`Files can be up to ${mb} MB`, { key: 'attachment-size' })
+        toast.fail(`Files can be up to ${attachmentMbLabel(mb)}`, { key: 'attachment-size' })
       }
       if (picked.length === 0) return
       const added = await readFiles(picked, (get().pending[key] ?? []).length)
