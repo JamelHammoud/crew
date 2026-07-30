@@ -279,14 +279,14 @@ ${bitFrame(ctx)}
     id: 'sakura',
     ink: '#ffffff',
     tile: [
-      ['#a9cdf2', 1],
-      ['#88b0e6', 1],
-      ['#6e93da', 1]
+      ['#9dc4ee', 1],
+      ['#7ba2e0', 1],
+      ['#5c81cf', 1]
     ],
     rim: [
       ['#ffffff', 0.82],
       ['#ffffff', 0.08],
-      ['#5f81c6', 0.34]
+      ['#4f70b8', 0.36]
     ],
     sheen: 0.16,
     defs: ctx => `${blur('sakura-far', 17)}
