@@ -294,9 +294,16 @@ app.whenReady().then(() => {
   session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
   scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
   said.remember(path.join(app.getPath('userData'), 'scribe-said.json'))
-  resumed = session.resume().then(() => {
-    sharing()
-    warmTerminals()
+  resumed = opening
+    ? Promise.resolve(null)
+    : session.resume().then(() => {
+        sharing()
+        warmTerminals()
+      })
+  ipcMain.handle('cli:opening', () => {
+    const asked = opening
+    opening = null
+    return asked
   })
   ipcMain.handle('folder:pick', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
