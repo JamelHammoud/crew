@@ -1,8 +1,12 @@
 import type { BrowserWindow } from 'electron'
-import { autoUpdater } from 'electron-updater'
+import type { AppUpdater } from 'electron-updater'
+import electronUpdater from 'electron-updater'
 import { NO_UPDATE, nextUpdate, type UpdateState, type UpdateWord } from '../shared/update'
 
 const AGAIN_MS = 60 * 60 * 1000
+
+let made: AppUpdater | null = null
+const autoUpdater = (): AppUpdater => (made ??= electronUpdater.autoUpdater)
 
 export class Updates {
   private state: UpdateState = NO_UPDATE
