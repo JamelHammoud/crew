@@ -121,7 +121,7 @@ export default function PdfPreview({ url, name }: { url: string; name: string })
         if (!answer.ok) throw new Error(String(answer.status))
         const data = new Uint8Array(await answer.arrayBuffer())
         if (!alive) return
-        task = pdfjs.getDocument({ data })
+        task = pdfjs.getDocument({ data, ...pdfAssets() })
         const opened = await task.promise
         if (!alive) return
         setDoc(opened)
