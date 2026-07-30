@@ -43,12 +43,17 @@ export default function Markdown({
   text,
   className = '',
   stream = false,
-  images
+  images,
+  breaks = true
 }: {
   text: string
   className?: string
   stream?: boolean
   images?: Record<string, string>
+  // A line ending is a line break in something somebody typed, and nothing at
+  // all in a file, where a paragraph is wrapped as it was written and only a
+  // blank line ends it.
+  breaks?: boolean
 }) {
   const host = useRef<HTMLDivElement>(null)
   const drawn = useRef(false)
