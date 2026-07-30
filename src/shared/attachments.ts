@@ -29,69 +29,19 @@ const IMAGE_BY_EXTENSION: Record<string, string> = {
 // served from the host's own address, so one carrying a script would be reading
 // the session from inside it. As text they are still there to read and there is
 // nothing to run.
-const TEXT_EXTENSIONS = [
-  'txt',
-  'text',
-  'log',
-  'yml',
-  'yaml',
-  'toml',
-  'ini',
-  'cfg',
-  'conf',
-  'env',
-  'sql',
-  'sh',
-  'bash',
-  'zsh',
-  'fish',
-  'ps1',
-  'bat',
-  'patch',
-  'diff',
-  'lock',
-  'ts',
-  'tsx',
-  'js',
-  'jsx',
-  'mjs',
-  'cjs',
-  'py',
-  'rb',
-  'go',
-  'rs',
-  'java',
-  'kt',
-  'kts',
-  'swift',
-  'c',
-  'h',
-  'cc',
-  'cpp',
-  'hpp',
-  'cs',
-  'php',
-  'pl',
-  'lua',
-  'scala',
-  'dart',
-  'vue',
-  'svelte',
-  'css',
-  'scss',
-  'sass',
-  'less',
-  'graphql',
-  'proto',
-  'gradle',
-  'cmake',
-  'html',
-  'htm',
-  'xhtml',
-  'xml',
-  'svg',
-  'plist'
-]
+const TEXT_EXTENSIONS = (
+  'txt text log md-none yml yaml toml ini cfg conf env properties lock patch diff sql ' +
+  'sh bash zsh fish ps1 bat awk tcl rake gemspec podspec ' +
+  'ts tsx js jsx mjs cjs mts cts vue svelte css scss sass less graphql proto ' +
+  'py rb go rs java kt kts swift m mm c h cc cpp hpp cs php pl lua scala sc dart ' +
+  'ex exs erl clj cljs edn jl hs ml fs elm zig groovy sbt vb asm ' +
+  'tf tfvars hcl nix gradle cmake csproj sln ' +
+  'html htm xhtml xml svg plist hbs ejs pug twig j2 ' +
+  'rst adoc asciidoc org tex bib po srt vtt ics ' +
+  'gitignore gitattributes npmrc editorconfig prettierrc eslintrc babelrc zshrc bashrc vimrc profile'
+)
+  .split(' ')
+  .filter(ext => ext !== 'md-none')
 
 const FILE_TYPES: Record<string, string> = {
   pdf: 'application/pdf',
