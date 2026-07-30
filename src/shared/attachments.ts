@@ -101,8 +101,23 @@ const EXTENSION_BY_TYPE: Record<string, string> = Object.fromEntries(
 
 export const DOWNLOAD_TYPE = 'application/octet-stream'
 
-export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
 export const MAX_ATTACHMENTS = 6
+
+// How big a file may be is the crew's own, since everything sent lands in the
+// folder they share and the host is what turns a big one away. It is written
+// down as one event and folded off the log the way the toolbox is, so a number
+// somebody picked months ago is still the number.
+export const DEFAULT_ATTACHMENT_MB = 10
+export const ATTACHMENT_MB_LIMIT = 500
+export const ATTACHMENT_MB_STEPS = [1, 2, 5, 10, 25, 50, 100, 250, 500]
+
+export const attachmentBytes = (mb: number): number => mb * 1024 * 1024
+
+export function cleanAttachmentMb(mb: unknown): number | null {
+  if (typeof mb !== 'number' || !Number.isFinite(mb)) return null
+  const whole = Math.round(mb)
+  return whole >= 1 && whole <= ATTACHMENT_MB_LIMIT ? whole : null
+}
 
 const FILE_NAME = /^[a-z0-9-]+\.[a-z0-9]{1,12}$/
 
