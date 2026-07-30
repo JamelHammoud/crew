@@ -1,12 +1,10 @@
 // @vitest-environment jsdom
-import http from 'node:http'
-import type { AddressInfo } from 'node:net'
-import { pathToFileURL } from 'node:url'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import PdfPreview from '../src/renderer/src/components/attachment/PdfPreview'
+import { pdfAssets } from '../src/renderer/src/components/attachment/pdfAssets'
 import { PAGE_WIDTH, pdfBytes } from './helpers/pdf'
 
 const PANEL = 456
