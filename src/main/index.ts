@@ -69,7 +69,19 @@ const tray = new CrewTray({
 })
 const scribe = new ScribeWindow(rendererPage)
 const awake = new KeepAwake()
-const updates = new Updates(() => appWindows())
+// The crew command opens one Crew per folder, so several are ordinary here and
+// none of them can see the others through electron.
+const crews = new OtherInstances(path.join(app.getPath('userData'), 'live'))
+// Whatever quitting puts down is put down once, whether the app is quitting or
+// being replaced under itself by an update.
+let settling: Promise<void> | null = null
+const settle = (): Promise<void> => (settling ??= session.shutdown())
+const updates = new Updates({
+  windows: () => appWindows(),
+  others: () => crews.count(),
+  settle,
+  log: path.join(app.getPath('userData'), 'updates.log')
+})
 const said = new ScribeHistory()
 let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
 // What a dictation has written and not yet let go of. Nothing may be pasted
