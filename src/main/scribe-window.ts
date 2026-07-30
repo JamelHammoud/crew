@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import { BrowserWindow, screen } from 'electron'
 import { PILL_ROOM, restsOnScreen, type ScribeSettings } from '../shared/scribe'
+import { joinHeld } from '../shared/scribeLanding'
 import {
   fits,
   grown,
@@ -119,7 +120,7 @@ export class ScribeWindow {
   // keeps them off the end of the one before them.
   hold(text: string): void {
     if (!text) return
-    this.words += this.words ? text : text.trimStart()
+    this.words = joinHeld(this.words, text)
     this.send('scribe:held', this.words)
     this.rest()
   }
