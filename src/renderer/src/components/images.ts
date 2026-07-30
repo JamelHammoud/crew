@@ -2,6 +2,7 @@ import {
   isImageType,
   MAX_ATTACHMENTS,
   MAX_ATTACHMENT_BYTES,
+  mimeForFile,
   type OutgoingAttachment
 } from '../../../shared/attachments'
 
