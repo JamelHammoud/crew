@@ -13,7 +13,7 @@ import { jumpToMessage, replyTargetLabel } from './reply'
 import ReplyQuote from './ReplyQuote'
 import SubagentMark from './SubagentMark'
 import Tooltip from './Tooltip'
-import MessageImages from './MessageImages'
+import MessageAttachments from './MessageAttachments'
 import type { ThreadItem } from './thread'
 import { formatFullTime, formatTime } from './time'
 
@@ -199,7 +199,7 @@ export default function ChatMessage({
             </p>
           )
         )}
-        {item.attachments && <MessageImages attachments={item.attachments} />}
+        {item.attachments && <MessageAttachments attachments={item.attachments} />}
         {item.reactionTargetId && !editing && (
           <MessageReactions
             targetId={item.reactionTargetId}
