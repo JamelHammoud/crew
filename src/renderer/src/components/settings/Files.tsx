@@ -16,7 +16,7 @@ export default function Files() {
   return (
     <Page title="Files">
       <Section>
-        <Row label="How big a file can be">
+        <Row label="Maximum file attachment size">
           <Select
             label="Up to"
             value={String(mb)}
