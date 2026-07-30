@@ -13,6 +13,7 @@ import TabIcon from './TabIcon'
 import Toolbox from './Toolbox'
 import ToolboxMark from './ToolboxMark'
 import Tooltip from './Tooltip'
+import UpdatePill from './UpdatePill'
 import { MenuItem, Popover } from './Popover'
 
 export type Tab = 'chat' | 'docs' | 'design'
