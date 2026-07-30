@@ -357,6 +357,7 @@ writeFileSync(path.join(resources, 'icon-dev.svg'), devDark)
 writeFileSync(path.join(resources, 'icon-dev-light.svg'), devLight)
 writeFileSync(path.join(resources, 'crew-logo.svg'), logo)
 writeFileSync(path.join(resources, 'tray.svg'), trayMark)
+for (const [id, source] of skins) writeFileSync(path.join(resources, `icon-${id}.svg`), source)
 
 writeFileSync(
   path.join(root, 'src/renderer/src/components/crew-mark.ts'),
