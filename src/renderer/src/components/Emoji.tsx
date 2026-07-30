@@ -46,7 +46,9 @@ export default function Emoji({
 }
 
 // The sprite carries no text, so the character rides along beside it, clipped
-// out of sight, for anything that copies or reads the message.
+// out of sight, for anything that copies or reads the message. The crew's own
+// carry their `:name:` there for the same reason: it is what somebody would type
+// to write the picture again.
 export function EmojiText({ text }: { text: string }) {
   const tokens = useMemo(() => tokenizeEmoji(text), [text])
   return (
@@ -56,7 +58,11 @@ export function EmojiText({ text }: { text: string }) {
           token.text
         ) : (
           <Fragment key={index}>
-            <Emoji char={token.entry.char} size="1.15em" className="align-[-0.2em]" />
+            <Emoji
+              char={token.kind === 'emoji' ? token.entry.char : token.text}
+              size="1.15em"
+              className="align-[-0.2em]"
+            />
             <span className="sr-only">{token.text}</span>
           </Fragment>
         )
