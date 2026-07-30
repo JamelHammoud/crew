@@ -42,6 +42,23 @@ function pushRun(tokens: EmojiToken[], text: string): void {
   if (run) tokens.push({ kind: 'text', text: run })
 }
 
+// A line of nothing but pictures is a picture rather than a sentence, so it is
+// drawn at a size worth looking at. Past a wall of them it is a paste, and a
+// wall at that size is a screen with nothing else on it, so the run has an end.
+const LARGE_LIMIT = 24
+
+export function onlyEmoji(text: string): boolean {
+  let drawn = 0
+  for (const token of tokenizeEmoji(text)) {
+    if (token.kind === 'text') {
+      if (token.text.trim()) return false
+      continue
+    }
+    drawn += 1
+  }
+  return drawn > 0 && drawn <= LARGE_LIMIT
+}
+
 export function tokenizeEmoji(text: string): EmojiToken[] {
   const tokens: EmojiToken[] = []
   let at = 0
