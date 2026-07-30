@@ -7,7 +7,8 @@ import Tooltip from './Tooltip'
 // The app puts what it can on a screen of its own. Everything else goes to the
 // machine, which has something that opens it.
 const open = (url: string, mime: string): void => {
-  if (showsInPanel(mime)) useBrowser.getState().openUrl(url)
+  const kind = previewOf(mime)
+  if (kind === 'text' || kind === 'video' || kind === 'audio' || kind === 'pdf') useBrowser.getState().openUrl(url)
   else void window.crew.openExternal(url)
 }
 
