@@ -118,14 +118,21 @@ export function landingInPage(tag: string, type: string, editable: boolean): Lan
 // A shadow root is walked into. The document hands back the host of one rather
 // than what is inside it, so a box drawn inside a shadow root would read as the
 // element it was drawn in and the words would be held back from a real field.
+//
+// Editable is asked twice, and it has to be. The property carries the answer down
+// from wherever it was written, which is the whole of what makes a doc's own box
+// answer for the elements inside it, and the attribute is what a box that says so
+// itself carries. Either one is enough, and a box that says outright it is not one
+// is not one however it was reached.
 export const FOCUSED_IN_PAGE = `(() => {
   let el = document.activeElement
   while (el && el.shadowRoot && el.shadowRoot.activeElement) el = el.shadowRoot.activeElement
   if (!el) return null
+  const said = el.getAttribute ? el.getAttribute('contenteditable') : null
   return {
     tag: el.tagName || '',
     type: el.getAttribute ? el.getAttribute('type') || '' : '',
-    editable: !!el.isContentEditable
+    editable: said === 'false' ? false : !!el.isContentEditable || said !== null
   }
 })()`
 
