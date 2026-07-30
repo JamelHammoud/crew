@@ -18,13 +18,13 @@
       <feGaussianBlur stdDeviation="46" />
     </filter>
     <radialGradient id="space-violet" cx="382" cy="416" r="461.44000000000005" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.5" />
-      <stop offset="0.55" stop-color="#7c3aed" stop-opacity="0.2" />
+      <stop offset="0" stop-color="#b39bff" stop-opacity="0.66" />
+      <stop offset="0.55" stop-color="#7c3aed" stop-opacity="0.3" />
       <stop offset="1" stop-color="#6d28d9" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="space-cyan" cx="692" cy="680" r="379.04" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#67e8f9" stop-opacity="0.34" />
-      <stop offset="0.6" stop-color="#0ea5e9" stop-opacity="0.14" />
+      <stop offset="0" stop-color="#67e8f9" stop-opacity="0.46" />
+      <stop offset="0.6" stop-color="#0ea5e9" stop-opacity="0.2" />
       <stop offset="1" stop-color="#0284c7" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="space-halo" cx="0.5" cy="0.5" r="0.5">

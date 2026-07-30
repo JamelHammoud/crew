@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="tile" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#a9cdf2" stop-opacity="1" />
-      <stop offset="0.5" stop-color="#88b0e6" stop-opacity="1" />
-      <stop offset="1" stop-color="#6e93da" stop-opacity="1" />
+      <stop offset="0" stop-color="#9dc4ee" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#7ba2e0" stop-opacity="1" />
+      <stop offset="1" stop-color="#5c81cf" stop-opacity="1" />
     </linearGradient>
     <linearGradient id="sheen" x1="0" y1="100" x2="0" y2="553.2" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.16" />
@@ -12,7 +12,7 @@
     <linearGradient id="rim" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.82" />
       <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.08" />
-      <stop offset="1" stop-color="#5f81c6" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#4f70b8" stop-opacity="0.36" />
     </linearGradient>
     <filter id="sakura-far" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="17" />
