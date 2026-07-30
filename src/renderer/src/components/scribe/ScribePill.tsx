@@ -6,6 +6,7 @@ import { scribeAnalyser, useScribe } from '../../state/scribe'
 import InsetRing from '../InsetRing'
 import Levels from '../Levels'
 import { grab } from './grab'
+import PillButton from './PillButton'
 import ScribeHeld from './ScribeHeld'
 
 // What is on screen while dictation is on. It stands there the whole time rather
@@ -28,36 +29,6 @@ const BANDS = 12
 
 // One reader for the life of the pill, because this is read every frame.
 const reader = new BandReader()
-
-// The marks on the pill are read at arm's length over somebody else's window,
-// so they wear the bold weight rather than the one a mark carries inside the
-// app.
-function Round({
-  label,
-  solid,
-  onClick,
-  children
-}: {
-  label: string
-  solid?: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      onClick={onClick}
-      // The pill is dragged by anywhere on it, so a button says the press is
-      // its own rather than the start of a move.
-      onPointerDown={event => event.stopPropagation()}
-      aria-label={label}
-      className={`w-7 h-7 shrink-0 rounded-full flex items-center justify-center transition-all duration-150 active:scale-90 ${
-        solid ? 'bg-fg text-ink-900 hover:bg-fg/90' : 'bg-fg/10 text-fg/70 hover:bg-fg/20 hover:text-fg'
-      }`}
-    >
-      {children}
-    </button>
-  )
-}
 
 export default function ScribePill() {
   const phase = useScribe(s => s.phase)
@@ -139,9 +110,9 @@ export default function ScribePill() {
                 failed ? 'w-9' : 'w-0 group-hover:w-9'
               }`}
             >
-              <Round label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
+              <PillButton label={failed ? 'Close' : 'Cancel'} onClick={cancel}>
                 <CloseGlyph className="w-3.5 h-3.5" strokeWidth={STROKE_BOLD} />
-              </Round>
+              </PillButton>
             </span>
 
             {failed ? (
@@ -182,9 +153,9 @@ export default function ScribePill() {
                 rather than offering a button that cannot work. */}
             {again && (
               <span className="ml-1.5 flex shrink-0">
-                <Round label="Try again" solid onClick={() => void retry()}>
+                <PillButton label="Try again" solid onClick={() => void retry()}>
                   <RefreshGlyph className="w-3.5 h-3.5" strokeWidth={STROKE_BOLD} />
-                </Round>
+                </PillButton>
               </span>
             )}
           </>
