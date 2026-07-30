@@ -29,8 +29,8 @@ The folder is the one you are in unless you name another. Where a crew lives is
 asked once per project and remembered from then on, so --in-project and --in-app
 only have anything to say the first time.
 
-CREW_APP points at the Crew to open. Without it the installed app is opened, and
-then the one built in this checkout.
+CREW_APP points at the Crew to open. Without it the command opens the Crew it
+came with, then the installed app, then the one built in this checkout.
 `
 
 export function parseArgs(argv, cwd) {

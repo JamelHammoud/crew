@@ -3,6 +3,7 @@ import http from 'node:http'
 import { WebSocketServer, WebSocket } from 'ws'
 import { isAttachmentFile, mimeForFile } from '../shared/attachments'
 import { mimeForMusic } from '../shared/music'
+import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { DesignOp } from '../shared/design'
 import type { CrewSession } from './session'
 
