@@ -405,6 +405,18 @@ Something to play while you wait. It is a tab in the side panel called Games, op
 - Reading the log back keeps the last score for each person rather than the highest, because they went in in the order they were played and each one already beat the one before it.
 - The board is the crew's own, so `game.score` is refused from a runner the way the music controls are. An agent's machine is connected the whole time it is joined.
 
+## Attachments
+
+Anything the crew has to hand goes on a message: a picture, a pdf, a log, a spreadsheet, a zip, a track, a clip. `src/shared/attachments.ts` is the one table of what a file is, and both sides of the wire read it.
+
+- A picture is kept under the type it says it is, since that is the one thing every browser reports the same way twice. Everything else is kept under the extension it arrived with, because the type a browser reports for a csv is a guess and for plenty of files it reports nothing at all. The type written down is the type it will be served as, so what the app reads off the record is what really comes back off the wire, and a file with no extension to go on is handed over as a download rather than guessed at.
+- Nothing a browser would run is ever served as itself. A page and a vector are markup, and an attachment is served from the host's own address, so one carrying a script would be reading the session from inside it. Both go over as text, which is still there to read with nothing left to run.
+- A face is a picture and nothing else. `savePhoto` is the one way one is set, and the window that sends it already turns everything else away: the host asks again, because taking a window's word for it is what put a pdf on somebody's avatar the first time this was widened.
+- The name somebody uploaded is a label and never a path. What is written down is a uuid and an extension, `isAttachmentFile` is the whole of what may be read or written under `.crew/attachments`, and the runner asks it again about a name that arrived over the wire, since that side is handed a name rather than making one.
+- What an agent gets is a path per file and a line saying which of them are pictures. It reads them off the disk itself, so a log or a csv is work it can do rather than something described to it. A thread's own transcript says `[image: name]` or `[file: name]`, so a later turn knows which it was.
+- Six to a message and 10MB each, the same for a picture and a file. Everything lands in the folder the crew syncs, so a big one is a big one in the history too.
+- An image draws where it stands. A file is a row that says what it is, what it is called and how big it is, and pressing it opens it in the side panel where the app can show it and hands it to the machine where it cannot.
+
 ## GIFs
 
 The plus button in the composer opens a menu, upload a file or pick a GIF, and picking one sends it straight out. `AddMenu.tsx` is the menu and `GifPicker.tsx` is a screen inside the same popover rather than a popover of its own.
@@ -578,6 +590,17 @@ An agent splits work off to a helper and carries on with its own. It makes one u
 - `WAKE_LIMIT` sits beside `RUN_LIMIT` and `DEPTH_LIMIT`. Without it a parent that spawns on every wake is a loop the crew watches burn tokens all afternoon.
 - Going out and coming home are `helper.out` and `helper.home`, one gesture in two directions: away from the middle and up, then back to the middle and down. Neither one lands on A, which is where `done`, `task.done` and `crew.mark` all come to rest, so a helper can never be heard as the thread somebody was waiting on. They are the `ERRAND` voice in `sounds.ts`, which is the same bubble as everything else at a fraction of the gain and well back in the room, with no low voice under it and no tail to speak of: an errand is not news, and four of them going out and coming back through an afternoon is what decides how loud one may be. The helper's own `agent.end` is silent for the same reason, since `subagent.ended` already says it once, and the pair hushes under voice the way the chat's cues do.
 - The one thing nothing here can merge is two agents editing one file at the same time. Half of that is words, in the preamble, which says to send out work that does not sit on what you are holding. The other half is the panel, which lists the files each helper changed.
+
+## Showing a page
+
+An agent puts a page on the screen beside the chat: the file it has just written, the server it has started, or a site worth looking at. It is the browser the panel already holds, asked for from the outside, so nothing new is drawn and nothing is installed.
+
+- `/page` on the host's own http is the whole of the way in, and `pagePreamble` in `src/shared/showPage.ts` is what an agent is told. It is written on the machine running the agent, the same reason the helpers and the board write theirs there: only that side knows the address it reaches the session at. Every call names the promptId of the run asking, which is the credential the board and the helpers are reached on.
+- Nothing about it is state the host holds. The call is one `page.shown` on the thread, so it replays for free, and a ghost thread's page reaches the one window that opened it without any of that being said again here.
+- It opens for whoever is reading that thread and nowhere else. Anyone else has the row in the thread, and a panel taken over by work somebody is not watching is the one way this becomes a thing people turn off.
+- The row is the way back to it once the run has scrolled away, so it carries the address rather than a tab that may have been closed since. Pressing it loads the page again rather than standing at what it looked like before the change being shown, which is `showPage` in `state/browser.ts` and the reload `BrowserTabView` does off its own `generation`. An address the webview has tidied is the same address, or every showing is a second tab.
+- Three ways to name one and no others, in `pageUrl`: a real address, a machine it is already serving on like `localhost:5173`, and a full path to a file. A person typing in the address bar gets the benefit of the doubt and lands on a search; an agent gets none of it, because what it writes is opened on every machine in the crew without anybody pressing anything. Anything else is refused in words, so a model reads what to write instead of watching a page it named quietly not appear.
+- The title is the agent's own line about what to look at. A page it said nothing about is named by its file or its host, which is the shortest true thing either one can be called.
 
 ## Ghost threads
 
