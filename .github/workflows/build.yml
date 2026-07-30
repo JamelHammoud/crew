@@ -71,6 +71,12 @@ jobs:
             codesign -dvv "$app" 2>&1 | grep -q 'Authority=Developer ID Application:' \
               || fail "$app is not signed with a Developer ID Application certificate"
             xcrun stapler validate "$app" || fail "$app carries no notarization ticket"
+            helpers=("$app"/Contents/Resources/app.asar.unpacked/node_modules/node-pty/prebuilds/*/spawn-helper)
+            [ "${#helpers[@]}" -gt 0 ] || fail "$app carries no spawn-helper"
+            for helper in "${helpers[@]}"; do
+              [ -x "$helper" ] || fail "$helper cannot be run, so every terminal would fail to start"
+              codesign --verify --strict "$helper" || fail "$helper is not signed"
+            done
           done
 
       - name: Name the files the way the update feed does
