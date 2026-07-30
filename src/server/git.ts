@@ -77,6 +77,14 @@ export class GitSync {
     this.loop = null
   }
 
+  // Stopping only stands the loop down, so a pass already under way is still
+  // committing and pushing somebody's work. This is what waits it out, and it is
+  // what a quit that is about to replace the app under itself has to hold for.
+  // Nothing new is started: the pass in flight commits whatever is on disk.
+  settle(): Promise<void> {
+    return this.chain.catch(() => {})
+  }
+
   // A pass that has not started yet is the pass everyone asking now wants: it
   // commits whatever is on disk by the time it runs, so a second one queued
   // behind it would find nothing left to do. Only a pass already under way is
