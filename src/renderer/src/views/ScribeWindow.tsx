@@ -19,6 +19,7 @@ export default function ScribeWindow() {
 
   useEffect(() => window.crew.onScribeSettings(useScribe.getState().apply), [])
   useEffect(() => window.crew.onScribeProblem(useScribe.getState().said), [])
+  useEffect(() => window.crew.onScribeHeld(useScribe.getState().holding), [])
 
   // The window is only ever as big as what it holds, the way the tray panel is,
   // and both ways round rather than only in height: the pill stands over
