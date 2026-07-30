@@ -27,7 +27,9 @@ export class Updates {
     up.autoInstallOnAppQuit = true
     up.on('update-available', info => this.say({ word: 'found', version: info.version }))
     up.on('update-not-available', () => this.say({ word: 'nothing' }))
-    up.on('download-progress', progress => this.say({ word: 'progress', percent: progress.percent }))
+    up.on('download-progress', progress =>
+      this.say({ word: 'progress', percent: progress.percent })
+    )
     up.on('update-downloaded', info => this.say({ word: 'ready', version: info.version }))
     up.on('error', () => this.say({ word: 'error' }))
     this.check()
