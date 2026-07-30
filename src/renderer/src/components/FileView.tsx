@@ -148,9 +148,10 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
 
   const file = data?.kind === 'file' ? data : null
   const long = !!file && file.text.split('\n').length > MAX_LINES
-  const editable = !!file && !file.truncated && !long
-  const text = editable ? doc : (file?.text ?? '')
-  const baseline = hidden ? null : base
+  const reading = !!file && tab.preview && isMarkdown(tab.path)
+  const editable = !!file && !file.truncated && !long && !reading
+  const text = !!file && !file.truncated && !long ? doc : (file?.text ?? '')
+  const baseline = hidden || reading ? null : base
 
   const rows = useMemo(() => {
     if (!file) return []
