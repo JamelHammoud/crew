@@ -98,7 +98,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const mention = useMentionAutocomplete(text, write, inputRef)
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
-  const threadSteps = useMemo(() => stepsOfThread(threadId, events, steps, threads), [threadId, events, steps, threads])
+  const threadSteps = useFamilySteps(threadId)
   const queueItems = useCrew(s => s.queues[threadId])
   const queuedMessages = useMemo<QueuedMessage[]>(
     () =>
