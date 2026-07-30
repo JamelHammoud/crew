@@ -5,6 +5,7 @@ import { STROKE_BOLD } from '../../icons/keylines'
 import InsetRing from '../InsetRing'
 import { useScribe } from '../../state/scribe'
 import { grab } from './grab'
+import PillButton from './PillButton'
 
 // A dictation that had nothing to write into. Scribe writes where the caret is, so
 // one started with the caret nowhere used to be read, tidied and pasted into
