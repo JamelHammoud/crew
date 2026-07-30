@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { markRuns, matchFiles, type FileEntry, type FileMatch } from '../../../shared/files'
 import { ChevronRightGlyph, FileGlyph, SearchGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
+import { useFileMenu } from './fileMenu'
 import Skeleton from './Skeleton'
 
 const MATCH_LIMIT = 60
@@ -128,23 +129,28 @@ function Match({ tab, match }: { tab: BrowserTab; match: FileMatch }) {
   const start = match.path.lastIndexOf('/') + 1
   const name = match.path.slice(start)
   const folder = start ? match.path.slice(0, start - 1) : ''
+  const { onContextMenu, menu } = useFileMenu(match.path)
   return (
-    <button
-      onClick={() => useBrowser.getState().navigateFile(tab.id, match.path)}
-      data-file={match.path}
-      style={{ paddingLeft: indent(0) }}
-      className={`${row} ${tab.path === match.path ? picked : quiet}`}
-    >
-      <FileGlyph className="w-3.5 h-3.5 shrink-0 text-fg-faint" />
-      <span className="shrink-0 max-w-[70%] truncate">
-        <Marked text={name} hits={match.hits.filter(hit => hit >= start).map(hit => hit - start)} />
-      </span>
-      {folder && (
-        <span className="min-w-0 truncate text-xs text-fg-faint">
-          <Marked text={folder} hits={match.hits.filter(hit => hit < start)} />
+    <>
+      <button
+        onClick={() => useBrowser.getState().navigateFile(tab.id, match.path)}
+        onContextMenu={onContextMenu}
+        data-file={match.path}
+        style={{ paddingLeft: indent(0) }}
+        className={`${row} ${tab.path === match.path ? picked : quiet}`}
+      >
+        <FileGlyph className="w-3.5 h-3.5 shrink-0 text-fg-faint" />
+        <span className="shrink-0 max-w-[70%] truncate">
+          <Marked text={name} hits={match.hits.filter(hit => hit >= start).map(hit => hit - start)} />
         </span>
-      )}
-    </button>
+        {folder && (
+          <span className="min-w-0 truncate text-xs text-fg-faint">
+            <Marked text={folder} hits={match.hits.filter(hit => hit < start)} />
+          </span>
+        )}
+      </button>
+      {menu}
+    </>
   )
 }
 
