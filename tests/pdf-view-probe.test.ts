@@ -62,23 +62,6 @@ const paper = (root: HTMLElement): HTMLElement =>
 const words = ['Crew pools agents', 'Second page here']
 
 describe('a pdf in the panel', () => {
-  let host: http.Server
-  let url = ''
-
-  beforeAll(async () => {
-    const bytes = pdfBytes(words)
-    host = http.createServer((_, answer) => {
-      answer.writeHead(200, { 'content-type': 'application/pdf' })
-      answer.end(Buffer.from(bytes))
-    })
-    await new Promise<void>(done => host.listen(0, '127.0.0.1', done))
-    url = `http://127.0.0.1:${(host.address() as AddressInfo).port}/note.pdf`
-  })
-
-  afterAll(async () => {
-    await new Promise<void>(done => host.close(() => done()))
-  })
-
   afterEach(cleanup)
 
   const shown = async (): Promise<HTMLElement> => {
