@@ -30,6 +30,15 @@ export function Failed({ label }: { label: string }) {
   )
 }
 
+export function FileMark({ mime }: { mime: string }) {
+  const Mark = markFor(mime)
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <Mark className="w-10 h-10 text-fg-faint" />
+    </div>
+  )
+}
+
 export default function Frame({
   name,
   mime,
