@@ -87,6 +87,9 @@ declare global {
     onScribeHeld(listener: (text: string) => void): () => void
     updateState(): Promise<UpdateState>
     pressUpdate(): Promise<void>
+    commandState(): Promise<CommandState>
+    installCommand(): Promise<CommandDone>
+    removeCommand(): Promise<CommandDone>
     onUpdate(listener: (state: UpdateState) => void): () => void
     onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
