@@ -34,7 +34,7 @@ describe('message reaction controls', () => {
       )
     )
 
-    fireEvent.click(screen.getByLabelText('React with 🎉'))
+    fireEvent.click(screen.getByLabelText('React with :tada:'))
     expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🎉')
 
     fireEvent.click(screen.getByLabelText('❤️, 2 reactions'))
@@ -57,10 +57,10 @@ describe('message reaction controls', () => {
     )
 
     const message = container.firstElementChild as HTMLElement
-    const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
+    const menu = screen.getByLabelText('React with :tada:').parentElement as HTMLElement
     expect(menu.className).toContain('group-hover/message:opacity-100')
 
-    fireEvent.click(screen.getByLabelText('React with 🎉'), { detail: 1 })
+    fireEvent.click(screen.getByLabelText('React with :tada:'), { detail: 1 })
     expect(menu.className).not.toContain('group-hover/message:opacity-100')
 
     fireEvent.mouseLeave(message)
@@ -85,7 +85,7 @@ describe('message reaction controls', () => {
       )
     )
 
-    const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
+    const menu = screen.getByLabelText('React with :tada:').parentElement as HTMLElement
     expect(menu.className).not.toContain('focus-within:opacity-100')
     expect(menu.className).toContain('has-[:focus-visible]:opacity-100')
   })
@@ -105,8 +105,8 @@ describe('message reaction controls', () => {
       )
     )
 
-    const menu = screen.getByLabelText('React with 🎉').parentElement as HTMLElement
-    fireEvent.click(screen.getByLabelText('React with 🎉'), { detail: 0 })
+    const menu = screen.getByLabelText('React with :tada:').parentElement as HTMLElement
+    fireEvent.click(screen.getByLabelText('React with :tada:'), { detail: 0 })
     expect(menu.className).toContain('has-[:focus-visible]:opacity-100')
   })
 
