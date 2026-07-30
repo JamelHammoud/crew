@@ -258,14 +258,14 @@ export const SKINS = [
     id: 'bit',
     ink: '#ffffff',
     tile: [
-      ['#8f6dff', 1],
-      ['#4a2bc4', 1],
-      ['#231566', 1]
+      ['#7ff0ff', 1],
+      ['#2b6be0', 1],
+      ['#1a2478', 1]
     ],
     rim: [
-      ['#c9b4ff', 0.7],
+      ['#b4ecff', 0.7],
       ['#ffffff', 0.06],
-      ['#7f5bff', 0.34]
+      ['#3f6ff0', 0.34]
     ],
     sheen: 0.05,
     defs: () => glow('bit-lift', '#ffffff', 0.1),
