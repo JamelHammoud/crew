@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createPanelOptions, createWindowOptions } from '../src/main/window-options'
+import { closePutsAway, createPanelOptions, createWindowOptions } from '../src/main/window-options'
 
 describe('tray panel options', () => {
   // skipTaskbar turns the app into an accessory on macOS: the panel opens and
