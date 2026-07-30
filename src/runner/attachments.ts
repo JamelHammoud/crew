@@ -30,7 +30,7 @@ export class AttachmentCache {
         fs.mkdirSync(dir, { recursive: true })
         fs.writeFileSync(full, data)
       }
-      local.push({ name: attachment.name, path: full })
+      local.push({ name: attachment.name, path: full, image: isImageType(attachment.mime) })
     }
     return local
   }
