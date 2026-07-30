@@ -1,4 +1,4 @@
-import type { MouseEvent, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CheckCircleGlyph, WarningGlyph } from '../icons'
 import { closeToast, holdToasts, useToasts, type Toast, type ToastTone } from '../state/toast'
