@@ -88,7 +88,7 @@ describe('a pdf in the panel', () => {
 
     expect(root.querySelectorAll('[data-pdf-text] span').length).toBeGreaterThan(1)
     const layer = root.querySelector('[data-pdf-text]') as HTMLElement
-    expect(layer.style.getPropertyValue('--total-scale-factor')).toBe(String(PANEL / PAGE_WIDTH))
+    expect(layer.style.getPropertyValue('--total-scale-factor')).toBe(String(FIT / PAGE_WIDTH))
   })
 
   it('finds a word in the document', async () => {
