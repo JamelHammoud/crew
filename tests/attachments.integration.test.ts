@@ -338,7 +338,12 @@ describe('attachments', () => {
     await connectRunner('jamel')
     await ui.waitForEvent(e => e.kind === 'agent.online')
 
-    ui.send({ type: 'chat.send', text: 'first @Fake', mentions: [fake], attachments: [file('notes.pdf', 'application/pdf')] })
+    ui.send({
+      type: 'chat.send',
+      text: 'first @Fake',
+      mentions: [fake],
+      attachments: [file('notes.pdf', 'application/pdf')]
+    })
     const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
     await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
 
