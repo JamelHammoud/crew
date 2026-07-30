@@ -1,17 +1,14 @@
-import { shipsCommand } from '../../../../shared/crewCommand'
 import type { Glyph } from '../../icons'
 import {
-  BoltGlyph,
+  DesktopGlyph,
   FileGlyph,
-  GroupGlyph,
   PeopleGlyph,
   PhotoGlyph,
   ScribeGlyph,
   SmileGlyph,
   SpeakerGlyph,
   SparkGlyph,
-  SunGlyph,
-  TerminalGlyph
+  SunGlyph
 } from '../../icons'
 import type { SettingsTab } from '../../state/settings'
 
@@ -32,22 +29,14 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'reactions', label: 'Reactions', group: 'You', mark: SmileGlyph },
   { id: 'sound', label: 'Sound and video', group: 'You', mark: SpeakerGlyph },
   { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
-  { id: 'power', label: 'Power', group: 'You', mark: BoltGlyph },
-  { id: 'command', label: 'Command line', group: 'You', mark: TerminalGlyph },
+  { id: 'machine', label: 'This computer', group: 'You', mark: DesktopGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
-  { id: 'helpers', label: 'Helpers', group: 'Crew', mark: GroupGlyph },
   { id: 'emoji', label: 'Emoji', group: 'Crew', mark: PhotoGlyph },
   { id: 'files', label: 'Files', group: 'Crew', mark: FileGlyph }
 ]
 
 export const GROUPS = [...new Set(SETTINGS_TABS.map(tab => tab.group))]
-
-// A page the machine cannot do anything about is left out rather than greyed,
-// the same rule the design panel and the actions palette hold.
-export function settingsTabs(platform: string): TabDef[] {
-  return SETTINGS_TABS.filter(tab => tab.id !== 'command' || shipsCommand(platform))
-}
 
 export function tabLabel(tab: TabDef, selfName: string): string {
   return tab.id === 'you' ? selfName || tab.label : tab.label
