@@ -899,6 +899,11 @@ export const useCrew = create<CrewState>((set, get) => {
           pending: { ...state.pending, [from]: [], [to]: [...waiting, ...carried].slice(0, MAX_ATTACHMENTS) }
         }
       }),
+    // The number is the crew's, so the host is what writes it down and every
+    // window hears it back. Nothing is set here on the way out.
+    setAttachmentLimit: mb => {
+      socket.send({ type: 'attachment.limit', mb })
+    },
     sendChat: (text, threadId, boardId, replyTo, aimedAt, commands) => {
       const key = threadId ?? boardId ?? CHAT_KEY
       const attachments = (get().pending[key] ?? []).map(({ name, mime, data }) => ({ name, mime, data }))
