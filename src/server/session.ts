@@ -400,6 +400,9 @@ export class CrewSession {
   private playlists = new Map<string, MusicPlaylist>()
   // The leaderboard: one row per person per game, their best and nothing else.
   private scores = new Map<string, GameScore>()
+  // The emoji the crew drew themselves, written down the way the shelf is: one
+  // somebody added is still theirs tomorrow.
+  private emoji = new Map<string, CustomEmoji>()
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
