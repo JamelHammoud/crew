@@ -59,6 +59,20 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
+      - name: Check the mac build is signed and notarized
+        if: matrix.label == 'mac'
+        run: |
+          shopt -s nullglob
+          fail() { echo "$1" >&2; exit 1; }
+          apps=(dist/*/Crew.app)
+          [ "${#apps[@]}" -eq 2 ] || fail "expected two mac apps, found ${#apps[@]}"
+          for app in "${apps[@]}"; do
+            codesign --verify --deep --strict "$app" || fail "$app is not signed properly"
+            codesign -dvv "$app" 2>&1 | grep -q 'Authority=Developer ID Application:' \
+              || fail "$app is not signed with a Developer ID Application certificate"
+            xcrun stapler validate "$app" || fail "$app carries no notarization ticket"
+          done
+
       - name: Name the files the way the update feed does
         run: |
           shopt -s nullglob
