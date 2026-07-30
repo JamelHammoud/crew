@@ -122,22 +122,12 @@ function NameCard({
 // One emoji: the picture, what it is written as, and who put it there. What the
 // row can do sits at the end of it in a slot that is held whether or not the
 // pointer is there, so nothing shuffles sideways under it.
-function EmojiRow({ emoji, list }: { emoji: CustomEmoji; list: CustomEmoji[] }) {
+function EmojiRow({ emoji }: { emoji: CustomEmoji }) {
   const renameCustomEmoji = useCrew(s => s.renameCustomEmoji)
   const removeCustomEmoji = useCrew(s => s.removeCustomEmoji)
   const [open, setOpen] = useState(false)
   const [naming, setNaming] = useState(false)
   const ref = customEmojiRef(emoji.name)
-
-  // A name means one thing for the whole crew, so a clash is worth saying rather
-  // than a rename that quietly does not happen.
-  const rename = (asked: string): string | null => {
-    const clean = cleanCustomEmojiName(asked)
-    if (!clean) return NEEDS_NAME
-    if (clean !== emoji.name && customEmojiNameTaken(list, clean)) return `${customEmojiRef(clean)} is already taken`
-    renameCustomEmoji(emoji.id, clean)
-    return null
-  }
 
   return (
     <div className="group flex items-center gap-3 px-3 py-2 -mx-3 rounded-2xl transition-colors hover:bg-fg/[0.03]">
