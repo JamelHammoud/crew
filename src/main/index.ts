@@ -15,6 +15,7 @@ import { setBadge, showAlert } from './alerts'
 import type { AgentAlert } from '../shared/alerts'
 import { copyImage } from './clipboard'
 import type { Present } from '../shared/presence'
+import { fromSource } from './from-source'
 import { appIcon, type IconTheme } from './icon'
 import { CrewTray } from './tray'
 import {
@@ -498,5 +499,6 @@ app.on('before-quit', () => {
   tray.close()
   scribeKeys.close()
   scribe.close()
+  updates.close()
   void session.shutdown()
 })
