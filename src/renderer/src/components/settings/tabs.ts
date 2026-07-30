@@ -37,6 +37,12 @@ export const SETTINGS_TABS: TabDef[] = [
 
 export const GROUPS = [...new Set(SETTINGS_TABS.map(tab => tab.group))]
 
+// A page the machine cannot do anything about is left out rather than greyed,
+// the same rule the design panel and the actions palette hold.
+export function settingsTabs(platform: string): TabDef[] {
+  return SETTINGS_TABS.filter(tab => tab.id !== 'command' || shipsCommand(platform))
+}
+
 export function tabLabel(tab: TabDef, selfName: string): string {
   return tab.id === 'you' ? selfName || tab.label : tab.label
 }
