@@ -11,6 +11,7 @@ import {
   commandScript,
   installLine,
   removeLine,
+  shellWord,
   shipsCommand,
   turnedDown
 } from '../src/shared/crewCommand'

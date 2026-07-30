@@ -251,11 +251,12 @@ export function previewOf(mime: string): PreviewKind {
 
 const UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
 
-// A size is read rather than counted, so it never stands in four digits of a
-// unit somebody would have said the next one up: a thousand kilobytes is a
-// megabyte to everyone looking at it. The decimal is only worth a digit under
-// ten, where it is the difference between two files, and a trailing nought is a
-// digit spent on nothing, so 1 MB, 1.4 MB, 14 MB, 140 MB.
+// A thousand of one unit is one of the next, which is how a disk is sold and how
+// the Finder counts, so a file is the size here that it is everywhere else
+// somebody would go and look. Nothing ever stands in four digits of the unit
+// below. The decimal is worth a digit only under ten, where it is the difference
+// between two files, and a trailing nought is a digit spent on nothing, so 1 MB,
+// 1.4 MB, 14 MB, 140 MB.
 export function fileSize(bytes: number): string {
   let size = Math.max(0, bytes)
   let unit = 0
