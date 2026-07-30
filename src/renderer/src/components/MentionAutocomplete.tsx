@@ -75,7 +75,10 @@ export function useMentionAutocomplete(
     const caret = inputRef.current?.selectionStart ?? next.length
     const head = next.slice(0, caret)
     const closed = EMOJI_CLOSED.exec(head)
-    const char = closed && emojiForShortcode(closed[1])
+    // A name the crew made up is left standing rather than turned into a
+    // character, whether or not the sheet answers to it too: the picture is what
+    // somebody typing their own name meant, and the sheet already has a menu.
+    const char = closed && !lookupCustomEmoji(closed[1]) && emojiForShortcode(closed[1])
     if (char) {
       const before = head.slice(0, head.length - closed[1].length - 2) + char
       caretTarget.current = before.length
