@@ -160,6 +160,7 @@ let balloonShown = false
 // launched for a folder opens that folder rather than the session the app was
 // last in, so the last session is not resumed on top of it.
 let opening = openRequestOf(process.argv)
+let command = new CrewCommand(null)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
 
@@ -528,6 +529,11 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('update:state', () => updates.now())
   ipcMain.handle('update:press', () => updates.press())
+  // Whether `crew` is on PATH, and the one press either way. It is this
+  // machine's own, like a terminal, so nothing about it is written down or sent.
+  ipcMain.handle('command:state', () => command.state())
+  ipcMain.handle('command:install', () => command.install())
+  ipcMain.handle('command:remove', () => command.remove())
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
