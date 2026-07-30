@@ -67,10 +67,13 @@ export class Updates {
     const next = nextUpdate(this.state, said)
     if (next === this.state) return
     this.state = next
-    // Nothing left to look for once it has landed, and a pass that ran while
-    // the app was on its way over would only be work nobody reads.
-    if (next.stage === 'ready') this.close()
     for (const win of this.windows()) this.tell(win)
+    if (next.stage !== 'ready') return
+    // Nothing left to look for once it has landed. The press was for the whole
+    // update rather than for the half of it that fetches, so the rest of it
+    // happens without a second press.
+    this.close()
+    this.restart()
   }
 
   // Silent and running again on the other side, because the press was somebody
