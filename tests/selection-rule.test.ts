@@ -40,3 +40,26 @@ describe('the app default for selection', () => {
     expect(styles).not.toMatch(/^body\s*\{[^}]*user-select/m)
   })
 })
+
+describe('the band a page of paper takes', () => {
+  const band = (name: string): string => {
+    const found = new RegExp(`--color-${name}:\\s*([^;]+);`).exec(styles)
+    expect(found, name).toBeTruthy()
+    return (found as RegExpExecArray)[1]
+  }
+
+  it('is a dark one, whichever theme the window is in', () => {
+    expect(band('selection-paper')).toContain('rgb(0 0 0')
+    expect(styles.match(/--color-selection-paper:/g)).toHaveLength(1)
+  })
+
+  it('is the one a pdf paints its selection in, since the window band vanishes on white', () => {
+    const view = readFileSync(
+      path.join(root, 'src/renderer/src/components/attachment/PdfPreview.tsx'),
+      'utf8'
+    )
+    const at = view.indexOf('.pdf-text span::selection')
+    expect(at).toBeGreaterThan(-1)
+    expect(view.slice(at, view.indexOf('}', at))).toContain('var(--color-selection-paper)')
+  })
+})
