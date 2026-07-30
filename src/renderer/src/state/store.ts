@@ -860,7 +860,7 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     detach: (key, id) =>
       set(state => ({ pending: { ...state.pending, [key]: (state.pending[key] ?? []).filter(a => a.id !== id) } })),
-    // A control that stages images under a key of its own has to hand them to
+    // A control that stages files under a key of its own has to hand them to
     // the thread or board the message is going to, because that is the only
     // place sendChat looks for them.
     moveAttachments: (from, to) =>
