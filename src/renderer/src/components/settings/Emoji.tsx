@@ -24,8 +24,6 @@ const ACCEPT = Object.keys(CUSTOM_EMOJI_TYPES).join(',')
 const FIELD =
   'w-full h-11 px-3.5 rounded-xl bg-fg/[0.07] text-sm text-fg placeholder:text-fg/35 outline-none border-none transition-colors focus:bg-fg/[0.11]'
 
-const NEEDS_NAME = 'Give it a name in letters and numbers'
-
 // One card that asks one thing: what it is called, with the picture standing
 // beside the field. Naming a new one and naming an old one again are the same
 // question, so they are the same card, and what comes back from the send is said
@@ -244,7 +242,7 @@ export default function Emoji() {
         {sorted.length > 0 && (
           <div className="space-y-0.5 mb-4">
             {sorted.map(one => (
-              <EmojiRow key={one.id} emoji={one} list={emoji} />
+              <EmojiRow key={one.id} emoji={one} />
             ))}
           </div>
         )}
