@@ -143,4 +143,10 @@ describe('a pdf in the panel', () => {
     expect(scroller.className).toContain('overflow-auto')
     expect(scroller.className).toContain('select-text')
   })
+
+  it('reads the page it is really given', () => {
+    expect(pdfAssets().standardFontDataUrl).toBe(
+      new URL('pdfjs/standard_fonts/', document.baseURI).href
+    )
+  })
 })
