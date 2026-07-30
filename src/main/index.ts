@@ -183,13 +183,6 @@ function appWindows(): BrowserWindow[] {
 // The pill is left out on purpose. It never takes focus, so it can only be the
 // answer on a machine where something has gone wrong, and a dictation answered by
 // the window drawing the pill would be answered by itself.
-const FOCUSED_IN_PAGE = `(() => {
-  let el = document.activeElement
-  while (el && el.shadowRoot && el.shadowRoot.activeElement) el = el.shadowRoot.activeElement
-  if (!el) return null
-  return { tag: el.tagName || '', type: el.getAttribute('type') || '', editable: !!el.isContentEditable }
-})()`
-
 async function caretInCrew(): Promise<Landing | null> {
   const win = BrowserWindow.getFocusedWindow()
   if (!win || scribe.owns(win) || tray.owns(win) || win.webContents.isDestroyed()) return null
