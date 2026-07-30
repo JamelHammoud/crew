@@ -206,7 +206,7 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
     return () => document.removeEventListener('selectionchange', onSelection)
   }, [rows])
 
-  const dirty = editable && !!file && doc !== file.text
+  const dirty = writable && !!file && doc !== file.text
 
   const apply = (next: string) => {
     const edit = editDoc(rows, doc, shown, next)

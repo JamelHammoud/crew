@@ -46,6 +46,18 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     }
   }, [tab.id])
 
+  // Asking for a page that is already open loads it again. The src has not
+  // changed, so nothing about the tag would move on its own, and a page shown
+  // after an edit would stand at what it was before it.
+  useEffect(() => {
+    if (tab.generation === 0) return
+    try {
+      ref.current?.reload()
+    } catch {
+      // The view is not attached yet, and its src is already the new page.
+    }
+  }, [tab.generation])
+
   return (
     <webview
       ref={ref}
