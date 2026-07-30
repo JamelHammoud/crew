@@ -481,6 +481,7 @@ Files from the toolbox opens the same tab with the project standing beside it, a
 - Turning the pane on opens every folder down to the file already showing and scrolls to it. A tree that lands back at the top of the project when you were reading something four folders down is a tree nobody uses twice.
 - The filter searches the whole project rather than the folders that happen to be open. `listRepoFiles` asks git what the project is made of, which leaves out everything `.gitignore` covers for free, and only a folder that is not a repository is walked by hand.
 - What was typed is matched letter by letter, in order, by `matchFiles` in `src/shared/files.ts`. A run inside the file's own name beats one spread across the folders above it, and the letters that landed are handed back so they can be picked out in the row.
+- A right click on a row opens what it names in a tab of its own. Three kinds of row do it, the folder listing, the tree and the filter's results, so what is shared is the menu rather than the row: `useFileMenu` in `fileMenu.tsx` hands each one a handler for its button and the card to stand beside it. It is a new tab every time rather than the one already holding that file, since keeping the file you are reading while this tab goes on somewhere else is half the reason to ask for one, and a row that says new tab and does nothing is worse than a second tab.
 
 ## The boot
 
