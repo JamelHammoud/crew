@@ -46,7 +46,9 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
     case 'found': {
       if (state.stage === 'getting' || state.stage === 'ready') return state
       const standing = state.stage === 'found' && state.version === said.version
-      return standing ? state : { stage: 'found', version: said.version, percent: 0, why: '' }
+      return standing
+        ? state
+        : { ...state, stage: 'found', version: said.version, percent: 0, why: '' }
     }
     // A check that finds nothing never takes back one already found, or a pass
     // made while a download is running would clear the pill out from under it.
