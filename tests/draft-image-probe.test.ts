@@ -79,3 +79,39 @@ describe('an image that has not been sent yet', () => {
     expect(useBrowser.getState().tabs).toHaveLength(0)
   })
 })
+
+describe('a file that has not been sent yet', () => {
+  beforeEach(() => {
+    useCrew.setState({ pending: { [KEY]: [draft('a', 'balance.png'), paper] } })
+  })
+
+  it('stands as its name and its weight rather than as a broken picture', () => {
+    const { container, getByText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+
+    expect(container.querySelectorAll('img')).toHaveLength(1)
+    expect(getByText('terms.pdf')).not.toBeNull()
+    expect(getByText('284 KB')).not.toBeNull()
+  })
+
+  it('sits at the height the thumbnails do', () => {
+    const { container, getByText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+    const thumbnail = container.querySelector('img')!.parentElement!
+    const chip = getByText('terms.pdf').closest('div')!
+
+    expect(thumbnail.className).toContain('h-16')
+    expect(chip.className).toContain('h-16')
+  })
+
+  it('is nothing to open, since there is nothing there yet', () => {
+    const { queryByLabelText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+
+    expect(queryByLabelText('Open terms.pdf')).toBeNull()
+  })
+
+  it('comes off the message the same way a picture does', () => {
+    const { getByLabelText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+    fireEvent.click(getByLabelText('Remove terms.pdf'))
+
+    expect(useCrew.getState().pending[KEY]!.map(item => item.name)).toEqual(['balance.png'])
+  })
+})

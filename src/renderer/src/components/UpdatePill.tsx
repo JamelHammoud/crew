@@ -1,4 +1,4 @@
-import { pressDoes, type UpdateStage } from '../../../shared/update'
+import { pressDoes, updateStanding, type UpdateStage } from '../../../shared/update'
 import { pressUpdate, useUpdate } from '../state/update'
 import Tooltip from './Tooltip'
 
@@ -12,7 +12,7 @@ const WORDS: Record<UpdateStage, string> = {
 
 export default function UpdatePill() {
   const update = useUpdate()
-  if (update.stage === 'none') return null
+  if (!updateStanding(update)) return null
   const waiting = pressDoes(update.stage) === 'none'
 
   return (

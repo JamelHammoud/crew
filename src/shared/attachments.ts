@@ -156,17 +156,22 @@ export function extensionFor(mime: string): string {
   return IMAGE_TYPES[mime]
 }
 
+const namedExtension = (name: string): string | null => {
+  const found = /\.([A-Za-z0-9]{1,12})$/.exec(name)?.[1]
+  return found ? found.toLowerCase() : null
+}
+
+export function extensionOf(name: string): string {
+  return namedExtension(name) ?? 'bin'
+}
+
 // A picture is stored under the extension its own type says, since that is the
 // one thing a browser hands over reliably. For everything else the type a
 // browser reports is a guess and the name is what somebody chose, so the name
-// decides, and a file with nothing to go on is kept as it arrived.
-export function extensionOf(name: string): string {
-  const found = /\.([A-Za-z0-9]{1,12})$/.exec(name)?.[1]
-  return found ? found.toLowerCase() : 'bin'
-}
-
+// goes first and the type is what is left to go on.
 export function extensionUsedFor(mime: string, name: string): string {
-  return isImageType(mime) ? extensionFor(mime) : extensionOf(name)
+  if (isImageType(mime)) return extensionFor(mime)
+  return namedExtension(name) ?? EXTENSION_BY_TYPE[mime] ?? 'bin'
 }
 
 export function mimeForFile(file: string): string {
