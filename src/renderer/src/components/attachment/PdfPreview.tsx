@@ -270,7 +270,16 @@ function Paper({
   }, [unit, onMeasured])
 
   useEffect(() => {
-    if (!page || !unit || !near || !paint) return
+    if (!page || !unit || !paint) return
+    if (!near) {
+      const gone = canvas.current
+      if (gone) {
+        gone.width = 0
+        gone.height = 0
+      }
+      setPainted(false)
+      return
+    }
     let alive = true
     let render: RenderTask | null = null
     const draw = async (): Promise<void> => {
