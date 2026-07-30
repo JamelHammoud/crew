@@ -88,6 +88,6 @@ export class Updates {
   // a beat so the window it was pressed in has painted the press before the app
   // goes, and so whatever quitting puts down is put down.
   private restart(): void {
-    setImmediate(() => autoUpdater.quitAndInstall(true, true))
+    setImmediate(() => autoUpdater().quitAndInstall(true, true))
   }
 }
