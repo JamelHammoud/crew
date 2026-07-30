@@ -48,7 +48,7 @@ describe('the room a dragged one leaves behind', () => {
     expect(room([boxes[0]!, boxes[1]!], 1)).toBe(100)
   })
 
-  it('is nothing at all for a row of one', () => {
+  it('is its own width alone when there is nothing beside it', () => {
     expect(room([boxes[0]!], 0)).toBe(90)
   })
 })
