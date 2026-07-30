@@ -277,14 +277,7 @@ const spaceStars = ctx => {
 // COVER_SEED is the picture. It is not a label: the shader works the whole scene
 // and its palette out from these exact characters, so rewording it draws a
 // different cover. Change it only by looking at what comes back.
-export const COVER_SEED = 'crew icon 68'
-
-// Every palette the covers are drawn in is pale by rule, because the darkest
-// place in a picture like that is a colour in shade and never an ink. So this is
-// the one skin whose mark is dark: white holds at the size the settings draw it
-// and closes into one blob by the time the dock is done with it, and the ink
-// keeps the two gaps at every size. It is the same answer the light tile gives.
-const COVER_INK = '#141414'
+export const COVER_SEED = 'crew icon 71'
 
 // TERMINAL -------------------------------------------------------------------
 // Phosphor on glass. The scanlines run over the mark rather than under it,
