@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { landingFrom, landingOf } from '../src/shared/scribeLanding'
+import { landingFrom, landingInPage, landingOf } from '../src/shared/scribeLanding'
 
 // Where a dictation lands. None of this touches a keyboard or a machine, which is
 // the whole point of the answer being a rule: the roles and the attribute lists
