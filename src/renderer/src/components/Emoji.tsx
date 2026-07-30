@@ -51,19 +51,12 @@ export default function Emoji({
 }
 
 // A picture drawn small in a sentence is one somebody may not know the name of,
-// and the name is what they would type to write it themselves. One of the crew's
-// own says who brought it, which is the one thing about it the sheet's cannot
-// say.
+// and the name is what they would type to write it themselves.
 export function EmojiTip({ char }: { char: string }) {
-  useCustomEmoji()
-  const picture = lookupCustomEmojiRef(char)
   return (
     <span className="flex items-center gap-2.5">
       <Emoji char={char} size={30} />
-      <span className="flex min-w-0 flex-col gap-0.5">
-        <span className="text-sm font-medium text-fg/85 break-words">{emojiName(char)}</span>
-        {picture && <span className="text-xs text-fg/45">Added by {picture.emoji.by}</span>}
-      </span>
+      <span className="min-w-0 text-sm font-medium text-fg/85 break-words">{emojiName(char)}</span>
     </span>
   )
 }
