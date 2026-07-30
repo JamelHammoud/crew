@@ -55,6 +55,8 @@ export default function ChatMessage({
   // own run's: it matches no member and no agent, and the hover card that would
   // have named the machine it ran on quietly stands down.
   const nameId = item.helperSeed ?? item.authorId
+  const sheet = useCustomEmoji()
+  const large = useMemo(() => onlyEmoji(item.text), [item.text, sheet])
 
   useLayoutEffect(() => {
     const el = input.current
