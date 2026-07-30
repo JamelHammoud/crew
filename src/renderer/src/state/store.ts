@@ -412,6 +412,13 @@ export const useCrew = create<CrewState>((set, get) => {
     if (event.kind === 'thread.started' && event.aside) {
       useBrowser.getState().openAside(event.threadId, event.title)
     }
+    // A page an agent showed comes up for whoever is reading the thread it was
+    // shown in, which is the whole of what showing one is. Anywhere else it is
+    // the row in that thread, so nobody's panel is taken over by work they are
+    // not watching.
+    if (event.kind === 'page.shown' && event.threadId === get().openThreadId) {
+      useBrowser.getState().showPage(event.url)
+    }
     if (event.kind === 'message.deleted') {
       set(state => ({
         events: markDeletedReplies(
