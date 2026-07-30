@@ -11,14 +11,26 @@ import { landingOf, type Landing } from '../shared/scribeLanding'
 // 'unknown' is the honest answer rather than a guess that would hold somebody's
 // words back from a field they really were in.
 
-// A focused element that is missing value is the machine declining to answer and
-// never an answer. Chromium builds its accessibility tree only once something asks
-// for it in the way it is waiting to be asked, and nothing here does, so every
-// application anybody really dictates into hands back missing value the whole time
-// their caret is sitting in a box. Setting AXManualAccessibility on the process is
-// what turns it over, and this never does: it is somebody else's application, the
-// tree costs them for as long as it is on, and Crew is already answered without
-// asking macOS anything.
+// A focused element that is missing value is two different answers, and the
+// focused window is what tells them apart. That one extra read is the whole of the
+// difference between a feature that works and one that says "click into a text
+// box" over somebody's open composer.
+//
+// With a focused window, it is a Chromium application that has not built its
+// accessibility tree. It builds one only once something asks for it the way it is
+// waiting to be asked, and nothing here does, so Crew, Discord, VS Code and Chrome
+// all hand back missing value the whole time a caret is sitting in a box. That is
+// a silence, and it pastes.
+//
+// With no focused window, nothing in that application is open. Mail, Messages,
+// Terminal and ChatGPT all sit like this with every window shut, and there really
+// is nowhere for the words to land, so this is the 'none' the card exists for.
+//
+// Nothing here ever turns anybody's tree on. AXManualAccessibility is somebody
+// else's application and costs them for as long as it is on, it is honoured by
+// almost nothing anyway, and Chrome wants AXEnhancedUserInterface and up to
+// several seconds to answer after it. Crew is answered without asking macOS at
+// all, and every other application is left as it was found.
 //
 // One place the script lives. `AXRole` is read as an attribute rather than
 // through System Events' own `role`, because the two disagree: a page with
