@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { attachmentBytes } from '../../../shared/attachments'
 import { WarningGlyph } from '../icons'
+import { useCrew } from '../state/store'
 import { gifsReady, searchGifs, trendingGifs, type Gif } from './gifs'
 import InsetRing from './InsetRing'
 import SearchField from './SearchField'
@@ -96,6 +98,7 @@ export default function GifPicker({
   const [failed, setFailed] = useState(false)
   const [sending, setSending] = useState<string | null>(null)
   const [refused, setRefused] = useState<string | null>(null)
+  const cap = attachmentBytes(useCrew(s => s.attachmentMb))
 
   const wanted = query.trim()
 
