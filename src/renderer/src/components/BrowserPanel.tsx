@@ -373,7 +373,7 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
   )
 }
 
-function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
+function TabPill({ tab, active, row }: { tab: BrowserTab; active: boolean; row: Reorder }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
 
@@ -386,12 +386,18 @@ function TabPill({ tab, active }: { tab: BrowserTab; active: boolean }) {
       <button
         ref={pillRef}
         data-tab={tab.id}
-        onClick={() => useBrowser.getState().selectTab(tab.id)}
+        data-reorder={tab.id}
+        onPointerDown={row.take(tab.id)}
+        onClick={() => {
+          if (!row.dragged()) useBrowser.getState().selectTab(tab.id)
+        }}
         onContextMenu={event => {
           event.preventDefault()
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
-        className={`group flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-all duration-150 active:scale-95 ${
+        // Everything but where a pill stands is transitioned, since where it
+        // stands is written by the drag itself and has to keep up with a pointer.
+        className={`group relative flex items-center gap-1.5 h-9 pl-3 pr-1.5 rounded-full text-sm font-medium max-w-[180px] shrink-0 transition-[color,background-color,scale] duration-150 active:scale-95 ${
           active
             ? 'bg-ink-800 text-fg'
             : menuAt
