@@ -126,6 +126,16 @@ export const stripMention = (text: string, label: string): string =>
     .replace(/\s+/g, ' ')
     .trim()
 
+// What a thread is about, as it reads inside the thread. The card in the feed
+// puts the agent's name in front of the ask, since the feed has to say where it
+// went. Inside, the name is on the row already, so the mention comes out rather
+// than being read twice, and a thread opened on nothing but a mention is
+// nothing rather than a blank line under the name.
+export const threadAsk = (
+  thread: Pick<ThreadMeta, 'title' | 'titleRefs' | 'agentLabel'>,
+  agents: Array<Pick<PooledAgent, 'id' | 'label'>>
+): string => stripMention(relabelMentions(thread.title, thread.titleRefs, agents), thread.agentLabel)
+
 export function lastEnd(
   threadId: string,
   events: SessionEvent[]
