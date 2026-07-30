@@ -150,7 +150,7 @@ describe('how big a file may be', () => {
 
     // A number picked before anybody was invited is the crew's, so it still
     // stands, and it is offered where its own size falls.
-    expect(attachmentMbChoices(true, 2048).at(-1)).toBe(2048)
+    expect(attachmentMbChoices(true, 2000).at(-1)).toBe(2000)
     expect(attachmentMbChoices(true, ATTACHMENT_UNLIMITED).at(-1)).toBe(ATTACHMENT_UNLIMITED)
     expect(attachmentMbChoices(true, 5)).toEqual(shared)
   })
