@@ -95,9 +95,9 @@ jobs:
           if [ "${{ matrix.label }}" = mac ]; then
             [ -f dist/latest-mac.yml ] || fail "dist/latest-mac.yml is missing"
             zips=(dist/*-mac.zip)
-            [ "${#zips[@]}" -eq 2 ] || fail "expected two mac zips, found ${#zips[@]}"
+            [ "${#zips[@]}" -eq 1 ] || fail "expected one mac zip, found ${#zips[@]}"
             listed=$(grep -c 'url:.*\.zip' dist/latest-mac.yml || true)
-            [ "$listed" -eq 2 ] || fail "latest-mac.yml lists $listed zips, expected two"
+            [ "$listed" -eq 1 ] || fail "latest-mac.yml lists $listed zips, expected one"
             dmgs=(dist/*.dmg)
             [ "${#dmgs[@]}" -gt 0 ] || fail "no dmg was built"
           else
