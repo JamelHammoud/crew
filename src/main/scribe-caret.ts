@@ -53,19 +53,19 @@ end tell`
 const PATIENCE_MS = 1500
 
 // Our own windows, asked before the machine is. It answers null when the caret is
-// somewhere else entirely, which is every application but this one, and that is
-// what sends the question on to macOS.
-export type OwnCaret = () => Landing | null
+// in another application altogether, which is what sends the question on to macOS,
+// and it is asked first because it is the one answer that is never a guess.
+export type OwnCaret = () => Promise<Landing | null>
 
-const elsewhere: OwnCaret = () => null
+const elsewhere: OwnCaret = () => Promise.resolve(null)
 
-export function askCaret(
+export async function askCaret(
   ours: OwnCaret = elsewhere,
   platform: string = process.platform
 ): Promise<Landing> {
-  const own = ours()
-  if (own) return Promise.resolve(own)
-  if (platform !== 'darwin') return Promise.resolve('unknown')
+  const own = await ours()
+  if (own) return own
+  if (platform !== 'darwin') return 'unknown'
   return new Promise(answer => {
     execFile(
       'osascript',
