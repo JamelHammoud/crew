@@ -161,6 +161,9 @@ export type ClientMessage =
   | { type: 'playlist.remove'; playlistId: string }
   | { type: 'playlist.rename'; playlistId: string; name: string }
   | { type: 'playlist.track'; playlistId: string; trackId: string; on: boolean }
+  | { type: 'emoji.add'; name: string; mime: string; data: string }
+  | { type: 'emoji.rename'; emojiId: string; name: string }
+  | { type: 'emoji.remove'; emojiId: string }
   | { type: 'game.score'; gameId: string; score: number }
   | { type: 'queue.edit'; promptId: string; text: string }
   | { type: 'queue.remove'; promptId: string }
@@ -197,6 +200,7 @@ export type ServerMessage =
   | { type: 'music.room'; room: MusicRoom }
   | { type: 'music.shelf'; uploads: MusicUpload[] }
   | { type: 'music.playlists'; playlists: MusicPlaylist[] }
+  | { type: 'emoji.set'; emoji: CustomEmoji[] }
   | { type: 'game.scores'; scores: GameScore[] }
   | { type: 'design.boards'; boards: DesignBoardMeta[] }
   | {
