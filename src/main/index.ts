@@ -106,6 +106,10 @@ function saidChanged(): void {
   for (const win of appWindows()) win.webContents.send('scribe:said', list)
 }
 let balloonShown = false
+// What `crew` in a terminal asked for, read once and handed over once. A window
+// launched for a folder opens that folder rather than the session the app was
+// last in, so the last session is not resumed on top of it.
+let opening = openRequestOf(process.argv)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
 
