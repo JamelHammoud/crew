@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import http from 'node:http'
 import { WebSocketServer, WebSocket } from 'ws'
-import { isAttachmentFile, MAX_ATTACHMENT_BYTES, mimeForFile } from '../shared/attachments'
+import { isAttachmentFile, mimeForFile } from '../shared/attachments'
 import { mimeForMusic } from '../shared/music'
 import type { DesignOp } from '../shared/design'
 import type { CrewSession } from './session'
