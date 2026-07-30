@@ -113,9 +113,15 @@ function scribeWrite(text: string): void {
 // One at a time, in the order it was spoken. The caller stays synchronous because
 // a stretch arrives off a socket and has nothing to wait on, and the order is the
 // whole of what this chain is for.
+//
+// The aim is taken hold of here rather than read at the far end of the chain. It is
+// the dictation's own, and the next one replaces it the moment its key goes down:
+// read late, a stretch still queued behind a slow paste would be answered by where
+// somebody is pointing now instead of where they were pointing when they said it.
 function scribeLand(text: string): void {
   said.add(text)
-  scribeLanding = scribeLanding.then(() => landScribe(text))
+  const aim = scribeAim
+  scribeLanding = scribeLanding.then(() => landScribe(text, aim))
 }
 
 // A dictation with nowhere to go is held rather than pasted into the desk. It is
