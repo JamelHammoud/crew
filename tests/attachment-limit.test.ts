@@ -178,7 +178,7 @@ describe('how big a file may be', () => {
 
   it('leaves the number where it is when a window asks for junk', async () => {
     const ui = await connect('sam')
-    ui.send({ type: 'attachment.limit', mb: 0 })
+    ui.send({ type: 'attachment.limit', mb: -1 })
     ui.send({ type: 'attachment.limit', mb: 5 })
     const said = (await ui.waitForEvent(e => e.kind === 'attachment.limit')) as Limit
     expect(said.mb).toBe(5)
