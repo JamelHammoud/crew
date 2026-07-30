@@ -132,6 +132,15 @@ import {
   isReactionEmoji,
   messageReactionTarget
 } from '../shared/reactions'
+import {
+  cleanCustomEmojiName,
+  customEmojiExtension,
+  customEmojiNameIn,
+  customEmojiNameTaken,
+  CUSTOM_EMOJI_MAX_BYTES,
+  MAX_CUSTOM_EMOJI,
+  type CustomEmoji
+} from '../shared/customEmoji'
 import type { ClientMessage, QueuedItem, RegisteredLlm, ServerMessage, SessionSnapshot } from '../shared/protocol'
 import {
   BOARD_ID,
