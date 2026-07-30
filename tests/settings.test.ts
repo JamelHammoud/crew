@@ -177,7 +177,7 @@ describe('the settings', () => {
     expect(page('Files')).toBeTruthy()
 
     fireEvent.click(within(card()).getByRole('button', { name: /10 MB/ }))
-    fireEvent.click(within(card()).getByRole('button', { name: '25 MB' }))
+    fireEvent.click(screen.getByRole('button', { name: '25 MB' }))
     expect(asked).toHaveBeenCalledWith(25)
   })
 
