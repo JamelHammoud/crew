@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
-  cleanCustomEmojiName,
   customEmojiNameFromFile,
-  customEmojiNameTaken,
   customEmojiRef,
   CUSTOM_EMOJI_NAME_LIMIT,
   CUSTOM_EMOJI_TYPES,
