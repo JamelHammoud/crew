@@ -58,6 +58,14 @@ export default function ScribePill() {
   // is what shows the card, since the words are still held.
   const holding = held.length > 0 && resting
 
+  // A pill that does not rest on screen has no resting state to draw. Its window
+  // is up for the length of a dictation and no longer, and where the words went is
+  // what decides whether it is put away or turned into a card, so it is still
+  // standing there for as long as the paste takes. Drawn the moment the sound had
+  // been read, the mark on its own is the pill flashing small over somebody's
+  // window on the way out of every dictation.
+  if (resting && !holding && !restsOnScreen(settings)) return null
+
   // The outer box is the room the shadow lands in. It is the window that is
   // larger rather than the pill, so this padding is what the two agree on, and
   // nothing in that margin takes the pointer: it is empty air standing over
