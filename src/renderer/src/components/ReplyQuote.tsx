@@ -53,9 +53,10 @@ export default function ReplyQuote({
               className="h-5 w-5 shrink-0 rounded-md border border-fg/10 object-cover"
             />
           )}
-          {text && (
+          {Mark && <Mark className="h-4 w-4 shrink-0 text-fg-muted" />}
+          {line && (
             <span className="min-w-0 flex-1 truncate text-sm text-fg-muted">
-              <EmojiText text={text} />
+              <EmojiText text={line} />
             </span>
           )}
         </>
