@@ -1,5 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
+import { customEmojiRef, type CustomEmoji } from '../../../shared/customEmoji'
 import { ClockGlyph, SearchGlyph } from '../icons'
+import { customEmojiSheet, lookupCustomEmojiRef, searchCustomEmoji } from './customEmojiSheet'
 import Emoji from './Emoji'
 import { EMOJI_CATEGORIES, lookupEmoji, searchEmoji, type EmojiEntry } from './emojiData'
 import { recentEmoji } from './emojiRecents'
@@ -10,13 +12,37 @@ const CELL = 34
 const HEADER = 28
 const OVERSCAN = 320
 
+// A cell is the value it hands back and the name it says, so one grid holds the
+// crew's own pictures and the sheet's squares without knowing which it is
+// drawing: `Emoji` already reads a `:name:` as a picture.
+interface Choice {
+  value: string
+  name: string
+}
+
 interface Section {
   id: string
   label: string
   icon: string | null
-  entries: EmojiEntry[]
+  choices: Choice[]
   top: number
   height: number
+}
+
+const sheetChoice = (entry: EmojiEntry): Choice => ({ value: entry.char, name: entry.shortName })
+
+const crewChoice = (emoji: CustomEmoji): Choice => ({
+  value: customEmojiRef(emoji.name),
+  name: emoji.name
+})
+
+// What is in the frequently used row is whatever has been picked, which is a
+// character or one of the crew's own.
+function choiceFor(value: string): Choice | null {
+  const entry = lookupEmoji(value)
+  if (entry) return sheetChoice(entry)
+  const picture = lookupCustomEmojiRef(value)
+  return picture ? crewChoice(picture.emoji) : null
 }
 
 // What the picker is for changes with where it stands: the same grid reacts to
@@ -40,33 +66,59 @@ export default function EmojiPicker({
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const searchRef = useAutoFocus<HTMLInputElement>()
+  // The crew's own are read once, as the picker opens, so one arriving while
+  // somebody is looking does not move the grid under the pointer. Newest first,
+  // and the newest is the mark the rail wears.
+  const crew = useMemo(() => [...customEmojiSheet()].sort((a, b) => b.ts - a.ts), [])
   const [query, setQuery] = useState('')
   const [scrollTop, setScrollTop] = useState(0)
-  const [active, setActive] = useState('recent')
-  const [preview, setPreview] = useState<EmojiEntry | null>(null)
+  const [active, setActive] = useState(crew.length > 0 ? 'crew' : 'recent')
+  const [preview, setPreview] = useState<Choice | null>(null)
 
   const sectionHeight = (count: number) => HEADER + Math.ceil(count / columns) * CELL
 
   const sections = useMemo<Section[]>(() => {
     const recents = recentEmoji()
-      .map(char => lookupEmoji(char))
-      .filter((entry): entry is EmojiEntry => Boolean(entry))
+      .map(choiceFor)
+      .filter((choice): choice is Choice => choice !== null)
     const all = [
-      { id: 'recent', label: 'Frequently used', icon: null, entries: recents },
-      ...EMOJI_CATEGORIES.map(category => ({ ...category, icon: category.icon as string | null }))
+      // A crew with none of its own gets no section at all, rather than a
+      // heading standing over an empty row saying there is nothing there.
+      ...(crew.length > 0
+        ? [
+            {
+              id: 'crew',
+              label: 'Crew',
+              icon: crewChoice(crew[0]).value as string | null,
+              choices: crew.map(crewChoice)
+            }
+          ]
+        : []),
+      { id: 'recent', label: 'Frequently used', icon: null, choices: recents },
+      ...EMOJI_CATEGORIES.map(category => ({
+        id: category.id,
+        label: category.label,
+        icon: category.icon as string | null,
+        choices: category.entries.map(sheetChoice)
+      }))
     ]
     let top = 0
     return all.map(section => {
-      const height = sectionHeight(section.entries.length)
+      const height = sectionHeight(section.choices.length)
       const placed = { ...section, top, height }
       top += height
       return placed
     })
-  }, [columns])
+  }, [columns, crew])
 
   const grid = { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
 
-  const results = useMemo(() => searchEmoji(query), [query])
+  // A name somebody here made up is more likely what they are reaching for than
+  // a match off the sheet, so the crew's own stand at the head of the results.
+  const results = useMemo(
+    () => [...searchCustomEmoji(query).map(crewChoice), ...searchEmoji(query).map(sheetChoice)],
+    [query]
+  )
   const searching = query.trim().length > 0
 
   const viewport = scrollRef.current?.clientHeight ?? 300
@@ -89,20 +141,20 @@ export default function EmojiPicker({
     setActive(current)
   }
 
-  const cell = (entry: EmojiEntry) => (
+  const cell = (choice: Choice) => (
     <button
-      key={entry.char}
+      key={choice.value}
       type="button"
-      aria-label={`${purpose} :${entry.shortName}:`}
-      aria-pressed={selected.has(entry.char)}
-      onClick={() => onPick(entry.char)}
-      onMouseEnter={() => setPreview(entry)}
-      onFocus={() => setPreview(entry)}
+      aria-label={`${purpose} :${choice.name}:`}
+      aria-pressed={selected.has(choice.value)}
+      onClick={() => onPick(choice.value)}
+      onMouseEnter={() => setPreview(choice)}
+      onFocus={() => setPreview(choice)}
       className={`flex h-[34px] w-[34px] items-center justify-center rounded-xl transition-[transform,background-color] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-fg/10 active:scale-90 ${
-        selected.has(entry.char) ? 'bg-fg/12' : ''
+        selected.has(choice.value) ? 'bg-fg/12' : ''
       }`}
     >
-      <Emoji char={entry.char} size={22} />
+      <Emoji char={choice.value} size={22} />
     </button>
   )
 
@@ -116,7 +168,7 @@ export default function EmojiPicker({
             value={query}
             onChange={event => setQuery(event.target.value)}
             onKeyDown={event => {
-              if (event.key === 'Enter' && results[0]) onPick(results[0].char)
+              if (event.key === 'Enter' && results[0]) onPick(results[0].value)
             }}
             placeholder="Search emoji"
             className="h-9 w-full rounded-full bg-fg/6 pl-9 pr-3 text-sm text-fg outline-none transition-colors placeholder:text-fg/40 focus:bg-fg/10"
@@ -165,7 +217,7 @@ export default function EmojiPicker({
                         {section.label}
                       </p>
                       <div className="grid" style={grid}>
-                        {section.entries.map(cell)}
+                        {section.choices.map(cell)}
                       </div>
                     </>
                   )}
@@ -178,8 +230,8 @@ export default function EmojiPicker({
       <div className="flex h-12 items-center gap-2.5 border-t border-fg/8 px-4">
         {preview ? (
           <>
-            <Emoji char={preview.char} size={24} />
-            <span className="truncate text-sm font-medium text-fg/70">:{preview.shortName}:</span>
+            <Emoji char={preview.value} size={24} />
+            <span className="truncate text-sm font-medium text-fg/70">:{preview.name}:</span>
           </>
         ) : (
           <span className="text-sm text-fg/45">{hint}</span>
