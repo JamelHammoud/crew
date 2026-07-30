@@ -3,7 +3,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { fromSource, wearsBlueprint } from '../src/main/from-source'
-import { DARK_ICON, DEV_DARK_ICON, DEV_LIGHT_ICON, LIGHT_ICON } from '../src/main/icon-png'
+import { DARK_ICON, DEV_DARK_ICON, DEV_LIGHT_ICON, LIGHT_ICON, SKIN_ICONS } from '../src/main/icon-png'
+import { APP_ICONS, PICTURE_ICONS } from '../src/shared/appIcon'
+import { ICON_ART } from '../src/renderer/src/components/settings/icon-art'
 import {
   MARK_CUT,
   MARK_DISCS,
