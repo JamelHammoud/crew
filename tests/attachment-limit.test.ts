@@ -120,9 +120,54 @@ describe('how big a file may be', () => {
     expect(host.session.attachmentLimit()).toBe(50 * 1024 * 1024)
   })
 
+  it('takes anything at all once the limit is off', async () => {
+    const sam = await connect('sam')
+    sam.send({ type: 'attachment.limit', mb: ATTACHMENT_UNLIMITED })
+    await sam.waitForEvent(e => e.kind === 'attachment.limit')
+    expect(host.session.attachmentLimit()).toBe(Number.POSITIVE_INFINITY)
+
+    const base = `http://127.0.0.1:${host.server.port()}`
+    expect((await upload(base, 12 * 1024 * 1024)).status).toBe(200)
+
+    await host.close()
+    host = await startHost(repoPath)
+    const back = await connect('sam')
+    expect(welcome(back).attachmentMb).toBe(ATTACHMENT_UNLIMITED)
+    expect(host.session.attachmentLimit()).toBe(Number.POSITIVE_INFINITY)
+  })
+
+  // A file lands in the history the crew syncs and every machine here pulls its
+  // own copy, so the biggest sizes are offered only while the crew is this
+  // machine's own.
+  it('offers the big sizes on your own crew and not on a shared one', () => {
+    const alone = attachmentMbChoices(false, DEFAULT_ATTACHMENT_MB)
+    expect(alone).toContain(ATTACHMENT_MB_LIMIT)
+    expect(alone.at(-1)).toBe(ATTACHMENT_UNLIMITED)
+
+    const shared = attachmentMbChoices(true, DEFAULT_ATTACHMENT_MB)
+    expect(shared).not.toContain(ATTACHMENT_UNLIMITED)
+    expect(Math.max(...shared)).toBe(SHARED_ATTACHMENT_MB)
+
+    // A number picked before anybody was invited is the crew's, so it still
+    // stands, and it is offered where its own size falls.
+    expect(attachmentMbChoices(true, 2048).at(-1)).toBe(2048)
+    expect(attachmentMbChoices(true, ATTACHMENT_UNLIMITED).at(-1)).toBe(ATTACHMENT_UNLIMITED)
+    expect(attachmentMbChoices(true, 5)).toEqual(shared)
+  })
+
+  it('says a size in the words somebody would use for it', () => {
+    expect(attachmentMbLabel(10)).toBe('10 MB')
+    expect(attachmentMbLabel(500)).toBe('500 MB')
+    expect(attachmentMbLabel(1024)).toBe('1 GB')
+    expect(attachmentMbLabel(5120)).toBe('5 GB')
+    expect(attachmentMbLabel(ATTACHMENT_UNLIMITED)).toBe('No limit')
+    expect(fileSize(3 * 1024 * 1024 * 1024)).toBe('3.0 GB')
+    expect(fileSize(700 * 1024 * 1024)).toBe('700.0 MB')
+  })
+
   it('refuses a number nobody could have meant', () => {
     expect(cleanAttachmentMb(10)).toBe(10)
-    expect(cleanAttachmentMb(0)).toBeNull()
+    expect(cleanAttachmentMb(ATTACHMENT_UNLIMITED)).toBe(ATTACHMENT_UNLIMITED)
     expect(cleanAttachmentMb(-5)).toBeNull()
     expect(cleanAttachmentMb(ATTACHMENT_MB_LIMIT + 1)).toBeNull()
     expect(cleanAttachmentMb(Number.NaN)).toBeNull()
