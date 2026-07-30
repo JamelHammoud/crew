@@ -50,6 +50,9 @@ const bar = (root: HTMLElement): HTMLInputElement | null =>
 const counted = (root: HTMLElement): string | null =>
   bar(root)?.parentElement?.querySelector('span.tabular-nums')?.textContent ?? null
 
+const paper = (root: HTMLElement): HTMLElement =>
+  root.querySelector('[data-pdf-text]')?.parentElement as HTMLElement
+
 const words = ['Crew pools agents', 'Second page here']
 
 describe('a pdf in the panel', () => {
