@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
+  mayInstall,
   NO_UPDATE,
   nextUpdate,
   pressDoes,
   updateStanding,
+  worthChecking,
   type UpdateState,
   type UpdateWord
 } from '../src/shared/update'
