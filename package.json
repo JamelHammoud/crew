@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "main": "out/main/index.js",
+  "bin": {
+    "crew": "bin/crew.mjs"
+  },
   "build": {
     "appId": "com.jamel.crew",
     "productName": "Crew",
