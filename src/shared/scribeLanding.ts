@@ -65,6 +65,21 @@ export function landingFrom(role: string, attributes: readonly string[]): Landin
   return attributes.includes(CARET) ? 'text' : 'none'
 }
 
+// Whether what was said is held back rather than written out. Copying was already
+// the answer to wanting the words on the clipboard, so a dictation aimed there is
+// never held: it has somewhere to go and it goes there. Everything else turns on
+// the one answer that had to be earned.
+export const holdsBack = (finish: 'paste' | 'copy', aim: Landing): boolean =>
+  finish === 'paste' && aim === 'none'
+
+// Stretches of one dictation, joined into the thing somebody said. They already
+// carry the space that keeps them off the end of the one before them, so nothing
+// goes between them, and only the first is trimmed: a card that opened on a space
+// would read as a card holding nothing for as long as it took the first word to
+// be read.
+export const joinHeld = (held: string, text: string): string =>
+  held ? held + text : text.trimStart()
+
 // What the machine printed, which is one line for the role and one for the
 // attributes it holds. A shape this does not recognise is 'unknown' rather than a
 // guess: the answer comes off another process and every part of it has to be
