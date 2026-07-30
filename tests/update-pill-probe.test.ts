@@ -13,6 +13,15 @@ import { NO_UPDATE, type UpdateState } from '../src/shared/update'
 // come. That fill is what this holds: the word is written on each side of it, or
 // it vanishes the moment the white passes under it.
 
+const said = vi.fn()
+const failed = vi.fn()
+vi.mock('../src/renderer/src/state/toast', () => ({
+  toast: Object.assign(
+    (text: string, opts?: unknown) => said(text, opts),
+    { fail: (text: string, opts?: unknown) => failed(text, opts) }
+  )
+}))
+
 const pressed = vi.fn()
 let drive: (state: UpdateState) => void = () => {}
 
