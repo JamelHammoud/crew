@@ -1,6 +1,7 @@
 import { shipsCommand } from '../../../../shared/crewCommand'
 import type { Glyph } from '../../icons'
 import {
+  BoltGlyph,
   FileGlyph,
   GroupGlyph,
   PeopleGlyph,
@@ -31,6 +32,7 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'reactions', label: 'Reactions', group: 'You', mark: SmileGlyph },
   { id: 'sound', label: 'Sound and video', group: 'You', mark: SpeakerGlyph },
   { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
+  { id: 'power', label: 'Power', group: 'You', mark: BoltGlyph },
   { id: 'command', label: 'Command line', group: 'You', mark: TerminalGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
