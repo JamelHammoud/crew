@@ -222,6 +222,20 @@ function terminalsFor(sender: WebContents): Terminals {
   return made
 }
 
+// A page being read belongs to the window reading it, the way a shell does, so
+// closing a window takes the pages it stood up with it.
+function previewsFor(sender: WebContents): Previews {
+  const open = previews.get(sender.id)
+  if (open) return open
+  const made = new Previews()
+  previews.set(sender.id, made)
+  sender.once('destroyed', () => {
+    made.clear()
+    previews.delete(sender.id)
+  })
+  return made
+}
+
 // A login shell reads the whole profile before it says anything, so one is
 // started for every window as soon as the folder a terminal would open in is
 // known, rather than when somebody asks for a tab and watches it blink.
