@@ -4,10 +4,14 @@ import { CloseGlyph, PlusGlyph } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { markFor } from './attachmentMark'
+import { pendingUrl } from './attachment/pendingUrl'
 import { previewSrc, type PendingAttachment } from './images'
 import Tooltip from './Tooltip'
 
-const SLOT = 'h-16 rounded-xl border border-fg/10'
+const SLOT = 'h-16 rounded-xl border border-fg/10 transition-all duration-150 hover:border-fg/25 active:scale-95'
+
+const open = (item: PendingAttachment): void =>
+  useBrowser.getState().openAttachment(pendingUrl(item), item.name, item.mime, item.size)
 
 // A picture is its own thumbnail. Anything else is nothing to look at yet, so it
 // stands as its name and its weight at the height the thumbnails are, and the
@@ -15,13 +19,17 @@ const SLOT = 'h-16 rounded-xl border border-fg/10'
 function PendingFile({ item }: { item: PendingAttachment }) {
   const Mark = markFor(item.mime)
   return (
-    <div className={`${SLOT} flex max-w-52 items-center gap-2.5 px-3`}>
+    <button
+      onClick={() => open(item)}
+      aria-label={`Open ${item.name}`}
+      className={`${SLOT} flex max-w-52 items-center gap-2.5 px-3 text-left`}
+    >
       <Mark className="h-5 w-5 shrink-0 text-fg-muted" />
       <span className="min-w-0">
         <span className="block truncate text-sm text-fg-secondary">{item.name}</span>
         <span className="block text-xs text-fg-faint">{fileSize(item.size)}</span>
       </span>
-    </div>
+    </button>
   )
 }
 
