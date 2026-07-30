@@ -7,7 +7,7 @@ import {
   type ChangeEvent,
   type KeyboardEvent
 } from 'react'
-import type { FileEntry, RepoFile } from '../../../shared/files'
+import { isMarkdown, type FileEntry, type RepoFile } from '../../../shared/files'
 import { DocGlyph, FileGlyph, FolderGlyph } from '../icons'
 import { useBrowser, type BrowserTab } from '../state/browser'
 import { baselineOf } from './baseline'
