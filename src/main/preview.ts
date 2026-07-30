@@ -18,7 +18,7 @@ export class Previews {
     const file = path.join(FOLDER, `${randomUUID()}.html`)
     try {
       await fs.mkdir(FOLDER, { recursive: true })
-      await fs.writeFile(file, withBase(text, baseUrl(absolute)), 'utf8')
+      await fs.writeFile(file, withBase(text, absolute ? baseUrl(absolute) : ''), 'utf8')
     } catch {
       return null
     }
