@@ -344,6 +344,7 @@ const dark = svg(THEMES.dark)
 const light = svg(THEMES.light)
 const devDark = svg(THEMES.devDark, true)
 const devLight = svg(THEMES.devLight, true)
+const skins = SKINS.map(skin => [skin.id, svg(skin, false, skin)])
 const logo = mark({ box: MARK, ink: 'currentColor' })
 // Black on nothing: macOS reads a template image by its alpha alone and tints
 // it to whatever the menu bar is wearing.
