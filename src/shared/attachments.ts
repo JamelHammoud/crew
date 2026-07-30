@@ -42,10 +42,6 @@ const TEXT_EXTENSIONS = (
   'gitignore gitattributes npmrc editorconfig prettierrc eslintrc babelrc zshrc bashrc vimrc profile'
 ).split(' ')
 
-// A dotfile is all extension, so the name a person wrote is the whole of what
-// there is to go on and these are how it reads as words rather than as a
-// download.
-
 const FILE_TYPES: Record<string, string> = {
   pdf: 'application/pdf',
   md: 'text/markdown',
