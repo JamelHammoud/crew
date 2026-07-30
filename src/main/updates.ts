@@ -66,7 +66,13 @@ export class Updates {
       this.landed = true
       this.say({ word: 'ready', version: info.version })
     })
-    up.on('error', () => this.say({ word: 'error' }))
+    // Squirrel refuses an app it cannot verify, and it says so here rather than
+    // on the way out, so an install already asked for is answered at once rather
+    // than left to the wait that catches the silent ways of failing.
+    up.on('error', () => {
+      if (this.going) this.gaveUp()
+      else this.say({ word: 'error' })
+    })
     this.check()
     this.timer = setInterval(() => this.check(), AGAIN_MS)
   }
