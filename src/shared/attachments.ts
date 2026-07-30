@@ -240,6 +240,22 @@ const WRITING_TYPES = new Set([
 // machine with nothing shown.
 export type PreviewKind = 'image' | 'video' | 'audio' | 'pdf' | 'sheet' | 'writing' | 'archive' | 'text'
 
+const PAGE_NAMES = new Set(['html', 'htm', 'xhtml'])
+
+export type MarkupKind = 'page' | 'vector'
+
+// A page and a vector are handed over as text on purpose, so the type one
+// carries says nothing about what it is and the name is the only thing left that
+// does. Both are still written to be looked at, and neither is ever served as
+// itself: a page is drawn from the words in hand, standing away from the address
+// the session is on, and a vector is drawn as the picture it is.
+export function markupOf(name: string): MarkupKind | null {
+  const ext = namedExtension(name)
+  if (!ext) return null
+  if (PAGE_NAMES.has(ext)) return 'page'
+  return ext === 'svg' ? 'vector' : null
+}
+
 export function previewOf(mime: string): PreviewKind {
   if (mime.startsWith('image/')) return 'image'
   if (mime.startsWith('video/')) return 'video'
