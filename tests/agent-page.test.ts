@@ -85,7 +85,7 @@ describe('a page an agent shows', () => {
     expect(event.agentId).toBe(fake)
 
     // The row is the way back to it, so it reads in the thread it was shown in.
-    const items = buildThread(eventsOfThread(ui.events, run.threadId), {}, 'sam')
+    const items = buildThread(eventsOfThread(ui.events, event.threadId), {}, 'sam')
     const row = items.find(item => item.kind === 'page')
     expect(row?.page).toEqual({ url: 'file:///Users/sam/site/index.html', title: 'The signup page' })
   })
