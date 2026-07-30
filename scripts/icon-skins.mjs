@@ -57,8 +57,21 @@ ${ramp(at)}
 
 const BLOCKS = 12
 const BIT_CORNER = 3
-const BIT_BANDS = ['#7ff0ff', '#3fb4f5', '#2b6be0', '#2340b4', '#1a2478']
+// A narrow range on purpose. Run the ramp from a near white to a near black and
+// the mark stands on the pale end and vanishes, and the two ends read as two
+// regions with a hard seam between them rather than as one lit field.
+const BIT_BANDS = ['#6ee0ff', '#43b0f0', '#2f7ce0', '#2a55c8', '#2440a8']
 const BIT_SPARKS = ['#ff5fd0', '#ffe36b', '#ffffff']
+
+// The ordered dither every machine of that era used. A plain checker only ever
+// mixes two blocks at the seam, so the seam is still a line; this spreads each
+// boundary over sixteen blocks, which is what reads as one field.
+const BAYER = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5]
+]
 
 const bitField = ({ TILE }) => {
   const block = TILE.size / BLOCKS
