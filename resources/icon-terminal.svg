@@ -45,6 +45,19 @@
   <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" />
   <g clip-path="url(#tile-clip)">
     <rect x="100" y="100" width="824" height="824" fill="url(#tube)" />
+    <rect x="208" y="176" width="86" height="26" rx="13" fill="#c084fc" opacity="0.85" />
+    <rect x="314" y="176" width="118" height="26" rx="13" fill="#67e8f9" opacity="0.8" />
+    <rect x="452" y="176" width="34" height="26" rx="13" fill="#5c8f75" opacity="0.7" />
+    <rect x="266" y="238" width="74" height="26" rx="13" fill="#67e8f9" opacity="0.8" />
+    <rect x="360" y="238" width="152" height="26" rx="13" fill="#4ade80" opacity="0.8" />
+    <rect x="266" y="300" width="60" height="26" rx="13" fill="#c084fc" opacity="0.85" />
+    <rect x="346" y="300" width="46" height="26" rx="13" fill="#fbbf24" opacity="0.75" />
+    <rect x="412" y="300" width="88" height="26" rx="13" fill="#5c8f75" opacity="0.7" />
+    <rect x="266" y="692" width="104" height="26" rx="13" fill="#67e8f9" opacity="0.8" />
+    <rect x="390" y="692" width="74" height="26" rx="13" fill="#4ade80" opacity="0.8" />
+    <rect x="208" y="754" width="40" height="26" rx="13" fill="#5c8f75" opacity="0.7" />
+    <path d="M 208 804 L 242 829 L 208 854" fill="none" stroke="#4ade80" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+    <rect x="270" y="802" width="34" height="54" rx="5" fill="#4ade80" opacity="0.9" />
     <rect x="100" y="100" width="824" height="824" fill="url(#vignette)" />
     <g fill="#4ade80" opacity="0.62" filter="url(#phosphor)">
     <circle cx="698" cy="512" r="130" mask="url(#cut-0)" />

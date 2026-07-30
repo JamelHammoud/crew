@@ -295,10 +295,55 @@ const scanlines = ({ TILE }) => {
   return lines.join('\n')
 }
 
-// Nothing stands on the tube but the mark. A prompt and a run of code were drawn
-// in behind it once, and they are the machinery of the joke rather than the joke:
-// the phosphor, the scanlines and the bloom off the mark are what say terminal,
-// and anything else in there is a second thing to read at 16 across.
+// Code above the mark and code below it, and the band the discs stand in is left
+// empty. A run of bars all one colour at one indent is a list; what makes a
+// screen read as code is that the lines step in and out and that the tokens on
+// them are not all the same colour, so this is written as tokens with an indent
+// each. The prompt and the cursor are the one literal terminal thing on it, and
+// they sit on the last line, where a live one is.
+
+const TOKENS = {
+  keyword: ['#c084fc', 0.85],
+  name: ['#67e8f9', 0.8],
+  string: [PHOSPHOR, 0.8],
+  number: ['#fbbf24', 0.75],
+  quiet: ['#5c8f75', 0.7]
+}
+
+const CODE_LEFT = 208
+const CODE_STEP = 62
+const CODE_INDENT = 58
+const CODE_WEIGHT = 26
+const CODE_GAP = 20
+
+// Every line is an indent and a run of tokens, each token a width, so the shape
+// of the block is the shape of real code rather than a row of equal bars.
+const CODE = [
+  { y: 176, indent: 0, run: [['keyword', 86], ['name', 118], ['quiet', 34]] },
+  { y: 176 + CODE_STEP, indent: 1, run: [['name', 74], ['string', 152]] },
+  { y: 176 + CODE_STEP * 2, indent: 1, run: [['keyword', 60], ['number', 46], ['quiet', 88]] },
+  { y: 692, indent: 1, run: [['name', 104], ['string', 74]] },
+  { y: 692 + CODE_STEP, indent: 0, run: [['quiet', 40]] }
+]
+
+const PROMPT = { y: 692 + CODE_STEP * 2, indent: 0 }
+
+const terminalCode = () => {
+  const lines = CODE.map(({ y, indent, run }) => {
+    let at = CODE_LEFT + indent * CODE_INDENT
+    return run
+      .map(([token, width]) => {
+        const [colour, alpha] = TOKENS[token]
+        const bar = `    <rect x="${at}" y="${y}" width="${width}" height="${CODE_WEIGHT}" rx="${CODE_WEIGHT / 2}" fill="${colour}" opacity="${alpha}" />`
+        at += width + CODE_GAP
+        return bar
+      })
+      .join('\n')
+  })
+  const chevron = `    <path d="M ${CODE_LEFT} ${PROMPT.y - 12} L ${CODE_LEFT + 34} ${PROMPT.y + 13} L ${CODE_LEFT} ${PROMPT.y + 38}" fill="none" stroke="${PHOSPHOR}" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />`
+  const cursor = `    <rect x="${CODE_LEFT + 62}" y="${PROMPT.y - 14}" width="34" height="54" rx="5" fill="${PHOSPHOR}" opacity="0.9" />`
+  return [...lines, chevron, cursor].join('\n')
+}
 
 export const SKINS = [
   {
@@ -475,6 +520,7 @@ ${spot({
       <stop offset="1" stop-color="#000000" stop-opacity="0.5" />
     </radialGradient>`,
     art: ctx => `    <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#tube)" />
+${terminalCode()}
     <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#vignette)" />
     <g fill="${PHOSPHOR}" opacity="0.62" filter="url(#phosphor)">
 ${ctx.discs()}
