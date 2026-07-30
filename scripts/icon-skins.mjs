@@ -422,12 +422,11 @@ ${spot({
       <stop offset="1" stop-color="#000000" stop-opacity="0.5" />
     </radialGradient>`,
     art: ctx => `    <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#tube)" />
-${terminalCode(ctx)}
     <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#vignette)" />
-    <g fill="${PHOSPHOR}" opacity="0.5" filter="url(#phosphor)">
+    <g fill="${PHOSPHOR}" opacity="0.62" filter="url(#phosphor)">
 ${ctx.discs()}
     </g>`,
-    over: ctx => `    <g fill="#000000" opacity="0.17">
+    over: ctx => `    <g fill="#000000" opacity="0.14">
 ${scanlines(ctx)}
     </g>`
   }
