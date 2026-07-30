@@ -3,13 +3,18 @@
 // driven by hand in a test without electron anywhere near it.
 export type UpdateStage = 'none' | 'found' | 'getting' | 'ready' | 'failed'
 
+// The three ways it can go wrong are three different sentences, so what went
+// wrong rides in the state and the words are picked off it where they are drawn.
+export type UpdateWhy = '' | 'download' | 'install' | 'others'
+
 export interface UpdateState {
   stage: UpdateStage
   version: string
   percent: number
+  why: UpdateWhy
 }
 
-export const NO_UPDATE: UpdateState = { stage: 'none', version: '', percent: 0 }
+export const NO_UPDATE: UpdateState = { stage: 'none', version: '', percent: 0, why: '' }
 
 export type UpdateWord =
   | { word: 'found'; version: string }
@@ -18,6 +23,7 @@ export type UpdateWord =
   | { word: 'progress'; percent: number }
   | { word: 'ready'; version: string }
   | { word: 'error' }
+  | { word: 'stuck'; why: UpdateWhy }
 
 function share(percent: number): number {
   if (!Number.isFinite(percent)) return 0
