@@ -360,6 +360,19 @@ function createWindow(): BrowserWindow {
     // nothing, so it is told where the update has got to as it lands.
     updates.tell(win)
   })
+  win.on('close', event => {
+    if (!closePutsAway(process.platform, quitting)) return
+    event.preventDefault()
+    // A full screen window has a desktop of its own, and hiding one leaves that
+    // desktop standing there empty with nothing in it to come back to. It comes
+    // out first and goes away once it has landed.
+    if (!win.isFullScreen()) {
+      win.hide()
+      return
+    }
+    win.once('leave-full-screen', () => win.hide())
+    win.setFullScreen(false)
+  })
   // Who is here is read from a window's own view of the session, so with none
   // open the tray says so rather than showing a list that stopped moving.
   win.on('closed', () => {
