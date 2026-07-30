@@ -459,13 +459,17 @@ app.whenReady().then(() => {
   ipcMain.on('scribe:write', (_event, text: string) => scribeWrite(text))
   ipcMain.on('scribe:done', (_event, text: string) => {
     scribeKeys.stopped()
-    scribe.rest()
     // Whatever was held back because the key was down goes out with it, in the
     // order it was spoken. A dictation written as it was said hands nothing over
     // here, because the words are already where they were going.
     const rest = scribePending.join('') + text
     scribePending = []
     scribeLand(rest)
+    // Resting waits for the words to have gone somewhere, because where they went
+    // is what decides it: a dictation that found nothing to write into is a card
+    // standing on this window, and put away on the way past it would be a window
+    // hidden and shown again with somebody's only copy inside it.
+    void scribeLanding.then(() => scribe.rest())
     // The take is one thing somebody said, however many stretches it landed in.
     scribeSaid()
   })
