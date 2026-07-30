@@ -48,7 +48,8 @@
       "extendInfo": {
         "NSMicrophoneUsageDescription": "So you can talk in a huddle, and dictate with Scribe.",
         "NSCameraUsageDescription": "So the crew can see you in a huddle.",
-        "NSLocalNetworkUsageDescription": "So you can reach a crew on this network."
+        "NSLocalNetworkUsageDescription": "So you can reach a crew on this network.",
+        "NSAppleEventsUsageDescription": "So dictation lands in the box you are typing in."
       }
     },
     "win": {
