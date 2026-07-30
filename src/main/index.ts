@@ -29,6 +29,8 @@ import {
 import type { MediaKind } from '../shared/media'
 import type { RepoCommand } from '../shared/repository'
 import { cleanSettings, type ScribeSettings } from '../shared/scribe'
+import type { Landing } from '../shared/scribeLanding'
+import { askCaret } from './scribe-caret'
 import { ScribeKeys } from './scribe-keys'
 import { deliver } from './scribe-paste'
 import { ScribeHistory } from './scribe-said'
@@ -107,11 +109,30 @@ function scribeWrite(text: string): void {
   scribePending = []
 }
 
+// One at a time, in the order it was spoken. The caller stays synchronous because
+// a stretch arrives off a socket and has nothing to wait on, and the order is the
+// whole of what this chain is for.
 function scribeLand(text: string): void {
   said.add(text)
-  void deliver(text, scribeSettings.finish).then(landed => {
-    if (!landed.ok) scribe.send('scribe:problem', landed.problem)
-  })
+  scribeLanding = scribeLanding.then(() => landScribe(text))
+}
+
+// A dictation with nowhere to go is held rather than pasted into the desk. It is
+// asked twice before that happens: once as the key went down, which is free, and
+// once here, because somebody who has clicked into a box since is somebody who
+// wants their words in it, and this second ask only ever costs the case that was
+// about to lose them anyway.
+//
+// Only an outright 'none' holds them back. A machine that would not say, and every
+// machine that is not a Mac, pastes exactly the way it always did.
+async function landScribe(text: string): Promise<void> {
+  if (!text) return
+  if (scribeSettings.finish === 'paste' && (await scribeAim) === 'none' && (await askCaret()) === 'none') {
+    scribe.hold(text)
+    return
+  }
+  const landed = await deliver(text, scribeSettings.finish)
+  if (!landed.ok) scribe.send('scribe:problem', landed.problem)
 }
 
 // A take that has ended, sealed into the one thing somebody said. The page that
