@@ -1,10 +1,11 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import type { WebSocket } from 'ws'
 import {
-  extensionFor,
+  extensionUsedFor,
   isImageType,
   MAX_ATTACHMENTS,
   MAX_ATTACHMENT_BYTES,
+  mimeForFile,
   type Attachment,
   type OutgoingAttachment
 } from '../shared/attachments'
