@@ -53,6 +53,38 @@ export const eventsOfThread = (events: SessionEvent[], threadId: string): Sessio
       : 'threadId' in event && event.threadId === threadId
   )
 
+// What a thread changed is what it changed and what it sent out. A helper's
+// edits are the thread's edits, the same reason a thread with helpers still out
+// is not ready for review, so a run that split every file off to helpers would
+// otherwise say nothing changed at all. Its own runs name the thread and a
+// helper's name the helper, so the family is walked down parentThreadId, and it
+// is walked all the way: a helper can send one out itself. The walk grows the
+// set until it stops growing rather than following each chain down, so a parent
+// named in a circle is a set that settles rather than a window that locks.
+export function stepsOfThread(
+  threadId: string,
+  events: SessionEvent[],
+  steps: Record<string, AgentStep[]>,
+  threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>>
+): AgentStep[] {
+  const family = new Set([threadId])
+  for (let grew = true; grew; ) {
+    grew = false
+    for (const thread of Object.values(threads)) {
+      if (family.has(thread.id)) continue
+      if (!thread.parentThreadId || !family.has(thread.parentThreadId)) continue
+      family.add(thread.id)
+      grew = true
+    }
+  }
+  const out: AgentStep[] = []
+  for (const event of events) {
+    if (event.kind !== 'agent.start' || !event.threadId || !family.has(event.threadId)) continue
+    out.push(...(steps[event.promptId] ?? []))
+  }
+  return out
+}
+
 export function threadState(thread: ThreadMeta, events: SessionEvent[], running: boolean): ThreadState {
   if (running) return 'working'
   if (thread.status !== 'open') return thread.status
