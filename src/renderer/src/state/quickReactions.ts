@@ -59,16 +59,6 @@ export function replaceQuickReaction(emoji: string, next: string): void {
   setQuickReactions(list.map(item => (item === emoji ? next : item)))
 }
 
-export function moveQuickReaction(emoji: string, to: number): void {
-  const list = quickReactions()
-  const from = list.indexOf(emoji)
-  if (from < 0 || to < 0 || to >= list.length || to === from) return
-  const next = [...list]
-  next.splice(from, 1)
-  next.splice(to, 0, emoji)
-  setQuickReactions(next)
-}
-
 export function useQuickReactions(): string[] {
   return useSyncExternalStore(listener => {
     listeners.add(listener)
