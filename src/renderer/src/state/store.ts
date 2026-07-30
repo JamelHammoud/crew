@@ -183,6 +183,9 @@ interface CrewState {
   // events because a board is folded off these rather than scrolled past.
   tickets: TicketEvent[]
   tools: CrewTool[]
+  // The emoji the crew drew themselves. They are everyone's here, so they come
+  // off the host rather than out of this window's own storage.
+  emoji: CustomEmoji[]
   scores: GameScore[]
   boards: DesignBoardMeta[]
   // Who is writing right now. It is never written down and never in the log, so
@@ -317,6 +320,7 @@ const EMPTY = {
   todos: [],
   tickets: [],
   tools: [],
+  emoji: [],
   scores: [],
   boards: [],
   typists: [],
