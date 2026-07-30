@@ -15,7 +15,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn selection-check` — select everything in a real window and see what it painted
 - `yarn preview-check` — stand a page up in a real window and see what it reached
 - `yarn dist` — build a mac dmg
-- `crew` opens a crew on a folder from a terminal. It ships inside the app, and the Command line page in the settings puts it on PATH. `npm link` in this checkout does the same from here
+- `crew` opens a crew on a folder from a terminal. It ships inside the app, and the This computer page in the settings puts it on PATH. `npm link` in this checkout does the same from here
 
 ## Writing
 
