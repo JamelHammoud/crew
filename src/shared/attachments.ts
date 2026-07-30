@@ -28,7 +28,8 @@ const IMAGE_BY_EXTENSION: Record<string, string> = {
 // A page and a vector are markup a browser would run, and an attachment is
 // served from the host's own address, so one carrying a script would be reading
 // the session from inside it. As text they are still there to read and there is
-// nothing to run.
+// nothing to run. The last row of them is dotfiles, which are all extension, so
+// the whole of the name a person wrote is what says it is words.
 const TEXT_EXTENSIONS = (
   'txt text log yml yaml toml ini cfg conf env properties lock patch diff sql ' +
   'sh bash zsh fish ps1 bat awk tcl rake gemspec podspec ' +
