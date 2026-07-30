@@ -236,7 +236,7 @@ const MESH = [
 
 const PHOSPHOR = '#4ade80'
 const SCAN_STEP = 11
-const SCAN_WEIGHT = 4.5
+const SCAN_WEIGHT = 4
 
 const scanlines = ({ TILE }) => {
   const lines = []
