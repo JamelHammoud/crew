@@ -163,7 +163,7 @@ function main(argv) {
   }
   const launch = appLaunch(process.platform, process.env, os.homedir(), root)
   if (!launch) {
-    process.stderr.write('crew: no Crew to open. Install the app, or point CREW_APP at one.\n')
+    process.stderr.write('crew: no Crew to open. Install the app, run yarn build here, or point CREW_APP at one.\n')
     return 1
   }
   const child = spawn(launch.command, [...launch.args, openFlag(request)], {
