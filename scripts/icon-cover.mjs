@@ -22,17 +22,47 @@ window.CrewCovers = { coverFor, coverArt, paletteFor }
 `
 
 const PAGE = `<!doctype html><html><body style="margin:0"><script src="covers.js"></script><script>
+// The band the mark stands in, as a share of the picture, so a cover can be
+// asked the one question that decides whether the mark reads on it: how light
+// the picture is exactly where the discs land, and how far it swings across
+// them. A pale even band is what a white mark vanishes into.
+window.BAND = { x: 0.11, y: 0.34, width: 0.78, height: 0.32 }
+
 window.shoot = ids => {
   const { coverFor, coverArt, paletteFor } = window.CrewCovers
   return ids.map(id => {
     const subject = { id, colors: paletteFor(id) }
     const art = coverFor(subject)
     const seed = coverArt(subject)
+    let band = null
+    if (art) {
+      const flat = art.getContext('2d')
+      const box = {
+        x: Math.round(window.BAND.x * art.width),
+        y: Math.round(window.BAND.y * art.height),
+        w: Math.round(window.BAND.width * art.width),
+        h: Math.round(window.BAND.height * art.height)
+      }
+      const { data } = flat.getImageData(box.x, box.y, box.w, box.h)
+      let sum = 0
+      let top = 0
+      let bottom = 1
+      const count = data.length / 4
+      for (let at = 0; at < data.length; at += 4) {
+        const light =
+          (0.2126 * data[at] + 0.7152 * data[at + 1] + 0.0722 * data[at + 2]) / 255
+        sum += light
+        if (light > top) top = light
+        if (light < bottom) bottom = light
+      }
+      band = { light: sum / count, top, bottom }
+    }
     return {
       id,
       png: art ? art.toDataURL('image/png') : null,
       cast: seed.cast,
-      petals: seed.petals.length
+      petals: seed.petals.length,
+      band
     }
   })
 }
