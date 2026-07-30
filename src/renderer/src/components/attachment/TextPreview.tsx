@@ -6,7 +6,17 @@ import { MAX_LINES, readText } from './bytes'
 import { Failed, Loading, Note } from './Frame'
 import { useRead } from './useRead'
 
-export default function TextPreview({ url, name, mime }: { url: string; name: string; mime: string }) {
+export default function TextPreview({
+  url,
+  name,
+  mime,
+  asPage = false
+}: {
+  url: string
+  name: string
+  mime: string
+  asPage?: boolean
+}) {
   const { data, failed } = useRead(url, readText)
   const text = data?.text ?? ''
   const all = useMemo(() => plainRows(text), [text])
