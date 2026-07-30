@@ -77,6 +77,8 @@ function Session() {
 
   useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThread(threadId)), [openThread])
 
+  useEffect(() => watchUpdates(), [])
+
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThread()
     setTab(next)
