@@ -145,12 +145,27 @@ function isFolder(target) {
   }
 }
 
+// From a checkout the version is in the package.json above this file. Inside the
+// app the whole app is one archive, and the command is standing beside it rather
+// than in it: it can be read all the same, because what is running this is the
+// app, and the app reads into its own archive. The app's own package.json is
+// never copied out beside the command, since taking it out of the archive is
+// what stops the app being built at all.
 function version() {
-  try {
-    return JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).version ?? ''
-  } catch {
-    return ''
+  const places = [
+    path.join(root, 'package.json'),
+    path.join(root, '..', 'app.asar', 'package.json'),
+    path.join(root, '..', 'app', 'package.json')
+  ]
+  for (const place of places) {
+    try {
+      const found = JSON.parse(readFileSync(place, 'utf8')).version
+      if (found) return found
+    } catch {
+      continue
+    }
   }
+  return ''
 }
 
 function main(argv) {
