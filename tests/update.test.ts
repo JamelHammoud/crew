@@ -69,6 +69,7 @@ describe('what the app can say about a new Crew', () => {
     expect(state.stage).toBe('failed')
     expect(state.percent).toBe(0)
     expect(state.version).toBe('0.2.0')
+    expect(state.why).toBe('download')
   })
 
   it('never clears an update out from under a download', () => {
