@@ -195,15 +195,29 @@ export function showsInPanel(mime: string): boolean {
   )
 }
 
+const ARCHIVE_TYPES = new Set([
+  'application/zip',
+  'application/gzip',
+  'application/x-tar',
+  'application/x-7z-compressed',
+  'application/x-bzip2',
+  'application/x-xz',
+  'application/vnd.rar'
+])
+
+const DOCUMENT_TYPES = new Set([
+  'application/pdf',
+  'application/json',
+  'application/msword',
+  'application/rtf'
+])
+
 export function kindOf(mime: string): AttachmentKind {
   if (isImageType(mime)) return 'image'
   if (mime.startsWith('video/')) return 'video'
   if (mime.startsWith('audio/')) return 'audio'
-  if (mime === 'application/zip' || mime === 'application/gzip' || mime === 'application/x-tar') return 'archive'
-  if (mime.startsWith('application/x-') || mime === 'application/vnd.rar') return 'archive'
-  if (mime.startsWith('text/') || mime === 'application/pdf' || mime === 'application/json') return 'document'
-  if (mime.startsWith('application/vnd.') || mime === 'application/msword' || mime === 'application/rtf')
-    return 'document'
+  if (ARCHIVE_TYPES.has(mime)) return 'archive'
+  if (mime.startsWith('text/') || mime.startsWith('application/vnd.') || DOCUMENT_TYPES.has(mime)) return 'document'
   return 'file'
 }
 
