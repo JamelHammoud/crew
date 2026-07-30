@@ -64,14 +64,13 @@ describe('the line that puts it on PATH', () => {
     expect(installLine(`/tmp/it's here/crew`)).toContain(`'/tmp/it'\\''s here/crew'`)
   })
 
-  it('reads back as one link, whatever the path is made of', () => {
-    const odd = mkdtempSync(path.join(os.tmpdir(), "crew's odd "))
-    const script = path.join(odd, 'crew')
-    writeFileSync(script, '')
-    const link = path.join(odd, 'link')
-    execFileSync('sh', ['-c', `ln -sf ${installLine(script).split('ln -sf ')[1].split(' ')[0]} '${link}'`])
-    expect(execFileSync('readlink', [link]).toString().trim()).toBe(script)
-    rmSync(odd, { recursive: true, force: true })
+  // A real shell reading it back is the only thing that says the quoting holds,
+  // and the whole line cannot be run for real: it writes to /usr/local/bin.
+  it.skipIf(process.platform === 'win32')('is one word to a real shell', () => {
+    for (const odd of ["/tmp/it's here/crew", '/tmp/My Apps/crew', '/tmp/$HOME `x`/crew']) {
+      const said = execFileSync('sh', ['-c', `printf %s ${shellWord(odd)}`]).toString()
+      expect(said).toBe(odd)
+    }
   })
 
   it('takes the link off again', () => {
