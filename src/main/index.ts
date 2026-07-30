@@ -137,7 +137,7 @@ function scribeLand(text: string): void {
 async function landScribe(text: string, aim: Promise<Landing>): Promise<void> {
   if (!text) return
   const finish = scribeSettings.finish
-  if (holdsBack(finish, await aim) && holdsBack(finish, await askCaret())) {
+  if (holdsBack(finish, await aim) && holdsBack(finish, await askCaret(caretInCrew))) {
     scribe.hold(text)
     return
   }
