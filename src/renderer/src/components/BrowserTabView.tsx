@@ -65,7 +65,7 @@ export default function BrowserTabView({ tab, active }: { tab: BrowserTab; activ
     <webview
       ref={ref}
       src={tab.initialUrl}
-      plugins={true}
+      plugins=""
       className="absolute inset-0 w-full h-full"
       style={{ visibility: active ? 'visible' : 'hidden' }}
     />
