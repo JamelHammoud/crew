@@ -65,7 +65,9 @@ export class Updates {
 
   private check(): void {
     if (this.state.stage !== 'none') return
-    void autoUpdater.checkForUpdates().catch(() => this.say({ word: 'error' }))
+    void autoUpdater()
+      .checkForUpdates()
+      .catch(() => this.say({ word: 'error' }))
   }
 
   private say(said: UpdateWord): void {
