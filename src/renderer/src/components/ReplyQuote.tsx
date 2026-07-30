@@ -1,10 +1,11 @@
-import { attachmentUrl } from '../../../shared/attachments'
+import { attachmentUrl, isImageType } from '../../../shared/attachments'
 import { UndoGlyph } from '../icons'
 import { useCrew } from '../state/store'
 import AgentIcon from './AgentIcon'
+import { markFor } from './attachmentMark'
 import Avatar from './Avatar'
 import { EmojiText } from './Emoji'
-import { replyImage } from './reply'
+import { replyAttachment } from './reply'
 
 export default function ReplyQuote({
   targetId,
