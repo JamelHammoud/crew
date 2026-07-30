@@ -39,7 +39,10 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>(known ? 'places' : 'name')
   // Only the very first time is there nowhere to go back to.
   const [first, setFirst] = useState(!known)
-  const [asking, setAsking] = useState<string | null>(null)
+  const [asking, setAsking] = useState<{ folder: string; share?: boolean } | null>(null)
+  // What `crew` in a terminal asked for, held while a name is asked for, since
+  // nothing can be opened without one.
+  const [asked, setAsked] = useState<OpenRequest | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [busyKey, setBusyKey] = useState<string | null>(null)
