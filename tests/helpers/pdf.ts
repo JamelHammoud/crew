@@ -1,5 +1,5 @@
-const WIDTH = 420
-const HEIGHT = 595
+export const PAGE_WIDTH = 420
+export const PAGE_HEIGHT = 595
 
 export function pdfBytes(words: string[]): Uint8Array {
   const objects = ['', '', '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>']
@@ -12,7 +12,7 @@ export function pdfBytes(words: string[]): Uint8Array {
       `BT /F1 14 Tf 40 470 Td (page ${i + 1} of ${words.length}) Tj ET\n` +
       `0 0 0 rg 40 60 120 40 re f\n`
     objects.push(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${WIDTH} ${HEIGHT}] ` +
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] ` +
         `/Resources << /Font << /F1 3 0 R >> >> /Contents ${at + 1} 0 R >>`
     )
     objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`)
