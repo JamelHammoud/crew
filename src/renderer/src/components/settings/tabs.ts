@@ -20,7 +20,8 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
-  { id: 'helpers', label: 'Helpers', group: 'Crew', mark: GroupGlyph }
+  { id: 'helpers', label: 'Helpers', group: 'Crew', mark: GroupGlyph },
+  { id: 'files', label: 'Files', group: 'Crew', mark: FileGlyph }
 ]
 
 export const GROUPS = [...new Set(SETTINGS_TABS.map(tab => tab.group))]
