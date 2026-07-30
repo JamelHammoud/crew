@@ -1153,6 +1153,21 @@ export const useCrew = create<CrewState>((set, get) => {
   }
 })
 
+const base64Of = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '')
+    reader.onerror = () => reject(new Error('unreadable'))
+    reader.readAsDataURL(file)
+  })
+
+// The crew's own emoji are drawn from a name, in a DOM walk over rendered
+// markdown and in components a dozen callers deep, so they are looked up the way
+// the sheet's are rather than handed down. This is the one thing that keeps that
+// lookup fed, and it takes the address with it: a name with nowhere to read a
+// picture from is nothing rather than a picture that will not load.
+useCrew.subscribe(state => holdCustomEmoji(state.emoji, state.httpBase))
+
 // What is waiting to be sent, read at the moment it is asked for. A picked GIF is
 // attached and sent in the same breath, and a count held from the last render is
 // still nought at that point, so a guard reading one would refuse to send the
