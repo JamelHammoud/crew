@@ -50,10 +50,7 @@ function Row({ toast }: { toast: Toast }) {
           {toast.detail && <p className="text-xs text-fg/45 mt-0.5 line-clamp-2">{toast.detail}</p>}
         </div>
         {action && (
-          <button
-            onClick={press}
-            className="shrink-0 h-7 px-3 rounded-full text-xs font-semibold text-fg bg-fg/10 hover:bg-fg/[0.14] transition-colors active:scale-95"
-          >
+          <button className="shrink-0 h-7 px-3 rounded-full text-xs font-semibold text-fg bg-fg/10 hover:bg-fg/[0.14] transition-colors active:scale-95">
             {action.label}
           </button>
         )}
