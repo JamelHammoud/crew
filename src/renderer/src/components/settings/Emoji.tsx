@@ -205,8 +205,9 @@ function AddEmoji() {
   const [picked, setPicked] = useState<File | null>(null)
   const url = useMemo(() => (picked ? URL.createObjectURL(picked) : ''), [picked])
 
-  useEffect(() => () => {
-    if (url) URL.revokeObjectURL(url)
+  useEffect(() => {
+    if (!url) return
+    return () => URL.revokeObjectURL(url)
   }, [url])
 
   return (
