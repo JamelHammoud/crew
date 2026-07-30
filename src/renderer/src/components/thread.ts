@@ -199,6 +199,7 @@ export interface ThreadItem {
   editedTs?: number
   voice?: boolean
   runs?: SubagentRun[]
+  page?: ShownPage
 }
 
 // Somebody typing three lines in a row is one person talking, so the lines

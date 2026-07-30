@@ -322,10 +322,10 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             />
           )}
         </div>
-        {(base || dirty) && (
+        {((base && !reading) || dirty) && (
           <div className="absolute top-2.5 right-4 flex items-center gap-1.5">
             {saveFailed && <span className="text-xs text-danger mr-1">Could not save</span>}
-            {base && (
+            {base && !reading && (
               <button
                 onClick={() => setHidden(!hidden)}
                 className="glass h-8 px-3.5 rounded-full text-sm text-fg-secondary transition-all duration-150 hover:text-fg active:scale-95"
