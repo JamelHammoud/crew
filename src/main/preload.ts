@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { AgentAlert } from '../shared/alerts'
+import type { AppIconId } from '../shared/appIcon'
 import type { OpenRequest } from '../shared/cli'
 import type { CommandDone, CommandState } from '../shared/crewCommand'
 import type { PathLocation, RepoFile } from '../shared/files'
@@ -84,6 +85,7 @@ const bridge = {
   openWindow: (): void => ipcRenderer.send('tray:open'),
   closeTray: (): void => ipcRenderer.send('tray:hide'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
+  setAppIcon: (icon: AppIconId): Promise<void> => ipcRenderer.invoke('app:icon', icon),
   keepAwake: (on: boolean): void => ipcRenderer.send('app:awake', on),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
   onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
