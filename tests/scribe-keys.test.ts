@@ -184,14 +184,15 @@ describe('the key a dictation is held on', () => {
 })
 
 describe('what a machine is offered', () => {
-  it('never offers Fn, because macOS never hands it over', () => {
-    expect(scribeKeys('darwin')).not.toContain('fn')
-    expect(defaultKey('darwin')).toBe('right-option')
+  it('offers Fn first on a Mac and keeps the right control default elsewhere', () => {
+    expect(scribeKeys('darwin')[0]).toBe('fn')
+    expect(defaultKey('darwin')).toBe('fn')
     expect(defaultKey('win32')).toBe('right-ctrl')
   })
 
   it('names the same key the way each platform names it', () => {
     expect(keyLabel('right-option', 'darwin')).toBe('Right Option')
+    expect(keyLabel('fn', 'darwin')).toBe('Fn')
     expect(keyLabel('right-option', 'win32')).toBe('Right Alt')
     expect(keyLabel('meta', 'darwin')).toBe('Command')
     expect(keyLabel('meta', 'win32')).toBe('Windows')
@@ -206,7 +207,7 @@ describe('what a machine is offered', () => {
 describe('what arrives is only as good as what checks it', () => {
   it('falls back to this machine for anything it does not recognise', () => {
     const clean = cleanSettings({ key: 'fn', press: 'sideways', finish: 7 }, 'darwin')
-    expect(clean.key).toBe('right-option')
+    expect(clean.key).toBe('fn')
     expect(clean.press).toBe('latch')
     expect(clean.finish).toBe('paste')
   })
@@ -214,6 +215,11 @@ describe('what arrives is only as good as what checks it', () => {
   it('takes nothing at all and hands back what this machine would use', () => {
     expect(cleanSettings(null, 'win32')).toEqual(defaultSettings('win32'))
     expect(cleanSettings('nonsense', 'win32')).toEqual(defaultSettings('win32'))
+  })
+
+  it('keeps the pill visible by default and accepts hotkey-only visibility', () => {
+    expect(cleanSettings(null, 'darwin').always).toBe(true)
+    expect(cleanSettings({ always: false }, 'darwin').always).toBe(false)
   })
 
   it('keeps a dictionary and throws out the rows that say nothing', () => {
