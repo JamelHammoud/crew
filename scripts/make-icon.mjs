@@ -170,7 +170,7 @@ function svg(
   // A skin paints inside the tile and nothing else. It is handed the same
   // numbers the frame is drawn from, so a picture can stand its own art against
   // the mark without a second set of them.
-  const stage = { CANVAS, TILE, CENTRE, RADIUS, STEP, discs, round }
+  const stage = { CANVAS, TILE, CENTRE, RADIUS, STEP, discs, round, cover: covers.get(skin?.id) }
   const clipped = markup => `  <g clip-path="url(#tile-clip)">
 ${markup}
   </g>
