@@ -63,10 +63,12 @@ export function emojifyHtml(root: HTMLElement): void {
         // The token carries the picture and the sheet carries where to read it
         // from, since the address is the session's rather than the emoji's.
         const picture = lookupCustomEmoji(token.emoji.name)
-        fragment.appendChild(
-          picture ? pictureNode(doc, picture.url) : doc.createTextNode(token.text)
-        )
-        if (picture) fragment.appendChild(readableNode(doc, token.text))
+        if (!picture) {
+          fragment.appendChild(doc.createTextNode(token.text))
+          continue
+        }
+        fragment.appendChild(pictureNode(doc, picture.url))
+        fragment.appendChild(readableNode(doc, token.text))
         continue
       }
       fragment.appendChild(spriteNode(doc, token.entry))
