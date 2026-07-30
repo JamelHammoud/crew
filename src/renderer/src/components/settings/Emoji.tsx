@@ -240,7 +240,7 @@ function AddEmoji() {
         picture={url ? <img src={url} alt="" className="max-w-10 max-h-10 object-contain" /> : null}
         name={picked ? customEmojiNameFromFile(picked.name) : ''}
         onClose={() => setPicked(null)}
-        onSubmit={name => (picked ? addCustomEmoji(name, picked) : Promise.resolve(NEEDS_NAME))}
+        onSubmit={name => (picked ? addCustomEmoji(name, picked) : null)}
       />
     </>
   )
