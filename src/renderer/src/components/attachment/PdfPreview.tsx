@@ -14,6 +14,7 @@ import FindBar from '../FindBar'
 import Skeleton from '../Skeleton'
 import ZoomView from '../ZoomView'
 import { Failed } from './Frame'
+import { pdfAssets } from './pdfAssets'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
