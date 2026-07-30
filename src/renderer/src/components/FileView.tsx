@@ -55,6 +55,28 @@ export function FileCrumbs({ tab }: { tab: BrowserTab }) {
   )
 }
 
+function DirRow({ tab, path, entry }: { tab: BrowserTab; path: string; entry: FileEntry }) {
+  const { onContextMenu, menu } = useFileMenu(path)
+  return (
+    <>
+      <button
+        onClick={() => useBrowser.getState().navigateFile(tab.id, path)}
+        onContextMenu={onContextMenu}
+        data-file={path}
+        className="w-full flex items-center gap-2.5 px-4 h-9 text-sm text-left transition-colors hover:bg-fg/[0.04]"
+      >
+        {entry.dir ? (
+          <FolderGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
+        ) : (
+          <FileGlyph className="w-4 h-4 shrink-0 text-fg-faint" />
+        )}
+        <span className="text-fg-secondary truncate">{entry.name}</span>
+      </button>
+      {menu}
+    </>
+  )
+}
+
 function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entries: FileEntry[] }) {
   if (entries.length === 0) {
     return <Empty icon={<FolderGlyph className="w-8 h-8 text-fg-faint" />} label="This folder is empty" />
@@ -62,18 +84,12 @@ function DirRows({ tab, path, entries }: { tab: BrowserTab; path: string; entrie
   return (
     <div className="py-2">
       {entries.map(entry => (
-        <button
+        <DirRow
           key={entry.name}
-          onClick={() => useBrowser.getState().navigateFile(tab.id, path ? `${path}/${entry.name}` : entry.name)}
-          className="w-full flex items-center gap-2.5 px-4 h-9 text-sm text-left transition-colors hover:bg-fg/[0.04]"
-        >
-          {entry.dir ? (
-            <FolderGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
-          ) : (
-            <FileGlyph className="w-4 h-4 shrink-0 text-fg-faint" />
-          )}
-          <span className="text-fg-secondary truncate">{entry.name}</span>
-        </button>
+          tab={tab}
+          path={path ? `${path}/${entry.name}` : entry.name}
+          entry={entry}
+        />
       ))}
     </div>
   )
