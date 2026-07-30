@@ -133,7 +133,7 @@ export const fallbackLabel = (platform: string): string =>
 export function defaultSettings(platform: string): ScribeSettings {
   return {
     on: false,
-    always: true,
+    always: false,
     key: defaultKey(platform),
     press: 'latch',
     finish: 'paste',
