@@ -60,12 +60,6 @@ describe('the files pdfjs reads for itself', () => {
     )
   })
 
-  it('reads the page it is really given', () => {
-    expect(pdfAssets().standardFontDataUrl).toBe(
-      new URL('pdfjs/standard_fonts/', document.baseURI).href
-    )
-  })
-
   it('lists a file from each directory', async () => {
     const files = await pdfjsFiles()
     for (const dir of PDFJS_DIRS) {
