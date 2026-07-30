@@ -2073,16 +2073,26 @@ export class CrewSession {
     return one
   }
 
+  // A picture is kept under the type it says it is, since that is the one thing
+  // a browser reports reliably. For everything else the extension it arrived
+  // with decides, and the type recorded is the type it will be served as, so
+  // what the app reads off the record is what really comes back off the wire.
   private attachmentOf(mime: string, name: string, data: Buffer): Attachment | null {
-    if (!isImageType(mime)) return null
     if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
     const id = randomUUID()
-    return { id, name: this.safeName(name), mime, size: data.length, file: `${id}.${extensionFor(mime)}` }
+    const file = `${id}.${extensionUsedFor(mime, name)}`
+    return {
+      id,
+      name: this.safeName(name, mime),
+      mime: isImageType(mime) ? mime : mimeForFile(file),
+      size: data.length,
+      file
+    }
   }
 
-  private safeName(name: string): string {
+  private safeName(name: string, mime: string): string {
     const flat = name.replace(/[\r\n]+/g, ' ').trim()
-    return flat.slice(0, 120) || 'image'
+    return flat.slice(0, 120) || (isImageType(mime) ? 'image' : 'file')
   }
 
   attachmentPath(file: string): string | null {
