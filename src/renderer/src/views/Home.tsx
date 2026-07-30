@@ -69,7 +69,7 @@ export default function Home() {
     return true
   }
 
-  const open = async (target: string, key: string, who: string, opts?: { home: CrewHome }) => {
+  const open = async (target: string, key: string, who: string, opts?: OpenOptions) => {
     setBusy(true)
     setBusyKey(key)
     setError('')
