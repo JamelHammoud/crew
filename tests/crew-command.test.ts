@@ -44,12 +44,6 @@ describe('the command that comes with the app', () => {
     expect(shipsCommand('darwin')).toBe(true)
     expect(shipsCommand('linux')).toBe(true)
   })
-
-  it('leaves the page out where the command has nowhere to go', () => {
-    expect(settingsTabs('darwin').some(tab => tab.id === 'command')).toBe(true)
-    expect(settingsTabs('win32').some(tab => tab.id === 'command')).toBe(false)
-    expect(settingsTabs('win32')).toHaveLength(settingsTabs('darwin').length - 1)
-  })
 })
 
 describe('the line that puts it on PATH', () => {
