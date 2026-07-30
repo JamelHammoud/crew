@@ -28,7 +28,7 @@ export default function TextPreview({
   if (failed) return <Failed label="Could not read this file" />
   if (!data) return <Loading />
 
-  if (mime === 'text/markdown') {
+  if (asPage && mime === 'text/markdown') {
     return (
       <div className="absolute inset-0 overflow-auto">
         <MarkdownView path={name} text={text} partial={partial} />
