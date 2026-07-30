@@ -429,9 +429,16 @@ ${skins.map(([id, source]) => `  ${id}: '${encode(source, 512, 512, id)}'`).join
 )
 
 // The picker draws the icon itself rather than a second drawing of it, so the
-// tiles go to the renderer as they are. An svg is a fraction of the png and
-// stays sharp at whatever size the page asks for.
-const uri = source => `data:image/svg+xml,${encodeURIComponent(source)}`
+// tiles go to the renderer as they are. A drawn one goes over as its own svg,
+// which is a fraction of the weight of a png and stays sharp at whatever size the
+// page asks for. One holding a photograph is already carrying a 512 png inside
+// it, so that one is rastered small instead: encoding the picture twice would put
+// a fifth of a megabyte in the renderer's bundle to draw a tile 88 across.
+const PICKER = 256
+const artFor = (id, source) =>
+  covers.has(id)
+    ? `data:image/png;base64,${encode(source, PICKER, PICKER, `${id}-art`)}`
+    : `data:image/svg+xml,${encodeURIComponent(source)}`
 
 writeFileSync(
   path.join(root, 'src/renderer/src/components/settings/icon-art.ts'),
@@ -443,7 +450,7 @@ ${[
   ['light', light],
   ...skins
 ]
-  .map(([id, source]) => `  ${id}: '${uri(source)}'`)
+  .map(([id, source]) => `  ${id}: '${artFor(id, source)}'`)
   .join(',\n')}
 }
 `
