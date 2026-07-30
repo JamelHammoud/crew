@@ -56,6 +56,14 @@ export function isImageUrl(url: string): boolean {
   return imageType(url.split(/[?#]/)[0] ?? '') !== null
 }
 
+const MARKDOWN_TYPES = new Set(['md', 'markdown', 'mdown', 'mkd'])
+
+export function isMarkdown(name: string): boolean {
+  const file = slashed(name).split('/').pop() ?? ''
+  const extension = /\.([a-z0-9]+)$/i.exec(file)?.[1]
+  return extension ? MARKDOWN_TYPES.has(extension.toLowerCase()) : false
+}
+
 export interface FileMatch {
   path: string
   hits: number[]
