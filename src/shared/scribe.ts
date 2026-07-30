@@ -85,8 +85,12 @@ export const PILL_MAX = 120
 // here, and the words scroll inside it past that height: what was said is however
 // long somebody talked for, and a card as tall as a paragraph would stand over
 // half of whatever it is floating on.
+// The words get their own ceiling rather than the card's, because the card is the
+// two rows around them as well, and a box grown to the whole of the card's height
+// would push those rows past the window the card is drawn in and be cut off flat.
 export const HELD_WIDTH = 300
-export const HELD_MAX = 200
+export const HELD_WORDS = 120
+export const HELD_MAX = 232
 
 // The app must not hear its own paste. That keystroke goes out through the same
 // hook the key is read with, so a dictation held on Command, or on Control where
