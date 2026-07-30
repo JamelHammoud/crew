@@ -115,6 +115,123 @@ describe('the tab strip', () => {
     expect(pillFor(container, games.id)?.textContent).toContain('Birdie')
   })
 
+  // The row is the order somebody put it in. A tab is dragged into another place
+  // in it by taking hold of the pill anywhere on it.
+  it('takes a tab into the place it was dragged to', () => {
+    openTwo()
+    useBrowser.getState().addTerminal()
+    const [first, second, third] = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+
+    act(() => {
+      drag(items[0]!, 45, 200)
+      fireEvent.pointerUp(window)
+    })
+
+    expect(order()).toEqual([second, third, first])
+  })
+
+  it('takes one back the way it came', () => {
+    openTwo()
+    useBrowser.getState().addTerminal()
+    const [first, second, third] = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+
+    act(() => {
+      drag(items[2]!, 245, -200)
+      fireEvent.pointerUp(window)
+    })
+
+    expect(order()).toEqual([third, first, second])
+  })
+
+  it('leaves the row alone and picks the tab up when the pointer barely moved', () => {
+    openTwo()
+    const [first, second] = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+
+    act(() => {
+      drag(items[0]!, 45, 2)
+      fireEvent.pointerUp(window)
+      fireEvent.click(items[0]!)
+    })
+
+    expect(order()).toEqual([first, second])
+    expect(useBrowser.getState().activeTabId).toBe(first)
+  })
+
+  // A drag is arranging the row rather than going anywhere, so the tab that is up
+  // stays up and the click the drag ends on is not a click on a tab.
+  it('does not open the tab it was handed after a drag', () => {
+    openTwo()
+    useBrowser.getState().addTerminal()
+    const [first, , third] = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+
+    act(() => {
+      drag(items[0]!, 45, 200)
+      fireEvent.pointerUp(window)
+      fireEvent.click(items[0]!)
+    })
+
+    expect(useBrowser.getState().activeTabId).toBe(third)
+    expect(order()[2]).toBe(first)
+  })
+
+  it('puts a tab back where it was on Escape', () => {
+    openTwo()
+    useBrowser.getState().addTerminal()
+    const was = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+
+    act(() => {
+      drag(items[0]!, 45, 200)
+      fireEvent.keyDown(window, { key: 'Escape' })
+      fireEvent.pointerUp(window)
+    })
+
+    expect(order()).toEqual(was)
+  })
+
+  it('leaves a right click to the menu rather than taking hold of the tab', () => {
+    openTwo()
+    const was = order()
+    const { container } = render(createElement(BrowserPanel))
+    const items = laidOut(container)
+
+    act(() => {
+      fireEvent.pointerDown(items[0]!, { button: 2, clientX: 45 })
+      fireEvent.pointerMove(window, { clientX: 245 })
+      fireEvent.pointerUp(window)
+    })
+
+    expect(order()).toEqual(was)
+  })
+
+  // Closing is one thing and arranging is another, so the press that closes a tab
+  // never takes hold of it.
+  it('closes a tab pressed on its own close', () => {
+    openTwo()
+    const [, second] = order()
+    const { container, getAllByLabelText } = render(createElement(BrowserPanel))
+    laidOut(container)
+    const close = getAllByLabelText('Close tab')[0]!
+
+    act(() => {
+      fireEvent.pointerDown(close, { button: 0, clientX: 80 })
+      fireEvent.pointerMove(window, { clientX: 280 })
+      fireEvent.pointerUp(window)
+      fireEvent.click(close)
+    })
+
+    expect(order()).toEqual([second])
+  })
+
   it('leaves the tab menu closed until a right click asks for it', () => {
     openTwo()
     const { queryByText } = render(createElement(BrowserPanel))
