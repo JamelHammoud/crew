@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { shootCovers } from './icon-cover.mjs'
 import { SKINS } from './icon-skins.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
