@@ -961,6 +961,15 @@ export class CrewSession {
       case 'playlist.track':
         if (meta.role === 'ui') this.handlePlaylistTrack(member, msg.playlistId, msg.trackId, msg.on)
         break
+      case 'emoji.add':
+        if (meta.role === 'ui') this.handleEmojiAdd(ws, member, msg.name, msg.mime, msg.data)
+        break
+      case 'emoji.rename':
+        if (meta.role === 'ui') this.handleEmojiRename(ws, member, msg.emojiId, msg.name)
+        break
+      case 'emoji.remove':
+        if (meta.role === 'ui') this.handleEmojiRemove(member, msg.emojiId)
+        break
       case 'game.score':
         if (meta.role === 'ui') this.handleGameScore(member, msg.gameId, msg.score)
         break
