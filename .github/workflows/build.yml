@@ -26,7 +26,7 @@ jobs:
         include:
           - os: macos-latest
             label: mac
-            target: --mac --x64 --arm64
+            target: --mac --arm64
           - os: windows-latest
             label: windows
             target: --win --x64
