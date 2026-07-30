@@ -345,6 +345,11 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
       serveMusic(session, decodeURIComponent(music[1]), res)
       return
     }
+    const emoji = /^\/emoji\/([^/?#]+)$/.exec(req.url ?? '')
+    if (emoji) {
+      serveCustomEmoji(session, decodeURIComponent(emoji[1]), res)
+      return
+    }
     if (serveAgents(session, req.url ?? '', req, res)) return
     if (serveTickets(session, req.url ?? '', req, res)) return
     if (servePage(session, req.url ?? '', req, res)) return
