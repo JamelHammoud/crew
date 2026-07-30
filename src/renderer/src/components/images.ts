@@ -16,14 +16,17 @@ const readAsBase64 = (file: File): Promise<string> =>
     reader.readAsDataURL(file)
   })
 
-export function filesFrom(items: FileList | File[] | null | undefined): File[] {
-  return [...(items ?? [])].filter(file => file.size <= MAX_ATTACHMENT_BYTES)
+// How big a file may be is the crew's, so it arrives from the session rather
+// than being a number written here. Anything over it is left behind, and the
+// caller is what says so.
+export function filesFrom(items: FileList | File[] | null | undefined, limit: number): File[] {
+  return [...(items ?? [])].filter(file => file.size <= limit)
 }
 
 // A photo is a picture, so that one path takes images and nothing else. A
 // message takes whatever somebody dropped on it.
-export function imagesFrom(items: FileList | File[] | null | undefined): File[] {
-  return filesFrom(items).filter(file => isImageType(file.type))
+export function imagesFrom(items: FileList | File[] | null | undefined, limit: number): File[] {
+  return filesFrom(items, limit).filter(file => isImageType(file.type))
 }
 
 export async function uploadImage(httpBase: string, file: File): Promise<string> {
