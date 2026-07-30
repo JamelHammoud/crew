@@ -59,11 +59,32 @@ export type OwnCaret = () => Promise<Landing | null>
 
 const elsewhere: OwnCaret = () => Promise.resolve(null)
 
+// Nothing here waits forever. The machine is held to PATIENCE_MS by execFile and
+// our own windows are held to it by this, because a page that never answers would
+// leave a dictation with its words neither pasted nor held: the one way to lose
+// them that this whole file exists to stop. A window that has not said by then is
+// a window that has said nothing, and the question goes on to macOS.
+async function within<T>(work: Promise<T>, instead: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([
+      work,
+      new Promise<T>(answer => {
+        timer = setTimeout(() => answer(instead), PATIENCE_MS)
+      })
+    ])
+  } catch {
+    return instead
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
+}
+
 export async function askCaret(
   ours: OwnCaret = elsewhere,
   platform: string = process.platform
 ): Promise<Landing> {
-  const own = await ours()
+  const own = await within(ours(), null)
   if (own) return own
   if (platform !== 'darwin') return 'unknown'
   return new Promise(answer => {
