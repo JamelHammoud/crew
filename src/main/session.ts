@@ -8,12 +8,13 @@ import { builtinProviders, detectProviders } from '../runner/providers/detect'
 import { installCommand, runInstall } from '../runner/providers/install'
 import type { Provider } from '../runner/providers/types'
 import { createCrewServer, type CrewServer } from '../server/index'
+import { cloneCrew, crewHere, crewRepoUrl, publishCrew } from '../server/crewRepo'
 import { GitSync } from '../server/git'
 import { CrewSession } from '../server/session'
 import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } from '../shared/llm'
-import { projectKey, type CrewHome } from '../shared/project'
+import { projectKey, readCrewRemote, writeCrewRemote, type CrewHome } from '../shared/project'
 import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
 import type {
   RepoActionResult,
@@ -70,6 +71,10 @@ export class AppSession {
   private server: CrewServer | null = null
   private runner: Runner | null = null
   private git: GitSync | null = null
+  // The crew's own loop, for a crew kept outside the project with a repo of its
+  // own. It runs beside the project's rather than instead of it, so somebody's
+  // code and their crew are two histories that never wait on each other.
+  private crewGit: GitSync | null = null
   private agentsPath: string | null = null
   private sessionPath: string | null = null
   private projectsPath: string | null = null
@@ -77,7 +82,16 @@ export class AppSession {
   private folder: string | null = null
   // What is being hosted here, kept so the listener can be moved between
   // loopback and the network without the session it is serving being remade.
-  private hosted: { session: CrewSession; folder: string; name: string; home: CrewHome } | null = null
+  private hosted: {
+    session: CrewSession
+    folder: string
+    base: string
+    name: string
+    home: CrewHome
+  } | null = null
+  // A crew that cannot get anything out is history piling up on one machine, so
+  // it is said in the app rather than left in a log nobody reads.
+  onTrouble: (message: string) => void = () => {}
 
   constructor(paths: { agents?: string; session?: string; projects?: string } = {}) {
     this.agentsPath = paths.agents ?? null
@@ -213,7 +227,18 @@ export class AppSession {
   async projectPlan(folder: string): Promise<ProjectPlan> {
     const tracked = await isGitRepo(folder)
     const known = this.savedStore()?.projects().find(project => project.folder === folder) ?? null
-    return { home: known?.home ?? (tracked ? 'folder' : 'private'), tracked, known: known !== null }
+    const crewRemote = await readCrewRemote(folder)
+    const key = known?.key || (await projectKey(folder))
+    return {
+      // A project that names a crew has already answered the one question, so
+      // somebody who cloned it is never asked where to keep a crew they are
+      // about to be handed.
+      home: known?.home ?? (crewRemote ? 'private' : tracked ? 'folder' : 'private'),
+      tracked,
+      known: known !== null || crewRemote !== null,
+      crewRemote,
+      crewHere: this.projectsPath ? crewHere(path.join(this.projectsPath, key)) : false
+    }
   }
 
   // Every builtin provider is listed, installed or not, so the UI can offer a
@@ -297,10 +322,18 @@ export class AppSession {
     await this.stop()
     const tracked = await isGitRepo(repoPath)
     const known = this.savedStore()?.projects().find(project => project.folder === repoPath)
-    const home = opts.home ?? known?.home ?? (tracked ? 'folder' : 'private')
+    const remote = await readCrewRemote(repoPath)
+    const home = opts.home ?? known?.home ?? (remote ? 'private' : tracked ? 'folder' : 'private')
     const shared = opts.share ?? home === 'folder'
     const key = known?.key || (await projectKey(repoPath))
     const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
+    // The crew this project names is fetched before anything is opened on it.
+    // Falling back to a crew of this machine's own would be two histories under
+    // one name, and it would look like it had worked.
+    if (home === 'private' && remote && !opts.own && !crewHere(base)) {
+      const got = await cloneCrew(remote, base)
+      if (!got.ok) throw new Error(got.message)
+    }
     const store = new Store(base)
     const session = new CrewSession(store)
     // Git is there for Push and Pull in any project that has it, because that
@@ -310,14 +343,23 @@ export class AppSession {
     const git = tracked ? new GitSync(repoPath) : null
     const auto = git !== null && home === 'folder'
     if (git) git.onLog = line => console.warn('[git]', line)
-    if (git && auto) {
-      session.onSyncNeeded = () => git.schedule()
-      git.start(AUTO_SYNC_MS)
+    if (git && auto) git.start(AUTO_SYNC_MS)
+    const crewUrl = home === 'private' ? await crewRepoUrl(base) : null
+    const crew = crewUrl ? this.crewLoop(base) : null
+    const passes: Array<() => Promise<unknown>> = []
+    if (git && auto) passes.push(() => git.syncNow())
+    if (crew) passes.push(() => crew.syncNow())
+    if (passes.length > 0) {
+      session.onSyncNeeded = () => {
+        if (git && auto) git.schedule()
+        crew?.schedule()
+      }
     }
     const server = await this.listen(session, shared, PREFERRED_PORT)
     this.server = server
     this.git = git
-    this.hosted = { session, folder: repoPath, name, home }
+    this.crewGit = crew
+    this.hosted = { session, folder: repoPath, base, name, home }
     const detected = await detectProviders()
     // The runner knows every builtin provider so an agent created right after a
     // mid-session CLI install can run.
@@ -327,7 +369,8 @@ export class AppSession {
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected, name),
-      onBeforeRun: git && auto ? () => git.syncNow() : undefined,
+      onBeforeRun:
+        passes.length > 0 ? () => Promise.all(passes.map(pass => pass())).then(() => undefined) : undefined,
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
@@ -341,8 +384,9 @@ export class AppSession {
       folder: repoPath,
       home,
       shared,
-      synced: auto,
-      hosting: true
+      synced: auto || crew !== null,
+      hosting: true,
+      crewRemote: crewUrl
     }
     this.folder = repoPath
     this.savedStore()?.save({ mode: 'host', folder: repoPath, name, home, shared })
@@ -378,6 +422,35 @@ export class AppSession {
       shared
     })
     return this.live
+  }
+
+  private crewLoop(base: string): GitSync {
+    const crew = new GitSync(base)
+    crew.onLog = line => console.warn('[crew]', line)
+    crew.onTrouble = () => this.onTrouble('This crew is not saving anywhere but this computer.')
+    crew.start(AUTO_SYNC_MS)
+    return crew
+  }
+
+  // Giving a crew a repo of its own is one press, and the address goes into the
+  // project in the same breath, so whoever clones it next finds the crew
+  // without being handed anything.
+  async connectCrew(remote: string): Promise<{ ok: boolean; message: string }> {
+    const hosted = this.hosted
+    const live = this.live
+    if (!hosted || !live) return { ok: false, message: 'Open a project first.' }
+    if (hosted.home !== 'private') {
+      return { ok: false, message: 'This crew lives in the project, so it already goes out with it.' }
+    }
+    if (this.crewGit) return { ok: false, message: 'This crew already has a repo of its own.' }
+    const done = await publishCrew(hosted.base, remote)
+    if (!done.ok) return { ok: false, message: done.message }
+    await writeCrewRemote(hosted.folder, done.address).catch(() => {})
+    const crew = this.crewLoop(hosted.base)
+    this.crewGit = crew
+    hosted.session.onSyncNeeded = () => crew.schedule()
+    this.live = { ...live, synced: true, crewRemote: done.address }
+    return { ok: true, message: '' }
   }
 
   private listen(session: CrewSession, shared: boolean, port: number): Promise<CrewServer> {
@@ -419,7 +492,8 @@ export class AppSession {
       home: 'folder',
       shared: true,
       synced: true,
-      hosting: false
+      hosting: false,
+      crewRemote: null
     }
     this.folder = repoPath
     this.savedStore()?.save({
@@ -449,9 +523,13 @@ export class AppSession {
     this.runner?.close()
     this.runner = null
     const git = this.git
+    const crew = this.crewGit
     git?.stop()
+    crew?.stop()
     this.git = null
+    this.crewGit = null
     await git?.quiet()
+    await crew?.quiet()
     await this.server?.close()
     this.server = null
   }

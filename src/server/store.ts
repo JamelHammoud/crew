@@ -3,6 +3,7 @@ import path from 'node:path'
 import { isAttachmentFile } from '../shared/attachments'
 import { isCustomEmojiFile } from '../shared/customEmoji'
 import { appendChatLine, readChatLines } from './chatLog'
+import { CREW_ATTRIBUTES } from './crewRepo'
 import { BOARD_ID, type DesignDocument } from '../shared/design'
 import { parseDocFile, serializeDocFile, type DocPage } from '../shared/docs'
 import type { SessionEvent } from '../shared/events'
@@ -46,6 +47,8 @@ export class Store {
     fs.mkdirSync(path.join(this.root, 'designs'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'music'), { recursive: true })
     fs.mkdirSync(path.join(this.root, 'emoji'), { recursive: true })
+    const attributes = path.join(this.root, '.gitattributes')
+    if (!fs.existsSync(attributes)) fs.writeFileSync(attributes, CREW_ATTRIBUTES)
   }
 
   saveAttachment(file: string, data: Buffer): void {

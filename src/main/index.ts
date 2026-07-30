@@ -447,6 +447,9 @@ app.whenReady().then(() => {
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
   session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
+  session.onTrouble = message => {
+    for (const win of appWindows()) win.webContents.send('crew:trouble', message)
+  }
   scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
   said.remember(path.join(app.getPath('userData'), 'scribe-said.json'))
   resumed = opening
@@ -471,6 +474,7 @@ app.whenReady().then(() => {
     return info
   })
   ipcMain.handle('session:plan', (_event, folder: string) => session.projectPlan(folder))
+  ipcMain.handle('crew:connect', (_event, remote: string) => session.connectCrew(remote))
   ipcMain.handle('session:projects', () => session.recentProjects())
   ipcMain.handle('session:forget', (_event, folder: string) => session.forgetProject(folder))
   ipcMain.handle('session:forget-join', (_event, link: string) => session.forgetJoin(link))

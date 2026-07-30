@@ -92,13 +92,25 @@ describe('a crew kept on this machine', () => {
     const paths = statePaths('local-plan')
 
     const app = new AppSession(paths)
-    expect(await app.projectPlan(repo)).toEqual({ home: 'folder', tracked: true, known: false })
+    expect(await app.projectPlan(repo)).toEqual({
+      home: 'folder',
+      tracked: true,
+      known: false,
+      crewRemote: null,
+      crewHere: false
+    })
 
     await app.startHost(repo, 'sam', { home: 'private' })
     await app.shutdown()
 
     const back = new AppSession(paths)
-    expect(await back.projectPlan(repo)).toEqual({ home: 'private', tracked: true, known: true })
+    expect(await back.projectPlan(repo)).toEqual({
+      home: 'private',
+      tracked: true,
+      known: true,
+      crewRemote: null,
+      crewHere: true
+    })
     const again = await back.startHost(repo, 'sam')
     expect(again.home).toBe('private')
     expect(fs.existsSync(path.join(repo, '.crew'))).toBe(false)
@@ -108,7 +120,13 @@ describe('a crew kept on this machine', () => {
   it('opens a folder that is not tracked with git at all', async () => {
     const plain = tmpDir('local-plain')
     const app = new AppSession(statePaths('local-plain-state'))
-    expect(await app.projectPlan(plain)).toEqual({ home: 'private', tracked: false, known: false })
+    expect(await app.projectPlan(plain)).toEqual({
+      home: 'private',
+      tracked: false,
+      known: false,
+      crewRemote: null,
+      crewHere: false
+    })
 
     const info = await app.startHost(plain, 'sam', { home: 'private' })
     expect(info.synced).toBe(false)

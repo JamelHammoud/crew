@@ -8,6 +8,7 @@ import PhotoPicker from '../PhotoPicker'
 import Pill from '../Pill'
 import Toggle from '../Toggle'
 import { folderLine, folderName } from '../../views/home/place'
+import CrewRepo from './CrewRepo'
 import { Action, Page, Row, Section } from './parts'
 
 export default function People() {
@@ -19,10 +20,12 @@ export default function People() {
   const share = useCrew(s => s.share)
   const setMyPhoto = useCrew(s => s.setMyPhoto)
   const [session, setSession] = useState<CurrentSession | null>(null)
+  const [connecting, setConnecting] = useState(false)
+  const [beat, setBeat] = useState(0)
 
   useEffect(() => {
     void window.crew?.current?.().then(setSession)
-  }, [shared])
+  }, [shared, beat])
 
   const copy = async (link: string) => {
     await navigator.clipboard.writeText(link)
@@ -103,8 +106,30 @@ export default function People() {
               </span>
             )}
           </Row>
+          {!inProject && (
+            <Row
+              label="Crew repo"
+              line={
+                session.crewRemote ? (
+                  <span className="font-mono mono-inline break-all">{session.crewRemote}</span>
+                ) : undefined
+              }
+            >
+              {!session.crewRemote && <Action label="Connect" onClick={() => setConnecting(true)} />}
+            </Row>
+          )}
         </Section>
       )}
+
+      <CrewRepo
+        open={connecting}
+        onClose={() => setConnecting(false)}
+        onConnect={async remote => {
+          const done = await window.crew.connectCrew(remote)
+          if (done.ok) setBeat(count => count + 1)
+          return done
+        }}
+      />
     </Page>
   )
 }

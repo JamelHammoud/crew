@@ -14,12 +14,11 @@ import type {
   RepoStatus,
   RepoWork
 } from '../shared/repository'
-import type { CrewHome } from '../shared/project'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import type { ScribeKeyState, ScribeSettings } from '../shared/scribe'
 import type { Said } from '../shared/scribeSaid'
 import type { UpdateState } from '../shared/update'
-import type { CurrentSession, OpenOptions } from './session'
+import type { CurrentSession, OpenOptions, ProjectPlan } from './session'
 import type { TerminalSize } from './terminal'
 
 const bridge = {
@@ -35,8 +34,9 @@ const bridge = {
   forgetProject: (folder: string): Promise<void> => ipcRenderer.invoke('session:forget', folder),
   forgetJoin: (link: string): Promise<void> => ipcRenderer.invoke('session:forget-join', link),
   opening: (): Promise<OpenRequest | null> => ipcRenderer.invoke('cli:opening'),
-  projectPlan: (folder: string): Promise<{ home: CrewHome; tracked: boolean; known: boolean }> =>
-    ipcRenderer.invoke('session:plan', folder),
+  projectPlan: (folder: string): Promise<ProjectPlan> => ipcRenderer.invoke('session:plan', folder),
+  connectCrew: (remote: string): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('crew:connect', remote),
   setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
@@ -195,6 +195,13 @@ const bridge = {
   },
   onOpenUrl: (listener: (url: string) => void): void => {
     ipcRenderer.on('browser:open', (_event, url: string) => listener(url))
+  },
+  onCrewTrouble: (listener: (message: string) => void): (() => void) => {
+    const handler = (_event: unknown, message: string): void => listener(message)
+    ipcRenderer.on('crew:trouble', handler)
+    return () => {
+      ipcRenderer.removeListener('crew:trouble', handler)
+    }
   }
 }
 

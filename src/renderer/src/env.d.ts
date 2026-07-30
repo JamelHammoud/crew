@@ -28,6 +28,7 @@ declare global {
     forgetJoin(link: string): Promise<void>
     opening(): Promise<OpenRequest | null>
     projectPlan(folder: string): Promise<ProjectPlan>
+    connectCrew(remote: string): Promise<{ ok: boolean; message: string }>
     setShared(shared: boolean): Promise<CurrentSession | null>
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>
@@ -98,6 +99,7 @@ declare global {
     onUpdate(listener: (state: UpdateState) => void): () => void
     onWindowShape(listener: (shape: { square: boolean; full: boolean }) => void): void
     onOpenUrl(listener: (url: string) => void): void
+    onCrewTrouble(listener: (message: string) => void): () => void
   }
 
   interface WebviewElement extends HTMLElement {

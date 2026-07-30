@@ -25,6 +25,10 @@ const DIFF_LINE_LIMIT = 2_000
 const UNIT = '\u001f'
 const AUTO_SYNC_MS = 5000
 const DEBOUNCE_MS = 2000
+// A pass that gets nothing out is ordinary once: a laptop moving between
+// networks, somebody else pushing in the same second. A run of them is history
+// piling up on one machine, and that is worth saying out loud.
+const TROUBLE_AFTER = 3
 
 interface StatusEntry {
   code: string
@@ -44,7 +48,9 @@ export class GitSync {
   private waiting: Promise<void> | null = null
   private hasRemote: boolean | null = null
   private inRepo: boolean | null = null
+  private stalls = 0
   onLog: (line: string) => void = () => {}
+  onTrouble: () => void = () => {}
 
   constructor(private repoPath: string) {}
 
@@ -185,12 +191,21 @@ export class GitSync {
     const pull = await this.pullRemote(false)
     if (!pull.ok) {
       this.onLog(`pull failed, will retry: ${pull.detail}`)
-      return
+      return this.stalled()
     }
     const push = await runGit(['push'], this.repoPath)
     if (push.code !== 0) {
       this.onLog(`push failed, will retry: ${push.stderr.trim()}`)
+      return this.stalled()
     }
+    this.stalls = 0
+  }
+
+  // Said once a streak, rather than on every pass of it. A machine that cannot
+  // get anything out says so and then gets on with trying.
+  private stalled(): void {
+    this.stalls += 1
+    if (this.stalls === TROUBLE_AFTER) this.onTrouble()
   }
 
   private async usable(): Promise<boolean> {

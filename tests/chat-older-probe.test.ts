@@ -130,6 +130,7 @@ function join(events: SessionEvent[], moreEvents = true) {
     link: null,
     folder: '/tmp/crew',
     home: 'folder',
+    crewRemote: null,
     shared: false,
     synced: false,
     hosting: true

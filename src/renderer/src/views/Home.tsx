@@ -1,20 +1,28 @@
 import { useEffect, useState } from 'react'
 import type { OpenRequest } from '../../../shared/cli'
-import type { OpenOptions } from '../../../shared/session'
+import type { OpenOptions, ProjectPlan } from '../../../shared/session'
 import Avatar from '../components/Avatar'
 import ScreenSwap from '../components/ScreenSwap'
 import Tooltip from '../components/Tooltip'
 import { ChevronLeftGlyph } from '../icons'
 import { useCrew } from '../state/store'
+import CrewAway from './home/CrewAway'
 import JoinLink from './home/JoinLink'
 import Places from './home/Places'
 import WhereTo from './home/WhereTo'
 import YourName from './home/YourName'
 import { placesOf, type Place } from './home/place'
 
-type Screen = 'places' | 'name' | 'where' | 'link'
+type Screen = 'places' | 'name' | 'where' | 'link' | 'away'
 
-const DEPTH: Record<Screen, number> = { places: 0, name: 1, where: 1, link: 1 }
+const DEPTH: Record<Screen, number> = { places: 0, name: 1, where: 1, link: 1, away: 1 }
+
+// A crew this project names and this computer has not got yet. Only an open
+// that has to fetch one can fail for want of it, which is what tells that
+// failure apart from every other way an open can go wrong.
+function fetching(plan: ProjectPlan | null): boolean {
+  return Boolean(plan?.crewRemote && !plan.crewHere)
+}
 
 // A column wide enough for what the screen holds. Everything is one column of
 // rows but the one question, which is two things standing beside each other.
@@ -22,7 +30,8 @@ const WIDTH: Record<Screen, string> = {
   places: 'max-w-sm',
   name: 'max-w-sm',
   where: 'max-w-lg',
-  link: 'max-w-sm'
+  link: 'max-w-sm',
+  away: 'max-w-sm'
 }
 
 function cleanError(err: unknown): string {
@@ -40,6 +49,7 @@ export default function Home() {
   // Only the very first time is there nowhere to go back to.
   const [first, setFirst] = useState(!known)
   const [asking, setAsking] = useState<{ folder: string; share?: boolean } | null>(null)
+  const [away, setAway] = useState<{ folder: string; share?: boolean } | null>(null)
   // What `crew` in a terminal asked for, held while a name is asked for, since
   // nothing can be opened without one.
   const [asked, setAsked] = useState<OpenRequest | null>(null)
@@ -69,7 +79,7 @@ export default function Home() {
     return true
   }
 
-  const open = async (target: string, key: string, who: string, opts?: OpenOptions) => {
+  const open = async (target: string, key: string, who: string, opts?: OpenOptions, fetch = false) => {
     setBusy(true)
     setBusyKey(key)
     setError('')
@@ -77,8 +87,13 @@ export default function Home() {
       localStorage.setItem('crew.folder', target)
       connect(await window.crew.start(target, keep(who), opts))
     } catch (err) {
-      setError(cleanError(err))
-      setScreen('places')
+      if (fetch) {
+        setAway({ folder: target, share: opts?.share })
+        setScreen('away')
+      } else {
+        setError(cleanError(err))
+        setScreen('places')
+      }
     } finally {
       setBusy(false)
       setBusyKey(null)
@@ -94,7 +109,7 @@ export default function Home() {
     setFolder(picked)
     setError('')
     const plan = await window.crew.projectPlan(picked).catch(() => null)
-    if (plan?.known) return open(picked, `project:${picked}`, name.trim())
+    if (plan?.known) return open(picked, `project:${picked}`, name.trim(), undefined, fetching(plan))
     setAsking({ folder: picked })
     setScreen('where')
   }
@@ -116,9 +131,11 @@ export default function Home() {
       return joinSession(request.link, request.folder, `join:${request.link}`, who)
     }
     const key = `project:${request.folder}`
-    if (request.home) return open(request.folder, key, who, { home: request.home, share: request.share })
     const plan = await window.crew.projectPlan(request.folder).catch(() => null)
-    if (plan?.known) return open(request.folder, key, who, { share: request.share })
+    if (request.home) {
+      return open(request.folder, key, who, { home: request.home, share: request.share }, fetching(plan))
+    }
+    if (plan?.known) return open(request.folder, key, who, { share: request.share }, fetching(plan))
     setAsking({ folder: request.folder, share: request.share })
     setScreen('where')
   }
@@ -157,7 +174,8 @@ export default function Home() {
     }
     if (place.project) {
       if (missingName()) return
-      return open(place.project.folder, place.key, name.trim())
+      const plan = await window.crew.projectPlan(place.project.folder).catch(() => null)
+      return open(place.project.folder, place.key, name.trim(), undefined, fetching(plan))
     }
   }
 
@@ -178,6 +196,7 @@ export default function Home() {
     setError('')
     setAsking(null)
     setAsked(null)
+    setAway(null)
     setScreen('places')
   }
 
@@ -203,6 +222,18 @@ export default function Home() {
           busy={busy}
           onPick={home =>
             void open(asking.folder, `project:${asking.folder}`, name.trim(), { home, share: asking.share })
+          }
+        />
+      )
+    }
+    if (screen === 'away' && away) {
+      const key = `project:${away.folder}`
+      return (
+        <CrewAway
+          busy={busy}
+          onRetry={() => void open(away.folder, key, name.trim(), { share: away.share }, true)}
+          onOwn={() =>
+            void open(away.folder, key, name.trim(), { home: 'private', own: true, share: away.share })
           }
         />
       )

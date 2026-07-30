@@ -10,6 +10,7 @@ import VoiceScreen from './components/voice/VoiceScreen'
 import { lazy, Suspense } from 'react'
 import { reviewCount } from './state/alerts'
 import { useCrew } from './state/store'
+import { toast } from './state/toast'
 import { watchUpdates } from './state/update'
 import { bootSeen, rememberBoot } from './components/boot/seen'
 import Boot from './views/Boot'
@@ -79,6 +80,11 @@ function Session() {
   useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThread(threadId)), [openThread])
 
   useEffect(() => watchUpdates(), [])
+
+  useEffect(
+    () => window.crew?.onCrewTrouble?.(message => toast.fail(message, { key: 'crew-sync' })),
+    []
+  )
 
   const switchTab = (next: Tab) => {
     if (next === 'chat') closeThread()

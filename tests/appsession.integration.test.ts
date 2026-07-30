@@ -1,9 +1,13 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { AppSession } from '../src/main/session'
+import { publishCrew } from '../src/server/crewRepo'
+import { Store } from '../src/server/store'
 import { parseLink } from '../src/shared/link'
+import { writeCrewRemote } from '../src/shared/project'
 import type { ServerMessage } from '../src/shared/protocol'
-import { initRepo } from './helpers/git'
+import { initBare, initRepo } from './helpers/git'
 import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 function welcomeOf(ui: TestUi): Extract<ServerMessage, { type: 'welcome' }> {
@@ -22,6 +26,58 @@ describe('app session', () => {
     expect(info.home).toBe('private')
     expect(info.synced).toBe(false)
     expect(info.shared).toBe(false)
+    await app.leave()
+  })
+
+  // A project that names a crew has already answered the one question, so
+  // somebody who cloned it is handed the crew rather than asked where to keep
+  // one they are about to be given.
+  it('picks up the crew a project names', async () => {
+    const base = tmpDir('named-crew')
+    const origin = path.join(base, 'origin.git')
+    const seed = path.join(base, 'seed')
+    const project = tmpDir('named-crew-project')
+    await initBare(origin)
+    fs.mkdirSync(seed, { recursive: true })
+    new Store(seed).appendEvent({
+      id: 'e1',
+      ts: Date.now(),
+      kind: 'message',
+      authorId: 'u1',
+      authorName: 'sam',
+      text: 'said before anybody cloned',
+      mentions: []
+    })
+    expect((await publishCrew(seed, `file://${origin}`)).ok).toBe(true)
+    await initRepo(project)
+    await writeCrewRemote(project, `file://${origin}`)
+
+    const app = new AppSession({ projects: tmpDir('named-crew-state') })
+    const plan = await app.projectPlan(project)
+    expect(plan.home).toBe('private')
+    expect(plan.known).toBe(true)
+    expect(plan.crewHere).toBe(false)
+
+    const info = await app.startHost(project, 'sam')
+    expect(info.home).toBe('private')
+    expect(info.crewRemote).toBe(`file://${origin}`)
+    expect(info.synced).toBe(true)
+    await app.leave()
+  })
+
+  // Falling back to a crew of this machine's own would be two histories under
+  // one name, and it would look like it had worked.
+  it('will not open on a crew it cannot reach unless that is what was asked for', async () => {
+    const project = tmpDir('away-crew-project')
+    await initRepo(project)
+    await writeCrewRemote(project, 'file:///nowhere/at/all.git')
+    const app = new AppSession({ projects: tmpDir('away-crew-state') })
+
+    await expect(app.startHost(project, 'sam')).rejects.toThrow()
+
+    const info = await app.startHost(project, 'sam', { home: 'private', own: true })
+    expect(info.home).toBe('private')
+    expect(info.crewRemote).toBe(null)
     await app.leave()
   })
 
