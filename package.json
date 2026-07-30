@@ -62,6 +62,7 @@
     "voice-check": "node scripts/voice-check.mjs",
     "selection-check": "node scripts/selection-check.mjs",
     "scribe-check": "node scripts/scribe-check.mjs",
+    "scribe-caret-check": "node scripts/scribe-caret-check.mjs",
     "preview-check": "node scripts/preview-check.mjs",
     "dist": "electron-vite build && electron-builder",
     "icon": "node scripts/make-icon.mjs",
