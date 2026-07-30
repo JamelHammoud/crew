@@ -18,8 +18,18 @@
       "**/node_modules/uiohook-napi/**",
       "**/node_modules/@koromix/koffi-*/**"
     ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "JamelHammoud",
+        "repo": "crew"
+      }
+    ],
     "mac": {
-      "target": "dmg",
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.productivity",
       "icon": "resources/icon.icns",
       "hardenedRuntime": true,
