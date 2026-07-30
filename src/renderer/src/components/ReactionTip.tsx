@@ -1,13 +1,8 @@
 import Emoji from './Emoji'
-import { lookupEmoji } from './emojiData'
+import { emojiName } from './emojiData'
 import type { ReactionGroup } from './reactionGroups'
 
 const SHOWN = 3
-
-export function reactionName(emoji: string): string {
-  const entry = lookupEmoji(emoji)
-  return entry ? `:${entry.shortName}:` : emoji
-}
 
 // Whoever is reading it is named first, so the line opens on You the way a
 // sentence about yourself does. A crew of any size ends on a count rather than
