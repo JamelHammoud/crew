@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import type { AgentAlert } from '../../shared/alerts'
+import type { OpenRequest } from '../../shared/cli'
 import type { PathLocation, RepoFile } from '../../shared/files'
 import type { AgentDef, AgentSettings, ProviderCapability } from '../../shared/llm'
 import type { MediaAccess, MediaKind, ScreenSource } from '../../shared/media'
