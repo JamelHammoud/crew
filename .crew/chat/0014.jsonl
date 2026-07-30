@@ -892,3 +892,6 @@
 {"id":"65e39685-645c-48bc-a6f0-40f0c38c4cb4","ts":1785374802308,"kind":"agent.online","agentId":"jamel (dev)/8f466d3f-782c-4e4b-b623-bfeac5287e35","label":"Kimi"}
 {"id":"6af11812-a1fd-4372-80b9-a662124405f6","ts":1785374802308,"kind":"agent.online","agentId":"jamel (dev)/580609af-be57-4e6d-b53c-b1a0562a47c0","label":"Kimi 2"}
 {"id":"c6cac80a-59f7-42e8-9ca2-486af86e2de5","ts":1785374802308,"kind":"person.joined","memberId":"21d14df6-2a40-46d6-8094-a25a3c98da1f","name":"Jamel"}
+{"id":"b4e7784e-e2e7-4f39-8ab9-b1fabad9b06c","ts":1785374805133,"kind":"person.joined","memberId":"6b264b80-77dc-4197-81f0-61505c3be802","name":"Ali (Mac)"}
+{"id":"723abfc4-288d-42ff-ab94-50ea91446ce6","ts":1785374805174,"kind":"agent.online","agentId":"ali (mac)/9ca5734d-1fe2-4bf0-95ab-f5b51031fa3f","label":"Claude Opus 5"}
+{"id":"921cf5e6-c540-4845-85df-cce2a846037a","ts":1785374805174,"kind":"agent.online","agentId":"ali (mac)/ab991358-0f29-4eeb-b3f1-2376e262a61f","label":"Codex Gpt-5.6-sol 2"}
