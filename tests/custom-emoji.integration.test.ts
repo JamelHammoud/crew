@@ -180,7 +180,10 @@ describe('custom emoji', () => {
     sam.send({ type: 'emoji.add', name: 'slides', mime: 'application/pdf', data })
     sam.send({ type: 'emoji.add', name: 'empty', mime: 'image/gif', data: '' })
     sam.send({ type: 'emoji.add', name: '   ', mime: 'image/gif', data })
-    sam.send({ type: 'emoji.add', name: '-nope', mime: 'image/gif', data })
+    // Nothing but punctuation is nothing, since the name is the whole of what
+    // somebody types to reach it.
+    sam.send({ type: 'emoji.add', name: '---', mime: 'image/gif', data })
+    sam.send({ type: 'emoji.add', name: '🎉', mime: 'image/gif', data })
     sam.send({
       type: 'emoji.add',
       name: 'huge',
