@@ -140,7 +140,6 @@ export default function TopBar({
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
         <UpdatePill />
-        {!compact && <span className="w-px h-5 bg-fg/[0.07] mx-[9px] first:hidden" />}
         <div className="flex items-center gap-0.5">
           <div className="relative flex items-center">
             <Tooltip label="Toolbox" disabled={toolboxOpen}>
