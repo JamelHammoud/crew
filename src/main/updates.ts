@@ -49,7 +49,9 @@ export class Updates {
     }
     if (this.state.stage !== 'found' && this.state.stage !== 'failed') return
     this.say({ word: 'getting' })
-    void autoUpdater.downloadUpdate().catch(() => this.say({ word: 'error' }))
+    void autoUpdater()
+      .downloadUpdate()
+      .catch(() => this.say({ word: 'error' }))
   }
 
   tell(win: BrowserWindow): void {
