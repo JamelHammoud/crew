@@ -66,6 +66,13 @@ export function Row({
   )
 }
 
+// A row whose right hand side is a plain fact rather than something to press.
+// It takes the foreground at an opacity the way every other quiet word on the
+// card does, and it is selectable because a fact is there to be copied.
+export function Fact({ children }: { children: ReactNode }) {
+  return <p className="text-base text-fg/45 select-text">{children}</p>
+}
+
 // A word to press and nothing around it, for a control that stands beside a
 // section title rather than in a row. A pill up there would weigh more than the
 // title it is standing next to.
