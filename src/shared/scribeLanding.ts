@@ -61,6 +61,7 @@ export function landingFrom(role: string, attributes: readonly string[]): Landin
   if (TEXT.has(named)) return 'text'
   if (attributes.includes(EDITABLE)) return 'text'
   if (NOT_TEXT.has(named)) return 'none'
+  if (PAGE.some(name => attributes.includes(name))) return 'none'
   return attributes.includes(CARET) ? 'text' : 'none'
 }
 
