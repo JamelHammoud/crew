@@ -136,12 +136,15 @@ export class Updates {
       return
     }
     this.going = true
-    await this.host.settle().catch(() => {})
     // An install that will not happen says nothing for itself. Squirrel does
     // nothing at all for an app it never staged, and the silent installer is
     // spawned detached with its exit code never read, so what says it did not
-    // happen is the app still standing here a while later.
+    // happen is the app still standing here a while later. The wait is armed
+    // before the shutdown rather than after it, or a push that never comes back
+    // leaves the pill offering a restart that is never coming.
     this.gone = setTimeout(() => this.gaveUp(), GONE_MS)
+    await this.host.settle().catch(() => {})
+    if (!this.going) return
     try {
       autoUpdater().quitAndInstall(true, true)
     } catch {
