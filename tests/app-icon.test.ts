@@ -19,6 +19,7 @@ const svg = (name: string) => readFileSync(path.join(root, 'resources', name), '
 
 const SHIPPING = ['icon.svg', 'icon-light.svg']
 const BLUEPRINT = ['icon-dev.svg', 'icon-dev-light.svg']
+const PICTURES = PICTURE_ICONS.map(id => `icon-${id}.svg`)
 
 // The blueprint paints the same three discs once per shading layer, so the
 // stack is the set of distinct discs, not every circle drawn.
