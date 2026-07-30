@@ -189,6 +189,9 @@ interface CrewState {
   threadCommands: Record<string, CommandName[]>
   httpBase: string
   pending: Record<string, PendingAttachment[]>
+  // How big a file the crew may send, in megabytes. One number for everyone,
+  // since the host is what turns a big one away.
+  attachmentMb: number
   boot: () => Promise<void>
   connect: (session: CurrentSession) => void
   loadHistory: () => void
