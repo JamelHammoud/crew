@@ -74,7 +74,6 @@ export function useLocalImages(file: string, text: string): Record<string, strin
     return () => {
       alive = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file, key])
 
   return found

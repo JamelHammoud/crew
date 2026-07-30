@@ -177,6 +177,7 @@ export default function Home() {
   const back = () => {
     setError('')
     setAsking(null)
+    setAsked(null)
     setScreen('places')
   }
 
