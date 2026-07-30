@@ -197,7 +197,7 @@ describe('attachments', () => {
     expect(fs.readFileSync(copied).equals(PNG)).toBe(true)
   })
 
-  it('turns away files that are not images or are too big', async () => {
+  it('keeps a file beside an image and turns away only what is too big', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
 
@@ -206,13 +206,136 @@ describe('attachments', () => {
       text: 'files',
       mentions: [],
       attachments: [
-        { name: 'notes.pdf', mime: 'application/pdf', data: PNG.toString('base64') },
+        file('notes.pdf', 'application/pdf'),
         { name: 'huge.png', mime: 'image/png', data: Buffer.alloc(11 * 1024 * 1024).toString('base64') },
         image('fine.png')
       ]
     })
 
     const seen = (await ui.waitForEvent(e => e.kind === 'message')) as Message
-    expect(seen.attachments?.map(a => a.name)).toEqual(['fine.png'])
+    expect(seen.attachments?.map(a => a.name)).toEqual(['notes.pdf', 'fine.png'])
+    const [pdf] = seen.attachments!
+    expect(pdf.mime).toBe('application/pdf')
+    expect(pdf.size).toBe(PDF.length)
+    expect(pdf.file).toBe(`${pdf.id}.pdf`)
+    expect(fs.readFileSync(path.join(host.repoPath, '.crew', 'attachments', pdf.file)).equals(PDF)).toBe(true)
+  })
+
+  // A browser reports one type for a text file and another for the same one on
+  // the next machine, and reports nothing at all for plenty of them, so the name
+  // is what decides and the type recorded is the type that comes back.
+  it('names a file by its own extension and serves it as what it is', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
+
+    ui.send({
+      type: 'chat.send',
+      text: 'all of it',
+      mentions: [],
+      attachments: [
+        file('rows.csv', 'text/plain', Buffer.from('a,b\n1,2\n')),
+        file('run.log', '', Buffer.from('started\n')),
+        file('shapes.sketch', 'application/octet-stream'),
+        file('Makefile', '', Buffer.from('all:\n'))
+      ]
+    })
+
+    const seen = (await ui.waitForEvent(e => e.kind === 'message')) as Message
+    const [csv, log, sketch, make] = seen.attachments!
+    expect(csv.file.endsWith('.csv')).toBe(true)
+    expect(csv.mime).toBe('text/csv')
+    expect(log.mime).toBe('text/plain')
+    expect(sketch.file.endsWith('.sketch')).toBe(true)
+    expect(sketch.mime).toBe('application/octet-stream')
+    expect(make.file.endsWith('.bin')).toBe(true)
+
+    for (const attachment of [csv, log, sketch, make]) {
+      const res = await fetch(`${base}/attachments/${attachment.file}`)
+      expect(res.status).toBe(200)
+      expect(res.headers.get('content-type')).toBe(attachment.mime)
+    }
+  })
+
+  // An attachment is served from the host's own address, so anything a browser
+  // would run there is handed over as words instead.
+  it('hands over a page or a vector as text and never as itself', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
+
+    ui.send({
+      type: 'chat.send',
+      text: 'have a look',
+      mentions: [],
+      attachments: [
+        file('page.html', 'text/html', Buffer.from('<script>alert(1)</script>')),
+        file('mark.svg', 'image/svg+xml', Buffer.from('<svg onload="alert(1)"/>'))
+      ]
+    })
+
+    const seen = (await ui.waitForEvent(e => e.kind === 'message')) as Message
+    for (const attachment of seen.attachments!) {
+      expect(attachment.mime).toBe('text/plain')
+      const res = await fetch(`${base}/attachments/${attachment.file}`)
+      expect(res.headers.get('content-type')).toBe('text/plain')
+    }
+  })
+
+  it('keeps a name that is a path out of the folder as a label and nothing else', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+
+    ui.send({
+      type: 'chat.send',
+      text: 'sneaky',
+      mentions: [],
+      attachments: [file('../../session.json', 'application/json', Buffer.from('{}'))]
+    })
+
+    const seen = (await ui.waitForEvent(e => e.kind === 'message')) as Message
+    const [one] = seen.attachments!
+    expect(one.file).toBe(`${one.id}.json`)
+    expect(fs.existsSync(path.join(host.repoPath, '.crew', 'attachments', one.file))).toBe(true)
+    expect(fs.readFileSync(path.join(host.repoPath, '.crew', 'session.json'), 'utf8')).not.toBe('{}')
+  })
+
+  it('gives the agent a path for a file and says which is which', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel')
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.send({
+      type: 'chat.send',
+      text: 'read these @Fake',
+      mentions: [fake],
+      attachments: [file('notes.pdf', 'application/pdf'), image()]
+    })
+    const sent = (await ui.waitForEvent(e => e.kind === 'message' && !!e.threadId)) as Message
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end')) as Ended
+
+    const dir = path.join(host.repoPath, '.crew', 'attachments')
+    const [pdf, png] = sent.attachments!
+    expect(end.text).toContain('Images shared with this message')
+    expect(end.text).toContain('Files shared with this message')
+    expect(end.text).toContain(path.join(dir, pdf.file))
+    expect(end.text).toContain(path.join(dir, png.file))
+  })
+
+  it('says a file is a file in what the next turn reads', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel')
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.send({ type: 'chat.send', text: 'first @Fake', mentions: [fake], attachments: [file('notes.pdf', 'application/pdf')] })
+    const started = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)
+
+    ui.send({ type: 'chat.send', text: 'and now', mentions: [], threadId: started.threadId })
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === started.threadId)) as Ended
+    expect(end.text).toContain('[file: notes.pdf]')
+    expect(end.text).not.toContain('[image: notes.pdf]')
   })
 })
