@@ -58,6 +58,16 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
   }, [scrollRef, setPinned])
 
+  // The head of the thread, where the words it is named after are written. It
+  // has to unpin: pinned, the next item to land would carry the view straight
+  // back to the foot of it.
+  const jumpToTop = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    setPinned(false)
+    el.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [scrollRef, setPinned])
+
   const follow = useCallback(
     (ready = true) => {
       const el = scrollRef.current

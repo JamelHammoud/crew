@@ -363,39 +363,25 @@ ${spaceStars(ctx)}
   },
   {
     id: 'gradient',
-    ink: '#ffffff',
+    ink: COVER_INK,
+    cover: COVER_SEED,
+    // The picture covers the tile, so the gradient under it is only what shows
+    // for the frame of a paint before the photograph has landed.
     tile: [
-      ['#6b46e0', 1],
-      ['#5a3fd6', 1],
-      ['#3f2bb0', 1]
+      ['#ffb0b8', 1],
+      ['#ff8f9f', 1],
+      ['#f77a92', 1]
     ],
+    // A light tile, so the rim is the light one: white where the light arrives
+    // and the picture's own colour in shade where it leaves.
     rim: [
-      ['#ffffff', 0.66],
-      ['#ffffff', 0.07],
-      ['#7c5cf0', 0.36]
+      ['#ffffff', 0.92],
+      ['#ffffff', 0.06],
+      ['#c05a72', 0.2]
     ],
-    sheen: 0.12,
-    defs: () => `${blur('mesh-soft', 58)}
-${MESH.map(({ colour, x, y, r }, index) =>
-  spot({
-    id: `mesh-${index}`,
-    x,
-    y,
-    r,
-    colour,
-    at: [
-      [0, colour, index === MESH.length - 1 ? 0.6 : 0.92],
-      [0.55, colour, index === MESH.length - 1 ? 0.2 : 0.42],
-      [1, colour, 0]
-    ]
-  })
-).join('\n')}`,
-    art: ctx => `    <g filter="url(#mesh-soft)">
-${MESH.map(
-  (_, index) =>
-    `      <rect x="${ctx.TILE.x - 60}" y="${ctx.TILE.y - 60}" width="${ctx.TILE.size + 120}" height="${ctx.TILE.size + 120}" fill="url(#mesh-${index})" />`
-).join('\n')}
-    </g>`
+    sheen: 0.1,
+    art: ctx =>
+      `    <image x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" preserveAspectRatio="xMidYMid slice" href="data:image/png;base64,${ctx.cover}" />`
   },
   {
     id: 'terminal',
