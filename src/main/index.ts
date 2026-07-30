@@ -486,7 +486,7 @@ app.whenReady().then(() => {
   // rather than in the page, because the words are held here and the clipboard is
   // this machine's own: a window that never takes focus cannot reach one.
   ipcMain.on('scribe:copyHeld', () => {
-    const words = scribe.held()
+    const words = scribe.heldWords()
     if (words) clipboard.writeText(words)
   })
   ipcMain.on('scribe:letGo', () => scribe.release())
