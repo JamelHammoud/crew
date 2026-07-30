@@ -6,6 +6,7 @@ import Avatar from '../Avatar'
 import Modal from '../Modal'
 import Agents from './Agents'
 import Appearance from './Appearance'
+import Files from './Files'
 import Helpers from './Helpers'
 import People from './People'
 import Scribe from './Scribe'
@@ -23,6 +24,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'scribe') return <Scribe />
   if (tab === 'people') return <People />
   if (tab === 'helpers') return <Helpers />
+  if (tab === 'files') return <Files />
   return <Agents />
 }
 
