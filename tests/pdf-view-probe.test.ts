@@ -38,9 +38,10 @@ HTMLCanvasElement.prototype.getContext = function measuring(this: HTMLCanvasElem
   return { canvas: this, font: '', measureText: measured }
 } as never
 
+const here = import.meta.url
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs',
-  import.meta.url
+  here
 ).href
 
 const url = 'https://crew.test/note.pdf'
