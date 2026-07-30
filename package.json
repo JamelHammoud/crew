@@ -17,8 +17,18 @@
       "**/node_modules/node-pty/**",
       "**/node_modules/uiohook-napi/**"
     ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "JamelHammoud",
+        "repo": "crew"
+      }
+    ],
     "mac": {
-      "target": "dmg",
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.productivity",
       "icon": "resources/icon.icns",
       "hardenedRuntime": true,
