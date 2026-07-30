@@ -27,6 +27,10 @@ export type BrowserTab = {
   diff: string | null
   // What a terminal tab was opened to run, typed into the shell once it is up.
   command: string | null
+  // What an attachment tab is holding, so the panel knows how to draw it and how
+  // big it is without going back for the file.
+  mime: string
+  size: number
   // Which game a games tab is standing in, or null for the list of them. It
   // rides on the tab so the pill can say what you are playing and so a look at
   // another tab does not put you back at the top of the list.
