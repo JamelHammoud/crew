@@ -1053,9 +1053,19 @@ export const useCrew = create<CrewState>((set, get) => {
         return 'That picture could not be read'
       }
     },
+    // Naming one again asks the same question adding one does, so it is answered
+    // in the same words and in one place.
     renameCustomEmoji: (emojiId, name) => {
-      const clean = cleanCustomEmojiName(name)
-      if (clean) socket.send({ type: 'emoji.rename', emojiId, name: clean })
+      const held = get().emoji
+      const clean = nameFor(
+        held.filter(emoji => emoji.id !== emojiId),
+        name
+      )
+      if (typeof clean !== 'string') return clean.said
+      if (clean !== held.find(emoji => emoji.id === emojiId)?.name) {
+        socket.send({ type: 'emoji.rename', emojiId, name: clean })
+      }
+      return null
     },
     removeCustomEmoji: emojiId => {
       socket.send({ type: 'emoji.remove', emojiId })
