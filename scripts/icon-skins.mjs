@@ -522,7 +522,7 @@ ${spot({
     art: ctx => `    <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#tube)" />
 ${terminalCode()}
     <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#vignette)" />
-    <g fill="${PHOSPHOR}" opacity="0.62" filter="url(#phosphor)">
+    <g fill="${PHOSPHOR}" opacity="0.44" filter="url(#phosphor)">
 ${ctx.discs()}
     </g>`,
     over: ctx => `    <g fill="#000000" opacity="0.14">
