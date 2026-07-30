@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { isImageType, type Attachment } from '../shared/attachments'
+import { isAttachmentFile, isImageType, type Attachment } from '../shared/attachments'
 
 export interface LocalAttachment {
   name: string
@@ -23,6 +23,9 @@ export class AttachmentCache {
     const dir = ghostPromptId ? this.ghostDir(ghostPromptId) : path.join(this.repoPath, '.crew', 'attachments')
     const local: LocalAttachment[] = []
     for (const attachment of attachments) {
+      // The name is the host's own uuid, so a message carrying anything else is
+      // one that has been got at, and it is nothing this machine writes.
+      if (!isAttachmentFile(attachment.file)) continue
       const full = path.join(dir, attachment.file)
       if (!fs.existsSync(full)) {
         const data = await this.download(`${httpBase}/attachments/${attachment.file}`)
