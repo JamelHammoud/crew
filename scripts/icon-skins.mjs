@@ -425,7 +425,7 @@ ${spaceStars(ctx)}
   },
   {
     id: 'gradient',
-    ink: COVER_INK,
+    ink: '#ffffff',
     cover: COVER_SEED,
     // The picture covers the tile, so the gradient under it is only what shows
     // for the frame of a paint before the photograph has landed.
