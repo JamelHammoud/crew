@@ -305,9 +305,9 @@ export const SKINS = [
     id: 'bit',
     ink: '#ffffff',
     tile: [
-      ['#7ff0ff', 1],
-      ['#2b6be0', 1],
-      ['#1a2478', 1]
+      ['#6ee0ff', 1],
+      ['#2f7ce0', 1],
+      ['#2440a8', 1]
     ],
     rim: [
       ['#b4ecff', 0.7],
@@ -318,7 +318,7 @@ export const SKINS = [
     defs: () => glow('bit-lift', '#ffffff', 0.1),
     art: ctx => `${bitField(ctx)}
     <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#bit-lift)" />
-    <g fill="#ffffff" opacity="0.22">
+    <g fill="#ffffff" opacity="0.28">
 ${bitFrame(ctx)}
     </g>`
   },
