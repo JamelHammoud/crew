@@ -334,7 +334,7 @@ function createWindow(): BrowserWindow {
   const win = new BrowserWindow(
     createWindowOptions(process.platform, path.join(dirname, '../preload/preload.mjs'))
   )
-  if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme))
+  if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
   win.webContents.on('will-navigate', (event, url) => {
     if (isAppUrl(url)) return
