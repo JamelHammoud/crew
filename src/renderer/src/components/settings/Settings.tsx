@@ -38,7 +38,6 @@ function Panel({ tab }: { tab: SettingsTab }) {
 export default function Settings() {
   const tab = useSettings()
   const selfName = useCrew(s => s.selfName)
-  const tabs = settingsTabs(platform())
 
   // The card belongs to the session it was opened in. Left standing, leaving a
   // crew and opening another one would land on the settings rather than on the
