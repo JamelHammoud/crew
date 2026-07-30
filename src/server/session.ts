@@ -2114,7 +2114,7 @@ export class CrewSession {
   // with decides, and the type recorded is the type it will be served as, so
   // what the app reads off the record is what really comes back off the wire.
   private attachmentOf(mime: string, name: string, data: Buffer): Attachment | null {
-    if (data.length === 0 || data.length > MAX_ATTACHMENT_BYTES) return null
+    if (data.length === 0 || data.length > this.attachmentLimit()) return null
     const id = randomUUID()
     const file = `${id}.${extensionUsedFor(mime, name)}`
     return {
