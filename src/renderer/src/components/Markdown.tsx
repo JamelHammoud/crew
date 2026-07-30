@@ -60,14 +60,14 @@ export default function Markdown({
   const [resolved, setResolved] = useState(0)
   const { html, unknown } = useMemo(() => {
     const container = document.createElement('div')
-    container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks: true }) as string)
+    container.innerHTML = DOMPurify.sanitize(marked.parse(text, { async: false, breaks }) as string)
     markTasks(container)
     wrapTables(container)
     if (images) swapImages(container, images)
     const unknown = linkifyFiles(container)
     emojifyHtml(container)
     return { html: container.innerHTML, unknown }
-  }, [text, resolved, images])
+  }, [text, resolved, images, breaks])
 
   useLayoutEffect(() => {
     const el = host.current
