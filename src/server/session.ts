@@ -770,7 +770,8 @@ export class CrewSession {
       music: this.musicRoom(),
       musicUploads: [...this.uploads.values()],
       musicPlaylists: this.playlistList(),
-      gameScores: [...this.scores.values()]
+      gameScores: [...this.scores.values()],
+      emoji: [...this.emoji.values()]
     }
   }
 
