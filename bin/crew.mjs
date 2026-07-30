@@ -82,7 +82,7 @@ export function parseArgs(argv, cwd) {
   if (link && (home !== null || share !== null)) {
     return {
       kind: 'error',
-      message: 'crew: --join takes a link and a folder. Where a crew lives and who can reach it is the host’s own.'
+      message: "crew: --join takes a link and a folder. Where a crew lives and who can reach it is the host's own."
     }
   }
   const request = { folder: path.resolve(cwd, folder ?? '.') }
