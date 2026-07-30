@@ -459,6 +459,17 @@ export const useBrowser = create<BrowserState>((write, get) => {
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
     selectTab: id => set({ activeTabId: id }),
+    // The row is the order somebody put it in, so a tab dragged into another
+    // place in it stays there. Which tab is up is untouched: arranging the row is
+    // not going anywhere, and the one being dragged is often not the one open.
+    moveTab: (id, to) =>
+      set(s => {
+        const from = s.tabs.findIndex(t => t.id === id)
+        if (from < 0 || to === from || to < 0 || to >= s.tabs.length) return {}
+        const tabs = [...s.tabs]
+        tabs.splice(to, 0, ...tabs.splice(from, 1))
+        return { tabs }
+      }),
     closeTab: id => {
       set(s => {
         const next = without(s, t => t.id === id)
