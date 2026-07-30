@@ -124,10 +124,10 @@ async function stage() {
   return { dir, page: path.join(site, 'index.html') }
 }
 
-function run(dir, page) {
+function run(dir, page, words) {
   return new Promise((resolve, reject) => {
     const child = spawn(electron, [path.join(dir, 'main.mjs')], {
-      env: { ...process.env, ELECTRON_ENABLE_LOGGING: '0', CHECK_SITE: page, CHECK_WORDS: EDITED },
+      env: { ...process.env, ELECTRON_ENABLE_LOGGING: '0', CHECK_SITE: page, CHECK_WORDS: words },
       stdio: ['ignore', 'pipe', 'pipe']
     })
     let out = ''
