@@ -59,6 +59,7 @@ const tray = new CrewTray({
   quit: () => app.quit()
 })
 const scribe = new ScribeWindow(rendererPage)
+const updates = new Updates(() => appWindows())
 const said = new ScribeHistory()
 let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
 // What a dictation has written and not yet let go of. Nothing may be pasted
