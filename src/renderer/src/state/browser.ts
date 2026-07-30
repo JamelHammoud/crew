@@ -33,6 +33,10 @@ export type BrowserTab = {
   // are open. Both ride on the tab, so a tree survives a look at another tab.
   tree: boolean
   open: string[]
+  // Whether a markdown file is being read as the page it is written to be
+  // rather than as the text it is written in. It rides on the tab, so walking
+  // from one page to the next keeps reading them the way you asked for.
+  preview: boolean
   generation: number
 }
 

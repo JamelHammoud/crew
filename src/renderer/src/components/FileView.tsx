@@ -62,7 +62,8 @@ function DirRow({ tab, path, entry }: { tab: BrowserTab; path: string; entry: Fi
       <button
         onClick={() => useBrowser.getState().navigateFile(tab.id, path)}
         onContextMenu={onContextMenu}
-        data-file={path}
+        data-file={entry.dir ? undefined : path}
+        data-folder={entry.dir ? path : undefined}
         className="w-full flex items-center gap-2.5 px-4 h-9 text-sm text-left transition-colors hover:bg-fg/[0.04]"
       >
         {entry.dir ? (
