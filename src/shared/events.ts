@@ -140,6 +140,21 @@ export type SessionEvent =
       byName: string
     }
   | { id: string; ts: number; kind: 'subagent.ended'; threadId: string; parentThreadId: string; ok: boolean; ms: number }
+  // A page an agent asked the app to show. It is written down rather than said
+  // once, because the row it draws in the thread is the way back to the page
+  // after the run that made it has scrolled away.
+  | {
+      id: string
+      ts: number
+      kind: 'page.shown'
+      threadId: string
+      url: string
+      // The agent's own line about what it is, or the file's name and the site's
+      // host where it said nothing.
+      title: string
+      agentId: string
+      agentLabel: string
+    }
   | {
       id: string
       ts: number
