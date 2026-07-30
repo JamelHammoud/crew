@@ -125,7 +125,7 @@ export class Runner {
     const previous = this.ws
     this.onStatus?.('connecting')
     this.httpBase = httpBaseFrom(url)
-    const ws = new WebSocket(url)
+    const ws = new WebSocket(url, { maxPayload: MAX_FRAME_BYTES })
     this.ws = ws
     previous?.close(1000)
     this.lastSeen = Date.now()
