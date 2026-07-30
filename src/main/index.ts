@@ -71,10 +71,24 @@ let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
 // and the words land nowhere. Held to the end, a dictation on that key reads as
 // it always did and the rest write as they are spoken.
 let scribePending: string[] = []
+// What had the caret when the key went down. It is asked then rather than at the
+// moment the words are ready, so the whole of the wait sits behind somebody
+// talking and a dictation is never slower for it.
+let scribeAim: Promise<Landing> = Promise.resolve('unknown')
+// Every landing in the order it was spoken. A dictation written as it is said
+// lands a stretch at a time and each one now waits on an answer, so the walk down
+// them is one chain: two stretches that came back the other way round would be
+// two halves of a sentence swapped.
+let scribeLanding: Promise<void> = Promise.resolve()
 const scribeKeys = new ScribeKeys({
   onArm: () => {
     scribePending = []
     said.begin()
+    // Starting to talk is letting go of the last card. Whoever is dictating has
+    // moved on, and words held behind a dictation that is already running are
+    // words nobody is coming back to copy.
+    scribe.release()
+    scribeAim = askCaret()
     scribe.show()
     scribe.send('scribe:arm')
   },
