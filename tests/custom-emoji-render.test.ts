@@ -71,6 +71,17 @@ describe('an emoji the crew added, drawn', () => {
     expect(plain.container.textContent).toBe(':nobody:')
   })
 
+  it('turns a name already on screen into a picture the moment the crew has it', () => {
+    hold([])
+    const { container } = render(createElement(EmojiText, { text: 'ship it :shipit:' }))
+    expect(container.querySelector('img')).toBeNull()
+
+    // What draws it is memoized on the words, and the words have not changed, so
+    // the sheet is what has to say it moved.
+    act(() => hold())
+    expect(container.querySelector('img')?.getAttribute('src')).toBe(`${BASE}/emoji/a.gif`)
+  })
+
   it('sends the name along with the picture, so what is copied out is the name', () => {
     hold()
     const { container } = render(createElement(EmojiText, { text: 'nice :parrot:' }))
