@@ -1,5 +1,15 @@
+import { shipsCommand } from '../../../../shared/crewCommand'
 import type { Glyph } from '../../icons'
-import { FileGlyph, GroupGlyph, PeopleGlyph, ScribeGlyph, SpeakerGlyph, SparkGlyph, SunGlyph } from '../../icons'
+import {
+  FileGlyph,
+  GroupGlyph,
+  PeopleGlyph,
+  ScribeGlyph,
+  SpeakerGlyph,
+  SparkGlyph,
+  SunGlyph,
+  TerminalGlyph
+} from '../../icons'
 import type { SettingsTab } from '../../state/settings'
 
 export interface TabDef {
