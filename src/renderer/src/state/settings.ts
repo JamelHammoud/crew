@@ -8,6 +8,7 @@ export type SettingsTab =
   | 'people'
   | 'agents'
   | 'helpers'
+  | 'files'
 
 // Which page of the settings is open, or none. It is held here rather than in
 // the top bar so anything can raise it, the way a toast is raised, and so the
