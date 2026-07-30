@@ -1,4 +1,4 @@
-import { PILL_MAX, PILL_REST, PILL_ROOM, PILL_WIDTH } from '../shared/scribe'
+import { HELD_MAX, HELD_WIDTH, PILL_MAX, PILL_REST, PILL_ROOM, PILL_WIDTH } from '../shared/scribe'
 
 export interface Box {
   x: number
