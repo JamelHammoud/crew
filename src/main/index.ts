@@ -128,7 +128,8 @@ function scribeLand(text: string): void {
 // machine that is not a Mac, pastes exactly the way it always did.
 async function landScribe(text: string): Promise<void> {
   if (!text) return
-  if (scribeSettings.finish === 'paste' && (await scribeAim) === 'none' && (await askCaret()) === 'none') {
+  const finish = scribeSettings.finish
+  if (holdsBack(finish, await scribeAim) && holdsBack(finish, await askCaret())) {
     scribe.hold(text)
     return
   }
