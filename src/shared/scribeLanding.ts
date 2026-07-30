@@ -92,9 +92,18 @@ const NOT_TYPED_IN = new Set([
   'submit'
 ])
 
+// The two things in one of our own pages that hold a page of their own. The side
+// panel is a real browser, so the caret can be in a field on somebody else's site
+// while the page around it only ever sees the box that site is drawn in. Read as
+// the box, it is not somewhere to type and the words would be held back from a
+// field they were really in, so the certainty this file is built on stops here and
+// the answer is the doubt it really is.
+const HANDS_IT_ON = new Set(['WEBVIEW', 'IFRAME', 'FRAME', 'OBJECT', 'EMBED'])
+
 export function landingInPage(tag: string, type: string, editable: boolean): Landing {
-  if (editable) return 'text'
   const named = tag.trim().toUpperCase()
+  if (HANDS_IT_ON.has(named)) return 'unknown'
+  if (editable) return 'text'
   if (named === 'TEXTAREA') return 'text'
   if (named !== 'INPUT') return 'none'
   return NOT_TYPED_IN.has(type.trim().toLowerCase()) ? 'none' : 'text'
