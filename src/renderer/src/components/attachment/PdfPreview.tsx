@@ -363,19 +363,17 @@ function useNear(ref: RefObject<HTMLElement | null>): boolean {
   const [near, setNear] = useState(false)
   useEffect(() => {
     const el = ref.current
-    if (!el || near) return
+    if (!el) return
     if (typeof IntersectionObserver === 'undefined') {
       setNear(true)
       return
     }
     const watch = new IntersectionObserver(
-      marks => {
-        if (marks.some(mark => mark.isIntersecting)) setNear(true)
-      },
+      marks => setNear(marks[marks.length - 1].isIntersecting),
       { root: el.closest('[data-pdf]'), rootMargin: NEAR }
     )
     watch.observe(el)
     return () => watch.disconnect()
-  }, [ref, near])
+  }, [ref])
   return near
 }
