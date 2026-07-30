@@ -364,6 +364,19 @@ export function buildThread(
         ]
       })
     }
+    if (event.kind === 'page.shown') {
+      items.push({
+        key: event.id,
+        ts: event.ts,
+        kind: 'page',
+        ...wroteIt(event.agentId, event.agentLabel),
+        agentId: event.agentId,
+        self: false,
+        text: '',
+        streaming: false,
+        page: { url: event.url, title: event.title }
+      })
+    }
     if (event.kind === 'message') {
       const route = routes.get(event.id)
       items.push({
