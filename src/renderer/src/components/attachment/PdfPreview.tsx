@@ -43,7 +43,8 @@ export default function PdfPreview({ url, name }: { url: string; name: string })
         const opened = await task.promise
         if (!alive) return
         setDoc(opened)
-      } catch {
+      } catch (why) {
+        console.log('PDFWHY ' + (why && why.message ? why.message : why))
         if (alive) setFailed(true)
       }
     })()
