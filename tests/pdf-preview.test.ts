@@ -1,7 +1,7 @@
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { createCanvas } from '@napi-rs/canvas'
+import { createCanvas, type Canvas } from '@napi-rs/canvas'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 const pdfBytes = (): Uint8Array => {
@@ -28,7 +28,7 @@ const pdfBytes = (): Uint8Array => {
   return new Uint8Array(Buffer.from(file, 'latin1'))
 }
 
-const inked = (canvas: ReturnType<typeof createCanvas>): number => {
+const inked = (canvas: Canvas): number => {
   const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data
   let dark = 0
   for (let i = 0; i < pixels.length; i += 4) if (pixels[i] < 200 && pixels[i + 1] < 200) dark++

@@ -4,10 +4,17 @@ import { Failed, Loading, Note } from './Frame'
 import { ROW_CAP, sheetsFrom, type Sheet } from './sheet'
 import { useRead } from './useRead'
 
-const FIGURE = /^[-+]?[0-9][0-9,.\s]*%?$/
+const FIGURE = /^[-+]?[0-9][0-9,. ]*%?$/
 
-const cellClass = (value: string): string =>
-  FIGURE.test(value.trim()) && value.trim() !== '' ? 'font-mono tabular-nums text-right' : ''
+const figure = (value: string): boolean => FIGURE.test(value.trim()) && value.trim() !== ''
+
+function Cell({ value }: { value: string }) {
+  return (
+    <span className={`block max-w-64 truncate ${figure(value) ? 'font-mono tabular-nums text-right' : ''}`}>
+      {value}
+    </span>
+  )
+}
 
 function Table({ sheet }: { sheet: Sheet }) {
   const [head, ...body] = sheet.rows
@@ -19,9 +26,9 @@ function Table({ sheet }: { sheet: Sheet }) {
           {head.map((value, index) => (
             <th
               key={index}
-              className="sticky top-0 z-10 max-w-64 truncate border-b border-ink-700 bg-ink-800 px-3 py-2 text-left font-semibold text-fg"
+              className="sticky top-0 border-b border-ink-700 bg-ink-800 px-3 py-2 text-left font-semibold text-fg"
             >
-              {value}
+              <Cell value={value} />
             </th>
           ))}
         </tr>
@@ -30,11 +37,8 @@ function Table({ sheet }: { sheet: Sheet }) {
         {body.map((row, index) => (
           <tr key={index}>
             {head.map((_, column) => (
-              <td
-                key={column}
-                className={`max-w-64 truncate border-b border-ink-700/60 px-3 py-1.5 text-fg-secondary ${cellClass(row[column] ?? '')}`}
-              >
-                {row[column] ?? ''}
+              <td key={column} className="border-b border-ink-700/60 px-3 py-1.5 align-top text-fg-secondary">
+                <Cell value={row[column] ?? ''} />
               </td>
             ))}
           </tr>
