@@ -52,11 +52,21 @@ export function emojifyHtml(root: HTMLElement): void {
   }
   for (const text of texts) {
     const tokens = tokenizeEmoji(text.textContent ?? '')
-    if (!tokens.some(token => token.kind === 'emoji')) continue
+    if (!tokens.some(token => token.kind !== 'text')) continue
     const fragment = doc.createDocumentFragment()
     for (const token of tokens) {
       if (token.kind === 'text') {
         fragment.appendChild(doc.createTextNode(token.text))
+        continue
+      }
+      if (token.kind === 'custom') {
+        // The token carries the picture and the sheet carries where to read it
+        // from, since the address is the session's rather than the emoji's.
+        const picture = lookupCustomEmoji(token.emoji.name)
+        fragment.appendChild(
+          picture ? pictureNode(doc, picture.url) : doc.createTextNode(token.text)
+        )
+        if (picture) fragment.appendChild(readableNode(doc, token.text))
         continue
       }
       fragment.appendChild(spriteNode(doc, token.entry))
