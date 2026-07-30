@@ -30,7 +30,7 @@ const IMAGE_BY_EXTENSION: Record<string, string> = {
 // the session from inside it. As text they are still there to read and there is
 // nothing to run.
 const TEXT_EXTENSIONS = (
-  'txt text log md-none yml yaml toml ini cfg conf env properties lock patch diff sql ' +
+  'txt text log yml yaml toml ini cfg conf env properties lock patch diff sql ' +
   'sh bash zsh fish ps1 bat awk tcl rake gemspec podspec ' +
   'ts tsx js jsx mjs cjs mts cts vue svelte css scss sass less graphql proto ' +
   'py rb go rs java kt kts swift m mm c h cc cpp hpp cs php pl lua scala sc dart ' +
