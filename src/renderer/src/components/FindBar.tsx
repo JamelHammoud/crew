@@ -174,7 +174,9 @@ export default function FindBar({
 
   if (!open) return null
   return (
-    <div className="glass absolute top-[78px] right-8 z-40 flex w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop">
+    <div
+      className={`glass absolute ${className} z-40 flex w-80 items-center gap-0.5 rounded-full pl-3 pr-1.5 py-1.5 animate-pop`}
+    >
       <SearchGlyph className="w-4 h-4 text-fg/45 shrink-0 mr-1.5" />
       <input
         ref={inputRef}
