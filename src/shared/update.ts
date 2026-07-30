@@ -39,10 +39,13 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
       return state
     case 'getting':
       return { ...state, stage: 'getting', percent: 0 }
-    case 'progress':
-      return state.stage === 'getting'
-        ? { ...state, percent: Math.max(state.percent, share(said.percent)) }
-        : state
+    // Progress arrives many times a second and most of them land on the number
+    // already drawn, so an unchanged one is not news and wakes nobody.
+    case 'progress': {
+      if (state.stage !== 'getting') return state
+      const percent = Math.max(state.percent, share(said.percent))
+      return percent === state.percent ? state : { ...state, percent }
+    }
     case 'ready':
       return { stage: 'ready', version: said.version || state.version, percent: 100 }
     // A check that could not reach the internet is nothing to say. Only a
