@@ -1,16 +1,39 @@
 // @vitest-environment jsdom
-import { cleanup, render } from '@testing-library/react'
+import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import ChatMessage from '../src/renderer/src/components/ChatMessage'
 import { EmojiText } from '../src/renderer/src/components/Emoji'
+import { onlyEmoji } from '../src/renderer/src/components/emojiTokens'
 import Markdown from '../src/renderer/src/components/Markdown'
 import { MentionText } from '../src/renderer/src/components/Mention'
+import type { ThreadItem } from '../src/renderer/src/components/thread'
 import { useCrew } from '../src/renderer/src/state/store'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+})
 
 function boot() {
-  useCrew.setState({ agents: [], members: [], docs: {} })
+  useCrew.setState({ agents: [], members: [], docs: {}, boards: [] })
+}
+
+const said = (text: string): ThreadItem => ({
+  key: 'm1',
+  ts: Date.parse('2026-07-21T12:00:00Z'),
+  kind: 'message',
+  author: 'Jamel',
+  authorId: 'jamel',
+  self: false,
+  text,
+  streaming: false
+})
+
+const words = (text: string): string => {
+  boot()
+  const { container } = render(createElement(ChatMessage, { item: said(text) }))
+  return container.querySelector('p')?.className ?? ''
 }
 
 const sprites = (root: HTMLElement) =>
