@@ -601,6 +601,8 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         case 'tool.removed':
           return { events, tools: state.tools.filter(t => t.id !== event.toolId) }
+        case 'attachment.limit':
+          return { events, attachmentMb: event.mb }
       }
       return {
         events,
@@ -660,6 +662,7 @@ export const useCrew = create<CrewState>((set, get) => {
           todos: msg.snapshot.todos ?? [],
           tickets: msg.snapshot.tickets ?? [],
           tools: msg.snapshot.tools ?? [],
+          attachmentMb: msg.snapshot.attachmentMb ?? DEFAULT_ATTACHMENT_MB,
           scores: msg.snapshot.gameScores ?? [],
           boards: msg.snapshot.boards ?? [],
           steps,
