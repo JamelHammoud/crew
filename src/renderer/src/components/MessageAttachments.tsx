@@ -1,23 +1,19 @@
-import { attachmentUrl, fileSize, isImageType, previewOf, type Attachment } from '../../../shared/attachments'
+import { attachmentUrl, fileSize, isImageType, type Attachment } from '../../../shared/attachments'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { markFor } from './attachmentMark'
 import Tooltip from './Tooltip'
 
-// The app puts what it can on a screen of its own. Everything else goes to the
-// machine, which has something that opens it.
-const open = (url: string, mime: string): void => {
-  const kind = previewOf(mime)
-  if (kind === 'text' || kind === 'video' || kind === 'audio' || kind === 'pdf') useBrowser.getState().openUrl(url)
-  else void window.crew.openExternal(url)
-}
+const open = (attachment: Attachment, httpBase: string): void =>
+  useBrowser
+    .getState()
+    .openAttachment(attachmentUrl(httpBase, attachment), attachment.name, attachment.mime, attachment.size)
 
 function FileRow({ attachment, httpBase }: { attachment: Attachment; httpBase: string }) {
   const Mark = markFor(attachment.mime)
-  const url = attachmentUrl(httpBase, attachment)
   return (
     <button
-      onClick={() => open(url, attachment.mime)}
+      onClick={() => open(attachment, httpBase)}
       aria-label={`Open ${attachment.name}`}
       className="flex h-14 w-fit max-w-full items-center gap-2.5 rounded-xl border border-fg/10 px-3.5 text-left transition-all duration-150 hover:border-fg/25 active:scale-[0.98]"
     >
@@ -41,13 +37,13 @@ export default function MessageAttachments({ attachments }: { attachments: Attac
         <div className="flex flex-wrap gap-2">
           {images.map(attachment => (
             <Tooltip key={attachment.id} label={attachment.name}>
-              <a href={attachmentUrl(httpBase, attachment)} target="_blank" rel="noreferrer">
+              <button onClick={() => open(attachment, httpBase)} aria-label={`Open ${attachment.name}`}>
                 <img
                   src={attachmentUrl(httpBase, attachment)}
                   alt={attachment.name}
                   className="max-h-64 rounded-xl border border-fg/10 transition-opacity hover:opacity-90"
                 />
-              </a>
+              </button>
             </Tooltip>
           ))}
         </div>
