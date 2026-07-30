@@ -129,6 +129,8 @@ function makeTab(url = ''): BrowserTab {
     line: null,
     diff: null,
     command: null,
+    mime: '',
+    size: 0,
     game: null,
     threadId: '',
     parentThreadId: '',
