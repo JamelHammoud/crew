@@ -40,7 +40,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
-  useScribe.setState({ held: '', phase: 'off', problem: null })
+  useScribe.setState({ held: '', phase: 'off', problem: null, settings: defaultSettings('darwin') })
   vi.unstubAllGlobals()
 })
 
