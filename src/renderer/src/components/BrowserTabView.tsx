@@ -3,6 +3,13 @@ import { useBrowser, type BrowserTab } from '../state/browser'
 
 const views = new Map<string, WebviewElement>()
 
+// A pdf is drawn by the reader the browser carries, and a view that has not
+// been told so hands the file to the machine rather than showing it, which is a
+// panel that opens on nothing. React drops a boolean it does not know instead of
+// writing it, so it goes on as the empty string an attribute that is simply
+// there is held as.
+const PLUGINS = { plugins: '' } as unknown as { plugins: boolean }
+
 export function viewFor(id: string): WebviewElement | null {
   return views.get(id) ?? null
 }
