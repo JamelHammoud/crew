@@ -271,15 +271,19 @@ describe('toasts', () => {
     act(() => {
       toast('Bubbles finished', { action: { label: 'Open', onPress: pressed } })
     })
+    // How fast it went is read over a window of time, so the clock the gesture
+    // is measured against is the one thing this has to hold still.
+    let now = 0
+    const clock = vi.spyOn(performance, 'now').mockImplementation(() => now)
     act(() => {
       const card = document.querySelector('.toast-card')!
       fireEvent.pointerDown(card, { button: 0, pointerId: 1, clientX: 0 })
-      fireEvent.pointerMove(card, { pointerId: 1, clientX: 10 })
-      vi.advanceTimersByTime(SAMPLE)
-      fireEvent.pointerMove(card, { pointerId: 1, clientX: 14 })
-      fireEvent.pointerUp(card, { pointerId: 1, clientX: 14 })
+      now = 30
+      fireEvent.pointerMove(card, { pointerId: 1, clientX: 15 })
+      fireEvent.pointerUp(card, { pointerId: 1, clientX: 15 })
       fireEvent.click(card)
     })
+    clock.mockRestore()
     tick(TOAST_OUT_MS)
     expect(pressed).not.toHaveBeenCalled()
     expect(rows().length).toBe(0)
