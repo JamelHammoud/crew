@@ -31,8 +31,6 @@ export function cleanQuickReactions(value: unknown): string[] {
   return [...new Set(kept)].slice(0, MAX_QUICK_REACTIONS)
 }
 
-const CUSTOM_REF = /^:[a-z0-9][a-z0-9_+-]*:$/
-
 export function messageReactionTarget(messageId: string): string {
   return `message:${messageId}`
 }
