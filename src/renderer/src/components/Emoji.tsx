@@ -54,7 +54,8 @@ export default function Emoji({
 // carry their `:name:` there for the same reason: it is what somebody would type
 // to write the picture again.
 export function EmojiText({ text }: { text: string }) {
-  const tokens = useMemo(() => tokenizeEmoji(text), [text])
+  const sheet = useCustomEmoji()
+  const tokens = useMemo(() => tokenizeEmoji(text), [text, sheet])
   return (
     <>
       {tokens.map((token, index) =>
