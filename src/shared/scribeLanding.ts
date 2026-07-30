@@ -22,6 +22,11 @@ export type Landing = 'text' | 'none' | 'unknown'
 // roles to trust is a list that is wrong on the next app somebody opens.
 const CARET = 'AXSelectedTextRange'
 
+// What a page says about the thing with the caret in it, which is the one place a
+// role cannot be trusted: a box somebody wrote themselves comes back as a group
+// in one app and as a text area in the next, and both of them say this instead.
+const EDITABLE = 'AXEditableAncestor'
+
 // Two things carry the caret's attribute and are not somewhere to type. A web
 // area is the page itself, which is what a browser hands back when nothing on the
 // page is focused, and that is the whole case this feature exists for. Text
@@ -43,6 +48,7 @@ const TEXT = new Set([
 export function landingFrom(role: string, attributes: readonly string[]): Landing {
   const named = role.trim()
   if (TEXT.has(named)) return 'text'
+  if (attributes.includes(EDITABLE)) return 'text'
   if (NOT_TEXT.has(named)) return 'none'
   return attributes.includes(CARET) ? 'text' : 'none'
 }
