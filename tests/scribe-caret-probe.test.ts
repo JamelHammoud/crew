@@ -41,8 +41,15 @@ describe('reading the caret off one of our own pages', () => {
     expect(page('<input id="a">', '#a')).toBe('text')
   })
 
+  // The docs, the board, and anywhere else the app draws a box rather than taking
+  // one from the browser. Written both ways, since an empty attribute is a box.
   it('writes into a box the app drew itself', () => {
     expect(page('<div id="a" contenteditable="true"></div>', '#a')).toBe('text')
+    expect(page('<div id="a" contenteditable=""></div>', '#a')).toBe('text')
+  })
+
+  it('holds the words back on a box that says outright it is not one', () => {
+    expect(page('<div id="a" contenteditable="false" tabindex="0"></div>', '#a')).toBe('none')
   })
 
   it('holds the words back on a button', () => {
