@@ -28,6 +28,7 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'appearance', label: 'Appearance', group: 'You', mark: SunGlyph },
   { id: 'sound', label: 'Sound and video', group: 'You', mark: SpeakerGlyph },
   { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
+  { id: 'command', label: 'Command line', group: 'You', mark: TerminalGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
   { id: 'helpers', label: 'Helpers', group: 'Crew', mark: GroupGlyph },
