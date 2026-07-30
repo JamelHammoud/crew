@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
-import { pdfBytes } from '../Users/jamel/Documents/Repositories/crew/tests/helpers/pdf'
+import { pdfBytes } from './helpers/pdf'
 
 describe('probe', () => {
   it('says where import.meta.url points and whether a doc opens', async () => {
