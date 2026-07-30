@@ -5,7 +5,8 @@ import FilesChanged from '../FilesChanged'
 import RunStatus from '../RunStatus'
 import ScrollFade from '../ScrollFade'
 import ThreadItems from '../ThreadItems'
-import { buildThread, eventsOfThread, stepsOfThread } from '../thread'
+import { buildThread, eventsOfThread } from '../thread'
+import { useFamilySteps } from '../useThreadSteps'
 import { useAutoResize } from '../useAutoResize'
 import useScrollEdges from '../useScrollEdges'
 import { useStickToBottom } from '../useStickToBottom'
@@ -59,7 +60,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
     () => buildThread(threadEvents, steps, selfId, agents, as),
     [threadEvents, steps, selfId, agents, as]
   )
-  const threadSteps = useMemo(() => stepsOfThread(threadId, events, steps, threads), [threadId, events, steps, threads])
+  const threadSteps = useFamilySteps(threadId)
   const start = threadEvents.find(event => event.kind === 'agent.start' && event.promptId === promptId)
 
   useLayoutEffect(() => {
