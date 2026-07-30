@@ -60,6 +60,7 @@ declare global {
     resizeTray(height: number): void
     openWindow(): void
     closeTray(): void
+    appVersion(): Promise<string>
     setTheme(theme: 'dark' | 'light'): Promise<void>
     setAppIcon(icon: AppIconId): Promise<void>
     keepAwake(on: boolean): void
