@@ -97,16 +97,21 @@ describe('a file that has not been sent yet', () => {
   it('sits at the height the thumbnails do', () => {
     const { container, getByText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
     const thumbnail = container.querySelector('img')!.parentElement!
-    const chip = getByText('terms.pdf').closest('div')!
+    const chip = getByText('terms.pdf').closest('button')!
 
     expect(thumbnail.className).toContain('h-16')
     expect(chip.className).toContain('h-16')
   })
 
-  it('is nothing to open, since there is nothing there yet', () => {
-    const { queryByLabelText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+  // Every file in the tray opens where a picture does, so nothing sitting on a
+  // message being written is a box that cannot be looked at.
+  it('opens in the panel the way a picture does', () => {
+    const { getByLabelText } = render(createElement(AttachmentTray, { attachmentKey: KEY }))
+    fireEvent.click(getByLabelText('Open terms.pdf'))
 
-    expect(queryByLabelText('Open terms.pdf')).toBeNull()
+    const tabs = useBrowser.getState().tabs
+    expect(tabs).toHaveLength(1)
+    expect(tabs[0]).toMatchObject({ kind: 'attachment', title: 'terms.pdf', mime: 'application/pdf' })
   })
 
   it('comes off the message the same way a picture does', () => {
