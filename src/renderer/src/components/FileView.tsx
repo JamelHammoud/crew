@@ -16,6 +16,7 @@ import FileTree from './FileTree'
 import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
 import { useFileMenu } from './fileMenu'
 import ImageView from './ImageView'
+import MarkdownView from './MarkdownView'
 import Spinner from './Spinner'
 
 const MAX_LINES = 5000

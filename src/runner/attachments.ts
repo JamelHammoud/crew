@@ -1,11 +1,12 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { Attachment } from '../shared/attachments'
+import { isImageType, type Attachment } from '../shared/attachments'
 
 export interface LocalAttachment {
   name: string
   path: string
+  image: boolean
 }
 
 const DOWNLOAD_TIMEOUT_MS = 30000
