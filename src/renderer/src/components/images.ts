@@ -58,16 +58,24 @@ export function relativizeDoc(markdown: string, httpBase: string): string {
   return markdown.replaceAll(`](${httpBase}/attachments/`, ATTACH_MARK)
 }
 
-export async function readImages(files: File[], taken: number): Promise<PendingAttachment[]> {
+// A browser reports the type of a picture reliably and guesses at everything
+// else, so the name decides for the rest. That is the same rule the host keeps,
+// which is what makes the mark in the tray the mark on the message.
+const typeOf = (file: File): string => (isImageType(file.type) ? file.type : mimeForFile(file.name))
+
+export async function readFiles(files: File[], taken: number): Promise<PendingAttachment[]> {
   const room = Math.max(0, MAX_ATTACHMENTS - taken)
   const read = await Promise.all(
-    files.slice(0, room).map(async file => ({
-      id: crypto.randomUUID(),
-      name: file.name || 'image',
-      mime: file.type,
-      size: file.size,
-      data: await readAsBase64(file)
-    }))
+    files.slice(0, room).map(async file => {
+      const mime = typeOf(file)
+      return {
+        id: crypto.randomUUID(),
+        name: file.name || (isImageType(mime) ? 'image' : 'file'),
+        mime,
+        size: file.size,
+        data: await readAsBase64(file)
+      }
+    })
   )
   return read.filter(item => item.data.length > 0)
 }
