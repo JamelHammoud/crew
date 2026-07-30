@@ -1,8 +1,21 @@
+import { isImageType, showsInPanel } from '../../../shared/attachments'
 import { create } from 'zustand'
 
 export type BrowserTab = {
   id: string
-  kind: 'web' | 'file' | 'terminal' | 'image' | 'music' | 'game' | 'plan' | 'work' | 'aside' | 'agent' | 'review'
+  kind:
+    | 'web'
+    | 'file'
+    | 'terminal'
+    | 'image'
+    | 'attachment'
+    | 'music'
+    | 'game'
+    | 'plan'
+    | 'work'
+    | 'aside'
+    | 'agent'
+    | 'review'
   initialUrl: string
   url: string
   title: string
