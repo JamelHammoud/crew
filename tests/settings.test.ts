@@ -168,6 +168,19 @@ describe('the settings', () => {
     expect(prefs()).toEqual({ tokens: false, cost: true })
   })
 
+  // The size limit is the crew's, so the page says the number everyone is on
+  // and asking for another one goes to the host rather than being set here.
+  it('says how big a file may be, and asks the crew for another number', () => {
+    const asked = vi.fn()
+    act(() => useCrew.setState({ attachmentMb: 10, setAttachmentLimit: asked }))
+    show('files')
+    expect(page('Files')).toBeTruthy()
+
+    fireEvent.click(within(card()).getByRole('button', { name: /10 MB/ }))
+    fireEvent.click(within(card()).getByRole('button', { name: '25 MB' }))
+    expect(asked).toHaveBeenCalledWith(25)
+  })
+
   it('keeps Scribe on screen or shows it only while dictating', () => {
     setScribeSettings({ always: true })
     show('scribe')
