@@ -523,6 +523,8 @@ app.on('window-all-closed', () => {
 app.on('before-quit', () => {
   for (const open of terminals.values()) open.closeAll()
   terminals.clear()
+  for (const open of previews.values()) open.clear()
+  previews.clear()
   tray.close()
   scribeKeys.close()
   scribe.close()
