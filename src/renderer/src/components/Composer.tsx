@@ -30,7 +30,10 @@ function EmojiHighlight({
   return (
     <>
       {tokens.map(({ token, start, end }, index) =>
-        token.kind === 'text' ? (
+        // One of the crew's own is a `:name:` and stays the words it was typed
+        // in. The patch is a square standing over one glyph, and ten characters
+        // of a name is not one: it would cover the rest of the line.
+        token.kind !== 'emoji' ? (
           token.text
         ) : (
           <span key={index} className="relative inline-block">

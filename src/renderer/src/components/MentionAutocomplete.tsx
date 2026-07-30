@@ -52,8 +52,21 @@ export function useMentionAutocomplete(
       ]
     if (query?.trigger === '#')
       return refCandidates(crewRefs(docs, boards), query.text).map(ref => ({ kind: 'ref', ref }))
-    if (query?.trigger === ':')
-      return searchEmoji(query.text, EMOJI_MATCHES).map(entry => ({ kind: 'emoji', entry }))
+    if (query?.trigger === ':') {
+      // The menu is as long as it ever was, so the crew's own take the places at
+      // the head of it rather than adding rows underneath the sheet's.
+      const crew = searchCustomEmoji(query.text, EMOJI_MATCHES).map(emoji => ({
+        kind: 'custom' as const,
+        emoji
+      }))
+      return [
+        ...crew,
+        ...searchEmoji(query.text, EMOJI_MATCHES - crew.length).map(entry => ({
+          kind: 'emoji' as const,
+          entry
+        }))
+      ]
+    }
     return []
   }, [agents, boards, docs, includeMembers, members, query])
   const activeIndex = Math.min(active, Math.max(matches.length - 1, 0))
