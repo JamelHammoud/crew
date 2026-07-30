@@ -469,6 +469,11 @@ app.whenReady().then(() => {
   ipcMain.handle('file:list', () => session.listFiles())
   ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
   ipcMain.handle('file:locate', (_event, target: string) => session.locatePath(target))
+  ipcMain.handle('preview:html', (event, id: string, target: string, text: string) => {
+    const absolute = session.resolveFile(target)
+    return absolute ? previewsFor(event.sender).show(id, absolute, text) : null
+  })
+  ipcMain.handle('preview:drop', (event, id: string) => previews.get(event.sender.id)?.drop(id))
   ipcMain.handle('file:reveal', (_event, target: string) => {
     const absolute = session.resolveFile(target)
     if (absolute) shell.showItemInFolder(absolute)
