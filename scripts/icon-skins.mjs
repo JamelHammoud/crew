@@ -219,16 +219,23 @@ const spaceStars = ({ TILE }) => {
 }
 
 // GRADIENT -------------------------------------------------------------------
-// The mark's own mesh, laid out as a tile. Nothing here invents a palette: the
-// colours are MESH_COLORS and the sky they stand on is the mark's own.
+// A real generated cover rather than a drawing of one: the same shader the music
+// is photographed with, so this tile is a petal held up to the lens and has the
+// depth of field, the sky and the bloom that come with that. A mesh of blurred
+// blobs was what it was before, and gradients average, so nothing in it was ever
+// in front of anything else.
+//
+// COVER_SEED is the picture. It is not a label: the shader works the whole scene
+// and its palette out from these exact characters, so rewording it draws a
+// different cover. Change it only by looking at what comes back.
+export const COVER_SEED = 'crew icon 68'
 
-const MESH = [
-  { colour: '#2dd4ff', x: 214, y: 236, r: 396 },
-  { colour: '#a855f7', x: 706, y: 300, r: 372 },
-  { colour: '#ff5d8f', x: 316, y: 806, r: 356 },
-  { colour: '#ffb14a', x: 838, y: 810, r: 330 },
-  { colour: '#ffffff', x: 880, y: 168, r: 176 }
-]
+// Every palette the covers are drawn in is pale by rule, because the darkest
+// place in a picture like that is a colour in shade and never an ink. So this is
+// the one skin whose mark is dark: white holds at the size the settings draw it
+// and closes into one blob by the time the dock is done with it, and the ink
+// keeps the two gaps at every size. It is the same answer the light tile gives.
+const COVER_INK = '#141414'
 
 // TERMINAL -------------------------------------------------------------------
 // Phosphor on glass. The scanlines run over the mark rather than under it,
