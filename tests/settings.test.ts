@@ -42,6 +42,9 @@ beforeEach(() => {
   )
   window.crew = {
     agentCapabilities: vi.fn().mockResolvedValue([]),
+    commandState: vi.fn().mockResolvedValue({ kind: 'missing', where: '/usr/local/bin/crew' }),
+    installCommand: vi.fn().mockResolvedValue({ ok: true }),
+    removeCommand: vi.fn().mockResolvedValue({ ok: true }),
     applyScribe: vi.fn().mockResolvedValue({ hooked: true, trusted: true }),
     onScribeSaid: vi.fn().mockReturnValue(() => {}),
     scribeSaid: vi.fn().mockResolvedValue([]),
