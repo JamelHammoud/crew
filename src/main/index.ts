@@ -571,8 +571,10 @@ app.whenReady().then(() => {
   ipcMain.handle('file:write', (_event, target: string, text: string) => session.writeFile(target, text))
   ipcMain.handle('file:locate', (_event, target: string) => session.locatePath(target))
   ipcMain.handle('preview:html', (event, id: string, target: string, text: string) => {
-    const absolute = session.resolveFile(target)
-    return absolute ? previewsFor(event.sender).show(id, absolute, text) : null
+    // A page somebody attached names no file, since it never landed in the
+    // project, so there is nothing to resolve and nothing beside it to reach.
+    const absolute = target ? session.resolveFile(target) : ''
+    return absolute === null ? null : previewsFor(event.sender).show(id, absolute, text)
   })
   ipcMain.handle('preview:drop', (event, id: string) => previews.get(event.sender.id)?.drop(id))
   ipcMain.handle('file:reveal', (_event, target: string) => {
