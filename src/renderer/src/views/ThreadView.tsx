@@ -16,14 +16,8 @@ import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
 import ThreadItems from '../components/ThreadItems'
 import Tooltip from '../components/Tooltip'
-import {
-  buildThread,
-  eventsOfThread,
-  stepsOfThread,
-  THREAD_STATE_LABELS,
-  threadState,
-  type ThreadItem
-} from '../components/thread'
+import { buildThread, eventsOfThread, THREAD_STATE_LABELS, threadState, type ThreadItem } from '../components/thread'
+import { useFamilySteps } from '../components/useThreadSteps'
 import { useAutoResize } from '../components/useAutoResize'
 import { useStickToBottom } from '../components/useStickToBottom'
 import { commandTyped, threadCommands, type CommandName } from '../../../shared/commands'
