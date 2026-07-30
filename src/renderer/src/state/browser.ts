@@ -62,6 +62,7 @@ type BrowserState = {
   openPanel(): void
   closePanel(): void
   openUrl(url: string): void
+  showPage(url: string): void
   openImage(src: string, name: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
   addFileTab(path: string): void
