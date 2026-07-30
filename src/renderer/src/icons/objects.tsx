@@ -66,10 +66,22 @@ export const PhotoGlyph = glyph(
   </>
 )
 
+// A strip of film, so it is the same screen the photo stands on with a rail of
+// perforations down each side. Two rails and a bar across the middle was what it
+// was, and at 16 that is a window pane rather than a video. The perforations are
+// solid, the way the sun in the photo is: a hole this small closes up whatever
+// you do, and a dot is a dot where a ring that fills unevenly is a smudge. Three
+// a side rather than two, because it is the repetition that says film, and they
+// stand clear of the rails a divider would draw: a hole between two lines at 16
+// has a fifth of a pixel either side of it and comes out as a bar.
 export const FilmGlyph = glyph(
   <>
     <rect {...SCREEN} />
-    <path d="M7.5 4.5v15M16.5 4.5v15M7.5 12h9" />
+    <path
+      d="M4.25 7h2.75v2H4.25ZM4.25 11h2.75v2H4.25ZM4.25 15h2.75v2H4.25ZM17 7h2.75v2H17ZM17 11h2.75v2H17ZM17 15h2.75v2H17Z"
+      fill="currentColor"
+      stroke="none"
+    />
   </>
 )
 
