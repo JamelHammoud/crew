@@ -12,7 +12,8 @@ import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy, RenderTask } from 'pdfjs-dist'
 import FindBar from '../FindBar'
 import Skeleton from '../Skeleton'
-import ZoomView from '../ZoomView'
+import Tooltip from '../Tooltip'
+import { pinchFactor } from '../zoom'
 import { Failed } from './Frame'
 import { pdfAssets } from './pdfAssets'
 
@@ -22,6 +23,9 @@ const PAPER = 11 / 8.5
 const NEAR = '800px'
 const SETTLED = 150
 const MAX_PIXELS = 8_388_608
+const PAD = 12
+const MIN_ZOOM = 1
+const MAX_ZOOM = 8
 
 const TEXT_CSS = `
 .pdf-text {
@@ -69,9 +73,6 @@ const TEXT_CSS = `
   cursor: default;
   user-select: none;
 }
-[data-pan] .pdf-text :is(span, br) {
-  cursor: inherit;
-}
 .pdf-text span::selection {
   background: var(--color-selection);
   color: transparent;
@@ -84,26 +85,29 @@ const TEXT_CSS = `
   background-color: rgb(251 191 36 / 0.5);
   color: transparent;
 }
-.pdf-page {
-  user-select: none;
-}
-.pdf-page::after {
-  content: attr(data-page);
-}
 `
+
+const hold = (zoom: number): number => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
+
+type Anchor = { fx: number; fy: number; x: number; y: number }
 
 export default function PdfPreview({ url, name }: { url: string; name: string }) {
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
   const [failed, setFailed] = useState(false)
-  const [width, setWidth] = useState(0)
+  const [frame, setFrame] = useState(0)
+  const [zoom, setZoom] = useState(MIN_ZOOM)
   const [shape, setShape] = useState({ aspect: PAPER, natural: 0 })
   const scroller = useRef<HTMLDivElement>(null)
   const column = useRef<HTMLDivElement>(null)
+  const anchor = useRef<Anchor | null>(null)
+
+  const width = Math.round(Math.max(0, frame - PAD * 2) * zoom)
+  const paint = useSettled(width)
 
   useLayoutEffect(() => {
-    const el = column.current
+    const el = scroller.current
     if (!el) return
-    const read = (): void => setWidth(old => (old === el.clientWidth ? old : el.clientWidth))
+    const read = (): void => setFrame(old => (old === el.clientWidth ? old : el.clientWidth))
     read()
     const watch = new ResizeObserver(read)
     watch.observe(el)
@@ -115,6 +119,7 @@ export default function PdfPreview({ url, name }: { url: string; name: string })
     let task: PDFDocumentLoadingTask | null = null
     setDoc(null)
     setFailed(false)
+    setZoom(MIN_ZOOM)
     setShape({ aspect: PAPER, natural: 0 })
     void (async () => {
       try {
@@ -136,90 +141,85 @@ export default function PdfPreview({ url, name }: { url: string; name: string })
     }
   }, [url])
 
+  useEffect(() => {
+    const el = scroller.current
+    if (!el) return
+    const onWheel = (event: WheelEvent): void => {
+      if (!event.ctrlKey && !event.metaKey) return
+      event.preventDefault()
+      const box = column.current?.getBoundingClientRect()
+      anchor.current =
+        box && box.width > 0 && box.height > 0
+          ? {
+              fx: (event.clientX - box.left) / box.width,
+              fy: (event.clientY - box.top) / box.height,
+              x: event.clientX,
+              y: event.clientY
+            }
+          : null
+      setZoom(old => hold(old * pinchFactor(event.deltaY)))
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [])
+
+  useLayoutEffect(() => {
+    const want = anchor.current
+    anchor.current = null
+    const el = scroller.current
+    const box = column.current?.getBoundingClientRect()
+    if (!want || !el || !box) return
+    el.scrollLeft += box.left + want.fx * box.width - want.x
+    el.scrollTop += box.top + want.fy * box.height - want.y
+  }, [width])
+
   const measured = useCallback((aspect: number, natural: number) => {
     setShape(old => (old.aspect === aspect && old.natural === natural ? old : { aspect, natural }))
   }, [])
 
-  const content = useCallback(
-    () =>
-      width
-        ? { box: { width, height: Math.round(width * shape.aspect) }, natural: shape.natural }
-        : null,
-    [width, shape]
-  )
-
   if (failed) return <Failed label="Could not read this file" />
+
+  const percent = shape.natural ? Math.round((width / shape.natural) * 100) : 0
 
   return (
     <div className="absolute inset-0">
       <style>{TEXT_CSS}</style>
-      <FindBar containerRef={column} scrollerRef={scroller} placeholder="Find in this file" />
-      <ZoomView content={content} refit={url} className="w-full h-full">
-        {({ scale }) => (
-          <Pages
-            doc={doc}
-            zoom={scale}
-            width={width}
-            aspect={shape.aspect}
-            label={name}
-            scrollerRef={scroller}
-            columnRef={column}
-            onMeasured={measured}
-          />
-        )}
-      </ZoomView>
-    </div>
-  )
-}
-
-function Pages({
-  doc,
-  zoom,
-  width,
-  aspect,
-  label,
-  scrollerRef,
-  columnRef,
-  onMeasured
-}: {
-  doc: PDFDocumentProxy | null
-  zoom: number
-  width: number
-  aspect: number
-  label: string
-  scrollerRef: RefObject<HTMLDivElement>
-  columnRef: RefObject<HTMLDivElement>
-  onMeasured: (aspect: number, natural: number) => void
-}) {
-  const density = useDensity(zoom)
-  const panning = zoom > 1
-
-  return (
-    <div
-      ref={scrollerRef}
-      data-pdf
-      data-pan={panning ? '' : undefined}
-      aria-label={label}
-      onWheelCapture={event => {
-        if (!event.ctrlKey) event.stopPropagation()
-      }}
-      className={`w-full h-full overflow-y-auto overflow-x-hidden p-3 ${
-        panning ? 'select-none' : 'select-text'
-      }`}
-    >
-      <div ref={columnRef} className="flex flex-col items-center gap-4">
-        {Array.from({ length: doc?.numPages ?? 1 }, (_, i) => (
-          <Paper
-            key={i + 1}
-            doc={doc}
-            number={i + 1}
-            width={width}
-            aspect={aspect}
-            density={density}
-            onMeasured={i === 0 ? onMeasured : undefined}
-          />
-        ))}
+      <FindBar
+        containerRef={column}
+        scrollerRef={scroller}
+        placeholder="Find in this file"
+        className="top-4 right-4"
+      />
+      <div
+        ref={scroller}
+        data-pdf
+        aria-label={name}
+        className="absolute inset-0 overflow-auto select-text"
+      >
+        <div ref={column} className="w-max min-w-full flex flex-col items-center gap-4 p-3">
+          {Array.from({ length: doc?.numPages ?? 1 }, (_, i) => (
+            <Paper
+              key={i + 1}
+              doc={doc}
+              number={i + 1}
+              width={width}
+              paint={paint}
+              aspect={shape.aspect}
+              onMeasured={i === 0 ? measured : undefined}
+            />
+          ))}
+        </div>
       </div>
+      {zoom > MIN_ZOOM && percent > 0 && (
+        <Tooltip label="Fit to width" className="absolute bottom-4 right-4">
+          <button
+            onClick={() => setZoom(MIN_ZOOM)}
+            className="glass animate-pop h-8 px-3 rounded-full text-xs tabular-nums text-fg/70 transition-all duration-150 hover:text-fg active:scale-95"
+          >
+            {percent}%
+          </button>
+        </Tooltip>
+      )}
     </div>
   )
 }
@@ -228,15 +228,15 @@ function Paper({
   doc,
   number,
   width,
+  paint,
   aspect,
-  density,
   onMeasured
 }: {
   doc: PDFDocumentProxy | null
   number: number
   width: number
+  paint: number
   aspect: number
-  density: number
   onMeasured?: (aspect: number, natural: number) => void
 }) {
   const box = useRef<HTMLDivElement>(null)
@@ -247,7 +247,8 @@ function Paper({
   const [painted, setPainted] = useState(false)
   const near = useNear(box)
   const unit = useMemo(() => page?.getViewport({ scale: 1 }) ?? null, [page])
-  const tall = Math.round(width * (unit ? unit.height / unit.width : aspect))
+  const ratio = unit ? unit.height / unit.width : aspect
+  const tall = Math.round(width * ratio)
 
   useEffect(() => {
     if (!doc) return
@@ -269,12 +270,13 @@ function Paper({
   }, [unit, onMeasured])
 
   useEffect(() => {
-    if (!page || !unit || !near || !width || !tall) return
+    if (!page || !unit || !near || !paint) return
     let alive = true
     let render: RenderTask | null = null
-    const paint = async (): Promise<void> => {
-      const room = Math.sqrt(MAX_PIXELS / (width * tall))
-      const viewport = page.getViewport({ scale: (width / unit.width) * Math.min(density, room) })
+    const draw = async (): Promise<void> => {
+      const room = Math.sqrt(MAX_PIXELS / (paint * paint * ratio))
+      const density = Math.min(window.devicePixelRatio || 1, 2)
+      const viewport = page.getViewport({ scale: (paint / unit.width) * Math.min(density, room) })
       const fresh = document.createElement('canvas')
       fresh.width = Math.round(viewport.width)
       fresh.height = Math.round(viewport.height)
@@ -287,12 +289,12 @@ function Paper({
       shown.getContext('2d')?.drawImage(fresh, 0, 0)
       setPainted(true)
     }
-    flow.current = flow.current.then(paint, paint).catch(() => {})
+    flow.current = flow.current.then(draw, draw).catch(() => {})
     return () => {
       alive = false
       render?.cancel()
     }
-  }, [page, unit, near, width, tall, density])
+  }, [page, unit, near, paint, ratio])
 
   useEffect(() => {
     const container = text.current
@@ -323,28 +325,29 @@ function Paper({
   }, [unit, width])
 
   return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div ref={box} className="relative" style={{ width, height: tall }}>
-        <canvas ref={canvas} className="block w-full h-full" />
-        <div ref={text} data-pdf-text className="pdf-text" />
-        {!painted && (
-          <div className="absolute inset-0">
-            <Skeleton />
-          </div>
-        )}
-      </div>
-      <span data-page={number} className="pdf-page text-xs text-fg-faint" />
+    <div ref={box} className="relative shrink-0" style={{ width, height: tall }}>
+      <canvas ref={canvas} className="block w-full h-full" />
+      <div ref={text} data-pdf-text className="pdf-text" />
+      {!painted && (
+        <div className="absolute inset-0">
+          <Skeleton />
+        </div>
+      )}
     </div>
   )
 }
 
-function useDensity(zoom: number): number {
-  const [settled, setSettled] = useState(1)
+function useSettled(value: number): number {
+  const [settled, setSettled] = useState(value)
   useEffect(() => {
-    const timer = window.setTimeout(() => setSettled(zoom), SETTLED)
+    if (!settled) {
+      setSettled(value)
+      return
+    }
+    const timer = window.setTimeout(() => setSettled(value), SETTLED)
     return () => window.clearTimeout(timer)
-  }, [zoom])
-  return Math.min(window.devicePixelRatio || 1, 2) * settled
+  }, [value, settled])
+  return settled
 }
 
 function useNear(ref: RefObject<HTMLElement | null>): boolean {
