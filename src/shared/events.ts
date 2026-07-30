@@ -260,6 +260,11 @@ const EPHEMERAL_KINDS = new Set([
   // the crew does not need to scroll past the moment it arrived.
   'music.added',
   'music.removed',
+  // An emoji the crew added is theirs from then on, the way a track on the shelf
+  // is, so it rides in the snapshot and nobody scrolls past the moment it landed.
+  'emoji.added',
+  'emoji.renamed',
+  'emoji.removed',
   // A playlist rides in the snapshot the same way, so the list somebody wrote
   // months ago is still a list.
   'playlist.added',

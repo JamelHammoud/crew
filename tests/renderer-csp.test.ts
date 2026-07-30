@@ -24,6 +24,15 @@ describe('renderer content security policy', () => {
     expect(media).toContain('https:')
   })
 
+  // A file not yet sent is read from a blob of its own, which pdfjs and the
+  // sheet reader fetch rather than point a tag at. Left out here the read is
+  // refused and the preview draws nothing, with the reason in the console.
+  it('lets a file waiting in the composer be read', () => {
+    const reach = policy().get('connect-src')
+    expect(reach).toContain('blob:')
+    expect(reach).toContain('data:')
+  })
+
   it('names every directive that carries something the app loads', () => {
     const held = policy()
     for (const name of ['default-src', 'style-src', 'connect-src', 'img-src', 'media-src', 'font-src']) {
