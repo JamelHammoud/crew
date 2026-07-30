@@ -158,37 +158,6 @@ export function isAttachmentFile(file: string): boolean {
   return FILE_NAME.test(file)
 }
 
-const SHEET_TYPES = new Set([
-  'text/csv',
-  'text/tab-separated-values',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.oasis.opendocument.spreadsheet'
-])
-
-const WRITING_TYPES = new Set([
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.oasis.opendocument.text',
-  'application/rtf'
-])
-
-// How the app draws one. Everything has an answer, because a file nobody can
-// name is still a file with something in it: what is left over is read as its
-// own contents rather than handed off with nothing shown.
-export type PreviewKind = 'image' | 'video' | 'audio' | 'pdf' | 'sheet' | 'writing' | 'archive' | 'text'
-
-export function previewOf(mime: string): PreviewKind {
-  if (mime.startsWith('image/')) return 'image'
-  if (mime.startsWith('video/')) return 'video'
-  if (mime.startsWith('audio/')) return 'audio'
-  if (mime === 'application/pdf') return 'pdf'
-  if (SHEET_TYPES.has(mime)) return 'sheet'
-  if (WRITING_TYPES.has(mime)) return 'writing'
-  if (ARCHIVE_TYPES.has(mime)) return 'archive'
-  return 'text'
-}
-
 const ARCHIVE_TYPES = new Set([
   'application/zip',
   'application/gzip',
