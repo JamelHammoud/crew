@@ -271,7 +271,7 @@ export const SKINS = [
     defs: () => glow('bit-lift', '#ffffff', 0.1),
     art: ctx => `${bitField(ctx)}
     <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#bit-lift)" />
-    <g fill="#ffffff" opacity="0.13">
+    <g fill="#ffffff" opacity="0.22">
 ${bitFrame(ctx)}
     </g>`
   },
