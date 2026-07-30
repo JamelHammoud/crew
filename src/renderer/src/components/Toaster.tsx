@@ -35,9 +35,7 @@ function Row({ toast }: { toast: Toast }) {
       <div
         {...swipe.props}
         role={toast.tone === 'fail' ? 'alert' : 'status'}
-        onClick={() => {
-          if (!swipe.moved()) closeToast(toast.id)
-        }}
+        onClick={press}
         className={`glass glass-strong toast-card pointer-events-auto cursor-pointer touch-none w-80 flex items-center gap-2.5 rounded-2xl py-2.5 ${
           action ? 'pl-3.5 pr-2' : 'px-3.5'
         }`}
