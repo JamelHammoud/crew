@@ -435,6 +435,8 @@ app.whenReady().then(() => {
       }
     })
   })
+  ipcMain.handle('update:state', () => updates.now())
+  ipcMain.handle('update:press', () => updates.press())
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
