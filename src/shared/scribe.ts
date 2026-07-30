@@ -215,4 +215,6 @@ export function rulesOf(settings: ScribeSettings): TidyRules {
   }
 }
 
+export const restsOnScreen = (settings: ScribeSettings): boolean => settings.on && settings.always
+
 export type { TidyRules }

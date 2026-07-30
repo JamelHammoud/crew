@@ -6,6 +6,7 @@ import {
   defaultSettings,
   fallbackCombo,
   keyLabel,
+  restsOnScreen,
   scribeKeys,
   TAP_MS,
   WORD_LIMIT
@@ -218,8 +219,10 @@ describe('what arrives is only as good as what checks it', () => {
   })
 
   it('keeps the pill visible by default and accepts hotkey-only visibility', () => {
-    expect(cleanSettings(null, 'darwin').always).toBe(true)
-    expect(cleanSettings({ always: false }, 'darwin').always).toBe(false)
+    const always = cleanSettings({ on: true }, 'darwin')
+    const hotkey = cleanSettings({ on: true, always: false }, 'darwin')
+    expect(restsOnScreen(always)).toBe(true)
+    expect(restsOnScreen(hotkey)).toBe(false)
   })
 
   it('keeps a dictionary and throws out the rows that say nothing', () => {
