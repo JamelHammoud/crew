@@ -78,6 +78,7 @@ type BrowserState = {
   showWork(threadId: string): void
   hideWork(): void
   toggleTree(id: string): void
+  togglePreview(id: string): void
   toggleFolder(id: string, path: string): void
   addTab(): void
   addTerminal(command?: string): void
