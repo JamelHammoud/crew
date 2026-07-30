@@ -181,6 +181,21 @@ describe('the settings', () => {
     expect(asked).toHaveBeenCalledWith(25)
   })
 
+  // A file is pulled by every machine in the crew and lands in the history they
+  // sync, so the biggest sizes stand only while the crew is this one's own.
+  it('offers no limit on your own crew and stops at 500 MB on a shared one', () => {
+    act(() => useCrew.setState({ attachmentMb: 10, shared: false }))
+    show('files')
+    fireEvent.click(within(card()).getByRole('button', { name: /10 MB/ }))
+    expect(screen.getByRole('button', { name: 'No limit' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: '10 GB' })).toBeTruthy()
+
+    act(() => useCrew.setState({ shared: true }))
+    expect(screen.queryByRole('button', { name: 'No limit' })).toBeNull()
+    expect(screen.queryByRole('button', { name: '10 GB' })).toBeNull()
+    expect(screen.getByRole('button', { name: '500 MB' })).toBeTruthy()
+  })
+
   it('keeps Scribe on screen or shows it only while dictating', () => {
     setScribeSettings({ always: true })
     show('scribe')

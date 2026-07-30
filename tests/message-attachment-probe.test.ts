@@ -68,7 +68,7 @@ describe('a message carrying a picture and a file', () => {
     expect(row.querySelector('svg')).not.toBeNull()
   })
 
-  it('opens a file the app can draw in the panel', () => {
+  it('opens a file in the panel', () => {
     const { getByLabelText } = draw([paper])
     fireEvent.click(getByLabelText('Open terms.pdf'))
 
@@ -78,12 +78,31 @@ describe('a message carrying a picture and a file', () => {
     expect(openExternal).not.toHaveBeenCalled()
   })
 
-  it('hands anything else to the machine', () => {
+  // Whatever it is, it opens where everything else does, and handing it to the
+  // machine is a button on the panel rather than what a click does.
+  it('opens one the app has to read for itself in the panel too', () => {
     const { getByLabelText } = draw([folded])
     fireEvent.click(getByLabelText('Open shots.zip'))
 
-    expect(openExternal).toHaveBeenCalledWith(`${BASE}/attachments/c.zip`)
-    expect(useBrowser.getState().tabs).toHaveLength(0)
+    expect(useBrowser.getState().tabs[0]).toMatchObject({
+      kind: 'attachment',
+      initialUrl: `${BASE}/attachments/c.zip`,
+      title: 'shots.zip',
+      mime: 'application/zip',
+      size: 4_400_000
+    })
+    expect(openExternal).not.toHaveBeenCalled()
+  })
+
+  it('opens a picture from the message it was sent in', () => {
+    const { getByLabelText } = draw([picture])
+    fireEvent.click(getByLabelText('Open balance.png'))
+
+    expect(useBrowser.getState().tabs[0]).toMatchObject({
+      kind: 'attachment',
+      initialUrl: `${BASE}/attachments/a.png`,
+      mime: 'image/png'
+    })
   })
 
   it('is nothing at all when the message carries nothing', () => {

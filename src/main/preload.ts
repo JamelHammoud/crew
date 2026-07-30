@@ -173,6 +173,9 @@ const bridge = {
   },
   updateState: (): Promise<UpdateState> => ipcRenderer.invoke('update:state'),
   pressUpdate: (): Promise<void> => ipcRenderer.invoke('update:press'),
+  commandState: (): Promise<CommandState> => ipcRenderer.invoke('command:state'),
+  installCommand: (): Promise<CommandDone> => ipcRenderer.invoke('command:install'),
+  removeCommand: (): Promise<CommandDone> => ipcRenderer.invoke('command:remove'),
   onUpdate: (listener: (state: UpdateState) => void): (() => void) => {
     const handler = (_event: unknown, state: UpdateState) => listener(state)
     ipcRenderer.on('update:state', handler)
