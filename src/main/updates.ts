@@ -137,21 +137,24 @@ export class Updates {
     }
     this.going = true
     await this.host.settle().catch(() => {})
-    // An install that will not happen says nothing for itself: Squirrel refuses
-    // an app it cannot verify and the silent installer takes the cancel default,
-    // and either way the app is still standing here a moment later.
-    this.gone = setTimeout(() => {
-      this.going = false
-      this.say({ word: 'stuck', why: 'install' })
-    }, GONE_MS)
+    // An install that will not happen says nothing for itself. Squirrel does
+    // nothing at all for an app it never staged, and the silent installer is
+    // spawned detached with its exit code never read, so what says it did not
+    // happen is the app still standing here a while later.
+    this.gone = setTimeout(() => this.gaveUp(), GONE_MS)
     try {
       autoUpdater().quitAndInstall(true, true)
     } catch {
-      if (this.gone) clearTimeout(this.gone)
-      this.gone = null
-      this.going = false
-      this.say({ word: 'stuck', why: 'install' })
+      this.gaveUp()
     }
+  }
+
+  private gaveUp(): void {
+    if (!this.going) return
+    if (this.gone) clearTimeout(this.gone)
+    this.gone = null
+    this.going = false
+    this.say({ word: 'stuck', why: 'install' })
   }
 
   // Nothing a packaged app logs to a console is ever read, so a failure out
