@@ -438,10 +438,9 @@ app.whenReady().then(() => {
   )
   ipcMain.handle('app:notify', (_event, alert: AgentAlert) => {
     showAlert(alert, () => {
-      openWindow()
-      if (alert.threadId) {
-        appWindows()[0]?.webContents.send('notification:open', alert.threadId)
-      }
+      const win = openWindow()
+      app.focus({ steal: true })
+      if (alert.threadId) openThreadIn(win, alert.threadId)
     })
   })
   ipcMain.handle('update:state', () => updates.now())
