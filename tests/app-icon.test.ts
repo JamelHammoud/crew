@@ -165,6 +165,78 @@ describe('app icon', () => {
   })
 })
 
+describe('the pictures', () => {
+  // The one thing every picture is held to. The tile behind the mark is the whole
+  // of what a skin changes, so a skin that drew the mark at its own size would be
+  // a different logo per icon rather than one logo on six tiles.
+  it('stands the same mark at the same size and place as the default', () => {
+    const wanted = stack(svg('icon.svg'))
+
+    for (const name of PICTURES) expect(stack(svg(name))).toEqual(wanted)
+  })
+
+  it('paints its art inside the tile and nowhere else', () => {
+    for (const name of PICTURES) {
+      const source = svg(name)
+      const clipped = [...source.matchAll(/<g clip-path="url\(#tile-clip\)">/g)]
+
+      expect(source).toContain('<clipPath id="tile-clip">')
+      expect(clipped.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('keeps the glass tile, sheen and rim the system icons wear', () => {
+    for (const name of PICTURES) {
+      const source = svg(name)
+      for (const id of ['tile', 'sheen', 'rim']) {
+        expect(source).toContain(`<linearGradient id="${id}"`)
+        expect(source).toContain(`url(#${id})`)
+      }
+    }
+  })
+
+  it('keeps the mark flat, the way the shipping one is', () => {
+    for (const name of PICTURES) expect(svg(name)).toMatch(/<g fill="#[0-9a-f]{6}">/)
+  })
+
+  it('is never the blueprint: no ruled paper and no cast shadow', () => {
+    for (const name of PICTURES) {
+      expect(svg(name)).not.toContain('feDropShadow')
+      expect(svg(name)).not.toContain('<line ')
+    }
+  })
+
+  // The Gradient tile is a real generated cover rather than a drawing of one, so
+  // the picture itself has to be in the file.
+  it('photographs the gradient tile with the shader the music uses', () => {
+    expect(svg('icon-gradient.svg')).toMatch(
+      /<image [^>]*href="data:image\/png;base64,[A-Za-z0-9+/=]{2000,}"/
+    )
+  })
+
+  it('ships one square image per picture for the dock', () => {
+    expect(Object.keys(SKIN_ICONS).sort()).toEqual([...PICTURE_ICONS].sort())
+    for (const encoded of Object.values(SKIN_ICONS)) {
+      const image = png(encoded)
+      expect(image.signature).toBe('89504e470d0a1a0a')
+      expect(image.width).toBe(512)
+      expect(image.height).toBe(512)
+    }
+    expect(new Set(Object.values(SKIN_ICONS)).size).toBe(PICTURE_ICONS.length)
+  })
+
+  // The picker draws the icon itself, so every row of the table has to have a
+  // tile to draw, and the default has one for each theme it flips between.
+  it('hands the picker art for every row of the table', () => {
+    for (const icon of APP_ICONS) {
+      for (const key of icon.flips ? ['dark', 'light'] : [icon.id]) {
+        expect(ICON_ART[key]).toMatch(/^data:image\/(svg\+xml|png);/)
+      }
+    }
+    expect(new Set(Object.values(ICON_ART)).size).toBe(Object.keys(ICON_ART).length)
+  })
+})
+
 describe('dev blueprint', () => {
   it('rules the paper square and keeps it inside the tile', () => {
     for (const name of BLUEPRINT) {
