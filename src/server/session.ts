@@ -352,6 +352,9 @@ export class CrewSession {
   private ghostFiles = new Map<string, { ws: WebSocket; mime: string; data: Buffer }>()
   private todos = new Map<string, Todo>()
   private tools = new Map<string, CrewTool>()
+  // How big a file may be, in megabytes. The crew's own, folded off the log the
+  // way the toolbox is.
+  private attachmentMb = DEFAULT_ATTACHMENT_MB
   // What a helper said, held from the moment it finished until whatever the
   // parent is doing can take it.
   private returns = new Map<string, PendingReturn>()
