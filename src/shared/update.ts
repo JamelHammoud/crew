@@ -84,3 +84,18 @@ export function pressDoes(stage: UpdateStage): UpdatePress {
 export function updateStanding(state: UpdateState): boolean {
   return state.stage !== 'none'
 }
+
+// A window left open for a week has to keep looking, or the release after the
+// one it found is one it never hears about. Only a download in flight and an
+// update already down are left alone, since neither has anything to learn.
+export function worthChecking(stage: UpdateStage): boolean {
+  return stage === 'none' || stage === 'found' || stage === 'failed'
+}
+
+// The installer replaces the whole app, and on Windows it force-kills every
+// Crew it can find to do it. Several Crews on one machine is ordinary here, so
+// an install is held while any other one is live rather than taking their work
+// down with it.
+export function mayInstall(others: number): boolean {
+  return others === 0
+}
