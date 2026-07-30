@@ -75,21 +75,23 @@ export default function MessageReactions({
               : 'pointer-events-none translate-y-1 opacity-0 group-hover/message:pointer-events-auto group-hover/message:translate-y-0 group-hover/message:opacity-100 has-[:focus-visible]:pointer-events-auto has-[:focus-visible]:translate-y-0 has-[:focus-visible]:opacity-100'
         }`}
       >
-        {QUICK_REACTIONS.map(emoji => (
+        {quick.map(emoji => (
           <button
             key={emoji}
             type="button"
-            aria-label={`React with ${emoji}`}
+            aria-label={`React with ${reactionName(emoji)}`}
             aria-pressed={selected.has(emoji)}
             onClick={event => reactFromMenu(emoji, event.detail > 0)}
-            className={`flex h-7 w-7 items-center justify-center rounded-full transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-90 ${
               selected.has(emoji) ? 'bg-fg/12' : 'hover:bg-fg/8'
             }`}
           >
             <Emoji char={emoji} size={17} />
           </button>
         ))}
-        <span className="mx-0.5 h-4 w-px bg-ink-600" />
+        {/* A rule with nothing on one side of it is a rule standing at the edge
+            of the tray, so it waits for something to divide. */}
+        {quick.length > 0 && <span className="mx-0.5 h-4 w-px shrink-0 bg-ink-600" />}
         {onReply && (
           <Tooltip label="Reply">
             <button
