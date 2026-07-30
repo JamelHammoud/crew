@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MAX_ATTACHMENTS } from '../../../shared/attachments'
+import { attachmentBytes, MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { GifGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
@@ -22,6 +22,7 @@ export default function AddMenu({
 }) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
   const attach = useCrew(s => s.attach)
+  const cap = attachmentBytes(useCrew(s => s.attachmentMb))
   const joined = useHuddle(s => s.joined)
   const live = useHuddle(s => s.room.peers.length > 0)
   const join = useHuddle(s => s.join)
@@ -37,7 +38,7 @@ export default function AddMenu({
   }
 
   const pick = async (gif: Gif) => {
-    await attach(attachmentKey, [await gifFile(gif)])
+    await attach(attachmentKey, [await gifFile(gif, cap)])
     setOpen(false)
     onSend()
   }

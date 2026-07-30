@@ -108,7 +108,7 @@ export default function GifPicker({
     if (scrollRef.current) scrollRef.current.scrollTop = 0
     const timer = setTimeout(
       () => {
-        const run = wanted ? searchGifs(wanted) : trendingGifs()
+        const run = wanted ? searchGifs(wanted, 1, cap) : trendingGifs(1, cap)
         run
           .then(result => {
             if (asked.current !== token) return
@@ -134,7 +134,7 @@ export default function GifPicker({
     if (scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight > NEAR_END) return
     const token = ++asked.current
     setMore(false)
-    const run = wanted ? searchGifs(wanted, page + 1) : trendingGifs(page + 1)
+    const run = wanted ? searchGifs(wanted, page + 1, cap) : trendingGifs(page + 1, cap)
     run
       .then(result => {
         if (asked.current !== token) return
