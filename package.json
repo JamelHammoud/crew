@@ -13,6 +13,7 @@
     "directories": {
       "output": "dist"
     },
+    "npmRebuild": false,
     "files": [
       "out/**"
     ],
