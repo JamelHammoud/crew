@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 // Where the `crew` command goes, and which file it points at. The app ships the
 // command inside itself, so putting it on PATH is one link rather than an
 // install of its own.
