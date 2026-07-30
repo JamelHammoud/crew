@@ -79,7 +79,7 @@ describe('the card', () => {
   it('says it copied them', () => {
     useScribe.setState({ held: 'Hello.' })
     render(createElement(ScribeHeld))
-    screen.getByText('Copy').click()
+    act(() => screen.getByText('Copy').click())
     expect(screen.getByText('Copied')).toBeTruthy()
   })
 
