@@ -26,6 +26,7 @@
   --color-attention: #fbbf24;
 
   --color-selection: rgb(255 255 255 / 0.16);
+  --color-selection-paper: rgb(0 0 0 / 0.12);
 
   --text-xs: 11px;
   --text-xs--line-height: 16px;
