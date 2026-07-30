@@ -163,8 +163,17 @@ const gridLines = () =>
 // is in bounding box units, so one definition shades all three the same way.
 function svg(
   { ink, tile, rim, sheen, grid, glow, body, shade, bounce, edge, gloss, grain },
-  blueprint = false
+  blueprint = false,
+  skin = null
 ) {
+  // A skin paints inside the tile and nothing else. It is handed the same
+  // numbers the frame is drawn from, so a picture can stand its own art against
+  // the mark without a second set of them.
+  const stage = { CANVAS, TILE, CENTRE, RADIUS, STEP, discs, round }
+  const clipped = markup => `  <g clip-path="url(#tile-clip)">
+${markup}
+  </g>
+`
   const paper = blueprint
     ? `    <radialGradient id="glow" cx="${CENTRE}" cy="${round(CENTRE - GRID * 0.3)}" r="${round(TILE.size * 0.46)}" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${glow[0]}" stop-opacity="${glow[1]}" />
@@ -257,7 +266,7 @@ ${stops(tile)}
     <linearGradient id="rim" x1="0" y1="${TILE.y}" x2="0" y2="${TILE.y + TILE.size}" gradientUnits="userSpaceOnUse">
 ${stops(rim)}
     </linearGradient>
-${paper}    <clipPath id="tile-clip">
+${paper}${skin?.defs ? `${skin.defs(stage)}\n` : ''}    <clipPath id="tile-clip">
       <rect x="${TILE.x}" y="${TILE.y}" width="${TILE.size}" height="${TILE.size}" rx="${TILE.radius}" />
     </clipPath>
 ${cutMasks()}
