@@ -48,6 +48,8 @@ declare global {
     listFiles(): Promise<string[]>
     writeFile(path: string, text: string): Promise<RepoFile | null>
     locatePath(path: string): Promise<PathLocation>
+    previewHtml(id: string, path: string, text: string): Promise<string | null>
+    dropPreview(id: string): Promise<void>
     revealFile(path: string): Promise<void>
     setBadge(count: number): Promise<void>
     publishPresence(here: Present[]): void
