@@ -26,6 +26,11 @@ export interface ScribeState {
   phase: ScribePhase
   progress: number
   problem: string | null
+  // What was said with nothing to say it into. Main is what decides this and what
+  // holds the words, so the pill is told rather than working it out: the caret
+  // belongs to another application and the clipboard belongs to the machine, and
+  // this window can reach neither.
+  held: string
   settings: ScribeSettings
   arm: () => Promise<void>
   finish: () => Promise<void>
