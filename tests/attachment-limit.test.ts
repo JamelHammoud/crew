@@ -1,3 +1,4 @@
+import WebSocket from 'ws'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   ATTACHMENT_MB_LIMIT,
