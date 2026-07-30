@@ -128,15 +128,22 @@ describe('attachments', () => {
     expect(Buffer.from(await back.arrayBuffer()).equals(PNG)).toBe(true)
   })
 
-  it('turns away a pasted upload that is not an image or is too big', async () => {
+  it('takes a pasted file of any kind and turns away one that is too big', async () => {
     const base = host.url.replace(/^ws/, 'http').replace(/\/ws$/, '')
 
-    const notImage = await fetch(`${base}/attachments`, {
+    const doc = await fetch(`${base}/attachments`, {
       method: 'POST',
-      headers: { 'content-type': 'application/pdf' },
-      body: PNG
+      headers: { 'content-type': 'application/pdf', 'x-attachment-name': encodeURIComponent('notes.pdf') },
+      body: PDF
     })
-    expect(notImage.status).toBe(400)
+    expect(doc.status).toBe(200)
+    const saved = (await doc.json()) as { id: string; name: string; mime: string; file: string }
+    expect(saved.file).toBe(`${saved.id}.pdf`)
+    expect(saved.mime).toBe('application/pdf')
+
+    const back = await fetch(`${base}/attachments/${saved.file}`)
+    expect(back.headers.get('content-type')).toBe('application/pdf')
+    expect(Buffer.from(await back.arrayBuffer()).equals(PDF)).toBe(true)
 
     const tooBig = await fetch(`${base}/attachments`, {
       method: 'POST',
