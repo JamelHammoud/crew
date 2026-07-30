@@ -86,14 +86,15 @@ function receiveAttachment(session: CrewSession, req: http.IncomingMessage, res:
   } catch {
     name = 'file'
   }
+  const limit = session.attachmentLimit()
   const chunks: Buffer[] = []
   let size = 0
   req.on('data', chunk => {
     size += chunk.length
-    if (size <= MAX_ATTACHMENT_BYTES) chunks.push(chunk as Buffer)
+    if (size <= limit) chunks.push(chunk as Buffer)
   })
   req.on('end', () => {
-    if (size > MAX_ATTACHMENT_BYTES) {
+    if (size > limit) {
       res.writeHead(413)
       res.end()
       return
