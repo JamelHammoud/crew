@@ -63,6 +63,7 @@ function tabLabel(tab: BrowserTab): string {
   // one that is. Out of a game it is the tab's own name again.
   if (tab.kind === 'game') return gameFor(tab.game ?? '')?.name ?? 'Games'
   if (tab.kind === 'terminal') return tab.title || 'Terminal'
+  if (tab.kind === 'attachment') return tab.title || 'File'
   if (tab.kind === 'file') return tab.path.split('/').pop() || 'Files'
   if (showsImage(tab)) return tab.title || imageName(tab.initialUrl)
   if (tab.title) return tab.title
