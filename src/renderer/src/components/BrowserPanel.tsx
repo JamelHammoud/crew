@@ -442,6 +442,8 @@ function TabPill({ tab, active, row }: { tab: BrowserTab; active: boolean; row: 
           <GameGlyph className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'terminal' ? (
           <TerminalGlyph className="w-4 h-4 shrink-0" />
+        ) : tab.kind === 'attachment' ? (
+          <FileMark className="w-4 h-4 shrink-0" />
         ) : tab.kind === 'file' ? (
           tab.path ? (
             <DocGlyph className="w-4 h-4 shrink-0" />
