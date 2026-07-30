@@ -42,6 +42,7 @@ export function useSwipeAway(onAway: () => void): SwipeAway {
   const [x, setX] = useState(0)
   const [swiping, setSwiping] = useState(false)
   const grab = useRef<Grab | null>(null)
+  const following = useRef(false)
   const moved = useRef(false)
   const gone = useRef(false)
 
