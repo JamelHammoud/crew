@@ -247,6 +247,10 @@ const EPHEMERAL_KINDS = new Set([
   'tool.added',
   'tool.edited',
   'tool.removed',
+  // The size limit rides in the snapshot the same way, so a number somebody
+  // picked months ago is still the number after its event has fallen off the
+  // window.
+  'attachment.limit',
   // A track somebody put on the shelf is the same: it stays on the shelf, and
   // the crew does not need to scroll past the moment it arrived.
   'music.added',
