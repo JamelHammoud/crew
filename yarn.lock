@@ -932,6 +932,78 @@
   resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-8.3.18.tgz#7e5601c0683ed2411e3aee8fcb81a151e5341ad2"
   integrity sha512-QoWr9+S8gg5050TQ06aTSxtlpGjYOpIllRbjYYXlRvZeTsUqiTbVfvQROLexu4rEaK+yy9Wwriwl9PMRgbLqPw==
 
+"@napi-rs/canvas-android-arm64@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-android-arm64/-/canvas-android-arm64-1.0.3.tgz#9bed40bad8725fb6a950811f3e3fa2a3bea9582a"
+  integrity sha512-7kSCdUhoXiO+AaIMXdBGdtp6EctZNkmF62Rea/BmVQlwKaM3bBhOzyGUzxyxz9dv5vdBfpyAaxhSRSJF4kqK4A==
+
+"@napi-rs/canvas-darwin-arm64@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-darwin-arm64/-/canvas-darwin-arm64-1.0.3.tgz#88a417ccc14ba4da5bd778a23cd4c77df32078fd"
+  integrity sha512-ds14V1BPagLszQyaDTeggny5fNeTCqsUQ5QhFj9VDxSEfzrVxXtdbR0LoFyKa0Siaaw8KvqSk4t7k/WoZJwvbg==
+
+"@napi-rs/canvas-darwin-x64@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-darwin-x64/-/canvas-darwin-x64-1.0.3.tgz#df61da3d8216884be10fa3046c9d2d629f937433"
+  integrity sha512-qof3LRAAycmkV2I1izZo9RoSHF8kCQr5O05sFwv0jK8rSdYV6KHVwimo6Qb7RxZj40WHKbLHm5JDaUF0o5XUAA==
+
+"@napi-rs/canvas-linux-arm-gnueabihf@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-linux-arm-gnueabihf/-/canvas-linux-arm-gnueabihf-1.0.3.tgz#73b2bb92c80a4d2bb8aedafc92b9b548ef1d49f6"
+  integrity sha512-FU2kKZLmolHA9+KcUA+l1+xH3WTLUUTQDU/kLv9SEUr2TrRPu94aytOeizFJDHPs/QBcw4QL1mCQhetQXYBbag==
+
+"@napi-rs/canvas-linux-arm64-gnu@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-linux-arm64-gnu/-/canvas-linux-arm64-gnu-1.0.3.tgz#a0aca29af1a154cb00c509d9f2f5276bb28794f3"
+  integrity sha512-GVSjntxKeA+/y/ZKf1F+cmUw1WeIkE5aMRPqnZUlBTBvBcrvgWccJAWuYCKPX4QJQwZILIIwhgdAbl51yj6fpA==
+
+"@napi-rs/canvas-linux-arm64-musl@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-linux-arm64-musl/-/canvas-linux-arm64-musl-1.0.3.tgz#769c126910e7db6687a78bdfb6bcf7f1b72895e4"
+  integrity sha512-J51oK/axyZ13kxycumSMfLiDZMdWdOVvqDFI28BpuViZHE3A0bQfr8B5vg8YnPEnqLD3BSn1hkdlh2buspEcNQ==
+
+"@napi-rs/canvas-linux-riscv64-gnu@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-linux-riscv64-gnu/-/canvas-linux-riscv64-gnu-1.0.3.tgz#2bfb752dfcbc97e1b2c820716f05f390d0e8b802"
+  integrity sha512-CtQgQjoVTX67jS9XuCTtJ40Sl7wRLMguoFnnGnfDmCWf7kzKFZVwj5ynqUOIGKFMSB61ZCuQlwPvVNxYTTseaw==
+
+"@napi-rs/canvas-linux-x64-gnu@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-linux-x64-gnu/-/canvas-linux-x64-gnu-1.0.3.tgz#385c1be0236d6ce4d95c3bd6f8d372ed9f8182b6"
+  integrity sha512-jtfzAHFp+FRaR7zGT4jyCe6wUgAG/dVb5A4Apd8FY9jKarntDfUAlJXscugiH7ZF5kKnu7/lHFk9LaDPcrGEVQ==
+
+"@napi-rs/canvas-linux-x64-musl@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-linux-x64-musl/-/canvas-linux-x64-musl-1.0.3.tgz#7c1484f3cb9160f209d8b7275b4ed95ea5274738"
+  integrity sha512-xTzaUCKUHTY4bCGadeeRZggbRVbGUT1petg7Z8r9AJR2+D9Bqu6nQAgqBGC6D47tA70LjaaaLTrJ7wNY1T74dg==
+
+"@napi-rs/canvas-win32-arm64-msvc@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-win32-arm64-msvc/-/canvas-win32-arm64-msvc-1.0.3.tgz#dc1374d8431a14223e361dd17145b044f6904626"
+  integrity sha512-ktVLuBkI6QVOm5BwO/WbdGwxgeetAMJa7TTmR8qBarXF0OU2NKjvjUtPJAl2y8t+zBRczJl/1VOl9gua6WcK2g==
+
+"@napi-rs/canvas-win32-x64-msvc@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas-win32-x64-msvc/-/canvas-win32-x64-msvc-1.0.3.tgz#b7c57758fca5e831b38d3cb9343a6e4035c48fed"
+  integrity sha512-SGhlQ8bDjL1Cz2KnsKMasr/5sTcwG/SZkB6WCJxLsmSm/3aS2C+3p39bA7iZ2/94+NkVDySZfbiGoaSZSFHYxA==
+
+"@napi-rs/canvas@^1.0.0":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@napi-rs/canvas/-/canvas-1.0.3.tgz#358c50317cfe3a1f9e44e3572a00cd9884f34635"
+  integrity sha512-OlI657a5XXvKGFX7kNeIzJ8rO7IXt87Mqu2H8rXE46viAuOfum/JA7ysX7+eBhxNKznT+RCZh418mndlcFX3+w==
+  optionalDependencies:
+    "@napi-rs/canvas-android-arm64" "1.0.3"
+    "@napi-rs/canvas-darwin-arm64" "1.0.3"
+    "@napi-rs/canvas-darwin-x64" "1.0.3"
+    "@napi-rs/canvas-linux-arm-gnueabihf" "1.0.3"
+    "@napi-rs/canvas-linux-arm64-gnu" "1.0.3"
+    "@napi-rs/canvas-linux-arm64-musl" "1.0.3"
+    "@napi-rs/canvas-linux-riscv64-gnu" "1.0.3"
+    "@napi-rs/canvas-linux-x64-gnu" "1.0.3"
+    "@napi-rs/canvas-linux-x64-musl" "1.0.3"
+    "@napi-rs/canvas-win32-arm64-msvc" "1.0.3"
+    "@napi-rs/canvas-win32-x64-msvc" "1.0.3"
+
 "@napi-rs/wasm-runtime@^1.1.4":
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-1.1.6.tgz#ed33806d0f9be98dc76d0c3d4fd872fda701b5d5"
@@ -4905,6 +4977,11 @@ package-json-from-dist@^1.0.0:
   resolved "https://registry.yarnpkg.com/package-json-from-dist/-/package-json-from-dist-1.0.1.tgz#4f1471a010827a86f94cfd9b0727e36d267de505"
   integrity sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==
 
+papaparse@^5.5.4:
+  version "5.5.4"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.5.4.tgz#7923f375a5d43850fd313160371c9567e5608c11"
+  integrity sha512-SwzWD9gl/ElwYLCI0nUja1mFJzjq2D8ziShfNBa7zCHzkOozeOGDwHWQ+tvCzEZcewecWZ5U7kUopDnG+DFYEQ==
+
 parse5@^8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-8.0.1.tgz#f43bcd2cd683efe084075333e9ce0da7d06da31e"
@@ -4939,6 +5016,13 @@ pathval@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/pathval/-/pathval-2.0.1.tgz#8855c5a2899af072d6ac05d11e46045ad0dc605d"
   integrity sha512-//nshmD55c46FuFw26xV/xFAaB5HF9Xdap7HJBBnrKdAd6/GxDBaNA1870O79+9ueg61cZLSVc+OaFlfmObYVQ==
+
+pdfjs-dist@^6.2.108:
+  version "6.2.108"
+  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-6.2.108.tgz#1e0ce0f4b3a034f953dbbe2334ab01fbddf0eb30"
+  integrity sha512-YxFb+SQcodN2rnX9Tn3dHYlqfb7NjlzzfONPpJd+AKoKtUjEdevTfbC07d5TcczzOK6261auRkP/M8OBHs9vFQ==
+  optionalDependencies:
+    "@napi-rs/canvas" "^1.0.0"
 
 pe-library@^0.4.1:
   version "0.4.1"
