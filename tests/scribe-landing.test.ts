@@ -215,10 +215,69 @@ describe('nothing malformed is ever held back by accident', () => {
     for (const printed of malformed) expect(landingOf(printed)).toBe('unknown')
   })
 
-  // The only two ways the words are ever held back, and both of them are the
-  // machine having answered properly.
+  // The one way the words are ever held back by the machine, and it is the machine
+  // having really answered: a role came back, and it is not somewhere to type.
   it('only holds them back on a real answer that has nowhere to type in it', () => {
-    expect(landingOf('none')).toBe('none')
     expect(landingOf(`AXWebArea\n${PAGE.join(',')}`)).toBe('none')
+    expect(landingOf(`AXRow\n${ROW.join(',')}`)).toBe('none')
+  })
+})
+
+// Crew's own boxes, which are the ones the machine could never see. Every window
+// here is Chromium, so all of the above came back as a silence, and the app held
+// the words back from its own composer while saying to click into a text box.
+describe('what has the caret in one of our own pages', () => {
+  it('writes into the composer', () => {
+    expect(landingInPage('TEXTAREA', '', false)).toBe('text')
+  })
+
+  it('writes into a field', () => {
+    expect(landingInPage('INPUT', 'text', false)).toBe('text')
+    expect(landingInPage('INPUT', 'search', false)).toBe('text')
+    expect(landingInPage('INPUT', 'email', false)).toBe('text')
+    expect(landingInPage('INPUT', 'password', false)).toBe('text')
+  })
+
+  // The docs, the board and anywhere else the app draws a box of its own rather
+  // than taking one from the browser.
+  it('writes into anything editable whatever it is drawn as', () => {
+    expect(landingInPage('DIV', '', true)).toBe('text')
+    expect(landingInPage('P', '', true)).toBe('text')
+    expect(landingInPage('SPAN', '', true)).toBe('text')
+  })
+
+  it('takes the tag and the type however they were cased', () => {
+    expect(landingInPage('textarea', '', false)).toBe('text')
+    expect(landingInPage('input', 'TEXT', false)).toBe('text')
+    expect(landingInPage(' INPUT ', ' text ', false)).toBe('text')
+  })
+
+  // An input the standard has not written yet is somewhere to type until it is
+  // known not to be, or the next kind of field added anywhere holds words back
+  // from a box they were really in.
+  it('writes into an input nobody here has heard of', () => {
+    expect(landingInPage('INPUT', 'nothing-yet', false)).toBe('text')
+    expect(landingInPage('INPUT', '', false)).toBe('text')
+  })
+
+  it('holds the words back on a button and on the rest of the page', () => {
+    expect(landingInPage('BUTTON', '', false)).toBe('none')
+    expect(landingInPage('BODY', '', false)).toBe('none')
+    expect(landingInPage('DIV', '', false)).toBe('none')
+    expect(landingInPage('A', '', false)).toBe('none')
+  })
+
+  it('holds the words back on an input that is not a box', () => {
+    for (const type of ['button', 'checkbox', 'radio', 'submit', 'file', 'range', 'color'])
+      expect(landingInPage('INPUT', type, false)).toBe('none')
+  })
+
+  // The side panel is a real browser, so the caret can be in a field on somebody
+  // else's site while the page around it sees only the box it is drawn in. Held
+  // back there, the words are taken off a field they were really in.
+  it('will not say for anything holding a page of its own', () => {
+    expect(landingInPage('WEBVIEW', '', false)).toBe('unknown')
+    expect(landingInPage('IFRAME', '', false)).toBe('unknown')
+    expect(landingInPage('webview', '', false)).toBe('unknown')
   })
 })
