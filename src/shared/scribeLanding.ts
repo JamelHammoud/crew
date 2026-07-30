@@ -156,16 +156,17 @@ export const joinHeld = (held: string, text: string): string =>
 // guess: the answer comes off another process and every part of it has to be
 // there before any of it is worth acting on.
 //
-// Nothing the machine says is ever a bare 'none', and that is the whole of what
-// was wrong here. An application with no focused element to hand over is not an
-// application saying nothing has the caret: it is a Chromium one that has not
-// built its accessibility tree, which is Crew, Discord, VS Code, Figma and Chrome
-// alike, and every one of them says it whether or not somebody is typing. Read as
-// an answer it held the words back from every box anybody really dictates into
-// while catching nothing at all. A silence is 'unknown', so it pastes the way it
-// always did, and only a role that really came back can earn a 'none'.
+// The bare word 'none' is an application with nothing open, and it is the whole of
+// what the machine may say without naming a role. An application with a window but
+// no focused element to hand over says 'unknown' instead, because that is a
+// Chromium one that has not built its accessibility tree rather than one saying
+// nothing has the caret, and Crew, Discord, VS Code and Chrome all say it whether
+// or not somebody is typing. Read as an answer it held the words back from every
+// box anybody really dictates into while catching nothing at all, which is what
+// "click into a text box" over an open composer was.
 export function landingOf(printed: string): Landing {
   const lines = printed.trim().split('\n')
+  if (lines[0]?.trim() === 'none') return 'none'
   if (lines.length < 2) return 'unknown'
   const role = lines[0].trim()
   if (!role || role === 'unknown') return 'unknown'
