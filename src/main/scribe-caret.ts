@@ -28,7 +28,7 @@ tell application "System Events"
   on error
     return "unknown"
   end try
-  if el is missing value then return "none"
+  if el is missing value then return "unknown"
   try
     set rl to value of attribute "AXRole" of el
     set hl to name of every attribute of el
