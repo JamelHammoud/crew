@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#232a6b" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#141748" stop-opacity="1" />
+      <stop offset="1" stop-color="#08091f" stop-opacity="1" />
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="100" x2="0" y2="553.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.1" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="100" x2="0" y2="924" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b9c8ff" stop-opacity="0.6" />
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="1" stop-color="#5f6ecc" stop-opacity="0.3" />
+    </linearGradient>
+    <filter id="space-cloud" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="46" />
+    </filter>
+    <radialGradient id="space-violet" cx="382" cy="416" r="461.44000000000005" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.5" />
+      <stop offset="0.55" stop-color="#7c3aed" stop-opacity="0.2" />
+      <stop offset="1" stop-color="#6d28d9" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="space-cyan" cx="692" cy="680" r="379.04" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#67e8f9" stop-opacity="0.34" />
+      <stop offset="0.6" stop-color="#0ea5e9" stop-opacity="0.14" />
+      <stop offset="1" stop-color="#0284c7" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="space-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#c7d2fe" stop-opacity="0.24" />
+      <stop offset="0.55" stop-color="#c7d2fe" stop-opacity="0.1" />
+      <stop offset="1" stop-color="#c7d2fe" stop-opacity="0" />
+    </radialGradient>
+    <clipPath id="tile-clip">
+      <rect x="100" y="100" width="824" height="824" rx="185" />
+    </clipPath>
+    <mask id="cut-0" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="0" y="0" width="1024" height="1024" fill="#ffffff" />
+      <circle cx="512" cy="512" r="158" fill="#000000" />
+      <circle cx="326" cy="512" r="158" fill="#000000" />
+    </mask>
+    <mask id="cut-1" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="0" y="0" width="1024" height="1024" fill="#ffffff" />
+      <circle cx="326" cy="512" r="158" fill="#000000" />
+    </mask>
+    <mask id="cut-2" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect x="0" y="0" width="1024" height="1024" fill="#ffffff" />
+    </mask>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)" />
+  <g clip-path="url(#tile-clip)">
+    <g filter="url(#space-cloud)">
+      <rect x="100" y="100" width="824" height="824" fill="url(#space-violet)" />
+      <rect x="100" y="100" width="824" height="824" fill="url(#space-cyan)" />
+    </g>
+    <circle cx="812.95" cy="272.79" r="3.98" fill="#ffffff" opacity="0.89" />
+    <circle cx="361.67" cy="686.56" r="6.72" fill="#ffffff" opacity="0.81" />
+    <circle cx="780.22" cy="154.77" r="6.06" fill="#ffffff" opacity="0.73" />
+    <circle cx="136.53" cy="321.19" r="4.39" fill="#ffffff" opacity="0.82" />
+    <circle cx="708.68" cy="588.43" r="4.04" fill="#ffffff" opacity="0.51" />
+    <circle cx="642.28" cy="570.93" r="4.88" fill="#ffffff" opacity="0.36" />
+    <circle cx="869.63" cy="346.91" r="7" fill="#ffffff" opacity="0.39" />
+    <circle cx="754.73" cy="561.25" r="5.51" fill="#ffffff" opacity="0.74" />
+    <circle cx="361.48" cy="527.21" r="7.32" fill="#ffffff" opacity="0.85" />
+    <circle cx="124.83" cy="756.15" r="5.51" fill="#ffffff" opacity="0.46" />
+    <circle cx="744.22" cy="496.85" r="3.52" fill="#ffffff" opacity="0.31" />
+    <circle cx="698.19" cy="297.33" r="2.8" fill="#ffffff" opacity="0.34" />
+    <circle cx="137.23" cy="794.68" r="6.26" fill="#ffffff" opacity="0.75" />
+    <circle cx="662.48" cy="234.59" r="4.86" fill="#ffffff" opacity="0.92" />
+    <circle cx="739.66" cy="211.61" r="6.39" fill="#ffffff" opacity="0.48" />
+    <circle cx="252.31" cy="234.63" r="4.83" fill="#ffffff" opacity="0.93" />
+    <circle cx="200.5" cy="705.32" r="3.41" fill="#ffffff" opacity="0.37" />
+    <circle cx="345.09" cy="455.2" r="3.88" fill="#ffffff" opacity="0.54" />
+    <circle cx="672.22" cy="331.06" r="4.92" fill="#ffffff" opacity="0.59" />
+    <circle cx="448.06" cy="372.59" r="7.29" fill="#ffffff" opacity="0.9" />
+    <circle cx="864.5" cy="355.97" r="5.56" fill="#ffffff" opacity="0.56" />
+    <circle cx="455.78" cy="295.47" r="5.43" fill="#ffffff" opacity="0.62" />
+    <circle cx="204.34" cy="320.16" r="5.83" fill="#ffffff" opacity="0.53" />
+    <circle cx="743.14" cy="466.15" r="7.15" fill="#ffffff" opacity="0.4" />
+    <circle cx="148.1" cy="810.1" r="5.09" fill="#ffffff" opacity="0.29" />
+    <circle cx="550.19" cy="367.17" r="3.33" fill="#ffffff" opacity="0.48" />
+    <circle cx="177.37" cy="791.8" r="4.74" fill="#ffffff" opacity="0.4" />
+    <circle cx="306.99" cy="674.66" r="5.4" fill="#ffffff" opacity="0.59" />
+    <circle cx="342.17" cy="454.03" r="5.01" fill="#ffffff" opacity="0.5" />
+    <circle cx="880.19" cy="614.87" r="5.09" fill="#ffffff" opacity="0.83" />
+    <circle cx="135.89" cy="190.22" r="6.24" fill="#ffffff" opacity="0.84" />
+    <circle cx="582.95" cy="594.4" r="3.46" fill="#ffffff" opacity="0.63" />
+    <circle cx="248.44" cy="286.27" r="4.65" fill="#ffffff" opacity="0.79" />
+    <circle cx="643.29" cy="718.46" r="4.49" fill="#ffffff" opacity="0.77" />
+    <circle cx="415.45" cy="146.89" r="3.35" fill="#ffffff" opacity="0.72" />
+    <circle cx="442.88" cy="319.72" r="7.31" fill="#ffffff" opacity="0.89" />
+    <circle cx="618.26" cy="778.29" r="5.82" fill="#ffffff" opacity="0.28" />
+    <circle cx="392.53" cy="434.67" r="6.87" fill="#ffffff" opacity="0.87" />
+    <circle cx="553.59" cy="422.13" r="5.06" fill="#ffffff" opacity="0.81" />
+    <circle cx="772.38" cy="141.01" r="6.29" fill="#ffffff" opacity="0.82" />
+    <circle cx="142.78" cy="881.97" r="4.45" fill="#ffffff" opacity="0.6" />
+    <circle cx="632.48" cy="814.87" r="6.55" fill="#ffffff" opacity="0.54" />
+    <circle cx="583.47" cy="238.78" r="5.58" fill="#ffffff" opacity="0.48" />
+    <circle cx="558.64" cy="876.32" r="6.53" fill="#ffffff" opacity="0.3" />
+    <circle cx="400.64" cy="405.81" r="3.06" fill="#ffffff" opacity="0.37" />
+    <circle cx="225.28" cy="465.96" r="5.54" fill="#ffffff" opacity="0.36" />
+    <path d="M 268 254 Q 274.44 293.56 314 300 Q 274.44 306.44 268 346 Q 261.56 306.44 222 300 Q 261.56 293.56 268 254 Z" fill="#ffffff" opacity="0.9" />
+    <path d="M 806 368 Q 810.76 397.24 840 402 Q 810.76 406.76 806 436 Q 801.24 406.76 772 402 Q 801.24 397.24 806 368 Z" fill="#ffffff" opacity="0.9" />
+    <path d="M 342 754 Q 347.32 786.68 380 792 Q 347.32 797.32 342 830 Q 336.68 797.32 304 792 Q 336.68 786.68 342 754 Z" fill="#ffffff" opacity="0.9" />
+    <path d="M 700 802 Q 703.64 824.36 726 828 Q 703.64 831.64 700 854 Q 696.36 831.64 674 828 Q 696.36 824.36 700 802 Z" fill="#ffffff" opacity="0.9" />
+    <rect x="100" y="100" width="824" height="824" fill="url(#space-halo)" />
+  </g>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)" />
+  <rect x="102" y="102" width="820" height="820" rx="183" fill="none" stroke="url(#rim)" stroke-width="4" />
+  <g fill="#ffffff">
+    <circle cx="698" cy="512" r="130" mask="url(#cut-0)" />
+    <circle cx="512" cy="512" r="130" mask="url(#cut-1)" />
+    <circle cx="326" cy="512" r="130" mask="url(#cut-2)" />
+  </g>
+</svg>
