@@ -389,10 +389,30 @@ ${spot({
     [1, '#0284c7', 0]
   ]
 })}
-${glow('space-halo', '#c7d2fe', 0.24)}`,
+${spot({
+  id: 'space-rose',
+  x: ctx.CENTRE + 250,
+  y: ctx.CENTRE - 270,
+  r: ctx.TILE.size * 0.36,
+  colour: '#f472b6',
+  at: [
+    [0, '#f9a8d4', 0.34],
+    [0.6, '#ec4899', 0.12],
+    [1, '#db2777', 0]
+  ]
+})}
+${glow('space-halo', '#c7d2fe', 0.2)}
+${glow('star-halo', '#dbe4ff', 0.5)}
+${blur('space-veil', 15)}`,
+    // The cloud is laid down blurriest first, so what is furthest off is softest,
+    // and the veil over the top is the one thin filament in front of all of it.
     art: ctx => `    <g filter="url(#space-cloud)">
       <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#space-violet)" />
       <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#space-cyan)" />
+      <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#space-rose)" />
+    </g>
+    <g filter="url(#space-veil)" opacity="0.5">
+      <path d="M ${ctx.TILE.x - 40} ${ctx.CENTRE + 210} C ${ctx.CENTRE - 210} ${ctx.CENTRE + 40} ${ctx.CENTRE + 120} ${ctx.CENTRE - 30} ${ctx.TILE.x + ctx.TILE.size + 40} ${ctx.TILE.y + 120}" fill="none" stroke="url(#space-violet)" stroke-width="150" />
     </g>
 ${spaceStars(ctx)}
     <rect x="${ctx.TILE.x}" y="${ctx.TILE.y}" width="${ctx.TILE.size}" height="${ctx.TILE.size}" fill="url(#space-halo)" />`
