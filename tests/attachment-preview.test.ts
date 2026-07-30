@@ -91,9 +91,9 @@ describe('the byte cap', () => {
   // Cutting on a byte lands mid-letter wherever the words are not plain ascii,
   // and a broken letter at the end reads as a file that arrived damaged.
   it('leaves no broken letter at the cut', () => {
-    const read = readText(words('née'.repeat(20)), 5)
+    const read = readText(words('née'.repeat(20)), 2)
 
-    expect(read.text.endsWith('�')).toBe(false)
+    expect(read.text).toBe('n')
   })
 })
 
