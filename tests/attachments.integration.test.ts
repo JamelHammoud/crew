@@ -245,21 +245,25 @@ describe('attachments', () => {
       attachments: [
         file('rows.csv', 'text/plain', Buffer.from('a,b\n1,2\n')),
         file('run.log', '', Buffer.from('started\n')),
+        file('.zshrc', '', Buffer.from('export PATH\n')),
+        file('main.tf', '', Buffer.from('resource {}\n')),
         file('shapes.sketch', 'application/octet-stream'),
         file('Makefile', '', Buffer.from('all:\n'))
       ]
     })
 
     const seen = (await ui.waitForEvent(e => e.kind === 'message')) as Message
-    const [csv, log, sketch, make] = seen.attachments!
+    const [csv, log, rc, tf, sketch, make] = seen.attachments!
     expect(csv.file.endsWith('.csv')).toBe(true)
     expect(csv.mime).toBe('text/csv')
     expect(log.mime).toBe('text/plain')
+    expect(rc.mime).toBe('text/plain')
+    expect(tf.mime).toBe('text/plain')
     expect(sketch.file.endsWith('.sketch')).toBe(true)
     expect(sketch.mime).toBe('application/octet-stream')
     expect(make.file.endsWith('.bin')).toBe(true)
 
-    for (const attachment of [csv, log, sketch, make]) {
+    for (const attachment of [csv, log, rc, tf, sketch, make]) {
       const res = await fetch(`${base}/attachments/${attachment.file}`)
       expect(res.status).toBe(200)
       expect(res.headers.get('content-type')).toBe(attachment.mime)
