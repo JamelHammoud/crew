@@ -205,6 +205,7 @@ interface CrewState {
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
   moveAttachments: (from: string, to: string) => void
+  setAttachmentLimit: (mb: number) => void
   sendChat: (
     text: string,
     threadId?: string,
@@ -316,7 +317,8 @@ const EMPTY = {
   chatCommands: [],
   threadDrafts: {},
   threadCommands: {},
-  pending: {}
+  pending: {},
+  attachmentMb: DEFAULT_ATTACHMENT_MB
 }
 
 export const CHAT_KEY = 'chat'
