@@ -16,6 +16,16 @@
     "files": [
       "out/**"
     ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "cli/bin"
+      },
+      {
+        "from": "package.json",
+        "to": "cli/package.json"
+      }
+    ],
     "asarUnpack": [
       "**/node_modules/node-pty/**",
       "**/node_modules/uiohook-napi/**",
