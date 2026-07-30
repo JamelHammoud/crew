@@ -64,11 +64,15 @@ export default function MessageReactions({
           than a message in the side panel, so the tray wraps onto a second line
           rather than hanging off the left edge of the message it is pinned to.
           Nothing in it gives up its own width for that: a button squashed to fit
-          is a smaller thing to aim at than the one beside it. */}
+          is a smaller thing to aim at than the one beside it.
+          It is pinned by its bottom edge and grows upward, the way the ask bar on
+          a board grows away from what it is asking about. Anchored at the top, a
+          second line reaches down over the message the tray is about, which takes
+          away the one thing on screen it refers to. */}
       <div
         ref={tray}
         onFocus={() => setDismissed(false)}
-        className={`absolute right-0 -top-4 z-10 flex select-none flex-wrap items-center justify-end gap-px rounded-full border border-ink-700 bg-ink-800 p-0.5 shadow-[0_8px_24px_rgb(0_0_0/0.24)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`absolute right-0 bottom-full -mb-[18px] z-10 flex select-none flex-wrap items-center justify-end gap-px rounded-full border border-ink-700 bg-ink-800 p-0.5 shadow-[0_8px_24px_rgb(0_0_0/0.24)] transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           menuOpen
             ? 'translate-y-0 opacity-100'
             : dismissed
