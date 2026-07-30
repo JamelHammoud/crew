@@ -14,6 +14,7 @@ import { baselineOf } from './baseline'
 import CodeRows from './CodeRows'
 import FileTree from './FileTree'
 import { diffRows, editDoc, firstChange, joinRows, plainRows, rowAt, snap, toDoc, toShown } from './diffRows'
+import { useFileMenu } from './fileMenu'
 import ImageView from './ImageView'
 import Spinner from './Spinner'
 
