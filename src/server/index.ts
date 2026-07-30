@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import http from 'node:http'
 import { WebSocketServer, WebSocket } from 'ws'
 import { isAttachmentFile, mimeForFile } from '../shared/attachments'
+import { mimeForCustomEmoji } from '../shared/customEmoji'
 import { mimeForMusic } from '../shared/music'
 import { MAX_FRAME_BYTES } from '../shared/protocol'
 import type { DesignOp } from '../shared/design'
@@ -73,6 +74,21 @@ function serveMusic(session: CrewSession, file: string, res: http.ServerResponse
     return
   }
   res.writeHead(200, { 'content-type': mimeForMusic(file), ...MEDIA_HEADERS })
+  fs.createReadStream(full)
+    .on('error', () => res.end())
+    .pipe(res)
+}
+
+// An emoji the crew drew themselves, read from everyone's own copy. The name is a
+// uuid the host wrote, so there is nothing in it to walk out of the folder with.
+function serveCustomEmoji(session: CrewSession, file: string, res: http.ServerResponse): void {
+  const full = session.customEmojiPath(file)
+  if (!full) {
+    res.writeHead(404)
+    res.end()
+    return
+  }
+  res.writeHead(200, { 'content-type': mimeForCustomEmoji(file), ...MEDIA_HEADERS })
   fs.createReadStream(full)
     .on('error', () => res.end())
     .pipe(res)
