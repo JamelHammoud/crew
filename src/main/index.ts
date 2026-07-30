@@ -681,5 +681,6 @@ app.on('before-quit', () => {
   scribeKeys.close()
   scribe.close()
   updates.close()
-  void session.shutdown()
+  crews.forget()
+  void settle()
 })
