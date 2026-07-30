@@ -84,6 +84,7 @@ const bridge = {
   openWindow: (): void => ipcRenderer.send('tray:open'),
   closeTray: (): void => ipcRenderer.send('tray:hide'),
   setTheme: (theme: 'dark' | 'light'): Promise<void> => ipcRenderer.invoke('app:theme', theme),
+  keepAwake: (on: boolean): void => ipcRenderer.send('app:awake', on),
   notify: (alert: AgentAlert): Promise<void> => ipcRenderer.invoke('app:notify', alert),
   onNotificationOpen: (listener: (threadId: string) => void): (() => void) => {
     const handler = (_event: unknown, threadId: string) => listener(threadId)
