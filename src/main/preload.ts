@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { AgentAlert } from '../shared/alerts'
+import type { OpenRequest } from '../shared/cli'
 import type { PathLocation, RepoFile } from '../shared/files'
 import type { MediaAccess, MediaKind, ScreenSource } from '../shared/media'
 import type { Present, PresenceSnapshot } from '../shared/presence'
