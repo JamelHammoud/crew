@@ -210,6 +210,79 @@ describe('the file explorer', () => {
     expect(activeTab().open).toEqual(['src'])
   })
 
+  it('opens a file from the tree in a tab of its own, leaving the one it was picked from', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByText('src'))
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+
+    fireEvent.contextMenu(rowFor('src/app.ts')!)
+    fireEvent.click(screen.getByText('Open in a new tab'))
+
+    const tabs = useBrowser.getState().tabs
+    expect(tabs.length).toBe(2)
+    expect(tabs[0]!.path).toBe('')
+    expect(tabs[0]!.tree).toBe(true)
+    expect(activeTab().id).toBe(tabs[1]!.id)
+    expect(activeTab().path).toBe('src/app.ts')
+    expect(await screen.findByText('export const one = 1')).toBeTruthy()
+  })
+
+  it('opens a file from the folder listing in a tab of its own', async () => {
+    useBrowser.getState().openFile('src')
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+
+    fireEvent.contextMenu(rowFor('src/app.ts')!)
+    fireEvent.click(screen.getByText('Open in a new tab'))
+
+    expect(useBrowser.getState().tabs.length).toBe(2)
+    expect(activeTab().path).toBe('src/app.ts')
+  })
+
+  it('opens a folder from the listing in a tab of its own', async () => {
+    useBrowser.getState().openFile('')
+    render(createElement(BrowserPanel))
+    await waitFor(() => expect(document.querySelector('[data-folder="src"]')).toBeTruthy())
+
+    fireEvent.contextMenu(document.querySelector('[data-folder="src"]') as HTMLElement)
+    fireEvent.click(screen.getByText('Open in a new tab'))
+
+    expect(useBrowser.getState().tabs.length).toBe(2)
+    expect(activeTab().path).toBe('src')
+    expect(await screen.findByText('app.ts')).toBeTruthy()
+  })
+
+  // A second tab on the file already showing is the whole reason to ask for one:
+  // it keeps this file while the tab it was picked from goes on somewhere else.
+  it('opens a second tab on the file already showing', async () => {
+    useBrowser.getState().openFile('src/app.ts')
+    render(createElement(BrowserPanel))
+    fireEvent.click(await screen.findByLabelText('Show files'))
+    await waitFor(() => expect(rowFor('src/app.ts')).toBeTruthy())
+
+    fireEvent.contextMenu(rowFor('src/app.ts')!)
+    fireEvent.click(screen.getByText('Open in a new tab'))
+
+    const tabs = useBrowser.getState().tabs
+    expect(tabs.length).toBe(2)
+    expect(tabs.every(tab => tab.path === 'src/app.ts')).toBe(true)
+  })
+
+  it('opens a file straight from the filter into a tab of its own', async () => {
+    useBrowser.getState().openFiles()
+    render(createElement(BrowserPanel))
+    await screen.findByText('src')
+    fireEvent.change(screen.getByLabelText('Filter files'), { target: { value: 'panel' } })
+    await waitFor(() => expect(rowFor('src/renderer/panel.tsx')).toBeTruthy())
+
+    fireEvent.contextMenu(rowFor('src/renderer/panel.tsx')!)
+    fireEvent.click(screen.getByText('Open in a new tab'))
+
+    expect(useBrowser.getState().tabs.length).toBe(2)
+    expect(activeTab().path).toBe('src/renderer/panel.tsx')
+  })
+
   it('shows the files beside the one being looked at, not some other tab', () => {
     useBrowser.getState().openFile('src/app.ts')
     useBrowser.getState().openFile('src/renderer/panel.tsx')
