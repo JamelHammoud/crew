@@ -248,24 +248,10 @@ const scanlines = ({ TILE }) => {
   return lines.join('\n')
 }
 
-// A prompt, a block cursor and a run of code, all drawn rather than typeset: a
-// face that is not on the machine rasterising this would come out as something
-// else, and the rest of the set is drawn too.
-const terminalCode = ({ TILE, CENTRE }) => {
-  const chevron = `    <path d="M 246 258 L 322 316 L 246 374" fill="none" stroke="${PHOSPHOR}" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" opacity="0.62" />`
-  const cursor = `    <rect x="366" y="266" width="52" height="100" rx="6" fill="${PHOSPHOR}" opacity="0.5" />`
-  const bars = [
-    [246, 690, 300],
-    [246, 758, 196],
-    [472, 758, 128],
-    [246, 826, 232]
-  ].map(
-    ([x, y, width]) =>
-      `    <rect x="${x}" y="${y}" width="${width}" height="30" rx="15" fill="${PHOSPHOR}" opacity="${x === 472 ? 0.24 : 0.36}" />`
-  )
-  const under = `    <rect x="${TILE.x}" y="${round(CENTRE + 232)}" width="${TILE.size}" height="4" fill="${PHOSPHOR}" opacity="0.16" />`
-  return [chevron, cursor, ...bars, under].join('\n')
-}
+// Nothing stands on the tube but the mark. A prompt and a run of code were drawn
+// in behind it once, and they are the machinery of the joke rather than the joke:
+// the phosphor, the scanlines and the bloom off the mark are what say terminal,
+// and anything else in there is a second thing to read at 16 across.
 
 export const SKINS = [
   {
