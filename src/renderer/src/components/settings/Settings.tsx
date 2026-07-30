@@ -13,7 +13,7 @@ import People from './People'
 import Scribe from './Scribe'
 import SoundAndVideo from './SoundAndVideo'
 import You from './You'
-import { GROUPS, SETTINGS_TABS, tabLabel } from './tabs'
+import { GROUPS, settingsTabs, tabLabel } from './tabs'
 
 const WIDTH = 940
 const HEIGHT = 620
