@@ -60,6 +60,10 @@ export default function MessageReactions({
 
   return (
     <>
+      {/* The row is as long as somebody has made it, and the tray is only ever
+          as wide as the message it hangs off, so nothing in it may give up its
+          own width: ten reactions in a narrow panel wrap onto a second line
+          rather than squashing every button down to fit one. */}
       <div
         ref={tray}
         onFocus={() => setDismissed(false)}
