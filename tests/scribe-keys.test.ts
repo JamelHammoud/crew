@@ -218,11 +218,11 @@ describe('what arrives is only as good as what checks it', () => {
     expect(cleanSettings('nonsense', 'win32')).toEqual(defaultSettings('win32'))
   })
 
-  it('keeps the pill visible by default and accepts hotkey-only visibility', () => {
-    const always = cleanSettings({ on: true }, 'darwin')
-    const hotkey = cleanSettings({ on: true, always: false }, 'darwin')
-    expect(restsOnScreen(always)).toBe(true)
+  it('shows the pill only while dictating until it is asked to stay', () => {
+    const hotkey = cleanSettings({ on: true }, 'darwin')
+    const always = cleanSettings({ on: true, always: true }, 'darwin')
     expect(restsOnScreen(hotkey)).toBe(false)
+    expect(restsOnScreen(always)).toBe(true)
   })
 
   it('keeps a dictionary and throws out the rows that say nothing', () => {
