@@ -271,6 +271,17 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = { ...makeTab(src), kind: 'image' as const, title: name }
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    // A file in the panel, whatever it is. One already standing on the same file
+    // is brought to the front rather than read a second time beside itself.
+    openAttachment: (url, name, mime, size = 0) => {
+      const existing = get().tabs.find(t => t.kind === 'attachment' && t.initialUrl === url)
+      if (existing) {
+        set({ activeTabId: existing.id })
+        return
+      }
+      const tab = { ...makeTab(url), kind: 'attachment' as const, title: name, mime, size }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
     openFile: (path, line = null, diff = null) => {
       const { tabs, activeTabId } = get()
       const existing = tabs.find(t => t.kind === 'file' && t.path === path)
