@@ -1032,6 +1032,35 @@ export const useCrew = create<CrewState>((set, get) => {
     removeTool: toolId => {
       socket.send({ type: 'tool.remove', toolId })
     },
+    // A picture the whole crew will have. The host keeps it beside the session
+    // and says so to everyone, so nothing is written down here on the way out.
+    // What comes back is the one line to say where it did not go: the name is
+    // what somebody types to reach it, so a name that cannot be one and a name
+    // already answering to something are both worth saying rather than a picture
+    // that quietly does not appear.
+    addCustomEmoji: async (name, file) => {
+      const clean = cleanCustomEmojiName(name)
+      if (!clean) return 'Give it a name in letters and numbers'
+      if (customEmojiNameTaken(get().emoji, clean)) return `:${clean}: is already taken`
+      if (get().emoji.length >= MAX_CUSTOM_EMOJI) return 'The crew has as many emoji as it can hold'
+      if (!customEmojiExtension(file.type)) return 'That file is not a picture Crew can draw'
+      if (file.size > CUSTOM_EMOJI_MAX_BYTES) return 'That picture is too big for an emoji'
+      try {
+        const data = await base64Of(file)
+        if (!data) return 'That picture could not be read'
+        socket.send({ type: 'emoji.add', name: clean, mime: file.type, data })
+        return null
+      } catch {
+        return 'That picture could not be read'
+      }
+    },
+    renameCustomEmoji: (emojiId, name) => {
+      const clean = cleanCustomEmojiName(name)
+      if (clean) socket.send({ type: 'emoji.rename', emojiId, name: clean })
+    },
+    removeCustomEmoji: emojiId => {
+      socket.send({ type: 'emoji.remove', emojiId })
+    },
     stopSubagent: threadId => {
       socket.send({ type: 'subagent.stop', threadId })
     },
