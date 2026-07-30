@@ -110,7 +110,7 @@ describe('the row somebody chose', () => {
     expect(quickReactions()).toEqual(['🔥'])
   })
 
-  it('takes one of the crew's own onto the row', () => {
+  it("takes one of the crew's own onto the row", () => {
     setQuickReactions([])
     addQuickReaction(':party_parrot:')
     expect(quickReactions()).toEqual([':party_parrot:'])
