@@ -1,19 +1,27 @@
 import { useSyncExternalStore } from 'react'
-import { NO_UPDATE, type UpdateState } from '../../../shared/update'
+import { NO_UPDATE, type UpdateState, type UpdateWhy } from '../../../shared/update'
 import { toast } from './toast'
 
 const listeners = new Set<() => void>()
 let state: UpdateState = NO_UPDATE
 let watching = false
 
-function put(next: UpdateState): void {
-  // A download that was asked for and did not arrive is a moment rather than a
-  // record: the pill is still standing there offering it again.
-  if (next.stage === 'failed' && state.stage !== 'failed') {
-    toast.fail('The update did not arrive', { key: 'update' })
+function say(why: UpdateWhy): void {
+  // An update that did not happen is a moment rather than a record: the pill is
+  // still standing there offering it again.
+  if (why === 'others') {
+    toast('Close your other Crew windows to update', { key: 'update' })
+    return
   }
+  const word = why === 'install' ? 'Crew did not update' : 'The update did not arrive'
+  toast.fail(word, { key: 'update' })
+}
+
+function put(next: UpdateState): void {
+  const told = next.why && next.told !== state.told
   state = next
   for (const listener of listeners) listener()
+  if (told) say(next.why)
 }
 
 export function watchUpdates(): () => void {
