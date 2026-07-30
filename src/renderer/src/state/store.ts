@@ -803,6 +803,9 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'music.playlists':
         for (const listener of playlistListeners) listener(msg.playlists)
         break
+      case 'emoji.set':
+        set({ emoji: msg.emoji })
+        break
       case 'game.scores':
         set({ scores: msg.scores })
         break
