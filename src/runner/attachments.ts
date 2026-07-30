@@ -54,8 +54,16 @@ export class AttachmentCache {
   }
 }
 
+const listOf = (attachments: LocalAttachment[]): string =>
+  attachments.map(a => `- ${a.path} (${a.name})`).join('\n')
+
 export function promptWithAttachments(text: string, attachments: LocalAttachment[]): string {
   if (attachments.length === 0) return text
-  const list = attachments.map(a => `- ${a.path} (${a.name})`).join('\n')
-  return [text, '', 'Images shared with this message, read them from disk:', list].join('\n')
+  const images = attachments.filter(a => a.image)
+  const files = attachments.filter(a => !a.image)
+  return [
+    text,
+    ...(images.length > 0 ? ['', 'Images shared with this message, read them from disk:', listOf(images)] : []),
+    ...(files.length > 0 ? ['', 'Files shared with this message, read them from disk:', listOf(files)] : [])
+  ].join('\n')
 }
