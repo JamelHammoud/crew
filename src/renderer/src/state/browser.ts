@@ -60,6 +60,7 @@ type BrowserState = {
   openUrl(url: string): void
   openImage(src: string, name: string): void
   openFile(path: string, line?: number | null, diff?: string | null): void
+  addFileTab(path: string): void
   openFiles(): void
   openMusic(): void
   openGame(): void
