@@ -106,6 +106,15 @@ describe('the Crew it opens', () => {
     expect(launch).toEqual({ command: electron, args: ['/repo'] })
   })
 
+  // The command that ships inside the app is the app itself in node's clothing,
+  // and that rides in the environment. Passed on, the Crew being opened comes up
+  // as a node process with no window.
+  it('is opened as an app, never as another node', () => {
+    const env = childEnv({ ELECTRON_RUN_AS_NODE: '1', CREW_APP: '/Applications/Crew.app/x', PATH: '/bin' })
+    expect(env.ELECTRON_RUN_AS_NODE).toBeUndefined()
+    expect(env).toEqual({ CREW_APP: '/Applications/Crew.app/x', PATH: '/bin' })
+  })
+
   it('is nothing when there is no build and no app', () => {
     const electron = path.join('/repo', 'node_modules', '.bin', 'electron')
     expect(appLaunch('darwin', {}, '/Users/jamel', '/repo', has(electron))).toBeNull()
