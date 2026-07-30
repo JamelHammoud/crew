@@ -185,7 +185,7 @@ describe('the row on the tray', () => {
     expect(row()).toEqual(['React with :fire:', 'React with :eyes:'])
   })
 
-  it('reacts with one of the crew's own by the name it is written as', () => {
+  it("reacts with one of the crew's own by the name it is written as", () => {
     setQuickReactions([':party_parrot:'])
     const reactToMessage = mount()
 

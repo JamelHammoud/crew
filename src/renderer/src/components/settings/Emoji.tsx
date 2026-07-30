@@ -180,7 +180,7 @@ function EmojiRow({ emoji }: { emoji: CustomEmoji }) {
         picture={<EmojiChar char={ref} size={32} />}
         name={emoji.name}
         onClose={() => setNaming(false)}
-        onSubmit={rename}
+        onSubmit={name => renameCustomEmoji(emoji.id, name)}
       />
     </div>
   )
