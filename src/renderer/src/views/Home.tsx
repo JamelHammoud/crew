@@ -197,7 +197,14 @@ export default function Home() {
       )
     }
     if (screen === 'where' && asking) {
-      return <WhereTo busy={busy} onPick={home => void open(asking, `project:${asking}`, name.trim(), { home })} />
+      return (
+        <WhereTo
+          busy={busy}
+          onPick={home =>
+            void open(asking.folder, `project:${asking.folder}`, name.trim(), { home, share: asking.share })
+          }
+        />
+      )
     }
     if (screen === 'link') {
       return (
