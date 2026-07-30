@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'
 import { entriesOf, unpacks } from '../src/renderer/src/components/attachment/archive'
 import { readText, TEXT_LIMIT } from '../src/renderer/src/components/attachment/bytes'
 import { ROW_CAP, sheetsFrom } from '../src/renderer/src/components/attachment/sheet'
-import { viewFor } from '../src/renderer/src/components/attachment/view'
+import { bothWays, viewFor } from '../src/renderer/src/components/attachment/view'
 import { useBrowser } from '../src/renderer/src/state/browser'
 
 const buffer = (bytes: Uint8Array): ArrayBuffer => bytes.slice().buffer as ArrayBuffer
