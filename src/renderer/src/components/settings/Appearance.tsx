@@ -111,9 +111,7 @@ export default function Appearance() {
               key={choice.theme}
               onClick={() => applyTheme(choice.theme)}
               aria-pressed={on}
-              className={`rounded-card p-1.5 border text-left transition-colors duration-150 active:scale-[0.99] ${
-                on ? 'border-fg/40 bg-fg/[0.04]' : 'border-fg/10 hover:border-fg/25'
-              }`}
+              className={`${CARD} ${on ? PICKED : RESTING} p-1.5 text-left`}
             >
               <Preview theme={choice.theme} />
               <span className="flex items-center gap-1.5 px-2 pt-2.5 pb-1 text-sm font-medium text-fg">
