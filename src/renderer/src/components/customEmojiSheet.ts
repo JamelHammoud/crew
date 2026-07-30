@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react'
 import {
   customEmojiNameIn,
   customEmojiUrl,
@@ -15,10 +16,31 @@ import {
 
 let held: readonly CustomEmoji[] = []
 let base = ''
+// What has been drawn already was drawn against the sheet as it stood. An emoji
+// added while a message naming it is on screen has to reach that message, and
+// what draws it is memoized on the words alone, so the sheet says when it has
+// changed and anything drawing from it works its picture out again.
+let version = 0
+const listeners = new Set<() => void>()
 
 export function holdCustomEmoji(list: readonly CustomEmoji[], httpBase: string): void {
+  // The store says this on every change it makes, so only a real change to the
+  // sheet is worth redrawing the app for.
+  if (list === held && httpBase === base) return
   held = list
   base = httpBase
+  version += 1
+  for (const listener of listeners) listener()
+}
+
+export function useCustomEmoji(): number {
+  return useSyncExternalStore(
+    listener => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+    () => version
+  )
 }
 
 export function customEmojiSheet(): readonly CustomEmoji[] {
