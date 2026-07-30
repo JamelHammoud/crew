@@ -84,7 +84,10 @@ export async function askCaret(
   ours: OwnCaret = elsewhere,
   platform: string = process.platform
 ): Promise<Landing> {
-  const own = await within(ours(), null)
+  const own = await within(
+    Promise.resolve().then(ours),
+    null
+  )
   if (own) return own
   if (platform !== 'darwin') return 'unknown'
   return new Promise(answer => {
