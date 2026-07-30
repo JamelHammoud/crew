@@ -191,31 +191,67 @@ const sakuraBlossoms = ({ CENTRE }) => {
 
 // SPACE ----------------------------------------------------------------------
 
-const SPACE_STARS = 46
+// A field of even dots is a dark tile with dust on it. What makes one read as
+// depth is that the stars are not all the same distance away: the far ones are
+// small, dim and take the colour of whatever cloud they are behind, the near ones
+// are bright and carry the four points a bright star reads with, and the whole
+// field thins out where the cloud is brightest, the way a real one is washed out
+// by what is in front of it.
 
-const spaceStars = ({ TILE }) => {
-  const pick = rng('space stars')
-  const stars = []
-  for (let index = 0; index < SPACE_STARS; index++) {
-    const x = between(pick, TILE.x + 18, TILE.x + TILE.size - 18)
-    const y = between(pick, TILE.y + 18, TILE.y + TILE.size - 18)
-    const r = between(pick, 2.6, 7.4)
-    stars.push(
-      `    <circle cx="${x}" cy="${y}" r="${r}" fill="#ffffff" opacity="${between(pick, 0.28, 0.95)}" />`
+const SPACE_DUST = 120
+const SPACE_NEAR = 26
+
+// How bright the cloud is at a point, which is what decides whether a star there
+// survives. Two soft centres, the same two the nebula is painted from.
+const cloudAt = (x, y, { CENTRE, TILE }) => {
+  const one = Math.hypot(x - (CENTRE - 130), y - (CENTRE - 96)) / (TILE.size * 0.5)
+  const two = Math.hypot(x - (CENTRE + 180), y - (CENTRE + 168)) / (TILE.size * 0.44)
+  return Math.max(0, 1 - one) * 0.8 + Math.max(0, 1 - two) * 0.6
+}
+
+const spaceStars = ctx => {
+  const { TILE } = ctx
+  const pick = rng('space stars deep')
+  const dust = []
+  for (let index = 0; index < SPACE_DUST; index++) {
+    const x = between(pick, TILE.x + 10, TILE.x + TILE.size - 10)
+    const y = between(pick, TILE.y + 10, TILE.y + TILE.size - 10)
+    const washed = cloudAt(x, y, ctx)
+    if (pick() < washed * 0.75) continue
+    const r = between(pick, 1.6, 3.4)
+    dust.push(
+      `    <circle cx="${x}" cy="${y}" r="${r}" fill="#cfd8ff" opacity="${round(between(pick, 0.2, 0.55) * (1 - washed * 0.5))}" />`
     )
   }
-  // A few carry the four points a bright one reads with, drawn rather than
-  // blurred: a blurred dot is a smudge, and the points are the whole shape.
+  const near = []
+  for (let index = 0; index < SPACE_NEAR; index++) {
+    const x = between(pick, TILE.x + 16, TILE.x + TILE.size - 16)
+    const y = between(pick, TILE.y + 16, TILE.y + TILE.size - 16)
+    const r = between(pick, 4, 8.4)
+    const lit = round(between(pick, 0.7, 1) * (1 - cloudAt(x, y, ctx) * 0.35))
+    near.push(
+      `    <circle cx="${x}" cy="${y}" r="${r}" fill="#ffffff" opacity="${lit}" />
+    <circle cx="${x}" cy="${y}" r="${round(r * 3.4)}" fill="url(#star-halo)" opacity="${round(lit * 0.5)}" />`
+    )
+  }
+  // The four points a bright star reads with, drawn rather than blurred: a
+  // blurred dot is a smudge, and the points are the whole shape. Each one is
+  // turned off the grid, or four crosses all square to the tile read as a
+  // pattern rather than as stars.
   const sparks = [
-    { x: 268, y: 300, r: 46 },
-    { x: 806, y: 402, r: 34 },
-    { x: 342, y: 792, r: 38 },
-    { x: 700, y: 828, r: 26 }
-  ].map(
-    ({ x, y, r }) =>
-      `    <path d="M ${x} ${y - r} Q ${x + round(r * 0.14)} ${y - round(r * 0.14)} ${x + r} ${y} Q ${x + round(r * 0.14)} ${y + round(r * 0.14)} ${x} ${y + r} Q ${x - round(r * 0.14)} ${y + round(r * 0.14)} ${x - r} ${y} Q ${x - round(r * 0.14)} ${y - round(r * 0.14)} ${x} ${y - r} Z" fill="#ffffff" opacity="0.9" />`
-  )
-  return [...stars, ...sparks].join('\n')
+    { x: 262, y: 288, r: 54, turn: 0 },
+    { x: 812, y: 396, r: 40, turn: 18 },
+    { x: 336, y: 800, r: 46, turn: -14 },
+    { x: 706, y: 838, r: 30, turn: 8 },
+    { x: 596, y: 196, r: 34, turn: 24 }
+  ].map(({ x, y, r, turn }) => {
+    const waist = round(r * 0.11)
+    return `    <g transform="translate(${x} ${y}) rotate(${turn})">
+      <path d="M 0 ${-r} Q ${waist} ${-waist} ${r} 0 Q ${waist} ${waist} 0 ${r} Q ${-waist} ${waist} ${-r} 0 Q ${-waist} ${-waist} 0 ${-r} Z" fill="#ffffff" />
+      <circle cx="0" cy="0" r="${round(r * 2.6)}" fill="url(#star-halo)" opacity="0.7" />
+    </g>`
+  })
+  return [...dust, ...near, ...sparks].join('\n')
 }
 
 // GRADIENT -------------------------------------------------------------------
