@@ -93,7 +93,7 @@ const scribeKeys = new ScribeKeys({
     // moved on, and words held behind a dictation that is already running are
     // words nobody is coming back to copy.
     scribe.release()
-    scribeAim = askCaret()
+    scribeAim = askCaret(caretInCrew)
     scribe.show()
     scribe.send('scribe:arm')
   },
