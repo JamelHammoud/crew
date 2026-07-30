@@ -267,14 +267,28 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                       <ChevronLeftGlyph className="w-5 h-5" />
                     </button>
                   </Tooltip>
-                  <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0">
-                    <span className="flex items-center gap-3 min-w-0 cursor-default">
-                      {nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH && (
-                        <AgentIcon seed={thread.agentId} presence={agentPresence} />
-                      )}
-                      <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
-                    </span>
-                  </MemberName>
+                  {/* Who the thread is with, and what it is about. The ask is
+                      the thread's own name for itself and it is the one thing
+                      this row could not say, so it stands under the agent's
+                      name and lines up with it. Pressing it goes to the head of
+                      the thread, where the whole of it is written. */}
+                  <div className="min-w-0 flex-1 flex flex-col items-start">
+                    <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0 max-w-full">
+                      <span className="flex items-center gap-3 min-w-0 cursor-default">
+                        {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} />}
+                        <span className="text-base font-bold text-fg truncate">{thread.agentLabel}</span>
+                      </span>
+                    </MemberName>
+                    {ask && nameWidth >= ASK_MIN_WIDTH && (
+                      <button
+                        onClick={jumpToTop}
+                        style={{ paddingLeft: showPet ? AVATAR_WIDTH : 0 }}
+                        className="max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
+                      >
+                        {ask}
+                      </button>
+                    )}
+                  </div>
                   <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 shrink-0">
                     {/* Why the answers here are one line each. Without it the
                         thread reads as an agent being terse for no reason. */}
