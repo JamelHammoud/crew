@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import type { AgentAlert } from '../../shared/alerts'
+import type { AppIconId } from '../../shared/appIcon'
 import type { OpenRequest } from '../../shared/cli'
 import type { CommandDone, CommandState } from '../../shared/crewCommand'
 import type { PathLocation, RepoFile } from '../../shared/files'
