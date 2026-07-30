@@ -1,4 +1,3 @@
-import { isImageType } from '../../../shared/attachments'
 import { create } from 'zustand'
 
 export type BrowserTab = {
