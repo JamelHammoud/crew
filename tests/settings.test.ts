@@ -127,7 +127,7 @@ describe('the settings', () => {
 
   it('holds no solid grey on the glass', () => {
     show()
-    for (const tab of ['you', 'appearance', 'sound', 'command', 'people', 'agents', 'files'] as const) {
+    for (const tab of ['you', 'appearance', 'sound', 'power', 'command', 'people', 'agents', 'files'] as const) {
       act(() => openSettings(tab))
       for (const el of card().querySelectorAll('*')) {
         expect(el.getAttribute('class') ?? '').not.toMatch(/text-fg-(muted|faint|secondary)/)
@@ -225,6 +225,24 @@ describe('the settings', () => {
     expect(window.crew.installCommand).toHaveBeenCalled()
     expect(await screen.findByRole('button', { name: 'Remove' })).toBeTruthy()
     expect(within(card()).getByText('/usr/local/bin/crew')).toBeTruthy()
+  })
+
+  // Whether this machine sleeps is yours alone, so it is written down where you
+  // sit and main is told in the same breath as the switch being turned.
+  it('lets this machine sleep until you say otherwise', () => {
+    show('power')
+    const row = screen.getByRole('switch', { name: 'Keep this computer awake' })
+    expect(row.getAttribute('aria-checked')).toBe('false')
+    expect(awake()).toBe(false)
+
+    fireEvent.click(row)
+    expect(row.getAttribute('aria-checked')).toBe('true')
+    expect(awake()).toBe(true)
+    expect(window.crew.keepAwake).toHaveBeenLastCalledWith(true)
+
+    fireEvent.click(row)
+    expect(awake()).toBe(false)
+    expect(window.crew.keepAwake).toHaveBeenLastCalledWith(false)
   })
 
   it('never says photo in words: your face is where a photo is changed', () => {
