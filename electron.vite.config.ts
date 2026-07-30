@@ -1,6 +1,7 @@
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import pdfjsAssets from './pdfjs-assets'
 
 export default defineConfig({
   main: {
@@ -20,7 +21,7 @@ export default defineConfig({
   },
   renderer: {
     root: 'src/renderer',
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), pdfjsAssets()],
     // Pre-bundling would drop the ?url suffix its font and icon imports rely on.
     optimizeDeps: { exclude: ['@tldraw/assets'] },
     build: { rollupOptions: { input: 'src/renderer/index.html' } }
