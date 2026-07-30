@@ -82,6 +82,9 @@ declare global {
     onScribe(listener: (word: 'arm' | 'finish' | 'cancel') => void): () => void
     onScribeSettings(listener: (settings: ScribeSettings) => void): () => void
     onScribeProblem(listener: (problem: string | null) => void): () => void
+    copyScribeHeld(): void
+    letGoScribeHeld(): void
+    onScribeHeld(listener: (text: string) => void): () => void
     updateState(): Promise<UpdateState>
     pressUpdate(): Promise<void>
     onUpdate(listener: (state: UpdateState) => void): () => void
