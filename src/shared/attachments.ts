@@ -127,8 +127,12 @@ export const ATTACHMENT_MB_STEPS = [
 // a window's, so it is offered wherever it falls.
 export const SHARED_ATTACHMENT_MB = 500
 
+// A megabyte is a million bytes here, which is what the Finder counts in and
+// what a file says it is everywhere somebody would go and check. Counting the
+// limit in one unit and saying it in another is how a ten megabyte limit turns
+// away a file the machine calls ten megabytes.
 export const attachmentBytes = (mb: number): number =>
-  mb === ATTACHMENT_UNLIMITED ? Number.POSITIVE_INFINITY : mb * 1024 * 1024
+  mb === ATTACHMENT_UNLIMITED ? Number.POSITIVE_INFINITY : mb * 1000 * 1000
 
 const bySize = (mbs: number[]): number[] => [...mbs].sort((a, b) => attachmentBytes(a) - attachmentBytes(b))
 

@@ -45,9 +45,13 @@ export function commandScript(place: CommandPlace): string | null {
   return path.join(place.resourcesPath, 'cli', 'bin', 'crew')
 }
 
-function quoted(text: string): string {
+// One word to a shell, whatever it is made of. A folder with a space or an
+// apostrophe in it is an ordinary folder, and the line below is handed to sh.
+export function shellWord(text: string): string {
   return `'${text.split("'").join(`'\\''`)}'`
 }
+
+const quoted = shellWord
 
 export function installLine(script: string): string {
   return `mkdir -p ${quoted(COMMAND_DIR)} && ln -sf ${quoted(script)} ${quoted(COMMAND_LINK)}`
