@@ -36,10 +36,10 @@ export function shipsCommand(platform: string): boolean {
 
 // A packaged app carries the command beside its own resources, as a shell
 // script that runs the app itself as node, so the machine it lands on needs no
-// node of its own. A run from source has the checkout to point at instead.
-// The pieces are joined by hand rather than through node's path, because the
-// rail in the settings reads this file too and nothing in the renderer may reach
-// for node. Every machine this runs on writes a path the one way.
+// node of its own. A run from source has the checkout to point at instead. The
+// pieces are joined by hand rather than through node's path, because the rail in
+// the settings reads this file too and nothing in the renderer may reach for
+// node.
 export function commandScript(place: CommandPlace): string | null {
   if (!shipsCommand(place.platform)) return null
   if (place.fromSource) return `${place.appPath}/bin/crew.mjs`
