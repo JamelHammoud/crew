@@ -31,6 +31,7 @@ const bridge = {
   projects: (): Promise<RecentProject[]> => ipcRenderer.invoke('session:projects'),
   forgetProject: (folder: string): Promise<void> => ipcRenderer.invoke('session:forget', folder),
   forgetJoin: (link: string): Promise<void> => ipcRenderer.invoke('session:forget-join', link),
+  opening: (): Promise<OpenRequest | null> => ipcRenderer.invoke('cli:opening'),
   projectPlan: (folder: string): Promise<{ home: CrewHome; tracked: boolean; known: boolean }> =>
     ipcRenderer.invoke('session:plan', folder),
   setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
