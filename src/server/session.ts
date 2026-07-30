@@ -1985,7 +1985,10 @@ export class CrewSession {
   }
 
   private handleReaction(ws: WebSocket, member: Member, targetId: string, emoji: string): void {
-    if (!isReactionEmoji(emoji)) return
+    // One off the sheet, or one of the crew's own. A `:name:` nothing here
+    // answers to is refused rather than written down, so a reaction can never
+    // stand for a picture that was never there.
+    if (!isReactionEmoji(emoji) && !this.hasCustomEmoji(emoji)) return
     const target = this.reactionTarget(targetId, this.ghostEventsFor(ws))
     if (!target) return
     let previous: ReactionEvent | undefined
