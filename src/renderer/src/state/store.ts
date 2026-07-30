@@ -1073,14 +1073,16 @@ export const useCrew = create<CrewState>((set, get) => {
         socket.send({ type: 'agent.avatar', agentId, image: null })
         return
       }
-      readPhoto(file, image => socket.send({ type: 'agent.avatar', agentId, image }))
+      readPhoto(file, attachmentBytes(get().attachmentMb), image =>
+        socket.send({ type: 'agent.avatar', agentId, image })
+      )
     },
     setMyPhoto: file => {
       if (!file) {
         socket.send({ type: 'member.avatar', image: null })
         return
       }
-      readPhoto(file, image => socket.send({ type: 'member.avatar', image }))
+      readPhoto(file, attachmentBytes(get().attachmentMb), image => socket.send({ type: 'member.avatar', image }))
     },
     removeAgent: agentId => {
       socket.send({ type: 'agent.remove', agentId })
