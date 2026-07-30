@@ -124,7 +124,7 @@ export class ScribeWindow {
     this.rest()
   }
 
-  held(): string {
+  heldWords(): string {
     return this.words
   }
 
