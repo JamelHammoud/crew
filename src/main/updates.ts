@@ -20,17 +20,16 @@ export class Updates {
   start(packaged: boolean): void {
     if (this.live || !packaged) return
     this.live = true
-    autoUpdater.autoDownload = false
+    const up = autoUpdater()
+    up.autoDownload = false
     // A download nobody restarted for is still put on at the next quit, so an
     // update asked for is never lost to closing the window.
-    autoUpdater.autoInstallOnAppQuit = true
-    autoUpdater.on('update-available', info => this.say({ word: 'found', version: info.version }))
-    autoUpdater.on('update-not-available', () => this.say({ word: 'nothing' }))
-    autoUpdater.on('download-progress', progress =>
-      this.say({ word: 'progress', percent: progress.percent })
-    )
-    autoUpdater.on('update-downloaded', info => this.say({ word: 'ready', version: info.version }))
-    autoUpdater.on('error', () => this.say({ word: 'error' }))
+    up.autoInstallOnAppQuit = true
+    up.on('update-available', info => this.say({ word: 'found', version: info.version }))
+    up.on('update-not-available', () => this.say({ word: 'nothing' }))
+    up.on('download-progress', progress => this.say({ word: 'progress', percent: progress.percent }))
+    up.on('update-downloaded', info => this.say({ word: 'ready', version: info.version }))
+    up.on('error', () => this.say({ word: 'error' }))
     this.check()
     this.timer = setInterval(() => this.check(), AGAIN_MS)
   }
