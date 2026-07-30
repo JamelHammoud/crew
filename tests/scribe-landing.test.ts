@@ -161,13 +161,17 @@ describe('reading back what the machine printed', () => {
     expect(landingOf('AXGroup\nAXRole, AXChildren, AXEditableAncestor')).toBe('text')
   })
 
-  it('takes the bare word none at its word', () => {
-    expect(landingOf('none')).toBe('none')
-    expect(landingOf('none\n')).toBe('none')
-  })
-
   it('takes the bare word unknown at its word', () => {
     expect(landingOf('unknown')).toBe('unknown')
+  })
+
+  // The one that cost Scribe every box anybody really dictates into. A Chromium
+  // application hands over no focused element at all until its accessibility tree
+  // is built, and nothing here builds it, so Crew, Discord, VS Code, Figma and
+  // Chrome all said this the whole time somebody's caret was sitting in a field.
+  it('is unknown when the application handed over no focused element', () => {
+    expect(landingOf('none')).toBe('unknown')
+    expect(landingOf('none\n')).toBe('unknown')
   })
 
   it('is unknown when nothing was printed at all', () => {
