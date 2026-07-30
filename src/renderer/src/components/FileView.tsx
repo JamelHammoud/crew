@@ -327,6 +327,9 @@ export default function FileView({ tab, active }: { tab: BrowserTab; active: boo
             />
           )}
         </div>
+        {file && asPage && (
+          <HtmlView id={tab.id} path={tab.path} text={text} partial={file.truncated || long} />
+        )}
         {((base && !reading) || dirty) && (
           <div className="absolute top-2.5 right-4 flex items-center gap-1.5">
             {saveFailed && <span className="text-xs text-danger mr-1">Could not save</span>}
