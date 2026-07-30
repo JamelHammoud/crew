@@ -593,6 +593,24 @@ export class CrewSession {
       if (event.kind === 'music.removed') {
         this.uploads.delete(event.trackId)
       }
+      // An emoji whose picture has gone is left out rather than handed over as a
+      // name that draws nothing, the same rule the shelf holds.
+      if (event.kind === 'emoji.added' && this.store.customEmojiPath(event.file)) {
+        this.emoji.set(event.emojiId, {
+          id: event.emojiId,
+          name: event.name,
+          file: event.file,
+          by: event.byName,
+          ts: event.ts
+        })
+      }
+      if (event.kind === 'emoji.renamed') {
+        const emoji = this.emoji.get(event.emojiId)
+        if (emoji) emoji.name = event.name
+      }
+      if (event.kind === 'emoji.removed') {
+        this.emoji.delete(event.emojiId)
+      }
       if (event.kind === 'playlist.added') {
         this.playlists.set(event.playlistId, {
           id: event.playlistId,
