@@ -28,6 +28,7 @@ export interface TabDef {
 export const SETTINGS_TABS: TabDef[] = [
   { id: 'you', label: 'You', group: 'You', mark: null },
   { id: 'appearance', label: 'Appearance', group: 'You', mark: SunGlyph },
+  { id: 'reactions', label: 'Reactions', group: 'You', mark: SmileGlyph },
   { id: 'sound', label: 'Sound and video', group: 'You', mark: SpeakerGlyph },
   { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
   { id: 'command', label: 'Command line', group: 'You', mark: TerminalGlyph },
