@@ -415,7 +415,7 @@ function openThreadIn(win: BrowserWindow, threadId: string): void {
 }
 
 app.whenReady().then(() => {
-  applyIcon(iconTheme)
+  applyIcon(iconTheme, chosenIcon)
   installMenu()
   tray.install()
   updates.start(!fromSource(app.getAppPath()))
@@ -498,7 +498,8 @@ app.whenReady().then(() => {
     setBadge(count)
     tray.update({ waiting: count })
   })
-  ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme))
+  ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme, chosenIcon))
+  ipcMain.handle('app:icon', (_event, icon: unknown) => applyIcon(iconTheme, cleanAppIcon(icon)))
   // Whether the machine sleeps is this window's own answer, said again on every
   // start, and the machine stays up while any window is asking.
   ipcMain.on('app:awake', (event, on: boolean) => awake.wants(event.sender.id, on))
