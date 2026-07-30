@@ -294,6 +294,7 @@ app.whenReady().then(() => {
   applyIcon(iconTheme)
   installMenu()
   tray.install()
+  updates.start(!fromSource(app.getAppPath()))
   session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
   session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
   session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
