@@ -50,6 +50,7 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
 const terminals = new Map<number, Terminals>()
+const previews = new Map<number, Previews>()
 const rendererPage = {
   preload: path.join(dirname, '../preload/preload.mjs'),
   devUrl: process.env['ELECTRON_RENDERER_URL'],
