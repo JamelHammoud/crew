@@ -39,6 +39,10 @@ function share(percent: number): number {
   return Math.min(100, Math.max(0, Math.round(percent)))
 }
 
+function failing(state: UpdateState, why: UpdateWhy): UpdateState {
+  return { ...state, stage: 'failed', percent: 0, why, told: state.told + 1 }
+}
+
 export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
   switch (said.word) {
     // Landed is the end of the fetching, so nothing about a check moves it: the
