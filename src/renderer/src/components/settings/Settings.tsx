@@ -18,6 +18,11 @@ import { GROUPS, settingsTabs, tabLabel } from './tabs'
 const WIDTH = 940
 const HEIGHT = 620
 
+// Windows has no folder every shell already reads, so the command has nowhere to
+// go there and the page is left out.
+const platform = (): string =>
+  globalThis.navigator?.platform?.toLowerCase().startsWith('win') ? 'win32' : 'darwin'
+
 function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'you') return <You onDone={closeSettings} />
   if (tab === 'appearance') return <Appearance />
@@ -36,6 +41,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
 export default function Settings() {
   const tab = useSettings()
   const selfName = useCrew(s => s.selfName)
+  const tabs = settingsTabs(platform())
 
   // The card belongs to the session it was opened in. Left standing, leaving a
   // crew and opening another one would land on the settings rather than on the
