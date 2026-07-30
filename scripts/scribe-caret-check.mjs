@@ -76,9 +76,17 @@ function read(printed) {
   }
 }
 
+// A process that handed over no focused element at all is the one answer worth
+// telling apart from a role, because it is what every Chromium application says
+// the whole time somebody's caret is in a box: Crew, Discord, VS Code, Figma and
+// Chrome alike. Printed as a role it reads as an application that answered.
 function say(who, printed, landing) {
   const { role, attributes } = read(printed)
   const has = name => (attributes.includes(name) ? 'yes' : 'no ')
+  if (role === 'unknown' && attributes.length === 0) {
+    console.log(`${who.padEnd(10)} said nothing, no tree built                        landing ${landing}`)
+    return
+  }
   console.log(
     `${who.padEnd(10)} role ${(role || 'nothing').padEnd(14)}` +
       ` caret ${has(CARET)}  editable ${has(EDITABLE)}  landing ${landing}`
