@@ -68,13 +68,12 @@ export const PhotoGlyph = glyph(
 
 // A strip of film, so it is the same screen the photo stands on with a rail of
 // perforations down each side. Two rails and a bar across the middle was what it
-// was, and at 16 that reads as a window pane rather than as a video. The holes
-// are solid, the way the sun in the photo is: a ring this small closes its
-// counter whatever you do, and a dot is a dot where a ring that fills unevenly
-// is a smudge. Three a side rather than two, because the repetition is what says
-// film, and there is no line drawn beside them: a hole standing between a rail
-// and the frame has a fifth of a pixel either side of it at 16 and the three of
-// them come out as one bar.
+// was, and at 16 that is a window pane rather than a video. The holes are solid,
+// the way the sun in the photo is: a ring this small closes its counter whatever
+// you do, and a dot is a dot where a ring that fills unevenly is a smudge. Three
+// a side rather than two, because the repetition is what says film, and no line
+// is drawn beside them: a hole standing between a rail and the frame has half a
+// pixel either side of it at 16, and the three of them come out as one bar.
 const PERF = { width: 2.75, height: 2, rx: 0.75 }
 const PERFS = [7, 11, 15].flatMap(y => [4.25, 17].map(x => ({ ...PERF, x, y })))
 
