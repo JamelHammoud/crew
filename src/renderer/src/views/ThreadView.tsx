@@ -48,7 +48,8 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)
   const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
-  const thread = useCrew(s => s.threads[threadId])
+  const threads = useCrew(s => s.threads)
+  const thread = threads[threadId]
   const activePromptId = useCrew(s => s.threadPrompts[threadId])
   const tokens = useCrew(s => (activePromptId ? (s.tokens[activePromptId] ?? 0) : 0))
   const cost = useCrew(s => (activePromptId ? s.costs[activePromptId] : undefined))
@@ -103,10 +104,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const mention = useMentionAutocomplete(text, write, inputRef)
   const slash = useSlashCommands(text, write, takeCommand, inputRef, offered)
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
-  const threadSteps = useMemo(() => {
-    const promptIds = threadEvents.filter(e => e.kind === 'agent.start').map(e => e.promptId)
-    return promptIds.flatMap(promptId => steps[promptId] ?? [])
-  }, [threadEvents, steps])
+  const threadSteps = useMemo(() => stepsOfThread(threadId, events, steps, threads), [threadId, events, steps, threads])
   const queueItems = useCrew(s => s.queues[threadId])
   const queuedMessages = useMemo<QueuedMessage[]>(
     () =>
