@@ -64,11 +64,12 @@ export default function Frame({
         <Mark className="w-4 h-4 shrink-0 text-fg-muted" />
         <span className="flex-1 min-w-0 truncate text-sm text-fg-secondary">{name}</span>
         {size > 0 && <span className="shrink-0 text-xs text-fg-faint tabular-nums">{fileSize(size)}</span>}
+        {tools}
         <Tooltip label="Open on this computer">
           <button
             onClick={() => void window.crew.openExternal(url)}
             aria-label="Open on this computer"
-            className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95"
+            className={headerButton}
           >
             <ExternalLinkGlyph className="w-4 h-4" />
           </button>
