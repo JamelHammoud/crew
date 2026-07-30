@@ -22,7 +22,7 @@ export default function ReactionTip({ reaction }: { reaction: ReactionGroup }) {
       <Emoji char={reaction.emoji} size={30} />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="text-sm font-medium text-fg/85 break-words">{reactorLine(reaction)}</span>
-        <span className="text-xs text-fg/45">reacted with {reactionName(reaction.emoji)}</span>
+        <span className="text-xs text-fg/45">reacted with {emojiName(reaction.emoji)}</span>
       </span>
     </span>
   )
