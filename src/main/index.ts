@@ -351,6 +351,11 @@ function createWindow(): BrowserWindow {
   win.on('leave-full-screen', syncWindowShape)
   installContextMenu(win)
   installDisplayMedia(win.webContents.session)
+  // A window that has gone is a window that has stopped asking, so the machine
+  // is let go of by the last one out rather than left awake by a window that
+  // died with the switch on.
+  const asked = win.webContents.id
+  win.webContents.once('destroyed', () => awake.forget(asked))
   win.webContents.on('did-finish-load', syncWindowShape)
   win.webContents.once('did-finish-load', () => {
     warmTerminals()
