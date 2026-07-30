@@ -66,18 +66,23 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
     case 'ready':
       return state.stage === 'ready'
         ? state
-        : { stage: 'ready', version: said.version || state.version, percent: 100, why: '' }
+        : {
+            ...state,
+            stage: 'ready',
+            version: said.version || state.version,
+            percent: 100,
+            why: ''
+          }
     // A check that could not reach the internet is nothing to say. Only a
     // download somebody asked for and did not get is worth a word.
     case 'error':
-      return state.stage === 'getting'
-        ? { ...state, stage: 'failed', percent: 0, why: 'download' }
-        : state
+      return state.stage === 'getting' ? failing(state, 'download') : state
     // An install that did not happen is the one thing said after it landed. The
-    // bytes are still here, so the press offers the whole of it again.
+    // bytes are still here, so the press offers the whole of it again, and being
+    // held a second time is said a second time.
     case 'stuck':
-      return state.stage === 'ready'
-        ? { ...state, stage: 'failed', percent: 0, why: said.why }
+      return state.stage === 'ready' || state.stage === 'failed'
+        ? failing(state, said.why)
         : state
   }
 }
