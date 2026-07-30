@@ -68,7 +68,7 @@ describe('emoji reactions', () => {
     expect(document.activeElement).toBe(search)
 
     fireEvent.change(document.activeElement as HTMLElement, { target: { value: 'tada' } })
-    expect(screen.getByLabelText('React with :tada:')).toBeTruthy()
+    expect(within(pickerOf(search)).getByLabelText('React with :tada:')).toBeTruthy()
   })
 
   it('reaches emoji the quick row never had', () => {
