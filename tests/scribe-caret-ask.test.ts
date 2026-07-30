@@ -43,12 +43,21 @@ describe('asking our own windows before the machine', () => {
 })
 
 describe('the script the app really sends', () => {
-  // The bug this was all about. A focused element that is missing value is an
-  // application that has not built its accessibility tree, which is every Chromium
-  // one, so it must never come back as the word that holds somebody's words back.
-  it('calls a missing focused element unknown and never none', () => {
-    expect(CARET_SCRIPT).toContain('if el is missing value then return "unknown"')
-    expect(CARET_SCRIPT).not.toContain('return "none"')
+  // The bug this was all about. A focused element that is missing value used to be
+  // read as nothing having the caret, and it is a Chromium application that has
+  // not built its accessibility tree, which is every application anybody really
+  // dictates into. The focused window is the one read that tells the two apart, so
+  // the silence must never be answered without asking for it.
+  it('asks for the focused window before it makes anything of a missing element', () => {
+    expect(CARET_SCRIPT).toContain('if el is missing value then')
+    expect(CARET_SCRIPT).not.toContain('if el is missing value then return "none"')
+    expect(CARET_SCRIPT).toContain('AXFocusedWindow')
+    const silence = CARET_SCRIPT.slice(CARET_SCRIPT.indexOf('if el is missing value then'))
+    expect(silence.indexOf('AXFocusedWindow')).toBeLessThan(silence.indexOf('return "none"'))
+  })
+
+  it('says nothing is open only when there is no focused window either', () => {
+    expect(CARET_SCRIPT).toContain('if fw is missing value then return "none"')
   })
 
   it('reads the role as an attribute rather than as a property', () => {
