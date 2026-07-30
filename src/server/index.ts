@@ -351,7 +351,11 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
     res.end()
   })
 
-  const wss = new WebSocketServer({ noServer: true, autoPong: opts.autoPong ?? true })
+  const wss = new WebSocketServer({
+    noServer: true,
+    autoPong: opts.autoPong ?? true,
+    maxPayload: MAX_FRAME_BYTES
+  })
   const clients = new Set<LiveSocket>()
 
   httpServer.on('upgrade', (req, socket, head) => {
