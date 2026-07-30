@@ -29,6 +29,7 @@ export default function MessageReactions({
   onReply?: () => void
 }) {
   const reactToMessage = useCrew(state => state.reactToMessage)
+  const quick = useQuickReactions()
   const tray = useRef<HTMLDivElement>(null)
   const [picker, setPicker] = useState<'tray' | 'row' | null>(null)
   const [actionsOpen, setActionsOpen] = useState(false)
