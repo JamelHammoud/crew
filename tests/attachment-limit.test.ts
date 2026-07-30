@@ -94,10 +94,23 @@ describe('how big a file may be', () => {
     expect(welcome(back).attachmentMb).toBe(25)
   })
 
-  it('takes nothing an agent's machine says about it', async () => {
+  // The controls a crew shares are refused from a runner, the way the music's
+  // are: an agent's machine is connected the whole time it is joined.
+  it('takes nothing a runner says about it', async () => {
     const ui = await connect('sam')
     ui.send({ type: 'attachment.limit', mb: 50 })
     await ui.waitForEvent(e => e.kind === 'attachment.limit')
+    expect(host.session.attachmentLimit()).toBe(50 * 1024 * 1024)
+
+    const runner = new WebSocket(host.url)
+    await new Promise<void>((resolve, reject) => {
+      runner.on('open', () => resolve())
+      runner.on('error', reject)
+    })
+    runner.send(JSON.stringify({ type: 'hello', role: 'runner', name: 'sam', code: host.code, llms: [] }))
+    runner.send(JSON.stringify({ type: 'attachment.limit', mb: 1 }))
+    await new Promise(r => setTimeout(r, 200))
+    runner.close()
     expect(host.session.attachmentLimit()).toBe(50 * 1024 * 1024)
   })
 
