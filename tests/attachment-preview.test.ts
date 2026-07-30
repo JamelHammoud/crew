@@ -220,6 +220,14 @@ describe('opening one in the panel', () => {
     expect(useBrowser.getState().activeTabId).toBe(first.id)
   })
 
+  // A file written to be looked at is looked at, and the words are one press
+  // away rather than the other way round.
+  it('opens on the page a file is written to be', () => {
+    useBrowser.getState().openAttachment('http://host/attachments/one.html', 'one.html', 'text/plain', 400)
+
+    expect(useBrowser.getState().tabs[0]!.preview).toBe(true)
+  })
+
   it('opens another file beside it', () => {
     open()
     useBrowser.getState().openAttachment('http://host/attachments/two.pdf', 'two.pdf', 'application/pdf', 90)
