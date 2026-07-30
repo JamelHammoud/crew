@@ -46,3 +46,18 @@ describe('window options', () => {
     })
   })
 })
+
+describe('closing a window', () => {
+  it('puts it away on macOS, where the app goes on running', () => {
+    expect(closePutsAway('darwin', false)).toBe(true)
+  })
+
+  it('lets the close through while the app is quitting', () => {
+    expect(closePutsAway('darwin', true)).toBe(false)
+  })
+
+  it('is the way out everywhere else', () => {
+    expect(closePutsAway('win32', false)).toBe(false)
+    expect(closePutsAway('linux', false)).toBe(false)
+  })
+})
