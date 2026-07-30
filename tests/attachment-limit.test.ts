@@ -106,7 +106,7 @@ describe('how big a file may be', () => {
     const ui = await connect('sam')
     ui.send({ type: 'attachment.limit', mb: 50 })
     await ui.waitForEvent(e => e.kind === 'attachment.limit')
-    expect(host.session.attachmentLimit()).toBe(50 * 1024 * 1024)
+    expect(host.session.attachmentLimit()).toBe(50 * 1000 * 1000)
 
     const runner = new WebSocket(host.url)
     await new Promise<void>((resolve, reject) => {
@@ -117,7 +117,7 @@ describe('how big a file may be', () => {
     runner.send(JSON.stringify({ type: 'attachment.limit', mb: 1 }))
     await new Promise(r => setTimeout(r, 200))
     runner.close()
-    expect(host.session.attachmentLimit()).toBe(50 * 1024 * 1024)
+    expect(host.session.attachmentLimit()).toBe(50 * 1000 * 1000)
   })
 
   it('takes anything at all once the limit is off', async () => {

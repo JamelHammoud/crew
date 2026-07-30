@@ -1,0 +1,55 @@
+import {
+  customEmojiNameIn,
+  customEmojiUrl,
+  findCustomEmoji,
+  type CustomEmoji
+} from '../../../shared/customEmoji'
+
+// The crew's own emoji, looked up the way the sheet's are: by name, from here,
+// with nothing handed in. A picture drawn from a name has to be reachable from a
+// DOM walk over rendered markdown and from a component a dozen callers deep, and
+// threading the list and the address through every one of them to draw one
+// picture is the plumbing this exists instead of.
+//
+// The store is what keeps it fed, off the snapshot and off every `emoji.set`.
+
+let held: readonly CustomEmoji[] = []
+let base = ''
+
+export function holdCustomEmoji(list: readonly CustomEmoji[], httpBase: string): void {
+  held = list
+  base = httpBase
+}
+
+export function customEmojiSheet(): readonly CustomEmoji[] {
+  return held
+}
+
+export interface CustomEmojiPicture {
+  emoji: CustomEmoji
+  url: string
+}
+
+export function lookupCustomEmoji(name: string): CustomEmojiPicture | undefined {
+  const emoji = findCustomEmoji(held, name)
+  // Before a session is up there is nowhere to read a picture from, so a name
+  // that has no address yet is nothing rather than a broken picture.
+  if (!emoji || !base) return undefined
+  return { emoji, url: customEmojiUrl(base, emoji.file) }
+}
+
+// The same lookup for a value that is the whole of a `:name:`, which is what a
+// reaction and what the picker hands back both are.
+export function lookupCustomEmojiRef(value: string): CustomEmojiPicture | undefined {
+  const name = customEmojiNameIn(value)
+  return name ? lookupCustomEmoji(name) : undefined
+}
+
+export function searchCustomEmoji(query: string, limit = 36): CustomEmoji[] {
+  const needle = query.trim().toLowerCase().replace(/^:|:$/g, '')
+  if (!needle) return []
+  return held
+    .filter(emoji => emoji.name.includes(needle))
+    .sort((a, b) => Number(b.name.startsWith(needle)) - Number(a.name.startsWith(needle)))
+    .slice(0, limit)
+}

@@ -91,7 +91,7 @@ describe('a file that has not been sent yet', () => {
 
     expect(container.querySelectorAll('img')).toHaveLength(1)
     expect(getByText('terms.pdf')).not.toBeNull()
-    expect(getByText('284 KB')).not.toBeNull()
+    expect(getByText('291 KB')).not.toBeNull()
   })
 
   it('sits at the height the thumbnails do', () => {

@@ -99,7 +99,12 @@ describe('window chrome', () => {
 describe('the drag the top bar takes', () => {
   it('cuts a dialog out of it', () => {
     render(
-      createElement(Modal, { open: true, onClose: () => {}, title: 'Rename' }, createElement('p', null, 'body'))
+      createElement(Modal, {
+        open: true,
+        onClose: () => {},
+        title: 'Rename',
+        children: createElement('p', null, 'body')
+      })
     )
 
     expect(screen.getByRole('dialog').parentElement!.className).toContain('app-no-drag')

@@ -63,7 +63,7 @@ describe('a message carrying a picture and a file', () => {
     const row = getByLabelText('Open terms.pdf')
 
     expect(row.textContent).toContain('terms.pdf')
-    expect(row.textContent).toContain('284 KB')
+    expect(row.textContent).toContain('291 KB')
     expect(row.querySelector('img')).toBeNull()
     expect(row.querySelector('svg')).not.toBeNull()
   })

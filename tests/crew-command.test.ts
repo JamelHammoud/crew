@@ -35,7 +35,7 @@ describe('the command that comes with the app', () => {
   // file standing right there rather than one in a bundle it does not have.
   it('is the one in the checkout when the app is run from source', () => {
     expect(commandScript({ ...packaged, fromSource: true, appPath: '/work/crew' })).toBe(
-      path.join('/work/crew', 'bin', 'crew.mjs')
+      '/work/crew/bin/crew.mjs'
     )
   })
 
