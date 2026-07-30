@@ -50,7 +50,8 @@ function boot() {
     selfName: 'ALI',
     members: [
       { id: 'ali', name: 'ALI', connected: true },
-      { id: 'jamel', name: 'Jamel', connected: true }
+      { id: 'jamel', name: 'Jamel', connected: true },
+      { id: 'sam', name: 'Sam', connected: false }
     ],
     agents: [agent],
     events: [],
