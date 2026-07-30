@@ -319,10 +319,22 @@ export function MentionMenu({
               onMouseEnter={() => onHover(index)}
             />
           )
+        if (item.kind === 'custom')
+          return (
+            <EmojiRow
+              key={item.emoji.id}
+              char={customEmojiRef(item.emoji.name)}
+              name={item.emoji.name}
+              active={index === activeIndex}
+              onClick={() => onPick(item)}
+              onMouseEnter={() => onHover(index)}
+            />
+          )
         return (
           <EmojiRow
             key={item.entry.char}
-            entry={item.entry}
+            char={item.entry.char}
+            name={item.entry.shortName}
             active={index === activeIndex}
             onClick={() => onPick(item)}
             onMouseEnter={() => onHover(index)}
