@@ -2846,6 +2846,87 @@ export class CrewSession {
     return this.store.musicPath(file)
   }
 
+  customEmojiPath(file: string): string | null {
+    return this.store.customEmojiPath(file)
+  }
+
+  // Whether a reaction is one of the crew's own. It is asked of the value as it
+  // was sent, so anything that is not a whole `:name:` is simply not one.
+  private hasCustomEmoji(value: string): boolean {
+    const name = customEmojiNameIn(value)
+    return name !== null && customEmojiNameTaken([...this.emoji.values()], name)
+  }
+
+  // An emoji the crew drew themselves. The picture is kept beside the session the
+  // way a track is, so everyone draws their own copy rather than reading it off
+  // the machine that added it.
+  private handleEmojiAdd(ws: WebSocket, member: Member, name: string, mime: string, data: string): void {
+    const clean = cleanCustomEmojiName(name)
+    const extension = customEmojiExtension(mime)
+    if (!clean || !extension) return
+    // The name is what everybody types to reach it, so a second picture cannot
+    // take one that is already answering to something. It is said rather than
+    // dropped, since the window that asked is holding a picture and a field.
+    if (customEmojiNameTaken([...this.emoji.values()], clean)) {
+      this.notice(`:${clean}: is already taken.`, ws)
+      return
+    }
+    if (this.emoji.size >= MAX_CUSTOM_EMOJI) {
+      this.notice('The crew has as many emoji as it can hold.', ws)
+      return
+    }
+    const bytes = Buffer.from(data ?? '', 'base64')
+    if (bytes.length === 0 || bytes.length > CUSTOM_EMOJI_MAX_BYTES) return
+    const emojiId = randomUUID()
+    const file = `${emojiId}.${extension}`
+    try {
+      this.store.saveCustomEmoji(file, bytes)
+    } catch {
+      return
+    }
+    const emoji: CustomEmoji = { id: emojiId, name: clean, file, by: member.name.slice(0, BY_LIMIT), ts: Date.now() }
+    this.emoji.set(emojiId, emoji)
+    this.emit({
+      id: randomUUID(),
+      ts: emoji.ts,
+      kind: 'emoji.added',
+      emojiId,
+      name: emoji.name,
+      file,
+      byName: emoji.by
+    })
+    this.broadcastEmoji()
+  }
+
+  // Naming one again keeps the picture where it is. What has already been
+  // reacted with under the old name still says the old name, which is the honest
+  // record of what somebody pressed.
+  private handleEmojiRename(ws: WebSocket, member: Member, emojiId: string, name: string): void {
+    const emoji = this.emoji.get(emojiId)
+    const clean = cleanCustomEmojiName(name)
+    if (!emoji || !clean || clean === emoji.name) return
+    if (customEmojiNameTaken([...this.emoji.values()], clean)) {
+      this.notice(`:${clean}: is already taken.`, ws)
+      return
+    }
+    emoji.name = clean
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'emoji.renamed', emojiId, name: clean, byName: member.name })
+    this.broadcastEmoji()
+  }
+
+  private handleEmojiRemove(member: Member, emojiId: string): void {
+    const emoji = this.emoji.get(emojiId)
+    if (!emoji) return
+    this.emoji.delete(emojiId)
+    this.store.deleteCustomEmoji(emoji.file)
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'emoji.removed', emojiId, byName: member.name })
+    this.broadcastEmoji()
+  }
+
+  private broadcastEmoji(): void {
+    this.broadcast({ type: 'emoji.set', emoji: [...this.emoji.values()] })
+  }
+
   // Anyone can put something on, and anyone can take it off again. A track
   // nobody has heard of is nothing to play, so it is dropped rather than sent
   // on to everyone as a name their build cannot draw.
