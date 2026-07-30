@@ -230,7 +230,7 @@ function warmTerminals(): void {
   }
 }
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow(
     createWindowOptions(process.platform, path.join(dirname, '../preload/preload.mjs'))
