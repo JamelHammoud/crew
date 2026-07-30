@@ -145,6 +145,15 @@ describe('attachments', () => {
     expect(back.headers.get('content-type')).toBe('application/pdf')
     expect(Buffer.from(await back.arrayBuffer()).equals(PDF)).toBe(true)
 
+    const unnamed = await fetch(`${base}/attachments`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/pdf' },
+      body: PDF
+    })
+    const bare = (await unnamed.json()) as { id: string; name: string; file: string }
+    expect(bare.file).toBe(`${bare.id}.pdf`)
+    expect(bare.name).toBe('file')
+
     const tooBig = await fetch(`${base}/attachments`, {
       method: 'POST',
       headers: { 'content-type': 'image/png' },
