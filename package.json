@@ -49,7 +49,10 @@
         "NSMicrophoneUsageDescription": "So you can talk in a huddle, and dictate with Scribe.",
         "NSCameraUsageDescription": "So the crew can see you in a huddle.",
         "NSLocalNetworkUsageDescription": "So you can reach a crew on this network.",
-        "NSAppleEventsUsageDescription": "So dictation lands in the box you are typing in."
+        "NSAppleEventsUsageDescription": "So dictation lands in the box you are typing in.",
+        "NSDesktopFolderUsageDescription": "So you can open a project kept there.",
+        "NSDocumentsFolderUsageDescription": "So you can open a project kept there.",
+        "NSDownloadsFolderUsageDescription": "So you can open a project kept there."
       }
     },
     "win": {
