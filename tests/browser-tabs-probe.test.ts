@@ -24,6 +24,11 @@ const openTwo = () => {
   useBrowser.getState().openUrl('https://example.com/two')
 }
 
+const openThree = () => {
+  openTwo()
+  useBrowser.getState().openUrl('https://example.com/three')
+}
+
 const order = () => useBrowser.getState().tabs.map(t => t.id)
 
 // jsdom lays nothing out, so the row is given one: pills 90 wide with a gap of
@@ -118,8 +123,7 @@ describe('the tab strip', () => {
   // The row is the order somebody put it in. A tab is dragged into another place
   // in it by taking hold of the pill anywhere on it.
   it('takes a tab into the place it was dragged to', () => {
-    openTwo()
-    useBrowser.getState().addTerminal()
+    openThree()
     const [first, second, third] = order()
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
@@ -133,8 +137,7 @@ describe('the tab strip', () => {
   })
 
   it('takes one back the way it came', () => {
-    openTwo()
-    useBrowser.getState().addTerminal()
+    openThree()
     const [first, second, third] = order()
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
@@ -166,8 +169,7 @@ describe('the tab strip', () => {
   // A drag is arranging the row rather than going anywhere, so the tab that is up
   // stays up and the click the drag ends on is not a click on a tab.
   it('does not open the tab it was handed after a drag', () => {
-    openTwo()
-    useBrowser.getState().addTerminal()
+    openThree()
     const [first, , third] = order()
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)
@@ -183,8 +185,7 @@ describe('the tab strip', () => {
   })
 
   it('puts a tab back where it was on Escape', () => {
-    openTwo()
-    useBrowser.getState().addTerminal()
+    openThree()
     const was = order()
     const { container } = render(createElement(BrowserPanel))
     const items = laidOut(container)

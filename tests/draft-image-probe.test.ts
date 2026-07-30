@@ -14,6 +14,8 @@ const SRC = `data:image/png;base64,${PIXEL}`
 
 const draft = (id: string, name: string) => ({ id, name, mime: 'image/png', data: PIXEL, size: 8 })
 
+const paper = { id: 'b', name: 'terms.pdf', mime: 'application/pdf', data: 'JVBERi0=', size: 291_000 }
+
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   useCrew.setState({ pending: { [KEY]: [draft('a', 'balance.png')] } })
