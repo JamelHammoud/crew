@@ -6,7 +6,8 @@
 //
 // 'text'    something with a caret in it, so the words go where they always went
 // 'none'    nothing with a caret, so the words are held where they can be copied
-// 'unknown' the machine would not say, which is every machine but a Mac
+// 'unknown' the machine would not say, which is every machine but a Mac, and
+//           every application that has not built the tree to answer with
 //
 // The two ways of being wrong do not cost the same, which is what settles every
 // rule below. Held words that could have been pasted are on screen, a press away
