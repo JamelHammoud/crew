@@ -12,7 +12,7 @@ export interface Said {
 // A short page rather than a record. Anything further back than this is a
 // dictation nobody is coming back for, and every one of them is sitting on
 // somebody's disk in plain words.
-export const SAID_LIMIT = 30
+export const SAID_LIMIT = 5
 
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
 
