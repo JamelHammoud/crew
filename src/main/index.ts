@@ -495,6 +495,9 @@ app.whenReady().then(() => {
     tray.update({ waiting: count })
   })
   ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme))
+  // Whether the machine sleeps is this window's own answer, said again on every
+  // start, and the machine stays up while any window is asking.
+  ipcMain.on('app:awake', (event, on: boolean) => awake.wants(event.sender.id, on))
   ipcMain.on('presence:publish', (_event, here: Present[]) => tray.update({ here, known: true }))
   ipcMain.on('tray:size', (_event, height: number) => tray.resizePanel(height))
   ipcMain.on('tray:open', () => openWindow())
