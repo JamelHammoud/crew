@@ -208,16 +208,19 @@ function sharing(): void {
   tray.update({ sharing: session.current() !== null })
 }
 
-// The icon is a white mark on black, or the inverse, so it follows the theme
-// chosen inside the app rather than the one the system is wearing.
-function applyIcon(theme: IconTheme): void {
+// The default icon is a white mark on black, or the inverse, so it follows the
+// theme chosen inside the app rather than the one the system is wearing. The tray
+// takes the theme alone: its mark is a template image, so nothing about it changes
+// with a picture.
+function applyIcon(theme: IconTheme, icon: AppIconId): void {
   iconTheme = theme
+  chosenIcon = icon
   tray.theme(theme)
   if (process.platform === 'darwin') {
-    app.dock?.setIcon(appIcon(theme))
+    app.dock?.setIcon(appIcon(theme, icon))
     return
   }
-  for (const win of appWindows()) win.setIcon(appIcon(theme))
+  for (const win of appWindows()) win.setIcon(appIcon(theme, icon))
 }
 
 // Without an application menu the standard clipboard accelerators (copy, cut,
