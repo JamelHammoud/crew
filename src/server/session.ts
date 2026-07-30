@@ -1370,6 +1370,22 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'tool.removed', toolId, byName: member.name })
   }
 
+  // The size limit is the crew's, so it is refused from a runner the way the
+  // music controls are: an agent's machine is connected the whole time it is
+  // joined.
+  private handleAttachmentLimit(member: Member, mb: number): void {
+    const clean = cleanAttachmentMb(mb)
+    if (clean === null || clean === this.attachmentMb) return
+    this.attachmentMb = clean
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'attachment.limit', mb: clean, byName: member.name })
+  }
+
+  // What the host will take, which is what every window is told and what both
+  // ways in ask before they keep a byte.
+  attachmentLimit(): number {
+    return attachmentBytes(this.attachmentMb)
+  }
+
   // Every route names a promptId, and the host takes it only while that prompt
   // is one it is running right now. A board being drawn on is a different weight
   // of thing from a shell running on somebody's laptop, so the live prompt is
