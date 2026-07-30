@@ -117,6 +117,18 @@ const ramp = list =>
     )
     .join('\n')
 
+// A skin that asks for one is handed a real generated cover, photographed by the
+// shader the music uses. One Electron for all of them, before anything is drawn.
+const wanted = SKINS.filter(skin => skin.cover)
+const covers = new Map(
+  wanted.length
+    ? (await shootCovers(wanted.map(skin => skin.cover))).map(shot => [
+        wanted.find(skin => skin.cover === shot.id).id,
+        shot.png.slice(shot.png.indexOf(',') + 1)
+      ])
+    : []
+)
+
 const CENTRE = CANVAS / 2
 const BACK_TO_FRONT = [CENTRE + STEP, CENTRE, CENTRE - STEP]
 const round = value => Number(value.toFixed(3))
