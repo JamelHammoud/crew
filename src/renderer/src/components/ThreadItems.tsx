@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
+import PageChip from './PageChip'
 import StepGroup from './StepGroup'
 import StepRow from './StepRow'
 import SubagentChips from './SubagentChips'
@@ -43,6 +44,8 @@ export default function ThreadItems({
             {isNewDay(blocks[index - 1]?.ts, block.ts) && <DayDivider ts={block.ts} />}
             {item.kind === 'subagent' ? (
               <SubagentChips runs={item.runs ?? []} threadId={threadId} />
+            ) : item.kind === 'page' && item.page ? (
+              <PageChip page={item.page} />
             ) : block.items.length > 1 ? (
               <StepGroup items={block.items} linked={follows(blocks[index - 1], block)} />
             ) : isStep(item) ? (
