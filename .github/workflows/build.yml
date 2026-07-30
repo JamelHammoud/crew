@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  YARN: 4.17.1
+  YARN: 1.22.22
 
 jobs:
   build:
