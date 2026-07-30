@@ -336,8 +336,8 @@ const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: 
 // A photo is one picture, read the same way whether it goes on a person or on
 // one of their agents. Anything that is not an image the app can carry is
 // dropped here rather than sent for the host to refuse.
-const readPhoto = (file: File, send: (image: OutgoingAttachment) => void): void => {
-  const [picked] = imagesFrom([file])
+const readPhoto = (file: File, limit: number, send: (image: OutgoingAttachment) => void): void => {
+  const [picked] = imagesFrom([file], limit)
   if (!picked) return
   void readFiles([picked], 0).then(([image]) => {
     if (image) send({ name: image.name, mime: image.mime, data: image.data })
@@ -873,7 +873,13 @@ export const useCrew = create<CrewState>((set, get) => {
       set(state => ({ threadCommands: { ...state.threadCommands, [threadId]: commands } })),
     setTyping: (where, on) => sayTyping(where, on),
     attach: async (key, files) => {
-      const picked = filesFrom(files)
+      const mb = get().attachmentMb
+      const picked = filesFrom(files, attachmentBytes(mb))
+      // A file left behind for being too big used to go quietly, which reads as
+      // a drop that did nothing.
+      if (picked.length < [...(files ?? [])].length) {
+        toast.fail(`Files can be up to ${mb} MB`, { key: 'attachment-size' })
+      }
       if (picked.length === 0) return
       const added = await readFiles(picked, (get().pending[key] ?? []).length)
       if (added.length === 0) return
