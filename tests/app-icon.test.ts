@@ -230,7 +230,7 @@ describe('the pictures', () => {
   it('hands the picker art for every row of the table', () => {
     for (const icon of APP_ICONS) {
       for (const key of icon.flips ? ['dark', 'light'] : [icon.id]) {
-        expect(ICON_ART[key]).toMatch(/^data:image\/(svg\+xml|png);/)
+        expect(ICON_ART[key]).toMatch(/^data:image\/(svg\+xml,%3Csvg|png;base64,)/)
       }
     }
     expect(new Set(Object.values(ICON_ART)).size).toBe(Object.keys(ICON_ART).length)
