@@ -2054,6 +2054,13 @@ export class CrewSession {
     return saved
   }
 
+  // A face is a picture and nothing else, whatever a message may carry. The
+  // window that sends one already knows that, and the host is not the place to
+  // take a window's word for it.
+  savePhoto(mime: string, name: string, data: Buffer): Attachment | null {
+    return isImageType(mime) ? this.saveAttachment(mime, name, data) : null
+  }
+
   saveAttachment(mime: string, name: string, data: Buffer): Attachment | null {
     const one = this.attachmentOf(mime, name, data)
     if (!one) return null
@@ -3628,7 +3635,7 @@ export class CrewSession {
   // the initial, which comes from the name.
   private handleMemberAvatar(member: Member, image: OutgoingAttachment | null): void {
     if (image) {
-      const saved = this.saveAttachment(image.mime, image.name, Buffer.from(image.data, 'base64'))
+      const saved = this.savePhoto(image.mime, image.name, Buffer.from(image.data, 'base64'))
       if (!saved) return
       member.avatar = saved.file
     } else {

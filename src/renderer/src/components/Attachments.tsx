@@ -76,14 +76,13 @@ export const PLUS_BUTTON =
 // The file dialog is opened from the plus in the ask bar and from a row in the
 // composer's own menu, so the input itself lives in one place and both reach it
 // through the same handle.
-export function useImagePicker(attachmentKey: string) {
+export function useFilePicker(attachmentKey: string) {
   const attach = useCrew(s => s.attach)
   const inputRef = useRef<HTMLInputElement>(null)
   const input = (
     <input
       ref={inputRef}
       type="file"
-      accept="image/png,image/jpeg,image/gif,image/webp"
       multiple
       className="hidden"
       onChange={event => {
@@ -103,16 +102,16 @@ export function AttachButton({
   size?: keyof typeof ATTACH_SIZES
 }) {
   const count = useCrew(s => (s.pending[attachmentKey] ?? []).length)
-  const { input, choose } = useImagePicker(attachmentKey)
+  const { input, choose } = useFilePicker(attachmentKey)
   const full = count >= MAX_ATTACHMENTS
   return (
     <>
       {input}
-      <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} images` : 'Add an image'}>
+      <Tooltip label={full ? `Up to ${MAX_ATTACHMENTS} files` : 'Add a file'}>
         <button
           onClick={choose}
           disabled={full}
-          aria-label="Add an image"
+          aria-label="Add a file"
           className={`${ATTACH_SIZES[size]} ${PLUS_BUTTON}`}
         >
           <PlusGlyph className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />

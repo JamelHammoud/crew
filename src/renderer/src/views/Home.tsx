@@ -111,11 +111,11 @@ export default function Home() {
     setAsked(null)
     setName(who)
     setFolder(request.folder)
-    const key = `project:${request.folder}`
     if (request.link) {
       setLink(request.link)
-      return joinSession(request.link, request.folder, key, who)
+      return joinSession(request.link, request.folder, `join:${request.link}`, who)
     }
+    const key = `project:${request.folder}`
     if (request.home) return open(request.folder, key, who, { home: request.home, share: request.share })
     const plan = await window.crew.projectPlan(request.folder).catch(() => null)
     if (plan?.known) return open(request.folder, key, who, { share: request.share })
