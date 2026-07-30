@@ -132,10 +132,10 @@ function scribeLand(text: string): void {
 //
 // Only an outright 'none' holds them back. A machine that would not say, and every
 // machine that is not a Mac, pastes exactly the way it always did.
-async function landScribe(text: string): Promise<void> {
+async function landScribe(text: string, aim: Promise<Landing>): Promise<void> {
   if (!text) return
   const finish = scribeSettings.finish
-  if (holdsBack(finish, await scribeAim) && holdsBack(finish, await askCaret())) {
+  if (holdsBack(finish, await aim) && holdsBack(finish, await askCaret())) {
     scribe.hold(text)
     return
   }
