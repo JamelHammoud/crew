@@ -11,6 +11,10 @@ import { installLocalStorage } from './helpers/local-storage'
 const storage = installLocalStorage()
 const defaultReactToMessage = useCrew.getState().reactToMessage
 
+// The row on the tray and the grid in the picker name a reaction the same way,
+// so a query for one of them has to say which it means.
+const pickerOf = (search: HTMLElement) => search.closest('.flex-col') as HTMLElement
+
 const mount = (reactToMessage = vi.fn()) => {
   useCrew.setState({ reactToMessage })
   render(
