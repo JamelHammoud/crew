@@ -411,7 +411,6 @@ function openThreadIn(win: BrowserWindow, threadId: string): void {
 }
 
 app.whenReady().then(() => {
-  powerSaveBlocker.start('prevent-app-suspension')
   applyIcon(iconTheme)
   installMenu()
   tray.install()
