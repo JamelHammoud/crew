@@ -146,27 +146,36 @@ function run(dir, page, words) {
   })
 }
 
-function judge(seen) {
+function judge(seen, beside) {
   if (seen.failed) return [`the page fell over: ${seen.failed}`]
   const problems = []
   if (seen.heading !== 'Written just now') problems.push(`the page reads "${seen.heading}", not the words in hand`)
-  if (seen.color !== 'rgb(0, 128, 0)') problems.push(`the stylesheet beside the page never arrived, the heading is ${seen.color}`)
-  if (seen.picture !== 1) problems.push('the picture beside the page never arrived')
-  if (seen.ran !== 'yes') problems.push('the script beside the page never ran')
+  if (seen.color !== 'rgb(0, 128, 0)') problems.push(`the style never arrived, the heading is ${seen.color}`)
+  if (seen.picture !== 1) problems.push('the picture never arrived')
+  if (seen.ran !== 'yes') problems.push('the script never ran')
+  if (beside && seen.base === seen.url) problems.push('the page was never handed the folder it lives in')
+  if (!beside && seen.base !== seen.url) problems.push(`a page with no folder was handed one: ${seen.base}`)
   return problems
 }
 
-const { dir, page } = await stage()
-try {
-  const seen = await run(dir, page)
-  const problems = judge(seen)
-  console.log(problems.length ? `Reading a page is broken:\n  ${problems.join('\n  ')}` : 'Reading a page works.')
+function say(what, seen, problems) {
+  console.log(problems.length ? `${what} is broken:\n  ${problems.join('\n  ')}` : `${what} works.`)
   console.log(`  words: ${seen.heading}`)
   console.log(`  heading color: ${seen.color}`)
   console.log(`  picture: ${seen.picture}px wide`)
   console.log(`  script: ${seen.ran === 'yes' ? 'ran' : 'never ran'}`)
   console.log(`  reaching from: ${seen.base}`)
-  if (problems.length) process.exitCode = 1
+}
+
+const { dir, page } = await stage()
+try {
+  const beside = await run(dir, page, EDITED)
+  const problems = judge(beside, true)
+  say('Reading a page in the project', beside, problems)
+  const attached = await run(dir, '', ATTACHED)
+  const alone = judge(attached, false)
+  say('Reading a page somebody attached', attached, alone)
+  if (problems.length || alone.length) process.exitCode = 1
 } finally {
   await rm(dir, { recursive: true, force: true })
 }
