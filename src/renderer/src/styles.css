@@ -1788,6 +1788,10 @@ textarea:placeholder-shown {
   @apply border-l border-ink-600 pl-3 text-fg-muted my-2;
 }
 
+.md img {
+  @apply max-w-full rounded-xl;
+}
+
 .md hr {
   @apply my-4 border-0 border-t border-ink-700;
 }
