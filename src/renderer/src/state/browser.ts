@@ -84,6 +84,7 @@ type BrowserState = {
   addTab(): void
   addTerminal(command?: string): void
   selectTab(id: string): void
+  moveTab(id: string, to: number): void
   closeTab(id: string): void
   closeAll(): void
   navigateTab(id: string, url: string): void

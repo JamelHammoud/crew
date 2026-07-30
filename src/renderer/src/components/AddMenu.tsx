@@ -3,7 +3,7 @@ import { MAX_ATTACHMENTS } from '../../../shared/attachments'
 import { GifGlyph, PlusGlyph, SignalGlyph, UploadGlyph } from '../icons'
 import { useHuddle } from '../state/huddle'
 import { useCrew } from '../state/store'
-import { ATTACH_SIZES, PLUS_BUTTON, useImagePicker } from './Attachments'
+import { ATTACH_SIZES, PLUS_BUTTON, useFilePicker } from './Attachments'
 import GifPicker from './GifPicker'
 import { gifFile, type Gif } from './gifs'
 import { MenuDivider, MenuItem, Popover } from './Popover'
@@ -25,7 +25,7 @@ export default function AddMenu({
   const joined = useHuddle(s => s.joined)
   const live = useHuddle(s => s.room.peers.length > 0)
   const join = useHuddle(s => s.join)
-  const { input, choose } = useImagePicker(attachmentKey)
+  const { input, choose } = useFilePicker(attachmentKey)
   const [open, setOpen] = useState(false)
   const [screen, setScreen] = useState<Screen>('menu')
   const full = count >= MAX_ATTACHMENTS
