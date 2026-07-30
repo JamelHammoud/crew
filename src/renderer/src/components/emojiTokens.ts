@@ -10,7 +10,7 @@ export type EmojiToken =
 // A flag is a pair of letters and a keycap is a digit, so neither counts as a
 // picture. They are on the sheet all the same.
 const PICTOGRAPHIC = /[\p{Extended_Pictographic}\p{Regional_Indicator}\u{20E3}]/u
-const VARIATION = /️/g
+const VARIATION = /\uFE0F/g
 const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 
 // The pattern is borrowed and the walking is ours. A global regex carries where
@@ -21,7 +21,7 @@ const SCAN = new RegExp(CUSTOM_EMOJI_SCAN.source, CUSTOM_EMOJI_SCAN.flags)
 function entryFor(segment: string): EmojiEntry | undefined {
   if (!PICTOGRAPHIC.test(segment)) return undefined
   return (
-    lookupEmoji(segment) ?? lookupEmoji(segment.replace(VARIATION, '')) ?? lookupEmoji(`${segment}️`)
+    lookupEmoji(segment) ?? lookupEmoji(segment.replace(VARIATION, '')) ?? lookupEmoji(`${segment}\uFE0F`)
   )
 }
 
