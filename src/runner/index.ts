@@ -391,6 +391,7 @@ export class Runner {
     const preambles = [
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
+      pagePreamble(this.httpBase, promptId),
       tickets ? ticketPreamble(this.httpBase, promptId) : ''
     ].filter(Boolean)
     const body = [text, ...preambles].join('\n\n')
