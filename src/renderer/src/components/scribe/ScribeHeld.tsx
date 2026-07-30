@@ -52,14 +52,9 @@ export default function ScribeHeld() {
         <p className="flex-1 min-w-0 text-xs text-fg/45 leading-tight">
           Click into a text box, then dictate
         </p>
-        <button
-          onClick={letGo}
-          onPointerDown={event => event.stopPropagation()}
-          aria-label="Close"
-          className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center bg-fg/10 text-fg/70 transition-all duration-150 hover:bg-fg/20 hover:text-fg active:scale-90"
-        >
+        <PillButton label="Close" onClick={letGo}>
           <CloseGlyph className="w-3.5 h-3.5" strokeWidth={STROKE_BOLD} />
-        </button>
+        </PillButton>
       </div>
 
       <p
