@@ -2,8 +2,13 @@ import WebSocket from 'ws'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   ATTACHMENT_MB_LIMIT,
+  ATTACHMENT_UNLIMITED,
+  attachmentMbChoices,
+  attachmentMbLabel,
   cleanAttachmentMb,
-  DEFAULT_ATTACHMENT_MB
+  DEFAULT_ATTACHMENT_MB,
+  fileSize,
+  SHARED_ATTACHMENT_MB
 } from '../src/shared/attachments'
 import type { SessionEvent } from '../src/shared/events'
 import type { SessionSnapshot } from '../src/shared/protocol'

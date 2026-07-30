@@ -31,7 +31,7 @@ describe('an image that has not been sent yet', () => {
 
     const tabs = useBrowser.getState().tabs
     expect(tabs).toHaveLength(1)
-    expect(tabs[0]!.kind).toBe('image')
+    expect(tabs[0]!.kind).toBe('attachment')
     expect(tabs[0]!.initialUrl).toBe(SRC)
   })
 
@@ -60,8 +60,8 @@ describe('an image that has not been sent yet', () => {
     fireEvent.click(getByLabelText('Open balance.png'))
 
     const { tabs, activeTabId } = useBrowser.getState()
-    expect(tabs.filter(t => t.kind === 'image')).toHaveLength(1)
-    expect(tabs.find(t => t.id === activeTabId)!.kind).toBe('image')
+    expect(tabs.filter(t => t.kind === 'attachment')).toHaveLength(1)
+    expect(tabs.find(t => t.id === activeTabId)!.kind).toBe('attachment')
   })
 
   it('hangs the remove tooltip on the button rather than on the flow', () => {
