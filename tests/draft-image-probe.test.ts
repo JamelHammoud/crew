@@ -31,7 +31,7 @@ describe('an image that has not been sent yet', () => {
 
     const tabs = useBrowser.getState().tabs
     expect(tabs).toHaveLength(1)
-    expect(tabs[0]!.kind).toBe('image')
+    expect(tabs[0]!.kind).toBe('attachment')
     expect(tabs[0]!.initialUrl).toBe(SRC)
   })
 
