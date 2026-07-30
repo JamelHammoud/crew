@@ -7,6 +7,15 @@ import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
 import { pdfBytes } from './helpers/pdf'
 
+const measured = (text: string) => ({
+  width: text.length * 6,
+  fontBoundingBoxAscent: 8,
+  fontBoundingBoxDescent: 2,
+  actualBoundingBoxAscent: 8,
+  actualBoundingBoxDescent: 2
+})
+HTMLCanvasElement.prototype.getContext = (() => ({ font: '', measureText: measured })) as never
+
 describe('pdfjs under jsdom', () => {
   it('opens a document', async () => {
     console.log('workerUrl', workerUrl)
