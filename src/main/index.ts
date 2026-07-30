@@ -528,6 +528,11 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('update:state', () => updates.now())
   ipcMain.handle('update:press', () => updates.press())
+  // Whether `crew` is on PATH, and the one press either way. It is this
+  // machine's own, like a terminal, so nothing about it is written down or sent.
+  ipcMain.handle('command:state', () => command.state())
+  ipcMain.handle('command:install', () => command.install())
+  ipcMain.handle('command:remove', () => command.remove())
   ipcMain.handle('shell:openExternal', (_event, url: string) => {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
   })
