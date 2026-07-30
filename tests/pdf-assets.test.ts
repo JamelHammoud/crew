@@ -76,7 +76,7 @@ describe('the files pdfjs reads for itself', () => {
 
   it('serves a standard font and the wasm it is asked for', async () => {
     const serve = served()
-    const font = await serve('/pdfjs/standard_fonts/FoxitSans.pfb')
+    const font = await serve('/pdfjs/standard_fonts/LiberationSans-Regular.ttf')
     expect(font.passed).toBe(false)
     expect(font.body?.length).toBeGreaterThan(0)
     const wasm = await serve('/pdfjs/wasm/openjpeg.wasm')
