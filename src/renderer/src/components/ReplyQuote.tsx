@@ -26,7 +26,13 @@ export default function ReplyQuote({
 }) {
   const agentId = useCrew(s => s.agents.find(a => a.id === authorId)?.id)
   const httpBase = useCrew(s => s.httpBase)
-  const image = useCrew(s => replyImage(s.events, targetId))
+  const carried = useCrew(s => replyAttachment(s.events, targetId))
+  const image = carried && isImageType(carried.mime) ? carried : undefined
+  const file = carried && !image ? carried : undefined
+  const Mark = file && markFor(file.mime)
+  // A message that is only a file has nothing to quote, so the file is what the
+  // line says.
+  const line = text || file?.name || ''
   return (
     <span className="flex min-w-0 flex-1 items-center gap-2">
       <span className="flex shrink-0 items-center gap-1.5">
