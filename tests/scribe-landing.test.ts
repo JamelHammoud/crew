@@ -165,13 +165,11 @@ describe('reading back what the machine printed', () => {
     expect(landingOf('unknown')).toBe('unknown')
   })
 
-  // The one that cost Scribe every box anybody really dictates into. A Chromium
-  // application hands over no focused element at all until its accessibility tree
-  // is built, and nothing here builds it, so Crew, Discord, VS Code, Figma and
-  // Chrome all said this the whole time somebody's caret was sitting in a field.
-  it('is unknown when the application handed over no focused element', () => {
-    expect(landingOf('none')).toBe('unknown')
-    expect(landingOf('none\n')).toBe('unknown')
+  // An application with nothing open, which is Mail, Messages, Terminal and
+  // ChatGPT with every window shut. There really is nowhere for the words to go.
+  it('takes the bare word none at its word', () => {
+    expect(landingOf('none')).toBe('none')
+    expect(landingOf('none\n')).toBe('none')
   })
 
   it('is unknown when nothing was printed at all', () => {
