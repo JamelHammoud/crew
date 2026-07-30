@@ -60,6 +60,7 @@ declare global {
     openWindow(): void
     closeTray(): void
     setTheme(theme: 'dark' | 'light'): Promise<void>
+    setAppIcon(icon: AppIconId): Promise<void>
     keepAwake(on: boolean): void
     notify(alert: AgentAlert): Promise<void>
     openTerminal(id: string, size: { cols: number; rows: number }): void
