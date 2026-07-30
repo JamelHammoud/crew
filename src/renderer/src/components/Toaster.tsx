@@ -20,10 +20,11 @@ function Row({ toast }: { toast: Toast }) {
   // a press as well: the card is the way out only when the pointer stayed put.
   const swipe = useSwipeAway(() => closeToast(toast.id))
 
-  // The row itself is the way out, so a press on the button is the button's own
-  // rather than that as well.
-  const press = (event: MouseEvent): void => {
-    event.stopPropagation()
+  // The whole row is the way into what it is about, the way a banner is, so the
+  // button on it says what a press does rather than being the one place that
+  // does it. A row with nothing to open has only the one thing a press can do,
+  // which is take it away, and the swipe is the way out of either.
+  const press = (): void => {
     if (swipe.moved()) return
     action?.onPress()
     if (!action?.keep) closeToast(toast.id)

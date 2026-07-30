@@ -1,4 +1,4 @@
-import { isImageType, showsInPanel } from '../../../shared/attachments'
+import { isImageType } from '../../../shared/attachments'
 import { create } from 'zustand'
 
 export type BrowserTab = {

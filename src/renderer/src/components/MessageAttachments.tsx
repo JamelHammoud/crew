@@ -1,4 +1,4 @@
-import { attachmentUrl, fileSize, isImageType, showsInPanel, type Attachment } from '../../../shared/attachments'
+import { attachmentUrl, fileSize, isImageType, previewOf, type Attachment } from '../../../shared/attachments'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
 import { markFor } from './attachmentMark'
