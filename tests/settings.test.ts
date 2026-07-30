@@ -214,14 +214,14 @@ describe('the settings', () => {
     )
   })
 
-  // The command comes with the app, so this page is the one press that puts it
+  // The command comes with the app, so this row is the one press that puts it
   // on PATH. The row turning over is what says it worked, so nothing else does.
   it('puts crew on your path in one press, and says where it went', async () => {
     window.crew.commandState = vi
       .fn()
       .mockResolvedValueOnce({ kind: 'missing', where: '/usr/local/bin/crew' })
       .mockResolvedValue({ kind: 'linked', where: '/usr/local/bin/crew' })
-    show('command')
+    show('machine')
 
     fireEvent.click(await screen.findByRole('button', { name: 'Install' }))
     expect(window.crew.installCommand).toHaveBeenCalled()
@@ -229,10 +229,31 @@ describe('the settings', () => {
     expect(within(card()).getByText('/usr/local/bin/crew')).toBeTruthy()
   })
 
+  // Windows has no folder every shell already reads, so the machine says it has
+  // nowhere to put the command and the row is left out rather than standing
+  // there greyed. The machine answers that, never the renderer guessing.
+  it('leaves the command row out where there is nowhere to put it', async () => {
+    window.crew.commandState = vi.fn().mockResolvedValue({ kind: 'off', where: '/usr/local/bin/crew' })
+    show('machine')
+
+    expect(await screen.findByRole('switch', { name: 'Keep this computer awake' })).toBeTruthy()
+    expect(within(card()).queryByText('The crew command')).toBeNull()
+  })
+
+  // The three things a machine answers for stand on one page, because they are
+  // one idea: what this computer does while Crew is open.
+  it('holds what this computer does on one page', async () => {
+    show('machine')
+    expect(page('This computer')).toBeTruthy()
+    expect(screen.getByRole('switch', { name: 'Keep this computer awake' })).toBeTruthy()
+    expect(screen.getByRole('switch', { name: 'Let agents send work out' })).toBeTruthy()
+    expect(await within(card()).findByText('The crew command')).toBeTruthy()
+  })
+
   // Whether this machine sleeps is yours alone, so it is written down where you
   // sit and main is told in the same breath as the switch being turned.
   it('lets this machine sleep until you say otherwise', () => {
-    show('power')
+    show('machine')
     const row = screen.getByRole('switch', { name: 'Keep this computer awake' })
     expect(row.getAttribute('aria-checked')).toBe('false')
     expect(awake()).toBe(false)

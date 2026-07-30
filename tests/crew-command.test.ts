@@ -15,7 +15,6 @@ import {
   shipsCommand,
   turnedDown
 } from '../src/shared/crewCommand'
-import { settingsTabs } from '../src/renderer/src/components/settings/tabs'
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
