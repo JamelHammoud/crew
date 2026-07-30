@@ -97,5 +97,5 @@ export function useStickToBottom(scrollRef: React.RefObject<HTMLDivElement | nul
     [measure, memoryKey, scrollRef, setPinned]
   )
 
-  return { pinnedRef, scrolledUp, atBottom, onScroll, jumpToBottom, follow }
+  return { pinnedRef, scrolledUp, atBottom, onScroll, jumpToBottom, jumpToTop, follow }
 }
