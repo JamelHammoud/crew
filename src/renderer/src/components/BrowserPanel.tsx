@@ -199,7 +199,7 @@ export default function BrowserPanel() {
             <RefreshGlyph className="w-4 h-4" />
           </button>
           <FileCrumbs tab={active} />
-          {isMarkdown(active.path) && (
+          {canPreview(active.path) && (
             <Tooltip label={active.preview ? 'Hide preview' : 'Show preview'}>
               <button
                 onClick={() => useBrowser.getState().togglePreview(active.id)}
