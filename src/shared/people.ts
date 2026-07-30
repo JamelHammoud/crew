@@ -16,13 +16,18 @@ export function memberPhoto(members: Array<{ name: string; avatar?: string }>, n
   return members.find(member => member.name.trim().toLowerCase() === key)?.avatar
 }
 
+// Everyone in the crew, here or not. An agent that is away cannot do the work,
+// so naming one is a message to nobody and it is left out; a person reads theirs
+// when they come back, which is the whole point of naming them. Whoever is here
+// stands first and the dot on the face says which is which, so the list needs no
+// heading over either half.
 export function memberMentionCandidates<T extends MentionableMember>(members: T[], query: string | null): T[] {
   if (query === null) return []
   const q = query.toLowerCase()
-  const connected = members.filter(member => member.connected)
-  const prefix = connected.filter(member => member.name.toLowerCase().startsWith(q))
+  const people = [...members].sort((a, b) => Number(b.connected) - Number(a.connected))
+  const prefix = people.filter(member => member.name.toLowerCase().startsWith(q))
   if (!q || q.includes(' ')) return prefix
-  const within = connected.filter(member => {
+  const within = people.filter(member => {
     const name = member.name.toLowerCase()
     return !name.startsWith(q) && name.includes(q)
   })
