@@ -93,3 +93,51 @@ describe('the one press', () => {
     expect(again.version).toBe('0.2.0')
   })
 })
+
+describe('an update that came down and did not go on', () => {
+  const landed = walk([found, { word: 'getting' }, { word: 'ready', version: '0.2.0' }])
+
+  it('says which of the two ways it did not happen', () => {
+    const held = nextUpdate(landed, { word: 'stuck', why: 'others' })
+    expect(held).toMatchObject({ stage: 'failed', why: 'others', version: '0.2.0', percent: 0 })
+    expect(nextUpdate(landed, { word: 'stuck', why: 'install' }).why).toBe('install')
+  })
+
+  it('says it again when it is pressed again and held again', () => {
+    const once = nextUpdate(landed, { word: 'stuck', why: 'others' })
+    const twice = nextUpdate(once, { word: 'stuck', why: 'others' })
+    expect(twice.told).toBe(once.told + 1)
+    expect(twice.stage).toBe('failed')
+  })
+
+  it('is nothing to say before anything has landed', () => {
+    for (const state of [NO_UPDATE, walk([found]), walk([found, { word: 'getting' }])]) {
+      expect(nextUpdate(state, { word: 'stuck', why: 'install' })).toBe(state)
+    }
+  })
+
+  it('offers the whole of it again, since the bytes are already here', () => {
+    expect(pressDoes(nextUpdate(landed, { word: 'stuck', why: 'others' }).stage)).toBe('get')
+  })
+})
+
+describe('when to look again, and when the app may be replaced', () => {
+  it('keeps looking while the pill stands, so the release after this one lands too', () => {
+    expect(worthChecking('none')).toBe(true)
+    expect(worthChecking('found')).toBe(true)
+    expect(worthChecking('failed')).toBe(true)
+  })
+
+  it('leaves a download in flight and one already down alone', () => {
+    expect(worthChecking('getting')).toBe(false)
+    expect(worthChecking('ready')).toBe(false)
+  })
+
+  // The installer replaces the whole app and force-kills every Crew it finds to
+  // do it, and several Crews on one machine is ordinary here.
+  it('waits for every other Crew on the machine', () => {
+    expect(mayInstall(0)).toBe(true)
+    expect(mayInstall(1)).toBe(false)
+    expect(mayInstall(4)).toBe(false)
+  })
+})
