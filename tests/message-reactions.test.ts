@@ -268,8 +268,10 @@ describe('message reaction controls', () => {
     expect(add.className).toContain('opacity-100')
     expect(add.className).not.toContain('opacity-0')
 
-    fireEvent.change(screen.getByPlaceholderText('Search emoji'), { target: { value: 'tada' } })
-    fireEvent.click(screen.getByLabelText('React with :tada:'))
+    const search = screen.getByPlaceholderText('Search emoji')
+    fireEvent.change(search, { target: { value: 'tada' } })
+    const picker = search.closest('.flex-col') as HTMLElement
+    fireEvent.click(within(picker).getByLabelText('React with :tada:'))
 
     expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🎉')
     expect(screen.queryByPlaceholderText('Search emoji')).toBeNull()
