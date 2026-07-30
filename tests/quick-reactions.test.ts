@@ -75,7 +75,7 @@ describe('what a stored row really is', () => {
     expect(cleanQuickReactions(eleven)).toEqual(TEN)
   })
 
-  it('keeps one of the crew's own, written as a name', () => {
+  it("keeps one of the crew's own, written as a name", () => {
     expect(cleanQuickReactions([':party_parrot:', '🔥'])).toEqual([':party_parrot:', '🔥'])
   })
 

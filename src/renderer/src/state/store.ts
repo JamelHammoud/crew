@@ -13,6 +13,7 @@ import {
   CUSTOM_EMOJI_MAX_BYTES,
   customEmojiExtension,
   customEmojiNameTaken,
+  customEmojiRef,
   MAX_CUSTOM_EMOJI,
   type CustomEmoji
 } from '../../../shared/customEmoji'
@@ -1161,6 +1162,15 @@ export const useCrew = create<CrewState>((set, get) => {
     clearDesignTarget: () => set({ designTarget: null })
   }
 })
+
+// What a typed name really is, or the one line to say why it is not a name. Both
+// adding an emoji and naming one again ask it, so the words exist once.
+const nameFor = (held: CustomEmoji[], asked: string): string | { said: string } => {
+  const clean = cleanCustomEmojiName(asked)
+  if (!clean) return { said: 'Give it a name in letters and numbers' }
+  if (customEmojiNameTaken(held, clean)) return { said: `${customEmojiRef(clean)} is already taken` }
+  return clean
+}
 
 const base64Of = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
