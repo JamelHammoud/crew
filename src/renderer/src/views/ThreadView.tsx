@@ -295,7 +295,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                       mark stands out here rather than inside the name, or line
                       one is 40 on its own and the row grows by the second. */}
                   {showPet && <AgentIcon seed={thread.agentId} presence={agentPresence} />}
-                  <div className="min-w-0 flex-1">
+                  {/* A column of two rather than two lines in one box: an inline
+                      box carries the strut of a line it has no text for, and the
+                      few pixels a descender leaves under the name are what would
+                      push the pair past the 40 the row is drawn at. */}
+                  <div className="min-w-0 flex-1 flex flex-col items-start">
                     <MemberName id={thread.agentId} name={thread.agentLabel} className="min-w-0 max-w-full">
                       <span className="block text-base font-bold text-fg truncate cursor-default">
                         {thread.agentLabel}
