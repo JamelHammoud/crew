@@ -1,10 +1,4 @@
-import {
-  isImageType,
-  MAX_ATTACHMENTS,
-  MAX_ATTACHMENT_BYTES,
-  mimeForFile,
-  type OutgoingAttachment
-} from '../../../shared/attachments'
+import { isImageType, MAX_ATTACHMENTS, mimeForFile, type OutgoingAttachment } from '../../../shared/attachments'
 
 export interface PendingAttachment extends OutgoingAttachment {
   id: string
