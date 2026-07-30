@@ -75,6 +75,22 @@ export class Store {
     fs.rmSync(path.join(this.root, 'music', file), { force: true })
   }
 
+  saveCustomEmoji(file: string, data: Buffer): void {
+    if (!isCustomEmojiFile(file)) throw new Error(`Bad emoji name: ${file}`)
+    this.writeAtomic(path.join(this.root, 'emoji', file), data)
+  }
+
+  customEmojiPath(file: string): string | null {
+    if (!isCustomEmojiFile(file)) return null
+    const full = path.join(this.root, 'emoji', file)
+    return fs.existsSync(full) ? full : null
+  }
+
+  deleteCustomEmoji(file: string): void {
+    if (!isCustomEmojiFile(file)) return
+    fs.rmSync(path.join(this.root, 'emoji', file), { force: true })
+  }
+
   loadSession(): PersistedSession | null {
     try {
       return JSON.parse(fs.readFileSync(this.sessionPath(), 'utf8'))
