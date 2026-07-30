@@ -17,7 +17,7 @@ function Row({ toast }: { toast: Toast }) {
   const mark = toast.mark ?? markFor(toast.tone)
   const action = toast.action
   // A row is pushed out of the way to the right, and what was a gesture is never
-  // a press as well: the card is the way out only when the pointer stayed put.
+  // a press as well.
   const swipe = useSwipeAway(() => closeToast(toast.id))
 
   // The whole row is the way into what it is about, the way a banner is, so the
