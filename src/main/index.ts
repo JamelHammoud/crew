@@ -156,6 +156,10 @@ function saidChanged(): void {
   for (const win of appWindows()) win.webContents.send('scribe:said', list)
 }
 let balloonShown = false
+// Whether the app is on its way out. A close during a quit is the real thing
+// and is let through, or the window would put itself away and the quit would
+// stall on a window that refuses to go.
+let quitting = false
 // What `crew` in a terminal asked for, read once and handed over once. A window
 // launched for a folder opens that folder rather than the session the app was
 // last in, so the last session is not resumed on top of it.
