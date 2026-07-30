@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
+import { pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
@@ -21,7 +22,7 @@ describe('pdfjs under jsdom', () => {
       console.log('fetch ok', answer.ok)
       const data = new Uint8Array(await answer.arrayBuffer())
       console.log('bytes', data.length)
-      pdfjs.GlobalWorkerOptions.workerSrc = new URL('../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs', import.meta.url).href
+      pdfjs.GlobalWorkerOptions.workerSrc = pathToFileURL('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs').href
       console.log('src', pdfjs.GlobalWorkerOptions.workerSrc)
       const doc = await pdfjs.getDocument({ data }).promise
       console.log('pages', doc.numPages)
