@@ -57,11 +57,27 @@ export function isImageUrl(url: string): boolean {
 }
 
 const MARKDOWN_TYPES = new Set(['md', 'markdown', 'mdown', 'mkd'])
+const HTML_TYPES = new Set(['html', 'htm', 'xhtml'])
+
+function extensionOf(name: string): string | null {
+  const file = slashed(name).split('/').pop() ?? ''
+  return /\.([a-z0-9]+)$/i.exec(file)?.[1]?.toLowerCase() ?? null
+}
 
 export function isMarkdown(name: string): boolean {
-  const file = slashed(name).split('/').pop() ?? ''
-  const extension = /\.([a-z0-9]+)$/i.exec(file)?.[1]
-  return extension ? MARKDOWN_TYPES.has(extension.toLowerCase()) : false
+  const extension = extensionOf(name)
+  return extension ? MARKDOWN_TYPES.has(extension) : false
+}
+
+export function isHtml(name: string): boolean {
+  const extension = extensionOf(name)
+  return extension ? HTML_TYPES.has(extension) : false
+}
+
+// A file that is written to be read as a page as well as as text, so it is
+// offered both ways.
+export function canPreview(name: string): boolean {
+  return isMarkdown(name) || isHtml(name)
 }
 
 export interface FileMatch {
