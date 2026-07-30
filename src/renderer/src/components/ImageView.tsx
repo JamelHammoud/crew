@@ -24,7 +24,11 @@ export default function ImageView({
     return { box: { width: image.offsetWidth, height: image.offsetHeight }, natural }
   }, [natural])
 
+  // Copy hands the picture to the machine's own clipboard, which takes a photo
+  // and nothing else, so a drawing is left without the menu rather than with a
+  // row that does nothing.
   const onContextMenu = (event: MouseEvent) => {
+    if (!copyable) return
     event.preventDefault()
     setMenuAt({ x: event.clientX, y: event.clientY })
   }
