@@ -62,3 +62,33 @@ describe('mentionCandidates', () => {
     expect(mentionCandidates(roster, 'timmy can you')).toEqual([])
   })
 })
+
+describe('memberMentionCandidates', () => {
+  const person = (id: string, name: string, connected = true) => ({ id, name, connected })
+  const crew = [person('a', 'Jamel'), person('b', 'Sam', false), person('c', 'ALI'), person('d', 'Alice', false)]
+
+  it('returns nothing when no @ is being typed', () => {
+    expect(memberMentionCandidates(crew, null)).toEqual([])
+  })
+
+  it('lists everybody for a bare @, here or not', () => {
+    expect(memberMentionCandidates(crew, '').map(m => m.id)).toEqual(['a', 'c', 'b', 'd'])
+  })
+
+  it('offers somebody who is not here', () => {
+    expect(memberMentionCandidates(crew, 'sam').map(m => m.id)).toEqual(['b'])
+  })
+
+  it('puts whoever is here first among the same matches', () => {
+    expect(memberMentionCandidates(crew, 'al').map(m => m.id)).toEqual(['c', 'd'])
+  })
+
+  it('ranks prefix matches before substring matches', () => {
+    const list = [person('a', 'Sam'), person('b', 'Rosam', false)]
+    expect(memberMentionCandidates(list, 'sam').map(m => m.id)).toEqual(['a', 'b'])
+  })
+
+  it('stops matching once the text moves past the name', () => {
+    expect(memberMentionCandidates(crew, 'jamel can you')).toEqual([])
+  })
+})
