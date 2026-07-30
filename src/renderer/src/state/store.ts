@@ -1039,9 +1039,8 @@ export const useCrew = create<CrewState>((set, get) => {
     // already answering to something are both worth saying rather than a picture
     // that quietly does not appear.
     addCustomEmoji: async (name, file) => {
-      const clean = cleanCustomEmojiName(name)
-      if (!clean) return 'Give it a name in letters and numbers'
-      if (customEmojiNameTaken(get().emoji, clean)) return `:${clean}: is already taken`
+      const clean = nameFor(get().emoji, name)
+      if (typeof clean !== 'string') return clean.said
       if (get().emoji.length >= MAX_CUSTOM_EMOJI) return 'The crew has as many emoji as it can hold'
       if (!customEmojiExtension(file.type)) return 'That file is not a picture Crew can draw'
       if (file.size > CUSTOM_EMOJI_MAX_BYTES) return 'That picture is too big for an emoji'
