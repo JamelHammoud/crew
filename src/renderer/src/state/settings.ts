@@ -5,6 +5,7 @@ export type SettingsTab =
   | 'appearance'
   | 'sound'
   | 'scribe'
+  | 'command'
   | 'people'
   | 'agents'
   | 'helpers'
