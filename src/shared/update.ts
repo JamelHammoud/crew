@@ -31,20 +31,20 @@ function share(percent: number): number {
 }
 
 export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
-  // Landed is the end of it. The app is on its way over and nothing said after
-  // that can take the offer of a restart off the screen.
-  if (state.stage === 'ready') return state
   switch (said.word) {
-    case 'found':
-      return state.stage === 'none' || state.stage === 'failed'
-        ? { stage: 'found', version: said.version, percent: 0 }
-        : state
+    // Landed is the end of the fetching, so nothing about a check moves it: the
+    // bytes are already here and the offer on the screen is the restart.
+    case 'found': {
+      if (state.stage === 'getting' || state.stage === 'ready') return state
+      const standing = state.stage === 'found' && state.version === said.version
+      return standing ? state : { stage: 'found', version: said.version, percent: 0, why: '' }
+    }
     // A check that finds nothing never takes back one already found, or a pass
     // made while a download is running would clear the pill out from under it.
     case 'nothing':
       return state
     case 'getting':
-      return { ...state, stage: 'getting', percent: 0 }
+      return state.stage === 'getting' ? state : { ...state, stage: 'getting', percent: 0, why: '' }
     // Progress arrives many times a second and most of them land on the number
     // already drawn, so an unchanged one is not news and wakes nobody.
     case 'progress': {
@@ -53,11 +53,21 @@ export function nextUpdate(state: UpdateState, said: UpdateWord): UpdateState {
       return percent === state.percent ? state : { ...state, percent }
     }
     case 'ready':
-      return { stage: 'ready', version: said.version || state.version, percent: 100 }
+      return state.stage === 'ready'
+        ? state
+        : { stage: 'ready', version: said.version || state.version, percent: 100, why: '' }
     // A check that could not reach the internet is nothing to say. Only a
     // download somebody asked for and did not get is worth a word.
     case 'error':
-      return state.stage === 'getting' ? { ...state, stage: 'failed', percent: 0 } : state
+      return state.stage === 'getting'
+        ? { ...state, stage: 'failed', percent: 0, why: 'download' }
+        : state
+    // An install that did not happen is the one thing said after it landed. The
+    // bytes are still here, so the press offers the whole of it again.
+    case 'stuck':
+      return state.stage === 'ready'
+        ? { ...state, stage: 'failed', percent: 0, why: said.why }
+        : state
   }
 }
 
