@@ -102,6 +102,20 @@ describe('picking a mention', () => {
     expect(screen.getByText('@Jamel').className).toContain('bg-fg/10')
   })
 
+  it('offers somebody who is not here and names them the same way', () => {
+    const input = boot()
+    type(input, 'morning @sa')
+    fireEvent.click(screen.getByText('@Sam'))
+    expect(input.value).toBe('morning @Sam ')
+  })
+
+  it('puts whoever is here at the head of the menu', () => {
+    const input = boot()
+    type(input, '@')
+    const names = screen.getAllByText(/^@(ALI|Jamel|Sam)$/).map(node => node.textContent)
+    expect(names).toEqual(['@ALI', '@Jamel', '@Sam'])
+  })
+
   it('adds a space after a doc name', () => {
     const input = boot()
     type(input, '#pla')
