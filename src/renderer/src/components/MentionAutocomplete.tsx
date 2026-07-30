@@ -233,13 +233,17 @@ function RefRow({
   )
 }
 
+// One row for both, since a character and a `:name:` are the same two things to
+// draw: the picture, and the name somebody would type to reach it.
 function EmojiRow({
-  entry,
+  char,
+  name,
   active,
   onClick,
   onMouseEnter
 }: {
-  entry: EmojiEntry
+  char: string
+  name: string
   active: boolean
   onClick: () => void
   onMouseEnter: () => void
@@ -248,13 +252,13 @@ function EmojiRow({
     <button
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      aria-label={`:${entry.shortName}:`}
+      aria-label={`:${name}:`}
       className={`w-full text-left px-2.5 py-2 rounded-xl text-sm flex items-center gap-2.5 transition-colors ${
         active ? 'bg-fg/[0.08] text-fg' : 'text-fg-secondary hover:bg-fg/[0.08] hover:text-fg'
       }`}
     >
-      <Emoji char={entry.char} size={18} />
-      <span className="flex-1 truncate">:{entry.shortName}:</span>
+      <Emoji char={char} size={18} />
+      <span className="flex-1 truncate">:{name}:</span>
     </button>
   )
 }
