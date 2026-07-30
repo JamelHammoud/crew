@@ -99,6 +99,7 @@ function IconTile({ icon, theme, on }: { icon: AppIconDef; theme: Theme; on: boo
 
 export default function Appearance() {
   const theme = useTheme()
+  const picked = useAppIcon()
   const prefs = usePrefs()
 
   return (
