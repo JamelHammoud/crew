@@ -74,7 +74,7 @@ const TEXT_CSS = `
   user-select: none;
 }
 .pdf-text span::selection {
-  background: var(--color-selection);
+  background: var(--color-selection-paper);
   color: transparent;
 }
 .pdf-text span::highlight(find-match) {
