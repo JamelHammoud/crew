@@ -38,6 +38,10 @@ if (Aside === null) {
   publishPresence()
   publishScribe()
   publishAwake()
+  // Which icon the dock wears is said again on every start, the way the awake
+  // switch is, and only from the window that picked it: the windows beside the app
+  // wear its theme without choosing one, and neither of them has a dock to set.
+  applyAppIcon(storedAppIcon())
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
     setFullScreen(shape.full)
