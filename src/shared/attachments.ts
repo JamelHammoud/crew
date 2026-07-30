@@ -205,12 +205,7 @@ const ARCHIVE_TYPES = new Set([
   'application/vnd.rar'
 ])
 
-const DOCUMENT_TYPES = new Set([
-  'application/pdf',
-  'application/json',
-  'application/msword',
-  'application/rtf'
-])
+const DOCUMENT_TYPES = new Set(['application/pdf', 'application/json', 'application/msword', 'application/rtf'])
 
 export function kindOf(mime: string): AttachmentKind {
   if (isImageType(mime)) return 'image'
