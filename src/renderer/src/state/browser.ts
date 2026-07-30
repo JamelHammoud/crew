@@ -223,6 +223,23 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = makeTab(url)
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    // A page an agent asked somebody to look at. It stands the panel up rather
+    // than waiting to be found, which is the whole of what showing one is, and a
+    // page already in a tab is loaded again rather than left standing at what it
+    // looked like before the change being shown. An address the webview has
+    // tidied is the same address, so a trailing slash is not a second tab.
+    showPage: url => {
+      const existing = get().tabs.find(
+        t => t.kind === 'web' && (sameAddress(t.url, url) || sameAddress(t.initialUrl, url))
+      )
+      if (existing) {
+        write({ activeTabId: existing.id, open: true } as never)
+        get().reloadTab(existing.id)
+        return
+      }
+      const tab = makeTab(url)
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
     openImage: (src, name) => {
       const existing = get().tabs.find(t => t.kind === 'image' && t.initialUrl === src)
       if (existing) {
