@@ -4,6 +4,7 @@ import CommandChip from '../components/CommandChip'
 import Composer from '../components/Composer'
 import DayDivider from '../components/DayDivider'
 import { JumpToBottom } from '../components/OverComposer'
+import TypingLine from '../components/TypingLine'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import PlanCard from '../components/PlanCard'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
@@ -247,6 +248,7 @@ export default function Chat() {
         <div className="bg-ink-900 px-6 pb-6">
           <div className="relative max-w-[660px] mx-auto pointer-events-auto">
             {scrolledUp && <JumpToBottom onClick={jumpToBottom} />}
+            <TypingLine />
             <Composer
               attachmentKey={CHAT_KEY}
               value={text}

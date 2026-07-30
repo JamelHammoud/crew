@@ -20,6 +20,7 @@ import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } fr
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
 import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
+import { TYPING_PING, type Typist } from '../../../shared/typing'
 import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
 import { alertToast } from '../components/alertToast'
@@ -168,6 +169,9 @@ interface CrewState {
   tools: CrewTool[]
   scores: GameScore[]
   boards: DesignBoardMeta[]
+  // Who is writing right now. It is never written down and never in the log, so
+  // it lives here and nowhere else.
+  typists: Typist[]
   openThreadId: string | null
   docsTarget: string | null
   designTarget: string | null
@@ -188,6 +192,7 @@ interface CrewState {
   setChatCommands: (commands: CommandName[]) => void
   setThreadDraft: (threadId: string, text: string) => void
   setThreadCommands: (threadId: string, commands: CommandName[]) => void
+  setTyping: (where: string | undefined, on: boolean) => void
   attach: (key: string, files: FileList | File[] | null) => Promise<void>
   detach: (key: string, id: string) => void
   moveAttachments: (from: string, to: string) => void
@@ -250,6 +255,26 @@ interface CrewState {
 
 const socket = new CrewSocket()
 
+// A window says it is writing at most every couple of seconds, and says it has
+// stopped the moment the box empties, the message goes, or the composer is left.
+// The host lets go of a window that never says either, so nothing is owed here
+// beyond keeping one keystroke from being one message.
+let typingSaid: { where?: string; at: number } | null = null
+
+function sayTyping(where: string | undefined, on: boolean): void {
+  if (!on) {
+    if (!typingSaid) return
+    const said = typingSaid
+    typingSaid = null
+    socket.send({ type: 'typing', where: said.where, on: false })
+    return
+  }
+  const now = Date.now()
+  if (typingSaid && typingSaid.where === where && now - typingSaid.at < TYPING_PING) return
+  typingSaid = { where, at: now }
+  socket.send({ type: 'typing', where, on: true })
+}
+
 // Changing what helpers may do here reaches the host at once, rather than
 // waiting for the next time the window happens to connect.
 onHelperPrefs(prefs => socket.send({ type: 'subagent.prefs', ...prefs }))
@@ -274,6 +299,7 @@ const EMPTY = {
   tools: [],
   scores: [],
   boards: [],
+  typists: [],
   openThreadId: null,
   docsTarget: null,
   designTarget: null,
@@ -746,6 +772,9 @@ export const useCrew = create<CrewState>((set, get) => {
       case 'game.scores':
         set({ scores: msg.scores })
         break
+      case 'typing.room':
+        set({ typists: msg.typists })
+        break
       // The same thing said twice is one row said again rather than a second
       // one under the first.
       case 'notice':
@@ -817,12 +846,18 @@ export const useCrew = create<CrewState>((set, get) => {
       void window.crew.leave()
       set({ connection: 'home', joinLink: null, hosting: false, shared: false, selfId: '', code: '', ...EMPTY })
     },
-    setChatDraft: text => set({ chatDraft: text }),
+    setChatDraft: text => {
+      sayTyping(undefined, text.trim().length > 0)
+      set({ chatDraft: text })
+    },
     setChatCommands: commands => set({ chatCommands: commands }),
-    setThreadDraft: (threadId, text) =>
-      set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } })),
+    setThreadDraft: (threadId, text) => {
+      sayTyping(threadId, text.trim().length > 0)
+      set(state => ({ threadDrafts: { ...state.threadDrafts, [threadId]: text } }))
+    },
     setThreadCommands: (threadId, commands) =>
       set(state => ({ threadCommands: { ...state.threadCommands, [threadId]: commands } })),
+    setTyping: (where, on) => sayTyping(where, on),
     attach: async (key, files) => {
       const picked = filesFrom(files)
       if (picked.length === 0) return
@@ -851,6 +886,7 @@ export const useCrew = create<CrewState>((set, get) => {
       // sent from a control that already knows the agent says so by id, so it
       // cannot be lost to a rename, a duplicate name or a fumbled spelling.
       const mentions = aimedAt ?? mentionsIn(text, get().agents)
+      sayTyping(threadId ?? boardId, false)
       playSound('send')
       if (threadId || boardId) {
         socket.send({

@@ -6,6 +6,7 @@ import FilesChanged from '../components/FilesChanged'
 import FindBar from '../components/FindBar'
 import GhostBar from '../components/GhostBar'
 import { FilesJump, JumpToBottom } from '../components/OverComposer'
+import TypingLine from '../components/TypingLine'
 import { MemberName } from '../components/Mention'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import QueueBar, { type QueuedMessage } from '../components/QueueBar'
@@ -322,6 +323,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 </div>
               </div>
               <div className="relative">
+                <TypingLine where={threadId} />
                 <Composer
                   attachmentKey={threadId}
                   value={text}

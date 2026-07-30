@@ -169,6 +169,13 @@ export default function Scribe() {
         <Row label="Dictation" line="Nothing you say leaves this machine.">
           <Toggle on={settings.on} label="Dictation" onChange={on => setScribeSettings({ on })} />
         </Row>
+        <Row label="Keep Scribe on screen" line="Turn this off to see it only while you dictate.">
+          <Toggle
+            on={settings.always}
+            label="Keep Scribe on screen"
+            onChange={always => setScribeSettings({ always })}
+          />
+        </Row>
       </Section>
 
       <Section

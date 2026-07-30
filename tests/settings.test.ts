@@ -9,6 +9,7 @@ import TopBar from '../src/renderer/src/components/TopBar'
 import { playSound } from '../src/renderer/src/media/sounds'
 import { prefs } from '../src/renderer/src/state/prefs'
 import { closeSettings, openSettings } from '../src/renderer/src/state/settings'
+import { setScribeSettings } from '../src/renderer/src/state/scribeSettings'
 import { setSounds } from '../src/renderer/src/state/sound'
 import { useCrew } from '../src/renderer/src/state/store'
 import { storedTheme } from '../src/renderer/src/state/theme'
@@ -41,6 +42,10 @@ beforeEach(() => {
   )
   window.crew = {
     agentCapabilities: vi.fn().mockResolvedValue([]),
+    applyScribe: vi.fn().mockResolvedValue({ hooked: true, trusted: true }),
+    onScribeSaid: vi.fn().mockReturnValue(() => {}),
+    scribeSaid: vi.fn().mockResolvedValue([]),
+    scribeState: vi.fn().mockResolvedValue({ hooked: true, trusted: true }),
     setTheme: vi.fn()
   } as unknown as typeof window.crew
   useCrew.setState({
@@ -161,6 +166,19 @@ describe('the settings', () => {
     fireEvent.click(price)
     fireEvent.click(count)
     expect(prefs()).toEqual({ tokens: false, cost: true })
+  })
+
+  it('keeps Scribe on screen or shows it only while dictating', () => {
+    setScribeSettings({ always: true })
+    show('scribe')
+    const visibility = screen.getByRole('switch', { name: 'Keep Scribe on screen' })
+    expect(visibility.getAttribute('aria-checked')).toBe('true')
+
+    fireEvent.click(visibility)
+    expect(visibility.getAttribute('aria-checked')).toBe('false')
+    expect(window.crew.applyScribe).toHaveBeenLastCalledWith(
+      expect.objectContaining({ always: false })
+    )
   })
 
   it('never says photo in words: your face is where a photo is changed', () => {

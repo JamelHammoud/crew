@@ -6,13 +6,7 @@ import { TIDY_RULES, type TidyRules } from './scribeTidy'
 // reaches the crew, which is why every setting here lives in this window rather
 // than in the log.
 
-// Fn is not among these and cannot be. macOS keeps it below the event tap every
-// app reads, so nothing outside the system is ever told it was pressed: it is
-// not in the public hot key API, and libuiohook, which is how the rest of this
-// is heard, has no keycode for it on any platform. Right Option is the nearest
-// thing on a Mac, and it is on the built-in keyboard, which Right Control is
-// not.
-export type ScribeKey = 'right-option' | 'right-ctrl' | 'ctrl' | 'meta' | 'none'
+export type ScribeKey = 'fn' | 'right-option' | 'right-ctrl' | 'ctrl' | 'meta' | 'none'
 export type ScribePress = 'hold' | 'toggle' | 'latch'
 export type ScribeFinish = 'paste' | 'copy'
 
@@ -25,6 +19,7 @@ export interface ScribeWord {
 
 export interface ScribeSettings {
   on: boolean
+  always: boolean
   key: ScribeKey
   press: ScribePress
   finish: ScribeFinish
@@ -92,10 +87,11 @@ export const OWN_MS = 150
 
 export const ownKey = (sent: number, now: number): boolean => sent > 0 && now - sent < OWN_MS
 
-const MAC_KEYS: ScribeKey[] = ['right-option', 'right-ctrl', 'ctrl', 'meta']
+const MAC_KEYS: ScribeKey[] = ['fn', 'right-option', 'right-ctrl', 'ctrl', 'meta']
 const OTHER_KEYS: ScribeKey[] = ['right-ctrl', 'ctrl', 'right-option', 'meta']
 
 const MAC_LABELS: Record<ScribeKey, string> = {
+  fn: 'Fn',
   'right-option': 'Right Option',
   'right-ctrl': 'Right Control',
   ctrl: 'Control',
@@ -104,6 +100,7 @@ const MAC_LABELS: Record<ScribeKey, string> = {
 }
 
 const OTHER_LABELS: Record<ScribeKey, string> = {
+  fn: 'Fn',
   'right-option': 'Right Alt',
   'right-ctrl': 'Right Ctrl',
   ctrl: 'Ctrl',
@@ -120,7 +117,7 @@ export const keyLabel = (key: ScribeKey, platform: string): string =>
 // Plain Control is offered because the rule that any other key cancels the take
 // makes it safe, not because it is a good first answer.
 export const defaultKey = (platform: string): ScribeKey =>
-  isMac(platform) ? 'right-option' : 'right-ctrl'
+  isMac(platform) ? 'fn' : 'right-ctrl'
 
 export const scribeKeys = (platform: string): ScribeKey[] => (isMac(platform) ? MAC_KEYS : OTHER_KEYS)
 
@@ -136,6 +133,7 @@ export const fallbackLabel = (platform: string): string =>
 export function defaultSettings(platform: string): ScribeSettings {
   return {
     on: false,
+    always: true,
     key: defaultKey(platform),
     press: 'latch',
     finish: 'paste',
@@ -183,6 +181,7 @@ export function cleanSettings(input: unknown, platform: string): ScribeSettings 
   const keys = [...scribeKeys(platform), 'none' as const]
   return {
     on: bool(held.on, base.on),
+    always: bool(held.always, base.always),
     key: one(held.key, keys, base.key),
     press: one(held.press, ['hold', 'toggle', 'latch'] as const, base.press),
     finish: one(held.finish, ['paste', 'copy'] as const, base.finish),
@@ -215,5 +214,7 @@ export function rulesOf(settings: ScribeSettings): TidyRules {
     words: settings.words
   }
 }
+
+export const restsOnScreen = (settings: ScribeSettings): boolean => settings.on && settings.always
 
 export type { TidyRules }

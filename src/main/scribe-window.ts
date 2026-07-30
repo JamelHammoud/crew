@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import { BrowserWindow, screen } from 'electron'
-import { PILL_ROOM, type ScribeSettings } from '../shared/scribe'
+import { PILL_ROOM, restsOnScreen, type ScribeSettings } from '../shared/scribe'
 import {
   fits,
   grown,
@@ -101,7 +101,7 @@ export class ScribeWindow {
   }
 
   rest(): void {
-    if (this.settings?.on) this.show()
+    if (this.settings && restsOnScreen(this.settings)) this.show()
     else this.hide()
   }
 

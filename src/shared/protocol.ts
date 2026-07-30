@@ -10,6 +10,7 @@ import type { MusicPlaylist, MusicRoom, MusicUpload } from './music'
 import type { ReactionEmoji } from './reactions'
 import type { TicketEvent } from './tickets'
 import type { CrewTool, ToolAction } from './toolbox'
+import type { Typist } from './typing'
 
 export interface RegisteredLlm {
   // Absent only from machines running an older build, which have no minted id
@@ -89,6 +90,9 @@ export type ClientMessage =
       replyTo?: string
     }
   | { type: 'history'; before: string }
+  // Said again every couple of seconds while somebody is still writing, and once
+  // with `on` false the moment they stop or send.
+  | { type: 'typing'; where?: string; on: boolean }
   | { type: 'chat.delete'; messageId: string }
   | { type: 'chat.edit'; messageId: string; text: string }
   | { type: 'chat.react'; targetId: string; emoji: ReactionEmoji }
@@ -171,6 +175,7 @@ export type ServerMessage =
   | { type: 'agent.step'; promptId: string; agentId: string; threadId: string; step: AgentStep }
   | { type: 'agent.usage'; agentId: string; usage: AgentUsage }
   | { type: 'agent.tokens'; promptId: string; agentId: string; threadId: string; tokens: number; cost?: number }
+  | { type: 'typing.room'; typists: Typist[] }
   | { type: 'huddle.room'; room: HuddleRoom }
   | { type: 'huddle.signal'; from: string; signal: HuddleSignal }
   | { type: 'music.room'; room: MusicRoom }
