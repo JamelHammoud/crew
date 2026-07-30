@@ -6,25 +6,18 @@ import Avatar from '../Avatar'
 import Modal from '../Modal'
 import Agents from './Agents'
 import Appearance from './Appearance'
-import Command from './Command'
 import Emoji from './Emoji'
 import Files from './Files'
-import Helpers from './Helpers'
+import Machine from './Machine'
 import People from './People'
-import Power from './Power'
 import Reactions from './Reactions'
 import Scribe from './Scribe'
 import SoundAndVideo from './SoundAndVideo'
 import You from './You'
-import { GROUPS, settingsTabs, tabLabel } from './tabs'
+import { GROUPS, SETTINGS_TABS, tabLabel } from './tabs'
 
 const WIDTH = 940
 const HEIGHT = 620
-
-// Windows has no folder every shell already reads, so the command has nowhere to
-// go there and the page is left out.
-const platform = (): string =>
-  globalThis.navigator?.platform?.toLowerCase().startsWith('win') ? 'win32' : 'darwin'
 
 function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'you') return <You onDone={closeSettings} />
@@ -32,10 +25,8 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'reactions') return <Reactions />
   if (tab === 'sound') return <SoundAndVideo />
   if (tab === 'scribe') return <Scribe />
-  if (tab === 'power') return <Power />
-  if (tab === 'command') return <Command />
+  if (tab === 'machine') return <Machine />
   if (tab === 'people') return <People />
-  if (tab === 'helpers') return <Helpers />
   if (tab === 'emoji') return <Emoji />
   if (tab === 'files') return <Files />
   return <Agents />
