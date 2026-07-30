@@ -175,6 +175,10 @@ describe('the row on the tray', () => {
     for (const button of tray().querySelectorAll('button')) {
       expect(button.className).toContain('shrink-0')
     }
+    // A second line grows away from the message rather than down over it, which
+    // is the bottom edge being the pinned one.
+    expect(tray().className).toContain('bottom-full')
+    expect(tray().className).not.toContain('-top-4')
   })
 
   it('turns over the moment the setting does', () => {
