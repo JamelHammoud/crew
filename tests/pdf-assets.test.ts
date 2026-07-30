@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { readFile, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
