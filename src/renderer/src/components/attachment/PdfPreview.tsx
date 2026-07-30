@@ -153,7 +153,7 @@ function useNear(ref: RefObject<HTMLElement | null>): boolean {
       marks => {
         if (marks.some(mark => mark.isIntersecting)) setNear(true)
       },
-      { rootMargin: NEAR }
+      { root: el.closest('[data-pdf]'), rootMargin: NEAR }
     )
     watch.observe(el)
     return () => watch.disconnect()
