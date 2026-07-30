@@ -60,7 +60,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
     () => buildThread(threadEvents, steps, selfId, agents, as),
     [threadEvents, steps, selfId, agents, as]
   )
-  const threadSteps = useMemo(() => stepsOfThread(threadId, events, steps, threads), [threadId, events, steps, threads])
+  const threadSteps = useFamilySteps(threadId)
   const start = threadEvents.find(event => event.kind === 'agent.start' && event.promptId === promptId)
 
   useLayoutEffect(() => {
