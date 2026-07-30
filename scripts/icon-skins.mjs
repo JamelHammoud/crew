@@ -84,10 +84,8 @@ const bitField = ({ TILE }) => {
       const depth = ((col + row) / (2 * (BLOCKS - 1))) * (BIT_BANDS.length - 1)
       const band = Math.floor(depth)
       const into = depth - band
-      // On the boundary between two bands the checker decides which of the two
-      // a block takes, which is what a dither is.
-      const checker = (col + row) % 2 === 0 ? 0.34 : 0.66
-      const index = Math.min(BIT_BANDS.length - 1, band + (into > checker ? 1 : 0))
+      const threshold = BAYER[row % 4][col % 4] / 16
+      const index = Math.min(BIT_BANDS.length - 1, band + (into > threshold ? 1 : 0))
       const spark = pick() > 0.965 ? BIT_SPARKS[Math.floor(pick() * BIT_SPARKS.length)] : null
       rows.push(
         `    <rect x="${round(TILE.x + col * block)}" y="${round(TILE.y + row * block)}" width="${round(block + 0.5)}" height="${round(block + 0.5)}" fill="${spark ?? BIT_BANDS[index]}"${spark ? ' opacity="0.9"' : ''} />`
