@@ -1,6 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { applyAppIcon, storedAppIcon } from './state/appIcon'
 import { publishAwake } from './state/awake'
 import { useBrowser } from './state/browser'
 import { applyPlatform } from './state/platform'
