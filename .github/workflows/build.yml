@@ -59,18 +59,52 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
+      - name: Name the files the way the update feed does
+        run: |
+          shopt -s nullglob
+          for f in dist/*\ *; do
+            mv "$f" "${f// /-}"
+          done
+
+      - name: Check the update files are there
+        run: |
+          shopt -s nullglob
+          fail() { echo "$1" >&2; exit 1; }
+          if [ "${{ matrix.label }}" = mac ]; then
+            [ -f dist/latest-mac.yml ] || fail "dist/latest-mac.yml is missing"
+            zips=(dist/*-mac.zip)
+            [ "${#zips[@]}" -eq 2 ] || fail "expected two mac zips, found ${#zips[@]}"
+            listed=$(grep -c 'url:.*\.zip' dist/latest-mac.yml || true)
+            [ "$listed" -eq 2 ] || fail "latest-mac.yml lists $listed zips, expected two"
+            dmgs=(dist/*.dmg)
+            [ "${#dmgs[@]}" -gt 0 ] || fail "no dmg was built"
+          else
+            [ -f dist/latest.yml ] || fail "dist/latest.yml is missing"
+            exes=(dist/*.exe)
+            [ "${#exes[@]}" -gt 0 ] || fail "no installer was built"
+          fi
+          maps=(dist/*.blockmap)
+          [ "${#maps[@]}" -gt 0 ] || fail "no blockmap was built"
+
       - uses: actions/upload-artifact@v4
         with:
           name: crew-${{ matrix.label }}
           if-no-files-found: error
           path: |
             dist/*.dmg
+            dist/*-mac.zip
             dist/*.exe
+            dist/*.blockmap
+            dist/latest-mac.yml
+            dist/latest.yml
 
   release:
     needs: build
     if: inputs.release
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -81,11 +115,19 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          shopt -s nullglob
+          fail() { echo "$1" >&2; exit 1; }
           version="${{ inputs.version }}"
           [ -n "$version" ] || version=$(node -p "require('./package.json').version")
           tag="v$version"
+          macFeed=(builds/*/latest-mac.yml)
+          winFeed=(builds/*/latest.yml)
+          [ "${#macFeed[@]}" -eq 1 ] || fail "latest-mac.yml never arrived"
+          [ "${#winFeed[@]}" -eq 1 ] || fail "latest.yml never arrived"
+          assets=(builds/*/*.dmg builds/*/*-mac.zip builds/*/*.exe builds/*/*.blockmap "${macFeed[@]}" "${winFeed[@]}")
+          [ "${#assets[@]}" -gt 0 ] || fail "nothing to put on the release"
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" builds/*/* --clobber
+            gh release upload "$tag" "${assets[@]}" --clobber
           else
-            gh release create "$tag" --target "$GITHUB_SHA" --title "Crew $version" --generate-notes builds/*/*
+            gh release create "$tag" --target "$GITHUB_SHA" --title "Crew $version" --generate-notes "${assets[@]}"
           fi
