@@ -52,8 +52,7 @@ export function imagePath(file: string, src: string): string {
 export function useLocalImages(file: string, text: string): Record<string, string> {
   const [found, setFound] = useState<Record<string, string>>({})
   const asked = useRef(new Set<string>())
-  const wanted = useMemo(() => imagesIn(text), [text])
-  const key = wanted.join('\n')
+  const key = useMemo(() => imagesIn(text).join('\n'), [text])
 
   useEffect(() => {
     asked.current = new Set()
@@ -62,7 +61,7 @@ export function useLocalImages(file: string, text: string): Record<string, strin
 
   useEffect(() => {
     let alive = true
-    for (const src of wanted) {
+    for (const src of key ? key.split('\n') : []) {
       if (asked.current.has(src)) continue
       asked.current.add(src)
       void window.crew
