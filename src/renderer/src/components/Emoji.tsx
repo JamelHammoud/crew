@@ -50,29 +50,49 @@ export default function Emoji({
   )
 }
 
+// A picture drawn small in a sentence is one somebody may not know the name of,
+// and the name is what they would type to write it themselves. One of the crew's
+// own says who brought it, which is the one thing about it the sheet's cannot
+// say.
+export function EmojiTip({ char }: { char: string }) {
+  useCustomEmoji()
+  const picture = lookupCustomEmojiRef(char)
+  return (
+    <span className="flex items-center gap-2.5">
+      <Emoji char={char} size={30} />
+      <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="text-sm font-medium text-fg/85 break-words">{emojiName(char)}</span>
+        {picture && <span className="text-xs text-fg/45">Added by {picture.emoji.by}</span>}
+      </span>
+    </span>
+  )
+}
+
 // The sprite carries no text, so the character rides along beside it, clipped
 // out of sight, for anything that copies or reads the message. The crew's own
 // carry their `:name:` there for the same reason: it is what somebody would type
 // to write the picture again.
+//
+// The alignment rides on the tooltip rather than on the sprite, since the box it
+// wraps what it holds in is a flex one and a flex item is not aligned by the
+// line it stands in.
 export function EmojiText({ text }: { text: string }) {
   const sheet = useCustomEmoji()
   const tokens = useMemo(() => tokenizeEmoji(text), [text, sheet])
   return (
     <>
-      {tokens.map((token, index) =>
-        token.kind === 'text' ? (
-          token.text
-        ) : (
+      {tokens.map((token, index) => {
+        if (token.kind === 'text') return token.text
+        const char = token.kind === 'emoji' ? token.entry.char : token.text
+        return (
           <Fragment key={index}>
-            <Emoji
-              char={token.kind === 'emoji' ? token.entry.char : token.text}
-              size="1.15em"
-              className="align-[-0.2em]"
-            />
+            <Tooltip label={<EmojiTip char={char} />} className="align-[-0.2em]">
+              <Emoji char={char} size="1.15em" />
+            </Tooltip>
             <span className="sr-only">{token.text}</span>
           </Fragment>
         )
-      )}
+      })}
     </>
   )
 }
