@@ -556,7 +556,7 @@ Opening a folder is the only way in, and there is no host and join to choose bet
 
 ## The crew command
 
-`crew` in a terminal opens a crew on the folder you are standing in. `bin/crew.mjs` is the whole of it: plain node, no dependencies and no build step, so the one command works from a checkout and from the installed app alike.
+`crew` in a terminal opens a crew on the folder you are standing in. It comes with the app, and one press on the Command line page in the settings puts it on PATH. `bin/crew.mjs` is the whole of what it does: plain node, no dependencies and no build step, so the one command works from a checkout and from the installed app alike.
 
 - The folder is the one you are in unless you name another, and a relative one is worked out from where the command was run rather than from wherever the app happens to start. `--name` is who you are, `--in-project` and `--in-app` are the two answers to where the crew lives, `--share` and `--no-share` are who can reach it, and `--join <link>` joins somebody else's crew with this folder as the place your agents work. `--help` and `--version` answer for themselves and open nothing.
 - Where a crew lives and who can reach it is the host's own, so `--join` is refused either of them rather than quietly ignoring them. Everything else is the same question the app asks the first time a project is opened and remembers from then on, which is why giving it again on a folder you have opened before changes nothing.
