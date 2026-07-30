@@ -5,6 +5,7 @@ import Select from '../Select'
 import Toggle from '../Toggle'
 import CommandRow from './CommandRow'
 import { Page, Row, Section } from './parts'
+import VersionRow from './VersionRow'
 
 // What this machine does while Crew is open: whether it sleeps, what agents
 // running here may do with your tokens and your files, and whether `crew` is on
