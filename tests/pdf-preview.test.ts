@@ -89,4 +89,15 @@ describe('a pdf in the panel', () => {
     await expect(task.promise).rejects.toThrow()
     await task.destroy()
   })
+
+  it('reads the build the window can run', () => {
+    const view = fs.readFileSync('src/renderer/src/components/attachment/PdfPreview.tsx', 'utf8')
+    expect(view).toContain("from 'pdfjs-dist/legacy/build/pdf.mjs'")
+    expect(view).toContain("from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'")
+
+    const modern = fs.readFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs', 'utf8')
+    const legacy = fs.readFileSync('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs', 'utf8')
+    expect(modern).toContain('toHex')
+    expect(legacy).toContain('toHex||')
+  })
 })
