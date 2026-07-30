@@ -1,6 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { publishAwake } from './state/awake'
 import { useBrowser } from './state/browser'
 import { applyPlatform } from './state/platform'
 import { publishScribe } from './state/scribeSettings'
@@ -35,6 +36,7 @@ if (Aside === null) {
   void useCrew.getState().boot()
   publishPresence()
   publishScribe()
+  publishAwake()
   window.crew.onWindowShape(shape => {
     root.classList.toggle('square', shape.square)
     setFullScreen(shape.full)
