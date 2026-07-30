@@ -448,8 +448,10 @@ export class AppSession {
     this.hosted = null
     this.runner?.close()
     this.runner = null
-    this.git?.stop()
+    const git = this.git
+    git?.stop()
     this.git = null
+    await git?.settle()
     await this.server?.close()
     this.server = null
   }
