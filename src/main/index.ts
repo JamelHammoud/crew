@@ -30,7 +30,7 @@ import {
 import type { MediaKind } from '../shared/media'
 import type { RepoCommand } from '../shared/repository'
 import { cleanSettings, type ScribeSettings } from '../shared/scribe'
-import { holdsBack, type Landing } from '../shared/scribeLanding'
+import { holdsBack, landingInPage, type Landing } from '../shared/scribeLanding'
 import { askCaret } from './scribe-caret'
 import { ScribeKeys } from './scribe-keys'
 import { deliver } from './scribe-paste'
