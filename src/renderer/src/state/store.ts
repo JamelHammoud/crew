@@ -8,6 +8,14 @@ import {
   type OutgoingAttachment
 } from '../../../shared/attachments'
 import type { CommandName } from '../../../shared/commands'
+import {
+  cleanCustomEmojiName,
+  CUSTOM_EMOJI_MAX_BYTES,
+  customEmojiExtension,
+  customEmojiNameTaken,
+  MAX_CUSTOM_EMOJI,
+  type CustomEmoji
+} from '../../../shared/customEmoji'
 import { boardCode, type DesignBoardMeta, type DesignDocument } from '../../../shared/design'
 import { fallbackTitle, slugify, type DocPage } from '../../../shared/docs'
 import {
