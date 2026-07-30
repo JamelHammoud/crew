@@ -108,14 +108,45 @@ export const MAX_ATTACHMENTS = 6
 // down as one event and folded off the log the way the toolbox is, so a number
 // somebody picked months ago is still the number.
 export const DEFAULT_ATTACHMENT_MB = 10
-export const ATTACHMENT_MB_LIMIT = 500
-export const ATTACHMENT_MB_STEPS = [1, 2, 5, 10, 25, 50, 100, 250, 500]
 
-export const attachmentBytes = (mb: number): number => mb * 1024 * 1024
+// No limit is written down as nought, the way nginx writes it, since nobody
+// could have meant a limit of nothing. It rides over the wire as a number like
+// every other, which nothing nullish can: a snapshot with no number in it is a
+// host that predates the setting, and that has to read as the default rather
+// than as no limit at all.
+export const ATTACHMENT_UNLIMITED = 0
+export const ATTACHMENT_MB_LIMIT = 10 * 1024
+export const ATTACHMENT_MB_STEPS = [
+  1, 2, 5, 10, 25, 50, 100, 250, 500, 1024, 2048, 5120, ATTACHMENT_MB_LIMIT, ATTACHMENT_UNLIMITED
+]
+
+// The sizes past half a gigabyte stand only while the crew is this machine's
+// own. Shared, a file is pulled by every machine here and lands in the history
+// they sync, so it is everyone's disk and not just yours. A number picked before
+// anybody was invited still stands, because it is the crew's number rather than
+// a window's, so it is offered wherever it falls.
+export const SHARED_ATTACHMENT_MB = 500
+
+export const attachmentBytes = (mb: number): number =>
+  mb === ATTACHMENT_UNLIMITED ? Number.POSITIVE_INFINITY : mb * 1024 * 1024
+
+const bySize = (mbs: number[]): number[] => [...mbs].sort((a, b) => attachmentBytes(a) - attachmentBytes(b))
+
+export function attachmentMbChoices(shared: boolean, picked: number): number[] {
+  if (!shared) return ATTACHMENT_MB_STEPS
+  const ladder = ATTACHMENT_MB_STEPS.filter(mb => mb !== ATTACHMENT_UNLIMITED && mb <= SHARED_ATTACHMENT_MB)
+  return ladder.includes(picked) ? ladder : bySize([...ladder, picked])
+}
+
+export function attachmentMbLabel(mb: number): string {
+  if (mb === ATTACHMENT_UNLIMITED) return 'No limit'
+  return mb >= 1024 ? `${Number((mb / 1024).toFixed(1))} GB` : `${mb} MB`
+}
 
 export function cleanAttachmentMb(mb: unknown): number | null {
   if (typeof mb !== 'number' || !Number.isFinite(mb)) return null
   const whole = Math.round(mb)
+  if (whole === ATTACHMENT_UNLIMITED) return whole
   return whole >= 1 && whole <= ATTACHMENT_MB_LIMIT ? whole : null
 }
 
