@@ -19,6 +19,7 @@ const paper = { id: 'b', name: 'terms.pdf', mime: 'application/pdf', data: 'JVBE
 beforeEach(() => {
   useBrowser.setState({ tabs: [], activeTabId: null })
   useCrew.setState({ pending: { [KEY]: [draft('a', 'balance.png')] } })
+  URL.createObjectURL ??= () => 'blob:pending'
 })
 
 afterEach(cleanup)
