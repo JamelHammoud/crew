@@ -33,4 +33,6 @@ if [ -z "$CREW_APP" ]; then
   export CREW_APP
 fi
 
-ELECTRON_RUN_AS_NODE=1 exec "$app" "$here/crew.mjs" "$@"
+ELECTRON_RUN_AS_NODE=1
+export ELECTRON_RUN_AS_NODE
+exec "$app" "$here/crew.mjs" "$@"
