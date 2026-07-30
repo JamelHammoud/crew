@@ -69,6 +69,34 @@ const CHOICES: Array<{ theme: Theme; label: string }> = [
   { theme: 'light', label: 'Light' }
 ]
 
+// The picked one is marked the way a theme card is, so the two blocks read as
+// one page: the same radius, the same border, the same check under it.
+const CARD = 'rounded-card border transition-colors duration-150 active:scale-[0.99]'
+const PICKED = 'border-fg/40 bg-fg/[0.04]'
+const RESTING = 'border-fg/10 hover:border-fg/25'
+
+// The tile is the size it wants and the column holds it, rather than the art
+// being stretched to whatever a third of the page comes to.
+const TILE = 88
+
+// The one that follows the theme turns over with the cards above it. The rest
+// are pictures somebody chose, so they stand whatever the window wears.
+function IconTile({ icon, theme, on }: { icon: AppIconDef; theme: Theme; on: boolean }) {
+  return (
+    <button
+      onClick={() => applyAppIcon(icon.id)}
+      aria-pressed={on}
+      className={`${CARD} ${on ? PICKED : RESTING} flex flex-col items-center p-1.5 pt-4`}
+    >
+      <img src={ICON_ART[icon.flips ? theme : icon.id]} alt="" width={TILE} height={TILE} draggable={false} />
+      <span className="flex items-center gap-1.5 pt-3 pb-1 text-sm font-medium text-fg">
+        {icon.label}
+        {on && <CheckGlyph className="w-4 h-4" />}
+      </span>
+    </button>
+  )
+}
+
 export default function Appearance() {
   const theme = useTheme()
   const prefs = usePrefs()
