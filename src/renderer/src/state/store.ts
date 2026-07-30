@@ -817,9 +817,9 @@ export const useCrew = create<CrewState>((set, get) => {
     setThreadCommands: (threadId, commands) =>
       set(state => ({ threadCommands: { ...state.threadCommands, [threadId]: commands } })),
     attach: async (key, files) => {
-      const picked = imagesFrom(files)
+      const picked = filesFrom(files)
       if (picked.length === 0) return
-      const added = await readImages(picked, (get().pending[key] ?? []).length)
+      const added = await readFiles(picked, (get().pending[key] ?? []).length)
       if (added.length === 0) return
       set(state => ({ pending: { ...state.pending, [key]: [...(state.pending[key] ?? []), ...added] } }))
     },
