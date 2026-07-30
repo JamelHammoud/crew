@@ -38,9 +38,17 @@ HTMLCanvasElement.prototype.getContext = function measuring(this: HTMLCanvasElem
   return { canvas: this, font: '', measureText: measured }
 } as never
 
-pdfjs.GlobalWorkerOptions.workerSrc = pathToFileURL(
-  'node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs'
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+  import.meta.url
 ).href
+
+const url = 'https://crew.test/note.pdf'
+const bytes = pdfBytes(['Crew pools agents', 'Second page here'])
+global.fetch = (async () => ({
+  ok: true,
+  arrayBuffer: async () => bytes.slice().buffer
+})) as unknown as typeof fetch
 
 const bar = (root: HTMLElement): HTMLInputElement | null =>
   root.ownerDocument.body.querySelector('input[placeholder="Find in this file"]')
