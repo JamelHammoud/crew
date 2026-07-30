@@ -451,7 +451,7 @@ export class AppSession {
     const git = this.git
     git?.stop()
     this.git = null
-    await git?.settle()
+    await git?.quiet()
     await this.server?.close()
     this.server = null
   }
