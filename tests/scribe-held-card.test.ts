@@ -92,7 +92,9 @@ describe('the card', () => {
 })
 
 describe('when the card stands in for the pill', () => {
+  // Set to rest on screen, or there is no pill at rest to tell the card from.
   it('is the pill and no card while nothing is being held', () => {
+    useScribe.setState({ settings: { ...defaultSettings('darwin'), on: true, always: true } })
     render(createElement(ScribePill))
     expect(screen.queryByText('Copy')).toBeNull()
   })
