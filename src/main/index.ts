@@ -160,6 +160,7 @@ let balloonShown = false
 // launched for a folder opens that folder rather than the session the app was
 // last in, so the last session is not resumed on top of it.
 let opening = openRequestOf(process.argv)
+let command = new CrewCommand(null)
 let resumed: Promise<unknown> = Promise.resolve()
 let iconTheme: IconTheme = 'dark'
 
