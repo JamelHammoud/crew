@@ -263,6 +263,28 @@ describe('toasts', () => {
     expect(screen.getByText('Playlist deleted')).toBeTruthy()
   })
 
+  // A flick lands well short of the distance a press may drift, so the row going
+  // is what says it was a gesture rather than how far it got.
+  it('a flick brushes the row aside without pressing it', () => {
+    show()
+    const pressed = vi.fn()
+    act(() => {
+      toast('Bubbles finished', { action: { label: 'Open', onPress: pressed } })
+    })
+    act(() => {
+      const card = document.querySelector('.toast-card')!
+      fireEvent.pointerDown(card, { button: 0, pointerId: 1, clientX: 0 })
+      fireEvent.pointerMove(card, { pointerId: 1, clientX: 10 })
+      vi.advanceTimersByTime(SAMPLE)
+      fireEvent.pointerMove(card, { pointerId: 1, clientX: 14 })
+      fireEvent.pointerUp(card, { pointerId: 1, clientX: 14 })
+      fireEvent.click(card)
+    })
+    tick(TOAST_OUT_MS)
+    expect(pressed).not.toHaveBeenCalled()
+    expect(rows().length).toBe(0)
+  })
+
   it('the last row going under the pointer hands the clocks back', () => {
     show()
     act(() => {
