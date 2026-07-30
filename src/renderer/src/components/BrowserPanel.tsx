@@ -442,6 +442,7 @@ function TabPill({ tab, active, row }: { tab: BrowserTab; active: boolean; row: 
         )}
         <span className="truncate">{tabLabel(tab)}</span>
         <span
+          onPointerDown={event => event.stopPropagation()}
           onClick={event => {
             event.stopPropagation()
             useBrowser.getState().closeTab(tab.id)
