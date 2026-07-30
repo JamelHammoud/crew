@@ -93,9 +93,12 @@ export default function ScribePill() {
   // where it was put whether it is open or shut.
   return (
     <div className="pointer-events-none w-fit flex justify-center" style={{ padding: PILL_ROOM }}>
-      {/* The whole of it is the handle, so it is moved by taking hold of it
-          anywhere rather than by finding a strip somewhere on it to aim at. The
-          cursor is the only thing that says so, which is all it needs to. */}
+      {holding ? (
+        <ScribeHeld />
+      ) : (
+      /* The whole of it is the handle, so it is moved by taking hold of it
+         anywhere rather than by finding a strip somewhere on it to aim at. The
+         cursor is the only thing that says so, which is all it needs to. */
       <div
         onPointerDown={grab}
         style={failed ? { width: PILL_WIDTH } : undefined}
