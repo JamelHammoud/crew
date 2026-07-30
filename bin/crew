@@ -1,0 +1,36 @@
+#!/bin/sh
+# The command as it ships inside Crew. It is a shell script rather than the node
+# one beside it because the machine it lands on may have no node at all: Electron
+# is a node, so the app runs its own command line.
+#
+# What is on PATH is a link to this file, so the first thing it does is follow
+# itself home. $0 is the link, and the app it belongs to is found from the file
+# rather than from wherever the link was made.
+target=$0
+while [ -L "$target" ]; do
+  link=$(readlink "$target")
+  case $link in
+    /*) target=$link ;;
+    *) target=$(dirname "$target")/$link ;;
+  esac
+done
+here=$(cd "$(dirname "$target")" && pwd)
+root=$(cd "$here/../../.." && pwd)
+
+app=$root/MacOS/Crew
+[ -x "$app" ] || app=$root/crew
+
+if [ ! -x "$app" ]; then
+  echo "crew: the Crew this command came with has gone." >&2
+  exit 1
+fi
+
+# Which Crew is opened is still CREW_APP's to say. This one is only the default,
+# so a command that came with the app in ~/Applications opens that one rather
+# than whichever Crew happens to be found first.
+if [ -z "$CREW_APP" ]; then
+  CREW_APP=$app
+  export CREW_APP
+fi
+
+ELECTRON_RUN_AS_NODE=1 exec "$app" "$here/crew.mjs" "$@"
