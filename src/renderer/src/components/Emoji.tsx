@@ -1,4 +1,5 @@
 import { Fragment, useMemo } from 'react'
+import { lookupCustomEmojiRef } from './customEmojiSheet'
 import { lookupEmoji, spriteStyle } from './emojiData'
 import { tokenizeEmoji } from './emojiTokens'
 
@@ -11,6 +12,22 @@ export default function Emoji({
   size?: number | string
   className?: string
 }) {
+  // A `:name:` the crew has is its picture. One the crew has never had falls
+  // through to the text below and prints the name itself, since the picture may
+  // simply have been taken away and the name is the honest answer.
+  const picture = lookupCustomEmojiRef(char)
+  if (picture) {
+    return (
+      <img
+        src={picture.url}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className={`inline-block shrink-0 object-contain ${className ?? ''}`}
+        style={{ width: size, height: size }}
+      />
+    )
+  }
   const entry = lookupEmoji(char)
   if (!entry) {
     return (
