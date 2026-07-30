@@ -563,6 +563,9 @@ export class CrewSession {
       if (event.kind === 'tool.removed') {
         this.tools.delete(event.toolId)
       }
+      if (event.kind === 'attachment.limit') {
+        this.attachmentMb = cleanAttachmentMb(event.mb) ?? this.attachmentMb
+      }
       // A track whose file has gone is left off the shelf rather than offered
       // as a row that plays nothing.
       if (event.kind === 'music.added' && this.store.musicPath(event.file)) {
@@ -731,6 +734,7 @@ export class CrewSession {
       ),
       todos: [...this.todos.values()],
       tools: [...this.tools.values()],
+      attachmentMb: this.attachmentMb,
       boards: this.boardList(),
       huddle: this.huddleRoom(),
       music: this.musicRoom(),
