@@ -191,6 +191,7 @@ export default function Home() {
             keep(name.trim())
             setFirst(false)
             setScreen('places')
+            if (asked) void follow({ ...asked, name: name.trim() })
           }}
         />
       )
