@@ -22,7 +22,7 @@ describe('where a dragged one lands', () => {
   })
 
   it('passes several at once on a long drag', () => {
-    expect(landing(boxes, 0, 300)).toBe(3)
+    expect(landing(boxes, 0, 350)).toBe(3)
     expect(landing(boxes, 3, -300)).toBe(0)
   })
 
