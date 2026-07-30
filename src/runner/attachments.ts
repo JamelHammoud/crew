@@ -1,11 +1,12 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { Attachment } from '../shared/attachments'
+import { isImageType, type Attachment } from '../shared/attachments'
 
 export interface LocalAttachment {
   name: string
   path: string
+  image: boolean
 }
 
 const DOWNLOAD_TIMEOUT_MS = 30000
@@ -13,10 +14,10 @@ const DOWNLOAD_TIMEOUT_MS = 30000
 export class AttachmentCache {
   constructor(private repoPath: string) {}
 
-  // A picture the agent has to read has to be a file somewhere. For an ordinary
+  // Anything the agent has to read has to be a file somewhere. For an ordinary
   // message that is the folder beside the session, where it is already kept and
-  // where it stays. A ghost thread has nothing beside the session, so its
-  // pictures go outside the project altogether and are taken away with the run:
+  // where it stays. A ghost thread has nothing beside the session, so what it
+  // carries goes outside the project altogether and is taken away with the run:
   // the folder the crew syncs never holds one, on any machine.
   async ensure(attachments: Attachment[], httpBase: string, ghostPromptId?: string): Promise<LocalAttachment[]> {
     const dir = ghostPromptId ? this.ghostDir(ghostPromptId) : path.join(this.repoPath, '.crew', 'attachments')
