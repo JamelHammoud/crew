@@ -105,9 +105,37 @@ export class ScribeWindow {
     this.rest()
   }
 
+  // A card of held words outranks the setting. Whoever is looking at it has not
+  // copied them yet, and a window that put itself away on the way past would take
+  // the only copy of what they said with it.
   rest(): void {
-    if (this.settings && restsOnScreen(this.settings)) this.show()
+    if (this.words || (this.settings && restsOnScreen(this.settings))) this.show()
     else this.hide()
+  }
+
+  // A stretch of a dictation that found nothing to write into. They arrive one at
+  // a time while somebody is still talking and the card says the whole of what was
+  // said, so they are joined here: the stretches already carry the space that
+  // keeps them off the end of the one before them.
+  hold(text: string): void {
+    if (!text) return
+    this.words += this.words ? text : text.trimStart()
+    this.send('scribe:held', this.words)
+    this.rest()
+  }
+
+  held(): string {
+    return this.words
+  }
+
+  // Letting go is the X on the card and the start of the next dictation both. It
+  // rests rather than hiding, so a machine that keeps the pill on screen all day
+  // is left with its pill rather than with nothing.
+  release(): void {
+    if (!this.words) return
+    this.words = ''
+    this.send('scribe:held', '')
+    this.rest()
   }
 
   // A pill that has grown keeps its bottom edge and its middle, and is never
@@ -209,6 +237,7 @@ export class ScribeWindow {
     })
     win.webContents.once('did-finish-load', () => {
       if (this.settings) win.webContents.send('scribe:settings', this.settings)
+      if (this.words) win.webContents.send('scribe:held', this.words)
     })
     if (this.page.devUrl) void win.loadURL(`${this.page.devUrl}#scribe`)
     else void win.loadFile(this.page.file, { hash: 'scribe' })
