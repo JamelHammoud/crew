@@ -1,5 +1,6 @@
 import type { Attachment, OutgoingAttachment } from './attachments'
 import type { CommandName } from './commands'
+import type { CustomEmoji } from './customEmoji'
 import type { DesignBoardMeta, DesignDocument, DesignPresence } from './design'
 import type { DocPage } from './docs'
 import type { SessionEvent, ThreadStatus, Todo } from './events'
@@ -80,6 +81,9 @@ export interface SessionSnapshot {
   musicPlaylists?: MusicPlaylist[]
   // Everyone's best at each game, which lasts longest of all.
   gameScores?: GameScore[]
+  // The emoji the crew drew themselves. They last, so they ride here the way the
+  // shelf does rather than being scrolled past in the chat.
+  emoji?: CustomEmoji[]
   // Whether the log holds anything older than the events here. Absent from a
   // host running an older build, which has nothing older to hand over, so
   // nobody is offered a way back into history that host cannot serve.
