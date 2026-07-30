@@ -186,8 +186,8 @@ function Pages({
   width: number
   aspect: number
   label: string
-  scrollerRef: RefObject<HTMLDivElement | null>
-  columnRef: RefObject<HTMLDivElement | null>
+  scrollerRef: RefObject<HTMLDivElement>
+  columnRef: RefObject<HTMLDivElement>
   onMeasured: (aspect: number, natural: number) => void
 }) {
   const density = useDensity(zoom)
