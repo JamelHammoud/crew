@@ -1,4 +1,5 @@
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
+import { spawn, type ChildProcessByStdio } from 'node:child_process'
+import type { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 
 export interface ScribeFunctionKeyEars {
@@ -8,7 +9,7 @@ export interface ScribeFunctionKeyEars {
 }
 
 export class ScribeFunctionKey {
-  private child: ChildProcessWithoutNullStreams | null = null
+  private child: ChildProcessByStdio<null, Readable, null> | null = null
   private pending = ''
   private isReady = false
 
