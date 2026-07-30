@@ -95,9 +95,39 @@ export default function Home() {
     setError('')
     const plan = await window.crew.projectPlan(picked).catch(() => null)
     if (plan?.known) return open(picked, `project:${picked}`, name.trim())
-    setAsking(picked)
+    setAsking({ folder: picked })
     setScreen('where')
   }
+
+  // A folder handed over by the `crew` command opens the way a row in the list
+  // does, so the one question a project is ever asked is still asked once.
+  const follow = async (request: OpenRequest) => {
+    const who = (request.name ?? name).trim()
+    if (!who) {
+      setAsked(request)
+      setScreen('name')
+      return
+    }
+    setAsked(null)
+    setName(who)
+    setFolder(request.folder)
+    const key = `project:${request.folder}`
+    if (request.link) {
+      setLink(request.link)
+      return joinSession(request.link, request.folder, key, who)
+    }
+    if (request.home) return open(request.folder, key, who, { home: request.home, share: request.share })
+    const plan = await window.crew.projectPlan(request.folder).catch(() => null)
+    if (plan?.known) return open(request.folder, key, who, { share: request.share })
+    setAsking({ folder: request.folder, share: request.share })
+    setScreen('where')
+  }
+
+  useEffect(() => {
+    void window.crew?.opening?.().then(request => {
+      if (request) void follow(request)
+    })
+  }, [])
 
   const joinSession = async (sessionLink: string, sessionFolder: string, key: string, who: string) => {
     setBusy(true)

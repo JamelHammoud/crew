@@ -1480,6 +1480,29 @@ export class CrewSession {
     return { ok: true }
   }
 
+  // A page an agent wants looked at. It goes through emit like everything else a
+  // run says about itself, so a ghost thread's page is shown to the one window
+  // that opened the thread and is never written down.
+  showPage(promptId: string, rawUrl: unknown, rawTitle: unknown): Done {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    const url = pageUrl(rawUrl)
+    if (!url) {
+      return { error: 'Give the full path to a file, an address on this machine like localhost:5173, or a link.' }
+    }
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'page.shown',
+      threadId: thread.id,
+      url,
+      title: pageTitle(rawTitle) || pageName(url),
+      agentId: thread.agentId,
+      agentLabel: thread.agentLabel
+    })
+    return { ok: true }
+  }
+
   private subagentThreads(parentThreadId: string): Thread[] {
     return [...this.threads.values()].filter(thread => thread.parentThreadId === parentThreadId)
   }
