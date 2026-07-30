@@ -74,10 +74,10 @@ export class Updates {
   }
 
   // Silent and running again on the other side, because the press was somebody
-  // asking for the new Crew rather than for an installer to look at. The quit
-  // is left a beat so whatever the session was holding is put down first.
+  // asking for the new Crew rather than for an installer to look at. It is left
+  // a beat so the window it was pressed in has painted the press before the app
+  // goes, and so whatever quitting puts down is put down.
   private restart(): void {
-    this.quit()
     setImmediate(() => autoUpdater.quitAndInstall(true, true))
   }
 }
