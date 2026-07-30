@@ -212,7 +212,7 @@ describe('the ask bar', () => {
 
   it('carries an attachment button and no record button', () => {
     boot()
-    expect(screen.getByLabelText('Add an image')).toBeTruthy()
+    expect(screen.getByLabelText('Add a file')).toBeTruthy()
     expect(screen.queryByLabelText(/record/i)).toBe(null)
   })
 
