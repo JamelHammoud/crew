@@ -39,17 +39,22 @@ export function FileMark({ mime }: { mime: string }) {
   )
 }
 
+export const headerButton =
+  'w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-muted transition-all duration-150 hover:text-fg hover:bg-fg/[0.06] active:scale-95'
+
 export default function Frame({
   name,
   mime,
   size,
   url,
+  tools,
   children
 }: {
   name: string
   mime: string
   size: number
   url: string
+  tools?: ReactNode
   children: ReactNode
 }) {
   const Mark = markFor(mime)
