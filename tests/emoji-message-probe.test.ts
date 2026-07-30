@@ -71,4 +71,42 @@ describe('emoji in the feed', () => {
     expect(sprites(container)).toHaveLength(0)
     expect(container.textContent).toBe('nothing to draw')
   })
+
+  it('says what an emoji is called when the pointer rests on it', () => {
+    vi.useFakeTimers()
+    boot()
+    const { container } = render(createElement(EmojiText, { text: 'well 🔥' }))
+    act(() => {
+      fireEvent.mouseEnter(sprites(container)[0].parentElement as HTMLElement)
+      vi.advanceTimersByTime(400)
+    })
+
+    expect(document.body.textContent).toContain(':fire:')
+  })
+})
+
+describe('a message of nothing but emoji', () => {
+  it('draws the pictures large', () => {
+    expect(words('🔥🔥🔥')).toContain('text-[32px]')
+  })
+
+  it('stays at the size of the words when there are any', () => {
+    expect(words('🔥 test')).toContain('text-base')
+    expect(words('nothing to draw')).toContain('text-base')
+  })
+
+  it('reads whitespace and line endings as nothing beside them', () => {
+    expect(onlyEmoji(' 🔥\n🔥 ')).toBe(true)
+    expect(onlyEmoji('')).toBe(false)
+    expect(onlyEmoji('   ')).toBe(false)
+  })
+
+  it('leaves a wall of them at the size of the words', () => {
+    expect(onlyEmoji('🔥'.repeat(24))).toBe(true)
+    expect(onlyEmoji('🔥'.repeat(25))).toBe(false)
+  })
+
+  it('reads a name somebody was written beside as words', () => {
+    expect(onlyEmoji('@Bubbles 🔥')).toBe(false)
+  })
 })
