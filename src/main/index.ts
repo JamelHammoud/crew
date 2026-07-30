@@ -261,6 +261,9 @@ function createWindow(): void {
     warmTerminals()
     tray.warm()
     scribe.warm()
+    // A window opened after the check has already run would stand there saying
+    // nothing, so it is told where the update has got to as it lands.
+    updates.tell(win)
   })
   // Who is here is read from a window's own view of the session, so with none
   // open the tray says so rather than showing a list that stopped moving.
