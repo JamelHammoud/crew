@@ -126,6 +126,17 @@ export function appLaunch(platform, env, homeDir, projectRoot, exists = existsSy
   return null
 }
 
+// The command may be running inside Crew itself, as the app in node's clothing,
+// and that is an environment variable rather than a way of being started: handed
+// on to the app being opened, it would come up as a node process with no window
+// and nobody would ever see it. Everything else about the environment is passed
+// on as it stands.
+export function childEnv(env) {
+  const next = { ...env }
+  delete next.ELECTRON_RUN_AS_NODE
+  return next
+}
+
 function isFolder(target) {
   try {
     return statSync(target).isDirectory()
