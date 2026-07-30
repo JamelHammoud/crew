@@ -44,7 +44,7 @@ describe('the crew command', () => {
     expect(request.folder).toBe(path.resolve(CWD, '../api'))
   })
 
-  it('refuses to be told where somebody else s crew lives', () => {
+  it("refuses to be told where somebody else's crew lives", () => {
     expect(parseArgs(['--join', 'crew://host:2739/abc', '--share'], CWD).kind).toBe('error')
     expect(parseArgs(['--join', 'crew://host:2739/abc', '--in-app'], CWD).kind).toBe('error')
   })
