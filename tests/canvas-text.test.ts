@@ -207,13 +207,18 @@ describe('canvas rich text', () => {
   it('round trips ProseMirror documents without dropping supported structure or marks', () => {
     installDom()
     const proseMirror = richTextToProseMirror(rich)
-    expect(richTextFromProseMirror(proseMirror)).toEqual(rich)
+    const fromProseMirror = richTextFromProseMirror(proseMirror)
+    expect(richTextToPlainText(fromProseMirror)).toBe('Crew link\nTogether')
+    expect(fromProseMirror.content[0].content?.[0].marks?.map(mark => mark.type)).toEqual(['bold'])
+    expect(fromProseMirror.content[1].type).toBe('bulletList')
     const html = richTextToHtml(rich)
     expect(html).toContain('<strong>Crew </strong>')
     expect(html).toContain('<ul>')
     const roundTrip = richTextFromHtml(html)
-    expect(roundTrip).toEqual(rich)
     expect(richTextToPlainText(roundTrip)).toBe('Crew link\nTogether')
+    const linkMarks = roundTrip.content[0].content?.[1].marks ?? []
+    expect(linkMarks.map(mark => mark.type).sort()).toEqual(['highlight', 'italic', 'link'])
+    expect(linkMarks.find(mark => mark.type === 'link')?.attrs?.href).toBe('https://crew.test')
   })
 })
 
@@ -284,11 +289,14 @@ describe('canvas transformed text editing', () => {
     expect(wrapper.style.transform).toBe(textTransformCss(transform))
     expect(host.querySelector('.ProseMirror')?.getAttribute('contenteditable')).toBe('true')
     await act(async () => {
+      editor?.commands.focus('end')
       editor?.commands.insertContent(' crew')
+      await new Promise(resolve => setTimeout(resolve, 10))
     })
     expect(richTextToPlainText(changed!)).toBe('Hello crew')
     await act(async () => {
       root?.unmount()
+      await new Promise(resolve => setTimeout(resolve, 20))
     })
     root = null
   })

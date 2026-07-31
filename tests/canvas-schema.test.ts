@@ -8,8 +8,8 @@ import {
   ShapeRecordType,
   createTLStore,
   createTLSchema,
-  decodeDrawPoints,
-  encodeDrawPoints,
+  decodePoints,
+  encodePoints,
   getSnapshot,
   loadSnapshot,
   type TLRecord,
@@ -87,9 +87,9 @@ describe('the Crew canvas schema', () => {
       { x: 13, y: -3.25, z: 0.5 },
       { x: 15.5, y: 1, z: 1 }
     ]
-    const encoded = encodeDrawPoints(points)
+    const encoded = encodePoints(points)
     expect(encoded).toHaveLength(32)
-    const decoded = decodeDrawPoints(encoded)
+    const decoded = decodePoints(encoded)
     expect(decoded[0]).toEqual(points[0])
     expect(decoded[1].x).toBeCloseTo(points[1].x, 3)
     expect(decoded[1].y).toBeCloseTo(points[1].y, 3)
@@ -98,7 +98,8 @@ describe('the Crew canvas schema', () => {
 
   it.skipIf(boardFiles.length === 0)('loads every existing Crew board and preserves its document snapshot', () => {
     for (const file of boardFiles) {
-      const document = JSON.parse(readFileSync(file, 'utf8')) as TLStoreSnapshot
+      const saved = JSON.parse(readFileSync(file, 'utf8')) as { document: TLStoreSnapshot }
+      const document = saved.document
       const store = createTLStore()
       loadSnapshot(store, document)
       const records = Object.values(document.store) as TLRecord[]
