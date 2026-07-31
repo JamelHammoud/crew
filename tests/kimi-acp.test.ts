@@ -25,30 +25,73 @@ const change = (body: Record<string, unknown>) => note({ sessionUpdate: 'tool_ca
 
 const acted = (out: ParsedOutput[]): ParsedActivity => out.find(one => one.activity)!.activity!
 
+const OPENED = {
+  sessionId: 'session_abc',
+  configOptions: [
+    { id: 'mode', name: 'Mode', options: [{ id: 'yolo', name: 'Yolo' }] },
+    { id: 'model', name: 'Model', options: [{ id: 'kimi-k2-thinking', name: 'K2 Thinking' }] }
+  ]
+}
+
 const walk = (dialog: ReturnType<typeof kimiDialog>) => {
   const sent = [...dialog.begin()]
   sent.push(...dialog.answer(reply(1, { protocolVersion: 1, agentCapabilities: { loadSession: true } })))
-  sent.push(
-    ...dialog.answer(reply(2, { sessionId: 'session_abc', configOptions: [{ id: 'model', name: 'Model' }] }))
-  )
+  sent.push(...dialog.answer(reply(2, OPENED)))
+  sent.push(...dialog.answer(reply(3, {})))
+  sent.push(...dialog.answer(reply(4, {})))
   return sent.map(line => JSON.parse(line))
 }
 
 describe('the kimi handshake', () => {
-  it('walks initialize, session and prompt in order', () => {
-    const sent = walk(kimiDialog('add the two numbers', '/repo', reader()))
-    expect(sent.map(m => m.method)).toEqual(['initialize', 'session/new', 'session/prompt'])
-    expect(sent.map(m => m.id)).toEqual([1, 2, 3])
+  it('walks initialize, the session, what it is set to, and the turn', () => {
+    const sent = walk(kimiDialog('add the two numbers', '/repo', reader({ model: 'kimi-k2-thinking' })))
+    expect(sent.map(m => m.method)).toEqual([
+      'initialize',
+      'session/new',
+      'session/set_config_option',
+      'session/set_config_option',
+      'session/prompt'
+    ])
+    expect(sent.map(m => m.id)).toEqual([1, 2, 3, 4, 5])
     expect(sent.every(m => m.jsonrpc === '2.0')).toBe(true)
     expect(sent[0].params).toEqual({
       protocolVersion: 1,
       clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
     })
     expect(sent[1].params).toEqual({ cwd: '/repo', mcpServers: [] })
-    expect(sent[2].params).toEqual({
+    expect(sent[2].params).toEqual({ sessionId: 'session_abc', configId: 'mode', value: 'yolo' })
+    expect(sent[3].params).toEqual({ sessionId: 'session_abc', configId: 'model', value: 'kimi-k2-thinking' })
+    expect(sent[4].params).toEqual({
       sessionId: 'session_abc',
       prompt: [{ type: 'text', text: 'add the two numbers' }]
     })
+  })
+
+  it('says nothing about a model nobody picked and goes straight to the turn', () => {
+    const sent = walk(kimiDialog('go', '/repo', reader()))
+    expect(sent.map(m => m.method)).toEqual([
+      'initialize',
+      'session/new',
+      'session/set_config_option',
+      'session/prompt'
+    ])
+    expect(sent.filter(m => m.method === 'session/set_config_option').map(m => m.params.configId)).toEqual(['mode'])
+    expect(sent[3].params).toEqual({ sessionId: 'session_abc', prompt: [{ type: 'text', text: 'go' }] })
+  })
+
+  it('carries on to the turn when a setting is refused', () => {
+    const dialog = kimiDialog('go', '/repo', reader({ model: 'gone-from-the-config' }))
+    dialog.begin()
+    dialog.answer(reply(1, { protocolVersion: 1 }))
+    expect(JSON.parse(dialog.answer(reply(2, OPENED))[0]).params.configId).toBe('mode')
+
+    const afterMode = dialog.answer(failed(3, 'unknown config option')).map(line => JSON.parse(line))
+    expect(afterMode.map(m => m.method)).toEqual(['session/set_config_option'])
+    expect(afterMode[0].params.configId).toBe('model')
+
+    const afterModel = dialog.answer(failed(4, 'no such model')).map(line => JSON.parse(line))
+    expect(afterModel.map(m => m.method)).toEqual(['session/prompt'])
+    expect(afterModel[0].params).toEqual({ sessionId: 'session_abc', prompt: [{ type: 'text', text: 'go' }] })
   })
 
   it('waits on the reply to each step before it asks for the next', () => {
@@ -61,14 +104,14 @@ describe('the kimi handshake', () => {
     expect(dialog.answer(reply(1, { protocolVersion: 1 }))).toEqual([])
   })
 
-  it('asks for no turn on a session that came back without an id', () => {
+  it('asks for nothing more on a session that came back without an id', () => {
     const dialog = kimiDialog('go', '/repo', reader())
     dialog.begin()
     dialog.answer(reply(1, { protocolVersion: 1 }))
     expect(dialog.answer(reply(2, { configOptions: [] }))).toEqual([])
   })
 
-  it('says nothing back to a reply that failed', () => {
+  it('stops where it stands when a step before the session fails', () => {
     const dialog = kimiDialog('go', '/repo', reader())
     dialog.begin()
     expect(dialog.answer(failed(1, 'unsupported protocol version', -32602))).toEqual([])
