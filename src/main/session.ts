@@ -377,14 +377,7 @@ export class AppSession {
     }
     this.folder = repoPath
     this.savedStore()?.save({ mode: 'host', folder: repoPath, name, home, shared })
-    this.savedStore()?.remember({
-      folder: repoPath,
-      name,
-      home,
-      key,
-      sync: projectSync,
-      openedAt: Date.now()
-    })
+    this.rememberProject()
     return this.live
   }
 

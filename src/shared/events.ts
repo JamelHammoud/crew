@@ -207,7 +207,21 @@ export type SessionEvent =
       reactionIds?: string[]
     }
   | { id: string; ts: number; kind: 'agent.step'; promptId: string; agentId: string; agentLabel: string; step: AgentStep; threadId?: string }
-  | { id: string; ts: number; kind: 'agent.end'; promptId: string; agentId: string; agentLabel: string; ok: boolean; text?: string; error?: string; threadId?: string }
+  | {
+      id: string
+      ts: number
+      kind: 'agent.end'
+      promptId: string
+      agentId: string
+      agentLabel: string
+      ok: boolean
+      text?: string
+      error?: string
+      threadId?: string
+      ms?: number
+      tokens?: number
+      cost?: number
+    }
   | { id: string; ts: number; kind: 'person.joined'; memberId: string; name: string }
   | { id: string; ts: number; kind: 'person.left'; memberId: string; name: string }
   | { id: string; ts: number; kind: 'agent.online'; agentId: string; label: string }
