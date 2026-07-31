@@ -2,7 +2,13 @@ import { createElement, type ReactNode } from 'react'
 import { CubicSpline2d, Edge2d, Polyline2d, type Geometry2d } from '../geometry'
 import { Vec } from '../math/Vec'
 import { lineShapeProps, type TLLineShapePoint as LinePoint, type TLShape as CrewShape } from '../schema'
-import { ShapeUtil, type ShapeResizeInfo } from './ShapeUtil'
+import {
+  ShapeUtil,
+  type CrewShapePartial,
+  type ShapeHandle,
+  type ShapeHandleDragInfo,
+  type ShapeResizeInfo
+} from './ShapeUtil'
 import { STROKES } from './shared'
 import { shapeColor } from './theme'
 
@@ -22,6 +28,28 @@ export class LineShapeUtil extends ShapeUtil<LineShape> {
   }
   override canEdit(): boolean { return true }
   override canResize(): boolean { return true }
+  override getHandles(shape: LineShape): ShapeHandle[] {
+    return Object.values(shape.props.points)
+      .sort((a, b) => a.index.localeCompare(b.index))
+      .map(point => ({ ...point, type: 'vertex', canSnap: true }))
+  }
+  override onHandleDrag(
+    shape: LineShape,
+    info: ShapeHandleDragInfo<LineShape>
+  ): CrewShapePartial<LineShape> | void {
+    const point = shape.props.points[info.handle.id]
+    if (!point) return
+    return {
+      id: shape.id,
+      type: 'line',
+      props: {
+        points: {
+          ...shape.props.points,
+          [point.id]: { ...point, x: info.handle.x, y: info.handle.y }
+        }
+      }
+    }
+  }
   getGeometry(shape: LineShape): Geometry2d {
     const points = linePoints(shape)
     if (points.length < 2) return new Edge2d({ start: points[0] ?? new Vec(), end: (points[0] ?? new Vec()).clone().addXY(0.1, 0.1) })
