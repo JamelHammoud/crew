@@ -277,6 +277,22 @@ describe('threads', () => {
     expect(tokens.agentId).toBe(fake)
   })
 
+  it('writes down what a run took and spent when it ends', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    await connectRunner('jamel')
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('count me @Fake', [fake])
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end')) as Ended
+    expect(end.ms).toBeGreaterThanOrEqual(0)
+    expect(end.tokens).toBeGreaterThan(0)
+
+    const written = host.store.loadEvents().find((e): e is Ended => e.kind === 'agent.end')
+    expect(written?.ms).toBe(end.ms)
+    expect(written?.tokens).toBe(end.tokens)
+  })
+
   async function connectPair(env: NodeJS.ProcessEnv = {}) {
     const runner = testRunner({
       name: 'jamel',
