@@ -71,6 +71,7 @@ uniform vec2 uDrift[4];
 uniform vec2 uFlow[4];
 uniform vec3 uPaper;
 uniform vec4 uBloom;
+uniform vec2 uShape;
 uniform float uWide;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
