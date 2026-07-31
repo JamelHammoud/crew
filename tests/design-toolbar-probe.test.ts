@@ -6,7 +6,7 @@ import { EditorContext, type Editor } from '../src/renderer/src/canvas'
 import { fakeBoard } from './helpers/design-editor'
 
 const { default: DesignToolbar } = await import('../src/renderer/src/components/DesignToolbar')
-const { ARROW_BODY, ARROW_ON_GRID } = await import('../src/renderer/src/design/cursors')
+const { ARROW_BODY } = await import('../src/renderer/src/design/cursors')
 const { CursorGlyph, RectangleGlyph } = await import('../src/renderer/src/design/glyphs')
 
 afterEach(cleanup)

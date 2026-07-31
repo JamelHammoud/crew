@@ -60,8 +60,10 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dia
   // over the wire once the session exists, one setting at a time, before the
   // turn starts. A turn sent alongside them would race the settings it is for.
   const settings: Array<[string, string]> = []
+  const steers: string[] = []
   let next = 0
   let sessionId = ''
+  let turning = false
 
   const ask = (stage: Stage, method: string, params: unknown): string => {
     const id = ++next
@@ -69,11 +71,22 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dia
     return rpc({ id, method, params })
   }
 
+  const turn = (text: string): string => {
+    turning = true
+    return ask('turn', 'session/prompt', { sessionId, prompt: input(text) })
+  }
+
   const step = (): string => {
     const setting = settings.shift()
-    if (!setting) return ask('turn', 'session/prompt', { sessionId, prompt: input(prompt) })
+    if (!setting) return turn(prompt)
     const [configId, value] = setting
     return ask('config', 'session/set_config_option', { sessionId, configId, value })
+  }
+
+  const resume = (): string[] => {
+    turning = false
+    if (!steers.length) return []
+    return [turn(steers.splice(0).join('\n'))]
   }
 
   const answered = (stage: Stage, result: any): string[] => {
@@ -86,7 +99,7 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dia
       return [step()]
     }
     if (stage === 'config') return [step()]
-    return []
+    return resume()
   }
 
   const served = (id: unknown, method: string, params: any): string[] => {
