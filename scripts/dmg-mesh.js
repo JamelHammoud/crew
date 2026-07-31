@@ -6,9 +6,9 @@
   const BASE = [0.612, 0.655, 0.969]
 
   const BLOOM = {
-    x: 0,
+    x: -0.05,
     y: 0.515,
-    radius: 0.88,
+    radius: 0.94,
     strength: 1,
     wide: 0.045,
     shape: [1, 1.5],
