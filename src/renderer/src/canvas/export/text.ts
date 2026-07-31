@@ -68,14 +68,25 @@ export function svgText(options: SvgTextOptions): string {
   const size = Math.max(1, finite(options.size, 16))
   const line = size * Math.max(0.5, finite(options.lineHeight, 1.2))
   const total = lines.length * line
-  const align = options.align === 'middle' || options.align === 'center' ? 'middle' : options.align === 'end' || options.align === 'right' ? 'end' : 'start'
-  const x = align === 'middle' ? options.x + options.w / 2 : align === 'end' ? options.x + options.w - padding : options.x + padding
+  const align =
+    options.align === 'middle' || options.align === 'center'
+      ? 'middle'
+      : options.align === 'end' || options.align === 'right'
+        ? 'end'
+        : 'start'
+  const x =
+    align === 'middle'
+      ? options.x + options.w / 2
+      : align === 'end'
+        ? options.x + options.w - padding
+        : options.x + padding
   const vertical = options.vertical
-  const y = vertical === 'middle' || vertical === 'center'
-    ? options.y + (options.h - total) / 2 + size
-    : vertical === 'end' || vertical === 'bottom'
-      ? options.y + options.h - total + size - padding
-      : options.y + size + padding
+  const y =
+    vertical === 'middle' || vertical === 'center'
+      ? options.y + (options.h - total) / 2 + size
+      : vertical === 'end' || vertical === 'bottom'
+        ? options.y + options.h - total + size - padding
+        : options.y + size + padding
   const attrs = [
     `x="${round(x)}"`,
     `y="${round(y)}"`,

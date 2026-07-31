@@ -54,32 +54,227 @@ function allShapes() {
     props: { title: 'Crew', description: 'Shared work', image: '', favicon: '', src: 'https://crew.test' },
     meta: {}
   }
-  const drawPath = b64Vecs.encodePoints2D([{ x: 0, y: 0 }, { x: 20, y: 10 }, { x: 40, y: 0 }])
+  const drawPath = b64Vecs.encodePoints2D([
+    { x: 0, y: 0 },
+    { x: 20, y: 10 },
+    { x: 40, y: 0 }
+  ])
   const records = [
-    shape('01', 'geo', { ...base, geo: 'check-box', dash: 'solid', url: '', w: 100, h: 60, growY: 0, labelColor: 'black', fill: 'semi', font: 'sans', align: 'middle', verticalAlign: 'middle', richText: richText('Geo') }),
-    shape('02', 'text', { ...base, font: 'sans', textAlign: 'start', w: 140, richText: richText('Text'), autoSize: true }, 120),
-    shape('03', 'note', { ...base, color: 'yellow', labelColor: 'black', font: 'sans', fontSizeAdjustment: 1, align: 'middle', verticalAlign: 'middle', growY: 0, url: '', richText: richText('Note'), textLastEditedBy: null }, 280),
+    shape('01', 'geo', {
+      ...base,
+      geo: 'check-box',
+      dash: 'solid',
+      url: '',
+      w: 100,
+      h: 60,
+      growY: 0,
+      labelColor: 'black',
+      fill: 'semi',
+      font: 'sans',
+      align: 'middle',
+      verticalAlign: 'middle',
+      richText: richText('Geo')
+    }),
+    shape(
+      '02',
+      'text',
+      { ...base, font: 'sans', textAlign: 'start', w: 140, richText: richText('Text'), autoSize: true },
+      120
+    ),
+    shape(
+      '03',
+      'note',
+      {
+        ...base,
+        color: 'yellow',
+        labelColor: 'black',
+        font: 'sans',
+        fontSizeAdjustment: 1,
+        align: 'middle',
+        verticalAlign: 'middle',
+        growY: 0,
+        url: '',
+        richText: richText('Note'),
+        textLastEditedBy: null
+      },
+      280
+    ),
     shape('04', 'frame', { w: 240, h: 160, name: 'Frame', color: 'black' }, 500),
-    shape('05', 'arrow', { ...base, kind: 'arc', labelColor: 'black', fill: 'none', dash: 'solid', arrowheadStart: 'none', arrowheadEnd: 'arrow', font: 'sans', start: { x: 0, y: 0 }, end: { x: 120, y: 40 }, bend: 20, richText: richText('Arrow'), labelPosition: 0.5, elbowMidPoint: 0.5 }, 0, 240),
-    shape('06', 'line', { ...base, dash: 'dashed', spline: 'line', points: { a1: { id: 'a1', index: 'a1', x: 0, y: 0 }, a2: { id: 'a2', index: 'a2', x: 90, y: 30 } } }, 160, 240),
-    shape('07', 'draw', { ...base, fill: 'none', dash: 'solid', segments: [{ type: 'free', path: drawPath, dim: 2 }], isComplete: true, isClosed: false, isPen: false, scaleX: 1, scaleY: 1 }, 300, 240),
-    shape('08', 'highlight', { ...base, segments: [{ type: 'free', path: drawPath, dim: 2 }], isComplete: true, isPen: false, scaleX: 1, scaleY: 1 }, 380, 240),
-    shape('09', 'design-node', { ...nodeDefaults(), w: 180, h: 100, text: 'Node', fills: [{ type: 'linear', angle: 90, stops: [{ color: '#141414', at: 0 }, { color: '#222222', at: 1 }], opacity: 1, visible: true }], strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid', visible: true }], effects: [{ type: 'shadow', x: 0, y: 8, blur: 16, spread: 0, color: '#00000059', visible: true }], clip: true }, 480, 240),
-    shape('10', 'image', { w: 80, h: 60, playing: false, url: '', assetId: imageAsset.id, crop: null, flipX: false, flipY: false, altText: 'Image' }, 700, 240),
-    shape('11', 'video', { w: 80, h: 60, time: 0, playing: false, autoplay: false, url: '', assetId: imageAsset.id, altText: 'Video' }, 800, 240),
+    shape(
+      '05',
+      'arrow',
+      {
+        ...base,
+        kind: 'arc',
+        labelColor: 'black',
+        fill: 'none',
+        dash: 'solid',
+        arrowheadStart: 'none',
+        arrowheadEnd: 'arrow',
+        font: 'sans',
+        start: { x: 0, y: 0 },
+        end: { x: 120, y: 40 },
+        bend: 20,
+        richText: richText('Arrow'),
+        labelPosition: 0.5,
+        elbowMidPoint: 0.5
+      },
+      0,
+      240
+    ),
+    shape(
+      '06',
+      'line',
+      {
+        ...base,
+        dash: 'dashed',
+        spline: 'line',
+        points: { a1: { id: 'a1', index: 'a1', x: 0, y: 0 }, a2: { id: 'a2', index: 'a2', x: 90, y: 30 } }
+      },
+      160,
+      240
+    ),
+    shape(
+      '07',
+      'draw',
+      {
+        ...base,
+        fill: 'none',
+        dash: 'solid',
+        segments: [{ type: 'free', path: drawPath, dim: 2 }],
+        isComplete: true,
+        isClosed: false,
+        isPen: false,
+        scaleX: 1,
+        scaleY: 1
+      },
+      300,
+      240
+    ),
+    shape(
+      '08',
+      'highlight',
+      {
+        ...base,
+        segments: [{ type: 'free', path: drawPath, dim: 2 }],
+        isComplete: true,
+        isPen: false,
+        scaleX: 1,
+        scaleY: 1
+      },
+      380,
+      240
+    ),
+    shape(
+      '09',
+      'design-node',
+      {
+        ...nodeDefaults(),
+        w: 180,
+        h: 100,
+        text: 'Node',
+        fills: [
+          {
+            type: 'linear',
+            angle: 90,
+            stops: [
+              { color: '#141414', at: 0 },
+              { color: '#222222', at: 1 }
+            ],
+            opacity: 1,
+            visible: true
+          }
+        ],
+        strokes: [{ color: '#ffffff14', weight: 1, align: 'inside', style: 'solid', visible: true }],
+        effects: [{ type: 'shadow', x: 0, y: 8, blur: 16, spread: 0, color: '#00000059', visible: true }],
+        clip: true
+      },
+      480,
+      240
+    ),
+    shape(
+      '10',
+      'image',
+      {
+        w: 80,
+        h: 60,
+        playing: false,
+        url: '',
+        assetId: imageAsset.id,
+        crop: null,
+        flipX: false,
+        flipY: false,
+        altText: 'Image'
+      },
+      700,
+      240
+    ),
+    shape(
+      '11',
+      'video',
+      { w: 80, h: 60, time: 0, playing: false, autoplay: false, url: '', assetId: imageAsset.id, altText: 'Video' },
+      800,
+      240
+    ),
     shape('12', 'bookmark', { w: 180, h: 120, assetId: bookmarkAsset.id, url: 'https://crew.test' }, 900, 240),
     shape('13', 'embed', { w: 180, h: 120, url: 'https://example.test' }, 1100, 240),
     shape('14', 'group', {}, 1300, 240)
   ]
-  records.push(shape('15', 'geo', { ...base, geo: 'ellipse', dash: 'solid', url: '', w: 40, h: 40, growY: 0, labelColor: 'black', fill: 'solid', font: 'sans', align: 'middle', verticalAlign: 'middle', richText: richText('') }, 10, 10, 'shape:14'))
-  return { store: Object.fromEntries([[PAGE.id, PAGE], [imageAsset.id, imageAsset], [bookmarkAsset.id, bookmarkAsset], ...records.map(record => [record.id, record])]), schema: null }
+  records.push(
+    shape(
+      '15',
+      'geo',
+      {
+        ...base,
+        geo: 'ellipse',
+        dash: 'solid',
+        url: '',
+        w: 40,
+        h: 40,
+        growY: 0,
+        labelColor: 'black',
+        fill: 'solid',
+        font: 'sans',
+        align: 'middle',
+        verticalAlign: 'middle',
+        richText: richText('')
+      },
+      10,
+      10,
+      'shape:14'
+    )
+  )
+  return {
+    store: Object.fromEntries([
+      [PAGE.id, PAGE],
+      [imageAsset.id, imageAsset],
+      [bookmarkAsset.id, bookmarkAsset],
+      ...records.map(record => [record.id, record])
+    ]),
+    schema: null
+  }
 }
 
 describe('canvas snapshot SVG export', () => {
   it('draws every shape type accepted by the owned canvas schema', () => {
     const svg = snapshotToSvg(allShapes(), { padding: 0 })
     expect(svg).not.toBeNull()
-    for (const type of ['geo', 'text', 'note', 'frame', 'arrow', 'line', 'draw', 'highlight', 'design-node', 'image', 'video', 'bookmark', 'embed', 'group']) {
+    for (const type of [
+      'geo',
+      'text',
+      'note',
+      'frame',
+      'arrow',
+      'line',
+      'draw',
+      'highlight',
+      'design-node',
+      'image',
+      'video',
+      'bookmark',
+      'embed',
+      'group'
+    ]) {
       expect(svg).toContain(`data-shape-type="${type}"`)
     }
     expect(svg).toContain('linearGradient id="node-fill-shape_09-0"')
@@ -92,9 +287,33 @@ describe('canvas snapshot SVG export', () => {
 
   it('keeps nested transforms, selection descendants, hidden records, and exact bounds', () => {
     const parent = shape('parent', 'design-node', { ...nodeDefaults(), w: 100, h: 80, clip: true }, 100, 20)
-    const child = shape('child', 'geo', { ...base, geo: 'rectangle', dash: 'solid', url: '', w: 20, h: 10, growY: 0, labelColor: 'black', fill: 'solid', font: 'sans', align: 'middle', verticalAlign: 'middle', richText: richText('') }, 5, 6, parent.id)
+    const child = shape(
+      'child',
+      'geo',
+      {
+        ...base,
+        geo: 'rectangle',
+        dash: 'solid',
+        url: '',
+        w: 20,
+        h: 10,
+        growY: 0,
+        labelColor: 'black',
+        fill: 'solid',
+        font: 'sans',
+        align: 'middle',
+        verticalAlign: 'middle',
+        richText: richText('')
+      },
+      5,
+      6,
+      parent.id
+    )
     const hidden = { ...shape('hidden', 'geo', { ...child.props, w: 500, h: 500 }, 900), meta: { hidden: true } }
-    const document = { store: { [PAGE.id]: PAGE, [parent.id]: parent, [child.id]: child, [hidden.id]: hidden }, schema: null }
+    const document = {
+      store: { [PAGE.id]: PAGE, [parent.id]: parent, [child.id]: child, [hidden.id]: hidden },
+      schema: null
+    }
     const result = snapshotToSvgResult(document, { shapeIds: [child.id], padding: 0 })
     expect(result?.svg).toContain('transform="matrix(1 0 0 1 105 26)"')
     expect(result?.svg).not.toContain('shape:hidden')
@@ -107,7 +326,28 @@ describe('canvas snapshot SVG export', () => {
 
   it('uses a mask node as a clip without painting the mask itself', () => {
     const mask = shape('mask', 'design-node', { ...nodeDefaults(), shape: 'ellipse', mask: true, clip: true }, 10, 10)
-    const child = shape('masked', 'geo', { ...base, geo: 'rectangle', dash: 'solid', url: '', w: 300, h: 200, growY: 0, labelColor: 'black', fill: 'solid', font: 'sans', align: 'middle', verticalAlign: 'middle', richText: richText('') }, 0, 0, mask.id)
+    const child = shape(
+      'masked',
+      'geo',
+      {
+        ...base,
+        geo: 'rectangle',
+        dash: 'solid',
+        url: '',
+        w: 300,
+        h: 200,
+        growY: 0,
+        labelColor: 'black',
+        fill: 'solid',
+        font: 'sans',
+        align: 'middle',
+        verticalAlign: 'middle',
+        richText: richText('')
+      },
+      0,
+      0,
+      mask.id
+    )
     const svg = snapshotToSvg({ store: { [PAGE.id]: PAGE, [mask.id]: mask, [child.id]: child } }, { padding: 0 })!
     const maskGroup = svg.slice(svg.indexOf('data-shape-id="shape:mask"'))
     expect(maskGroup).toContain('clip-path="url(#export-clip-shape_mask)"')
@@ -201,9 +441,7 @@ describe('canvas copyAs', () => {
   })
 
   it('retries with resolved blobs when a clipboard rejects promised values', async () => {
-    const write = vi.fn()
-      .mockRejectedValueOnce(new Error('promises unsupported'))
-      .mockResolvedValueOnce(undefined)
+    const write = vi.fn().mockRejectedValueOnce(new Error('promises unsupported')).mockResolvedValueOnce(undefined)
     const editor = {
       getCurrentPageShapeIds: () => ['shape:one'],
       getSvgString: vi.fn(),

@@ -22,7 +22,13 @@ function write(types: Record<string, Promise<Blob>>): Promise<void> {
   const clipboard = navigator.clipboard
   const entries = Object.entries(types)
   for (const promise of Object.values(types)) promise.catch(() => {})
-  return clipboard.write([clipboardItem(types)]).catch(() => Promise.all(entries.map(async ([type, promise]) => [type, await promise] as const)).then(resolved => clipboard.write([clipboardItem(Object.fromEntries(resolved))])))
+  return clipboard
+    .write([clipboardItem(types)])
+    .catch(() =>
+      Promise.all(entries.map(async ([type, promise]) => [type, await promise] as const)).then(resolved =>
+        clipboard.write([clipboardItem(Object.fromEntries(resolved))])
+      )
+    )
 }
 
 function selectedIds(editor: ClipboardExportEditor, ids: readonly (TLShapeId | string)[]): TLShapeId[] {

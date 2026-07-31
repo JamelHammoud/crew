@@ -1,7 +1,26 @@
-import { expandBounds, IDENTITY, matrixFor, matrixText, multiply, positive, round, transformBounds, unionBounds, type Matrix } from './geometry'
+import {
+  expandBounds,
+  IDENTITY,
+  matrixFor,
+  matrixText,
+  multiply,
+  positive,
+  round,
+  transformBounds,
+  unionBounds,
+  type Matrix
+} from './geometry'
 import { escapeXml } from './text'
 import { renderShapeBody, type ShapeBody, type ShapeRenderContext } from './shapes'
-import type { ExportAsset, ExportBounds, ExportShape, ExportStore, SnapshotSource, SnapshotSvgOptions, SnapshotSvgResult } from './types'
+import type {
+  ExportAsset,
+  ExportBounds,
+  ExportShape,
+  ExportStore,
+  SnapshotSource,
+  SnapshotSvgOptions,
+  SnapshotSvgResult
+} from './types'
 
 function recordsOf(source: SnapshotSource): Record<string, unknown> {
   const wrapped = source as { store?: unknown }
@@ -13,12 +32,26 @@ function recordsOf(source: SnapshotSource): Record<string, unknown> {
 
 function isShape(record: unknown): record is ExportShape {
   const value = record as Partial<ExportShape> | null
-  return !!value && value.typeName === 'shape' && typeof value.id === 'string' && typeof value.type === 'string' && !!value.props && typeof value.props === 'object'
+  return (
+    !!value &&
+    value.typeName === 'shape' &&
+    typeof value.id === 'string' &&
+    typeof value.type === 'string' &&
+    !!value.props &&
+    typeof value.props === 'object'
+  )
 }
 
 function isAsset(record: unknown): record is ExportAsset {
   const value = record as Partial<ExportAsset> | null
-  return !!value && value.typeName === 'asset' && typeof value.id === 'string' && typeof value.type === 'string' && !!value.props && typeof value.props === 'object'
+  return (
+    !!value &&
+    value.typeName === 'asset' &&
+    typeof value.id === 'string' &&
+    typeof value.type === 'string' &&
+    !!value.props &&
+    typeof value.props === 'object'
+  )
 }
 
 function sortShapes(shapes: ExportShape[]): ExportShape[] {
@@ -69,20 +102,31 @@ function hasSelectedAncestor(shape: ExportShape, selected: Set<string>, store: E
 function rootsFor(store: ExportStore, options: SnapshotSvgOptions): ExportShape[] {
   if (options.shapeIds) {
     const selected = new Set(options.shapeIds.map(String))
-    return sortShapes([...selected].map(id => store.shapes.get(id)).filter((shape): shape is ExportShape => !!shape && !hasSelectedAncestor(shape, selected, store)))
+    return sortShapes(
+      [...selected]
+        .map(id => store.shapes.get(id))
+        .filter((shape): shape is ExportShape => !!shape && !hasSelectedAncestor(shape, selected, store))
+    )
   }
   const page = pageId(store, options.pageId)
   if (page) return [...(store.children.get(page) ?? [])]
   return sortShapes([...store.shapes.values()].filter(shape => !store.shapes.has(shape.parentId)))
 }
 
-function worldMatrix(shape: ExportShape, store: ExportStore, cache: Map<string, Matrix>, active = new Set<string>()): Matrix {
+function worldMatrix(
+  shape: ExportShape,
+  store: ExportStore,
+  cache: Map<string, Matrix>,
+  active = new Set<string>()
+): Matrix {
   const cached = cache.get(shape.id)
   if (cached) return cached
   if (active.has(shape.id)) return matrixFor(shape)
   active.add(shape.id)
   const parent = store.shapes.get(shape.parentId)
-  const matrix = parent ? multiply(worldMatrix(parent, store, cache, active), matrixFor(shape)) : multiply(IDENTITY, matrixFor(shape))
+  const matrix = parent
+    ? multiply(worldMatrix(parent, store, cache, active), matrixFor(shape))
+    : multiply(IDENTITY, matrixFor(shape))
   active.delete(shape.id)
   cache.set(shape.id, matrix)
   return matrix
@@ -125,10 +169,14 @@ function renderNode(node: RenderedShape, context: ShapeRenderContext): string {
   }
   const children = node.children.map(child => renderNode(child, context)).join('')
   const clippedChildren = node.body.clip && children ? `<g clip-path="url(#${clipId})">${children}</g>` : children
-  const clippedBody = node.body.clip && (node.shape.type === 'image' || node.shape.type === 'video')
-    ? `<g clip-path="url(#${clipId})">${node.body.body}</g>`
-    : node.body.body
-  const opacity = typeof node.shape.opacity === 'number' && node.shape.opacity !== 1 ? ` opacity="${round(Math.max(0, Math.min(1, node.shape.opacity)))}"` : ''
+  const clippedBody =
+    node.body.clip && (node.shape.type === 'image' || node.shape.type === 'video')
+      ? `<g clip-path="url(#${clipId})">${node.body.body}</g>`
+      : node.body.body
+  const opacity =
+    typeof node.shape.opacity === 'number' && node.shape.opacity !== 1
+      ? ` opacity="${round(Math.max(0, Math.min(1, node.shape.opacity)))}"`
+      : ''
   return `<g data-shape-id="${escapeXml(node.shape.id)}" data-shape-type="${escapeXml(node.shape.type)}" transform="${matrixText(node.matrix)}"${opacity}>${clippedBody}${clippedChildren}</g>`
 }
 
@@ -138,7 +186,10 @@ function exactBounds(value: ExportBounds): ExportBounds {
   return { x: Number.isFinite(value.x) ? value.x : 0, y: Number.isFinite(value.y) ? value.y : 0, w, h }
 }
 
-export function snapshotToSvgResult(source: SnapshotSource, options: SnapshotSvgOptions = {}): SnapshotSvgResult | null {
+export function snapshotToSvgResult(
+  source: SnapshotSource,
+  options: SnapshotSvgOptions = {}
+): SnapshotSvgResult | null {
   const store = exportStore(source)
   const roots = rootsFor(store, options)
   if (roots.length === 0) return null
@@ -146,9 +197,13 @@ export function snapshotToSvgResult(source: SnapshotSource, options: SnapshotSvg
   const context: ShapeRenderContext = { store, defs, darkMode: options.darkMode === true }
   const matrices = new Map<string, Matrix>()
   const rendered = roots
-    .map(shape => buildTree(shape, store, context, options.shapeIds ? worldMatrix(shape, store, matrices) : matrixFor(shape)))
+    .map(shape =>
+      buildTree(shape, store, context, options.shapeIds ? worldMatrix(shape, store, matrices) : matrixFor(shape))
+    )
     .filter((node): node is RenderedShape => node !== null)
-  let bounds = options.bounds ? exactBounds(options.bounds) : rendered.reduce<ExportBounds | null>((box, node) => unionBounds(box, renderedBounds(node)), null)
+  let bounds = options.bounds
+    ? exactBounds(options.bounds)
+    : rendered.reduce<ExportBounds | null>((box, node) => unionBounds(box, renderedBounds(node)), null)
   if (!bounds) return null
   const defaultPadding = options.shapeIds?.length === 1 && roots[0]?.type === 'frame' ? 0 : 32
   const padding = Math.max(0, Number.isFinite(options.padding) ? options.padding! : defaultPadding)
@@ -157,9 +212,14 @@ export function snapshotToSvgResult(source: SnapshotSource, options: SnapshotSvg
   const width = bounds.w * scale
   const height = bounds.h * scale
   const body = rendered.map(node => renderNode(node, context)).join('')
-  const background = options.background === true
-    ? options.darkMode ? '#0d0d0d' : '#f9fafb'
-    : typeof options.background === 'string' ? options.background : null
+  const background =
+    options.background === true
+      ? options.darkMode
+        ? '#0d0d0d'
+        : '#f9fafb'
+      : typeof options.background === 'string'
+        ? options.background
+        : null
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" direction="ltr" width="${round(width)}" height="${round(height)}" viewBox="${round(bounds.x)} ${round(bounds.y)} ${round(bounds.w)} ${round(bounds.h)}" preserveAspectRatio="${escapeXml(options.preserveAspectRatio ?? 'xMidYMid meet')}" stroke-linecap="round" stroke-linejoin="round" data-color-mode="${options.darkMode ? 'dark' : 'light'}">${defs.size > 0 ? `<defs>${[...defs.values()].join('')}</defs>` : ''}${background ? `<rect x="${round(bounds.x)}" y="${round(bounds.y)}" width="${round(bounds.w)}" height="${round(bounds.h)}" fill="${escapeXml(background)}"/>` : ''}${body}</svg>`
   return { svg, width, height, bounds }
 }

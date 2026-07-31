@@ -25,9 +25,7 @@ export interface SnapshotSvgResult {
   bounds: ExportBounds
 }
 
-export type SnapshotSource =
-  | { store: Record<string, unknown>; schema?: unknown }
-  | Record<string, unknown>
+export type SnapshotSource = { store: Record<string, unknown>; schema?: unknown } | Record<string, unknown>
 
 export interface ExportShape extends Omit<TLShape, 'props'> {
   props: Record<string, unknown>
@@ -62,10 +60,7 @@ export interface ClipboardExportEditor {
     ids: TLShapeId[],
     options?: ImageExportOptions
   ): Promise<{ svg: string; width: number; height: number } | undefined>
-  toImage(
-    ids: TLShapeId[],
-    options?: ImageExportOptions
-  ): Promise<{ blob: Blob; width: number; height: number }>
+  toImage(ids: TLShapeId[], options?: ImageExportOptions): Promise<{ blob: Blob; width: number; height: number }>
 }
 
 export interface CopyAsOptions extends Omit<ImageExportOptions, 'format'> {
