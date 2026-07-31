@@ -317,7 +317,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             else spent = addUsage(spent, out.usage)
           }
           if (out.error) parsedError = out.error
-          if (out.turnEnd && dialog && !reopened) onTurnEnd()
+          if (out.turnEnd && dialog) onTurnEnd()
       }
 
       const handleLine = (line: string) => {
