@@ -573,7 +573,7 @@ export function snapTranslateBounds(options: TranslateBoundsSnapOptions): Bounds
     id: point.id || `selection:${index}`,
     x: point.x + dragDelta.x,
     y: point.y + dragDelta.y,
-    handle: point.handle
+    handle: 'handle' in point ? point.handle : undefined
   }))
   const otherPoints = pointsForNodes(snappableShapes)
   const visibleGaps = getVisibleGaps(snappableShapes)
