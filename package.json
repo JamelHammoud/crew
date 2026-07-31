@@ -58,7 +58,7 @@
     },
     "dmg": {
       "title": "Crew",
-      "background": "resources/dmg-background.tiff",
+      "background": "resources/dmg-background.png",
       "window": {
         "width": 660,
         "height": 400
