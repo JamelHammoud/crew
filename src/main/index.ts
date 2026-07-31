@@ -45,7 +45,7 @@ import { OtherInstances } from './instances'
 import { AppSession, type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
 import { Updates } from './updates'
-import { closePutsAway, createWindowOptions } from './window-options'
+import { appMenuTemplate, closePutsAway, createWindowOptions } from './window-options'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
