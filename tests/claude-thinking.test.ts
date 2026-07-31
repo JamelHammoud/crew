@@ -107,33 +107,31 @@ describe('claude file changes', () => {
   })
 
   it('attaches files to kimi tool calls', () => {
-    const line = JSON.stringify({
-      role: 'assistant',
-      tool_calls: [
-        {
-          id: 'c1',
-          function: {
-            name: 'edit_file',
-            arguments: JSON.stringify({ file_path: '/r/e.ts', old_string: 'one', new_string: 'one\ntwo' })
-          }
-        }
-      ]
-    })
-    const [out] = parseKimiLine(line)
-    expect(out.activity?.files).toEqual([{ path: '/r/e.ts', added: 2, removed: 1, diff: '- one\n+ one\n+ two' }])
+    const parse = kimiParser()
+    parse(kimiUpdate({ sessionUpdate: 'tool_call', toolCallId: 'c1', title: 'edit_file', status: 'pending' }))
+    const out = parse(
+      kimiUpdate({
+        sessionUpdate: 'tool_call_update',
+        toolCallId: 'c1',
+        title: 'Editing e.ts',
+        status: 'in_progress',
+        rawInput: { file_path: '/r/e.ts', old_string: 'one', new_string: 'one\ntwo' }
+      })
+    )
+    expect(out[0].activity?.files).toEqual([{ path: '/r/e.ts', added: 2, removed: 1, diff: '- one\n+ one\n+ two' }])
   })
 
   it('attaches files to kimi write calls', () => {
-    const line = JSON.stringify({
-      role: 'assistant',
-      tool_calls: [
-        {
-          id: 'c2',
-          function: { name: 'write_file', arguments: JSON.stringify({ path: '/r/f.ts', content: 'a\nb' }) }
-        }
-      ]
-    })
-    const [out] = parseKimiLine(line)
-    expect(out.activity?.files).toEqual([{ path: '/r/f.ts', added: 2, removed: 0, diff: '+ a\n+ b' }])
+    const parse = kimiParser()
+    parse(kimiUpdate({ sessionUpdate: 'tool_call', toolCallId: 'c2', title: 'write_file', status: 'pending' }))
+    const out = parse(
+      kimiUpdate({
+        sessionUpdate: 'tool_call_update',
+        toolCallId: 'c2',
+        status: 'in_progress',
+        rawInput: { path: '/r/f.ts', content: 'a\nb' }
+      })
+    )
+    expect(out[0].activity?.files).toEqual([{ path: '/r/f.ts', added: 2, removed: 0, diff: '+ a\n+ b' }])
   })
 })
