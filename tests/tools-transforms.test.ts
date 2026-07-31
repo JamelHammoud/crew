@@ -93,7 +93,7 @@ describe('canvas transforms', () => {
     near(update as { x: number; y: number }, 15, 17)
   })
 
-  it('resizes box shapes with tldraw minimum, flip, handle, and rotation behavior', () => {
+  it('resizes box shapes with the expected minimum, flip, handle, and rotation behavior', () => {
     const shape = geoShape('box', { x: 10, y: 20 })
     const initialBounds = new Box(0, 0, 100, 50)
     const left = resizeBox(shape, {

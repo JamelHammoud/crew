@@ -77,7 +77,7 @@ describe('type on a text shape', () => {
     expect(type.transform).toBe('none')
   })
 
-  it('writes alignment where tldraw keeps it and the rest alongside', () => {
+  it('writes alignment in shape props and keeps the rest alongside', () => {
     const edits: Edit[] = []
     const shape = text({}, { hidden: true })
     setTextShapeType(fakeEditor(edits), shape, { family: 'Sora', size: 32, align: 'right' })
@@ -107,7 +107,7 @@ describe('type on a text shape', () => {
 describe('what the canvas draws and measures text with', () => {
   const styled = { family: 'Inter', size: 48, weight: 700, spacing: 2, transform: 'upper', italic: true }
 
-  it('measures with the style, not with the four sizes tldraw ships', () => {
+  it('measures with the full text style', () => {
     const type = textShapeType(fakeEditor([]), text({}, { type: styled }))
     const opts = typeMeasure(type, null)
     expect(opts.fontFamily).toContain('"Inter"')
@@ -130,7 +130,7 @@ describe('what the canvas draws and measures text with', () => {
     expect(values.lineHeight).toBe(1.35)
   })
 
-  it('stands in for the text shape tldraw ships, outline off', () => {
+  it('uses the canvas text shape with its outline off', () => {
     expect(DesignTextUtil.type).toBe('text')
     expect(new DesignTextUtil(fakeEditor([])).options.showTextOutline).toBe(false)
   })

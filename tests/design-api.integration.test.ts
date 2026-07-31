@@ -12,7 +12,7 @@ function freshDocument(): DesignDocument {
 }
 
 describe('design ops', () => {
-  it('produces records the real tldraw schema accepts', () => {
+  it('produces records the canvas schema accepts', () => {
     const schema = createTLSchema()
     const document = freshDocument()
     const ops: DesignOp[] = [

@@ -86,7 +86,7 @@ describe('the canvas editor', () => {
     expect(subject.getShapePageBounds(pasted!.id)?.center).toMatchObject({ x: 300, y: 200 })
   })
 
-  it('uses the exact tldraw theme values Crew reads', () => {
+  it('uses the exact canvas theme values Crew reads', () => {
     const subject = editor()
     expect(subject.getCurrentTheme()).toMatchObject({ id: 'default', fontSize: 16, lineHeight: 1.35, strokeWidth: 2 })
     expect(subject.getCurrentTheme().colors.light.selectionStroke).toBe('hsl(214, 84%, 56%)')

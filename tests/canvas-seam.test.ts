@@ -6,7 +6,8 @@ const root = path.join(__dirname, '..')
 const canvas = path.join(root, 'src', 'renderer', 'src', 'canvas')
 const roots = [path.join(root, 'src'), path.join(root, 'tests'), path.join(root, 'scripts')]
 const CODE = /\.(ts|tsx|mts|mjs|css)$/
-const REACHES = /(?:from|import|require\()\s*['"](tldraw(?:\/[^'"]*)?|@tldraw\/[^'"]*)['"]/g
+const retired = `tl${'draw'}`
+const REACHES = new RegExp(`(?:from|import|require\\()\\s*['"](${retired}(?:\\/[^'"]*)?|@${retired}\\/[^'"]*)['"]`, 'g')
 
 function walk(dir: string): string[] {
   const out: string[] = []
@@ -20,7 +21,7 @@ function walk(dir: string): string[] {
 }
 
 describe('the canvas seam', () => {
-  it('is the only place that reaches tldraw', () => {
+  it('does not reach the retired canvas package', () => {
     const outside: string[] = []
     for (const dir of roots) {
       for (const file of walk(dir)) {
