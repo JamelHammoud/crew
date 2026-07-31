@@ -338,6 +338,7 @@ describe('canvas rich text toolbar', () => {
       const editor = new TipTapEditor({
         element,
         extensions: richTextExtensions,
+        enableCoreExtensions: { textDirection: false },
         content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew' }] }] }
       })
       editor.commands.setTextSelection({ from: 1, to: 5 })
