@@ -110,7 +110,7 @@ describe('claude file changes', () => {
   })
 
   it('attaches files to kimi tool calls', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(kimiUpdate({ sessionUpdate: 'tool_call', toolCallId: 'c1', title: 'edit_file', status: 'pending' }))
     const out = parse(
       kimiUpdate({
@@ -125,7 +125,7 @@ describe('claude file changes', () => {
   })
 
   it('attaches files to kimi write calls', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(kimiUpdate({ sessionUpdate: 'tool_call', toolCallId: 'c2', title: 'write_file', status: 'pending' }))
     const out = parse(
       kimiUpdate({

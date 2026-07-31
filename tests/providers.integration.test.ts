@@ -127,7 +127,7 @@ describe('kimi parser matches the real CLI format', () => {
     JSON.stringify({ jsonrpc: '2.0', method: 'session/update', params: { sessionId: 's1', update: body } })
 
   it('parses streamed words, tool calls, and tool results', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
 
     expect(parse(update({ sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'ok' } }))).toEqual([
       { textStart: { index: 1 } },
@@ -175,7 +175,7 @@ describe('kimi parser matches the real CLI format', () => {
   })
 
   it('ends the turn on the stop reason the prompt answers with', () => {
-    expect(kimiParser()('{"jsonrpc":"2.0","id":3,"result":{"stopReason":"end_turn"}}')).toEqual([{ turnEnd: true }])
+    expect(kimiParser().parse('{"jsonrpc":"2.0","id":3,"result":{"stopReason":"end_turn"}}')).toEqual([{ turnEnd: true }])
   })
 })
 

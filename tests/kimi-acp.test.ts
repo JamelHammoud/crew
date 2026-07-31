@@ -182,7 +182,7 @@ describe('what kimi asks the client', () => {
 
 describe('what kimi says while it works', () => {
   it('streams a thought and an answer, each on a lane of its own', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     expect(parse(chunk('agent_thought_chunk', 'The'))).toEqual([
       { thinkingStart: { index: 1 } },
       { thinkingDelta: { index: 1, text: 'The' } }
@@ -199,7 +199,7 @@ describe('what kimi says while it works', () => {
   })
 
   it('never stands a block on an index another block has held', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     const out: ParsedOutput[] = []
     out.push(...parse(chunk('agent_thought_chunk', 'one')))
     out.push(...parse(chunk('agent_message_chunk', 'two')))
@@ -217,7 +217,7 @@ describe('what kimi says while it works', () => {
   })
 
   it('opens nothing for a chunk with no words in it', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     expect(parse(chunk('agent_message_chunk', ''))).toEqual([])
     expect(parse(note({ sessionUpdate: 'agent_thought_chunk', content: { type: 'image', data: 'x' } }))).toEqual([])
   })
@@ -225,7 +225,7 @@ describe('what kimi says while it works', () => {
 
 describe('what kimi says it did', () => {
   it('keeps the name the tool started under when the title turns into a phrase', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     const started = parse(
       call({ toolCallId: '0:tool_Uhx', title: 'Read', kind: 'read', status: 'pending', content: [] })
     )
@@ -250,7 +250,7 @@ describe('what kimi says it did', () => {
   })
 
   it('counts an edit the way the file changed and carries the diff with it', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(call({ toolCallId: '0:tool_Edt', title: 'Edit', kind: 'edit', status: 'pending' }))
     const out = parse(
       change({
@@ -267,17 +267,17 @@ describe('what kimi says it did', () => {
   })
 
   it('names a helper as a helper', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     const out = parse(call({ toolCallId: '0:tool_Agt', title: 'Agent', kind: 'other', status: 'pending' }))
     expect(acted(out).kind).toBe('subagent')
   })
 
   it('says nothing about an update with no tool on it', () => {
-    expect(kimiParser()(change({ status: 'completed', rawOutput: 'done' }))).toEqual([])
+    expect(kimiParser().parse(change({ status: 'completed', rawOutput: 'done' }))).toEqual([])
   })
 
   it('hands every finished tool its result, and the run keeps only what a command printed', async () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(call({ toolCallId: '0:tool_Rd', title: 'Read', kind: 'read', status: 'pending' }))
     const read = parse(change({ toolCallId: '0:tool_Rd', status: 'completed', rawOutput: 'export function add' }))
     expect(acted(read).output).toBe('export function add')
@@ -313,7 +313,7 @@ describe('what kimi says it did', () => {
   })
 
   it('reads a result given as content blocks when there is no raw output', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(call({ toolCallId: '0:tool_Bsh', title: 'Bash', kind: 'execute', status: 'pending' }))
     const out = parse(
       change({
@@ -327,7 +327,7 @@ describe('what kimi says it did', () => {
 })
 
 describe('the end of a turn', () => {
-  const stopped = (stopReason: string) => kimiParser()(reply(3, { stopReason }))
+  const stopped = (stopReason: string) => kimiParser().parse(reply(3, { stopReason }))
 
   it('ends the turn on end_turn and says nothing about it', () => {
     expect(stopped('end_turn')).toEqual([{ turnEnd: true }])
@@ -346,21 +346,21 @@ describe('the end of a turn', () => {
   })
 
   it('closes the block that was still open as the turn ends', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(chunk('agent_message_chunk', 'Added the line.'))
     expect(parse(reply(3, { stopReason: 'end_turn' }))).toEqual([{ blockStop: { index: 1 } }, { turnEnd: true }])
   })
 
   it('ends nothing on a reply that carries no stop reason', () => {
-    expect(kimiParser()(reply(1, { protocolVersion: 1, agentCapabilities: {} }))).toEqual([])
-    expect(kimiParser()(reply(2, { sessionId: 'session_abc', configOptions: [] }))).toEqual([])
+    expect(kimiParser().parse(reply(1, { protocolVersion: 1, agentCapabilities: {} }))).toEqual([])
+    expect(kimiParser().parse(reply(2, { sessionId: 'session_abc', configOptions: [] }))).toEqual([])
   })
 })
 
 describe('a parser a run', () => {
   it('keeps two runs out of the lanes and the tool names either one is holding', () => {
-    const one = kimiParser()
-    const two = kimiParser()
+    const one = kimiParser().parse
+    const two = kimiParser().parse
 
     expect(one(chunk('agent_thought_chunk', 'mine'))[0]).toEqual({ thinkingStart: { index: 1 } })
     expect(two(chunk('agent_message_chunk', 'mine too'))[0]).toEqual({ textStart: { index: 1 } })
@@ -376,7 +376,7 @@ describe('a parser a run', () => {
 
 describe('a line it cannot use', () => {
   it('reads past junk without throwing, in the parser and in the dialog', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     expect(parse('not json')).toEqual([])
     expect(parse('')).toEqual([])
     expect(parse('{"jsonrpc":"2.0",')).toEqual([])
@@ -388,11 +388,11 @@ describe('a line it cannot use', () => {
   })
 
   it('carries a failure through as the sentence it came with', () => {
-    expect(kimiParser()(failed(3, 'The model is not available on this account.'))).toEqual([
+    expect(kimiParser().parse(failed(3, 'The model is not available on this account.'))).toEqual([
       { error: 'The model is not available on this account.' },
       { turnEnd: true }
     ])
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(reply(2, { sessionId: 'session_x' }))
     parse(chunk('agent_message_chunk', 'Half a se'))
     expect(parse(failed(3, 'The stream dropped.'))).toEqual([

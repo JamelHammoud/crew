@@ -74,21 +74,21 @@ describe('finding what Kimi wrote down', () => {
 
 describe('a run reading its own cost', () => {
   it('says what the turn came to when the turn ends', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { sessionId: 'session_x' } }))
     const out = parse(JSON.stringify({ jsonrpc: '2.0', id: 3, result: { stopReason: 'end_turn' } }))
     expect(out.some(item => item.turnEnd)).toBe(true)
   })
 
   it('ends the run when the way in fails, rather than waiting out the clock', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     const out = parse(JSON.stringify({ jsonrpc: '2.0', id: 2, error: { code: -32603, message: 'Not logged in.' } }))
     expect(out).toContainEqual({ error: 'Not logged in.' })
     expect(out).toContainEqual({ turnEnd: true })
   })
 
   it('leaves a run going when a setting is refused after the session is up', () => {
-    const parse = kimiParser()
+    const parse = kimiParser().parse
     parse(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { sessionId: 'session_x' } }))
     const out = parse(JSON.stringify({ jsonrpc: '2.0', id: 3, error: { code: -32602, message: 'Unknown configId' } }))
     expect(out.some(item => item.turnEnd)).toBe(false)
