@@ -6,13 +6,19 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/node_modules/**", "!out/**", "!dist/**", "!resources/**"]
+    "includes": [
+      "**",
+      "!**/node_modules/**",
+      "!out/**",
+      "!dist/**",
+      "!resources/**"
+    ]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 100,
+    "lineWidth": 160,
     "lineEnding": "lf"
   },
   "javascript": {
