@@ -10,6 +10,7 @@ import {
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { textShapeType, typeMeasure } from './textType'
+import { compensateTextGrowth } from '../canvas/text'
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
@@ -61,6 +62,40 @@ export class DesignTextUtil extends Configured {
     const size = measure(this.editor as Editor, shape)
     measured.set(shape, { at, size })
     return size
+  }
+
+  override onBeforeUpdate(previous: TLTextShape, next: TLTextShape): TLTextShape {
+    const previousSize = measure(this.editor as Editor, previous)
+    const nextSize = measure(this.editor as Editor, next)
+    const growth = compensateTextGrowth(
+      {
+        x: previous.x,
+        y: previous.y,
+        rotation: previous.rotation,
+        scale: previous.props.scale,
+        autoSize: previous.props.autoSize,
+        textAlign: previous.props.textAlign,
+        width: previous.props.w
+      },
+      {
+        x: next.x,
+        y: next.y,
+        rotation: next.rotation,
+        scale: next.props.scale,
+        autoSize: next.props.autoSize,
+        textAlign: next.props.textAlign,
+        width: next.props.w
+      },
+      previousSize,
+      nextSize,
+      JSON.stringify(previous.props.richText) !== JSON.stringify(next.props.richText)
+    )
+    return {
+      ...next,
+      x: growth.x,
+      y: growth.y,
+      props: { ...next.props, w: growth.width }
+    }
   }
 
   override component(shape: TLTextShape) {
