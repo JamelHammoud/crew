@@ -296,7 +296,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             else spent = addUsage(spent, out.usage)
           }
           if (out.error) parsedError = out.error
-          if (out.turnEnd && opts.streamInput) onTurnEnd()
+          if (out.turnEnd && dialog) onTurnEnd()
         }
         reportTokens()
       }
