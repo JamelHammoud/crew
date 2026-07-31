@@ -3,7 +3,7 @@ import { Rectangle2d } from '../geometry'
 import { textShapeProps, type TLShape as CrewShape } from '../schema'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
 import { ShapeUtil } from './ShapeUtil'
-import { FONT_FAMILIES, FONT_SIZES, plainText, richText } from './shared'
+import { FONT_FAMILIES, TEXT_FONT_SIZES, plainText, richText } from './shared'
 import { shapeColor } from './theme'
 
 export type TextShape = CrewShape<'text'>
@@ -18,7 +18,7 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
   override canEdit(): boolean { return true }
   getMinDimensions(shape: TextShape): { width: number; height: number } {
     const text = plainText(shape.props.richText)
-    const fontSize = FONT_SIZES[shape.props.size]
+    const fontSize = TEXT_FONT_SIZES[shape.props.size]
     const width = shape.props.autoSize ? Math.max(8, ...text.split('\n').map(line => line.length * fontSize * 0.58)) : shape.props.w
     return { width, height: Math.max(fontSize * 1.35, text.split('\n').length * fontSize * 1.35) }
   }
@@ -31,6 +31,6 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
     const custom = (this.options.getCustomDisplayValues as (editor: unknown, shape: TextShape) => Partial<CSSProperties>)(this.editor, shape)
     const size = this.getMinDimensions(shape)
     const editing = this.editor.getEditingShapeId?.() === shape.id
-    return createElement('div', { className: 'crew-rich-text', style: { width: size.width, minHeight: size.height, transform: `scale(${shape.props.scale})`, transformOrigin: 'top left', color: shapeColor(this.editor, shape.props.color), fontFamily: FONT_FAMILIES[shape.props.font], fontSize: FONT_SIZES[shape.props.size], lineHeight: 1.35, textAlign: shape.props.textAlign === 'middle' ? 'center' : shape.props.textAlign === 'end' ? 'right' : 'left', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', pointerEvents: 'all', visibility: editing ? 'hidden' : undefined, ...custom }, dangerouslySetInnerHTML: { __html: richTextToHtml(shape.props.richText as RichTextDocument) } })
+    return createElement('div', { className: 'crew-rich-text', style: { width: size.width, minHeight: size.height, transform: `scale(${shape.props.scale})`, transformOrigin: 'top left', color: shapeColor(this.editor, shape.props.color), fontFamily: FONT_FAMILIES[shape.props.font], fontSize: TEXT_FONT_SIZES[shape.props.size], lineHeight: 1.35, textAlign: shape.props.textAlign === 'middle' ? 'center' : shape.props.textAlign === 'end' ? 'right' : 'left', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', pointerEvents: 'all', visibility: editing ? 'hidden' : undefined, ...custom }, dangerouslySetInnerHTML: { __html: richTextToHtml(shape.props.richText as RichTextDocument) } })
   }
 }

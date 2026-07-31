@@ -4,7 +4,7 @@ import { Vec } from '../math/Vec'
 import { geoShapeProps, type TLGeoShapeGeoStyle as GeoKind, type TLShape as CrewShape } from '../schema'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
 import { BaseBoxShapeUtil } from './ShapeUtil'
-import { FONT_FAMILIES, FONT_SIZES, STROKES, plainText, shapeElement } from './shared'
+import { FONT_FAMILIES, LABEL_FONT_SIZES, STROKES, plainText, shapeElement } from './shared'
 import { canvasSurface, shapeColor } from './theme'
 
 export type GeoShape = CrewShape<'geo'>
@@ -109,7 +109,7 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<GeoShape> {
     const geometry = this.getGeometry(shape)
     const text = plainText(props.richText)
     const editing = this.editor.getEditingShapeId?.() === shape.id
-    const label = text ? createElement('div', { className: 'crew-rich-text', style: { position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: props.align.startsWith('start') ? 'flex-start' : props.align.startsWith('end') ? 'flex-end' : 'center', justifyContent: props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center', padding: 8, color: shapeColor(this.editor, props.labelColor), fontFamily: FONT_FAMILIES[props.font], fontSize: FONT_SIZES[props.size] * props.scale, whiteSpace: 'pre-wrap', textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left', pointerEvents: 'all', visibility: editing ? 'hidden' : undefined }, dangerouslySetInnerHTML: { __html: richTextToHtml(props.richText as RichTextDocument) } }) : null
+    const label = text ? createElement('div', { className: 'crew-rich-text', style: { position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: props.align.startsWith('start') ? 'flex-start' : props.align.startsWith('end') ? 'flex-end' : 'center', justifyContent: props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center', padding: 8, color: shapeColor(this.editor, props.labelColor), fontFamily: FONT_FAMILIES[props.font], fontSize: LABEL_FONT_SIZES[props.size] * props.scale, whiteSpace: 'pre-wrap', textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left', pointerEvents: 'all', visibility: editing ? 'hidden' : undefined }, dangerouslySetInnerHTML: { __html: richTextToHtml(props.richText as RichTextDocument) } }) : null
     return createElement('div', { style: { position: 'relative', width: props.w, height: props.h + props.growY } }, shapeElement(geometry.toSimpleSvgPath(), { editor: this.editor, color: props.color, fill: fillFor(this.editor, shape), width: STROKES[props.size] * props.scale }), label)
   }
 }

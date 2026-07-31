@@ -10,7 +10,9 @@ type DrawSegment = CrewShape<'draw'>['props']['segments'][number]
 type RichText = CrewShape<'text'>['props']['richText']
 
 export const STROKES = { s: 2, m: 3.5, l: 5, xl: 10 } as const
-export const FONT_SIZES = { s: 18, m: 22, l: 28, xl: 36 } as const
+export const TEXT_FONT_SIZES = { s: 18, m: 24, l: 36, xl: 44 } as const
+export const LABEL_FONT_SIZES = { s: 18, m: 22, l: 26, xl: 32 } as const
+export const ARROW_FONT_SIZES = { s: 18, m: 20, l: 24, xl: 28 } as const
 export const FONT_FAMILIES = {
   draw: '"Comic Sans MS", "Bradley Hand", cursive',
   sans: 'Inter, ui-sans-serif, system-ui, sans-serif',
