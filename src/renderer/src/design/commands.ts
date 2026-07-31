@@ -69,7 +69,7 @@ const HIDE: Chord = { key: 'h', meta: true, shift: true }
 const LOCK: Chord = { key: 'l', meta: true, shift: true }
 const MASK: Chord = { key: 'm', meta: true, ctrl: true }
 
-let held: ReturnType<Editor['getContentFromCurrentPage']> = null
+let held: ReturnType<Editor['getContentFromCurrentPage']> | undefined
 
 const STYLE_KEYS = ['fills', 'strokes', 'effects', 'radius', 'type', 'blend'] as const
 
