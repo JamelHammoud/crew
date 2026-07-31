@@ -4,39 +4,39 @@
   const LAYERS = [
     {
       color: [0.435, 0.847, 1.0],
-      scale: 1.05,
+      scale: 1.02,
       speed: 0.062,
-      bias: 0.06,
+      bias: 0.04,
       drift: [0.09, -0.05],
-      flow: [-0.42, 1.85],
+      flow: [-0.44, 1.42],
       weight: 1.0
     },
     {
       color: [0.706, 0.545, 0.98],
-      scale: 0.82,
-      speed: 0.048,
-      bias: -0.02,
+      scale: 0.86,
+      speed: 0.047,
+      bias: -0.08,
       drift: [-0.07, 0.06],
-      flow: [-0.28, 2.3],
-      weight: 0.94
-    },
-    {
-      color: [1.0, 0.588, 0.706],
-      scale: 1.28,
-      speed: 0.075,
-      bias: -0.14,
-      drift: [0.05, 0.08],
-      flow: [-0.6, 1.55],
+      flow: [1.12, 1.28],
       weight: 0.82
     },
     {
+      color: [1.0, 0.588, 0.706],
+      scale: 1.24,
+      speed: 0.074,
+      bias: -0.26,
+      drift: [0.05, 0.08],
+      flow: [-1.33, 1.58],
+      weight: 0.58
+    },
+    {
       color: [1.0, 0.796, 0.549],
-      scale: 0.94,
-      speed: 0.041,
-      bias: -0.06,
+      scale: 0.92,
+      speed: 0.04,
+      bias: -0.22,
       drift: [-0.1, -0.03],
-      flow: [-0.36, 2.05],
-      weight: 0.7
+      flow: [0.36, 1.34],
+      weight: 0.44
     }
   ]
 
