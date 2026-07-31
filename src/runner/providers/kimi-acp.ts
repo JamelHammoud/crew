@@ -1,9 +1,12 @@
 import type { SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
+import { kimiUsage, kimiWire } from './kimi-usage'
 import { taskCall } from './tasks'
 import type { Dialog, OutputParser, ParsedOutput } from './types'
 
 const PROTOCOL = 1
+
+const USAGE_MS = 1500
 
 // Crew never reads or writes a file on the agent's behalf. The CLI already runs
 // in the project folder and does its own work everywhere else, so the two file
