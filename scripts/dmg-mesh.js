@@ -1,9 +1,17 @@
 ;(function () {
-  const PAPER = [0.078, 0.078, 0.078]
+  const PAPER = [0.925, 0.925, 0.925]
 
   const BASE = [0.443, 0.494, 0.949]
 
-  const BLOOM = { x: 0.73939, y: 0.515, radius: 0.6, strength: 0.95, wide: 0.03 }
+  const BLOOM = {
+    x: 0,
+    y: 0.515,
+    radius: 0.98,
+    strength: 1,
+    wide: 0.05,
+    shape: [1, 1.3],
+    edge: 0.34
+  }
 
   const LAYERS = [
     {
@@ -11,7 +19,7 @@
       scale: 0.96,
       speed: 0.058,
       bias: 0.16,
-      drift: [0.09, -0.05],
+      drift: [0.11, -0.04],
       flow: [-0.44, 1.38],
       weight: 1.0
     },
@@ -20,7 +28,7 @@
       scale: 0.8,
       speed: 0.045,
       bias: 0.04,
-      drift: [-0.07, 0.06],
+      drift: [0.06, 0.07],
       flow: [1.12, 1.24],
       weight: 1.0
     },
@@ -29,7 +37,7 @@
       scale: 1.18,
       speed: 0.071,
       bias: -0.12,
-      drift: [0.05, 0.08],
+      drift: [0.09, 0.05],
       flow: [-1.33, 1.5],
       weight: 0.92
     },
@@ -38,7 +46,7 @@
       scale: 0.88,
       speed: 0.038,
       bias: -0.16,
-      drift: [-0.1, -0.03],
+      drift: [0.04, -0.08],
       flow: [0.36, 1.3],
       weight: 0.8
     }
