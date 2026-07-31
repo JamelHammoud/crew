@@ -1,10 +1,11 @@
-import type { BrowserWindowConstructorOptions } from 'electron'
+import type { BrowserWindowConstructorOptions, MenuItemConstructorOptions } from 'electron'
 
 // The tray panel. Never `skipTaskbar`: on macOS that turns the app into an
 // accessory, and the icon leaves the dock and does not come back.
 export function createPanelOptions(
   preload: string,
-  size: { width: number; height: number }
+  size: { width: number; height: number },
+  devTools: boolean
 ): BrowserWindowConstructorOptions {
   return {
     ...size,
@@ -21,7 +22,8 @@ export function createPanelOptions(
     webPreferences: {
       preload,
       contextIsolation: true,
-      sandbox: false
+      sandbox: false,
+      devTools
     }
   }
 }
