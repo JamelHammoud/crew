@@ -6,6 +6,9 @@ import type { TLAsset as CrewAsset, TLBinding as CrewBinding, TLBindingType as C
 import type { PropsConfig } from '../schema/shapeProps'
 
 export interface ShapeEditor {
+  getColorMode?(): 'light' | 'dark'
+  getCurrentThemeId?(): string
+  getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, string | Record<string, string>>>> }
   getAsset?(id: string): CrewAsset | undefined
   getBindingsFromShape?(id: CrewShapeId, type?: CrewBindingType): CrewBinding[]
   getShape?(id: CrewShapeId): CrewShape | undefined

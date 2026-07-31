@@ -42,20 +42,20 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
 }
 
 export interface TransformShapeUtil<Shape extends TLShape = TLShape> {
-  onTranslateStart?(shape: Shape): ShapeUpdate<Shape> | void
-  onTranslate?(initial: Shape, current: Shape): ShapeUpdate<Shape> | void
-  onTranslateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | void
+  onTranslateStart?(shape: Shape): ShapeUpdate<Shape> | undefined
+  onTranslate?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
+  onTranslateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onTranslateCancel?(initial: Shape, current: Shape): void
-  onResizeStart?(shape: Shape): ShapeUpdate<Shape> | void
-  onResizeEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | void
+  onResizeStart?(shape: Shape): ShapeUpdate<Shape> | undefined
+  onResizeEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onResizeCancel?(initial: Shape, current: Shape): void
-  onRotateStart?(shape: Shape): ShapeUpdate<Shape> | void
-  onRotate?(initial: Shape, current: Shape): ShapeUpdate<Shape> | void
-  onRotateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | void
+  onRotateStart?(shape: Shape): ShapeUpdate<Shape> | undefined
+  onRotate?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
+  onRotateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onRotateCancel?(initial: Shape, current: Shape): void
-  onHandleDragStart?(shape: Shape, info: HandleDragInfo<Shape>): ShapeUpdate<Shape> | void
-  onHandleDrag?(shape: Shape, info: HandleDragInfo<Shape>): ShapeUpdate<Shape> | void
-  onHandleDragEnd?(shape: Shape, info: HandleDragInfo<Shape>): ShapeUpdate<Shape> | void
+  onHandleDragStart?(shape: Shape, info: HandleDragInfo<Shape>): ShapeUpdate<Shape> | undefined
+  onHandleDrag?(shape: Shape, info: HandleDragInfo<Shape>): ShapeUpdate<Shape> | undefined
+  onHandleDragEnd?(shape: Shape, info: HandleDragInfo<Shape>): ShapeUpdate<Shape> | undefined
   onHandleDragCancel?(shape: Shape, info: HandleDragInfo<Shape>): void
 }
 

@@ -4,8 +4,7 @@ import type { TLShape } from '../../schema'
 import {
   TransformState,
   type ShapeUpdate,
-  type TransformEditor,
-  type TransformParent
+  type TransformEditor
 } from './types'
 
 export interface TranslationSnapshot<Shape extends TLShape = TLShape> {
@@ -103,10 +102,6 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
   info: TranslatingInfo<Shape> = {}
   snapshots: TranslationSnapshot<Shape>[] = []
   markId = ''
-
-  constructor(editor: TransformEditor<Shape>, parent?: TransformParent) {
-    super(editor, parent)
-  }
 
   override onEnter(info: TranslatingInfo<Shape>): void {
     this.info = info

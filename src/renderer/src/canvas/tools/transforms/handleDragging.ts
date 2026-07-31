@@ -7,8 +7,7 @@ import {
   type HandleDragInfo,
   type ShapeUpdate,
   type TransformEditor,
-  type TransformHandle,
-  type TransformParent
+  type TransformHandle
 } from './types'
 
 export interface DragHandleOptions {
@@ -73,10 +72,6 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
   pageRotation = 0
   markId = ''
   isPrecise = false
-
-  constructor(editor: TransformEditor<Shape>, parent?: TransformParent) {
-    super(editor, parent)
-  }
 
   override onEnter(info: DraggingHandleInfo<Shape>): void {
     this.info = info

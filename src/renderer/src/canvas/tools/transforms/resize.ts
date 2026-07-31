@@ -11,8 +11,7 @@ import {
 import {
   TransformState,
   type ShapeUpdate,
-  type TransformEditor,
-  type TransformParent
+  type TransformEditor
 } from './types'
 
 export interface ResizeSnapshot<Shape extends TLShape = TLShape> {
@@ -241,10 +240,6 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
   selectionBounds = new Box()
   selectionRotation = 0
   markId = ''
-
-  constructor(editor: TransformEditor<Shape>, parent?: TransformParent) {
-    super(editor, parent)
-  }
 
   override onEnter(info: ResizingInfo<Shape>): void {
     this.info = info

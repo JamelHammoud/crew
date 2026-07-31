@@ -5,8 +5,7 @@ import type { TLShape } from '../../schema'
 import {
   TransformState,
   type ShapeUpdate,
-  type TransformEditor,
-  type TransformParent
+  type TransformEditor
 } from './types'
 
 export interface RotationShapeSnapshot<Shape extends TLShape = TLShape> {
@@ -106,10 +105,6 @@ export class Rotating<Shape extends TLShape = TLShape> extends TransformState<
   info: RotatingInfo<Shape> = {}
   snapshot!: RotationSnapshot<Shape>
   markId = ''
-
-  constructor(editor: TransformEditor<Shape>, parent?: TransformParent) {
-    super(editor, parent)
-  }
 
   override onEnter(info: RotatingInfo<Shape>): void {
     this.info = info
