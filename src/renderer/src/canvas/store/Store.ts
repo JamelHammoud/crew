@@ -108,8 +108,8 @@ export class Store<R extends UnknownRecord> {
 
   put(records: R[], phaseOverride?: RecordValidationPhase): void {
     this.atomic(() => {
-      const updates: RecordsDiff<R>['updated'] = {}
-      const additions: RecordsDiff<R>['added'] = {}
+      const updates = {} as RecordsDiff<R>['updated']
+      const additions = {} as RecordsDiff<R>['added']
       let didChange = false
       const source: ChangeSource = this.isMergingRemoteChanges ? 'remote' : 'user'
 
