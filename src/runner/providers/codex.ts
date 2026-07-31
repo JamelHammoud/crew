@@ -1,65 +1,71 @@
-import type { AgentSettingField, FileChange } from '../../shared/llm'
-import { choices, flag, makeCliProvider, type SettingReader } from './cli'
+import type { AgentSettingField } from '../../shared/llm'
+import { choices, makeCliProvider } from './cli'
+import { codexDialog } from './codex-app'
 import { codexModels } from './codex-models'
+import { itemActivity } from './codex-items'
 import { activityDetail, stepTodos } from './detail'
-import { commandOutput } from './output'
 import { usageFrom } from './tokens'
 import { codexUsage } from './usage'
 import type { OutputParser, ParsedOutput, Provider } from './types'
 
-const TOOL_LABELS: Record<string, string> = {
-  command_execution: 'Shell',
-  file_change: 'Edit',
-  mcp_tool_call: 'Mcp',
-  web_search: 'WebSearch',
-  todo_list: 'Todo'
+const TEXT = 0
+const PLAN_ID = 'plan'
+
+const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+
+const thinkIndex = (summaryIndex: unknown): number => (typeof summaryIndex === 'number' ? summaryIndex : 0) + 1
+
+const started = (item: any): ParsedOutput[] => {
+  const type = str(item?.type)
+  if (type === 'agentMessage') return [{ textStart: { index: TEXT } }]
+  if (type === 'reasoning' || type === 'userMessage') return []
+  const activity = itemActivity(item, false)
+  return activity ? [{ activity }] : []
 }
 
-const changeFiles = (changes: unknown): FileChange[] | undefined => {
-  const paths = Array.isArray(changes)
-    ? changes.map(c => (typeof c === 'string' ? c : c?.path)).filter((p): p is string => typeof p === 'string')
-    : changes && typeof changes === 'object'
-      ? Object.keys(changes as Record<string, unknown>)
-      : []
-  if (!paths.length) return undefined
-  return paths.map(path => ({ path, added: 0, removed: 0 }))
+const completed = (item: any): ParsedOutput[] => {
+  const type = str(item?.type)
+  if (type === 'agentMessage') {
+    const text = str(item.text).trim()
+    return text ? [{ blockStop: { index: TEXT } }, { text }] : [{ blockStop: { index: TEXT } }]
+  }
+  if (type === 'reasoning') {
+    const summary = (Array.isArray(item.summary) ? item.summary : []).map(str).filter(Boolean)
+    const out: ParsedOutput[] = summary.map((_, index) => ({ blockStop: { index: index + 1 } }))
+    const text = summary.join('\n\n')
+    if (text) out.push({ thinking: text })
+    return out
+  }
+  if (type === 'userMessage') return []
+  const activity = itemActivity(item, true)
+  return activity ? [{ activity }] : []
 }
 
-const changedPaths = (changes: unknown): string | undefined => {
-  if (Array.isArray(changes)) {
-    const paths = changes.map(c => (typeof c === 'string' ? c : c?.path)).filter(Boolean)
-    return paths.length ? paths.join(', ') : undefined
-  }
-  if (changes && typeof changes === 'object') {
-    const keys = Object.keys(changes as Record<string, unknown>)
-    return keys.length ? keys.join(', ') : undefined
-  }
-  return undefined
+const planOutput = (params: any): ParsedOutput[] => {
+  const plan = Array.isArray(params?.plan) ? params.plan : []
+  const todos = stepTodos({ plan })
+  if (!todos) return []
+  return [
+    {
+      activity: {
+        id: PLAN_ID,
+        kind: 'tool',
+        name: 'UpdatePlan',
+        status: 'finished',
+        detail: activityDetail({ plan }),
+        todos
+      }
+    }
+  ]
 }
 
-const toolName = (item: any): string => {
-  if (item.type === 'mcp_tool_call') {
-    const parts = [item.server, item.tool ?? item.tool_name].filter(Boolean)
-    if (parts.length) return parts.join('.')
+const turnOutput = (params: any): ParsedOutput[] => {
+  const out: ParsedOutput[] = [{ turnEnd: true }]
+  if (str(params?.turn?.status) === 'failed') {
+    const message = str(params.turn?.error?.message).trim()
+    if (message) out.push({ error: message })
   }
-  return TOOL_LABELS[item.type] ?? item.type
-}
-
-const toolDetail = (item: any): string | undefined => {
-  switch (item.type) {
-    case 'command_execution':
-      return typeof item.command === 'string' ? item.command : undefined
-    case 'file_change':
-      return changedPaths(item.changes)
-    case 'mcp_tool_call':
-      return activityDetail(item.arguments)
-    case 'web_search':
-      return typeof item.query === 'string' ? item.query : undefined
-    case 'todo_list':
-      return activityDetail(item)
-    default:
-      return undefined
-  }
+  return out
 }
 
 export const parseCodexLine: OutputParser = line => {
@@ -69,57 +75,47 @@ export const parseCodexLine: OutputParser = line => {
   } catch {
     return []
   }
-  const out: ParsedOutput[] = []
+  const method = str(msg?.method)
+  if (!method) {
+    const model = str(msg?.result?.model)
+    return model ? [{ usage: { model } }] : []
+  }
+  if (msg.id !== undefined && msg.id !== null) return []
+  const params = msg.params ?? {}
 
-  if (msg?.type === 'item.started' || msg?.type === 'item.updated' || msg?.type === 'item.completed') {
-    const item = msg.item
-    if (!item?.type) return out
-    const done = msg.type === 'item.completed'
-
-    // Text and reasoning are only emitted once the item closes — session.ts appends
-    // text on same-id merges, so emitting on updates too would duplicate the content.
-    if (item.type === 'agent_message') {
-      if (done && typeof item.text === 'string' && item.text.trim()) out.push({ text: item.text })
-      return out
+  switch (method) {
+    case 'item/started':
+      return started(params.item)
+    case 'item/completed':
+      return completed(params.item)
+    case 'item/agentMessage/delta': {
+      const delta = str(params.delta)
+      return delta ? [{ textDelta: { index: TEXT, text: delta } }] : []
     }
-    if (item.type === 'reasoning') {
-      if (done && typeof item.text === 'string' && item.text.trim()) out.push({ thinking: item.text })
-      return out
+    case 'item/reasoning/summaryPartAdded': {
+      const index = thinkIndex(params.summaryIndex)
+      return [{ blockStop: { index } }, { thinkingStart: { index } }]
     }
-    if (item.type === 'error') {
-      if (typeof item.message === 'string' && item.message.trim()) out.push({ error: item.message })
-      return out
+    case 'item/reasoning/summaryTextDelta': {
+      const delta = str(params.delta)
+      return delta ? [{ thinkingDelta: { index: thinkIndex(params.summaryIndex), text: delta } }] : []
     }
-    if (typeof item.id !== 'string') return out
-    out.push({
-      activity: {
-        id: item.id,
-        kind: 'tool' as const,
-        name: toolName(item),
-        status: done ? ('finished' as const) : ('started' as const),
-        detail: toolDetail(item),
-        output: commandOutput(item.aggregated_output),
-        files: item.type === 'file_change' ? changeFiles(item.changes) : undefined,
-        todos: item.type === 'todo_list' ? stepTodos(item) : undefined
-      }
-    })
-    return out
+    case 'turn/plan/updated':
+      return planOutput(params)
+    case 'thread/tokenUsage/updated': {
+      const usage = usageFrom(params.tokenUsage?.total)
+      return usage ? [{ usage: { ...usage, total: true } }] : []
+    }
+    case 'turn/completed':
+      return turnOutput(params)
+    case 'error': {
+      if (params.willRetry) return []
+      const message = str(params.error?.message).trim()
+      return message ? [{ error: message }] : []
+    }
+    default:
+      return []
   }
-
-  if (msg?.type === 'turn.completed') {
-    const usage = usageFrom(msg?.usage, msg?.model)
-    if (usage) out.push({ usage: { ...usage, total: true } })
-    return out
-  }
-  if (msg?.type === 'turn.failed') {
-    const message = msg?.error?.message
-    if (typeof message === 'string' && message.trim()) out.push({ error: message })
-    return out
-  }
-  if (msg?.type === 'error') {
-    if (typeof msg.message === 'string' && msg.message.trim()) out.push({ error: msg.message })
-  }
-  return out
 }
 
 export const codexFields = (): AgentSettingField[] => {
@@ -130,13 +126,7 @@ export const codexFields = (): AgentSettingField[] => {
   ]
 }
 
-export const codexArgs = (_prompt: string, get: SettingReader): string[] => [
-  'exec',
-  '--dangerously-bypass-approvals-and-sandbox',
-  '--json',
-  ...flag('--model', get('model')),
-  ...flag('-c', get('effort') ? `model_reasoning_effort="${get('effort')}"` : '')
-]
+export const codexArgs = (): string[] => ['app-server']
 
 // Codex has no standalone installer script; npm is its documented install path.
 const INSTALL_NPM = 'npm install -g @openai/codex'
@@ -148,7 +138,7 @@ export const codexProvider: Provider = makeCliProvider({
   fields: codexFields,
   args: codexArgs,
   parser: parseCodexLine,
-  stdinPrompt: true,
+  dialog: codexDialog,
   usage: codexUsage,
   install: { darwin: INSTALL_NPM, linux: INSTALL_NPM, win32: INSTALL_NPM }
 })
