@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
 import path from 'node:path'
@@ -10,6 +10,10 @@ const TASK =
 const BROKEN = 'export function add(a, b) {\n  return a - b\n}\n'
 const LIMIT = 240000
 const BARE = ['Read', 'Edit', 'Bash']
+const SESSIONS = ['.kimi-code', 'sessions']
+const WIRE = ['agents', 'main', 'wire.jsonl']
+const SCOPE = 'turn'
+const POLL = 1000
 
 function binary() {
   if (process.env.CREW_KIMI) return process.env.CREW_KIMI
