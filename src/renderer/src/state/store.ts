@@ -387,6 +387,7 @@ const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): v
         voice: event.voice,
         tickets: event.tickets,
         aside: event.aside,
+        forkedFrom: event.forkedFrom,
         parentThreadId: event.parentThreadId,
         parentPromptId: event.parentPromptId,
         helper: event.helper,
