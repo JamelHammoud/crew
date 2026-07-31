@@ -163,6 +163,16 @@ const ranEvent = (ts: number): SessionEvent =>
 
 const thought = { [RUN]: [{ id: 's1', ts: 1, kind: 'thinking' as const, status: 'done' as const, text: 'weighing it' }] }
 
+const alsoRead = {
+  [RUN]: [
+    ...thought[RUN],
+    { id: 's2', ts: 3, kind: 'tool' as const, status: 'done' as const, name: 'Read', detail: 'notes.md' }
+  ]
+}
+
+const endedEvent = (ts: number): SessionEvent =>
+  ({ id: `end-${ts}`, ts, kind: 'agent.end', promptId: RUN, agentId: 'a1', agentLabel: 'Bubbles', ok: true, text: '', threadId: 't1' }) as SessionEvent
+
 describe('where a page row sits in the run that showed it', () => {
   const rowOf = (word: string): HTMLElement | null => screen.getByText(word).closest('div')
 
