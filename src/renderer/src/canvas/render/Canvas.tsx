@@ -21,7 +21,7 @@ export function Canvas<Shape extends CanvasShapeRecord>({
   ...events
 }: CanvasProps<Shape>) {
   const pageLayerRef = useRef<HTMLDivElement>(null)
-  const rootRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement | null>(null)
 
   useQuickReactor(
     'canvas camera transform',
