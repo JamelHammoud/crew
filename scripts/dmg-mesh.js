@@ -1,42 +1,42 @@
 ;(function () {
-  const BASE = [0.815, 0.851, 0.933]
+  const BASE = [0.541, 0.588, 0.949]
 
   const LAYERS = [
     {
-      color: [0.435, 0.847, 1.0],
-      scale: 1.02,
-      speed: 0.062,
-      bias: 0.04,
+      color: [0.259, 0.796, 1.0],
+      scale: 0.96,
+      speed: 0.058,
+      bias: 0.16,
       drift: [0.09, -0.05],
-      flow: [-0.44, 1.42],
+      flow: [-0.44, 1.38],
       weight: 1.0
     },
     {
-      color: [0.706, 0.545, 0.98],
-      scale: 0.86,
-      speed: 0.047,
-      bias: -0.08,
+      color: [0.671, 0.431, 0.98],
+      scale: 0.8,
+      speed: 0.045,
+      bias: 0.04,
       drift: [-0.07, 0.06],
-      flow: [1.12, 1.28],
-      weight: 0.82
+      flow: [1.12, 1.24],
+      weight: 1.0
     },
     {
-      color: [1.0, 0.588, 0.706],
-      scale: 1.24,
-      speed: 0.074,
-      bias: -0.26,
+      color: [1.0, 0.451, 0.588],
+      scale: 1.18,
+      speed: 0.071,
+      bias: -0.12,
       drift: [0.05, 0.08],
-      flow: [-1.33, 1.58],
-      weight: 0.58
+      flow: [-1.33, 1.5],
+      weight: 0.92
     },
     {
-      color: [1.0, 0.796, 0.549],
-      scale: 0.92,
-      speed: 0.04,
-      bias: -0.22,
+      color: [1.0, 0.808, 0.404],
+      scale: 0.88,
+      speed: 0.038,
+      bias: -0.16,
       drift: [-0.1, -0.03],
-      flow: [0.36, 1.34],
-      weight: 0.44
+      flow: [0.36, 1.3],
+      weight: 0.8
     }
   ]
 
@@ -139,7 +139,7 @@ void main() {
     vec2 lie = uFlow[i];
     float seed = float(i);
     float n = band(p, wave, drift, lie, seed, uTime);
-    float a = smoothstep(-0.16, 0.62, n) * wave.w;
+    float a = smoothstep(-0.04, 0.46, n) * wave.w;
     colour = mix(colour, uColour[i], a);
     float dx = band(p + vec2(nudge.x, 0.0), wave, drift, lie, seed, uTime)
              - band(p - vec2(nudge.x, 0.0), wave, drift, lie, seed, uTime);
@@ -148,12 +148,12 @@ void main() {
     relief += (dx * 0.7 - dy * 0.7) * a;
   }
 
-  colour += vec3(0.055) * clamp(relief * 1.7, -1.0, 1.0);
+  colour += vec3(0.1, 0.096, 0.088) * clamp(relief * 2.4, -1.0, 1.0);
   colour += vec3(0.045, 0.042, 0.05) * (1.0 - vUv.y);
 
   vec2 away = vUv - vec2(0.5, 0.46);
   away.x *= ratio;
-  colour -= vec3(0.05) * smoothstep(0.34, 0.92, length(away));
+  colour -= vec3(0.055, 0.05, 0.04) * smoothstep(0.3, 0.95, length(away));
 
   colour += (grain(vUv * uSize) - 0.5) * 0.016;
   gl_FragColor = vec4(clamp(colour, 0.0, 1.0), 1.0);
