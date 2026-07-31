@@ -36,6 +36,7 @@ import { OverlayManager } from './overlays'
 import { descendantsOf, rootIds, sortedChildren, sortedPageShapes } from './pages'
 import { UserPreferencesManager } from './preferences'
 import { SelectionManager } from './selection'
+import { SnapManager } from './snaps'
 import { reorderedShapes, type OrderOperation } from './ordering'
 import { sharedOpacity, styleKey } from './styles'
 import { FontManager, TextMeasure } from './textMeasure'
@@ -87,12 +88,7 @@ export class Editor {
   }
   readonly performance = { _notifyInteractionStart: (_id: string, _path: string) => undefined, _notifyInteractionEnd: () => undefined }
   readonly edgeScrollManager = { start: () => undefined, stop: () => undefined, update: () => undefined }
-  readonly snaps = {
-    clearIndicators: () => undefined,
-    setIndicators: (_indicators: unknown[]) => undefined,
-    snapTranslateBounds: () => ({ nudge: { x: 0, y: 0 }, indicators: [] }),
-    snapResizeBounds: () => ({ nudge: { x: 0, y: 0 }, indicators: [] })
-  }
+  readonly snaps = new SnapManager()
   private readonly camera: CameraManager
   private readonly selection = new SelectionManager()
   private readonly tools: ToolManager
