@@ -11,11 +11,15 @@ const PAGE = mesh => `<!doctype html><html><body style="margin:0">
 <script>${mesh}</script>
 <script>
 window.shoot = frames => frames.map(frame => {
-  const canvas = document.createElement('canvas')
-  canvas.width = frame.width
-  canvas.height = frame.height
-  window.CrewMesh.frame(canvas, frame.at)
-  return { at: frame.at, png: canvas.toDataURL('image/png') }
+  try {
+    const canvas = document.createElement('canvas')
+    canvas.width = frame.width
+    canvas.height = frame.height
+    window.CrewMesh.frame(canvas, frame.at)
+    return { at: frame.at, png: canvas.toDataURL('image/png') }
+  } catch (error) {
+    return { at: frame.at, png: null, why: String((error && error.message) || error) }
+  }
 })
 </script>
 </body></html>`
