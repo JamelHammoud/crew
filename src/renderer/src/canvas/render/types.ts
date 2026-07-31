@@ -1,5 +1,4 @@
 import type { CSSProperties, HTMLAttributes, MutableRefObject, ReactNode, RefCallback } from 'react'
-import type { Geometry2d } from '../geometry'
 import type { MatLike } from '../math'
 
 export interface CanvasCamera {
