@@ -2,6 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { pendingCount, useCrew } from '../../state/store'
 import Composer from '../Composer'
 import FilesChanged from '../FilesChanged'
+import RunEnded from '../RunEnded'
 import RunStatus from '../RunStatus'
 import ScrollFade from '../ScrollFade'
 import ThreadItems from '../ThreadItems'
@@ -81,13 +82,15 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
         <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
           <div className="space-y-4 pt-1 pb-4 select-text">
             <ThreadItems threadId={threadId} items={items} />
-            {working && start?.kind === 'agent.start' && (
+            {working && start?.kind === 'agent.start' ? (
               <RunStatus
                 startedAt={start.ts}
                 tokens={tokens}
                 cost={cost}
                 steps={promptId ? (steps[promptId] ?? []) : []}
               />
+            ) : (
+              ended && <RunEnded end={ended} />
             )}
             <FilesChanged steps={threadSteps} />
           </div>

@@ -63,7 +63,7 @@ export function Chevron({ open }: { open: boolean }) {
   )
 }
 
-const SUBJECT = 'truncate text-xs text-fg-faint'
+export const SUBJECT = 'truncate text-xs text-fg-faint'
 export const SUBJECT_MONO = `${SUBJECT} mono-inline`
 
 export const rowClass = (expandable: boolean): string =>

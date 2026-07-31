@@ -57,6 +57,10 @@ interface CliProviderOptions {
   fields?: () => AgentSettingField[]
   args: (prompt: string, get: SettingReader) => string[]
   parser?: OutputParser
+  // A parser that has to remember where it is in a run gets one of its own. A
+  // module-level function is shared by every run at once, so a second agent
+  // starting would take the first one's place in the stream.
+  makeParser?: () => OutputParser
   env?: NodeJS.ProcessEnv
   idleTimeoutMs?: number
   stdinPrompt?: boolean
@@ -92,6 +96,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const resolved = resolveSettings(fields(), settings)
       const read: SettingReader = key => resolved[key] ?? ''
       const dialog = opts.dialog?.(prompt, cwd, read)
+      const parse = opts.makeParser?.() ?? opts.parser
       const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, read))
       const child = spawn(invocation.command, invocation.args, {
         cwd,
