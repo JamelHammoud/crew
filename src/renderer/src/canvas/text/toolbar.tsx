@@ -1,7 +1,14 @@
 import { getMarkRange, type Editor as TipTapEditor } from '@tiptap/core'
 import type { MarkType } from '@tiptap/pm/model'
 import { createPortal } from 'react-dom'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent
+} from 'react'
 import { BoldGlyph, BulletListGlyph, CodeGlyph, ItalicGlyph, LinkGlyph } from '../../components/doc/docGlyphs'
 import { HighlighterGlyph, type Glyph } from '../../design/glyphs'
 import { ExternalLinkGlyph, TrashGlyph } from '../../icons'
@@ -91,7 +98,9 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
       if (link === null) setPosition(null)
       return
     }
-    const rects = Array.from({ length: selection.rangeCount }, (_, index) => selection.getRangeAt(index).getBoundingClientRect())
+    const rects = Array.from({ length: selection.rangeCount }, (_, index) =>
+      selection.getRangeAt(index).getBoundingClientRect()
+    )
     const visible = rects.filter(rect => rect.width > 0 || rect.height > 0)
     if (visible.length === 0) return
     const left = Math.min(...visible.map(rect => rect.left))
