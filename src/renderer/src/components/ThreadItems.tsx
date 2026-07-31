@@ -44,8 +44,8 @@ export default function ThreadItems({
             {isNewDay(blocks[index - 1]?.ts, block.ts) && <DayDivider ts={block.ts} />}
             {item.kind === 'subagent' ? (
               <SubagentChips runs={item.runs ?? []} threadId={threadId} />
-            ) : item.kind === 'page' && item.page ? (
-              <PageChip page={item.page} />
+            ) : item.kind === 'page' && item.shown ? (
+              <PageRow shown={item.shown} />
             ) : block.items.length > 1 ? (
               <StepGroup items={block.items} linked={follows(blocks[index - 1], block)} />
             ) : isStep(item) ? (
