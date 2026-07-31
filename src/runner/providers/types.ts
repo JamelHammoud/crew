@@ -54,9 +54,6 @@ export interface ParsedOutput {
 
 export type OutputParser = (line: string) => ParsedOutput[]
 
-// A CLI that has to be answered rather than only read. Given the prompt, it
-// says what goes out at the start, what to write back for each line that
-// arrives, and what a steer looks like. A run with one is a run that steers.
 export interface Dialog {
   begin(): string[]
   answer(line: string): string[]
