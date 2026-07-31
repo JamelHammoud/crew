@@ -10,9 +10,6 @@ import { isNewDay } from './time'
 
 const isStep = (item: ThreadItem | undefined): boolean => item?.kind === 'tool' || item?.kind === 'thinking'
 
-// A page an agent showed is one of its run's own steps and closes up against the
-// rows either side of it the way the rest of them do. What it is drawn as is the
-// question below rather than this one.
 const inRun = (item: ThreadItem | undefined): boolean => isStep(item) || item?.kind === 'page'
 
 const follows = (previous: StepBlock | undefined, block: StepBlock): boolean => {
