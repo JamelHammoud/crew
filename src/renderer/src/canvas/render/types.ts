@@ -27,6 +27,7 @@ export interface CanvasRenderingShape<Shape extends CanvasShapeRecord = CanvasSh
   index: number
   backgroundIndex: number
   opacity: number
+  isEditing?: boolean
 }
 
 export interface CanvasOverlay {

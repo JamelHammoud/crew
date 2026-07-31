@@ -328,8 +328,9 @@ export class Editor {
     index: number
     backgroundIndex: number
     opacity: number
+    isEditing: boolean
   }> {
-    void this.getEditingShapeId()
+    const editingShapeId = this.getEditingShapeId()
     const shapes = this.getCurrentPageRenderingShapesSorted()
     return shapes.map((shape, index) => ({
       id: shape.id,
@@ -337,6 +338,7 @@ export class Editor {
       index,
       backgroundIndex: index,
       opacity: shape.opacity
+      ,isEditing: editingShapeId === shape.id
     }))
   }
 

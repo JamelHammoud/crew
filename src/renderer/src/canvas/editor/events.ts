@@ -78,7 +78,7 @@ export class CanvasEventBridge {
   }
 
   private doubleClick(event: MouseEvent): void {
-    const info = mouseInfo('double_click', event, this.editor)
+    const info = mouseInfo('double_click', event, this.editor, 'down')
     this.dispatch({ ...info, ...resolveTarget(event, info.point, this.editor) })
   }
 
@@ -195,9 +195,14 @@ function pointerInfo(name: CanvasEventInfo['name'], event: PointerEvent, screen:
   }
 }
 
-function mouseInfo(name: CanvasEventInfo['name'], event: MouseEvent, editor: Editor): CanvasEventInfo {
+function mouseInfo(
+  name: CanvasEventInfo['name'],
+  event: MouseEvent,
+  editor: Editor,
+  phase = 'up'
+): CanvasEventInfo {
   const screen = screenPoint(event, editor.getContainer())
-  return pointerInfo(name, event as PointerEvent, screen, editor.screenToPage(screen), 'up')
+  return pointerInfo(name, event as PointerEvent, screen, editor.screenToPage(screen), phase)
 }
 
 function keyInfo(name: CanvasEventInfo['name'], event: KeyboardEvent): CanvasEventInfo {

@@ -125,6 +125,7 @@ function sameShapeContent<Shape extends CanvasShapeRecord>(
     previous.result.index === next.result.index &&
     previous.result.backgroundIndex === next.result.backgroundIndex &&
     previous.result.opacity === next.result.opacity &&
+    previous.result.isEditing === next.result.isEditing &&
     previous.result.shape.type === next.result.shape.type &&
     previous.result.shape.props === next.result.shape.props &&
     previous.result.shape.meta === next.result.shape.meta
