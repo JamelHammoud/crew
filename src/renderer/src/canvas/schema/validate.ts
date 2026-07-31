@@ -216,7 +216,8 @@ function typeofValidator<Value>(expected: string): Validator<Value> {
 }
 
 const unknown = new Validator(value => value)
-const any = new Validator((value): never => value as never)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const any = new Validator((value): any => value)
 const string = typeofValidator<string>('string')
 const boolean = typeofValidator<boolean>('boolean')
 
