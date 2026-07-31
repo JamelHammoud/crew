@@ -331,6 +331,24 @@ const routeBadge = (
   return started.has(route.promptId) ? undefined : 'queued'
 }
 
+// Which run each page belongs to. It rides on the event, and a page shown
+// before it did is read off the log rather than left standing on its own: the
+// call is made from inside a turn, so the run open on the thread when it landed
+// is the run that made it.
+const runOfPages = (events: SessionEvent[]): Map<string, string> => {
+  const runs = new Map<string, string>()
+  let open: string | undefined
+  for (const event of events) {
+    if (event.kind === 'agent.start') open = event.promptId
+    if (event.kind === 'agent.end' && event.promptId === open) open = undefined
+    if (event.kind === 'page.shown') {
+      const run = event.promptId ?? open
+      if (run) runs.set(event.id, run)
+    }
+  }
+  return runs
+}
+
 // Every name an agent wrote under is read back off its id, so a rename shows on
 // work it did before the rename instead of leaving the old name behind.
 export function buildThread(
