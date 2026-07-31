@@ -26,11 +26,10 @@ export function useCanvasOverlayActive(
   overlays: CanvasOverlayManager | null,
   type: CanvasOverlayHook | (string & {})
 ): boolean {
-  return useValue(
-    `canvas ${type} overlay`,
-    () => (overlays ? canvasOverlayIsActive(overlays, type) : false),
-    [overlays, type]
-  )
+  return useValue(`canvas ${type} overlay`, () => (overlays ? canvasOverlayIsActive(overlays, type) : false), [
+    overlays,
+    type
+  ])
 }
 
 export const useSelectionOverlayActive = (overlays: CanvasOverlayManager | null) =>
@@ -39,8 +38,7 @@ export const useSelectionOverlayActive = (overlays: CanvasOverlayManager | null)
 export const useBrushOverlayActive = (overlays: CanvasOverlayManager | null) =>
   useCanvasOverlayActive(overlays, 'brush')
 
-export const useSnapOverlayActive = (overlays: CanvasOverlayManager | null) =>
-  useCanvasOverlayActive(overlays, 'snap')
+export const useSnapOverlayActive = (overlays: CanvasOverlayManager | null) => useCanvasOverlayActive(overlays, 'snap')
 
 export const useHandleOverlayActive = (overlays: CanvasOverlayManager | null) =>
   useCanvasOverlayActive(overlays, 'handle')

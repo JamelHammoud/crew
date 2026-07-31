@@ -29,20 +29,16 @@ export function Canvas<Shape extends CanvasShapeRecord>({
     [host]
   )
 
-  useQuickReactor(
-    'canvas state attributes',
-    () => {
-      rootRef.current?.setAttribute(
-        'data-is-editing-anything',
-        (host.getEditingShapeId?.() ?? null) === null ? 'false' : 'true'
-      )
-      rootRef.current?.setAttribute(
-        'data-is-selecting-anything',
-        (host.getSelectedShapeIds?.().length ?? 0) === 0 ? 'false' : 'true'
-      )
-    },
-    [host]
-  )
+  useQuickReactor('canvas state attributes', () => {
+    rootRef.current?.setAttribute(
+      'data-is-editing-anything',
+      (host.getEditingShapeId?.() ?? null) === null ? 'false' : 'true'
+    )
+    rootRef.current?.setAttribute(
+      'data-is-selecting-anything',
+      (host.getSelectedShapeIds?.().length ?? 0) === 0 ? 'false' : 'true'
+    )
+  }, [host])
 
   const cameraMoving = useValue('canvas camera state', () => host.getCameraState() === 'moving', [host])
 
@@ -77,10 +73,7 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         <OverlayCanvas host={host} />
         {viewportOverlay && <div style={viewportLayerStyle}>{viewportOverlay}</div>}
         {cameraMoving && (
-          <div
-            data-canvas-hit-test-blocker="true"
-            style={{ ...viewportLayerStyle, pointerEvents: 'all' }}
-          />
+          <div data-canvas-hit-test-blocker="true" style={{ ...viewportLayerStyle, pointerEvents: 'all' }} />
         )}
       </div>
       {inFrontOfCanvas && <div style={viewportLayerStyle}>{inFrontOfCanvas}</div>}

@@ -39,9 +39,7 @@ const globalKeys = [
   'IS_REACT_ACT_ENVIRONMENT'
 ] as const
 
-const originalGlobals = new Map(
-  globalKeys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)] as const)
-)
+const originalGlobals = new Map(globalKeys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)] as const))
 
 const setGlobal = (key: (typeof globalKeys)[number], value: unknown) =>
   Object.defineProperty(globalThis, key, { configurable: true, writable: true, value })
@@ -105,9 +103,7 @@ function setup() {
     getCamera: () => camera.get(),
     getCameraState: () => cameraState.get(),
     getInstanceState: () => instance.get(),
-    getRenderingShapes: () => [
-      { id: shape.get().id, shape: shape.get(), index: 7, backgroundIndex: 6, opacity: 0.8 }
-    ],
+    getRenderingShapes: () => [{ id: shape.get().id, shape: shape.get(), index: 7, backgroundIndex: 6, opacity: 0.8 }],
     getCulledShapes: () => culled.get(),
     getShape: id => (id === shape.get().id ? shape.get() : undefined),
     getShapePageTransform: id => {
@@ -151,9 +147,7 @@ describe('canvas rendering', () => {
 
   it('writes motion and culling straight to a mounted shape without rebuilding its content', () => {
     const context = canvasContext()
-    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
-      context as unknown as CanvasRenderingContext2D
-    )
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
     const state = setup()
     let shapeRenders = 0
     const renderer: CanvasShapeRenderer<Shape> = {
@@ -197,9 +191,7 @@ describe('canvas rendering', () => {
 
   it('sizes its bitmap and hands overlay renderers page-space coordinates', () => {
     const context = canvasContext()
-    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
-      context as unknown as CanvasRenderingContext2D
-    )
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
     const state = setup()
     const paint = vi.fn()
     state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [] }])

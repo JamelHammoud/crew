@@ -2,12 +2,7 @@ import { memo, useLayoutEffect, useRef } from 'react'
 import { useQuickReactor, useValue } from '../signals'
 import { MountedShapeCullingProvider, useMountedShapeCulling } from './Culling'
 import { setStyle, shapeCssTransform, shapeStyle } from './style'
-import type {
-  CanvasRenderHost,
-  CanvasRenderingShape,
-  CanvasShapeRecord,
-  CanvasShapeRenderer
-} from './types'
+import type { CanvasRenderHost, CanvasRenderingShape, CanvasShapeRecord, CanvasShapeRenderer } from './types'
 
 export function sortRenderingShapes<Shape extends CanvasShapeRecord>(
   shapes: CanvasRenderingShape<Shape>[]
@@ -45,42 +40,34 @@ interface CanvasShapeProps<Shape extends CanvasShapeRecord> {
   result: CanvasRenderingShape<Shape>
 }
 
-function CanvasShapeView<Shape extends CanvasShapeRecord>({
-  host,
-  renderer,
-  result
-}: CanvasShapeProps<Shape>) {
+function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, result }: CanvasShapeProps<Shape>) {
   const foregroundRef = useRef<HTMLDivElement>(null)
   const backgroundRef = useRef<HTMLDivElement>(null)
   const memoized = useRef({ transform: '', clipPath: '', width: '', height: '' })
   const culling = useMountedShapeCulling()
   const background = renderer.renderBackground?.(result.shape)
 
-  useQuickReactor(
-    `canvas shape ${result.id}`,
-    () => {
-      const shape = host.getShape(result.id)
-      const transform = host.getShapePageTransform(result.id)
-      if (!shape || !transform) return
-      const bounds = host.getShapeGeometry(shape).bounds
-      const clipPath = host.getShapeClipPath(result.id) ?? 'none'
-      const next = {
-        transform: shapeCssTransform(transform),
-        clipPath,
-        width: `${Math.max(bounds.w, 1)}px`,
-        height: `${Math.max(bounds.h, 1)}px`
-      }
-      const previous = memoized.current
-      for (const key of Object.keys(next) as Array<keyof typeof next>) {
-        if (next[key] === previous[key]) continue
-        const property = key === 'clipPath' ? 'clip-path' : key
-        setStyle(foregroundRef.current, property, next[key])
-        setStyle(backgroundRef.current, property, next[key])
-        previous[key] = next[key]
-      }
-    },
-    [host, result.id]
-  )
+  useQuickReactor(`canvas shape ${result.id}`, () => {
+    const shape = host.getShape(result.id)
+    const transform = host.getShapePageTransform(result.id)
+    if (!shape || !transform) return
+    const bounds = host.getShapeGeometry(shape).bounds
+    const clipPath = host.getShapeClipPath(result.id) ?? 'none'
+    const next = {
+      transform: shapeCssTransform(transform),
+      clipPath,
+      width: `${Math.max(bounds.w, 1)}px`,
+      height: `${Math.max(bounds.h, 1)}px`
+    }
+    const previous = memoized.current
+    for (const key of Object.keys(next) as Array<keyof typeof next>) {
+      if (next[key] === previous[key]) continue
+      const property = key === 'clipPath' ? 'clip-path' : key
+      setStyle(foregroundRef.current, property, next[key])
+      setStyle(backgroundRef.current, property, next[key])
+      previous[key] = next[key]
+    }
+  }, [host, result.id])
 
   useLayoutEffect(() => {
     setStyle(foregroundRef.current, 'opacity', String(result.opacity))
