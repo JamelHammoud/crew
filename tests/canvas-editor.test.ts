@@ -96,6 +96,19 @@ describe('the canvas editor', () => {
     expect(subject.getCurrentTheme().colors.dark['light-blue']).toMatchObject({ solid: '#4dabf7', fill: '#4dabf7' })
   })
 
+  it('exports selected shapes from the current document snapshot', async () => {
+    const subject = editor()
+    const id = frame(subject, 'export', 10, 20, 40, 30)
+    await expect(subject.getSvgString([])).resolves.toBeUndefined()
+    const result = await subject.getSvgString([id], { padding: 0, scale: 2 })
+    expect(result).toMatchObject({ width: 80, height: 60 })
+    expect(result?.svg).toContain(`data-shape-id="${id}"`)
+    const image = await subject.toImage([id], { format: 'svg', padding: 0 })
+    expect(image).toMatchObject({ width: 40, height: 30 })
+    expect(image.blob.type).toBe('image/svg+xml')
+    expect(await image.blob.text()).toContain(`data-shape-id="${id}"`)
+  })
+
   it('routes shape pointer events into selection and translation tools', () => {
     const subject = new Editor({
       store: createTLStore({ id: 'event-test' }),
