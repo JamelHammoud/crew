@@ -406,15 +406,26 @@ export class AppSession {
       await git.quiet()
     }
     this.live = { ...live, projectSync: on, synced: on || this.crewGit !== null }
+    this.hosted = { ...hosted, sync: on }
+    this.rememberProject()
+    return this.live
+  }
+
+  // A project keeps the answers it was given, so opening it again from the list
+  // is never a switch somebody has to set a second time.
+  private rememberProject(): void {
+    const hosted = this.hosted
+    const live = this.live
+    if (!hosted || !live) return
     this.savedStore()?.remember({
       folder: hosted.folder,
       name: hosted.name,
       home: hosted.home,
       key: hosted.key,
-      sync: on,
+      sync: hosted.sync,
+      shared: live.shared,
       openedAt: Date.now()
     })
-    return this.live
   }
 
   // Inviting people is the listener moving, and nothing else. The session, its
