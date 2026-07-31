@@ -55,7 +55,7 @@ export abstract class ShapeUtil<Shape extends TLShape = TLShape> {
   static handledAssetTypes?: readonly string[]
 
   static configure<T extends TLShapeUtilConstructor>(this: T, options: Record<string, unknown>): T {
-    const Parent = this as unknown as new (...args: any[]) => ShapeUtil
+    const Parent: any = this
     class ConfiguredShapeUtil extends Parent {
       constructor(...args: any[]) {
         super(...args)
