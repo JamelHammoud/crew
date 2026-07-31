@@ -26,7 +26,3 @@ export async function interruptedStates(repoPath: string): Promise<InterruptedSt
   }
   return [...found.values()]
 }
-
-export async function rebaseActive(repoPath: string): Promise<boolean> {
-  return (await interruptedStates(repoPath)).some(state => state.label === 'rebase')
-}

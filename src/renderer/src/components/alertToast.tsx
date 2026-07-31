@@ -14,7 +14,7 @@ export function alertToast(alert: AgentAlert, open: (threadId: string) => void):
     <Avatar name={alert.from} size="xs" />
   ) : undefined
   toast(alert.title, {
-    tone: alert.stopped ? 'fail' : 'plain',
+    tone: alert.failed ? 'fail' : 'plain',
     detail: alert.body || undefined,
     mark: face,
     key: thread ? `alert:${thread}` : undefined,

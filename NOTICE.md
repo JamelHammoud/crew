@@ -29,7 +29,7 @@ CC BY 4.0, which requires attribution.
 > Code licensed under the MIT License
 > https://opensource.org/licenses/MIT
 
-The same attribution is carried inside the app, on the This computer page in the
+The same attribution is carried inside the app, on the About page in the
 settings, so it reaches somebody running Crew and not only somebody reading the
 repository.
 

@@ -383,6 +383,10 @@ export function soundFor(event: SessionEvent, selfId: string, state: ReviewState
   // agent without ending anything anybody asked about, and a chime for one of
   // those is the app saying a thread landed while the thread carries on working
   // in front of you.
+  // A run somebody ended makes no sound. The fail chime is the app saying
+  // something went wrong, and nothing did: whoever pressed it knows already,
+  // and the row that arrives says it to everybody else.
+  if (event.kind === 'agent.end' && event.stopped) return null
   if (event.kind === 'agent.end') return threadFinished(event, state) ? (event.ok ? 'done' : 'failed') : null
   // An agent asking something of you is a word arriving, and it sounds like one.
   if (event.kind === 'ticket.asked') return 'receive'
