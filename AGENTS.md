@@ -638,7 +638,8 @@ A word with a slash in front of it, lifted out of the box onto a chip beside the
 - One is a ghost, so it runs on your own machine and nowhere else, none of it is written down, and it goes with the window. A thread somebody else's agent is on is still one you can ask about: one of yours answers it, which is `startAside`.
 - `aside` on the thread is the thread it was asked from, and `buildPrompt` reads that thread and then the talk beside it. They stand as two blocks rather than as one run of lines: a question and its answer are turns of their own, and after a few of them there is nothing to say where the thread ended and the conversation about it began. The thread is read again on every turn rather than remembered, so an answer keeps up with work that has carried on since. It answers itself and sends no work out, because helpers on a thread nobody can see is work nobody asked for.
 - It is not the crew's work, so it is no card in the chat, no row in the task list, and no toast when it lands: the panel that opened to answer it is already on the screen.
-- Each question is its own tab, so one asked while an answer is still being read leaves that answer where it is. `AsideView` is what a tab holds, and there is no composer on it: a one-off is one question, and a second one is a second question.
+- It is two way. `AsideView` is an ordinary thread in a panel, composer and all, so the next question goes where the last one was answered: an answer is rarely the end of it, and starting again in a tab of its own is being told to explain the whole thing a second time. Nothing typed there can reach the thread it is about, whatever is written in it, since it is a message into a ghost of its own and the thread is only ever read.
+- A question asked from the thread's own composer opens a tab, so one asked while an answer is still being read leaves that answer where it is. Two of those are two conversations, and each one goes on where it stands.
 
 ## Helpers
 
