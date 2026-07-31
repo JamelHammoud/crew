@@ -1,9 +1,9 @@
 ;(function () {
-  const PAPER = [1.0, 1.0, 1.0]
+  const PAPER = [0.078, 0.078, 0.078]
 
   const BASE = [0.443, 0.494, 0.949]
 
-  const BLOOM = { x: 0.73939, y: 0.515, radius: 0.58, strength: 0.88, wide: 0.02 }
+  const BLOOM = { x: 0.73939, y: 0.515, radius: 0.6, strength: 0.95, wide: 0.03 }
 
   const LAYERS = [
     {
