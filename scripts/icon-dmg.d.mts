@@ -9,6 +9,7 @@ export const DMG: {
   chrome: number
   iconTextRoom: number
   at: number
+  retina: number
 }
 
 export const ARROW: {
@@ -19,6 +20,12 @@ export const ARROW: {
   weight: number
   glide: number
 }
+
+export const GROUND: string
+
+export const LABEL: string
+
+export const INK: string
 
 export const DMG_DEFS: string
 
