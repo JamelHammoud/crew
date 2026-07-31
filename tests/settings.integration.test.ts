@@ -48,12 +48,20 @@ describe('provider settings map to command line flags', () => {
   })
 
   it('codex bypasses approvals and sets reasoning effort', () => {
-    const args = codexArgs('hi', reader({ model: '', effort: 'low' }))
-    expect(args).toContain('--dangerously-bypass-approvals-and-sandbox')
-    expect(args.join(' ')).toContain('model_reasoning_effort="low"')
-    expect(args).not.toContain('--model')
-    expect(args).not.toContain('hi')
-    expect(args).not.toContain('-')
+    expect(codexArgs()).toEqual(['app-server'])
+    const dialog = codexDialog('hi', '/tmp/work', reader({ model: 'gpt-5.6-sol', effort: 'low' }))
+    const sent: string[] = [...dialog.begin()]
+    sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 1, result: {} })))
+    const thread = JSON.parse(sent[sent.length - 1])
+    expect(thread.method).toBe('thread/start')
+    expect(thread.params).toMatchObject({ cwd: '/tmp/work', sandbox: 'danger-full-access', approvalPolicy: 'never' })
+    expect(thread.params.model).toBe('gpt-5.6-sol')
+
+    sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { thread: { id: 't1' } } })))
+    const turn = JSON.parse(sent[sent.length - 1])
+    expect(turn.method).toBe('turn/start')
+    expect(turn.params).toMatchObject({ threadId: 't1', effort: 'low', approvalPolicy: 'never' })
+    expect(turn.params.input).toEqual([{ type: 'text', text: 'hi' }])
   })
 
   it('leaves a flag off when the value is empty', () => {
