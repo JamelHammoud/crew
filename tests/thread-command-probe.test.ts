@@ -174,6 +174,45 @@ describe('commands in a thread', () => {
     )
   })
 
+  it('offers a fork whether or not there is a turn running', () => {
+    const composer = open()
+    fireEvent.change(composer, { target: { value: '/' } })
+    expect(screen.getByText('/fork')).toBeTruthy()
+
+    cleanup()
+    const mid = open({ mid: true })
+    fireEvent.change(mid, { target: { value: '/' } })
+    expect(screen.getByText('/fork')).toBeTruthy()
+  })
+
+  it('says on the button that a fork is going somewhere else', () => {
+    const composer = open({ mid: true })
+
+    fireEvent.change(composer, { target: { value: '/fork ' } })
+    expect(screen.getByLabelText('Remove Fork')).toBeTruthy()
+    expect(composer.placeholder).toBe('Carry on from here')
+    fireEvent.change(composer, { target: { value: 'try it with the header on top' } })
+    expect(screen.getByLabelText('Fork')).toBeTruthy()
+  })
+
+  it('sends a fork beside the message, and as a reply to nothing in the thread', () => {
+    const sendChat = vi.fn()
+    const composer = open({ mid: true, sendChat })
+
+    fireEvent.change(composer, { target: { value: '/fork ' } })
+    fireEvent.change(composer, { target: { value: 'try it with the header on top' } })
+    fireEvent.click(screen.getByLabelText('Fork'))
+
+    expect(sendChat).toHaveBeenCalledWith(
+      'try it with the header on top',
+      'thread-1',
+      undefined,
+      undefined,
+      undefined,
+      ['fork']
+    )
+  })
+
   it('drops a chip the thread can no longer honor when the turn ends', () => {
     const composer = open({ mid: true })
     fireEvent.change(composer, { target: { value: '/queue ' } })
