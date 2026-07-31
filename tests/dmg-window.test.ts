@@ -47,7 +47,13 @@ describe('the disk image window', () => {
       expect(centre + half).toBeLessThan(DMG.width)
     }
     expect(DMG.line - half).toBeGreaterThan(DMG.headline)
-    expect(DMG.line + half + DMG.iconSize / 6).toBeLessThan(DMG.height)
+  })
+
+  it('keeps everything above the band the title bar takes off the bottom', () => {
+    const seen = DMG.height - DMG.chrome
+    const labels = DMG.line + half + DMG.iconTextRoom
+    expect(labels).toBeLessThan(seen)
+    expect(seen - labels).toBeGreaterThan(DMG.headline / 2)
   })
 })
 

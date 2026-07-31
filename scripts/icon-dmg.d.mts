@@ -15,6 +15,7 @@ export const DMG: {
   app: number
   applications: number
   headline: number
+  chrome: number
   at: number
 }
 

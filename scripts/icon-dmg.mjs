@@ -6,6 +6,7 @@ export const DMG = {
   app: 172,
   applications: 488,
   headline: 84,
+  chrome: 48,
   at: 61
 }
 
