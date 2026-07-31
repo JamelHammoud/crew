@@ -81,24 +81,25 @@ export interface ShapeUtilConstructor<Shape extends CrewShape = CrewShape> {
   handledAssetTypes?: readonly string[]
 }
 
+function configureShapeUtil<Constructor extends ShapeUtilConstructor>(
+  this: Constructor,
+  options: Record<string, unknown>
+): Constructor {
+  const Parent: any = this
+  class ConfiguredShapeUtil extends Parent {
+    constructor(...args: any[]) {
+      super(...args)
+      this.options = { ...this.options, ...options }
+    }
+  }
+  return ConfiguredShapeUtil as unknown as Constructor
+}
+
 export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   static type: string
   static props?: PropsConfig<CrewShape['props']>
   static handledAssetTypes?: readonly string[]
-
-  static configure<Constructor extends ShapeUtilConstructor>(
-    this: Constructor,
-    options: Record<string, unknown>
-  ): Constructor {
-    const Parent: any = this
-    class ConfiguredShapeUtil extends Parent {
-      constructor(...args: any[]) {
-        super(...args)
-        this.options = { ...this.options, ...options }
-      }
-    }
-    return ConfiguredShapeUtil as unknown as Constructor
-  }
+  static configure = configureShapeUtil
 
   options: Record<string, unknown> = {}
 
