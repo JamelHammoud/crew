@@ -1,4 +1,5 @@
 import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
+import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../export'
 import { Box, Mat, Vec, type VecLike as MathVecLike } from '../math'
 import {
   DocumentRecordType,
@@ -6,6 +7,7 @@ import {
   TLDOCUMENT_ID,
   ZERO_INDEX_KEY,
   createShapeId,
+  getSnapshot,
   getIndexAbove,
   getIndicesBetween,
   type IndexKey,
@@ -108,10 +110,10 @@ export class Editor {
     isCoarsePointer: false,
     isToolLocked: false,
     cursor: { type: 'default', rotation: 0 },
-    isReadonly: false
-    ,erasingShapeIds: [] as TLShapeId[]
-    ,hintingShapeIds: [] as TLShapeId[]
-    ,hoveredShapeId: null as TLShapeId | null
+    isReadonly: false,
+    erasingShapeIds: [] as TLShapeId[],
+    hintingShapeIds: [] as TLShapeId[],
+    hoveredShapeId: null as TLShapeId | null
   }
   private currentPageId: TLPageId
   private disposed = false
@@ -227,7 +229,7 @@ export class Editor {
       selectedShapeIds: this.getSelectedShapeIds(),
       editingShapeId: this.getEditingShapeId(),
       focusedGroupId: focused.startsWith('shape:') ? focused as TLShapeId : null,
-      hintingShapeIds: [],
+      hintingShapeIds: this.instance.hintingShapeIds,
       hoveredShapeId: this.instance.hoveredShapeId
     }
   }
