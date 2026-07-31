@@ -94,13 +94,12 @@ describe('the picture', () => {
     expect(dmgBackground('AAAA')).toContain('data:image/png;base64,AAAA')
   })
 
-  it('sets the words in one hand at one size', () => {
+  it('sets the words in one face at one size', () => {
     const svg = dmgBackground(null)
     expect(svg).not.toContain('<tspan')
     expect(svg).not.toContain('monospace')
-    expect(svg).toContain('Bradley Hand')
-    expect(svg).toContain('cursive')
-    expect(svg).not.toContain('sans-serif')
+    expect(svg).not.toContain('cursive')
+    expect(svg).toContain('sans-serif')
     expect(svg.match(/font-size="[\d.]+"/g)?.length).toBe(1)
   })
 })
