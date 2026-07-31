@@ -69,10 +69,10 @@ export function geoGeometry(kind: TLGeoShapeGeoStyle, w: number, h: number): Geo
     ? new Polygon2d({ points, isFilled: true })
     : new Rectangle2d({ width: w, height: h, isFilled: true })
   if (kind === 'x-box') {
-    return new Group2d({ children: [outline, new Edge2d({ start: new Vec(0, 0), end: new Vec(w, h), isInternal: true }), new Edge2d({ start: new Vec(w, 0), end: new Vec(0, h), isInternal: true })] })
+    return new Group2d({ children: [outline, new Edge2d({ start: new Vec(0, 0), end: new Vec(w, h) }), new Edge2d({ start: new Vec(w, 0), end: new Vec(0, h) })] })
   }
   if (kind === 'check-box') {
-    return new Group2d({ children: [outline, new Edge2d({ start: new Vec(w * 0.2, h * 0.52), end: new Vec(w * 0.43, h * 0.75), isInternal: true }), new Edge2d({ start: new Vec(w * 0.43, h * 0.75), end: new Vec(w * 0.82, h * 0.25), isInternal: true })] })
+    return new Group2d({ children: [outline, new Edge2d({ start: new Vec(w * 0.2, h * 0.52), end: new Vec(w * 0.43, h * 0.75) }), new Edge2d({ start: new Vec(w * 0.43, h * 0.75), end: new Vec(w * 0.82, h * 0.25) })] })
   }
   return outline
 }

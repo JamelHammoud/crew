@@ -1,7 +1,7 @@
 import { createElement, type ReactNode } from 'react'
 import { Arc2d, Edge2d, Group2d, Polyline2d, Rectangle2d, type Geometry2d } from '../geometry'
 import { Vec, type VecLike } from '../math/Vec'
-import { arrowBindingProps, arrowShapeProps, type TLBinding, type TLShape } from '../schema'
+import { BINDING_PROPS, arrowShapeProps, type TLBinding, type TLShape } from '../schema'
 import { BindingUtil, ShapeUtil, type ShapeEditor } from './ShapeUtil'
 import { COLORS, FONT_FAMILIES, FONT_SIZES, STROKES, pathFromPoints, plainText, richText } from './shared'
 
@@ -125,6 +125,6 @@ export class ArrowShapeUtil extends ShapeUtil<TLArrowShape> {
 
 export class ArrowBindingUtil extends BindingUtil<TLArrowBinding> {
   static override type = 'arrow' as const
-  static override props = arrowBindingProps
+  static override props = BINDING_PROPS.arrow
   getDefaultProps(): Partial<TLArrowBinding['props']> { return { isPrecise: false, isExact: false, normalizedAnchor: { x: 0.5, y: 0.5 }, snap: 'none' } }
 }
