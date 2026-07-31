@@ -16,6 +16,7 @@ export const DMG: {
   applications: number
   headline: number
   chrome: number
+  iconTextRoom: number
   at: number
 }
 
