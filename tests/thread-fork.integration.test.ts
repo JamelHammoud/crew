@@ -280,12 +280,34 @@ describe('forking a thread', () => {
     await sam.waitForEvent(e => e.kind === 'agent.online')
 
     const thread = await threadWith(sam, '@Fake tidy the readme', [samsFake])
-    fork(sam, '   ', thread.threadId)
+    sam.send({
+      type: 'chat.send',
+      text: '   ',
+      mentions: [],
+      threadId: thread.threadId,
+      commands: ['fork'],
+      attachments: [image()]
+    })
 
     const notice = (await sam.waitFor(msg => msg.type === 'notice')) as Notice
     expect(notice.text).toBe('Say what to carry on with.')
     await settle()
     expect(pat.messages.some(m => m.type === 'notice')).toBe(false)
+    expect(sam.events.some(e => e.kind === 'thread.started' && e.forkedFrom !== undefined)).toBe(false)
+    // Nothing landed in the thread it was asked from either.
+    expect(sam.events.filter(e => 'threadId' in e && e.threadId === thread.threadId && e.kind === 'message')).toHaveLength(1)
+  })
+
+  it('a fork with nothing in it at all does nothing at all', async () => {
+    const sam = await connectUi('sam')
+    await connectRunner('sam', false)
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    const thread = await threadWith(sam, '@Fake tidy the readme', [samsFake])
+    fork(sam, '   ', thread.threadId)
+    await settle()
+
+    expect(sam.messages.some(m => m.type === 'notice')).toBe(false)
     expect(sam.events.some(e => e.kind === 'thread.started' && e.forkedFrom !== undefined)).toBe(false)
   })
 
