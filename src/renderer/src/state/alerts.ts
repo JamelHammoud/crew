@@ -69,12 +69,13 @@ export function finishedAlert(event: SessionEvent, state: AlertState): AgentAler
   const thread = event.threadId ? state.threads[event.threadId] : undefined
   const label = state.agents.find(agent => agent.id === event.agentId)?.label ?? event.agentLabel
   const title = relabelMentions(thread?.title ?? '', thread?.titleRefs, state.agents)
+  const failed = !event.ok && !event.stopped
   return {
-    title: event.ok ? `${label} finished` : `${label} stopped`,
+    title: event.ok ? `${label} finished` : event.stopped ? `${label} was stopped` : `${label} could not finish`,
     body: stripMention(title, label) || title,
     threadId: event.threadId,
     agentId: event.agentId,
-    stopped: !event.ok
+    failed
   }
 }
 

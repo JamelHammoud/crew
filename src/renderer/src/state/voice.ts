@@ -308,5 +308,3 @@ export const useVoice = create<VoiceState>((set, get) => {
     clearProblem: () => set({ problem: null })
   }
 })
-
-export const voiceAgents = agentsHere

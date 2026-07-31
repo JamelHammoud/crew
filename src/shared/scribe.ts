@@ -76,7 +76,6 @@ export const PILL_WIDTH = 260
 // to hear and comes back down after, and it grows by its top edge, so the
 // bottom of it never moves.
 export const PILL_REST = 28
-export const PILL_MIN = 40
 export const PILL_MAX = 120
 
 // A dictation that had nowhere to go is held on a card rather than on the pill,
