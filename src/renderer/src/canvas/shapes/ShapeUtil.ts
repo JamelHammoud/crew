@@ -183,23 +183,23 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   getText?(_shape: Shape): string
   getAriaDescriptor?(_shape: Shape): string
   getHandles?(_shape: Shape): ShapeHandle[]
-  onBeforeCreate?(_next: Shape): Shape | void
-  onBeforeUpdate?(_previous: Shape, _next: Shape): Shape | void
-  onResizeStart?(_shape: Shape): CrewShapePartial<Shape> | void
+  onBeforeCreate?(_next: Shape): Shape | undefined
+  onBeforeUpdate?(_previous: Shape, _next: Shape): Shape | undefined
+  onResizeStart?(_shape: Shape): CrewShapePartial<Shape> | undefined
   onResize?(shape: Shape, info: ShapeResizeInfo<Shape>): Shape
-  onResizeEnd?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | void
+  onResizeEnd?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | undefined
   onResizeCancel?(_initial: Shape, _current: Shape): void
-  onTranslateStart?(_shape: Shape): CrewShapePartial<Shape> | void
-  onTranslate?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | void
-  onTranslateEnd?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | void
+  onTranslateStart?(_shape: Shape): CrewShapePartial<Shape> | undefined
+  onTranslate?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | undefined
+  onTranslateEnd?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | undefined
   onTranslateCancel?(_initial: Shape, _current: Shape): void
-  onRotateStart?(_shape: Shape): CrewShapePartial<Shape> | void
-  onRotate?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | void
-  onRotateEnd?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | void
+  onRotateStart?(_shape: Shape): CrewShapePartial<Shape> | undefined
+  onRotate?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | undefined
+  onRotateEnd?(_initial: Shape, _current: Shape): CrewShapePartial<Shape> | undefined
   onRotateCancel?(_initial: Shape, _current: Shape): void
-  onHandleDragStart?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): CrewShapePartial<Shape> | void
-  onHandleDrag?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): CrewShapePartial<Shape> | void
-  onHandleDragEnd?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): CrewShapePartial<Shape> | void
+  onHandleDragStart?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): CrewShapePartial<Shape> | undefined
+  onHandleDrag?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): CrewShapePartial<Shape> | undefined
+  onHandleDragEnd?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): CrewShapePartial<Shape> | undefined
   onHandleDragCancel?(_shape: Shape, _info: ShapeHandleDragInfo<Shape>): void
   toSvg?(shape: Shape): ReactElement | null | Promise<ReactElement | null>
 }

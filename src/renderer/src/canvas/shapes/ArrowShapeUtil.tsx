@@ -263,7 +263,10 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
     const binding = getArrowBindings(this.editor, shape)[info.handle.id]
     if (binding) this.editor.deleteBinding?.(binding.id)
   }
-  override onHandleDrag(shape: ArrowShape, info: ShapeHandleDragInfo<ArrowShape>): CrewShapePartial<ArrowShape> | void {
+  override onHandleDrag(
+    shape: ArrowShape,
+    info: ShapeHandleDragInfo<ArrowShape>
+  ): CrewShapePartial<ArrowShape> | undefined {
     if (info.handle.id === 'start')
       return { type: 'arrow', id: shape.id, props: { start: { x: info.handle.x, y: info.handle.y } } }
     if (info.handle.id === 'end')

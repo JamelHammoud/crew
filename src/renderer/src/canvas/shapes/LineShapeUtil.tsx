@@ -46,7 +46,10 @@ export class LineShapeUtil extends ShapeUtil<LineShape> {
       .sort((a, b) => a.index.localeCompare(b.index))
       .map(point => ({ ...point, type: 'vertex', canSnap: true }))
   }
-  override onHandleDrag(shape: LineShape, info: ShapeHandleDragInfo<LineShape>): CrewShapePartial<LineShape> | void {
+  override onHandleDrag(
+    shape: LineShape,
+    info: ShapeHandleDragInfo<LineShape>
+  ): CrewShapePartial<LineShape> | undefined {
     const point = shape.props.points[info.handle.id]
     if (!point) return
     return {
