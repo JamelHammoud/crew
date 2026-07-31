@@ -12,13 +12,16 @@ import { isNewDay } from './time'
 import { toolAction } from './toolActions'
 
 // A thread's standing as a task. 'done' and 'archived' record explicit calls a
-// person made; 'working', 'ready', and 'failed' are read off the run history.
-// 'ready' is finished work waiting for someone to look at it.
-export type ThreadState = 'working' | 'ready' | 'failed' | 'done' | 'archived'
+// person made; 'working', 'ready', 'stopped' and 'failed' are read off the run
+// history. 'ready' is finished work waiting for someone to look at it, and
+// 'stopped' is a run somebody ended themselves, which is a decision rather than
+// a fault and is drawn as quietly as one.
+export type ThreadState = 'working' | 'ready' | 'stopped' | 'failed' | 'done' | 'archived'
 
 export const THREAD_STATE_LABELS: Record<ThreadState, string> = {
   working: 'Working',
   ready: 'Ready for review',
+  stopped: 'Stopped',
   failed: 'Failed',
   done: 'Done',
   archived: 'Archived'
