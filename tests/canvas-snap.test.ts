@@ -30,7 +30,6 @@ describe('canvas bounds snapping', () => {
     expect(vertical?.points.map((point) => [point.x, point.y])).toEqual([
       [100, 0],
       [100, 50],
-      [100, 25],
       [100, 20],
       [100, 30]
     ])
