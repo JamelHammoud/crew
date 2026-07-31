@@ -11,6 +11,7 @@ export * from './NoteShapeUtil'
 export * from './ImageShapeUtil'
 export * from './GroupShapeUtil'
 export * from './shared'
+export * from './theme'
 
 import { ArrowBindingUtil, ArrowShapeUtil } from './ArrowShapeUtil'
 import { DrawShapeUtil } from './DrawShapeUtil'
