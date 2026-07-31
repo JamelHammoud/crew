@@ -143,7 +143,20 @@ const outputText = (update: any): string => {
 export function kimiParser(): OutputParser {
   let lane = 0
   let open: 'thinking' | 'text' | null = null
+  let sessionId = ''
+  let read = 0
   const names = new Map<string, string>()
+  const wire = kimiWire()
+
+  const counted = (out: ParsedOutput[], force: boolean): void => {
+    if (!sessionId) return
+    const now = Date.now()
+    if (!force && now - read < USAGE_MS) return
+    read = now
+    const text = wire(sessionId)
+    const usage = text ? kimiUsage(text) : null
+    if (usage) out.push({ usage })
+  }
 
   const close = (out: ParsedOutput[]): void => {
     if (open === null) return
