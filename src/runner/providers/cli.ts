@@ -216,8 +216,10 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         hooks.onTokens(tokens, cost)
       }
 
-      const openBlock = (kind: 'thinking' | 'text', index: number) => {
-        streams[kind].ids.set(index, `b${blocks++}`)
+      const openBlock = (kind: 'thinking' | 'text', index: number, apart = false) => {
+        const id = `b${blocks++}`
+        streams[kind].ids.set(index, id)
+        if (apart) asides.add(id)
       }
 
       const streamBlock = (kind: 'thinking' | 'text', index: number, chunk: string) => {
@@ -227,7 +229,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           id = `b${blocks++}`
           stream.ids.set(index, id)
         }
-        if (kind === 'text') text += (text && !stream.open.has(id) ? '\n' : '') + chunk
+        if (kind === 'text' && asides.has(id)) aside += (aside && !stream.open.has(id) ? '\n' : '') + chunk
+        else if (kind === 'text') text += (text && !stream.open.has(id) ? '\n' : '') + chunk
         stream.streamed = true
         stream.open.add(id)
         written += chunk.length
@@ -250,7 +253,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         if (dialog) for (const body of dialog.answer(line)) write(body)
         for (const out of opts.parser!(line)) {
           if (out.thinkingStart) openBlock('thinking', out.thinkingStart.index)
-          if (out.textStart) openBlock('text', out.textStart.index)
+          if (out.textStart) openBlock('text', out.textStart.index, out.textStart.aside)
           // A model that is asked not to show its reasoning still sends the
           // blocks, with an empty string where the words would be. Those are
           // not steps: a run that thinks in silence should look like it is
