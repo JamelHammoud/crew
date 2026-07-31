@@ -94,11 +94,16 @@ void main() {
   vec2 nudge = vec2(0.0032 * ratio, 0.0032);
 
   for (int i = 0; i < 4; i++) {
-    float n = band(p, i, uTime);
-    float a = smoothstep(-0.22, 0.72, n) * uWave[i].w;
+    vec4 wave = uWave[i];
+    vec2 drift = uDrift[i];
+    float seed = float(i);
+    float n = band(p, wave, drift, seed, uTime);
+    float a = smoothstep(-0.22, 0.72, n) * wave.w;
     colour = mix(colour, uColour[i], a);
-    float dx = band(p + vec2(nudge.x, 0.0), i, uTime) - band(p - vec2(nudge.x, 0.0), i, uTime);
-    float dy = band(p + vec2(0.0, nudge.y), i, uTime) - band(p - vec2(0.0, nudge.y), i, uTime);
+    float dx = band(p + vec2(nudge.x, 0.0), wave, drift, seed, uTime)
+             - band(p - vec2(nudge.x, 0.0), wave, drift, seed, uTime);
+    float dy = band(p + vec2(0.0, nudge.y), wave, drift, seed, uTime)
+             - band(p - vec2(0.0, nudge.y), wave, drift, seed, uTime);
     relief += (dx * 0.7 - dy * 0.7) * a;
   }
 
