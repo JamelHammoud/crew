@@ -56,6 +56,29 @@
         "NSDownloadsFolderUsageDescription": "So you can open a project kept there."
       }
     },
+    "dmg": {
+      "title": "Crew",
+      "background": "resources/dmg-background.tiff",
+      "window": {
+        "width": 660,
+        "height": 400
+      },
+      "iconSize": 128,
+      "iconTextSize": 12,
+      "contents": [
+        {
+          "x": 172,
+          "y": 210,
+          "type": "file"
+        },
+        {
+          "x": 488,
+          "y": 210,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
     "win": {
       "icon": "resources/icon.png"
     },
