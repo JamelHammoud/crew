@@ -83,6 +83,13 @@ export const RADIUS_TIGHT = 0.1
 // says tile, before whatever is standing on it has been read at all.
 export const RADIUS_TILE = 0.25
 
+// A tile carries a mark cut out of it rather than its whole box as ink, so it is
+// not a solid and does not sit where one sits. It stands in a column beside a
+// ring, which paints its stroke outside itself and arrives at 19, and a square
+// reads larger than a circle at the same measure. 17.5 is where the two sit
+// level, which is the only thing this number is for.
+export const TILE = 17.5
+
 export const corner = (side: number, share = RADIUS): number =>
   Math.round(side * share * 4) / 4
 
