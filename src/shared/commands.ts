@@ -34,7 +34,7 @@ export function commandsIn(where: CommandWhere): SlashCommand[] {
 // this message could go into. Without one every message queues and runs, so
 // naming either would promise a choice that was never there.
 export function threadCommands(canSteer: boolean): SlashCommand[] {
-  return commandsIn('thread').filter(command => canSteer || command.name === 'btw')
+  return commandsIn('thread').filter(command => canSteer || !command.live)
 }
 
 // A command is only a command while it is the whole of what has been typed, so
