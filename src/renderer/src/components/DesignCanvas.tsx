@@ -1,23 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import {
-  CollaboratorCursorOverlayUtil,
   createTLStore,
   defaultBindingUtils,
   getSnapshot,
   InstancePresenceRecordType,
   loadSnapshot,
-  Tldraw,
   useValue,
   type Editor,
-  type TLCollaboratorCursorOverlay,
-  type TLComponents,
-  type TldrawOptions,
   type TLPageId,
   type TLRecord,
   type TLShapeId,
   type TLStoreSnapshot,
   type TLUserId
 } from '../canvas'
+import { CrewCanvas } from '../canvas/CrewCanvas'
 import '../canvas/canvas.css'
 import type { DesignPresence } from '../../../shared/design'
 import {
@@ -40,47 +36,9 @@ import { onDesign, useCrew } from '../state/store'
 import AgentIcon, { petHue } from './AgentIcon'
 import Avatar from './Avatar'
 import { avatarHue } from './avatarColor'
-import { designAssetUrls } from './designIcons'
 import Spinner from './Spinner'
 
-const assetUrls = designAssetUrls()
-
 const tools = [DesignNodeTool]
-
-class CursorsDrawnByCrew extends CollaboratorCursorOverlayUtil {
-  isActive(): boolean {
-    return false
-  }
-
-  getOverlays(): TLCollaboratorCursorOverlay[] {
-    return []
-  }
-}
-
-const overlayUtils = [CursorsDrawnByCrew]
-
-// crew owns every panel now, so tldraw's own chrome stays out of the way.
-const components: TLComponents = {
-  ContextMenu: null,
-  MenuPanel: null,
-  NavigationPanel: null,
-  StylePanel: null,
-  Toolbar: null,
-  PageMenu: null,
-  QuickActions: null,
-  ActionsMenu: null,
-  HelpMenu: null,
-  ZoomMenu: null,
-  MainMenu: null,
-  DebugPanel: null,
-  DebugMenu: null,
-  SharePanel: null
-}
-
-const tldrawOptions: Partial<TldrawOptions> = { maxPages: 40 }
-
-const shapeVisibility = (shape: { meta: Record<string, unknown> }) =>
-  shape.meta.hidden === true ? ('hidden' as const) : ('inherit' as const)
 
 const FLUSH_MS = 80
 const PRESENCE_MS = 100
@@ -158,8 +116,6 @@ export default function DesignCanvas({
         return { ...prev, [presence.userId]: presence }
       })
       if (presence.kind === 'agent') return
-      // What someone has selected outlives their cursor leaving the board, so
-      // this record only goes when they do.
       const id = InstancePresenceRecordType.createId(presence.userId)
       const at = presence.cursor ?? { x: 0, y: 0 }
       store.mergeRemoteChanges(() => {
@@ -195,9 +151,7 @@ export default function DesignCanvas({
         if (msg.document) {
           try {
             loadSnapshot(store, { store: msg.document.store, schema: msg.document.schema } as TLStoreSnapshot)
-          } catch {
-            // An unreadable document still leaves a working empty board.
-          }
+          } catch {}
         } else if (!wasListening) {
           const document = getSnapshot(store).document
           initDesign(boardId, { store: document.store as Record<string, unknown>, schema: document.schema })
@@ -245,8 +199,6 @@ export default function DesignCanvas({
     }
   }, [boardId, store, openDesign, initDesign, applyDesign, sendDesignPresence])
 
-  // A cursor that is not over the board is not on the board, so it goes away
-  // rather than standing wherever it was last seen.
   useEffect(() => {
     if (!ready || !editor) return
     const container = editor.getContainer()
@@ -321,20 +273,15 @@ export default function DesignCanvas({
       style={
         {
           ...DESIGN_CURSORS,
-          cursor: 'var(--tl-cursor-default)',
+          cursor: 'var(--crew-cursor-default)',
           '--design-selected': selected
         } as CSSProperties
       }
     >
-      <Tldraw
+      <CrewCanvas
         store={store}
         shapeUtils={designShapeUtils}
         tools={tools}
-        assetUrls={assetUrls}
-        components={components}
-        overlayUtils={overlayUtils}
-        options={tldrawOptions}
-        getShapeVisibility={shapeVisibility}
         onMount={onMount}
       />
       <SelectionOverlay editor={editor} asking={asking} />
