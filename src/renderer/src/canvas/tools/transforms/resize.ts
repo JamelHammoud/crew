@@ -236,7 +236,11 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
   override onEnter(info: ResizingInfo<Shape>): void {
     this.info = info
     this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
-    this.snapshots = info.snapshots ?? []
+    this.snapshots = info.snapshots ?? this.createSnapshots()
+    if (this.snapshots.length === 0) {
+      this.parent.transition('idle')
+      return
+    }
     this.selectionBounds = info.selectionBounds ?? this.editor.getSelectionRotatedPageBounds?.() ?? new Box()
     this.selectionRotation = info.selectionRotation ?? this.editor.getSelectionRotation?.() ?? 0
     this.markId = info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('starting resizing') ?? ''
@@ -279,6 +283,25 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
     this.editor.snaps?.clearIndicators?.()
     if (this.markId) this.editor.bailToMark?.(this.markId)
     this.finish()
+  }
+
+  private createSnapshots(): ResizeSnapshot<Shape>[] {
+    return (this.editor.getSelectedShapeIds?.() ?? []).flatMap(id => {
+      const shape = this.editor.getShape(id)
+      const pageTransform = shape && this.editor.getShapePageTransform?.(shape)
+      const geometry = shape && this.editor.getShapeGeometry?.(shape)
+      if (!shape || !pageTransform || !geometry) return []
+      const parentPageTransform = shape.parentId.startsWith('shape:')
+        ? this.editor.getShapeParentTransform?.(shape)
+        : undefined
+      return [{
+        shape,
+        bounds: geometry.bounds,
+        pageTransform,
+        parentTransform: parentPageTransform ? Mat.Inverse(parentPageTransform) : null,
+        isAspectRatioLocked: this.editor.getShapeUtil?.(shape).isAspectRatioLocked?.(shape) ?? false
+      }]
+    })
   }
 
   private update(): void {

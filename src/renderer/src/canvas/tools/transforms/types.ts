@@ -70,6 +70,7 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
   getSelectedShapeIds?(): Shape['id'][]
   getShapePageTransform?(shape: Shape | Shape['id']): MatLike | undefined
   getShapeParentTransform?(shape: Shape | Shape['id']): MatLike | undefined
+  getShapeGeometry?(shape: Shape | Shape['id']): { bounds: import('../../math/Box').Box }
   getSelectionRotation?(): number
   getSelectionRotatedPageBounds?(): import('../../math/Box').Box | undefined
   getIsReadonly?(): boolean
@@ -87,6 +88,7 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
 }
 
 export interface TransformShapeUtil<Shape extends TLShape = TLShape> {
+  isAspectRatioLocked?(shape: Shape): boolean
   onTranslateStart?(shape: Shape): ShapeUpdate<Shape> | undefined
   onTranslate?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onTranslateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
