@@ -84,6 +84,7 @@ function projectFrom(value: unknown): RecentProject | null {
     home,
     key: project.key,
     sync: typeof project.sync === 'boolean' ? project.sync : home === 'folder',
+    shared: typeof project.shared === 'boolean' ? project.shared : home === 'folder',
     openedAt: project.openedAt
   }
 }
