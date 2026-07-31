@@ -18,6 +18,13 @@ export interface ShapeEditor {
   getShapeLocalTransform?(shape: CrewShape): { applyToPoint(point: VecLike): VecLike }
   getPointInShapeSpace?(shape: CrewShape, point: VecLike): VecLike
   getShapePageBounds?(shapeOrId: CrewShape | CrewShapeId): Box | undefined
+  getShapePageTransform?(shapeOrId: CrewShape | CrewShapeId): { applyToPoint(point: VecLike): VecLike }
+  bindArrowTerminal?(
+    arrow: CrewShape<'arrow'>,
+    terminal: 'start' | 'end',
+    pagePoint: VecLike,
+    isPrecise: boolean
+  ): unknown
   deleteBinding?(id: string): void
 }
 

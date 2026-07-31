@@ -61,6 +61,7 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
 
   info!: DraggingHandleInfo<Shape>
   initialHandle!: TransformHandle
+  currentHandle!: TransformHandle
   adjacentHandle: TransformHandle | null = null
   initialPagePoint = new Vec()
   pageRotation = 0
@@ -71,6 +72,7 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
     this.info = info
     this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
     this.initialHandle = { ...info.handle }
+    this.currentHandle = { ...info.handle }
     this.adjacentHandle = info.adjacentHandle ? { ...info.adjacentHandle } : null
     this.initialPagePoint = this.editor.inputs.getOriginPagePoint().clone()
     this.pageRotation =
@@ -138,6 +140,7 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
       pageRotation: this.pageRotation,
       shiftKey: this.editor.inputs.getShiftKey()
     })
+    this.currentHandle = handle
     const changes = this.editor.getShapeUtil?.(shape).onHandleDrag?.(shape, this.dragInfo(handle))
     if (changes) {
       this.editor.updateShapes([{ ...changes, id: shape.id, type: shape.type } as ShapeUpdate<Shape>])
@@ -147,7 +150,7 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
   private complete(): void {
     const shape = this.editor.getShape(this.info.shape.id)
     if (shape) {
-      const changes = this.editor.getShapeUtil?.(shape).onHandleDragEnd?.(shape, this.dragInfo())
+      const changes = this.editor.getShapeUtil?.(shape).onHandleDragEnd?.(shape, this.dragInfo(this.currentHandle))
       if (changes) this.editor.updateShapes([changes])
     }
     this.finish(true)

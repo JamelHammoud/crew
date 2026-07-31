@@ -153,6 +153,11 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
       { id: 'end', type: 'vertex', index: 'a3', x: end.x, y: end.y, canSnap: true }
     ]
   }
+  override onHandleDragStart(shape: ArrowShape, info: ShapeHandleDragInfo<ArrowShape>): void {
+    if (info.handle.id !== 'start' && info.handle.id !== 'end') return
+    const binding = getArrowBindings(this.editor, shape)[info.handle.id]
+    if (binding) this.editor.deleteBinding?.(binding.id)
+  }
   override onHandleDrag(shape: ArrowShape, info: ShapeHandleDragInfo<ArrowShape>): CrewShapePartial<ArrowShape> | void {
     if (info.handle.id === 'start') return { type: 'arrow', id: shape.id, props: { start: { x: info.handle.x, y: info.handle.y } } }
     if (info.handle.id === 'end') return { type: 'arrow', id: shape.id, props: { end: { x: info.handle.x, y: info.handle.y } } }
@@ -168,6 +173,17 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
     const perpendicular = Vec.Sub(end, start).uni().per()
     const bend = -Vec.Sub(new Vec(info.handle.x, info.handle.y), midpoint).dpr(perpendicular)
     return { type: 'arrow', id: shape.id, props: { bend } }
+  }
+  override onHandleDragEnd(shape: ArrowShape, info: ShapeHandleDragInfo<ArrowShape>): void {
+    if (info.handle.id !== 'start' && info.handle.id !== 'end') return
+    const transform = this.editor.getShapePageTransform?.(shape)
+    if (!transform) return
+    this.editor.bindArrowTerminal?.(
+      shape,
+      info.handle.id,
+      transform.applyToPoint(info.handle),
+      info.isPrecise
+    )
   }
   component(shape: ArrowShape): ReactNode {
     const geometry = this.getGeometry(shape)
