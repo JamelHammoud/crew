@@ -61,9 +61,10 @@ describe('what a shown file opens in', () => {
     ])
 
     const tabs = useBrowser.getState().tabs
+    // They stand in the order they were named.
     expect(tabs.filter(tab => tab.kind === 'file').map(tab => tab.path)).toEqual([
-      'Button.tsx',
-      'theme.css'
+      'theme.css',
+      'Button.tsx'
     ])
     expect(tabs.filter(tab => tab.kind === 'web').map(tab => tab.url)).toEqual(['http://localhost:5173'])
     // Showing something stands the panel up, and the first one named is the one
@@ -77,6 +78,14 @@ describe('what a shown file opens in', () => {
     await openShown(['file:///Users/ali/elsewhere/notes.md'])
     expect(useBrowser.getState().tabs).toHaveLength(0)
     expect(useBrowser.getState().open).toBe(false)
+
+    // One named first that nobody here can follow leaves the front to whatever
+    // really opened, rather than to nothing.
+    inRepo(`${REPO}/notes.md`, 'notes.md')
+    await openShown(['file:///Users/ali/elsewhere/notes.md', `file://${REPO}/notes.md`])
+    const { tabs, activeTabId } = useBrowser.getState()
+    expect(tabs).toHaveLength(1)
+    expect(tabs.find(tab => tab.id === activeTabId)?.path).toBe('notes.md')
   })
 })
 
