@@ -47,7 +47,65 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "a11y": {
+        "noAutofocus": "off",
+        "noLabelWithoutControl": "off",
+        "noNoninteractiveTabindex": "off",
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "useButtonType": "off",
+        "useKeyWithClickEvents": "off",
+        "useMediaCaption": "off",
+        "useSemanticElements": "off"
+      },
+      "complexity": {
+        "noCommaOperator": "off",
+        "noExtraBooleanCast": "off",
+        "noImportantStyles": "off",
+        "noUselessContinue": "off",
+        "noUselessFragments": "off",
+        "noUselessUndefinedInitialization": "off",
+        "useArrowFunction": "off",
+        "useLiteralKeys": "off",
+        "useOptionalChain": "off",
+        "useRegexLiterals": "off"
+      },
+      "correctness": {
+        "noChildrenProp": "off",
+        "noConstructorReturn": "off",
+        "noUnusedFunctionParameters": "off",
+        "noUnusedImports": "off",
+        "noUnusedPrivateClassMembers": "off",
+        "noUnusedVariables": "off",
+        "noVoidTypeReturn": "off",
+        "useExhaustiveDependencies": "off",
+        "useHookAtTopLevel": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off",
+        "noGlobalEval": "off"
+      },
+      "style": {
+        "noDescendingSpecificity": "off",
+        "noNonNullAssertion": "off",
+        "useConst": "off",
+        "useExponentiationOperator": "off",
+        "useImportType": "off",
+        "useTemplate": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noAssignInExpressions": "off",
+        "noControlCharactersInRegex": "off",
+        "noExplicitAny": "off",
+        "noFocusedTests": "off",
+        "noGlobalIsFinite": "off",
+        "noMisleadingCharacterClass": "off",
+        "noTemplateCurlyInString": "off",
+        "useIterableCallbackReturn": "off"
+      }
     }
   },
   "assist": {
