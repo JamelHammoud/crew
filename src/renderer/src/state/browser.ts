@@ -515,6 +515,20 @@ export const useBrowser = create<BrowserState>((write, get) => {
       })
       settle()
     },
+    closeOthers: id => {
+      set(s => {
+        const kept = s.tabs.find(t => t.id === id)
+        if (!kept || s.tabs.length < 2) return {}
+        const gone = s.tabs.filter(t => t.id !== id)
+        return {
+          tabs: [kept],
+          activeTabId: kept.id,
+          closedPlans: remember(s.closedPlans, gone, 'plan'),
+          closedBoards: remember(s.closedBoards, gone, 'work')
+        }
+      })
+      settle()
+    },
     closeAll: () => {
       set(s => ({
         tabs: [],
