@@ -64,6 +64,10 @@ function strokePoints(input: readonly VecLike[], options: StrokeOptions): Stroke
   return points
 }
 
+export function freehandCenterline(input: readonly VecLike[], options: StrokeOptions = {}): Vec[] {
+  return strokePoints(input, options).map(point => point.point)
+}
+
 function taperValue(value: number | boolean | undefined, totalLength: number): number {
   if (value === true) return Math.max(totalLength, 1)
   return typeof value === 'number' ? Math.max(0, value) : 0
