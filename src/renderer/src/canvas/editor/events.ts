@@ -1,0 +1,195 @@
+import type { CanvasEventInfo } from '../tools/state/events'
+import type { Editor } from './Editor'
+
+export interface CanvasEventHandlers {
+  onPointerDown(event: PointerEvent): void
+  onPointerMove(event: PointerEvent): void
+  onPointerUp(event: PointerEvent): void
+  onPointerCancel(event: PointerEvent): void
+  onDoubleClick(event: MouseEvent): void
+  onContextMenu(event: MouseEvent): void
+  onWheel(event: WheelEvent): void
+  onKeyDown(event: KeyboardEvent): void
+  onKeyUp(event: KeyboardEvent): void
+  onTouchStart(event: TouchEvent): void
+  onTouchMove(event: TouchEvent): void
+  onTouchEnd(event: TouchEvent): void
+  onTouchCancel(event: TouchEvent): void
+}
+
+export class CanvasEventBridge {
+  private readonly pointers = new Map<number, { x: number; y: number }>()
+  private pinchDistance = 0
+  private pinchCamera: { x: number; y: number; z: number } | null = null
+
+  constructor(private readonly editor: Editor) {}
+
+  getHandlers(): CanvasEventHandlers {
+    return {
+      onPointerDown: event => this.pointerDown(event),
+      onPointerMove: event => this.pointerMove(event),
+      onPointerUp: event => this.pointerUp(event),
+      onPointerCancel: event => this.pointerCancel(event),
+      onDoubleClick: event => this.doubleClick(event),
+      onContextMenu: event => this.contextMenu(event),
+      onWheel: event => this.wheel(event),
+      onKeyDown: event => this.keyDown(event),
+      onKeyUp: event => this.keyUp(event),
+      onTouchStart: event => this.touchStart(event),
+      onTouchMove: event => this.touchMove(event),
+      onTouchEnd: event => this.touchEnd(event),
+      onTouchCancel: event => this.touchEnd(event)
+    }
+  }
+
+  private pointerDown(event: PointerEvent): void {
+    const screen = screenPoint(event, this.editor.getContainer())
+    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    this.pointers.set(event.pointerId, screen)
+    this.editor.inputs.pointerDown(screen, page, event, event.pointerType)
+    event.currentTarget instanceof Element && event.currentTarget.setPointerCapture?.(event.pointerId)
+    this.dispatch(pointerInfo(event.button === 1 ? 'middle_click' : event.button === 2 ? 'right_click' : 'pointer_down', event, screen, page, 'down'))
+  }
+
+  private pointerMove(event: PointerEvent): void {
+    const screen = screenPoint(event, this.editor.getContainer())
+    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    this.pointers.set(event.pointerId, screen)
+    this.editor.inputs.pointerMove(screen, page, event, this.editor.options.dragDistanceSquared as number)
+    this.dispatch(pointerInfo('pointer_move', event, screen, page, 'move'))
+  }
+
+  private pointerUp(event: PointerEvent): void {
+    const screen = screenPoint(event, this.editor.getContainer())
+    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    this.editor.inputs.pointerUp(screen, page, event)
+    this.pointers.delete(event.pointerId)
+    this.dispatch(pointerInfo('pointer_up', event, screen, page, 'up'))
+  }
+
+  private pointerCancel(event: PointerEvent): void {
+    this.pointers.delete(event.pointerId)
+    this.editor.inputs.cancelPointer()
+    this.dispatch({ name: 'cancel', pointerId: event.pointerId, originalEvent: event })
+  }
+
+  private doubleClick(event: MouseEvent): void {
+    this.dispatch(mouseInfo('double_click', event, this.editor))
+  }
+
+  private contextMenu(event: MouseEvent): void {
+    this.dispatch(mouseInfo('right_click', event, this.editor))
+  }
+
+  private wheel(event: WheelEvent): void {
+    const screen = screenPoint(event, this.editor.getContainer())
+    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    this.editor.inputs.updateModifiers(event)
+    this.dispatch({
+      name: 'wheel',
+      point: page,
+      screenPoint: screen,
+      delta: { x: event.deltaX, y: event.deltaY, z: event.ctrlKey ? event.deltaY : 0 },
+      shiftKey: event.shiftKey,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      accelKey: event.metaKey || event.ctrlKey,
+      originalEvent: event
+    })
+  }
+
+  private keyDown(event: KeyboardEvent): void {
+    this.editor.inputs.setKey(event.code, true)
+    this.editor.inputs.updateModifiers(event)
+    this.dispatch(keyInfo(event.repeat ? 'key_repeat' : 'key_down', event))
+  }
+
+  private keyUp(event: KeyboardEvent): void {
+    this.editor.inputs.setKey(event.code, false)
+    this.editor.inputs.updateModifiers(event)
+    this.dispatch(keyInfo('key_up', event))
+  }
+
+  private touchStart(event: TouchEvent): void {
+    if (event.touches.length !== 2) return
+    this.pinchDistance = touchDistance(event.touches)
+    this.pinchCamera = this.editor.getCamera()
+  }
+
+  private touchMove(event: TouchEvent): void {
+    if (event.touches.length !== 2 || !this.pinchCamera || this.pinchDistance <= 0) return
+    const center = touchCenter(event.touches, this.editor.getContainer())
+    const z = this.pinchCamera.z * touchDistance(event.touches) / this.pinchDistance
+    const pageAtCenter = {
+      x: center.x / this.pinchCamera.z - this.pinchCamera.x,
+      y: center.y / this.pinchCamera.z - this.pinchCamera.y
+    }
+    this.editor.setCamera({ x: center.x / z - pageAtCenter.x, y: center.y / z - pageAtCenter.y, z }, { immediate: true })
+    this.dispatch({ name: 'pointer_move', point: this.editor.screenToPage(center), screenPoint: center, phase: 'move', isPinching: true, originalEvent: event })
+  }
+
+  private touchEnd(event: TouchEvent): void {
+    if (event.touches.length >= 2) return
+    this.pinchDistance = 0
+    this.pinchCamera = null
+  }
+
+  private dispatch(info: CanvasEventInfo): void {
+    this.editor.dispatch(info)
+  }
+}
+
+function pointerInfo(name: CanvasEventInfo['name'], event: PointerEvent, screen: { x: number; y: number }, page: { x: number; y: number }, phase: string): CanvasEventInfo {
+  return {
+    name,
+    target: 'canvas',
+    point: page,
+    screenPoint: screen,
+    phase,
+    pointerId: event.pointerId,
+    pointerType: event.pointerType,
+    button: event.button,
+    buttons: event.buttons,
+    pressure: event.pressure,
+    shiftKey: event.shiftKey,
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    accelKey: event.metaKey || event.ctrlKey,
+    originalEvent: event
+  }
+}
+
+function mouseInfo(name: CanvasEventInfo['name'], event: MouseEvent, editor: Editor): CanvasEventInfo {
+  const screen = screenPoint(event, editor.getContainer())
+  return pointerInfo(name, event as PointerEvent, screen, editor.screenToPage({ x: event.clientX, y: event.clientY }), 'up')
+}
+
+function keyInfo(name: CanvasEventInfo['name'], event: KeyboardEvent): CanvasEventInfo {
+  return {
+    name,
+    key: event.key,
+    code: event.code,
+    shiftKey: event.shiftKey,
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    accelKey: event.metaKey || event.ctrlKey,
+    originalEvent: event
+  }
+}
+
+function screenPoint(event: MouseEvent, container: HTMLElement): { x: number; y: number } {
+  const rect = container.getBoundingClientRect?.() ?? { left: 0, top: 0 }
+  return { x: event.clientX - rect.left, y: event.clientY - rect.top }
+}
+
+function touchDistance(touches: TouchList): number {
+  return Math.hypot(touches[1].clientX - touches[0].clientX, touches[1].clientY - touches[0].clientY)
+}
+
+function touchCenter(touches: TouchList, container: HTMLElement): { x: number; y: number } {
+  const rect = container.getBoundingClientRect?.() ?? { left: 0, top: 0 }
+  return {
+    x: (touches[0].clientX + touches[1].clientX) / 2 - rect.left,
+    y: (touches[0].clientY + touches[1].clientY) / 2 - rect.top
+  }
+}
