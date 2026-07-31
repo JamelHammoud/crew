@@ -71,8 +71,10 @@ export async function shootMesh(frames) {
       })
     })
     const shot = JSON.parse(await readFile(out, 'utf8'))
-    const missing = shot.filter(one => !one.png).map(one => one.at)
-    if (missing.length) throw new Error(`no picture at ${missing.join(', ')}`)
+    const missing = shot.filter(one => !one.png)
+    if (missing.length) {
+      throw new Error(missing.map(one => `${one.at}: ${one.why || 'nothing came back'}`).join('\n'))
+    }
     return shot.map(one => ({ ...one, png: one.png.slice(one.png.indexOf(',') + 1) }))
   } finally {
     await rm(dir, { recursive: true, force: true })
