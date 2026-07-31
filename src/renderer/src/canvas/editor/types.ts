@@ -78,7 +78,7 @@ export interface TLContent {
 export interface TLShapeUpdate extends Partial<Omit<TLShape, 'id' | 'type' | 'typeName' | 'props' | 'meta'>> {
   id: TLShapeId
   type: TLShape['type']
-  props?: Partial<TLShape['props']>
+  props?: Record<string, unknown>
   meta?: Record<string, unknown>
 }
 

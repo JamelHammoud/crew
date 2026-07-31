@@ -4,12 +4,12 @@ import { Box } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
 import { ArrowShapeUtil, FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
-import { Resizing } from '../src/renderer/src/canvas/tools/transforms'
 
 function editor() {
   return new Editor({
     store: createTLStore({ id: 'editor-test' }),
     shapeUtils: [FrameShapeUtil, GroupShapeUtil],
+    tools: [SelectTool],
     getContainer: () =>
       ({
         getBoundingClientRect: () => ({ left: 0, top: 0 })
@@ -92,7 +92,7 @@ describe('the canvas editor', () => {
     const current = { x: before.maxX + 100, y: before.maxY + 80 }
     subject.inputs.pointerDown(origin, origin, {}, 'mouse')
     subject.inputs.pointerMove(current, current, {})
-    new Resizing(subject, { transition: () => undefined }).enter({ handle: 'bottom_right' })
+    subject.setCurrentTool('select.resizing', { handle: 'bottom_right' })
     const after = subject.getSelectionRotatedPageBounds()!
     expect(after.w).toBeGreaterThan(before.w)
     expect(after.h).toBeGreaterThan(before.h)
