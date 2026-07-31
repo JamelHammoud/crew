@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArchiveGlyph, CheckGlyph, EyeGlyph, UndoGlyph, WarningGlyph } from '../icons'
+import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, UndoGlyph, WarningGlyph } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
 import { MenuItem, Popover } from './Popover'
 import Spinner from './Spinner'
