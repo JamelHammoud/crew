@@ -3,10 +3,12 @@ import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../exp
 import { Box, Mat, Vec } from '../math'
 import {
   DocumentRecordType,
+  BindingRecordType,
   PageRecordType,
   TLDOCUMENT_ID,
   ZERO_INDEX_KEY,
   createShapeId,
+  createBindingId,
   getSnapshot,
   getIndexAbove,
   getIndicesBetween,
@@ -121,6 +123,7 @@ export class Editor {
     isFocused?: boolean
     [key: string]: unknown
   } | null = null
+  private arrowTargetId: TLShapeId | null = null
 
   constructor(options: TLEditorOptions) {
     this.store = options.store
@@ -395,6 +398,17 @@ export class Editor {
 
   deleteBinding(id: string): this {
     this.store.remove([id as TLBindingId])
+    return this
+  }
+
+  createBinding(partial: Omit<TLBinding<'arrow'>, 'id' | 'typeName' | 'meta'> & { id?: TLBindingId }): this {
+    this.store.put([BindingRecordType.create({
+      id: partial.id ?? createBindingId(),
+      type: 'arrow',
+      fromId: partial.fromId,
+      toId: partial.toId,
+      props: partial.props
+    })])
     return this
   }
 
@@ -1277,11 +1291,57 @@ export class Editor {
     return this
   }
 
-  updateArrowTargetState(_options: unknown): null {
-    return null
+  updateArrowTargetState(options: {
+    pointInPageSpace: VecLike
+    arrow?: TLShape<'arrow'>
+    isPrecise?: boolean
+  }): { target: TLShape } | null {
+    const target = this.getShapeAtPoint(options.pointInPageSpace, {
+      hitInside: true,
+      hitLocked: false,
+      renderingOnly: true,
+      filter: shape =>
+        shape.id !== options.arrow?.id &&
+        !['arrow', 'line', 'draw', 'highlight', 'group'].includes(shape.type) &&
+        this.getShapeUtil(shape).canBind(shape as never)
+    })
+    this.arrowTargetId = target?.id ?? null
+    this.setHintingShapes(target ? [target.id] : [])
+    return target ? { target } : null
   }
 
-  clearArrowTargetState(): void {}
+  clearArrowTargetState(): void {
+    this.arrowTargetId = null
+    this.setHintingShapes([])
+  }
+
+  bindArrowTerminal(
+    arrow: TLShape<'arrow'>,
+    terminal: 'start' | 'end',
+    pagePoint: VecLike,
+    isPrecise: boolean
+  ): this {
+    for (const binding of this.getBindingsFromShape(arrow.id, 'arrow')) {
+      if (binding.props.terminal === terminal) this.deleteBinding(binding.id)
+    }
+    const state = this.updateArrowTargetState({ pointInPageSpace: pagePoint, arrow, isPrecise })
+    const target = state?.target
+    if (!target) return this
+    const bounds = this.getShapePageBounds(target)
+    if (!bounds || bounds.w === 0 || bounds.h === 0) return this
+    const normalizedAnchor = isPrecise
+      ? {
+          x: Math.max(0, Math.min(1, (pagePoint.x - bounds.x) / bounds.w)),
+          y: Math.max(0, Math.min(1, (pagePoint.y - bounds.y) / bounds.h))
+        }
+      : { x: 0.5, y: 0.5 }
+    return this.createBinding({
+      type: 'arrow',
+      fromId: arrow.id,
+      toId: target.id,
+      props: { terminal, normalizedAnchor, isExact: false, isPrecise, snap: 'edge' }
+    })
+  }
 
   getResizeScaleFactor(): number {
     return 1
