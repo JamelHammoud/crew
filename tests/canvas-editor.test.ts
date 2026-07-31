@@ -9,9 +9,10 @@ function editor() {
   return new Editor({
     store: createTLStore({ id: 'editor-test' }),
     shapeUtils: [FrameShapeUtil, GroupShapeUtil],
-    getContainer: () => ({
-      getBoundingClientRect: () => ({ left: 0, top: 0 })
-    }) as HTMLElement
+    getContainer: () =>
+      ({
+        getBoundingClientRect: () => ({ left: 0, top: 0 })
+      }) as HTMLElement
   })
 }
 
@@ -27,7 +28,10 @@ describe('the canvas editor', () => {
     const id = frame(subject, 'one', 10, 20)
     expect(subject.getShape(id)).toMatchObject({ x: 10, y: 20, parentId: subject.getCurrentPageId() })
     expect(subject.getShapePageBounds(id)?.toJson()).toEqual({ x: 10, y: 20, w: 100, h: 60 })
-    subject.select(id).nudgeShapes([id], { x: 5, y: -3 }).resizeShape(id, { x: 2, y: 0.5 }, { scaleOrigin: { x: 15, y: 17 } })
+    subject
+      .select(id)
+      .nudgeShapes([id], { x: 5, y: -3 })
+      .resizeShape(id, { x: 2, y: 0.5 }, { scaleOrigin: { x: 15, y: 17 } })
     expect(subject.getSelectedShapeIds()).toEqual([id])
     expect(subject.getShape(id)?.props).toMatchObject({ w: 200, h: 30 })
     subject.deleteShapes([id])
@@ -91,11 +95,19 @@ describe('the canvas editor', () => {
     expect(subject.getCurrentTheme()).toMatchObject({ id: 'default', fontSize: 16, lineHeight: 1.35, strokeWidth: 2 })
     expect(subject.getCurrentTheme().colors.light.selectionStroke).toBe('hsl(214, 84%, 56%)')
     expect(subject.getCurrentTheme().colors.light.blue).toMatchObject({ solid: '#4465e9', fill: '#4465e9' })
-    expect(subject.getCurrentTheme().colors.light.orange).toMatchObject({ noteFill: '#FAA475', frameStroke: '#e68544', highlightSrgb: '#ffa500' })
+    expect(subject.getCurrentTheme().colors.light.orange).toMatchObject({
+      noteFill: '#FAA475',
+      frameStroke: '#e68544',
+      highlightSrgb: '#ffa500'
+    })
     subject.user.updateUserPreferences({ colorScheme: 'dark' })
     expect(subject.getColorMode()).toBe('dark')
     expect(subject.getCurrentTheme().colors.dark['light-blue']).toMatchObject({ solid: '#4dabf7', fill: '#4dabf7' })
-    expect(subject.getCurrentTheme().colors.dark.violet).toMatchObject({ noteFill: '#5f1c70', frameFill: '#1b0f21', highlightSrgb: '#9e00ee' })
+    expect(subject.getCurrentTheme().colors.dark.violet).toMatchObject({
+      noteFill: '#5f1c70',
+      frameFill: '#1b0f21',
+      highlightSrgb: '#9e00ee'
+    })
   })
 
   it('exports selected shapes from the current document snapshot', async () => {
@@ -116,31 +128,33 @@ describe('the canvas editor', () => {
       store: createTLStore({ id: 'event-test' }),
       shapeUtils: [FrameShapeUtil, GroupShapeUtil],
       tools: [SelectTool],
-      getContainer: () => ({
-        focus: () => undefined,
-        getBoundingClientRect: () => ({ left: 0, top: 0 })
-      }) as HTMLElement
+      getContainer: () =>
+        ({
+          focus: () => undefined,
+          getBoundingClientRect: () => ({ left: 0, top: 0 })
+        }) as HTMLElement
     })
     const id = frame(subject, 'drag', 0, 0, 100, 60)
     const shapeElement = {
       dataset: { shapeId: id },
-      closest: (selector: string) => selector === '[data-shape-id]' ? shapeElement : null
+      closest: (selector: string) => (selector === '[data-shape-id]' ? shapeElement : null)
     }
-    const pointer = (x: number, buttons: number) => ({
-      clientX: x,
-      clientY: 10,
-      pointerId: 1,
-      pointerType: 'mouse',
-      button: 0,
-      buttons,
-      pressure: buttons ? 0.5 : 0,
-      shiftKey: false,
-      altKey: false,
-      ctrlKey: false,
-      metaKey: false,
-      target: shapeElement,
-      currentTarget: null
-    }) as unknown as PointerEvent
+    const pointer = (x: number, buttons: number) =>
+      ({
+        clientX: x,
+        clientY: 10,
+        pointerId: 1,
+        pointerType: 'mouse',
+        button: 0,
+        buttons,
+        pressure: buttons ? 0.5 : 0,
+        shiftKey: false,
+        altKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        target: shapeElement,
+        currentTarget: null
+      }) as unknown as PointerEvent
     const handlers = subject.getCanvasEventHandlers()
     handlers.onPointerDown(pointer(10, 1))
     expect(subject.getSelectedShapeIds()).toEqual([id])

@@ -52,12 +52,17 @@ beforeAll(() => {
   setGlobal('requestAnimationFrame', view.requestAnimationFrame.bind(view))
   setGlobal('cancelAnimationFrame', view.cancelAnimationFrame.bind(view))
   setGlobal('IS_REACT_ACT_ENVIRONMENT', true)
-  setGlobal('ResizeObserver', class {
-    constructor(private readonly callback: ResizeObserverCallback) {}
-    observe(): void { this.callback([], this as unknown as ResizeObserver) }
-    disconnect(): void {}
-    unobserve(): void {}
-  })
+  setGlobal(
+    'ResizeObserver',
+    class {
+      constructor(private readonly callback: ResizeObserverCallback) {}
+      observe(): void {
+        this.callback([], this as unknown as ResizeObserver)
+      }
+      disconnect(): void {}
+      unobserve(): void {}
+    }
+  )
   const rect = {
     x: 0,
     y: 0,
@@ -151,7 +156,9 @@ describe('the mounted Crew canvas', () => {
         }
       ])
     }
-    const view = render(createElement(CrewCanvas, { store, shapeUtils: [FrameShapeUtil, TextShapeUtil], onMount: mounted }))
+    const view = render(
+      createElement(CrewCanvas, { store, shapeUtils: [FrameShapeUtil, TextShapeUtil], onMount: mounted })
+    )
 
     await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
     const frame = view.container.querySelector(`[data-shape-id="${frameId}"]`) as HTMLElement

@@ -16,7 +16,6 @@ import { nodeStyle, polygonFillStyle, polygonStyle, strokeDash, textBoxStyle, te
 import { nodeOutline, nodePolygon, polygonPath, type UnitPoint } from './nodeShape'
 import { nextNodeName, nextNodeShape } from './nextShape'
 
-
 export type DesignNodeShape = TLShape<'design-node'>
 
 export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
@@ -124,7 +123,12 @@ function PolygonNode({ shape, points }: { shape: DesignNodeShape; points: UnitPo
     <div style={{ width: '100%', height: '100%', position: 'relative', ...polygonStyle(props) }}>
       <div style={{ position: 'absolute', inset: 0, ...polygonFillStyle(props, points) }} />
       {strokes.length > 0 && (
-        <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+        <svg
+          width={w}
+          height={h}
+          viewBox={`0 0 ${w} ${h}`}
+          style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+        >
           <defs>
             <clipPath id={`node-in-${key}`}>
               <path d={path} />
