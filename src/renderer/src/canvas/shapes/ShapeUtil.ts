@@ -18,8 +18,6 @@ export interface ShapeEditor {
   getShapeLocalTransform?(shape: CrewShape): { applyToPoint(point: VecLike): VecLike }
   getPointInShapeSpace?(shape: CrewShape, point: VecLike): VecLike
   getShapePageBounds?(shapeOrId: CrewShape | CrewShapeId): Box | undefined
-  updateShape?(shape: Partial<CrewShape> & Pick<CrewShape, 'id' | 'type'>): void
-  updateShapes?(shapes: Array<Partial<CrewShape> & Pick<CrewShape, 'id' | 'type'>>): void
   deleteBinding?(id: string): void
 }
 
@@ -70,24 +68,15 @@ export interface ShapeUtilConstructor<Shape extends CrewShape = CrewShape> {
   handledAssetTypes?: readonly string[]
 }
 
-type ConfiguredShapeUtilConstructor<
-  Constructor extends ShapeUtilConstructor,
-  Options extends Record<string, unknown>
-> = Constructor & {
-  new (...args: ConstructorParameters<Constructor>): InstanceType<Constructor> & {
-    options: InstanceType<Constructor>['options'] & Options
-  }
-}
-
 export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   static type: string
   static props?: PropsConfig<CrewShape['props']>
   static handledAssetTypes?: readonly string[]
 
-  static configure<Constructor extends ShapeUtilConstructor, Options extends Record<string, unknown>>(
+  static configure<Constructor extends ShapeUtilConstructor>(
     this: Constructor,
-    options: Options
-  ): ConfiguredShapeUtilConstructor<Constructor, Options> {
+    options: Record<string, unknown>
+  ): Constructor {
     const Parent: any = this
     class ConfiguredShapeUtil extends Parent {
       constructor(...args: any[]) {
@@ -95,7 +84,7 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
         this.options = { ...this.options, ...options }
       }
     }
-    return ConfiguredShapeUtil as unknown as ConfiguredShapeUtilConstructor<Constructor, Options>
+    return ConfiguredShapeUtil as unknown as Constructor
   }
 
   options: Record<string, unknown> = {}

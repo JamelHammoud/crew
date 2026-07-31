@@ -42,7 +42,7 @@ export function shapeColor(editor: ShapeEditor | undefined, color: CrewColorStyl
   const mode = shapeColorMode(editor)
   const themeId = editor?.getCurrentThemeId?.()
   if (themeId && themeId !== 'default') {
-    const entry = editor?.getCurrentTheme?.().colors?.[mode]?.[color]
+    const entry = editor?.getCurrentTheme?.().colors?.[mode]?.[color] as Record<string, unknown> | undefined
     if (entry && typeof entry === 'object') {
       const value = entry[variant]
       if (typeof value === 'string') return value

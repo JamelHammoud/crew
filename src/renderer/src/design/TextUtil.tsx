@@ -13,6 +13,19 @@ import { textShapeType, typeMeasure } from './textType'
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
 
+const customDisplayValues = (editor: Editor, shape: TLTextShape) => {
+  const type = textShapeType(editor, shape)
+  loadFonts([type.family])
+  return {
+    color: type.color,
+    fontFamily: fontStack(type.family),
+    fontSize: type.size,
+    lineHeight: type.lineHeight,
+    fontWeight: String(type.weight),
+    fontStyle: type.italic ? 'italic' : 'normal'
+  }
+}
+
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
   editor.fonts.trackFontsForShape(shape as unknown as { props?: Record<string, unknown> })
@@ -26,21 +39,16 @@ const measured = new WeakMap<TLTextShape, { at: number; size: { width: number; h
 
 const Configured = TextShapeUtil.configure({
   showTextOutline: false,
-  getCustomDisplayValues: (editor: Editor, shape: TLTextShape) => {
-    const type = textShapeType(editor, shape)
-    loadFonts([type.family])
-    return {
-      color: type.color,
-      fontFamily: fontStack(type.family),
-      fontSize: type.size,
-      lineHeight: type.lineHeight,
-      fontWeight: String(type.weight),
-      fontStyle: type.italic ? 'italic' : 'normal'
-    }
-  }
+  getCustomDisplayValues: customDisplayValues
 })
 
 export class DesignTextUtil extends Configured {
+  override options = {
+    ...super.options,
+    showTextOutline: false,
+    getCustomDisplayValues: customDisplayValues
+  }
+
   override getMinDimensions(shape: TLTextShape) {
     const at = generation.get()
     const cached = measured.get(shape)
