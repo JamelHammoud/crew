@@ -13,7 +13,11 @@ const PLAN_ID = 'plan'
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 
-const thinkIndex = (summaryIndex: unknown): number => (typeof summaryIndex === 'number' ? summaryIndex : 0) + 1
+const lane = (value: unknown): number => (typeof value === 'number' ? value : 0)
+
+const thinkIndex = (summaryIndex: unknown): number => lane(summaryIndex) * 2 + 1
+
+const rawIndex = (contentIndex: unknown): number => lane(contentIndex) * 2 + 2
 
 const started = (item: any): ParsedOutput[] => {
   const type = str(item?.type)
