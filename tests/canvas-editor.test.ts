@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { Box } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
-import { FrameShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
+import { ArrowShapeUtil, FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
 function editor() {
@@ -179,5 +179,26 @@ describe('the canvas editor', () => {
     expect(entry?.overlays).toHaveLength(result.indicators.length)
     subject.snaps.clearIndicators()
     expect(subject.overlays.getOverlayUtil('snap_indicator').isActive()).toBe(false)
+  })
+
+  it('binds arrow terminals to shapes and exposes editable arrow handles', () => {
+    const subject = new Editor({
+      store: createTLStore({ id: 'binding-test' }),
+      shapeUtils: [GeoShapeUtil, ArrowShapeUtil],
+      getContainer: () => document.body
+    })
+    const targetId = createShapeId('target')
+    const arrowId = createShapeId('arrow')
+    subject.createShape({ id: targetId, type: 'geo', x: 100, y: 20, props: { w: 120, h: 80 } })
+    subject.createShape({ id: arrowId, type: 'arrow', x: 0, y: 50, props: { end: { x: 120, y: 0 } } })
+    const arrow = subject.getShape(arrowId)
+    expect(arrow?.type).toBe('arrow')
+    subject.bindArrowTerminal(arrow as Extract<typeof arrow, { type: 'arrow' }>, 'end', { x: 120, y: 50 }, true)
+    expect(subject.getBindingsFromShape(arrowId, 'arrow')).toEqual([
+      expect.objectContaining({ fromId: arrowId, toId: targetId, props: expect.objectContaining({ terminal: 'end' }) })
+    ])
+    subject.select(arrowId)
+    expect(subject.overlays.getOverlayUtil('shape_handle').isActive()).toBe(true)
+    expect(subject.overlays.getActiveOverlayEntries().flatMap(entry => entry.overlays).filter(value => value.type === 'shape_handle')).toHaveLength(3)
   })
 })
