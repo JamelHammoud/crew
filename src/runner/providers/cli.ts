@@ -60,9 +60,9 @@ interface CliProviderOptions {
   env?: NodeJS.ProcessEnv
   idleTimeoutMs?: number
   stdinPrompt?: boolean
-  // When set, the prompt is written to stdin as a JSON message instead of being
-  // passed in argv, and stdin stays open so later messages can steer the run.
-  streamInput?: boolean
+  // When set, the prompt is written to stdin as a message the dialog decides the
+  // shape of, and stdin stays open so later messages can steer the run.
+  dialog?: (prompt: string, cwd: string, get: SettingReader) => Dialog
   usage?: () => Promise<AgentUsage | null>
 }
 
