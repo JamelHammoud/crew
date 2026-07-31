@@ -203,6 +203,9 @@ interface QueuedPrompt {
   // without writing a message into the thread for people to scroll past. The
   // chip is the record, and the chip opens onto the whole thing.
   silent?: boolean
+  // Whether this message has already been handed to a fallback once. One hop and
+  // no more, or a pair of agents naming each other burns an afternoon.
+  fellBack?: boolean
 }
 
 // A steer sent to a runner but not yet acknowledged. Kept so it can be turned
