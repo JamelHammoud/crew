@@ -124,10 +124,11 @@ describe('the row a showing leaves behind', () => {
 describe('the mark a showing wears', () => {
   const drawn = (pages: string[]): { tile: string | null; cut: string | null; painted: number } => {
     const { container } = render(createElement(PageRow, { shown: { pages, title: 'Look at this' } }))
+    const mark = container.querySelector('mask')?.closest('svg') ?? null
     return {
-      tile: container.querySelector('rect[fill="currentColor"]')?.getAttribute('width') ?? null,
-      cut: container.querySelector('mask path')?.getAttribute('d') ?? null,
-      painted: container.querySelectorAll('svg > path').length
+      tile: mark?.querySelector('rect[fill="currentColor"]')?.getAttribute('width') ?? null,
+      cut: mark?.querySelector('mask path')?.getAttribute('d') ?? null,
+      painted: mark ? mark.querySelectorAll(':scope > path').length : -1
     }
   }
 
