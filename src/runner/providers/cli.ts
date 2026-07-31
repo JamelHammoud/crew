@@ -76,9 +76,6 @@ const EXIT_FLUSH_MS = 1500
 // more stdin. We wait this long after a turn ends before closing stdin, so a
 // steer already in flight over the socket still lands in the same run.
 const TURN_END_GRACE_MS = 750
-// What a run that said nothing at all falls back to. A protocol stream is
-// thousands of lines a run, so the fallback is capped rather than the whole of
-// it: a wall of JSON posted as the answer is worse than a short one.
 const RAW_LIMIT = 20000
 
 export function makeCliProvider(opts: CliProviderOptions): Provider {
