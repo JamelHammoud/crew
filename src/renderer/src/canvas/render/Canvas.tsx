@@ -34,7 +34,7 @@ export function Canvas<Shape extends CanvasShapeRecord>({
     () => {
       rootRef.current?.setAttribute(
         'data-is-editing-anything',
-        host.getEditingShapeId?.() === null ? 'false' : 'true'
+        (host.getEditingShapeId?.() ?? null) === null ? 'false' : 'true'
       )
       rootRef.current?.setAttribute(
         'data-is-selecting-anything',

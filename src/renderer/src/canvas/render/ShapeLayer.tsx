@@ -12,7 +12,7 @@ import type {
 export function sortRenderingShapes<Shape extends CanvasShapeRecord>(
   shapes: CanvasRenderingShape<Shape>[]
 ): CanvasRenderingShape<Shape>[] {
-  return shapes.length < 2 ? shapes : [...shapes].sort((a, b) => a.id.localeCompare(b.id))
+  return shapes.length < 2 ? shapes : [...shapes].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 }
 
 export function ShapeLayer<Shape extends CanvasShapeRecord>({
@@ -98,7 +98,7 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({
 
   return (
     <>
-      {background !== undefined && background !== null && (
+      {renderer.renderBackground && (
         <div
           ref={backgroundRef}
           data-canvas-shape-background="true"
