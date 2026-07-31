@@ -33,6 +33,33 @@ const OPENED = {
   ]
 }
 
+const LATE_CANCEL = `
+const send = o => process.stdout.write(JSON.stringify(o) + '\\n')
+const chunk = text =>
+  send({ jsonrpc: '2.0', method: 'session/update', params: { update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text } } } })
+let asked = null
+let turns = 0
+require('readline')
+  .createInterface({ input: process.stdin })
+  .on('line', line => {
+    let m
+    try { m = JSON.parse(line) } catch { return }
+    if (m.method === 'initialize') return send({ jsonrpc: '2.0', id: m.id, result: { protocolVersion: 1 } })
+    if (m.method === 'session/new') return send({ jsonrpc: '2.0', id: m.id, result: { sessionId: 'session_abc' } })
+    if (m.method === 'session/set_config_option') return send({ jsonrpc: '2.0', id: m.id, result: {} })
+    if (m.method === 'session/cancel') return send({ jsonrpc: '2.0', id: asked, result: { stopReason: 'end_turn' } })
+    if (m.method !== 'session/prompt') return
+    turns += 1
+    if (turns === 1) { asked = m.id; return chunk('working') }
+    const id = m.id
+    setTimeout(() => {
+      chunk('STEERED')
+      send({ jsonrpc: '2.0', id, result: { stopReason: 'end_turn' } })
+    }, 1500)
+  })
+  .on('close', () => process.exit(0))
+`
+
 const walk = (dialog: ReturnType<typeof kimiDialog>) => {
   const sent = [...dialog.begin()]
   sent.push(...dialog.answer(reply(1, { protocolVersion: 1, agentCapabilities: { loadSession: true } })))
