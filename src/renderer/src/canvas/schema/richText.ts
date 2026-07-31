@@ -99,7 +99,7 @@ export function renderHtmlFromRichText(richText: TLRichText): string {
 }
 
 export function renderHtmlFromRichTextForMeasurement(richText: TLRichText): string {
-  return `<div class="tl-rich-text">${renderHtmlFromRichText(richText)}</div>`
+  return `<div class="crew-rich-text">${renderHtmlFromRichText(richText)}</div>`
 }
 
 function nodeText(node: TLRichTextNode): string {

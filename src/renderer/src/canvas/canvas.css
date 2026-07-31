@@ -1,1 +1,38 @@
-@import 'tldraw/tldraw.css';
+@import './text/text.css';
+
+.crew-canvas {
+  background: var(--design-canvas);
+  color: var(--color-fg);
+  outline: none;
+}
+
+.crew-html-layer,
+.crew-shape,
+.crew-shape-background,
+.crew-canvas-overlays,
+.crew-svg-context,
+.crew-canvas-in-front {
+  pointer-events: none;
+}
+
+.crew-shape:not(.crew-shape-background) > * {
+  pointer-events: all;
+}
+
+.crew-canvas-overlays,
+.crew-svg-context,
+.crew-canvas-in-front {
+  position: absolute;
+  inset: 0;
+}
+
+.design .crew-text::selection,
+.design .crew-text *::selection {
+  background: color-mix(in srgb, var(--design-selected) 45%, transparent);
+  color: inherit;
+  text-shadow: none;
+}
+
+.design .crew-text {
+  caret-color: currentColor;
+}
