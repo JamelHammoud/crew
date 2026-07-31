@@ -58,30 +58,3 @@ export function PanelButton({
     </Tooltip>
   )
 }
-
-export function PanelTabs<T extends string>({
-  tabs,
-  current,
-  onPick
-}: {
-  tabs: ReadonlyArray<{ id: T; label: string }>
-  current: T
-  onPick: (id: T) => void
-}) {
-  return (
-    <div className="flex-1 min-w-0 flex gap-0.5 rounded-full bg-fg/[0.05] p-0.5">
-      {tabs.map(tab => (
-        <button
-          key={tab.id}
-          onClick={() => onPick(tab.id)}
-          aria-pressed={current === tab.id}
-          className={`flex-1 min-w-0 h-7 rounded-full text-xs font-semibold transition-colors ${
-            current === tab.id ? 'bg-fg text-ink-900' : 'text-fg-muted hover:text-fg'
-          }`}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
-  )
-}
