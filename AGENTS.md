@@ -318,7 +318,7 @@ A tldraw canvas per board, with crew's own chrome around it. Every tldraw panel 
 - In review is the column that pays for the rest. Everything else is already readable in the thread, and this is the agent saying a slice is finished. Both ways out are real messages: a sentence goes back as a steer aimed at that slice, and picking the ticket up again is what the board reads as the way out of review.
 - What you have dealt with is yours rather than the crew's, so a question you answered and a review you have looked at are held in the window, in `state/board.ts`, and never written down. Two people each get their own review queue, which is what In review means.
 - The columns run in the order they want you, not the order work travels: a review, then what is being worked on, then what is next, then what is done. The panel is 480 across and a ticket is a sentence, so they are sections down the panel rather than columns across it. Four columns at 480 is 105 pixels each.
-- Only Claude takes a steer mid-run, so anywhere else an answer joins the queue.
+- Claude and Codex take a steer mid-run, so anywhere else an answer joins the queue.
 
 ## Docs
 
