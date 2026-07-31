@@ -21,8 +21,9 @@ export function usageFrom(usage: unknown, model?: unknown): ParsedUsage | null {
     return { model: name, input: count(raw.input_tokens), output, cacheRead: read, cacheWrite: written }
   }
 
-  const input = count(raw.input_tokens) ?? count(raw.prompt_tokens)
-  const cached = count(raw.cached_input_tokens) ?? count(raw.prompt_tokens_details?.cached_tokens)
+  const input = count(raw.input_tokens) ?? count(raw.prompt_tokens) ?? count(raw.inputTokens)
+  const cached =
+    count(raw.cached_input_tokens) ?? count(raw.prompt_tokens_details?.cached_tokens) ?? count(raw.cachedInputTokens)
   if (cached !== undefined && input !== undefined) {
     return { model: name, input: Math.max(0, input - cached), output, cacheRead: cached }
   }
