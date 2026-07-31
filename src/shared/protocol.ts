@@ -103,6 +103,9 @@ export type ClientMessage =
       attachments?: OutgoingAttachment[]
       boardId?: string
       replyTo?: string
+      // The id a fork is asked for under, so the window that made it opens it the
+      // moment it lands rather than guessing which new thread was its own.
+      forkId?: string
     }
   | { type: 'history'; before: string }
   // Said again every couple of seconds while somebody is still writing, and once
