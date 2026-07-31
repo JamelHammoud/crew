@@ -91,9 +91,11 @@ const dir = await mkdtemp(path.join(tmpdir(), 'crew-kimi-'))
 const work = path.join(dir, 'work')
 let child = null
 let killer = null
+let watcher = null
 
 function stop() {
   if (killer) clearTimeout(killer)
+  if (watcher) clearInterval(watcher)
   if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
 }
 
