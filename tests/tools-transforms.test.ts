@@ -25,7 +25,10 @@ import {
 
 type GeoShape = Extract<TLShape, { type: 'geo' }>
 
-function geoShape(id: string, overrides: Partial<GeoShape> & { props?: Partial<GeoShape['props']> } = {}): GeoShape {
+function geoShape(
+  id: string,
+  overrides: Omit<Partial<GeoShape>, 'props'> & { props?: Partial<GeoShape['props']> } = {}
+): GeoShape {
   return {
     id: `shape:${id}` as TLShapeId,
     typeName: 'shape',
