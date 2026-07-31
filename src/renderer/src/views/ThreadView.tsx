@@ -218,7 +218,11 @@ export default function ThreadView({ threadId }: { threadId: string }) {
   const ask = threadAsk(thread, agents)
   const showPet = nameWidth >= AVATAR_WIDTH + NAME_MIN_WIDTH
   const placeholder =
-    command === 'btw' ? 'Ask about this thread, off to the side' : 'Send a message or @ someone'
+    command === 'btw'
+      ? 'Ask about this thread, off to the side'
+      : command === 'fork'
+        ? 'Carry on from here'
+        : 'Send a message or @ someone'
   const state = threadState(thread, threadEvents, Boolean(activePromptId))
   const statusAction =
     thread.status === 'open'

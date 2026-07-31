@@ -9,15 +9,9 @@ import { useAutoResize } from './useAutoResize'
 import useScrollEdges from './useScrollEdges'
 import { useStickToBottom } from './useStickToBottom'
 
-// A conversation on the side, standing where it was asked to stand: beside the
-// work rather than in it. It is a thread nobody else has, so it is made of the
-// pieces a thread is already made of, a composer among them: an answer is
-// rarely the end of it, and going back for the next question is a second tab
-// that has to be told the whole thing again.
-//
-// Nothing typed here reaches the thread it is about, whatever is written. The
-// thread is read fresh on every turn, so it carries on and the answers keep up
-// with it.
+// A conversation on the side, and the answers to it. It is a thread nobody else
+// has, standing where it was asked to stand: beside the work rather than in it.
+// Nothing typed here writes back into that work, whatever is written.
 export default function AsideView({ threadId }: { threadId: string }) {
   const events = useCrew(s => s.events)
   const steps = useCrew(s => s.steps)
