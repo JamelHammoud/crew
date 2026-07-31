@@ -752,6 +752,16 @@ A new Crew is out and the app says so, on one pill in the top bar. It stands onl
 - The Mac build is arm64 and nothing else. Half of what a native module ships is a package per architecture, `@koromix/koffi-darwin-arm64` and `@img/sharp-darwin-arm64`, and only the one matching the machine is installed, so an x64 app cross-built on an arm64 runner carried arm64 binaries and nothing that could load them. That is a runner rather than a flag, so the target is `--mac --arm64` and the check reads `lipo` back off the app it built. Windows is not affected, since it builds x64 on an x64 runner and installs the x64 packages for itself.
 - The build installs with the yarn this project is on, which is 1.22.22, and `--frozen-lockfile`. `yarn.lock` here is a v1 lockfile, and yarn 4 reads one by converting it to its own format, which counts as changing it, so an immutable install refuses and the build fails on its first step before anything is compiled. The lockfile rule is what should be strict: a release resolving different versions from the machines it was written on is not the app anybody tested. Never install with corepack yarn 4 without migrating the lockfile with it.
 
+## Dev tools
+
+A shipped Crew has none. `fromSource(app.getAppPath())` is the gate, the same one the icon and the updates read, so a run from source keeps them and only the packaged app loses them. `inspectable` in `src/main/index.ts` is that answer, worked out once and handed to everything that needs it.
+
+- It is off in two places at once, because either one on its own is half a door. `devTools` in `webPreferences` is what makes `openDevTools` do nothing at all, and it goes on every window the app makes: the main one, the tray panel and the Scribe pill, which all read it off the `PanelPage` they are handed. The row in the menu is the other half, since a switch left on with only the row taken away is a window anything in main could still open an inspector on, and a row left standing over a dead switch is a menu item that does nothing.
+- The View menu is written out in `appMenuTemplate` rather than taken as the `viewMenu` role. That role carries Toggle Developer Tools and its accelerator, and there is no way to keep the rest of it and drop that one row. Reload and the zoom stay, since `⌘R` is the app's own and the canvas is written around it.
+- A page in the side panel is a real browser carrying preferences of its own, and a webview inherits none of this from the window it stands in, so `will-attach-webview` says it again for whatever a window embeds.
+- There is no way to loosen it, and no environment variable stands beside `CREW_SHIPPING_ICON` for this. An escape hatch is the ability, which is the thing being taken away.
+- `tests/window-options.test.ts` holds all of it. It walks the whole menu tree rather than one submenu, so nothing can put the row back under another menu unnoticed.
+
 ## Rules for agents working here
 
 - `src/server`, `src/runner`, and `src/shared` must never import electron. Tests import them directly.
