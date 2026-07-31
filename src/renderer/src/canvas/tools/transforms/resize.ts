@@ -164,9 +164,7 @@ export function resizeShape<Shape extends TLShape>(
       requestedScale,
       options.scaleAxisRotation
     )
-    const nextLocalCenter = parentTransform
-      ? Mat.applyToPoint(parentTransform, nextPageCenter)
-      : nextPageCenter
+    const nextLocalCenter = parentTransform ? Mat.applyToPoint(parentTransform, nextPageCenter) : nextPageCenter
     const parentRotation = pageRotation - shape.rotation
     const isMirrored = Math.sign(requestedScale.x) * Math.sign(requestedScale.y) < 0
     const rotation = isMirrored ? -shape.rotation - 2 * parentRotation : shape.rotation
@@ -321,9 +319,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
         isAspectRatioLocked: locked,
         onResize: (shape, resizeInfo) =>
           this.editor.getShapeUtil?.(shape).onResize?.(shape, resizeInfo) ??
-          (supportsBoxResize(shape)
-            ? resizeBox(shape, resizeInfo as ResizeInfo<typeof shape>)
-            : undefined)
+          (supportsBoxResize(shape) ? resizeBox(shape, resizeInfo as ResizeInfo<typeof shape>) : undefined)
       })
     )
   }
@@ -344,11 +340,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
       const util = this.editor.getShapeUtil?.(shape)
       const current = this.editor.getShape(shape.id)
       const update =
-        stage === 'start'
-          ? util?.onResizeStart?.(shape)
-          : current
-            ? util?.onResizeEnd?.(shape, current)
-            : undefined
+        stage === 'start' ? util?.onResizeStart?.(shape) : current ? util?.onResizeEnd?.(shape, current) : undefined
       if (update) updates.push(update)
     }
     if (updates.length) this.editor.updateShapes(updates)
