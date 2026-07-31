@@ -35,6 +35,7 @@ import { emptyMusic, type MusicPlaylist, type MusicUpload } from '../../../share
 import { mentionsIn, type AgentMentionRef, type AgentStep, type PooledAgent } from '../../../shared/llm'
 import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../../../shared/protocol'
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
+import { shownPages } from '../../../shared/showPage'
 import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
 import { TYPING_PING, type Typist } from '../../../shared/typing'
 import type { CurrentSession } from '../../../shared/session'
