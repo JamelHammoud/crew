@@ -1636,6 +1636,7 @@ export class CrewSession {
       ts: Date.now(),
       kind: 'page.shown',
       threadId: thread.id,
+      promptId,
       pages,
       title: pageTitle(rawTitle) || (pages.length === 1 ? pageName(pages[0]) : ''),
       agentId: thread.agentId,
