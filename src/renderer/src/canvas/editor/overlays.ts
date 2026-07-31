@@ -52,13 +52,13 @@ export class OverlayManager {
     return entries
   }
 
-  getOverlayUtil(type: string): ToolOverlayUtil
-  getOverlayUtil(overlay: CanvasOverlay): ToolOverlayUtil
-  getOverlayUtil(value: string | CanvasOverlay): ToolOverlayUtil {
+  getOverlayUtil<Util extends ToolOverlayUtil = ToolOverlayUtil>(type: string): Util
+  getOverlayUtil<Util extends ToolOverlayUtil = ToolOverlayUtil>(overlay: CanvasOverlay): Util
+  getOverlayUtil<Util extends ToolOverlayUtil = ToolOverlayUtil>(value: string | CanvasOverlay): Util {
     const type = typeof value === 'string' ? value : value.type
     const util = this.values.get(type)
     if (!util) throw new Error(`No overlay util found for type: "${type}"`)
-    return util
+    return util as Util
   }
 
   getOverlayAtPoint(point: VecLike, margin = 0): CanvasOverlay | null {
