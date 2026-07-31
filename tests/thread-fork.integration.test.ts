@@ -15,7 +15,17 @@ type Notice = Extract<ServerMessage, { type: 'notice' }>
 
 const settle = () => new Promise(r => setTimeout(r, 300))
 
-const times = (haystack: string, needle: string): number => haystack.split(needle).length - 1
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64'
+)
+
+const image = () => ({ name: 'shot.png', mime: 'image/png', data: PNG.toString('base64') })
+
+// The prompt's own transcript, which is everything under the one heading the
+// thread is read to the agent under. What was said inside it carries whole
+// prompts of its own, since the fake CLI answers with what it was handed.
+const soFar = (text: string | undefined): string => (text ?? '').slice((text ?? '').indexOf('Thread so far:'))
 
 describe('what a thread offers to fork with', () => {
   it('carries on from here whether or not there is a turn to go into', () => {
