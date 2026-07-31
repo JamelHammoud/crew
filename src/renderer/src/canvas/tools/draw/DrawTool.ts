@@ -1,0 +1,113 @@
+import { Drawing } from './Drawing'
+import type { FreehandEditor, FreehandKeyboardEvent, FreehandPointerEvent, FreehandShapeType } from './types'
+
+export type DrawStateId = 'idle' | 'drawing'
+
+export abstract class DrawState {
+  constructor(
+    protected readonly tool: DrawTool,
+    protected readonly editor: FreehandEditor
+  ) {}
+
+  onEnter(_info?: FreehandPointerEvent): void {}
+  onExit(): void {}
+  onPointerDown(_info: FreehandPointerEvent): void {}
+  onPointerMove(_info?: FreehandPointerEvent): void {}
+  onPointerUp(_info?: FreehandPointerEvent): void {}
+  onKeyDown(_info: FreehandKeyboardEvent): void {}
+  onKeyUp(_info: FreehandKeyboardEvent): void {}
+  onCancel(): void {}
+  onComplete(): void {}
+  onInterrupt(): void {}
+}
+
+export class DrawIdle extends DrawState {
+  static readonly id = 'idle'
+
+  override onEnter(): void {
+    this.editor.setCursor({ type: 'cross', rotation: 0 })
+  }
+
+  override onPointerDown(info: FreehandPointerEvent): void {
+    if (info.accelKey && !info.shiftKey) {
+      this.editor.setCurrentTool('eraser.pointing', { ...info, onInteractionEnd: this.tool.id })
+      return
+    }
+    this.tool.transition('drawing', info)
+  }
+
+  override onCancel(): void {
+    this.editor.setCurrentTool('select')
+  }
+}
+
+export class DrawTool {
+  static readonly id = 'draw'
+  static readonly initial = 'idle'
+  static readonly isLockable = false
+  static readonly useCoalescedEvents = true
+  readonly children: { idle: DrawIdle; drawing: Drawing }
+  stateId: DrawStateId = 'idle'
+
+  constructor(
+    readonly editor: FreehandEditor,
+    readonly shapeType: FreehandShapeType = 'draw'
+  ) {
+    this.children = {
+      idle: new DrawIdle(this, editor),
+      drawing: new Drawing(this, editor)
+    }
+    this.children.idle.onEnter()
+  }
+
+  get id(): FreehandShapeType {
+    return this.shapeType
+  }
+
+  get state(): DrawState {
+    return this.children[this.stateId]
+  }
+
+  transition(id: DrawStateId, info?: FreehandPointerEvent): void {
+    if (id === this.stateId) return
+    this.state.onExit()
+    this.stateId = id
+    this.state.onEnter(info)
+  }
+
+  onPointerDown(info: FreehandPointerEvent): void {
+    this.state.onPointerDown(info)
+  }
+
+  onPointerMove(info?: FreehandPointerEvent): void {
+    this.state.onPointerMove(info)
+  }
+
+  onPointerUp(info?: FreehandPointerEvent): void {
+    this.state.onPointerUp(info)
+  }
+
+  onKeyDown(info: FreehandKeyboardEvent): void {
+    this.state.onKeyDown(info)
+  }
+
+  onKeyUp(info: FreehandKeyboardEvent): void {
+    this.state.onKeyUp(info)
+  }
+
+  onCancel(): void {
+    this.state.onCancel()
+  }
+
+  onComplete(): void {
+    this.state.onComplete()
+  }
+
+  onInterrupt(): void {
+    this.state.onInterrupt()
+  }
+
+  onExit(): void {
+    this.children.drawing.initialShape = undefined
+  }
+}
