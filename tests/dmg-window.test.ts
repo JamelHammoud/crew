@@ -9,6 +9,22 @@ const build = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).
 const dmg = build.dmg
 const half = DMG.iconSize / 2
 
+const hex = (...channels: number[]): string =>
+  `#${channels.map(one => Math.round(one * 255).toString(16).padStart(2, '0')).join('')}`
+
+const luminance = (colour: string): number => {
+  const channels = [1, 3, 5].map(from => parseInt(colour.slice(from, from + 2), 16) / 255)
+  const [red, green, blue] = channels.map(one =>
+    one <= 0.03928 ? one / 12.92 : ((one + 0.055) / 1.055) ** 2.4
+  )
+  return red * 0.2126 + green * 0.7152 + blue * 0.0722
+}
+
+const contrast = (one: string, other: string): number => {
+  const [light, dark] = [luminance(one), luminance(other)].sort((a, b) => b - a)
+  return (light + 0.05) / (dark + 0.05)
+}
+
 const at = (type: string): { x: number; y: number } => {
   const found = dmg.contents.find((one: { type: string }) => one.type === type)
   expect(found).toBeTruthy()
