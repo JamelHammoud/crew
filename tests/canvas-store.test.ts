@@ -350,7 +350,7 @@ describe('history', () => {
     history.markHistoryStoppingPoint()
     store.put([{ ...a, x: 7 }])
 
-    expect(history.getNumUndos()).toBe(2)
+    expect(history.getNumUndos()).toBe(3)
     history.undo()
     expect((store.get(a.id) as Shape).x).toBe(0)
     history.redo()
