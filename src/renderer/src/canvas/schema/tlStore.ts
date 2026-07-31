@@ -173,6 +173,8 @@ export interface TLEditorSnapshot {
   session?: TLStoreSnapshot
 }
 
+const loadedDocumentSchemas = new WeakMap<TLStore, SerializedSchema>()
+
 export function createTLSchema(): StoreSchema<TLRecord> {
   return StoreSchema.create<TLRecord>(recordTypes, { sequences: { ...SEQUENCES } })
 }
@@ -186,8 +188,11 @@ export function createTLStore(options: TLStoreOptions = {}): TLStore {
 }
 
 export function getSnapshot(store: TLStore): TLEditorSnapshot {
+  const document = getStoreSnapshot(store, 'document') as TLStoreSnapshot
+  const loadedSchema = loadedDocumentSchemas.get(store)
+  if (loadedSchema) document.schema = loadedSchema
   return {
-    document: getStoreSnapshot(store, 'document') as TLStoreSnapshot,
+    document,
     session: getStoreSnapshot(store, 'session') as TLStoreSnapshot
   }
 }
@@ -195,6 +200,7 @@ export function getSnapshot(store: TLStore): TLEditorSnapshot {
 export function loadSnapshot(store: TLStore, snapshot: TLStoreSnapshot | TLEditorSnapshot): void {
   const document = 'document' in snapshot ? snapshot.document : snapshot
   acceptSchema(document.schema)
+  loadedDocumentSchemas.set(store, structuredClone(document.schema))
   const documentIds = store
     .records()
     .filter(record => store.scopedTypes.document.has(record.typeName))

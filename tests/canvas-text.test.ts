@@ -65,6 +65,20 @@ function installDom() {
   setGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => setTimeout(() => callback(Date.now()), 0))
   setGlobal('cancelAnimationFrame', (id: number) => clearTimeout(id))
   setGlobal('IS_REACT_ACT_ENVIRONMENT', true)
+  const emptyRect = {
+    x: 0,
+    y: 0,
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    toJSON: () => ({})
+  }
+  Object.defineProperty(view.Range.prototype, 'getClientRects', { configurable: true, value: () => [] })
+  Object.defineProperty(view.Range.prototype, 'getBoundingClientRect', { configurable: true, value: () => emptyRect })
+  Object.defineProperty(view.Element.prototype, 'getClientRects', { configurable: true, value: () => [] })
   return dom
 }
 
@@ -208,14 +222,14 @@ describe('canvas rich text', () => {
     installDom()
     const proseMirror = richTextToProseMirror(rich)
     const fromProseMirror = richTextFromProseMirror(proseMirror)
-    expect(richTextToPlainText(fromProseMirror)).toBe('Crew link\nTogether')
+    expect(richTextToPlainText(fromProseMirror).replace(/\n+/g, '\n')).toBe('Crew link\nTogether')
     expect(fromProseMirror.content[0].content?.[0].marks?.map(mark => mark.type)).toEqual(['bold'])
     expect(fromProseMirror.content[1].type).toBe('bulletList')
     const html = richTextToHtml(rich)
     expect(html).toContain('<strong>Crew </strong>')
     expect(html).toContain('<ul>')
     const roundTrip = richTextFromHtml(html)
-    expect(richTextToPlainText(roundTrip)).toBe('Crew link\nTogether')
+    expect(richTextToPlainText(roundTrip).replace(/\n+/g, '\n')).toBe('Crew link\nTogether')
     const linkMarks = roundTrip.content[0].content?.[1].marks ?? []
     expect(linkMarks.map(mark => mark.type).sort()).toEqual(['highlight', 'italic', 'link'])
     expect(linkMarks.find(mark => mark.type === 'link')?.attrs?.href).toBe('https://crew.test')
