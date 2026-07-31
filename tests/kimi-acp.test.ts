@@ -358,7 +358,7 @@ describe('the end of a turn', () => {
 })
 
 describe('a parser a run', () => {
-  it('keeps two runs out of each other s lanes and each other s tools', () => {
+  it('keeps two runs out of the lanes and the tool names either one is holding', () => {
     const one = kimiParser()
     const two = kimiParser()
 
