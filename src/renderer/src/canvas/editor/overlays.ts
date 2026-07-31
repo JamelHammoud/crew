@@ -76,7 +76,8 @@ export class OverlayManager {
     const entries = this.getActiveOverlayEntries()
     for (let entryIndex = entries.length - 1; entryIndex >= 0; entryIndex--) {
       const overlays = entries[entryIndex].overlays
-      for (const overlay of overlays) {
+      for (let overlayIndex = overlays.length - 1; overlayIndex >= 0; overlayIndex--) {
+        const overlay = overlays[overlayIndex]
         const props = overlay.props as { point?: VecLike; radius?: number; bounds?: Box }
         if (props.point) {
           const radius = (props.radius ?? 6 / this.editor.getZoomLevel()) + margin
