@@ -1,11 +1,11 @@
 import type { SessionEvent } from '../../../shared/events'
 import RunFigures from './RunFigures'
 import { DoneGlyph } from './toolGlyphs'
-import { WarningGlyph } from '../icons'
+import { StopGlyph, WarningGlyph } from '../icons'
 
 export default function RunEnded({ end }: { end: Extract<SessionEvent, { kind: 'agent.end' }> }) {
   if (end.ms === undefined) return null
-  const Mark = end.ok ? DoneGlyph : WarningGlyph
+  const Mark = end.ok ? DoneGlyph : end.stopped ? StopGlyph : WarningGlyph
 
   return (
     <div className="flex items-center gap-2.5 text-sm pl-14 select-none">
