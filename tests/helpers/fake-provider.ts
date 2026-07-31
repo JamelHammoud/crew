@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import type { AgentSettingField } from '../../src/shared/llm'
 import { choices, flag, makeCliProvider } from '../../src/runner/providers/cli'
+import { claudeDialog } from '../../src/runner/providers/claude'
 import type { OutputParser, Provider } from '../../src/runner/providers/types'
 
 export const fakeCliPath = fileURLToPath(new URL('./fake-cli.mjs', import.meta.url))
