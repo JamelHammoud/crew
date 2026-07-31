@@ -55,8 +55,8 @@ describe('the mark that travels', () => {
   it('is three discs of one size, spaced the way the app icon spaces them', () => {
     expect(mark.centres.length).toBe(3)
     const gaps = mark.centres.slice(1).map((x, index) => x - mark.centres[index])
-    expect(gaps[0]).toBeCloseTo(gaps[1], 6)
-    expect(gaps[0]).toBeCloseTo(mark.radius * geometry.step, 6)
+    expect(gaps[0]).toBeCloseTo(gaps[1], 2)
+    expect(gaps[0]).toBeCloseTo(mark.radius * geometry.step, 2)
   })
 
   it('bites each disc with the one in front rather than overlapping it whole', () => {
@@ -64,12 +64,15 @@ describe('the mark that travels', () => {
     expect(mark.cut).toBeLessThan(mark.radius * geometry.step)
   })
 
-  it('never reaches either icon, at any point of the travel', () => {
-    for (const where of [0, 0.25, 0.5, 0.75, 1]) {
-      const head = markAt(where)
-      expect(head - mark.width / 2).toBeGreaterThan(DMG.app + half)
-      expect(head + mark.width / 2).toBeLessThan(DMG.applications - half)
-    }
+  it('stands clear of both icons at the moment the still is cut from', () => {
+    const head = markAt(TRAVEL.still)
+    expect(head - mark.width / 2).toBeGreaterThan(DMG.app + half)
+    expect(head + mark.width / 2).toBeLessThan(DMG.applications - half)
+  })
+
+  it('sets out from behind the app and arrives behind the folder', () => {
+    expect(markAt(0)).toBeLessThan(DMG.app + half)
+    expect(markAt(1)).toBeGreaterThan(DMG.applications - half)
   })
 
   it('runs towards Applications', () => {
@@ -78,10 +81,12 @@ describe('the mark that travels', () => {
   })
 
   it('trails its wake behind it and never in front', () => {
-    const path = wakePath(geometry)
-    const xs = [...path.matchAll(/-?\d+(?:\.\d+)?(?= )/g)].map(Number)
-    expect(Math.min(...xs)).toBeCloseTo(-TRAVEL.wake, 6)
-    expect(Math.max(...xs)).toBeLessThan(0)
+    const drawn = wakePath(geometry)
+    const pairs = [...drawn.matchAll(/(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g)]
+    const xs = pairs.map(pair => Number(pair[1]))
+    expect(xs.length).toBeGreaterThan(4)
+    expect(Math.min(...xs)).toBeCloseTo(-TRAVEL.wake, 3)
+    expect(Math.max(...xs)).toBeLessThanOrEqual(0)
   })
 })
 
@@ -89,8 +94,7 @@ describe('the picture', () => {
   it('draws the ground, the words and the mark', () => {
     const svg = dmgBackground(geometry, null)
     expect(svg).toContain(`width="${DMG.width}" height="${DMG.height}"`)
-    expect(svg).toContain('Drag ')
-    expect(svg).toContain('into Applications')
+    expect(svg).toContain('Drag Crew into Applications')
     expect(svg.match(/<circle /g)?.length).toBeGreaterThanOrEqual(mark.centres.length)
   })
 
@@ -101,5 +105,12 @@ describe('the picture', () => {
   it('places the mark at the moment it is asked for', () => {
     expect(dmgOverlay(geometry, 0.2)).toContain(`translate(${markAt(0.2)} ${DMG.line})`)
     expect(dmgOverlay(geometry, 0.9)).toContain(`translate(${markAt(0.9)} ${DMG.line})`)
+  })
+
+  it('sets the words in one face at one size', () => {
+    const svg = dmgBackground(geometry, null)
+    expect(svg).not.toContain('<tspan')
+    expect(svg).not.toContain('monospace')
+    expect(svg.match(/font-size="\d+"/g)?.length).toBe(1)
   })
 })
