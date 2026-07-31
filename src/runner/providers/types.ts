@@ -54,6 +54,15 @@ export interface ParsedOutput {
 
 export type OutputParser = (line: string) => ParsedOutput[]
 
+// A parser that has to remember where it is in a run gets one of its own, and
+// may have something left to say once the run is over. What a turn cost is the
+// case that needs it: a CLI that writes the last of it just after saying the
+// turn has ended is only read in full once there are no more lines coming.
+export interface RunParser {
+  parse: OutputParser
+  finish?: () => ParsedOutput[]
+}
+
 export interface Dialog {
   begin(): string[]
   answer(line: string): string[]
