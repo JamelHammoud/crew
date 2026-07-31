@@ -55,7 +55,7 @@ export interface ImageExportOptions {
 }
 
 export interface ClipboardExportEditor {
-  getCurrentPageShapeIds(): Iterable<TLShapeId>
+  getCurrentPageShapeIds(): Iterable<string>
   getSvgString(
     ids: TLShapeId[],
     options?: ImageExportOptions
