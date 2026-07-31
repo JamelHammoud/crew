@@ -66,7 +66,8 @@ export function createScribeOptions(
       preload,
       contextIsolation: true,
       sandbox: false,
-      backgroundThrottling: false
+      backgroundThrottling: false,
+      devTools
     }
   }
 }
