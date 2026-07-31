@@ -1,4 +1,3 @@
-import { b64Vecs } from '@tldraw/tlschema'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nodeDefaults } from '../src/shared/designNode'
 import type { Editor, TLShapeId } from '../src/renderer/src/canvas'
@@ -6,9 +5,10 @@ import {
   copyAs,
   snapshotToSvg,
   snapshotToSvgResult,
-  TLDRAW_CUSTOM_PNG_MIME_TYPE,
+  CREW_CANVAS_PNG_MIME_TYPE,
   type ClipboardExportEditor
 } from '../src/renderer/src/canvas/export'
+import { DIM_2D, encodePoints } from '../src/renderer/src/canvas/schema'
 
 const PAGE = { id: 'page:page', typeName: 'page', name: 'Page 1', index: 'a1', meta: {} }
 
@@ -58,11 +58,11 @@ function allShapes() {
     props: { title: 'Crew', description: 'Shared work', image: '', favicon: '', src: 'https://crew.test' },
     meta: {}
   }
-  const drawPath = b64Vecs.encodePoints2D([
+  const drawPath = encodePoints([
     { x: 0, y: 0 },
     { x: 20, y: 10 },
     { x: 40, y: 0 }
-  ])
+  ], DIM_2D)
   const records = [
     shape('01', 'geo', {
       ...base,
@@ -430,9 +430,9 @@ describe('canvas copyAs', () => {
 
     await copyAs(editor, [], { format: 'png', pixelRatio: 2 })
     const item = write.mock.calls[0][0][0] as FakeClipboardItem
-    expect(Object.keys(item.types)).toEqual(['image/png', TLDRAW_CUSTOM_PNG_MIME_TYPE])
+    expect(Object.keys(item.types)).toEqual(['image/png', CREW_CANVAS_PNG_MIME_TYPE])
     expect((await item.types['image/png']).type).toBe('image/png')
-    expect((await item.types[TLDRAW_CUSTOM_PNG_MIME_TYPE]).type).toBe(TLDRAW_CUSTOM_PNG_MIME_TYPE)
+    expect((await item.types[CREW_CANVAS_PNG_MIME_TYPE]).type).toBe(CREW_CANVAS_PNG_MIME_TYPE)
     expect(toImage).toHaveBeenCalledTimes(1)
     expect(toImage).toHaveBeenCalledWith(['shape:one'], expect.objectContaining({ format: 'png', pixelRatio: 2 }))
   })

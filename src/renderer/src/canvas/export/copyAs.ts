@@ -1,7 +1,7 @@
 import type { TLShapeId } from '../schema/records'
 import type { ClipboardExportEditor, CopyAsOptions, ImageExportOptions } from './types'
 
-export const TLDRAW_CUSTOM_PNG_MIME_TYPE = 'web image/vnd.tldraw+png'
+export const CREW_CANVAS_PNG_MIME_TYPE = 'web image/vnd.crew-canvas+png'
 
 interface RuntimeClipboardEditor {
   getCurrentPageShapeIds(): Iterable<string>
@@ -68,8 +68,8 @@ export function copyAs(
     const type = options.format === 'png' ? 'image/png' : 'text/plain'
     const blob = runtime.toImage(chosen, imageOptions).then(result => rewritten(result.blob, type))
     const types: Record<string, Promise<Blob>> = { [type]: blob }
-    if (options.format === 'png' && supports(TLDRAW_CUSTOM_PNG_MIME_TYPE)) {
-      types[TLDRAW_CUSTOM_PNG_MIME_TYPE] = blob.then(value => rewritten(value, TLDRAW_CUSTOM_PNG_MIME_TYPE))
+    if (options.format === 'png' && supports(CREW_CANVAS_PNG_MIME_TYPE)) {
+      types[CREW_CANVAS_PNG_MIME_TYPE] = blob.then(value => rewritten(value, CREW_CANVAS_PNG_MIME_TYPE))
     }
     return write(types)
   }
