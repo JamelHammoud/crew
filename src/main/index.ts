@@ -242,30 +242,8 @@ function applyIcon(theme: IconTheme, icon: AppIconId): void {
   for (const win of appWindows()) win.setIcon(appIcon(theme, icon))
 }
 
-// Without an application menu the standard clipboard accelerators (copy, cut,
-// paste, select-all, undo, redo) are never registered, so they do nothing
-// inside the app. Registering the roles wires them up on every platform.
 function installMenu(): void {
-  const isMac = process.platform === 'darwin'
-  const template: MenuItemConstructorOptions[] = [
-    ...(isMac ? [{ role: 'appMenu' as const }] : []),
-    { role: 'fileMenu' },
-    {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectAll' }
-      ]
-    },
-    { role: 'viewMenu' },
-    { role: 'windowMenu' }
-  ]
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+  Menu.setApplicationMenu(Menu.buildFromTemplate(appMenuTemplate(process.platform, inspectable)))
 }
 
 // Right-click clipboard actions for text fields and the doc editor,
