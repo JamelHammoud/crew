@@ -383,7 +383,7 @@ try {
     console.error(`\n${failed.length} of ${checks.length} checks failed off the real CLI`)
     process.exitCode = 1
   } else {
-    console.log('\nlive thinking, a streamed answer, named tools with their arguments and a real edit, off the real CLI')
+    console.log('\nlive thinking, a streamed answer, named tools with their arguments, a real edit and live token counts, off the real CLI')
   }
 } catch (error) {
   console.error(`the run fell over: ${error.message}`)
