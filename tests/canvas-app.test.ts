@@ -172,7 +172,9 @@ describe('the mounted Crew canvas', () => {
     const canvas = view.container.querySelector('[data-canvas="true"]') as HTMLElement
     const beforeResize = editor!.getShapePageBounds(frameId)!
     act(() => canvas.dispatchEvent(pointer('pointerdown', beforeResize.maxX, beforeResize.maxY, 1)))
+    expect((editor!.root.getCurrent() as { getPath(): string }).getPath()).toBe('select.pointing_resize_handle')
     act(() => canvas.dispatchEvent(pointer('pointermove', beforeResize.maxX + 30, beforeResize.maxY + 20, 1)))
+    expect((editor!.root.getCurrent() as { getPath(): string }).getPath()).toBe('select.resizing')
     act(() => canvas.dispatchEvent(pointer('pointerup', beforeResize.maxX + 30, beforeResize.maxY + 20, 0)))
     const afterResize = editor!.getShapePageBounds(frameId)!
     expect(afterResize.w).toBeGreaterThan(beforeResize.w)
