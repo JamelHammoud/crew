@@ -37,6 +37,10 @@ export class EditorHistory {
     this.manager.redo()
   }
 
+  bailToMark(id: string): void {
+    this.manager.bailToMark(id)
+  }
+
   ignore<T>(fn: () => T): T {
     return this.manager.ignore(fn)
   }

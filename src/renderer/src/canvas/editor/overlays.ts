@@ -19,6 +19,7 @@ interface ToolOverlayUtil extends CanvasOverlayUtil {
 
 export class OverlayManager {
   private readonly values = new Map<string, ToolOverlayUtil>()
+  private hoveredId: string | null = null
 
   constructor(private readonly editor: OverlayEditor, constructors: readonly unknown[] = []) {
     this.register(new SelectionForegroundOverlayUtil(editor))
@@ -75,6 +76,15 @@ export class OverlayManager {
       }
     }
     return null
+  }
+
+  getHoveredOverlay(): CanvasOverlay | null {
+    if (!this.hoveredId) return null
+    return this.getActiveOverlayEntries().flatMap(entry => entry.overlays).find(overlay => overlay.id === this.hoveredId) ?? null
+  }
+
+  setHoveredOverlay(id: string | null): void {
+    this.hoveredId = id
   }
 
   private register(util: ToolOverlayUtil): void {

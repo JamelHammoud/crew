@@ -76,6 +76,21 @@ export class Editor {
   readonly options
   readonly root: { handleEvent: (info: CanvasEventInfo) => void; getCurrent: () => unknown }
   readonly menus = { clearOpenMenus: () => undefined }
+  readonly timers = {
+    setTimeout: (callback: () => void, delay: number) => setTimeout(callback, delay),
+    clearTimeout: (id: ReturnType<typeof setTimeout>) => clearTimeout(id),
+    requestAnimationFrame: (callback: FrameRequestCallback) => typeof requestAnimationFrame === 'undefined'
+      ? setTimeout(() => callback(Date.now()), 16) as unknown as number
+      : requestAnimationFrame(callback)
+  }
+  readonly performance = { _notifyInteractionStart: (_id: string, _path: string) => undefined, _notifyInteractionEnd: () => undefined }
+  readonly edgeScrollManager = { start: () => undefined, stop: () => undefined, update: () => undefined }
+  readonly snaps = {
+    clearIndicators: () => undefined,
+    setIndicators: (_indicators: unknown[]) => undefined,
+    snapTranslateBounds: () => ({ nudge: { x: 0, y: 0 }, indicators: [] }),
+    snapResizeBounds: () => ({ nudge: { x: 0, y: 0 }, indicators: [] })
+  }
   private readonly camera: CameraManager
   private readonly selection = new SelectionManager()
   private readonly tools: ToolManager
@@ -94,6 +109,9 @@ export class Editor {
     isToolLocked: false,
     cursor: { type: 'default', rotation: 0 },
     isReadonly: false
+    ,erasingShapeIds: [] as TLShapeId[]
+    ,hintingShapeIds: [] as TLShapeId[]
+    ,hoveredShapeId: null as TLShapeId | null
   }
   private currentPageId: TLPageId
   private disposed = false
@@ -210,7 +228,7 @@ export class Editor {
       editingShapeId: this.getEditingShapeId(),
       focusedGroupId: focused.startsWith('shape:') ? focused as TLShapeId : null,
       hintingShapeIds: [],
-      hoveredShapeId: null
+      hoveredShapeId: this.instance.hoveredShapeId
     }
   }
 
@@ -287,6 +305,10 @@ export class Editor {
     return this.allShapes().filter(shape => pageIds.has(shape.id))
   }
 
+  getCurrentPageShapeIds(): Set<TLShapeId> {
+    return new Set(this.getCurrentPageShapesSorted().map(shape => shape.id))
+  }
+
   getCurrentPageShapesSorted(): TLShape[] {
     return sortedPageShapes(this.allShapes(), this.currentPageId)
   }
@@ -306,6 +328,24 @@ export class Editor {
 
   getSortedChildIdsForParent(parentId: TLParentId): TLShapeId[] {
     return sortedChildren(this.allShapes(), parentId).map(shape => shape.id)
+  }
+
+  getShapeAncestors(shapeOrId: TLShape | TLShapeId): TLShape[] {
+    const result: TLShape[] = []
+    let shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    while (shape?.parentId.startsWith('shape:')) {
+      const parent = this.getShape(shape.parentId as TLShapeId)
+      if (!parent) break
+      result.push(parent)
+      shape = parent
+    }
+    return result
+  }
+
+  getShapeHandles(shapeOrId: TLShape | TLShapeId): ReturnType<NonNullable<ShapeUtil['getHandles']>> | undefined {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return undefined
+    return this.getShapeUtil(shape).getHandles?.(shape as never)
   }
 
   getCurrentPageBounds(): Box | null {
@@ -477,6 +517,20 @@ export class Editor {
     return this
   }
 
+  setHintingShapes(ids: TLShapeId[]): this {
+    this.instance.hintingShapeIds = ids.filter(id => this.getShape(id) !== undefined)
+    return this
+  }
+
+  getErasingShapeIds(): TLShapeId[] {
+    return this.instance.erasingShapeIds
+  }
+
+  setErasingShapes(ids: TLShapeId[]): this {
+    this.instance.erasingShapeIds = ids.filter(id => this.getShape(id) !== undefined)
+    return this
+  }
+
   getEditingShape(): TLShape | undefined {
     const id = this.getEditingShapeId()
     return id ? this.getShape(id) : undefined
@@ -558,8 +612,24 @@ export class Editor {
   }
 
   getHoveredShape(): TLShape | undefined {
-    return undefined
+    return this.instance.hoveredShapeId ? this.getShape(this.instance.hoveredShapeId) : undefined
   }
+
+  updateHoveredOverlayId(): boolean {
+    const overlay = this.overlays.getOverlayAtPoint(this.inputs.getCurrentPagePoint(), this.hitTestMargin / this.getZoomLevel())
+    this.overlays.setHoveredOverlay(overlay?.id ?? null)
+    return Boolean(overlay)
+  }
+
+  updateHoveredShapeId(): void {
+    this.instance.hoveredShapeId = this.getShapeAtPoint(this.inputs.getCurrentPagePoint(), {
+      margin: this.hitTestMargin / this.getZoomLevel(),
+      hitInside: true,
+      renderingOnly: true
+    })?.id ?? null
+  }
+
+  cancelUpdateHoveredShapeId(): void {}
 
   createShape<Shape extends TLShape = TLShape>(partial: ShapeCreate): this {
     return this.createShapes([partial])
@@ -918,6 +988,12 @@ export class Editor {
     return this.history.markHistoryStoppingPoint(name)
   }
 
+  bailToMark(id: string): this {
+    this.history.bailToMark(id)
+    this.cleanSelection()
+    return this
+  }
+
   squashToMark(id: string): this {
     this.history.squashToMark(id)
     return this
@@ -990,6 +1066,69 @@ export class Editor {
   isPointInShape(shape: TLShape, point: VecLike): boolean {
     return this.getShapeGeometry(shape).hitTestPoint(this.getPointInShapeSpace(shape, point), 0, true)
   }
+
+  isPointInShapeLabel(shape: TLShape, point: VecLike): boolean {
+    return this.isPointInShape(shape, point)
+  }
+
+  getShapeIdsInsideBounds(bounds: Box): Set<TLShapeId> {
+    return new Set(this.getCurrentPageShapesSorted().filter(shape => {
+      const shapeBounds = this.getShapePageBounds(shape)
+      return shapeBounds ? bounds.includes(shapeBounds) : false
+    }).map(shape => shape.id))
+  }
+
+  getSnappableShapes(): Array<{ id: TLShapeId; pageBounds: Box; points: Vec[] }> {
+    const selected = new Set(this.getSelectedShapeIds())
+    return this.getCurrentPageShapesSorted().flatMap(shape => {
+      if (selected.has(shape.id) || shape.isLocked || !this.getShapeUtil(shape).canSnap(shape as never)) return []
+      const pageBounds = this.getShapePageBounds(shape)
+      return pageBounds ? [{ id: shape.id, pageBounds, points: pageBounds.cornersAndCenter }] : []
+    })
+  }
+
+  getShapeStrokeWidth(_shape: TLShape): number {
+    return this.getCurrentTheme().strokeWidth ?? 2
+  }
+
+  getIsSnapMode(): boolean {
+    return this.user.getUserPreferences().isSnapMode
+  }
+
+  canCreateShapes(_ids?: TLShapeId[]): boolean {
+    return !this.getIsReadonly()
+  }
+
+  hasRichText(shape: TLShape): boolean {
+    return 'richText' in shape.props
+  }
+
+  startEditingShapeWithRichText(shapeOrId: TLShape | TLShapeId, options: { selectAll?: boolean } = {}): this {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape || !this.hasRichText(shape) || !this.canEditShape(shape)) return this
+    this.setEditingShape(shape)
+    this.setCurrentTool('select.editing_shape', { target: 'shape', shape, selectAll: options.selectAll })
+    return this
+  }
+
+  popFocusedGroupId(): this {
+    const focused = this.getFocusedGroupId()
+    if (!focused.startsWith('shape:')) return this
+    const group = this.getShape(focused as TLShapeId)
+    const parent = group?.parentId
+    this.selection.setFocusedGroupId(parent?.startsWith('shape:') ? parent as TLShapeId : null)
+    return this
+  }
+
+  kickoutOccludedShapes(_shapes: TLShape[]): this {
+    return this
+  }
+
+  updateArrowTargetState(_options: unknown): null {
+    return null
+  }
+
+  clearArrowTargetState(): void {}
 
   getResizeScaleFactor(): number {
     return 1
