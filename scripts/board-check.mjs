@@ -229,7 +229,7 @@ const directory = await stage(file)
 try {
   await compile(directory)
   const result = await run(directory)
-  if (result.failed) throw new Error(result.failed)
+  if (result.failed) throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
   const problems = []
   if (result.records === 0) problems.push('the saved board had no shapes')
   if (result.painted !== result.records) problems.push(`${result.painted} of ${result.records} shapes painted`)
