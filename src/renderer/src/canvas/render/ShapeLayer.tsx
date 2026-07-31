@@ -91,6 +91,7 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
           data-canvas-shape-background="true"
           data-shape-id={result.id}
           data-shape-type={result.shape.type}
+          className="tl-shape tl-shape-background"
           draggable={false}
           style={shapeStyle}
         >
@@ -103,6 +104,7 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
         data-shape-id={result.id}
         data-shape-type={result.shape.type}
         data-shape-is-filled={renderer.isFilled?.(result.shape)}
+        className="tl-shape"
         draggable={false}
         style={shapeStyle}
       >

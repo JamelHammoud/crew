@@ -10,6 +10,7 @@ const join = (...parts: Array<string | undefined>) => parts.filter(Boolean).join
 export function Canvas<Shape extends CanvasShapeRecord>({
   host,
   shapeRenderer,
+  svgDefs,
   background,
   onTheCanvas,
   viewportOverlay,
@@ -31,11 +32,11 @@ export function Canvas<Shape extends CanvasShapeRecord>({
 
   useQuickReactor('canvas state attributes', () => {
     rootRef.current?.setAttribute(
-      'data-is-editing-anything',
+      'data-iseditinganything',
       (host.getEditingShapeId?.() ?? null) === null ? 'false' : 'true'
     )
     rootRef.current?.setAttribute(
-      'data-is-selecting-anything',
+      'data-isselectinganything',
       (host.getSelectedShapeIds?.().length ?? 0) === 0 ? 'false' : 'true'
     )
   }, [host])
@@ -56,14 +57,24 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         {...events}
         ref={assignRoot}
         data-canvas="true"
-        className={join('crew-canvas', className)}
+        className={join('tl-canvas crew-canvas', className)}
         draggable={false}
         style={{ ...canvasStyle, ...style }}
       >
-        {background && <div style={{ ...viewportLayerStyle, pointerEvents: undefined }}>{background}</div>}
+        {svgDefs && (
+          <svg className="tl-svg-context" aria-hidden="true">
+            <defs>{svgDefs}</defs>
+          </svg>
+        )}
+        {background && (
+          <div className="tl-background__wrapper" style={{ ...viewportLayerStyle, pointerEvents: undefined }}>
+            {background}
+          </div>
+        )}
         <div
           ref={pageLayerRef}
           data-canvas-page-layer="true"
+          className="tl-html-layer tl-shapes"
           draggable={false}
           style={{ ...pageLayerStyle, ...shapeLayerStyle }}
         >
@@ -73,10 +84,18 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         <OverlayCanvas host={host} />
         {viewportOverlay && <div style={viewportLayerStyle}>{viewportOverlay}</div>}
         {cameraMoving && (
-          <div data-canvas-hit-test-blocker="true" style={{ ...viewportLayerStyle, pointerEvents: 'all' }} />
+          <div
+            data-canvas-hit-test-blocker="true"
+            className="tl-hit-test-blocker"
+            style={{ ...viewportLayerStyle, pointerEvents: 'all' }}
+          />
         )}
       </div>
-      {inFrontOfCanvas && <div style={viewportLayerStyle}>{inFrontOfCanvas}</div>}
+      {inFrontOfCanvas && (
+        <div className="tl-canvas__in-front" style={viewportLayerStyle}>
+          {inFrontOfCanvas}
+        </div>
+      )}
     </>
   )
 }

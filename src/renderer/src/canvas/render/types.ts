@@ -79,6 +79,7 @@ export interface CanvasProps<Shape extends CanvasShapeRecord = CanvasShapeRecord
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   host: CanvasRenderHost<Shape>
   shapeRenderer: CanvasShapeRenderer<Shape>
+  svgDefs?: ReactNode
   background?: ReactNode
   onTheCanvas?: ReactNode
   viewportOverlay?: ReactNode
