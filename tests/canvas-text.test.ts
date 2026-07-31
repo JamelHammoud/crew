@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { createRequire } from 'node:module'
 import { createElement } from 'react'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -27,8 +27,14 @@ import {
   textPointToScreen,
   textTransformCss,
   type FontFaceSetLike,
+  type TextMeasureOptions,
   type TLRichText
 } from '../src/renderer/src/canvas/text'
+
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+  html: string,
+  options: { pretendToBeVisual: boolean }
+) => { window: Window & typeof globalThis }
 
 const GLOBAL_KEYS = [
   'window',
@@ -147,7 +153,7 @@ describe('canvas text measurement', () => {
     const dom = installDom()
     const container = dom.window.document.body
     const sizes = new WeakMap<Element, { width: number; height: number }>()
-    vi.spyOn(dom.window.HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () {
+    vi.spyOn(dom.window.HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
       const size = sizes.get(this) ?? { width: this.textContent?.length ?? 0, height: 18 }
       return {
         x: 0,
@@ -244,7 +250,7 @@ describe('canvas rich text', () => {
 describe('canvas text autosizing', () => {
   it('uses fixed widths for wrapped text and adds wrapping room to automatic widths', () => {
     installDom()
-    const measureHtml = vi.fn(() => ({ x: 0, y: 0, w: 33.4, h: 11, scrollWidth: 0 }))
+    const measureHtml = vi.fn((_html: string, _options: TextMeasureOptions) => ({ x: 0, y: 0, w: 33.4, h: 11, scrollWidth: 0 }))
     const automatic = measureTextLayout(
       { measureHtml },
       { richText: rich, autoSize: true, width: 4, fontSize: 16, options: layoutMeasure }

@@ -370,6 +370,7 @@ describe('line tool hierarchy', () => {
     tool.onPointerUp()
     editor.zoom = 4
     const end = editor.getShape(id)!.props.points.a2
+    expect(end).toMatchObject({ x: 14.1, y: 10.1 })
     editor.point.set(shape.x + end.x + 1, shape.y + end.y)
     tool.onPointerDown()
     expect(editor.shapes.size).toBe(1)
@@ -442,7 +443,7 @@ describe('arrow tool hierarchy', () => {
     vi.advanceTimersByTime(300)
     expect(editor.targetUpdates.at(-1)?.isPrecise).toBe(true)
     tool.onPointerDown()
-    const pointing = tool.current as { isPrecise: boolean }
+    const pointing = tool.current as unknown as { isPrecise: boolean }
     expect(pointing.isPrecise).toBe(true)
     editor.targetId = undefined
     vi.advanceTimersByTime(500)
