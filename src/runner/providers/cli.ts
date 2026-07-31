@@ -243,7 +243,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
 
       const handleLine = (line: string) => {
         if (!line.trim()) return
-        raw += (raw ? '\n' : '') + line
+        if (raw.length < RAW_LIMIT) raw += (raw ? '\n' : '') + line
+        if (dialog) for (const body of dialog.answer(line)) write(body)
         for (const out of opts.parser!(line)) {
           if (out.thinkingStart) openBlock('thinking', out.thinkingStart.index)
           if (out.textStart) openBlock('text', out.textStart.index)
