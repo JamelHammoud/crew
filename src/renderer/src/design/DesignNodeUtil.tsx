@@ -5,8 +5,8 @@ import {
   Rectangle2d,
   resizeBox,
   ShapeUtil,
-  T,
   Vec,
+  designNodeShapeProps,
   type TLResizeInfo,
   type TLShape
 } from '../canvas'
@@ -22,24 +22,7 @@ export type DesignNodeShape = TLShape<'design-node'>
 export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
   static override type = 'design-node' as const
 
-  static override props = {
-    w: T.number,
-    h: T.number,
-    name: T.string,
-    shape: T.any,
-    radius: T.any,
-    fills: T.any,
-    strokes: T.any,
-    effects: T.any,
-    layout: T.any,
-    text: T.string,
-    type: T.any,
-    clip: T.boolean,
-    mask: T.boolean,
-    blend: T.string,
-    component: T.string,
-    instanceOf: T.string
-  }
+  static override props = designNodeShapeProps
 
   getDefaultProps(): DesignNodeProps {
     const shape = nextNodeShape()
