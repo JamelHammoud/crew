@@ -128,7 +128,7 @@ ${blobs}
   </g>
   <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="url(#vignette)" />
   <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="url(#settle)" />
-  <circle cx="${DMG.app}" cy="${DMG.line - 8}" r="152" fill="url(#pool)" />
+  <circle cx="${DMG.app}" cy="${DMG.line - 6}" r="136" fill="url(#pool)" />
   <ellipse cx="340" cy="${DMG.line}" rx="96" ry="15" fill="url(#run)" filter="url(#soften)" />
   <circle cx="${SETTLED.last}" cy="${DMG.line}" r="46" fill="url(#landing)" />
 ${drawn}
