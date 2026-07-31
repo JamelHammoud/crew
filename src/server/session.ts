@@ -3376,7 +3376,8 @@ export class CrewSession {
       agentLabel: start.agentLabel,
       threadId: start.threadId,
       ok: false,
-      error: 'Stopped'
+      error: 'Stopped',
+      stopped: true
     })
   }
 
