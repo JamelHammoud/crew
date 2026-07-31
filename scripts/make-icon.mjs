@@ -400,8 +400,11 @@ rmSync(iconset, { recursive: true, force: true })
 raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
 
 const [still] = await shootMesh([{ at: DMG.at, width: DMG.width * 2, height: DMG.height * 2 }])
-writeFileSync(path.join(resources, 'dmg-background.svg'), dmgBackground(still.png))
-const loop = await drawDmgLoop(path.join(resources, 'dmg-background.png'), raster)
+const backdrop = dmgBackground(still.png)
+writeFileSync(path.join(resources, 'dmg-background.svg'), backdrop)
+const backing = path.join(resources, 'dmg-background.png')
+raster(backdrop, DMG.width * DMG.RETINA, DMG.height * DMG.RETINA, backing)
+tagDpi(backing, 72 * DMG.RETINA)
 
 function encode(source, width, height, key) {
   const out = path.join(tmpdir(), `crew-icon-${key}.png`)
