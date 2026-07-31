@@ -76,22 +76,31 @@ export function dmgBackground(geometry) {
   <defs>
 ${sky}
     <filter id="drift" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.0055 0.0092" numOctaves="4" seed="7" result="field" />
-      <feDisplacementMap in="SourceGraphic" in2="field" scale="178" xChannelSelector="R" yChannelSelector="G" />
-      <feGaussianBlur stdDeviation="13" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.0031" numOctaves="3" seed="3" result="warp" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.0074" numOctaves="5" seed="11" result="raw" />
+      <feDisplacementMap in="raw" in2="warp" scale="128" xChannelSelector="R" yChannelSelector="G" result="veined" />
+      <feColorMatrix in="veined" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0" result="lum" />
+      <feComponentTransfer in="lum" result="folded">
+        <feFuncA type="table" tableValues="0 1 0" />
+      </feComponentTransfer>
+      <feComponentTransfer in="folded" result="veins">
+        <feFuncA type="gamma" amplitude="1" exponent="2.4" offset="0" />
+      </feComponentTransfer>
+      <feComposite in="SourceGraphic" in2="veins" operator="in" result="lit" />
+      <feGaussianBlur in="lit" stdDeviation="5" />
     </filter>
-    <radialGradient id="vignette" cx="0.448" cy="0.44" r="0.78">
+    <radialGradient id="vignette" cx="0.44" cy="0.46" r="0.8">
       <stop offset="0" stop-color="#0a0a0b" stop-opacity="0" />
-      <stop offset="0.52" stop-color="#0a0a0b" stop-opacity="0.3" />
-      <stop offset="1" stop-color="#08080a" stop-opacity="0.94" />
+      <stop offset="0.5" stop-color="#0a0a0b" stop-opacity="0.16" />
+      <stop offset="1" stop-color="#08080a" stop-opacity="0.92" />
     </radialGradient>
-    <linearGradient id="settle" x1="${DMG.width * 0.4}" y1="0" x2="${DMG.width}" y2="0" gradientUnits="userSpaceOnUse">
+    <linearGradient id="settle" x1="${DMG.width * 0.42}" y1="0" x2="${DMG.width}" y2="0" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#0b0b0c" stop-opacity="0" />
-      <stop offset="1" stop-color="#0b0b0c" stop-opacity="0.42" />
+      <stop offset="1" stop-color="#0b0b0c" stop-opacity="0.3" />
     </linearGradient>
     <radialGradient id="pool" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.11" />
-      <stop offset="0.46" stop-color="#ffffff" stop-opacity="0.035" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="0.42" stop-color="#ffffff" stop-opacity="0.045" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <linearGradient id="run" x1="248" y1="0" x2="432" y2="0" gradientUnits="userSpaceOnUse">
