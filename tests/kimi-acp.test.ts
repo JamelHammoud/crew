@@ -233,7 +233,7 @@ describe('what kimi says it did', () => {
     expect(kimiParser()(change({ status: 'completed', rawOutput: 'done' }))).toEqual([])
   })
 
-  it('hands every finished tool its result, and the run keeps only a command s', async () => {
+  it('hands every finished tool its result, and the run keeps only what a command printed', async () => {
     const parse = kimiParser()
     parse(call({ toolCallId: '0:tool_Rd', title: 'Read', kind: 'read', status: 'pending' }))
     const read = parse(change({ toolCallId: '0:tool_Rd', status: 'completed', rawOutput: 'export function add' }))
