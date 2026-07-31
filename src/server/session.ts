@@ -3331,6 +3331,11 @@ export class CrewSession {
 
   private handleCancel(promptId: string): void {
     const ref = this.prompts.get(promptId)
+    // What a killed CLI says on its way out is that CLI's own words, and they
+    // arrive as an ordinary error a moment later. The stop is remembered here
+    // instead, so whichever way the run comes back it is written down as the
+    // thing somebody did rather than as a thing that went wrong.
+    if (ref) this.stopping.add(promptId)
     // Stopping a run stops the helpers it sent out. They are its work, being
     // done somewhere else, so leaving them running would be leaving a stopped
     // turn writing to the project.
