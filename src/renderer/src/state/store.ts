@@ -949,6 +949,10 @@ export const useCrew = create<CrewState>((set, get) => {
       sayTyping(threadId ?? boardId, false)
       playSound('send')
       if (threadId || boardId) {
+        // A fork is named on the way out rather than waited for and picked out of
+        // whatever arrives, so the window that made it opens it and no other.
+        const forkId = threadId && commands?.includes('fork') ? globalThis.crypto.randomUUID() : undefined
+        forkWanted = forkId ?? forkWanted
         socket.send({
           type: 'chat.send',
           text,
@@ -957,7 +961,8 @@ export const useCrew = create<CrewState>((set, get) => {
           threadId,
           attachments,
           boardId: threadId ? undefined : boardId,
-          replyTo
+          replyTo,
+          forkId
         })
         set(state => ({
           threadDrafts: { ...state.threadDrafts, [key]: '' },
