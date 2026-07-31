@@ -76,7 +76,6 @@ export function RichTextEditor({
           if (position !== undefined) next.chain().focus().setTextSelection(position).run()
           else next.chain().focus('end').run()
         } else next.chain().focus('end').run()
-        callbacks.current.onReady?.(next)
       },
       editorProps: {
         handleKeyDown: (_view, event) => {
@@ -91,6 +90,7 @@ export function RichTextEditor({
       }
     })
     instance.current = editor
+    callbacks.current.onReady?.(editor)
     return () => {
       callbacks.current.onReady?.(null)
       instance.current = null

@@ -227,7 +227,7 @@ describe('canvas rich text', () => {
     expect(fromProseMirror.content[1].type).toBe('bulletList')
     const html = richTextToHtml(rich)
     expect(html).toContain('<strong>Crew </strong>')
-    expect(html).toContain('<ul>')
+    expect(html).toContain('<ul dir="auto">')
     const roundTrip = richTextFromHtml(html)
     expect(richTextToPlainText(roundTrip).replace(/\n+/g, '\n')).toBe('Crew link\nTogether')
     const linkMarks = roundTrip.content[0].content?.[1].marks ?? []
