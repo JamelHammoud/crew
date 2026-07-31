@@ -169,6 +169,15 @@ describe('the mounted Crew canvas', () => {
     act(() => frame.dispatchEvent(pointer('pointerup', 40, 20, 0)))
     expect(editor?.getShape(frameId)?.x).toBe(30)
 
+    const canvas = view.container.querySelector('[data-canvas="true"]') as HTMLElement
+    const beforeResize = editor!.getShapePageBounds(frameId)!
+    act(() => canvas.dispatchEvent(pointer('pointerdown', beforeResize.maxX, beforeResize.maxY, 1)))
+    act(() => canvas.dispatchEvent(pointer('pointermove', beforeResize.maxX + 30, beforeResize.maxY + 20, 1)))
+    act(() => canvas.dispatchEvent(pointer('pointerup', beforeResize.maxX + 30, beforeResize.maxY + 20, 0)))
+    const afterResize = editor!.getShapePageBounds(frameId)!
+    expect(afterResize.w).toBeGreaterThan(beforeResize.w)
+    expect(afterResize.h).toBeGreaterThan(beforeResize.h)
+
     const text = view.container.querySelector(`[data-shape-id="${textId}"]`) as HTMLElement
     act(() => text.dispatchEvent(new dom.window.MouseEvent('dblclick', { bubbles: true, clientX: 25, clientY: 105 })))
     await waitFor(() => expect(view.getByTestId('canvas-rich-text-editor')).toBeTruthy())
