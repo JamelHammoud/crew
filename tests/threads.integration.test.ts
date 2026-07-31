@@ -247,6 +247,9 @@ describe('threads', () => {
     const end = (await ui.waitForEvent(e => e.kind === 'agent.end' && e.promptId === start.promptId)) as Ended
     expect(end.ok).toBe(false)
     expect(end.error).toBe('Stopped')
+    // A stop is written down as the thing somebody did rather than left to be
+    // read out of whatever the CLI said as it was killed.
+    expect(end.stopped).toBe(true)
 
     const kept = host.store
       .loadEvents()
