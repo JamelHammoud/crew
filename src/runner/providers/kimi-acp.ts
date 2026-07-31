@@ -265,13 +265,13 @@ export function kimiParser(): RunParser {
     const opened = str(msg?.result?.sessionId)
     if (opened) sessionId = opened
     // Only the prompt answers with a stop reason, so it needs no id to be told
-    // apart, and it is the one thing that says the turn is over.
+    // apart.
     const stop = str(msg?.result?.stopReason)
     if (stop) {
       close(out)
       if (STOPS[stop]) out.push({ error: STOPS[stop] })
       counted(out, true)
-      out.push({ turnEnd: true })
+      if (stop !== CANCELLED) out.push({ turnEnd: true })
     }
     return out
   }
