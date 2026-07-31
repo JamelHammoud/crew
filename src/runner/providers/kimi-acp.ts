@@ -222,7 +222,7 @@ export function kimiParser(): RunParser {
     }
   }
 
-  return line => {
+  const parse = (line: string): ParsedOutput[] => {
     let msg: any
     try {
       msg = JSON.parse(line)
