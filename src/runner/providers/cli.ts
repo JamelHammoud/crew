@@ -316,15 +316,17 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
             else spent = addUsage(spent, out.usage)
           }
           if (out.error) parsedError = out.error
-          if (out.turnEnd && dialog) onTurnEnd()
+          if (out.turnEnd && dialog && !reopened) onTurnEnd()
       }
 
       const handleLine = (line: string) => {
         if (!line.trim()) return
         if (raw.length < RAW_LIMIT) raw += (raw ? '\n' : '') + line
-        if (dialog) for (const body of dialog.answer(line)) write(body)
+        reopened = false
+        if (dialog) for (const body of dialog.answer(line)) reopened = write(body) || reopened
         for (const out of parse!(line)) apply(out)
         reportTokens()
+        reopened = false
       }
 
       // A CLI that writes what a turn cost just after it says the turn is over
