@@ -418,6 +418,11 @@ const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]):
   return Object.fromEntries(kept.map(promptId => [promptId, steps[promptId]]))
 }
 
+// The fork this window asked for, waiting on the thread to really arrive. It is
+// named on the way out so there is nothing to guess about which of the threads
+// landing was your own, and nobody else's window moves for it.
+let forkWanted: string | null = null
+
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     const cue = soundFor(event, get().selfId, get())
