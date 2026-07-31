@@ -399,23 +399,9 @@ rmSync(iconset, { recursive: true, force: true })
 
 raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
 
-const [oneToOne, retinaMesh] = await shootMesh([
-  { at: DMG.at, width: DMG.width, height: DMG.height },
-  { at: DMG.at, width: DMG.width * 2, height: DMG.height * 2 }
-])
-const backdrop = dmgBackground(retinaMesh.png)
-const plain = path.join(resources, 'dmg-background.png')
-const retina = path.join(resources, 'dmg-background@2x.png')
-writeFileSync(path.join(resources, 'dmg-background.svg'), backdrop)
-raster(dmgBackground(oneToOne.png), DMG.width, DMG.height, plain)
-raster(backdrop, DMG.width * 2, DMG.height * 2, retina)
-execFileSync('tiffutil', [
-  '-cathidpicheck',
-  plain,
-  retina,
-  '-out',
-  path.join(resources, 'dmg-background.tiff')
-])
+const [still] = await shootMesh([{ at: DMG.at, width: DMG.width * 2, height: DMG.height * 2 }])
+writeFileSync(path.join(resources, 'dmg-background.svg'), dmgBackground(still.png))
+const loop = await drawDmgLoop(path.join(resources, 'dmg-background.png'), raster)
 
 function encode(source, width, height, key) {
   const out = path.join(tmpdir(), `crew-icon-${key}.png`)
