@@ -1,62 +1,59 @@
+export { CrewCanvas, type CrewCanvasOptions, type CrewCanvasProps } from './CrewCanvas'
+export { Editor } from './editor'
+export type { TLResizeInfo } from './tools/transforms/resizeBox'
 export {
   ArrowShapeUtil,
-  atom,
-  BaseBoxShapeTool,
-  CollaboratorCursorOverlayUtil,
-  copyAs,
-  createShapeId,
-  createTLStore,
-  DefaultColorStyle,
-  DefaultDashStyle,
-  DefaultFontStyle,
-  defaultBindingUtils,
-  defaultShapeUtils,
-  EditorContext,
-  Ellipse2d,
   FrameShapeUtil,
   GeoShapeUtil,
-  getColorValue,
-  getSnapshot,
-  HTMLContainer,
-  InstancePresenceRecordType,
-  LineShapeSplineStyle,
-  loadSnapshot,
-  Polygon2d,
-  Rectangle2d,
-  renderHtmlFromRichTextForMeasurement,
-  resizeBox,
   ShapeUtil,
-  T,
   TextShapeUtil,
-  Tldraw,
-  TldrawImage,
-  useCanRedo,
-  useCanUndo,
-  useEditor,
-  useMaybeEditor,
-  useValue,
-  Vec
-} from 'tldraw'
-
+  defaultBindingUtils,
+  defaultShapeUtils
+} from './shapes'
+export { BaseBoxShapeTool } from './tools'
+export { resizeBox } from './tools/transforms/resizeBox'
+export { copyAs } from './export'
+export { atom, useValue } from './signals'
+export { Ellipse2d, Polygon2d, Rectangle2d } from './geometry'
+export { Vec } from './math'
+export {
+  InstancePresenceRecordType,
+  T,
+  createShapeId,
+  createTLSchema,
+  createTLStore,
+  getSnapshot,
+  loadSnapshot,
+  renderHtmlFromRichTextForMeasurement
+} from './schema'
 export type {
-  Editor,
-  SelectionForegroundOverlayUtil,
-  TLCollaboratorCursorOverlay,
-  TLComponents,
   TLCursorType,
   TLDefaultColorStyle,
   TLDefaultDashStyle,
   TLDefaultSizeStyle,
-  TldrawOptions,
-  TLFrameShape,
   TLPageId,
   TLRecord,
-  TLResizeInfo,
   TLShape,
   TLShapeId,
-  TLStoreSnapshot,
-  TLTextShape,
   TLUserId
-} from 'tldraw'
+} from './schema'
+export type { TLStoreSnapshot } from './schema/tlStore'
+export {
+  DefaultColorStyle,
+  DefaultDashStyle,
+  DefaultFontStyle,
+  LineShapeSplineStyle,
+  getColorValue
+} from './styles'
+export {
+  EditorContext,
+  useCanRedo,
+  useCanUndo,
+  useEditor,
+  useMaybeEditor
+} from './react'
+export { HTMLContainer } from './primitives'
+export type { SelectionForegroundOverlayUtil } from './primitives'
 
-export { createTLSchema } from '@tldraw/tlschema'
+export type TLFrameShape = import('./schema').TLShape<'frame'>
+export type TLTextShape = import('./schema').TLShape<'text'>

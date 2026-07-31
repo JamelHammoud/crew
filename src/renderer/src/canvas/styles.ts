@@ -19,10 +19,10 @@ function style<Value>(id: string, defaultValue: Value, values: readonly Value[])
   return { id, defaultValue, values }
 }
 
-export const DefaultColorStyle = style<TLDefaultColorStyle>('tldraw:color', 'black', DEFAULT_COLORS)
-export const DefaultDashStyle = style<TLDefaultDashStyle>('tldraw:dash', 'draw', DEFAULT_DASHES)
-export const DefaultFontStyle = style<TLDefaultFontStyle>('tldraw:font', 'draw', DEFAULT_FONTS)
-export const LineShapeSplineStyle = style<TLLineShapeSplineStyle>('tldraw:spline', 'line', SPLINES)
+export const DefaultColorStyle = style<TLDefaultColorStyle>('crew:color', 'black', DEFAULT_COLORS)
+export const DefaultDashStyle = style<TLDefaultDashStyle>('crew:dash', 'draw', DEFAULT_DASHES)
+export const DefaultFontStyle = style<TLDefaultFontStyle>('crew:font', 'draw', DEFAULT_FONTS)
+export const LineShapeSplineStyle = style<TLLineShapeSplineStyle>('crew:spline', 'line', SPLINES)
 
 export function getColorValue(
   palette: Record<string, unknown>,

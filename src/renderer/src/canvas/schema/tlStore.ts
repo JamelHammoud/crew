@@ -210,5 +210,3 @@ export function loadSnapshot(store: TLStore, snapshot: TLStoreSnapshot | TLEdito
     store.put(Object.values(document.store), 'initialize')
   }, false)
 }
-
-export const defaultBindingUtils: unknown[] = []
