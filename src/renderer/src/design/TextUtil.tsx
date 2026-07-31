@@ -15,12 +15,7 @@ import { compensateTextGrowth } from '../canvas/text'
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
 
-const customDisplayValues = (
-  editor: ShapeUtil['editor'],
-  shape: TLTextShape,
-  _geometry?: unknown,
-  _mode?: string
-) => {
+const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _geometry?: unknown, _mode?: string) => {
   const type = textShapeType(editor as Editor, shape)
   loadFonts([type.family])
   return {
