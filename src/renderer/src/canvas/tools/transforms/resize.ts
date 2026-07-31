@@ -4,7 +4,7 @@ import { HALF_PI, approximately } from '../../math/utils'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
 import { resizeBox, type ResizeInfo, type ResizeMode } from './resizeBox'
-import { TransformState, type ShapeUpdate, type TransformEditor } from './types'
+import { TransformState, type ShapeUpdate, type TransformEditor, type TransformSnapNode } from './types'
 
 export interface ResizeSnapshot<Shape extends TLShape = TLShape> {
   shape: Shape
@@ -214,6 +214,8 @@ export interface ResizingInfo<Shape extends TLShape = TLShape> {
   snapshots?: ResizeSnapshot<Shape>[]
   selectionBounds?: Box
   selectionRotation?: number
+  snappableShapes?: readonly TransformSnapNode[]
+  zoom?: number
   isCreating?: boolean
   creatingMarkId?: string
   onCreate?(shape: Shape | null): void
@@ -247,6 +249,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
 
   override onExit(): void {
     this.parent.setCurrentToolIdMask?.(undefined)
+    this.editor.snaps?.clearIndicators?.()
     this.editor.setCursor?.({ type: 'default', rotation: 0 })
   }
 
@@ -275,18 +278,37 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
       const current = this.editor.getShape(shape.id)
       if (current) this.editor.getShapeUtil?.(shape).onResizeCancel?.(shape, current)
     }
+    this.editor.snaps?.clearIndicators?.()
     if (this.markId) this.editor.bailToMark?.(this.markId)
     this.finish()
   }
 
   private update(): void {
     const locked = this.editor.inputs.getShiftKey() || this.snapshots.some(snapshot => snapshot.isAspectRatioLocked)
+    const originPagePoint = this.editor.inputs.getOriginPagePoint()
+    const currentPagePoint = this.editor.inputs.getCurrentPagePoint().clone()
+    const snapMode = this.editor.getIsSnapMode?.() ?? true
+    const accelKey = this.editor.inputs.getAccelKey?.() ?? false
+    const snap =
+      (snapMode ? !accelKey : accelKey) && this.selectionRotation % HALF_PI === 0
+        ? this.editor.snaps?.snapResizeBounds?.({
+            initialSelectionPageBounds: this.selectionBounds,
+            dragDelta: Vec.Sub(currentPagePoint, originPagePoint),
+            handle: this.info.handle,
+            isAspectRatioLocked: locked,
+            isResizingFromCenter: this.editor.inputs.getAltKey?.(),
+            snappableShapes: this.info.snappableShapes ?? this.editor.getSnappableShapes?.() ?? [],
+            zoom: this.info.zoom ?? this.editor.getZoomLevel?.() ?? 1
+          })
+        : undefined
+    if (snap) currentPagePoint.add(snap.nudge)
+    this.editor.snaps?.setIndicators?.(snap?.indicators ?? [])
     const calculation = calculateResize({
       selectionBounds: this.selectionBounds,
       selectionRotation: this.selectionRotation,
       handle: this.info.handle,
-      originPagePoint: this.editor.inputs.getOriginPagePoint(),
-      currentPagePoint: this.editor.inputs.getCurrentPagePoint(),
+      originPagePoint,
+      currentPagePoint,
       fromCenter: this.editor.inputs.getAltKey?.(),
       isAspectRatioLocked: locked
     })
