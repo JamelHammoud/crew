@@ -55,6 +55,15 @@ describe('provider settings map to command line flags', () => {
     expect(session.params).toMatchObject({ cwd: '/tmp/work', mcpServers: [] })
 
     sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { sessionId: 's1' } })))
+    const mode = JSON.parse(sent[sent.length - 1])
+    expect(mode.method).toBe('session/set_config_option')
+    expect(mode.params).toEqual({ sessionId: 's1', configId: 'mode', value: 'yolo' })
+
+    sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 3, result: {} })))
+    const picked = JSON.parse(sent[sent.length - 1])
+    expect(picked.params).toEqual({ sessionId: 's1', configId: 'model', value: 'kimi-code/k3' })
+
+    sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 4, result: {} })))
     const turn = JSON.parse(sent[sent.length - 1])
     expect(turn.method).toBe('session/prompt')
     expect(turn.params.sessionId).toBe('s1')
