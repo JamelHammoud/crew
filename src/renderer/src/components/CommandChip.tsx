@@ -7,6 +7,7 @@ import {
   ClockGlyph,
   CloseGlyph,
   GhostGlyph,
+  HandoffGlyph,
   MicGlyph,
   QuestionGlyph,
   TicketGlyph
@@ -22,7 +23,8 @@ export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   steer: BoltGlyph,
   queue: ClockGlyph,
   btw: QuestionGlyph,
-  fork: BranchGlyph
+  fork: BranchGlyph,
+  fallback: HandoffGlyph
 }
 
 export const COMMAND_LABELS: Record<CommandName, string> = {
@@ -34,7 +36,8 @@ export const COMMAND_LABELS: Record<CommandName, string> = {
   steer: 'Steer',
   queue: 'Queue',
   btw: 'On the side',
-  fork: 'Fork'
+  fork: 'Fork',
+  fallback: 'Fallback'
 }
 
 // In the composer a command is a control standing in the row the plus stands in,

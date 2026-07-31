@@ -79,6 +79,8 @@ const baseMeasure = {
   padding: '0px'
 }
 
+const { fontSize: _fontSize, maxWidth: _maxWidth, ...layoutMeasure } = baseMeasure
+
 const rich: TLRichText = {
   type: 'doc',
   content: [
@@ -213,13 +215,13 @@ describe('canvas text autosizing', () => {
     const measureHtml = vi.fn(() => ({ x: 0, y: 0, w: 33.4, h: 11, scrollWidth: 0 }))
     const automatic = measureTextLayout(
       { measureHtml },
-      { richText: rich, autoSize: true, width: 4, fontSize: 16, options: { ...baseMeasure, fontSize: undefined } as never }
+      { richText: rich, autoSize: true, width: 4, fontSize: 16, options: layoutMeasure }
     )
     expect(automatic).toEqual({ width: 34.4, height: 16 })
     expect(measureHtml.mock.calls[0][1].maxWidth).toBeNull()
     const fixed = measureTextLayout(
       { measureHtml },
-      { richText: rich, autoSize: false, width: 91.8, fontSize: 16, options: { ...baseMeasure, fontSize: undefined } as never }
+      { richText: rich, autoSize: false, width: 91.8, fontSize: 16, options: layoutMeasure }
     )
     expect(fixed).toEqual({ width: 91, height: 16 })
     expect(measureHtml.mock.calls[1][1].maxWidth).toBe(91)
@@ -243,7 +245,9 @@ describe('canvas transformed text editing', () => {
     const transform = { x: 80, y: 40, rotation: Math.PI / 4, scaleX: 2, scaleY: 0.5 }
     const local = { x: 12, y: 18 }
     const screen = textPointToScreen(local, transform)
-    expect(screenPointToText(screen, transform)).toEqual(expect.objectContaining({ x: expect.closeTo(12), y: expect.closeTo(18) }))
+    const restored = screenPointToText(screen, transform)
+    expect(restored.x).toBeCloseTo(12)
+    expect(restored.y).toBeCloseTo(18)
     expect(textTransformCss(transform)).toBe(`translate(80px, 40px) rotate(${Math.PI / 4}rad) scale(2, 0.5)`)
 
     const dom = installDom()
