@@ -362,10 +362,12 @@ describe('line tool hierarchy', () => {
       }
     ])
     tool.onPointerUp()
+    expect(tool.current).toMatchObject({ shapeId: id })
     editor.shift = true
     editor.zoom = 0.25
     editor.point.set(shape.x + 14, shape.y + 10)
     tool.onPointerDown()
+    expect(editor.shapes.size).toBe(1)
     expect(Object.keys(editor.getShape(id)!.props.points)).toHaveLength(2)
     tool.onPointerUp()
     editor.zoom = 4

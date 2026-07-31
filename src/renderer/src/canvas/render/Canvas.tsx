@@ -62,7 +62,7 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         style={{ ...canvasStyle, ...style }}
       >
         {svgDefs && (
-          <svg className="crew-svg-context" aria-hidden="true">
+          <svg className="crew-svg-context" aria-hidden="true" style={viewportLayerStyle}>
             <defs>{svgDefs}</defs>
           </svg>
         )}
