@@ -3685,7 +3685,12 @@ export class CrewSession {
     if (thread?.aside) lines.push(``, ASIDE_INSTRUCTIONS)
     if (thread?.mode === 'plan') lines.push(``, PLAN_INSTRUCTIONS)
     else if (thread?.plan) lines.push(``, `The plan this thread agreed on:`, thread.plan)
-    lines.push(``, thread?.parentThreadId ? `Your work:` : `Thread so far:`, transcript || '(nothing yet)')
+    if (thread?.aside) {
+      lines.push(``, `The thread, which you are not in:`, this.transcriptOf(beside) || '(nothing yet)')
+      lines.push(``, `Your conversation on the side:`, transcript || '(nothing yet)')
+    } else {
+      lines.push(``, thread?.parentThreadId ? `Your work:` : `Thread so far:`, transcript || '(nothing yet)')
+    }
     const referenced = this.referencedPages(context, prompt)
     for (const page of referenced) {
       const doc = this.docs.get(page)
