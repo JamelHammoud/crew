@@ -125,6 +125,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         thinking: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false },
         text: { ids: new Map<number, string>(), open: new Set<string>(), streamed: false }
       }
+      const asides = new Set<string>()
       const toolNames = new Map<string, string>()
       const tasks = taskLedger()
 
