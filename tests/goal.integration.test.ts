@@ -29,23 +29,21 @@ describe('goal runs', () => {
       steerable: true,
       fields: () => [],
       detect: async () => true,
-      start: (_prompt, _cwd, _hooks, _settings, options) => ({
-        done: new Promise(resolve => setTimeout(() => resolve({ text: 'done' }), 180)),
-        kill: () => {},
-        steer: () => {
-          steers += 1
-          return true
+      start: (_prompt, _cwd, _hooks, _settings, options) => {
+        goals.push(options?.goal === true)
+        return {
+          done: new Promise(resolve => setTimeout(() => resolve({ text: 'done' }), 180)),
+          kill: () => {},
+          steer: () => {
+            steers += 1
+            return true
+          }
         }
-      })
+      }
     }
-    const originalStart = provider.start
-    provider.start = (prompt, cwd, hooks, settings, options) => {
-      goals.push(options?.goal === true)
-      return originalStart(prompt, cwd, hooks, settings, options)
-    }
+    ui = await TestUi.connect(host.url, 'sam', host.code)
     runner = testRunner({ name: 'sam', code: host.code, repoPath: host.repoPath, providers: [provider] })
     runner.connect(host.url)
-    ui = await TestUi.connect(host.url, 'sam', host.code)
     await ui.waitForEvent(event => event.kind === 'agent.online')
 
     const watcher = agentId('sam', 'watcher')

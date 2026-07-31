@@ -1,0 +1,129 @@
+import { describe, expect, it } from 'vitest'
+import { Box } from '../src/renderer/src/canvas/math/Box'
+import { Vec } from '../src/renderer/src/canvas/math/Vec'
+import {
+  snapResizeBounds,
+  snapTranslateBounds,
+  type BoundsSnapNode,
+  type GapsSnapIndicator,
+  type PointsSnapIndicator
+} from '../src/renderer/src/canvas/tools/snaps'
+
+const node = (id: string, x: number, y: number, w = 10, h = 10): BoundsSnapNode => ({
+  id,
+  pageBounds: new Box(x, y, w, h)
+})
+
+describe('canvas bounds snapping', () => {
+  it('snaps to the closest point on each axis and accumulates equal point matches', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 20, 10, 10),
+      dragDelta: new Vec(89, 0),
+      snappableShapes: [node('target', 100, 0, 10, 50)]
+    })
+
+    expect(result.nudge).toEqual(new Vec(1, 0))
+    const vertical = result.indicators.find(
+      (indicator): indicator is PointsSnapIndicator =>
+        indicator.type === 'points' && indicator.id === 'point:x:100'
+    )
+    expect(vertical?.points.map((point) => [point.x, point.y])).toEqual([
+      [100, 0],
+      [100, 50],
+      [100, 25],
+      [100, 20],
+      [100, 30]
+    ])
+  })
+
+  it('uses a screen-pixel threshold at every zoom level', () => {
+    const options = {
+      initialSelectionPageBounds: new Box(0, 30, 10, 10),
+      snappableShapes: [node('target', 100, 0)],
+      snapThreshold: 8
+    }
+
+    expect(
+      snapTranslateBounds({ ...options, dragDelta: new Vec(85.9, 0), zoom: 1 }).nudge.x
+    ).toBeCloseTo(4.1)
+    expect(
+      snapTranslateBounds({ ...options, dragDelta: new Vec(85.9, 0), zoom: 2 }).nudge.x
+    ).toBe(0)
+    expect(snapTranslateBounds({ ...options, dragDelta: new Vec(86, 0), zoom: 2 }).nudge.x).toBe(4)
+  })
+
+  it('recalculates indicators after applying both nudge axes', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 10, 10),
+      initialSelectionSnapPoints: [{ id: 'selection', x: 10, y: 10 }],
+      dragDelta: new Vec(89, 89),
+      snappableShapes: [
+        { id: 'vertical', pageBounds: new Box(100, 30, 10, 10), points: [new Vec(100, 35)] },
+        { id: 'horizontal', pageBounds: new Box(30, 100, 10, 10), points: [new Vec(35, 100)] },
+        { id: 'corner', pageBounds: new Box(100, 100, 10, 10), points: [new Vec(100, 100)] }
+      ]
+    })
+
+    expect(result.nudge).toEqual(new Vec(1, 1))
+    expect(
+      result.indicators
+        .filter((indicator): indicator is PointsSnapIndicator => indicator.type === 'points')
+        .map((indicator) => indicator.id)
+    ).toEqual(['point:x:100', 'point:y:100'])
+    expect(
+      result.indicators
+        .filter((indicator): indicator is PointsSnapIndicator => indicator.type === 'points')
+        .every((indicator) => indicator.points.some((point) => point.equalsXY(100, 100)))
+    ).toBe(true)
+  })
+
+  it('duplicates a gap and carries equal-distance indicators through adjacent shapes', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 10, 10),
+      dragDelta: new Vec(59, 0),
+      snappableShapes: [node('a', 0, 0), node('b', 20, 0), node('c', 40, 0)]
+    })
+
+    expect(result.nudge).toEqual(new Vec(1, 0))
+    const indicator = result.indicators.find(
+      (candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps'
+    )
+    expect(indicator?.direction).toBe('horizontal')
+    expect(indicator?.gaps).toHaveLength(3)
+    expect(indicator?.gaps.map((gap) => [gap.startEdge[0].x, gap.endEdge[0].x])).toEqual([
+      [10, 20],
+      [30, 40],
+      [50, 60]
+    ])
+  })
+
+  it('centers a selection inside a larger gap and draws both resulting distances', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 10, 10),
+      dragDelta: new Vec(24, 0),
+      snappableShapes: [node('left', 0, 0), node('right', 50, 0)]
+    })
+
+    expect(result.nudge).toEqual(new Vec(1, 0))
+    const indicator = result.indicators.find(
+      (candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps'
+    )
+    expect(indicator?.gaps.map((gap) => [gap.startEdge[0].x, gap.endEdge[0].x])).toEqual([
+      [10, 25],
+      [35, 50]
+    ])
+  })
+
+  it('snaps resized edges with the same zoom-aware point pass', () => {
+    const result = snapResizeBounds({
+      initialSelectionPageBounds: new Box(0, 20, 20, 20),
+      dragDelta: new Vec(78, 0),
+      handle: 'right',
+      snappableShapes: [node('target', 100, 0, 10, 60)],
+      zoom: 2
+    })
+
+    expect(result.nudge).toEqual(new Vec(2, 0))
+    expect(result.indicators.some((indicator) => indicator.id === 'point:x:100')).toBe(true)
+  })
+})

@@ -1,0 +1,340 @@
+import { Box, type SelectionHandle } from '../../math/Box'
+import { Mat, type MatLike } from '../../math/Mat'
+import { HALF_PI, approximately } from '../../math/utils'
+import { Vec, type VecLike } from '../../math/Vec'
+import type { TLShape } from '../../schema'
+import type { TLResizeInfo, TLResizeMode } from '../../shapes/ShapeUtil'
+import { resizeBox } from './resizeBox'
+import {
+  TransformState,
+  type ShapeUpdate,
+  type TransformEditor,
+  type TransformParent
+} from './types'
+
+export interface ResizeSnapshot<Shape extends TLShape = TLShape> {
+  shape: Shape
+  bounds: Box
+  pageTransform: MatLike
+  parentTransform: MatLike | null
+  isAspectRatioLocked?: boolean
+}
+
+export interface ResizeCalculation {
+  scale: Vec
+  scaleOrigin: Vec
+}
+
+export interface CalculateResizeOptions {
+  selectionBounds: Box
+  selectionRotation: number
+  handle: SelectionHandle
+  originPagePoint: VecLike
+  currentPagePoint: VecLike
+  fromCenter?: boolean
+  isAspectRatioLocked?: boolean
+}
+
+const OPPOSITE_HANDLE: Record<SelectionHandle, SelectionHandle> = {
+  top: 'bottom',
+  top_right: 'bottom_left',
+  right: 'left',
+  bottom_right: 'top_left',
+  bottom: 'top',
+  bottom_left: 'top_right',
+  left: 'right',
+  top_left: 'bottom_right'
+}
+
+export function calculateResize(options: CalculateResizeOptions): ResizeCalculation {
+  const {
+    selectionBounds,
+    selectionRotation,
+    handle,
+    originPagePoint,
+    currentPagePoint,
+    fromCenter = false,
+    isAspectRatioLocked = false
+  } = options
+
+  const scaleOrigin = Vec.RotWith(
+    fromCenter
+      ? selectionBounds.center
+      : selectionBounds.getHandlePoint(OPPOSITE_HANDLE[handle]),
+    selectionBounds.point,
+    selectionRotation
+  )
+  const currentDistance = Vec.Sub(currentPagePoint, scaleOrigin).rot(-selectionRotation)
+  const initialDistance = Vec.Sub(originPagePoint, scaleOrigin).rot(-selectionRotation)
+  const scale = Vec.DivV(currentDistance, initialDistance)
+
+  if (!Number.isFinite(scale.x)) scale.x = 1
+  if (!Number.isFinite(scale.y)) scale.y = 1
+
+  const lockX = handle === 'top' || handle === 'bottom'
+  const lockY = handle === 'left' || handle === 'right'
+
+  if (isAspectRatioLocked) {
+    if (lockY) {
+      scale.y = Math.abs(scale.x)
+    } else if (lockX) {
+      scale.x = Math.abs(scale.y)
+    } else if (Math.abs(scale.x) > Math.abs(scale.y)) {
+      scale.y = Math.abs(scale.x) * (scale.y < 0 ? -1 : 1)
+    } else {
+      scale.x = Math.abs(scale.y) * (scale.x < 0 ? -1 : 1)
+    }
+  } else {
+    if (lockX) scale.x = 1
+    if (lockY) scale.y = 1
+  }
+
+  return { scale, scaleOrigin }
+}
+
+export function scalePagePoint(
+  point: VecLike,
+  scaleOrigin: VecLike,
+  scale: VecLike,
+  scaleAxisRotation: number
+): Vec {
+  const relative = Vec.RotWith(point, scaleOrigin, -scaleAxisRotation).sub(scaleOrigin)
+  return Vec.MulV(relative, scale)
+    .add(scaleOrigin)
+    .rotWith(scaleOrigin, scaleAxisRotation)
+}
+
+export interface ResizeShapeOptions<Shape extends TLShape> {
+  scaleOrigin: VecLike
+  scaleAxisRotation: number
+  handle?: SelectionHandle
+  mode?: TLResizeMode
+  isAspectRatioLocked?: boolean
+  onResize?(shape: Shape, info: TLResizeInfo<Shape>): Shape
+}
+
+function supportsBoxResize(
+  shape: TLShape
+): shape is TLShape & { props: TLShape['props'] & { w: number; h: number } } {
+  return 'w' in shape.props && 'h' in shape.props
+}
+
+export function resizeShape<Shape extends TLShape>(
+  snapshot: ResizeSnapshot<Shape>,
+  scale: VecLike,
+  options: ResizeShapeOptions<Shape>
+): ShapeUpdate<Shape> {
+  const {
+    shape,
+    bounds,
+    pageTransform,
+    parentTransform,
+    isAspectRatioLocked = options.isAspectRatioLocked ?? false
+  } = snapshot
+  const pageRotation = Mat.Rotation(pageTransform)
+  const adjustedScale = Vec.From(scale)
+
+  if (isAspectRatioLocked) {
+    if (Math.abs(adjustedScale.x) > Math.abs(adjustedScale.y)) {
+      adjustedScale.y = Math.sign(adjustedScale.y) * Math.abs(adjustedScale.x)
+    } else {
+      adjustedScale.x = Math.sign(adjustedScale.x) * Math.abs(adjustedScale.y)
+    }
+  }
+
+  const aligned = approximately(
+    Math.abs((pageRotation - options.scaleAxisRotation) % HALF_PI),
+    0
+  )
+  if (!aligned) {
+    const uniform = Math.min(Math.abs(adjustedScale.x), Math.abs(adjustedScale.y))
+    adjustedScale.x = Math.sign(adjustedScale.x) * uniform
+    adjustedScale.y = Math.sign(adjustedScale.y) * uniform
+  }
+
+  const pagePoint = Mat.applyToPoint(pageTransform, new Vec())
+  const newPagePoint = scalePagePoint(
+    pagePoint,
+    options.scaleOrigin,
+    adjustedScale,
+    options.scaleAxisRotation
+  )
+  const newLocalPoint = parentTransform
+    ? Mat.applyToPoint(parentTransform, newPagePoint)
+    : newPagePoint
+
+  const axesAligned = approximately((pageRotation - options.scaleAxisRotation) % Math.PI, 0)
+  const shapeScale = axesAligned
+    ? adjustedScale
+    : new Vec(adjustedScale.y, adjustedScale.x)
+
+  const info: TLResizeInfo<Shape> = {
+    newPoint: newLocalPoint,
+    handle: options.handle ?? 'bottom_right',
+    mode: options.mode ?? 'scale_shape',
+    scaleX: shapeScale.x,
+    scaleY: shapeScale.y,
+    initialBounds: bounds,
+    initialShape: shape
+  }
+
+  const resized = options.onResize?.(shape, info) ??
+    (supportsBoxResize(shape) ? resizeBox(shape, info as TLResizeInfo<typeof shape>) : undefined)
+
+  if (resized) return resized as ShapeUpdate<Shape>
+
+  const initialPageCenter = Mat.applyToPoint(pageTransform, bounds.center)
+  const nextPageCenter = scalePagePoint(
+    initialPageCenter,
+    options.scaleOrigin,
+    adjustedScale,
+    options.scaleAxisRotation
+  )
+  const initialLocalCenter = parentTransform
+    ? Mat.applyToPoint(parentTransform, initialPageCenter)
+    : initialPageCenter
+  const nextLocalCenter = parentTransform
+    ? Mat.applyToPoint(parentTransform, nextPageCenter)
+    : nextPageCenter
+  const delta = Vec.Sub(nextLocalCenter, initialLocalCenter)
+
+  return {
+    id: shape.id,
+    type: shape.type,
+    x: shape.x + delta.x,
+    y: shape.y + delta.y
+  } as ShapeUpdate<Shape>
+}
+
+export function resizeShapes<Shape extends TLShape>(
+  snapshots: ResizeSnapshot<Shape>[],
+  scale: VecLike,
+  options: ResizeShapeOptions<Shape>
+): ShapeUpdate<Shape>[] {
+  return snapshots.map(snapshot => resizeShape(snapshot, scale, options))
+}
+
+export interface ResizingInfo<Shape extends TLShape = TLShape> {
+  target?: 'selection'
+  handle: SelectionHandle
+  snapshots?: ResizeSnapshot<Shape>[]
+  selectionBounds?: Box
+  selectionRotation?: number
+  isCreating?: boolean
+  creatingMarkId?: string
+  onCreate?(shape: Shape | null): void
+  onInteractionEnd?: string | (() => void)
+}
+
+export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
+  TransformEditor<Shape>,
+  ResizingInfo<Shape>
+> {
+  static override id = 'resizing'
+  static override trackPerformance = true
+
+  info!: ResizingInfo<Shape>
+  snapshots: ResizeSnapshot<Shape>[] = []
+  selectionBounds = new Box()
+  selectionRotation = 0
+  markId = ''
+
+  constructor(editor: TransformEditor<Shape>, parent?: TransformParent) {
+    super(editor, parent)
+  }
+
+  override onEnter(info: ResizingInfo<Shape>): void {
+    this.info = info
+    this.parent.setCurrentToolIdMask?.(
+      typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined
+    )
+    this.snapshots = info.snapshots ?? []
+    this.selectionBounds =
+      info.selectionBounds ?? this.editor.getSelectionRotatedPageBounds?.() ?? new Box()
+    this.selectionRotation = info.selectionRotation ?? this.editor.getSelectionRotation?.() ?? 0
+    this.markId =
+      info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('starting resizing') ?? ''
+    if (info.isCreating) this.editor.setCursor?.({ type: 'cross', rotation: 0 })
+    this.update()
+  }
+
+  override onExit(): void {
+    this.parent.setCurrentToolIdMask?.(undefined)
+    this.editor.setCursor?.({ type: 'default', rotation: 0 })
+  }
+
+  onPointerMove(): void {
+    this.update()
+  }
+
+  onKeyDown(): void {
+    this.update()
+  }
+
+  onKeyUp(): void {
+    this.update()
+  }
+
+  onPointerUp(): void {
+    this.complete()
+  }
+
+  onComplete(): void {
+    this.complete()
+  }
+
+  onCancel(): void {
+    for (const { shape } of this.snapshots) {
+      const current = this.editor.getShape(shape.id)
+      if (current) this.editor.getShapeUtil?.(shape).onResizeCancel?.(shape, current)
+    }
+    if (this.markId) this.editor.bailToMark?.(this.markId)
+    this.finish()
+  }
+
+  private update(): void {
+    const locked =
+      this.editor.inputs.getShiftKey() ||
+      this.snapshots.some(snapshot => snapshot.isAspectRatioLocked)
+    const calculation = calculateResize({
+      selectionBounds: this.selectionBounds,
+      selectionRotation: this.selectionRotation,
+      handle: this.info.handle,
+      originPagePoint: this.editor.inputs.getOriginPagePoint(),
+      currentPagePoint: this.editor.inputs.getCurrentPagePoint(),
+      fromCenter: this.editor.inputs.getAltKey?.(),
+      isAspectRatioLocked: locked
+    })
+    this.editor.updateShapes(
+      resizeShapes(this.snapshots, calculation.scale, {
+        scaleOrigin: calculation.scaleOrigin,
+        scaleAxisRotation: this.selectionRotation,
+        handle: this.info.handle,
+        mode: this.snapshots.length === 1 ? 'resize_bounds' : 'scale_shape',
+        isAspectRatioLocked: locked
+      })
+    )
+  }
+
+  private complete(): void {
+    this.update()
+    if (this.info.isCreating) {
+      const shape = this.snapshots[0]
+        ? this.editor.getShape(this.snapshots[0].shape.id) ?? null
+        : null
+      this.info.onCreate?.(shape)
+    }
+    this.finish()
+  }
+
+  private finish(): void {
+    const end = this.info.onInteractionEnd
+    if (typeof end === 'function') {
+      end()
+    } else if (typeof end === 'string') {
+      this.editor.setCurrentTool?.(end, {})
+    } else if (!this.info.isCreating) {
+      this.parent.transition('idle')
+    }
+  }
+}

@@ -111,7 +111,7 @@ describe('commands in a thread', () => {
     fireEvent.change(composer, { target: { value: '/goal ' } })
     expect(screen.getByLabelText('Remove Goal')).toBeTruthy()
     fireEvent.change(composer, { target: { value: 'finish the migration' } })
-    fireEvent.click(screen.getByLabelText('Steer'))
+    fireEvent.click(screen.getByLabelText('Send'))
 
     expect(sendChat).toHaveBeenCalledWith(
       'finish the migration',
