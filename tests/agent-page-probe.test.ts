@@ -163,10 +163,6 @@ const ranEvent = (ts: number): SessionEvent =>
 
 const thought = { [RUN]: [{ id: 's1', ts: 1, kind: 'thinking' as const, status: 'done' as const, text: 'weighing it' }] }
 
-// A step is pulled up against the one before it when both came out of the same
-// run, and a page an agent showed is one of that run's own steps. Left out of
-// that rule it sat a whole gap clear of the rows either side of it, which reads
-// as a thing that happened beside the work rather than as part of it.
 describe('where a page row sits in the run that showed it', () => {
   const rowOf = (word: string): HTMLElement | null => screen.getByText(word).closest('div')
 
