@@ -20,9 +20,9 @@ const round = value => Number(value.toFixed(3))
 export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.62" fill="${INK}" fill-opacity="0.92">Drag Crew into Applications</text>`
 
 export const DMG_DEFS = `    <linearGradient id="clearing" x1="0" y1="0" x2="${DMG.width}" y2="${DMG.height}" gradientUnits="userSpaceOnUse">
-      <stop offset="0.3" stop-color="${INK}" stop-opacity="0" />
-      <stop offset="0.72" stop-color="${INK}" stop-opacity="0.028" />
-      <stop offset="1" stop-color="${INK}" stop-opacity="0.062" />
+      <stop offset="0.38" stop-color="${INK}" stop-opacity="0" />
+      <stop offset="0.76" stop-color="${INK}" stop-opacity="0.018" />
+      <stop offset="1" stop-color="${INK}" stop-opacity="0.042" />
     </linearGradient>
     <linearGradient id="shaft" x1="${ARROW.from}" y1="0" x2="${ARROW.to}" y2="0" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${INK}" stop-opacity="0" />
