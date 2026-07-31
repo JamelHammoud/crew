@@ -6,7 +6,7 @@ export const DMG = {
   app: 172,
   applications: 488,
   headline: 84,
-  at: 27.4
+  at: 61
 }
 
 const INK = '#141414'
