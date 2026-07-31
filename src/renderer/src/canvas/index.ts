@@ -22,6 +22,7 @@ export {
   createShapeId,
   createTLSchema,
   createTLStore,
+  designNodeShapeProps,
   getSnapshot,
   loadSnapshot,
   renderHtmlFromRichTextForMeasurement
