@@ -1,0 +1,208 @@
+import type { SettingReader } from './cli'
+import { activityDetail, fileChanges, stepTodos } from './detail'
+import { taskCall } from './tasks'
+import type { Dialog, OutputParser, ParsedOutput } from './types'
+
+const PROTOCOL = 1
+
+// Crew never reads or writes a file on the agent's behalf. The CLI already runs
+// in the project folder and does its own work everywhere else, so the two file
+// capabilities are declined and the agent uses the hands it has.
+const CAPABILITIES = { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
+
+const SUBAGENT_TOOLS = new Set(['Agent', 'Task'])
+
+const STARTED = new Set(['pending', 'in_progress'])
+
+// A stop that is not the end of a turn has a reason, and these are the ones the
+// protocol names rather than describes.
+const STOPS: Record<string, string> = {
+  refusal: 'Kimi declined to answer this one.',
+  max_tokens: 'Kimi reached its token limit before it finished.',
+  max_turn_requests: 'Kimi reached its limit of steps before it finished.'
+}
+
+type Stage = 'init' | 'session' | 'config' | 'turn'
+
+const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+
+const rpc = (body: Record<string, unknown>): string => JSON.stringify({ jsonrpc: '2.0', ...body })
+
+const input = (text: string) => [{ type: 'text', text }]
+
+// Everything is allowed, the way it is on every other CLI here: an agent in a
+// crew is already running with permissions bypassed. Nothing is rejected, and a
+// request offering no way to say yes is cancelled rather than left unanswered,
+// since a request nobody answers is a run that hangs forever.
+const allowed = (options: unknown): string => {
+  const list = Array.isArray(options) ? options : []
+  const kind = (option: any): string => str(option?.kind)
+  const pick =
+    list.find(option => kind(option) === 'allow_always') ??
+    list.find(option => kind(option) === 'allow_once') ??
+    list.find(option => !kind(option).startsWith('reject'))
+  return str((pick as any)?.optionId)
+}
+
+export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dialog {
+  const model = get('model')
+  const pending = new Map<number, Stage>()
+  let next = 0
+  let sessionId = ''
+
+  const ask = (stage: Stage, method: string, params: unknown): string => {
+    const id = ++next
+    pending.set(id, stage)
+    return rpc({ id, method, params })
+  }
+
+  const startTurn = () => ask('turn', 'session/prompt', { sessionId, prompt: input(prompt) })
+
+  const answered = (stage: Stage, result: any): string[] => {
+    if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: [] })]
+    if (stage === 'session') {
+      sessionId = str(result?.sessionId)
+      return sessionId ? [startTurn()] : []
+    }
+    return []
+  }
+
+  const served = (id: unknown, method: string, params: any): string[] => {
+    if (method === 'session/request_permission') {
+      const optionId = allowed(params?.options)
+      const outcome = optionId ? { outcome: 'selected', optionId } : { outcome: 'cancelled' }
+      return [rpc({ id, result: { outcome } })]
+    }
+    return [rpc({ id, error: { code: -32601, message: `Crew does not answer ${method}.` } })]
+  }
+
+  return {
+    begin: () => [ask('init', 'initialize', { protocolVersion: PROTOCOL, clientCapabilities: CAPABILITIES })],
+    answer: line => {
+      let msg: any
+      try {
+        msg = JSON.parse(line)
+      } catch {
+        return []
+      }
+      if (typeof msg?.method === 'string') {
+        if (msg.id !== undefined && msg.id !== null) return served(msg.id, msg.method, msg.params)
+        return []
+      }
+      const stage = typeof msg?.id === 'number' ? pending.get(msg.id) : undefined
+      if (!stage) return []
+      pending.delete(msg.id)
+      return msg.error ? [] : answered(stage, msg.result)
+    },
+    steer: () => null
+  }
+}
+
+const chunkText = (content: any): string => (str(content?.type) === 'text' ? str(content.text) : '')
+
+const outputText = (update: any): string => {
+  const raw = update?.rawOutput
+  if (typeof raw === 'string') return raw
+  const list = Array.isArray(update?.content) ? update.content : []
+  return list
+    .map((part: any) => chunkText(part?.content))
+    .filter(Boolean)
+    .join('\n')
+}
+
+// The words arrive as a plain run of chunks with no block number on them, so
+// the lanes are counted here. A block is a stretch of one kind, and switching
+// kind or reaching a tool closes the one that was open. Nothing reuses a
+// number, because closing a block closes every kind standing at that index.
+export function kimiParser(): OutputParser {
+  let lane = 0
+  let open: 'thinking' | 'text' | null = null
+  const names = new Map<string, string>()
+
+  const close = (out: ParsedOutput[]): void => {
+    if (open === null) return
+    out.push({ blockStop: { index: lane } })
+    open = null
+  }
+
+  const stream = (out: ParsedOutput[], kind: 'thinking' | 'text', text: string): void => {
+    if (!text) return
+    if (open !== kind) {
+      close(out)
+      lane += 1
+      out.push(kind === 'thinking' ? { thinkingStart: { index: lane } } : { textStart: { index: lane } })
+      open = kind
+    }
+    out.push(
+      kind === 'thinking' ? { thinkingDelta: { index: lane, text } } : { textDelta: { index: lane, text } }
+    )
+  }
+
+  // The name a tool started under is the one that says what it is. Every update
+  // after the first carries a narrated title instead, "Reading math.js" where
+  // the tool is Read, so the first one is kept and the rest are read for what
+  // they add: the arguments, and what the tool printed.
+  const activity = (out: ParsedOutput[], update: any): void => {
+    const id = str(update?.toolCallId)
+    if (!id) return
+    if (str(update?.sessionUpdate) === 'tool_call') names.set(id, str(update?.title))
+    const name = names.get(id) ?? ''
+    const args = update?.rawInput
+    const running = STARTED.has(str(update?.status))
+    close(out)
+    out.push({
+      activity: {
+        id,
+        kind: SUBAGENT_TOOLS.has(name) ? 'subagent' : 'tool',
+        name,
+        status: running ? 'started' : 'finished',
+        detail: args ? activityDetail(args) : undefined,
+        files: args ? fileChanges(name, args) : undefined,
+        todos: args ? stepTodos(args) : undefined,
+        task: args ? taskCall(name, args) : undefined,
+        output: running ? undefined : outputText(update)
+      }
+    })
+  }
+
+  const update = (out: ParsedOutput[], params: any): void => {
+    const body = params?.update ?? params
+    const kind = str(body?.sessionUpdate)
+    if (kind === 'agent_thought_chunk') return stream(out, 'thinking', chunkText(body?.content))
+    if (kind === 'agent_message_chunk') return stream(out, 'text', chunkText(body?.content))
+    if (kind === 'tool_call' || kind === 'tool_call_update') return activity(out, body)
+    if (kind === 'plan') {
+      const todos = stepTodos(body)
+      if (todos) out.push({ activity: { id: 'plan', kind: 'tool', name: 'TodoWrite', status: 'finished', todos } })
+    }
+  }
+
+  return line => {
+    let msg: any
+    try {
+      msg = JSON.parse(line)
+    } catch {
+      return []
+    }
+    const out: ParsedOutput[] = []
+    if (str(msg?.method) === 'session/update') {
+      update(out, msg.params)
+      return out
+    }
+    if (msg?.error && msg.id !== undefined) {
+      close(out)
+      const text = str(msg.error?.message)
+      if (text) out.push({ error: text })
+      return out
+    }
+    // Only the prompt answers with a stop reason, so it needs no id to be told
+    // apart, and it is the one thing that says the turn is over.
+    const stop = str(msg?.result?.stopReason)
+    if (stop) {
+      close(out)
+      if (STOPS[stop]) out.push({ error: STOPS[stop] })
+      out.push({ turnEnd: true })
+    }
+    return out
+  }
+}
