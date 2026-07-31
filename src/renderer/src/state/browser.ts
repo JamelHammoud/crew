@@ -102,6 +102,7 @@ type BrowserState = {
   selectTab(id: string): void
   moveTab(id: string, to: number): void
   closeTab(id: string): void
+  closeOthers(id: string): void
   closeAll(): void
   navigateTab(id: string, url: string): void
   navigateFile(id: string, path: string): void
