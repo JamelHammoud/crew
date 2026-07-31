@@ -128,13 +128,14 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
 
   useEffect(() => {
     if (!editor) return
+    const document = editor.view.dom.ownerDocument
     const keydown = (event: KeyboardEvent) => {
       if (!(event.metaKey || event.ctrlKey) || !event.shiftKey || event.key.toLowerCase() !== 'k') return
       event.preventDefault()
       openLinkEditor(editor, setLink)
     }
-    editor.view.dom.ownerDocument.addEventListener('keydown', keydown)
-    return () => editor.view.dom.ownerDocument.removeEventListener('keydown', keydown)
+    document.addEventListener('keydown', keydown)
+    return () => document.removeEventListener('keydown', keydown)
   }, [editor])
 
   useEffect(() => {
