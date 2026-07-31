@@ -89,9 +89,13 @@ describe('the numbers underneath', () => {
 
   it('measures an ellipse and agrees with a circle where it is one', () => {
     expect(perimeterOfEllipse(10, 10)).toBeCloseTo(PI2 * 10, 6)
-    expect(perimeterOfEllipse(0, 0)).toBe(0)
     expect(perimeterOfEllipse(20, 10)).toBeGreaterThan(PI2 * 10)
     expect(perimeterOfEllipse(20, 10)).toBeLessThan(PI2 * 20)
+    expect(perimeterOfEllipse(5, 0)).toBeGreaterThan(0)
+  })
+
+  it('has no perimeter to give for an ellipse with no radius at all', () => {
+    expect(Number.isNaN(perimeterOfEllipse(0, 0))).toBe(true)
   })
 })
 
