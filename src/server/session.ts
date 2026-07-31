@@ -427,6 +427,7 @@ export class CrewSession {
   private meta = new Map<WebSocket, ConnMeta>()
   private removedAgents = new Set<string>()
   private prompts = new Map<string, PromptRef>()
+  private stopping = new Set<string>()
   private steers = new Map<string, PendingSteer[]>()
   private emittedMessages = new Set<string>()
   private cancelTimeoutMs: number
