@@ -194,8 +194,16 @@ describe('where a page row sits in the run that showed it', () => {
     expect(rowOf('Showed')?.className).not.toContain('-mt-3')
   })
 
-  it('leaves a row from before the run was written down where it was', () => {
+  it('reads the run off the log for a page shown before it was written down', () => {
     const events = [ranEvent(1), shownEvent({ ts: 2, pages: ['http://localhost:5173'] })]
+    render(createElement(ThreadItems, { items: buildThread(events, alsoRead, 'sam'), threadId: 't1' }))
+
+    expect(rowOf('Showed')?.className).toContain('-mt-3')
+    expect(rowOf('Read')?.className).toContain('-mt-3')
+  })
+
+  it('stands clear where no run was open to have shown it', () => {
+    const events = [ranEvent(1), endedEvent(2), shownEvent({ ts: 3, pages: ['http://localhost:5173'] })]
     render(createElement(ThreadItems, { items: buildThread(events, thought, 'sam'), threadId: 't1' }))
     expect(rowOf('Showed')?.className).not.toContain('-mt-3')
   })
