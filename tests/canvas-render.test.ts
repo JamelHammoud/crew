@@ -1,7 +1,7 @@
-// @vitest-environment jsdom
 import { act, cleanup, render } from '@testing-library/react'
+import { JSDOM } from 'jsdom'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Mat } from '../src/renderer/src/canvas/math'
 import { atom } from '../src/renderer/src/canvas/signals'
 import {
@@ -23,6 +23,56 @@ interface Shape extends CanvasShapeRecord {
   props: { w: number; h: number; label: string }
   meta: Record<string, unknown>
 }
+
+const globalKeys = [
+  'window',
+  'document',
+  'navigator',
+  'HTMLElement',
+  'HTMLCanvasElement',
+  'SVGElement',
+  'Element',
+  'Node',
+  'MutationObserver',
+  'requestAnimationFrame',
+  'cancelAnimationFrame',
+  'IS_REACT_ACT_ENVIRONMENT'
+] as const
+
+const originalGlobals = new Map(
+  globalKeys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)] as const)
+)
+
+const setGlobal = (key: (typeof globalKeys)[number], value: unknown) =>
+  Object.defineProperty(globalThis, key, { configurable: true, writable: true, value })
+
+let dom: JSDOM
+
+beforeAll(() => {
+  dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true })
+  const view = dom.window
+  setGlobal('window', view)
+  setGlobal('document', view.document)
+  setGlobal('navigator', view.navigator)
+  setGlobal('HTMLElement', view.HTMLElement)
+  setGlobal('HTMLCanvasElement', view.HTMLCanvasElement)
+  setGlobal('SVGElement', view.SVGElement)
+  setGlobal('Element', view.Element)
+  setGlobal('Node', view.Node)
+  setGlobal('MutationObserver', view.MutationObserver)
+  setGlobal('requestAnimationFrame', view.requestAnimationFrame.bind(view))
+  setGlobal('cancelAnimationFrame', view.cancelAnimationFrame.bind(view))
+  setGlobal('IS_REACT_ACT_ENVIRONMENT', true)
+})
+
+afterAll(() => {
+  dom.window.close()
+  for (const key of globalKeys) {
+    const descriptor = originalGlobals.get(key)
+    if (descriptor) Object.defineProperty(globalThis, key, descriptor)
+    else Reflect.deleteProperty(globalThis, key)
+  }
+})
 
 afterEach(() => {
   cleanup()
