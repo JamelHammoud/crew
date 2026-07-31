@@ -9,8 +9,7 @@
     radius: 0.98,
     strength: 1,
     wide: 0.05,
-    shape: [1, 1.3],
-    edge: 0.34
+    shape: [1, 1.3]
   }
 
   const LAYERS = [
