@@ -34,6 +34,7 @@ export default function AsideView({ threadId }: { threadId: string }) {
   const threadEvents = useMemo(() => eventsOfThread(events, threadId), [events, threadId])
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const startedAt = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === promptId)?.ts
+  const ended = lastEnd(threadId, threadEvents)
 
   // An answer is written into the bottom of the panel, so it follows itself down
   // the way a thread does, until somebody scrolls back to read it.
