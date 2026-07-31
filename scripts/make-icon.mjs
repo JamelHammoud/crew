@@ -399,12 +399,15 @@ rmSync(iconset, { recursive: true, force: true })
 
 raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
 
-const [mesh] = await shootMesh([{ at: DMG.at, width: DMG.width * 2, height: DMG.height * 2 }])
-const backdrop = dmgBackground(mesh.png)
+const [oneToOne, retinaMesh] = await shootMesh([
+  { at: DMG.at, width: DMG.width, height: DMG.height },
+  { at: DMG.at, width: DMG.width * 2, height: DMG.height * 2 }
+])
+const backdrop = dmgBackground(retinaMesh.png)
 const plain = path.join(resources, 'dmg-background.png')
 const retina = path.join(resources, 'dmg-background@2x.png')
 writeFileSync(path.join(resources, 'dmg-background.svg'), backdrop)
-raster(backdrop, DMG.width, DMG.height, plain)
+raster(dmgBackground(oneToOne.png), DMG.width, DMG.height, plain)
 raster(backdrop, DMG.width * 2, DMG.height * 2, retina)
 execFileSync('tiffutil', [
   '-cathidpicheck',
