@@ -156,6 +156,34 @@ describe('a run somebody stopped', () => {
     expect(reply?.stopped).toBe(true)
   })
 
+  // A stop takes the helpers with it, so the chips are where one press would
+  // otherwise paint a whole row red.
+  it('leaves the helpers it took with it saying what happened', () => {
+    const run = (threadId: string, extra: Partial<SubagentRun>): SubagentRun => ({
+      threadId,
+      name: 'Scout',
+      subject: 'reading the schema',
+      agentId: 'a1',
+      ok: false,
+      ...extra
+    })
+    load([])
+    render(
+      createElement(SubagentChips, {
+        runs: [run('c1', { stopped: true })],
+        threadId: 't1'
+      })
+    )
+    expect(screen.getByText('Stopped')).toBeTruthy()
+    expect(reds()).toHaveLength(0)
+
+    cleanup()
+    load([])
+    render(createElement(SubagentChips, { runs: [run('c2', {})], threadId: 't1' }))
+    expect(screen.getByText('Failed')).toBeTruthy()
+    expect(reds().length).toBeGreaterThan(0)
+  })
+
   it('makes no sound, since whoever pressed it knows', () => {
     const state = { threads: { t1: thread }, threadPrompts: {}, queues: {} }
     expect(soundFor(stopped, 'ali', state)).toBeNull()
