@@ -8,7 +8,7 @@ interface OverlayEditor {
   getSelectionRotatedPageBounds(): Box | undefined
   getSelectionRotation(): number
   getSelectedShapeIds(): TLShapeId[]
-  getOnlySelectedShape(): TLShape | undefined
+  getOnlySelectedShape(): TLShape | null
   getShapeUtil(shape: TLShape): ShapeUtil
   getShapePageTransform(shape: TLShape): { applyToPoint(point: VecLike): VecLike }
   getEditingShapeId(): TLShapeId | null
