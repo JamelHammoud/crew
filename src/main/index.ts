@@ -58,10 +58,15 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
+// A shipped Crew has no dev tools, in any window and from any way in. It is the
+// same gate the icon and the updates read, so a run from source keeps them and
+// nothing about the path check is loosened for this.
+const inspectable = fromSource(app.getAppPath())
 const rendererPage = {
   preload: path.join(dirname, '../preload/preload.mjs'),
   devUrl: process.env['ELECTRON_RENDERER_URL'],
-  file: path.join(dirname, '../renderer/index.html')
+  file: path.join(dirname, '../renderer/index.html'),
+  devTools: inspectable
 }
 const tray = new CrewTray({
   page: rendererPage,
@@ -346,7 +351,11 @@ function warmTerminals(): void {
 function createWindow(): BrowserWindow {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
   const win = new BrowserWindow(
-    createWindowOptions(process.platform, path.join(dirname, '../preload/preload.mjs'))
+    createWindowOptions(
+      process.platform,
+      path.join(dirname, '../preload/preload.mjs'),
+      inspectable
+    )
   )
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
