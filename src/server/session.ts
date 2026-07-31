@@ -3685,13 +3685,31 @@ export class CrewSession {
     )
   }
 
-  private threadContext(threadId: string): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
+  private threadContext(
+    threadId: string,
+    until = Infinity
+  ): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
     return this.eventsOf(threadId)
       .filter(
         (e): e is Extract<SessionEvent, { kind: 'message' | 'agent.end' }> =>
-          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === threadId
+          (e.kind === 'message' || e.kind === 'agent.end') && e.threadId === threadId && e.ts <= until
       )
       .slice(-CONTEXT_EVENT_LIMIT)
+  }
+
+  // What a fork carries in from the thread it came from, and from whatever that
+  // one came from. Each link is read up to the moment the fork under it was made,
+  // so a fork of a fork reads the whole line it came down and none of what any of
+  // those threads went on to do afterwards.
+  private forkContext(thread: Thread | undefined): Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>> {
+    const chain: Array<{ threadId: string; until: number }> = []
+    let at = thread
+    while (at?.forkedFrom && chain.length < FORK_DEPTH_LIMIT) {
+      const from: string = at.forkedFrom
+      chain.unshift({ threadId: from, until: at.forkedAt ?? Infinity })
+      at = this.threads.get(from)
+    }
+    return chain.flatMap(link => this.threadContext(link.threadId, link.until)).slice(-CONTEXT_EVENT_LIMIT)
   }
 
   private transcriptOf(context: Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>>): string {
