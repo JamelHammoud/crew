@@ -1,6 +1,7 @@
 import { createElement, type CSSProperties, type ReactNode } from 'react'
 import { Vec } from '../math/Vec'
 import type { TLDefaultColorStyle, TLDrawShapeSegment, TLRichText } from '../schema'
+import { decodePoints } from '../schema/points'
 
 export const COLORS: Record<TLDefaultColorStyle, string> = {
   black: '#1d1d1d',
@@ -48,12 +49,10 @@ export function plainText(value: unknown): string {
 
 export function segmentPoints(segments: TLDrawShapeSegment[], scaleX = 1, scaleY = 1): Vec[] {
   const points: Vec[] = []
-  const pattern = /-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi
   for (const segment of segments) {
-    const values = segment.path.match(pattern)?.map(Number) ?? []
-    const stride = segment.dim ?? (values.length % 3 === 0 ? 3 : 2)
-    for (let at = 0; at + 1 < values.length; at += stride) {
-      points.push(new Vec(values[at] * scaleX, values[at + 1] * scaleY, values[at + 2] ?? 1))
+    const decoded = decodePoints(segment.path, segment.dim)
+    for (const point of decoded) {
+      points.push(new Vec(point.x * scaleX, point.y * scaleY, point.z))
     }
   }
   return points
