@@ -255,4 +255,15 @@ export function kimiParser(): RunParser {
     }
     return out
   }
+
+  // The last call of a turn is written to the log a moment after the turn says
+  // it is over, so a run read only at that word is short by the whole of its
+  // final answer. This is the read that catches it.
+  const finish = (): ParsedOutput[] => {
+    const out: ParsedOutput[] = []
+    counted(out, true)
+    return out
+  }
+
+  return { parse, finish }
 }
