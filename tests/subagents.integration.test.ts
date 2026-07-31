@@ -321,7 +321,15 @@ describe('subagents', () => {
     await ui.waitForEvent(e => e.kind === 'agent.start' && e.threadId === child)
 
     ui.cancel(parent.promptId)
-    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === child && e.ok === false, 20000)
+    const childEnd = await ui.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === child && e.ok === false,
+      20000
+    )
+    // The helper was called off rather than broken, and its chip is drawn off
+    // this, so a stop that reads as a failure is a row of red for one press.
+    expect(childEnd.kind === 'agent.end' && childEnd.stopped).toBe(true)
+    const home = await ui.waitForEvent(e => e.kind === 'subagent.ended' && e.threadId === child, 20000)
+    expect(home.kind === 'subagent.ended' && home.stopped).toBe(true)
     // A helper called off does not wake anybody: there is no run left to wake.
     await new Promise(r => setTimeout(r, 800))
     expect(ui.events.filter(e => e.kind === 'agent.start' && e.threadId === parent.threadId)).toHaveLength(1)
