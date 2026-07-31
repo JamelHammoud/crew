@@ -1,13 +1,14 @@
 import { createElement, type ReactNode } from 'react'
 import { Edge2d, Ellipse2d, Group2d, Polygon2d, Rectangle2d, Stadium2d, type Geometry2d } from '../geometry'
 import { Vec } from '../math/Vec'
-import { geoShapeProps, type TLGeoShapeGeoStyle, type TLShape } from '../schema'
+import { geoShapeProps, type TLGeoShapeGeoStyle as GeoKind, type TLShape as CrewShape } from '../schema'
 import { BaseBoxShapeUtil } from './ShapeUtil'
-import { COLORS, FONT_FAMILIES, FONT_SIZES, STROKES, pathFromPoints, plainText, shapeElement } from './shared'
+import { FONT_FAMILIES, FONT_SIZES, STROKES, plainText, shapeElement } from './shared'
+import { canvasSurface, shapeColor } from './theme'
 
-export type TLGeoShape = TLShape<'geo'>
+export type GeoShape = CrewShape<'geo'>
 
-const POLYGONS: Partial<Record<TLGeoShapeGeoStyle, readonly [number, number][]>> = {
+const POLYGONS: Partial<Record<GeoKind, readonly [number, number][]>> = {
   triangle: [[0.5, 0], [1, 1], [0, 1]],
   diamond: [[0.5, 0], [1, 0.5], [0.5, 1], [0, 0.5]],
   pentagon: [[0.5, 0], [0.976, 0.345], [0.794, 0.905], [0.206, 0.905], [0.024, 0.345]],
@@ -50,7 +51,7 @@ function heartPoints(): Vec[] {
   })
 }
 
-export function geoPoints(kind: TLGeoShapeGeoStyle, w: number, h: number): Vec[] | null {
+export function geoPoints(kind: GeoKind, w: number, h: number): Vec[] | null {
   const source = kind === 'cloud'
     ? cloudPoints()
     : kind === 'heart'
@@ -61,7 +62,7 @@ export function geoPoints(kind: TLGeoShapeGeoStyle, w: number, h: number): Vec[]
   return source?.map(point => new Vec(point.x * w, point.y * h)) ?? null
 }
 
-export function geoGeometry(kind: TLGeoShapeGeoStyle, w: number, h: number): Geometry2d {
+export function geoGeometry(kind: GeoKind, w: number, h: number): Geometry2d {
   if (kind === 'ellipse') return new Ellipse2d({ width: w, height: h, isFilled: true })
   if (kind === 'oval') return new Stadium2d({ width: w, height: h, isFilled: true })
   const points = geoPoints(kind, w, h)
@@ -77,35 +78,36 @@ export function geoGeometry(kind: TLGeoShapeGeoStyle, w: number, h: number): Geo
   return outline
 }
 
-function fillFor(shape: TLGeoShape): string {
+function fillFor(editor: GeoShapeUtil['editor'], shape: GeoShape): string {
   if (shape.props.fill === 'none') return 'none'
-  const color = COLORS[shape.props.color]
-  return shape.props.fill === 'semi' ? `${color}33` : color
+  if (shape.props.fill === 'semi') return canvasSurface(editor)
+  const variant = shape.props.fill === 'solid' ? 'semi' : shape.props.fill === 'lined-fill' ? 'linedFill' : shape.props.fill
+  return shapeColor(editor, shape.props.color, variant)
 }
 
-export class GeoShapeUtil extends BaseBoxShapeUtil<TLGeoShape> {
+export class GeoShapeUtil extends BaseBoxShapeUtil<GeoShape> {
   static override type = 'geo' as const
   static override props = geoShapeProps
 
   override options = { showTextOutline: true, getCustomDisplayValues: () => ({}) }
 
-  getDefaultProps(): TLGeoShape['props'] {
+  getDefaultProps(): GeoShape['props'] {
     return { w: 100, h: 100, geo: 'rectangle', dash: 'draw', growY: 0, url: '', scale: 1, color: 'black', labelColor: 'black', fill: 'none', size: 'm', font: 'draw', align: 'middle', verticalAlign: 'middle', richText: { type: 'doc', content: [{ type: 'paragraph' }] } }
   }
 
   override canEdit(): boolean { return true }
 
-  getGeometry(shape: TLGeoShape): Geometry2d {
+  getGeometry(shape: GeoShape): Geometry2d {
     return geoGeometry(shape.props.geo, Math.max(1, shape.props.w), Math.max(1, shape.props.h + shape.props.growY))
   }
 
-  override getText(shape: TLGeoShape): string { return plainText(shape.props.richText) }
+  override getText(shape: GeoShape): string { return plainText(shape.props.richText) }
 
-  component(shape: TLGeoShape): ReactNode {
+  component(shape: GeoShape): ReactNode {
     const { props } = shape
     const geometry = this.getGeometry(shape)
     const text = plainText(props.richText)
-    const label = text ? createElement('div', { style: { position: 'absolute', inset: 0, display: 'flex', alignItems: props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center', justifyContent: props.align.startsWith('start') ? 'flex-start' : props.align.startsWith('end') ? 'flex-end' : 'center', padding: 8, color: COLORS[props.labelColor], fontFamily: FONT_FAMILIES[props.font], fontSize: FONT_SIZES[props.size] * props.scale, whiteSpace: 'pre-wrap', textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left', pointerEvents: 'all' } }, text) : null
-    return createElement('div', { style: { position: 'relative', width: props.w, height: props.h + props.growY } }, shapeElement(geometry.toSimpleSvgPath(), { color: props.color, fill: fillFor(shape), width: STROKES[props.size] * props.scale }), label)
+    const label = text ? createElement('div', { style: { position: 'absolute', inset: 0, display: 'flex', alignItems: props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center', justifyContent: props.align.startsWith('start') ? 'flex-start' : props.align.startsWith('end') ? 'flex-end' : 'center', padding: 8, color: shapeColor(this.editor, props.labelColor), fontFamily: FONT_FAMILIES[props.font], fontSize: FONT_SIZES[props.size] * props.scale, whiteSpace: 'pre-wrap', textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left', pointerEvents: 'all' } }, text) : null
+    return createElement('div', { style: { position: 'relative', width: props.w, height: props.h + props.growY } }, shapeElement(geometry.toSimpleSvgPath(), { editor: this.editor, color: props.color, fill: fillFor(this.editor, shape), width: STROKES[props.size] * props.scale }), label)
   }
 }
