@@ -150,6 +150,9 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       let killTimer: NodeJS.Timeout | null = null
       let turnTimer: NodeJS.Timeout | null = null
       let inputClosed = false
+      // A dialog that answered the very line the turn ended on has opened
+      // another turn in the same breath, so the run is not winding down.
+      let reopened = false
 
       const clearTimers = () => {
         if (idleTimer) clearTimeout(idleTimer)

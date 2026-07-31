@@ -27,14 +27,10 @@ export type StoreSchemaTypes<R extends UnknownRecord> = {
 
 export class StoreSchema<R extends UnknownRecord> {
   static create<R extends UnknownRecord>(
-    types: {
-      [TypeName in R['typeName']]: {
-        createId: unknown
-      }
-    },
+    types: StoreSchemaTypes<R>,
     options?: StoreSchemaOptions<R>
   ): StoreSchema<R> {
-    return new StoreSchema<R>(types as unknown as StoreSchemaTypes<R>, options ?? {})
+    return new StoreSchema<R>(types, options ?? {})
   }
 
   constructor(
@@ -43,7 +39,7 @@ export class StoreSchema<R extends UnknownRecord> {
   ) {}
 
   getType(typeName: string): RecordType<R, never> {
-    const type = (this.types as Record<string, RecordType<R, never>>)[typeName]
+    const type = (this.types as Record<string, RecordType<R, never> | undefined>)[typeName]
     if (!type) throw new Error(`Missing definition for record type ${typeName}`)
     return type
   }
