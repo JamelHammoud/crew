@@ -80,6 +80,7 @@ export class Editor {
   private readonly getContainerFn: () => HTMLElement
   private readonly opacityForNextShape = { value: 1 }
   private readonly stylesForNextShape = new Map<string, unknown>()
+  private readonly instance = { brush: null as ViewportBounds | null }
   private currentPageId: TLPageId
   private disposed = false
 
@@ -145,6 +146,25 @@ export class Editor {
 
   getViewportPageBounds(): Box {
     return this.camera.getViewportPageBounds()
+  }
+
+  getCameraState(): 'idle' | 'moving' {
+    return 'idle'
+  }
+
+  getInstanceState(): { devicePixelRatio: number; screenBounds: ViewportBounds; brush: ViewportBounds | null } {
+    const bounds = this.camera.getScreenBounds()
+    return {
+      devicePixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio,
+      screenBounds: bounds.toJson(),
+      brush: this.instance.brush
+    }
+  }
+
+  updateInstanceState(update: { screenBounds?: ViewportBounds; brush?: ViewportBounds | null }): this {
+    if (update.screenBounds) this.setViewportScreenBounds(update.screenBounds)
+    if ('brush' in update) this.instance.brush = update.brush ?? null
+    return this
   }
 
   setViewportScreenBounds(bounds: ViewportBounds): this {
@@ -226,6 +246,15 @@ export class Editor {
 
   getCurrentPageRenderingShapesSorted(): TLShape[] {
     return this.getCurrentPageShapesSorted().filter(shape => !this.isShapeHidden(shape))
+  }
+
+  getRenderingShapes(): Array<{ id: TLShapeId; shape: TLShape; index: number; backgroundIndex: number; opacity: number }> {
+    const shapes = this.getCurrentPageRenderingShapesSorted()
+    return shapes.map((shape, index) => ({ id: shape.id, shape, index, backgroundIndex: index, opacity: shape.opacity }))
+  }
+
+  getCulledShapes(): ReadonlySet<TLShapeId> {
+    return new Set()
   }
 
   getSortedChildIdsForParent(parentId: TLParentId): TLShapeId[] {
@@ -318,6 +347,50 @@ export class Editor {
     return bounds.length ? Box.Common(bounds) : null
   }
 
+  getOnlySelectedShape(): TLShape | null {
+    const shapes = this.getSelectedShapes()
+    return shapes.length === 1 ? shapes[0] : null
+  }
+
+  getOnlySelectedShapeId(): TLShapeId | null {
+    return this.getOnlySelectedShape()?.id ?? null
+  }
+
+  getSelectionRotation(): number {
+    const ids = this.getSelectedShapeIds()
+    if (ids.length === 0) return 0
+    const rotation = this.getShapePageTransform(ids[0]).rotation()
+    return ids.every(id => this.getShapePageTransform(id).rotation() === rotation) ? rotation : 0
+  }
+
+  getSelectionRotatedPageBounds(): Box | undefined {
+    const ids = this.getSelectedShapeIds()
+    if (ids.length === 0) return undefined
+    const rotation = this.getSelectionRotation()
+    if (rotation === 0) return this.getSelectionPageBounds() ?? undefined
+    if (ids.length === 1) {
+      const bounds = this.getShapeGeometry(ids[0]).bounds.clone()
+      bounds.point = this.getShapePageTransform(ids[0]).applyToPoint(bounds.point)
+      return bounds
+    }
+    const points = ids.flatMap(id => this.getShapePageTransform(id).applyToPoints(this.getShapeGeometry(id).bounds.corners))
+      .map(point => point.rot(-rotation))
+    const bounds = Box.FromPoints(points)
+    bounds.point = bounds.point.rot(rotation)
+    return bounds
+  }
+
+  getFocusedGroupId(): TLShapeId | TLPageId {
+    return this.selection.getFocusedGroupId(this.currentPageId)
+  }
+
+  setFocusedGroup(shape: TLShape | TLShapeId | null): this {
+    const id = typeof shape === 'string' ? shape : shape?.id ?? null
+    const record = id ? this.getShape(id) : undefined
+    this.selection.setFocusedGroupId(record?.type === 'group' ? record.id : null)
+    return this
+  }
+
   getSelectedShapeIds(): TLShapeId[] {
     return this.selection.getSelectedShapeIds().filter(id => this.getShape(id) !== undefined)
   }
@@ -354,6 +427,19 @@ export class Editor {
   setEditingShape(id: TLShapeId | null): this {
     this.selection.setEditingShapeId(id && this.getShape(id) ? id : null)
     return this
+  }
+
+  canEditShape(shapeOrId: TLShape | TLShapeId | undefined): boolean {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return false
+    const util = this.getShapeUtil(shape)
+    if (shape.isLocked && !util.canEditWhileLocked(shape as never)) return false
+    return util.canEdit(shape as never)
+  }
+
+  canCropShape(shapeOrId: TLShape | TLShapeId | null | undefined): boolean {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    return Boolean(shape && this.getShapeUtil(shape).canCrop(shape as never))
   }
 
   createShape<Shape extends TLShape = TLShape>(partial: ShapeCreate): this {
@@ -738,6 +824,14 @@ export class Editor {
   getShapeMask(shape: TLShape): Vec[] | undefined {
     const clip = this.getShapeUtil(shape).getClipPath?.(shape as never)
     return clip?.map(point => this.getShapePageTransform(shape).applyToPoint(point))
+  }
+
+  getShapeClipPath(shapeOrId: TLShape | TLShapeId): string | undefined {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return undefined
+    const clip = this.getShapeUtil(shape).getClipPath?.(shape as never)
+    if (!clip || clip.length === 0) return undefined
+    return `polygon(${clip.map(point => `${point.x}px ${point.y}px`).join(',')})`
   }
 
   getShapeText(shape: TLShape): string | undefined {

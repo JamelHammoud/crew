@@ -1,6 +1,7 @@
 import type { MatLike } from '../../math/Mat'
 import type { Vec } from '../../math/Vec'
 import type { TLCursor, TLShape } from '../../schema'
+import type { ResizeInfo } from './resizeBox'
 
 export type ShapeUpdate<Shape extends TLShape = TLShape> = Partial<Shape> & Pick<Shape, 'id' | 'type'>
 
@@ -46,6 +47,7 @@ export interface TransformShapeUtil<Shape extends TLShape = TLShape> {
   onTranslateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onTranslateCancel?(initial: Shape, current: Shape): void
   onResizeStart?(shape: Shape): ShapeUpdate<Shape> | undefined
+  onResize?(shape: Shape, info: ResizeInfo<Shape>): Shape
   onResizeEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onResizeCancel?(initial: Shape, current: Shape): void
   onRotateStart?(shape: Shape): ShapeUpdate<Shape> | undefined
