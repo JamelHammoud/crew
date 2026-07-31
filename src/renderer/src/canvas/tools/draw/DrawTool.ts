@@ -1,25 +1,8 @@
 import { Drawing } from './Drawing'
+import { DrawState } from './DrawState'
 import type { FreehandEditor, FreehandKeyboardEvent, FreehandPointerEvent, FreehandShapeType } from './types'
 
 export type DrawStateId = 'idle' | 'drawing'
-
-export abstract class DrawState {
-  constructor(
-    protected readonly tool: DrawTool,
-    protected readonly editor: FreehandEditor
-  ) {}
-
-  onEnter(_info?: FreehandPointerEvent): void {}
-  onExit(): void {}
-  onPointerDown(_info: FreehandPointerEvent): void {}
-  onPointerMove(_info?: FreehandPointerEvent): void {}
-  onPointerUp(_info?: FreehandPointerEvent): void {}
-  onKeyDown(_info: FreehandKeyboardEvent): void {}
-  onKeyUp(_info: FreehandKeyboardEvent): void {}
-  onCancel(): void {}
-  onComplete(): void {}
-  onInterrupt(): void {}
-}
 
 export class DrawIdle extends DrawState {
   static readonly id = 'idle'
@@ -40,6 +23,8 @@ export class DrawIdle extends DrawState {
     this.editor.setCurrentTool('select')
   }
 }
+
+export { DrawState } from './DrawState'
 
 export class DrawTool {
   static readonly id: string = 'draw'
