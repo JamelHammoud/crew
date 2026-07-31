@@ -104,7 +104,10 @@ export type SessionEvent =
   // aside is the thread a question on the side was asked from. It is always a
   // ghost, so it is never written down, and it answers in the panel rather than
   // as a card in the chat.
-  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean; tickets?: boolean; aside?: string; parentThreadId?: string; parentPromptId?: string; helper?: string; subject?: string; depth?: number }
+  // forkedFrom is the thread this one carried on from, and forkedAt the moment
+  // it was carried. The pair is what the run of talk before the fork is folded
+  // back out of, so nothing about it is copied and it replays for free.
+  | { id: string; ts: number; kind: 'thread.started'; threadId: string; agentId: string; agentLabel: string; title: string; titleRefs?: AgentMentionRef[]; byName: string; boardId?: string; mode?: ThreadMode; ghost?: boolean; voice?: boolean; tickets?: boolean; aside?: string; forkedFrom?: string; forkedAt?: number; parentThreadId?: string; parentPromptId?: string; helper?: string; subject?: string; depth?: number }
   | { id: string; ts: number; kind: 'thread.plan'; threadId: string; text: string; agentId: string; agentLabel: string }
   | { id: string; ts: number; kind: 'thread.implement'; threadId: string; byName: string }
   // Superseded by thread.status; still emitted-compatible and replayed so old
