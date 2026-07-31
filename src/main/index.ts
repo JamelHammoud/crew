@@ -281,6 +281,11 @@ function installContextMenu(win: BrowserWindow): void {
 }
 
 app.on('web-contents-created', (_event, contents) => {
+  // A page in the side panel is a real browser carrying preferences of its own,
+  // so a window with no dev tools has to say so again for whatever it embeds.
+  contents.on('will-attach-webview', (_e, preferences) => {
+    preferences.devTools = inspectable
+  })
   if (contents.getType() !== 'webview') return
   contents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) void contents.loadURL(url)
