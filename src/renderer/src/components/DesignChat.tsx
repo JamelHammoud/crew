@@ -64,6 +64,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
   const items = useMemo(() => buildThread(threadEvents, steps, selfId, agents), [threadEvents, steps, selfId, agents])
   const activePromptId = threadId ? threadPrompts[threadId] : undefined
   const runningStart = threadEvents.find(e => e.kind === 'agent.start' && e.promptId === activePromptId)
+  const ended = threadId ? lastEnd(threadId, threadEvents) : undefined
 
   useEffect(() => {
     const el = scrollRef.current
