@@ -39,7 +39,8 @@ export function createPanelOptions(
 export function createScribeOptions(
   platform: NodeJS.Platform,
   preload: string,
-  size: { width: number; height: number }
+  size: { width: number; height: number },
+  devTools: boolean
 ): BrowserWindowConstructorOptions {
   const isMac = platform === 'darwin'
   return {
