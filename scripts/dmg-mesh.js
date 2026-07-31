@@ -3,6 +3,8 @@
 
   const GRAIN = 0.068
 
+  const BASE_WIDTH = 660
+
   const BASE = [0.612, 0.655, 0.969]
 
   const BLOOM = {
