@@ -99,13 +99,25 @@ export default function People() {
             label={folderName(session.folder)}
             line={<span className="font-mono mono-inline">{folderLine(session.folder)}</span>}
           >
-            {session.synced && (
+            {inProject && session.synced && (
               <span className="flex items-center gap-1.5 text-sm text-fg/45">
                 <CheckGlyph className="w-4 h-4" />
                 Syncing
               </span>
             )}
           </Row>
+          {!inProject && session.tracked && (
+            <Row
+              label="Sync the project"
+              line="Changes here go out as they happen, and everyone else's come in."
+            >
+              <Toggle
+                on={session.projectSync}
+                label="Sync the project"
+                onChange={on => void window.crew.setProjectSync(on).then(setSession)}
+              />
+            </Row>
+          )}
           {!inProject && (
             <Row
               label="Crew repo"

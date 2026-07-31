@@ -25,9 +25,6 @@ const DIFF_LINE_LIMIT = 2_000
 const UNIT = '\u001f'
 const AUTO_SYNC_MS = 5000
 const DEBOUNCE_MS = 2000
-// A pass that gets nothing out is ordinary once: a laptop moving between
-// networks, somebody else pushing in the same second. A run of them is history
-// piling up on one machine, and that is worth saying out loud.
 const TROUBLE_AFTER = 3
 
 interface StatusEntry {
@@ -201,8 +198,6 @@ export class GitSync {
     this.stalls = 0
   }
 
-  // Said once a streak, rather than on every pass of it. A machine that cannot
-  // get anything out says so and then gets on with trying.
   private stalled(): void {
     this.stalls += 1
     if (this.stalls === TROUBLE_AFTER) this.onTrouble()

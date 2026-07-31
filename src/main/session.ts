@@ -86,9 +86,12 @@ export class AppSession {
     session: CrewSession
     folder: string
     base: string
+    key: string
     name: string
     home: CrewHome
   } | null = null
+  // Whether this project's own code is going out with the crew right now.
+  private projectAuto = false
   // A crew that cannot get anything out is history piling up on one machine, so
   // it is said in the app rather than left in a log nobody reads.
   onTrouble: (message: string) => void = () => {}
@@ -325,6 +328,10 @@ export class AppSession {
     const remote = await readCrewRemote(repoPath)
     const home = opts.home ?? known?.home ?? (remote ? 'private' : tracked ? 'folder' : 'private')
     const shared = opts.share ?? home === 'folder'
+    // A crew that rides in the folder carries the code because it is the same
+    // repo. One kept outside it carries the code only where somebody said so,
+    // so a folder opened privately is still never committed to under anyone.
+    const projectSync = opts.sync ?? known?.sync ?? home === 'folder'
     const key = known?.key || (await projectKey(repoPath))
     const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
     // The crew this project names is fetched before anything is opened on it.
@@ -341,25 +348,21 @@ export class AppSession {
     // the folder runs the loop, so a project kept on this machine is never
     // committed to under anyone.
     const git = tracked ? new GitSync(repoPath) : null
-    const auto = git !== null && home === 'folder'
+    const auto = git !== null && projectSync
     if (git) git.onLog = line => console.warn('[git]', line)
     if (git && auto) git.start(AUTO_SYNC_MS)
     const crewUrl = home === 'private' ? await crewRepoUrl(base) : null
     const crew = crewUrl ? this.crewLoop(base) : null
-    const passes: Array<() => Promise<unknown>> = []
-    if (git && auto) passes.push(() => git.syncNow())
-    if (crew) passes.push(() => crew.syncNow())
-    if (passes.length > 0) {
-      session.onSyncNeeded = () => {
-        if (git && auto) git.schedule()
-        crew?.schedule()
-      }
-    }
+    // Both loops are asked for by what is running right now rather than by what
+    // was running when the session opened, so turning one on mid-session is the
+    // whole of turning it on.
+    session.onSyncNeeded = () => this.scheduleSync()
     const server = await this.listen(session, shared, PREFERRED_PORT)
     this.server = server
     this.git = git
     this.crewGit = crew
-    this.hosted = { session, folder: repoPath, base, name, home }
+    this.projectAuto = auto
+    this.hosted = { session, folder: repoPath, base, key, name, home }
     const detected = await detectProviders()
     // The runner knows every builtin provider so an agent created right after a
     // mid-session CLI install can run.
@@ -369,8 +372,7 @@ export class AppSession {
       repoPath,
       providers: builtinProviders,
       agents: this.agentDefs(detected, name),
-      onBeforeRun:
-        passes.length > 0 ? () => Promise.all(passes.map(pass => pass())).then(() => undefined) : undefined,
+      onBeforeRun: () => this.syncAll(),
       onForget: instanceId => this.forgetAgent(instanceId),
       onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
     })
@@ -386,11 +388,61 @@ export class AppSession {
       shared,
       synced: auto || crew !== null,
       hosting: true,
-      crewRemote: crewUrl
+      crewRemote: crewUrl,
+      tracked,
+      projectSync: auto
     }
     this.folder = repoPath
     this.savedStore()?.save({ mode: 'host', folder: repoPath, name, home, shared })
-    this.savedStore()?.remember({ folder: repoPath, name, home, key, openedAt: Date.now() })
+    this.savedStore()?.remember({
+      folder: repoPath,
+      name,
+      home,
+      key,
+      sync: projectSync,
+      openedAt: Date.now()
+    })
+    return this.live
+  }
+
+  // What is running right now, asked for rather than remembered, so a loop
+  // started mid-session is waited on by the very next prompt.
+  private syncAll(): Promise<void> {
+    const passes: Array<Promise<unknown>> = []
+    if (this.git && this.projectAuto) passes.push(this.git.syncNow())
+    if (this.crewGit) passes.push(this.crewGit.syncNow())
+    return Promise.all(passes).then(() => undefined)
+  }
+
+  private scheduleSync(): void {
+    if (this.git && this.projectAuto) this.git.schedule()
+    this.crewGit?.schedule()
+  }
+
+  // Somebody's own code going out with the crew is their answer rather than a
+  // consequence of where the crew is kept. A project with no git has nothing to
+  // turn on, so the row is never offered there.
+  async setProjectSync(on: boolean): Promise<CurrentSession | null> {
+    const hosted = this.hosted
+    const live = this.live
+    const git = this.git
+    if (!hosted || !live || !git || this.projectAuto === on) return this.live
+    this.projectAuto = on
+    if (on) {
+      git.start(AUTO_SYNC_MS)
+    } else {
+      git.stop()
+      await git.quiet()
+    }
+    this.live = { ...live, projectSync: on, synced: on || this.crewGit !== null }
+    this.savedStore()?.remember({
+      folder: hosted.folder,
+      name: hosted.name,
+      home: hosted.home,
+      key: hosted.key,
+      sync: on,
+      openedAt: Date.now()
+    })
     return this.live
   }
 
@@ -446,9 +498,7 @@ export class AppSession {
     const done = await publishCrew(hosted.base, remote)
     if (!done.ok) return { ok: false, message: done.message }
     await writeCrewRemote(hosted.folder, done.address).catch(() => {})
-    const crew = this.crewLoop(hosted.base)
-    this.crewGit = crew
-    hosted.session.onSyncNeeded = () => crew.schedule()
+    this.crewGit = this.crewLoop(hosted.base)
     this.live = { ...live, synced: true, crewRemote: done.address }
     return { ok: true, message: '' }
   }
@@ -493,7 +543,9 @@ export class AppSession {
       shared: true,
       synced: true,
       hosting: false,
-      crewRemote: null
+      crewRemote: null,
+      tracked: true,
+      projectSync: true
     }
     this.folder = repoPath
     this.savedStore()?.save({
@@ -520,6 +572,7 @@ export class AppSession {
     this.live = null
     this.folder = null
     this.hosted = null
+    this.projectAuto = false
     this.runner?.close()
     this.runner = null
     const git = this.git

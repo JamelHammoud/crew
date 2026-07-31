@@ -131,6 +131,8 @@ function join(events: SessionEvent[], moreEvents = true) {
     folder: '/tmp/crew',
     home: 'folder',
     crewRemote: null,
+    tracked: true,
+    projectSync: true,
     shared: false,
     synced: false,
     hosting: true

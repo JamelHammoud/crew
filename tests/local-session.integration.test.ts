@@ -6,7 +6,7 @@ import { projectKey } from '../src/shared/project'
 import { runGit } from '../src/shared/git'
 import type { ServerMessage } from '../src/shared/protocol'
 import { initRepo } from './helpers/git'
-import { linkOf, TestUi, tmpDir } from './helpers/session'
+import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 // What somebody walking in is handed. History arrives in the welcome rather
 // than as events, so this is what says the crew was really there before them.
@@ -83,6 +83,33 @@ describe('a crew kept on this machine', () => {
     const ui2 = await TestUi.connect(second.wsUrl, 'sam', second.code)
     expect(historyOf(ui2)).toContain('kept')
     ui2.close()
+    await back.leave()
+  }, 40000)
+
+  // Where the crew is kept and whether the code goes out with it are two
+  // answers. Somebody working with their brother wants the second one on
+  // without the chat going back into the project.
+  it('carries the project too, once somebody says so, and remembers it', async () => {
+    const repo = tmpDir('local-sync-repo')
+    await initRepo(repo)
+    const paths = statePaths('local-sync')
+    const before = await commitCount(repo)
+
+    const app = new AppSession(paths)
+    const info = await app.startHost(repo, 'sam', { home: 'private' })
+    expect(info.tracked).toBe(true)
+    expect(info.projectSync).toBe(false)
+
+    fs.writeFileSync(path.join(repo, 'work.ts'), 'export const one = 1\n')
+    const on = await app.setProjectSync(true)
+    expect(on?.projectSync).toBe(true)
+    await waitUntil(async () => (await commitCount(repo)) > before, 20000)
+    expect(fs.existsSync(path.join(repo, '.crew'))).toBe(false)
+    await app.shutdown()
+
+    const back = new AppSession(paths)
+    const again = await back.startHost(repo, 'sam')
+    expect(again.projectSync).toBe(true)
     await back.leave()
   }, 40000)
 

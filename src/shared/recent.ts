@@ -12,5 +12,6 @@ export interface RecentProject {
   name: string
   home: CrewHome
   key: string
+  sync: boolean
   openedAt: number
 }

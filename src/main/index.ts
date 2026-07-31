@@ -475,6 +475,7 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('session:plan', (_event, folder: string) => session.projectPlan(folder))
   ipcMain.handle('crew:connect', (_event, remote: string) => session.connectCrew(remote))
+  ipcMain.handle('session:sync', (_event, on: boolean) => session.setProjectSync(on))
   ipcMain.handle('session:projects', () => session.recentProjects())
   ipcMain.handle('session:forget', (_event, folder: string) => session.forgetProject(folder))
   ipcMain.handle('session:forget-join', (_event, link: string) => session.forgetJoin(link))

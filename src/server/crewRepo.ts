@@ -3,15 +3,6 @@ import path from 'node:path'
 import { runGit } from '../shared/git'
 import { cleanCrewRemote } from '../shared/project'
 
-// A crew kept on this machine can have a repo of its own, so the chat, the docs
-// and the boards reach everyone on it without going out with the project. Every
-// member commits and pushes, so every member is a replica: whoever may write to
-// that repo is the crew, and there is no key for anybody to lose.
-
-// A chat log is only ever appended to, so two machines writing at once is a
-// merge git can settle on its own. It stands inside `.crew` rather than at the
-// top of a repo, which is what makes one rule cover a crew that rides in
-// somebody's project and one that has a repo to itself.
 export const CREW_ATTRIBUTES = '*.jsonl merge=union\n'
 
 export interface CrewRepoResult {
@@ -31,9 +22,6 @@ export async function crewRepoUrl(base: string): Promise<string | null> {
   return url.stdout.trim() || null
 }
 
-// Nothing here says why it did not work. A repo that is not yours and one that
-// is not there answer the same way on purpose, and a machine with no way out to
-// the internet is a third nobody can tell from the other two.
 export async function cloneCrew(remote: string, base: string): Promise<CrewRepoResult> {
   const address = cleanCrewRemote(remote)
   if (!address) return { ok: false, message: 'That is not an address a crew can be kept at.', address: '' }
@@ -47,8 +35,6 @@ export async function cloneCrew(remote: string, base: string): Promise<CrewRepoR
   return { ok: true, message: '', address }
 }
 
-// An empty repo is the only safe place to put a crew. Two crews pushed to one
-// address is two histories that never met, and nothing here can merge that.
 export async function publishCrew(base: string, remote: string): Promise<CrewRepoResult> {
   const address = cleanCrewRemote(remote)
   if (!address) return { ok: false, message: 'That is not an address a crew can be kept at.', address: '' }

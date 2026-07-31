@@ -29,6 +29,7 @@ declare global {
     opening(): Promise<OpenRequest | null>
     projectPlan(folder: string): Promise<ProjectPlan>
     connectCrew(remote: string): Promise<{ ok: boolean; message: string }>
+    setProjectSync(on: boolean): Promise<CurrentSession | null>
     setShared(shared: boolean): Promise<CurrentSession | null>
     agentCapabilities(): Promise<ProviderCapability[]>
     installProvider(provider: string): Promise<ProviderCapability[]>

@@ -37,6 +37,8 @@ const bridge = {
   projectPlan: (folder: string): Promise<ProjectPlan> => ipcRenderer.invoke('session:plan', folder),
   connectCrew: (remote: string): Promise<{ ok: boolean; message: string }> =>
     ipcRenderer.invoke('crew:connect', remote),
+  setProjectSync: (on: boolean): Promise<CurrentSession | null> =>
+    ipcRenderer.invoke('session:sync', on),
   setShared: (shared: boolean): Promise<CurrentSession | null> => ipcRenderer.invoke('session:share', shared),
   agentCapabilities: (): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:capabilities'),
   installProvider: (provider: string): Promise<ProviderCapability[]> => ipcRenderer.invoke('agents:install', provider),
