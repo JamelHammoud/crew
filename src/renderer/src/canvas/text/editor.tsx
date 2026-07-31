@@ -1,11 +1,10 @@
 import { Editor as TipTapEditor, type Extensions, type JSONContent } from '@tiptap/core'
 import { useLayoutEffect, useRef, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react'
-import type { TLRichText } from '../schema/richText'
-import { richTextExtensions } from './richText'
+import { richTextExtensions, type RichTextDocument } from './richText'
 import { IDENTITY_TEXT_TRANSFORM, textTransformCss, type TextPoint, type TextTransform } from './transform'
 
 export interface RichTextEditorProps {
-  richText: TLRichText
+  richText: RichTextDocument
   editing: boolean
   transform?: TextTransform
   className?: string
@@ -14,7 +13,7 @@ export interface RichTextEditorProps {
   extensions?: Extensions
   selectAll?: boolean
   caret?: TextPoint | null
-  onChange(richText: TLRichText): void
+  onChange(richText: RichTextDocument): void
   onReady?(editor: TipTapEditor | null): void
   onFocus?(): void
   onBlur?(): void
@@ -25,7 +24,7 @@ export interface RichTextEditorProps {
   customTabBehavior?: boolean
 }
 
-function sameDocument(one: TLRichText, two: TLRichText): boolean {
+function sameDocument(one: RichTextDocument, two: RichTextDocument): boolean {
   return JSON.stringify(one) === JSON.stringify(two)
 }
 
@@ -67,7 +66,7 @@ export function RichTextEditor({
       enableCoreExtensions: { textDirection: false },
       textDirection: 'auto',
       onUpdate: ({ editor: next }) => {
-        const document = next.state.doc.toJSON() as TLRichText
+        const document = next.state.doc.toJSON() as RichTextDocument
         current.current = document
         callbacks.current.onChange(document)
       },

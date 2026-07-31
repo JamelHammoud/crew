@@ -111,7 +111,7 @@ export class TextMeasurement {
 
   private createElement(): HTMLDivElement {
     const element = this.document.createElement('div')
-    element.classList.add('tl-text', 'tl-text-measure')
+    element.classList.add('crew-text', 'crew-text-measure')
     element.dir = 'auto'
     element.tabIndex = -1
     element.setAttribute('aria-hidden', 'true')

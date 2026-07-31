@@ -1,5 +1,4 @@
-import type { TLRichText } from '../schema/richText'
-import { richTextForMeasurement } from './richText'
+import { richTextForMeasurement, type RichTextDocument } from './richText'
 import type { MeasuredTextSize, TextMeasureOptions } from './measurement'
 
 export interface TextMeasurer {
@@ -7,7 +6,7 @@ export interface TextMeasurer {
 }
 
 export interface TextLayoutRequest {
-  richText: TLRichText
+  richText: RichTextDocument
   autoSize: boolean
   width: number
   fontSize: number

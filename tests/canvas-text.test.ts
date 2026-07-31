@@ -27,8 +27,8 @@ import {
   textPointToScreen,
   textTransformCss,
   type FontFaceSetLike,
+  type RichTextDocument,
   type TextMeasureOptions,
-  type TLRichText
 } from '../src/renderer/src/canvas/text'
 
 const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
@@ -113,7 +113,7 @@ const baseMeasure = {
 
 const { fontSize: _fontSize, maxWidth: _maxWidth, ...layoutMeasure } = baseMeasure
 
-const rich: TLRichText = {
+const rich: RichTextDocument = {
   type: 'doc',
   content: [
     {
@@ -180,10 +180,10 @@ describe('canvas text measurement', () => {
       { html: '<p>two</p>', options: { ...baseMeasure, maxWidth: 40 } }
     ])
     expect(batch).toHaveLength(2)
-    expect(container.querySelectorAll('.tl-text-measure')).toHaveLength(3)
+    expect(container.querySelectorAll('.crew-text-measure')).toHaveLength(3)
     expect((container.lastElementChild as HTMLElement).style.maxWidth).toBe('40px')
     measurement.dispose()
-    expect(container.querySelectorAll('.tl-text-measure')).toHaveLength(0)
+    expect(container.querySelectorAll('.crew-text-measure')).toHaveLength(0)
   })
 })
 
@@ -293,7 +293,7 @@ describe('canvas transformed text editing', () => {
     dom.window.document.body.appendChild(host)
     let root: Root | null = createRoot(host)
     let editor: import('@tiptap/core').Editor | null = null
-    let changed: TLRichText | null = null
+    let changed: RichTextDocument | null = null
     await act(async () => {
       root?.render(
         createElement(RichTextEditor, {

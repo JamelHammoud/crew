@@ -1,8 +1,8 @@
 import type { DesignNodeProps, Effect, Paint, Stroke, TypeStyle } from '../../../../shared/designNode'
-import { expandBounds, finite, pointsBounds, pointsPath, positive, round, type Point } from './geometry'
+import { finite, pointsBounds, pointsPath, positive, round, type Point } from './geometry'
 import { geoPath, nodePath } from './shapePath'
 import { dashArray, fillPaint, patternDef, themeColor } from './theme'
-import { decodeDrawPoints, escapeXml, fontFamily, plainLines, richLines, svgText } from './text'
+import { decodeDrawPoints, escapeXml, plainLines, richLines, svgText } from './text'
 import type { ExportBounds, ExportShape, ExportStore } from './types'
 
 export interface ShapeRenderContext {
@@ -23,10 +23,6 @@ const FONT_SIZES: Record<string, number> = { s: 18, m: 24, l: 36, xl: 44 }
 const LABEL_SIZES: Record<string, number> = { s: 18, m: 22, l: 26, xl: 32 }
 
 const cleanId = (value: string): string => value.replace(/[^a-zA-Z0-9_-]/g, '_')
-
-function numberProp(props: Record<string, unknown>, name: string, fallback: number): number {
-  return finite(props[name], fallback)
-}
 
 function stringProp(props: Record<string, unknown>, name: string, fallback = ''): string {
   return typeof props[name] === 'string' ? (props[name] as string) : fallback
