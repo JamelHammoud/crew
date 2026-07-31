@@ -2,17 +2,30 @@ import { createElement, type CSSProperties, type ReactNode } from 'react'
 import { Rectangle2d } from '../geometry'
 import { textShapeProps, type TLShape as CrewShape } from '../schema'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
-import { ShapeUtil } from './ShapeUtil'
+import { ShapeUtil, type ShapeEditor } from './ShapeUtil'
 import { FONT_FAMILIES, TEXT_FONT_SIZES, plainText, richText } from './shared'
 import { shapeColor } from './theme'
 
 export type TextShape = CrewShape<'text'>
 
+export interface TextShapeUtilOptions {
+  showTextOutline: boolean
+  getCustomDisplayValues(
+    editor: ShapeEditor,
+    shape: TextShape,
+    geometry?: unknown,
+    mode?: string
+  ): Partial<CSSProperties>
+}
+
 export class TextShapeUtil extends ShapeUtil<TextShape> {
   static override type = 'text' as const
   static override props = textShapeProps
 
-  override options = { showTextOutline: true, getCustomDisplayValues: () => ({}) }
+  override options: TextShapeUtilOptions = {
+    showTextOutline: true,
+    getCustomDisplayValues: () => ({})
+  }
 
   getDefaultProps(): TextShape['props'] { return { color: 'black', size: 'm', w: 8, font: 'draw', textAlign: 'start', autoSize: true, scale: 1, richText: richText() } }
   override canEdit(): boolean { return true }
@@ -28,7 +41,7 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
   }
   override getText(shape: TextShape): string { return plainText(shape.props.richText) }
   component(shape: TextShape): ReactNode {
-    const custom = (this.options.getCustomDisplayValues as (editor: unknown, shape: TextShape) => Partial<CSSProperties>)(this.editor, shape)
+    const custom = this.options.getCustomDisplayValues(this.editor, shape)
     const size = this.getMinDimensions(shape)
     const editing = this.editor.getEditingShapeId?.() === shape.id
     return createElement('div', { className: 'crew-rich-text', style: { width: size.width, minHeight: size.height, transform: `scale(${shape.props.scale})`, transformOrigin: 'top left', color: shapeColor(this.editor, shape.props.color), fontFamily: FONT_FAMILIES[shape.props.font], fontSize: TEXT_FONT_SIZES[shape.props.size], lineHeight: 1.35, textAlign: shape.props.textAlign === 'middle' ? 'center' : shape.props.textAlign === 'end' ? 'right' : 'left', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', pointerEvents: 'all', visibility: editing ? 'hidden' : undefined, ...custom }, dangerouslySetInnerHTML: { __html: richTextToHtml(shape.props.richText as RichTextDocument) } })

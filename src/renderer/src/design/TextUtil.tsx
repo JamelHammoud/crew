@@ -4,6 +4,7 @@ import {
   renderHtmlFromRichTextForMeasurement,
   TextShapeUtil,
   type Editor,
+  type ShapeUtil,
   type TLTextShape
 } from '../canvas'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
@@ -14,12 +15,12 @@ const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
 
 const customDisplayValues = (
-  editor: Editor,
+  editor: ShapeUtil['editor'],
   shape: TLTextShape,
   _geometry?: unknown,
   _mode?: string
 ) => {
-  const type = textShapeType(editor, shape)
+  const type = textShapeType(editor as Editor, shape)
   loadFonts([type.family])
   return {
     color: type.color,
@@ -49,7 +50,6 @@ const Configured = TextShapeUtil.configure({
 
 export class DesignTextUtil extends Configured {
   override options = {
-    ...super.options,
     showTextOutline: false,
     getCustomDisplayValues: customDisplayValues
   }
