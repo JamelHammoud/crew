@@ -26,6 +26,7 @@ export const kimiProvider: Provider = makeCliProvider({
   args: kimiArgs,
   makeParser: kimiParser,
   dialog: (prompt, cwd, get) => kimiDialog(prompt, cwd, get),
+  goalCommand: true,
   steerable: true,
   install: {
     darwin: INSTALL_SH,

@@ -74,6 +74,10 @@ export interface RunHooks {
   onTokens?: (tokens: number, cost: number | null) => void
 }
 
+export interface RunOptions {
+  goal?: boolean
+}
+
 export interface RunningPrompt {
   done: Promise<{ text: string }>
   kill: () => void
@@ -93,7 +97,7 @@ export interface Provider {
   steerable?: boolean
   fields(): AgentSettingField[]
   detect(): Promise<boolean>
-  start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings): RunningPrompt
+  start(prompt: string, cwd: string, hooks: RunHooks, settings?: AgentSettings, options?: RunOptions): RunningPrompt
   // Reads the account's rate-limit state from this machine (credentials,
   // session logs). null means the provider has no usage data to offer.
   usage?(): Promise<AgentUsage | null>

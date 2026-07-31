@@ -15,6 +15,7 @@ import type {
   ParsedOutput,
   ParsedUsage,
   Provider,
+  RunOptions,
   RunParser,
   RunningPrompt
 } from './types'
@@ -64,7 +65,7 @@ interface CliProviderOptions {
   command: string
   install?: InstallCommands
   fields?: () => AgentSettingField[]
-  args: (prompt: string, get: SettingReader) => string[]
+  args: (prompt: string, get: SettingReader, run: RunOptions) => string[]
   parser?: OutputParser
   // A parser that has to remember where it is in a run gets one of its own. A
   // module-level function is shared by every run at once, so a second agent
@@ -75,7 +76,8 @@ interface CliProviderOptions {
   stdinPrompt?: boolean
   // When set, the prompt is written to stdin as a message the dialog decides the
   // shape of, and stdin stays open so later messages can steer the run.
-  dialog?: (prompt: string, cwd: string, get: SettingReader) => Dialog
+  dialog?: (prompt: string, cwd: string, get: SettingReader, run: RunOptions) => Dialog
+  goalCommand?: boolean
   steerable?: boolean
   usage?: () => Promise<AgentUsage | null>
 }
@@ -102,13 +104,14 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     fields,
     detect: async () => commandExists(opts.command),
     usage: opts.usage,
-    start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
+    start: (prompt, cwd, hooks, settings = {}, options = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
       const read: SettingReader = key => resolved[key] ?? ''
-      const dialog = opts.dialog?.(prompt, cwd, read)
+      const body = options.goal && opts.goalCommand ? `/goal ${prompt}` : prompt
+      const dialog = opts.dialog?.(body, cwd, read, options)
       const made = opts.makeParser?.()
       const parse = made?.parse ?? opts.parser
-      const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, read))
+      const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(body, read, options))
       const child = spawn(invocation.command, invocation.args, {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env },
@@ -405,7 +408,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       if (dialog) {
         for (const body of dialog.begin()) write(body)
       } else if (opts.stdinPrompt) {
-        child.stdin?.end(prompt)
+        child.stdin?.end(body)
       }
 
       // Start the clock at spawn: a process that hangs before its first byte

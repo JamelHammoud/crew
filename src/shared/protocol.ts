@@ -238,6 +238,7 @@ export type ServerMessage =
       // about one for the same reason: the board is reached over http, and only
       // that side knows the address.
       tickets?: boolean
+      goal?: boolean
     }
   | {
       type: 'steer'

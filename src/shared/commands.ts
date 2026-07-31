@@ -1,4 +1,4 @@
-export type CommandName = 'plan' | 'tickets' | 'ghost' | 'voice' | 'steer' | 'queue' | 'btw' | 'fork' | 'fallback'
+export type CommandName = 'plan' | 'tickets' | 'goal' | 'ghost' | 'voice' | 'steer' | 'queue' | 'btw' | 'fork' | 'fallback'
 
 // Which composer offers a command. The chat's open a thread, so they are asked
 // for before there is one. A thread's are about the thread already open: where
@@ -16,16 +16,18 @@ export interface SlashCommand {
 export const SLASH_COMMANDS: SlashCommand[] = [
   { name: 'plan', where: 'chat', hint: 'Get a plan first, then implement it' },
   { name: 'tickets', where: 'chat', hint: 'Watch the work on a board, and answer as it goes' },
+  { name: 'goal', where: 'chat', hint: 'Keep going until the work is done' },
   { name: 'ghost', where: 'chat', hint: 'Nobody else sees this thread' },
   { name: 'voice', where: 'chat', hint: 'Talk to them out loud' },
   { name: 'steer', where: 'thread', hint: 'Go in now, on the turn already running', live: true },
   { name: 'queue', where: 'thread', hint: 'Wait for this turn to finish', live: true },
   { name: 'btw', where: 'thread', hint: 'Ask on the side, without touching the thread' },
   { name: 'fork', where: 'thread', hint: 'Carry on from here in a thread of its own' },
+  { name: 'goal', where: 'thread', hint: 'Keep going until the work is done' },
   { name: 'fallback', where: 'thread', hint: 'Name who takes over if this one fails' }
 ]
 
-const NAMES = SLASH_COMMANDS.map(command => command.name)
+const NAMES = [...new Set(SLASH_COMMANDS.map(command => command.name))]
 
 export function commandsIn(where: CommandWhere): SlashCommand[] {
   return SLASH_COMMANDS.filter(command => command.where === where)
