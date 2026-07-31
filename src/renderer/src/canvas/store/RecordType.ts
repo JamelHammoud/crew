@@ -2,12 +2,12 @@ import { uniqueId } from './uniqueId'
 
 export type RecordId<R extends UnknownRecord> = string & { __type__: R }
 
-export interface BaseRecord<TypeName extends string, Id extends RecordId<UnknownRecord>> {
+export interface BaseRecord<TypeName extends string, Id extends string> {
   readonly id: Id
   readonly typeName: TypeName
 }
 
-export type UnknownRecord = BaseRecord<string, RecordId<UnknownRecord>>
+export type UnknownRecord = BaseRecord<string, string>
 
 export type IdOf<R extends UnknownRecord> = R['id']
 

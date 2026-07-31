@@ -1,0 +1,292 @@
+import { JSDOM } from 'jsdom'
+import { createElement } from 'react'
+import { act } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import {
+  FontMeasurementCache,
+  FontTracker,
+  RichTextEditor,
+  TextMeasurement,
+  compensateTextGrowth,
+  measureTextLayout,
+  normalizeLink,
+  normalizeTextForMeasurement,
+  resolveLineHeight,
+  richTextFromHtml,
+  richTextFromProseMirror,
+  richTextToHtml,
+  richTextToPlainText,
+  richTextToProseMirror,
+  screenPointToText,
+  textPointToScreen,
+  textTransformCss,
+  type FontFaceSetLike,
+  type TLRichText
+} from '../src/renderer/src/canvas/text'
+
+const originalWindow = globalThis.window
+const originalDocument = globalThis.document
+const originalNavigator = globalThis.navigator
+const originalHTMLElement = globalThis.HTMLElement
+const originalElement = globalThis.Element
+const originalNode = globalThis.Node
+const originalMutationObserver = globalThis.MutationObserver
+const originalGetSelection = globalThis.getSelection
+
+function installDom() {
+  const dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true })
+  const view = dom.window
+  Object.assign(globalThis, {
+    window: view,
+    document: view.document,
+    navigator: view.navigator,
+    HTMLElement: view.HTMLElement,
+    Element: view.Element,
+    Node: view.Node,
+    MutationObserver: view.MutationObserver,
+    getSelection: view.getSelection.bind(view),
+    innerHeight: 900,
+    innerWidth: 1400,
+    requestAnimationFrame: (callback: FrameRequestCallback) => setTimeout(() => callback(Date.now()), 0),
+    cancelAnimationFrame: (id: number) => clearTimeout(id)
+  })
+  Object.defineProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT', { configurable: true, value: true })
+  return dom
+}
+
+afterEach(() => {
+  Object.assign(globalThis, {
+    window: originalWindow,
+    document: originalDocument,
+    navigator: originalNavigator,
+    HTMLElement: originalHTMLElement,
+    Element: originalElement,
+    Node: originalNode,
+    MutationObserver: originalMutationObserver,
+    getSelection: originalGetSelection
+  })
+  Reflect.deleteProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT')
+})
+
+const baseMeasure = {
+  fontStyle: 'normal',
+  fontWeight: '500',
+  fontFamily: 'Inter',
+  fontSize: 13,
+  lineHeight: 1.35,
+  maxWidth: null,
+  padding: '0px'
+}
+
+const rich: TLRichText = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [
+        { type: 'text', text: 'Crew ', marks: [{ type: 'bold' }] },
+        {
+          type: 'text',
+          text: 'link',
+          marks: [
+            { type: 'italic' },
+            { type: 'link', attrs: { href: 'https://crew.test', target: '_blank', rel: 'noopener noreferrer nofollow' } },
+            { type: 'highlight', attrs: { color: null } }
+          ]
+        }
+      ]
+    },
+    {
+      type: 'bulletList',
+      content: [
+        {
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Together', marks: [{ type: 'code' }] }] }]
+        }
+      ]
+    }
+  ]
+}
+
+describe('canvas text measurement', () => {
+  it('normalizes lines and resolves whole-pixel line heights', () => {
+    expect(normalizeTextForMeasurement('one\r\n\rthree')).toBe('one\n \nthree')
+    expect(resolveLineHeight(13, 1.35)).toBe(18)
+  })
+
+  it('applies and restores measurement styles and supports batches', () => {
+    const dom = installDom()
+    const container = dom.window.document.body
+    const sizes = new WeakMap<Element, { width: number; height: number }>()
+    vi.spyOn(dom.window.HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () {
+      const size = sizes.get(this) ?? { width: this.textContent?.length ?? 0, height: 18 }
+      return {
+        x: 0,
+        y: 0,
+        left: 0,
+        top: 0,
+        right: size.width,
+        bottom: size.height,
+        width: size.width,
+        height: size.height,
+        toJSON: () => ({})
+      }
+    })
+    const measurement = new TextMeasurement(dom.window.document, container)
+    const first = container.firstElementChild as HTMLElement
+    sizes.set(first, { width: 44.5, height: 36 })
+    const measured = measurement.measureHtml('<strong>hello</strong>', { ...baseMeasure, maxWidth: 80 })
+    expect(measured).toMatchObject({ w: 44.5, h: 36 })
+    expect(first.innerHTML).toBe('<strong>hello</strong>')
+    expect(first.style.maxWidth).toBe('')
+    expect(first.style.lineHeight).toBe('')
+    const batch = measurement.measureHtmlBatch([
+      { html: '<p>one</p>', options: baseMeasure },
+      { html: '<p>two</p>', options: { ...baseMeasure, maxWidth: 40 } }
+    ])
+    expect(batch).toHaveLength(2)
+    expect(container.querySelectorAll('.tl-text-measure')).toHaveLength(3)
+    expect((container.lastElementChild as HTMLElement).style.maxWidth).toBe('40px')
+    measurement.dispose()
+    expect(container.querySelectorAll('.tl-text-measure')).toHaveLength(0)
+  })
+})
+
+describe('canvas text fonts', () => {
+  it('invalidates tracked measurements when relevant fonts settle', async () => {
+    const target = new EventTarget()
+    let finishReady: (() => void) | undefined
+    const ready = new Promise<void>(resolve => {
+      finishReady = resolve
+    })
+    const fonts: FontFaceSetLike = {
+      ready,
+      load: vi.fn(async () => []),
+      addEventListener: (type, listener) => target.addEventListener(type, listener),
+      removeEventListener: (type, listener) => target.removeEventListener(type, listener)
+    }
+    const tracker = new FontTracker(fonts)
+    tracker.track(['Inter'])
+    const cache = new FontMeasurementCache<object, number>(tracker)
+    const key = {}
+    const measure = vi.fn(() => 24)
+    expect(cache.get(key, 'a', measure)).toBe(24)
+    expect(cache.get(key, 'a', measure)).toBe(24)
+    const unrelated = new Event('loadingdone') as Event & { fontfaces: Array<{ family: string }> }
+    unrelated.fontfaces = [{ family: 'Other' }]
+    target.dispatchEvent(unrelated)
+    expect(cache.get(key, 'a', measure)).toBe(24)
+    expect(measure).toHaveBeenCalledTimes(1)
+    const loaded = new Event('loadingdone') as Event & { fontfaces: Array<{ family: string }> }
+    loaded.fontfaces = [{ family: 'Inter' }]
+    target.dispatchEvent(loaded)
+    expect(cache.get(key, 'a', measure)).toBe(24)
+    expect(measure).toHaveBeenCalledTimes(2)
+    await tracker.load('500 13px Inter')
+    expect(cache.get(key, 'a', measure)).toBe(24)
+    expect(measure).toHaveBeenCalledTimes(3)
+    finishReady?.()
+    await ready
+    await Promise.resolve()
+    expect(tracker.generation).toBe(3)
+    tracker.dispose()
+  })
+})
+
+describe('canvas rich text', () => {
+  it('round trips ProseMirror documents without dropping supported structure or marks', () => {
+    installDom()
+    const proseMirror = richTextToProseMirror(rich)
+    expect(richTextFromProseMirror(proseMirror)).toEqual(rich)
+    const html = richTextToHtml(rich)
+    expect(html).toContain('<strong>Crew </strong>')
+    expect(html).toContain('<ul>')
+    const roundTrip = richTextFromHtml(html)
+    expect(roundTrip).toEqual(rich)
+    expect(richTextToPlainText(roundTrip)).toBe('Crew link\nTogether')
+  })
+})
+
+describe('canvas text autosizing', () => {
+  it('uses fixed widths for wrapped text and adds wrapping room to automatic widths', () => {
+    const measureHtml = vi.fn(() => ({ x: 0, y: 0, w: 33.4, h: 11, scrollWidth: 0 }))
+    const automatic = measureTextLayout(
+      { measureHtml },
+      { richText: rich, autoSize: true, width: 4, fontSize: 16, options: { ...baseMeasure, fontSize: undefined } as never }
+    )
+    expect(automatic).toEqual({ width: 34.4, height: 16 })
+    expect(measureHtml.mock.calls[0][1].maxWidth).toBeNull()
+    const fixed = measureTextLayout(
+      { measureHtml },
+      { richText: rich, autoSize: false, width: 91.8, fontSize: 16, options: { ...baseMeasure, fontSize: undefined } as never }
+    )
+    expect(fixed).toEqual({ width: 91, height: 16 })
+    expect(measureHtml.mock.calls[1][1].maxWidth).toBe(91)
+  })
+
+  it('keeps aligned growth anchored through rotation and keeps content growth on its top edge', () => {
+    const previous = { x: 100, y: 80, rotation: Math.PI / 2, scale: 2, autoSize: true, textAlign: 'end' as const, width: 20 }
+    const next = { ...previous, width: 20 }
+    const content = compensateTextGrowth(previous, next, { width: 20, height: 10 }, { width: 30, height: 20 }, true)
+    expect(content.x).toBeCloseTo(100)
+    expect(content.y).toBeCloseTo(60)
+    expect(content.width).toBe(30)
+    const style = compensateTextGrowth(previous, next, { width: 20, height: 10 }, { width: 30, height: 20 }, false)
+    expect(style.x).toBeCloseTo(110)
+    expect(style.y).toBeCloseTo(60)
+  })
+})
+
+describe('canvas transformed text editing', () => {
+  it('maps points through the same transform applied to the contenteditable', async () => {
+    const transform = { x: 80, y: 40, rotation: Math.PI / 4, scaleX: 2, scaleY: 0.5 }
+    const local = { x: 12, y: 18 }
+    const screen = textPointToScreen(local, transform)
+    expect(screenPointToText(screen, transform)).toEqual(expect.objectContaining({ x: expect.closeTo(12), y: expect.closeTo(18) }))
+    expect(textTransformCss(transform)).toBe(`translate(80px, 40px) rotate(${Math.PI / 4}rad) scale(2, 0.5)`)
+
+    const dom = installDom()
+    const host = dom.window.document.createElement('div')
+    dom.window.document.body.appendChild(host)
+    let root: Root | null = createRoot(host)
+    let editor: import('@tiptap/core').Editor | null = null
+    let changed: TLRichText | null = null
+    await act(async () => {
+      root?.render(
+        createElement(RichTextEditor, {
+          richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }] },
+          editing: true,
+          transform,
+          onChange: value => {
+            changed = value
+          },
+          onReady: value => {
+            editor = value
+          }
+        })
+      )
+      await new Promise(resolve => setTimeout(resolve, 10))
+    })
+    const wrapper = host.querySelector('[data-testid="canvas-rich-text-editor"]') as HTMLElement
+    expect(wrapper.style.transform).toBe(textTransformCss(transform))
+    expect(host.querySelector('.ProseMirror')?.getAttribute('contenteditable')).toBe('true')
+    await act(async () => {
+      editor?.commands.insertContent(' crew')
+    })
+    expect(richTextToPlainText(changed!)).toBe('Hello crew')
+    await act(async () => {
+      root?.unmount()
+    })
+    root = null
+  })
+})
+
+describe('canvas rich text toolbar', () => {
+  it('normalizes links the same way the current Design editor does', () => {
+    expect(normalizeLink(' crew.test ')).toBe('https://crew.test')
+    expect(normalizeLink('https://crew.test')).toBe('https://crew.test')
+    expect(normalizeLink('mailto:hello@crew.test')).toBe('mailto:hello@crew.test')
+    expect(normalizeLink('   ')).toBe('')
+  })
+})
