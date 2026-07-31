@@ -103,6 +103,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const stderr = child.stderr
       if (!stdout || !stderr) throw new Error(`${opts.label} could not open its output streams.`)
       let text = ''
+      let aside = ''
       let errText = ''
       let buffer = ''
       let raw = ''
