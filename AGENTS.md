@@ -645,6 +645,7 @@ A word with a slash in front of it, lifted out of the box onto a chip beside the
 - It reads as one run of talk rather than as two blocks, which is the opposite of what an aside does and for the opposite reason. An aside is a conversation about a thread, and a fork is that conversation carrying on, so nothing in the prompt says a fork was made at all.
 - It carries the mode, the plan and the board with it for the same reason. A fork of a ghost thread is a ghost, or a hidden thread leaks the moment somebody forks it, and a fork of a helper's thread is a thread of its own rather than a second helper, since nobody sent it out.
 - Whoever asks for a fork names the id it opens under, in `forkId` on `chat.send`, the way whoever makes a playlist names that. The window that asked opens it the moment it lands, since a message was just typed into it, and no other window moves: everyone else has the card in the chat, the way they do for any thread.
+- A fork reads as a thread that starts mid conversation, since what came before it is in the prompt and not on the screen, so `ForkedFrom` stands at the head of it and names the thread it carried on from. That is the way back as well as the one thing the screen cannot say on its own: whoever made it knows, and everybody else opened a card that answers a conversation they cannot see.
 
 ## Helpers
 
