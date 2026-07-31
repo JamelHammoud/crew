@@ -96,7 +96,6 @@ import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
   agentId,
   agentMentionRefsIn,
-  mentionsIn,
   resolveSettings,
   type AgentMentionRef,
   type AgentStatus,

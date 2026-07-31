@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { VoiceCard } from '../../../shared/voice'
 import { VoiceReply } from '../../../shared/voiceReply'
-import { agentsHere, agentToAsk } from '../design/askAgent'
+import { agentToAsk } from '../design/askAgent'
 import { VoiceEar } from '../media/voice/ear'
 import { VoiceListener } from '../media/voice/listener'
 import { progressOf, rememberVoice, storedVoice, type Fetching } from '../media/voice/models'

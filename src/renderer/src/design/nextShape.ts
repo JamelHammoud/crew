@@ -1,5 +1,5 @@
 import { atom } from 'tldraw'
-import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
+import { type NodeShape } from '../../../shared/designNode'
 
 const LABELS: Record<NodeShape, string> = {
   rect: 'Rectangle',
