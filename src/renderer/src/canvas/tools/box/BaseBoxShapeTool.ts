@@ -45,5 +45,5 @@ export abstract class BaseBoxShapeTool implements BoxStateParent {
   onInterrupt(info: BoxPointerInfo = {}): void { this.current.onInterrupt(info) }
   onKeyDown(info: BoxPointerInfo = {}): void { this.current.onKeyDown(info) }
 
-  onCreate?(_shape: TLShape | null): void | null
+  onCreate?(_shape: TLShape | null): void
 }

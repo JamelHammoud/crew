@@ -44,10 +44,7 @@ export interface ArrowShapeUtilLike {
     hoverPreciseTimeout: number
     pointingPreciseTimeout: number
   }
-  onHandleDrag?(
-    shape: TLArrowShape,
-    info: ArrowHandleDragInfo
-  ): ArrowShapeUpdate | undefined
+  onHandleDrag?(shape: TLArrowShape, info: ArrowHandleDragInfo): ArrowShapeUpdate | undefined
 }
 
 export type ArrowTimerId = ReturnType<typeof setTimeout>

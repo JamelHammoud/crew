@@ -1,11 +1,7 @@
 import { ArrowStateNode, type ArrowStateParent } from './StateNode'
 import { Idle } from './toolStates/Idle'
 import { Pointing } from './toolStates/Pointing'
-import type {
-  ArrowKeyboardInfo,
-  ArrowPointerInfo,
-  ArrowToolEditor
-} from './types'
+import type { ArrowKeyboardInfo, ArrowPointerInfo, ArrowToolEditor } from './types'
 
 export class ArrowShapeTool implements ArrowStateParent {
   static readonly id = 'arrow'

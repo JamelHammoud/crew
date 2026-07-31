@@ -1,9 +1,5 @@
 import { ArrowStateNode } from '../StateNode'
-import type {
-  ArrowKeyboardInfo,
-  ArrowPointerInfo,
-  ArrowTimerId
-} from '../types'
+import type { ArrowKeyboardInfo, ArrowPointerInfo, ArrowTimerId } from '../types'
 
 export class Idle extends ArrowStateNode {
   readonly id = 'idle'

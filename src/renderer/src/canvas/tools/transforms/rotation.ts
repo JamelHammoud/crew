@@ -2,11 +2,7 @@ import { Mat, type MatLike } from '../../math/Mat'
 import { canonicalizeRotation, degreesToRadians, shortAngleDist } from '../../math/utils'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
-import {
-  TransformState,
-  type ShapeUpdate,
-  type TransformEditor
-} from './types'
+import { TransformState, type ShapeUpdate, type TransformEditor } from './types'
 
 export interface RotationShapeSnapshot<Shape extends TLShape = TLShape> {
   shape: Shape
@@ -40,8 +36,7 @@ export function getRotationDelta({
   isCoarsePointer?: boolean
 }): number {
   const currentAngle = snapshot.initialPageCenter.angle(currentPagePoint)
-  let rotation =
-    snapshot.initialShapesRotation + currentAngle - snapshot.initialCursorAngle
+  let rotation = snapshot.initialShapesRotation + currentAngle - snapshot.initialCursorAngle
 
   if (shiftKey) {
     rotation = snapAngle(rotation, 24)
@@ -108,9 +103,7 @@ export class Rotating<Shape extends TLShape = TLShape> extends TransformState<
 
   override onEnter(info: RotatingInfo<Shape>): void {
     this.info = info
-    this.parent.setCurrentToolIdMask?.(
-      typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined
-    )
+    this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
     const snapshot = info.snapshot ?? this.createSnapshot()
     if (!snapshot) {
       this.parent.transition('idle', info)

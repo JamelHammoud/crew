@@ -82,7 +82,7 @@ class LineEditor implements LineToolEditor {
   }
 
   getShapeHandles(shape: TLLineShape): LineHandle[] {
-    return Object.values(shape.props.points).map((point) => ({ ...point, type: 'vertex' })) as LineHandle[]
+    return Object.values(shape.props.points).map(point => ({ ...point, type: 'vertex' })) as LineHandle[]
   }
 
   getShapeParentTransform(): Mat {

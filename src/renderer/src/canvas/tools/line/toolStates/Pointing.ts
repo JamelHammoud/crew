@@ -32,7 +32,7 @@ export class Pointing extends LineStateNode {
       this.shape = shape
       const handles = this.editor.getShapeHandles(shape)
       if (!handles) return
-      const vertexHandles = handles.filter((handle) => handle.type === 'vertex').sort(sortByIndex)
+      const vertexHandles = handles.filter(handle => handle.type === 'vertex').sort(sortByIndex)
       const endHandle = vertexHandles[vertexHandles.length - 1]
       const previousEndHandle = vertexHandles[vertexHandles.length - 2]
       if (!endHandle || !previousEndHandle) return
@@ -48,10 +48,7 @@ export class Pointing extends LineStateNode {
       const points = structuredClone(shape.props.points)
       const minDistance = MINIMUM_DISTANCE_BETWEEN_SHIFT_CLICKED_HANDLES / this.editor.getZoomLevel()
 
-      if (
-        Vec.DistMin(endHandle, previousEndHandle, minDistance) ||
-        Vec.DistMin(nextPoint, endHandle, minDistance)
-      ) {
+      if (Vec.DistMin(endHandle, previousEndHandle, minDistance) || Vec.DistMin(nextPoint, endHandle, minDistance)) {
         points[endHandle.id] = {
           id: endHandle.id,
           index: endHandle.index,

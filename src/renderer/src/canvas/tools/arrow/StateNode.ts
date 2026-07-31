@@ -1,8 +1,4 @@
-import type {
-  ArrowKeyboardInfo,
-  ArrowPointerInfo,
-  ArrowToolEditor
-} from './types'
+import type { ArrowKeyboardInfo, ArrowPointerInfo, ArrowToolEditor } from './types'
 
 export abstract class ArrowStateNode {
   abstract readonly id: string

@@ -31,12 +31,7 @@ export function resizeBox<Shape extends TLShape & { props: { w: number; h: numbe
   options: ResizeBoxOptions = {}
 ): Shape {
   const { newPoint, handle, scaleX, scaleY } = info
-  const {
-    minWidth = 1,
-    maxWidth = Infinity,
-    minHeight = 1,
-    maxHeight = Infinity
-  } = options
+  const { minWidth = 1, maxWidth = Infinity, minHeight = 1, maxHeight = Infinity } = options
 
   let w = shape.props.w * scaleX
   let h = shape.props.h * scaleY

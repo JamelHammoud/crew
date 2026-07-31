@@ -2,8 +2,7 @@ import type { MatLike } from '../../math/Mat'
 import type { Vec } from '../../math/Vec'
 import type { TLCursor, TLShape } from '../../schema'
 
-export type ShapeUpdate<Shape extends TLShape = TLShape> = Partial<Shape> &
-  Pick<Shape, 'id' | 'type'>
+export type ShapeUpdate<Shape extends TLShape = TLShape> = Partial<Shape> & Pick<Shape, 'id' | 'type'>
 
 export interface TransformParent {
   transition(id: string, info?: unknown): unknown
@@ -79,10 +78,7 @@ export interface HandleDragInfo<Shape extends TLShape = TLShape> {
   initial: Shape
 }
 
-export abstract class TransformState<
-  Editor extends TransformEditor = TransformEditor,
-  Info = unknown
-> {
+export abstract class TransformState<Editor extends TransformEditor = TransformEditor, Info = unknown> {
   static id = ''
   static isLockable = true
   static useCoalescedEvents = false

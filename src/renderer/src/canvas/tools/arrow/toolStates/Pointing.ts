@@ -1,11 +1,7 @@
 import { Vec } from '../../../math/Vec'
 import { createShapeId } from '../../../schema/id'
 import { ArrowStateNode } from '../StateNode'
-import type {
-  ArrowPointerInfo,
-  ArrowTimerId,
-  TLArrowShape
-} from '../types'
+import type { ArrowPointerInfo, ArrowTimerId, TLArrowShape } from '../types'
 
 function snapToGrid(point: Vec, state: { isGridMode: boolean }, gridSize: number): Vec {
   return state.isGridMode ? point.clone().snapToGrid(gridSize) : point.clone()
@@ -107,7 +103,7 @@ export class Pointing extends ArrowStateNode {
     if (!shape) return
     const handles = this.editor.getShapeHandles(shape)
     if (!handles) throw new Error('expected handles for arrow')
-    const startHandle = handles.find((handle) => handle.id === 'start')
+    const startHandle = handles.find(handle => handle.id === 'start')
     if (!startHandle) throw new Error('expected start handle for arrow')
     const change = this.editor.getShapeUtil('arrow').onHandleDrag?.(shape, {
       handle: { ...startHandle, x: 0, y: 0 },
@@ -125,8 +121,8 @@ export class Pointing extends ArrowStateNode {
     if (!shape) throw new Error('expected shape')
     const handles = this.editor.getShapeHandles(shape)
     if (!handles) throw new Error('expected handles for arrow')
-    const startHandle = handles.find((handle) => handle.id === 'start')
-    const endHandle = handles.find((handle) => handle.id === 'end')
+    const startHandle = handles.find(handle => handle.id === 'start')
+    const endHandle = handles.find(handle => handle.id === 'end')
     if (!startHandle || !endHandle) throw new Error('expected endpoint handles for arrow')
     const util = this.editor.getShapeUtil('arrow')
     const initial = this.shape
@@ -139,10 +135,7 @@ export class Pointing extends ArrowStateNode {
     if (startChange) this.editor.updateShapes([startChange])
     const currentShape = this.editor.getShape(shape.id)
     if (!currentShape) throw new Error('expected shape')
-    const point = this.editor.getPointInShapeSpace(
-      currentShape,
-      this.editor.inputs.getCurrentPagePoint()
-    )
+    const point = this.editor.getPointInShapeSpace(currentShape, this.editor.inputs.getCurrentPagePoint())
     const endChange = util.onHandleDrag?.(currentShape, {
       handle: { ...endHandle, x: point.x, y: point.y },
       isPrecise: this.isPrecise,

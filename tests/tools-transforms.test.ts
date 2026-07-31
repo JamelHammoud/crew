@@ -24,10 +24,7 @@ import {
 
 type GeoShape = Extract<TLShape, { type: 'geo' }>
 
-function geoShape(
-  id: string,
-  overrides: Partial<GeoShape> & { props?: Partial<GeoShape['props']> } = {}
-): GeoShape {
+function geoShape(id: string, overrides: Partial<GeoShape> & { props?: Partial<GeoShape['props']> } = {}): GeoShape {
   return {
     id: `shape:${id}` as TLShapeId,
     typeName: 'shape',
@@ -121,18 +118,15 @@ describe('canvas transforms', () => {
     expect(flipped.props.h).toBe(100)
     near(flipped, 60, -30)
 
-    const rotated = resizeBox(
-      geoShape('rotated-box', { x: 10, y: 20, rotation: HALF_PI }),
-      {
-        newPoint: new Vec(10, 20),
-        handle: 'bottom_right',
-        mode: 'resize_bounds',
-        scaleX: -1,
-        scaleY: 1,
-        initialBounds,
-        initialShape: shape
-      }
-    )
+    const rotated = resizeBox(geoShape('rotated-box', { x: 10, y: 20, rotation: HALF_PI }), {
+      newPoint: new Vec(10, 20),
+      handle: 'bottom_right',
+      mode: 'resize_bounds',
+      scaleX: -1,
+      scaleY: 1,
+      initialBounds,
+      initialShape: shape
+    })
     near(rotated, 10, -80)
   })
 
@@ -232,9 +226,7 @@ describe('canvas transforms', () => {
     expect(updates[0].rotation).toBeCloseTo(0, 8)
     expect(updates[1].rotation).toBeCloseTo(HALF_PI, 8)
 
-    expect(
-      getRotationDelta({ snapshot, currentPagePoint: new Vec(0, 10) })
-    ).toBeCloseTo(HALF_PI, 8)
+    expect(getRotationDelta({ snapshot, currentPagePoint: new Vec(0, 10) })).toBeCloseTo(HALF_PI, 8)
     expect(
       getRotationDelta({
         snapshot,

@@ -1,11 +1,7 @@
 import { Mat, type MatLike } from '../../math/Mat'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
-import {
-  TransformState,
-  type ShapeUpdate,
-  type TransformEditor
-} from './types'
+import { TransformState, type ShapeUpdate, type TransformEditor } from './types'
 
 export interface TranslationSnapshot<Shape extends TLShape = TLShape> {
   shape: Shape
@@ -47,9 +43,7 @@ export function translateShape<Shape extends TLShape>(
   delta: VecLike
 ): ShapeUpdate<Shape> {
   const pagePoint = Vec.Add(snapshot.pagePoint, delta)
-  const localPoint = snapshot.parentTransform
-    ? Mat.applyToPoint(snapshot.parentTransform, pagePoint)
-    : pagePoint
+  const localPoint = snapshot.parentTransform ? Mat.applyToPoint(snapshot.parentTransform, pagePoint) : pagePoint
 
   return {
     id: snapshot.shape.id,
@@ -77,10 +71,7 @@ export function moveShapesToPoint<Shape extends TLShape>({
   currentPagePoint: VecLike
   options?: TranslateOptions
 }): ShapeUpdate<Shape>[] {
-  return translateShapes(
-    snapshots,
-    getTranslationDelta(originPagePoint, currentPagePoint, options)
-  )
+  return translateShapes(snapshots, getTranslationDelta(originPagePoint, currentPagePoint, options))
 }
 
 export interface TranslatingInfo<Shape extends TLShape = TLShape> {
@@ -105,16 +96,13 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   override onEnter(info: TranslatingInfo<Shape>): void {
     this.info = info
-    this.parent.setCurrentToolIdMask?.(
-      typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined
-    )
+    this.parent.setCurrentToolIdMask?.(typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined)
     this.snapshots = info.snapshots ?? this.createSnapshots()
     if (this.snapshots.length === 0) {
       this.parent.transition('idle')
       return
     }
-    this.markId =
-      info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('translating') ?? ''
+    this.markId = info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('translating') ?? ''
     this.editor.setCursor?.({ type: 'move', rotation: 0 })
     this.applyLifecycle('start')
     this.update()
@@ -213,9 +201,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.update()
     this.applyLifecycle('end')
     if (this.info.isCreating) {
-      const shape = this.snapshots[0]
-        ? this.editor.getShape(this.snapshots[0].shape.id) ?? null
-        : null
+      const shape = this.snapshots[0] ? (this.editor.getShape(this.snapshots[0].shape.id) ?? null) : null
       this.info.onCreate?.(shape)
     }
     this.finish(true)
