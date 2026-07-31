@@ -344,11 +344,30 @@ try {
       note: `stopReason ${turn?.stopReason}`
     },
     {
-      name: 'a token count appeared',
-      ok: tokens.length > 0,
+      name: 'the stream itself carries no token count, which is why the wire log is read',
+      ok: tokens.length === 0,
       note: tokens.length
-        ? tokens.slice(0, 6).map(t => `${t.where} ${flat(JSON.stringify(t.value)).slice(0, 80)}`).join(' | ')
-        : 'no token, usage or cost figure arrived anywhere in the stream'
+        ? `a count did arrive over the wire: ${tokens.slice(0, 6).map(t => `${t.where} ${flat(JSON.stringify(t.value)).slice(0, 80)}`).join(' | ')}`
+        : 'no token, usage or cost figure anywhere in the stream, as expected'
+    },
+    {
+      name: 'the wire log was found for this session',
+      ok: Boolean(wire),
+      note: wire ? wire : `nothing under ${path.join(homedir(), ...SESSIONS)} held ${session.sessionId}`
+    },
+    {
+      name: 'the wire log holds usage records for the turn',
+      ok: Boolean(usage && usage.calls > 0),
+      note: usage && usage.calls
+        ? `${usage.calls} calls on ${usage.model || 'an unnamed model'}, input ${usage.input}, output ${usage.output}, cache read ${usage.cacheRead}, cache creation ${usage.cacheWrite}, total input ${usage.input + usage.cacheRead + usage.cacheWrite}`
+        : 'no usage.record with scope turn was written'
+    },
+    {
+      name: 'the records were written live rather than only at the end',
+      ok: Boolean(mid && mid.calls > 0),
+      note: mid
+        ? `${mid.calls} record(s) already on disk at ${mid.at}s, with the turn ending at ${stopped}s`
+        : `nothing was on disk before the turn ended at ${stopped}s`
     }
   ]
 
