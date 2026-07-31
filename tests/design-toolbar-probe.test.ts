@@ -63,7 +63,7 @@ describe('the design toolbar', () => {
   it('carries the arrow at the weight of every other mark', () => {
     const arrow = drawn(CursorGlyph)
     const { scale } = placed(arrow.getAttribute('transform')!)
-    const weight = Number(arrow.getAttribute('stroke-width')) * scale
+    const weight = Number(arrow.ownerSVGElement!.getAttribute('stroke-width')) * scale
     const family = Number(drawn(RectangleGlyph).ownerSVGElement!.getAttribute('stroke-width'))
     expect(weight).toBeCloseTo(family, 1)
   })
