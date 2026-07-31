@@ -256,7 +256,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       }
 
       const apply = (out: ParsedOutput) => {
-        {
+        if (true) {
           if (out.thinkingStart) openBlock('thinking', out.thinkingStart.index)
           if (out.textStart) openBlock('text', out.textStart.index, out.textStart.aside)
           // A model that is asked not to show its reasoning still sends the
