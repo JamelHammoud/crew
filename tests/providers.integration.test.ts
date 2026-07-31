@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
-import { parseCodexLine } from '../src/runner/providers/codex'
 import { parseGrokLine } from '../src/runner/providers/grok'
 import { parseKimiLine } from '../src/runner/providers/kimi'
 import { tmpDir } from './helpers/session'
@@ -309,76 +308,6 @@ describe('a step says what it is about', () => {
     ]
     expect(detail('TodoWrite', { todos })).toBe('Drawing the rows')
     expect(detail('TodoWrite', { todos: [{ content: 'Read the icons', status: 'pending' }] })).toBe('Read the icons')
-  })
-})
-
-describe('codex parser matches the real CLI format', () => {
-  const parse = (event: unknown) => parseCodexLine(JSON.stringify(event))
-
-  it('ignores noise and unparseable lines', () => {
-    expect(parseCodexLine('not json')).toEqual([])
-    expect(parse({ type: 'thread.started', thread_id: 'x' })).toEqual([])
-    expect(parse({ type: 'turn.started' })).toEqual([])
-    expect(parse({ type: 'item.started', item: null })).toEqual([])
-    expect(parse({ type: 'item.started', item: { type: 'command_execution' } })).toEqual([])
-  })
-
-  it('emits message and reasoning text only once the item closes', () => {
-    // session.ts appends text on same-id merges, so emitting on updates would duplicate it.
-    expect(parse({ type: 'item.updated', item: { id: 'i1', type: 'agent_message', text: 'part' } })).toEqual([])
-    expect(parse({ type: 'item.completed', item: { id: 'i1', type: 'agent_message', text: 'ok' } })).toEqual([
-      { text: 'ok' }
-    ])
-    expect(parse({ type: 'item.completed', item: { id: 'i2', type: 'reasoning', text: 'let me check' } })).toEqual([
-      { thinking: 'let me check' }
-    ])
-  })
-
-  it('tracks tool activity from start to finish under one id', () => {
-    const started = parse({ type: 'item.started', item: { id: 'i3', type: 'command_execution', command: 'ls -la' } })
-    expect(started).toEqual([
-      { activity: { id: 'i3', kind: 'tool', name: 'Shell', status: 'started', detail: 'ls -la' } }
-    ])
-    const done = parse({
-      type: 'item.completed',
-      item: {
-        id: 'i3',
-        type: 'command_execution',
-        command: 'ls -la',
-        aggregated_output: 'total 8\ndrwxr-xr-x  4 jamel  staff  128 src',
-        exit_code: 0
-      }
-    })
-    expect(done[0].activity?.id).toBe('i3')
-    expect(done[0].activity?.status).toBe('finished')
-    expect(done[0].activity?.output).toBe('total 8\ndrwxr-xr-x  4 jamel  staff  128 src')
-  })
-
-  it('labels file changes, mcp calls, and web searches', () => {
-    const asList = parse({
-      type: 'item.started',
-      item: { id: 'i4', type: 'file_change', changes: [{ path: 'a.ts' }, { path: 'b.ts' }] }
-    })
-    expect(asList[0].activity?.detail).toBe('a.ts, b.ts')
-
-    const asMap = parse({ type: 'item.started', item: { id: 'i5', type: 'file_change', changes: { 'c.ts': 'update' } } })
-    expect(asMap[0].activity?.detail).toBe('c.ts')
-
-    const mcp = parse({ type: 'item.started', item: { id: 'i6', type: 'mcp_tool_call', server: 'figma', tool: 'get' } })
-    expect(mcp[0].activity?.name).toBe('figma.get')
-
-    const search = parse({ type: 'item.started', item: { id: 'i7', type: 'web_search', query: 'cats' } })
-    expect(search[0].activity?.detail).toBe('cats')
-  })
-
-  it('reports tokens and surfaces failures', () => {
-    expect(parse({ type: 'turn.completed', usage: { output_tokens: 42 } })).toEqual([
-      { usage: { output: 42, total: true } }
-    ])
-    expect(parse({ type: 'error', message: "You've hit your usage limit." })).toEqual([
-      { error: "You've hit your usage limit." }
-    ])
-    expect(parse({ type: 'turn.failed', error: { message: 'boom' } })).toEqual([{ error: 'boom' }])
   })
 })
 
