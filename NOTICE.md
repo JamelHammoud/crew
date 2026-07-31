@@ -98,19 +98,6 @@ what to do here. If nothing loads it, leaving it out of the build settles this
 outright. If something does, the license text has to ship and the library has to
 come out of the archive.
 
-### tldraw
-
-`tldraw` 5.2.5 and `@tldraw/assets` 5.2.5 declare `SEE LICENSE IN LICENSE.md`,
-and that file points at the tldraw license rather than to an OSI approved one:
-
-> This code is licensed under the [tldraw license](https://github.com/tldraw/tldraw/blob/main/LICENSE.md)
-
-This is not an open source license and it is not covered by anything in this
-file. It is being handled separately.
-
-`@tldraw/assets` bundles the IBM Plex and Shantell Sans typefaces, both under
-the SIL Open Font License 1.1. Their reserved font name and no standalone sale
-terms apply. That is moot until the tldraw license itself is settled.
 
 ## Code
 
