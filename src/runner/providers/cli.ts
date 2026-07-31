@@ -381,7 +381,12 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           clearTimers()
           terminate()
         },
-        steer: opts.streamInput ? (body: string) => writeMessage(body) : undefined
+        steer: dialog
+          ? (body: string) => {
+              const line = dialog.steer(body)
+              return line !== null && write(line)
+            }
+          : undefined
       }
     }
   }
