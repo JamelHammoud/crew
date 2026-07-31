@@ -364,8 +364,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         })
       })
 
-      if (opts.streamInput) {
-        writeMessage(prompt)
+      if (dialog) {
+        for (const body of dialog.begin()) write(body)
       } else if (opts.stdinPrompt) {
         child.stdin?.end(prompt)
       }
