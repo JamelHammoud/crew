@@ -331,10 +331,6 @@ const routeBadge = (
   return started.has(route.promptId) ? undefined : 'queued'
 }
 
-// Which run each page belongs to. It rides on the event, and a page shown
-// before it did is read off the log rather than left standing on its own: the
-// call is made from inside a turn, so the run open on the thread when it landed
-// is the run that made it.
 const runOfPages = (events: SessionEvent[]): Map<string, string> => {
   const runs = new Map<string, string>()
   let open: string | undefined
