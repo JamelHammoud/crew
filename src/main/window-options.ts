@@ -86,7 +86,8 @@ export function closePutsAway(platform: NodeJS.Platform, quitting: boolean): boo
 
 export function createWindowOptions(
   platform: NodeJS.Platform,
-  preload: string
+  preload: string,
+  devTools: boolean
 ): BrowserWindowConstructorOptions {
   const isWindows = platform === 'win32'
 
