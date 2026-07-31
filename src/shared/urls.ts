@@ -27,6 +27,18 @@ export function pageUrl(input: unknown): string | null {
   return null
 }
 
+// The file an address stands for, where it stands for one at all. A file goes
+// to the app's own file view rather than to the browser, so whatever was named
+// is read as a page or as a file here and nowhere else.
+export function filePathOf(url: string): string | null {
+  if (!/^file:\/\//i.test(url)) return null
+  try {
+    return decodeURIComponent(new URL(url).pathname).replace(/^\/([A-Za-z]:)/, '$1') || null
+  } catch {
+    return null
+  }
+}
+
 // What the row in the thread reads as when the agent said nothing about the
 // page. A file is its own name and a site is its host, which is the shortest
 // true thing either one can be called.

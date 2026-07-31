@@ -3629,6 +3629,7 @@ export class CrewSession {
         this.persistStep(agent, promptId, threadId, stepId)
       }
     }
+    const run = agent.runs.get(promptId)
     agent.runs.delete(promptId)
     this.emit({
       id: randomUUID(),
@@ -3638,6 +3639,9 @@ export class CrewSession {
       agentId: agent.id,
       agentLabel: agent.label,
       threadId,
+      ms: run ? Math.max(0, Date.now() - run.startedAt) : undefined,
+      tokens: run && run.tokens > 0 ? run.tokens : undefined,
+      cost: run?.cost ?? undefined,
       ...result
     })
     if (thread && thread.mode === 'plan' && result.ok && result.text?.trim()) {

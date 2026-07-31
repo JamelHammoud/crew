@@ -455,6 +455,7 @@ export class AppSession {
       home: hosted.home,
       shared
     })
+    this.rememberProject()
     return this.live
   }
 

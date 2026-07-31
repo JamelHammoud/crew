@@ -256,15 +256,6 @@ const STRIKES: Record<StrikeName, Strike[]> = {
     bubble(SPARK, NOTE.a5, 0.21, 0.52, 0.14),
     bubble(SPARK, NOTE.cs6, 0.29, 0.6, -0.16)
   ],
-  // One gesture in two directions: a helper going out travels away from the
-  // middle and up, and the same helper coming home travels back to the middle
-  // and down. Two bubbles each and nothing under them, because it is the low
-  // voice and the long tail that make a sound land, and neither of these is
-  // anything landing. Neither one ends on A, which is where the sounds that
-  // really do mean finished all come to rest, so a helper can never be heard
-  // as the thread you were waiting on.
-  'helper.out': [bubble(ERRAND, NOTE.b4, 0, 0.14, -0.04), bubble(ERRAND, NOTE.fs5, 0.055, 0.2, 0.34)],
-  'helper.home': [bubble(ERRAND, NOTE.fs5, 0, 0.14, 0.34), bubble(ERRAND, NOTE.b4, 0.055, 0.32, -0.04)],
   'task.done': [
     {
       hz: 1567.98,
@@ -353,10 +344,8 @@ let ringing: (() => void) | null = null
 // Voice is already a conversation, so the chat's own cues have nothing left to
 // say inside one: the turn going out and the answer coming back are both being
 // spoken out loud, and a chime into an open microphone is one more thing the
-// gate has to hear past. A helper is the same, quieter: the agent is talking
-// while it sends them out, so the errands go over the top of it.
-// Everything else the app makes a noise about still does.
-const CHAT_CUES = new Set<SoundName>(['send', 'receive', 'done', 'failed', 'helper.out', 'helper.home'])
+// gate has to hear past. Everything else the app makes a noise about still does.
+const CHAT_CUES = new Set<SoundName>(['send', 'receive', 'done', 'failed'])
 let hushed = false
 
 export function hushChat(on: boolean): void {
