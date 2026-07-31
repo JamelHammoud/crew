@@ -3734,6 +3734,29 @@ export class CrewSession {
         agentLabel: agent.label
       })
     }
+    // A run that fell over on its own goes to whoever the thread named, and the
+    // thread moves with it. One hop per message: the retry carries a mark, so a
+    // fallback that fails too is the end of it rather than a pair of agents
+    // handing one message back and forth. A run somebody stopped never falls
+    // over, since that was a decision rather than a fault, and a fallback nobody
+    // is running takes nothing, or the message would sit at the head of the
+    // queue holding up everything behind it.
+    const entry = run?.entry
+    const taker = thread?.fallbackId ? this.agents.get(thread.fallbackId) : undefined
+    if (
+      thread &&
+      entry &&
+      taker &&
+      !result.ok &&
+      !stopped &&
+      !entry.fellBack &&
+      taker.id !== agent.id &&
+      (taker.runner || taker.dropTimer)
+    ) {
+      this.switchThreadAgent(thread, taker.id)
+      thread.queue.unshift({ ...entry, promptId: randomUUID(), agentId: taker.id, fellBack: true })
+      this.broadcastQueue(thread)
+    }
     // Steers the run never acknowledged died with it, so give them a turn of
     // their own rather than losing them.
     const orphaned = this.steers.get(promptId) ?? []

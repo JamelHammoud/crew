@@ -17,6 +17,8 @@ export interface TLRichText {
   attrs?: Record<string, unknown>
 }
 
+const NBSP = ' '
+
 const MARK_TAGS: Record<string, string> = {
   bold: 'strong',
   italic: 'em',
@@ -32,14 +34,25 @@ const LINK_DEFAULTS: Record<string, unknown> = {
 
 const LINK_ATTRS = ['target', 'rel', 'class', 'href']
 
+const TEXT_ESCAPES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  [NBSP]: '&nbsp;'
+}
+
+const ATTR_ESCAPES: Record<string, string> = {
+  '&': '&amp;',
+  '"': '&quot;',
+  [NBSP]: '&nbsp;'
+}
+
 function escapeText(text: string): string {
-  return text.replace(/[& <>]/g, one =>
-    one === '&' ? '&amp;' : one === ' ' ? '&nbsp;' : one === '<' ? '&lt;' : '&gt;'
-  )
+  return text.replace(/[&<> ]/g, one => TEXT_ESCAPES[one])
 }
 
 function escapeAttribute(value: string): string {
-  return value.replace(/[& "]/g, one => (one === '&' ? '&amp;' : one === ' ' ? '&nbsp;' : '&quot;'))
+  return value.replace(/[&" ]/g, one => ATTR_ESCAPES[one])
 }
 
 function linkTag(mark: TLRichTextMark): string {
