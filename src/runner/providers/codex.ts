@@ -27,7 +27,8 @@ const completed = (item: any): ParsedOutput[] => {
   const type = str(item?.type)
   if (type === 'agentMessage') {
     const text = str(item.text).trim()
-    return text ? [{ blockStop: { index: TEXT } }, { text }] : [{ blockStop: { index: TEXT } }]
+    const stop: ParsedOutput = { blockStop: { index: TEXT } }
+    return text && str(item.phase) !== 'commentary' ? [stop, { text }] : [stop]
   }
   if (type === 'reasoning') {
     const summary: string[] = (Array.isArray(item.summary) ? item.summary : []).map(str).filter(Boolean)
