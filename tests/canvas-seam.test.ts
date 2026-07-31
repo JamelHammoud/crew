@@ -25,7 +25,6 @@ describe('the canvas seam', () => {
     const outside: string[] = []
     for (const dir of roots) {
       for (const file of walk(dir)) {
-        if (file.startsWith(canvas + path.sep)) continue
         const text = readFileSync(file, 'utf8')
         for (const hit of text.matchAll(REACHES)) {
           outside.push(`${path.relative(root, file)}: ${hit[1]}`)
