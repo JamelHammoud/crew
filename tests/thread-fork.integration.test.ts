@@ -121,9 +121,14 @@ describe('forking a thread', () => {
     ui.send({ type: 'chat.send', text, mentions, threadId, commands: ['fork'], forkId })
   }
 
+  // Several forks off one thread all point at it, so the one this call opened is
+  // the one nothing has seen before rather than the first that matches.
   async function forked(ui: TestUi, text: string, threadId: string, mentions: string[] = [], forkId?: string) {
+    const seen = new Set(ui.events.filter(e => e.kind === 'thread.started').map(e => e.threadId))
     fork(ui, text, threadId, mentions, forkId)
-    return (await ui.waitForEvent(e => e.kind === 'thread.started' && e.forkedFrom === threadId)) as Started
+    return (await ui.waitForEvent(
+      e => e.kind === 'thread.started' && e.forkedFrom === threadId && !seen.has(e.threadId)
+    )) as Started
   }
 
   it('opens a thread of its own and leaves the one it came from exactly as it was', async () => {
