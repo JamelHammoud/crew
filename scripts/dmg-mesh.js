@@ -95,14 +95,14 @@ void main() {
   vec2 p = vec2(vUv.x * ratio, vUv.y);
   vec3 colour = uBase;
   float relief = 0.0;
-  vec2 step = vec2(0.0032 * ratio, 0.0032);
+  vec2 nudge = vec2(0.0032 * ratio, 0.0032);
 
   for (int i = 0; i < 4; i++) {
     float n = band(p, i, uTime);
     float a = smoothstep(-0.22, 0.72, n) * uWave[i].w;
     colour = mix(colour, uColour[i], a);
-    float dx = band(p + vec2(step.x, 0.0), i, uTime) - band(p - vec2(step.x, 0.0), i, uTime);
-    float dy = band(p + vec2(0.0, step.y), i, uTime) - band(p - vec2(0.0, step.y), i, uTime);
+    float dx = band(p + vec2(nudge.x, 0.0), i, uTime) - band(p - vec2(nudge.x, 0.0), i, uTime);
+    float dy = band(p + vec2(0.0, nudge.y), i, uTime) - band(p - vec2(0.0, nudge.y), i, uTime);
     relief += (dx * 0.7 - dy * 0.7) * a;
   }
 
