@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import { CrewCanvas } from '../src/renderer/src/canvas/CrewCanvas'
 import type { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore } from '../src/renderer/src/canvas/schema'
-import { FrameShapeUtil, TextShapeUtil } from '../src/renderer/src/canvas/shapes'
+import { FrameShapeUtil, LineShapeUtil, TextShapeUtil } from '../src/renderer/src/canvas/shapes'
 
 const globalKeys = [
   'window',
@@ -158,7 +158,11 @@ describe('the mounted Crew canvas', () => {
       return undefined
     }
     const view = render(
-      createElement(CrewCanvas, { store, shapeUtils: [FrameShapeUtil, TextShapeUtil], onMount: mounted })
+      createElement(CrewCanvas, {
+        store,
+        shapeUtils: [FrameShapeUtil, TextShapeUtil, LineShapeUtil],
+        onMount: mounted
+      })
     )
 
     await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
@@ -179,6 +183,21 @@ describe('the mounted Crew canvas', () => {
     const afterResize = editor!.getShapePageBounds(frameId)!
     expect(afterResize.w).toBeGreaterThan(beforeResize.w)
     expect(afterResize.h).toBeGreaterThan(beforeResize.h)
+
+    act(() => editor!.setCurrentTool('line'))
+    act(() => canvas.dispatchEvent(pointer('pointerdown', 200, 200, 1)))
+    act(() => canvas.dispatchEvent(pointer('pointermove', 260, 240, 1)))
+    act(() => canvas.dispatchEvent(pointer('pointerup', 260, 240, 0)))
+    const line = editor!.getCurrentPageShapes().find(shape => shape.type === 'line')
+    expect(line?.type).toBe('line')
+    expect(line?.props.points).toEqual(
+      expect.objectContaining({ a2: expect.objectContaining({ x: expect.any(Number), y: expect.any(Number) }) })
+    )
+    if (line?.type === 'line') {
+      expect(line.props.points.a2.x).toBeGreaterThan(40)
+      expect(line.props.points.a2.y).toBeGreaterThan(20)
+    }
+    act(() => editor!.setCurrentTool('select'))
 
     const text = view.container.querySelector(`[data-shape-id="${textId}"]`) as HTMLElement
     act(() => text.dispatchEvent(new dom.window.MouseEvent('dblclick', { bubbles: true, clientX: 25, clientY: 105 })))

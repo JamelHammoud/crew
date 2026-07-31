@@ -4,6 +4,7 @@ import { Box } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
 import { ArrowShapeUtil, FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
+import { Resizing } from '../src/renderer/src/canvas/tools/transforms'
 
 function editor() {
   return new Editor({
@@ -77,6 +78,28 @@ describe('the canvas editor', () => {
     expect(subject.getShape(group)).toBeUndefined()
     expect(subject.getShape(a)?.parentId).toBe(subject.getCurrentPageId())
     expect([subject.getShapePageBounds(a)?.toJson(), subject.getShapePageBounds(b)?.toJson()]).toEqual(before)
+  })
+
+  it('resizes selected groups through their leaf shapes', () => {
+    const subject = editor()
+    const a = frame(subject, 'group-a', 10, 20, 100, 60)
+    const b = frame(subject, 'group-b', 180, 90, 80, 40)
+    const group = createShapeId('resize-group')
+    subject.groupShapes([a, b], group)
+    subject.select(group)
+    const before = subject.getSelectionRotatedPageBounds()!
+    const origin = { x: before.maxX, y: before.maxY }
+    const current = { x: before.maxX + 100, y: before.maxY + 80 }
+    subject.inputs.pointerDown(origin, origin, {}, 'mouse')
+    subject.inputs.pointerMove(current, current, {})
+    new Resizing(subject, { transition: () => undefined }).enter({ handle: 'bottom_right' })
+    const after = subject.getSelectionRotatedPageBounds()!
+    expect(after.w).toBeGreaterThan(before.w)
+    expect(after.h).toBeGreaterThan(before.h)
+    expect(subject.getShape(a)?.props).toMatchObject({ w: expect.any(Number), h: expect.any(Number) })
+    expect(subject.getShape(b)?.props).toMatchObject({ w: expect.any(Number), h: expect.any(Number) })
+    expect((subject.getShape(a)?.props as { w: number }).w).toBeGreaterThan(100)
+    expect((subject.getShape(b)?.props as { w: number }).w).toBeGreaterThan(80)
   })
 
   it('copies descendants, remaps ids and pastes at a point', () => {
