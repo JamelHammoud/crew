@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { shootCovers } from './icon-cover.mjs'
 import { DMG, dmgBackground } from './icon-dmg.mjs'
 import { shootMesh } from './dmg-shoot.mjs'
+import { tagDpi } from './dmg-art.mjs'
 import { SKINS } from './icon-skins.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -403,8 +404,8 @@ const [still] = await shootMesh([{ at: DMG.at, width: DMG.width * 2, height: DMG
 const backdrop = dmgBackground(still.png)
 writeFileSync(path.join(resources, 'dmg-background.svg'), backdrop)
 const backing = path.join(resources, 'dmg-background.png')
-raster(backdrop, DMG.width * DMG.RETINA, DMG.height * DMG.RETINA, backing)
-tagDpi(backing, 72 * DMG.RETINA)
+raster(backdrop, DMG.width * DMG.retina, DMG.height * DMG.retina, backing)
+tagDpi(backing, 72 * DMG.retina)
 
 function encode(source, width, height, key) {
   const out = path.join(tmpdir(), `crew-icon-${key}.png`)
@@ -473,5 +474,5 @@ writeFileSync(
 console.log(
   `wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, ${skins
     .map(([id]) => `icon-${id}.svg`)
-    .join(', ')}, crew-logo.svg, tray.svg, icon.icns, icon.png, dmg-background.svg, dmg-background.png, dmg-background@2x.png, dmg-background.tiff, src/main/icon-png.ts, src/main/tray-png.ts, src/renderer/src/components/crew-mark.ts and src/renderer/src/components/settings/icon-art.ts`
+    .join(', ')}, crew-logo.svg, tray.svg, icon.icns, icon.png, dmg-background.svg, dmg-background.png, src/main/icon-png.ts, src/main/tray-png.ts, src/renderer/src/components/crew-mark.ts and src/renderer/src/components/settings/icon-art.ts`
 )
