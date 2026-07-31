@@ -24,10 +24,9 @@ describe('canvas bounds snapping', () => {
 
     expect(result.nudge).toEqual(new Vec(1, 0))
     const vertical = result.indicators.find(
-      (indicator): indicator is PointsSnapIndicator =>
-        indicator.type === 'points' && indicator.id === 'point:x:100'
+      (indicator): indicator is PointsSnapIndicator => indicator.type === 'points' && indicator.id === 'point:x:100'
     )
-    expect(vertical?.points.map((point) => [point.x, point.y])).toEqual([
+    expect(vertical?.points.map(point => [point.x, point.y])).toEqual([
       [100, 0],
       [100, 50],
       [100, 20],
@@ -42,12 +41,8 @@ describe('canvas bounds snapping', () => {
       snapThreshold: 8
     }
 
-    expect(
-      snapTranslateBounds({ ...options, dragDelta: new Vec(85.9, 0), zoom: 1 }).nudge.x
-    ).toBeCloseTo(4.1)
-    expect(
-      snapTranslateBounds({ ...options, dragDelta: new Vec(85.9, 0), zoom: 2 }).nudge.x
-    ).toBe(0)
+    expect(snapTranslateBounds({ ...options, dragDelta: new Vec(85.9, 0), zoom: 1 }).nudge.x).toBeCloseTo(4.1)
+    expect(snapTranslateBounds({ ...options, dragDelta: new Vec(85.9, 0), zoom: 2 }).nudge.x).toBe(0)
     expect(snapTranslateBounds({ ...options, dragDelta: new Vec(86, 0), zoom: 2 }).nudge.x).toBe(4)
   })
 
@@ -67,12 +62,12 @@ describe('canvas bounds snapping', () => {
     expect(
       result.indicators
         .filter((indicator): indicator is PointsSnapIndicator => indicator.type === 'points')
-        .map((indicator) => indicator.id)
+        .map(indicator => indicator.id)
     ).toEqual(['point:x:100', 'point:y:100'])
     expect(
       result.indicators
         .filter((indicator): indicator is PointsSnapIndicator => indicator.type === 'points')
-        .every((indicator) => indicator.points.some((point) => point.equalsXY(100, 100)))
+        .every(indicator => indicator.points.some(point => point.equalsXY(100, 100)))
     ).toBe(true)
   })
 
@@ -84,12 +79,10 @@ describe('canvas bounds snapping', () => {
     })
 
     expect(result.nudge).toEqual(new Vec(1, 0))
-    const indicator = result.indicators.find(
-      (candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps'
-    )
+    const indicator = result.indicators.find((candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps')
     expect(indicator?.direction).toBe('horizontal')
     expect(indicator?.gaps).toHaveLength(3)
-    expect(indicator?.gaps.map((gap) => [gap.startEdge[0].x, gap.endEdge[0].x])).toEqual([
+    expect(indicator?.gaps.map(gap => [gap.startEdge[0].x, gap.endEdge[0].x])).toEqual([
       [10, 20],
       [30, 40],
       [50, 60]
@@ -104,13 +97,31 @@ describe('canvas bounds snapping', () => {
     })
 
     expect(result.nudge).toEqual(new Vec(1, 0))
-    const indicator = result.indicators.find(
-      (candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps'
-    )
-    expect(indicator?.gaps.map((gap) => [gap.startEdge[0].x, gap.endEdge[0].x])).toEqual([
+    const indicator = result.indicators.find((candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps')
+    expect(indicator?.gaps.map(gap => [gap.startEdge[0].x, gap.endEdge[0].x])).toEqual([
       [10, 25],
       [35, 50]
     ])
+  })
+
+  it('accumulates equal vertical gaps without repeating an edge', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 10, 10),
+      dragDelta: new Vec(0, 59),
+      snappableShapes: [node('a', 0, 0), node('b', 0, 20), node('c', 0, 40)]
+    })
+
+    expect(result.nudge).toEqual(new Vec(0, 1))
+    const indicator = result.indicators.find(
+      (candidate): candidate is GapsSnapIndicator => candidate.type === 'gaps' && candidate.direction === 'vertical'
+    )
+    const distances = indicator?.gaps.map(gap => [gap.startEdge[0].y, gap.endEdge[0].y])
+    expect(distances).toEqual([
+      [10, 20],
+      [30, 40],
+      [50, 60]
+    ])
+    expect(new Set(distances?.map(distance => distance.join(':'))).size).toBe(3)
   })
 
   it('snaps resized edges with the same zoom-aware point pass', () => {
@@ -123,6 +134,6 @@ describe('canvas bounds snapping', () => {
     })
 
     expect(result.nudge).toEqual(new Vec(2, 0))
-    expect(result.indicators.some((indicator) => indicator.id === 'point:x:100')).toBe(true)
+    expect(result.indicators.some(indicator => indicator.id === 'point:x:100')).toBe(true)
   })
 })

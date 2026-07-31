@@ -104,7 +104,7 @@ const thresholdAtZoom = (threshold = 8, zoom = 1) => {
 const boxFrom = (box: BoxLike) => new Box(box.x, box.y, box.w, box.h)
 
 const pointsForNodes = (nodes: readonly BoundsSnapNode[]) =>
-  nodes.flatMap((node) => {
+  nodes.flatMap(node => {
     const bounds = boxFrom(node.pageBounds)
     return (node.points ?? bounds.cornersAndCenter).map((point, index) => ({
       id: `${node.id}:${index}`,
@@ -114,7 +114,7 @@ const pointsForNodes = (nodes: readonly BoundsSnapNode[]) =>
   })
 
 const gapNodes = (nodes: readonly BoundsSnapNode[]): BoundsSnapGapNode[] =>
-  nodes.map((node) => ({ id: node.id, pageBounds: boxFrom(node.pageBounds) }))
+  nodes.map(node => ({ id: node.id, pageBounds: boxFrom(node.pageBounds) }))
 
 export function getVisibleGaps(nodes: readonly BoundsSnapNode[]): {
   horizontal: BoundsSnapGap[]
@@ -235,13 +235,9 @@ function collectPointSnaps(
   }
 }
 
-function addCenterSnap(
-  nearest: NearestSnap[],
-  snap: Extract<NearestSnap, { type: 'gap_center' }>
-) {
+function addCenterSnap(nearest: NearestSnap[], snap: Extract<NearestSnap, { type: 'gap_center' }>) {
   const other = nearest.find(
-    (candidate): candidate is Extract<NearestSnap, { type: 'gap_center' }> =>
-      candidate.type === 'gap_center'
+    (candidate): candidate is Extract<NearestSnap, { type: 'gap_center' }> => candidate.type === 'gap_center'
   )
   const overlap =
     other &&
@@ -278,10 +274,7 @@ function collectGapSnaps(
     }
 
     const centerNudge = gap.startEdge[0].x + gap.length / 2 - selectionPageBounds.center.x
-    if (
-      gap.length > selectionPageBounds.width &&
-      rounded(Math.abs(centerNudge)) <= rounded(minOffset.x)
-    ) {
+    if (gap.length > selectionPageBounds.width && rounded(Math.abs(centerNudge)) <= rounded(minOffset.x)) {
       if (rounded(Math.abs(centerNudge)) < rounded(minOffset.x)) nearestSnapsX.length = 0
       minOffset.x = Math.abs(centerNudge)
       addCenterSnap(nearestSnapsX, { type: 'gap_center', gap, nudge: centerNudge })
@@ -325,10 +318,7 @@ function collectGapSnaps(
     }
 
     const centerNudge = gap.startEdge[0].y + gap.length / 2 - selectionPageBounds.center.y
-    if (
-      gap.length > selectionPageBounds.height &&
-      rounded(Math.abs(centerNudge)) <= rounded(minOffset.y)
-    ) {
+    if (gap.length > selectionPageBounds.height && rounded(Math.abs(centerNudge)) <= rounded(minOffset.y)) {
       if (rounded(Math.abs(centerNudge)) < rounded(minOffset.y)) nearestSnapsY.length = 0
       minOffset.y = Math.abs(centerNudge)
       addCenterSnap(nearestSnapsY, { type: 'gap_center', gap, nudge: centerNudge })
@@ -379,11 +369,8 @@ function pointIndicators(nearestSnapsX: NearestSnap[], nearestSnapsY: NearestSna
 
   return Array.from(groups, ([key, group]): PointsSnapIndicator => {
     const points: Vec[] = []
-    for (const point of [
-      ...group.map((pair) => pair.otherPoint),
-      ...group.map((pair) => pair.thisPoint)
-    ]) {
-      if (!points.some((existing) => existing.x === point.x && existing.y === point.y)) {
+    for (const point of [...group.map(pair => pair.otherPoint), ...group.map(pair => pair.thisPoint)]) {
+      if (!points.some(existing => existing.x === point.x && existing.y === point.y)) {
         points.push(new Vec(point.x, point.y))
       }
     }
@@ -399,17 +386,12 @@ function findAdjacentGaps(
   intersection: [number, number],
   visited = new Set<string>()
 ): BoundsSnapGap[] {
-  const matches = gaps.filter((gap) => {
+  const matches = gaps.filter(gap => {
     const id = direction === 'forward' ? gap.startNode.id : gap.endNode.id
     return (
       id === shapeId &&
       rounded(gap.length) === rounded(gapLength) &&
-      rangeIntersection(
-        gap.breadthIntersection[0],
-        gap.breadthIntersection[1],
-        intersection[0],
-        intersection[1]
-      )
+      rangeIntersection(gap.breadthIntersection[0], gap.breadthIntersection[1], intersection[0], intersection[1])
     )
   })
   const result: BoundsSnapGap[] = []
@@ -425,9 +407,7 @@ function findAdjacentGaps(
       intersection[0],
       intersection[1]
     )!
-    result.push(
-      ...findAdjacentGaps(gaps, nextId, gapLength, direction, nextIntersection, visited)
-    )
+    result.push(...findAdjacentGaps(gaps, nextId, gapLength, direction, nextIntersection, visited))
   }
   return result
 }
@@ -445,9 +425,9 @@ function dedupeGapIndicators(indicators: GapsSnapIndicator[]) {
       if (
         indicators[i].direction === indicators[j].direction &&
         indicators[i].gaps.every(
-          (gap) =>
-            indicators[j].gaps.some((other) => edgesEqual(gap.startEdge, other.startEdge)) &&
-            indicators[j].gaps.some((other) => edgesEqual(gap.endEdge, other.endEdge))
+          gap =>
+            indicators[j].gaps.some(other => edgesEqual(gap.startEdge, other.startEdge)) &&
+            indicators[j].gaps.some(other => edgesEqual(gap.endEdge, other.endEdge))
         )
       ) {
         indicators.splice(i, 1)
@@ -488,8 +468,7 @@ function gapIndicators(
     let drawn: GapsSnapIndicator['gaps']
 
     if (snap.type === 'gap_center') {
-      const newLength =
-        (length - (axisIsX ? selectionPageBounds.width : selectionPageBounds.height)) / 2
+      const newLength = (length - (axisIsX ? selectionPageBounds.width : selectionPageBounds.height)) / 2
       drawn = [
         ...findAdjacentGaps(gaps, startNode.id, newLength, 'backward', breadth),
         {
@@ -508,13 +487,8 @@ function gapIndicators(
         drawn = [
           {
             startEdge: axisIsX ? selectionSides.right : selectionSides.bottom,
-            endEdge: startEdge.map((point) =>
-              point
-                .clone()
-                .addXY(
-                  axisIsX ? -startNode.pageBounds.width : 0,
-                  axisIsX ? 0 : -startNode.pageBounds.height
-                )
+            endEdge: startEdge.map(point =>
+              point.clone().addXY(axisIsX ? -startNode.pageBounds.width : 0, axisIsX ? 0 : -startNode.pageBounds.height)
             ) as [Vec, Vec]
           },
           { startEdge, endEdge },
@@ -525,13 +499,8 @@ function gapIndicators(
           ...findAdjacentGaps(gaps, startNode.id, length, 'backward', breadth),
           { startEdge, endEdge },
           {
-            startEdge: endEdge.map((point) =>
-              point
-                .clone()
-                .addXY(
-                  axisIsX ? endNode.pageBounds.width : 0,
-                  axisIsX ? 0 : endNode.pageBounds.height
-                )
+            startEdge: endEdge.map(point =>
+              point.clone().addXY(axisIsX ? endNode.pageBounds.width : 0, axisIsX ? 0 : endNode.pageBounds.height)
             ) as [Vec, Vec],
             endEdge: axisIsX ? selectionSides.left : selectionSides.top
           }
@@ -553,13 +522,7 @@ function gapIndicators(
 }
 
 export function snapTranslateBounds(options: TranslateBoundsSnapOptions): BoundsSnapResult {
-  const {
-    dragDelta,
-    snappableShapes,
-    lockedAxis = null,
-    snapThreshold = 8,
-    zoom = 1
-  } = options
+  const { dragDelta, snappableShapes, lockedAxis = null, snapThreshold = 8, zoom = 1 } = options
   const initialBounds = boxFrom(options.initialSelectionPageBounds)
   const selectionBounds = initialBounds.clone().translate(dragDelta)
   const sourcePoints =
@@ -636,10 +599,7 @@ const flipY = (handle: SelectionCorner | SelectionEdge) => {
   return swaps[handle] ?? handle
 }
 
-function resizePoints(
-  handle: SelectionCorner | SelectionEdge | 'any',
-  bounds: Box
-): BoundsSnapPoint[] {
+function resizePoints(handle: SelectionCorner | SelectionEdge | 'any', bounds: Box): BoundsSnapPoint[] {
   const choices: Array<[SelectionCorner, Array<SelectionCorner | SelectionEdge | 'any'>]> = [
     ['top_left', ['top', 'left', 'top_left', 'any']],
     ['top_right', ['top', 'right', 'top_right', 'any']],
@@ -666,7 +626,11 @@ export function snapResizeBounds(options: ResizeBoundsSnapOptions): BoundsSnapRe
     isResizingFromCenter = false
   } = options
   const initialBounds = boxFrom(options.initialSelectionPageBounds)
-  const { box: unsnapped, scaleX, scaleY } = Box.Resize(
+  const {
+    box: unsnapped,
+    scaleX,
+    scaleY
+  } = Box.Resize(
     initialBounds,
     options.handle,
     isResizingFromCenter ? dragDelta.x * 2 : dragDelta.x,
@@ -680,10 +644,7 @@ export function snapResizeBounds(options: ResizeBoundsSnapOptions): BoundsSnapRe
 
   const nearestX: NearestPointsSnap[] = []
   const nearestY: NearestPointsSnap[] = []
-  const minOffset = new Vec(
-    thresholdAtZoom(snapThreshold, zoom),
-    thresholdAtZoom(snapThreshold, zoom)
-  )
+  const minOffset = new Vec(thresholdAtZoom(snapThreshold, zoom), thresholdAtZoom(snapThreshold, zoom))
   const otherPoints = pointsForNodes(snappableShapes)
   collectPointSnaps(resizePoints(handle, unsnapped), otherPoints, minOffset, nearestX, nearestY)
   const nudge = new Vec(
