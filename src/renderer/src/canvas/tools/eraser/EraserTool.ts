@@ -8,7 +8,9 @@ export interface EraserPointerEvent {
 }
 
 export interface EraserKeyboardEvent {
-  key: string
+  key?: string
+  ctrlKey: boolean
+  metaKey: boolean
 }
 
 export interface EraserShape {
@@ -104,7 +106,7 @@ export class EraserIdle extends EraserState {
   }
 
   override onKeyUp(info: EraserKeyboardEvent): void {
-    if (info.key !== 'Control' && info.key !== 'Meta') this.tool.maybeReturnToOriginatingTool()
+    if (!info.ctrlKey && !info.metaKey) this.tool.maybeReturnToOriginatingTool()
   }
 
   override onPointerDown(info: EraserPointerEvent): void {
@@ -305,7 +307,10 @@ export class EraserTool {
   stateId: EraserStateId = 'idle'
   info: { onInteractionEnd?: string } = {}
 
-  constructor(readonly editor: EraserEditor, info: { onInteractionEnd?: string } = {}) {
+  constructor(
+    readonly editor: EraserEditor,
+    info: EraserPointerEvent & { onInteractionEnd?: string } = {}
+  ) {
     this.children = {
       idle: new EraserIdle(this, editor),
       pointing: new EraserPointing(this, editor),
@@ -319,7 +324,7 @@ export class EraserTool {
     return this.children[this.stateId]
   }
 
-  onEnter(info: { onInteractionEnd?: string } = {}): void {
+  onEnter(info: EraserPointerEvent & { onInteractionEnd?: string } = {}): void {
     this.info = info
     if (info.onInteractionEnd) this.editor.setCurrentToolIdMask?.(info.onInteractionEnd)
     this.editor.setCursor({ type: 'cross', rotation: 0 })
