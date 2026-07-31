@@ -57,15 +57,16 @@ describe('goal runs', () => {
       event => event.kind === 'agent.start' && event.threadId === thread.threadId && event.promptText === 'finish the migration'
     )
     expect(goalStart.kind).toBe('agent.start')
+    await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === goalStart.promptId)
     expect(goals).toEqual([false, true])
     expect(steers).toBe(0)
 
-    await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === goalStart.promptId)
     ui.chat('verify it @Watcher', [watcher], undefined, ['goal'])
     const chatGoal = await ui.waitForEvent(
       event => event.kind === 'agent.start' && event.threadId !== thread.threadId && event.promptText === 'verify it @Watcher'
     )
     expect(chatGoal.kind).toBe('agent.start')
+    await ui.waitForEvent(event => event.kind === 'agent.end' && event.promptId === chatGoal.promptId)
     expect(goals).toEqual([false, true, true])
   })
 })

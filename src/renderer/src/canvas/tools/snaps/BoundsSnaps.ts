@@ -640,7 +640,7 @@ function resizePoints(
   handle: SelectionCorner | SelectionEdge | 'any',
   bounds: Box
 ): BoundsSnapPoint[] {
-  const choices: Array<[SelectionCorner, SelectionCorner | SelectionEdge | 'any'][]] = [
+  const choices: Array<[SelectionCorner, Array<SelectionCorner | SelectionEdge | 'any'>]> = [
     ['top_left', ['top', 'left', 'top_left', 'any']],
     ['top_right', ['top', 'right', 'top_right', 'any']],
     ['bottom_right', ['bottom', 'right', 'bottom_right', 'any']],
