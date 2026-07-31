@@ -108,6 +108,10 @@ and that file points at the tldraw license rather than to an OSI approved one:
 This is not an open source license and it is not covered by anything in this
 file. It is being handled separately.
 
+`@tldraw/assets` bundles the IBM Plex and Shantell Sans typefaces, both under
+the SIL Open Font License 1.1. Their reserved font name and no standalone sale
+terms apply. That is moot until the tldraw license itself is settled.
+
 ## Code
 
 Everything below is used at runtime. Each license requires that its copyright

@@ -32,7 +32,7 @@ const thread = (id: string, extra: Partial<ThreadMeta> = {}): ThreadMeta => ({
   ...extra
 })
 
-const ended = (threadId: string | undefined, ok = true): SessionEvent => ({
+const ended = (threadId: string | undefined, ok = true, stopped = false): SessionEvent => ({
   id: `e-${threadId}`,
   ts: 1,
   kind: 'agent.end',
@@ -40,6 +40,7 @@ const ended = (threadId: string | undefined, ok = true): SessionEvent => ({
   agentId: 'a1',
   agentLabel: 'Bubbles',
   ok,
+  stopped: stopped || undefined,
   threadId
 })
 
