@@ -193,3 +193,40 @@ Dual licensed, so either one may be taken. Both texts ship in the package, as
 | Name | Version |
 | --- | --- |
 | mammoth | 1.12.0 |
+
+## Choices taken further down the tree
+
+Some packages Crew reaches through its own dependencies offer more than one
+license. These are the choices taken.
+
+| Name | Version | Offered | Taken | Reached through |
+| --- | --- | --- | --- | --- |
+| jszip | 3.10.1 | MIT or GPL-3.0-or-later | MIT | mammoth |
+| type-fest | 4.41.0 | MIT or CC0-1.0 | MIT | several |
+
+The jszip one is the one that matters. Its `LICENSE.markdown` carries the whole
+GPL text alongside the MIT text, so a scan of the file reads as copyleft. Taking
+MIT is what keeps GPL out of the app, and taking it has to be written down,
+which is what this table is for.
+
+Two more read as unusual and are permissive:
+
+| Name | Version | License |
+| --- | --- | --- |
+| pako | 1.0.11 | MIT and Zlib |
+| argparse | 2.0.1 | Python-2.0 |
+
+`argparse` 2.0.1 is reached through `js-yaml`. Its license text discusses GPL
+compatibility, which is why it trips a keyword scan. The top level `argparse`
+1.0.10 is plain MIT.
+
+## Model weights
+
+`kokoro-js` 1.2.1 is Apache-2.0, and it ships around 29MB of voice model weights
+as `.bin` files under `voices/`. The weights carry no license of their own in
+the package, so the Apache-2.0 grant on the wrapper is all there is to go on.
+Where each voice was trained from is worth confirming with the project rather
+than inferring from the wrapper.
+
+`@huggingface/transformers` ships no weights. The speech models are fetched at
+runtime, so their licenses attach to the download rather than to the binary.
