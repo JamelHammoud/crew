@@ -111,7 +111,11 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dia
       const stage = typeof msg?.id === 'number' ? pending.get(msg.id) : undefined
       if (!stage) return []
       pending.delete(msg.id)
-      return msg.error ? [] : answered(stage, msg.result)
+      // A setting the CLI will not take is not worth stalling a run over. A
+      // model that has left the config and a CLI too old to be told either way
+      // carry on to the turn, which runs on whatever it was already set to.
+      if (msg.error) return stage === 'config' ? [step()] : []
+      return answered(stage, msg.result)
     },
     steer: () => null
   }
