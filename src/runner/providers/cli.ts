@@ -222,6 +222,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         if (apart) asides.add(id)
       }
 
+      const rail = (kind: 'thinking' | 'text', id: string) => (kind === 'text' && asides.has(id) ? 'thinking' : kind)
+
       const streamBlock = (kind: 'thinking' | 'text', index: number, chunk: string) => {
         const stream = streams[kind]
         let id = stream.ids.get(index)
@@ -234,7 +236,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         stream.streamed = true
         stream.open.add(id)
         written += chunk.length
-        hooks.onStep({ id, kind, text: chunk, status: 'running' })
+        hooks.onStep({ id, kind: rail(kind, id), text: chunk, status: 'running' })
       }
 
       const closeBlock = (index: number) => {
@@ -243,7 +245,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           const id = stream.ids.get(index)
           if (!id) continue
           stream.ids.delete(index)
-          if (stream.open.delete(id)) hooks.onStep({ id, kind, status: 'done' })
+          if (stream.open.delete(id)) hooks.onStep({ id, kind: rail(kind, id), status: 'done' })
         }
       }
 
