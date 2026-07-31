@@ -1,12 +1,16 @@
 import type { Box, VecLike } from '../math'
 import type { CanvasOverlay, CanvasOverlayEntry, CanvasOverlayUtil } from '../render/types'
-import type { TLShapeId } from '../schema'
+import type { TLShape, TLShapeId } from '../schema'
+import type { ShapeHandle, ShapeUtil } from '../shapes'
 import type { BoundsSnapIndicator } from '../tools/snaps'
 
 interface OverlayEditor {
   getSelectionRotatedPageBounds(): Box | undefined
   getSelectionRotation(): number
   getSelectedShapeIds(): TLShapeId[]
+  getOnlySelectedShape(): TLShape | undefined
+  getShapeUtil(shape: TLShape): ShapeUtil
+  getShapePageTransform(shape: TLShape): { applyToPoint(point: VecLike): VecLike }
   getEditingShapeId(): TLShapeId | null
   getZoomLevel(): number
   getCurrentTheme(): { colors: Record<'light' | 'dark', { selectionStroke: string }> }
@@ -31,7 +35,7 @@ export class OverlayManager {
     this.register(new SelectionForegroundOverlayUtil(editor))
     this.register(new BrushOverlayUtil(editor))
     this.register(new SnapOverlayUtil(editor))
-    this.register(new EmptyOverlayUtil('shape_handle'))
+    this.register(new ShapeHandleOverlayUtil(editor))
     for (const Constructor of constructors) {
       const value =
         typeof Constructor === 'function'
@@ -212,14 +216,47 @@ class SnapOverlayUtil implements ToolOverlayUtil {
   }
 }
 
-class EmptyOverlayUtil implements ToolOverlayUtil {
-  constructor(readonly id: string) {}
+class ShapeHandleOverlayUtil implements ToolOverlayUtil {
+  static type = 'shape_handle'
+
+  constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
-    return false
+    return this.editor.getEditingShapeId() === null && this.handles().length > 0
   }
 
-  render(): void {}
+  getOverlays(): CanvasOverlay[] {
+    return this.handles().map(({ shape, handle, point }) => ({
+      id: `shape-handle:${shape.id}:${handle.id}`,
+      type: 'shape_handle',
+      props: { shapeId: shape.id, handle, point, radius: 6 / this.editor.getZoomLevel() }
+    }))
+  }
+
+  render(context: CanvasRenderingContext2D): void {
+    const handles = this.handles()
+    if (handles.length === 0) return
+    const zoom = this.editor.getZoomLevel()
+    const stroke = this.editor.getCurrentTheme().colors[this.editor.getColorMode()].selectionStroke
+    context.strokeStyle = stroke
+    context.fillStyle = '#ffffff'
+    context.lineWidth = 1.5 / zoom
+    for (const { handle, point } of handles) {
+      const radius = (handle.type === 'virtual' ? 3 : 4) / zoom
+      context.beginPath()
+      context.arc(point.x, point.y, radius, 0, Math.PI * 2)
+      context.fill()
+      context.stroke()
+    }
+  }
+
+  private handles(): Array<{ shape: TLShape; handle: ShapeHandle; point: VecLike }> {
+    const shape = this.editor.getOnlySelectedShape()
+    if (!shape) return []
+    const handles = this.editor.getShapeUtil(shape).getHandles?.(shape as never) ?? []
+    const transform = this.editor.getShapePageTransform(shape)
+    return handles.map(handle => ({ shape, handle, point: transform.applyToPoint(handle) }))
+  }
 }
 
 function selectionHandlePoints(bounds: Box, rotation: number, rotateDistance: number): Record<string, VecLike> {
