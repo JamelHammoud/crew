@@ -86,6 +86,7 @@ export class AppSession {
     key: string
     name: string
     home: CrewHome
+    sync: boolean
   } | null = null
   private projectAuto = false
   onTrouble: (message: string) => void = () => {}
@@ -318,7 +319,7 @@ export class AppSession {
     const known = this.savedStore()?.projects().find(project => project.folder === repoPath)
     const remote = await readCrewRemote(repoPath)
     const home = opts.home ?? known?.home ?? (remote ? 'private' : tracked ? 'folder' : 'private')
-    const shared = opts.share ?? home === 'folder'
+    const shared = opts.share ?? known?.shared ?? home === 'folder'
     const projectSync = opts.sync ?? known?.sync ?? home === 'folder'
     const key = known?.key || (await projectKey(repoPath))
     const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
