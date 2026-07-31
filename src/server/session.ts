@@ -3678,7 +3678,7 @@ export class CrewSession {
     // A helper is back only once its thread has gone quiet with nothing behind
     // it. A turn that lands mid-queue is still the same piece of work.
     if (thread?.parentThreadId && !this.subagentRunning(thread)) {
-      this.subagentReturn(thread, result.ok, result.text ?? result.error ?? '')
+      this.subagentReturn(thread, result.ok, result.text ?? result.error ?? '', stopped)
     }
   }
 
