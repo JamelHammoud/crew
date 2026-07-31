@@ -1,3 +1,4 @@
+import { canPreview } from '../../../shared/files'
 import { create } from 'zustand'
 
 export type BrowserTab = {
@@ -78,6 +79,7 @@ type BrowserState = {
   closePanel(): void
   openUrl(url: string): void
   showPage(url: string): void
+  showFile(path: string): void
   openImage(src: string, name: string): void
   openAttachment(url: string, name: string, mime: string, size?: number): void
   openFile(path: string, line?: number | null, diff?: string | null): void
