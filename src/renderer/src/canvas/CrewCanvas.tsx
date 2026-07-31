@@ -1,0 +1,156 @@
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Editor } from './editor'
+import { EditorContext } from './react'
+import { Canvas, type CanvasShapeRenderer } from './render'
+import type { TLRecord, TLShape } from './schema'
+import type { ShapeUtilConstructor } from './shapes'
+import type { Store } from './store'
+import {
+  ArrowShapeTool,
+  DrawShapeTool,
+  EraserTool,
+  FrameShapeTool,
+  HandTool,
+  HighlightShapeTool,
+  LineShapeTool,
+  NoteShapeTool,
+  SelectTool,
+  TextShapeTool
+} from './tools'
+
+const BUILT_IN_TOOLS = [
+  SelectTool,
+  HandTool,
+  DrawShapeTool,
+  HighlightShapeTool,
+  EraserTool,
+  TextShapeTool,
+  NoteShapeTool,
+  FrameShapeTool,
+  LineShapeTool,
+  ArrowShapeTool
+] as const
+
+export interface CrewCanvasOptions {
+  camera?: { zoomMin?: number; zoomMax?: number; zoomSteps?: number[] | null }
+  [key: string]: unknown
+}
+
+export interface CrewCanvasProps {
+  store: Store<TLRecord>
+  shapeUtils: readonly ShapeUtilConstructor[]
+  bindingUtils?: readonly unknown[]
+  tools?: readonly unknown[]
+  overlayUtils?: readonly unknown[]
+  options?: Partial<CrewCanvasOptions>
+  onMount?(editor: Editor): void | (() => void)
+  children?: ReactNode
+}
+
+export function CrewCanvas({
+  store,
+  shapeUtils,
+  bindingUtils = [],
+  tools = [],
+  overlayUtils = [],
+  options,
+  onMount,
+  children
+}: CrewCanvasProps) {
+  const container = useRef<HTMLDivElement>(null)
+  const [editor] = useState(
+    () =>
+      new Editor({
+        store,
+        shapeUtils,
+        bindingUtils,
+        tools: [...BUILT_IN_TOOLS, ...tools],
+        overlayUtils,
+        options,
+        getContainer: () => {
+          if (!container.current) throw new Error('Canvas container is not mounted')
+          return container.current
+        }
+      })
+  )
+
+  const renderer = useMemo<CanvasShapeRenderer<TLShape>>(
+    () => ({
+      render: shape => editor.getShapeUtil(shape).component(shape as never),
+      isFilled: shape => editor.getShapeGeometry(shape).isFilled
+    }),
+    [editor]
+  )
+
+  useEffect(() => {
+    const element = container.current
+    if (!element) return
+    const handlers = editor.getCanvasEventHandlers()
+    const pointerDown = (event: PointerEvent) => {
+      element.focus({ preventScroll: true })
+      handlers.onPointerDown(event)
+    }
+    const contextMenu = (event: MouseEvent) => {
+      event.preventDefault()
+      handlers.onContextMenu(event)
+    }
+    const wheel = (event: WheelEvent) => {
+      event.preventDefault()
+      handlers.onWheel(event)
+    }
+    element.addEventListener('pointerdown', pointerDown)
+    element.addEventListener('pointermove', handlers.onPointerMove)
+    element.addEventListener('pointerup', handlers.onPointerUp)
+    element.addEventListener('pointercancel', handlers.onPointerCancel)
+    element.addEventListener('dblclick', handlers.onDoubleClick)
+    element.addEventListener('contextmenu', contextMenu)
+    element.addEventListener('wheel', wheel, { passive: false })
+    element.addEventListener('keydown', handlers.onKeyDown)
+    element.addEventListener('keyup', handlers.onKeyUp)
+    element.addEventListener('touchstart', handlers.onTouchStart, { passive: false })
+    element.addEventListener('touchmove', handlers.onTouchMove, { passive: false })
+    element.addEventListener('touchend', handlers.onTouchEnd)
+    element.addEventListener('touchcancel', handlers.onTouchCancel)
+
+    const size = () => {
+      const bounds = element.getBoundingClientRect()
+      editor.setViewportScreenBounds({ x: 0, y: 0, w: bounds.width, h: bounds.height })
+    }
+    const observer = new ResizeObserver(size)
+    observer.observe(element)
+    size()
+    const stopMount = onMount?.(editor)
+    return () => {
+      observer.disconnect()
+      element.removeEventListener('pointerdown', pointerDown)
+      element.removeEventListener('pointermove', handlers.onPointerMove)
+      element.removeEventListener('pointerup', handlers.onPointerUp)
+      element.removeEventListener('pointercancel', handlers.onPointerCancel)
+      element.removeEventListener('dblclick', handlers.onDoubleClick)
+      element.removeEventListener('contextmenu', contextMenu)
+      element.removeEventListener('wheel', wheel)
+      element.removeEventListener('keydown', handlers.onKeyDown)
+      element.removeEventListener('keyup', handlers.onKeyUp)
+      element.removeEventListener('touchstart', handlers.onTouchStart)
+      element.removeEventListener('touchmove', handlers.onTouchMove)
+      element.removeEventListener('touchend', handlers.onTouchEnd)
+      element.removeEventListener('touchcancel', handlers.onTouchCancel)
+      stopMount?.()
+      editor.dispose()
+    }
+  }, [editor, onMount])
+
+  return (
+    <EditorContext.Provider value={editor}>
+      <Canvas
+        host={editor}
+        shapeRenderer={renderer}
+        canvasRef={container}
+        tabIndex={0}
+        role="application"
+        aria-label="Design canvas"
+        inFrontOfCanvas={children}
+      />
+    </EditorContext.Provider>
+  )
+}
