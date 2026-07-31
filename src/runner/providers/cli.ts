@@ -367,6 +367,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
           if (exitTimer) clearTimeout(exitTimer)
           if (buffer.trim()) handleLine(buffer)
           buffer = ''
+          finish()
           if (rawOpen) hooks.onStep({ id: 'b0', kind: 'text', status: 'done' })
           // What the run itself said comes first, then what it printed on the
           // way out, and only a run that said nothing at all is described.
