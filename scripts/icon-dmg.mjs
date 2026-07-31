@@ -84,23 +84,23 @@ ${sky}
         <feFuncA type="table" tableValues="0 1 0" />
       </feComponentTransfer>
       <feComponentTransfer in="folded" result="veins">
-        <feFuncA type="gamma" amplitude="1" exponent="2.4" offset="0" />
+        <feFuncA type="gamma" amplitude="1" exponent="1.8" offset="0" />
       </feComponentTransfer>
       <feComposite in="SourceGraphic" in2="veins" operator="in" result="lit" />
-      <feGaussianBlur in="lit" stdDeviation="5" />
+      <feGaussianBlur in="lit" stdDeviation="6" />
     </filter>
-    <radialGradient id="vignette" cx="0.44" cy="0.46" r="0.8">
-      <stop offset="0" stop-color="#0a0a0b" stop-opacity="0" />
-      <stop offset="0.5" stop-color="#0a0a0b" stop-opacity="0.16" />
-      <stop offset="1" stop-color="#08080a" stop-opacity="0.92" />
+    <radialGradient id="vignette" cx="0.44" cy="0.46" r="0.82">
+      <stop offset="0" stop-color="#0e0e10" stop-opacity="0" />
+      <stop offset="0.56" stop-color="#0e0e10" stop-opacity="0.1" />
+      <stop offset="1" stop-color="#0c0c0e" stop-opacity="0.72" />
     </radialGradient>
     <linearGradient id="settle" x1="${DMG.width * 0.42}" y1="0" x2="${DMG.width}" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0b0b0c" stop-opacity="0" />
-      <stop offset="1" stop-color="#0b0b0c" stop-opacity="0.3" />
+      <stop offset="0" stop-color="#0c0c0e" stop-opacity="0" />
+      <stop offset="1" stop-color="#0c0c0e" stop-opacity="0.24" />
     </linearGradient>
     <radialGradient id="pool" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14" />
-      <stop offset="0.42" stop-color="#ffffff" stop-opacity="0.045" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16" />
+      <stop offset="0.42" stop-color="#ffffff" stop-opacity="0.055" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <linearGradient id="run" x1="248" y1="0" x2="432" y2="0" gradientUnits="userSpaceOnUse">
@@ -123,7 +123,10 @@ ${sky}
 ${masks}
   </defs>
   <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="${INK}" />
-  <g filter="url(#drift)" opacity="0.32">
+  <g opacity="0.22">
+${blobs}
+  </g>
+  <g filter="url(#drift)" opacity="0.5">
 ${blobs}
   </g>
   <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="url(#vignette)" />

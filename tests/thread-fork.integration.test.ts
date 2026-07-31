@@ -154,9 +154,7 @@ describe('forking a thread', () => {
     expect(parent.some(e => e.kind === 'message' && e.text === 'try the changelog instead')).toBe(false)
     expect(parent.filter(e => e.kind === 'agent.start')).toHaveLength(1)
     expect(parent.some(e => e.kind === 'thread.agent')).toBe(false)
-    expect(
-      sam.messages.some(m => m.type === 'queue.state' && m.threadId === thread.threadId && m.items.length > 0)
-    ).toBe(false)
+    expect(sam.messages.slice(said).some(m => m.type === 'queue.state' && m.threadId === thread.threadId)).toBe(false)
   })
 
   it('reads what was said before it, in one run of talk, and none of what was said after', async () => {
