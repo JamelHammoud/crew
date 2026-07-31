@@ -113,7 +113,13 @@ export type SessionEvent =
   // Superseded by thread.status; still emitted-compatible and replayed so old
   // event logs and old peers keep working.
   | { id: string; ts: number; kind: 'thread.archived'; threadId: string; byName: string }
-  | { id: string; ts: number; kind: 'thread.agent'; threadId: string; agentId: string; agentLabel: string; byName: string }
+  // A hand-off nobody made carries no name: the thread moved because a run fell
+  // over and the fallback took it, so there is no one to say it was them.
+  | { id: string; ts: number; kind: 'thread.agent'; threadId: string; agentId: string; agentLabel: string; byName?: string }
+  // Who takes over when a run in this thread ends badly. No agent means it was
+  // taken off. Nothing reads it until a run fails, so the thread queues and
+  // steers exactly as it did before one was named.
+  | { id: string; ts: number; kind: 'thread.fallback'; threadId: string; agentId?: string; agentLabel?: string; byName: string }
   | { id: string; ts: number; kind: 'thread.status'; threadId: string; status: ThreadStatus; byName: string }
   | { id: string; ts: number; kind: 'todo.added'; todoId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'todo.edited'; todoId: string; text: string; agentId?: string; byName: string }
