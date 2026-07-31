@@ -90,8 +90,7 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
     this: Constructor,
     options: Record<string, unknown>
   ): Constructor {
-    const Parent: any = this
-    class ConfiguredShapeUtil extends Parent {
+    class ConfiguredShapeUtil extends this {
       constructor(...args: any[]) {
         super(...args)
         this.options = { ...this.options, ...options }
