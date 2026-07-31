@@ -1857,7 +1857,7 @@ export class CrewSession {
   // A helper has gone quiet with nothing behind it. Its answer is held for a
   // breath so a run of them arriving together is one interruption, then handed
   // to whatever the parent is doing.
-  private subagentReturn(thread: Thread, ok: boolean, text: string): void {
+  private subagentReturn(thread: Thread, ok: boolean, text: string, stopped = false): void {
     const parentId = thread.parentThreadId
     if (!parentId) return
     for (const wait of [...this.waits]) {
