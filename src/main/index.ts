@@ -15,7 +15,7 @@ import { KeepAwake } from './awake'
 import type { AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
 import { copyImage } from './clipboard'
-import { contextMenuTemplate } from './context-menu'
+import { installContextMenu } from './context-menu'
 import type { Present } from '../shared/presence'
 import { fromSource } from './from-source'
 import { appIcon, type IconTheme } from './icon'
@@ -246,16 +246,6 @@ function installMenu(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate(appMenuTemplate(process.platform, inspectable)))
 }
 
-function installContextMenu(contents: WebContents, browser: boolean): void {
-  contents.on('context-menu', (_event, params) => {
-    const items = contextMenuTemplate(contents, params, browser, inspectable)
-    if (items.length === 0) return
-    const host = browser ? contents.hostWebContents : contents
-    const win = BrowserWindow.fromWebContents(host)
-    Menu.buildFromTemplate(items).popup(win ? { window: win } : undefined)
-  })
-}
-
 app.on('web-contents-created', (_event, contents) => {
   // A page in the side panel is a real browser carrying preferences of its own,
   // so a window with no dev tools has to say so again for whatever it embeds.
@@ -263,7 +253,7 @@ app.on('web-contents-created', (_event, contents) => {
     preferences.devTools = inspectable
   })
   if (contents.getType() !== 'webview') return
-  installContextMenu(contents, true)
+  installContextMenu(contents, true, inspectable)
   contents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) void contents.loadURL(url)
     return { action: 'deny' }
@@ -337,7 +327,7 @@ function createWindow(): BrowserWindow {
   win.on('unmaximize', syncWindowShape)
   win.on('enter-full-screen', syncWindowShape)
   win.on('leave-full-screen', syncWindowShape)
-  installContextMenu(win.webContents, false)
+  installContextMenu(win.webContents, false, inspectable)
   installDisplayMedia(win.webContents.session)
   // A window that has gone is a window that has stopped asking, so the machine
   // is let go of by the last one out rather than left awake by a window that

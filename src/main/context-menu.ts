@@ -1,5 +1,7 @@
 import {
+  BrowserWindow,
   clipboard,
+  Menu,
   shell,
   type ContextMenuParams,
   type MenuItemConstructorOptions,
@@ -98,4 +100,18 @@ export function contextMenuTemplate(
   }
 
   return items
+}
+
+export function installContextMenu(
+  contents: WebContents,
+  browser: boolean,
+  inspectable: boolean
+): void {
+  contents.on('context-menu', (_event, params) => {
+    const items = contextMenuTemplate(contents, params, browser, inspectable)
+    if (items.length === 0) return
+    const host = browser ? contents.hostWebContents : contents
+    const win = BrowserWindow.fromWebContents(host)
+    Menu.buildFromTemplate(items).popup(win ? { window: win } : undefined)
+  })
 }

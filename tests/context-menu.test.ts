@@ -3,13 +3,23 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const copied = vi.hoisted(() => [] as string[])
 const opened = vi.hoisted(() => [] as string[])
+const built = vi.hoisted(() => [] as MenuItemConstructorOptions[][])
+const popups = vi.hoisted(() => [] as unknown[])
+const owner = vi.hoisted(() => ({ id: 'window' }))
 
 vi.mock('electron', () => ({
+  BrowserWindow: { fromWebContents: () => owner },
   clipboard: { writeText: (value: string) => copied.push(value) },
+  Menu: {
+    buildFromTemplate: (items: MenuItemConstructorOptions[]) => {
+      built.push(items)
+      return { popup: (options: unknown) => popups.push(options) }
+    }
+  },
   shell: { openExternal: (value: string) => opened.push(value) }
 }))
 
-const { contextMenuTemplate } = await import('../src/main/context-menu')
+const { contextMenuTemplate, installContextMenu } = await import('../src/main/context-menu')
 
 function params(overrides: Partial<ContextMenuParams> = {}): ContextMenuParams {
   return {
@@ -63,6 +73,8 @@ function press(items: MenuItemConstructorOptions[], label: string): void {
 beforeEach(() => {
   copied.length = 0
   opened.length = 0
+  built.length = 0
+  popups.length = 0
 })
 
 describe('the web browser context menu', () => {
@@ -77,6 +89,23 @@ describe('the web browser context menu', () => {
     press(menu, 'Back')
     press(menu, 'Reload')
     expect(page.calls).toEqual(['back', 'reload'])
+  })
+
+  it('opens the native menu when the webview raises a right click', () => {
+    const page = contents()
+    let contextMenu: ((event: unknown, value: ContextMenuParams) => void) | undefined
+    Object.assign(page.target, {
+      on: (event: string, listener: (event: unknown, value: ContextMenuParams) => void) => {
+        if (event === 'context-menu') contextMenu = listener
+      }
+    })
+
+    installContextMenu(page.target, true, false)
+    contextMenu?.({}, params())
+
+    expect(built).toHaveLength(1)
+    expect(built[0].map(one => one.label)).toEqual(['Back', 'Forward', 'Reload'])
+    expect(popups).toEqual([{ window: owner }])
   })
 
   it('opens and copies links from the page', () => {
