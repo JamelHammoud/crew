@@ -1,13 +1,11 @@
 import {
   app,
   BrowserWindow,
-  BrowserWindow,
   clipboard,
   dialog,
   ipcMain,
   Menu,
   shell,
-  type MenuItemConstructorOptions,
   type WebContents
 } from 'electron'
 import path from 'node:path'
