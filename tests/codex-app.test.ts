@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { codexDialog } from '../src/runner/providers/codex-app'
 import { commandTool, codexFile } from '../src/runner/providers/codex-items'
 import { parseCodexLine } from '../src/runner/providers/codex'
+import { makeCliProvider } from '../src/runner/providers/cli'
 import type { ParsedOutput } from '../src/runner/providers/types'
 
 const reader = (settings: Record<string, string> = {}) => (key: string) => settings[key] ?? ''
@@ -264,5 +265,69 @@ describe('what codex says it did', () => {
     expect(parsed('account/rateLimits/updated', { rateLimits: {} })).toEqual([])
     expect(parsed('thread/status/changed', { status: { type: 'idle' } })).toEqual([])
     expect(parseCodexLine('not json')).toEqual([])
+  })
+})
+
+describe('what the commentary reads as', () => {
+  const speak = (lines: string[]) =>
+    makeCliProvider({
+      name: 'codexfake',
+      label: 'Codex',
+      command: process.execPath,
+      args: () => ['-e', `for (const l of ${JSON.stringify(lines)}) process.stdout.write(l + '\\n')`],
+      parser: parseCodexLine
+    })
+
+  const run = async (lines: string[]) => {
+    const steps: Array<{ kind?: string; text?: string }> = []
+    const started = speak(lines).start('go', process.cwd(), {
+      onStep: step => {
+        if (step.text) steps.push({ kind: step.kind, text: step.text })
+      }
+    })
+    return { steps, ...(await started.done) }
+  }
+
+  const commentary = [
+    note('item/started', { item: { type: 'agentMessage', id: 'c0', phase: 'commentary' } }),
+    note('item/agentMessage/delta', { itemId: 'c0', delta: 'Reading the file and working out the pattern.' }),
+    note('item/completed', {
+      item: { type: 'agentMessage', id: 'c0', phase: 'commentary', text: 'Reading the file and working out the pattern.' }
+    })
+  ]
+
+  const answer = [
+    note('item/started', { item: { type: 'agentMessage', id: 'a0', phase: 'final_answer' } }),
+    note('item/agentMessage/delta', { itemId: 'a0', delta: 'Appended the line.' }),
+    note('item/completed', { item: { type: 'agentMessage', id: 'a0', phase: 'final_answer', text: 'Appended the line.' } })
+  ]
+
+  it('draws what codex says on the way as a thought, and the answer as the answer', async () => {
+    const { steps, text } = await run([...commentary, ...answer])
+    expect(steps).toEqual([
+      { kind: 'thinking', text: 'Reading the file and working out the pattern.' },
+      { kind: 'text', text: 'Appended the line.' }
+    ])
+    expect(text).toBe('Appended the line.')
+  })
+
+  it('still answers with the commentary when a turn ends without one', async () => {
+    const { steps, text } = await run(commentary)
+    expect(steps.map(s => s.kind)).toEqual(['thinking'])
+    expect(text).toBe('Reading the file and working out the pattern.')
+  })
+
+  it('keeps a stretch of reasoning on its own rail beside it', async () => {
+    const { steps } = await run([
+      ...commentary,
+      note('item/reasoning/summaryPartAdded', { summaryIndex: 0 }),
+      note('item/reasoning/summaryTextDelta', { summaryIndex: 0, delta: '**Planning the edit**' }),
+      ...answer
+    ])
+    expect(steps).toEqual([
+      { kind: 'thinking', text: 'Reading the file and working out the pattern.' },
+      { kind: 'thinking', text: '**Planning the edit**' },
+      { kind: 'text', text: 'Appended the line.' }
+    ])
   })
 })
