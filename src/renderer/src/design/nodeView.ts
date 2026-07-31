@@ -72,18 +72,6 @@ export interface NodeView {
   clip: Toggle<boolean> | null
 }
 
-export const NO_TEXT_FIELDS: TextFields = {
-  size: false,
-  weight: false,
-  family: 'none',
-  align: false,
-  vertical: false,
-  lineHeight: false,
-  spacing: false,
-  settings: false,
-  color: false
-}
-
 export function emptyView(id: TLShapeId): NodeView {
   return {
     id,

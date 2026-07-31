@@ -24,7 +24,3 @@ export function nextNodeShape(): NodeShape {
 export function nextNodeName(shape: NodeShape): string {
   return LABELS[shape]
 }
-
-export function nodeShapeLabel(shape: unknown): string {
-  return LABELS[nodeShapeOf(shape)]
-}
