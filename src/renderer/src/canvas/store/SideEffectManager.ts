@@ -92,42 +92,42 @@ export class SideEffectManager<R extends UnknownRecord> {
     typeName: T,
     handler: BeforeCreateHandler<Extract<R, { typeName: T }>>
   ): () => void {
-    return add(this.beforeCreate, typeName, handler as BeforeCreateHandler<R>)
+    return add(this.beforeCreate, typeName, handler as unknown as BeforeCreateHandler<R>)
   }
 
   registerAfterCreateHandler<T extends R['typeName']>(
     typeName: T,
     handler: AfterCreateHandler<Extract<R, { typeName: T }>>
   ): () => void {
-    return add(this.afterCreate, typeName, handler as AfterCreateHandler<R>)
+    return add(this.afterCreate, typeName, handler as unknown as AfterCreateHandler<R>)
   }
 
   registerBeforeChangeHandler<T extends R['typeName']>(
     typeName: T,
     handler: BeforeChangeHandler<Extract<R, { typeName: T }>>
   ): () => void {
-    return add(this.beforeChange, typeName, handler as BeforeChangeHandler<R>)
+    return add(this.beforeChange, typeName, handler as unknown as BeforeChangeHandler<R>)
   }
 
   registerAfterChangeHandler<T extends R['typeName']>(
     typeName: T,
     handler: AfterChangeHandler<Extract<R, { typeName: T }>>
   ): () => void {
-    return add(this.afterChange, typeName, handler as AfterChangeHandler<R>)
+    return add(this.afterChange, typeName, handler as unknown as AfterChangeHandler<R>)
   }
 
   registerBeforeDeleteHandler<T extends R['typeName']>(
     typeName: T,
     handler: BeforeDeleteHandler<Extract<R, { typeName: T }>>
   ): () => void {
-    return add(this.beforeDelete, typeName, handler as BeforeDeleteHandler<R>)
+    return add(this.beforeDelete, typeName, handler as unknown as BeforeDeleteHandler<R>)
   }
 
   registerAfterDeleteHandler<T extends R['typeName']>(
     typeName: T,
     handler: AfterDeleteHandler<Extract<R, { typeName: T }>>
   ): () => void {
-    return add(this.afterDelete, typeName, handler as AfterDeleteHandler<R>)
+    return add(this.afterDelete, typeName, handler as unknown as AfterDeleteHandler<R>)
   }
 
   registerOperationCompleteHandler(handler: OperationCompleteHandler): () => void {

@@ -1087,6 +1087,10 @@ export class CrewSession {
     if (threadId) {
       const thread = this.threads.get(threadId)
       if (!thread || this.hiddenFrom(ws, threadId)) return
+      if (naming) {
+        this.setFallback(ws, member, thread, mentions, hidden)
+        return
+      }
       if (beside) {
         this.startAside(ws, member, thread, mentions, trimmed, attachments)
         return
