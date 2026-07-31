@@ -5,6 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { shootCovers } from './icon-cover.mjs'
 import { DMG, dmgBackground } from './icon-dmg.mjs'
+import { shootMesh } from './dmg-shoot.mjs'
 import { SKINS } from './icon-skins.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -121,7 +122,7 @@ const ramp = list =>
 // A skin that asks for one is handed a real generated cover, photographed by the
 // shader the music uses. One Electron for all of them, before anything is drawn.
 const wanted = SKINS.filter(skin => skin.cover)
-const shots = await shootCovers([...wanted.map(skin => skin.cover), DMG.cover])
+const shots = await shootCovers(wanted.map(skin => skin.cover))
 const shotOf = seed => {
   const shot = shots.find(one => one.id === seed)
   return shot?.png ? shot.png.slice(shot.png.indexOf(',') + 1) : null
@@ -398,7 +399,8 @@ rmSync(iconset, { recursive: true, force: true })
 
 raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
 
-const backdrop = dmgBackground({ bite: GAP / RADIUS, step: STEP / RADIUS }, shotOf(DMG.cover))
+const [mesh] = await shootMesh([{ at: DMG.at, width: DMG.width * 2, height: DMG.height * 2 }])
+const backdrop = dmgBackground({ bite: GAP / RADIUS, step: STEP / RADIUS }, mesh.png)
 const plain = path.join(resources, 'dmg-background.png')
 const retina = path.join(resources, 'dmg-background@2x.png')
 writeFileSync(path.join(resources, 'dmg-background.svg'), backdrop)
