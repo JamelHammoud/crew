@@ -453,6 +453,7 @@ export function buildThread(
           text: event.ok ? (event.text ?? '') : (event.error ?? 'Something went wrong.'),
           streaming: false,
           error: event.ok ? undefined : (event.error ?? 'error'),
+          stopped: event.stopped,
           reactionTargetId: agentEndReactionTarget(event.promptId),
           reactions: reactions.get(agentEndReactionTarget(event.promptId))
         })
