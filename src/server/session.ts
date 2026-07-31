@@ -329,6 +329,11 @@ const SNAPSHOT_EVENT_LIMIT = 500
 const TICKET_HISTORY_LIMIT = 600
 const HISTORY_PAGE = 200
 const CONTEXT_EVENT_LIMIT = 20
+
+// How far back down a line of forks one is read. A fork always points at a
+// thread older than itself so the walk ends on its own, and this is the backstop
+// against a session that has been forked all afternoon.
+const FORK_DEPTH_LIMIT = 20
 const MAX_DOC_PROMPT_CHARS = 8000
 const TITLE_LIMIT = 80
 const LABEL_LIMIT = 40
