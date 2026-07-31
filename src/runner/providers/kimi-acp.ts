@@ -184,10 +184,16 @@ export function kimiParser(): OutputParser {
   const activity = (out: ParsedOutput[], update: any): void => {
     const id = str(update?.toolCallId)
     if (!id) return
-    if (str(update?.sessionUpdate) === 'tool_call') names.set(id, str(update?.title))
+    const opening = str(update?.sessionUpdate) === 'tool_call'
+    if (opening) names.set(id, str(update?.title))
     const name = names.get(id) ?? ''
     const args = update?.rawInput
     const running = STARTED.has(str(update?.status))
+    // One tool beats out a dozen updates saying the same thing while its
+    // arguments are still being written, and a step redrawn from one of those
+    // is a step whose detail blinks out. Only what opens a step, fills it in,
+    // or ends it is worth drawing again.
+    if (!opening && !args && running) return
     close(out)
     out.push({
       activity: {
