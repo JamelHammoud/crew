@@ -2,7 +2,7 @@ import type { SettingReader } from './cli'
 import { activityDetail, fileChanges, stepTodos } from './detail'
 import { kimiUsage, kimiWire } from './kimi-usage'
 import { taskCall } from './tasks'
-import type { Dialog, OutputParser, ParsedOutput } from './types'
+import type { Dialog, ParsedOutput, RunParser } from './types'
 
 const PROTOCOL = 1
 
