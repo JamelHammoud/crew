@@ -165,7 +165,7 @@ void main() {
 
   colour += vec3(0.1, 0.096, 0.088) * clamp(relief * 2.4, -1.0, 1.0);
 
-  vec2 away = vec2((vUv.x - uBloom.x) * ratio, vUv.y - uBloom.y);
+  vec2 away = vec2((vUv.x - uBloom.x) * ratio / uShape.x, (vUv.y - uBloom.y) / uShape.y);
   float reach = length(away) / uBloom.z;
   float ragged = snoise(vec3(p * 1.9, uTime * 0.045)) * 0.1
                + snoise(vec3(p * 4.6 + 12.0, uTime * 0.07)) * 0.035;
@@ -174,7 +174,7 @@ void main() {
   float wide = (1.0 - smoothstep(0.0, 2.4, reach)) * uWide;
 
   vec3 lit = mix(uPaper, colour, clamp(glow + wide, 0.0, 1.0));
-  lit += (grain(vUv * uSize) - 0.5) * 0.012;
+  lit += (grain(vUv * uSize) - 0.5) * 0.015;
   gl_FragColor = vec4(clamp(lit, 0.0, 1.0), 1.0);
 }`
 
