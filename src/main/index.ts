@@ -1,6 +1,7 @@
 import {
   app,
   BrowserWindow,
+  BrowserWindow,
   clipboard,
   dialog,
   ipcMain,
@@ -16,6 +17,7 @@ import { KeepAwake } from './awake'
 import type { AgentAlert } from '../shared/alerts'
 import { cleanAppIcon, DEFAULT_APP_ICON, type AppIconId } from '../shared/appIcon'
 import { copyImage } from './clipboard'
+import { contextMenuTemplate } from './context-menu'
 import type { Present } from '../shared/presence'
 import { fromSource } from './from-source'
 import { appIcon, type IconTheme } from './icon'
@@ -246,37 +248,13 @@ function installMenu(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate(appMenuTemplate(process.platform, inspectable)))
 }
 
-// Right-click clipboard actions for text fields and the doc editor,
-// plus spellcheck suggestions (which Electron only exposes through the
-// context menu — a custom menu must add them back itself).
-function installContextMenu(win: BrowserWindow): void {
-  win.webContents.on('context-menu', (_event, params) => {
-    const editable = params.isEditable
-    const hasSelection = params.selectionText.trim().length > 0
-    const misspelled = editable && params.misspelledWord.length > 0
-    if (!editable && !hasSelection) return
-    const items: MenuItemConstructorOptions[] = []
-    if (misspelled) {
-      for (const suggestion of params.dictionarySuggestions) {
-        items.push({
-          label: suggestion,
-          click: () => win.webContents.replaceMisspelling(suggestion)
-        })
-      }
-      if (params.dictionarySuggestions.length === 0) {
-        items.push({ label: 'No spelling suggestions', enabled: false })
-      }
-      items.push({
-        label: 'Add to Dictionary',
-        click: () =>
-          win.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord)
-      })
-      items.push({ type: 'separator' })
-    }
-    if (editable) items.push({ role: 'cut', enabled: hasSelection })
-    if (editable || hasSelection) items.push({ role: 'copy', enabled: hasSelection })
-    if (editable) items.push({ role: 'paste' }, { type: 'separator' }, { role: 'selectAll' })
-    Menu.buildFromTemplate(items).popup({ window: win })
+function installContextMenu(contents: WebContents, browser: boolean): void {
+  contents.on('context-menu', (_event, params) => {
+    const items = contextMenuTemplate(contents, params, browser, inspectable)
+    if (items.length === 0) return
+    const host = browser ? contents.hostWebContents : contents
+    const win = BrowserWindow.fromWebContents(host)
+    Menu.buildFromTemplate(items).popup(win ? { window: win } : undefined)
   })
 }
 
@@ -287,6 +265,7 @@ app.on('web-contents-created', (_event, contents) => {
     preferences.devTools = inspectable
   })
   if (contents.getType() !== 'webview') return
+  installContextMenu(contents, true)
   contents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) void contents.loadURL(url)
     return { action: 'deny' }
@@ -360,7 +339,7 @@ function createWindow(): BrowserWindow {
   win.on('unmaximize', syncWindowShape)
   win.on('enter-full-screen', syncWindowShape)
   win.on('leave-full-screen', syncWindowShape)
-  installContextMenu(win)
+  installContextMenu(win.webContents, false)
   installDisplayMedia(win.webContents.session)
   // A window that has gone is a window that has stopped asking, so the machine
   // is let go of by the last one out rather than left awake by a window that
