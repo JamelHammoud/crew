@@ -255,7 +255,7 @@ class PendingDiff<R extends UnknownRecord> {
     squashRecordDiffsMutable(this.diff, [diff])
     if (hasAnyKey(diff.added) || hasAnyKey(diff.removed)) {
       this.isEmptyAtom.set(isRecordsDiffEmpty(this.diff))
-    } else if (this.isEmptyAtom.get()) {
+    } else if (unsafe__withoutCapture(() => this.isEmptyAtom.get())) {
       this.isEmptyAtom.set(!hasAnyKey(diff.updated))
     }
   }
