@@ -123,7 +123,7 @@ export const codexFields = (): AgentSettingField[] => {
   const { models, efforts } = codexModels()
   return [
     { key: 'model', label: 'Model', options: choices(['', ...models]), default: '' },
-    { key: 'effort', label: 'Thinking', options: choices(efforts), default: 'high' }
+    { key: 'effort', label: 'Thinking', options: choices(['', ...efforts]), default: '' }
   ]
 }
 
