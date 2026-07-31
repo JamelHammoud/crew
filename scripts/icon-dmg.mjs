@@ -17,7 +17,7 @@ export const ARROW = { from: 252, to: 410, head: 13, sweep: 0.62, weight: 3.4, g
 
 const round = value => Number(value.toFixed(3))
 
-export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.62" fill="${INK}" fill-opacity="0.88">Drag Crew into Applications</text>`
+export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline + 6}" text-anchor="middle" font-family="&quot;Bradley Hand&quot;, &quot;Bradley Hand ITC&quot;, cursive" font-size="34" font-weight="700" fill="${INK}" fill-opacity="0.9">Drag Crew into Applications</text>`
 
 export const DMG_DEFS = `    <radialGradient id="clearing" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
