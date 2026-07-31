@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ARROW, DMG, HEADLINE, dmgArrow, dmgDefs } from './icon-dmg.mjs'
+import { ARROW, DMG, GROUND, HEADLINE, LABEL, dmgArrow, dmgDefs } from './icon-dmg.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const out = path.join(tmpdir(), 'crew-dmg')
