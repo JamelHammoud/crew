@@ -1216,7 +1216,56 @@ export class CrewSession {
     return this.agents.get(id)?.ownerId === member.id
   }
 
-  private switchThreadAgent(thread: Thread, id: string, member: Member): void {
+  // Who takes over when a run here ends badly. They are named by mentioning
+  // them, which is the one way the app already names an agent in a composer, and
+  // naming nobody takes it off. Nothing is emitted into the thread as a message,
+  // because an arrangement is not something somebody said.
+  private setFallback(ws: WebSocket, member: Member, thread: Thread, mentions: string[], hidden: boolean): void {
+    const named = [...new Set(mentions)].filter(id => this.agents.has(id))
+    const id = named[0]
+    if (!id) {
+      if (mentions.length > 0) {
+        this.notice('Mention an agent with @ to say who takes over.', ws)
+        return
+      }
+      if (thread.fallbackId === undefined) return
+      thread.fallbackId = undefined
+      this.emit({
+        id: randomUUID(),
+        ts: Date.now(),
+        kind: 'thread.fallback',
+        threadId: thread.id,
+        byName: member.name
+      })
+      return
+    }
+    // A hidden thread only ever goes to an agent of your own, so the one that
+    // would take it over is held to the same rule as the one on it now.
+    if (hidden && !this.ownAgent(member, id)) {
+      this.notice("That agent runs on somebody else's machine. Mention one of your own.", ws)
+      return
+    }
+    if (id === thread.agentId) {
+      this.notice('This thread is already on them. Mention somebody else to take over.', ws)
+      return
+    }
+    const agent = this.agents.get(id)!
+    thread.fallbackId = id
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'thread.fallback',
+      threadId: thread.id,
+      agentId: id,
+      agentLabel: agent.label,
+      byName: member.name
+    })
+  }
+
+  // A hand-off nobody made carries no name. That is the fallback taking a thread
+  // over after a run fell over, and the transcript draws it as its own line
+  // rather than as somebody handing the thread on.
+  private switchThreadAgent(thread: Thread, id: string, member?: Member): void {
     const agent = this.agents.get(id)
     if (!agent) return
     thread.agentId = id
@@ -1228,7 +1277,7 @@ export class CrewSession {
       threadId: thread.id,
       agentId: id,
       agentLabel: agent.label,
-      byName: member.name
+      byName: member?.name
     })
   }
 
