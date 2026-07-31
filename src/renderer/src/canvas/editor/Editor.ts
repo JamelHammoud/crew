@@ -337,8 +337,8 @@ export class Editor {
       shape,
       index,
       backgroundIndex: index,
-      opacity: shape.opacity
-      ,isEditing: editingShapeId === shape.id
+      opacity: shape.opacity,
+      isEditing: editingShapeId === shape.id
     }))
   }
 

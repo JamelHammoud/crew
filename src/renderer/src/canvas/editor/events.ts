@@ -50,7 +50,13 @@ export class CanvasEventBridge {
     const currentTarget = event.currentTarget as (EventTarget & { setPointerCapture?: (id: number) => void }) | null
     currentTarget?.setPointerCapture?.(event.pointerId)
     this.dispatch({
-      ...pointerInfo(event.button === 1 ? 'middle_click' : event.button === 2 ? 'right_click' : 'pointer_down', event, screen, page, 'down'),
+      ...pointerInfo(
+        event.button === 1 ? 'middle_click' : event.button === 2 ? 'right_click' : 'pointer_down',
+        event,
+        screen,
+        page,
+        'down'
+      ),
       ...resolveTarget(event, page, this.editor)
     })
   }
@@ -60,7 +66,10 @@ export class CanvasEventBridge {
     const page = this.editor.screenToPage(screen)
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerMove(screen, page, event, this.editor.options.dragDistanceSquared as number)
-    this.dispatch({ ...pointerInfo('pointer_move', event, screen, page, 'move'), ...resolveTarget(event, page, this.editor) })
+    this.dispatch({
+      ...pointerInfo('pointer_move', event, screen, page, 'move'),
+      ...resolveTarget(event, page, this.editor)
+    })
   }
 
   private pointerUp(event: PointerEvent): void {
@@ -68,7 +77,10 @@ export class CanvasEventBridge {
     const page = this.editor.screenToPage(screen)
     this.editor.inputs.pointerUp(screen, page, event)
     this.pointers.delete(event.pointerId)
-    this.dispatch({ ...pointerInfo('pointer_up', event, screen, page, 'up'), ...resolveTarget(event, page, this.editor) })
+    this.dispatch({
+      ...pointerInfo('pointer_up', event, screen, page, 'up'),
+      ...resolveTarget(event, page, this.editor)
+    })
   }
 
   private pointerCancel(event: PointerEvent): void {
@@ -94,17 +106,23 @@ export class CanvasEventBridge {
     const camera = this.editor.getCamera()
     if (event.ctrlKey || event.metaKey) {
       const z = Math.max(0.05, Math.min(8, camera.z * Math.exp(-event.deltaY * 0.002)))
-      this.editor.setCamera({
-        x: camera.x + screen.x / z - screen.x / camera.z,
-        y: camera.y + screen.y / z - screen.y / camera.z,
-        z
-      }, { immediate: true })
+      this.editor.setCamera(
+        {
+          x: camera.x + screen.x / z - screen.x / camera.z,
+          y: camera.y + screen.y / z - screen.y / camera.z,
+          z
+        },
+        { immediate: true }
+      )
     } else {
-      this.editor.setCamera({
-        x: camera.x - event.deltaX / camera.z,
-        y: camera.y - event.deltaY / camera.z,
-        z: camera.z
-      }, { immediate: true })
+      this.editor.setCamera(
+        {
+          x: camera.x - event.deltaX / camera.z,
+          y: camera.y - event.deltaY / camera.z,
+          z: camera.z
+        },
+        { immediate: true }
+      )
     }
     this.dispatch({
       name: 'wheel',
@@ -140,13 +158,23 @@ export class CanvasEventBridge {
   private touchMove(event: TouchEvent): void {
     if (event.touches.length !== 2 || !this.pinchCamera || this.pinchDistance <= 0) return
     const center = touchCenter(event.touches, this.editor.getContainer())
-    const z = this.pinchCamera.z * touchDistance(event.touches) / this.pinchDistance
+    const z = (this.pinchCamera.z * touchDistance(event.touches)) / this.pinchDistance
     const pageAtCenter = {
       x: center.x / this.pinchCamera.z - this.pinchCamera.x,
       y: center.y / this.pinchCamera.z - this.pinchCamera.y
     }
-    this.editor.setCamera({ x: center.x / z - pageAtCenter.x, y: center.y / z - pageAtCenter.y, z }, { immediate: true })
-    this.dispatch({ name: 'pointer_move', point: this.editor.screenToPage(center), screenPoint: center, phase: 'move', isPinching: true, originalEvent: event })
+    this.editor.setCamera(
+      { x: center.x / z - pageAtCenter.x, y: center.y / z - pageAtCenter.y, z },
+      { immediate: true }
+    )
+    this.dispatch({
+      name: 'pointer_move',
+      point: this.editor.screenToPage(center),
+      screenPoint: center,
+      phase: 'move',
+      isPinching: true,
+      originalEvent: event
+    })
   }
 
   private touchEnd(event: TouchEvent): void {
@@ -161,12 +189,16 @@ export class CanvasEventBridge {
 }
 
 function resolveTarget(event: Event, page: { x: number; y: number }, editor: Editor): Record<string, unknown> {
-  const target = event.target && typeof (event.target as Element).closest === 'function' ? event.target as Element : null
+  const target =
+    event.target && typeof (event.target as Element).closest === 'function' ? (event.target as Element) : null
   const taggedHandle = target?.closest('[data-canvas-handle]') as HTMLElement | null
   if (taggedHandle?.dataset.canvasHandle) {
     return { target: 'selection', handle: taggedHandle.dataset.canvasHandle }
   }
-  const overlay = editor.overlays.getOverlayAtPoint(page, editor.options.hitTestMargin as number / editor.getZoomLevel())
+  const overlay = editor.overlays.getOverlayAtPoint(
+    page,
+    (editor.options.hitTestMargin as number) / editor.getZoomLevel()
+  )
   if (overlay) return { target: 'overlay', overlay }
   const shapeElement = target?.closest('[data-shape-id]') as HTMLElement | null
   const id = shapeElement?.dataset.shapeId
@@ -175,7 +207,13 @@ function resolveTarget(event: Event, page: { x: number; y: number }, editor: Edi
   return { target: 'canvas' }
 }
 
-function pointerInfo(name: CanvasEventInfo['name'], event: PointerEvent, screen: { x: number; y: number }, page: { x: number; y: number }, phase: string): CanvasEventInfo {
+function pointerInfo(
+  name: CanvasEventInfo['name'],
+  event: PointerEvent,
+  screen: { x: number; y: number },
+  page: { x: number; y: number },
+  phase: string
+): CanvasEventInfo {
   return {
     name,
     target: 'canvas',
@@ -195,12 +233,7 @@ function pointerInfo(name: CanvasEventInfo['name'], event: PointerEvent, screen:
   }
 }
 
-function mouseInfo(
-  name: CanvasEventInfo['name'],
-  event: MouseEvent,
-  editor: Editor,
-  phase = 'up'
-): CanvasEventInfo {
+function mouseInfo(name: CanvasEventInfo['name'], event: MouseEvent, editor: Editor, phase = 'up'): CanvasEventInfo {
   const screen = screenPoint(event, editor.getContainer())
   return pointerInfo(name, event as PointerEvent, screen, editor.screenToPage(screen), phase)
 }
