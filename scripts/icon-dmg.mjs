@@ -8,7 +8,8 @@ export const DMG = {
   headline: 78,
   chrome: 48,
   iconTextRoom: 22,
-  at: 118
+  at: 118,
+  retina: 2
 }
 
 export const GROUND = '#f2f2f2'
