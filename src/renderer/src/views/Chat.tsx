@@ -189,7 +189,7 @@ export default function Chat() {
           onScroll()
           reachBack()
         }}
-        className="h-full overflow-y-auto px-6"
+        className="h-full overflow-y-auto overflow-x-hidden px-6"
       >
         <div className="max-w-[660px] mx-auto pt-28 pb-48 space-y-8">
           {moreHistory && (
