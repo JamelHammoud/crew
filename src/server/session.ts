@@ -1290,6 +1290,8 @@ export class CrewSession {
       voice: thread.voice ? true : undefined,
       tickets: thread.tickets ? true : undefined,
       aside: thread.aside,
+      forkedFrom: thread.forkedFrom,
+      forkedAt: thread.forkedAt,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
       helper: sent?.name,
