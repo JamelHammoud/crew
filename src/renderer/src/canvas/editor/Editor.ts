@@ -81,11 +81,15 @@ export class Editor {
   readonly timers = {
     setTimeout: (callback: () => void, delay: number) => setTimeout(callback, delay),
     clearTimeout: (id: ReturnType<typeof setTimeout>) => clearTimeout(id),
-    requestAnimationFrame: (callback: FrameRequestCallback) => typeof requestAnimationFrame === 'undefined'
-      ? setTimeout(() => callback(Date.now()), 16) as unknown as number
-      : requestAnimationFrame(callback)
+    requestAnimationFrame: (callback: FrameRequestCallback) =>
+      typeof requestAnimationFrame === 'undefined'
+        ? (setTimeout(() => callback(Date.now()), 16) as unknown as number)
+        : requestAnimationFrame(callback)
   }
-  readonly performance = { _notifyInteractionStart: (_id: string, _path: string) => undefined, _notifyInteractionEnd: () => undefined }
+  readonly performance = {
+    _notifyInteractionStart: (_id: string, _path: string) => undefined,
+    _notifyInteractionEnd: () => undefined
+  }
   readonly edgeScrollManager = { start: () => undefined, stop: () => undefined, update: () => undefined }
   readonly snaps = new SnapManager()
   private readonly camera: CameraManager
@@ -112,7 +116,11 @@ export class Editor {
   }
   private currentPageId: TLPageId
   private disposed = false
-  private richTextEditor: { commands?: { focus(position?: unknown): unknown }; isFocused?: boolean; [key: string]: unknown } | null = null
+  private richTextEditor: {
+    commands?: { focus(position?: unknown): unknown }
+    isFocused?: boolean
+    [key: string]: unknown
+  } | null = null
 
   constructor(options: TLEditorOptions) {
     this.store = options.store
@@ -223,7 +231,7 @@ export class Editor {
     return {
       selectedShapeIds: this.getSelectedShapeIds(),
       editingShapeId: this.getEditingShapeId(),
-      focusedGroupId: focused.startsWith('shape:') ? focused as TLShapeId : null,
+      focusedGroupId: focused.startsWith('shape:') ? (focused as TLShapeId) : null,
       hintingShapeIds: this.instance.hintingShapeIds,
       hoveredShapeId: this.instance.hoveredShapeId
     }
@@ -314,10 +322,22 @@ export class Editor {
     return this.getCurrentPageShapesSorted().filter(shape => !this.isShapeHidden(shape))
   }
 
-  getRenderingShapes(): Array<{ id: TLShapeId; shape: TLShape; index: number; backgroundIndex: number; opacity: number }> {
+  getRenderingShapes(): Array<{
+    id: TLShapeId
+    shape: TLShape
+    index: number
+    backgroundIndex: number
+    opacity: number
+  }> {
     void this.getEditingShapeId()
     const shapes = this.getCurrentPageRenderingShapesSorted()
-    return shapes.map((shape, index) => ({ id: shape.id, shape, index, backgroundIndex: index, opacity: shape.opacity }))
+    return shapes.map((shape, index) => ({
+      id: shape.id,
+      shape,
+      index,
+      backgroundIndex: index,
+      opacity: shape.opacity
+    }))
   }
 
   getCulledShapes(): ReadonlySet<TLShapeId> {
@@ -365,9 +385,10 @@ export class Editor {
   }
 
   getBindingsFromShape(id: TLShapeId, type?: TLBinding['type']): TLBinding[] {
-    return this.store.query('binding').get().filter(binding =>
-      (binding.fromId === id || binding.toId === id) && (!type || binding.type === type)
-    )
+    return this.store
+      .query('binding')
+      .get()
+      .filter(binding => (binding.fromId === id || binding.toId === id) && (!type || binding.type === type))
   }
 
   deleteBinding(id: string): this {
@@ -458,7 +479,8 @@ export class Editor {
       bounds.point = this.getShapePageTransform(ids[0]).applyToPoint(bounds.point)
       return bounds
     }
-    const points = ids.flatMap(id => this.getShapePageTransform(id).applyToPoints(this.getShapeGeometry(id).bounds.corners))
+    const points = ids
+      .flatMap(id => this.getShapePageTransform(id).applyToPoints(this.getShapeGeometry(id).bounds.corners))
       .map(point => point.rot(-rotation))
     const bounds = Box.FromPoints(points)
     bounds.point = bounds.point.rot(rotation)
@@ -470,7 +492,7 @@ export class Editor {
   }
 
   setFocusedGroup(shape: TLShape | TLShapeId | null): this {
-    const id = typeof shape === 'string' ? shape : shape?.id ?? null
+    const id = typeof shape === 'string' ? shape : (shape?.id ?? null)
     const record = id ? this.getShape(id) : undefined
     this.selection.setFocusedGroupId(record?.type === 'group' ? record.id : null)
     return this
@@ -481,12 +503,14 @@ export class Editor {
   }
 
   getSelectedShapes(): TLShape[] {
-    return this.getSelectedShapeIds().map(id => this.getShape(id)!).filter(Boolean)
+    return this.getSelectedShapeIds()
+      .map(id => this.getShape(id)!)
+      .filter(Boolean)
   }
 
   setSelectedShapes(shapes: readonly (TLShape | TLShapeId)[]): this {
     const ids = shapes
-      .map(shape => typeof shape === 'string' ? shape : shape.id)
+      .map(shape => (typeof shape === 'string' ? shape : shape.id))
       .filter(id => this.getShape(id) !== undefined)
     this.selection.setSelectedShapeIds(rootIds(this.allShapes(), ids))
     return this
@@ -510,7 +534,7 @@ export class Editor {
   }
 
   setEditingShape(shapeOrId: TLShape | TLShapeId | null): this {
-    const id = typeof shapeOrId === 'string' ? shapeOrId : shapeOrId?.id ?? null
+    const id = typeof shapeOrId === 'string' ? shapeOrId : (shapeOrId?.id ?? null)
     this.selection.setEditingShapeId(id && this.getShape(id) ? id : null)
     return this
   }
@@ -597,7 +621,7 @@ export class Editor {
   }
 
   deselect(...shapes: Array<TLShape | TLShapeId>): this {
-    const removing = new Set(shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
+    const removing = new Set(shapes.map(shape => (typeof shape === 'string' ? shape : shape.id)))
     this.selection.setSelectedShapeIds(this.getSelectedShapeIds().filter(id => !removing.has(id)))
     return this
   }
@@ -614,17 +638,21 @@ export class Editor {
   }
 
   updateHoveredOverlayId(): boolean {
-    const overlay = this.overlays.getOverlayAtPoint(this.inputs.getCurrentPagePoint(), this.hitTestMargin / this.getZoomLevel())
+    const overlay = this.overlays.getOverlayAtPoint(
+      this.inputs.getCurrentPagePoint(),
+      this.hitTestMargin / this.getZoomLevel()
+    )
     this.overlays.setHoveredOverlay(overlay?.id ?? null)
     return Boolean(overlay)
   }
 
   updateHoveredShapeId(): void {
-    this.instance.hoveredShapeId = this.getShapeAtPoint(this.inputs.getCurrentPagePoint(), {
-      margin: this.hitTestMargin / this.getZoomLevel(),
-      hitInside: true,
-      renderingOnly: true
-    })?.id ?? null
+    this.instance.hoveredShapeId =
+      this.getShapeAtPoint(this.inputs.getCurrentPagePoint(), {
+        margin: this.hitTestMargin / this.getZoomLevel(),
+        hitInside: true,
+        renderingOnly: true
+      })?.id ?? null
   }
 
   cancelUpdateHoveredShapeId(): void {}
@@ -691,10 +719,15 @@ export class Editor {
   }
 
   deleteShapes(shapes: readonly (TLShape | TLShapeId)[]): this {
-    const requested = shapes.map(shape => typeof shape === 'string' ? shape : shape.id)
-    const ids = descendantsOf(this.allShapes(), requested.filter(id => this.getShape(id)))
+    const requested = shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
+    const ids = descendantsOf(
+      this.allShapes(),
+      requested.filter(id => this.getShape(id))
+    )
     const deleting = new Set(ids)
-    const bindings = this.store.query('binding').get()
+    const bindings = this.store
+      .query('binding')
+      .get()
       .filter(binding => deleting.has(binding.fromId) || deleting.has(binding.toId))
       .map(binding => binding.id)
     this.store.remove([...bindings, ...ids])
@@ -703,7 +736,7 @@ export class Editor {
   }
 
   duplicateShapes(shapes: readonly (TLShape | TLShapeId)[], offset: VecLike = { x: 16, y: 16 }): this {
-    const ids = shapes.map(shape => typeof shape === 'string' ? shape : shape.id)
+    const ids = shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
     const content = this.getContentFromCurrentPage(ids)
     if (!content) return this
     const clone = cloneContent(content)
@@ -712,7 +745,9 @@ export class Editor {
       if (roots.has(shape.id)) {
         shape.x += offset.x
         shape.y += offset.y
-        shape.index = getIndexAbove(sortedChildren([...this.allShapes(), ...clone.shapes], shape.parentId).at(-1)?.index)
+        shape.index = getIndexAbove(
+          sortedChildren([...this.allShapes(), ...clone.shapes], shape.parentId).at(-1)?.index
+        )
       }
     }
     this.store.put([...clone.assets.filter(asset => !this.store.has(asset.id)), ...clone.shapes, ...clone.bindings])
@@ -722,8 +757,13 @@ export class Editor {
 
   reparentShapes(shapes: readonly (TLShape | TLShapeId)[], parentId: TLParentId, insertIndex?: IndexKey): this {
     if (!parentId.startsWith('page:') && !this.getShape(parentId as TLShapeId)) return this
-    const ids = rootIds(this.allShapes(), shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
-    const parentTransform = parentId.startsWith('shape:') ? this.getShapePageTransform(parentId as TLShapeId) : Mat.Identity()
+    const ids = rootIds(
+      this.allShapes(),
+      shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
+    )
+    const parentTransform = parentId.startsWith('shape:')
+      ? this.getShapePageTransform(parentId as TLShapeId)
+      : Mat.Identity()
     const inverseParent = parentTransform.clone().invert()
     const moving = ids.map(id => this.getShape(id)).filter((shape): shape is TLShape => Boolean(shape))
     let indices = insertIndex
@@ -746,13 +786,20 @@ export class Editor {
   }
 
   groupShapes(shapes: readonly (TLShape | TLShapeId)[], groupId = createShapeId()): this {
-    const ids = rootIds(this.allShapes(), shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
+    const ids = rootIds(
+      this.allShapes(),
+      shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
+    )
     const moving = ids.map(id => this.getShape(id)).filter((shape): shape is TLShape => Boolean(shape))
     if (moving.length < 1) return this
     const parentId = commonParent(moving) ?? this.currentPageId
-    const pageBounds = moving.map(shape => this.getShapePageBounds(shape)).filter((value): value is Box => Boolean(value))
+    const pageBounds = moving
+      .map(shape => this.getShapePageBounds(shape))
+      .filter((value): value is Box => Boolean(value))
     if (pageBounds.length === 0) return this
-    const parentTransform = parentId.startsWith('shape:') ? this.getShapePageTransform(parentId as TLShapeId) : Mat.Identity()
+    const parentTransform = parentId.startsWith('shape:')
+      ? this.getShapePageTransform(parentId as TLShapeId)
+      : Mat.Identity()
     const point = parentTransform.clone().invert().applyToPoint(Box.Common(pageBounds).point)
     const lowest = moving.map(shape => shape.index).sort()[0]
     this.createShape({ id: groupId, type: 'group', parentId, index: lowest, x: point.x, y: point.y, props: {} })
@@ -804,8 +851,13 @@ export class Editor {
   }
 
   rotateShapesBy(shapes: readonly (TLShape | TLShapeId)[], delta: number): this {
-    const ids = rootIds(this.allShapes(), shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
-    const moving = ids.map(id => this.getShape(id)).filter((shape): shape is TLShape => shape !== undefined && !shape.isLocked)
+    const ids = rootIds(
+      this.allShapes(),
+      shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
+    )
+    const moving = ids
+      .map(id => this.getShape(id))
+      .filter((shape): shape is TLShape => shape !== undefined && !shape.isLocked)
     const bounds = moving.map(shape => this.getShapePageBounds(shape)).filter((value): value is Box => Boolean(value))
     if (bounds.length === 0) return this
     const center = Box.Common(bounds).center
@@ -813,7 +865,13 @@ export class Editor {
       const pageOrigin = this.getShapePageTransform(shape).point()
       const rotated = Vec.RotWith(pageOrigin, center, delta)
       const local = this.getShapeParentTransform(shape).invert().applyToPoint(rotated)
-      return { id: shape.id, type: shape.type, x: local.x, y: local.y, rotation: shape.rotation + delta } as TLShapeUpdate
+      return {
+        id: shape.id,
+        type: shape.type,
+        x: local.x,
+        y: local.y,
+        rotation: shape.rotation + delta
+      } as TLShapeUpdate
     })
     return this.updateShapes(updates)
   }
@@ -857,7 +915,10 @@ export class Editor {
   }
 
   flipShapes(shapes: readonly (TLShape | TLShapeId)[], operation: 'horizontal' | 'vertical'): this {
-    const ids = rootIds(this.allShapes(), shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
+    const ids = rootIds(
+      this.allShapes(),
+      shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
+    )
     const bounds = ids.map(id => this.getShapePageBounds(id)).filter((value): value is Box => Boolean(value))
     if (bounds.length === 0) return this
     const center = Box.Common(bounds).center
@@ -866,8 +927,13 @@ export class Editor {
     return this
   }
 
-  alignShapes(shapes: readonly (TLShape | TLShapeId)[], operation: 'left' | 'center-horizontal' | 'right' | 'top' | 'center-vertical' | 'bottom'): this {
-    const moving = shapes.map(input => typeof input === 'string' ? this.getShape(input) : input).filter((shape): shape is TLShape => Boolean(shape))
+  alignShapes(
+    shapes: readonly (TLShape | TLShapeId)[],
+    operation: 'left' | 'center-horizontal' | 'right' | 'top' | 'center-vertical' | 'bottom'
+  ): this {
+    const moving = shapes
+      .map(input => (typeof input === 'string' ? this.getShape(input) : input))
+      .filter((shape): shape is TLShape => Boolean(shape))
     const bounds = moving.map(shape => this.getShapePageBounds(shape)).filter((value): value is Box => Boolean(value))
     if (bounds.length < 2) return this
     const common = Box.Common(bounds)
@@ -880,23 +946,41 @@ export class Editor {
   }
 
   toggleLock(shapes: readonly (TLShape | TLShapeId)[]): this {
-    const updates = shapes.map(input => {
-      const shape = typeof input === 'string' ? this.getShape(input) : input
-      return shape ? { id: shape.id, type: shape.type, isLocked: !shape.isLocked } as TLShapeUpdate : null
-    }).filter((value): value is TLShapeUpdate => value !== null)
+    const updates = shapes
+      .map(input => {
+        const shape = typeof input === 'string' ? this.getShape(input) : input
+        return shape ? ({ id: shape.id, type: shape.type, isLocked: !shape.isLocked } as TLShapeUpdate) : null
+      })
+      .filter((value): value is TLShapeUpdate => value !== null)
     return this.updateShapes(updates)
   }
 
   getContentFromCurrentPage(shapes: readonly (TLShape | TLShapeId)[]): TLContent | null {
-    const requested = shapes.map(shape => typeof shape === 'string' ? shape : shape.id).filter(id => this.getShape(id))
+    const requested = shapes
+      .map(shape => (typeof shape === 'string' ? shape : shape.id))
+      .filter(id => this.getShape(id))
     const roots = rootIds(this.allShapes(), requested)
     if (roots.length === 0) return null
     const allIds = descendantsOf(this.allShapes(), roots)
     const ids = new Set(allIds)
-    const copiedShapes = this.getCurrentPageShapesSorted().filter(shape => ids.has(shape.id)).map(shape => structuredClone(shape))
-    const bindings = this.store.query('binding').get().filter(binding => ids.has(binding.fromId) && ids.has(binding.toId)).map(binding => structuredClone(binding))
-    const assetIds = new Set(copiedShapes.map(shape => (shape.props as { assetId?: unknown }).assetId).filter((id): id is string => typeof id === 'string'))
-    const assets = this.store.query('asset').get().filter(asset => assetIds.has(asset.id)).map(asset => structuredClone(asset))
+    const copiedShapes = this.getCurrentPageShapesSorted()
+      .filter(shape => ids.has(shape.id))
+      .map(shape => structuredClone(shape))
+    const bindings = this.store
+      .query('binding')
+      .get()
+      .filter(binding => ids.has(binding.fromId) && ids.has(binding.toId))
+      .map(binding => structuredClone(binding))
+    const assetIds = new Set(
+      copiedShapes
+        .map(shape => (shape.props as { assetId?: unknown }).assetId)
+        .filter((id): id is string => typeof id === 'string')
+    )
+    const assets = this.store
+      .query('asset')
+      .get()
+      .filter(asset => assetIds.has(asset.id))
+      .map(asset => structuredClone(asset))
     return { shapes: copiedShapes, bindings, rootShapeIds: roots, assets, schema: this.store.schema.serialize() }
   }
 
@@ -905,7 +989,7 @@ export class Editor {
     options: ImageExportOptions = {}
   ): Promise<{ svg: string; width: number; height: number } | undefined> {
     const shapeIds = shapes
-      .map(shape => typeof shape === 'string' ? shape : shape.id)
+      .map(shape => (typeof shape === 'string' ? shape : shape.id))
       .filter(id => this.getShape(id) !== undefined)
     if (shapeIds.length === 0) return undefined
     const result = snapshotToSvgResult(getSnapshot(this.store).document, {
@@ -957,7 +1041,9 @@ export class Editor {
     const clone = cloneContent(content, options.preserveIds)
     const roots = new Set(clone.rootShapeIds)
     const rootShapes = clone.shapes.filter(shape => roots.has(shape.id))
-    const oldBounds = rootShapes.map(shape => boundsFromShapeRecord(shape)).filter((value): value is Box => Boolean(value))
+    const oldBounds = rootShapes
+      .map(shape => boundsFromShapeRecord(shape))
+      .filter((value): value is Box => Boolean(value))
     const center = oldBounds.length ? Box.Common(oldBounds).center : new Vec()
     const point = options.point ?? this.getViewportPageBounds().center
     for (const shape of clone.shapes) {
@@ -965,7 +1051,9 @@ export class Editor {
         shape.parentId = this.currentPageId
         shape.x += point.x - center.x
         shape.y += point.y - center.y
-        shape.index = getIndexAbove(sortedChildren([...this.allShapes(), ...clone.shapes], this.currentPageId).at(-1)?.index)
+        shape.index = getIndexAbove(
+          sortedChildren([...this.allShapes(), ...clone.shapes], this.currentPageId).at(-1)?.index
+        )
       }
     }
     const records: TLRecord[] = [
@@ -989,7 +1077,9 @@ export class Editor {
 
   setOpacityForSelectedShapes(opacity: number): this {
     const value = clamp(opacity, 0, 1)
-    return this.updateShapes(this.opacityTargets(this.getSelectedShapes()).map(shape => ({ id: shape.id, type: shape.type, opacity: value })))
+    return this.updateShapes(
+      this.opacityTargets(this.getSelectedShapes()).map(shape => ({ id: shape.id, type: shape.type, opacity: value }))
+    )
   }
 
   setStyleForNextShapes<T>(style: TLStyleProp<T> | string, value: T): this {
@@ -999,7 +1089,11 @@ export class Editor {
 
   setStyleForSelectedShapes<T>(style: TLStyleProp<T> | string, value: T): this {
     const key = styleKey(style)
-    return this.updateShapes(this.getSelectedShapes().filter(shape => key in shape.props).map(shape => ({ id: shape.id, type: shape.type, props: { [key]: value } })))
+    return this.updateShapes(
+      this.getSelectedShapes()
+        .filter(shape => key in shape.props)
+        .map(shape => ({ id: shape.id, type: shape.type, props: { [key]: value } }))
+    )
   }
 
   getColorMode(): TLColorMode {
@@ -1125,10 +1219,14 @@ export class Editor {
   }
 
   getShapeIdsInsideBounds(bounds: Box): Set<TLShapeId> {
-    return new Set(this.getCurrentPageShapesSorted().filter(shape => {
-      const shapeBounds = this.getShapePageBounds(shape)
-      return shapeBounds ? bounds.includes(shapeBounds) : false
-    }).map(shape => shape.id))
+    return new Set(
+      this.getCurrentPageShapesSorted()
+        .filter(shape => {
+          const shapeBounds = this.getShapePageBounds(shape)
+          return shapeBounds ? bounds.includes(shapeBounds) : false
+        })
+        .map(shape => shape.id)
+    )
   }
 
   getSnappableShapes(): Array<{ id: TLShapeId; pageBounds: Box; points: Vec[] }> {
@@ -1169,7 +1267,7 @@ export class Editor {
     if (!focused.startsWith('shape:')) return this
     const group = this.getShape(focused as TLShapeId)
     const parent = group?.parentId
-    this.selection.setFocusedGroupId(parent?.startsWith('shape:') ? parent as TLShapeId : null)
+    this.selection.setFocusedGroupId(parent?.startsWith('shape:') ? (parent as TLShapeId) : null)
     return this
   }
 
@@ -1204,23 +1302,32 @@ export class Editor {
 
   slideCamera(options: { speed: number; direction: VecLike }): void {
     const camera = this.getCamera()
-    this.setCamera({ x: camera.x + options.direction.x * options.speed, y: camera.y + options.direction.y * options.speed, z: camera.z })
+    this.setCamera({
+      x: camera.x + options.direction.x * options.speed,
+      y: camera.y + options.direction.y * options.speed,
+      z: camera.z
+    })
   }
 
   private ensureStore(preferredPageId?: TLPageId): void {
     if (!this.store.has(TLDOCUMENT_ID)) this.store.put([DocumentRecordType.create({ id: TLDOCUMENT_ID })])
     if (this.store.query('page').get().length === 0) {
-      this.store.put([PageRecordType.create({
-        id: preferredPageId ?? ('page:page' as TLPageId),
-        name: 'Page 1',
-        index: ZERO_INDEX_KEY
-      })])
+      this.store.put([
+        PageRecordType.create({
+          id: preferredPageId ?? ('page:page' as TLPageId),
+          name: 'Page 1',
+          index: ZERO_INDEX_KEY
+        })
+      ])
     }
   }
 
   private resolvePageId(preferred?: TLPageId): TLPageId {
     if (preferred && this.store.get(preferred)?.typeName === 'page') return preferred
-    const page = this.store.query('page').get().sort((a, b) => a.index.localeCompare(b.index))[0]
+    const page = this.store
+      .query('page')
+      .get()
+      .sort((a, b) => a.index.localeCompare(b.index))[0]
     if (!page) throw new Error('Editor requires a page')
     return page.id
   }
@@ -1230,7 +1337,7 @@ export class Editor {
   }
 
   private reorder(shapes: readonly (TLShape | TLShapeId)[], operation: OrderOperation): this {
-    const ids = shapes.map(shape => typeof shape === 'string' ? shape : shape.id)
+    const ids = shapes.map(shape => (typeof shape === 'string' ? shape : shape.id))
     const byParent = new Map<TLParentId, TLShapeId[]>()
     for (const id of ids) {
       const shape = this.getShape(id)
@@ -1286,7 +1393,11 @@ class FallbackShapeUtil extends ShapeUtil<TLShape> {
 
   getGeometry(shape: TLShape): Geometry2d {
     const props = shape.props as { w?: number; h?: number }
-    return new Rectangle2d({ width: Math.max(1, Math.abs(props.w ?? 1)), height: Math.max(1, Math.abs(props.h ?? 1)), isFilled: true })
+    return new Rectangle2d({
+      width: Math.max(1, Math.abs(props.w ?? 1)),
+      height: Math.max(1, Math.abs(props.h ?? 1)),
+      isFilled: true
+    })
   }
 
   component(): null {
@@ -1331,13 +1442,20 @@ function linearInverse(matrix: Mat, vector: VecLike): Vec {
 
 function alignOffset(shape: Box, common: Box, operation: string): Vec {
   switch (operation) {
-    case 'left': return new Vec(common.minX - shape.minX, 0)
-    case 'center-horizontal': return new Vec(common.midX - shape.midX, 0)
-    case 'right': return new Vec(common.maxX - shape.maxX, 0)
-    case 'top': return new Vec(0, common.minY - shape.minY)
-    case 'center-vertical': return new Vec(0, common.midY - shape.midY)
-    case 'bottom': return new Vec(0, common.maxY - shape.maxY)
-    default: return new Vec()
+    case 'left':
+      return new Vec(common.minX - shape.minX, 0)
+    case 'center-horizontal':
+      return new Vec(common.midX - shape.midX, 0)
+    case 'right':
+      return new Vec(common.maxX - shape.maxX, 0)
+    case 'top':
+      return new Vec(0, common.minY - shape.minY)
+    case 'center-vertical':
+      return new Vec(0, common.midY - shape.midY)
+    case 'bottom':
+      return new Vec(0, common.maxY - shape.maxY)
+    default:
+      return new Vec()
   }
 }
 
@@ -1363,9 +1481,13 @@ function loadImage(source: string): Promise<HTMLImageElement> {
 
 function canvasBlob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob(blob => {
-      if (blob) resolve(blob)
-      else reject(new Error('Could not encode image'))
-    }, type, quality)
+    canvas.toBlob(
+      blob => {
+        if (blob) resolve(blob)
+        else reject(new Error('Could not encode image'))
+      },
+      type,
+      quality
+    )
   })
 }

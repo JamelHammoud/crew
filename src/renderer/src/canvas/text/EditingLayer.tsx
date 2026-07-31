@@ -3,12 +3,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import type { Editor } from '../editor'
 import { shapeCssTransform } from '../render'
 import type { TLShape } from '../schema'
-import {
-  ARROW_FONT_SIZES,
-  FONT_FAMILIES,
-  LABEL_FONT_SIZES,
-  TEXT_FONT_SIZES
-} from '../shapes/shared'
+import { ARROW_FONT_SIZES, FONT_FAMILIES, LABEL_FONT_SIZES, TEXT_FONT_SIZES } from '../shapes/shared'
 import { canvasSurface, shapeColor } from '../shapes/theme'
 import { useValue } from '../signals'
 import { RichTextEditor } from './editor'
@@ -98,7 +93,9 @@ function ShapeTextEditor({
 }) {
   const common = { richText, editing: true, onChange, onReady, onComplete, selectAll: false }
   if (shape.type === 'text') {
-    const util = editor.getShapeUtil(shape) as { options?: { getCustomDisplayValues?: (...args: unknown[]) => CSSProperties } }
+    const util = editor.getShapeUtil(shape) as {
+      options?: { getCustomDisplayValues?: (...args: unknown[]) => CSSProperties }
+    }
     const custom = util.options?.getCustomDisplayValues?.(editor, shape) ?? {}
     return (
       <RichTextEditor
@@ -137,9 +134,10 @@ function ShapeTextEditor({
     )
   }
   if (shape.type === 'note') {
-    const color = shape.props.labelColor === 'black'
-      ? shapeColor(editor, shape.props.color, 'noteText')
-      : shapeColor(editor, shape.props.labelColor, 'fill')
+    const color =
+      shape.props.labelColor === 'black'
+        ? shapeColor(editor, shape.props.color, 'noteText')
+        : shapeColor(editor, shape.props.labelColor, 'fill')
     return (
       <CenteredEditor
         {...common}
@@ -156,7 +154,10 @@ function ShapeTextEditor({
     )
   }
   if (shape.type === 'arrow') {
-    const middle = editor.getShapeUtil(shape).getHandles?.(shape as never)?.find(handle => handle.id === 'middle')
+    const middle = editor
+      .getShapeUtil(shape)
+      .getHandles?.(shape as never)
+      ?.find(handle => handle.id === 'middle')
     return (
       <RichTextEditor
         {...common}

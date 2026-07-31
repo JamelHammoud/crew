@@ -5,7 +5,14 @@ import { isValidElement, type ReactElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { encodePoints } from '../src/renderer/src/canvas/schema/points'
-import { GEO_KINDS, SHAPE_PROPS, type TLBinding, type TLShape, type TLShapeId, type TLShapeType } from '../src/renderer/src/canvas/schema'
+import {
+  GEO_KINDS,
+  SHAPE_PROPS,
+  type TLBinding,
+  type TLShape,
+  type TLShapeId,
+  type TLShapeType
+} from '../src/renderer/src/canvas/schema'
 import { DesignNodeUtil } from '../src/renderer/src/design/DesignNodeUtil'
 import {
   ArrowBindingUtil,
@@ -43,13 +50,19 @@ const base = {
   meta: {}
 }
 
-function shape<Type extends TLShapeType>(type: Type, props: TLShape<Type>['props'], id = `shape:${type}`): TLShape<Type> {
+function shape<Type extends TLShapeType>(
+  type: Type,
+  props: TLShape<Type>['props'],
+  id = `shape:${type}`
+): TLShape<Type> {
   return { ...base, id: id as TLShapeId, type, props } as TLShape<Type>
 }
 
 const editor: ShapeEditor = {}
 
-const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => { window: Window & typeof globalThis }
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+  html: string
+) => { window: Window & typeof globalThis }
 const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
 const originalDocument = Object.getOwnPropertyDescriptor(globalThis, 'document')
 let dom: { window: Window & typeof globalThis }
@@ -109,9 +122,35 @@ describe('owned canvas shape utilities', () => {
       expect(util.getDefaultProps()).toBeTruthy()
     }
     expect(new FrameShapeUtil(editor).getDefaultProps()).toEqual({ w: 320, h: 180, name: '', color: 'black' })
-    expect(new ArrowShapeUtil(editor).getDefaultProps()).toMatchObject({ kind: 'arc', bend: 0, elbowMidPoint: 0.5, arrowheadStart: 'none', arrowheadEnd: 'arrow' })
-    expect(new ImageShapeUtil(editor).getDefaultProps()).toEqual({ w: 100, h: 100, assetId: null, playing: true, url: '', crop: null, flipX: false, flipY: false, altText: '' })
-    expect(defaultShapeUtils.map(util => util.type)).toEqual(['text', 'draw', 'geo', 'note', 'line', 'frame', 'arrow', 'highlight', 'image'])
+    expect(new ArrowShapeUtil(editor).getDefaultProps()).toMatchObject({
+      kind: 'arc',
+      bend: 0,
+      elbowMidPoint: 0.5,
+      arrowheadStart: 'none',
+      arrowheadEnd: 'arrow'
+    })
+    expect(new ImageShapeUtil(editor).getDefaultProps()).toEqual({
+      w: 100,
+      h: 100,
+      assetId: null,
+      playing: true,
+      url: '',
+      crop: null,
+      flipX: false,
+      flipY: false,
+      altText: ''
+    })
+    expect(defaultShapeUtils.map(util => util.type)).toEqual([
+      'text',
+      'draw',
+      'geo',
+      'note',
+      'line',
+      'frame',
+      'arrow',
+      'highlight',
+      'image'
+    ])
     expect(defaultBindingUtils).toEqual([ArrowBindingUtil])
   })
 
@@ -136,30 +175,79 @@ describe('owned canvas shape utilities', () => {
     const defaults = util.getDefaultProps()
     const straight = shape('arrow', { ...defaults, start: { x: 0, y: 0 }, end: { x: 100, y: 0 } })
     const curved = shape('arrow', { ...straight.props, bend: 35 }, 'shape:curved')
-    const elbow = shape('arrow', { ...straight.props, kind: 'elbow', elbowMidPoint: 0.25, end: { x: 100, y: 80 } }, 'shape:elbow')
-    expect(arrowGeometry(editor, straight).vertices).toEqual(expect.arrayContaining([expect.objectContaining({ x: 0, y: 0 }), expect.objectContaining({ x: 100, y: 0 })]))
+    const elbow = shape(
+      'arrow',
+      { ...straight.props, kind: 'elbow', elbowMidPoint: 0.25, end: { x: 100, y: 80 } },
+      'shape:elbow'
+    )
+    expect(arrowGeometry(editor, straight).vertices).toEqual(
+      expect.arrayContaining([expect.objectContaining({ x: 0, y: 0 }), expect.objectContaining({ x: 100, y: 0 })])
+    )
     expect(arrowGeometry(editor, curved).vertices.length).toBeGreaterThan(4)
-    expect(arrowGeometry(editor, elbow).vertices).toEqual(expect.arrayContaining([expect.objectContaining({ x: 25, y: 0 }), expect.objectContaining({ x: 25, y: 80 })]))
+    expect(arrowGeometry(editor, elbow).vertices).toEqual(
+      expect.arrayContaining([expect.objectContaining({ x: 25, y: 0 }), expect.objectContaining({ x: 25, y: 80 })])
+    )
 
-    const binding: TLBinding<'arrow'> = { id: 'binding:start' as TLBinding<'arrow'>['id'], typeName: 'binding', type: 'arrow', fromId: straight.id, toId: 'shape:target' as TLShapeId, props: { terminal: 'start', normalizedAnchor: { x: 0.25, y: 0.75 }, isExact: false, isPrecise: true, snap: 'edge' }, meta: {} }
+    const binding: TLBinding<'arrow'> = {
+      id: 'binding:start' as TLBinding<'arrow'>['id'],
+      typeName: 'binding',
+      type: 'arrow',
+      fromId: straight.id,
+      toId: 'shape:target' as TLShapeId,
+      props: {
+        terminal: 'start',
+        normalizedAnchor: { x: 0.25, y: 0.75 },
+        isExact: false,
+        isPrecise: true,
+        snap: 'edge'
+      },
+      meta: {}
+    }
     const boundEditor: ShapeEditor = {
       getBindingsFromShape: () => [binding],
-      getShape: id => id === straight.id ? straight : shape('geo', new GeoShapeUtil(editor).getDefaultProps(), 'shape:target'),
-      getShapePageBounds: () => ({ x: 20, y: 40, w: 200, h: 100 }) as ReturnType<NonNullable<ShapeEditor['getShapePageBounds']>>
+      getShape: id =>
+        id === straight.id ? straight : shape('geo', new GeoShapeUtil(editor).getDefaultProps(), 'shape:target'),
+      getShapePageBounds: () =>
+        ({ x: 20, y: 40, w: 200, h: 100 }) as ReturnType<NonNullable<ShapeEditor['getShapePageBounds']>>
     }
     expect(getArrowTerminals(boundEditor, straight).start).toMatchObject({ x: 89.56521739130434, y: 40 })
-    expect(new ArrowBindingUtil({}).getDefaultProps()).toEqual({ isPrecise: false, isExact: false, normalizedAnchor: { x: 0.5, y: 0.5 }, snap: 'none' })
+    expect(new ArrowBindingUtil({}).getDefaultProps()).toEqual({
+      isPrecise: false,
+      isExact: false,
+      normalizedAnchor: { x: 0.5, y: 0.5 },
+      snap: 'none'
+    })
   })
 
   it('preserves line, draw, and highlight point records', () => {
     const lineUtil = new LineShapeUtil(editor)
-    const line = shape('line', { ...lineUtil.getDefaultProps(), spline: 'cubic', points: { a1: { id: 'a1', index: 'a1', x: 0, y: 0 }, a2: { id: 'a2', index: 'a2', x: 50, y: 80 }, a3: { id: 'a3', index: 'a3', x: 100, y: 0 } } })
-    expect(linePoints(line).map(point => [point.x, point.y])).toEqual([[0, 0], [50, 80], [100, 0]])
+    const line = shape('line', {
+      ...lineUtil.getDefaultProps(),
+      spline: 'cubic',
+      points: {
+        a1: { id: 'a1', index: 'a1', x: 0, y: 0 },
+        a2: { id: 'a2', index: 'a2', x: 50, y: 80 },
+        a3: { id: 'a3', index: 'a3', x: 100, y: 0 }
+      }
+    })
+    expect(linePoints(line).map(point => [point.x, point.y])).toEqual([
+      [0, 0],
+      [50, 80],
+      [100, 0]
+    ])
     expect(lineUtil.getGeometry(line).vertices.length).toBeGreaterThan(3)
 
-    const encoded = encodePoints([{ x: 5, y: 7, z: 0.2 }, { x: 20, y: 30, z: 0.8 }, { x: 40, y: 15, z: 0.5 }])
+    const encoded = encodePoints([
+      { x: 5, y: 7, z: 0.2 },
+      { x: 20, y: 30, z: 0.8 },
+      { x: 40, y: 15, z: 0.5 }
+    ])
     const segments = [{ type: 'free' as const, path: encoded }]
-    expect(segmentPoints(segments).map(point => [point.x, point.y, point.z])).toEqual([[5, 7, expect.closeTo(0.2)], [20, 30, expect.closeTo(0.8)], [40, 15, expect.closeTo(0.5)]])
+    expect(segmentPoints(segments).map(point => [point.x, point.y, point.z])).toEqual([
+      [5, 7, expect.closeTo(0.2)],
+      [20, 30, expect.closeTo(0.8)],
+      [40, 15, expect.closeTo(0.5)]
+    ])
     const drawUtil = new DrawShapeUtil(editor)
     const draw = shape('draw', { ...drawUtil.getDefaultProps(), segments, isComplete: true })
     const highlightUtil = new HighlightShapeUtil(editor)
@@ -181,7 +269,13 @@ describe('owned canvas shape utilities', () => {
 
   it('renders text, notes, frames, images, groups, and Crew design nodes', () => {
     const textUtil = new TextShapeUtil(editor)
-    const text = shape('text', { ...textUtil.getDefaultProps(), richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew', marks: [{ type: 'bold' }] }] }] } })
+    const text = shape('text', {
+      ...textUtil.getDefaultProps(),
+      richText: {
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew', marks: [{ type: 'bold' }] }] }]
+      }
+    })
     expect(textUtil.getText(text)).toBe('Crew')
     expect(textUtil.getGeometry(text).bounds.w).toBeGreaterThan(8)
     expect(isValidElement(textUtil.component(text))).toBe(true)

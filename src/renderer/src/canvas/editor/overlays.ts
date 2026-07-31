@@ -24,15 +24,19 @@ export class OverlayManager {
   private readonly values = new Map<string, ToolOverlayUtil>()
   private hoveredId: string | null = null
 
-  constructor(private readonly editor: OverlayEditor, constructors: readonly unknown[] = []) {
+  constructor(
+    private readonly editor: OverlayEditor,
+    constructors: readonly unknown[] = []
+  ) {
     this.register(new SelectionForegroundOverlayUtil(editor))
     this.register(new BrushOverlayUtil(editor))
     this.register(new SnapOverlayUtil(editor))
     this.register(new EmptyOverlayUtil('shape_handle'))
     for (const Constructor of constructors) {
-      const value = typeof Constructor === 'function'
-        ? new (Constructor as new (editor: OverlayEditor) => ToolOverlayUtil)(editor)
-        : Constructor
+      const value =
+        typeof Constructor === 'function'
+          ? new (Constructor as new (editor: OverlayEditor) => ToolOverlayUtil)(editor)
+          : Constructor
       const id = overlayId(value)
       if (id && isOverlayUtil(value)) this.values.set(id, value)
     }
@@ -83,7 +87,11 @@ export class OverlayManager {
 
   getHoveredOverlay(): CanvasOverlay | null {
     if (!this.hoveredId) return null
-    return this.getActiveOverlayEntries().flatMap(entry => entry.overlays).find(overlay => overlay.id === this.hoveredId) ?? null
+    return (
+      this.getActiveOverlayEntries()
+        .flatMap(entry => entry.overlays)
+        .find(overlay => overlay.id === this.hoveredId) ?? null
+    )
   }
 
   setHoveredOverlay(id: string | null): void {
@@ -239,7 +247,7 @@ function selectionHandlePoints(bounds: Box, rotation: number, rotateDistance: nu
 function drawPointIndicator(context: CanvasRenderingContext2D, points: VecLike[], zoom: number): void {
   if (points.length < 2) return
   const sameX = points.every(point => Math.abs(point.x - points[0].x) < 1e-8)
-  const sorted = [...points].sort((a, b) => sameX ? a.y - b.y : a.x - b.x)
+  const sorted = [...points].sort((a, b) => (sameX ? a.y - b.y : a.x - b.x))
   context.beginPath()
   context.moveTo(sorted[0].x, sorted[0].y)
   context.lineTo(sorted[sorted.length - 1].x, sorted[sorted.length - 1].y)
@@ -297,12 +305,17 @@ function sharedRangeCenter(a0: number, a1: number, b0: number, b1: number): numb
 
 function overlayId(value: unknown): string | null {
   if (!value || typeof value !== 'object') return null
-  const id = (value as { id?: unknown }).id
-    ?? (value as { constructor?: { type?: unknown } }).constructor?.type
-    ?? (value as { constructor?: { id?: unknown } }).constructor?.id
+  const id =
+    (value as { id?: unknown }).id ??
+    (value as { constructor?: { type?: unknown } }).constructor?.type ??
+    (value as { constructor?: { id?: unknown } }).constructor?.id
   return typeof id === 'string' ? id : null
 }
 
 function isOverlayUtil(value: unknown): value is ToolOverlayUtil {
-  return Boolean(value && typeof (value as ToolOverlayUtil).isActive === 'function' && typeof (value as ToolOverlayUtil).render === 'function')
+  return Boolean(
+    value &&
+      typeof (value as ToolOverlayUtil).isActive === 'function' &&
+      typeof (value as ToolOverlayUtil).render === 'function'
+  )
 }
