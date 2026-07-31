@@ -6,6 +6,7 @@ import {
   InstancePresenceRecordType,
   PageRecordType,
   ShapeRecordType,
+  UserRecordType,
   ZERO_INDEX_KEY,
   createTLStore,
   createTLSchema,
@@ -72,7 +73,7 @@ describe('the Crew canvas schema', () => {
     const page = PageRecordType.create({ id: PageRecordType.createId('page'), name: 'Page 1', index: ZERO_INDEX_KEY })
     const presence = InstancePresenceRecordType.create({
       id: InstancePresenceRecordType.createId('person'),
-      userId: InstancePresenceRecordType.createId('person') as unknown as Parameters<typeof InstancePresenceRecordType.create>[0]['userId'],
+      userId: UserRecordType.createId('person'),
       userName: 'Person',
       currentPageId: page.id
     })
