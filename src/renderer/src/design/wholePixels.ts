@@ -1,4 +1,4 @@
-import type { Editor, TLShape } from 'tldraw'
+import type { Editor, TLShape } from '../canvas'
 
 export interface Size {
   w: number

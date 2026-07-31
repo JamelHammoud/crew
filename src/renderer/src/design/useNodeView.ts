@@ -1,4 +1,4 @@
-import { useEditor, useValue, type Editor, type TLFrameShape, type TLShape } from 'tldraw'
+import { useEditor, useValue, type Editor, type TLFrameShape, type TLShape } from '../canvas'
 import type { DesignNodeShape } from './DesignNodeUtil'
 import { designView } from './designView'
 import { frameView } from './frameView'

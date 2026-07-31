@@ -2,7 +2,7 @@
 import { render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
-import type { Editor } from 'tldraw'
+import type { Editor } from '../src/renderer/src/canvas'
 
 const { default: SelectionOverlay } = await import('../src/renderer/src/design/SelectionOverlay')
 

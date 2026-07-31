@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { useCanRedo, useCanUndo, useEditor, useValue } from 'tldraw'
+import { useCanRedo, useCanUndo, useEditor, useValue } from '../canvas'
 import {
   CheckGlyph,
   ChevronDownGlyph,

@@ -1,4 +1,4 @@
-import type { Editor } from 'tldraw'
+import type { Editor } from '../canvas'
 import type { Glyph } from '../components/glyph'
 import { availableCommands, type CommandContext } from './commands'
 import { activateTool, ALL_TOOLS } from './tools'

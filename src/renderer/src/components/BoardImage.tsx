@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { TldrawImage, type TLStoreSnapshot } from 'tldraw'
-import 'tldraw/tldraw.css'
+import { TldrawImage, type TLStoreSnapshot } from '../canvas'
+import '../canvas/canvas.css'
 import type { DesignDocument } from '../../../shared/design'
 import { designShapeUtils } from '../design/shapeUtils'
 import Skeleton from './Skeleton'

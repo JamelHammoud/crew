@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render } from '@testing-library/react'
 import { createElement } from 'react'
-import { DefaultColorStyle, type Editor, type TLShape, type TLTextShape } from 'tldraw'
+import { DefaultColorStyle, type Editor, type TLShape, type TLTextShape } from '../src/renderer/src/canvas'
 import { describe, expect, it } from 'vitest'
 
 const { paintColor, setTextShapeType, textShapeType, typeMeasure, typePaint } = await import(

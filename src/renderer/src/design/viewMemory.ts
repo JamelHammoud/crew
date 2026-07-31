@@ -1,4 +1,4 @@
-import type { Editor, TLShapeId } from 'tldraw'
+import type { Editor, TLShapeId } from '../canvas'
 
 const KEY = 'crew.design.view'
 const BOARDS = 24

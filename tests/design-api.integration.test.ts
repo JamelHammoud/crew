@@ -1,4 +1,4 @@
-import { createTLSchema } from '@tldraw/tlschema'
+import { createTLSchema } from '../src/renderer/src/canvas'
 import { describe, expect, it } from 'vitest'
 import { applyDesignOps } from '../src/server/designops'
 import type { DesignDocument, DesignOp, DesignOpResult } from '../src/shared/design'

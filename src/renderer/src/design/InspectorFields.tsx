@@ -7,7 +7,7 @@ import {
   type PointerEvent,
   type ReactNode
 } from 'react'
-import { useMaybeEditor } from 'tldraw'
+import { useMaybeEditor } from '../canvas'
 import { Popover } from '../components/Popover'
 import ColorPicker from './ColorPicker'
 

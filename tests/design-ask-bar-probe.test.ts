@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { EditorContext, type Editor } from 'tldraw'
+import { EditorContext, type Editor } from '../src/renderer/src/canvas'
 import { nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
 import { installLocalStorage } from './helpers/local-storage'

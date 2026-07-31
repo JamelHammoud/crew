@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react'
-import { useEditor, useValue } from 'tldraw'
+import { useEditor, useValue } from '../canvas'
 import type { Corner } from '../../../shared/designNode'
 import { PanelButton } from '../components/DesignControls'
 import Select from '../components/Select'

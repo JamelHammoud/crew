@@ -17,8 +17,8 @@ import {
   type TLShapeId,
   type TLStoreSnapshot,
   type TLUserId
-} from 'tldraw'
-import 'tldraw/tldraw.css'
+} from '../canvas'
+import '../canvas/canvas.css'
 import type { DesignPresence } from '../../../shared/design'
 import {
   applyDesignCursors,

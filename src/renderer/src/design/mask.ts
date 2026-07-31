@@ -1,4 +1,4 @@
-import type { Editor, TLShape, TLShapeId } from 'tldraw'
+import type { Editor, TLShape, TLShapeId } from '../canvas'
 
 type MaskNode = TLShape & { props: { mask: boolean; clip: boolean } }
 

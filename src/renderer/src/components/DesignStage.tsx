@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { Editor, TLShape } from 'tldraw'
+import type { Editor, TLShape } from '../canvas'
 import { commandForKey, type CommandContext } from '../design/commands'
 import DesignAskBar from './DesignAskBar'
 import DesignCanvas from './DesignCanvas'

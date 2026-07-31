@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
+import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from '../canvas'
 import { PanelButton } from '../components/DesignControls'
 import {
   AlignBottomGlyph,

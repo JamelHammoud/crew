@@ -5,7 +5,7 @@ import {
   TextShapeUtil,
   type Editor,
   type TLTextShape
-} from 'tldraw'
+} from '../canvas'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { textShapeType, typeMeasure } from './textType'

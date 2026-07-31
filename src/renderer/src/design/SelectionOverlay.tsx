@@ -1,4 +1,4 @@
-import { useValue, type Editor } from 'tldraw'
+import { useValue, type Editor } from '../canvas'
 import { hasCorners, nodeShapeOf, type Corner, type DesignNodeProps } from '../../../shared/designNode'
 import type { DesignNodeShape } from './DesignNodeUtil'
 import { selectionChromeVisible } from './selectionChrome'

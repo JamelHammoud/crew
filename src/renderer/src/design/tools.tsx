@@ -1,4 +1,4 @@
-import { type Editor, type TLShape } from 'tldraw'
+import { type Editor, type TLShape } from '../canvas'
 import { nodeShapeOf } from '../../../shared/designNode'
 import { nextNodeShape, setNextNodeShape } from './nextShape'
 import {

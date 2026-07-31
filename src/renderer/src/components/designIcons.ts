@@ -1,4 +1,4 @@
-import { getAssetUrlsByImport } from '@tldraw/assets/imports.vite'
+import { getAssetUrlsByImport } from '../canvas/assets'
 import { createElement, type ComponentType } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import {

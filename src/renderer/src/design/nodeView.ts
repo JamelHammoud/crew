@@ -1,4 +1,4 @@
-import type { TLShapeId } from 'tldraw'
+import type { TLShapeId } from '../canvas'
 import type { Corner, Effect, Layout, Paint, Stroke, TypeStyle } from '../../../shared/designNode'
 
 export interface PaintList {

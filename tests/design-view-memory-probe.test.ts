@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { Editor } from 'tldraw'
+import type { Editor } from '../src/renderer/src/canvas'
 import {
   lastBoard,
   lastPanels,

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useEditor, useValue } from 'tldraw'
+import { useEditor, useValue } from '../canvas'
 import { agentToAsk, agentsHere, askPrompt, lastAskAgent, rememberAskAgent } from '../design/askAgent'
 import { askAnchor, type Box } from '../design/askAnchor'
 import { layerName } from '../design/tools'

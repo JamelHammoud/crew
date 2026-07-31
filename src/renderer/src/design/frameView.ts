@@ -1,4 +1,4 @@
-import type { Editor, TLFrameShape } from 'tldraw'
+import type { Editor, TLFrameShape } from '../canvas'
 import { frameBackground } from './frameFill'
 import { emptyView, type NodeView } from './nodeView'
 

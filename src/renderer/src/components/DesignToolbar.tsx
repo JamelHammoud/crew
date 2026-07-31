@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useEditor, useValue, type Editor, type TLShape } from 'tldraw'
+import { useEditor, useValue, type Editor, type TLShape } from '../canvas'
 import { activateTool, ALL_TOOLS, currentToolId, TOOL_GROUPS, type DesignToolGroup } from '../design/tools'
 import { ChevronDownGlyph } from '../icons'
 import DesignActions from './DesignActions'

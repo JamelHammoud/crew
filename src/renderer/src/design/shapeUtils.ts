@@ -1,4 +1,4 @@
-import { ArrowShapeUtil, defaultShapeUtils, GeoShapeUtil } from 'tldraw'
+import { ArrowShapeUtil, defaultShapeUtils, GeoShapeUtil } from '../canvas'
 import { DesignNodeUtil } from './DesignNodeUtil'
 import { DesignFrameUtil } from './FrameUtil'
 import { DesignTextUtil } from './TextUtil'

@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { useEditor, type TLShape, type TLShapeId } from 'tldraw'
+import { useEditor, type TLShape, type TLShapeId } from '../canvas'
 import {
   availableCommands,
   shapesUnder,

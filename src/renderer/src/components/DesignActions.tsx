@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useEditor, type TLShape } from 'tldraw'
+import { useEditor, type TLShape } from '../canvas'
 import { actionRows, searchActions, type ActionRow } from '../design/actionSearch'
 import type { CommandContext } from '../design/commands'
 import { SearchGlyph } from '../design/glyphs'

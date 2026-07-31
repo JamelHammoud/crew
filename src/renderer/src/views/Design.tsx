@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { EditorContext, type Editor, type TLShape } from 'tldraw'
+import { EditorContext, type Editor, type TLShape } from '../canvas'
 import { HeaderButton } from '../components/DesignControls'
 import DesignLeftPanel from '../components/DesignLeftPanel'
 import { BoardSwitcher, DesignBoardContext, DesignRenameContext, DesignZoom } from '../components/DesignPanels'

@@ -1,4 +1,4 @@
-import { BaseBoxShapeTool } from 'tldraw'
+import { BaseBoxShapeTool } from '../canvas'
 
 export class DesignNodeTool extends BaseBoxShapeTool {
   static override id = 'design-node'

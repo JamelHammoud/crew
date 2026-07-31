@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { EditorContext, type Editor } from 'tldraw'
+import { EditorContext, type Editor } from '../src/renderer/src/canvas'
 import { fakeBoard } from './helpers/design-editor'
 
 const { default: DesignToolbar } = await import('../src/renderer/src/components/DesignToolbar')

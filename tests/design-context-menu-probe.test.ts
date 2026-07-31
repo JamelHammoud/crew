@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { EditorContext } from 'tldraw'
+import { EditorContext } from '../src/renderer/src/canvas'
 import { nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
 

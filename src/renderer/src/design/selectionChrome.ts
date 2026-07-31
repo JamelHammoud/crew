@@ -1,4 +1,4 @@
-import type { Editor, SelectionForegroundOverlayUtil } from 'tldraw'
+import type { Editor, SelectionForegroundOverlayUtil } from '../canvas'
 
 export function selectionChromeVisible(editor: Editor): boolean {
   if (editor.getEditingShapeId()) return false

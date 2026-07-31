@@ -1,4 +1,4 @@
-import type { Editor } from 'tldraw'
+import type { Editor } from '../canvas'
 import {
   activateTool,
   addFrame,

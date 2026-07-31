@@ -1,4 +1,4 @@
-import type { Editor, TLShape, TLTextShape } from 'tldraw'
+import type { Editor, TLShape, TLTextShape } from '../canvas'
 import { BASE_TYPE, type Stroke, type TypeStyle } from '../../../shared/designNode'
 import { autoLineHeight, paintColor, setTextShapeType, textShapeType, typePaint } from './textType'
 import {

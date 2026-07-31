@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from 'tldraw'
+import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from '../canvas'
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
 import { canRename, layerName, renameShape } from '../design/tools'

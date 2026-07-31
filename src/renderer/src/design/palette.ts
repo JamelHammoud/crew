@@ -5,7 +5,7 @@ import {
   type TLDefaultColorStyle,
   type TLDefaultDashStyle,
   type TLDefaultSizeStyle
-} from 'tldraw'
+} from '../canvas'
 import type { Stroke, TypeStyle } from '../../../shared/designNode'
 
 const WEIGHTS: Record<TLDefaultSizeStyle, number> = { s: 2, m: 3.5, l: 4.5, xl: 6.5 }

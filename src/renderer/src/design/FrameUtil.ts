@@ -1,4 +1,4 @@
-import { FrameShapeUtil, type TLFrameShape } from 'tldraw'
+import { FrameShapeUtil, type TLFrameShape } from '../canvas'
 import { frameBackground, frameStroke } from './frameFill'
 
 export const DesignFrameUtil = FrameShapeUtil.configure({

@@ -1,4 +1,4 @@
-import { atom } from 'tldraw'
+import { atom } from '../canvas'
 import { type NodeShape } from '../../../shared/designNode'
 
 const LABELS: Record<NodeShape, string> = {

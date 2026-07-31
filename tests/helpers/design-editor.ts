@@ -1,4 +1,4 @@
-import type { Editor, TLShape, TLShapeId } from 'tldraw'
+import type { Editor, TLShape, TLShapeId } from '../../src/renderer/src/canvas'
 
 export interface FakeShape {
   id: string

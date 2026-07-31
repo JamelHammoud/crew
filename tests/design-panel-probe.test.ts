@@ -2,7 +2,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it } from 'vitest'
-import { DefaultColorStyle, type Editor, type TLShape } from 'tldraw'
+import { DefaultColorStyle, type Editor, type TLShape } from '../src/renderer/src/canvas'
 import { nodeDefaults, type NodeShape } from '../src/shared/designNode'
 
 const { viewOf } = await import('../src/renderer/src/design/useNodeView')

@@ -1,4 +1,4 @@
-import { DefaultDashStyle, DefaultFontStyle, LineShapeSplineStyle, type Editor } from 'tldraw'
+import { DefaultDashStyle, DefaultFontStyle, LineShapeSplineStyle, type Editor } from '../canvas'
 import { DESIGN_STYLE_DEFAULTS } from '../../../shared/design'
 
 export function applyDesignDefaults(editor: Editor): void {
