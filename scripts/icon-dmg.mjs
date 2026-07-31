@@ -41,7 +41,7 @@ export function dmgArrow(where = 1) {
   const back = round(ARROW.head * ARROW.sweep)
   return `  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="${ARROW.weight}">
     <line x1="${ARROW.from}" y1="${DMG.line}" x2="${round(tip - ARROW.weight / 2)}" y2="${DMG.line}" stroke="url(#shaft)" />
-    <path d="M ${round(tip - ARROW.head)} ${round(DMG.line - back)} L ${tip} ${DMG.line} L ${round(tip - ARROW.head)} ${round(DMG.line + back)}" stroke="${INK}" stroke-opacity="0.82" />
+    <path d="M ${round(tip - ARROW.head)} ${round(DMG.line - back)} L ${tip} ${DMG.line} L ${round(tip - ARROW.head)} ${round(DMG.line + back)}" stroke="${INK}" stroke-opacity="0.72" />
   </g>`
 }
 
