@@ -75,9 +75,9 @@
         "noChildrenProp": "off",
         "noConstructorReturn": "off",
         "noUnusedFunctionParameters": "off",
-        "noUnusedImports": "off",
+        "noUnusedImports": "error",
         "noUnusedPrivateClassMembers": "off",
-        "noUnusedVariables": "off",
+        "noUnusedVariables": "error",
         "noVoidTypeReturn": "off",
         "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "off"
