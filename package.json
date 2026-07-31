@@ -99,6 +99,7 @@
     "scribe-caret-check": "node scripts/scribe-caret-check.mjs",
     "preview-check": "node scripts/preview-check.mjs",
     "codex-check": "node scripts/codex-check.mjs",
+    "kimi-check": "node scripts/kimi-check.mjs",
     "dist": "electron-vite build && electron-builder",
     "icon": "node scripts/make-icon.mjs",
     "dmg-preview": "node scripts/dmg-preview.mjs",
