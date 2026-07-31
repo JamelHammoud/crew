@@ -146,7 +146,16 @@ export type SessionEvent =
       agentLabel: string
       byName: string
     }
-  | { id: string; ts: number; kind: 'subagent.ended'; threadId: string; parentThreadId: string; ok: boolean; ms: number }
+  | {
+      id: string
+      ts: number
+      kind: 'subagent.ended'
+      threadId: string
+      parentThreadId: string
+      ok: boolean
+      ms: number
+      stopped?: boolean
+    }
   // What an agent asked the app to show. It is written down rather than said
   // once, because the row it draws in the thread is the way back to it after
   // the run that made it has scrolled away.
