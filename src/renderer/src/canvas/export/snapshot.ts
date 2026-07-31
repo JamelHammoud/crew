@@ -100,7 +100,7 @@ function hasSelectedAncestor(shape: ExportShape, selected: Set<string>, store: E
 }
 
 function rootsFor(store: ExportStore, options: SnapshotSvgOptions): ExportShape[] {
-  if (options.shapeIds) {
+  if (options.shapeIds && options.shapeIds.length > 0) {
     const selected = new Set(options.shapeIds.map(String))
     return sortShapes(
       [...selected]
@@ -198,14 +198,23 @@ export function snapshotToSvgResult(
   const matrices = new Map<string, Matrix>()
   const rendered = roots
     .map(shape =>
-      buildTree(shape, store, context, options.shapeIds ? worldMatrix(shape, store, matrices) : matrixFor(shape))
+      buildTree(
+        shape,
+        store,
+        context,
+        options.shapeIds && options.shapeIds.length > 0 ? worldMatrix(shape, store, matrices) : matrixFor(shape)
+      )
     )
     .filter((node): node is RenderedShape => node !== null)
   let bounds = options.bounds
     ? exactBounds(options.bounds)
     : rendered.reduce<ExportBounds | null>((box, node) => unionBounds(box, renderedBounds(node)), null)
   if (!bounds) return null
-  const defaultPadding = options.shapeIds?.length === 1 && roots[0]?.type === 'frame' ? 0 : 32
+  const defaultPadding = options.bounds
+    ? 0
+    : options.shapeIds?.length === 1 && roots[0]?.type === 'frame'
+      ? 0
+      : 32
   const padding = Math.max(0, Number.isFinite(options.padding) ? options.padding! : defaultPadding)
   bounds = expandBounds(bounds, padding)
   const scale = positive(options.scale)

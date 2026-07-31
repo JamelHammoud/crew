@@ -1,6 +1,7 @@
 import { b64Vecs } from '@tldraw/tlschema'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nodeDefaults } from '../src/shared/designNode'
+import type { Editor, TLShapeId } from '../src/renderer/src/canvas'
 import {
   copyAs,
   snapshotToSvg,
@@ -38,6 +39,9 @@ const base = {
   size: 'm',
   scale: 1
 }
+
+const currentEditorCopy = (editor: Editor, ids: TLShapeId[]) => copyAs(editor, ids, { format: 'svg' })
+void currentEditorCopy
 
 function allShapes() {
   const imageAsset = {
@@ -283,6 +287,11 @@ describe('canvas snapshot SVG export', () => {
     expect(svg).toContain('data:image/png;base64,AA==')
     expect(svg).toContain('M0 0 L20 10 L40 0')
     expect(svg).toContain('marker-end="url(#arrow-end-shape_05)"')
+  })
+
+  it('treats an empty shape selection as the current page', () => {
+    const svg = snapshotToSvg(allShapes(), { shapeIds: [], padding: 0 })
+    expect(svg).toContain('data-shape-type="design-node"')
   })
 
   it('keeps nested transforms, selection descendants, hidden records, and exact bounds', () => {
