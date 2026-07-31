@@ -789,6 +789,21 @@ A shipped Crew has none. `fromSource(app.getAppPath())` is the gate, the same on
 - There is no way to loosen it, and no environment variable stands beside `CREW_SHIPPING_ICON` for this. An escape hatch is the ability, which is the thing being taken away.
 - `tests/window-options.test.ts` holds all of it. It walks the whole menu tree rather than one submenu, so nothing can put the row back under another menu unnoticed.
 
+## The installer
+
+What somebody sees the first time they meet Crew: a disk image window with the app on the left, Applications on the right, and a line in a hand telling them what to do. The ground is white and the colour is one aurora blooming behind the folder they are dragging to, so the destination is the lit thing on the screen.
+
+- **A disk image window is one still picture.** Finder paints a background picture behind the icons and nothing about it moves, so there is no animation to ship and no video to fall back on. The mesh is animated all the same, because the frame that ships is cut from it: `DMG.at` is the moment, and `yarn dmg-preview` stands the whole thing up as a real page so a moment can be picked by watching rather than by guessing a number.
+- **Finder pins the icon labels to near-black in both appearances the moment a background picture is set.** Measured off the pixels: the words under both icons come back `#030303` in Light and `#030303` in Dark, byte for byte, while the same volume with no background picture tracks the appearance properly and reads `#dddddf` on dark. There is no label colour key in the view options blob, so there is nothing to write and nothing to opt out of. That single fact decides the whole design: the ground has to be light, or the labels are unreadable for everybody rather than for half of them.
+- The title bar takes `DMG.chrome` off the bottom of the picture, so the bottom 48 of what is drawn is never seen. The window is the height of the picture rather than the picture plus a title bar, because a picture taller than the content area is cropped and one shorter leaves a band of nothing at the bottom, and a title bar is not the same height on every Mac. Everything is composed inside `height - chrome` and `tests/dmg-window.test.ts` holds it there.
+- `src/renderer` is not involved. The mesh is a shader in `scripts/dmg-mesh.js`, written as a browser global with no imports, so the same file drives the live page and the frame that ships. `scripts/dmg-shoot.mjs` renders a frame in Electron, which is the only place here with a real GL context: headless Chrome hands back an empty canvas, and an empty canvas is a background that looks like nothing went wrong.
+- Uniform arrays are indexed in `main` and the values passed into `band`, never indexed by a function parameter. GLSL ES 1.00 only allows a constant index expression, a loop counter counts and a parameter does not, and the whole shader fails to compile over it.
+- The bloom is contained. A glow that runs to the edges is cut flat by the frame and reads as a stain rather than as light, so it falls to nothing well inside the window and only a whisper of colour reaches the rest.
+- The words are set in Bradley Hand, which ships with macOS, and the fallback is `cursive` and nothing else. A machine without the face draws Apple Chancery instead, which is wrong in a way anybody can see, where a sans fallback would be wrong in a way nobody would notice until it had shipped.
+- `resources/dmg-background.tiff` carries both scales, made by `tiffutil` from the two pngs, and it is written by `yarn icon` along with everything else. Nothing in `resources/` is edited by hand.
+- Where the icons stand is written down twice, in `DMG` and in the `dmg` block of `package.json`, because one is a drawing and the other is a build config that cannot import it. The suite holds the two to agreeing.
+- `yarn dmg-check` is the only thing that can see the rest of it. It builds a real disk image with the real background, sets it up the way electron-builder does, and photographs the mounted window, because whether Finder really lines the picture up with the icons is not a thing any suite can answer.
+
 ## Rules for agents working here
 
 - `src/server`, `src/runner`, and `src/shared` must never import electron. Tests import them directly.
