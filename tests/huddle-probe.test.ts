@@ -342,7 +342,7 @@ describe('a huddle you are in', () => {
       Promise.resolve([
         { id: 'screen:1', name: 'Screen 1', kind: 'screen' as const, thumbnail: 'data:,', icon: null }
       ])
-    const { container } = render(createElement(App))
+    render(createElement(App))
     fireEvent.click(screen.getByLabelText('Share screen'))
 
     await waitFor(() => expect(screen.getByText('Screen 1')).toBeTruthy())

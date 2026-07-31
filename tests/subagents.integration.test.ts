@@ -6,7 +6,6 @@ import { makeFakeProvider, makeSteerableProvider } from './helpers/fake-provider
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
 
-type Started = Extract<SessionEvent, { kind: 'thread.started' }>
 type Start = Extract<SessionEvent, { kind: 'agent.start' }>
 type End = Extract<SessionEvent, { kind: 'agent.end' }>
 type SpawnStarted = Extract<SessionEvent, { kind: 'subagent.started' }>
