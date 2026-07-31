@@ -141,6 +141,33 @@ describe('a crew kept on this machine', () => {
     await back.leave()
   }, 30000)
 
+  it('opens again on the answer it was given about who can reach it', async () => {
+    const repo = tmpDir('local-share-again-repo')
+    await initRepo(repo)
+    const paths = statePaths('local-share-again')
+
+    const app = new AppSession(paths)
+    const first = await app.startHost(repo, 'sam', { home: 'private' })
+    expect(first.shared).toBe(false)
+    expect((await app.setShared(true))?.shared).toBe(true)
+    await app.shutdown()
+
+    const back = new AppSession(paths)
+    const again = await back.startHost(repo, 'sam')
+    expect(again.shared).toBe(true)
+    expect(again.link).not.toBeNull()
+    const guest = await TestUi.connect(again.wsUrl, 'jamel', again.code)
+    guest.close()
+    expect((await back.setShared(false))?.shared).toBe(false)
+    await back.shutdown()
+
+    const third = new AppSession(paths)
+    const shut = await third.startHost(repo, 'sam')
+    expect(shut.shared).toBe(false)
+    expect(shut.link).toBeNull()
+    await third.leave()
+  }, 40000)
+
   it('opens a folder that is not tracked with git at all', async () => {
     const plain = tmpDir('local-plain')
     const app = new AppSession(statePaths('local-plain-state'))
