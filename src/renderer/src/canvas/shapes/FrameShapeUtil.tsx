@@ -23,7 +23,7 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
     const configured = this.options.getCustomDisplayValues as ((editor: unknown, shape: FrameShape) => { fillColor?: string; strokeColor?: string })
     const values = configured(this.editor, shape)
     const stroke = values.strokeColor ?? shapeColor(this.editor, shape.props.color, 'frameStroke')
-    const frame = shapeElement(boxPath(shape.props.w, shape.props.h), { editor: this.editor, color: shape.props.color, fill: values.fillColor ?? shapeColor(this.editor, shape.props.color, 'frameFill'), width: 1 })
+    const frame = shapeElement(boxPath(shape.props.w, shape.props.h), { editor: this.editor, color: shape.props.color, stroke, fill: values.fillColor ?? shapeColor(this.editor, shape.props.color, 'frameFill'), width: 1 })
     return createElement('div', { style: { position: 'relative', width: shape.props.w, height: shape.props.h, color: stroke } }, frame, shape.props.name && createElement('div', { style: { position: 'absolute', bottom: '100%', left: 0, paddingBottom: 4, fontSize: 12, color: stroke, whiteSpace: 'nowrap' } }, shape.props.name))
   }
 }

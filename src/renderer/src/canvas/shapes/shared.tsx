@@ -76,9 +76,9 @@ export function pathFromPoints(points: readonly Vec[], close = false): string {
 
 export function shapeElement(
   path: string,
-  options: { editor?: ShapeEditor; color?: CrewColorStyle; fill?: string; width?: number; opacity?: number; children?: ReactNode } = {}
+  options: { editor?: ShapeEditor; color?: CrewColorStyle; stroke?: string; fill?: string; width?: number; opacity?: number; children?: ReactNode } = {}
 ): ReactNode {
-  const stroke = shapeColor(options.editor, options.color ?? 'black')
+  const stroke = options.stroke ?? shapeColor(options.editor, options.color ?? 'black')
   const style: CSSProperties = { overflow: 'visible', pointerEvents: 'all' }
   return createElement(
     'svg',
