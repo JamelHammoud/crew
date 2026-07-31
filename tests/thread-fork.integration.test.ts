@@ -172,10 +172,14 @@ describe('forking a thread', () => {
     // fork was given to read.
     expect(first.text).toContain('the readme is stale')
     expect(first.text).toContain('carry on with the changelog')
-    // One run of talk rather than a thread and a conversation about it, and
-    // nothing anywhere says a fork was made.
-    expect(times(first.text ?? '', 'Thread so far:')).toBe(1)
+    // One run of talk rather than a thread and a conversation about it, so what
+    // was said before the fork stands ahead of what has been said since under
+    // the one heading, and nothing anywhere says a fork was made.
+    const block = soFar(first.text)
+    expect(block.indexOf('the readme is stale')).toBeLessThan(block.indexOf('carry on with the changelog'))
     expect(first.text).not.toContain('The thread, which you are not in:')
+    expect(first.text).not.toContain('Your conversation on the side:')
+    expect(first.text).not.toContain('forked')
 
     // The thread it came from carries on without it, and none of that reaches
     // the fork on a later turn.

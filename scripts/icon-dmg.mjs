@@ -71,7 +71,7 @@ export function dmgBackground(geometry) {
     (blob, index) =>
       `    <circle cx="${blob.x}" cy="${blob.y}" r="${blob.r}" fill="url(#sky-${index})" />`
   ).join('\n')
-  const headline = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" xml:space="preserve" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Text&quot;, sans-serif" font-size="16" font-weight="500" fill="#ffffff" fill-opacity="0.66">Drag <tspan dy="1" font-family="ui-monospace, &quot;SF Mono&quot;, Menlo, monospace" font-size="15">Crew</tspan><tspan dy="-1"> into Applications</tspan></text>`
+  const headline = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" xml:space="preserve" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Text&quot;, sans-serif" font-size="16" font-weight="500" fill="#ffffff" fill-opacity="0.66">Drag <tspan dy="1" font-family="&quot;SF Mono&quot;, Menlo, ui-monospace, monospace" font-size="14.5" font-weight="600">Crew</tspan><tspan dy="-1"> into Applications</tspan></text>`
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${DMG.width}" height="${DMG.height}" viewBox="0 0 ${DMG.width} ${DMG.height}">
   <defs>
 ${sky}

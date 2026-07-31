@@ -31,7 +31,7 @@ const { useCrew } = await import('../src/renderer/src/state/store')
 
 const socket = (): FakeSocket => sockets[0]
 
-const forkOf = (threadId: string): ClientMessage | undefined =>
+const forkSent = (): ClientMessage | undefined =>
   socket().sent.find(msg => msg.type === 'chat.send' && msg.commands?.includes('fork'))
 
 const landed = (threadId: string, forkedFrom: string): SessionEvent => ({

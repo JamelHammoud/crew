@@ -8,6 +8,13 @@ export const MinusGlyph = glyph(<path d="M4.5 12h15" />)
 // where the plus runs 15. Both end up carrying about thirty units of ink.
 export const CloseGlyph = glyph(<path d="m6.5 6.5 11 11M17.5 6.5 6.5 17.5" />)
 
+export const CloseOthersGlyph = glyph(
+  <>
+    <rect x="3" y="12" width="10" height="8" rx="2" />
+    <path d="m15 4 6 6M21 4l-6 6" />
+  </>
+)
+
 // The short arm is a little under half the long one. Any shorter and the tick
 // loses its foot, any longer and it turns into a corner.
 export const CheckGlyph = glyph(<path d="m5 12.5 4.5 4.5L19 7" />)
