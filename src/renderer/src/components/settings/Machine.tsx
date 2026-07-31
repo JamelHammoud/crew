@@ -4,6 +4,7 @@ import { setHelperPrefs, useHelperPrefs } from '../../state/helpers'
 import Select from '../Select'
 import Toggle from '../Toggle'
 import CommandRow from './CommandRow'
+import CreditsRow from './CreditsRow'
 import { Page, Row, Section } from './parts'
 import VersionRow from './VersionRow'
 
