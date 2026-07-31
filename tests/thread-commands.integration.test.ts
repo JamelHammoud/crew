@@ -132,6 +132,42 @@ describe('commands inside a thread', () => {
     expect(inThread.filter(e => e.kind === 'agent.start')).toHaveLength(1)
   })
 
+  it('goes on being answered, and still says nothing in the thread it is about', async () => {
+    const sam = await connectUi('sam')
+    const pat = await connectUi('pat')
+    await connectRunner('sam', false)
+    await sam.waitForEvent(e => e.kind === 'agent.online')
+
+    sam.chat('@Fake tidy the readme', [samsFake])
+    const thread = (await sam.waitForEvent(e => e.kind === 'thread.started')) as Started
+    await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === thread.threadId)
+
+    sam.chat('what is a changelog for', [], thread.threadId, ['btw'])
+    const aside = (await sam.waitForEvent(
+      e => e.kind === 'thread.started' && e.threadId !== thread.threadId
+    )) as Started
+    const first = (await sam.waitForEvent(e => e.kind === 'agent.end' && e.threadId === aside.threadId)) as Ended
+
+    // A second question goes into the same thread, so it is answered with the
+    // one before it in hand rather than as a question nobody has heard.
+    sam.chat('and who writes it', [], aside.threadId)
+    const answer = (await sam.waitForEvent(
+      e => e.kind === 'agent.end' && e.threadId === aside.threadId && e.promptId !== first.promptId
+    )) as Ended
+    expect(answer.text).toContain('Your conversation on the side')
+    expect(answer.text).toContain('what is a changelog for')
+    expect(answer.text).toContain('and who writes it')
+    // The thread it is about is read again rather than remembered, so an answer
+    // keeps up with work that has carried on since.
+    expect(answer.text).toContain('tidy the readme')
+    await settle()
+
+    const inThread = sam.events.filter(e => 'threadId' in e && e.threadId === thread.threadId)
+    expect(inThread.some(e => e.kind === 'message' && e.text === 'and who writes it')).toBe(false)
+    expect(inThread.filter(e => e.kind === 'agent.start')).toHaveLength(1)
+    expect(pat.events.some(e => 'threadId' in e && e.threadId === aside.threadId)).toBe(false)
+  })
+
   it('a question on the side reaches nobody else and is written down nowhere', async () => {
     const sam = await connectUi('sam')
     const samSecondWindow = await connectUi('sam')
