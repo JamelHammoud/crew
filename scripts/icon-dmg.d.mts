@@ -1,11 +1,10 @@
 export type DmgGeometry = { bite: number; step: number }
 
-export type DmgDisc = {
-  x: number
-  y: number
-  r: number
-  o: number
-  cut: { x: number; r: number } | null
+export type DmgMark = {
+  radius: number
+  cut: number
+  centres: number[]
+  width: number
 }
 
 export const DMG: {
@@ -16,24 +15,37 @@ export const DMG: {
   app: number
   applications: number
   headline: number
-  cover: string
+  at: number
 }
 
-export const DMG_COVERS: string[]
+export const TRAVEL: {
+  from: number
+  to: number
+  radius: number
+  glide: number
+  wake: number
+}
 
 export const DMG_DEFS: string
 
 export const DMG_WASH: string
 
-export const DMG_GRAIN: string
-
 export const HEADLINE: string
 
-export function dmgDiscs(geometry: DmgGeometry): DmgDisc[]
+export function dmgMark(geometry: DmgGeometry, radius?: number): DmgMark
 
-export function dmgOverlay(
+export function markGroup(
   geometry: DmgGeometry,
-  prefix?: string
-): { masks: string; drawn: string }
+  id: string,
+  radius?: number
+): { mark: DmgMark; masks: string; discs: string }
 
-export function dmgBackground(geometry: DmgGeometry, cover: string | null): string
+export function markAt(where: number): number
+
+export function wakePath(geometry: DmgGeometry): string
+
+export function dmgOverlay(geometry: DmgGeometry, where?: number): string
+
+export function dmgDefs(geometry: DmgGeometry): string
+
+export function dmgBackground(geometry: DmgGeometry, picture: string | null): string
