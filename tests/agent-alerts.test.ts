@@ -93,7 +93,7 @@ describe('finished alerts', () => {
       body: 'fix the sync loop',
       threadId: 't1',
       agentId: 'a1',
-      stopped: false
+      failed: false
     })
   })
 
