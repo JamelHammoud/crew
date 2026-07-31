@@ -339,6 +339,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                         {state === 'done' && <CheckGlyph className="w-5 h-5 text-fg" />}
                         {state === 'ready' && <EyeGlyph className="w-5 h-5 text-fg" />}
                         {state === 'failed' && <WarningGlyph className="w-5 h-5 text-danger" />}
+                        {state === 'stopped' && <StopGlyph className="w-5 h-5 text-fg-muted" />}
                         {state === 'archived' && <ArchiveGlyph className="w-5 h-5 text-fg-muted" />}
                         <span className={`text-base font-semibold ${state === 'failed' ? 'text-danger' : 'text-fg'}`}>
                           {THREAD_STATE_LABELS[state]}

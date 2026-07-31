@@ -2,6 +2,7 @@ import type { Glyph } from '../../icons'
 import {
   DesktopGlyph,
   FileGlyph,
+  InfoGlyph,
   PeopleGlyph,
   PhotoGlyph,
   ScribeGlyph,
@@ -33,7 +34,8 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
   { id: 'emoji', label: 'Emoji', group: 'Crew', mark: PhotoGlyph },
-  { id: 'files', label: 'Files', group: 'Crew', mark: FileGlyph }
+  { id: 'files', label: 'Files', group: 'Crew', mark: FileGlyph },
+  { id: 'about', label: 'About', group: 'App', mark: InfoGlyph }
 ]
 
 export const GROUPS = [...new Set(SETTINGS_TABS.map(tab => tab.group))]
