@@ -4,7 +4,7 @@ import type { ServerMessage } from '../src/shared/protocol'
 import { agentId } from '../src/shared/llm'
 import { CrewSession } from '../src/server/session'
 import { Runner } from '../src/runner'
-import { makeFakeProvider } from '../src/../tests/helpers/fake-provider'
+import { makeFakeProvider } from './helpers/fake-provider'
 import { startHost, TestUi, waitUntil, type TestHost } from './helpers/session'
 import { testRunner } from './helpers/runner'
 
