@@ -1,6 +1,22 @@
+import type { Box } from '../../math/Box'
+import type { SelectionHandle } from '../../math/Box'
 import { Vec } from '../../math/Vec'
 import type { TLShape } from '../../schema'
-import type { TLResizeInfo } from '../../shapes/ShapeUtil'
+
+export type ResizeMode = 'resize_bounds' | 'scale_shape'
+
+export interface ResizeInfo<Shape extends TLShape> {
+  newPoint: Vec
+  handle: SelectionHandle
+  mode: ResizeMode
+  scaleX: number
+  scaleY: number
+  initialBounds: Box
+  initialShape: Shape
+}
+
+export type TLResizeMode = ResizeMode
+export type TLResizeInfo<Shape extends TLShape> = ResizeInfo<Shape>
 
 export interface ResizeBoxOptions {
   minWidth?: number
@@ -11,7 +27,7 @@ export interface ResizeBoxOptions {
 
 export function resizeBox<Shape extends TLShape & { props: { w: number; h: number } }>(
   shape: Shape,
-  info: TLResizeInfo<Shape>,
+  info: ResizeInfo<Shape>,
   options: ResizeBoxOptions = {}
 ): Shape {
   const { newPoint, handle, scaleX, scaleY } = info

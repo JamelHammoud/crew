@@ -3,8 +3,11 @@ import { Mat, type MatLike } from '../../math/Mat'
 import { HALF_PI, approximately } from '../../math/utils'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
-import type { TLResizeInfo, TLResizeMode } from '../../shapes/ShapeUtil'
-import { resizeBox } from './resizeBox'
+import {
+  resizeBox,
+  type ResizeInfo,
+  type ResizeMode
+} from './resizeBox'
 import {
   TransformState,
   type ShapeUpdate,
@@ -108,9 +111,9 @@ export interface ResizeShapeOptions<Shape extends TLShape> {
   scaleOrigin: VecLike
   scaleAxisRotation: number
   handle?: SelectionHandle
-  mode?: TLResizeMode
+  mode?: ResizeMode
   isAspectRatioLocked?: boolean
-  onResize?(shape: Shape, info: TLResizeInfo<Shape>): Shape
+  onResize?(shape: Shape, info: ResizeInfo<Shape>): Shape
 }
 
 function supportsBoxResize(
@@ -168,7 +171,7 @@ export function resizeShape<Shape extends TLShape>(
     ? adjustedScale
     : new Vec(adjustedScale.y, adjustedScale.x)
 
-  const info: TLResizeInfo<Shape> = {
+  const info: ResizeInfo<Shape> = {
     newPoint: newLocalPoint,
     handle: options.handle ?? 'bottom_right',
     mode: options.mode ?? 'scale_shape',
@@ -179,7 +182,7 @@ export function resizeShape<Shape extends TLShape>(
   }
 
   const resized = options.onResize?.(shape, info) ??
-    (supportsBoxResize(shape) ? resizeBox(shape, info as TLResizeInfo<typeof shape>) : undefined)
+    (supportsBoxResize(shape) ? resizeBox(shape, info as ResizeInfo<typeof shape>) : undefined)
 
   if (resized) return resized as ShapeUpdate<Shape>
 
