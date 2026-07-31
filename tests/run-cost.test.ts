@@ -91,9 +91,12 @@ describe('reading what a CLI says about its tokens', () => {
   })
 
   it('reads a turn total as the whole of it rather than as one more call', () => {
-    expect(parseCodexLine('{"type":"turn.completed","usage":{"input_tokens":100,"output_tokens":8}}')).toEqual([
-      { usage: { input: 100, output: 8, total: true } }
-    ])
+    const line = JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'thread/tokenUsage/updated',
+      params: { tokenUsage: { total: { inputTokens: 100, outputTokens: 8 } } }
+    })
+    expect(parseCodexLine(line)).toEqual([{ usage: { input: 100, output: 8, total: true } }])
   })
 })
 
