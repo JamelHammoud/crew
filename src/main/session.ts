@@ -87,10 +87,7 @@ export class AppSession {
     name: string
     home: CrewHome
   } | null = null
-  // Whether this project's own code is going out with the crew right now.
   private projectAuto = false
-  // A crew that cannot get anything out is history piling up on one machine, so
-  // it is said in the app rather than left in a log nobody reads.
   onTrouble: (message: string) => void = () => {}
 
   constructor(paths: { agents?: string; session?: string; projects?: string } = {}) {
