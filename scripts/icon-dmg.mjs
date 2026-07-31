@@ -72,7 +72,7 @@ export function trailAt(geometry, where) {
 }
 
 export function dmgOverlay(geometry, where = 0.62) {
-  const { masks, discs } = markGroup(geometry, 'mark')
+  const { discs } = markGroup(geometry, 'mark')
   const { head } = trailAt(geometry, where)
   const ghosts = Array.from({ length: TRAVEL.ghosts }, (_, index) => {
     const back = (index + 1) / (TRAVEL.ghosts + 1)
