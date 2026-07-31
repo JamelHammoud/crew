@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parseClaudeLine } from '../src/runner/providers/claude'
 import { fileChanges } from '../src/runner/providers/detail'
-import { parseKimiLine } from '../src/runner/providers/kimi'
+import { kimiParser } from '../src/runner/providers/kimi-acp'
 
 const streamEvent = (event: unknown): string => JSON.stringify({ type: 'stream_event', event })
 
