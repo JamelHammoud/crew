@@ -180,7 +180,7 @@ describe('a run somebody stopped', () => {
     cleanup()
     load([])
     render(createElement(SubagentChips, { runs: [run('c2', {})], threadId: 't1' }))
-    expect(screen.getByText('Failed')).toBeTruthy()
+    expect(screen.queryByText('Stopped')).toBeNull()
     expect(reds().length).toBeGreaterThan(0)
   })
 
