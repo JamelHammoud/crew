@@ -79,6 +79,7 @@ function editor() {
     getShapeUtil: () => ({}),
     isShapeOrAncestorLocked: () => false,
     canCropShape: () => false,
+    canEditShape: () => false,
     setEditingShape: vi.fn(),
     select: vi.fn(),
     setSelectedShapes: vi.fn(),
