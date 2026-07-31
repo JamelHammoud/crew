@@ -6,10 +6,10 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { encodePoints } from '../src/renderer/src/canvas/schema/points'
 import { GEO_KINDS, SHAPE_PROPS, type TLBinding, type TLShape, type TLShapeId, type TLShapeType } from '../src/renderer/src/canvas/schema'
+import { DesignNodeUtil } from '../src/renderer/src/design/DesignNodeUtil'
 import {
   ArrowBindingUtil,
   ArrowShapeUtil,
-  DesignNodeUtil,
   DrawShapeUtil,
   FrameShapeUtil,
   GeoShapeUtil,

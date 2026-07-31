@@ -15,13 +15,19 @@ import { RichTextEditor } from './editor'
 import type { RichTextDocument } from './richText'
 import { RichTextToolbar } from './toolbar'
 
+type EditableTextShape = TLShape<'text' | 'geo' | 'note' | 'arrow'>
+
+function isEditableTextShape(shape: TLShape): shape is EditableTextShape {
+  return shape.type === 'text' || shape.type === 'geo' || shape.type === 'note' || shape.type === 'arrow'
+}
+
 export function EditingLayer({ editor }: { editor: Editor }) {
   const shape = useValue('canvas editing shape', () => editor.getEditingShape(), [editor])
-  if (!shape || !('richText' in shape.props)) return null
+  if (!shape || !isEditableTextShape(shape)) return null
   return <EditingRichText key={shape.id} editor={editor} shape={shape} />
 }
 
-function EditingRichText({ editor, shape }: { editor: Editor; shape: TLShape }) {
+function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTextShape }) {
   const [textEditor, setTextEditor] = useState<TipTapEditor | null>(null)
   const mark = useRef<string | null>(null)
   const transform = editor.getShapePageTransform(shape)
@@ -84,7 +90,7 @@ function ShapeTextEditor({
   onComplete
 }: {
   editor: Editor
-  shape: TLShape
+  shape: EditableTextShape
   richText: RichTextDocument
   onChange(value: RichTextDocument): void
   onReady(value: TipTapEditor | null): void
@@ -143,7 +149,7 @@ function ShapeTextEditor({
         style={{
           color,
           fontFamily: FONT_FAMILIES[shape.props.font],
-          fontSize: LABEL_FONT_SIZES[shape.props.size] * shape.props.fontSizeAdjustment * shape.props.scale,
+          fontSize: LABEL_FONT_SIZES[shape.props.size] * (shape.props.fontSizeAdjustment ?? 1) * shape.props.scale,
           lineHeight: 1.35
         }}
       />
