@@ -213,6 +213,33 @@ describe('commands in a thread', () => {
     )
   })
 
+  it('says at the head of a fork where the talk before it is', () => {
+    open()
+    cleanup()
+    useCrew.setState({
+      openThreadId: 'thread-2',
+      events: [started, { ...started, id: 'fork-start', ts: 9, threadId: 'thread-2', title: 'the header on top' }],
+      threads: {
+        ...useCrew.getState().threads,
+        'thread-2': {
+          id: 'thread-2',
+          agentId: agent.id,
+          agentLabel: agent.label,
+          title: 'the header on top',
+          createdBy: 'ALI',
+          status: 'open',
+          mode: 'build',
+          forkedFrom: 'thread-1'
+        }
+      }
+    })
+    render(createElement(ThreadView, { threadId: 'thread-2' }))
+
+    const back = screen.getByText('Carried on from tidy the readme')
+    fireEvent.click(back)
+    expect(useCrew.getState().openThreadId).toBe('thread-1')
+  })
+
   it('drops a chip the thread can no longer honor when the turn ends', () => {
     const composer = open({ mid: true })
     fireEvent.change(composer, { target: { value: '/queue ' } })
