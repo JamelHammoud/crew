@@ -124,7 +124,7 @@ describe('the picture', () => {
   it('draws the ground, the words and the arrow', () => {
     const svg = dmgBackground(null)
     expect(svg).toContain(`width="${DMG.width}" height="${DMG.height}"`)
-    expect(svg).toContain('Drag Crew into Applications')
+    expect(svg).toContain('Your new Crew')
     expect(svg).toContain('url(#shaft)')
   })
 
