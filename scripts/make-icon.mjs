@@ -481,5 +481,5 @@ writeFileSync(
 console.log(
   `wrote resources/icon.svg, icon-light.svg, icon-dev.svg, icon-dev-light.svg, ${skins
     .map(([id]) => `icon-${id}.svg`)
-    .join(', ')}, crew-logo.svg, tray.svg, icon.icns, icon.png, src/main/icon-png.ts, src/main/tray-png.ts, src/renderer/src/components/crew-mark.ts and src/renderer/src/components/settings/icon-art.ts`
+    .join(', ')}, crew-logo.svg, tray.svg, icon.icns, icon.png, dmg-background.svg, dmg-background.png, dmg-background@2x.png, dmg-background.tiff, src/main/icon-png.ts, src/main/tray-png.ts, src/renderer/src/components/crew-mark.ts and src/renderer/src/components/settings/icon-art.ts`
 )
