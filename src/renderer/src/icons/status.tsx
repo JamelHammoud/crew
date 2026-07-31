@@ -50,6 +50,14 @@ export const QuestionGlyph = glyph(
   </>
 )
 
+export const InfoGlyph = glyph(
+  <>
+    <circle {...RING} />
+    <path d="M12 7.4v.4" />
+    <path d="M12 10.9v5.7" />
+  </>
+)
+
 // The eyes and the mouth are the only place in the set where a mark exists to
 // be liked rather than to be read.
 export const SmileGlyph = glyph(

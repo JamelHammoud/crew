@@ -10,6 +10,9 @@ import ThreadStatusBar from './ThreadStatusBar'
 export function StateIcon({ state }: { state: ThreadState }) {
   if (state === 'working') return <Spinner size={16} className="text-fg" />
   if (state === 'failed') return <WarningGlyph className="w-4 h-4 text-danger shrink-0" />
+  // The mark on the button that ended it, so the row says what was done rather
+  // than warning about it.
+  if (state === 'stopped') return <StopGlyph className="w-4 h-4 text-fg-muted shrink-0" />
   if (state === 'ready') return <EyeGlyph className="w-4 h-4 text-fg shrink-0" />
   if (state === 'archived') return <ArchiveGlyph className="w-4 h-4 text-fg-muted shrink-0" />
   return <CheckGlyph className="w-4 h-4 text-fg shrink-0" />

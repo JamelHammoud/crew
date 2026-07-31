@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: yarn tsc --noEmit
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Formatting of the files this change touches
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            base="origin/${{ github.base_ref }}"
+          else
+            base="${{ github.event.before }}"
+            git cat-file -e "$base^{commit}" 2>/dev/null || base=HEAD~1
+          fi
+          echo "comparing against $base"
+          yarn biome format --changed --since="$base" --no-errors-on-unmatched . || {
+            echo "Run yarn format to fix the files listed above." >&2
+            exit 1
+          }
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: yarn test
