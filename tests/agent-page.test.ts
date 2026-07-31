@@ -80,14 +80,57 @@ describe('a page an agent shows', () => {
 
     const event = (await ui.waitForEvent(e => e.kind === 'page.shown')) as Shown
     expect(event.threadId).toBe(run.threadId)
-    expect(event.url).toBe('file:///Users/sam/site/index.html')
+    expect(event.pages).toEqual(['file:///Users/sam/site/index.html'])
     expect(event.title).toBe('The signup page')
     expect(event.agentId).toBe(fake)
 
     // The row is the way back to it, so it reads in the thread it was shown in.
     const items = buildThread(eventsOfThread(ui.events, event.threadId), {}, 'sam')
     const row = items.find(item => item.kind === 'page')
-    expect(row?.page).toEqual({ url: 'file:///Users/sam/site/index.html', title: 'The signup page' })
+    expect(row?.shown).toEqual({ pages: ['file:///Users/sam/site/index.html'], title: 'The signup page' })
+  })
+
+  it('takes a list of files as one row, whatever they are written in', async () => {
+    const { ui, run } = await startRun()
+
+    const shown = await post('/page', {
+      promptId: run.promptId,
+      url: ['/Users/sam/app/theme.css', '/Users/sam/app/Button.tsx', '/Users/sam/app/notes.md']
+    })
+    expect(shown.status).toBe(200)
+
+    const event = (await ui.waitForEvent(e => e.kind === 'page.shown')) as Shown
+    expect(event.pages).toEqual([
+      'file:///Users/sam/app/theme.css',
+      'file:///Users/sam/app/Button.tsx',
+      'file:///Users/sam/app/notes.md'
+    ])
+    // Nothing was said about them, and one file's name is not a line about three.
+    expect(event.title).toBe('')
+
+    const items = buildThread(eventsOfThread(ui.events, event.threadId), {}, 'sam')
+    expect(items.filter(item => item.kind === 'page')).toHaveLength(1)
+    expect(items.find(item => item.kind === 'page')?.shown?.pages).toHaveLength(3)
+  })
+
+  it('refuses a list with one bad address in it, rather than opening the rest', async () => {
+    const { ui, run } = await startRun()
+
+    const refused = await post('/page', {
+      promptId: run.promptId,
+      url: ['/Users/sam/app/theme.css', 'the other one']
+    })
+    expect(refused.status).toBe(400)
+    expect(refused.body.error).toContain('localhost')
+
+    const many = await post('/page', {
+      promptId: run.promptId,
+      url: ['/a/1.ts', '/a/2.ts', '/a/3.ts', '/a/4.ts', '/a/5.ts', '/a/6.ts', '/a/7.ts']
+    })
+    expect(many.status).toBe(400)
+    expect(await post('/page', { promptId: run.promptId, url: [] })).toMatchObject({ status: 400 })
+
+    expect(ui.events.some(e => e.kind === 'page.shown')).toBe(false)
   })
 
   it('takes a server on this machine and names a page the agent said nothing about', async () => {
