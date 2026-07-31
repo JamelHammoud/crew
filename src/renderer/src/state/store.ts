@@ -448,6 +448,12 @@ export const useCrew = create<CrewState>((set, get) => {
     if (event.kind === 'thread.started' && event.aside) {
       useBrowser.getState().openAside(event.threadId, event.title)
     }
+    // A fork opens for whoever made it, since a message was just typed into it.
+    // Everyone else has the card in the chat, the way they do for any thread.
+    if (event.kind === 'thread.started' && event.threadId === forkWanted) {
+      forkWanted = null
+      get().openThread(event.threadId)
+    }
     // A page an agent showed comes up for whoever is reading the thread it was
     // shown in, which is the whole of what showing one is. Anywhere else it is
     // the row in that thread, so nobody's panel is taken over by work they are
