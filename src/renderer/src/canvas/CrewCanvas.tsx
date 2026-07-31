@@ -68,10 +68,7 @@ export function CrewCanvas({
         tools: [...BUILT_IN_TOOLS, ...tools],
         overlayUtils,
         options,
-        getContainer: () => {
-          if (!container.current) throw new Error('Canvas container is not mounted')
-          return container.current
-        }
+        getContainer: () => container.current ?? document.body
       })
   )
 
