@@ -97,6 +97,7 @@ export class Editor {
   }
   private currentPageId: TLPageId
   private disposed = false
+  private richTextEditor: { commands?: { focus(position?: unknown): unknown }; isFocused?: boolean; [key: string]: unknown } | null = null
 
   constructor(options: TLEditorOptions) {
     this.store = options.store
@@ -470,9 +471,31 @@ export class Editor {
     return this.selection.getEditingShapeId()
   }
 
-  setEditingShape(id: TLShapeId | null): this {
+  setEditingShape(shapeOrId: TLShape | TLShapeId | null): this {
+    const id = typeof shapeOrId === 'string' ? shapeOrId : shapeOrId?.id ?? null
     this.selection.setEditingShapeId(id && this.getShape(id) ? id : null)
     return this
+  }
+
+  getEditingShape(): TLShape | undefined {
+    const id = this.getEditingShapeId()
+    return id ? this.getShape(id) : undefined
+  }
+
+  setRichTextEditor(editor: typeof this.richTextEditor): this {
+    this.richTextEditor = editor
+    return this
+  }
+
+  getRichTextEditor(): typeof this.richTextEditor {
+    return this.richTextEditor
+  }
+
+  isTextInputFocused(): boolean {
+    if (this.richTextEditor?.isFocused) return true
+    if (typeof document === 'undefined') return false
+    const active = document.activeElement
+    return active instanceof HTMLElement && Boolean(active.closest('input, textarea, [contenteditable="true"]'))
   }
 
   setCursor(cursor: { type: string; rotation: number }): this {
@@ -491,6 +514,51 @@ export class Editor {
   canCropShape(shapeOrId: TLShape | TLShapeId | null | undefined): boolean {
     const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
     return Boolean(shape && this.getShapeUtil(shape).canCrop(shape as never))
+  }
+
+  getOutermostSelectableShape(shape: TLShape): TLShape {
+    let current = shape
+    while (current.parentId.startsWith('shape:')) {
+      const parent = this.getShape(current.parentId as TLShapeId)
+      if (!parent || parent.id === this.getFocusedGroupId()) break
+      current = parent
+    }
+    return current
+  }
+
+  isShapeOrAncestorLocked(shapeOrId: TLShape | TLShapeId): boolean {
+    let shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    while (shape) {
+      if (shape.isLocked) return true
+      shape = shape.parentId.startsWith('shape:') ? this.getShape(shape.parentId as TLShapeId) : undefined
+    }
+    return false
+  }
+
+  getIsReadonly(): boolean {
+    return this.instance.isReadonly
+  }
+
+  focus(): this {
+    this.getContainer().focus?.()
+    return this
+  }
+
+  deselect(...shapes: Array<TLShape | TLShapeId>): this {
+    const removing = new Set(shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
+    this.selection.setSelectedShapeIds(this.getSelectedShapeIds().filter(id => !removing.has(id)))
+    return this
+  }
+
+  cancelDoubleClick(): void {}
+
+  getSelectedShapeAtPoint(point: VecLike): TLShape | undefined {
+    const selected = new Set(this.getSelectedShapeIds())
+    return this.getShapesAtPoint(point, { hitInside: true }).find(shape => selected.has(shape.id))
+  }
+
+  getHoveredShape(): TLShape | undefined {
+    return undefined
   }
 
   createShape<Shape extends TLShape = TLShape>(partial: ShapeCreate): this {

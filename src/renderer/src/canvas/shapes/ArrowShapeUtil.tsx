@@ -166,7 +166,7 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
     }
     const midpoint = Vec.Med(start, end)
     const perpendicular = Vec.Sub(end, start).uni().per()
-    const bend = -Vec.Sub(new Vec(info.handle.x, info.handle.y), midpoint).dot(perpendicular)
+    const bend = -Vec.Sub(new Vec(info.handle.x, info.handle.y), midpoint).dpr(perpendicular)
     return { type: 'arrow', id: shape.id, props: { bend } }
   }
   component(shape: ArrowShape): ReactNode {

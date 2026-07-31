@@ -1,5 +1,6 @@
 import { atom, type Atom } from '../signals'
 import { EVENT_NAME_MAP, type CanvasEventInfo } from '../tools/state/events'
+import { DraggingHandle, Resizing, Rotating, Translating } from '../tools/transforms'
 
 interface ToolInstance {
   id?: string
@@ -18,6 +19,7 @@ export class ToolManager {
       if (typeof Constructor !== 'function') continue
       const instance = new (Constructor as new (editor: unknown) => ToolInstance)(editor)
       const id = toolId(Constructor) ?? instance.id ?? null
+      if (id === 'select') addTransformChildren(instance)
       if (id) this.instances.set(id, instance)
     }
     const first = this.instances.has(initial) ? initial : this.instances.keys().next().value ?? initial
@@ -34,13 +36,19 @@ export class ToolManager {
   }
 
   setCurrentTool(id: string, info: unknown = {}): void {
+    const [topLevelId, ...path] = id.split('.')
     const previousId = this.currentId.get()
-    if (id === previousId) return
+    if (topLevelId === previousId) {
+      transitionPath(this.instances.get(previousId), path, info)
+      return
+    }
     const previous = this.instances.get(previousId)
-    const next = this.instances.get(id)
-    previous?.exit?.(info, id)
-    this.currentId.set(id)
+    const next = this.instances.get(topLevelId)
+    if (!next) return
+    previous?.exit?.(info, topLevelId)
+    this.currentId.set(topLevelId)
     next?.enter?.(info, previousId)
+    transitionPath(next, path, info)
   }
 
   dispatch(info: CanvasEventInfo): void {
@@ -57,6 +65,22 @@ export class ToolManager {
   has(id: string): boolean {
     return this.instances.has(id)
   }
+}
+
+function addTransformChildren(instance: ToolInstance): void {
+  const addChild = instance.addChild
+  const children = instance.children as Record<string, unknown> | undefined
+  if (typeof addChild !== 'function') return
+  for (const Child of [Translating, Resizing, Rotating, DraggingHandle]) {
+    if (!children?.[Child.id]) addChild.call(instance, Child)
+  }
+}
+
+function transitionPath(instance: ToolInstance | undefined, path: string[], info: unknown): void {
+  if (!instance || path.length === 0) return
+  const transition = instance.transition
+  if (typeof transition !== 'function') return
+  transition.call(instance, path.join('.'), info)
 }
 
 function toolId(tool: unknown): string | null {

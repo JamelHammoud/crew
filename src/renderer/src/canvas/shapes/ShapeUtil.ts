@@ -46,12 +46,14 @@ export interface CrewShapePartial<Shape extends CrewShape = CrewShape> {
   meta?: Record<string, unknown>
 }
 
-export interface ShapeHandle extends VecLike {
+export interface ShapeHandle {
+  x: number
+  y: number
+  z?: number
   id: string
   type: string
   index?: string
   canSnap?: boolean
-  [key: string]: unknown
 }
 
 export interface ShapeHandleDragInfo<Shape extends CrewShape> {
