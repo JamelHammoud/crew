@@ -221,7 +221,7 @@ export class Store<R extends UnknownRecord> {
             ) {
               continue
             }
-            if (!changed) changed = { ...existing }
+            changed ??= { ...(existing as Record<string, unknown>) }
             changed[key] = value
           }
           if (changed) toPut.push(changed as unknown as R)

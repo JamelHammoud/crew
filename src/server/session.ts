@@ -1073,13 +1073,16 @@ export class CrewSession {
     const holding = threadId ? asking.includes('queue') : false
     const beside = threadId ? asking.includes('btw') : false
     const forking = threadId ? asking.includes('fork') : false
+    const naming = threadId ? asking.includes('fallback') : false
     const trimmed = text.trim()
     // A question on the side opens a ghost of its own, so a picture sent with
     // one is held for the window the way any ghost's is, whatever the thread it
     // was asked from does with its own.
     const hidden = threadId ? beside || this.ghostOf(threadId) !== undefined : ghosting
     const attachments = this.saveAttachments(incoming, hidden ? ws : undefined)
-    if (!trimmed && attachments.length === 0) return
+    // Taking a fallback off is an empty box with the chip on it, so that one send
+    // is the exception to nothing typed being nothing sent.
+    if (!trimmed && attachments.length === 0 && !naming) return
     const replyTo = this.replyReference(ws, replyTargetId)
     if (threadId) {
       const thread = this.threads.get(threadId)
