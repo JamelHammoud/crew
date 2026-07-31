@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Rectangle2d } from '../src/renderer/src/canvas/geometry/Rectangle2d'
 import { Mat } from '../src/renderer/src/canvas/math/Mat'
-import { Vec, type VecModel } from '../src/renderer/src/canvas/math/Vec'
+import { Vec } from '../src/renderer/src/canvas/math/Vec'
 import { decodePoints } from '../src/renderer/src/canvas/schema/points'
 import { DrawTool, type FreehandEditor, type FreehandShape } from '../src/renderer/src/canvas/tools/draw'
 import {

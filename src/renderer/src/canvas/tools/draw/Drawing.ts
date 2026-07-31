@@ -4,7 +4,6 @@ import { Vec, type VecModel } from '../../math/Vec'
 import { createShapeId, uniqueId } from '../../schema/id'
 import { decodePoints, DIM_2D, DIM_3D, encodePoints } from '../../schema/points'
 import type { TLDrawShapeSegment } from '../../schema/shapeProps'
-import type { DrawTool } from './DrawTool'
 import { DrawState } from './DrawState'
 import type { FreehandKeyboardEvent, FreehandPointerEvent, FreehandShape, FreehandShapeType } from './types'
 
