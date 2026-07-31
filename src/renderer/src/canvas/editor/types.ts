@@ -1,5 +1,5 @@
 import type { BoxModel, TLAsset, TLBinding, TLPageId, TLParentId, TLRecord, TLShape, TLShapeId } from '../schema'
-import type { ShapeUtil, TLShapePartial, TLShapeUtilConstructor } from '../shapes/ShapeUtil'
+import type { CrewShapePartial, ShapeUtil, ShapeUtilConstructor } from '../shapes/ShapeUtil'
 import type { Store } from '../store'
 
 export interface VecLike {
@@ -22,9 +22,19 @@ export type TLColorMode = 'light' | 'dark'
 
 export interface TLThemeColor {
   solid: string
+  fill?: string
+  linedFill?: string
+  frameHeadingStroke?: string
+  frameHeadingFill?: string
+  frameStroke?: string
+  frameFill?: string
+  frameText?: string
+  noteFill?: string
+  noteText?: string
   semi?: string
   pattern?: string
   highlightSrgb?: string
+  highlightP3?: string
 }
 
 export interface TLThemePalette {
@@ -33,6 +43,7 @@ export interface TLThemePalette {
 }
 
 export interface TLTheme {
+  id?: string
   colors: Record<TLColorMode, TLThemePalette>
   fontSize?: number
   lineHeight?: number
@@ -75,7 +86,7 @@ export interface TLShapeUpdate extends Partial<Omit<TLShape, 'id' | 'type' | 'ty
 
 export interface TLEditorOptions {
   store: Store<TLRecord>
-  shapeUtils?: readonly TLShapeUtilConstructor[]
+  shapeUtils?: readonly ShapeUtilConstructor[]
   bindingUtils?: readonly unknown[]
   overlayUtils?: readonly unknown[]
   tools?: readonly unknown[]
@@ -139,6 +150,6 @@ export interface ShapeEditorApi {
   updateShapes(partials: TLShapeUpdate[]): unknown
 }
 
-export type ShapePartial = TLShapePartial<TLShape>
+export type ShapePartial = CrewShapePartial<TLShape>
 
 export type ViewportBounds = BoxModel

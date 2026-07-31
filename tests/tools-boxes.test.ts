@@ -16,7 +16,7 @@ import { TextShapeTool } from '../src/renderer/src/canvas/tools/text'
 
 function defaultProps(type: TLShapeType): Record<string, unknown> {
   if (type === 'frame') return { w: 320, h: 180, name: '', color: 'black' }
-  if (type === 'design-node') return nodeDefaults()
+  if (type === 'design-node') return nodeDefaults() as unknown as Record<string, unknown>
   if (type === 'text') {
     return {
       color: 'black',

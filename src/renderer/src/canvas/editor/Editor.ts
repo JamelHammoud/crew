@@ -14,7 +14,6 @@ import {
   type TLAssetId,
   type TLBinding,
   type TLBindingId,
-  type TLContent,
   type TLPage,
   type TLPageId,
   type TLParentId,
@@ -22,7 +21,7 @@ import {
   type TLShape,
   type TLShapeId
 } from '../schema'
-import { ShapeUtil, type TLResizeInfo, type TLShapePartial } from '../shapes/ShapeUtil'
+import { ShapeUtil, type CrewShapePartial, type ShapeResizeInfo } from '../shapes/ShapeUtil'
 import { transact } from '../signals'
 import { uniqueId } from '../store'
 import { cloneContent } from './clipboard'
@@ -45,6 +44,7 @@ import type {
   TLCameraPoint,
   TLColorMode,
   TLEditorOptions,
+  TLContent,
   TLPutContentOptions,
   TLResizeShapeOptions,
   TLShapeUpdate,
@@ -54,7 +54,7 @@ import type {
   ViewportBounds
 } from './types'
 
-type ShapeCreate = TLShapePartial<TLShape> & {
+type ShapeCreate = CrewShapePartial<TLShape> & {
   parentId?: TLParentId
   index?: IndexKey
   isLocked?: boolean
@@ -263,7 +263,7 @@ export class Editor {
 
   getShapeUtil(shapeOrType: TLShape | TLShape['type']): ShapeUtil {
     const type = typeof shapeOrType === 'string' ? shapeOrType : shapeOrType.type
-    return this.shapeUtils.get(type) ?? new FallbackShapeUtil(this)
+    return this.shapeUtils.get(type) ?? new FallbackShapeUtil(this as never)
   }
 
   getShapeGeometry(shapeOrId: TLShape | TLShapeId): Geometry2d {
@@ -530,7 +530,7 @@ export class Editor {
 
   rotateShapesBy(shapes: readonly (TLShape | TLShapeId)[], delta: number): this {
     const ids = rootIds(this.allShapes(), shapes.map(shape => typeof shape === 'string' ? shape : shape.id))
-    const moving = ids.map(id => this.getShape(id)).filter((shape): shape is TLShape => Boolean(shape) && !shape.isLocked)
+    const moving = ids.map(id => this.getShape(id)).filter((shape): shape is TLShape => shape !== undefined && !shape.isLocked)
     const bounds = moving.map(shape => this.getShapePageBounds(shape)).filter((value): value is Box => Boolean(value))
     if (bounds.length === 0) return this
     const center = Box.Common(bounds).center
@@ -559,9 +559,9 @@ export class Editor {
     )
     const localOrigin = this.getShapeParentTransform(shape).invert().applyToPoint(scaledPageOrigin)
     if (util.onResize) {
-      const info: TLResizeInfo<TLShape> = {
+      const info: ShapeResizeInfo<TLShape> = {
         newPoint: localOrigin,
-        handle: (options.dragHandle ?? 'bottom_right') as TLResizeInfo<TLShape>['handle'],
+        handle: (options.dragHandle ?? 'bottom_right') as ShapeResizeInfo<TLShape>['handle'],
         mode: options.mode ?? 'resize_bounds',
         scaleX: finite(scale.x, 1),
         scaleY: finite(scale.y, 1),

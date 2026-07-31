@@ -1,4 +1,5 @@
-import { createBindingId, createShapeId, type TLAsset, type TLBinding, type TLContent, type TLShape, type TLShapeId } from '../schema'
+import { createBindingId, createShapeId, type TLAsset, type TLBinding, type TLShape, type TLShapeId } from '../schema'
+import type { TLContent } from './types'
 
 export interface ClipboardClone {
   shapes: TLShape[]
