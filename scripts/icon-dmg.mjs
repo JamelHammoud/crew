@@ -53,39 +53,38 @@ export const DMG_DEFS = `    <radialGradient id="pool" cx="0.5" cy="0.5" r="0.5"
       <stop offset="0.44" stop-color="#ffffff" stop-opacity="0.06" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
-    <linearGradient id="wake" x1="${TRAVEL.from - 40}" y1="0" x2="${TRAVEL.to}" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
-      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.16" />
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0.34" />
+    <linearGradient id="wake" x1="${-TRAVEL.wake}" y1="0" x2="0" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="${INK}" stop-opacity="0" />
+      <stop offset="0.62" stop-color="${INK}" stop-opacity="0.07" />
+      <stop offset="1" stop-color="${INK}" stop-opacity="0.2" />
     </linearGradient>
-    <filter id="haze" x="-45%" y="-200%" width="190%" height="500%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="9" />
+    <filter id="haze" x="-30%" y="-180%" width="160%" height="460%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.4" />
     </filter>`
 
 export const DMG_WASH = `  <circle cx="${DMG.app}" cy="${DMG.line - 6}" r="132" fill="url(#pool)" />`
 
-export function trailAt(geometry, where) {
+export function wakePath(geometry) {
   const { mark } = markGroup(geometry, 'measure')
-  const run = TRAVEL.to - TRAVEL.from
-  const head = TRAVEL.from + run * where
-  return { mark, head, run }
+  const nose = -mark.width / 2 + mark.radius * 0.4
+  const tail = -TRAVEL.wake
+  const lift = round(mark.radius * 0.92)
+  const bend = round(tail * 0.34)
+  return `M ${tail} 0 C ${round(bend)} ${-lift * 0.72} ${round(nose * 1.5)} ${-lift} ${round(nose)} ${-lift} L ${round(nose)} ${lift} C ${round(nose * 1.5)} ${lift} ${round(bend)} ${lift * 0.72} ${tail} 0 Z`
 }
 
-export function dmgOverlay(geometry, where = 0.62) {
+export function markAt(where) {
+  return round(TRAVEL.from + (TRAVEL.to - TRAVEL.from) * where)
+}
+
+export function dmgOverlay(geometry, where = 0.66) {
   const { discs } = markGroup(geometry, 'mark')
-  const { head } = trailAt(geometry, where)
-  const ghosts = Array.from({ length: TRAVEL.ghosts }, (_, index) => {
-    const back = (index + 1) / (TRAVEL.ghosts + 1)
-    const at = head - back * 78
-    const fade = round(0.2 * (1 - back) ** 1.5)
-    return `  <g transform="translate(${round(at)} ${DMG.line}) scale(${round(1 - back * 0.26)})" fill="${INK}" fill-opacity="${fade}">
+  const head = markAt(where)
+  return `  <g transform="translate(${head} ${DMG.line})">
+    <path d="${wakePath(geometry)}" fill="url(#wake)" filter="url(#haze)" />
+    <g fill="${INK}" fill-opacity="0.93">
 ${discs}
-  </g>`
-  }).join('\n')
-  return `  <ellipse cx="${round((TRAVEL.from + head) / 2)}" cy="${DMG.line}" rx="${round((head - TRAVEL.from) / 2 + 26)}" ry="13" fill="url(#wake)" filter="url(#haze)" />
-${ghosts}
-  <g transform="translate(${round(head)} ${DMG.line})" fill="${INK}" fill-opacity="0.94">
-${discs}
+    </g>
   </g>`
 }
 
