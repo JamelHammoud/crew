@@ -1,5 +1,7 @@
 ;(function () {
-  const PAPER = [0.925, 0.925, 0.925]
+  const PAPER = [0.949, 0.949, 0.949]
+
+  const GRAIN = 0.032
 
   const BASE = [0.612, 0.655, 0.969]
 
