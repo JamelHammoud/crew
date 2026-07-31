@@ -226,20 +226,28 @@ export function kimiParser(): OutputParser {
     const out: ParsedOutput[] = []
     if (str(msg?.method) === 'session/update') {
       update(out, msg.params)
+      counted(out, false)
       return out
     }
     if (msg?.error && msg.id !== undefined) {
       close(out)
       const text = str(msg.error?.message)
       if (text) out.push({ error: text })
+      // Nothing has been asked for yet but the session itself, so there is no
+      // turn coming to end this run and say why. Anything that goes wrong here
+      // is the way in failing, and being told is worth more than waiting.
+      if (!sessionId) out.push({ turnEnd: true })
       return out
     }
+    const opened = str(msg?.result?.sessionId)
+    if (opened) sessionId = opened
     // Only the prompt answers with a stop reason, so it needs no id to be told
     // apart, and it is the one thing that says the turn is over.
     const stop = str(msg?.result?.stopReason)
     if (stop) {
       close(out)
       if (STOPS[stop]) out.push({ error: STOPS[stop] })
+      counted(out, true)
       out.push({ turnEnd: true })
     }
     return out
