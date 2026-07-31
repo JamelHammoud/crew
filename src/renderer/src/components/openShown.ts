@@ -19,6 +19,6 @@ export async function openShown(pages: string[]): Promise<void> {
   for (const page of [...pages].reverse()) {
     const path = filePathOf(page)
     if (path === null) browser.showPage(page)
-    else if (openable(path)) browser.openFile(targetFor(path))
+    else if (openable(path)) browser.showFile(targetFor(path))
   }
 }
