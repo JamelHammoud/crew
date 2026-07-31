@@ -11,7 +11,7 @@ export const DMG = {
 
 const INK = '#141414'
 
-export const TRAVEL = { from: 258, to: 402, radius: 12, glide: 3.6, ghosts: 5 }
+export const TRAVEL = { from: 262, to: 400, radius: 12, glide: 3.8, wake: 96 }
 
 const round = value => Number(value.toFixed(3))
 
