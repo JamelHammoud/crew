@@ -1,4 +1,4 @@
-export type CommandName = 'plan' | 'tickets' | 'ghost' | 'voice' | 'steer' | 'queue' | 'btw'
+export type CommandName = 'plan' | 'tickets' | 'ghost' | 'voice' | 'steer' | 'queue' | 'btw' | 'fork'
 
 // Which composer offers a command. The chat's open a thread, so they are asked
 // for before there is one. A thread's are about the thread already open: where
@@ -9,6 +9,8 @@ export interface SlashCommand {
   name: CommandName
   where: CommandWhere
   hint: string
+  // Whether it only means anything while a turn is running.
+  live?: boolean
 }
 
 export const SLASH_COMMANDS: SlashCommand[] = [
@@ -16,9 +18,10 @@ export const SLASH_COMMANDS: SlashCommand[] = [
   { name: 'tickets', where: 'chat', hint: 'Watch the work on a board, and answer as it goes' },
   { name: 'ghost', where: 'chat', hint: 'Nobody else sees this thread' },
   { name: 'voice', where: 'chat', hint: 'Talk to them out loud' },
-  { name: 'steer', where: 'thread', hint: 'Go in now, on the turn already running' },
-  { name: 'queue', where: 'thread', hint: 'Wait for this turn to finish' },
-  { name: 'btw', where: 'thread', hint: 'Ask on the side, without touching the thread' }
+  { name: 'steer', where: 'thread', hint: 'Go in now, on the turn already running', live: true },
+  { name: 'queue', where: 'thread', hint: 'Wait for this turn to finish', live: true },
+  { name: 'btw', where: 'thread', hint: 'Ask on the side, without touching the thread' },
+  { name: 'fork', where: 'thread', hint: 'Carry on from here in a thread of its own' }
 ]
 
 const NAMES = SLASH_COMMANDS.map(command => command.name)
