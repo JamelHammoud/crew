@@ -91,9 +91,11 @@ describe('the canvas editor', () => {
     expect(subject.getCurrentTheme()).toMatchObject({ id: 'default', fontSize: 16, lineHeight: 1.35, strokeWidth: 2 })
     expect(subject.getCurrentTheme().colors.light.selectionStroke).toBe('hsl(214, 84%, 56%)')
     expect(subject.getCurrentTheme().colors.light.blue).toMatchObject({ solid: '#4465e9', fill: '#4465e9' })
+    expect(subject.getCurrentTheme().colors.light.orange).toMatchObject({ noteFill: '#FAA475', frameStroke: '#e68544', highlightSrgb: '#ffa500' })
     subject.user.updateUserPreferences({ colorScheme: 'dark' })
     expect(subject.getColorMode()).toBe('dark')
     expect(subject.getCurrentTheme().colors.dark['light-blue']).toMatchObject({ solid: '#4dabf7', fill: '#4dabf7' })
+    expect(subject.getCurrentTheme().colors.dark.violet).toMatchObject({ noteFill: '#5f1c70', frameFill: '#1b0f21', highlightSrgb: '#9e00ee' })
   })
 
   it('exports selected shapes from the current document snapshot', async () => {
