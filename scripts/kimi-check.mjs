@@ -322,6 +322,13 @@ try {
         : `${withArgs.length} updates carried rawInput, edit keys seen: ${editArgs.map(a => Object.keys(a).join('/')).join(' | ') || 'none'}`
     },
     {
+      name: 'every tool that ran had its arguments filled in',
+      ok: calls.size > 0 && silent.length === 0,
+      note: silent.length
+        ? `${silent.length} of ${calls.size} never carried rawInput: ${silent.join(', ')}`
+        : `all ${calls.size} tool calls carried rawInput`
+    },
+    {
       name: 'the edit really landed',
       ok: after.includes('return a + b'),
       note: flat(after)

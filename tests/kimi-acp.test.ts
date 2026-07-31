@@ -393,7 +393,7 @@ describe('a line it cannot use', () => {
       { turnEnd: true }
     ])
     const parse = kimiParser()
-    parse(opened(2, 'session_x'))
+    parse(reply(2, { sessionId: 'session_x' }))
     parse(chunk('agent_message_chunk', 'Half a se'))
     expect(parse(failed(3, 'The stream dropped.'))).toEqual([
       { blockStop: { index: 1 } },
