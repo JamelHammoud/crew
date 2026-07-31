@@ -286,7 +286,12 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
   }
 
   private createSnapshots(): ResizeSnapshot<Shape>[] {
-    return (this.editor.getSelectedShapeIds?.() ?? []).flatMap(id => {
+    const leaves = (id: Shape['id']): Shape['id'][] => {
+      const shape = this.editor.getShape(id)
+      if (!shape || shape.type !== 'group') return shape ? [id] : []
+      return (this.editor.getSortedChildIdsForParent?.(id) ?? []).flatMap(leaves)
+    }
+    return (this.editor.getSelectedShapeIds?.() ?? []).flatMap(leaves).flatMap(id => {
       const shape = this.editor.getShape(id)
       const pageTransform = shape && this.editor.getShapePageTransform?.(shape)
       const geometry = shape && this.editor.getShapeGeometry?.(shape)

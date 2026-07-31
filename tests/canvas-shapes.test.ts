@@ -148,9 +148,10 @@ describe('owned canvas shape utilities', () => {
       'line',
       'frame',
       'arrow',
-      'highlight',
-      'image'
-    ])
+        'highlight',
+        'image',
+        'group'
+      ])
     expect(defaultBindingUtils).toEqual([ArrowBindingUtil])
   })
 

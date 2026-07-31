@@ -17,6 +17,7 @@ import { ArrowBindingUtil, ArrowShapeUtil } from './ArrowShapeUtil'
 import { DrawShapeUtil } from './DrawShapeUtil'
 import { FrameShapeUtil } from './FrameShapeUtil'
 import { GeoShapeUtil } from './GeoShapeUtil'
+import { GroupShapeUtil } from './GroupShapeUtil'
 import { HighlightShapeUtil } from './HighlightShapeUtil'
 import { ImageShapeUtil } from './ImageShapeUtil'
 import { LineShapeUtil } from './LineShapeUtil'
@@ -32,7 +33,8 @@ export const defaultShapeUtils = [
   FrameShapeUtil,
   ArrowShapeUtil,
   HighlightShapeUtil,
-  ImageShapeUtil
+  ImageShapeUtil,
+  GroupShapeUtil
 ] as const
 
 export const defaultBindingUtils = [ArrowBindingUtil] as const

@@ -68,6 +68,7 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
   getShape(id: Shape['id']): Shape | undefined
   updateShapes(shapes: ShapeUpdate<Shape>[]): unknown
   getSelectedShapeIds?(): Shape['id'][]
+  getSortedChildIdsForParent?(id: Shape['id']): Shape['id'][]
   getShapePageTransform?(shape: Shape | Shape['id']): MatLike | undefined
   getShapeParentTransform?(shape: Shape | Shape['id']): MatLike | undefined
   getShapeGeometry?(shape: Shape | Shape['id']): { bounds: import('../../math/Box').Box }

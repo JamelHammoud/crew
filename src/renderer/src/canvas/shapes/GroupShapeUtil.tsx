@@ -23,6 +23,6 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
     return children.length ? new Group2d({ children }) : new Rectangle2d({ width: 1, height: 1, isFilled: false })
   }
   override canBind(): boolean { return false }
-  override canResize(): boolean { return false }
+  override canResize(): boolean { return true }
   component(_shape: GroupShape): ReactNode { return createElement('div') }
 }
