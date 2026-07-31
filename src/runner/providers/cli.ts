@@ -60,7 +60,7 @@ interface CliProviderOptions {
   // A parser that has to remember where it is in a run gets one of its own. A
   // module-level function is shared by every run at once, so a second agent
   // starting would take the first one's place in the stream.
-  makeParser?: () => OutputParser
+  makeParser?: () => RunParser
   env?: NodeJS.ProcessEnv
   idleTimeoutMs?: number
   stdinPrompt?: boolean
