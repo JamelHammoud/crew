@@ -71,6 +71,9 @@ export interface ThreadMeta {
   // The thread a question on the side was asked from. It reads in the panel and
   // is nobody's work, so it stands out of the chat and out of the task list.
   aside?: string
+  // The thread this one carried on from. It is a card in the chat like any
+  // other: what the fork says is that the talk before it is being carried.
+  forkedFrom?: string
   // A thread another one sent out. It reads inside its parent rather than as a
   // card of its own in the feed.
   parentThreadId?: string
