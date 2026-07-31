@@ -172,6 +172,9 @@ export interface SubagentRun {
   agentId: string
   ok?: boolean
   ms?: number
+  // Stopping a run stops the helpers it sent out, so this is the ordinary way a
+  // helper ends rather than an edge of it.
+  stopped?: boolean
 }
 
 // What an agent put on the screen, as it reads in the thread afterwards. The
