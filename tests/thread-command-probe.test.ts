@@ -99,8 +99,28 @@ describe('commands in a thread', () => {
     expect(screen.getByText('/steer')).toBeTruthy()
     expect(screen.getByText('/queue')).toBeTruthy()
     expect(screen.getByText('/btw')).toBeTruthy()
+    expect(screen.getByText('/goal')).toBeTruthy()
     expect(screen.queryByText('/plan')).toBeNull()
     expect(screen.queryByText('/ghost')).toBeNull()
+  })
+
+  it('sends a goal beside the next turn', () => {
+    const sendChat = vi.fn()
+    const composer = open({ sendChat })
+
+    fireEvent.change(composer, { target: { value: '/goal ' } })
+    expect(screen.getByLabelText('Remove Goal')).toBeTruthy()
+    fireEvent.change(composer, { target: { value: 'finish the migration' } })
+    fireEvent.click(screen.getByLabelText('Steer'))
+
+    expect(sendChat).toHaveBeenCalledWith(
+      'finish the migration',
+      'thread-1',
+      undefined,
+      undefined,
+      undefined,
+      ['goal']
+    )
   })
 
   it('leaves steering and queueing out while there is no turn to go into', () => {

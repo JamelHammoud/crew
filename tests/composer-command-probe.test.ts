@@ -69,6 +69,18 @@ describe('commands in the composer', () => {
     expect(screen.getByLabelText('Remove Ghost')).toBeTruthy()
   })
 
+  it('offers a goal and sends it beside the work', () => {
+    const sendChat = vi.fn()
+    const composer = open(sendChat)
+
+    fireEvent.change(composer, { target: { value: '/goal ' } })
+    expect(screen.getByLabelText('Remove Goal')).toBeTruthy()
+    fireEvent.change(composer, { target: { value: 'finish the migration' } })
+    fireEvent.click(screen.getByLabelText('Send'))
+
+    expect(sendChat).toHaveBeenCalledWith('finish the migration', undefined, undefined, undefined, undefined, ['goal'])
+  })
+
   it('sends the command beside the message rather than in it', () => {
     const sendChat = vi.fn()
     const composer = open(sendChat)

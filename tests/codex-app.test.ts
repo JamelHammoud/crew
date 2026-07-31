@@ -31,6 +31,29 @@ describe('the codex handshake', () => {
     expect(sent[3].params.sandboxPolicy).toEqual({ type: 'dangerFullAccess' })
   })
 
+  it('sets a goal before starting its turn', () => {
+    const dialog = codexDialog('finish the migration', '/repo', reader(), { goal: true })
+    const sent = [...dialog.begin()]
+    sent.push(...dialog.answer(reply(1, { userAgent: 'crew' })))
+    sent.push(...dialog.answer(reply(2, { thread: { id: 'thread-1' } })))
+    sent.push(...dialog.answer(reply(3, { goal: { objective: 'finish the migration', status: 'active' } })))
+    const messages = sent.map(line => JSON.parse(line))
+
+    expect(messages.map(message => message.method)).toEqual([
+      'initialize',
+      'initialized',
+      'thread/start',
+      'thread/goal/set',
+      'turn/start'
+    ])
+    expect(messages[3].params).toEqual({
+      threadId: 'thread-1',
+      objective: 'finish the migration',
+      status: 'active'
+    })
+    expect(messages[4].params.input).toEqual([{ type: 'text', text: 'finish the migration' }])
+  })
+
   it('steers the live turn and holds the message back once the turn is over', () => {
     const dialog = codexDialog('go', '/repo', reader())
     expect(dialog.steer('wait')).toBeNull()

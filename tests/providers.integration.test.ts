@@ -114,6 +114,22 @@ describe('fake provider contract', () => {
     await expect(run.done).resolves.toEqual({ text: prompt })
   })
 
+  it('hands native slash-command providers a goal prompt', async () => {
+    const provider = makeCliProvider({
+      name: 'goal',
+      label: 'Goal',
+      command: process.execPath,
+      args: () => [
+        '-e',
+        'let body = ""; process.stdin.setEncoding("utf8"); process.stdin.on("data", chunk => body += chunk); process.stdin.on("end", () => process.stdout.write(body))'
+      ],
+      stdinPrompt: true,
+      goalCommand: true
+    })
+    const run = provider.start('finish the migration', repo, { onStep: () => {} }, {}, { goal: true })
+    await expect(run.done).resolves.toEqual({ text: '/goal finish the migration' })
+  })
+
   it('kill stops the run and rejects with Stopped', async () => {
     const provider = makeFakeProvider({ FAKE_CLI_DELAY_MS: '300' })
     const run = provider.start('slow', repo, { onStep: () => {} })
