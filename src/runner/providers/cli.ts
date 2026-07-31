@@ -83,21 +83,20 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     name: opts.name,
     label: opts.label,
     install: opts.install,
-    steerable: opts.streamInput === true,
+    steerable: opts.dialog !== undefined,
     fields,
     detect: async () => commandExists(opts.command),
     usage: opts.usage,
     start: (prompt, cwd, hooks, settings = {}): RunningPrompt => {
       const resolved = resolveSettings(fields(), settings)
-      const invocation = commandInvocation(
-        resolveCommand(opts.command) ?? opts.command,
-        opts.args(prompt, key => resolved[key] ?? '')
-      )
+      const read: SettingReader = key => resolved[key] ?? ''
+      const dialog = opts.dialog?.(prompt, cwd, read)
+      const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, read))
       const child = spawn(invocation.command, invocation.args, {
         cwd,
         env: { ...process.env, PATH: crewPath(), ...opts.env },
         detached: detachCliProcess(),
-        stdio: [opts.stdinPrompt || opts.streamInput ? 'pipe' : 'ignore', 'pipe', 'pipe']
+        stdio: [opts.stdinPrompt || dialog ? 'pipe' : 'ignore', 'pipe', 'pipe']
       })
       const stdout = child.stdout
       const stderr = child.stderr
