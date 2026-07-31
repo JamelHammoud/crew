@@ -108,6 +108,7 @@ writeFileSync(
     <div class="pane">
       <canvas id="live"></canvas>
       <svg class="overlay" viewBox="0 0 ${DMG.width} ${DMG.height}" xmlns="http://www.w3.org/2000/svg">
+        ${DMG_WASH}
         <defs>
 ${dmgDefs()}
         </defs>

@@ -8,7 +8,7 @@ export const DMG = {
   headline: 78,
   chrome: 48,
   iconTextRoom: 22,
-  at: 61
+  at: 118
 }
 
 const INK = '#141414'
