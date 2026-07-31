@@ -26,10 +26,7 @@ export type StoreSchemaTypes<R extends UnknownRecord> = {
 }
 
 export class StoreSchema<R extends UnknownRecord> {
-  static create<R extends UnknownRecord>(
-    types: StoreSchemaTypes<R>,
-    options?: StoreSchemaOptions<R>
-  ): StoreSchema<R> {
+  static create<R extends UnknownRecord>(types: StoreSchemaTypes<R>, options?: StoreSchemaOptions<R>): StoreSchema<R> {
     return new StoreSchema<R>(types, options ?? {})
   }
 
@@ -44,12 +41,7 @@ export class StoreSchema<R extends UnknownRecord> {
     return type
   }
 
-  validateRecord(
-    store: Store<R>,
-    record: R,
-    phase: RecordValidationPhase,
-    recordBefore: R | null
-  ): R {
+  validateRecord(store: Store<R>, record: R, phase: RecordValidationPhase, recordBefore: R | null): R {
     try {
       return this.getType(record.typeName).validate(record, recordBefore ?? undefined)
     } catch (error) {

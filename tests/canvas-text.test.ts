@@ -28,7 +28,7 @@ import {
   textTransformCss,
   type FontFaceSetLike,
   type RichTextDocument,
-  type TextMeasureOptions,
+  type TextMeasureOptions
 } from '../src/renderer/src/canvas/text'
 
 const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
@@ -125,7 +125,10 @@ const rich: RichTextDocument = {
           text: 'link',
           marks: [
             { type: 'italic' },
-            { type: 'link', attrs: { href: 'https://crew.test', target: '_blank', rel: 'noopener noreferrer nofollow' } },
+            {
+              type: 'link',
+              attrs: { href: 'https://crew.test', target: '_blank', rel: 'noopener noreferrer nofollow' }
+            },
             { type: 'highlight', attrs: { color: null } }
           ]
         }
@@ -153,7 +156,9 @@ describe('canvas text measurement', () => {
     const dom = installDom()
     const container = dom.window.document.body
     const sizes = new WeakMap<Element, { width: number; height: number }>()
-    vi.spyOn(dom.window.HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    vi.spyOn(dom.window.HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement
+    ) {
       const size = sizes.get(this) ?? { width: this.textContent?.length ?? 0, height: 18 }
       return {
         x: 0,
@@ -250,7 +255,13 @@ describe('canvas rich text', () => {
 describe('canvas text autosizing', () => {
   it('uses fixed widths for wrapped text and adds wrapping room to automatic widths', () => {
     installDom()
-    const measureHtml = vi.fn((_html: string, _options: TextMeasureOptions) => ({ x: 0, y: 0, w: 33.4, h: 11, scrollWidth: 0 }))
+    const measureHtml = vi.fn((_html: string, _options: TextMeasureOptions) => ({
+      x: 0,
+      y: 0,
+      w: 33.4,
+      h: 11,
+      scrollWidth: 0
+    }))
     const automatic = measureTextLayout(
       { measureHtml },
       { richText: rich, autoSize: true, width: 4, fontSize: 16, options: layoutMeasure }
@@ -266,7 +277,15 @@ describe('canvas text autosizing', () => {
   })
 
   it('keeps aligned growth anchored through rotation and keeps content growth on its top edge', () => {
-    const previous = { x: 100, y: 80, rotation: Math.PI / 2, scale: 2, autoSize: true, textAlign: 'end' as const, width: 20 }
+    const previous = {
+      x: 100,
+      y: 80,
+      rotation: Math.PI / 2,
+      scale: 2,
+      autoSize: true,
+      textAlign: 'end' as const,
+      width: 20
+    }
     const next = { ...previous, width: 20 }
     const content = compensateTextGrowth(previous, next, { width: 20, height: 10 }, { width: 30, height: 20 }, true)
     expect(content.x).toBeCloseTo(100)
@@ -371,7 +390,11 @@ describe('canvas rich text toolbar', () => {
     const tab = new dom.window.KeyboardEvent('keydown', { key: 'Tab', cancelable: true }) as unknown as KeyboardEvent
     expect(handleTextTab(editor, tab)).toBe(true)
     expect(editor.getText()).toBe('\tCrew')
-    const untab = new dom.window.KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, cancelable: true }) as unknown as KeyboardEvent
+    const untab = new dom.window.KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      cancelable: true
+    }) as unknown as KeyboardEvent
     expect(handleTextTab(editor, untab)).toBe(true)
     expect(editor.getText()).toBe('Crew')
     editor.destroy()

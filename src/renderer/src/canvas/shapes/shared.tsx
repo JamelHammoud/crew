@@ -32,11 +32,14 @@ export function plainText(value: unknown): string {
   const record = value as { text?: unknown; content?: unknown[]; type?: unknown }
   if (typeof record.text === 'string') return record.text
   if (!Array.isArray(record.content)) return ''
-  return record.content.map((child, index) => {
-    const text = plainText(child)
-    const next = record.content?.[index + 1] as { type?: unknown } | undefined
-    return next && record.type === 'doc' ? `${text}\n` : text
-  }).join('').replace(/\n$/, '')
+  return record.content
+    .map((child, index) => {
+      const text = plainText(child)
+      const next = record.content?.[index + 1] as { type?: unknown } | undefined
+      return next && record.type === 'doc' ? `${text}\n` : text
+    })
+    .join('')
+    .replace(/\n$/, '')
 }
 
 export function segmentPoints(segments: DrawSegment[], scaleX = 1, scaleY = 1): Vec[] {
@@ -78,7 +81,15 @@ export function pathFromPoints(points: readonly Vec[], close = false): string {
 
 export function shapeElement(
   path: string,
-  options: { editor?: ShapeEditor; color?: CrewColorStyle; stroke?: string; fill?: string; width?: number; opacity?: number; children?: ReactNode } = {}
+  options: {
+    editor?: ShapeEditor
+    color?: CrewColorStyle
+    stroke?: string
+    fill?: string
+    width?: number
+    opacity?: number
+    children?: ReactNode
+  } = {}
 ): ReactNode {
   const stroke = options.stroke ?? shapeColor(options.editor, options.color ?? 'black')
   const style: CSSProperties = { overflow: 'visible', pointerEvents: 'all' }

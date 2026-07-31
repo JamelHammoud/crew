@@ -87,7 +87,11 @@ export class CameraManager {
     const viewport = this.screenBounds.get()
     const availableWidth = Math.max(1, viewport.w - padding * 2)
     const availableHeight = Math.max(1, viewport.h - padding * 2)
-    const z = clamp(Math.min(availableWidth / Math.max(1, bounds.w), availableHeight / Math.max(1, bounds.h)), this.zoomMin, this.zoomMax)
+    const z = clamp(
+      Math.min(availableWidth / Math.max(1, bounds.w), availableHeight / Math.max(1, bounds.h)),
+      this.zoomMin,
+      this.zoomMax
+    )
     this.setCamera({
       x: viewport.w / (2 * z) - bounds.midX,
       y: viewport.h / (2 * z) - bounds.midY,

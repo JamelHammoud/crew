@@ -25,7 +25,7 @@ describe('atoms', () => {
     expect(count.get()).toBe(1)
     count.set(2)
     expect(count.get()).toBe(2)
-    count.update((n) => n + 1)
+    count.update(n => n + 1)
     expect(count.get()).toBe(3)
   })
 
@@ -242,7 +242,7 @@ describe('transactions', () => {
 
   it('rolls back when asked to', () => {
     const a = atom('a', 1)
-    transaction((rollback) => {
+    transaction(rollback => {
       a.set(9)
       rollback()
     })
@@ -280,7 +280,7 @@ describe('transactions', () => {
     ).toThrow('nope')
 
     expect(a.get()).toBe(1)
-    expect(seen.every((v) => v === 1)).toBe(true)
+    expect(seen.every(v => v === 1)).toBe(true)
     stop()
   })
 })
@@ -357,14 +357,10 @@ describe('useValue', () => {
 
     function Probe(): ReturnType<typeof createElement> {
       renders++
-      const value = useValue(
-        'plain',
-        () => {
-          derives++
-          return plain.value * 2
-        },
-        []
-      )
+      const value = useValue('plain', () => {
+        derives++
+        return plain.value * 2
+      }, [])
       return createElement('span', { 'data-testid': 'out' }, String(value))
     }
 
@@ -469,11 +465,7 @@ describe('the react bindings', () => {
       const doubled = useComputed('doubled', () => count.get() * 2, [count])
       seenAtom = count
       const value = useValue(doubled)
-      return createElement(
-        'button',
-        { 'data-testid': 'out', onClick: () => count.update((n) => n + 1) },
-        String(value)
-      )
+      return createElement('button', { 'data-testid': 'out', onClick: () => count.update(n => n + 1) }, String(value))
     }
 
     render(createElement(Probe))

@@ -401,7 +401,10 @@ export function createAssetValidator<Type extends string, Props extends object>(
   })
 }
 
-export function createBindingValidator<Type extends string, Props extends object>(type: Type, props: PropsConfig<Props>) {
+export function createBindingValidator<Type extends string, Props extends object>(
+  type: Type,
+  props: PropsConfig<Props>
+) {
   return T.object<TLBaseBinding<Type, Props>>({
     id: bindingIdValidator,
     typeName: T.literal('binding'),

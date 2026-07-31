@@ -155,12 +155,7 @@ export abstract class Geometry2d {
     )
   }
 
-  hitTestPoint(
-    point: VecLike,
-    margin = 0,
-    hitInside = false,
-    filters?: Geometry2dFilters
-  ): boolean {
+  hitTestPoint(point: VecLike, margin = 0, hitInside = false, filters?: Geometry2dFilters): boolean {
     return this.distanceToPoint(point, hitInside, filters) <= margin
   }
 
@@ -193,12 +188,7 @@ export abstract class Geometry2d {
     return this.isClosed && this.isFilled && pointInPolygon(nearest, this.vertices) ? -dist : dist
   }
 
-  hitTestLineSegment(
-    a: VecLike,
-    b: VecLike,
-    distance = 0,
-    filters?: Geometry2dFilters
-  ): boolean {
+  hitTestLineSegment(a: VecLike, b: VecLike, distance = 0, filters?: Geometry2dFilters): boolean {
     return this.distanceToLineSegment(a, b, filters) <= distance
   }
 

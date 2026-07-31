@@ -13,25 +13,62 @@ export interface StrokeOptions {
 }
 
 const linear = (value: number) => value
-const easeOutSine = (value: number) => Math.sin(value * Math.PI / 2)
-const penEasing = (value: number) => value * 0.65 + Math.sin(value * Math.PI / 2) * 0.35
+const easeOutSine = (value: number) => Math.sin((value * Math.PI) / 2)
+const penEasing = (value: number) => value * 0.65 + Math.sin((value * Math.PI) / 2) * 0.35
 
 function modulate(value: number, from: [number, number], to: [number, number]): number {
   return Math.max(to[0], Math.min(to[1], to[0] + (to[1] - to[0]) * ((value - from[0]) / (from[1] - from[0]))))
 }
 
-export function freehandOptions(props: { dash: string; isPen: boolean; isComplete: boolean }, strokeWidth: number, forceComplete: boolean, forceSolid: boolean): StrokeOptions {
+export function freehandOptions(
+  props: { dash: string; isPen: boolean; isComplete: boolean },
+  strokeWidth: number,
+  forceComplete: boolean,
+  forceSolid: boolean
+): StrokeOptions {
   const last = props.isComplete || forceComplete
   if (forceSolid || props.dash !== 'draw') {
-    return { size: strokeWidth, thinning: 0, streamline: props.isPen ? 0.62 : modulate(strokeWidth, [9, 16], [0.64, 0.74]), smoothing: 0.62, simulatePressure: false, easing: linear, last }
+    return {
+      size: strokeWidth,
+      thinning: 0,
+      streamline: props.isPen ? 0.62 : modulate(strokeWidth, [9, 16], [0.64, 0.74]),
+      smoothing: 0.62,
+      simulatePressure: false,
+      easing: linear,
+      last
+    }
   }
   return props.isPen
-    ? { size: 1 + strokeWidth * 1.2, thinning: 0.62, streamline: 0.62, smoothing: 0.62, simulatePressure: false, easing: penEasing, last }
-    : { size: strokeWidth, thinning: 0.5, streamline: modulate(strokeWidth, [9, 16], [0.64, 0.74]), smoothing: 0.62, simulatePressure: true, easing: easeOutSine, last }
+    ? {
+        size: 1 + strokeWidth * 1.2,
+        thinning: 0.62,
+        streamline: 0.62,
+        smoothing: 0.62,
+        simulatePressure: false,
+        easing: penEasing,
+        last
+      }
+    : {
+        size: strokeWidth,
+        thinning: 0.5,
+        streamline: modulate(strokeWidth, [9, 16], [0.64, 0.74]),
+        smoothing: 0.62,
+        simulatePressure: true,
+        easing: easeOutSine,
+        last
+      }
 }
 
 export function highlightOptions(strokeWidth: number, showAsComplete: boolean): StrokeOptions {
-  return { size: 1 + strokeWidth, thinning: 0, streamline: 0.5, smoothing: 0.5, simulatePressure: false, easing: easeOutSine, last: showAsComplete }
+  return {
+    size: 1 + strokeWidth,
+    thinning: 0,
+    streamline: 0.5,
+    smoothing: 0.5,
+    simulatePressure: false,
+    easing: easeOutSine,
+    last: showAsComplete
+  }
 }
 
 interface StrokePoint {
@@ -98,7 +135,7 @@ export function freehandOutline(input: readonly VecLike[], options: StrokeOption
       simulatedPressure = Math.min(1, simulatedPressure + (target - simulatedPressure) * 0.275)
     }
     const pressure = simulate ? simulatedPressure : current.pressure
-    let radius = Math.max(0.01, size / 2 * (1 - thinning * (0.5 - easing(pressure))))
+    let radius = Math.max(0.01, (size / 2) * (1 - thinning * (0.5 - easing(pressure))))
     if (startTaper > 0) radius *= startEase(Math.min(1, current.runningLength / startTaper))
     if (endTaper > 0) radius *= endEase(Math.min(1, (totalLength - current.runningLength) / endTaper))
     const nextVector = points[Math.min(points.length - 1, index + 1)].vector
@@ -122,15 +159,23 @@ export function freehandOutline(input: readonly VecLike[], options: StrokeOption
   if (options.start?.cap === false || startTaper > 0) startCap.push(right[0] ?? first, left[0] ?? first)
   else {
     const origin = right[0] ?? first
-    for (let step = 1; step < 10; step++) startCap.push(origin.clone().rotWith(first, Math.PI * step / 9))
+    for (let step = 1; step < 10; step++) startCap.push(origin.clone().rotWith(first, (Math.PI * step) / 9))
   }
-  if (options.end?.cap === false || endTaper > 0 || !options.last) endCap.push(left[left.length - 1] ?? last, right[right.length - 1] ?? last)
+  if (options.end?.cap === false || endTaper > 0 || !options.last)
+    endCap.push(left[left.length - 1] ?? last, right[right.length - 1] ?? last)
   else {
     const origin = left[left.length - 1] ?? last
-    for (let step = 1; step < 10; step++) endCap.push(origin.clone().rotWith(last, Math.PI * step / 9))
+    for (let step = 1; step < 10; step++) endCap.push(origin.clone().rotWith(last, (Math.PI * step) / 9))
   }
   if (input.length === 1 || totalLength < Math.max(startRadius, endRadius)) {
-    return Array.from({ length: 16 }, (_, index) => new Vec(first.x + Math.cos(index * Math.PI * 2 / 16) * Math.max(startRadius, size / 2), first.y + Math.sin(index * Math.PI * 2 / 16) * Math.max(startRadius, size / 2)))
+    return Array.from(
+      { length: 16 },
+      (_, index) =>
+        new Vec(
+          first.x + Math.cos((index * Math.PI * 2) / 16) * Math.max(startRadius, size / 2),
+          first.y + Math.sin((index * Math.PI * 2) / 16) * Math.max(startRadius, size / 2)
+        )
+    )
   }
   return [...left, ...endCap, ...right.reverse(), ...startCap]
 }

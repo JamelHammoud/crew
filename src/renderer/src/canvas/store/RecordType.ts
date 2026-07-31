@@ -29,10 +29,7 @@ export interface RecordTypeConfig<R extends UnknownRecord> {
   ephemeralKeys?: EphemeralKeys<R>
 }
 
-export class RecordType<
-  R extends UnknownRecord,
-  RequiredProperties extends keyof Omit<R, 'id' | 'typeName'>
-> {
+export class RecordType<R extends UnknownRecord, RequiredProperties extends keyof Omit<R, 'id' | 'typeName'>> {
   readonly typeName: R['typeName']
   readonly createDefaultProperties: () => Omit<R, 'id' | 'typeName'>
   readonly validator: StoreValidator<R>
@@ -43,7 +40,7 @@ export class RecordType<
   constructor(typeName: R['typeName'], config: RecordTypeConfig<R>) {
     this.typeName = typeName
     this.createDefaultProperties = config.createDefaultProperties
-    this.validator = config.validator ?? { validate: (record) => record as R }
+    this.validator = config.validator ?? { validate: record => record as R }
     this.scope = config.scope ?? 'document'
     this.ephemeralKeys = config.ephemeralKeys
     const ephemeralKeySet = new Set<string>()

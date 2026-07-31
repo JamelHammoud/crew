@@ -1,8 +1,4 @@
-import {
-  base62CharSet,
-  generateNJitteredKeysBetween,
-  generateNKeysBetween
-} from 'fractional-indexing-jittered'
+import { base62CharSet, generateNJitteredKeysBetween, generateNKeysBetween } from 'fractional-indexing-jittered'
 
 export type IndexKey = string & { __brand: 'indexKey' }
 
@@ -14,8 +10,7 @@ const SMALLEST_INTEGER = CHAR_SET.mostNegative + ZERO.repeat(26)
 
 const keysBetween =
   process.env.NODE_ENV === 'test'
-    ? (below: string | null, above: string | null, count: number) =>
-        generateNKeysBetween(below, above, count, CHAR_SET)
+    ? (below: string | null, above: string | null, count: number) => generateNKeysBetween(below, above, count, CHAR_SET)
     : (below: string | null, above: string | null, count: number) =>
         generateNJitteredKeysBetween(below, above, count, CHAR_SET)
 
@@ -59,10 +54,7 @@ export function getIndicesBelow(above: IndexKey | null | undefined, count: numbe
   return keysBetween(null, above ?? null, count) as IndexKey[]
 }
 
-export function getIndexBetween(
-  below: IndexKey | null | undefined,
-  above: IndexKey | null | undefined
-): IndexKey {
+export function getIndexBetween(below: IndexKey | null | undefined, above: IndexKey | null | undefined): IndexKey {
   return keysBetween(below ?? null, above ?? null, 1)[0] as IndexKey
 }
 

@@ -65,30 +65,187 @@ const darkVariants: Partial<Record<string, Partial<TLThemeColor>>> = {
   white: { fill: '#f3f3f3', linedFill: '#f3f3f3', semi: '#f5f5f5', pattern: '#f9f9f9' }
 }
 
-const colorNames = ['black', 'grey', 'light-violet', 'violet', 'blue', 'light-blue', 'yellow', 'orange', 'green', 'light-green', 'light-red', 'red', 'white'] as const
+const colorNames = [
+  'black',
+  'grey',
+  'light-violet',
+  'violet',
+  'blue',
+  'light-blue',
+  'yellow',
+  'orange',
+  'green',
+  'light-green',
+  'light-red',
+  'red',
+  'white'
+] as const
 
 const lightUtilityVariants = utilityVariants({
-  noteFill: ['#FCE19C', '#C0CAD3', '#DFB0F9', '#DB91FD', '#8AA3FF', '#9BC4FD', '#FED49A', '#FAA475', '#6FC896', '#98D08A', '#F7A5A1', '#FC8282', '#FFFFFF'],
+  noteFill: [
+    '#FCE19C',
+    '#C0CAD3',
+    '#DFB0F9',
+    '#DB91FD',
+    '#8AA3FF',
+    '#9BC4FD',
+    '#FED49A',
+    '#FAA475',
+    '#6FC896',
+    '#98D08A',
+    '#F7A5A1',
+    '#FC8282',
+    '#FFFFFF'
+  ],
   noteText: Array(13).fill('#000000'),
-  frameStroke: ['#717171', '#aaaaab', '#e59bf5', '#bc62d3', '#6681ec', '#6cb2f3', '#f3bb6c', '#e68544', '#37a684', '#6dbe7c', '#f89090', '#e55757', '#7d7d7d'],
-  frameFill: ['#ffffff', '#fcfcfd', '#fefbff', '#fdf9fd', '#f9fafe', '#fafcff', '#fffdfa', '#fef9f6', '#f8fcfa', '#fafdfa', '#fffbfb', '#fef9f9', '#ffffff'],
+  frameStroke: [
+    '#717171',
+    '#aaaaab',
+    '#e59bf5',
+    '#bc62d3',
+    '#6681ec',
+    '#6cb2f3',
+    '#f3bb6c',
+    '#e68544',
+    '#37a684',
+    '#6dbe7c',
+    '#f89090',
+    '#e55757',
+    '#7d7d7d'
+  ],
+  frameFill: [
+    '#ffffff',
+    '#fcfcfd',
+    '#fefbff',
+    '#fdf9fd',
+    '#f9fafe',
+    '#fafcff',
+    '#fffdfa',
+    '#fef9f6',
+    '#f8fcfa',
+    '#fafdfa',
+    '#fffbfb',
+    '#fef9f9',
+    '#ffffff'
+  ],
   frameText: Array(13).fill('#000000'),
-  highlightSrgb: ['#fddd00', '#cbe7f1', '#ff88ff', '#c77cff', '#10acff', '#00f4ff', '#fddd00', '#ffa500', '#00ffc8', '#65f641', '#ff7fa3', '#ff636e', '#ffffff']
+  highlightSrgb: [
+    '#fddd00',
+    '#cbe7f1',
+    '#ff88ff',
+    '#c77cff',
+    '#10acff',
+    '#00f4ff',
+    '#fddd00',
+    '#ffa500',
+    '#00ffc8',
+    '#65f641',
+    '#ff7fa3',
+    '#ff636e',
+    '#ffffff'
+  ]
 })
 
 const darkUtilityVariants = utilityVariants({
-  noteFill: ['#2c2c2c', '#56595F', '#762F8E', '#5f1c70', '#2A3F98', '#1F5495', '#8a5e1c', '#7c3905', '#014429', '#21581D', '#7a3333', '#7e201f', '#eaeaea'],
-  noteText: ['#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#1d1d1d'],
-  frameStroke: ['#5c5c5c', '#42474D', '#6c367a', '#6d1583', '#384994', '#075797', '#684e12', '#773a0e', '#10513C', '#1C5427', '#6f3232', '#701e1e', '#ffffff'],
-  frameFill: ['#0c0c0c', '#151719', '#1C151E', '#1b0f21', '#11141f', '#0B1823', '#1e1911', '#1c1512', '#0E1614', '#0F1911', '#181212', '#1b1313', '#ffffff'],
-  frameText: ['#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#f2f2f2', '#000000'],
-  highlightSrgb: ['#d2b700', '#9cb4cb', '#c400c7', '#9e00ee', '#0079d2', '#00bdc8', '#d2b700', '#d07a00', '#009774', '#00a000', '#db005b', '#de002c', '#ffffff']
+  noteFill: [
+    '#2c2c2c',
+    '#56595F',
+    '#762F8E',
+    '#5f1c70',
+    '#2A3F98',
+    '#1F5495',
+    '#8a5e1c',
+    '#7c3905',
+    '#014429',
+    '#21581D',
+    '#7a3333',
+    '#7e201f',
+    '#eaeaea'
+  ],
+  noteText: [
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#1d1d1d'
+  ],
+  frameStroke: [
+    '#5c5c5c',
+    '#42474D',
+    '#6c367a',
+    '#6d1583',
+    '#384994',
+    '#075797',
+    '#684e12',
+    '#773a0e',
+    '#10513C',
+    '#1C5427',
+    '#6f3232',
+    '#701e1e',
+    '#ffffff'
+  ],
+  frameFill: [
+    '#0c0c0c',
+    '#151719',
+    '#1C151E',
+    '#1b0f21',
+    '#11141f',
+    '#0B1823',
+    '#1e1911',
+    '#1c1512',
+    '#0E1614',
+    '#0F1911',
+    '#181212',
+    '#1b1313',
+    '#ffffff'
+  ],
+  frameText: [
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#f2f2f2',
+    '#000000'
+  ],
+  highlightSrgb: [
+    '#d2b700',
+    '#9cb4cb',
+    '#c400c7',
+    '#9e00ee',
+    '#0079d2',
+    '#00bdc8',
+    '#d2b700',
+    '#d07a00',
+    '#009774',
+    '#00a000',
+    '#db005b',
+    '#de002c',
+    '#ffffff'
+  ]
 })
 
 function utilityVariants(values: Record<string, string[]>): Record<string, Partial<TLThemeColor>> {
-  return Object.fromEntries(colorNames.map((name, index) => [name, Object.fromEntries(
-    Object.entries(values).map(([variant, entries]) => [variant, entries[index]])
-  )]))
+  return Object.fromEntries(
+    colorNames.map((name, index) => [
+      name,
+      Object.fromEntries(Object.entries(values).map(([variant, entries]) => [variant, entries[index]]))
+    ])
+  )
 }
 
 function colorEntries(
@@ -96,7 +253,9 @@ function colorEntries(
   variants: Partial<Record<string, Partial<TLThemeColor>>>,
   utilities: Record<string, Partial<TLThemeColor>>
 ): Record<string, TLThemeColor> {
-  return Object.fromEntries(Object.entries(colors).map(([name, solid]) => [name, { solid, ...variants[name], ...utilities[name] }]))
+  return Object.fromEntries(
+    Object.entries(colors).map(([name, solid]) => [name, { solid, ...variants[name], ...utilities[name] }])
+  )
 }
 
 const light: TLThemePalette = {

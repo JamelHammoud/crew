@@ -25,20 +25,9 @@ export class CubicSpline2d extends Geometry2d {
         const p1 = points[i]
         const p2 = points[i + 1]
         const p3 = i === last ? p2 : points[i + 2]
-        const cp1 =
-          i === 0
-            ? p0
-            : new Vec(
-                p1.x + ((p2.x - p0.x) / 6) * TENSION,
-                p1.y + ((p2.y - p0.y) / 6) * TENSION
-              )
+        const cp1 = i === 0 ? p0 : new Vec(p1.x + ((p2.x - p0.x) / 6) * TENSION, p1.y + ((p2.y - p0.y) / 6) * TENSION)
         const cp2 =
-          i === last
-            ? p2
-            : new Vec(
-                p2.x - ((p3.x - p1.x) / 6) * TENSION,
-                p2.y - ((p3.y - p1.y) / 6) * TENSION
-              )
+          i === last ? p2 : new Vec(p2.x - ((p3.x - p1.x) / 6) * TENSION, p2.y - ((p3.y - p1.y) / 6) * TENSION)
 
         this.cachedSegments.push(new CubicBezier2d({ start: p1, cp1, cp2, end: p2 }))
       }
@@ -83,6 +72,6 @@ export class CubicSpline2d extends Geometry2d {
   }
 
   override hitTestLineSegment(a: VecLike, b: VecLike): boolean {
-    return this.segments.some((segment) => segment.hitTestLineSegment(a, b))
+    return this.segments.some(segment => segment.hitTestLineSegment(a, b))
   }
 }

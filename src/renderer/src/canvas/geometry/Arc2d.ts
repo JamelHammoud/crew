@@ -71,7 +71,7 @@ export class Arc2d extends Geometry2d {
     const intersection = intersectLineSegmentCircle(a, b, arcCenter, radius)
     if (intersection === null) return false
 
-    return intersection.some((p) => {
+    return intersection.some(p => {
       const t = getPointInArcT(measure, angleStart, angleEnd, arcCenter.angle(p))
       return t >= 0 && t <= 1
     })

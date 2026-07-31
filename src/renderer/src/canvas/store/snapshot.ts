@@ -14,10 +14,7 @@ export function getStoreSnapshot<R extends UnknownRecord>(
   return { store: store.serialize(scope), schema: store.schema.serialize() }
 }
 
-export function loadStoreSnapshot<R extends UnknownRecord>(
-  store: Store<R>,
-  snapshot: StoreSnapshot<R>
-): void {
+export function loadStoreSnapshot<R extends UnknownRecord>(store: Store<R>, snapshot: StoreSnapshot<R>): void {
   const wasEnabled = store.sideEffects.isEnabled()
   try {
     store.sideEffects.setIsEnabled(false)

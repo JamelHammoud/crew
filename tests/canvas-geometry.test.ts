@@ -28,7 +28,7 @@ import { Box, HALF_PI, Mat, PI, PI2, Vec } from '../src/renderer/src/canvas/math
 
 function coords(points: { x: number; y: number }[] | null) {
   if (!points) return null
-  return points.map((p) => [Math.round(p.x * 1e6) / 1e6, Math.round(p.y * 1e6) / 1e6])
+  return points.map(p => [Math.round(p.x * 1e6) / 1e6, Math.round(p.y * 1e6) / 1e6])
 }
 
 function box(b: Box) {
@@ -41,9 +41,7 @@ describe('a rectangle', () => {
 
   it('knows its own box without walking its corners', () => {
     expect(box(filled.getBounds())).toEqual([0, 0, 100, 50])
-    expect(box(new Rectangle2d({ x: 10, y: 20, width: 5, height: 6, isFilled: true }).bounds)).toEqual([
-      10, 20, 5, 6
-    ])
+    expect(box(new Rectangle2d({ x: 10, y: 20, width: 5, height: 6, isFilled: true }).bounds)).toEqual([10, 20, 5, 6])
   })
 
   it('measures its own area and the way round it', () => {
@@ -194,10 +192,7 @@ describe('an ellipse', () => {
   it('measures a way round that sits between its two circles', () => {
     expect(wide.getLength()).toBeGreaterThan(PI2 * 25)
     expect(wide.getLength()).toBeLessThan(PI2 * 50)
-    expect(new Ellipse2d({ width: 100, height: 100, isFilled: true }).getLength()).toBeCloseTo(
-      PI2 * 50,
-      6
-    )
+    expect(new Ellipse2d({ width: 100, height: 100, isFilled: true }).getLength()).toBeCloseTo(PI2 * 50, 6)
   })
 
   it('is hit inside, missed outside, and hit on its own rim', () => {
@@ -614,32 +609,22 @@ describe('two line segments', () => {
   })
 
   it('never meet when they are parallel, apart, or stop short', () => {
-    expect(
-      intersectLineSegmentLineSegment(new Vec(0, 0), new Vec(10, 0), new Vec(0, 1), new Vec(10, 1))
-    ).toBe(null)
-    expect(
-      intersectLineSegmentLineSegment(new Vec(0, 0), new Vec(1, 1), new Vec(5, 5), new Vec(6, 6))
-    ).toBe(null)
-    expect(
-      intersectLineSegmentLineSegment(new Vec(0, 0), new Vec(4, 0), new Vec(5, -5), new Vec(5, 5))
-    ).toBe(null)
+    expect(intersectLineSegmentLineSegment(new Vec(0, 0), new Vec(10, 0), new Vec(0, 1), new Vec(10, 1))).toBe(null)
+    expect(intersectLineSegmentLineSegment(new Vec(0, 0), new Vec(1, 1), new Vec(5, 5), new Vec(6, 6))).toBe(null)
+    expect(intersectLineSegmentLineSegment(new Vec(0, 0), new Vec(4, 0), new Vec(5, -5), new Vec(5, 5))).toBe(null)
   })
 })
 
 describe('a line segment and a circle', () => {
   it('meets it twice going straight through the middle', () => {
-    expect(coords(intersectLineSegmentCircle(new Vec(-20, 0), new Vec(20, 0), new Vec(0, 0), 10))).toEqual(
-      [
-        [10, 0],
-        [-10, 0]
-      ]
-    )
+    expect(coords(intersectLineSegmentCircle(new Vec(-20, 0), new Vec(20, 0), new Vec(0, 0), 10))).toEqual([
+      [10, 0],
+      [-10, 0]
+    ])
   })
 
   it('meets it once when it starts inside', () => {
-    expect(coords(intersectLineSegmentCircle(new Vec(0, 0), new Vec(20, 0), new Vec(0, 0), 10))).toEqual([
-      [10, 0]
-    ])
+    expect(coords(intersectLineSegmentCircle(new Vec(0, 0), new Vec(20, 0), new Vec(0, 0), 10))).toEqual([[10, 0]])
   })
 
   it('never meets it when it grazes, misses, or is swallowed whole', () => {

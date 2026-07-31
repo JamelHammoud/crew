@@ -85,9 +85,7 @@ export function shortAngleDist(a0: number, a1: number): number {
 }
 
 export function angleDistance(fromAngle: number, toAngle: number, direction: number): number {
-  return direction < 0
-    ? clockwiseAngleDist(fromAngle, toAngle)
-    : counterClockwiseAngleDist(fromAngle, toAngle)
+  return direction < 0 ? clockwiseAngleDist(fromAngle, toAngle) : counterClockwiseAngleDist(fromAngle, toAngle)
 }
 
 export function degreesToRadians(d: number): number {
@@ -98,12 +96,7 @@ export function radiansToDegrees(r: number): number {
   return (r * 180) / PI
 }
 
-export function getArcMeasure(
-  a: number,
-  b: number,
-  sweepFlag: number,
-  largeArcFlag: number
-): number {
+export function getArcMeasure(a: number, b: number, sweepFlag: number, largeArcFlag: number): number {
   const m = ((2 * ((b - a) % PI2)) % PI2) - ((b - a) % PI2)
   if (!largeArcFlag) return m
   return (PI2 - Math.abs(m)) * (sweepFlag ? 1 : -1)
@@ -135,12 +128,7 @@ export function rangesOverlap(a0: number, a1: number, b0: number, b1: number): b
   return a0 < b1 && b0 < a1
 }
 
-export function rangeIntersection(
-  a0: number,
-  a1: number,
-  b0: number,
-  b1: number
-): [number, number] | null {
+export function rangeIntersection(a0: number, a1: number, b0: number, b1: number): [number, number] | null {
   const min = Math.max(a0, b0)
   const max = Math.min(a1, b1)
   if (min <= max) return [min, max]

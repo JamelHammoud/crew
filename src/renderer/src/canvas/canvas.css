@@ -1,4 +1,4 @@
-@import './text/text.css';
+@import "./text/text.css";
 
 .crew-canvas {
   background: var(--design-canvas);

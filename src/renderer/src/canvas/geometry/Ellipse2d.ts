@@ -98,6 +98,6 @@ export class Ellipse2d extends Geometry2d {
   }
 
   override hitTestLineSegment(a: VecLike, b: VecLike): boolean {
-    return this.edges.some((edge) => edge.hitTestLineSegment(a, b))
+    return this.edges.some(edge => edge.hitTestLineSegment(a, b))
   }
 }

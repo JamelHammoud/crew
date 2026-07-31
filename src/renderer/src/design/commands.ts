@@ -42,15 +42,7 @@ export interface CommandContext {
   rename: (shape: TLShape) => void
 }
 
-export type CommandGroup =
-  | 'agent'
-  | 'clipboard'
-  | 'order'
-  | 'group'
-  | 'transform'
-  | 'state'
-  | 'remove'
-  | 'canvas'
+export type CommandGroup = 'agent' | 'clipboard' | 'order' | 'group' | 'transform' | 'state' | 'remove' | 'canvas'
 
 export interface DesignCommand {
   id: string
@@ -556,9 +548,7 @@ export function availableCommands(ctx: CommandContext): DesignCommand[] {
 
 export function commandForKey(event: KeyboardEvent, ctx: CommandContext): DesignCommand | null {
   if (typingInto(event.target) || ctx.editor.getEditingShapeId()) return null
-  return (
-    DESIGN_COMMANDS.find(command => command.keys && matchesChord(event, command.keys) && command.when(ctx)) ?? null
-  )
+  return DESIGN_COMMANDS.find(command => command.keys && matchesChord(event, command.keys) && command.when(ctx)) ?? null
 }
 
 function frameSelection(editor: Editor): void {

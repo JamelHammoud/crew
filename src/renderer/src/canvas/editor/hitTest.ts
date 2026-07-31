@@ -60,21 +60,10 @@ function plainDistance(geometry: Geometry2d, point: Vec, hitInside: boolean, out
   return Infinity
 }
 
-export function getShapeAtPoint(
-  host: HitTestHost,
-  point: Vec,
-  opts: HitTestOptions = {}
-): TLShape | undefined {
+export function getShapeAtPoint(host: HitTestHost, point: Vec, opts: HitTestOptions = {}): TLShape | undefined {
   const zoom = host.getZoomLevel()
   const viewport = host.getViewportPageBounds()
-  const {
-    filter,
-    margin = 0,
-    hitLocked = false,
-    hitLabels = false,
-    hitInside = false,
-    hitFrameInside = false
-  } = opts
+  const { filter, margin = 0, hitLocked = false, hitLabels = false, hitInside = false, hitFrameInside = false } = opts
   const [innerMargin, outerMargin] = Array.isArray(margin) ? margin : [margin, margin]
 
   let smallestHollowArea = Infinity
@@ -84,9 +73,7 @@ export function getShapeAtPoint(
 
   const searchMargin = Math.max(innerMargin, outerMargin, host.hitTestMargin / zoom)
   const candidates = host.candidatesAtPoint(point, searchMargin)
-  const sorted = opts.renderingOnly
-    ? host.getCurrentPageRenderingShapesSorted()
-    : host.getCurrentPageShapesSorted()
+  const sorted = opts.renderingOnly ? host.getCurrentPageRenderingShapesSorted() : host.getCurrentPageShapesSorted()
 
   const checking = sorted.filter(shape => {
     if (candidates && !candidates.has(shape.id) && !host.isShapeFrameLike(shape)) return false

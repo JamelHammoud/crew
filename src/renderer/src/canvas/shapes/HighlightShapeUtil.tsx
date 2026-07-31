@@ -13,7 +13,9 @@ export class HighlightShapeUtil extends ShapeUtil<HighlightShape> {
   static override props = highlightShapeProps
   override options = { getCustomDisplayValues: () => ({}) }
 
-  getDefaultProps(): HighlightShape['props'] { return { segments: [], color: 'black', size: 'm', isComplete: false, isPen: false, scale: 1, scaleX: 1, scaleY: 1 } }
+  getDefaultProps(): HighlightShape['props'] {
+    return { segments: [], color: 'black', size: 'm', isComplete: false, isPen: false, scale: 1, scaleX: 1, scaleY: 1 }
+  }
   getGeometry(shape: HighlightShape): Geometry2d {
     const points = segmentPoints(shape.props.segments, shape.props.scaleX, shape.props.scaleY)
     const width = STROKES[shape.props.size] * shape.props.scale
@@ -22,15 +24,29 @@ export class HighlightShapeUtil extends ShapeUtil<HighlightShape> {
     return new Polygon2d({ points: freehandOutline(points, highlightOptions(width, complete)), isFilled: true })
   }
   override onResize(shape: HighlightShape, info: ShapeResizeInfo<HighlightShape>): HighlightShape {
-    return { ...shape, x: info.newPoint.x, y: info.newPoint.y, props: { ...shape.props, scaleX: shape.props.scaleX * info.scaleX, scaleY: shape.props.scaleY * info.scaleY } }
+    return {
+      ...shape,
+      x: info.newPoint.x,
+      y: info.newPoint.y,
+      props: { ...shape.props, scaleX: shape.props.scaleX * info.scaleX, scaleY: shape.props.scaleY * info.scaleY }
+    }
   }
   component(shape: HighlightShape): ReactNode {
     const points = segmentPoints(shape.props.segments, shape.props.scaleX, shape.props.scaleY)
     const width = STROKES[shape.props.size] * shape.props.scale
     const color = shapeColor(this.editor, shape.props.color, 'highlightSrgb')
-    if (points.length < 2) return createElement('svg', { width: '100%', height: '100%', style: { overflow: 'visible' } }, createElement('circle', { cx: 0, cy: 0, r: width / 2, fill: color, opacity: 0.35 }))
+    if (points.length < 2)
+      return createElement(
+        'svg',
+        { width: '100%', height: '100%', style: { overflow: 'visible' } },
+        createElement('circle', { cx: 0, cy: 0, r: width / 2, fill: color, opacity: 0.35 })
+      )
     const complete = shape.props.isComplete || shape.props.segments.at(-1)?.type === 'straight'
     const outline = freehandOutline(points, highlightOptions(width, complete))
-    return createElement('svg', { width: '100%', height: '100%', style: { overflow: 'visible', pointerEvents: 'all', mixBlendMode: 'multiply' } }, createElement('path', { d: pathFromPoints(outline, true), fill: color, opacity: 0.35 }))
+    return createElement(
+      'svg',
+      { width: '100%', height: '100%', style: { overflow: 'visible', pointerEvents: 'all', mixBlendMode: 'multiply' } },
+      createElement('path', { d: pathFromPoints(outline, true), fill: color, opacity: 0.35 })
+    )
   }
 }

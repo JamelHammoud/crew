@@ -25,9 +25,7 @@ export class Polyline2d extends Geometry2d {
         this.cachedSegments.push(new Edge2d({ start: vertices[i], end: vertices[i + 1] }))
       }
       if (this.isClosed) {
-        this.cachedSegments.push(
-          new Edge2d({ start: vertices[vertices.length - 1], end: vertices[0] })
-        )
+        this.cachedSegments.push(new Edge2d({ start: vertices[vertices.length - 1], end: vertices[0] }))
       }
     }
 

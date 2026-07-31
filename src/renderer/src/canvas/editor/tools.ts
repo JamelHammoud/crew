@@ -23,7 +23,7 @@ export class ToolManager {
       if (id === 'select') addTransformChildren(instance)
       if (id) this.instances.set(id, instance)
     }
-    const first = this.instances.has(initial) ? initial : this.instances.keys().next().value ?? initial
+    const first = this.instances.has(initial) ? initial : (this.instances.keys().next().value ?? initial)
     this.currentId = atom('editor.currentTool', first)
     this.instances.get(first)?.enter?.({}, 'initial')
   }

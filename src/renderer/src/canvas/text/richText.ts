@@ -1,4 +1,13 @@
-import { Extension, extensions, generateHTML, generateJSON, generateText, getSchema, type Extensions, type JSONContent } from '@tiptap/core'
+import {
+  Extension,
+  extensions,
+  generateHTML,
+  generateJSON,
+  generateText,
+  getSchema,
+  type Extensions,
+  type JSONContent
+} from '@tiptap/core'
 import { Code } from '@tiptap/extension-code'
 import { Highlight } from '@tiptap/extension-highlight'
 import type { Node as ProseMirrorNode, Schema } from '@tiptap/pm/model'

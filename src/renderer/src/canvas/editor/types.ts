@@ -65,9 +65,7 @@ export interface TLStyleProp<T> {
   defaultValue?: T
 }
 
-export type SharedStyle<T> =
-  | { readonly type: 'mixed' }
-  | { readonly type: 'shared'; readonly value: T }
+export type SharedStyle<T> = { readonly type: 'mixed' } | { readonly type: 'shared'; readonly value: T }
 
 export interface TLContent {
   shapes: TLShape[]
@@ -97,7 +95,10 @@ export interface TLEditorOptions {
   themes?: Partial<TLThemes>
   initialTheme?: string
   textMeasure?: TLTextMeasure
-  user?: { getUserPreferences?: () => Partial<TLUserPreferences>; setUserPreferences?: (next: TLUserPreferences) => void }
+  user?: {
+    getUserPreferences?: () => Partial<TLUserPreferences>
+    setUserPreferences?: (next: TLUserPreferences) => void
+  }
   options?: {
     camera?: { zoomMin?: number; zoomMax?: number; zoomSteps?: number[] | null }
     [key: string]: unknown

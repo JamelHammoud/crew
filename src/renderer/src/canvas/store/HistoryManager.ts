@@ -165,13 +165,7 @@ export class HistoryManager<R extends UnknownRecord> {
     this.stacks.update(({ undos, redos }) => ({ undos: undos.push({ type: 'diff', diff }), redos }))
   }
 
-  private replay({
-    pushToRedoStack,
-    toMark
-  }: {
-    pushToRedoStack: boolean
-    toMark?: string
-  }): void {
+  private replay({ pushToRedoStack, toMark }: { pushToRedoStack: boolean; toMark?: string }): void {
     const previousState = this.state
     this.state = 'paused'
     try {

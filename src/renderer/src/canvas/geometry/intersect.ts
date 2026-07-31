@@ -32,12 +32,7 @@ export function intersectLineSegmentLineSegment(
   return null
 }
 
-export function intersectLineSegmentCircle(
-  a1: VecLike,
-  a2: VecLike,
-  c: VecLike,
-  r: number
-): VecLike[] | null {
+export function intersectLineSegmentCircle(a1: VecLike, a2: VecLike, c: VecLike, r: number): VecLike[] | null {
   const dx = a2.x - a1.x
   const dy = a2.y - a1.y
   const ocx = a1.x - c.x
@@ -66,11 +61,7 @@ export function intersectLineSegmentCircle(
   return result
 }
 
-export function intersectLineSegmentPolyline(
-  a1: VecLike,
-  a2: VecLike,
-  points: VecLike[]
-): VecLike[] | null {
+export function intersectLineSegmentPolyline(a1: VecLike, a2: VecLike, points: VecLike[]): VecLike[] | null {
   const result: VecLike[] = []
 
   for (let i = 0, n = points.length - 1; i < n; i++) {
@@ -83,11 +74,7 @@ export function intersectLineSegmentPolyline(
   return result
 }
 
-export function intersectLineSegmentPolygon(
-  a1: VecLike,
-  a2: VecLike,
-  points: VecLike[]
-): VecLike[] | null {
+export function intersectLineSegmentPolygon(a1: VecLike, a2: VecLike, points: VecLike[]): VecLike[] | null {
   const result: VecLike[] = []
 
   for (let i = 1, n = points.length; i < n + 1; i++) {
@@ -100,12 +87,7 @@ export function intersectLineSegmentPolygon(
   return result
 }
 
-export function intersectCircleCircle(
-  c1: VecLike,
-  r1: number,
-  c2: VecLike,
-  r2: number
-): VecLike[] {
+export function intersectCircleCircle(c1: VecLike, r1: number, c2: VecLike, r2: number): VecLike[] {
   let dx = c2.x - c1.x
   let dy = c2.y - c1.y
   const d = Math.sqrt(dx * dx + dy * dy)
@@ -158,10 +140,7 @@ export function intersectPolygonBounds(points: VecLike[], bounds: Box): VecLike[
   return result
 }
 
-export function intersectPolygonPolygon(
-  polygonA: VecLike[],
-  polygonB: VecLike[]
-): VecLike[] | null {
+export function intersectPolygonPolygon(polygonA: VecLike[], polygonB: VecLike[]): VecLike[] | null {
   const result = new Map<string, VecLike>()
 
   const keep = (point: VecLike) => {
@@ -194,12 +173,7 @@ export function intersectPolygonPolygon(
   return points.sort((a, b) => Vec.Angle(c, a) - Vec.Angle(c, b))
 }
 
-export function intersectPolys(
-  polyA: VecLike[],
-  polyB: VecLike[],
-  isAClosed: boolean,
-  isBClosed: boolean
-): VecLike[] {
+export function intersectPolys(polyA: VecLike[], polyB: VecLike[], isAClosed: boolean, isBClosed: boolean): VecLike[] {
   const result = new Map<string, VecLike>()
 
   for (let i = 0, n = isAClosed ? polyA.length : polyA.length - 1; i < n; i++) {
@@ -207,12 +181,7 @@ export function intersectPolys(
     const nextA = polyA[(i + 1) % polyA.length]
 
     for (let j = 0, m = isBClosed ? polyB.length : polyB.length - 1; j < m; j++) {
-      const hit = intersectLineSegmentLineSegment(
-        currentA,
-        nextA,
-        polyB[j],
-        polyB[(j + 1) % polyB.length]
-      )
+      const hit = intersectLineSegmentLineSegment(currentA, nextA, polyB[j], polyB[(j + 1) % polyB.length])
       if (hit !== null) {
         const id = `${hit.x},${hit.y}`
         if (!result.has(id)) result.set(id, hit)

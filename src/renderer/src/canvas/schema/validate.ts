@@ -128,9 +128,7 @@ export class ObjectValidator<Shape extends object> extends Validator<Shape> {
       }
       for (const key of Object.keys(config)) {
         try {
-          ;(config as Record<string, Validatable<unknown>>)[key].validate(
-            (value as Record<string, unknown>)[key]
-          )
+          ;(config as Record<string, Validatable<unknown>>)[key].validate((value as Record<string, unknown>)[key])
         } catch (error) {
           rethrow(key, error)
         }
@@ -148,9 +146,11 @@ export class ObjectValidator<Shape extends object> extends Validator<Shape> {
     return new ObjectValidator(this.config, true)
   }
 
-  extend<Extension extends object>(extension: {
-    readonly [K in keyof Extension]: Validatable<Extension[K]>
-  }): ObjectValidator<Shape & Extension> {
+  extend<Extension extends object>(
+    extension: {
+      readonly [K in keyof Extension]: Validatable<Extension[K]>
+    }
+  ): ObjectValidator<Shape & Extension> {
     return new ObjectValidator({ ...this.config, ...extension } as never) as ObjectValidator<Shape & Extension>
   }
 }
@@ -300,7 +300,8 @@ const jsonValue: Validator<JsonValue> = new Validator<JsonValue>(value => {
 
 function literal<Value extends string | number | boolean>(expected: Value): Validator<Value> {
   return new Validator(value => {
-    if (value !== expected) throw new ValidationError(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(value)}`)
+    if (value !== expected)
+      throw new ValidationError(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(value)}`)
     return value as Value
   })
 }
@@ -321,9 +322,11 @@ function setEnum<Value>(values: ReadonlySet<Value>): Validator<Value> {
   })
 }
 
-function object<Shape extends object>(config: {
-  readonly [K in keyof Shape]: Validatable<Shape[K]>
-}): ObjectValidator<Shape> {
+function object<Shape extends object>(
+  config: {
+    readonly [K in keyof Shape]: Validatable<Shape[K]>
+  }
+): ObjectValidator<Shape> {
   return new ObjectValidator(config)
 }
 
@@ -353,10 +356,7 @@ function nullable<Value>(validator: Validatable<Value>): Validator<Value | null>
   return new Validator(value => (value === null ? null : validator.validate(value)))
 }
 
-function model<Value extends { readonly id: string }>(
-  name: string,
-  validator: Validatable<Value>
-): Validator<Value> {
+function model<Value extends { readonly id: string }>(name: string, validator: Validatable<Value>): Validator<Value> {
   return new Validator(
     value => {
       try {

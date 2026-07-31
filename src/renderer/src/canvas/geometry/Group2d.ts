@@ -6,9 +6,7 @@ export class Group2d extends Geometry2d {
   children: Geometry2d[] = []
   ignoredChildren: Geometry2d[] = []
 
-  constructor(
-    config: Omit<Geometry2dOptions, 'isClosed' | 'isFilled'> & { children: Geometry2d[] }
-  ) {
+  constructor(config: Omit<Geometry2dOptions, 'isClosed' | 'isFilled'> & { children: Geometry2d[] }) {
     super({ ...config, isClosed: true, isFilled: false })
 
     const addChildren = (children: Geometry2d[]) => {
@@ -30,14 +28,12 @@ export class Group2d extends Geometry2d {
 
   override getVertices(filters?: Geometry2dFilters): Vec[] {
     if (this.isExcludedByFilter(filters)) return []
-    return this.children
-      .filter((c) => !c.isExcludedByFilter(filters))
-      .flatMap((c) => c.getVertices(filters))
+    return this.children.filter(c => !c.isExcludedByFilter(filters)).flatMap(c => c.getVertices(filters))
   }
 
   override getBoundsVertices(): Vec[] {
     if (this.excludeFromShapeBounds) return []
-    return this.children.flatMap((child) => child.getBoundsVertices())
+    return this.children.flatMap(child => child.getBoundsVertices())
   }
 
   override getArea(): number {

@@ -112,7 +112,7 @@ export function reactor<Result>(
   const scheduler = new EffectScheduler(name, fn, options)
   return {
     scheduler,
-    start: (startOptions) => {
+    start: startOptions => {
       scheduler.attach()
       if (startOptions?.force) {
         scheduler.scheduleEffect()

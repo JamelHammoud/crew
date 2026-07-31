@@ -39,9 +39,7 @@ export class HistoryAccumulator<R extends UnknownRecord> {
   }
 }
 
-function squashHistoryEntries<R extends UnknownRecord>(
-  entries: HistoryEntry<R>[]
-): HistoryEntry<R>[] {
+function squashHistoryEntries<R extends UnknownRecord>(entries: HistoryEntry<R>[]): HistoryEntry<R>[] {
   if (entries.length === 0) return []
   const chunked: HistoryEntry<R>[][] = []
   let chunk: HistoryEntry<R>[] = [entries[0]]
@@ -54,8 +52,8 @@ function squashHistoryEntries<R extends UnknownRecord>(
     chunk.push(entry)
   }
   chunked.push(chunk)
-  return chunked.map((chunk) => ({
+  return chunked.map(chunk => ({
     source: chunk[0].source,
-    changes: chunk.length === 1 ? chunk[0].changes : squashRecordDiffs(chunk.map((e) => e.changes))
+    changes: chunk.length === 1 ? chunk[0].changes : squashRecordDiffs(chunk.map(e => e.changes))
   }))
 }

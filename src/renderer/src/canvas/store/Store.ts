@@ -94,9 +94,7 @@ export class Store<R extends UnknownRecord> {
   query<T extends R['typeName']>(typeName: T): Computed<Extract<R, { typeName: T }>[]> {
     let query = this.queries.get(typeName)
     if (!query) {
-      query = computed(`store.query:${typeName}`, () =>
-        this.records().filter((record) => record.typeName === typeName)
-      )
+      query = computed(`store.query:${typeName}`, () => this.records().filter(record => record.typeName === typeName))
       this.queries.set(typeName, query)
     }
     return query as Computed<Extract<R, { typeName: T }>[]>
@@ -114,12 +112,7 @@ export class Store<R extends UnknownRecord> {
         const initialValue = this.unsafeGetWithoutCapture(record.id as IdOf<R>)
         if (initialValue) {
           record = this.sideEffects.handleBeforeChange(initialValue, record, source)
-          const validated = this.schema.validateRecord(
-            this,
-            record,
-            phaseOverride ?? 'updateRecord',
-            initialValue
-          )
+          const validated = this.schema.validateRecord(this, record, phaseOverride ?? 'updateRecord', initialValue)
           if (validated === initialValue) continue
           record = validated
           this.setRecord(record)
@@ -193,10 +186,7 @@ export class Store<R extends UnknownRecord> {
     return result
   }
 
-  applyDiff(
-    diff: RecordsDiff<R>,
-    options?: { runCallbacks?: boolean; ignoreEphemeralKeys?: boolean }
-  ): void {
+  applyDiff(diff: RecordsDiff<R>, options?: { runCallbacks?: boolean; ignoreEphemeralKeys?: boolean }): void {
     const runCallbacks = options?.runCallbacks ?? true
     const ignoreEphemeralKeys = options?.ignoreEphemeralKeys ?? false
     this.atomic(() => {
@@ -211,10 +201,7 @@ export class Store<R extends UnknownRecord> {
           }
           let changed: Record<string, unknown> | null = null
           for (const [key, value] of Object.entries(to)) {
-            if (
-              type.ephemeralKeySet.has(key) ||
-              Object.is(value, (existing as Record<string, unknown>)[key])
-            ) {
+            if (type.ephemeralKeySet.has(key) || Object.is(value, (existing as Record<string, unknown>)[key])) {
               continue
             }
             changed ??= { ...(existing as Record<string, unknown>) }
@@ -247,14 +234,12 @@ export class Store<R extends UnknownRecord> {
   }
 
   addHistoryInterceptor(fn: (entry: HistoryEntry<R>, source: ChangeSource) => void): () => void {
-    return this.historyAccumulator.addInterceptor((entry) =>
-      fn(entry, this.isMergingRemoteChanges ? 'remote' : 'user')
-    )
+    return this.historyAccumulator.addInterceptor(entry => fn(entry, this.isMergingRemoteChanges ? 'remote' : 'user'))
   }
 
   extractingChanges(fn: () => void): RecordsDiff<R> {
     const changes: RecordsDiff<R>[] = []
-    const dispose = this.historyAccumulator.addInterceptor((entry) => changes.push(entry.changes))
+    const dispose = this.historyAccumulator.addInterceptor(entry => changes.push(entry.changes))
     try {
       transact(fn)
       return squashRecordDiffs(changes)
@@ -357,7 +342,7 @@ export class Store<R extends UnknownRecord> {
       return
     }
     this.atoms.set(record.id as IdOf<R>, atom(`store.record:${record.id}`, record))
-    this.version.update((v) => v + 1)
+    this.version.update(v => v + 1)
   }
 
   private deleteRecord(id: IdOf<R>): R | undefined {
@@ -366,16 +351,16 @@ export class Store<R extends UnknownRecord> {
     const record = unsafe__withoutCapture(() => existing.get())
     this.atoms.delete(id)
     existing.set(undefined)
-    this.version.update((v) => v + 1)
+    this.version.update(v => v + 1)
     return record
   }
 
   private filterChangesByScope(changes: RecordsDiff<R>, scope: RecordScope): RecordsDiff<R> | null {
     const types = this.scopedTypes[scope]
     const result = {
-      added: filterEntries(changes.added, (record) => types.has(record.typeName)),
+      added: filterEntries(changes.added, record => types.has(record.typeName)),
       updated: filterEntries(changes.updated, ([, to]) => types.has(to.typeName)),
-      removed: filterEntries(changes.removed, (record) => types.has(record.typeName))
+      removed: filterEntries(changes.removed, record => types.has(record.typeName))
     } as RecordsDiff<R>
     if (!hasAnyKey(result.added) && !hasAnyKey(result.updated) && !hasAnyKey(result.removed)) {
       return null
@@ -434,10 +419,7 @@ export class Store<R extends UnknownRecord> {
   }
 }
 
-function scopedTypeNames<R extends UnknownRecord>(
-  schema: StoreSchema<R>,
-  scope: RecordScope
-): ReadonlySet<string> {
+function scopedTypeNames<R extends UnknownRecord>(schema: StoreSchema<R>, scope: RecordScope): ReadonlySet<string> {
   const names = new Set<string>()
   for (const [typeName, type] of Object.entries(schema.types)) {
     if ((type as { scope: RecordScope }).scope === scope) names.add(typeName)
@@ -445,10 +427,7 @@ function scopedTypeNames<R extends UnknownRecord>(
   return names
 }
 
-function filterEntries<T>(
-  entries: Record<string, T>,
-  keep: (value: T) => boolean
-): Record<string, T> {
+function filterEntries<T>(entries: Record<string, T>, keep: (value: T) => boolean): Record<string, T> {
   const result: Record<string, T> = {}
   for (const key in entries) {
     if (keep(entries[key])) result[key] = entries[key]

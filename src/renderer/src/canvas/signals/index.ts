@@ -1,5 +1,13 @@
 export { atom, isAtom } from './atom'
-export { computed, getComputedInstance, isComputed, isUninitialized, withDiff, UNINITIALIZED, WithDiff } from './computed'
+export {
+  computed,
+  getComputedInstance,
+  isComputed,
+  isUninitialized,
+  withDiff,
+  UNINITIALIZED,
+  WithDiff
+} from './computed'
 export { EffectScheduler, react, reactor } from './effect'
 export { isSignal } from './isSignal'
 export { transact, transaction, flushChanges, getGlobalEpoch, getIsReacting, getReactionEpoch } from './transactions'

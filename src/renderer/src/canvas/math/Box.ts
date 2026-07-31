@@ -149,12 +149,7 @@ export class Box {
   }
 
   isValid(): boolean {
-    return (
-      Number.isFinite(this.x) &&
-      Number.isFinite(this.y) &&
-      Number.isFinite(this.w) &&
-      Number.isFinite(this.h)
-    )
+    return Number.isFinite(this.x) && Number.isFinite(this.y) && Number.isFinite(this.w) && Number.isFinite(this.h)
   }
 
   set(x = 0, y = 0, w = 0, h = 0): this {
@@ -384,12 +379,7 @@ export class Box {
   }
 
   static ContainsPoint(a: Box, b: VecLike, margin = 0): boolean {
-    return !(
-      b.x < a.minX - margin ||
-      b.y < a.minY - margin ||
-      b.x > a.maxX + margin ||
-      b.y > a.maxY + margin
-    )
+    return !(b.x < a.minX - margin || b.y < a.minY - margin || b.x > a.maxX + margin || b.y > a.maxY + margin)
   }
 
   static Sides(a: Box): Array<[Vec, Vec]> {

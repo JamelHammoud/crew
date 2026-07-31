@@ -66,7 +66,10 @@ export default function DesignCanvas({
   editorRef.current = editor
   const lastSpot = useRef<Record<string, DesignPresence>>({})
 
-  const store = useMemo(() => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }), [boardId])
+  const store = useMemo(
+    () => createTLStore({ shapeUtils: designShapeUtils, bindingUtils: defaultBindingUtils }),
+    [boardId]
+  )
 
   useEffect(() => {
     setReady(false)
@@ -239,11 +242,7 @@ export default function DesignCanvas({
     return watchView(editor, boardId)
   }, [ready, editor, boardId])
 
-  const selected = useValue(
-    'design selected color',
-    () => (editor ? selectionStroke(editor) : null),
-    [editor]
-  )
+  const selected = useValue('design selected color', () => (editor ? selectionStroke(editor) : null), [editor])
 
   const tool = useValue('design tool cursor', () => editor?.getCurrentToolId() ?? '', [editor])
 
@@ -278,12 +277,7 @@ export default function DesignCanvas({
         } as CSSProperties
       }
     >
-      <CrewCanvas
-        store={store}
-        shapeUtils={designShapeUtils}
-        tools={tools}
-        onMount={onMount}
-      />
+      <CrewCanvas store={store} shapeUtils={designShapeUtils} tools={tools} onMount={onMount} />
       <SelectionOverlay editor={editor} asking={asking} />
       <RemoteCursors editor={editor} boardId={boardId} live={cursors} held={lastSpot} />
       {!ready && (
@@ -353,11 +347,7 @@ function RemoteCursors({
                 <CursorArrow color={color} />
               </span>
               <span className="absolute left-[11px] top-[14px] flex items-center gap-1.5 rounded-full glass glass-strong pl-1 pr-2.5 py-0.5 whitespace-nowrap">
-                {agent ? (
-                  <AgentIcon seed={presence.userId} size="sm" />
-                ) : (
-                  <Avatar name={presence.name} size="sm" />
-                )}
+                {agent ? <AgentIcon seed={presence.userId} size="sm" /> : <Avatar name={presence.name} size="sm" />}
                 <span className="text-xs font-semibold text-fg">{presence.name}</span>
                 {working.has(presence.userId) && <Spinner size={11} />}
               </span>

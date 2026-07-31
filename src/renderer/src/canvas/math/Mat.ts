@@ -41,12 +41,7 @@ export class Mat {
   equals(m: MatLike): boolean {
     return (
       (this as MatLike) === m ||
-      (this.a === m.a &&
-        this.b === m.b &&
-        this.c === m.c &&
-        this.d === m.d &&
-        this.e === m.e &&
-        this.f === m.f)
+      (this.a === m.a && this.b === m.b && this.c === m.c && this.d === m.d && this.e === m.e && this.f === m.f)
     )
   }
 
@@ -268,7 +263,7 @@ export class Mat {
   }
 
   static applyToPoints(m: MatLike, points: VecLike[]): Vec[] {
-    return points.map((point) => Mat.applyToPoint(m, point))
+    return points.map(point => Mat.applyToPoint(m, point))
   }
 
   static applyToBounds(m: MatLike, box: Box): Box {

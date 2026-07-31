@@ -4,9 +4,7 @@ import { Geometry2d, type Geometry2dOptions } from './Geometry2d'
 export class Point2d extends Geometry2d {
   readonly point: Vec
 
-  constructor(
-    config: Omit<Geometry2dOptions, 'isClosed' | 'isFilled'> & { margin: number; point: Vec }
-  ) {
+  constructor(config: Omit<Geometry2dOptions, 'isClosed' | 'isFilled'> & { margin: number; point: Vec }) {
     super({ ...config, isClosed: true, isFilled: true })
     this.point = config.point
   }

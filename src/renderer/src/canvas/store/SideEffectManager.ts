@@ -3,20 +3,9 @@ import type { ChangeSource, Store } from './Store'
 
 export type BeforeCreateHandler<R extends UnknownRecord> = (record: R, source: ChangeSource) => R
 export type AfterCreateHandler<R extends UnknownRecord> = (record: R, source: ChangeSource) => void
-export type BeforeChangeHandler<R extends UnknownRecord> = (
-  prev: R,
-  next: R,
-  source: ChangeSource
-) => R
-export type AfterChangeHandler<R extends UnknownRecord> = (
-  prev: R,
-  next: R,
-  source: ChangeSource
-) => void
-export type BeforeDeleteHandler<R extends UnknownRecord> = (
-  record: R,
-  source: ChangeSource
-) => void | false
+export type BeforeChangeHandler<R extends UnknownRecord> = (prev: R, next: R, source: ChangeSource) => R
+export type AfterChangeHandler<R extends UnknownRecord> = (prev: R, next: R, source: ChangeSource) => void
+export type BeforeDeleteHandler<R extends UnknownRecord> = (record: R, source: ChangeSource) => void | false
 export type AfterDeleteHandler<R extends UnknownRecord> = (record: R, source: ChangeSource) => void
 export type OperationCompleteHandler = (source: ChangeSource) => void
 

@@ -9,7 +9,5 @@ export function styleKey(style: TLStyleProp<unknown> | string): string {
 export function sharedOpacity(shapes: readonly TLShape[], fallback: number): SharedStyle<number> {
   if (shapes.length === 0) return { type: 'shared', value: fallback }
   const first = shapes[0].opacity
-  return shapes.every(shape => shape.opacity === first)
-    ? { type: 'shared', value: first }
-    : { type: 'mixed' }
+  return shapes.every(shape => shape.opacity === first) ? { type: 'shared', value: first } : { type: 'mixed' }
 }

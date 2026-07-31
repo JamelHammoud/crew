@@ -1,10 +1,11 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
 
-export const HTMLContainer = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  function HTMLContainer({ className, ...props }, ref) {
-    return <div ref={ref} className={['crew-shape-html', className].filter(Boolean).join(' ')} {...props} />
-  }
-)
+export const HTMLContainer = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function HTMLContainer(
+  { className, ...props },
+  ref
+) {
+  return <div ref={ref} className={['crew-shape-html', className].filter(Boolean).join(' ')} {...props} />
+})
 
 export interface TLCollaboratorCursorOverlay {
   id: string

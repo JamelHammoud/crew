@@ -38,39 +38,41 @@ export const DocumentRecordType = recordType<TLDocument>(
   'document'
 ).withDefaultProperties(() => ({ gridSize: 10, name: '', meta: {} }))
 
-export const PageRecordType = recordType<TLPage>('page', pageValidator, 'document').withDefaultProperties(
+export const PageRecordType = recordType<TLPage>('page', pageValidator, 'document').withDefaultProperties(() => ({
+  meta: {}
+}))
+
+export const UserRecordType = recordType<TLUser>('user', userValidator, 'document').withDefaultProperties(() => ({
+  name: '',
+  color: '',
+  imageUrl: '',
+  meta: {}
+}))
+
+export const CameraRecordType = recordType<TLCamera>('camera', cameraValidator, 'session').withDefaultProperties(
+  () => ({ x: 0, y: 0, z: 1, meta: {} })
+)
+
+export const PointerRecordType = recordType<TLPointer>('pointer', pointerValidator, 'session').withDefaultProperties(
+  () => ({ x: 0, y: 0, lastActivityTimestamp: 0, meta: {} })
+)
+
+export const ShapeRecordType = recordType<TLShape>('shape', shapeValidator, 'document').withDefaultProperties(() => ({
+  x: 0,
+  y: 0,
+  rotation: 0,
+  isLocked: false,
+  opacity: 1,
+  meta: {}
+}))
+
+export const AssetRecordType = recordType<TLAsset>('asset', assetValidator, 'document').withDefaultProperties(() => ({
+  meta: {}
+}))
+
+export const BindingRecordType = recordType<TLBinding>('binding', bindingValidator, 'document').withDefaultProperties(
   () => ({ meta: {} })
 )
-
-export const UserRecordType = recordType<TLUser>('user', userValidator, 'document').withDefaultProperties(
-  () => ({ name: '', color: '', imageUrl: '', meta: {} })
-)
-
-export const CameraRecordType = recordType<TLCamera>(
-  'camera',
-  cameraValidator,
-  'session'
-).withDefaultProperties(() => ({ x: 0, y: 0, z: 1, meta: {} }))
-
-export const PointerRecordType = recordType<TLPointer>(
-  'pointer',
-  pointerValidator,
-  'session'
-).withDefaultProperties(() => ({ x: 0, y: 0, lastActivityTimestamp: 0, meta: {} }))
-
-export const ShapeRecordType = recordType<TLShape>('shape', shapeValidator, 'document').withDefaultProperties(
-  () => ({ x: 0, y: 0, rotation: 0, isLocked: false, opacity: 1, meta: {} })
-)
-
-export const AssetRecordType = recordType<TLAsset>('asset', assetValidator, 'document').withDefaultProperties(
-  () => ({ meta: {} })
-)
-
-export const BindingRecordType = recordType<TLBinding>(
-  'binding',
-  bindingValidator,
-  'document'
-).withDefaultProperties(() => ({ meta: {} }))
 
 export const InstanceRecordType = recordType<TLInstance>(
   'instance',

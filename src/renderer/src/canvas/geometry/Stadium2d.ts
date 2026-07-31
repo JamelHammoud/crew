@@ -65,7 +65,7 @@ export class Stadium2d extends Geometry2d {
   }
 
   override getVertices(): Vec[] {
-    return this.parts.flatMap((part) => part.vertices)
+    return this.parts.flatMap(part => part.vertices)
   }
 
   override getBounds(): Box {
@@ -106,6 +106,6 @@ export class Stadium2d extends Geometry2d {
   }
 
   override hitTestLineSegment(a: VecLike, b: VecLike): boolean {
-    return this.parts.some((part) => part.hitTestLineSegment(a, b))
+    return this.parts.some(part => part.hitTestLineSegment(a, b))
   }
 }

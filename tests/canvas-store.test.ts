@@ -32,15 +32,13 @@ interface Cursor extends BaseRecord<'cursor', RecordId<Cursor>> {
 
 type Rec = Shape | Camera | Cursor
 
-const ShapeType = createRecordType<Shape>('shape', { scope: 'document' }).withDefaultProperties(
-  () => ({ x: 0, y: 0, parentId: null })
-)
-const CameraType = createRecordType<Camera>('camera', { scope: 'session' }).withDefaultProperties(
-  () => ({ zoom: 1 })
-)
-const CursorType = createRecordType<Cursor>('cursor', { scope: 'presence' }).withDefaultProperties(
-  () => ({ x: 0 })
-)
+const ShapeType = createRecordType<Shape>('shape', { scope: 'document' }).withDefaultProperties(() => ({
+  x: 0,
+  y: 0,
+  parentId: null
+}))
+const CameraType = createRecordType<Camera>('camera', { scope: 'session' }).withDefaultProperties(() => ({ zoom: 1 }))
+const CursorType = createRecordType<Cursor>('cursor', { scope: 'presence' }).withDefaultProperties(() => ({ x: 0 }))
 
 function makeSchema() {
   return StoreSchema.create<Rec>(
@@ -62,7 +60,7 @@ function diffOf(parts: Partial<RecordsDiff<Rec>>): RecordsDiff<Rec> {
 }
 
 function tick() {
-  return new Promise((resolve) => setTimeout(resolve, 5))
+  return new Promise(resolve => setTimeout(resolve, 5))
 }
 
 describe('the diff algebra', () => {
@@ -70,10 +68,7 @@ describe('the diff algebra', () => {
     const a = shape('a')
     const b = { ...a, x: 1 }
     const c = { ...a, x: 2 }
-    const squashed = squashRecordDiffs<Rec>([
-      diffOf({ added: { [a.id]: a } }),
-      diffOf({ updated: { [a.id]: [b, c] } })
-    ])
+    const squashed = squashRecordDiffs<Rec>([diffOf({ added: { [a.id]: a } }), diffOf({ updated: { [a.id]: [b, c] } })])
     expect(squashed.added[a.id]).toBe(c)
     expect(squashed.updated[a.id]).toBeUndefined()
   })
@@ -92,10 +87,7 @@ describe('the diff algebra', () => {
   it('turns an add landing over a remove into an update', () => {
     const a = shape('a')
     const b = { ...a, x: 1 }
-    const squashed = squashRecordDiffs<Rec>([
-      diffOf({ removed: { [a.id]: a } }),
-      diffOf({ added: { [a.id]: b } })
-    ])
+    const squashed = squashRecordDiffs<Rec>([diffOf({ removed: { [a.id]: a } }), diffOf({ added: { [a.id]: b } })])
     expect(squashed.updated[a.id]).toEqual([a, b])
     expect(squashed.added[a.id]).toBeUndefined()
     expect(squashed.removed[a.id]).toBeUndefined()
@@ -103,10 +95,7 @@ describe('the diff algebra', () => {
 
   it('drops an add over a remove of the very same record', () => {
     const a = shape('a')
-    const squashed = squashRecordDiffs<Rec>([
-      diffOf({ removed: { [a.id]: a } }),
-      diffOf({ added: { [a.id]: a } })
-    ])
+    const squashed = squashRecordDiffs<Rec>([diffOf({ removed: { [a.id]: a } }), diffOf({ added: { [a.id]: a } })])
     expect(isRecordsDiffEmpty(squashed)).toBe(true)
   })
 
@@ -123,10 +112,7 @@ describe('the diff algebra', () => {
 
   it('cancels an add followed by a remove', () => {
     const a = shape('a')
-    const squashed = squashRecordDiffs<Rec>([
-      diffOf({ added: { [a.id]: a } }),
-      diffOf({ removed: { [a.id]: a } })
-    ])
+    const squashed = squashRecordDiffs<Rec>([diffOf({ added: { [a.id]: a } }), diffOf({ removed: { [a.id]: a } })])
     expect(isRecordsDiffEmpty(squashed)).toBe(true)
   })
 
@@ -155,7 +141,7 @@ describe('the store', () => {
     store.put([a])
     expect(store.get(a.id)).toBe(a)
     expect(store.has(a.id)).toBe(true)
-    store.update(a.id, (record) => ({ ...record, x: 5 }))
+    store.update(a.id, record => ({ ...record, x: 5 }))
     expect((store.get(a.id) as Shape).x).toBe(5)
     store.remove([a.id])
     expect(store.get(a.id)).toBeUndefined()
@@ -168,7 +154,7 @@ describe('the store', () => {
     const a = shape('a')
     store.put([a, CameraType.create({ id: CameraType.createId('one') })])
     const shapes = store.query('shape')
-    expect(shapes.get().map((record) => record.id)).toEqual([a.id])
+    expect(shapes.get().map(record => record.id)).toEqual([a.id])
     store.put([shape('b')])
     expect(shapes.get()).toHaveLength(2)
     store.remove([a.id])
@@ -190,7 +176,7 @@ describe('the store', () => {
   it('filters what a listener hears by scope', async () => {
     const store = makeStore()
     const heard: HistoryEntry<Rec>[] = []
-    store.listen((entry) => heard.push(entry), { scope: 'document' })
+    store.listen(entry => heard.push(entry), { scope: 'document' })
     store.put([CameraType.create({ id: CameraType.createId('one') })])
     store.put([CursorType.create({ id: CursorType.createId('one') })])
     await tick()
@@ -205,8 +191,8 @@ describe('the store', () => {
     const store = makeStore()
     const user: HistoryEntry<Rec>[] = []
     const remote: HistoryEntry<Rec>[] = []
-    store.listen((entry) => user.push(entry), { source: 'user' })
-    store.listen((entry) => remote.push(entry), { source: 'remote' })
+    store.listen(entry => user.push(entry), { source: 'user' })
+    store.listen(entry => remote.push(entry), { source: 'remote' })
     store.put([shape('a')])
     await tick()
     expect(user).toHaveLength(1)
@@ -220,7 +206,7 @@ describe('the store', () => {
   it('stamps a change made inside mergeRemoteChanges as remote', async () => {
     const store = makeStore()
     const heard: HistoryEntry<Rec>[] = []
-    store.listen((entry) => heard.push(entry))
+    store.listen(entry => heard.push(entry))
     store.mergeRemoteChanges(() => {
       store.put([shape('a')])
       store.put([shape('b')])
@@ -234,7 +220,7 @@ describe('the store', () => {
   it('squashes what a listener hears into one entry a frame', async () => {
     const store = makeStore()
     const heard: HistoryEntry<Rec>[] = []
-    store.listen((entry) => heard.push(entry))
+    store.listen(entry => heard.push(entry))
     const a = shape('a')
     store.put([a])
     store.put([{ ...a, x: 1 }])
@@ -285,7 +271,7 @@ describe('a snapshot', () => {
 describe('side effects', () => {
   it('lets a before handler rewrite the record that lands', () => {
     const store = makeStore()
-    store.sideEffects.registerBeforeCreateHandler('shape', (record) => ({ ...record, x: 100 }))
+    store.sideEffects.registerBeforeCreateHandler('shape', record => ({ ...record, x: 100 }))
     store.sideEffects.registerBeforeChangeHandler('shape', (_prev, next) => ({ ...next, y: 50 }))
     const a = shape('a')
     store.put([a])
@@ -308,16 +294,16 @@ describe('side effects', () => {
     const parent = shape('parent')
     const child = shape('child', { parentId: 'shape:parent' })
     store.put([parent, child])
-    store.sideEffects.registerAfterDeleteHandler('shape', (record) => {
+    store.sideEffects.registerAfterDeleteHandler('shape', record => {
       const children = store
         .query('shape')
         .get()
-        .filter((other) => other.parentId === record.id)
-      if (children.length) store.remove(children.map((other) => other.id))
+        .filter(other => other.parentId === record.id)
+      if (children.length) store.remove(children.map(other => other.id))
     })
 
     const heard: HistoryEntry<Rec>[] = []
-    store.listen((entry) => heard.push(entry))
+    store.listen(entry => heard.push(entry))
     store.remove([parent.id])
     await tick()
 

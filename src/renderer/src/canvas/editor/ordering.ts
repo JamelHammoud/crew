@@ -26,5 +26,5 @@ export function reorderedShapes(siblings: TLShape[], ids: readonly TLShapeId[], 
     }
   }
   const indices = getIndicesBetween(null, null, order.length)
-  return order.map((shape, index) => shape.index === indices[index] ? shape : { ...shape, index: indices[index] })
+  return order.map((shape, index) => (shape.index === indices[index] ? shape : { ...shape, index: indices[index] }))
 }

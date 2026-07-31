@@ -20,12 +20,7 @@ export class Rectangle2d extends Polygon2d {
     const { x = 0, y = 0, width, height } = config
     super({
       ...config,
-      points: [
-        new Vec(x, y),
-        new Vec(x + width, y),
-        new Vec(x + width, y + height),
-        new Vec(x, y + height)
-      ]
+      points: [new Vec(x, y), new Vec(x + width, y), new Vec(x + width, y + height), new Vec(x, y + height)]
     })
     this.x = x
     this.y = y

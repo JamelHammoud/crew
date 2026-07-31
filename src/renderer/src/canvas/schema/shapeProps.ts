@@ -48,17 +48,7 @@ export const GEO_KINDS = [
   'heart'
 ] as const
 export const ARROW_KINDS = ['arc', 'elbow'] as const
-export const ARROWHEADS = [
-  'arrow',
-  'triangle',
-  'square',
-  'dot',
-  'pipe',
-  'diamond',
-  'inverted',
-  'bar',
-  'none'
-] as const
+export const ARROWHEADS = ['arrow', 'triangle', 'square', 'dot', 'pipe', 'diamond', 'inverted', 'bar', 'none'] as const
 export const SPLINES = ['cubic', 'line'] as const
 
 export type TLDefaultColorStyle = (typeof DEFAULT_COLORS)[number]

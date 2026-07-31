@@ -91,7 +91,7 @@ export function flushChanges(atoms: Iterable<AnyAtom>): void {
 
     const reactors = new Set<Reactor>()
     for (const atom of atoms) {
-      atom.children.visit((child) => traverse(reactors, child))
+      atom.children.visit(child => traverse(reactors, child))
     }
     for (const r of reactors) {
       r.maybeScheduleEffect()
@@ -116,7 +116,7 @@ export function flushChanges(atoms: Iterable<AnyAtom>): void {
 
 function traverseAtomForCleanup(atom: AnyAtom): void {
   const rs = (cleanupReactors ??= new Set())
-  atom.children.visit((child) => traverse(rs, child))
+  atom.children.visit(child => traverse(rs, child))
 }
 
 export function atomDidChange(atom: AnyAtom, previousValue: unknown): void {

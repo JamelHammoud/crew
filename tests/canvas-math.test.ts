@@ -20,16 +20,7 @@ import {
   toFixed
 } from '../src/renderer/src/canvas/math/utils'
 
-const HANDLES = [
-  'top_left',
-  'top',
-  'top_right',
-  'right',
-  'bottom_right',
-  'bottom',
-  'bottom_left',
-  'left'
-] as const
+const HANDLES = ['top_left', 'top', 'top_right', 'right', 'bottom_right', 'bottom', 'bottom_left', 'left'] as const
 
 function near(a: Vec, b: { x: number; y: number }, digits = 10) {
   expect(a.x).toBeCloseTo(b.x, digits)
@@ -146,10 +137,7 @@ describe('a vector', () => {
     const a = new Vec(3, 4)
     for (const r of [0.3, 1, 2.2, 5]) {
       expect(Vec.Rot(a, r).len()).toBeCloseTo(5, 10)
-      expect(Vec.RotWith(a, new Vec(10, 10), r).dist(new Vec(10, 10))).toBeCloseTo(
-        a.dist(new Vec(10, 10)),
-        10
-      )
+      expect(Vec.RotWith(a, new Vec(10, 10), r).dist(new Vec(10, 10))).toBeCloseTo(a.dist(new Vec(10, 10)), 10)
     }
   })
 
@@ -258,7 +246,7 @@ describe('a box', () => {
 
   it('names its corners clockwise from the top left', () => {
     const b = new Box(0, 0, 10, 20)
-    expect(b.corners.map((c) => [c.x, c.y])).toEqual([
+    expect(b.corners.map(c => [c.x, c.y])).toEqual([
       [0, 0],
       [10, 0],
       [10, 20],
@@ -287,7 +275,7 @@ describe('a box', () => {
     for (const handle of HANDLES) {
       near(b.getHandlePoint(handle), want[handle])
     }
-    expect(new Set(HANDLES.map((h) => b.getHandlePoint(h).toString())).size).toBe(8)
+    expect(new Set(HANDLES.map(h => b.getHandlePoint(h).toString())).size).toBe(8)
   })
 
   it('grows to hold every point it is given', () => {
@@ -339,12 +327,8 @@ describe('a box', () => {
   it('expands, moves and scales', () => {
     expect(Box.ExpandBy(new Box(0, 0, 10, 10), 5).equals(new Box(-5, -5, 20, 20))).toBe(true)
     expect(new Box(0, 0, 10, 10).expandBy(5).equals(new Box(-5, -5, 20, 20))).toBe(true)
-    expect(Box.Expand(new Box(0, 0, 10, 10), new Box(20, 20, 10, 10)).equals(new Box(0, 0, 30, 30))).toBe(
-      true
-    )
-    expect(new Box(0, 0, 10, 10).union({ x: 20, y: 20, w: 10, h: 10 }).equals(new Box(0, 0, 30, 30))).toBe(
-      true
-    )
+    expect(Box.Expand(new Box(0, 0, 10, 10), new Box(20, 20, 10, 10)).equals(new Box(0, 0, 30, 30))).toBe(true)
+    expect(new Box(0, 0, 10, 10).union({ x: 20, y: 20, w: 10, h: 10 }).equals(new Box(0, 0, 30, 30))).toBe(true)
     expect(new Box(1, 2, 3, 4).translate(new Vec(10, 10)).equals(new Box(11, 12, 3, 4))).toBe(true)
     expect(new Box(10, 20, 30, 40).scale(10).equals(new Box(1, 2, 3, 4))).toBe(true)
   })
@@ -360,18 +344,10 @@ describe('a box', () => {
   })
 
   it('resizes from the handle that was dragged', () => {
-    expect(Box.Resize(new Box(0, 0, 100, 100), 'right', 50, 0).box.equals(new Box(0, 0, 150, 100))).toBe(
-      true
-    )
-    expect(Box.Resize(new Box(0, 0, 100, 100), 'left', 50, 0).box.equals(new Box(50, 0, 50, 100))).toBe(
-      true
-    )
-    expect(
-      Box.Resize(new Box(0, 0, 100, 100), 'bottom_right', 50, 50).box.equals(new Box(0, 0, 150, 150))
-    ).toBe(true)
-    expect(
-      Box.Resize(new Box(0, 0, 100, 100), 'top_left', 50, 50).box.equals(new Box(50, 50, 50, 50))
-    ).toBe(true)
+    expect(Box.Resize(new Box(0, 0, 100, 100), 'right', 50, 0).box.equals(new Box(0, 0, 150, 100))).toBe(true)
+    expect(Box.Resize(new Box(0, 0, 100, 100), 'left', 50, 0).box.equals(new Box(50, 0, 50, 100))).toBe(true)
+    expect(Box.Resize(new Box(0, 0, 100, 100), 'bottom_right', 50, 50).box.equals(new Box(0, 0, 150, 150))).toBe(true)
+    expect(Box.Resize(new Box(0, 0, 100, 100), 'top_left', 50, 50).box.equals(new Box(50, 50, 50, 50))).toBe(true)
     expect(new Box(0, 0, 100, 100).resize('right', 50, 0).equals(new Box(0, 0, 150, 100))).toBe(true)
   })
 
@@ -480,13 +456,7 @@ describe('a point against a polygon', () => {
   })
 
   it('reads the notch of a concave polygon as outside', () => {
-    const arrow = [
-      new Vec(0, 0),
-      new Vec(10, 0),
-      new Vec(10, 10),
-      new Vec(5, 5),
-      new Vec(0, 10)
-    ]
+    const arrow = [new Vec(0, 0), new Vec(10, 0), new Vec(10, 10), new Vec(5, 5), new Vec(0, 10)]
     expect(pointInPolygon(new Vec(5, 2), arrow)).toBe(true)
     expect(pointInPolygon(new Vec(1, 2), arrow)).toBe(true)
     expect(pointInPolygon(new Vec(5, 8), arrow)).toBe(false)
@@ -496,9 +466,7 @@ describe('a point against a polygon', () => {
 
 describe('two lines', () => {
   it('cross when they really cross', () => {
-    expect(
-      linesIntersect(new Vec(0, 0), new Vec(10, 10), new Vec(0, 10), new Vec(10, 0))
-    ).toBe(true)
+    expect(linesIntersect(new Vec(0, 0), new Vec(10, 10), new Vec(0, 10), new Vec(10, 0))).toBe(true)
   })
 
   it('do not cross when they miss or run alongside', () => {

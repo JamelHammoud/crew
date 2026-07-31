@@ -12,7 +12,4 @@ const REPLACEMENTS: Record<string, (typeof defaultShapeUtils)[number]> = {
   arrow: ArrowShapeUtil.configure(NO_OUTLINE)
 }
 
-export const designShapeUtils = [
-  ...defaultShapeUtils.map(util => REPLACEMENTS[util.type] ?? util),
-  DesignNodeUtil
-]
+export const designShapeUtils = [...defaultShapeUtils.map(util => REPLACEMENTS[util.type] ?? util), DesignNodeUtil]
