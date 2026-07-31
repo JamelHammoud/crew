@@ -32,7 +32,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 
 ## Code
 
-- No code comments. Humans add comments when they want them.
+- No code comments, in any file, ever. Humans add comments when they want them. A file already full of them is not an invitation to add another: matching the surrounding style is the one reason that never counts, because every comment in there was written by somebody who wanted it and none of them were written by whoever is reading the diff. Why a thing works the way it does belongs in this file. Why a change was made belongs in the message it was committed under.
 - Small files. SOLID. DRY. Readable over clever.
 - TypeScript everywhere. React and Tailwind in the renderer.
 - Integration tests over unit tests. Every feature ships with coverage of its behavior. Tests live in `tests/` and boot real servers and runners on loopback.
