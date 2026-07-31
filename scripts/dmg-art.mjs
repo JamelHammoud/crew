@@ -1,73 +1,40 @@
-import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
-import { DMG, DMG_WASH, HEADLINE, dmgArrow, dmgDefs } from './icon-dmg.mjs'
-import { shootMesh } from './dmg-shoot.mjs'
+import { readFileSync, writeFileSync } from 'node:fs'
+import zlib from 'node:zlib'
 
-export const LOOP = { scale: 2, fps: 8, seconds: 4, dpi: 144, colours: 256 }
+const SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
 
-export function overlaySvg() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${DMG.width}" height="${DMG.height}" viewBox="0 0 ${DMG.width} ${DMG.height}">
-  <defs>
-${dmgDefs()}
-  </defs>
-${DMG_WASH}
-${dmgArrow()}
-  ${HEADLINE}
-</svg>
-`
+const PER_METRE = dpi => Math.round(dpi / 0.0254)
+
+function physical(dpi) {
+  const body = Buffer.alloc(9)
+  body.writeUInt32BE(PER_METRE(dpi), 0)
+  body.writeUInt32BE(PER_METRE(dpi), 4)
+  body.writeUInt8(1, 8)
+  const chunk = Buffer.alloc(body.length + 12)
+  chunk.writeUInt32BE(body.length, 0)
+  chunk.write('pHYs', 4, 'ascii')
+  body.copy(chunk, 8)
+  chunk.writeUInt32BE(zlib.crc32(Buffer.concat([Buffer.from('pHYs'), body])) >>> 0, body.length + 8)
+  return chunk
 }
 
-export async function drawDmgLoop(out, raster) {
-  try {
-    execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' })
-  } catch {
-    throw new Error('the disk image background needs ffmpeg to be on PATH')
+export function tagDpi(file, dpi) {
+  const png = readFileSync(file)
+  if (!png.subarray(0, 8).equals(SIGNATURE)) throw new Error(`${file} is not a png`)
+  const pieces = [png.subarray(0, 8)]
+  let at = 8
+  let placed = false
+  while (at < png.length) {
+    const length = png.readUInt32BE(at)
+    const kind = png.toString('ascii', at + 4, at + 8)
+    if (kind !== 'pHYs') {
+      pieces.push(png.subarray(at, at + 12 + length))
+      if (kind === 'IHDR' && !placed) {
+        pieces.push(physical(dpi))
+        placed = true
+      }
+    }
+    at += 12 + length
   }
-
-  const width = DMG.width * LOOP.scale
-  const height = DMG.height * LOOP.scale
-  const count = Math.round(LOOP.fps * LOOP.seconds)
-  const work = mkdtempSync(path.join(tmpdir(), 'crew-dmg-loop-'))
-
-  try {
-    const frames = path.join(work, 'f')
-    mkdirSync(frames, { recursive: true })
-
-    const chrome = path.join(work, 'overlay.png')
-    raster(overlaySvg(), width, height, chrome)
-
-    const shot = await shootMesh(
-      Array.from({ length: count }, (unused, i) => ({
-        at: DMG.at + i / LOOP.fps,
-        width,
-        height
-      }))
-    )
-    shot.forEach((frame, i) => {
-      writeFileSync(path.join(frames, `m${String(i).padStart(4, '0')}.png`), Buffer.from(frame.png, 'base64'))
-    })
-
-    execFileSync('ffmpeg', [
-      '-y',
-      '-framerate', String(LOOP.fps),
-      '-i', path.join(frames, 'm%04d.png'),
-      '-i', chrome,
-      '-filter_complex',
-      `[0][1]overlay=0:0[v];[v]split[a][b];` +
-        `[b]reverse,trim=start_frame=1:end_frame=${count - 1}[r];` +
-        `[a][r]concat=n=2:v=1:a=0[all];[all]split[c][d];` +
-        `[c]palettegen=max_colors=${LOOP.colours}:stats_mode=full[p];` +
-        `[d][p]paletteuse=dither=none:diff_mode=rectangle`,
-      '-plays', '0',
-      '-dpi', String(LOOP.dpi),
-      '-f', 'apng',
-      out
-    ], { stdio: 'ignore' })
-
-    return { frames: count * 2 - 2, width, height }
-  } finally {
-    rmSync(work, { recursive: true, force: true })
-  }
+  writeFileSync(file, Buffer.concat(pieces))
 }
