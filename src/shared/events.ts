@@ -160,6 +160,10 @@ export type SessionEvent =
       // The one a crew wrote down before a call could name several. It is read
       // and never written, so a thread from before this keeps its row.
       url?: string
+      // The run that showed them, so the row closes up against the steps either
+      // side of it the way one step closes up against the next. A thread from
+      // before this has none and keeps the wider gap.
+      promptId?: string
       threadId: string
       // The agent's own line about what it is, or the file's name and the site's
       // host where it said nothing about one page.
