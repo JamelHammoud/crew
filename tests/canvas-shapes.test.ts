@@ -27,6 +27,7 @@ import {
   getArrowTerminals,
   linePoints,
   segmentPoints,
+  shapeColor,
   type ShapeEditor
 } from '../src/renderer/src/canvas/shapes'
 
@@ -169,6 +170,15 @@ describe('owned canvas shape utilities', () => {
     expect(isValidElement(highlightUtil.component(highlight))).toBe(true)
   })
 
+  it('uses exact light and dark paint variants', () => {
+    expect(shapeColor(editor, 'blue', 'solid')).toBe('#4465e9')
+    expect(shapeColor(editor, 'blue', 'semi')).toBe('#dce1f8')
+    expect(shapeColor(editor, 'yellow', 'noteFill')).toBe('#FED49A')
+    expect(shapeColor({ getColorMode: () => 'dark' }, 'blue', 'solid')).toBe('#4f72fc')
+    expect(shapeColor({ getColorMode: () => 'dark' }, 'yellow', 'highlightSrgb')).toBe('#d2b700')
+    expect(shapeColor({ getColorMode: () => 'dark' }, 'black', 'frameFill')).toBe('#0c0c0c')
+  })
+
   it('renders text, notes, frames, images, groups, and Crew design nodes', () => {
     const textUtil = new TextShapeUtil(editor)
     const text = shape('text', { ...textUtil.getDefaultProps(), richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew', marks: [{ type: 'bold' }] }] }] } })
@@ -176,6 +186,8 @@ describe('owned canvas shape utilities', () => {
     expect(textUtil.getGeometry(text).bounds.w).toBeGreaterThan(8)
     expect(isValidElement(textUtil.component(text))).toBe(true)
     expect(renderToStaticMarkup(textUtil.component(text) as ReactElement)).toContain('<strong>Crew</strong>')
+    const editingText = new TextShapeUtil({ getEditingShapeId: () => text.id })
+    expect(renderToStaticMarkup(editingText.component(text) as ReactElement)).toContain('visibility:hidden')
 
     const noteUtil = new NoteShapeUtil(editor)
     const note = shape('note', noteUtil.getDefaultProps())
