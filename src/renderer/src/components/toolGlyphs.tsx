@@ -208,8 +208,12 @@ export const ThinkingGlyph = glyph(
 // is the one step that puts something on the screen outside the thread. A tile is
 // what an app is drawn as everywhere else, so the row says that before a word of
 // it has been read, and the arrow leaving it is what the press does.
+// The arrow stands in the middle 7.6 of the tile, so a stroke's worth of corner
+// is still tile on every side. Run out to the edges it reads as a box the arrow
+// is stuck in rather than as a mark drawn on one, and both head arms are half
+// the shaft, which is the length that keeps a head a head at 18.
 const TILE = { at: center(SOLID), side: SOLID, r: corner(SOLID, RADIUS_TILE) }
-const ARROW = 'M7.2 16.8 16.8 7.2M10 7.2h6.8V14'
+const ARROW = 'M8.2 15.8 15.8 8.2M10.4 8.2H15.8V13.6'
 
 // The arrow is cut out rather than painted on, so what comes through it is
 // whatever the row is standing on. Painted, it would be one fixed color over a
