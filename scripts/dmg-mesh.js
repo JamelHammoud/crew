@@ -75,12 +75,19 @@ float snoise(vec3 v) {
   return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
 }
 
-float band(vec2 p, vec4 wave, vec2 drift, float seed, float t) {
+vec2 flow(vec2 p, vec2 lie) {
+  float c = cos(lie.x);
+  float s = sin(lie.x);
+  vec2 turned = vec2(p.x * c - p.y * s, p.x * s + p.y * c);
+  return vec2(turned.x / lie.y, turned.y * lie.y);
+}
+
+float band(vec2 p, vec4 wave, vec2 drift, vec2 lie, float seed, float t) {
   float clock = t * wave.y;
-  vec2 q = p * wave.x + drift * clock * 6.0;
+  vec2 q = flow(p, lie) * wave.x + drift * clock * 6.0;
   float broad = snoise(vec3(q, clock + seed * 13.7));
   float fine = snoise(vec3(q * 2.1 - 5.0, clock * 0.64 + seed * 5.3));
-  return broad * 0.74 + fine * 0.36 + wave.z;
+  return broad * 0.78 + fine * 0.34 + wave.z;
 }
 
 float grain(vec2 p) {
