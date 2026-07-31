@@ -120,7 +120,8 @@ export function threadState(thread: ThreadMeta, events: SessionEvent[], running:
   if (running) return 'working'
   if (thread.status !== 'open') return thread.status
   const end = lastEnd(thread.id, events)
-  return end && !end.ok ? 'failed' : 'ready'
+  if (!end || end.ok) return 'ready'
+  return end.stopped ? 'stopped' : 'failed'
 }
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -193,6 +194,9 @@ export interface ThreadItem {
   promptId?: string
   agentId?: string
   error?: string
+  // A run somebody ended. It reads as the record it is rather than in the color
+  // a failure wears, since nothing went wrong and somebody already knows.
+  stopped?: boolean
   // The mark this reads under, in place of the pet. A helper's own thread is
   // the one place an agent's words are not the agent's: they are the helper's,
   // so they stand under the name it was made up with and the mark drawn from
