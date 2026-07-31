@@ -20,36 +20,36 @@
     {
       color: [0.259, 0.796, 1.0],
       scale: 0.96,
-      speed: 0.058,
+      speed: 0.132,
       bias: 0.16,
-      drift: [0.11, -0.04],
+      drift: [0.19, -0.08],
       flow: [-0.44, 1.38],
       weight: 1.0
     },
     {
       color: [0.753, 0.549, 0.984],
       scale: 0.8,
-      speed: 0.045,
+      speed: 0.104,
       bias: 0.04,
-      drift: [0.06, 0.07],
+      drift: [0.12, 0.13],
       flow: [1.12, 1.24],
       weight: 1.0
     },
     {
       color: [1.0, 0.451, 0.588],
       scale: 1.18,
-      speed: 0.071,
+      speed: 0.158,
       bias: -0.12,
-      drift: [0.09, 0.05],
+      drift: [0.16, 0.09],
       flow: [-1.33, 1.5],
       weight: 0.76
     },
     {
       color: [1.0, 0.808, 0.404],
       scale: 0.88,
-      speed: 0.038,
+      speed: 0.088,
       bias: -0.16,
-      drift: [0.04, -0.08],
+      drift: [0.09, -0.15],
       flow: [0.36, 1.3],
       weight: 0.52
     }
