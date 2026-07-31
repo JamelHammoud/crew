@@ -142,7 +142,7 @@ export function CrewCanvas({
 
   return (
     <EditorContext.Provider value={editor}>
-      <Canvas
+      <Canvas<TLShape>
         host={editor}
         shapeRenderer={renderer}
         canvasRef={container}

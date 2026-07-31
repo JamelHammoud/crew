@@ -6,6 +6,7 @@ import {
   InstancePresenceRecordType,
   PageRecordType,
   ShapeRecordType,
+  ZERO_INDEX_KEY,
   createTLStore,
   createTLSchema,
   decodePoints,
@@ -36,12 +37,12 @@ const boardFiles = existsSync(designsRoot)
 describe('the Crew canvas schema', () => {
   it('validates and snapshots a document without session records', () => {
     const store = createTLStore()
-    const page = PageRecordType.create({ id: PageRecordType.createId('page'), name: 'Page 1', index: 'a1' })
+    const page = PageRecordType.create({ id: PageRecordType.createId('page'), name: 'Page 1', index: ZERO_INDEX_KEY })
     const shape = ShapeRecordType.create({
       id: ShapeRecordType.createId('box'),
       type: 'geo',
       parentId: page.id,
-      index: 'a1',
+      index: ZERO_INDEX_KEY,
       props: {
         geo: 'rectangle',
         dash: 'draw',
@@ -68,10 +69,10 @@ describe('the Crew canvas schema', () => {
 
   it('keeps local presence when a document snapshot lands', () => {
     const store = createTLStore()
-    const page = PageRecordType.create({ id: PageRecordType.createId('page'), name: 'Page 1', index: 'a1' })
+    const page = PageRecordType.create({ id: PageRecordType.createId('page'), name: 'Page 1', index: ZERO_INDEX_KEY })
     const presence = InstancePresenceRecordType.create({
       id: InstancePresenceRecordType.createId('person'),
-      userId: 'user:person',
+      userId: InstancePresenceRecordType.createId('person') as unknown as Parameters<typeof InstancePresenceRecordType.create>[0]['userId'],
       userName: 'Person',
       currentPageId: page.id
     })
