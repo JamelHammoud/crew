@@ -1041,7 +1041,8 @@ export class CrewSession {
     incoming?: OutgoingAttachment[],
     boardId?: string,
     replyTargetId?: string,
-    asked?: CommandName[]
+    asked?: CommandName[],
+    forkId?: string
   ): void {
     // A command rides beside the message rather than in it, so nothing is ever
     // cut out of what somebody wrote. The chat's commands open a thread, so
@@ -1056,6 +1057,7 @@ export class CrewSession {
     const reporting = commands.includes('tickets')
     const holding = threadId ? asking.includes('queue') : false
     const beside = threadId ? asking.includes('btw') : false
+    const forking = threadId ? asking.includes('fork') : false
     const trimmed = text.trim()
     // A question on the side opens a ghost of its own, so a picture sent with
     // one is held for the window the way any ghost's is, whatever the thread it
