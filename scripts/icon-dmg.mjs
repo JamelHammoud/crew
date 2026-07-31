@@ -23,7 +23,7 @@ export const ARROW = { from: 252, to: 410, head: 13, sweep: 0.62, weight: 3.4, g
 
 const round = value => Number(value.toFixed(3))
 
-export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="31" font-weight="600" letter-spacing="-0.72" fill="${INK}" fill-opacity="0.92">Move in</text>`
+export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="30" font-weight="600" letter-spacing="-0.7" fill="${INK}" fill-opacity="0.92">Your new Crew</text>`
 
 export const DMG_DEFS = `    <linearGradient id="clearing" x1="0" y1="0" x2="${DMG.width}" y2="${DMG.height}" gradientUnits="userSpaceOnUse">
       <stop offset="0.38" stop-color="${INK}" stop-opacity="0" />
