@@ -100,7 +100,7 @@ export function makeSteerableProvider(env: NodeJS.ProcessEnv = {}, name = 'steer
     fields: fakeFields,
     args: () => [fakeSteerCliPath],
     parser: parseFakeLine,
-    streamInput: true,
+    dialog: prompt => claudeDialog(prompt),
     env
   })
 }
