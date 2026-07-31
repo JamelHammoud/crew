@@ -178,10 +178,11 @@ describe('where a page row sits in the run that showed it', () => {
 
   it('closes up against the steps either side of it', () => {
     const events = [ranEvent(1), shownEvent({ ts: 2, promptId: RUN, pages: ['http://localhost:5173'] })]
-    render(createElement(ThreadItems, { items: buildThread(events, thought, 'sam'), threadId: 't1' }))
+    render(createElement(ThreadItems, { items: buildThread(events, alsoRead, 'sam'), threadId: 't1' }))
 
     expect(rowOf('Thought')?.className).not.toContain('-mt-3')
     expect(rowOf('Showed')?.className).toContain('-mt-3')
+    expect(rowOf('Read')?.className).toContain('-mt-3')
   })
 
   it('stands clear of a run that is not its own', () => {
