@@ -378,7 +378,13 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                   onSend={send}
                   onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
                   sendLabel={
-                    command === 'btw' ? 'Ask' : canSteer && command !== 'queue' ? 'Steer' : 'Send'
+                    command === 'btw'
+                      ? 'Ask'
+                      : command === 'fork'
+                        ? 'Fork'
+                        : canSteer && command !== 'queue'
+                          ? 'Steer'
+                          : 'Send'
                   }
                   ghost={thread.ghost}
                   chips={

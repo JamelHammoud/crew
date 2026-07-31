@@ -400,6 +400,20 @@ rmSync(iconset, { recursive: true, force: true })
 
 raster(dark, 1024, 1024, path.join(resources, 'icon.png'))
 
+const backdrop = dmgBackground({ bite: GAP / RADIUS, step: STEP / RADIUS })
+const plain = path.join(resources, 'dmg-background.png')
+const retina = path.join(resources, 'dmg-background@2x.png')
+writeFileSync(path.join(resources, 'dmg-background.svg'), backdrop)
+raster(backdrop, DMG.width, DMG.height, plain)
+raster(backdrop, DMG.width * 2, DMG.height * 2, retina)
+execFileSync('tiffutil', [
+  '-cathidpicheck',
+  plain,
+  retina,
+  '-out',
+  path.join(resources, 'dmg-background.tiff')
+])
+
 function encode(source, width, height, key) {
   const out = path.join(tmpdir(), `crew-icon-${key}.png`)
   raster(source, width, height, out)

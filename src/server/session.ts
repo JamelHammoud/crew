@@ -3738,10 +3738,8 @@ export class CrewSession {
     const people = [...this.members.values()].map(m => m.name).join(', ')
     const thread = this.threads.get(prompt.threadId)
     // A conversation on the side is about a thread it is not in, so it reads
-    // that thread and then the talk beside it. They stay two blocks rather than
-    // one run of lines: a question and its answer are turns of their own, and
-    // after a few of them there is nothing to say where the thread ended and the
-    // conversation about it began.
+    // that thread and then the talk beside it, as two blocks rather than one run
+    // of lines.
     const beside = thread?.aside ? this.threadContext(thread.aside) : []
     // A fork is that conversation carrying on rather than one about it, so what
     // was said before it stands in the same run of talk as what has been said
