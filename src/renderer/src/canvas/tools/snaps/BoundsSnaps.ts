@@ -59,14 +59,14 @@ export interface ResizeBoundsSnapOptions {
   zoom?: number
 }
 
-interface GapNode {
+export interface BoundsSnapGapNode {
   id: string
   pageBounds: Box
 }
 
-interface Gap {
-  startNode: GapNode
-  endNode: GapNode
+export interface BoundsSnapGap {
+  startNode: BoundsSnapGapNode
+  endNode: BoundsSnapGapNode
   startEdge: [Vec, Vec]
   endEdge: [Vec, Vec]
   length: number
@@ -89,7 +89,7 @@ type NearestSnap =
   | { type: 'gap_center'; gap: Gap; nudge: number }
   | {
       type: 'gap_duplicate'
-      gap: Gap
+      gap: BoundsSnapGap
       protrusionDirection: 'left' | 'right' | 'top' | 'bottom'
       nudge: number
     }
@@ -113,15 +113,15 @@ const pointsForNodes = (nodes: readonly BoundsSnapNode[]) =>
     }))
   })
 
-const gapNodes = (nodes: readonly BoundsSnapNode[]): GapNode[] =>
+const gapNodes = (nodes: readonly BoundsSnapNode[]): BoundsSnapGapNode[] =>
   nodes.map((node) => ({ id: node.id, pageBounds: boxFrom(node.pageBounds) }))
 
 export function getVisibleGaps(nodes: readonly BoundsSnapNode[]): {
-  horizontal: Gap[]
-  vertical: Gap[]
+  horizontal: BoundsSnapGap[]
+  vertical: BoundsSnapGap[]
 } {
-  const horizontal: Gap[] = []
-  const vertical: Gap[] = []
+  const horizontal: BoundsSnapGap[] = []
+  const vertical: BoundsSnapGap[] = []
   const byX = gapNodes(nodes).sort((a, b) => a.pageBounds.minX - b.pageBounds.minX)
 
   for (let i = 0; i < byX.length; i++) {
@@ -392,13 +392,13 @@ function pointIndicators(nearestSnapsX: NearestSnap[], nearestSnapsY: NearestSna
 }
 
 function findAdjacentGaps(
-  gaps: Gap[],
+  gaps: BoundsSnapGap[],
   shapeId: string,
   gapLength: number,
   direction: 'forward' | 'backward',
   intersection: [number, number],
   visited = new Set<string>()
-): Gap[] {
+): BoundsSnapGap[] {
   const matches = gaps.filter((gap) => {
     const id = direction === 'forward' ? gap.startNode.id : gap.endNode.id
     return (
@@ -412,7 +412,7 @@ function findAdjacentGaps(
       )
     )
   })
-  const result: Gap[] = []
+  const result: BoundsSnapGap[] = []
   for (const match of matches) {
     const key = `${match.startNode.id}:${match.endNode.id}`
     if (visited.has(key)) continue
