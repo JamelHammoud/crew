@@ -56,7 +56,7 @@ describe('opening a fork', () => {
   it('names the id it opens under, and goes there the moment it lands', () => {
     useCrew.getState().sendChat('try it with the header on top', 'thread-1', undefined, undefined, undefined, ['fork'])
 
-    const sent = forkOf('thread-1')
+    const sent = forkSent()
     expect(sent?.type).toBe('chat.send')
     const forkId = sent && sent.type === 'chat.send' ? sent.forkId : undefined
     expect(forkId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
