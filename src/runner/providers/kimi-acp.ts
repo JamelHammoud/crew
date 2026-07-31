@@ -140,7 +140,7 @@ const outputText = (update: any): string => {
 // the lanes are counted here. A block is a stretch of one kind, and switching
 // kind or reaching a tool closes the one that was open. Nothing reuses a
 // number, because closing a block closes every kind standing at that index.
-export function kimiParser(): OutputParser {
+export function kimiParser(): RunParser {
   let lane = 0
   let open: 'thinking' | 'text' | null = null
   let sessionId = ''
