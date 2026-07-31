@@ -36,7 +36,7 @@ describe('what a thread offers to fork with', () => {
     expect(idle).not.toContain('queue')
 
     const live = threadCommands(true).map(command => command.name)
-    expect(live).toEqual(['steer', 'queue', 'btw', 'fork'])
+    expect(live).toEqual(['steer', 'queue', 'btw', 'fork', 'fallback'])
   })
 
   it('is a thread’s own, so the chat never offers it', () => {

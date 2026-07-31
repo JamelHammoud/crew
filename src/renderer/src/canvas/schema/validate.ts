@@ -2,6 +2,8 @@ export type JsonPrimitive = string | number | boolean | null
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue }
 export type JsonObject = { [key: string]: JsonValue }
 
+export type AnyValue = ReturnType<typeof JSON.parse>
+
 export type ValidatorFn<Value> = (value: unknown) => Value
 export type KnownGoodFn<Value> = (knownGoodValue: Value, newValue: unknown) => Value
 
