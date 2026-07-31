@@ -456,7 +456,7 @@ export class AppSession {
   private crewLoop(base: string): GitSync {
     const crew = new GitSync(base)
     crew.onLog = line => console.warn('[crew]', line)
-    crew.onTrouble = () => this.onTrouble('This crew is not saving anywhere but this computer.')
+    crew.onTrouble = () => this.onTrouble('This crew is only saving on this computer.')
     crew.start(AUTO_SYNC_MS)
     return crew
   }
