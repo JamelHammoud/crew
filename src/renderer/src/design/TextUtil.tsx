@@ -13,7 +13,12 @@ import { textShapeType, typeMeasure } from './textType'
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
 
-const customDisplayValues = (editor: Editor, shape: TLTextShape) => {
+const customDisplayValues = (
+  editor: Editor,
+  shape: TLTextShape,
+  _geometry?: unknown,
+  _mode?: string
+) => {
   const type = textShapeType(editor, shape)
   loadFonts([type.family])
   return {
