@@ -20,7 +20,7 @@ export interface CanvasEventInfo {
   [key: string]: any
 }
 
-export const EVENT_NAME_MAP: Record<CanvasEventName, string> = {
+export const EVENT_NAME_MAP = {
   wheel: 'onWheel',
   pointer_down: 'onPointerDown',
   pointer_move: 'onPointerMove',
@@ -36,10 +36,10 @@ export const EVENT_NAME_MAP: Record<CanvasEventName, string> = {
   complete: 'onComplete',
   interrupt: 'onInterrupt',
   tick: 'onTick'
-}
+} as const satisfies Record<CanvasEventName, string>
 
 export type StateEventHandler = (info: any) => void
 
-export type StateEventHandlers = {
-  [K in (typeof EVENT_NAME_MAP)[CanvasEventName]]?: StateEventHandler
-}
+export type StateEventHandlers = Partial<
+  Record<(typeof EVENT_NAME_MAP)[CanvasEventName], StateEventHandler>
+>
