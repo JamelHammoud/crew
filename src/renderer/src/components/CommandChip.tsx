@@ -1,6 +1,7 @@
 import type { CommandName } from '../../../shared/commands'
 import {
   BoltGlyph,
+  BranchGlyph,
   ChecklistGlyph,
   ClockGlyph,
   CloseGlyph,
@@ -18,7 +19,8 @@ export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   voice: MicGlyph,
   steer: BoltGlyph,
   queue: ClockGlyph,
-  btw: QuestionGlyph
+  btw: QuestionGlyph,
+  fork: BranchGlyph
 }
 
 export const COMMAND_LABELS: Record<CommandName, string> = {
