@@ -345,7 +345,7 @@ export class AppSession {
     this.git = git
     this.crewGit = crew
     this.projectAuto = auto
-    this.hosted = { session, folder: repoPath, base, key, name, home }
+    this.hosted = { session, folder: repoPath, base, key, name, home, sync: projectSync }
     const detected = await detectProviders()
     // The runner knows every builtin provider so an agent created right after a
     // mid-session CLI install can run.
