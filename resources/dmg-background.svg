@@ -18,5 +18,5 @@
     <line x1="252" y1="206" x2="408.3" y2="206" stroke="url(#shaft)" />
     <path d="M 397 197.94 L 410 206 L 397 214.06" stroke="#141414" stroke-opacity="0.62" />
   </g>
-  <text x="330" y="78" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.62" fill="#141414" fill-opacity="0.88">Drag Crew into Applications</text>
+  <text x="330" y="84" text-anchor="middle" font-family="&quot;Bradley Hand&quot;, &quot;Bradley Hand ITC&quot;, cursive" font-size="34" font-weight="700" fill="#141414" fill-opacity="0.9">Drag Crew into Applications</text>
 </svg>
