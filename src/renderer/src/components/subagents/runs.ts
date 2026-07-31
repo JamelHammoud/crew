@@ -30,18 +30,22 @@ export function useSubagentRuns(parentThreadId: string): SubagentRun[] {
   }, [events, parentThreadId])
 }
 
-export type RunState = 'working' | 'done' | 'failed'
+export type RunState = 'working' | 'done' | 'stopped' | 'failed'
 
+// Stopping a run stops the helpers it sent out, so a stop read as a failure is
+// a row of red down a panel for one press somebody made on purpose.
 export function useRunState(threadId: string): RunState {
   const running = useCrew(state => Boolean(state.threadPrompts[threadId]))
   const queued = useCrew(state => state.queues[threadId]?.length ?? 0)
-  const failed = useCrew(state => {
+  const ended = useCrew(state => {
     for (let i = state.events.length - 1; i >= 0; i--) {
       const event = state.events[i]
-      if (event.kind === 'agent.end' && event.threadId === threadId) return !event.ok
+      if (event.kind === 'agent.end' && event.threadId === threadId) {
+        return event.ok ? 'done' : event.stopped ? 'stopped' : 'failed'
+      }
     }
-    return false
+    return 'done' as const
   })
   if (running || queued > 0) return 'working'
-  return failed ? 'failed' : 'done'
+  return ended
 }
