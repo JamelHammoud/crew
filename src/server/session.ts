@@ -1260,6 +1260,8 @@ export class CrewSession {
       voice: opts.voice === true,
       tickets: opts.tickets === true,
       aside: opts.aside,
+      forkedFrom: opts.fork?.from,
+      forkedAt: opts.fork?.at,
       parentThreadId: sent?.parentThreadId,
       parentPromptId: sent?.parentPromptId,
       helper: sent?.name,
