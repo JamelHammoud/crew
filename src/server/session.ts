@@ -199,6 +199,7 @@ interface QueuedPrompt {
   messageId: string
   replyTo?: MessageReply
   voice?: boolean
+  goal?: boolean
   // A helper coming back is not something anybody said, so it opens a turn
   // without writing a message into the thread for people to scroll past. The
   // chip is the record, and the chip opens onto the whole thing.
@@ -1070,6 +1071,7 @@ export class CrewSession {
     const ghosting = commands.includes('ghost')
     const talking = asking.includes('voice')
     const reporting = commands.includes('tickets')
+    const goal = asking.includes('goal')
     const holding = threadId ? asking.includes('queue') : false
     const beside = threadId ? asking.includes('btw') : false
     const forking = threadId ? asking.includes('fork') : false
@@ -1116,7 +1118,8 @@ export class CrewSession {
           mentions: targets,
           replyTo,
           voice: talking,
-          holding
+          holding: holding || goal,
+          goal
         })
       }
       return
@@ -1143,7 +1146,7 @@ export class CrewSession {
         ? (this.agentsHere(member.id)[0] ?? null)
         : talking
           ? (this.agentsHere()[0] ?? null)
-          : planning
+          : planning || goal
             ? this.soloAgent()
             : null
       if (taker) {
@@ -1153,7 +1156,8 @@ export class CrewSession {
           ghost,
           replyTo,
           voice: talking,
-          tickets: reporting
+          tickets: reporting,
+          goal
         })
         return
       }
@@ -1167,6 +1171,10 @@ export class CrewSession {
       }
       if (planning) {
         this.notice('Mention an agent with @ to say who should write the plan.', ws)
+        return
+      }
+      if (goal) {
+        this.notice('Mention an agent with @ to say who should take this.', ws)
         return
       }
       this.emit({
@@ -1193,7 +1201,8 @@ export class CrewSession {
         mentions: ids,
         replyTo,
         voice: talking,
-        tickets: reporting
+        tickets: reporting,
+        goal
       })
     }
   }
@@ -1294,6 +1303,7 @@ export class CrewSession {
       replyTo?: MessageReply
       voice?: boolean
       tickets?: boolean
+      goal?: boolean
       aside?: string
       plan?: string
       threadId?: string
@@ -1374,6 +1384,7 @@ export class CrewSession {
       mentions: [agent.id],
       replyTo: opts.replyTo,
       voice: opts.voice
+      , goal: opts.goal
     })
     return threadId
   }
@@ -3503,7 +3514,7 @@ export class CrewSession {
     text: string,
     threadId: string,
     attachments: Attachment[],
-    route?: { messageId: string; mentions: string[]; replyTo?: MessageReply; voice?: boolean; holding?: boolean }
+    route?: { messageId: string; mentions: string[]; replyTo?: MessageReply; voice?: boolean; holding?: boolean; goal?: boolean }
   ): void {
     const thread = this.threads.get(threadId)
     if (!thread) return
@@ -3519,7 +3530,8 @@ export class CrewSession {
       attachments,
       messageId: route?.messageId ?? randomUUID(),
       replyTo: route?.replyTo,
-      voice: route?.voice
+      voice: route?.voice,
+      goal: route?.goal
     }
     if (!agent.runner && !agent.dropTimer) {
       this.emitThreadMessage(entry)
@@ -3690,6 +3702,7 @@ export class CrewSession {
       spawnRoom: canSend ? room : 0,
       spawnProviders: canSend ? this.spawnProviders() : undefined,
       tickets: thread.tickets
+      , goal: entry.goal
     }
   }
 
