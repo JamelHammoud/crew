@@ -97,7 +97,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       const resolved = resolveSettings(fields(), settings)
       const read: SettingReader = key => resolved[key] ?? ''
       const dialog = opts.dialog?.(prompt, cwd, read)
-      const parse = opts.makeParser?.() ?? opts.parser
+      const made = opts.makeParser?.()
+      const parse = made?.parse ?? opts.parser
       const invocation = commandInvocation(resolveCommand(opts.command) ?? opts.command, opts.args(prompt, read))
       const child = spawn(invocation.command, invocation.args, {
         cwd,
