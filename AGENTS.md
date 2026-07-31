@@ -816,7 +816,7 @@ What somebody sees the first time they meet Crew: a disk image window with the a
 - Uniform arrays are indexed in `main` and the values passed into `band`, never indexed by a function parameter. GLSL ES 1.00 only allows a constant index expression, a loop counter counts and a parameter does not, and the whole shader fails to compile over it.
 - The bloom is contained. A glow that runs to the edges is cut flat by the frame and reads as a stain rather than as light, so it falls to nothing well inside the window and only a whisper of colour reaches the rest.
 - The words are set in the system sans, one face and one size. A hand was tried and it undid the rest: the grain, the glass tile and the aurora are a considered picture, and a casual face standing over them reads as a novelty rather than as the same piece of design.
-- `resources/dmg-background.tiff` carries both scales, made by `tiffutil` from the two pngs, and it is written by `yarn icon` along with everything else. Nothing in `resources/` is edited by hand.
+- `resources/dmg-background.png` is the one file, written by `yarn icon` along with everything else. Nothing in `resources/` is edited by hand.
 - Where the icons stand is written down twice, in `DMG` and in the `dmg` block of `package.json`, because one is a drawing and the other is a build config that cannot import it. The suite holds the two to agreeing.
 - `yarn dmg-check` is the only thing that can see the rest of it. It builds a real disk image with the real background, sets it up the way electron-builder does, and photographs the mounted window, because whether Finder really lines the picture up with the icons is not a thing any suite can answer.
 
