@@ -14,6 +14,7 @@ import QueueBar, { type QueuedMessage } from '../components/QueueBar'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
 import { usePresence } from '../components/presence'
 import ReplyPreview from '../components/ReplyPreview'
+import RunEnded from '../components/RunEnded'
 import RunStatus from '../components/RunStatus'
 import Spinner from '../components/Spinner'
 import ThreadItems from '../components/ThreadItems'
@@ -21,6 +22,7 @@ import Tooltip from '../components/Tooltip'
 import {
   buildThread,
   eventsOfThread,
+  lastEnd,
   threadAsk,
   THREAD_STATE_LABELS,
   threadState,

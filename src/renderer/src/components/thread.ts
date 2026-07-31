@@ -6,6 +6,7 @@ import type { AgentMentionRef, AgentStep, FileChange, PooledAgent } from '../../
 import { relabelMentions } from '../../../shared/llm'
 import { agentEndReactionTarget, agentStepReactionTarget, messageReactionTarget } from '../../../shared/reactions'
 import type { ThreadMeta } from '../state/store'
+import { shownPages } from '../../../shared/showPage'
 import { reactionGroups, type ReactionGroup } from './reactionGroups'
 import { isNewDay } from './time'
 import { toolAction } from './toolActions'
@@ -385,7 +386,7 @@ export function buildThread(
         self: false,
         text: '',
         streaming: false,
-        page: { url: event.url, title: event.title }
+        shown: { pages: shownPages(event), title: event.title }
       })
     }
     if (event.kind === 'message') {
