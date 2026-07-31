@@ -369,7 +369,8 @@ describe('line tool hierarchy', () => {
     expect(Object.keys(editor.getShape(id)!.props.points)).toHaveLength(2)
     tool.onPointerUp()
     editor.zoom = 4
-    editor.point.set(shape.x + 11, shape.y + 10)
+    const end = editor.getShape(id)!.props.points.a2
+    editor.point.set(shape.x + end.x + 1, shape.y + end.y)
     tool.onPointerDown()
     expect(Object.keys(editor.getShape(id)!.props.points)).toHaveLength(3)
   })
