@@ -199,16 +199,15 @@ void main() {
     )
     gl.uniform4fv(
       gl.getUniformLocation(program, 'uWave'),
-      LAYERS.flatMap((layer, index) => [
-        layer.scale,
-        layer.speed,
-        [0.06, -0.02, -0.12, 0.0][index],
-        layer.weight
-      ])
+      LAYERS.flatMap(layer => [layer.scale, layer.speed, layer.bias, layer.weight])
     )
     gl.uniform2fv(
       gl.getUniformLocation(program, 'uDrift'),
       LAYERS.flatMap(layer => layer.drift)
+    )
+    gl.uniform2fv(
+      gl.getUniformLocation(program, 'uFlow'),
+      LAYERS.flatMap(layer => layer.flow)
     )
 
     const size = gl.getUniformLocation(program, 'uSize')
