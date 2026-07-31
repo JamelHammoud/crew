@@ -1,15 +1,17 @@
 ;(function () {
   const PAPER = [0.925, 0.925, 0.925]
 
-  const BASE = [0.443, 0.494, 0.949]
+  const BASE = [0.612, 0.655, 0.969]
 
   const BLOOM = {
     x: 0,
     y: 0.515,
-    radius: 0.98,
+    radius: 0.75,
     strength: 1,
-    wide: 0.05,
-    shape: [1, 1.3]
+    wide: 0.045,
+    shape: [1, 1.5],
+    fade: 2.6,
+    lift: 0.28
   }
 
   const LAYERS = [
