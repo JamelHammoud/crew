@@ -138,7 +138,7 @@ describe('a page an agent shows', () => {
 
     expect((await post('/page', { promptId: run.promptId, url: 'localhost:5173' })).status).toBe(200)
     const event = (await ui.waitForEvent(e => e.kind === 'page.shown')) as Shown
-    expect(event.url).toBe('http://localhost:5173')
+    expect(event.pages).toEqual(['http://localhost:5173'])
     expect(event.title).toBe('localhost:5173')
   })
 
