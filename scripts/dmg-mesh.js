@@ -74,16 +74,12 @@ float snoise(vec3 v) {
   return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
 }
 
-float band(vec2 p, int which, float t) {
-  float scale = uWave[which].x;
-  float speed = uWave[which].y;
-  float bias = uWave[which].z;
-  vec2 drift = uDrift[which];
-  float clock = t * speed;
-  vec2 q = p * scale + drift * clock * 6.0;
-  float broad = snoise(vec3(q, clock + float(which) * 13.7));
-  float fine = snoise(vec3(q * 2.1 - 5.0, clock * 0.64 + float(which) * 5.3));
-  return broad * 0.74 + fine * 0.36 + bias;
+float band(vec2 p, vec4 wave, vec2 drift, float seed, float t) {
+  float clock = t * wave.y;
+  vec2 q = p * wave.x + drift * clock * 6.0;
+  float broad = snoise(vec3(q, clock + seed * 13.7));
+  float fine = snoise(vec3(q * 2.1 - 5.0, clock * 0.64 + seed * 5.3));
+  return broad * 0.74 + fine * 0.36 + wave.z;
 }
 
 float grain(vec2 p) {
