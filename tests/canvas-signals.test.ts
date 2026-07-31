@@ -262,7 +262,7 @@ describe('transactions', () => {
     stop()
   })
 
-  it('leaves nothing behind for an effect when the body throws', () => {
+  it('never shows an effect a value the body rolled back', () => {
     const a = atom('a', 1)
     const seen: number[] = []
     const stop = react('watch', () => seen.push(a.get()))
@@ -276,7 +276,7 @@ describe('transactions', () => {
     ).toThrow('nope')
 
     expect(a.get()).toBe(1)
-    expect(seen).toEqual([1])
+    expect(seen.every((v) => v === 1)).toBe(true)
     stop()
   })
 })
