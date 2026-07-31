@@ -16,8 +16,7 @@
       "!src/main/icon-png.ts",
       "!src/main/tray-png.ts",
       "!src/renderer/src/components/crew-mark.ts",
-      "!pdfjs-assets.ts",
-      "!chip-probe.mjs.bundle.css"
+      "!pdfjs-assets.ts"
     ]
   },
   "formatter": {
