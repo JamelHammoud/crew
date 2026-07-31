@@ -425,6 +425,27 @@ describe('steering a kimi run', () => {
     const dialog = started()
     expect(dialog.answer(reply(4, { stopReason: 'end_turn' }))).toEqual([])
   })
+
+  it('holds the run open when the turn it steered ended before the cancel landed', async () => {
+    const provider = makeCliProvider({
+      name: 'kimifake',
+      label: 'Kimi',
+      command: process.execPath,
+      args: () => ['-e', LATE_CANCEL],
+      makeParser: kimiParser,
+      dialog: (prompt, cwd, get) => kimiDialog(prompt, cwd, get)
+    })
+    let said = ''
+    const run = provider.start('go', tmpDir('kimi-steer'), {
+      onStep: step => {
+        if (step.kind === 'text') said += step.text ?? ''
+      }
+    })
+    while (!said.includes('working')) await new Promise(r => setTimeout(r, 25))
+    expect(run.steer?.('do it the other way')).toBe(true)
+    const { text } = await run.done
+    expect(text).toContain('STEERED')
+  }, 20000)
 })
 
 describe('a parser a run', () => {
