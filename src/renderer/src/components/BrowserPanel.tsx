@@ -8,6 +8,7 @@ import {
   BranchGlyph,
   ChecklistGlyph,
   CloseGlyph,
+  CloseOthersGlyph,
   DocGlyph,
   ExternalLinkGlyph,
   FolderGlyph,
