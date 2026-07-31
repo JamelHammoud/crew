@@ -3,17 +3,12 @@ import { filePathOf, pageName } from '../../../shared/urls'
 import { useBrowser } from '../state/browser'
 import { isPrivate, PrivateChip, useLocated } from './fileLinks'
 import { openShown, shownPaths } from './openShown'
-import { Chevron, FilePathLink, Label, Mark, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
+import { Chevron, FilePathLink, Label, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
 import type { Shown } from './thread'
 import type { ToolAction } from './toolActions'
-import { FilesGlyph, GlobeGlyph, PageGlyph } from './toolGlyphs'
+import { ShowGlyph } from './toolGlyphs'
 
 const allFiles = (pages: string[]): boolean => shownPaths(pages).length === pages.length
-
-const markFor = (pages: string[]): ToolAction['icon'] => {
-  if (!allFiles(pages)) return GlobeGlyph
-  return pages.length > 1 ? FilesGlyph : PageGlyph
-}
 
 const countOf = (pages: string[]): string => `${pages.length} ${allFiles(pages) ? 'files' : 'pages'}`
 
