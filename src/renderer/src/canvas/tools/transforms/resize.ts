@@ -294,13 +294,15 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
       const parentPageTransform = shape.parentId.startsWith('shape:')
         ? this.editor.getShapeParentTransform?.(shape)
         : undefined
-      return [{
-        shape,
-        bounds: geometry.bounds,
-        pageTransform,
-        parentTransform: parentPageTransform ? Mat.Inverse(parentPageTransform) : null,
-        isAspectRatioLocked: this.editor.getShapeUtil?.(shape).isAspectRatioLocked?.(shape) ?? false
-      }]
+      return [
+        {
+          shape,
+          bounds: geometry.bounds,
+          pageTransform,
+          parentTransform: parentPageTransform ? Mat.Inverse(parentPageTransform) : null,
+          isAspectRatioLocked: this.editor.getShapeUtil?.(shape).isAspectRatioLocked?.(shape) ?? false
+        }
+      ]
     })
   }
 
