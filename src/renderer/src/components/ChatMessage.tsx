@@ -189,7 +189,7 @@ export default function ChatMessage({
         ) : (
           item.text && (
             <p
-              className={`select-text text-fg whitespace-pre-wrap ${
+              className={`select-text text-fg whitespace-pre-wrap break-words ${
                 large ? 'text-[32px] leading-[1.3]' : 'text-base leading-[22px]'
               } ${linked ? '' : 'mt-1'}`}
             >

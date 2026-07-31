@@ -190,7 +190,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
           ) : action.prose ? (
             <p
               onClick={() => !selecting() && setOpen(false)}
-              className="select-text whitespace-pre-wrap cursor-pointer text-fg-muted text-xs leading-5"
+              className="select-text whitespace-pre-wrap break-words cursor-pointer text-fg-muted text-xs leading-5"
             >
               <TextWithFileLinks text={detail} inline again={!item.streaming} />
             </p>
