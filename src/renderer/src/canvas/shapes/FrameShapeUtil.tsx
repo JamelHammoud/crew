@@ -15,9 +15,9 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
 
   getDefaultProps(): FrameShape['props'] { return { w: 320, h: 180, name: '', color: 'black' } }
   getGeometry(shape: FrameShape) { return new Rectangle2d({ width: shape.props.w, height: shape.props.h, isFilled: false }) }
-  override isFrameLike(): boolean { return true }
-  override providesBackgroundForChildren(): boolean { return true }
-  override canReceiveNewChildrenOfType(): boolean { return true }
+  override isFrameLike(_shape: FrameShape): boolean { return true }
+  override providesBackgroundForChildren(_shape: FrameShape): boolean { return true }
+  override canReceiveNewChildrenOfType(_shape: FrameShape): boolean { return true }
   override getAriaDescriptor(shape: FrameShape): string { return shape.props.name }
   component(shape: FrameShape): ReactNode {
     const configured = this.options.getCustomDisplayValues as ((editor: unknown, shape: FrameShape) => { fillColor?: string; strokeColor?: string })
