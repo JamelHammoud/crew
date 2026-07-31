@@ -74,5 +74,7 @@ export const OverlayCanvas = memo(function OverlayCanvas<Shape extends CanvasSha
     return () => scheduler.detach()
   }, [host])
 
-  return <canvas ref={canvasRef} data-canvas-overlays="true" className="tl-canvas-overlays" style={viewportLayerStyle} />
+  return (
+    <canvas ref={canvasRef} data-canvas-overlays="true" className="tl-canvas-overlays" style={viewportLayerStyle} />
+  )
 })

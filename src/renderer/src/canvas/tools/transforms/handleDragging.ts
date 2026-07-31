@@ -88,7 +88,7 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
     this.pageRotation =
       info.pageRotation ??
       (this.editor.getShapePageTransform
-        ? this.editor.getShapePageTransform(info.shape)?.rotation?.() ?? 0
+        ? Mat.Rotation(this.editor.getShapePageTransform(info.shape) ?? Mat.Identity())
         : 0)
     this.markId =
       info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('dragging handle') ?? ''
@@ -160,7 +160,7 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
     )
     if (changes) {
       this.editor.updateShapes([
-        { id: shape.id, type: shape.type, ...changes } as ShapeUpdate<Shape>
+        { ...changes, id: shape.id, type: shape.type } as ShapeUpdate<Shape>
       ])
     }
   }

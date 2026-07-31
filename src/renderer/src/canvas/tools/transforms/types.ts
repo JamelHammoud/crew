@@ -1,5 +1,5 @@
 import type { MatLike } from '../../math/Mat'
-import type { Vec, VecLike } from '../../math/Vec'
+import type { Vec } from '../../math/Vec'
 import type { TLCursor, TLShape } from '../../schema'
 
 export type ShapeUpdate<Shape extends TLShape = TLShape> = Partial<Shape> &
@@ -59,7 +59,10 @@ export interface TransformShapeUtil<Shape extends TLShape = TLShape> {
   onHandleDragCancel?(shape: Shape, info: HandleDragInfo<Shape>): void
 }
 
-export interface TransformHandle extends VecLike {
+export interface TransformHandle {
+  x: number
+  y: number
+  z?: number
   id: string
   type: string
   index?: string
