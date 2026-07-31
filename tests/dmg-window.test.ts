@@ -44,7 +44,16 @@ describe('the disk image window', () => {
   })
 
   it('wears the background the icon script writes', () => {
-    expect(dmg.background).toBe('resources/dmg-background.tiff')
+    expect(dmg.background).toBe('resources/dmg-background.png')
+  })
+
+  it('draws the picture at retina and tells Finder to size it back down', () => {
+    const png = readFileSync(path.join(root, dmg.background))
+    const width = png.readUInt32BE(16)
+    const height = png.readUInt32BE(20)
+    expect(width).toBe(DMG.width * DMG.retina)
+    expect(height).toBe(DMG.height * DMG.retina)
+    expect(dpiOf(png)).toBe(72 * DMG.retina)
   })
 
   it('leaves both icons inside the window', () => {
