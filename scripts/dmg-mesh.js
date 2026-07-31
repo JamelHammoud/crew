@@ -153,7 +153,7 @@ void main() {
     gl.uniform3fv(gl.getUniformLocation(program, 'uBase'), BASE)
     gl.uniform3fv(
       gl.getUniformLocation(program, 'uColour'),
-      LAYERS.flatMap(layer => layer.colour || layer.color)
+      LAYERS.flatMap(layer => layer.color)
     )
     gl.uniform4fv(
       gl.getUniformLocation(program, 'uWave'),
