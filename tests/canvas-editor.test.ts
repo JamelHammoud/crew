@@ -96,10 +96,13 @@ describe('the canvas editor', () => {
     const after = subject.getSelectionRotatedPageBounds()!
     expect(after.w).toBeGreaterThan(before.w)
     expect(after.h).toBeGreaterThan(before.h)
-    expect(subject.getShape(a)?.props).toMatchObject({ w: expect.any(Number), h: expect.any(Number) })
-    expect(subject.getShape(b)?.props).toMatchObject({ w: expect.any(Number), h: expect.any(Number) })
-    expect((subject.getShape(a)?.props as { w: number }).w).toBeGreaterThan(100)
-    expect((subject.getShape(b)?.props as { w: number }).w).toBeGreaterThan(80)
+    const resizedA = subject.getShape(a)
+    const resizedB = subject.getShape(b)
+    expect(resizedA?.type).toBe('frame')
+    expect(resizedB?.type).toBe('frame')
+    if (resizedA?.type !== 'frame' || resizedB?.type !== 'frame') throw new Error('Expected frame children')
+    expect(resizedA.props.w).toBeGreaterThan(100)
+    expect(resizedB.props.w).toBeGreaterThan(80)
   })
 
   it('copies descendants, remaps ids and pastes at a point', () => {
