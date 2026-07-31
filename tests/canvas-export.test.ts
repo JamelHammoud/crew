@@ -362,7 +362,9 @@ describe('canvas snapshot SVG export', () => {
     expect(maskGroup).toContain('clip-path="url(#export-clip-shape_mask)"')
     expect(maskGroup.indexOf('<path d="M0 60')).toBeLessThan(0)
     expect(maskGroup).toContain('data-shape-id="shape:masked"')
-    expect(snapshotToSvgResult({ store: { [PAGE.id]: PAGE, [mask.id]: mask, [child.id]: child } }, { padding: 0 })?.bounds).toEqual({ x: 10, y: 10, w: 200, h: 120 })
+    expect(
+      snapshotToSvgResult({ store: { [PAGE.id]: PAGE, [mask.id]: mask, [child.id]: child } }, { padding: 0 })?.bounds
+    ).toEqual({ x: 10, y: 10, w: 200, h: 120 })
   })
 })
 

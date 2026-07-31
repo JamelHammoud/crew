@@ -1,32 +1,32 @@
 import { createElement, type ReactNode } from 'react'
 import { Ellipse2d, Rectangle2d } from '../geometry'
-import { createShapeId, imageShapeProps, type TLAsset, type TLShape } from '../schema'
-import { BaseBoxShapeUtil, type TLShapePartial } from './ShapeUtil'
+import { createShapeId, imageShapeProps, type TLAsset as CrewAsset, type TLShape as CrewShape } from '../schema'
+import { BaseBoxShapeUtil, type CrewShapePartial } from './ShapeUtil'
 
-export type TLImageShape = TLShape<'image'>
+export type ImageShape = CrewShape<'image'>
 
-export class ImageShapeUtil extends BaseBoxShapeUtil<TLImageShape> {
+export class ImageShapeUtil extends BaseBoxShapeUtil<ImageShape> {
   static override type = 'image' as const
   static override props = imageShapeProps
   static override handledAssetTypes = ['image'] as const
 
-  getDefaultProps(): TLImageShape['props'] { return { w: 100, h: 100, assetId: null, playing: true, url: '', crop: null, flipX: false, flipY: false, altText: '' } }
+  getDefaultProps(): ImageShape['props'] { return { w: 100, h: 100, assetId: null, playing: true, url: '', crop: null, flipX: false, flipY: false, altText: '' } }
   override canCrop(): boolean { return true }
   override isAspectRatioLocked(): boolean { return true }
   override isExportBoundsContainer(): boolean { return true }
 
-  createShapeForAsset(asset: TLAsset, position: { x: number; y: number }): TLShapePartial<TLImageShape> | null {
+  createShapeForAsset(asset: CrewAsset, position: { x: number; y: number }): CrewShapePartial<ImageShape> | null {
     if (asset.type !== 'image') return null
     return { id: createShapeId(), type: 'image', x: position.x, y: position.y, opacity: 1, props: { assetId: asset.id, w: asset.props.w, h: asset.props.h } }
   }
 
-  getGeometry(shape: TLImageShape) {
+  getGeometry(shape: ImageShape) {
     return shape.props.crop?.isCircle
       ? new Ellipse2d({ width: shape.props.w, height: shape.props.h, isFilled: true })
       : new Rectangle2d({ width: shape.props.w, height: shape.props.h, isFilled: true })
   }
 
-  component(shape: TLImageShape): ReactNode {
+  component(shape: ImageShape): ReactNode {
     const asset = shape.props.assetId ? this.editor.getAsset?.(shape.props.assetId) : undefined
     const source = asset?.type === 'image' ? asset.props.src : null
     const crop = shape.props.crop

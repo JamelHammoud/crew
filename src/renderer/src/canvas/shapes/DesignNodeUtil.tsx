@@ -2,14 +2,14 @@ import { createElement, type ReactNode } from 'react'
 import { holdsChildren, nodeDefaults, nodeShapeOf, type DesignNodeProps } from '../../../../shared/designNode'
 import { Ellipse2d, Polygon2d, Rectangle2d } from '../geometry'
 import { Vec } from '../math/Vec'
-import { designNodeShapeProps, type TLShape } from '../schema'
+import { designNodeShapeProps, type TLShape as CrewShape } from '../schema'
 import { loadFonts } from '../../design/fonts'
 import { nodeStyle, polygonFillStyle, polygonStyle, strokeDash, textBoxStyle, textStyle } from '../../design/nodeCss'
 import { nodeOutline, nodePolygon, polygonPath, type UnitPoint } from '../../design/nodeShape'
 import { nextNodeName, nextNodeShape } from '../../design/nextShape'
-import { ShapeUtil, resizeBox, type TLResizeInfo } from './ShapeUtil'
+import { ShapeUtil, resizeBox, type ShapeResizeInfo } from './ShapeUtil'
 
-export type DesignNodeShape = TLShape<'design-node'>
+export type DesignNodeShape = CrewShape<'design-node'>
 
 function NodeText({ props, centered }: { props: DesignNodeProps; centered?: boolean }): ReactNode {
   if (!props.text) return null
@@ -39,7 +39,7 @@ export class DesignNodeUtil extends ShapeUtil<DesignNodeShape> {
   }
   override canResize(): boolean { return true }
   override canEdit(): boolean { return true }
-  override onResize(shape: DesignNodeShape, info: TLResizeInfo<DesignNodeShape>) { return resizeBox(shape, info) }
+  override onResize(shape: DesignNodeShape, info: ShapeResizeInfo<DesignNodeShape>) { return resizeBox(shape, info) }
   getGeometry(shape: DesignNodeShape) {
     const { w, h } = shape.props
     const kind = nodeShapeOf(shape.props.shape)

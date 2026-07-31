@@ -1,16 +1,16 @@
 import { createElement, type ReactNode } from 'react'
 import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
-import { groupShapeProps, type TLShape } from '../schema'
+import { groupShapeProps, type TLShape as CrewShape } from '../schema'
 import { ShapeUtil } from './ShapeUtil'
 
-export type TLGroupShape = TLShape<'group'>
+export type GroupShape = CrewShape<'group'>
 
-export class GroupShapeUtil extends ShapeUtil<TLGroupShape> {
+export class GroupShapeUtil extends ShapeUtil<GroupShape> {
   static override type = 'group' as const
   static override props = groupShapeProps
 
-  getDefaultProps(): TLGroupShape['props'] { return {} }
-  getGeometry(shape: TLGroupShape): Geometry2d {
+  getDefaultProps(): GroupShape['props'] { return {} }
+  getGeometry(shape: GroupShape): Geometry2d {
     const ids = this.editor.getSortedChildIdsForParent?.(shape.id) ?? []
     const children = ids.flatMap(id => {
       const child = this.editor.getShape?.(id)
@@ -24,5 +24,5 @@ export class GroupShapeUtil extends ShapeUtil<TLGroupShape> {
   }
   override canBind(): boolean { return false }
   override canResize(): boolean { return false }
-  component(_shape: TLGroupShape): ReactNode { return createElement('div') }
+  component(_shape: GroupShape): ReactNode { return createElement('div') }
 }
