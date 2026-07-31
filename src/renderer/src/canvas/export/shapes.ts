@@ -15,6 +15,7 @@ export interface ShapeBody {
   body: string
   bounds: ExportBounds | null
   clip: string | null
+  clipBounds?: ExportBounds
   mask: boolean
 }
 
@@ -164,6 +165,7 @@ function renderFrame(shape: ExportShape): ShapeBody {
     body,
     bounds: { x: 0, y: -28, w, h: h + 28 },
     clip: `<rect width="${round(w)}" height="${round(h)}"/>`,
+    clipBounds: shapeBox(w, h),
     mask: false
   }
 }
@@ -447,6 +449,7 @@ function renderDesignNode(shape: ExportShape, ctx: ShapeRenderContext): ShapeBod
     body,
     bounds: props.mask ? null : shapeBox(w, h, Math.max(filter.spill, outside)),
     clip: props.clip || props.mask ? `<path d="${path}"/>` : null,
+    clipBounds: shapeBox(w, h),
     mask: props.mask === true
   }
 }
@@ -479,6 +482,7 @@ function renderImageLike(shape: ExportShape, ctx: ShapeRenderContext, video: boo
     body: `${image}${play}`,
     bounds: shapeBox(w, h),
     clip: `<rect width="${round(w)}" height="${round(h)}"/>`,
+    clipBounds: shapeBox(w, h),
     mask: false
   }
 }

@@ -362,6 +362,7 @@ describe('canvas snapshot SVG export', () => {
     expect(maskGroup).toContain('clip-path="url(#export-clip-shape_mask)"')
     expect(maskGroup.indexOf('<path d="M0 60')).toBeLessThan(0)
     expect(maskGroup).toContain('data-shape-id="shape:masked"')
+    expect(snapshotToSvgResult({ store: { [PAGE.id]: PAGE, [mask.id]: mask, [child.id]: child } }, { padding: 0 })?.bounds).toEqual({ x: 10, y: 10, w: 200, h: 120 })
   })
 })
 
@@ -447,6 +448,18 @@ describe('canvas copyAs', () => {
     expect(writeText).toHaveBeenCalledWith('<svg>owned</svg>')
     expect(editor.toImage).not.toHaveBeenCalled()
     expect(() => copyAs(editor, ['shape:one'], { format: 'png' })).toThrow('Copy not supported')
+  })
+
+  it('still resolves an SVG before an older clipboard drops the write', async () => {
+    const editor = {
+      getCurrentPageShapeIds: () => ['shape:one'],
+      getSvgString: vi.fn(async () => ({ svg: '<svg>owned</svg>', width: 10, height: 10 })),
+      toImage: vi.fn()
+    } as unknown as ClipboardExportEditor
+    vi.stubGlobal('navigator', { clipboard: {} })
+
+    await expect(copyAs(editor, ['shape:one'], { format: 'svg' })).resolves.toBeUndefined()
+    expect(editor.getSvgString).toHaveBeenCalledTimes(1)
   })
 
   it('retries with resolved blobs when a clipboard rejects promised values', async () => {

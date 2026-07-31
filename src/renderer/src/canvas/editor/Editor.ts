@@ -26,6 +26,7 @@ import { transact } from '../signals'
 import { uniqueId } from '../store'
 import { cloneContent } from './clipboard'
 import { CameraManager } from './camera'
+import { CanvasEventBridge, type CanvasEventHandlers } from './events'
 import { EditorHistory } from './history'
 import { getShapeAtPoint, getShapesAtPoint, type HitTestOptions } from './hitTest'
 import { InputsManager } from './inputs'
@@ -38,6 +39,7 @@ import { sharedOpacity, styleKey } from './styles'
 import { FontManager, TextMeasure } from './textMeasure'
 import { ThemeManager } from './theme'
 import { ToolManager } from './tools'
+import type { CanvasEventInfo } from '../tools/state/events'
 import type {
   SharedStyle,
   TLCameraMoveOptions,
@@ -70,24 +72,46 @@ export class Editor {
   readonly user: UserPreferencesManager
   readonly textMeasure
   readonly fonts = new FontManager()
-  readonly hitTestMargin = 8
+  readonly hitTestMargin: number
   readonly options
+  readonly root: { handleEvent: (info: CanvasEventInfo) => void; getCurrent: () => unknown }
+  readonly menus = { clearOpenMenus: () => undefined }
   private readonly camera: CameraManager
   private readonly selection = new SelectionManager()
   private readonly tools: ToolManager
+  private readonly eventBridge: CanvasEventBridge
   private readonly themes: ThemeManager
   private readonly shapeUtils = new Map<TLShape['type'], ShapeUtil>()
   private readonly getContainerFn: () => HTMLElement
   private readonly opacityForNextShape = { value: 1 }
   private readonly stylesForNextShape = new Map<string, unknown>()
-  private readonly instance = { brush: null as ViewportBounds | null }
+  private readonly instance = {
+    brush: null as ViewportBounds | null,
+    duplicateProps: null as { shapeIds: TLShapeId[]; offset: { x: number; y: number } } | null,
+    isGridMode: false,
+    isChangingStyle: false,
+    isCoarsePointer: false,
+    isToolLocked: false,
+    cursor: { type: 'default', rotation: 0 },
+    isReadonly: false
+  }
   private currentPageId: TLPageId
   private disposed = false
 
   constructor(options: TLEditorOptions) {
     this.store = options.store
     this.sideEffects = options.store.sideEffects
-    this.options = options.options ?? {}
+    this.options = {
+      hitTestMargin: 8,
+      selectLockedShapes: false,
+      dragDistanceSquared: 16,
+      coarseDragDistanceSquared: 36,
+      adjacentShapeMargin: 20,
+      animationMediumMs: 180,
+      ...options.options,
+      camera: { ...options.options?.camera }
+    }
+    this.hitTestMargin = this.options.hitTestMargin as number
     this.getContainerFn = options.getContainer ?? defaultContainer
     this.ensureStore(options.currentPageId)
     this.currentPageId = this.resolvePageId(options.currentPageId)
@@ -105,13 +129,15 @@ export class Editor {
       write: options.user?.setUserPreferences
     })
     this.themes = new ThemeManager(options.themes, options.initialTheme)
-    this.tools = new ToolManager(options.tools, options.initialState)
     this.overlays = new OverlayManager(options.overlayUtils)
     this.textMeasure = options.textMeasure ?? new TextMeasure(this.getContainerFn)
     for (const Constructor of options.shapeUtils ?? []) {
       const type = Constructor.type
-      this.shapeUtils.set(type, new Constructor(this))
+      this.shapeUtils.set(type, new Constructor(this as never))
     }
+    this.tools = new ToolManager(this, options.tools, options.initialState)
+    this.root = { handleEvent: info => this.tools.dispatch(info), getCurrent: () => this.tools.getCurrent() }
+    this.eventBridge = new CanvasEventBridge(this)
   }
 
   dispose(): void {
@@ -152,19 +178,39 @@ export class Editor {
     return 'idle'
   }
 
-  getInstanceState(): { devicePixelRatio: number; screenBounds: ViewportBounds; brush: ViewportBounds | null } {
+  getInstanceState(): typeof this.instance & { devicePixelRatio: number; screenBounds: ViewportBounds } {
     const bounds = this.camera.getScreenBounds()
     return {
       devicePixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio,
       screenBounds: bounds.toJson(),
-      brush: this.instance.brush
+      ...this.instance
     }
   }
 
-  updateInstanceState(update: { screenBounds?: ViewportBounds; brush?: ViewportBounds | null }): this {
+  updateInstanceState(update: Partial<typeof this.instance> & { screenBounds?: ViewportBounds }): this {
     if (update.screenBounds) this.setViewportScreenBounds(update.screenBounds)
-    if ('brush' in update) this.instance.brush = update.brush ?? null
+    for (const [key, value] of Object.entries(update)) {
+      if (key === 'screenBounds' || value === undefined) continue
+      ;(this.instance as Record<string, unknown>)[key] = value
+    }
     return this
+  }
+
+  getCurrentPageState(): {
+    selectedShapeIds: TLShapeId[]
+    editingShapeId: TLShapeId | null
+    focusedGroupId: TLShapeId | null
+    hintingShapeIds: TLShapeId[]
+    hoveredShapeId: TLShapeId | null
+  } {
+    const focused = this.getFocusedGroupId()
+    return {
+      selectedShapeIds: this.getSelectedShapeIds(),
+      editingShapeId: this.getEditingShapeId(),
+      focusedGroupId: focused.startsWith('shape:') ? focused as TLShapeId : null,
+      hintingShapeIds: [],
+      hoveredShapeId: null
+    }
   }
 
   setViewportScreenBounds(bounds: ViewportBounds): this {
@@ -426,6 +472,11 @@ export class Editor {
 
   setEditingShape(id: TLShapeId | null): this {
     this.selection.setEditingShapeId(id && this.getShape(id) ? id : null)
+    return this
+  }
+
+  setCursor(cursor: { type: string; rotation: number }): this {
+    this.instance.cursor = cursor
     return this
   }
 
@@ -781,9 +832,18 @@ export class Editor {
     return this.tools.getCurrentToolId()
   }
 
-  setCurrentTool(id: string): this {
-    this.tools.setCurrentTool(id)
+  setCurrentTool(id: string, info?: unknown): this {
+    this.tools.setCurrentTool(id, info)
     return this
+  }
+
+  dispatch(info: CanvasEventInfo): this {
+    this.tools.dispatch(info)
+    return this
+  }
+
+  getCanvasEventHandlers(): CanvasEventHandlers {
+    return this.eventBridge.getHandlers()
   }
 
   markHistoryStoppingPoint(name?: string): string {
@@ -857,6 +917,34 @@ export class Editor {
 
   candidatesAtPoint(_point: Vec, _margin: number): Set<TLShapeId> | null {
     return null
+  }
+
+  isPointInShape(shape: TLShape, point: VecLike): boolean {
+    return this.getShapeGeometry(shape).hitTestPoint(this.getPointInShapeSpace(shape, point), 0, true)
+  }
+
+  getResizeScaleFactor(): number {
+    return 1
+  }
+
+  getDocumentSettings(): { gridSize: number } {
+    const document = this.store.get(TLDOCUMENT_ID)
+    return { gridSize: document?.typeName === 'document' ? document.gridSize : 10 }
+  }
+
+  getCameraOptions(): { zoomSteps: number[] } {
+    return { zoomSteps: [0.05, 0.1, 0.2, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8] }
+  }
+
+  getBaseZoom(): number {
+    return 1
+  }
+
+  stopCameraAnimation(): void {}
+
+  slideCamera(options: { speed: number; direction: VecLike }): void {
+    const camera = this.getCamera()
+    this.setCamera({ x: camera.x + options.direction.x * options.speed, y: camera.y + options.direction.y * options.speed, z: camera.z })
   }
 
   private ensureStore(preferredPageId?: TLPageId): void {

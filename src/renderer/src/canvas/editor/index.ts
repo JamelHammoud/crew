@@ -1,6 +1,7 @@
 export { Editor } from './Editor'
 export { CameraManager } from './camera'
 export { EditorHistory } from './history'
+export { CanvasEventBridge } from './events'
 export { InputsManager } from './inputs'
 export { OverlayManager } from './overlays'
 export { UserPreferencesManager } from './preferences'

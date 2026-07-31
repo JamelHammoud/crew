@@ -74,8 +74,10 @@ export function copyAs(
     return write(types)
   }
   const writeText = clipboard.writeText
-  if (options.format === 'svg' && writeText) {
-    return svgText(runtime, chosen, imageOptions).then(value => writeText(value))
+  if (options.format === 'svg') {
+    return svgText(runtime, chosen, imageOptions)
+      .then(value => writeText?.(value))
+      .then(() => undefined)
   }
   throw new Error('Copy not supported')
 }

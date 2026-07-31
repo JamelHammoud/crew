@@ -1,6 +1,7 @@
 import {
   expandBounds,
   IDENTITY,
+  intersectBounds,
   matrixFor,
   matrixText,
   multiply,
@@ -158,7 +159,12 @@ function buildTree(
 function renderedBounds(node: RenderedShape, parent: Matrix = IDENTITY): ExportBounds | null {
   const matrix = multiply(parent, node.matrix)
   let bounds = node.body.bounds ? transformBounds(node.body.bounds, matrix) : null
-  for (const child of node.children) bounds = unionBounds(bounds, renderedBounds(child, matrix))
+  let children: ExportBounds | null = null
+  for (const child of node.children) children = unionBounds(children, renderedBounds(child, matrix))
+  if (children && node.body.clipBounds) {
+    children = intersectBounds(children, transformBounds(node.body.clipBounds, matrix))
+  }
+  bounds = unionBounds(bounds, children)
   return bounds
 }
 

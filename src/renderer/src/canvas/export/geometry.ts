@@ -75,6 +75,14 @@ export function unionBounds(left: ExportBounds | null, right: ExportBounds | nul
   return { x, y, w: maxX - x, h: maxY - y }
 }
 
+export function intersectBounds(left: ExportBounds, right: ExportBounds): ExportBounds | null {
+  const x = Math.max(left.x, right.x)
+  const y = Math.max(left.y, right.y)
+  const maxX = Math.min(left.x + left.w, right.x + right.w)
+  const maxY = Math.min(left.y + left.h, right.y + right.h)
+  return maxX > x && maxY > y ? { x, y, w: maxX - x, h: maxY - y } : null
+}
+
 export function expandBounds(bounds: ExportBounds, amount: number): ExportBounds {
   return {
     x: bounds.x - amount,
