@@ -56,7 +56,7 @@ export interface FreehandEditor {
   getResizeScaleFactor(): number
   getCurrentTheme(): { strokeWidth: number }
   getShapeUtil(type: FreehandShapeType): { options: { maxPointsPerShape: number } }
-  getShape<T extends FreehandShape = FreehandShape>(id: string): T | undefined
+  getShape(id: string): FreehandShape | undefined
   getPointInShapeSpace(shape: FreehandShape, point: VecModel): VecModel
   getShapePageTransform(shape: FreehandShape | string): MatLike | undefined
   getShapeStrokeWidth?(shape: FreehandShape): number
