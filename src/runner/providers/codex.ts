@@ -30,7 +30,7 @@ const completed = (item: any): ParsedOutput[] => {
     return text ? [{ blockStop: { index: TEXT } }, { text }] : [{ blockStop: { index: TEXT } }]
   }
   if (type === 'reasoning') {
-    const summary = (Array.isArray(item.summary) ? item.summary : []).map(str).filter(Boolean)
+    const summary: string[] = (Array.isArray(item.summary) ? item.summary : []).map(str).filter(Boolean)
     const out: ParsedOutput[] = summary.map((_, index) => ({ blockStop: { index: index + 1 } }))
     const text = summary.join('\n\n')
     if (text) out.push({ thinking: text })
