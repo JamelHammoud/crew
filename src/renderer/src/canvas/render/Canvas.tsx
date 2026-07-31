@@ -57,24 +57,24 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         {...events}
         ref={assignRoot}
         data-canvas="true"
-        className={join('tl-canvas crew-canvas', className)}
+        className={join('crew-canvas', className)}
         draggable={false}
         style={{ ...canvasStyle, ...style }}
       >
         {svgDefs && (
-          <svg className="tl-svg-context" aria-hidden="true">
+          <svg className="crew-svg-context" aria-hidden="true">
             <defs>{svgDefs}</defs>
           </svg>
         )}
         {background && (
-          <div className="tl-background__wrapper" style={{ ...viewportLayerStyle, pointerEvents: undefined }}>
+          <div className="crew-background-wrapper" style={{ ...viewportLayerStyle, pointerEvents: undefined }}>
             {background}
           </div>
         )}
         <div
           ref={pageLayerRef}
           data-canvas-page-layer="true"
-          className="tl-html-layer tl-shapes"
+          className="crew-html-layer crew-shapes"
           draggable={false}
           style={{ ...pageLayerStyle, ...shapeLayerStyle }}
         >
@@ -86,13 +86,13 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         {cameraMoving && (
           <div
             data-canvas-hit-test-blocker="true"
-            className="tl-hit-test-blocker"
+            className="crew-hit-test-blocker"
             style={{ ...viewportLayerStyle, pointerEvents: 'all' }}
           />
         )}
       </div>
       {inFrontOfCanvas && (
-        <div className="tl-canvas__in-front" style={viewportLayerStyle}>
+        <div className="crew-canvas-in-front" style={viewportLayerStyle}>
           {inFrontOfCanvas}
         </div>
       )}
