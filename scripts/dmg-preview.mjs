@@ -8,7 +8,6 @@ import { ARROW, DMG, GROUND, HEADLINE, LABEL, dmgArrow, dmgDefs } from './icon-d
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const out = path.join(tmpdir(), 'crew-dmg')
 const SIDE = 256
-const LABEL = '#030303'
 
 mkdirSync(out, { recursive: true })
 
