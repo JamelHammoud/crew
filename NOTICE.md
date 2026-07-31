@@ -76,6 +76,28 @@ with any binary built from this repository.
 
 ## Needs its own answer
 
+### libvips, under the GNU Lesser General Public License
+
+`@img/sharp-libvips-darwin-arm64` 1.2.4 is LGPL-3.0-or-later, and it reaches the
+app as a required dependency rather than an optional one:
+
+`@huggingface/transformers` 3.8.1 goes to `sharp` 0.34.5, which goes to
+`@img/sharp-darwin-arm64`, which goes to `@img/sharp-libvips-darwin-arm64`.
+
+It ships a 16MB `libvips-cpp` dynamic library that statically bundles eight
+LGPLv3 libraries: libvips, glib, pango, librsvg, libheif, libexif, fribidi and
+proxy-libintl. The package carries no LICENSE file at all, only a note in its
+README, so the license text it has to convey is not currently shipped.
+
+The LGPL also asks that somebody be able to replace the library with their own
+build of it. The `@img` packages are not in `asarUnpack`, so the library is
+packed inside `app.asar`, where it cannot be replaced.
+
+Whether `sharp` is ever loaded at runtime is worth answering before deciding
+what to do here. If nothing loads it, leaving it out of the build settles this
+outright. If something does, the license text has to ship and the library has to
+come out of the archive.
+
 ### tldraw
 
 `tldraw` 5.2.5 and `@tldraw/assets` 5.2.5 declare `SEE LICENSE IN LICENSE.md`,
