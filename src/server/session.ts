@@ -669,6 +669,10 @@ export class CrewSession {
           thread.agentLabel = event.agentLabel
         }
       }
+      if (event.kind === 'thread.fallback') {
+        const thread = this.threads.get(event.threadId)
+        if (thread) thread.fallbackId = event.agentId
+      }
     }
     // A call the host was in when it went down has a start in the log and no
     // end. It ran until the session last said anything, so that is where it is
