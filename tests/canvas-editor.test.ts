@@ -1,0 +1,97 @@
+import { describe, expect, it } from 'vitest'
+import { Editor } from '../src/renderer/src/canvas/editor'
+import { Box } from '../src/renderer/src/canvas/math'
+import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
+import { FrameShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
+
+function editor() {
+  return new Editor({
+    store: createTLStore({ id: 'editor-test' }),
+    shapeUtils: [FrameShapeUtil, GroupShapeUtil],
+    getContainer: () => ({
+      getBoundingClientRect: () => ({ left: 0, top: 0 })
+    }) as HTMLElement
+  })
+}
+
+function frame(subject: Editor, id: string, x: number, y: number, w = 100, h = 60): TLShapeId {
+  const shapeId = createShapeId(id)
+  subject.createShape({ id: shapeId, type: 'frame', x, y, props: { w, h, name: id, color: 'black' } })
+  return shapeId
+}
+
+describe('the canvas editor', () => {
+  it('creates, selects, updates, resizes and deletes shapes', () => {
+    const subject = editor()
+    const id = frame(subject, 'one', 10, 20)
+    expect(subject.getShape(id)).toMatchObject({ x: 10, y: 20, parentId: subject.getCurrentPageId() })
+    expect(subject.getShapePageBounds(id)?.toJson()).toEqual({ x: 10, y: 20, w: 100, h: 60 })
+    subject.select(id).nudgeShapes([id], { x: 5, y: -3 }).resizeShape(id, { x: 2, y: 0.5 }, { scaleOrigin: { x: 15, y: 17 } })
+    expect(subject.getSelectedShapeIds()).toEqual([id])
+    expect(subject.getShape(id)?.props).toMatchObject({ w: 200, h: 30 })
+    subject.deleteShapes([id])
+    expect(subject.getShape(id)).toBeUndefined()
+    expect(subject.getSelectedShapeIds()).toEqual([])
+  })
+
+  it('converts camera coordinates and zooms to content', () => {
+    const subject = editor()
+    subject.setViewportScreenBounds({ x: 20, y: 30, w: 800, h: 600 })
+    subject.setCamera({ x: 10, y: -5, z: 2 })
+    expect(subject.pageToViewport({ x: 40, y: 25 })).toMatchObject({ x: 100, y: 40 })
+    expect(subject.screenToPage({ x: 120, y: 70 })).toMatchObject({ x: 40, y: 25 })
+    frame(subject, 'fit', 100, 100, 200, 100)
+    subject.zoomToFit()
+    expect(subject.getViewportPageBounds().contains(new Box(100, 100, 200, 100))).toBe(true)
+  })
+
+  it('orders siblings without changing their relative selected order', () => {
+    const subject = editor()
+    const a = frame(subject, 'a', 0, 0)
+    const b = frame(subject, 'b', 20, 0)
+    const c = frame(subject, 'c', 40, 0)
+    subject.bringForward([a])
+    expect(subject.getSortedChildIdsForParent(subject.getCurrentPageId())).toEqual([b, a, c])
+    subject.bringToFront([b, a])
+    expect(subject.getSortedChildIdsForParent(subject.getCurrentPageId())).toEqual([c, b, a])
+    subject.sendToBack([a])
+    expect(subject.getSortedChildIdsForParent(subject.getCurrentPageId())).toEqual([a, c, b])
+  })
+
+  it('groups and ungroups while preserving page positions', () => {
+    const subject = editor()
+    const a = frame(subject, 'a', 10, 20)
+    const b = frame(subject, 'b', 180, 90)
+    const before = [subject.getShapePageBounds(a)?.toJson(), subject.getShapePageBounds(b)?.toJson()]
+    const group = createShapeId('group')
+    subject.groupShapes([a, b], group)
+    expect(subject.getShape(group)?.type).toBe('group')
+    expect(subject.getShape(a)?.parentId).toBe(group)
+    expect([subject.getShapePageBounds(a)?.toJson(), subject.getShapePageBounds(b)?.toJson()]).toEqual(before)
+    subject.ungroupShapes([group])
+    expect(subject.getShape(group)).toBeUndefined()
+    expect(subject.getShape(a)?.parentId).toBe(subject.getCurrentPageId())
+    expect([subject.getShapePageBounds(a)?.toJson(), subject.getShapePageBounds(b)?.toJson()]).toEqual(before)
+  })
+
+  it('copies descendants, remaps ids and pastes at a point', () => {
+    const subject = editor()
+    const id = frame(subject, 'copy', 10, 20, 40, 30)
+    const content = subject.getContentFromCurrentPage([id])
+    expect(content?.rootShapeIds).toEqual([id])
+    subject.putContentOntoCurrentPage(content!, { point: { x: 300, y: 200 }, select: true })
+    const pasted = subject.getOnlySelectedShape()
+    expect(pasted?.id).not.toBe(id)
+    expect(subject.getShapePageBounds(pasted!.id)?.center).toMatchObject({ x: 300, y: 200 })
+  })
+
+  it('uses the exact tldraw theme values Crew reads', () => {
+    const subject = editor()
+    expect(subject.getCurrentTheme()).toMatchObject({ id: 'default', fontSize: 16, lineHeight: 1.35, strokeWidth: 2 })
+    expect(subject.getCurrentTheme().colors.light.selectionStroke).toBe('hsl(214, 84%, 56%)')
+    expect(subject.getCurrentTheme().colors.light.blue).toMatchObject({ solid: '#4465e9', fill: '#4465e9' })
+    subject.user.updateUserPreferences({ colorScheme: 'dark' })
+    expect(subject.getColorMode()).toBe('dark')
+    expect(subject.getCurrentTheme().colors.dark['light-blue']).toMatchObject({ solid: '#4dabf7', fill: '#4dabf7' })
+  })
+})
