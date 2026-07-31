@@ -95,6 +95,15 @@ export const SparkGlyph = glyph(
   <path d="M12 2.75c1.09 4.24 5 8.16 9.25 9.25-4.24 1.09-8.16 5-9.25 9.25-1.09-4.24-5-8.16-9.25-9.25 4.24-1.09 8.16-5 9.25-9.25Z" />
 )
 
+export const HandoffGlyph = glyph(
+  <>
+    <circle cx="5.8" cy="5.8" r="2.6" />
+    <circle cx="18.2" cy="18.2" r="2.6" />
+    <path d="m9.75 9.75 4.5 4.5" />
+    <path d="M11.25 14.25h3v-3" />
+  </>
+)
+
 export const MenuGlyph = glyph(<path d="M4.5 7h15M4.5 12h15M4.5 17h15" />)
 
 export const HandleGlyph = glyph(<path d="M4.5 9.5h15M4.5 14.5h15" />)
