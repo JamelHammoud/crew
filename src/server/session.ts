@@ -813,7 +813,8 @@ export class CrewSession {
             msg.attachments,
             msg.boardId,
             msg.replyTo,
-            msg.commands
+            msg.commands,
+            msg.forkId
           )
         }
         break
