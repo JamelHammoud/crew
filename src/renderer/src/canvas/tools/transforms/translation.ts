@@ -1,7 +1,13 @@
 import { Mat, type MatLike } from '../../math/Mat'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
-import { TransformState, type ShapeUpdate, type TransformEditor } from './types'
+import {
+  TransformState,
+  type ShapeUpdate,
+  type TransformEditor,
+  type TransformSnapNode,
+  type TransformSnapPoint
+} from './types'
 
 export interface TranslationSnapshot<Shape extends TLShape = TLShape> {
   shape: Shape
@@ -77,6 +83,10 @@ export function moveShapesToPoint<Shape extends TLShape>({
 export interface TranslatingInfo<Shape extends TLShape = TLShape> {
   target?: 'shape'
   snapshots?: TranslationSnapshot<Shape>[]
+  initialPageBounds?: import('../../math/Box').Box
+  initialSnapPoints?: readonly TransformSnapPoint[]
+  snappableShapes?: readonly TransformSnapNode[]
+  zoom?: number
   isCreating?: boolean
   creatingMarkId?: string
   onCreate?(shape: Shape | null): void
@@ -110,6 +120,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   override onExit(): void {
     this.parent.setCurrentToolIdMask?.(undefined)
+    this.editor.snaps?.clearIndicators?.()
     this.editor.setCursor?.({ type: 'default', rotation: 0 })
   }
 
@@ -138,6 +149,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
       const current = this.editor.getShape(shape.id)
       if (current) this.editor.getShapeUtil?.(shape).onTranslateCancel?.(shape, current)
     }
+    this.editor.snaps?.clearIndicators?.()
     if (this.markId) this.editor.bailToMark?.(this.markId)
     this.finish(false)
   }
@@ -162,19 +174,39 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   private update(): void {
     const averagePagePoint = Vec.Average(this.snapshots.map(snapshot => snapshot.pagePoint))
+    const originPagePoint = this.editor.inputs.getOriginPagePoint()
+    const currentPagePoint = this.editor.inputs.getCurrentPagePoint()
+    const rawDelta = Vec.Sub(currentPagePoint, originPagePoint)
+    const lockedAxis = this.editor.inputs.getShiftKey()
+      ? Math.abs(rawDelta.x) < Math.abs(rawDelta.y)
+        ? 'x'
+        : 'y'
+      : null
+    const delta = getTranslationDelta(originPagePoint, currentPagePoint, {
+      shiftKey: this.editor.inputs.getShiftKey()
+    })
+    const snapMode = this.editor.getIsSnapMode?.() ?? true
+    const accelKey = this.editor.inputs.getAccelKey?.() ?? false
+    const snap =
+      (snapMode ? !accelKey : accelKey) && this.info.initialPageBounds
+        ? this.editor.snaps?.snapTranslateBounds?.({
+            initialSelectionPageBounds: this.info.initialPageBounds,
+            initialSelectionSnapPoints: this.info.initialSnapPoints,
+            dragDelta: delta,
+            snappableShapes: this.info.snappableShapes ?? this.editor.getSnappableShapes?.() ?? [],
+            lockedAxis,
+            zoom: this.info.zoom ?? this.editor.getZoomLevel?.() ?? 1
+          })
+        : undefined
+    if (snap) delta.add(snap.nudge)
+    this.editor.snaps?.setIndicators?.(snap?.indicators ?? [])
     const gridSize = this.editor.getInstanceState?.().isGridMode
       ? this.editor.getDocumentSettings?.().gridSize
       : undefined
-    const updates = moveShapesToPoint({
-      snapshots: this.snapshots,
-      originPagePoint: this.editor.inputs.getOriginPagePoint(),
-      currentPagePoint: this.editor.inputs.getCurrentPagePoint(),
-      options: {
-        shiftKey: this.editor.inputs.getShiftKey(),
-        gridSize,
-        averagePagePoint
-      }
-    })
+    if (gridSize && !accelKey && !snap?.indicators.length) {
+      delta.setTo(Vec.Add(averagePagePoint, delta).snapToGrid(gridSize).sub(averagePagePoint))
+    }
+    const updates = translateShapes(this.snapshots, delta)
     this.editor.updateShapes(updates)
     this.applyLifecycle('update')
   }
