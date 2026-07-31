@@ -55,7 +55,7 @@ writeFileSync(
   h1 { font-size: 16px; font-weight: 500; margin: 0 0 10px; }
   p { margin: 0; color: #707070; font-size: 13px; max-width: 580px; text-align: center; line-height: 1.55; }
   .window {
-    position: relative; width: min(920px, 100%); aspect-ratio: var(--ratio);
+    position: relative; width: min(920px, 100%);
     border-radius: 13px; overflow: hidden; margin-top: 32px;
     box-shadow: 0 44px 100px rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.09);
   }
@@ -68,8 +68,8 @@ writeFileSync(
   }
   .light { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
   .bar b { font-weight: 500; margin-left: 10px; }
-  .pane { position: absolute; inset: 40px 0 0 0; overflow: hidden; }
-  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .pane { position: relative; margin-top: 40px; aspect-ratio: var(--ratio); overflow: hidden; }
+  .pane canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .overlay { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
   .icon { position: absolute; z-index: 3; }
   .name { position: absolute; z-index: 3; text-align: center; font-size: 12px; color: ${LABEL}; }
@@ -114,7 +114,7 @@ writeFileSync(
     </div>
     <div class="pane">
       <canvas id="live"></canvas>
-      <svg class="overlay" viewBox="0 0 ${DMG.width} ${DMG.height}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <svg class="overlay" viewBox="0 0 ${DMG.width} ${DMG.height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
 ${dmgDefs(geometry)}
         </defs>

@@ -5,7 +5,7 @@ import { resultText } from './output'
 import { taskCall } from './tasks'
 import { usageFrom } from './tokens'
 import { claudeUsage } from './usage'
-import type { OutputParser, ParsedOutput, Provider } from './types'
+import type { Dialog, OutputParser, ParsedOutput, Provider } from './types'
 
 const SUBAGENT_TOOLS = new Set(['Task'])
 const CLAUDE_MODELS = [
@@ -193,6 +193,15 @@ export const claudeArgs = (_prompt: string, get: SettingReader): string[] => [
   'bypassPermissions',
   '--dangerously-skip-permissions'
 ]
+
+const userMessage = (text: string): string =>
+  JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text }] } })
+
+export const claudeDialog = (prompt: string): Dialog => ({
+  begin: () => [userMessage(prompt)],
+  answer: () => [],
+  steer: text => userMessage(text)
+})
 
 const INSTALL_SH = 'curl -fsSL https://claude.ai/install.sh | bash'
 
