@@ -76,16 +76,35 @@ describe('what codex says while it works', () => {
       { thinkingDelta: { index: 1, text: '**Planning**' } }
     ])
     expect(parsed('item/reasoning/summaryTextDelta', { summaryIndex: 1, delta: '**Checking**' })).toEqual([
-      { thinkingDelta: { index: 2, text: '**Checking**' } }
+      { thinkingDelta: { index: 3, text: '**Checking**' } }
     ])
   })
 
-  it('closes every stretch a reasoning item held', () => {
+  it('draws raw reasoning where a model sends it, clear of the summaries', () => {
+    expect(parsed('item/reasoning/textDelta', { contentIndex: 0, delta: 'So the file ends ' })).toEqual([
+      { thinkingDelta: { index: 2, text: 'So the file ends ' } }
+    ])
+    expect(parsed('item/reasoning/textDelta', { contentIndex: 1, delta: 'and the pattern is' })).toEqual([
+      { thinkingDelta: { index: 4, text: 'and the pattern is' } }
+    ])
+    const summaries = [0, 1, 2].map(i => parsed('item/reasoning/summaryTextDelta', { summaryIndex: i, delta: 'x' }))
+    const raw = [0, 1, 2].map(i => parsed('item/reasoning/textDelta', { contentIndex: i, delta: 'x' }))
+    const index = (out: ParsedOutput[]) => out[0].thinkingDelta!.index
+    expect(summaries.map(index).some(i => raw.map(index).includes(i))).toBe(false)
+  })
+
+  it('closes every stretch a reasoning item held, on both channels', () => {
     const out = parsed('item/completed', {
       item: { type: 'reasoning', id: 'rs_1', summary: ['**One**', '**Two**'], content: [] }
     })
-    expect(out.filter(o => o.blockStop).map(o => o.blockStop!.index)).toEqual([1, 2])
+    expect(out.filter(o => o.blockStop).map(o => o.blockStop!.index)).toEqual([1, 3])
     expect(out.find(o => o.thinking)?.thinking).toBe('**One**\n\n**Two**')
+
+    const both = parsed('item/completed', {
+      item: { type: 'reasoning', id: 'rs_2', summary: ['**One**'], content: ['The file ends in a newline.'] }
+    })
+    expect(both.filter(o => o.blockStop).map(o => o.blockStop!.index)).toEqual([1, 2])
+    expect(both.find(o => o.thinking)?.thinking).toBe('**One**\n\nThe file ends in a newline.')
   })
 
   it('streams the answer token by token and never on an index reasoning holds', () => {
