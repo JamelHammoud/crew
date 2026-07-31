@@ -47,7 +47,7 @@ export interface TransformShapeUtil<Shape extends TLShape = TLShape> {
   onTranslateEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onTranslateCancel?(initial: Shape, current: Shape): void
   onResizeStart?(shape: Shape): ShapeUpdate<Shape> | undefined
-  onResize?(shape: Shape, info: ResizeInfo<Shape>): Shape
+  onResize?(shape: Shape, info: ResizeInfo<Shape>): Shape | undefined
   onResizeEnd?(initial: Shape, current: Shape): ShapeUpdate<Shape> | undefined
   onResizeCancel?(initial: Shape, current: Shape): void
   onRotateStart?(shape: Shape): ShapeUpdate<Shape> | undefined

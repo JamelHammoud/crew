@@ -95,7 +95,7 @@ export interface ResizeShapeOptions<Shape extends TLShape> {
   handle?: SelectionHandle
   mode?: ResizeMode
   isAspectRatioLocked?: boolean
-  onResize?(shape: Shape, info: ResizeInfo<Shape>): Shape
+  onResize?(shape: Shape, info: ResizeInfo<Shape>): Shape | undefined
 }
 
 function supportsBoxResize(shape: TLShape): shape is TLShape & { props: TLShape['props'] & { w: number; h: number } } {
@@ -301,7 +301,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
           this.editor.getShapeUtil?.(shape).onResize?.(shape, resizeInfo) ??
           (supportsBoxResize(shape)
             ? resizeBox(shape, resizeInfo as ResizeInfo<typeof shape>)
-            : shape)
+            : undefined)
       })
     )
   }
