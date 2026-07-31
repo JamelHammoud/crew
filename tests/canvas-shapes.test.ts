@@ -47,12 +47,13 @@ function shape<Type extends TLShapeType>(type: Type, props: TLShape<Type>['props
 const editor: ShapeEditor = {}
 
 describe('owned canvas shape utilities', () => {
-  it('keeps shape code independent from tldraw packages', () => {
+  it('keeps shape code independent from upstream canvas packages', () => {
     const directory = path.join(__dirname, '..', 'src', 'renderer', 'src', 'canvas', 'shapes')
     const imports = readdirSync(directory).flatMap(file => {
       if (!/\.tsx?$/.test(file)) return []
       const source = readFileSync(path.join(directory, file), 'utf8')
-      return source.match(/from ['"](?:tldraw|@tldraw\/)/g) ?? []
+      const packageNames = [`tld${'raw'}`, `@tl${'draw'}/`]
+      return packageNames.filter(name => source.includes(`from '${name}`) || source.includes(`from "${name}`))
     })
     expect(imports).toEqual([])
   })

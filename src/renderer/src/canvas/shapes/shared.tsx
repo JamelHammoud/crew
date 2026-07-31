@@ -1,9 +1,13 @@
 import { createElement, type CSSProperties, type ReactNode } from 'react'
 import { Vec } from '../math/Vec'
-import type { TLDefaultColorStyle as CrewColorStyle, TLDrawShapeSegment as DrawSegment, TLRichText as RichText } from '../schema'
+import type { TLShape as CrewShape } from '../schema'
 import { decodePoints } from '../schema/points'
 import type { ShapeEditor } from './ShapeUtil'
 import { shapeColor } from './theme'
+
+type CrewColorStyle = CrewShape<'geo'>['props']['color']
+type DrawSegment = CrewShape<'draw'>['props']['segments'][number]
+type RichText = CrewShape<'text'>['props']['richText']
 
 export const STROKES = { s: 2, m: 3.5, l: 5, xl: 10 } as const
 export const FONT_SIZES = { s: 18, m: 22, l: 28, xl: 36 } as const
