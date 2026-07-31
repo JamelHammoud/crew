@@ -168,17 +168,17 @@ describe('the graph', () => {
     const seen: number[] = []
     const stop = react('leaf', () => seen.push(join.get()))
 
-    expect(seen).toEqual([3])
+    expect(seen).toEqual([4])
     expect(joinRuns).toBe(1)
 
     source.set(2)
-    expect(seen).toEqual([3, 7])
+    expect(seen).toEqual([4, 7])
     expect(leftRuns).toBe(2)
     expect(rightRuns).toBe(2)
     expect(joinRuns).toBe(2)
 
     source.set(3)
-    expect(seen).toEqual([3, 7, 10])
+    expect(seen).toEqual([4, 7, 10])
     expect(joinRuns).toBe(3)
     stop()
   })
