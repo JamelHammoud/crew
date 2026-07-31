@@ -159,8 +159,8 @@ export type TLStore = Store<TLRecord>
 export interface TLStoreOptions {
   initialData?: SerializedStore<TLRecord>
   id?: string
-  shapeUtils?: unknown[]
-  bindingUtils?: unknown[]
+  shapeUtils?: readonly unknown[]
+  bindingUtils?: readonly unknown[]
 }
 
 export interface TLStoreSnapshot {

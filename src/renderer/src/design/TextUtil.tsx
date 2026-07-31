@@ -15,9 +15,9 @@ whenFontsLoad(() => generation.set(generation.get() + 1))
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
-  editor.fonts.trackFontsForShape(shape)
+  editor.fonts.trackFontsForShape(shape as unknown as { props?: Record<string, unknown> })
   const fixed = shape.props.autoSize ? null : Math.max(16, Math.floor(shape.props.w))
-  const html = renderHtmlFromRichTextForMeasurement(editor, shape.props.richText)
+  const html = renderHtmlFromRichTextForMeasurement(shape.props.richText)
   const size = editor.textMeasure.measureHtml(html, typeMeasure(type, fixed))
   return { width: fixed ?? Math.max(16, size.w + 1), height: Math.max(type.size, size.h) }
 }
@@ -45,14 +45,14 @@ export class DesignTextUtil extends Configured {
     const at = generation.get()
     const cached = measured.get(shape)
     if (cached && cached.at === at) return cached.size
-    const size = measure(this.editor, shape)
+    const size = measure(this.editor as Editor, shape)
     measured.set(shape, { at, size })
     return size
   }
 
   override component(shape: TLTextShape) {
     const label = super.component(shape) as ReactElement<{ style?: CSSProperties }>
-    const style = { ...label.props.style, ...textInkStyle(textShapeType(this.editor, shape)) }
+    const style = { ...label.props.style, ...textInkStyle(textShapeType(this.editor as Editor, shape)) }
     return cloneElement(label, { style })
   }
 }
