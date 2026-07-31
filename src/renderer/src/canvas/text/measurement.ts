@@ -1,3 +1,5 @@
+import './text.css'
+
 export interface TextMeasureOptions {
   fontStyle: string
   fontWeight: string

@@ -1,0 +1,103 @@
+.crew-text {
+  appearance: auto;
+  background: none;
+  border: 0;
+  caret-color: currentColor;
+  color: inherit;
+  display: inline-block;
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-kerning: auto;
+  font-optical-sizing: auto;
+  font-size: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+  font-variation-settings: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-break: normal;
+  line-height: inherit;
+  margin: 0;
+  outline: none;
+  overflow-wrap: break-word;
+  padding: 0;
+  text-align: inherit;
+  text-indent: 0;
+  text-rendering: auto;
+  text-shadow: inherit;
+  text-transform: inherit;
+  white-space: pre-wrap;
+  word-spacing: 0;
+  word-wrap: break-word;
+  writing-mode: horizontal-tb;
+}
+
+.crew-text-measure {
+  box-sizing: border-box;
+  contain: layout style paint;
+  left: 0;
+  opacity: 0;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  position: absolute;
+  resize: none;
+  top: 0;
+  unicode-bidi: plaintext;
+  user-select: none;
+  visibility: hidden;
+  white-space: pre-wrap;
+  width: max-content;
+  word-wrap: break-word;
+}
+
+.crew-rich-text,
+.crew-rich-text .ProseMirror {
+  overflow-wrap: break-word;
+  tab-size: 2;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.crew-rich-text .ProseMirror {
+  font-feature-settings: inherit;
+  font-variant-ligatures: inherit;
+  min-height: 1lh;
+  outline: none;
+}
+
+.crew-rich-text p {
+  margin: 0;
+  min-height: 1lh;
+}
+
+.crew-rich-text ul,
+.crew-rich-text ol {
+  list-style: revert;
+  margin: 0;
+  padding-left: 1.625ch;
+  text-align: left;
+}
+
+.crew-rich-text ol:has(> li:nth-child(10)) {
+  padding-left: 2.625ch;
+}
+
+.crew-rich-text ol:has(> li:nth-child(100)) {
+  padding-left: 3.625ch;
+}
+
+.crew-rich-text a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.crew-rich-text code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.crew-rich-text mark {
+  background-color: #fddd00;
+  border-radius: 2px;
+  color: currentColor;
+  text-shadow: none;
+}

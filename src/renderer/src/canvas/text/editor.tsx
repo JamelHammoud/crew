@@ -2,6 +2,7 @@ import { Editor as TipTapEditor, type Extensions, type JSONContent } from '@tipt
 import { useLayoutEffect, useRef, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { richTextExtensions, type RichTextDocument } from './richText'
 import { IDENTITY_TEXT_TRANSFORM, textTransformCss, type TextPoint, type TextTransform } from './transform'
+import './text.css'
 
 export interface RichTextEditorProps {
   richText: RichTextDocument
@@ -128,7 +129,7 @@ export function RichTextEditor({
       onTouchEnd={stop}
       onDragStart={event => event.preventDefault()}
     >
-      <div ref={mount} className={editorClassName} />
+      <div ref={mount} className={`crew-text crew-rich-text ${editorClassName}`} />
     </div>
   )
 }
