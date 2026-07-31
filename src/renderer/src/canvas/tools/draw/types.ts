@@ -1,6 +1,6 @@
 import type { MatLike } from '../../math/Mat'
 import type { VecModel } from '../../math/Vec'
-import type { TLDrawShapeSegment } from '../../schema/shapeProps'
+import type { CanvasDrawShapeSegment } from '../../schema/shapeProps'
 
 export type FreehandShapeType = 'draw' | 'highlight'
 export type FreehandSize = 's' | 'm' | 'l' | 'xl'
@@ -13,7 +13,7 @@ export interface FreehandShape {
   props: {
     size: FreehandSize
     scale: number
-    segments: TLDrawShapeSegment[]
+    segments: CanvasDrawShapeSegment[]
     isComplete?: boolean
     isClosed?: boolean
     isPen: boolean

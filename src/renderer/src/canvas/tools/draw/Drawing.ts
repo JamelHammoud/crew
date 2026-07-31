@@ -3,7 +3,7 @@ import { clampRadians, toFixed } from '../../math/utils'
 import { Vec, type VecModel } from '../../math/Vec'
 import { createShapeId, uniqueId } from '../../schema/id'
 import { decodePoints, DIM_2D, DIM_3D, encodePoints } from '../../schema/points'
-import type { TLDrawShapeSegment } from '../../schema/shapeProps'
+import type { CanvasDrawShapeSegment } from '../../schema/shapeProps'
 import { DrawState } from './DrawState'
 import type { FreehandKeyboardEvent, FreehandPointerEvent, FreehandShape, FreehandShapeType } from './types'
 
@@ -23,12 +23,12 @@ function json(value: VecModel): VecModel {
   return { x: value.x, y: value.y, z: value.z }
 }
 
-function firstPoint(segment: TLDrawShapeSegment): Vec | null {
+function firstPoint(segment: CanvasDrawShapeSegment): Vec | null {
   const value = decodePoints(segment.path, segment.dim ?? DIM_3D)[0]
   return value ? point(value) : null
 }
 
-function lastPoint(segment: TLDrawShapeSegment): Vec | null {
+function lastPoint(segment: CanvasDrawShapeSegment): Vec | null {
   const values = decodePoints(segment.path, segment.dim ?? DIM_3D)
   const value = values[values.length - 1]
   return value ? point(value) : null
@@ -145,7 +145,7 @@ export class Drawing extends DrawState {
   }
 
   getIsClosed(
-    segments: TLDrawShapeSegment[],
+    segments: CanvasDrawShapeSegment[],
     size: keyof typeof strokeSizes,
     scale: number,
     strokeWidth?: number
@@ -194,7 +194,7 @@ export class Drawing extends DrawState {
     this.tool.transition('idle', this.info)
   }
 
-  private makeSegment(type: TLDrawShapeSegment['type'], values: VecModel[]): TLDrawShapeSegment {
+  private makeSegment(type: CanvasDrawShapeSegment['type'], values: VecModel[]): CanvasDrawShapeSegment {
     const path = encodePoints(values, this.segmentDim ?? DIM_3D)
     return this.segmentDim === DIM_2D ? { type, path, dim: DIM_2D } : { type, path }
   }
@@ -293,7 +293,7 @@ export class Drawing extends DrawState {
         const previousLast = previous && lastPoint(previous)
         if (!previousLast) throw new Error('Expected a previous last point')
         const changedLocal = fixed(this.editor.getPointInShapeSpace(shape, changed))
-        let next: TLDrawShapeSegment
+        let next: CanvasDrawShapeSegment
         if (previous.type === 'straight') {
           this.currentLineLength += Vec.Dist(previousLast, changedLocal)
           next = this.makeSegment('straight', [previousLast, changedLocal])
@@ -342,7 +342,7 @@ export class Drawing extends DrawState {
         shouldSnapToAngle = !ctrlKey
       }
       newPoint = json(fixed(this.editor.getPointInShapeSpace(shape, currentPagePoint)))
-      let snappedSegment: TLDrawShapeSegment | undefined
+      let snappedSegment: CanvasDrawShapeSegment | undefined
       if (this.editor.user.getIsSnapMode() ? !ctrlKey : ctrlKey) {
         if (nextSegments.length > 2) {
           let distance = 8 / this.zoomOnEnter
@@ -454,7 +454,7 @@ export class Drawing extends DrawState {
     }
   }
 
-  private updateSegments(shape: FreehandShape, segments: TLDrawShapeSegment[], closureSegments = segments): void {
+  private updateSegments(shape: FreehandShape, segments: CanvasDrawShapeSegment[], closureSegments = segments): void {
     const props: Record<string, unknown> = { segments }
     if (this.canClose()) {
       props.isClosed = this.getIsClosed(closureSegments, shape.props.size, shape.props.scale)
@@ -462,7 +462,7 @@ export class Drawing extends DrawState {
     this.editor.updateShapes([{ id: shape.id, type: this.shapeType, props }])
   }
 
-  private getLineLength(segments: TLDrawShapeSegment[]): number {
+  private getLineLength(segments: CanvasDrawShapeSegment[]): number {
     let length = 0
     for (const segment of segments) {
       const values = decodePoints(segment.path, segment.dim ?? DIM_3D)

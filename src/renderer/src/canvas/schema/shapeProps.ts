@@ -117,13 +117,13 @@ export const cropValidator = T.object<TLShapeCrop>({
   isCircle: T.boolean.optional()
 })
 
-export interface TLDrawShapeSegment {
+export interface CanvasDrawShapeSegment {
   type: 'free' | 'straight'
   path: string
   dim?: 2 | 3
 }
 
-export const drawSegmentValidator = T.object<TLDrawShapeSegment>({
+export const drawSegmentValidator = T.object<CanvasDrawShapeSegment>({
   type: T.literalEnum('free', 'straight'),
   path: T.string,
   dim: T.literalEnum(2, 3).optional()
@@ -215,12 +215,12 @@ export interface TLLineShapeProps {
   scale: number
 }
 
-export interface TLDrawShapeProps {
+export interface CanvasDrawShapeProps {
   color: TLDefaultColorStyle
   fill: TLDefaultFillStyle
   dash: TLDefaultDashStyle
   size: TLDefaultSizeStyle
-  segments: TLDrawShapeSegment[]
+  segments: CanvasDrawShapeSegment[]
   isComplete: boolean
   isClosed: boolean
   isPen: boolean
@@ -232,7 +232,7 @@ export interface TLDrawShapeProps {
 export interface TLHighlightShapeProps {
   color: TLDefaultColorStyle
   size: TLDefaultSizeStyle
-  segments: TLDrawShapeSegment[]
+  segments: CanvasDrawShapeSegment[]
   isComplete: boolean
   isPen: boolean
   scale: number
@@ -291,7 +291,7 @@ export interface TLShapePropsMap {
   note: TLNoteShapeProps
   arrow: TLArrowShapeProps
   line: TLLineShapeProps
-  draw: TLDrawShapeProps
+  draw: CanvasDrawShapeProps
   highlight: TLHighlightShapeProps
   frame: TLFrameShapeProps
   group: TLGroupShapeProps
@@ -380,7 +380,7 @@ export const lineShapeProps: PropsConfig<TLLineShapeProps> = {
   scale: T.nonZeroNumber
 }
 
-export const drawShapeProps: PropsConfig<TLDrawShapeProps> = {
+export const drawShapeProps: PropsConfig<CanvasDrawShapeProps> = {
   color: colorStyle,
   fill: fillStyle,
   dash: dashStyle,
