@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -27,9 +27,7 @@ async function provider(dir) {
 const dir = await mkdtemp(path.join(tmpdir(), 'crew-codex-'))
 const work = path.join(dir, 'work')
 try {
-  await rm(work, { recursive: true, force: true })
-  await mkdtemp(work).catch(() => {})
-  await import('node:fs/promises').then(fs => fs.mkdir(work, { recursive: true }))
+  await mkdir(work, { recursive: true })
   await writeFile(path.join(work, 'notes.txt'), 'first\nsecond\n')
 
   const { codexProvider } = await provider(dir)
