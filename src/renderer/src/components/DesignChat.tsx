@@ -120,13 +120,15 @@ export default function DesignChat({ boardId }: { boardId: string }) {
                   inputRef.current?.focus()
                 }}
               />
-              {activePromptId && runningStart && (
+              {activePromptId && runningStart ? (
                 <RunStatus
                   startedAt={runningStart.ts}
                   tokens={tokens[activePromptId] ?? 0}
                   cost={costs[activePromptId]}
                   steps={steps[activePromptId] ?? []}
                 />
+              ) : (
+                ended && <RunEnded end={ended} />
               )}
             </div>
           ) : (
