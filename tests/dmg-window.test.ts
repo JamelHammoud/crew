@@ -25,6 +25,19 @@ const contrast = (one: string, other: string): number => {
   return (light + 0.05) / (dark + 0.05)
 }
 
+const dpiOf = (png: Buffer): number | null => {
+  let at = 8
+  while (at < png.length) {
+    const length = png.readUInt32BE(at)
+    if (png.toString('ascii', at + 4, at + 8) === 'pHYs') {
+      if (png.readUInt8(at + 16) !== 1) return null
+      return Math.round(png.readUInt32BE(at + 8) * 0.0254)
+    }
+    at += 12 + length
+  }
+  return null
+}
+
 const at = (type: string): { x: number; y: number } => {
   const found = dmg.contents.find((one: { type: string }) => one.type === type)
   expect(found).toBeTruthy()
