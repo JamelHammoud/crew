@@ -18,6 +18,9 @@ export interface StateNodeConstructor<Editor extends StateNodeEditor = StateNode
   trackPerformance: boolean
 }
 
+export type TLStateNodeConstructor<Editor extends StateNodeEditor = StateNodeEditor> =
+  StateNodeConstructor<Editor>
+
 export abstract class StateNode<Editor extends StateNodeEditor = StateNodeEditor> implements StateEventHandlers {
   static id: string
   static initial?: string
