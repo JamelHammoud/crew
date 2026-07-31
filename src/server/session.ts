@@ -3634,25 +3634,15 @@ export class CrewSession {
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
     const people = [...this.members.values()].map(m => m.name).join(', ')
     const thread = this.threads.get(prompt.threadId)
-    // A question on the side is asked about a thread it is not in, so what it
-    // reads is that thread and then the question, as one run of talk.
-    const context = thread?.aside
-      ? [...this.threadContext(thread.aside), ...this.threadContext(prompt.threadId)]
-      : this.threadContext(prompt.threadId)
-    const transcript = context
-      .map(e => {
-        if (e.kind === 'message') {
-          const shared = (e.attachments ?? [])
-            .map(a => `[${isImageType(a.mime) ? 'image' : 'file'}: ${a.name}]`)
-            .join(' ')
-          const reply = e.replyTo ? `, replying to ${e.replyTo.authorName}: ${JSON.stringify(e.replyTo.text)}` : ''
-          return `${e.authorName}${reply}: ${[e.text, shared].filter(Boolean).join(' ')}`
-        }
-        if (e.ok && e.text) return `${e.agentLabel}: ${e.text}`
-        return null
-      })
-      .filter(Boolean)
-      .join('\n')
+    // A conversation on the side is about a thread it is not in, so it reads
+    // that thread and then the talk beside it. They stay two blocks rather than
+    // one run of lines: a question and its answer are turns of their own, and
+    // after a few of them there is nothing to say where the thread ended and the
+    // conversation about it began.
+    const beside = thread?.aside ? this.threadContext(thread.aside) : []
+    const own = this.threadContext(prompt.threadId)
+    const context = [...beside, ...own]
+    const transcript = this.transcriptOf(own)
     const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
     // A helper sees its task and its own turns, and none of the room. It was
     // sent out on one piece of work by somebody who could see the room, and the
