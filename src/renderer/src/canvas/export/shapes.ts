@@ -358,7 +358,7 @@ function renderImageLike(shape: ExportShape, ctx: ShapeRenderContext, video: boo
   const transform = flipX || flipY ? ` transform="translate(${flipX ? w : 0} ${flipY ? h : 0}) scale(${flipX ? -1 : 1} ${flipY ? -1 : 1})"` : ''
   const image = source ? `<image href="${escapeXml(source)}" width="${round(w)}" height="${round(h)}" preserveAspectRatio="xMidYMid slice"${transform}/>` : `<rect width="${round(w)}" height="${round(h)}" fill="#e8e8e8"/><path d="M0 ${round(h)} L${round(w * 0.35)} ${round(h * 0.6)} L${round(w * 0.55)} ${round(h * 0.78)} L${round(w)} ${round(h * 0.3)}" fill="none" stroke="#9fa8b2" stroke-width="2"/>`
   const play = video ? `<circle cx="${round(w / 2)}" cy="${round(h / 2)}" r="24" fill="#00000099"/><path d="M${round(w / 2 - 6)} ${round(h / 2 - 10)} L${round(w / 2 + 12)} ${round(h / 2)} L${round(w / 2 - 6)} ${round(h / 2 + 10)} Z" fill="#ffffff"/>` : ''
-  return { body: `<g clip-path="url(#asset-clip-${cleanId(shape.id)})">${image}${play}</g>`, bounds: shapeBox(w, h), clip: `<rect width="${round(w)}" height="${round(h)}"/>`, mask: false }
+  return { body: `${image}${play}`, bounds: shapeBox(w, h), clip: `<rect width="${round(w)}" height="${round(h)}"/>`, mask: false }
 }
 
 function renderBookmark(shape: ExportShape, ctx: ShapeRenderContext): ShapeBody {

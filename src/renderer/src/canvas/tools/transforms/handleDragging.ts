@@ -1,3 +1,4 @@
+import { Mat } from '../../math/Mat'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
 import { snapAngle } from './rotation'
