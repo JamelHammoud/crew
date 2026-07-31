@@ -1,5 +1,4 @@
 export * from './ShapeUtil'
-export * from './DesignNodeUtil'
 export * from './FrameShapeUtil'
 export * from './TextShapeUtil'
 export * from './GeoShapeUtil'
