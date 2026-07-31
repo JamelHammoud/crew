@@ -9,10 +9,15 @@
   "files": {
     "includes": [
       "**",
-      "!**/node_modules/**",
-      "!out/**",
-      "!dist/**",
-      "!resources/**"
+      "!**/node_modules",
+      "!out",
+      "!dist",
+      "!resources",
+      "!src/main/icon-png.ts",
+      "!src/main/tray-png.ts",
+      "!src/renderer/src/components/crew-mark.ts",
+      "!pdfjs-assets.ts",
+      "!chip-probe.mjs.bundle.css"
     ]
   },
   "formatter": {
@@ -34,10 +39,15 @@
       "quoteProperties": "asNeeded"
     }
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "assist": {

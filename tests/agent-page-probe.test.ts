@@ -139,10 +139,7 @@ describe('the mark a showing wears', () => {
     expect(address).toEqual(file)
   })
 
-  it('cuts the arrow out rather than painting it', () => {
-    // Painted it would be one fixed color over a surface that changes under it.
-    // Cut, what comes through is whatever the row is standing on, the hover wash
-    // included.
+  it('cuts the arrow out rather than painting it, so the row shows through', () => {
     const one = drawn([`file://${REPO}/index.html`])
     expect(one.cut).toContain('M')
     expect(one.painted).toBe(0)
