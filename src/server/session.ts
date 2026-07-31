@@ -232,6 +232,9 @@ interface Thread {
   plan?: string
   queue: QueuedPrompt[]
   running: string | null
+  // Who takes over when a run here ends badly. Nothing reads it until one does,
+  // so naming somebody changes nothing about how this thread queues or steers.
+  fallbackId?: string
   boardId?: string
   ghost?: boolean
   voice?: boolean
