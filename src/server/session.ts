@@ -1619,23 +1619,25 @@ export class CrewSession {
     return { ok: true }
   }
 
-  // A page an agent wants looked at. It goes through emit like everything else a
+  // What an agent wants looked at. It goes through emit like everything else a
   // run says about itself, so a ghost thread's page is shown to the one window
   // that opened the thread and is never written down.
   showPage(promptId: string, rawUrl: unknown, rawTitle: unknown): Done {
     const thread = this.askingThread(promptId)
     if (!thread) return { error: NOT_RUNNING }
-    const url = pageUrl(rawUrl)
-    if (!url) {
-      return { error: 'Give the full path to a file, an address on this machine like localhost:5173, or a link.' }
+    const pages = pagesNamed(rawUrl)
+    if (!pages) {
+      return {
+        error: `Give the full path to a file, an address on this machine like localhost:5173, or a link. Up to ${PAGE_LIMIT} at a time, as a list.`
+      }
     }
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
       kind: 'page.shown',
       threadId: thread.id,
-      url,
-      title: pageTitle(rawTitle) || pageName(url),
+      pages,
+      title: pageTitle(rawTitle) || (pages.length === 1 ? pageName(pages[0]) : ''),
       agentId: thread.agentId,
       agentLabel: thread.agentLabel
     })
