@@ -3,13 +3,12 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DMG, HEADLINE, TRAVEL, dmgDefs, markGroup, wakePath } from './icon-dmg.mjs'
+import { ARROW, DMG, HEADLINE, dmgArrow, dmgDefs } from './icon-dmg.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const out = path.join(tmpdir(), 'crew-dmg')
 const SIDE = 256
 const LABEL = '#030303'
-const geometry = { bite: 28 / 130, step: 186 / 130 }
 
 mkdirSync(out, { recursive: true })
 
@@ -28,7 +27,7 @@ const icons = {
 }
 
 const mesh = readFileSync(path.join(root, 'scripts/dmg-mesh.js'), 'utf8')
-const { discs } = markGroup(geometry, 'mark')
+const { DMG_WASH } = await import('./icon-dmg.mjs')
 
 
 const icon = (data, cx) =>
@@ -45,7 +44,7 @@ writeFileSync(
 <meta charset="utf-8">
 <title>Crew installer</title>
 <style>
-  :root { color-scheme: dark; --ratio: ${DMG.width} / ${DMG.height}; --glide: ${TRAVEL.glide}s; }
+  :root { color-scheme: dark; --ratio: ${DMG.width} / ${DMG.height}; --glide: ${ARROW.glide}s; }
   * { box-sizing: border-box; }
   body {
     margin: 0; padding: 54px 40px 80px; background: #141414; color: #fff;
@@ -74,26 +73,20 @@ writeFileSync(
   .icon { position: absolute; z-index: 3; }
   .name { position: absolute; z-index: 3; text-align: center; font-size: 12px; color: ${LABEL}; }
 
-  .flight {
-    animation: glide var(--glide) cubic-bezier(.42,0,.3,1) infinite,
-               show var(--glide) linear infinite;
-  }
-  .wake { animation: wake var(--glide) cubic-bezier(.42,0,.3,1) infinite; transform-origin: 100% 50%; }
+  .shaft { stroke-dasharray: ${ARROW.to - ARROW.from}; animation: draw var(--glide) cubic-bezier(.5,0,.2,1) infinite; }
+  .head { animation: tip var(--glide) cubic-bezier(.5,0,.2,1) infinite; }
 
-  @keyframes glide {
-    0%   { transform: translate(${TRAVEL.from}px, ${DMG.line}px) }
-    100% { transform: translate(${TRAVEL.to}px, ${DMG.line}px) }
+  @keyframes draw {
+    0%   { stroke-dashoffset: ${ARROW.to - ARROW.from} }
+    46%  { stroke-dashoffset: 0 }
+    82%  { stroke-dashoffset: 0; opacity: 1 }
+    100% { stroke-dashoffset: 0; opacity: 0 }
   }
-  @keyframes show {
-    0%   { opacity: 0 }
-    16%  { opacity: 1 }
-    74%  { opacity: 1 }
-    100% { opacity: 0 }
-  }
-  @keyframes wake {
-    0%   { transform: scaleX(.06) }
-    46%  { transform: scaleX(1) }
-    100% { transform: scaleX(.42) }
+  @keyframes tip {
+    0%, 12%  { opacity: 0; transform: translateX(-${ARROW.to - ARROW.from}px) }
+    46%      { opacity: 1; transform: translateX(0) }
+    82%      { opacity: 1; transform: translateX(0) }
+    100%     { opacity: 0; transform: translateX(0) }
   }
 
   .sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: min(920px, 100%); margin-top: 40px; }
@@ -116,15 +109,12 @@ writeFileSync(
       <canvas id="live"></canvas>
       <svg class="overlay" viewBox="0 0 ${DMG.width} ${DMG.height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
-${dmgDefs(geometry)}
+${dmgDefs()}
         </defs>
-        <circle cx="${DMG.app}" cy="${DMG.line - 6}" r="132" fill="url(#pool)" />
-        <g class="flight">
-          <path class="wake" d="${wakePath(geometry)}" fill="url(#wake)" filter="url(#haze)" />
-          <g fill="#141414" fill-opacity="0.93">
-${discs}
-          </g>
-        </g>
+        ${dmgArrow()
+          .replace('<line ', '<line class="shaft" ')
+          .replace('<path ', '<path class="head" ')}
+        
       ${HEADLINE}
       </svg>
       ${icon(icons.app, DMG.app)}
