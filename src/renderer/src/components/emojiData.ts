@@ -1,5 +1,6 @@
 import source from 'emoji-datasource-twitter/emoji.json'
 import sheetUrl from 'emoji-datasource-twitter/img/twitter/sheets-256/64.png'
+import distortedFaceUrl from '../media/distorted-face.png'
 
 interface SourceEmoji {
   name: string
@@ -20,6 +21,7 @@ export interface EmojiEntry {
   terms: string[]
   x: number
   y: number
+  imageUrl?: string
 }
 
 export interface EmojiCategory {
@@ -81,6 +83,23 @@ for (const item of ordered) {
   byCategory.set(item.category, bucket)
 }
 
+const distortedFace: EmojiEntry = {
+  char: '\u{1FAEA}',
+  shortName: 'distorted_face',
+  terms: ['distorted_face', 'distorted', 'face'],
+  x: 0,
+  y: 0,
+  imageUrl: distortedFaceUrl
+}
+
+byChar.set(distortedFace.char, distortedFace)
+byShortName.set(distortedFace.shortName, distortedFace)
+const smileys = byCategory.get('Smileys & Emotion') ?? []
+const existingDistortedFace = smileys.findIndex(entry => entry.char === distortedFace.char)
+if (existingDistortedFace >= 0) smileys[existingDistortedFace] = distortedFace
+else smileys.push(distortedFace)
+byCategory.set('Smileys & Emotion', smileys)
+
 export const EMOJI_CATEGORIES: EmojiCategory[] = CATEGORIES.map(category => ({
   id: category.id,
   label: category.label,
@@ -97,6 +116,13 @@ export function spriteStyle(entry: EmojiEntry): {
   backgroundSize: string
   backgroundPosition: string
 } {
+  if (entry.imageUrl) {
+    return {
+      backgroundImage: `url(${entry.imageUrl})`,
+      backgroundSize: '100% 100%',
+      backgroundPosition: 'center'
+    }
+  }
   return {
     backgroundImage: `url(${SHEET_URL})`,
     backgroundSize: `${SHEET_GRID * 100}% ${SHEET_GRID * 100}%`,

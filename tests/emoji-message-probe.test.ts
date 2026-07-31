@@ -50,6 +50,19 @@ describe('emoji in the feed', () => {
     expect(container.textContent).toBe('well 😔')
   })
 
+  it('draws the distorted face from its built-in picture', () => {
+    boot()
+    const { container } = render(createElement(MentionText, { text: 'well 🫪' }))
+    const drawn = [...container.querySelectorAll('span')].filter(span =>
+      span.style.backgroundImage.includes('distorted-face.png')
+    )
+
+    expect(drawn).toHaveLength(1)
+    expect(drawn[0].style.backgroundSize).toBe('100% 100%')
+    expect(container.textContent).toBe('well 🫪')
+    expect(onlyEmoji('🫪')).toBe(true)
+  })
+
   it('keeps a skin tone or a flag as one sprite', () => {
     boot()
     const { container } = render(createElement(MentionText, { text: '👍🏽 🇱🇧 👍' }))

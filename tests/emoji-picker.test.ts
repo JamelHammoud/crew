@@ -2,7 +2,12 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { lookupEmoji, searchEmoji } from '../src/renderer/src/components/emojiData'
+import {
+  emojiForShortcode,
+  lookupEmoji,
+  searchEmoji,
+  spriteStyle
+} from '../src/renderer/src/components/emojiData'
 import MessageReactions from '../src/renderer/src/components/MessageReactions'
 import { useCrew } from '../src/renderer/src/state/store'
 import { isReactionEmoji } from '../src/shared/reactions'
@@ -83,6 +88,20 @@ describe('emoji reactions', () => {
     fireEvent.click(screen.getByLabelText('React with :melting_face:'))
 
     expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🫠')
+  })
+
+  it('includes the distorted face in the built-in set', () => {
+    const entry = lookupEmoji('🫪')!
+
+    expect(entry.shortName).toBe('distorted_face')
+    expect(searchEmoji('distorted')[0]).toBe(entry)
+    expect(emojiForShortcode('distorted_face')).toBe('🫪')
+    expect(spriteStyle(entry)).toMatchObject({
+      backgroundImage: expect.stringContaining('distorted-face.png'),
+      backgroundSize: '100% 100%',
+      backgroundPosition: 'center'
+    })
+    expect(isReactionEmoji('🫪')).toBe(true)
   })
 
   it('holds the more reactions tooltip back while the picker is open', () => {
