@@ -88,12 +88,20 @@ describe('what codex says while it works', () => {
   })
 
   it('streams the answer token by token and never on an index reasoning holds', () => {
-    expect(parsed('item/started', { item: { type: 'agentMessage', id: 'm1', text: '' } })).toEqual([
-      { textStart: { index: 0 } }
-    ])
+    expect(parsed('item/started', { item: { type: 'agentMessage', id: 'm1', text: '', phase: 'final_answer' } })).toEqual(
+      [{ textStart: { index: 0, aside: false } }]
+    )
     expect(parsed('item/agentMessage/delta', { delta: 'Do' })).toEqual([{ textDelta: { index: 0, text: 'Do' } }])
-    const done = parsed('item/completed', { item: { type: 'agentMessage', id: 'm1', text: 'Done.' } })
+    const done = parsed('item/completed', { item: { type: 'agentMessage', id: 'm1', text: 'Done.', phase: 'final_answer' } })
     expect(done).toEqual([{ blockStop: { index: 0 } }, { text: 'Done.' }])
+  })
+
+  it('shows what it says on the way as it goes, and keeps it out of the answer', () => {
+    const item = { type: 'agentMessage', id: 'm0', text: 'I will read the file first.', phase: 'commentary' }
+    expect(parsed('item/started', { item: { ...item, text: '' } })).toEqual([
+      { textStart: { index: 0, aside: true } }
+    ])
+    expect(parsed('item/completed', { item })).toEqual([{ blockStop: { index: 0 } }])
   })
 
   it('says nothing at all about the message the person sent', () => {
