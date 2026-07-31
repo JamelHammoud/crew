@@ -78,6 +78,11 @@ export const SOLID = 16
 export const RADIUS = 0.15
 export const RADIUS_TIGHT = 0.1
 
+// A tile is read as an app icon rather than as a shape in the set, and an app
+// icon turns a corner harder than anything else drawn here. The corner is what
+// says tile, before whatever is standing on it has been read at all.
+export const RADIUS_TILE = 0.25
+
 export const corner = (side: number, share = RADIUS): number =>
   Math.round(side * share * 4) / 4
 
