@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DMG, HEADLINE, TRAVEL, dmgDefs, markGroup } from './icon-dmg.mjs'
+import { DMG, HEADLINE, TRAVEL, dmgDefs, markGroup, wakePath } from './icon-dmg.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const out = path.join(tmpdir(), 'crew-dmg')
@@ -30,12 +30,6 @@ const icons = {
 const mesh = readFileSync(path.join(root, 'scripts/dmg-mesh.js'), 'utf8')
 const { discs } = markGroup(geometry, 'mark')
 
-const ghosts = Array.from({ length: TRAVEL.ghosts }, (_, index) => {
-  const back = (index + 1) / (TRAVEL.ghosts + 1)
-  return `      <g class="ghost" style="--back:${back.toFixed(3)};--rest:${(0.2 * (1 - back) ** 1.5).toFixed(3)};--shrink:${(1 - back * 0.26).toFixed(3)}" fill="#141414">
-${discs}
-      </g>`
-}).join('\n')
 
 const icon = (data, cx) =>
   `<img class="icon" style="left:${((cx - DMG.iconSize / 2) / DMG.width) * 100}%;top:${((DMG.line - DMG.iconSize / 2) / DMG.height) * 100}%;width:${(DMG.iconSize / DMG.width) * 100}%" src="data:image/png;base64,${data}" alt="">`
@@ -80,38 +74,26 @@ writeFileSync(
   .icon { position: absolute; z-index: 3; }
   .name { position: absolute; z-index: 3; text-align: center; font-size: 12px; color: ${LABEL}; }
 
-  .flight { animation: glide var(--glide) cubic-bezier(.45,0,.35,1) infinite; }
-  .ghost {
-    animation: glide var(--glide) cubic-bezier(.45,0,.35,1) infinite,
+  .flight {
+    animation: glide var(--glide) cubic-bezier(.42,0,.3,1) infinite,
                show var(--glide) linear infinite;
-    animation-delay: calc(var(--back) * var(--glide) * -0.085);
-    fill-opacity: 0;
-    transform-box: fill-box;
   }
-  .lead { animation: glide var(--glide) cubic-bezier(.45,0,.35,1) infinite, lead var(--glide) linear infinite; }
-  .wake { animation: wake var(--glide) cubic-bezier(.45,0,.35,1) infinite; }
+  .wake { animation: wake var(--glide) cubic-bezier(.42,0,.3,1) infinite; transform-origin: 100% 50%; }
 
   @keyframes glide {
     0%   { transform: translate(${TRAVEL.from}px, ${DMG.line}px) }
     100% { transform: translate(${TRAVEL.to}px, ${DMG.line}px) }
   }
-  @keyframes lead {
-    0% { fill-opacity: 0 }
-    14% { fill-opacity: .94 }
-    76% { fill-opacity: .94 }
-    100% { fill-opacity: 0 }
-  }
   @keyframes show {
-    0% { fill-opacity: 0 }
-    18% { fill-opacity: var(--rest) }
-    74% { fill-opacity: var(--rest) }
-    100% { fill-opacity: 0 }
+    0%   { opacity: 0 }
+    16%  { opacity: 1 }
+    74%  { opacity: 1 }
+    100% { opacity: 0 }
   }
   @keyframes wake {
-    0%   { opacity: 0; transform: translate(${TRAVEL.from}px, ${DMG.line}px) scaleX(.04) }
-    18%  { opacity: .85 }
-    76%  { opacity: .85 }
-    100% { opacity: 0; transform: translate(${(TRAVEL.from + TRAVEL.to) / 2}px, ${DMG.line}px) scaleX(1) }
+    0%   { transform: scaleX(.06) }
+    46%  { transform: scaleX(1) }
+    100% { transform: scaleX(.42) }
   }
 
   .sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: min(920px, 100%); margin-top: 40px; }
@@ -136,12 +118,13 @@ writeFileSync(
         <defs>
 ${dmgDefs(geometry)}
         </defs>
-        <ellipse class="wake" cx="0" cy="0" rx="${(TRAVEL.to - TRAVEL.from) / 2 + 26}" ry="13" fill="url(#wake)" filter="url(#haze)" />
         <circle cx="${DMG.app}" cy="${DMG.line - 6}" r="132" fill="url(#pool)" />
-${ghosts}
-      <g class="lead" fill="#141414" fill-opacity="0">
+        <g class="flight">
+          <path class="wake" d="${wakePath(geometry)}" fill="url(#wake)" filter="url(#haze)" />
+          <g fill="#141414" fill-opacity="0.93">
 ${discs}
-      </g>
+          </g>
+        </g>
       ${HEADLINE}
       </svg>
       ${icon(icons.app, DMG.app)}
