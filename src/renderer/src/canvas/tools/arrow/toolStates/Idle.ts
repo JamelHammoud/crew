@@ -2,8 +2,7 @@ import { ArrowStateNode } from '../StateNode'
 import type {
   ArrowKeyboardInfo,
   ArrowPointerInfo,
-  ArrowTimerId,
-  ArrowTargetState
+  ArrowTimerId
 } from '../types'
 
 export class Idle extends ArrowStateNode {
@@ -80,5 +79,3 @@ export class Idle extends ArrowStateNode {
     this.isPreciseTimerId = null
   }
 }
-
-export type IdleArrowTargetState = ArrowTargetState

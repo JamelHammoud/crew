@@ -1,10 +1,10 @@
 import { Mat } from '../../../math/Mat'
 import { Vec } from '../../../math/Vec'
 import { createShapeId } from '../../../schema/id'
-import { getIndexAbove, sortByIndex, type IndexKey } from '../../../schema/indices'
+import { getIndexAbove, sortByIndex } from '../../../schema/indices'
 import type { TLShapeId } from '../../../schema/records'
 import { LineStateNode } from '../StateNode'
-import type { LineHandle, LinePointerInfo, TLLineShape } from '../types'
+import type { LinePointerInfo, TLLineShape } from '../types'
 
 const MINIMUM_DISTANCE_BETWEEN_SHIFT_CLICKED_HANDLES = 2
 
@@ -148,8 +148,4 @@ export class Pointing extends LineStateNode {
     this.parent.transition('idle', { shapeId: this.shape?.id })
     this.editor.snaps.clearIndicators()
   }
-}
-
-export function sortLineHandles(handles: LineHandle[]): LineHandle[] {
-  return [...handles].sort((a, b) => sortByIndex(a as LineHandle & { index: IndexKey }, b))
 }

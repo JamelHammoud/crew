@@ -6,7 +6,7 @@ import type { TLLineShapeProps } from '../../schema/shapeProps'
 
 export type TLLineShape = TLBaseShape<'line', TLLineShapeProps>
 
-export interface LineHandle extends VecLike {
+export type LineHandle = VecLike & {
   id: string
   index: IndexKey
   type: string

@@ -5,7 +5,7 @@ import type { TLArrowShapeProps } from '../../schema/shapeProps'
 
 export type TLArrowShape = TLBaseShape<'arrow', TLArrowShapeProps>
 
-export interface ArrowHandle extends VecLike {
+export type ArrowHandle = VecLike & {
   id: string
   index: IndexKey
   type: string

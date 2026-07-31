@@ -2,7 +2,6 @@ import { Vec } from '../../../math/Vec'
 import { createShapeId } from '../../../schema/id'
 import { ArrowStateNode } from '../StateNode'
 import type {
-  ArrowHandle,
   ArrowPointerInfo,
   ArrowTimerId,
   TLArrowShape
@@ -168,8 +167,4 @@ export class Pointing extends ArrowStateNode {
     clear(this.isPreciseTimerId)
     this.isPreciseTimerId = null
   }
-}
-
-export function getArrowEndpoint(handles: ArrowHandle[], id: 'start' | 'end'): ArrowHandle | undefined {
-  return handles.find((handle) => handle.id === id)
 }
