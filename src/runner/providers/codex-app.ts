@@ -1,5 +1,5 @@
 import type { SettingReader } from './cli'
-import type { Dialog } from './types'
+import type { Dialog, RunOptions } from './types'
 
 const CLIENT = { name: 'crew', title: 'Crew', version: '1' }
 const SANDBOX = 'danger-full-access'
@@ -15,7 +15,7 @@ const APPROVALS = new Set([
   'execCommandApproval'
 ])
 
-type Stage = 'init' | 'thread' | 'turn' | 'steer'
+type Stage = 'init' | 'thread' | 'goal' | 'turn' | 'steer'
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 
@@ -23,7 +23,7 @@ const rpc = (body: Record<string, unknown>): string => JSON.stringify({ jsonrpc:
 
 const input = (text: string) => [{ type: 'text', text }]
 
-export function codexDialog(prompt: string, cwd: string, get: SettingReader): Dialog {
+export function codexDialog(prompt: string, cwd: string, get: SettingReader, options: RunOptions = {}): Dialog {
   const model = get('model')
   const effort = get('effort')
   const pending = new Map<number, Stage>()
@@ -55,6 +55,13 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader): Di
       ...(effort ? { effort } : {})
     })
 
+  const startGoal = () =>
+    ask('goal', 'thread/goal/set', {
+      threadId,
+      objective: prompt,
+      status: 'active'
+    })
+
   const served = (id: unknown, method: string): string[] =>
     APPROVALS.has(method)
       ? [rpc({ id, result: { decision: 'accept' } })]
@@ -64,8 +71,9 @@ export function codexDialog(prompt: string, cwd: string, get: SettingReader): Di
     if (stage === 'init') return [rpc({ method: 'initialized', params: {} }), startThread()]
     if (stage === 'thread') {
       threadId = str(result?.thread?.id)
-      return threadId ? [startTurn()] : []
+      return threadId ? [options.goal ? startGoal() : startTurn()] : []
     }
+    if (stage === 'goal') return [startTurn()]
     if (stage === 'turn') turnId = str(result?.turn?.id) || turnId
     if (stage === 'steer') turnId = str(result?.turnId) || turnId
     return []

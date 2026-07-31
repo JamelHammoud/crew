@@ -297,7 +297,8 @@ export class Runner {
           msg.ghost === true,
           msg.spawnRoom ?? 0,
           msg.spawnProviders ?? [],
-          msg.tickets === true
+          msg.tickets === true,
+          msg.goal === true
         )
         break
       case 'steer':
@@ -379,7 +380,8 @@ export class Runner {
     ghost = false,
     spawnRoom = 0,
     spawnProviders: string[] = [],
-    tickets = false
+    tickets = false,
+    goal = false
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -399,7 +401,7 @@ export class Runner {
     const body = [text, ...preambles].join('\n\n')
     const tail = this.tails.get(threadId) ?? Promise.resolve()
     const next = tail
-      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost))
+      .then(() => this.execute(agent.provider, promptId, body, settings, attachments, ghost, goal))
       .catch(() => {})
     this.tails.set(threadId, next)
     void next.then(() => {
@@ -415,7 +417,8 @@ export class Runner {
     text: string,
     settings: AgentSettings,
     attachments: Attachment[],
-    ghost = false
+    ghost = false,
+    goal = false
   ): Promise<void> {
     await this.opts.onBeforeRun?.().catch(() => {})
     const local = await this.attachments.ensure(attachments, this.httpBase, ghost ? promptId : undefined)
@@ -429,7 +432,7 @@ export class Runner {
     const run = provider.start(promptWithAttachments(text, local), this.opts.repoPath, {
       onStep: step => this.send({ type: 'agent.step', promptId, step }),
       onTokens: (tokens, cost) => this.send({ type: 'agent.tokens', promptId, tokens, cost: cost ?? undefined })
-    }, settings)
+    }, settings, { goal })
     this.running.set(promptId, run)
     try {
       const { text: reply } = await run.done

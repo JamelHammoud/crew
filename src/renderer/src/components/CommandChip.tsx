@@ -2,6 +2,7 @@ import type { CommandName } from '../../../shared/commands'
 import {
   BoltGlyph,
   BranchGlyph,
+  CheckCircleGlyph,
   ChecklistGlyph,
   ClockGlyph,
   CloseGlyph,
@@ -15,6 +16,7 @@ import Pill from './Pill'
 export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
   plan: ChecklistGlyph,
   tickets: TicketGlyph,
+  goal: CheckCircleGlyph,
   ghost: GhostGlyph,
   voice: MicGlyph,
   steer: BoltGlyph,
@@ -26,6 +28,7 @@ export const COMMAND_MARKS: Record<CommandName, typeof ChecklistGlyph> = {
 export const COMMAND_LABELS: Record<CommandName, string> = {
   plan: 'Plan',
   tickets: 'Tickets',
+  goal: 'Goal',
   ghost: 'Ghost',
   voice: 'Voice',
   steer: 'Steer',
