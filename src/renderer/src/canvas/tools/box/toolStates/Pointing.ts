@@ -42,15 +42,23 @@ export class Pointing extends BoxStateNode {
     })
   }
 
-  override onPointerUp(): void { this.complete() }
+  override onPointerUp(): void {
+    this.complete()
+  }
 
   override onLongPress(): void {
     if (this.editor.getInstanceState().isCoarsePointer) this.cancel()
   }
 
-  override onCancel(): void { this.cancel() }
-  override onComplete(): void { this.complete() }
-  override onInterrupt(): void { this.cancel() }
+  override onCancel(): void {
+    this.cancel()
+  }
+  override onComplete(): void {
+    this.complete()
+  }
+  override onInterrupt(): void {
+    this.cancel()
+  }
 
   complete(): void {
     const originPagePoint = this.editor.inputs.getOriginPagePoint()
@@ -92,7 +100,9 @@ export class Pointing extends BoxStateNode {
 }
 
 function hasBoxProps(shape: TLShape): shape is TLShape & { props: { w: number; h: number } } {
-  return typeof (shape.props as { w?: unknown }).w === 'number' && typeof (shape.props as { h?: unknown }).h === 'number'
+  return (
+    typeof (shape.props as { w?: unknown }).w === 'number' && typeof (shape.props as { h?: unknown }).h === 'number'
+  )
 }
 
 export function maybeSnapToGrid(point: Vec, editor: BoxToolEditor): Vec {

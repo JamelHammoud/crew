@@ -84,14 +84,14 @@ const hand = (art: string, place: string, fallback: string) =>
 const TOOL_CURSORS: Record<string, string> = { draw: pencil }
 
 export const DESIGN_CURSORS = {
-  '--tl-cursor-default': arrow,
-  '--tl-cursor-pointer': arrow,
-  '--tl-cursor-move': arrow,
-  '--tl-cursor-text': beam,
-  '--tl-cursor-cross': crosshair,
-  '--tl-cursor-grab': hand(OPEN_HAND, OPEN_HAND_PLACE, 'grab'),
-  '--tl-cursor-grabbing': hand(CLOSED_HAND, CLOSED_HAND_PLACE, 'grabbing')
-} satisfies Partial<Record<`--tl-cursor-${TLCursorType}`, string>>
+  '--crew-cursor-default': arrow,
+  '--crew-cursor-pointer': arrow,
+  '--crew-cursor-move': arrow,
+  '--crew-cursor-text': beam,
+  '--crew-cursor-cross': crosshair,
+  '--crew-cursor-grab': hand(OPEN_HAND, OPEN_HAND_PLACE, 'grab'),
+  '--crew-cursor-grabbing': hand(CLOSED_HAND, CLOSED_HAND_PLACE, 'grabbing')
+} satisfies Partial<Record<`--crew-cursor-${TLCursorType}`, string>>
 
 export const ARROW_TIP = { x: AT_TIP.x, y: AT_TIP.y }
 
@@ -100,7 +100,7 @@ export function applyDesignCursors(container: HTMLElement): void {
 }
 
 export function applyToolCursor(container: HTMLElement, toolId: string): void {
-  container.style.setProperty('--tl-cursor-cross', TOOL_CURSORS[toolId] ?? crosshair)
+  container.style.setProperty('--crew-cursor-cross', TOOL_CURSORS[toolId] ?? crosshair)
 }
 
 export function cursorColor(hue: number): string {

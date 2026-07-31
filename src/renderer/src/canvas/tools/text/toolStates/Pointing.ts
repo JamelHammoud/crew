@@ -53,15 +53,23 @@ export class Pointing extends BoxStateNode {
     })
   }
 
-  override onPointerUp(): void { this.complete() }
+  override onPointerUp(): void {
+    this.complete()
+  }
 
   override onLongPress(): void {
     if (this.editor.getInstanceState().isCoarsePointer) this.cancel()
   }
 
-  override onComplete(): void { this.cancel() }
-  override onCancel(): void { this.cancel() }
-  override onInterrupt(): void { this.cancel() }
+  override onComplete(): void {
+    this.cancel()
+  }
+  override onCancel(): void {
+    this.cancel()
+  }
+  override onInterrupt(): void {
+    this.cancel()
+  }
 
   private complete(): void {
     this.editor.markHistoryStoppingPoint('creating text shape')

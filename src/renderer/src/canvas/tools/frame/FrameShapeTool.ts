@@ -24,7 +24,7 @@ export function getEnclosedShapeIds(
   const bounds = editor.getShapePageBounds(shape)
   if (!bounds) return []
   const enclosed: TLShapeId[] = []
-  const ancestors = editor.getShapeAncestors?.(shape).map((ancestor) => ancestor.id) ?? []
+  const ancestors = editor.getShapeAncestors?.(shape).map(ancestor => ancestor.id) ?? []
   for (const siblingId of editor.getSortedChildIdsForParent?.(shape.parentId) ?? []) {
     const sibling = editor.getShape(siblingId)
     if (!sibling || sibling.id === shape.id || sibling.isLocked) continue

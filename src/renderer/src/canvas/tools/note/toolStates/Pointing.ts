@@ -22,13 +22,7 @@ export class Pointing extends BoxStateNode {
     this.shapeId = createShapeId()
     this.markId = this.editor.markHistoryStoppingPoint(`creating_note:${this.shapeId}`)
     const center = Vec.From(this.editor.inputs.getOriginPagePoint())
-    const offset = getNoteShapeAdjacentPositionOffset(
-      this.editor,
-      center,
-      this.editor.getResizeScaleFactor(),
-      200,
-      200
-    )
+    const offset = getNoteShapeAdjacentPositionOffset(this.editor, center, this.editor.getResizeScaleFactor(), 200, 200)
     if (offset) center.sub(offset)
     this.shapeCenter = center
     if (!this.editor.getInstanceState().isCoarsePointer) this.ensureShapeCreated()
@@ -51,15 +45,23 @@ export class Pointing extends BoxStateNode {
     })
   }
 
-  override onPointerUp(): void { this.complete() }
+  override onPointerUp(): void {
+    this.complete()
+  }
 
   override onLongPress(): void {
     if (this.editor.getInstanceState().isCoarsePointer) this.cancel()
   }
 
-  override onInterrupt(): void { this.cancel() }
-  override onComplete(): void { this.complete() }
-  override onCancel(): void { this.cancel() }
+  override onInterrupt(): void {
+    this.cancel()
+  }
+  override onComplete(): void {
+    this.complete()
+  }
+  override onCancel(): void {
+    this.cancel()
+  }
 
   private ensureShapeCreated(): void {
     if (this.hasCreatedShape) return
@@ -105,7 +107,7 @@ export function getNoteAdjacentPositions(
     new Vec(width * 0.5, height * 1.5 + margin + shape.props.growY * scale),
     new Vec(-width * 0.5 - margin, height * 0.5)
   ]
-  return offsets.map((offset) => offset.rot(rotation).add(pagePoint))
+  return offsets.map(offset => offset.rot(rotation).add(pagePoint))
 }
 
 export function getAvailableNoteAdjacentPositions(
@@ -116,15 +118,18 @@ export function getAvailableNoteAdjacentPositions(
 ): Vec[] {
   const selected = new Set(editor.getSelectedShapeIds?.() ?? [])
   const notes = (editor.getCurrentPageShapes?.() ?? []).filter(
-    (shape): shape is NoteShape =>
-      shape.type === 'note' && shape.props.scale === scale && !selected.has(shape.id)
+    (shape): shape is NoteShape => shape.type === 'note' && shape.props.scale === scale && !selected.has(shape.id)
   )
-  const positions = notes.flatMap((shape) => getNoteAdjacentPositions(editor, shape, noteWidth, noteHeight))
-  return positions.filter((position) =>
-    notes.every((shape) => {
+  const positions = notes.flatMap(shape => getNoteAdjacentPositions(editor, shape, noteWidth, noteHeight))
+  return positions.filter(position =>
+    notes.every(shape => {
       const bounds = editor.getShapePageBounds(shape)
       if (!bounds) return true
-      if (Vec.Dist2(bounds.center, position) > (Math.max(noteWidth, noteHeight) + (editor.options?.adjacentShapeMargin ?? 20)) ** 2) return true
+      if (
+        Vec.Dist2(bounds.center, position) >
+        (Math.max(noteWidth, noteHeight) + (editor.options?.adjacentShapeMargin ?? 20)) ** 2
+      )
+        return true
       return !(editor.isPointInShape?.(shape, position) ?? bounds.containsPoint(position))
     })
   )

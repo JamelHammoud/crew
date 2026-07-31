@@ -27,13 +27,31 @@ export class NoteShapeTool implements BoxStateParent {
     next.onEnter(info)
   }
 
-  getCurrentStateId(): string { return `${this.id}.${this.current.id}` }
-  onPointerDown(info: BoxPointerInfo = {}): void { this.current.onPointerDown(info) }
-  onPointerMove(info: BoxPointerInfo = {}): void { this.current.onPointerMove(info) }
-  onPointerUp(info: BoxPointerInfo = {}): void { this.current.onPointerUp(info) }
-  onLongPress(info: BoxPointerInfo = {}): void { this.current.onLongPress(info) }
-  onCancel(info: BoxPointerInfo = {}): void { this.current.onCancel(info) }
-  onComplete(info: BoxPointerInfo = {}): void { this.current.onComplete(info) }
-  onInterrupt(info: BoxPointerInfo = {}): void { this.current.onInterrupt(info) }
-  onKeyDown(info: BoxPointerInfo = {}): void { this.current.onKeyDown(info) }
+  getCurrentStateId(): string {
+    return `${this.id}.${this.current.id}`
+  }
+  onPointerDown(info: BoxPointerInfo = {}): void {
+    this.current.onPointerDown(info)
+  }
+  onPointerMove(info: BoxPointerInfo = {}): void {
+    this.current.onPointerMove(info)
+  }
+  onPointerUp(info: BoxPointerInfo = {}): void {
+    this.current.onPointerUp(info)
+  }
+  onLongPress(info: BoxPointerInfo = {}): void {
+    this.current.onLongPress(info)
+  }
+  onCancel(info: BoxPointerInfo = {}): void {
+    this.current.onCancel(info)
+  }
+  onComplete(info: BoxPointerInfo = {}): void {
+    this.current.onComplete(info)
+  }
+  onInterrupt(info: BoxPointerInfo = {}): void {
+    this.current.onInterrupt(info)
+  }
+  onKeyDown(info: BoxPointerInfo = {}): void {
+    this.current.onKeyDown(info)
+  }
 }

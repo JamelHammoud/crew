@@ -117,11 +117,15 @@ class BoxEditor implements BoxToolEditor {
     for (const update of updates) this.updateShape(update)
   }
 
-  getShape(id: TLShapeId): TLShape | undefined { return this.shapes.get(id) }
+  getShape(id: TLShapeId): TLShape | undefined {
+    return this.shapes.get(id)
+  }
 
   getShapePageBounds(shape: TLShape): Box {
-    if (shape.type === 'text') return new Box(shape.x, shape.y, shape.props.w * shape.props.scale, 24 * shape.props.scale)
-    if (shape.type === 'note') return new Box(shape.x, shape.y, 200 * shape.props.scale, (200 + shape.props.growY) * shape.props.scale)
+    if (shape.type === 'text')
+      return new Box(shape.x, shape.y, shape.props.w * shape.props.scale, 24 * shape.props.scale)
+    if (shape.type === 'note')
+      return new Box(shape.x, shape.y, 200 * shape.props.scale, (200 + shape.props.growY) * shape.props.scale)
     const props = shape.props as { w: number; h: number }
     return new Box(shape.x, shape.y, props.w, props.h)
   }
@@ -131,7 +135,9 @@ class BoxEditor implements BoxToolEditor {
     return { bounds: new Box(0, 0, bounds.width, bounds.height) }
   }
 
-  getShapeParentTransform(): null { return null }
+  getShapeParentTransform(): null {
+    return null
+  }
 
   getShapePageTransform(id: TLShapeId) {
     const shape = this.shapes.get(id)
@@ -139,14 +145,20 @@ class BoxEditor implements BoxToolEditor {
     return { rotation: () => shape.rotation, point: () => new Vec(shape.x, shape.y) }
   }
 
-  getShapeAncestors(): TLShape[] { return [] }
-
-  getSortedChildIdsForParent(parentId: TLShape['parentId']): TLShapeId[] {
-    return [...this.shapes.values()].filter((shape) => shape.parentId === parentId).map((shape) => shape.id)
+  getShapeAncestors(): TLShape[] {
+    return []
   }
 
-  getCurrentPageShapes(): TLShape[] { return [...this.shapes.values()] }
-  getSelectedShapeIds(): TLShapeId[] { return this.selected }
+  getSortedChildIdsForParent(parentId: TLShape['parentId']): TLShapeId[] {
+    return [...this.shapes.values()].filter(shape => shape.parentId === parentId).map(shape => shape.id)
+  }
+
+  getCurrentPageShapes(): TLShape[] {
+    return [...this.shapes.values()]
+  }
+  getSelectedShapeIds(): TLShapeId[] {
+    return this.selected
+  }
 
   isPointInShape(shape: TLShape, point: VecLike): boolean {
     return this.getShapePageBounds(shape).containsPoint(point)
@@ -171,9 +183,15 @@ class BoxEditor implements BoxToolEditor {
     if (snapshot) this.shapes = structuredClone(snapshot)
   }
 
-  select(id: TLShapeId): void { this.selected = [id] }
-  setSelectedShapes(ids: TLShapeId[]): void { this.selected = ids }
-  setEditingShape(shape: TLShape): void { this.editing = shape.id }
+  select(id: TLShapeId): void {
+    this.selected = [id]
+  }
+  setSelectedShapes(ids: TLShapeId[]): void {
+    this.selected = ids
+  }
+  setEditingShape(shape: TLShape): void {
+    this.editing = shape.id
+  }
   setHintingShapes(): void {}
   updateHoveredShapeId(): void {}
   cancelUpdateHoveredShapeId(): void {}
@@ -191,11 +209,21 @@ class BoxEditor implements BoxToolEditor {
     this.currentToolInfo = info
   }
 
-  setCursor(cursor: { type: string }): void { this.cursor = cursor.type }
-  getResizeScaleFactor(): number { return this.scale }
-  getZoomLevel(): number { return this.zoom }
-  getInstanceState() { return { isGridMode: this.grid, isToolLocked: this.locked, isCoarsePointer: this.coarse } }
-  getDocumentSettings() { return { gridSize: 10 } }
+  setCursor(cursor: { type: string }): void {
+    this.cursor = cursor.type
+  }
+  getResizeScaleFactor(): number {
+    return this.scale
+  }
+  getZoomLevel(): number {
+    return this.zoom
+  }
+  getInstanceState() {
+    return { isGridMode: this.grid, isToolLocked: this.locked, isCoarsePointer: this.coarse }
+  }
+  getDocumentSettings() {
+    return { gridSize: 10 }
+  }
 }
 
 class DesignNodeTool extends BaseBoxShapeTool {

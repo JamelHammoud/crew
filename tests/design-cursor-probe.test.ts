@@ -40,22 +40,22 @@ const drawn = (svg: string) => {
 describe('design cursors', () => {
   it('covers every cursor the board tools ask for', () => {
     expect(Object.keys(vars)).toEqual([
-      '--tl-cursor-default',
-      '--tl-cursor-pointer',
-      '--tl-cursor-move',
-      '--tl-cursor-text',
-      '--tl-cursor-cross',
-      '--tl-cursor-grab',
-      '--tl-cursor-grabbing'
+      '--crew-cursor-default',
+      '--crew-cursor-pointer',
+      '--crew-cursor-move',
+      '--crew-cursor-text',
+      '--crew-cursor-cross',
+      '--crew-cursor-grab',
+      '--crew-cursor-grabbing'
     ])
   })
 
   it('falls back to the native cursor of the same job', () => {
-    expect(parse(vars['--tl-cursor-default']).fallback).toBe('default')
-    expect(parse(vars['--tl-cursor-text']).fallback).toBe('text')
-    expect(parse(vars['--tl-cursor-cross']).fallback).toBe('crosshair')
-    expect(parse(vars['--tl-cursor-grab']).fallback).toBe('grab')
-    expect(parse(vars['--tl-cursor-grabbing']).fallback).toBe('grabbing')
+    expect(parse(vars['--crew-cursor-default']).fallback).toBe('default')
+    expect(parse(vars['--crew-cursor-text']).fallback).toBe('text')
+    expect(parse(vars['--crew-cursor-cross']).fallback).toBe('crosshair')
+    expect(parse(vars['--crew-cursor-grab']).fallback).toBe('grab')
+    expect(parse(vars['--crew-cursor-grabbing']).fallback).toBe('grabbing')
   })
 
   it('draws them all at one size, with the point inside it', () => {
@@ -72,13 +72,13 @@ describe('design cursors', () => {
   })
 
   it('stays smaller than the art it is drawn from', () => {
-    const { w, h } = size(parse(vars['--tl-cursor-default']).svg)
+    const { w, h } = size(parse(vars['--crew-cursor-default']).svg)
     expect(w).toBeLessThan(29)
     expect(h).toBeLessThan(30)
   })
 
   it('keeps the target small enough to aim with', () => {
-    const { svg } = parse(vars['--tl-cursor-cross'])
+    const { svg } = parse(vars['--crew-cursor-cross'])
     const { w, h } = size(svg)
     const art = drawn(svg)
     expect(art.w).toBeCloseTo(art.h)
@@ -89,16 +89,16 @@ describe('design cursors', () => {
   })
 
   it('puts the thumb on the left of both hands', () => {
-    expect(placement(parse(vars['--tl-cursor-grab']).svg)).toContain('scale(-0.9 0.9)')
-    expect(placement(parse(vars['--tl-cursor-grabbing']).svg)).toContain('scale(0.9)')
+    expect(placement(parse(vars['--crew-cursor-grab']).svg)).toContain('scale(-0.9 0.9)')
+    expect(placement(parse(vars['--crew-cursor-grabbing']).svg)).toContain('scale(0.9)')
   })
 
   it('hands the pencil its own cursor and takes it back', () => {
     const container = document.createElement('div')
     applyDesignCursors(container)
     applyToolCursor(container, 'draw')
-    const drawing = container.style.getPropertyValue('--tl-cursor-cross')
-    expect(drawing).not.toBe(vars['--tl-cursor-cross'])
+    const drawing = container.style.getPropertyValue('--crew-cursor-cross')
+    expect(drawing).not.toBe(vars['--crew-cursor-cross'])
     const pencil = parse(drawing)
     const { w, h, viewBox } = size(pencil.svg)
     expect([w, h]).toEqual(viewBox)
@@ -106,11 +106,11 @@ describe('design cursors', () => {
     expect(pencil.x).toBeGreaterThan(0)
     expect(pencil.y).toBeLessThan(h)
     applyToolCursor(container, 'select')
-    expect(container.style.getPropertyValue('--tl-cursor-cross')).toBe(vars['--tl-cursor-cross'])
+    expect(container.style.getPropertyValue('--crew-cursor-cross')).toBe(vars['--crew-cursor-cross'])
   })
 
   it('points from the tip of the arrow, wherever it is drawn', () => {
-    const { x, y } = parse(vars['--tl-cursor-default'])
+    const { x, y } = parse(vars['--crew-cursor-default'])
     expect(ARROW_TIP).toEqual({ x, y })
   })
 
@@ -125,7 +125,7 @@ describe('design cursors', () => {
   it('gives someone else the same arrow in their own color', () => {
     const { container } = render(createElement(CursorArrow, { color: 'oklch(0.7 0.22 120)' }))
     const paths = container.querySelectorAll('path')
-    const drawn = parse(vars['--tl-cursor-default'])
+    const drawn = parse(vars['--crew-cursor-default'])
     expect(paths).toHaveLength(2)
     expect(paths[0].getAttribute('fill')).toBe('oklch(0.7 0.22 120)')
     expect(paths[1].getAttribute('stroke')).toBe('white')
