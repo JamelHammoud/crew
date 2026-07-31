@@ -11,21 +11,20 @@ export const DMG = {
 const INK = '#141414'
 
 const SKY = [
-  { color: '#2dd4ff', x: 196, y: 142, r: 250, o: 0.85 },
-  { color: '#a855f7', x: 300, y: 286, r: 240, o: 0.7 },
-  { color: '#ff5d8f', x: 92, y: 292, r: 200, o: 0.55 },
-  { color: '#ffb14a', x: 452, y: 88, r: 210, o: 0.42 },
-  { color: '#ffffff', x: 206, y: 122, r: 126, o: 0.5 }
+  { color: '#2dd4ff', x: 150, y: 104, r: 216, o: 0.95 },
+  { color: '#a855f7', x: 246, y: 306, r: 226, o: 0.8 },
+  { color: '#ff5d8f', x: 54, y: 226, r: 168, o: 0.62 },
+  { color: '#ffb14a', x: 512, y: 58, r: 182, o: 0.5 }
 ]
 
 const TRAVELLING = [
-  { x: 248, r: 3, o: 0.18 },
-  { x: 276, r: 4.5, o: 0.26 },
-  { x: 306, r: 6.5, o: 0.36 },
-  { x: 338, r: 9, o: 0.5 }
+  { x: 250, r: 3.5, o: 0.2 },
+  { x: 278, r: 5.5, o: 0.3 },
+  { x: 306, r: 8, o: 0.42 },
+  { x: 336, r: 11, o: 0.58 }
 ]
 
-const SETTLED = { count: 3, r: 12, last: 402, o: [0.68, 0.82, 0.95] }
+const SETTLED = { count: 3, r: 14, last: 400, o: [0.72, 0.85, 0.97] }
 
 const round = value => Number(value.toFixed(3))
 
