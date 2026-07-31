@@ -1224,6 +1224,9 @@ export class CrewSession {
       voice?: boolean
       tickets?: boolean
       aside?: string
+      plan?: string
+      threadId?: string
+      fork?: { from: string; at: number }
       subagent?: {
         parentThreadId: string
         parentPromptId: string

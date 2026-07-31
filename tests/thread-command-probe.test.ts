@@ -187,8 +187,7 @@ describe('commands in a thread', () => {
     expect(screen.getByLabelText('Send')).toBeTruthy()
   })
 
-  it('stands a question asked on the side in the panel, under what was asked', () => {
-    open()
+  const aside = () => {
     useBrowser.setState({ tabs: [], activeTabId: null })
     useCrew.setState({
       events: [
