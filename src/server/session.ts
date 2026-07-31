@@ -3640,6 +3640,7 @@ export class CrewSession {
     }
     const run = agent.runs.get(promptId)
     agent.runs.delete(promptId)
+    const stopped = this.stopping.delete(promptId) && !result.ok
     this.emit({
       id: randomUUID(),
       ts: Date.now(),
@@ -3651,7 +3652,8 @@ export class CrewSession {
       ms: run ? Math.max(0, Date.now() - run.startedAt) : undefined,
       tokens: run && run.tokens > 0 ? run.tokens : undefined,
       cost: run?.cost ?? undefined,
-      ...result
+      ...result,
+      ...(stopped ? { error: 'Stopped', stopped: true } : {})
     })
     if (thread && thread.mode === 'plan' && result.ok && result.text?.trim()) {
       thread.plan = result.text.trim()
