@@ -1,12 +1,14 @@
 import { spawn } from 'node:child_process'
 import { mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import electron from 'electron'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
+const resolve = createRequire(path.join(root, 'package.json')).resolve
 
 async function boardsIn(directory) {
   const found = []
@@ -51,8 +53,10 @@ async function boardFile() {
 function probeSource(snapshot) {
   const canvas = JSON.stringify(path.join(root, 'src/renderer/src/canvas/index.ts'))
   const shapes = JSON.stringify(path.join(root, 'src/renderer/src/design/shapeUtils.ts'))
-  return `import React from 'react'
-import { createRoot } from 'react-dom/client'
+  const react = JSON.stringify(resolve('react'))
+  const reactDom = JSON.stringify(resolve('react-dom/client'))
+  return `import React from ${react}
+import { createRoot } from ${reactDom}
 import { CrewCanvas, createTLStore, defaultBindingUtils, loadSnapshot } from ${canvas}
 import { designShapeUtils } from ${shapes}
 import './probe.css'
