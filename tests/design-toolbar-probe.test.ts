@@ -29,7 +29,7 @@ function toolbar(tool = 'select') {
 
 const drawn = (Icon: typeof CursorGlyph): SVGGraphicsElement => {
   const view = render(createElement(Icon, { className: 'w-6 h-6' }))
-  return view.container.querySelector('svg > *') as SVGGraphicsElement
+  return view.container.querySelector('path, rect, circle') as SVGGraphicsElement
 }
 
 const step = (className: string, prefix: string) => {
