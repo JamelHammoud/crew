@@ -11,7 +11,13 @@ export const DMG = {
   at: 118
 }
 
+export const GROUND = '#f2f2f2'
+
+export const LABEL = '#030303'
+
 const INK = '#141414'
+
+export { INK }
 
 export const ARROW = { from: 252, to: 410, head: 13, sweep: 0.62, weight: 3.4, glide: 3.4 }
 
