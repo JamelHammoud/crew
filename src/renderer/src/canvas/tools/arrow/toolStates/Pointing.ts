@@ -13,6 +13,7 @@ export class Pointing extends ArrowStateNode {
   isPrecise = false
   isPreciseTimerId: ArrowTimerId | null = null
   markId = ''
+  bindStart = false
 
   override onEnter(info: ArrowPointerInfo): void {
     this.markId = ''
@@ -25,6 +26,7 @@ export class Pointing extends ArrowStateNode {
       currentBinding: undefined,
       oppositeBinding: undefined
     })
+    this.bindStart = Boolean(targetState)
     if (!targetState) {
       this.createArrowShape()
       if (!this.shape) {
@@ -113,6 +115,9 @@ export class Pointing extends ArrowStateNode {
     })
     if (change) this.editor.updateShapes([change])
     this.shape = this.editor.getShape(id)
+    if (this.shape && this.bindStart) {
+      this.editor.bindArrowTerminal?.(this.shape, 'start', originPagePoint, this.isPrecise)
+    }
     this.editor.select(id)
   }
 
