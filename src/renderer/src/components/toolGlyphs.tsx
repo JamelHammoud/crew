@@ -203,3 +203,41 @@ export const ThinkingGlyph = glyph(
     ))}
   </>
 )
+
+// The one tool mark that is a tile rather than an outline, because showing a page
+// is the one step that puts something on the screen outside the thread. A tile is
+// what an app is drawn as everywhere else, so the row says that before a word of
+// it has been read, and the arrow leaving it is what the press does.
+const TILE = { at: center(SOLID), side: SOLID, r: corner(SOLID, RADIUS_TILE) }
+const ARROW = 'M7.2 16.8 16.8 7.2M10 7.2h6.8V14'
+
+// The arrow is cut out rather than painted on, so what comes through it is
+// whatever the row is standing on. Painted, it would be one fixed color over a
+// surface that changes under it: the hover wash, the panel, the board.
+export function ShowGlyph({ className = 'w-4 h-4', strokeWidth }: { className?: string; strokeWidth?: number }) {
+  const id = useId().replace(/[^a-zA-Z0-9-]/g, '')
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden viewBox="0 0 24 24" className={className}>
+      <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+        <rect width="24" height="24" fill="#fff" />
+        <path
+          d={ARROW}
+          fill="none"
+          stroke="#000"
+          strokeWidth={strokeWidth ?? wearWeight(STROKE, className)}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </mask>
+      <rect
+        x={TILE.at}
+        y={TILE.at}
+        width={TILE.side}
+        height={TILE.side}
+        rx={TILE.r}
+        fill="currentColor"
+        mask={`url(#${id})`}
+      />
+    </svg>
+  )
+}
