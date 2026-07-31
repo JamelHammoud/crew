@@ -36,18 +36,6 @@ const rgba = (hex: string, alpha: number): string => {
   return `rgb(${r} ${g} ${b} / ${alpha.toFixed(2)})`
 }
 
-// Toward white, for the light falling on the mesh. It is the track's own color
-// lifted rather than white itself, so a highlight stays in the family instead of
-// bleaching a hole in the middle of the picture.
-const lift = (hex: string, amount: number): string => {
-  const [r, g, b] = rgbOf(hex)
-  const up = (one: number): string =>
-    Math.round(one + (255 - one) * amount)
-      .toString(16)
-      .padStart(2, '0')
-  return `#${up(r)}${up(g)}${up(b)}`
-}
-
 const at = (value: number): string => value.toFixed(1)
 
 // The mesh is painted on a layer half again as big as the tile, so the tile is
