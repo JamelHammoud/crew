@@ -118,9 +118,6 @@ describe('the row a showing leaves behind', () => {
   })
 })
 
-// The row wears one mark whatever it put on the screen. It said the same thing
-// twice before this, a page, a stack of pages or a globe beside words already
-// naming the file, and the mark was doing the label's job in a second language.
 describe('the mark a showing wears', () => {
   const drawn = (pages: string[]): { tile: string | null; cut: string | null; painted: number } => {
     const { container } = render(createElement(PageRow, { shown: { pages, title: 'Look at this' } }))
