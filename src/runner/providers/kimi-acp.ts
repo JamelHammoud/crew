@@ -10,6 +10,12 @@ const PROTOCOL = 1
 // capabilities are declined and the agent uses the hands it has.
 const CAPABILITIES = { fs: { readTextFile: false, writeTextFile: false }, terminal: false }
 
+// Everything is approved before the turn starts, which is the posture every
+// other CLI here runs under. The permission requests below are still answered,
+// because a CLI too old to take the setting would otherwise ask, and a request
+// nobody answers is a run that hangs forever.
+const MODE = 'yolo'
+
 const SUBAGENT_TOOLS = new Set(['Agent', 'Task'])
 
 const STARTED = new Set(['pending', 'in_progress'])

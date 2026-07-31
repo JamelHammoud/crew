@@ -14,11 +14,13 @@ export async function openShown(pages: string[]): Promise<void> {
   const paths = shownPaths(pages)
   if (paths.length > 0) await locatePaths(paths)
   const browser = useBrowser.getState()
-  // The first one named is the one to read, so they are opened from the back
-  // and each arrival takes the front.
-  for (const page of [...pages].reverse()) {
+  let first: string | null = null
+  for (const page of pages) {
     const path = filePathOf(page)
     if (path === null) browser.showPage(page)
     else if (openable(path)) browser.showFile(targetFor(path))
+    else continue
+    first ??= useBrowser.getState().activeTabId
   }
+  if (first) browser.selectTab(first)
 }
