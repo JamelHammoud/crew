@@ -480,6 +480,16 @@ function TabPill({ tab, active, row }: { tab: BrowserTab; active: boolean; row: 
             useBrowser.getState().closeTab(tab.id)
           }}
         />
+        {others && (
+          <MenuItem
+            icon={<CloseOthersGlyph />}
+            label="Close other tabs"
+            onClick={() => {
+              setMenuAt(null)
+              useBrowser.getState().closeOthers(tab.id)
+            }}
+          />
+        )}
         <MenuItem
           icon={<XCircleGlyph />}
           label="Close all tabs"
