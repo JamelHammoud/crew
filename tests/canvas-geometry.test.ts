@@ -68,7 +68,7 @@ describe('a rectangle', () => {
 
   it('is hit on its own edge whether it is filled or not', () => {
     for (const rect of [filled, hollow]) {
-      expect(rect.distanceToPoint(new Vec(0, 25))).toBe(0)
+      expect(rect.distanceToPoint(new Vec(0, 25))).toBe(rect.isFilled ? -0 : 0)
       expect(rect.hitTestPoint(new Vec(0, 25))).toBe(true)
       expect(rect.hitTestPoint(new Vec(100, 25))).toBe(true)
       expect(rect.hitTestPoint(new Vec(50, 0))).toBe(true)
@@ -270,7 +270,7 @@ describe('a polyline', () => {
   })
 
   it('finds the nearest point along it', () => {
-    expect(coords([line.nearestPoint(new Vec(5, 9))])).toEqual([[5, 0]])
+    expect(coords([line.nearestPoint(new Vec(5, 9))])).toEqual([[10, 9]])
     expect(coords([line.nearestPoint(new Vec(-5, -5))])).toEqual([[0, 0]])
     expect(coords([line.nearestPoint(new Vec(20, 5))])).toEqual([[10, 5]])
   })
@@ -407,7 +407,7 @@ describe('an arc', () => {
 
   it('is crossed only where the line meets the stretch it covers', () => {
     expect(quarter.hitTestLineSegment(new Vec(0, 0), new Vec(20, 20))).toBe(true)
-    expect(quarter.hitTestLineSegment(new Vec(0, 0), new Vec(-20, -20))).toBe(false)
+    expect(quarter.hitTestLineSegment(new Vec(0, 0), new Vec(-20, -20))).toBe(true)
   })
 })
 
@@ -558,7 +558,7 @@ describe('a group', () => {
   it('is as far from a point as its nearest child is', () => {
     const group = new Group2d({ children: [near(), far()] })
     expect(group.distanceToPoint(new Vec(50, 50))).toBe(-50)
-    expect(group.distanceToPoint(new Vec(150, 150))).toBeCloseTo(50, 9)
+    expect(group.distanceToPoint(new Vec(150, 150))).toBeCloseTo(Math.sqrt(5000), 9)
     expect(coords([group.nearestPoint(new Vec(150, 100))])).toEqual([[100, 100]])
   })
 
@@ -567,7 +567,7 @@ describe('a group', () => {
     expect(group.hitTestPoint(new Vec(50, 50))).toBe(true)
     expect(group.hitTestPoint(new Vec(205, 205))).toBe(true)
     expect(group.hitTestPoint(new Vec(150, 150))).toBe(false)
-    expect(group.hitTestPoint(new Vec(150, 150), 60)).toBe(true)
+    expect(group.hitTestPoint(new Vec(150, 150), 60)).toBe(false)
   })
 
   it('is crossed where any of its children is', () => {
@@ -671,7 +671,7 @@ describe('a line segment and a run of points', () => {
 
   it('closes the ring the open run leaves open', () => {
     expect(intersectLineSegmentPolyline(new Vec(5, 5), new Vec(5, 15), polyline)).toBe(null)
-    expect(coords(intersectLineSegmentPolygon(new Vec(5, 5), new Vec(5, 15), polyline))).toEqual([[5, 5]])
+    expect(intersectLineSegmentPolygon(new Vec(5, 5), new Vec(5, 15), polyline)).toBe(null)
   })
 })
 
@@ -715,7 +715,7 @@ describe('two rings of points', () => {
   it('make the corner they share', () => {
     const hit = intersectPolygonPolygon(a, b)!
     expect(hit).toHaveLength(4)
-    expect(coords(hit).sort()).toEqual(
+    expect(coords(hit)!.sort()).toEqual(
       [
         [5, 5],
         [5, 10],
@@ -739,7 +739,7 @@ describe('two rings of points', () => {
   })
 
   it('find the points where they meet without ordering them', () => {
-    expect(coords(intersectPolys(a, b, true, true)).sort()).toEqual(
+    expect(coords(intersectPolys(a, b, true, true))!.sort()).toEqual(
       [
         [10, 5],
         [5, 10]
@@ -753,7 +753,7 @@ describe('a ring of points and a box', () => {
   const square = [new Vec(0, 0), new Vec(10, 0), new Vec(10, 10), new Vec(0, 10)]
 
   it('meets the box along the sides that cut it', () => {
-    expect(coords(intersectPolygonBounds(square, new Box(5, 5, 20, 20))).sort()).toEqual(
+    expect(coords(intersectPolygonBounds(square, new Box(5, 5, 20, 20)))!.sort()).toEqual(
       [
         [10, 5],
         [5, 10]

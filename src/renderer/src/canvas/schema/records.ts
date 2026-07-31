@@ -374,7 +374,7 @@ export const pointerValidator = T.model<TLPointer>(
   })
 )
 
-export function createShapeValidator<Type extends string, Props>(type: Type, props: PropsConfig<Props>) {
+export function createShapeValidator<Type extends string, Props extends object>(type: Type, props: PropsConfig<Props>) {
   return T.object<TLBaseShape<Type, Props>>({
     id: shapeIdValidator,
     typeName: T.literal('shape'),
@@ -386,29 +386,29 @@ export function createShapeValidator<Type extends string, Props>(type: Type, pro
     parentId: parentIdValidator,
     isLocked: T.boolean,
     opacity: T.unitInterval,
-    props: T.object(props),
+    props: T.object<Props>(props),
     meta
   })
 }
 
-export function createAssetValidator<Type extends string, Props>(type: Type, props: PropsConfig<Props>) {
+export function createAssetValidator<Type extends string, Props extends object>(type: Type, props: PropsConfig<Props>) {
   return T.object<TLBaseAsset<Type, Props>>({
     id: assetIdValidator,
     typeName: T.literal('asset'),
     type: T.literal(type),
-    props: T.object(props),
+    props: T.object<Props>(props),
     meta
   })
 }
 
-export function createBindingValidator<Type extends string, Props>(type: Type, props: PropsConfig<Props>) {
+export function createBindingValidator<Type extends string, Props extends object>(type: Type, props: PropsConfig<Props>) {
   return T.object<TLBaseBinding<Type, Props>>({
     id: bindingIdValidator,
     typeName: T.literal('binding'),
     type: T.literal(type),
     fromId: shapeIdValidator,
     toId: shapeIdValidator,
-    props: T.object(props),
+    props: T.object<Props>(props),
     meta
   })
 }
