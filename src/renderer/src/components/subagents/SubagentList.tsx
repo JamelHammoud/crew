@@ -22,6 +22,8 @@ function Row({ run, onOpen }: { run: SubagentRun; onOpen: (threadId: string) => 
         <Spinner size={14} className="text-fg-muted shrink-0" />
       ) : state === 'failed' ? (
         <WarningGlyph className="w-4 h-4 shrink-0 text-danger" />
+      ) : state === 'stopped' ? (
+        <StopGlyph className="w-4 h-4 shrink-0 text-fg-muted" />
       ) : (
         <span className="text-xs text-fg-faint shrink-0">{run.ms ? formatSpan(run.ms) : ''}</span>
       )}
