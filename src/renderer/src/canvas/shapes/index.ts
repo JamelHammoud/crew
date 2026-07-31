@@ -12,6 +12,7 @@ export * from './ImageShapeUtil'
 export * from './GroupShapeUtil'
 export * from './shared'
 export * from './theme'
+export * from './freehand'
 
 import { ArrowBindingUtil, ArrowShapeUtil } from './ArrowShapeUtil'
 import { DrawShapeUtil } from './DrawShapeUtil'

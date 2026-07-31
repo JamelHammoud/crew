@@ -5,7 +5,7 @@ import { decodePoints } from '../schema/points'
 import type { ShapeEditor } from './ShapeUtil'
 import { shapeColor } from './theme'
 
-export const STROKES = { s: 2, m: 3, l: 5, xl: 8 } as const
+export const STROKES = { s: 2, m: 3.5, l: 5, xl: 10 } as const
 export const FONT_SIZES = { s: 18, m: 22, l: 28, xl: 36 } as const
 export const FONT_FAMILIES = {
   draw: '"Comic Sans MS", "Bradley Hand", cursive',
@@ -37,9 +37,30 @@ export function segmentPoints(segments: DrawSegment[], scaleX = 1, scaleY = 1): 
   const points: Vec[] = []
   for (const segment of segments) {
     const decoded = decodePoints(segment.path, segment.dim)
-    for (const point of decoded) {
-      points.push(new Vec(point.x * scaleX, point.y * scaleY, point.z))
+    const scaled = decoded.map(point => new Vec(point.x * scaleX, point.y * scaleY, point.z))
+    if (segment.type === 'free' || scaled.length < 2) {
+      points.push(...scaled)
+      continue
     }
+    const start = scaled[0]
+    const end = scaled[1]
+    const distance = Vec.Dist(start, end)
+    if (distance === 0) {
+      points.push(start)
+      continue
+    }
+    const direction = end.clone().sub(start).uni()
+    const nudge = Math.min(1, Math.floor(distance / 4))
+    const from = start.clone().add(direction.clone().mul(nudge))
+    const to = end.clone().sub(direction.clone().mul(nudge))
+    const count = Math.max(4, Math.floor(distance / 16))
+    points.push(start)
+    for (let at = 1; at < count; at++) {
+      const t = at / count
+      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+      points.push(from.clone().lrp(to, eased))
+    }
+    points.push(end)
   }
   return points
 }

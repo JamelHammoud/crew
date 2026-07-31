@@ -3,6 +3,15 @@ import type { ClipboardExportEditor, CopyAsOptions, ImageExportOptions } from '.
 
 export const TLDRAW_CUSTOM_PNG_MIME_TYPE = 'web image/vnd.tldraw+png'
 
+interface RuntimeClipboardEditor {
+  getCurrentPageShapeIds(): Iterable<string>
+  getSvgString(
+    ids: TLShapeId[],
+    options?: ImageExportOptions
+  ): Promise<{ svg: string; width: number; height: number } | undefined>
+  toImage(ids: TLShapeId[], options?: ImageExportOptions): Promise<{ blob: Blob; width: number; height: number }>
+}
+
 function rewritten(blob: Blob, type: string): Blob {
   return blob.type === type ? blob : blob.slice(0, blob.size, type)
 }
@@ -31,11 +40,11 @@ function write(types: Record<string, Promise<Blob>>): Promise<void> {
     )
 }
 
-function selectedIds(editor: ClipboardExportEditor, ids: readonly (TLShapeId | string)[]): TLShapeId[] {
+function selectedIds(editor: RuntimeClipboardEditor, ids: readonly (TLShapeId | string)[]): TLShapeId[] {
   return (ids.length > 0 ? [...ids] : [...editor.getCurrentPageShapeIds()]) as TLShapeId[]
 }
 
-function svgText(editor: ClipboardExportEditor, ids: TLShapeId[], options: ImageExportOptions): Promise<string> {
+function svgText(editor: RuntimeClipboardEditor, ids: TLShapeId[], options: ImageExportOptions): Promise<string> {
   return editor.getSvgString(ids, options).then(result => {
     if (!result) throw new Error('Failed to copy')
     return result.svg
@@ -48,7 +57,8 @@ export function copyAs(
   options: CopyAsOptions
 ): Promise<void> {
   if (typeof navigator === 'undefined' || !navigator.clipboard) return Promise.reject(new Error('Copy not supported'))
-  const chosen = selectedIds(editor, ids)
+  const runtime = editor as unknown as RuntimeClipboardEditor
+  const chosen = selectedIds(runtime, ids)
   const imageOptions: ImageExportOptions = { ...options, format: options.format }
   const clipboard = navigator.clipboard as unknown as {
     write?: (items: ClipboardItem[]) => Promise<void>
@@ -56,7 +66,7 @@ export function copyAs(
   }
   if (clipboard.write) {
     const type = options.format === 'png' ? 'image/png' : 'text/plain'
-    const blob = editor.toImage(chosen, imageOptions).then(result => rewritten(result.blob, type))
+    const blob = runtime.toImage(chosen, imageOptions).then(result => rewritten(result.blob, type))
     const types: Record<string, Promise<Blob>> = { [type]: blob }
     if (options.format === 'png' && supports(TLDRAW_CUSTOM_PNG_MIME_TYPE)) {
       types[TLDRAW_CUSTOM_PNG_MIME_TYPE] = blob.then(value => rewritten(value, TLDRAW_CUSTOM_PNG_MIME_TYPE))
@@ -65,7 +75,7 @@ export function copyAs(
   }
   const writeText = clipboard.writeText
   if (options.format === 'svg' && writeText) {
-    return svgText(editor, chosen, imageOptions).then(value => writeText(value))
+    return svgText(runtime, chosen, imageOptions).then(value => writeText(value))
   }
   throw new Error('Copy not supported')
 }

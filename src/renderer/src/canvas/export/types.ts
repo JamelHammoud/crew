@@ -56,11 +56,8 @@ export interface ImageExportOptions {
 
 export interface ClipboardExportEditor {
   getCurrentPageShapeIds(): Iterable<string>
-  getSvgString(
-    ids: TLShapeId[],
-    options?: ImageExportOptions
-  ): Promise<{ svg: string; width: number; height: number } | undefined>
-  toImage(ids: TLShapeId[], options?: ImageExportOptions): Promise<{ blob: Blob; width: number; height: number }>
+  getSvgString: (...args: never[]) => Promise<{ svg: string; width: number; height: number } | undefined>
+  toImage: (...args: never[]) => Promise<{ blob: Blob; width: number; height: number }>
 }
 
 export interface CopyAsOptions extends Omit<ImageExportOptions, 'format'> {
