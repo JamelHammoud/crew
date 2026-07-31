@@ -232,6 +232,7 @@ void main() {
     gl.uniform1f(gl.getUniformLocation(program, 'uWide'), BLOOM.wide)
     gl.uniform1f(gl.getUniformLocation(program, 'uFade'), BLOOM.fade)
     gl.uniform1f(gl.getUniformLocation(program, 'uLift'), BLOOM.lift)
+    gl.uniform1f(gl.getUniformLocation(program, 'uGrain'), GRAIN)
     gl.uniform3fv(
       gl.getUniformLocation(program, 'uColour'),
       LAYERS.flatMap(layer => layer.color)
