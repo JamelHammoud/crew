@@ -102,10 +102,18 @@ describe('finished alerts', () => {
     expect(alert?.title).toBe('Bubbles 2 finished')
   })
 
-  it('says so when a run stopped short', () => {
+  it('says so when a run could not finish', () => {
     const alert = finishedAlert(ended('t1', false), state())
-    expect(alert?.title).toBe('Bubbles stopped')
-    expect(alert?.stopped).toBe(true)
+    expect(alert?.title).toBe('Bubbles could not finish')
+    expect(alert?.failed).toBe(true)
+  })
+
+  // A run somebody ended is not a run that went wrong, so it says what
+  // happened and wears none of the marks a failure wears.
+  it('says a stopped run was stopped, and does not call it a failure', () => {
+    const alert = finishedAlert(ended('t1', false, true), state())
+    expect(alert?.title).toBe('Bubbles was stopped')
+    expect(alert?.failed).toBe(false)
   })
 
   it('stays quiet while that thread is on screen', () => {
