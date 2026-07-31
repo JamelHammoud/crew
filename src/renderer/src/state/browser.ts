@@ -265,6 +265,23 @@ export const useBrowser = create<BrowserState>((write, get) => {
       const tab = makeTab(url)
       set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
     },
+    // A file an agent asked somebody to look at, read the way it is written to
+    // be read: a page if that is what it is, and the words it is written in one
+    // press away. It is read again where a tab is already standing on it, since
+    // what is being shown is almost always what the run has just written.
+    showFile: path => {
+      const preview = canPreview(path)
+      const existing = get().tabs.find(t => t.kind === 'file' && t.path === path)
+      if (existing) {
+        write({ activeTabId: existing.id, open: true } as never)
+        set(s => ({
+          tabs: s.tabs.map(t => (t.id === existing.id ? { ...t, preview, generation: t.generation + 1 } : t))
+        }))
+        return
+      }
+      const tab = { ...makeTab(), kind: 'file' as const, path, preview }
+      set(s => ({ tabs: [...s.tabs, tab], activeTabId: tab.id }))
+    },
     openImage: (src, name) => {
       const existing = get().tabs.find(t => t.kind === 'image' && t.initialUrl === src)
       if (existing) {
