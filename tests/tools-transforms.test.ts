@@ -4,6 +4,7 @@ import { Mat } from '../src/renderer/src/canvas/math/Mat'
 import { HALF_PI, PI, PI2 } from '../src/renderer/src/canvas/math/utils'
 import { Vec } from '../src/renderer/src/canvas/math/Vec'
 import type { IndexKey, TLPageId, TLShape, TLShapeId } from '../src/renderer/src/canvas/schema'
+import { snapResizeBounds, snapTranslateBounds } from '../src/renderer/src/canvas/tools/snaps'
 import {
   DraggingHandle,
   Resizing,
@@ -333,5 +334,99 @@ describe('canvas transforms', () => {
     expect(Resizing.trackPerformance).toBe(true)
     expect(Rotating.trackPerformance).toBe(true)
     expect(DraggingHandle.trackPerformance).toBe(true)
+  })
+
+  it('drives translation snapping through the state and owns its indicators', () => {
+    const shape = geoShape('translate-snap')
+    let current = shape
+    let indicators: unknown[] = []
+    const clearIndicators = vi.fn(() => {
+      indicators = []
+    })
+    const editor = {
+      inputs: {
+        getCurrentPagePoint: () => new Vec(89, 0),
+        getOriginPagePoint: () => new Vec(),
+        getShiftKey: () => false,
+        getAccelKey: () => false
+      },
+      getShape: () => current,
+      updateShapes: (updates: Array<Partial<GeoShape>>) => {
+        current = { ...current, ...updates[0], props: { ...current.props, ...updates[0]?.props } }
+      },
+      getIsSnapMode: () => true,
+      snaps: {
+        snapTranslateBounds,
+        setIndicators: (next: unknown[]) => {
+          indicators = next
+        },
+        clearIndicators
+      }
+    } as unknown as TransformEditor<GeoShape>
+    const state = new Translating(editor)
+    state.enter({
+      snapshots: [{ shape, pagePoint: new Vec(), parentTransform: null }],
+      initialPageBounds: new Box(0, 20, 10, 10),
+      snappableShapes: [{ id: 'target', pageBounds: new Box(100, 0, 10, 50) }]
+    })
+
+    near(current, 90, 0)
+    expect(indicators).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'point:x:100' })]))
+    state.exit()
+    expect(clearIndicators).toHaveBeenCalledOnce()
+    expect(indicators).toEqual([])
+  })
+
+  it('drives resize snapping through the state and clears indicators on cancel', () => {
+    const shape = geoShape('resize-snap', { y: 20, props: { w: 20, h: 20 } })
+    let current = shape
+    let indicators: unknown[] = []
+    const clearIndicators = vi.fn(() => {
+      indicators = []
+    })
+    const editor = {
+      inputs: {
+        getCurrentPagePoint: () => new Vec(98, 30),
+        getOriginPagePoint: () => new Vec(20, 30),
+        getShiftKey: () => false,
+        getAltKey: () => false,
+        getAccelKey: () => false
+      },
+      getShape: () => current,
+      updateShapes: (updates: Array<Partial<GeoShape>>) => {
+        current = { ...current, ...updates[0], props: { ...current.props, ...updates[0]?.props } }
+      },
+      getIsSnapMode: () => true,
+      snaps: {
+        snapResizeBounds,
+        setIndicators: (next: unknown[]) => {
+          indicators = next
+        },
+        clearIndicators
+      }
+    } as unknown as TransformEditor<GeoShape>
+    const state = new Resizing(editor)
+    state.enter({
+      handle: 'right',
+      snapshots: [
+        {
+          shape,
+          bounds: new Box(0, 0, 20, 20),
+          pageTransform: Mat.Translate(0, 20),
+          parentTransform: null
+        }
+      ],
+      selectionBounds: new Box(0, 20, 20, 20),
+      snappableShapes: [{ id: 'target', pageBounds: new Box(100, 0, 10, 60) }],
+      zoom: 2
+    })
+
+    near(current, 0, 20)
+    expect(current.props.w).toBe(100)
+    expect(current.props.h).toBe(20)
+    expect(indicators).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'point:x:100' })]))
+    state.onCancel()
+    expect(clearIndicators).toHaveBeenCalledOnce()
+    expect(indicators).toEqual([])
   })
 })
