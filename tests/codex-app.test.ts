@@ -248,7 +248,7 @@ describe('what codex says it did', () => {
         aggregatedOutput: 'ok\n'
       }
     })
-    expect(command[0].activity?.output).toBe('ok\n')
+    expect(command[0].activity?.output).toBe('ok')
   })
 
   it('ignores everything the protocol says that is not the work', () => {
