@@ -204,21 +204,10 @@ export const ThinkingGlyph = glyph(
   </>
 )
 
-// The one tool mark that is a tile rather than an outline, because showing a page
-// is the one step that puts something on the screen outside the thread. A tile is
-// what an app is drawn as everywhere else, so the row says that before a word of
-// it has been read, and the arrow leaving it is what the press does.
-// The arrow takes a little under half the tile, so a stroke's worth of corner is
-// still tile on every side. Run out to the edges it reads as a box the arrow is
-// stuck in rather than as a mark drawn on one, and both head arms are half the
-// shaft, which is the length that keeps a head a head at 18.
 const TILE_AT = center(TILE)
 const TILE_R = corner(TILE, RADIUS_TILE)
 const ARROW = 'M7.85 16.15 16.15 7.85M10.3 7.85H16.15V13.7'
 
-// The arrow is cut out rather than painted on, so what comes through it is
-// whatever the row is standing on. Painted, it would be one fixed color over a
-// surface that changes under it: the hover wash, the panel, the board.
 export function ShowGlyph({ className = 'w-4 h-4', strokeWidth }: { className?: string; strokeWidth?: number }) {
   const id = useId().replace(/[^a-zA-Z0-9-]/g, '')
   return (
