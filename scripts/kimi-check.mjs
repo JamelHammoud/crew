@@ -218,7 +218,7 @@ try {
   const goodEdit = editArgs.find(a => a.old_string !== undefined && a.new_string !== undefined && (a.path ?? a.file_path) !== undefined)
   const tokens = counted(heard, '', [])
 
-  const live = firstThought !== -1 && (firstTool === -1 || firstThought < firstTool)
+  const live = firstThought !== -1 && firstTool !== -1 && firstThought < firstTool
   const checks = [
     {
       name: 'thinking arrived while the work was going',
@@ -276,9 +276,10 @@ try {
   const failed = checks.filter(c => !c.ok)
   if (failed.length) {
     console.error(`\n${failed.length} of ${checks.length} checks failed off the real CLI`)
-    process.exit(1)
+    process.exitCode = 1
+  } else {
+    console.log('\nlive thinking, a streamed answer, named tools with their arguments and a real edit, off the real CLI')
   }
-  console.log('\nlive thinking, a streamed answer, named tools with their arguments and a real edit, off the real CLI')
 } catch (error) {
   console.error(`the run fell over: ${error.message}`)
   process.exitCode = 1
