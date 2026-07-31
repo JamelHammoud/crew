@@ -3,7 +3,7 @@
 
   const BASE = [0.443, 0.494, 0.949]
 
-  const BLOOM = { x: 0.73939, y: 0.515, radius: 0.66, strength: 0.97, wide: 0.05 }
+  const BLOOM = { x: 0.73939, y: 0.515, radius: 0.58, strength: 0.88, wide: 0.02 }
 
   const LAYERS = [
     {
@@ -159,11 +159,11 @@ void main() {
 
   vec2 away = vec2((vUv.x - uBloom.x) * ratio, vUv.y - uBloom.y);
   float reach = length(away) / uBloom.z;
-  float ragged = snoise(vec3(p * 2.15, uTime * 0.045)) * 0.19
-               + snoise(vec3(p * 5.4 + 12.0, uTime * 0.07)) * 0.07;
-  float glow = 1.0 - smoothstep(0.28, 1.0, reach + ragged);
-  glow = pow(clamp(glow, 0.0, 1.0), 1.28) * uBloom.w;
-  float wide = (1.0 - smoothstep(0.0, 2.1, reach)) * uWide;
+  float ragged = snoise(vec3(p * 1.9, uTime * 0.045)) * 0.1
+               + snoise(vec3(p * 4.6 + 12.0, uTime * 0.07)) * 0.035;
+  float glow = 1.0 - smoothstep(0.0, 1.0, reach + ragged);
+  glow = pow(clamp(glow, 0.0, 1.0), 1.55) * uBloom.w;
+  float wide = (1.0 - smoothstep(0.0, 2.4, reach)) * uWide;
 
   vec3 lit = mix(uPaper, colour, clamp(glow + wide, 0.0, 1.0));
   lit += (grain(vUv * uSize) - 0.5) * 0.012;
