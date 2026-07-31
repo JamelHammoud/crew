@@ -147,17 +147,22 @@ export type SessionEvent =
       byName: string
     }
   | { id: string; ts: number; kind: 'subagent.ended'; threadId: string; parentThreadId: string; ok: boolean; ms: number }
-  // A page an agent asked the app to show. It is written down rather than said
-  // once, because the row it draws in the thread is the way back to the page
-  // after the run that made it has scrolled away.
+  // What an agent asked the app to show. It is written down rather than said
+  // once, because the row it draws in the thread is the way back to it after
+  // the run that made it has scrolled away.
   | {
       id: string
       ts: number
       kind: 'page.shown'
+      // Everything the call named, in the order it named it: a file url for
+      // one on the disk, an address for a page.
+      pages?: string[]
+      // The one a crew wrote down before a call could name several. It is read
+      // and never written, so a thread from before this keeps its row.
+      url?: string
       threadId: string
-      url: string
       // The agent's own line about what it is, or the file's name and the site's
-      // host where it said nothing.
+      // host where it said nothing about one page.
       title: string
       agentId: string
       agentLabel: string
