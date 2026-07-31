@@ -17,7 +17,7 @@ interface OverlayEditor {
 
 interface ToolOverlayUtil extends CanvasOverlayUtil {
   getOverlays?(): CanvasOverlay[]
-  onPointerDown?(overlay: CanvasOverlay, info: unknown): boolean | void
+  onPointerDown?(overlay: CanvasOverlay, info: unknown): boolean | undefined
 }
 
 export class OverlayManager {

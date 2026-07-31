@@ -1,6 +1,6 @@
-import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
+import { Rectangle2d, type Geometry2d } from '../geometry'
 import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../export'
-import { Box, Mat, Vec, type VecLike as MathVecLike } from '../math'
+import { Box, Mat, Vec } from '../math'
 import {
   DocumentRecordType,
   PageRecordType,
@@ -24,7 +24,6 @@ import {
   type TLShapeId
 } from '../schema'
 import { ShapeUtil, type CrewShapePartial, type ShapeResizeInfo } from '../shapes/ShapeUtil'
-import { transact } from '../signals'
 import { uniqueId } from '../store'
 import { cloneContent } from './clipboard'
 import { CameraManager } from './camera'
@@ -630,7 +629,7 @@ export class Editor {
 
   cancelUpdateHoveredShapeId(): void {}
 
-  createShape<Shape extends TLShape = TLShape>(partial: ShapeCreate): this {
+  createShape<_Shape extends TLShape = TLShape>(partial: ShapeCreate): this {
     return this.createShapes([partial])
   }
 
@@ -666,7 +665,7 @@ export class Editor {
     return this
   }
 
-  updateShape<Shape extends TLShape = TLShape>(partial: TLShapeUpdate): this {
+  updateShape<_Shape extends TLShape = TLShape>(partial: TLShapeUpdate): this {
     return this.updateShapes([partial])
   }
 
