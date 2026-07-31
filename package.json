@@ -126,6 +126,7 @@
     "electron-updater": "^6.8.9",
     "emoji-datasource-twitter": "^15.1.2",
     "fflate": "^0.8.3",
+    "fractional-indexing-jittered": "^1.0.0",
     "koffi": "^3.1.2",
     "kokoro-js": "1.2.1",
     "mammoth": "^1.12.0",

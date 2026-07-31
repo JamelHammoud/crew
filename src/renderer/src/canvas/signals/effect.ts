@@ -32,10 +32,6 @@ export class EffectScheduler<Result> implements Child {
     return this.listening
   }
 
-  set isActivelyListening(value: boolean) {
-    this.listening = value
-  }
-
   get scheduleCount(): number {
     return this.scheduleCount_
   }
