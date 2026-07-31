@@ -372,6 +372,7 @@ export function buildThread(
   for (const event of events) {
     if (event.kind === 'message.route') routes.set(event.messageId, event)
   }
+  const pageRuns = runOfPages(events)
   const reactions = reactionGroups(events, selfId)
   // The end of a helper is a fact about the chip that stands where it started,
   // so it is folded onto that chip rather than landing as a row of its own.
