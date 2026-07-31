@@ -148,4 +148,22 @@ describe('the canvas editor', () => {
     handlers.onPointerUp(pointer(30, 0))
     expect(subject.getShape(id)?.x).toBe(20)
   })
+
+  it('routes point and gap snaps through the editor and exposes their overlay', () => {
+    const subject = editor()
+    const result = subject.snaps.snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 100, 60),
+      dragDelta: { x: 7, y: 0 },
+      snappableShapes: [{ id: 'shape:target', pageBounds: new Box(110, 0, 100, 60) }]
+    })
+    expect(result.nudge).toMatchObject({ x: 3, y: 0 })
+    expect(result.indicators.some(indicator => indicator.type === 'points')).toBe(true)
+    subject.snaps.setIndicators(result.indicators)
+    const entry = subject.overlays
+      .getActiveOverlayEntries()
+      .find(candidate => candidate.util === subject.overlays.getOverlayUtil('snap_indicator'))
+    expect(entry?.overlays).toHaveLength(result.indicators.length)
+    subject.snaps.clearIndicators()
+    expect(subject.overlays.getOverlayUtil('snap_indicator').isActive()).toBe(false)
+  })
 })
