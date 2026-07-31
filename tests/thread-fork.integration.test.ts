@@ -138,6 +138,7 @@ describe('forking a thread', () => {
 
     const thread = await threadWith(sam, '@Fake tidy the readme', [samsFake])
     const before = Date.now()
+    const said = sam.messages.length
     const carried = await forked(sam, 'try the changelog instead', thread.threadId)
 
     expect(carried.threadId).not.toBe(thread.threadId)

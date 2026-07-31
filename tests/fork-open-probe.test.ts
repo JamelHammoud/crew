@@ -22,11 +22,10 @@ class FakeSocket {
 }
 
 vi.mock('../src/renderer/src/api/ws', () => ({ CrewSocket: FakeSocket }))
-vi.mock('../src/renderer/src/media/sounds', () => ({
-  playSound: () => {},
-  primeSounds: () => {},
-  setSoundVolume: () => {}
-}))
+vi.mock('../src/renderer/src/media/sounds', async importOriginal => {
+  const actual = await importOriginal<typeof import('../src/renderer/src/media/sounds')>()
+  return { ...actual, playSound: () => {} }
+})
 
 const { useCrew } = await import('../src/renderer/src/state/store')
 
