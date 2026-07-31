@@ -294,6 +294,8 @@ try {
   const bashOut = updates.filter(u => bashIds.has(u.toolCallId) && u.rawOutput !== undefined && u.rawOutput !== null)
   const goodEdit = editArgs.find(a => a.old_string !== undefined && a.new_string !== undefined && (a.path ?? a.file_path) !== undefined)
   const tokens = counted(heard, '', [])
+  const argued = new Set(withArgs.map(u => u.toolCallId))
+  const silent = [...calls.entries()].filter(([id]) => !argued.has(id)).map(([id, c]) => `${c.title || id}`)
 
   const live = firstThought !== -1 && firstTool !== -1 && firstThought < firstTool
   const checks = [
