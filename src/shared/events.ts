@@ -160,7 +160,6 @@ export type SessionEvent =
       // The one a crew wrote down before a call could name several. It is read
       // and never written, so a thread from before this keeps its row.
       url?: string
-      // The run that showed them. A thread from before this has none.
       promptId?: string
       threadId: string
       // The agent's own line about what it is, or the file's name and the site's
