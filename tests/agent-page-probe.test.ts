@@ -117,3 +117,84 @@ describe('the row a showing leaves behind', () => {
     ])
   })
 })
+
+// The row wears one mark whatever it put on the screen. It said the same thing
+// twice before this, a page, a stack of pages or a globe beside words already
+// naming the file, and the mark was doing the label's job in a second language.
+describe('the mark a showing wears', () => {
+  const drawn = (pages: string[]): { tile: string | null; cut: string | null; painted: number } => {
+    const { container } = render(createElement(PageRow, { shown: { pages, title: 'Look at this' } }))
+    return {
+      tile: container.querySelector('rect[fill="currentColor"]')?.getAttribute('width') ?? null,
+      cut: container.querySelector('mask path')?.getAttribute('d') ?? null,
+      painted: container.querySelectorAll('svg > path').length
+    }
+  }
+
+  it('is the one tile, whether it showed a file, several, or an address', () => {
+    const file = drawn([`file://${REPO}/index.html`])
+    const several = drawn([`file://${REPO}/a.css`, `file://${REPO}/b.css`, `file://${REPO}/c.css`])
+    const address = drawn(['http://localhost:5173'])
+
+    expect(file.tile).toBe('17.5')
+    expect(several).toEqual(file)
+    expect(address).toEqual(file)
+  })
+
+  it('cuts the arrow out rather than painting it', () => {
+    // Painted it would be one fixed color over a surface that changes under it.
+    // Cut, what comes through is whatever the row is standing on, the hover wash
+    // included.
+    const one = drawn([`file://${REPO}/index.html`])
+    expect(one.cut).toContain('M')
+    expect(one.painted).toBe(0)
+  })
+})
+
+const RUN = 'p9'
+
+const ranEvent = (ts: number): SessionEvent =>
+  ({
+    id: `start-${ts}`,
+    ts,
+    kind: 'agent.start',
+    promptId: RUN,
+    agentId: 'a1',
+    agentLabel: 'Bubbles',
+    promptText: 'show me',
+    byName: 'Bubbles',
+    threadId: 't1'
+  }) as SessionEvent
+
+const thought = { [RUN]: [{ id: 's1', ts: 1, kind: 'thinking' as const, status: 'done' as const, text: 'weighing it' }] }
+
+// A step is pulled up against the one before it when both came out of the same
+// run, and a page an agent showed is one of that run's own steps. Left out of
+// that rule it sat a whole gap clear of the rows either side of it, which reads
+// as a thing that happened beside the work rather than as part of it.
+describe('where a page row sits in the run that showed it', () => {
+  const rowOf = (word: string): HTMLElement | null => screen.getByText(word).closest('div')
+
+  it('closes up against the steps either side of it', () => {
+    const events = [ranEvent(1), shownEvent({ ts: 2, promptId: RUN, pages: ['http://localhost:5173'] })]
+    render(createElement(ThreadItems, { items: buildThread(events, thought, 'sam'), threadId: 't1' }))
+
+    expect(rowOf('Thought')?.className).not.toContain('-mt-3')
+    expect(rowOf('Showed')?.className).toContain('-mt-3')
+  })
+
+  it('stands clear of a run that is not its own', () => {
+    const events = [
+      ranEvent(1),
+      shownEvent({ ts: 2, promptId: 'other', pages: ['http://localhost:5173'] })
+    ]
+    render(createElement(ThreadItems, { items: buildThread(events, thought, 'sam'), threadId: 't1' }))
+    expect(rowOf('Showed')?.className).not.toContain('-mt-3')
+  })
+
+  it('leaves a row from before the run was written down where it was', () => {
+    const events = [ranEvent(1), shownEvent({ ts: 2, pages: ['http://localhost:5173'] })]
+    render(createElement(ThreadItems, { items: buildThread(events, thought, 'sam'), threadId: 't1' }))
+    expect(rowOf('Showed')?.className).not.toContain('-mt-3')
+  })
+})
