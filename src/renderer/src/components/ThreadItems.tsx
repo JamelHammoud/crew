@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
-import PageChip from './PageChip'
+import PageRow from './PageRow'
 import StepGroup from './StepGroup'
 import StepRow from './StepRow'
 import SubagentChips from './SubagentChips'
