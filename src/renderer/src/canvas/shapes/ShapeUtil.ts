@@ -2,7 +2,13 @@ import type { ReactElement, ReactNode } from 'react'
 import type { Geometry2d } from '../geometry'
 import type { Box, SelectionHandle } from '../math/Box'
 import { Vec, type VecLike } from '../math/Vec'
-import type { TLAsset as CrewAsset, TLBinding as CrewBinding, TLBindingType as CrewBindingType, TLShape as CrewShape, TLShapeId as CrewShapeId } from '../schema'
+import type {
+  TLAsset as CrewAsset,
+  TLBinding as CrewBinding,
+  TLBindingType as CrewBindingType,
+  TLShape as CrewShape,
+  TLShapeId as CrewShapeId
+} from '../schema'
 import type { PropsConfig } from '../schema/shapeProps'
 
 export interface ShapeEditor {
@@ -107,28 +113,72 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
     return new Path2D(this.getGeometry(shape).toSimpleSvgPath())
   }
 
-  canSnap(_shape: Shape): boolean { return true }
-  canTabTo(_shape: Shape): boolean { return true }
-  canScroll(_shape: Shape): boolean { return false }
-  canBind(_shape: Shape): boolean { return true }
-  canEdit(_shape: Shape): boolean { return false }
-  canResize(_shape: Shape): boolean { return true }
-  canResizeChildren(_shape: Shape): boolean { return true }
-  canEditInReadonly(_shape: Shape): boolean { return false }
-  canEditWhileLocked(_shape: Shape): boolean { return false }
-  canCrop(_shape: Shape): boolean { return false }
-  canBeLaidOut(_shape: Shape): boolean { return true }
-  canCull(_shape: Shape): boolean { return true }
-  providesBackgroundForChildren(_shape: Shape): boolean { return false }
-  hideResizeHandles(_shape: Shape): boolean { return false }
-  hideRotateHandle(_shape: Shape): boolean { return false }
-  hideSelectionBoundsBg(_shape: Shape): boolean { return false }
-  hideSelectionBoundsFg(_shape: Shape): boolean { return false }
-  isAspectRatioLocked(_shape: Shape): boolean { return false }
-  isFrameLike(_shape: Shape): boolean { return false }
-  isExportBoundsContainer(_shape: Shape): boolean { return false }
-  canReceiveNewChildrenOfType(_shape: Shape, _type: CrewShape['type']): boolean { return false }
-  canRemoveChildrenOfType(_shape: Shape, _type: CrewShape['type']): boolean { return true }
+  canSnap(_shape: Shape): boolean {
+    return true
+  }
+  canTabTo(_shape: Shape): boolean {
+    return true
+  }
+  canScroll(_shape: Shape): boolean {
+    return false
+  }
+  canBind(_shape: Shape): boolean {
+    return true
+  }
+  canEdit(_shape: Shape): boolean {
+    return false
+  }
+  canResize(_shape: Shape): boolean {
+    return true
+  }
+  canResizeChildren(_shape: Shape): boolean {
+    return true
+  }
+  canEditInReadonly(_shape: Shape): boolean {
+    return false
+  }
+  canEditWhileLocked(_shape: Shape): boolean {
+    return false
+  }
+  canCrop(_shape: Shape): boolean {
+    return false
+  }
+  canBeLaidOut(_shape: Shape): boolean {
+    return true
+  }
+  canCull(_shape: Shape): boolean {
+    return true
+  }
+  providesBackgroundForChildren(_shape: Shape): boolean {
+    return false
+  }
+  hideResizeHandles(_shape: Shape): boolean {
+    return false
+  }
+  hideRotateHandle(_shape: Shape): boolean {
+    return false
+  }
+  hideSelectionBoundsBg(_shape: Shape): boolean {
+    return false
+  }
+  hideSelectionBoundsFg(_shape: Shape): boolean {
+    return false
+  }
+  isAspectRatioLocked(_shape: Shape): boolean {
+    return false
+  }
+  isFrameLike(_shape: Shape): boolean {
+    return false
+  }
+  isExportBoundsContainer(_shape: Shape): boolean {
+    return false
+  }
+  canReceiveNewChildrenOfType(_shape: Shape, _type: CrewShape['type']): boolean {
+    return false
+  }
+  canRemoveChildrenOfType(_shape: Shape, _type: CrewShape['type']): boolean {
+    return true
+  }
   getClipPath?(_shape: Shape): Vec[] | undefined
   getText?(_shape: Shape): string
   getAriaDescriptor?(_shape: Shape): string
@@ -154,7 +204,9 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   toSvg?(shape: Shape): ReactElement | null | Promise<ReactElement | null>
 }
 
-export abstract class BaseBoxShapeUtil<Shape extends CrewShape & { props: { w: number; h: number } }> extends ShapeUtil<Shape> {
+export abstract class BaseBoxShapeUtil<
+  Shape extends CrewShape & { props: { w: number; h: number } }
+> extends ShapeUtil<Shape> {
   override onResize(shape: Shape, info: ShapeResizeInfo<Shape>): Shape {
     return resizeBox(shape, info)
   }

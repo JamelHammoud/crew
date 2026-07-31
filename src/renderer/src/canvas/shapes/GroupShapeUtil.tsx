@@ -9,7 +9,9 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
   static override type = 'group' as const
   static override props = groupShapeProps
 
-  getDefaultProps(): GroupShape['props'] { return {} }
+  getDefaultProps(): GroupShape['props'] {
+    return {}
+  }
   getGeometry(shape: GroupShape): Geometry2d {
     const ids = this.editor.getSortedChildIdsForParent?.(shape.id) ?? []
     const children = ids.flatMap(id => {
@@ -18,11 +20,25 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
       const geometry = this.editor.getShapeGeometry?.(child)
       if (!geometry) return []
       const bounds = geometry.bounds
-      return [new Rectangle2d({ x: child.x + bounds.x, y: child.y + bounds.y, width: Math.max(1, bounds.w), height: Math.max(1, bounds.h), isFilled: false })]
+      return [
+        new Rectangle2d({
+          x: child.x + bounds.x,
+          y: child.y + bounds.y,
+          width: Math.max(1, bounds.w),
+          height: Math.max(1, bounds.h),
+          isFilled: false
+        })
+      ]
     })
     return children.length ? new Group2d({ children }) : new Rectangle2d({ width: 1, height: 1, isFilled: false })
   }
-  override canBind(): boolean { return false }
-  override canResize(): boolean { return true }
-  component(_shape: GroupShape): ReactNode { return createElement('div') }
+  override canBind(): boolean {
+    return false
+  }
+  override canResize(): boolean {
+    return true
+  }
+  component(_shape: GroupShape): ReactNode {
+    return createElement('div')
+  }
 }

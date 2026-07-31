@@ -148,10 +148,10 @@ describe('owned canvas shape utilities', () => {
       'line',
       'frame',
       'arrow',
-        'highlight',
-        'image',
-        'group'
-      ])
+      'highlight',
+      'image',
+      'group'
+    ])
     expect(defaultBindingUtils).toEqual([ArrowBindingUtil])
   })
 
@@ -237,12 +237,14 @@ describe('owned canvas shape utilities', () => {
       [100, 0]
     ])
     expect(lineUtil.getHandles(line).map(handle => handle.id)).toEqual(['a1', 'a2', 'a3'])
-    expect(lineUtil.onHandleDrag(line, {
-      handle: { ...lineUtil.getHandles(line)[1], x: 60, y: 90 },
-      isPrecise: true,
-      isCreatingShape: false,
-      initial: line
-    })).toMatchObject({ props: { points: { a2: { x: 60, y: 90 } } } })
+    expect(
+      lineUtil.onHandleDrag(line, {
+        handle: { ...lineUtil.getHandles(line)[1], x: 60, y: 90 },
+        isPrecise: true,
+        isCreatingShape: false,
+        initial: line
+      })
+    ).toMatchObject({ props: { points: { a2: { x: 60, y: 90 } } } })
     expect(lineUtil.getGeometry(line).vertices.length).toBeGreaterThan(3)
 
     const encoded = encodePoints([

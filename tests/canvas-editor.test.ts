@@ -199,6 +199,11 @@ describe('the canvas editor', () => {
     ])
     subject.select(arrowId)
     expect(subject.overlays.getOverlayUtil('shape_handle').isActive()).toBe(true)
-    expect(subject.overlays.getActiveOverlayEntries().flatMap(entry => entry.overlays).filter(value => value.type === 'shape_handle')).toHaveLength(3)
+    expect(
+      subject.overlays
+        .getActiveOverlayEntries()
+        .flatMap(entry => entry.overlays)
+        .filter(value => value.type === 'shape_handle')
+    ).toHaveLength(3)
   })
 })

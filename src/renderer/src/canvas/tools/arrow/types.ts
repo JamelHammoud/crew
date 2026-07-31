@@ -71,12 +71,7 @@ export interface ArrowToolEditor {
   startEditingShapeWithRichText?(shape: TLShape, options: { selectAll: boolean }): void
   updateArrowTargetState(args: ArrowTargetArgs): ArrowTargetState | null
   clearArrowTargetState(): void
-  bindArrowTerminal?(
-    arrow: TLArrowShape,
-    terminal: 'start' | 'end',
-    pagePoint: VecLike,
-    isPrecise: boolean
-  ): void
+  bindArrowTerminal?(arrow: TLArrowShape, terminal: 'start' | 'end', pagePoint: VecLike, isPrecise: boolean): void
   markHistoryStoppingPoint(name: string): string
   createShape(shape: ArrowShapeCreate): void
   updateShapes(shapes: ArrowShapeUpdate[]): void

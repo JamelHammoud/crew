@@ -402,13 +402,15 @@ export class Editor {
   }
 
   createBinding(partial: Omit<TLBinding<'arrow'>, 'id' | 'typeName' | 'meta'> & { id?: TLBindingId }): this {
-    this.store.put([BindingRecordType.create({
-      id: partial.id ?? createBindingId(),
-      type: 'arrow',
-      fromId: partial.fromId,
-      toId: partial.toId,
-      props: partial.props
-    })])
+    this.store.put([
+      BindingRecordType.create({
+        id: partial.id ?? createBindingId(),
+        type: 'arrow',
+        fromId: partial.fromId,
+        toId: partial.toId,
+        props: partial.props
+      })
+    ])
     return this
   }
 
@@ -1315,12 +1317,7 @@ export class Editor {
     this.setHintingShapes([])
   }
 
-  bindArrowTerminal(
-    arrow: TLShape<'arrow'>,
-    terminal: 'start' | 'end',
-    pagePoint: VecLike,
-    isPrecise: boolean
-  ): this {
+  bindArrowTerminal(arrow: TLShape<'arrow'>, terminal: 'start' | 'end', pagePoint: VecLike, isPrecise: boolean): this {
     for (const binding of this.getBindingsFromShape(arrow.id, 'arrow')) {
       if (binding.props.terminal === terminal) this.deleteBinding(binding.id)
     }
