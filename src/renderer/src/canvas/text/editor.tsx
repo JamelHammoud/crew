@@ -21,6 +21,8 @@ export interface RichTextEditorProps {
   onComplete?(): void
   onKeyDown?(event: KeyboardEvent): void
   onPaste?(event: ClipboardEvent): boolean | void
+  onDoubleClick?(event: MouseEvent): boolean | void
+  customTabBehavior?: boolean
 }
 
 function sameDocument(one: TLRichText, two: TLRichText): boolean {
@@ -43,13 +45,15 @@ export function RichTextEditor({
   onBlur,
   onComplete,
   onKeyDown,
-  onPaste
+  onPaste,
+  onDoubleClick,
+  customTabBehavior = false
 }: RichTextEditorProps) {
   const mount = useRef<HTMLDivElement>(null)
   const instance = useRef<TipTapEditor | null>(null)
   const current = useRef(richText)
-  const callbacks = useRef({ onChange, onReady, onFocus, onBlur, onComplete, onKeyDown, onPaste })
-  callbacks.current = { onChange, onReady, onFocus, onBlur, onComplete, onKeyDown, onPaste }
+  const callbacks = useRef({ onChange, onReady, onFocus, onBlur, onComplete, onKeyDown, onPaste, onDoubleClick })
+  callbacks.current = { onChange, onReady, onFocus, onBlur, onComplete, onKeyDown, onPaste, onDoubleClick }
 
   useLayoutEffect(() => {
     if (!editing || !mount.current || instance.current) return
@@ -79,6 +83,7 @@ export function RichTextEditor({
       },
       editorProps: {
         handleKeyDown: (_view, event) => {
+          if (event.key === 'Tab' && !customTabBehavior) handleTextTab(editor, event)
           if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
             event.preventDefault()
             callbacks.current.onComplete?.()
@@ -86,7 +91,8 @@ export function RichTextEditor({
           callbacks.current.onKeyDown?.(event)
           return event.defaultPrevented
         },
-        handlePaste: (_view, event) => callbacks.current.onPaste?.(event) === true
+        handlePaste: (_view, event) => callbacks.current.onPaste?.(event) === true,
+        handleDoubleClick: (_view, _position, event) => callbacks.current.onDoubleClick?.(event) === true
       }
     })
     instance.current = editor
@@ -96,7 +102,7 @@ export function RichTextEditor({
       instance.current = null
       editor.destroy()
     }
-  }, [editing, extensions, selectAll, caret?.x, caret?.y])
+  }, [editing, extensions, selectAll, caret?.x, caret?.y, customTabBehavior])
 
   useLayoutEffect(() => {
     const editor = instance.current
@@ -126,4 +132,35 @@ export function RichTextEditor({
       <div ref={mount} className={editorClassName} />
     </div>
   )
+}
+
+export function handleTextTab(editor: TipTapEditor, event: KeyboardEvent): boolean {
+  event.preventDefault()
+  if (editor.isActive('bulletList') || editor.isActive('orderedList')) return true
+  const { state, view } = editor
+  const { $from, $to } = state.selection
+  let transaction = state.tr
+  let position = $to.end()
+  while (position >= $from.start()) {
+    const line = state.doc.resolve(position).blockRange()
+    if (!line) break
+    const lineStart = line.start
+    const lineEnd = line.end
+    const text = state.doc.textBetween(lineStart, lineEnd, '\n')
+    let inList = false
+    state.doc.nodesBetween(lineStart, lineEnd, node => {
+      if (node.type.name !== 'bulletList' && node.type.name !== 'orderedList') return true
+      inList = true
+      return false
+    })
+    if (!inList) {
+      if (event.shiftKey) {
+        if (text.startsWith('\t')) transaction = transaction.delete(lineStart + 1, lineStart + 2)
+      } else transaction = transaction.insertText('\t', lineStart + 1)
+    }
+    position = lineStart - 1
+  }
+  transaction.setSelection(state.selection.map(transaction.doc, transaction.mapping))
+  if (transaction.docChanged) view.dispatch(transaction)
+  return true
 }

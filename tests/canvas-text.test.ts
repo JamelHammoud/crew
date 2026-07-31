@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   FontMeasurementCache,
   FontTracker,
+  handleTextTab,
   RichTextEditor,
   TextMeasurement,
   compensateTextGrowth,
@@ -21,6 +22,7 @@ import {
   richTextToProseMirror,
   richTextExtensions,
   runRichTextAction,
+  setRichTextLink,
   screenPointToText,
   textPointToScreen,
   textTransformCss,
@@ -344,5 +346,28 @@ describe('canvas rich text toolbar', () => {
       editor.destroy()
       element.remove()
     }
+
+    const element = dom.window.document.createElement('div')
+    dom.window.document.body.appendChild(element)
+    const editor = new TipTapEditor({
+      element,
+      extensions: richTextExtensions,
+      enableCoreExtensions: { textDirection: false },
+      content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew' }] }] }
+    })
+    editor.commands.setTextSelection({ from: 1, to: 5 })
+    expect(setRichTextLink(editor, 'crew.test')).toBe(true)
+    expect(editor.getAttributes('link').href).toBe('https://crew.test')
+    expect(setRichTextLink(editor, '')).toBe(true)
+    expect(editor.isActive('link')).toBe(false)
+    editor.commands.setTextSelection(3)
+    const tab = new dom.window.KeyboardEvent('keydown', { key: 'Tab', cancelable: true }) as unknown as KeyboardEvent
+    expect(handleTextTab(editor, tab)).toBe(true)
+    expect(editor.getText()).toBe('\tCrew')
+    const untab = new dom.window.KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, cancelable: true }) as unknown as KeyboardEvent
+    expect(handleTextTab(editor, untab)).toBe(true)
+    expect(editor.getText()).toBe('Crew')
+    editor.destroy()
+    element.remove()
   })
 })

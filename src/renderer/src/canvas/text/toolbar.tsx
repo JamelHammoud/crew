@@ -41,6 +41,12 @@ export function normalizeLink(value: string): string {
   return `https://${trimmed}`
 }
 
+export function setRichTextLink(editor: TipTapEditor, value: string): boolean {
+  const href = normalizeLink(value)
+  if (href) return editor.chain().setLink({ href }).run()
+  return editor.chain().unsetLink().run()
+}
+
 interface ToolbarPosition {
   left: number
   top: number
@@ -69,9 +75,7 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
   const commitLink = useCallback(
     (value: string) => {
       if (!editor) return
-      const href = normalizeLink(value)
-      if (href) editor.chain().setLink({ href }).run()
-      else editor.chain().unsetLink().run()
+      setRichTextLink(editor, value)
       closeLink()
     },
     [closeLink, editor]
