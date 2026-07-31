@@ -9,9 +9,11 @@ import type { SubagentRun } from '../thread'
 export function useSubagentRuns(parentThreadId: string): SubagentRun[] {
   const events = useCrew(state => state.events)
   return useMemo(() => {
-    const ended = new Map<string, { ok: boolean; ms: number }>()
+    const ended = new Map<string, { ok: boolean; ms: number; stopped?: boolean }>()
     for (const event of events) {
-      if (event.kind === 'subagent.ended') ended.set(event.threadId, { ok: event.ok, ms: event.ms })
+      if (event.kind === 'subagent.ended') {
+        ended.set(event.threadId, { ok: event.ok, ms: event.ms, stopped: event.stopped })
+      }
     }
     const runs: SubagentRun[] = []
     for (const event of events) {
@@ -23,7 +25,8 @@ export function useSubagentRuns(parentThreadId: string): SubagentRun[] {
         subject: event.subject,
         agentId: event.agentId,
         ok: home?.ok,
-        ms: home?.ms
+        ms: home?.ms,
+        stopped: home?.stopped
       })
     }
     return runs.reverse()
