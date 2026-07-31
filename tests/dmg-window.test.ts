@@ -2,13 +2,22 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { DMG, dmgBackground, dmgDiscs } from '../scripts/icon-dmg.mjs'
+import {
+  DMG,
+  TRAVEL,
+  dmgBackground,
+  dmgMark,
+  dmgOverlay,
+  markAt,
+  wakePath
+} from '../scripts/icon-dmg.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const build = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).build
 const dmg = build.dmg
 const geometry = { bite: 28 / 130, step: 186 / 130 }
 const half = DMG.iconSize / 2
+const mark = dmgMark(geometry)
 
 const at = (type: string): { x: number; y: number } => {
   const found = dmg.contents.find((one: { type: string }) => one.type === type)
@@ -40,42 +49,57 @@ describe('the disk image window', () => {
     expect(DMG.line - half).toBeGreaterThan(DMG.headline)
     expect(DMG.line + half + DMG.iconSize / 6).toBeLessThan(DMG.height)
   })
+})
 
-  it('keeps the trail clear of both icons', () => {
-    const discs = dmgDiscs(geometry)
-    const first = discs[0]
-    const last = discs[discs.length - 1]
-    expect(first.x - first.r).toBeGreaterThan(DMG.app + half)
-    expect(last.x + last.r).toBeLessThan(DMG.applications - half)
-    expect(discs.every(disc => disc.y === DMG.line)).toBe(true)
+describe('the mark that travels', () => {
+  it('is three discs of one size, spaced the way the app icon spaces them', () => {
+    expect(mark.centres.length).toBe(3)
+    const gaps = mark.centres.slice(1).map((x, index) => x - mark.centres[index])
+    expect(gaps[0]).toBeCloseTo(gaps[1], 6)
+    expect(gaps[0]).toBeCloseTo(mark.radius * geometry.step, 6)
   })
 
-  it('runs left to right, growing the whole way', () => {
-    const discs = dmgDiscs(geometry)
-    for (let index = 1; index < discs.length; index += 1) {
-      expect(discs[index].x).toBeGreaterThan(discs[index - 1].x)
-      expect(discs[index].r).toBeGreaterThanOrEqual(discs[index - 1].r)
-      expect(discs[index].o).toBeGreaterThan(discs[index - 1].o)
+  it('bites each disc with the one in front rather than overlapping it whole', () => {
+    expect(mark.cut).toBeGreaterThan(mark.radius)
+    expect(mark.cut).toBeLessThan(mark.radius * geometry.step)
+  })
+
+  it('never reaches either icon, at any point of the travel', () => {
+    for (const where of [0, 0.25, 0.5, 0.75, 1]) {
+      const head = markAt(where)
+      expect(head - mark.width / 2).toBeGreaterThan(DMG.app + half)
+      expect(head + mark.width / 2).toBeLessThan(DMG.applications - half)
     }
   })
 
-  it('settles into the mark, each disc bitten by the one in front', () => {
-    const discs = dmgDiscs(geometry)
-    const settled = discs.filter(disc => disc.r === discs[discs.length - 1].r)
-    expect(settled.length).toBe(3)
-    for (let index = 1; index < settled.length; index += 1) {
-      const gap = settled[index].x - settled[index - 1].x
-      expect(gap).toBeCloseTo(settled[index].r * geometry.step, 2)
-      expect(gap).toBeLessThan(settled[index].r * 2)
-    }
-    expect(discs[discs.length - 1].cut).toBe(null)
+  it('runs towards Applications', () => {
+    expect(TRAVEL.to).toBeGreaterThan(TRAVEL.from)
+    expect(markAt(1)).toBeGreaterThan(markAt(0))
   })
 
-  it('draws the picture, the words and every disc', () => {
+  it('trails its wake behind it and never in front', () => {
+    const path = wakePath(geometry)
+    const xs = [...path.matchAll(/-?\d+(?:\.\d+)?(?= )/g)].map(Number)
+    expect(Math.min(...xs)).toBeCloseTo(-TRAVEL.wake, 6)
+    expect(Math.max(...xs)).toBeLessThan(0)
+  })
+})
+
+describe('the picture', () => {
+  it('draws the ground, the words and the mark', () => {
     const svg = dmgBackground(geometry, null)
     expect(svg).toContain(`width="${DMG.width}" height="${DMG.height}"`)
     expect(svg).toContain('Drag ')
     expect(svg).toContain('into Applications')
-    expect(svg.match(/<circle /g)?.length).toBeGreaterThanOrEqual(dmgDiscs(geometry).length)
+    expect(svg.match(/<circle /g)?.length).toBeGreaterThanOrEqual(mark.centres.length)
+  })
+
+  it('puts the mesh in as the ground when it is handed one', () => {
+    expect(dmgBackground(geometry, 'AAAA')).toContain('data:image/png;base64,AAAA')
+  })
+
+  it('places the mark at the moment it is asked for', () => {
+    expect(dmgOverlay(geometry, 0.2)).toContain(`translate(${markAt(0.2)} ${DMG.line})`)
+    expect(dmgOverlay(geometry, 0.9)).toContain(`translate(${markAt(0.9)} ${DMG.line})`)
   })
 })
