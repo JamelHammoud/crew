@@ -1,35 +1,18 @@
 export const SCHEMA_VERSION = 2
 
 export const SEQUENCES: Readonly<Record<string, number>> = {
-  'com.tldraw.store': 5,
-  'com.tldraw.asset': 1,
-  'com.tldraw.camera': 1,
-  'com.tldraw.document': 2,
-  'com.tldraw.instance': 26,
-  'com.tldraw.instance_page_state': 5,
-  'com.tldraw.page': 1,
-  'com.tldraw.instance_presence': 6,
-  'com.tldraw.pointer': 1,
-  'com.tldraw.shape': 4,
-  'com.tldraw.user': 1,
-  'com.tldraw.asset.image': 6,
-  'com.tldraw.asset.video': 5,
-  'com.tldraw.asset.bookmark': 2,
-  'com.tldraw.shape.group': 0,
-  'com.tldraw.shape.text': 4,
-  'com.tldraw.shape.bookmark': 2,
-  'com.tldraw.shape.draw': 5,
-  'com.tldraw.shape.geo': 11,
-  'com.tldraw.shape.note': 13,
-  'com.tldraw.shape.line': 5,
-  'com.tldraw.shape.frame': 1,
-  'com.tldraw.shape.arrow': 8,
-  'com.tldraw.shape.highlight': 4,
-  'com.tldraw.shape.embed': 4,
-  'com.tldraw.shape.image': 5,
-  'com.tldraw.shape.video': 4,
-  'com.tldraw.shape.design-node': 0,
-  'com.tldraw.binding.arrow': 1
+  'com.crew.canvas.store': 1,
+  'com.crew.canvas.asset': 1,
+  'com.crew.canvas.camera': 1,
+  'com.crew.canvas.document': 1,
+  'com.crew.canvas.instance': 1,
+  'com.crew.canvas.instance_page_state': 1,
+  'com.crew.canvas.page': 1,
+  'com.crew.canvas.instance_presence': 1,
+  'com.crew.canvas.pointer': 1,
+  'com.crew.canvas.shape': 1,
+  'com.crew.canvas.user': 1,
+  'com.crew.canvas.binding': 1
 }
 
 export interface SerializedSchema {
@@ -46,10 +29,7 @@ export function isKnownSchema(schema: unknown): schema is SerializedSchema {
   if (!block || typeof block !== 'object') return false
   if (block.schemaVersion !== SCHEMA_VERSION) return false
   if (!block.sequences || typeof block.sequences !== 'object') return false
-  for (const [id, version] of Object.entries(block.sequences)) {
-    const known = SEQUENCES[id]
-    if (known === undefined || known !== version) return false
-  }
+  for (const version of Object.values(block.sequences)) if (!Number.isInteger(version) || version < 0) return false
   return true
 }
 

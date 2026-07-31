@@ -22,8 +22,6 @@ export default defineConfig({
   renderer: {
     root: 'src/renderer',
     plugins: [react(), tailwindcss(), pdfjsAssets()],
-    // Pre-bundling would drop the ?url suffix its font and icon imports rely on.
-    optimizeDeps: { exclude: ['@tldraw/assets'] },
     build: { rollupOptions: { input: 'src/renderer/index.html' } }
   }
 })
