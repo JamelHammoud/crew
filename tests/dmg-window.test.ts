@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { ARROW, DMG, arrowAt, dmgArrow, dmgBackground } from '../scripts/icon-dmg.mjs'
+import { ARROW, DMG, GROUND, INK, LABEL, arrowAt, dmgArrow, dmgBackground } from '../scripts/icon-dmg.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const build = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')).build
