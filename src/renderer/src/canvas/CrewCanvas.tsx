@@ -5,6 +5,7 @@ import { Canvas, type CanvasShapeRenderer } from './render'
 import type { TLRecord, TLShape } from './schema'
 import type { ShapeUtilConstructor } from './shapes'
 import type { Store } from './store'
+import { EditingLayer } from './text/EditingLayer'
 import {
   ArrowShapeTool,
   DrawShapeTool,
@@ -149,6 +150,7 @@ export function CrewCanvas({
         tabIndex={0}
         role="application"
         aria-label="Design canvas"
+        onTheCanvas={<EditingLayer editor={editor} />}
         inFrontOfCanvas={children}
       />
     </EditorContext.Provider>

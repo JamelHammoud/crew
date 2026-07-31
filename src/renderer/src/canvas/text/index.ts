@@ -1,5 +1,6 @@
 export * from './autosize'
 export * from './editor'
+export * from './EditingLayer'
 export * from './fonts'
 export * from './measurement'
 export * from './richText'

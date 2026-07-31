@@ -320,6 +320,7 @@ export class Editor {
   }
 
   getRenderingShapes(): Array<{ id: TLShapeId; shape: TLShape; index: number; backgroundIndex: number; opacity: number }> {
+    void this.getEditingShapeId()
     const shapes = this.getCurrentPageRenderingShapesSorted()
     return shapes.map((shape, index) => ({ id: shape.id, shape, index, backgroundIndex: index, opacity: shape.opacity }))
   }
@@ -678,7 +679,7 @@ export class Editor {
     for (const partial of partials) {
       const shape = this.getShape(partial.id)
       if (!shape || shape.type !== partial.type) continue
-      records.push({
+      let next = {
         ...shape,
         ...withoutUndefined(partial),
         props: partial.props ? { ...shape.props, ...partial.props } : shape.props,
@@ -686,7 +687,9 @@ export class Editor {
         id: shape.id,
         type: shape.type,
         typeName: 'shape'
-      } as TLShape)
+      } as TLShape
+      next = this.getShapeUtil(shape).onBeforeUpdate?.(shape as never, next as never) ?? next
+      records.push(next)
     }
     if (records.length) this.store.put(records)
     return this
