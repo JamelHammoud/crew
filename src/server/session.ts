@@ -1238,7 +1238,10 @@ export class CrewSession {
       }
     } = {}
   ): string {
-    const threadId = randomUUID()
+    // Whoever asks for a fork names the id it opens under, so a junk one or one
+    // something else already answers to is named here instead.
+    const asked = opts.threadId
+    const threadId = asked && UUID.test(asked) && !this.threads.has(asked) ? asked : randomUUID()
     const boardId = opts.boardId
     const sent = opts.subagent
     const thread: Thread = {
@@ -1249,6 +1252,7 @@ export class CrewSession {
       createdBy: member.name,
       status: 'open',
       mode: opts.mode ?? 'build',
+      plan: opts.plan,
       queue: [],
       running: null,
       boardId: boardId && this.designs.has(boardId) ? boardId : undefined,
