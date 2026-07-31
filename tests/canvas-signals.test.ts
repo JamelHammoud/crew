@@ -418,3 +418,73 @@ describe('useValue', () => {
     expect(renders).toBeGreaterThan(settled)
   })
 })
+
+describe('the react bindings', () => {
+  it('re-renders a tracked component when what it read changes', () => {
+    const count = atom('count', 1)
+    const Tracked = track(function Tracked() {
+      return createElement('span', { 'data-testid': 'out' }, String(count.get()))
+    })
+
+    render(createElement(Tracked))
+    expect(screen.getByTestId('out').textContent).toBe('1')
+
+    act(() => {
+      count.set(2)
+    })
+    expect(screen.getByTestId('out').textContent).toBe('2')
+  })
+
+  it('runs a quick reactor outside the render', () => {
+    const count = atom('count', 1)
+    const seen: number[] = []
+
+    function Probe(): ReturnType<typeof createElement> {
+      useQuickReactor('watch', () => {
+        seen.push(count.get())
+      })
+      return createElement('span', { 'data-testid': 'out' }, 'ok')
+    }
+
+    const view = render(createElement(Probe))
+    expect(seen).toEqual([1])
+
+    act(() => {
+      count.set(2)
+    })
+    expect(seen).toEqual([1, 2])
+
+    view.unmount()
+    act(() => {
+      count.set(3)
+    })
+    expect(seen).toEqual([1, 2])
+  })
+
+  it('holds one atom and one computed for the life of a component', () => {
+    let seenAtom: unknown = null
+
+    function Probe(): ReturnType<typeof createElement> {
+      const count = useAtom('count', 1)
+      const doubled = useComputed('doubled', () => count.get() * 2, [count])
+      seenAtom = count
+      const value = useValue(doubled)
+      return createElement(
+        'button',
+        { 'data-testid': 'out', onClick: () => count.update((n) => n + 1) },
+        String(value)
+      )
+    }
+
+    render(createElement(Probe))
+    const button = screen.getByTestId('out')
+    expect(button.textContent).toBe('2')
+    const first = seenAtom
+
+    act(() => {
+      button.click()
+    })
+    expect(button.textContent).toBe('4')
+    expect(seenAtom).toBe(first)
+  })
+})
