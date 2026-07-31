@@ -1,15 +1,18 @@
 import type { Box, VecLike } from '../math'
 import type { CanvasOverlay, CanvasOverlayEntry, CanvasOverlayUtil } from '../render/types'
 import type { TLShapeId } from '../schema'
+import type { BoundsSnapIndicator } from '../tools/snaps'
 
 interface OverlayEditor {
   getSelectionRotatedPageBounds(): Box | undefined
   getSelectionRotation(): number
   getSelectedShapeIds(): TLShapeId[]
+  getEditingShapeId(): TLShapeId | null
   getZoomLevel(): number
   getCurrentTheme(): { colors: Record<'light' | 'dark', { selectionStroke: string }> }
   getColorMode(): 'light' | 'dark'
   getInstanceState(): { brush?: { x: number; y: number; w: number; h: number } | null }
+  snaps: { getIndicators(): BoundsSnapIndicator[] }
 }
 
 interface ToolOverlayUtil extends CanvasOverlayUtil {
@@ -24,7 +27,7 @@ export class OverlayManager {
   constructor(private readonly editor: OverlayEditor, constructors: readonly unknown[] = []) {
     this.register(new SelectionForegroundOverlayUtil(editor))
     this.register(new BrushOverlayUtil(editor))
-    this.register(new EmptyOverlayUtil('snap_indicator'))
+    this.register(new SnapOverlayUtil(editor))
     this.register(new EmptyOverlayUtil('shape_handle'))
     for (const Constructor of constructors) {
       const value = typeof Constructor === 'function'
@@ -99,7 +102,7 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
-    return this.editor.getSelectedShapeIds().length > 0
+    return this.editor.getEditingShapeId() === null && this.editor.getSelectedShapeIds().length > 0
   }
 
   getOverlays(): CanvasOverlay[] {
@@ -167,6 +170,40 @@ class BrushOverlayUtil implements ToolOverlayUtil {
   }
 }
 
+class SnapOverlayUtil implements ToolOverlayUtil {
+  static type = 'snap_indicator'
+
+  constructor(private readonly editor: OverlayEditor) {}
+
+  isActive(): boolean {
+    return this.editor.snaps.getIndicators().length > 0
+  }
+
+  getOverlays(): CanvasOverlay[] {
+    return this.editor.snaps.getIndicators().map(indicator => ({
+      id: indicator.id,
+      type: 'snap_indicator',
+      props: indicator
+    }))
+  }
+
+  render(context: CanvasRenderingContext2D): void {
+    const indicators = this.editor.snaps.getIndicators()
+    if (indicators.length === 0) return
+    const zoom = this.editor.getZoomLevel()
+    const stroke = this.editor.getCurrentTheme().colors[this.editor.getColorMode()].selectionStroke
+    context.strokeStyle = stroke
+    context.fillStyle = stroke
+    context.lineWidth = 1 / zoom
+    context.setLineDash([4 / zoom, 4 / zoom])
+    for (const indicator of indicators) {
+      if (indicator.type === 'points') drawPointIndicator(context, indicator.points, zoom)
+      else drawGapIndicator(context, indicator, zoom)
+    }
+    context.setLineDash([])
+  }
+}
+
 class EmptyOverlayUtil implements ToolOverlayUtil {
   constructor(readonly id: string) {}
 
@@ -197,6 +234,65 @@ function selectionHandlePoints(bounds: Box, rotation: number, rotateDistance: nu
     point.y = bounds.y + dx * Math.sin(rotation) + dy * Math.cos(rotation)
   }
   return local
+}
+
+function drawPointIndicator(context: CanvasRenderingContext2D, points: VecLike[], zoom: number): void {
+  if (points.length < 2) return
+  const sameX = points.every(point => Math.abs(point.x - points[0].x) < 1e-8)
+  const sorted = [...points].sort((a, b) => sameX ? a.y - b.y : a.x - b.x)
+  context.beginPath()
+  context.moveTo(sorted[0].x, sorted[0].y)
+  context.lineTo(sorted[sorted.length - 1].x, sorted[sorted.length - 1].y)
+  context.stroke()
+  context.setLineDash([])
+  for (const point of sorted) {
+    context.beginPath()
+    context.arc(point.x, point.y, 2 / zoom, 0, Math.PI * 2)
+    context.fill()
+  }
+  context.setLineDash([4 / zoom, 4 / zoom])
+}
+
+function drawGapIndicator(
+  context: CanvasRenderingContext2D,
+  indicator: Extract<BoundsSnapIndicator, { type: 'gaps' }>,
+  zoom: number
+): void {
+  const tick = 4 / zoom
+  for (const gap of indicator.gaps) {
+    if (indicator.direction === 'horizontal') {
+      const y = sharedRangeCenter(gap.startEdge[0].y, gap.startEdge[1].y, gap.endEdge[0].y, gap.endEdge[1].y)
+      const start = gap.startEdge[0].x
+      const end = gap.endEdge[0].x
+      context.beginPath()
+      context.moveTo(start, y)
+      context.lineTo(end, y)
+      context.moveTo(start, y - tick)
+      context.lineTo(start, y + tick)
+      context.moveTo(end, y - tick)
+      context.lineTo(end, y + tick)
+      context.stroke()
+    } else {
+      const x = sharedRangeCenter(gap.startEdge[0].x, gap.startEdge[1].x, gap.endEdge[0].x, gap.endEdge[1].x)
+      const start = gap.startEdge[0].y
+      const end = gap.endEdge[0].y
+      context.beginPath()
+      context.moveTo(x, start)
+      context.lineTo(x, end)
+      context.moveTo(x - tick, start)
+      context.lineTo(x + tick, start)
+      context.moveTo(x - tick, end)
+      context.lineTo(x + tick, end)
+      context.stroke()
+    }
+  }
+}
+
+function sharedRangeCenter(a0: number, a1: number, b0: number, b1: number): number {
+  const start = Math.max(Math.min(a0, a1), Math.min(b0, b1))
+  const end = Math.min(Math.max(a0, a1), Math.max(b0, b1))
+  if (start <= end) return (start + end) / 2
+  return (a0 + a1 + b0 + b1) / 4
 }
 
 function overlayId(value: unknown): string | null {
