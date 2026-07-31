@@ -3738,7 +3738,10 @@ export class CrewSession {
     // after a few of them there is nothing to say where the thread ended and the
     // conversation about it began.
     const beside = thread?.aside ? this.threadContext(thread.aside) : []
-    const own = this.threadContext(prompt.threadId)
+    // A fork is that conversation carrying on rather than one about it, so what
+    // was said before it stands in the same run of talk as what has been said
+    // since, and nothing anywhere says a fork was made.
+    const own = [...this.forkContext(thread), ...this.threadContext(prompt.threadId)]
     const context = [...beside, ...own]
     const transcript = this.transcriptOf(own)
     const others = [...this.agents.values()].filter(a => a.id !== agent.id).map(a => a.label)
