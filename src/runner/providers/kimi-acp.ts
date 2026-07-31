@@ -233,9 +233,6 @@ export function kimiParser(): OutputParser {
       close(out)
       const text = str(msg.error?.message)
       if (text) out.push({ error: text })
-      // Nothing has been asked for yet but the session itself, so there is no
-      // turn coming to end this run and say why. Anything that goes wrong here
-      // is the way in failing, and being told is worth more than waiting.
       if (!sessionId) out.push({ turnEnd: true })
       return out
     }
