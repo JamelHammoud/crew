@@ -29,7 +29,7 @@ export class OverlayManager {
     for (const value of this.values.values()) {
       if (!isOverlayUtil(value) || !value.isActive()) continue
       const overlays = typeof (value as { getOverlays?: () => CanvasOverlay[] }).getOverlays === 'function'
-        ? (value as { getOverlays: () => CanvasOverlay[] }).getOverlays()
+        ? (value as unknown as { getOverlays: () => CanvasOverlay[] }).getOverlays()
         : []
       entries.push({ util: value, overlays })
     }
