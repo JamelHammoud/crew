@@ -43,7 +43,7 @@ export interface CrewCanvasProps {
   tools?: readonly unknown[]
   overlayUtils?: readonly unknown[]
   options?: Partial<CrewCanvasOptions>
-  onMount?(editor: Editor): void | (() => void)
+  onMount?(editor: Editor): undefined | (() => void)
   children?: ReactNode
 }
 
