@@ -18,18 +18,12 @@ function Chip({ run, threadId }: { run: SubagentRun; threadId: string }) {
   const step = useCrew(state => (promptId ? state.steps[promptId]?.at(-1) : undefined))
   const working = Boolean(promptId) || queued > 0
   const ended = !working && run.ok === false
+  // Stopping a run stops every helper under it, so the warning is kept for the
+  // ones that really went wrong and a stop says so in the word it already had.
   const failed = ended && !run.stopped
   // Only RunStatus spins. A working chip lights its mark and pulses it, the way
   // a live step does, or four helpers under one run is a field of spinners.
-  const says = working
-    ? describeStep(step)
-    : ended
-      ? run.stopped
-        ? 'Stopped'
-        : 'Failed'
-      : run.ms
-        ? formatSpan(run.ms)
-        : 'Done'
+  const says = working ? describeStep(step) : ended ? 'Stopped' : run.ms ? formatSpan(run.ms) : 'Done'
 
   return (
     <button
