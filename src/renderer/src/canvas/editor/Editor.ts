@@ -1348,3 +1348,26 @@ function boundsFromShapeRecord(shape: TLShape): Box | null {
   if (typeof props.w !== 'number' || typeof props.h !== 'number') return new Box(shape.x, shape.y, 1, 1)
   return new Box(shape.x, shape.y, Math.abs(props.w), Math.abs(props.h))
 }
+
+function positiveNumber(value: number | undefined, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : fallback
+}
+
+function loadImage(source: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(new Error('Could not construct image'))
+    image.src = source
+  })
+}
+
+function canvasBlob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob)
+      else reject(new Error('Could not encode image'))
+    }, type, quality)
+  })
+}
