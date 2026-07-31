@@ -239,6 +239,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
             className="max-w-[660px] mx-auto pt-28 space-y-5"
             style={{ paddingBottom: Math.max(120, overlayHeight - 16) }}
           >
+            {thread.forkedFrom && <ForkedFrom threadId={thread.forkedFrom} />}
             <ThreadItems
               threadId={threadId}
               items={items}
