@@ -233,9 +233,27 @@ describe('commands in a thread', () => {
     })
     useBrowser.getState().openAside('aside-1', 'what does this file do')
     cleanup()
-
     render(createElement(BrowserPanel))
+  }
+
+  it('stands a question asked on the side in the panel, under what was asked', () => {
+    open()
+    aside()
+
     expect(screen.getByText('what does this file do')).toBeTruthy()
     expect(screen.getByText('It draws the panel.')).toBeTruthy()
+  })
+
+  it('takes the next question where the last one was answered', () => {
+    const sendChat = vi.fn()
+    open({ sendChat })
+    aside()
+
+    const composer = screen.getByPlaceholderText('Ask something else') as HTMLTextAreaElement
+    fireEvent.change(composer, { target: { value: 'and who wrote it' } })
+    fireEvent.click(screen.getByLabelText('Ask'))
+
+    // Into the conversation on the side, never into the thread it is about.
+    expect(sendChat).toHaveBeenCalledWith('and who wrote it', 'aside-1')
   })
 })
