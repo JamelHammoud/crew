@@ -17,9 +17,6 @@ type Screen = 'places' | 'name' | 'where' | 'link' | 'away'
 
 const DEPTH: Record<Screen, number> = { places: 0, name: 1, where: 1, link: 1, away: 1 }
 
-// A crew this project names and this computer has not got yet. Only an open
-// that has to fetch one can fail for want of it, which is what tells that
-// failure apart from every other way an open can go wrong.
 function fetching(plan: ProjectPlan | null): boolean {
   return Boolean(plan?.crewRemote && !plan.crewHere)
 }

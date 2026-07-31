@@ -71,9 +71,6 @@ export class AppSession {
   private server: CrewServer | null = null
   private runner: Runner | null = null
   private git: GitSync | null = null
-  // The crew's own loop, for a crew kept outside the project with a repo of its
-  // own. It runs beside the project's rather than instead of it, so somebody's
-  // code and their crew are two histories that never wait on each other.
   private crewGit: GitSync | null = null
   private agentsPath: string | null = null
   private sessionPath: string | null = null
