@@ -42,7 +42,8 @@ writeFileSync(
 `
 )
 cpSync(path.join(root, 'resources/icon.icns'), path.join(app, 'Contents/Resources/icon.icns'))
-cpSync(path.join(root, dmg.background), path.join(stage, '.background/background.tiff'))
+const art = `background${path.extname(dmg.background)}`
+cpSync(path.join(root, dmg.background), path.join(stage, '.background', art))
 symlinkSync('/Applications', path.join(stage, 'Applications'))
 
 const image = path.join(work, 'check.dmg')
@@ -60,7 +61,7 @@ osa(`tell application "Finder"
     set arrangement of options to not arranged
     set icon size of options to ${dmg.iconSize}
     set text size of options to ${dmg.iconTextSize}
-    set background picture of options to file ".background:background.tiff"
+    set background picture of options to file ".background:${art}"
     set position of item "${NAME}.app" of container window to {${dmg.contents[0].x}, ${dmg.contents[0].y}}
     set position of item "Applications" of container window to {${dmg.contents[1].x}, ${dmg.contents[1].y}}
     close
