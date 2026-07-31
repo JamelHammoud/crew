@@ -29,9 +29,6 @@ describe('app session', () => {
     await app.leave()
   })
 
-  // A project that names a crew has already answered the one question, so
-  // somebody who cloned it is handed the crew rather than asked where to keep
-  // one they are about to be given.
   it('picks up the crew a project names', async () => {
     const base = tmpDir('named-crew')
     const origin = path.join(base, 'origin.git')
@@ -65,8 +62,6 @@ describe('app session', () => {
     await app.leave()
   })
 
-  // Falling back to a crew of this machine's own would be two histories under
-  // one name, and it would look like it had worked.
   it('will not open on a crew it cannot reach unless that is what was asked for', async () => {
     const project = tmpDir('away-crew-project')
     await initRepo(project)

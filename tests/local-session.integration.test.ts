@@ -86,9 +86,6 @@ describe('a crew kept on this machine', () => {
     await back.leave()
   }, 40000)
 
-  // Where the crew is kept and whether the code goes out with it are two
-  // answers. Somebody working with their brother wants the second one on
-  // without the chat going back into the project.
   it('carries the project too, once somebody says so, and remembers it', async () => {
     const repo = tmpDir('local-sync-repo')
     await initRepo(repo)

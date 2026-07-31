@@ -227,9 +227,6 @@ export class AppSession {
     const crewRemote = await readCrewRemote(folder)
     const key = known?.key || (await projectKey(folder))
     return {
-      // A project that names a crew has already answered the one question, so
-      // somebody who cloned it is never asked where to keep a crew they are
-      // about to be handed.
       home: known?.home ?? (crewRemote ? 'private' : tracked ? 'folder' : 'private'),
       tracked,
       known: known !== null || crewRemote !== null,
@@ -322,15 +319,9 @@ export class AppSession {
     const remote = await readCrewRemote(repoPath)
     const home = opts.home ?? known?.home ?? (remote ? 'private' : tracked ? 'folder' : 'private')
     const shared = opts.share ?? home === 'folder'
-    // A crew that rides in the folder carries the code because it is the same
-    // repo. One kept outside it carries the code only where somebody said so,
-    // so a folder opened privately is still never committed to under anyone.
     const projectSync = opts.sync ?? known?.sync ?? home === 'folder'
     const key = known?.key || (await projectKey(repoPath))
     const base = home === 'folder' ? repoPath : path.join(this.projectsDir(), key)
-    // The crew this project names is fetched before anything is opened on it.
-    // Falling back to a crew of this machine's own would be two histories under
-    // one name, and it would look like it had worked.
     if (home === 'private' && remote && !opts.own && !crewHere(base)) {
       const got = await cloneCrew(remote, base)
       if (!got.ok) throw new Error(got.message)
@@ -347,9 +338,6 @@ export class AppSession {
     if (git && auto) git.start(AUTO_SYNC_MS)
     const crewUrl = home === 'private' ? await crewRepoUrl(base) : null
     const crew = crewUrl ? this.crewLoop(base) : null
-    // Both loops are asked for by what is running right now rather than by what
-    // was running when the session opened, so turning one on mid-session is the
-    // whole of turning it on.
     session.onSyncNeeded = () => this.scheduleSync()
     const server = await this.listen(session, shared, PREFERRED_PORT)
     this.server = server
@@ -399,8 +387,6 @@ export class AppSession {
     return this.live
   }
 
-  // What is running right now, asked for rather than remembered, so a loop
-  // started mid-session is waited on by the very next prompt.
   private syncAll(): Promise<void> {
     const passes: Array<Promise<unknown>> = []
     if (this.git && this.projectAuto) passes.push(this.git.syncNow())
@@ -413,9 +399,6 @@ export class AppSession {
     this.crewGit?.schedule()
   }
 
-  // Somebody's own code going out with the crew is their answer rather than a
-  // consequence of where the crew is kept. A project with no git has nothing to
-  // turn on, so the row is never offered there.
   async setProjectSync(on: boolean): Promise<CurrentSession | null> {
     const hosted = this.hosted
     const live = this.live
@@ -478,9 +461,6 @@ export class AppSession {
     return crew
   }
 
-  // Giving a crew a repo of its own is one press, and the address goes into the
-  // project in the same breath, so whoever clones it next finds the crew
-  // without being handed anything.
   async connectCrew(remote: string): Promise<{ ok: boolean; message: string }> {
     const hosted = this.hosted
     const live = this.live
