@@ -21,7 +21,8 @@ export const SLASH_COMMANDS: SlashCommand[] = [
   { name: 'steer', where: 'thread', hint: 'Go in now, on the turn already running', live: true },
   { name: 'queue', where: 'thread', hint: 'Wait for this turn to finish', live: true },
   { name: 'btw', where: 'thread', hint: 'Ask on the side, without touching the thread' },
-  { name: 'fork', where: 'thread', hint: 'Carry on from here in a thread of its own' }
+  { name: 'fork', where: 'thread', hint: 'Carry on from here in a thread of its own' },
+  { name: 'fallback', where: 'thread', hint: 'Name who takes over if this one fails' }
 ]
 
 const NAMES = SLASH_COMMANDS.map(command => command.name)
