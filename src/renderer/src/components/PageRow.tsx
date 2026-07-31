@@ -29,7 +29,7 @@ function ShownLink({ page }: { page: string }) {
 // A run showing its work, as the row it leaves behind. It reads the way every
 // other step in the thread reads, because it is one: what the agent did, what
 // it did it to, and the rest of it a press away.
-export default function PageRow({ shown }: { shown: Shown }) {
+export default function PageRow({ shown, linked }: { shown: Shown; linked?: boolean }) {
   const [open, setOpen] = useState(false)
   const { pages, title } = shown
   useLocated(shownPaths(pages))
@@ -38,13 +38,13 @@ export default function PageRow({ shown }: { shown: Shown }) {
   const path = filePathOf(one)
   const away = !many && path !== null && isPrivate(path)
   const where = many ? countOf(pages) : pageName(one)
-  const action: ToolAction = { icon: markFor(pages), run: 'Showing', done: 'Showed', prose: true }
+  const action: ToolAction = { icon: ShowGlyph, run: 'Showing', done: 'Showed', prose: true }
   const press = many ? () => setOpen(!open) : away ? null : () => void openShown(pages)
 
   return (
-    <div className="animate-rise pl-14">
+    <div className={`animate-rise pl-14 ${linked ? '-mt-3' : ''}`}>
       <button onClick={press ?? undefined} className={rowClass(press !== null)}>
-        <Mark icon={action.icon} running={false} />
+        <ShowGlyph className="w-[18px] h-[18px] shrink-0 text-fg" />
         <Label action={action} running={false} />
         {title && <span className={SUBJECT}>{title}</span>}
         {away ? <PrivateChip /> : where !== title && <span className={SUBJECT_MONO}>{where}</span>}
