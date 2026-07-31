@@ -42,7 +42,7 @@ export class DrawIdle extends DrawState {
 }
 
 export class DrawTool {
-  static readonly id = 'draw'
+  static readonly id: string = 'draw'
   static readonly initial = 'idle'
   static readonly isLockable = false
   static readonly useCoalescedEvents = true
