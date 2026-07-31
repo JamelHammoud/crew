@@ -129,7 +129,7 @@ export class Editor {
       write: options.user?.setUserPreferences
     })
     this.themes = new ThemeManager(options.themes, options.initialTheme)
-    this.overlays = new OverlayManager(options.overlayUtils)
+    this.overlays = new OverlayManager(this, options.overlayUtils)
     this.textMeasure = options.textMeasure ?? new TextMeasure(this.getContainerFn)
     for (const Constructor of options.shapeUtils ?? []) {
       const type = Constructor.type
