@@ -1383,8 +1383,8 @@ export class CrewSession {
       messageId: randomUUID(),
       mentions: [agent.id],
       replyTo: opts.replyTo,
-      voice: opts.voice
-      , goal: opts.goal
+      voice: opts.voice,
+      goal: opts.goal
     })
     return threadId
   }
@@ -3701,8 +3701,8 @@ export class CrewSession {
       ghost: this.ghostOf(thread.id) ? true : undefined,
       spawnRoom: canSend ? room : 0,
       spawnProviders: canSend ? this.spawnProviders() : undefined,
-      tickets: thread.tickets
-      , goal: entry.goal
+      tickets: thread.tickets,
+      goal: entry.goal
     }
   }
 

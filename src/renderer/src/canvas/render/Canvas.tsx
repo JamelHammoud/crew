@@ -49,7 +49,9 @@ export function Canvas<Shape extends CanvasShapeRecord>({
   const assignRoot = (element: HTMLDivElement | null) => {
     rootRef.current = element
     if (typeof canvasRef === 'function') canvasRef(element)
-    else if (canvasRef) canvasRef.current = element
+    else if (canvasRef) {
+      canvasRef.current = element
+    }
   }
 
   return (

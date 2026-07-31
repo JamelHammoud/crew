@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from 'react'
+import type { CSSProperties, HTMLAttributes, MutableRefObject, ReactNode, RefCallback } from 'react'
 import type { Geometry2d } from '../geometry'
 import type { MatLike } from '../math'
 
@@ -84,6 +84,6 @@ export interface CanvasProps<Shape extends CanvasShapeRecord = CanvasShapeRecord
   onTheCanvas?: ReactNode
   viewportOverlay?: ReactNode
   inFrontOfCanvas?: ReactNode
-  canvasRef?: Ref<HTMLDivElement>
+  canvasRef?: RefCallback<HTMLDivElement> | MutableRefObject<HTMLDivElement | null>
   shapeLayerStyle?: CSSProperties
 }
