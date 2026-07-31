@@ -1,5 +1,9 @@
 ;(function () {
-  const BASE = [0.541, 0.588, 0.949]
+  const PAPER = [1.0, 1.0, 1.0]
+
+  const BASE = [0.443, 0.494, 0.949]
+
+  const BLOOM = { x: 0.73939, y: 0.515, radius: 0.66, strength: 0.97, wide: 0.05 }
 
   const LAYERS = [
     {
@@ -58,6 +62,9 @@ uniform vec3 uColour[4];
 uniform vec4 uWave[4];
 uniform vec2 uDrift[4];
 uniform vec2 uFlow[4];
+uniform vec3 uPaper;
+uniform vec4 uBloom;
+uniform float uWide;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -149,14 +156,18 @@ void main() {
   }
 
   colour += vec3(0.1, 0.096, 0.088) * clamp(relief * 2.4, -1.0, 1.0);
-  colour += vec3(0.045, 0.042, 0.05) * (1.0 - vUv.y);
 
-  vec2 away = vUv - vec2(0.5, 0.46);
-  away.x *= ratio;
-  colour -= vec3(0.055, 0.05, 0.04) * smoothstep(0.3, 0.95, length(away));
+  vec2 away = vec2((vUv.x - uBloom.x) * ratio, vUv.y - uBloom.y);
+  float reach = length(away) / uBloom.z;
+  float ragged = snoise(vec3(p * 2.15, uTime * 0.045)) * 0.19
+               + snoise(vec3(p * 5.4 + 12.0, uTime * 0.07)) * 0.07;
+  float glow = 1.0 - smoothstep(0.28, 1.0, reach + ragged);
+  glow = pow(clamp(glow, 0.0, 1.0), 1.28) * uBloom.w;
+  float wide = (1.0 - smoothstep(0.0, 2.1, reach)) * uWide;
 
-  colour += (grain(vUv * uSize) - 0.5) * 0.016;
-  gl_FragColor = vec4(clamp(colour, 0.0, 1.0), 1.0);
+  vec3 lit = mix(uPaper, colour, clamp(glow + wide, 0.0, 1.0));
+  lit += (grain(vUv * uSize) - 0.5) * 0.012;
+  gl_FragColor = vec4(clamp(lit, 0.0, 1.0), 1.0);
 }`
 
   function compile(gl, kind, source) {
@@ -193,6 +204,15 @@ void main() {
     gl.vertexAttribPointer(spot, 2, gl.FLOAT, false, 0, 0)
 
     gl.uniform3fv(gl.getUniformLocation(program, 'uBase'), BASE)
+    gl.uniform3fv(gl.getUniformLocation(program, 'uPaper'), PAPER)
+    gl.uniform4f(
+      gl.getUniformLocation(program, 'uBloom'),
+      BLOOM.x,
+      BLOOM.y,
+      BLOOM.radius,
+      BLOOM.strength
+    )
+    gl.uniform1f(gl.getUniformLocation(program, 'uWide'), BLOOM.wide)
     gl.uniform3fv(
       gl.getUniformLocation(program, 'uColour'),
       LAYERS.flatMap(layer => layer.color)
@@ -224,6 +244,7 @@ void main() {
   }
 
   window.CrewMesh = {
+    bloom: BLOOM,
     frame(canvas, at) {
       build(canvas).draw(at)
       return canvas
