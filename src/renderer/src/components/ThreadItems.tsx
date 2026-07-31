@@ -51,7 +51,7 @@ export default function ThreadItems({
             {item.kind === 'subagent' ? (
               <SubagentChips runs={item.runs ?? []} threadId={threadId} />
             ) : item.kind === 'page' && item.shown ? (
-              <PageRow shown={item.shown} />
+              <PageRow shown={item.shown} linked={follows(blocks[index - 1], block)} />
             ) : block.items.length > 1 ? (
               <StepGroup items={block.items} linked={follows(blocks[index - 1], block)} />
             ) : isStep(item) ? (
