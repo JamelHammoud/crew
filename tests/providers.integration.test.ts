@@ -123,26 +123,59 @@ describe('fake provider contract', () => {
 })
 
 describe('kimi parser matches the real CLI format', () => {
-  it('parses text, tool calls, and tool results', () => {
-    expect(parseKimiLine('{"role":"assistant","content":"ok"}')).toEqual([{ text: 'ok' }])
+  const update = (body: unknown): string =>
+    JSON.stringify({ jsonrpc: '2.0', method: 'session/update', params: { sessionId: 's1', update: body } })
 
-    const toolCall = parseKimiLine(
-      '{"role":"assistant","tool_calls":[{"type":"function","id":"tool_123","function":{"name":"Glob","arguments":"{\\"pattern\\":\\"*.md\\"}"}}]}'
-    )
-    expect(toolCall).toEqual([
-      { activity: { id: 'tool_123', kind: 'tool', name: 'Glob', status: 'started', detail: '*.md' } }
+  it('parses streamed words, tool calls, and tool results', () => {
+    const parse = kimiParser()
+
+    expect(parse(update({ sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'ok' } }))).toEqual([
+      { textStart: { index: 1 } },
+      { textDelta: { index: 1, text: 'ok' } }
     ])
 
-    const subagent = parseKimiLine(
-      '{"role":"assistant","tool_calls":[{"type":"function","id":"tool_9","function":{"name":"Agent","arguments":"{\\"prompt\\":\\"look around\\"}"}}]}'
+    const started = parse(
+      update({ sessionUpdate: 'tool_call', toolCallId: 'tool_123', title: 'Glob', kind: 'search', status: 'pending' })
+    )
+    expect(started).toEqual([
+      { blockStop: { index: 1 } },
+      { activity: { id: 'tool_123', kind: 'tool', name: 'Glob', status: 'started' } }
+    ])
+
+    const args = parse(
+      update({
+        sessionUpdate: 'tool_call_update',
+        toolCallId: 'tool_123',
+        title: 'Searching for *.md',
+        status: 'in_progress',
+        rawInput: { pattern: '*.md' }
+      })
+    )
+    expect(args[0].activity?.name).toBe('Glob')
+    expect(args[0].activity?.detail).toBe('*.md')
+
+    const finished = parse(
+      update({
+        sessionUpdate: 'tool_call_update',
+        toolCallId: 'tool_123',
+        status: 'completed',
+        rawOutput: 'AGENTS.md'
+      })
+    )
+    expect(finished).toEqual([
+      { activity: { id: 'tool_123', kind: 'tool', name: 'Glob', status: 'finished', output: 'AGENTS.md' } }
+    ])
+
+    const subagent = parse(
+      update({ sessionUpdate: 'tool_call', toolCallId: 'tool_9', title: 'Agent', kind: 'other', status: 'pending' })
     )
     expect(subagent[0].activity?.kind).toBe('subagent')
 
-    expect(parseKimiLine('{"role":"tool","tool_call_id":"tool_123","content":"AGENTS.md"}')).toEqual([
-      { activity: { id: 'tool_123', kind: 'tool', name: '', status: 'finished', output: 'AGENTS.md' } }
-    ])
+    expect(parse(update({ sessionUpdate: 'available_commands_update', availableCommands: [] }))).toEqual([])
+  })
 
-    expect(parseKimiLine('{"role":"meta","type":"session.resume_hint"}')).toEqual([])
+  it('ends the turn on the stop reason the prompt answers with', () => {
+    expect(kimiParser()('{"jsonrpc":"2.0","id":3,"result":{"stopReason":"end_turn"}}')).toEqual([{ turnEnd: true }])
   })
 })
 
