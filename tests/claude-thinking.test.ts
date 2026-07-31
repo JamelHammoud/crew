@@ -5,6 +5,9 @@ import { kimiParser } from '../src/runner/providers/kimi-acp'
 
 const streamEvent = (event: unknown): string => JSON.stringify({ type: 'stream_event', event })
 
+const kimiUpdate = (update: unknown): string =>
+  JSON.stringify({ jsonrpc: '2.0', method: 'session/update', params: { sessionId: 's1', update } })
+
 describe('claude thinking stream', () => {
   it('parses thinking block start, deltas, and stop', () => {
     expect(
