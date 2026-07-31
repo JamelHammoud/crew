@@ -7,6 +7,7 @@ export interface PanelPage {
   preload: string
   devUrl: string | undefined
   file: string
+  devTools: boolean
 }
 
 const PANEL_WIDTH = 272
