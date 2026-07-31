@@ -155,6 +155,7 @@ describe('the mounted Crew canvas', () => {
           }
         }
       ])
+      return undefined
     }
     const view = render(
       createElement(CrewCanvas, { store, shapeUtils: [FrameShapeUtil, TextShapeUtil], onMount: mounted })
