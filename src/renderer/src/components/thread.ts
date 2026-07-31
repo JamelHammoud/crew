@@ -169,11 +169,11 @@ export interface SubagentRun {
   ms?: number
 }
 
-// A page an agent put on the screen, as it reads in the thread afterwards. The
+// What an agent put on the screen, as it reads in the thread afterwards. The
 // row is the way back to it once the run that made it has scrolled away, so it
-// carries the address rather than a tab that may have been closed since.
-export interface ShownPage {
-  url: string
+// carries the addresses rather than tabs that may have been closed since.
+export interface Shown {
+  pages: string[]
   title: string
 }
 

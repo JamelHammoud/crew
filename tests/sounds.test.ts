@@ -203,27 +203,15 @@ describe('which sound an event makes', () => {
 describe('a helper going out and coming home', () => {
   const withHelper = () => state({ threads: { t1: thread('t1'), h1: thread('h1', { parentThreadId: 't1' }) } })
 
-  it('says an errand went out, in a voice of its own', () => {
-    expect(soundFor(helperOut(), 'me', withHelper())).toBe('helper.out')
+  it('says nothing when one goes out', () => {
+    expect(soundFor(helperOut(), 'me', withHelper())).toBe(null)
   })
 
-  it('says the same errand came home', () => {
-    expect(soundFor(helperHome(), 'me', withHelper())).toBe('helper.home')
+  it('says nothing when one comes home, whichever way it went', () => {
+    expect(soundFor(helperHome(), 'me', withHelper())).toBe(null)
+    expect(soundFor(helperHome(false), 'me', withHelper())).toBe(null)
   })
 
-  it('says it the same way whether or not the errand went well, since the chip is what reports that', () => {
-    expect(soundFor(helperHome(false), 'me', withHelper())).toBe('helper.home')
-  })
-
-  it('never says it in the voice that means the work you asked for landed', () => {
-    for (const event of [helperOut(), helperHome(), helperHome(false)]) {
-      expect(['done', 'failed']).not.toContain(soundFor(event, 'me', withHelper()))
-    }
-  })
-
-  // Coming home is said once, by subagent.ended. The helper's own turn ending is
-  // the same moment reached by another road, and left to speak it would say it a
-  // second time in the voice that means something you were waiting on.
   it('leaves the turn that ended it silent, whichever way it ended', () => {
     expect(soundFor(ended(true, 'h1'), 'me', withHelper())).toBe(null)
     expect(soundFor(ended(false, 'h1'), 'me', withHelper())).toBe(null)

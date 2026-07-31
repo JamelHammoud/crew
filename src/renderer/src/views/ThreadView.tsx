@@ -249,8 +249,10 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                 inputRef.current?.focus()
               }}
             />
-            {activePromptId && startedAt && (
+            {activePromptId && startedAt ? (
               <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[activePromptId] ?? []} />
+            ) : (
+              ended && <RunEnded end={ended} />
             )}
             <FilesChanged steps={threadSteps} />
           </div>
