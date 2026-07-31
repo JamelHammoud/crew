@@ -110,6 +110,10 @@ export const parseCodexLine: OutputParser = line => {
       const delta = str(params.delta)
       return delta ? [{ thinkingDelta: { index: thinkIndex(params.summaryIndex), text: delta } }] : []
     }
+    case 'item/reasoning/textDelta': {
+      const delta = str(params.delta)
+      return delta ? [{ thinkingDelta: { index: rawIndex(params.contentIndex), text: delta } }] : []
+    }
     case 'turn/plan/updated':
       return planOutput(params)
     case 'thread/tokenUsage/updated': {
