@@ -23,6 +23,8 @@ const SUBAGENT_TOOLS = new Set(['Agent', 'Task'])
 
 const STARTED = new Set(['pending', 'in_progress'])
 
+const CANCELLED = 'cancelled'
+
 // A stop that is not the end of a turn has a reason, and these are the ones the
 // protocol names rather than describes.
 const STOPS: Record<string, string> = {
