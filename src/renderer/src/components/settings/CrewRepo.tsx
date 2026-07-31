@@ -2,9 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import Modal from '../Modal'
 import Spinner from '../Spinner'
 
-// Where a crew kept outside the project is saved, asked for once. What goes
-// wrong here is worth reading, so the card says what came back rather than the
-// same sentence whatever happened.
 export default function CrewRepo({
   open,
   onClose,
