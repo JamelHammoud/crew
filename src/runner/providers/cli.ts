@@ -67,8 +67,6 @@ interface CliProviderOptions {
   // When set, the prompt is written to stdin as a message the dialog decides the
   // shape of, and stdin stays open so later messages can steer the run.
   dialog?: (prompt: string, cwd: string, get: SettingReader) => Dialog
-  // A CLI that needs a handshake but will not take a message mid-turn says so
-  // here, so nothing offers a steer that would only ever be queued.
   steerable?: boolean
   usage?: () => Promise<AgentUsage | null>
 }
@@ -91,7 +89,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
     name: opts.name,
     label: opts.label,
     install: opts.install,
-    steerable: opts.dialog !== undefined,
+    steerable: opts.steerable ?? opts.dialog !== undefined,
     fields,
     detect: async () => commandExists(opts.command),
     usage: opts.usage,
