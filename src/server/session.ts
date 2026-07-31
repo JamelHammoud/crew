@@ -1871,7 +1871,8 @@ export class CrewSession {
       threadId: thread.id,
       parentThreadId: parentId,
       ok,
-      ms
+      ms,
+      stopped: stopped || undefined
     })
     if (thread.notify === false) return
     const woken = this.wakes.get(parentId) ?? 0
