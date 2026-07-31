@@ -1,8 +1,5 @@
 import Spinner from '../../components/Spinner'
 
-// A project whose crew is kept somewhere this computer cannot reach. Nothing
-// here quietly starts a second crew under the same name: both ways on are a
-// press, and the one that leaves you working alone says so.
 export default function CrewAway({
   busy,
   onRetry,

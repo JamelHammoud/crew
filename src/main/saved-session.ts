@@ -83,8 +83,6 @@ function projectFrom(value: unknown): RecentProject | null {
     name: project.name,
     home,
     key: project.key,
-    // A project remembered before there was anything to answer here syncs if
-    // its crew rides in the folder, which is what it was already doing.
     sync: typeof project.sync === 'boolean' ? project.sync : home === 'folder',
     openedAt: project.openedAt
   }
