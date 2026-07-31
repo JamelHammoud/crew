@@ -35,7 +35,7 @@ function rethrow(key: string | number, error: unknown): never {
 }
 
 function owns(object: object, key: string): boolean {
-  return Object.prototype.hasOwnProperty.call(object, key)
+  return Object.hasOwn(object, key)
 }
 
 export class Validator<Value> implements Validatable<Value> {

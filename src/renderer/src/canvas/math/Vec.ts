@@ -495,7 +495,7 @@ export class Vec {
   }
 
   static IsNaN(a: VecLike): boolean {
-    return isNaN(a.x) || isNaN(a.y)
+    return Number.isNaN(a.x) || Number.isNaN(a.y)
   }
 
   static IsFinite(a: VecLike): boolean {

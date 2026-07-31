@@ -20,8 +20,8 @@ export interface RichTextEditorProps {
   onBlur?(): void
   onComplete?(): void
   onKeyDown?(event: KeyboardEvent): void
-  onPaste?(event: ClipboardEvent): boolean | void
-  onDoubleClick?(event: MouseEvent): boolean | void
+  onPaste?(event: ClipboardEvent): boolean | undefined
+  onDoubleClick?(event: MouseEvent): boolean | undefined
   customTabBehavior?: boolean
 }
 
