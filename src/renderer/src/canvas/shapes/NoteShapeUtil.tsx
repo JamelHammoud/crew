@@ -1,6 +1,7 @@
 import { createElement, type ReactNode } from 'react'
 import { Group2d, Rectangle2d } from '../geometry'
 import { noteShapeProps, type TLShape as CrewShape } from '../schema'
+import { richTextToHtml, type RichTextDocument } from '../text/richText'
 import { ShapeUtil } from './ShapeUtil'
 import { FONT_FAMILIES, FONT_SIZES, boxPath, plainText, richText, shapeElement } from './shared'
 import { shapeColor } from './theme'
@@ -30,8 +31,8 @@ export class NoteShapeUtil extends ShapeUtil<NoteShape> {
     const width = 200 * props.scale
     const height = (200 + props.growY) * props.scale
     const background = shapeColor(this.editor, props.color, 'noteFill')
-    const text = plainText(props.richText)
     const labelColor = props.labelColor === 'black' ? shapeColor(this.editor, props.color, 'noteText') : shapeColor(this.editor, props.labelColor, 'fill')
-    return createElement('div', { style: { position: 'relative', width, height } }, shapeElement(boxPath(width, height), { editor: this.editor, color: props.color, fill: background, width: 2 }), createElement('div', { style: { position: 'absolute', inset: 12 * props.scale, display: 'flex', alignItems: props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center', justifyContent: props.align.startsWith('start') ? 'flex-start' : props.align.startsWith('end') ? 'flex-end' : 'center', color: labelColor, fontFamily: FONT_FAMILIES[props.font], fontSize: FONT_SIZES[props.size] * (props.fontSizeAdjustment ?? 1) * props.scale, lineHeight: 1.25, textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left', whiteSpace: 'pre-wrap', overflow: 'hidden', pointerEvents: 'all' } }, text))
+    const editing = this.editor.getEditingShapeId?.() === shape.id
+    return createElement('div', { style: { position: 'relative', width, height } }, shapeElement(boxPath(width, height), { editor: this.editor, color: props.color, fill: background, width: 2 }), createElement('div', { className: 'crew-rich-text', style: { position: 'absolute', inset: 12 * props.scale, display: 'flex', flexDirection: 'column', alignItems: props.align.startsWith('start') ? 'flex-start' : props.align.startsWith('end') ? 'flex-end' : 'center', justifyContent: props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center', color: labelColor, fontFamily: FONT_FAMILIES[props.font], fontSize: FONT_SIZES[props.size] * (props.fontSizeAdjustment ?? 1) * props.scale, lineHeight: 1.25, textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left', whiteSpace: 'pre-wrap', overflow: 'hidden', pointerEvents: 'all', visibility: editing ? 'hidden' : undefined }, dangerouslySetInnerHTML: { __html: richTextToHtml(props.richText as RichTextDocument) } }))
   }
 }

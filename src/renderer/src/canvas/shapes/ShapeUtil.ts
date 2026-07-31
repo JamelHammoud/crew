@@ -9,6 +9,7 @@ export interface ShapeEditor {
   getColorMode?(): 'light' | 'dark'
   getCurrentThemeId?(): string
   getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, string | Record<string, string>>>> }
+  getEditingShapeId?(): CrewShapeId | null
   getAsset?(id: string): CrewAsset | undefined
   getBindingsFromShape?(id: CrewShapeId, type?: CrewBindingType): CrewBinding[]
   getShape?(id: CrewShapeId): CrewShape | undefined
