@@ -240,11 +240,31 @@ try {
   const session = await ask('session/new', { cwd: work, mcpServers: [] })
   console.log(`${at()} session   ${session.sessionId}`)
 
+  let wire = null
+  let mid = null
+  watcher = setInterval(() => {
+    if (!wire) {
+      wire = wireAt(session.sessionId)
+      if (wire) console.log(`${at()} wire      ${wire}`)
+    }
+    if (!wire || mid) return
+    const found = records(wire)
+    if (!found.length) return
+    mid = { at: at().trim(), ...summed(found) }
+    console.log(`${at()} usage     ${mid.calls} record(s) while the turn is still going`)
+  }, POLL)
+
   const turn = await ask('session/prompt', {
     sessionId: session.sessionId,
     prompt: [{ type: 'text', text: TASK }]
   })
-  console.log(`${at()} stopped   ${turn?.stopReason}`)
+  const stopped = at().trim()
+  clearInterval(watcher)
+  watcher = null
+  console.log(`${stopped.padStart(6)} stopped   ${turn?.stopReason}`)
+
+  if (!wire) wire = wireAt(session.sessionId)
+  const usage = wire ? summed(records(wire)) : null
 
   child.stdin.end()
   await new Promise(resolve => {

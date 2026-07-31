@@ -389,9 +389,11 @@ describe('a line it cannot use', () => {
 
   it('carries a failure through as the sentence it came with', () => {
     expect(kimiParser()(failed(3, 'The model is not available on this account.'))).toEqual([
-      { error: 'The model is not available on this account.' }
+      { error: 'The model is not available on this account.' },
+      { turnEnd: true }
     ])
     const parse = kimiParser()
+    parse(opened(2, 'session_x'))
     parse(chunk('agent_message_chunk', 'Half a se'))
     expect(parse(failed(3, 'The stream dropped.'))).toEqual([
       { blockStop: { index: 1 } },
