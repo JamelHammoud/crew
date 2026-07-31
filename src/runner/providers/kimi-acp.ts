@@ -130,10 +130,17 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dia
       // A setting the CLI will not take is not worth stalling a run over. A
       // model that has left the config and a CLI too old to be told either way
       // carry on to the turn, which runs on whatever it was already set to.
-      if (msg.error) return stage === 'config' ? [step()] : []
+      if (msg.error) {
+        if (stage === 'config') return [step()]
+        return stage === 'turn' ? resume() : []
+      }
       return answered(stage, msg.result)
     },
-    steer: () => null
+    steer: text => {
+      if (!sessionId || !turning) return null
+      steers.push(text)
+      return rpc({ method: 'session/cancel', params: { sessionId } })
+    }
   }
 }
 
