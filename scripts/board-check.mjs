@@ -18,8 +18,13 @@ async function boardsIn(directory) {
   }
   for (const entry of entries) {
     const target = path.join(directory, entry.name)
-    if (entry.isDirectory()) found.push(...await boardsIn(target))
-    else if (entry.isFile() && entry.name.endsWith('.json') && target.includes(`${path.sep}.crew${path.sep}designs${path.sep}`)) found.push(target)
+    if (entry.isDirectory()) found.push(...(await boardsIn(target)))
+    else if (
+      entry.isFile() &&
+      entry.name.endsWith('.json') &&
+      target.includes(`${path.sep}.crew${path.sep}designs${path.sep}`)
+    )
+      found.push(target)
   }
   return found
 }
@@ -29,11 +34,17 @@ async function boardFile() {
   const projects = path.join(homedir(), 'Library', 'Application Support', 'Crew', 'projects')
   const files = await boardsIn(projects)
   if (files.length === 0) throw new Error('No saved Crew board was found')
-  const scored = await Promise.all(files.map(async file => {
-    const saved = JSON.parse(await readFile(file, 'utf8'))
-    const types = new Set(Object.values(saved.document?.store ?? {}).filter(record => record.typeName === 'shape').map(record => record.type))
-    return { file, score: types.size }
-  }))
+  const scored = await Promise.all(
+    files.map(async file => {
+      const saved = JSON.parse(await readFile(file, 'utf8'))
+      const types = new Set(
+        Object.values(saved.document?.store ?? {})
+          .filter(record => record.typeName === 'shape')
+          .map(record => record.type)
+      )
+      return { file, score: types.size }
+    })
+  )
   return scored.sort((a, b) => b.score - a.score)[0].file
 }
 
@@ -162,9 +173,15 @@ async function stage(file) {
   const saved = JSON.parse(await readFile(file, 'utf8'))
   if (!saved.document?.store || !saved.document?.schema) throw new Error(`${file} is not a Crew board`)
   const directory = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-board-')))
-  await writeFile(path.join(directory, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>')
+  await writeFile(
+    path.join(directory, 'index.html'),
+    '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>'
+  )
   await writeFile(path.join(directory, 'probe.tsx'), probeSource(saved.document))
-  await writeFile(path.join(directory, 'probe.css'), `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@import "${path.join(root, 'src/renderer/src/canvas/canvas.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n`)
+  await writeFile(
+    path.join(directory, 'probe.css'),
+    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@import "${path.join(root, 'src/renderer/src/canvas/canvas.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n`
+  )
   await writeFile(path.join(directory, 'main.cjs'), mainSource)
   return directory
 }
@@ -185,7 +202,9 @@ function run(directory) {
   return new Promise((resolve, reject) => {
     const child = spawn(electron, [path.join(directory, 'main.cjs')], { stdio: ['ignore', 'pipe', 'pipe'] })
     let output = ''
-    child.stdout.on('data', chunk => { output += chunk })
+    child.stdout.on('data', chunk => {
+      output += chunk
+    })
     child.stderr.on('data', () => {})
     const timeout = setTimeout(() => {
       child.kill('SIGKILL')
@@ -211,7 +230,8 @@ try {
   if (result.records === 0) problems.push('the saved board had no shapes')
   if (result.painted !== result.records) problems.push(`${result.painted} of ${result.records} shapes painted`)
   if (result.byType.draw && !result.drawPath) problems.push('draw paths did not paint')
-  if ((result.byType.text || result.byType.note || result.byType.geo) && result.richText === 0) problems.push('rich text did not paint')
+  if ((result.byType.text || result.byType.note || result.byType.geo) && result.richText === 0)
+    problems.push('rich text did not paint')
   if (!result.moved) problems.push('a pointer drag did not move a shape')
   if (!result.resized) problems.push('a handle drag did not resize a shape')
   if (!result.snapIndicators) problems.push('snapping produced no visible indicators')
@@ -221,7 +241,11 @@ try {
   if (result.errors.length) problems.push(...result.errors.map(error => `window error: ${error}`))
   if (problems.length) throw new Error(problems.join('\n'))
   console.log(`${path.basename(file)} painted ${result.painted} shapes, dragged, resized, snapped, and exported`)
-  console.log(`shape types: ${Object.entries(result.byType).map(([type, count]) => `${type} ${count}`).join(', ')}`)
+  console.log(
+    `shape types: ${Object.entries(result.byType)
+      .map(([type, count]) => `${type} ${count}`)
+      .join(', ')}`
+  )
 } finally {
   await rm(directory, { recursive: true, force: true })
 }
