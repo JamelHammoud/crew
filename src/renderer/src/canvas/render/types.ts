@@ -47,7 +47,7 @@ export interface CanvasOverlayEntry {
 
 export interface CanvasOverlayManager {
   getActiveOverlayEntries(): CanvasOverlayEntry[]
-  getOverlayUtil<Util extends CanvasOverlayUtil = CanvasOverlayUtil>(type: string): Util
+  getOverlayUtil(type: string): CanvasOverlayUtil
 }
 
 export interface CanvasRenderHost<Shape extends CanvasShapeRecord = CanvasShapeRecord> {

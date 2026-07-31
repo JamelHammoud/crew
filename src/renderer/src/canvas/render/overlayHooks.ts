@@ -1,5 +1,5 @@
 import { useValue } from '../signals'
-import type { CanvasOverlayManager, CanvasOverlayUtil } from './types'
+import type { CanvasOverlayManager } from './types'
 
 export const CANVAS_OVERLAY_TYPES = {
   selection: 'selection_foreground',
@@ -16,7 +16,7 @@ export function canvasOverlayIsActive(
 ): boolean {
   const overlayType = type in CANVAS_OVERLAY_TYPES ? CANVAS_OVERLAY_TYPES[type as CanvasOverlayHook] : type
   try {
-    return overlays.getOverlayUtil<CanvasOverlayUtil>(overlayType).isActive()
+    return overlays.getOverlayUtil(overlayType).isActive()
   } catch {
     return false
   }

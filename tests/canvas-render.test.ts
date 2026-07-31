@@ -1,5 +1,5 @@
 import { act, cleanup, render } from '@testing-library/react'
-import { JSDOM } from 'jsdom'
+import { createRequire } from 'node:module'
 import { createElement } from 'react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Mat } from '../src/renderer/src/canvas/math'
@@ -44,7 +44,12 @@ const originalGlobals = new Map(globalKeys.map(key => [key, Object.getOwnPropert
 const setGlobal = (key: (typeof globalKeys)[number], value: unknown) =>
   Object.defineProperty(globalThis, key, { configurable: true, writable: true, value })
 
-let dom: JSDOM
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
+  html: string,
+  options: { pretendToBeVisual: boolean }
+) => { window: Window & typeof globalThis }
+
+let dom: { window: Window & typeof globalThis }
 
 beforeAll(() => {
   dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true })
