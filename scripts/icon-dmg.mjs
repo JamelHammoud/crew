@@ -61,24 +61,15 @@ export function dmgBackground(geometry, cover) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${DMG.width}" height="${DMG.height}" viewBox="0 0 ${DMG.width} ${DMG.height}">
   <defs>
     <radialGradient id="clearing" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.42" />
-      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.17" />
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.08" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="pool" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.3" />
-      <stop offset="0.44" stop-color="#ffffff" stop-opacity="0.11" />
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="0.44" stop-color="#ffffff" stop-opacity="0.05" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
-    <linearGradient id="run" x1="248" y1="0" x2="432" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
-      <stop offset="0.58" stop-color="#ffffff" stop-opacity="0.12" />
-      <stop offset="0.9" stop-color="#ffffff" stop-opacity="0.34" />
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-    </linearGradient>
-    <filter id="soften" x="-40%" y="-160%" width="180%" height="420%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="11" />
-    </filter>
     <filter id="grain" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.86" numOctaves="3" stitchTiles="stitch" />
       <feColorMatrix type="saturate" values="0" />
