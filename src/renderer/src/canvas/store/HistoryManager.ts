@@ -1,4 +1,4 @@
-import { atom, transact } from '../signals'
+import { atom, transact, unsafe__withoutCapture } from '../signals'
 import {
   createEmptyRecordsDiff,
   hasAnyKey,
