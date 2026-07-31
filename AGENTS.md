@@ -14,6 +14,7 @@ Pool LLMs with friends. Open a project and you are in, share it when you want so
 - `yarn covers` — draw every music cover on one page
 - `yarn selection-check` — select everything in a real window and see what it painted
 - `yarn preview-check` — stand a page up in a real window and see what it reached
+- `yarn codex-check` — run a real Codex turn and read what came back off it
 - `yarn dist` — build a mac dmg
 - `crew` opens a crew on a folder from a terminal. It ships inside the app, and the This computer page in the settings puts it on PATH. `npm link` in this checkout does the same from here
 
