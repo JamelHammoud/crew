@@ -75,10 +75,15 @@ describe('what a finished run is worth', () => {
 
     const later = await TestUi.connect(host.url, 'ali', host.code)
     uis.push(later)
-    await later.waitForEvent(e => e.kind === 'agent.end' && e.promptId === end.promptId)
-    const seen = later.events.find(e => e.kind === 'agent.end' && e.promptId === end.promptId) as Ended
-    expect(seen.ms).toBe(end.ms)
-    expect(seen.tokens).toBe(end.tokens)
+    const welcome = (await later.waitFor(m => m.type === 'welcome')) as Extract<
+      ServerMessage,
+      { type: 'welcome' }
+    >
+    const seen = welcome.snapshot.events.find(
+      (e): e is Ended => e.kind === 'agent.end' && e.promptId === end.promptId
+    )
+    expect(seen?.ms).toBe(end.ms)
+    expect(seen?.tokens).toBe(end.tokens)
   })
 
   // A run somebody stopped still spent what it spent, so it keeps its figures
