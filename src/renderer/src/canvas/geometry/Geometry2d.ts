@@ -212,6 +212,10 @@ export abstract class Geometry2d {
     )
   }
 
+  ignoreHit(_point: VecLike): boolean {
+    return false
+  }
+
   toSimpleSvgPath(): string {
     let path = ''
 
