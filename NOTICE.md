@@ -7,6 +7,12 @@ Licenses were read from the `LICENSE` file in each installed package rather than
 from the `license` field alone. Versions are the ones installed at the time of
 writing.
 
+The list below names the 33 direct dependencies. The full production closure is
+395 packages, and all of them ship inside the built app: electron-builder
+collects production `node_modules` on a walk of its own, so keeping them out of
+the `files` list does not keep them out of the binary. Every notice here has to
+travel with any binary built from this repository.
+
 ## Artwork and fonts
 
 These carry a named attribution requirement. The line under each one is the
