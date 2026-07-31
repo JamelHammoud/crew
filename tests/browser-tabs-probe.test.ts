@@ -94,6 +94,31 @@ describe('the tab strip', () => {
     expect(useBrowser.getState().tabs.map(t => t.id)).toEqual([second!.id])
   })
 
+  it('keeps the tab the menu was opened on and closes the rest', () => {
+    openThree()
+    const { container, getByText } = render(createElement(BrowserPanel))
+    const kept = useBrowser.getState().tabs[1]!
+
+    fireEvent.contextMenu(pillFor(container, kept.id)!)
+    fireEvent.click(getByText('Close other tabs'))
+
+    expect(order()).toEqual([kept.id])
+    expect(useBrowser.getState().activeTabId).toBe(kept.id)
+  })
+
+  // An action a tab cannot do is left out rather than greyed, and one tab on its
+  // own has no others to close.
+  it('offers no others to close on the only tab there is', () => {
+    useBrowser.getState().openUrl('https://example.com/one')
+    const { container, queryByText } = render(createElement(BrowserPanel))
+    const only = useBrowser.getState().tabs[0]!
+
+    fireEvent.contextMenu(pillFor(container, only.id)!)
+
+    expect(queryByText('Close other tabs')).toBeNull()
+    expect(queryByText('Close all tabs')).not.toBeNull()
+  })
+
   it('closes every tab from the same menu', () => {
     openTwo()
     const { container, getByText } = render(createElement(BrowserPanel))
