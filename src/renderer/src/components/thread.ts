@@ -386,6 +386,7 @@ export function buildThread(
         self: false,
         text: '',
         streaming: false,
+        promptId: event.promptId,
         shown: { pages: shownPages(event), title: event.title }
       })
     }
