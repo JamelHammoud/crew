@@ -3631,6 +3631,23 @@ export class CrewSession {
       .slice(-CONTEXT_EVENT_LIMIT)
   }
 
+  private transcriptOf(context: Array<Extract<SessionEvent, { kind: 'message' | 'agent.end' }>>): string {
+    return context
+      .map(e => {
+        if (e.kind === 'message') {
+          const shared = (e.attachments ?? [])
+            .map(a => `[${isImageType(a.mime) ? 'image' : 'file'}: ${a.name}]`)
+            .join(' ')
+          const reply = e.replyTo ? `, replying to ${e.replyTo.authorName}: ${JSON.stringify(e.replyTo.text)}` : ''
+          return `${e.authorName}${reply}: ${[e.text, shared].filter(Boolean).join(' ')}`
+        }
+        if (e.ok && e.text) return `${e.agentLabel}: ${e.text}`
+        return null
+      })
+      .filter(Boolean)
+      .join('\n')
+  }
+
   private buildPrompt(agent: AgentState, prompt: QueuedPrompt, reactions: ReactionEvent[]): string {
     const people = [...this.members.values()].map(m => m.name).join(', ')
     const thread = this.threads.get(prompt.threadId)
