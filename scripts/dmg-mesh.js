@@ -220,6 +220,7 @@ void main() {
       BLOOM.radius,
       BLOOM.strength
     )
+    gl.uniform2fv(gl.getUniformLocation(program, 'uShape'), BLOOM.shape)
     gl.uniform1f(gl.getUniformLocation(program, 'uWide'), BLOOM.wide)
     gl.uniform3fv(
       gl.getUniformLocation(program, 'uColour'),
