@@ -46,7 +46,7 @@ export {
 
 export { ClipboardGlyph as PasteGlyph, PhotoGlyph as ImageGlyph }
 
-export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />)
+export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />, 2.13)
 
 export const FrameGlyph = glyph(
   <>
