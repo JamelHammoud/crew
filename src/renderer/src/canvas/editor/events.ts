@@ -47,7 +47,8 @@ export class CanvasEventBridge {
     const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerDown(screen, page, event, event.pointerType)
-    event.currentTarget instanceof Element && event.currentTarget.setPointerCapture?.(event.pointerId)
+    const currentTarget = event.currentTarget as (EventTarget & { setPointerCapture?: (id: number) => void }) | null
+    currentTarget?.setPointerCapture?.(event.pointerId)
     this.dispatch({
       ...pointerInfo(event.button === 1 ? 'middle_click' : event.button === 2 ? 'right_click' : 'pointer_down', event, screen, page, 'down'),
       ...resolveTarget(event, page, this.editor)
@@ -160,7 +161,7 @@ export class CanvasEventBridge {
 }
 
 function resolveTarget(event: Event, page: { x: number; y: number }, editor: Editor): Record<string, unknown> {
-  const target = event.target instanceof Element ? event.target : null
+  const target = event.target && typeof (event.target as Element).closest === 'function' ? event.target as Element : null
   const taggedHandle = target?.closest('[data-canvas-handle]') as HTMLElement | null
   if (taggedHandle?.dataset.canvasHandle) {
     return { target: 'selection', handle: taggedHandle.dataset.canvasHandle }

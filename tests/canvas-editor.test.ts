@@ -3,6 +3,7 @@ import { Editor } from '../src/renderer/src/canvas/editor'
 import { Box } from '../src/renderer/src/canvas/math'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
 import { FrameShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
+import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
 function editor() {
   return new Editor({
@@ -93,5 +94,43 @@ describe('the canvas editor', () => {
     subject.user.updateUserPreferences({ colorScheme: 'dark' })
     expect(subject.getColorMode()).toBe('dark')
     expect(subject.getCurrentTheme().colors.dark['light-blue']).toMatchObject({ solid: '#4dabf7', fill: '#4dabf7' })
+  })
+
+  it('routes shape pointer events into selection and translation tools', () => {
+    const subject = new Editor({
+      store: createTLStore({ id: 'event-test' }),
+      shapeUtils: [FrameShapeUtil, GroupShapeUtil],
+      tools: [SelectTool],
+      getContainer: () => ({
+        focus: () => undefined,
+        getBoundingClientRect: () => ({ left: 0, top: 0 })
+      }) as HTMLElement
+    })
+    const id = frame(subject, 'drag', 0, 0, 100, 60)
+    const shapeElement = {
+      dataset: { shapeId: id },
+      closest: (selector: string) => selector === '[data-shape-id]' ? shapeElement : null
+    }
+    const pointer = (x: number, buttons: number) => ({
+      clientX: x,
+      clientY: 10,
+      pointerId: 1,
+      pointerType: 'mouse',
+      button: 0,
+      buttons,
+      pressure: buttons ? 0.5 : 0,
+      shiftKey: false,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      target: shapeElement,
+      currentTarget: null
+    }) as unknown as PointerEvent
+    const handlers = subject.getCanvasEventHandlers()
+    handlers.onPointerDown(pointer(10, 1))
+    expect(subject.getSelectedShapeIds()).toEqual([id])
+    handlers.onPointerMove(pointer(30, 1))
+    handlers.onPointerUp(pointer(30, 0))
+    expect(subject.getShape(id)?.x).toBe(20)
   })
 })
