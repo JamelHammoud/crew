@@ -94,6 +94,19 @@ describe('the picture', () => {
     expect(dmgBackground('AAAA')).toContain('data:image/png;base64,AAAA')
   })
 
+  it('stands on the ground the mesh is painted on', () => {
+    const shader = readFileSync(path.join(root, 'scripts/dmg-mesh.js'), 'utf8')
+    const paper = shader.match(/const PAPER = \[([\d., ]+)\]/)
+    expect(paper).toBeTruthy()
+    const [red, green, blue] = paper![1].split(',').map(Number)
+    expect(hex(red, green, blue)).toBe(GROUND)
+  })
+
+  it('leaves the ground light enough to read the labels Finder pins to near black', () => {
+    expect(contrast(LABEL, GROUND)).toBeGreaterThan(4.5)
+    expect(contrast(INK, GROUND)).toBeGreaterThan(4.5)
+  })
+
   it('sets the words in one face at one size', () => {
     const svg = dmgBackground(null)
     expect(svg).not.toContain('<tspan')
