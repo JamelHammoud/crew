@@ -44,7 +44,7 @@ export class CanvasEventBridge {
 
   private pointerDown(event: PointerEvent): void {
     const screen = screenPoint(event, this.editor.getContainer())
-    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    const page = this.editor.screenToPage(screen)
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerDown(screen, page, event, event.pointerType)
     const currentTarget = event.currentTarget as (EventTarget & { setPointerCapture?: (id: number) => void }) | null
@@ -57,7 +57,7 @@ export class CanvasEventBridge {
 
   private pointerMove(event: PointerEvent): void {
     const screen = screenPoint(event, this.editor.getContainer())
-    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    const page = this.editor.screenToPage(screen)
     this.pointers.set(event.pointerId, screen)
     this.editor.inputs.pointerMove(screen, page, event, this.editor.options.dragDistanceSquared as number)
     this.dispatch({ ...pointerInfo('pointer_move', event, screen, page, 'move'), ...resolveTarget(event, page, this.editor) })
@@ -65,7 +65,7 @@ export class CanvasEventBridge {
 
   private pointerUp(event: PointerEvent): void {
     const screen = screenPoint(event, this.editor.getContainer())
-    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    const page = this.editor.screenToPage(screen)
     this.editor.inputs.pointerUp(screen, page, event)
     this.pointers.delete(event.pointerId)
     this.dispatch({ ...pointerInfo('pointer_up', event, screen, page, 'up'), ...resolveTarget(event, page, this.editor) })
@@ -89,7 +89,7 @@ export class CanvasEventBridge {
 
   private wheel(event: WheelEvent): void {
     const screen = screenPoint(event, this.editor.getContainer())
-    const page = this.editor.screenToPage({ x: event.clientX, y: event.clientY })
+    const page = this.editor.screenToPage(screen)
     this.editor.inputs.updateModifiers(event)
     const camera = this.editor.getCamera()
     if (event.ctrlKey || event.metaKey) {
@@ -197,7 +197,7 @@ function pointerInfo(name: CanvasEventInfo['name'], event: PointerEvent, screen:
 
 function mouseInfo(name: CanvasEventInfo['name'], event: MouseEvent, editor: Editor): CanvasEventInfo {
   const screen = screenPoint(event, editor.getContainer())
-  return pointerInfo(name, event as PointerEvent, screen, editor.screenToPage({ x: event.clientX, y: event.clientY }), 'up')
+  return pointerInfo(name, event as PointerEvent, screen, editor.screenToPage(screen), 'up')
 }
 
 function keyInfo(name: CanvasEventInfo['name'], event: KeyboardEvent): CanvasEventInfo {
