@@ -55,10 +55,6 @@ export default function Machine() {
           </Row>
         )}
         <CommandRow />
-        <VersionRow />
-      </Section>
-      <Section title="Credits">
-        <CreditsRow />
       </Section>
     </Page>
   )

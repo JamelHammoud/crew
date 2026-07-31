@@ -223,6 +223,11 @@ export type SessionEvent =
       ok: boolean
       text?: string
       error?: string
+      // A run somebody stopped, which is not a run that went wrong. The host is
+      // the one that asked for it, so it is the one that can say so: what comes
+      // back off a killed CLI is whatever that CLI says about being killed, and
+      // reading the word out of an error string would be a guess.
+      stopped?: boolean
       threadId?: string
       ms?: number
       tokens?: number
