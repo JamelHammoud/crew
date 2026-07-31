@@ -24,6 +24,7 @@ export const TRAVEL: {
   radius: number
   glide: number
   wake: number
+  still: number
 }
 
 export const DMG_DEFS: string

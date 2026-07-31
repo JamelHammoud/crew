@@ -77,7 +77,7 @@ export function markAt(where) {
   return round(TRAVEL.from + (TRAVEL.to - TRAVEL.from) * where)
 }
 
-export function dmgOverlay(geometry, where = 0.66) {
+export function dmgOverlay(geometry, where = TRAVEL.still) {
   const { discs } = markGroup(geometry, 'mark')
   const head = markAt(where)
   return `  <g transform="translate(${head} ${DMG.line})">
