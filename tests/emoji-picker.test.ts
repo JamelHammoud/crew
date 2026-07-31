@@ -104,6 +104,20 @@ describe('emoji reactions', () => {
     expect(isReactionEmoji('🫪')).toBe(true)
   })
 
+  it('finds and reacts with the distorted face from the picker', () => {
+    const reactToMessage = mount()
+    fireEvent.click(screen.getByLabelText('More reactions'))
+
+    const search = screen.getByPlaceholderText('Search emoji')
+    fireEvent.change(search, { target: { value: 'distorted' } })
+    const button = within(pickerOf(search)).getByLabelText('React with :distorted_face:')
+    const picture = button.querySelector('span[aria-hidden]') as HTMLElement
+
+    expect(picture.style.backgroundImage).toContain('distorted-face.png')
+    fireEvent.click(button)
+    expect(reactToMessage).toHaveBeenCalledWith('message:m1', '🫪')
+  })
+
   it('holds the more reactions tooltip back while the picker is open', () => {
     vi.useFakeTimers()
     mount()
