@@ -53,6 +53,10 @@ const allowed = (options: unknown): string => {
 export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dialog {
   const model = get('model')
   const pending = new Map<number, Stage>()
+  // There is no flag to start a session on, so what a run is set to is said
+  // over the wire once the session exists, one setting at a time, before the
+  // turn starts. A turn sent alongside them would race the settings it is for.
+  const settings: Array<[string, string]> = []
   let next = 0
   let sessionId = ''
 
@@ -62,14 +66,23 @@ export function kimiDialog(prompt: string, cwd: string, get: SettingReader): Dia
     return rpc({ id, method, params })
   }
 
-  const startTurn = () => ask('turn', 'session/prompt', { sessionId, prompt: input(prompt) })
+  const step = (): string => {
+    const setting = settings.shift()
+    if (!setting) return ask('turn', 'session/prompt', { sessionId, prompt: input(prompt) })
+    const [configId, value] = setting
+    return ask('config', 'session/set_config_option', { sessionId, configId, value })
+  }
 
   const answered = (stage: Stage, result: any): string[] => {
     if (stage === 'init') return [ask('session', 'session/new', { cwd, mcpServers: [] })]
     if (stage === 'session') {
       sessionId = str(result?.sessionId)
-      return sessionId ? [startTurn()] : []
+      if (!sessionId) return []
+      settings.push(['mode', MODE])
+      if (model) settings.push(['model', model])
+      return [step()]
     }
+    if (stage === 'config') return [step()]
     return []
   }
 
