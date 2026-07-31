@@ -2,37 +2,37 @@ import type { ReactElement, ReactNode } from 'react'
 import type { Geometry2d } from '../geometry'
 import type { Box, SelectionHandle } from '../math/Box'
 import { Vec, type VecLike } from '../math/Vec'
-import type { TLAsset, TLBinding, TLBindingType, TLShape, TLShapeId } from '../schema'
+import type { TLAsset as CrewAsset, TLBinding as CrewBinding, TLBindingType as CrewBindingType, TLShape as CrewShape, TLShapeId as CrewShapeId } from '../schema'
 import type { PropsConfig } from '../schema/shapeProps'
 
 export interface ShapeEditor {
-  getAsset?(id: string): TLAsset | undefined
-  getBindingsFromShape?(id: TLShapeId, type?: TLBindingType): TLBinding[]
-  getShape?(id: TLShapeId): TLShape | undefined
-  getShapeGeometry?(shapeOrId: TLShape | TLShapeId): Geometry2d
-  getSortedChildIdsForParent?(id: TLShapeId): TLShapeId[]
-  getShapeLocalTransform?(shape: TLShape): { applyToPoint(point: VecLike): VecLike }
-  getPointInShapeSpace?(shape: TLShape, point: VecLike): VecLike
-  getShapePageBounds?(shapeOrId: TLShape | TLShapeId): Box | undefined
-  updateShape?(shape: Partial<TLShape> & Pick<TLShape, 'id' | 'type'>): void
-  updateShapes?(shapes: Array<Partial<TLShape> & Pick<TLShape, 'id' | 'type'>>): void
+  getAsset?(id: string): CrewAsset | undefined
+  getBindingsFromShape?(id: CrewShapeId, type?: CrewBindingType): CrewBinding[]
+  getShape?(id: CrewShapeId): CrewShape | undefined
+  getShapeGeometry?(shapeOrId: CrewShape | CrewShapeId): Geometry2d
+  getSortedChildIdsForParent?(id: CrewShapeId): CrewShapeId[]
+  getShapeLocalTransform?(shape: CrewShape): { applyToPoint(point: VecLike): VecLike }
+  getPointInShapeSpace?(shape: CrewShape, point: VecLike): VecLike
+  getShapePageBounds?(shapeOrId: CrewShape | CrewShapeId): Box | undefined
+  updateShape?(shape: Partial<CrewShape> & Pick<CrewShape, 'id' | 'type'>): void
+  updateShapes?(shapes: Array<Partial<CrewShape> & Pick<CrewShape, 'id' | 'type'>>): void
   deleteBinding?(id: string): void
 }
 
-export type TLResizeMode = 'resize_bounds' | 'scale_shape'
+export type ShapeResizeMode = 'resize_bounds' | 'scale_shape'
 
-export interface TLResizeInfo<Shape extends TLShape> {
+export interface ShapeResizeInfo<Shape extends CrewShape> {
   newPoint: Vec
   handle: SelectionHandle
-  mode: TLResizeMode
+  mode: ShapeResizeMode
   scaleX: number
   scaleY: number
   initialBounds: Box
   initialShape: Shape
 }
 
-export interface TLShapePartial<Shape extends TLShape = TLShape> {
-  id?: TLShapeId
+export interface CrewShapePartial<Shape extends CrewShape = CrewShape> {
+  id?: CrewShapeId
   type: Shape['type']
   x?: number
   y?: number
@@ -42,19 +42,19 @@ export interface TLShapePartial<Shape extends TLShape = TLShape> {
   meta?: Record<string, unknown>
 }
 
-export interface TLShapeUtilConstructor<Shape extends TLShape = TLShape> {
+export interface ShapeUtilConstructor<Shape extends CrewShape = CrewShape> {
   new (editor: ShapeEditor): ShapeUtil<Shape>
   type: Shape['type']
   props?: PropsConfig<Shape['props']>
   handledAssetTypes?: readonly string[]
 }
 
-export abstract class ShapeUtil<Shape extends TLShape = TLShape> {
+export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   static type: string
-  static props?: PropsConfig<TLShape['props']>
+  static props?: PropsConfig<CrewShape['props']>
   static handledAssetTypes?: readonly string[]
 
-  static configure<T extends TLShapeUtilConstructor>(this: T, options: Record<string, unknown>): T {
+  static configure<T extends ShapeUtilConstructor>(this: T, options: Record<string, unknown>): T {
     const Parent: any = this
     class ConfiguredShapeUtil extends Parent {
       constructor(...args: any[]) {
@@ -98,24 +98,24 @@ export abstract class ShapeUtil<Shape extends TLShape = TLShape> {
   isAspectRatioLocked(_shape: Shape): boolean { return false }
   isFrameLike(_shape: Shape): boolean { return false }
   isExportBoundsContainer(_shape: Shape): boolean { return false }
-  canReceiveNewChildrenOfType(_shape: Shape, _type: TLShape['type']): boolean { return false }
-  canRemoveChildrenOfType(_shape: Shape, _type: TLShape['type']): boolean { return true }
+  canReceiveNewChildrenOfType(_shape: Shape, _type: CrewShape['type']): boolean { return false }
+  canRemoveChildrenOfType(_shape: Shape, _type: CrewShape['type']): boolean { return true }
   getClipPath?(_shape: Shape): Vec[] | undefined
   getText?(_shape: Shape): string
   getAriaDescriptor?(_shape: Shape): string
-  onResize?(shape: Shape, info: TLResizeInfo<Shape>): Shape
+  onResize?(shape: Shape, info: ShapeResizeInfo<Shape>): Shape
   toSvg?(shape: Shape): ReactElement | null | Promise<ReactElement | null>
 }
 
-export abstract class BaseBoxShapeUtil<Shape extends TLShape & { props: { w: number; h: number } }> extends ShapeUtil<Shape> {
-  override onResize(shape: Shape, info: TLResizeInfo<Shape>): Shape {
+export abstract class BaseBoxShapeUtil<Shape extends CrewShape & { props: { w: number; h: number } }> extends ShapeUtil<Shape> {
+  override onResize(shape: Shape, info: ShapeResizeInfo<Shape>): Shape {
     return resizeBox(shape, info)
   }
 }
 
-export function resizeBox<Shape extends TLShape & { props: { w: number; h: number } }>(
+export function resizeBox<Shape extends CrewShape & { props: { w: number; h: number } }>(
   shape: Shape,
-  info: TLResizeInfo<Shape>,
+  info: ShapeResizeInfo<Shape>,
   limits: { minWidth?: number; minHeight?: number; maxWidth?: number; maxHeight?: number } = {}
 ): Shape {
   const minWidth = limits.minWidth ?? 1
@@ -140,13 +140,13 @@ export function resizeBox<Shape extends TLShape & { props: { w: number; h: numbe
 }
 
 export interface BindingEditor {
-  getShape?(id: TLShapeId): TLShape | undefined
-  updateShape?(shape: Partial<TLShape> & Pick<TLShape, 'id' | 'type'>): void
+  getShape?(id: CrewShapeId): CrewShape | undefined
+  updateShape?(shape: Partial<CrewShape> & Pick<CrewShape, 'id' | 'type'>): void
 }
 
-export abstract class BindingUtil<Binding extends TLBinding = TLBinding> {
+export abstract class BindingUtil<Binding extends CrewBinding = CrewBinding> {
   static type: string
-  static props?: PropsConfig<TLBinding['props']>
+  static props?: PropsConfig<CrewBinding['props']>
 
   constructor(public editor: BindingEditor) {}
 

@@ -372,6 +372,8 @@ describe('line tool hierarchy', () => {
     const end = editor.getShape(id)!.props.points.a2
     editor.point.set(shape.x + end.x + 1, shape.y + end.y)
     tool.onPointerDown()
+    expect(editor.shapes.size).toBe(1)
+    expect(tool.getCurrentStateId()).toBe('line.pointing')
     expect(Object.keys(editor.getShape(id)!.props.points)).toHaveLength(3)
   })
 
