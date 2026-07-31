@@ -210,11 +210,7 @@ export function snapshotToSvgResult(
     ? exactBounds(options.bounds)
     : rendered.reduce<ExportBounds | null>((box, node) => unionBounds(box, renderedBounds(node)), null)
   if (!bounds) return null
-  const defaultPadding = options.bounds
-    ? 0
-    : options.shapeIds?.length === 1 && roots[0]?.type === 'frame'
-      ? 0
-      : 32
+  const defaultPadding = options.bounds ? 0 : options.shapeIds?.length === 1 && roots[0]?.type === 'frame' ? 0 : 32
   const padding = Math.max(0, Number.isFinite(options.padding) ? options.padding! : defaultPadding)
   bounds = expandBounds(bounds, padding)
   const scale = positive(options.scale)

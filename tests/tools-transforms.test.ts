@@ -208,6 +208,33 @@ describe('canvas transforms', () => {
     expect(update.props.h).toBe(100)
   })
 
+  it('keeps an unaligned shape uniform and compensates its center and mirrored rotation', () => {
+    const shape = geoShape('unaligned', { x: 100, rotation: PI / 4 })
+    const pageTransform = Mat.Compose(Mat.Translate(100, 0), Mat.Rotate(PI / 4))
+    const snapshot = {
+      shape,
+      bounds: new Box(0, 0, 100, 50),
+      pageTransform,
+      parentTransform: null
+    }
+    const update = resizeShape(snapshot, new Vec(2, 1), {
+      scaleOrigin: new Vec(),
+      scaleAxisRotation: 0,
+      handle: 'bottom_right'
+    }) as GeoShape
+    expect(update.props.w).toBe(100)
+    expect(update.props.h).toBe(50)
+    near(update, 217.67766953, 0)
+
+    const mirrored = resizeShape(snapshot, new Vec(-2, 1), {
+      scaleOrigin: new Vec(),
+      scaleAxisRotation: 0,
+      handle: 'bottom_right'
+    }) as GeoShape
+    expect(mirrored.rotation).toBeCloseTo(-PI / 4, 8)
+    near(mirrored, -288.38834765, 70.71067812)
+  })
+
   it('rotates page points and local angles around a shared center', () => {
     const first = geoShape('first', { x: 10, rotation: PI2 - HALF_PI })
     const second = geoShape('second', { x: -10 })
