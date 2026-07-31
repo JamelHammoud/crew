@@ -159,7 +159,7 @@ void main() {
     float seed = float(i);
     float n = band(p, wave, drift, lie, seed, uTime);
     float a = smoothstep(-0.04, 0.46, n) * wave.w;
-    colour = mix(colour, uColour[i], a);
+    colour = mix(colour, mix(uColour[i], vec3(1.0), uLift), a);
     float dx = band(p + vec2(nudge.x, 0.0), wave, drift, lie, seed, uTime)
              - band(p - vec2(nudge.x, 0.0), wave, drift, lie, seed, uTime);
     float dy = band(p + vec2(0.0, nudge.y), wave, drift, lie, seed, uTime)
