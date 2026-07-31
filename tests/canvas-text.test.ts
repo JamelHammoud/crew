@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom'
 import { createElement } from 'react'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
+import { Editor as TipTapEditor } from '@tiptap/core'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   FontMeasurementCache,
@@ -18,6 +19,8 @@ import {
   richTextToHtml,
   richTextToPlainText,
   richTextToProseMirror,
+  richTextExtensions,
+  runRichTextAction,
   screenPointToText,
   textPointToScreen,
   textTransformCss,
@@ -320,7 +323,26 @@ describe('canvas rich text toolbar', () => {
   it('normalizes links the same way the current Design editor does', () => {
     expect(normalizeLink(' crew.test ')).toBe('https://crew.test')
     expect(normalizeLink('https://crew.test')).toBe('https://crew.test')
-    expect(normalizeLink('mailto:hello@crew.test')).toBe('mailto:hello@crew.test')
+    expect(normalizeLink('mailto:hello@crew.test')).toBe('https://mailto:hello@crew.test')
     expect(normalizeLink('   ')).toBe('')
+  })
+
+  it('runs every formatting command exposed by Design', () => {
+    const dom = installDom()
+    const actions = ['bold', 'italic', 'code', 'bulletList', 'highlight'] as const
+    for (const action of actions) {
+      const element = dom.window.document.createElement('div')
+      dom.window.document.body.appendChild(element)
+      const editor = new TipTapEditor({
+        element,
+        extensions: richTextExtensions,
+        content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew' }] }] }
+      })
+      editor.commands.setTextSelection({ from: 1, to: 5 })
+      expect(runRichTextAction(editor, action)).toBe(true)
+      expect(editor.isActive(action)).toBe(true)
+      editor.destroy()
+      element.remove()
+    }
   })
 })

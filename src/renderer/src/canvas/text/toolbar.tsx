@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { BoldGlyph, BulletListGlyph, CodeGlyph, ItalicGlyph, LinkGlyph } from '../../components/doc/docGlyphs'
 import { HighlighterGlyph, type Glyph } from '../../design/glyphs'
+import { ExternalLinkGlyph, TrashGlyph } from '../../icons'
 
 export type RichTextAction = 'bold' | 'italic' | 'code' | 'link' | 'bulletList' | 'highlight'
 
@@ -36,7 +37,7 @@ export function runRichTextAction(editor: TipTapEditor, action: Exclude<RichText
 
 export function normalizeLink(value: string): string {
   const trimmed = value.trim()
-  if (trimmed === '' || /^(https?:|mailto:|tel:)/i.test(trimmed)) return trimmed
+  if (trimmed === '' || trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed
   return `https://${trimmed}`
 }
 
@@ -56,6 +57,25 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
   const [position, setPosition] = useState<ToolbarPosition | null>(null)
   const previous = useRef<ToolbarPosition | null>(null)
   const input = useRef<HTMLInputElement>(null)
+
+  const closeLink = useCallback(() => {
+    setLink(null)
+    if (!editor) return
+    const from = editor.state.selection.from
+    editor.commands.setTextSelection({ from, to: from })
+    editor.commands.focus()
+  }, [editor])
+
+  const commitLink = useCallback(
+    (value: string) => {
+      if (!editor) return
+      const href = normalizeLink(value)
+      if (href) editor.chain().setLink({ href }).run()
+      else editor.chain().unsetLink().run()
+      closeLink()
+    },
+    [closeLink, editor]
+  )
 
   const place = useCallback(() => {
     if (!editor || disabled || editor.state.selection.empty) {
@@ -113,28 +133,26 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
     return () => editor.view.dom.ownerDocument.removeEventListener('keydown', keydown)
   }, [editor])
 
+  useEffect(() => {
+    if (!editor || link === null) return
+    const document = editor.view.dom.ownerDocument
+    const outside = (event: PointerEvent) => {
+      const toolbar = document.querySelector('[data-testid="canvas-rich-text-toolbar"]')
+      if (toolbar?.contains(event.target as Node)) return
+      commitLink(link)
+    }
+    document.addEventListener('pointerdown', outside, { capture: true })
+    return () => document.removeEventListener('pointerdown', outside, { capture: true })
+  }, [commitLink, editor, link])
+
   if (!editor || disabled || (!position && !previous.current)) return null
   const at = position ?? previous.current!
-  const preventSelectionLoss = (event: ReactPointerEvent) => event.preventDefault()
-  const closeLink = () => {
-    setLink(null)
-    const from = editor.state.selection.from
-    editor.commands.setTextSelection({ from, to: from })
-    editor.commands.focus()
-  }
-  const commitLink = () => {
-    const href = normalizeLink(link ?? '')
-    if (href) editor.chain().setLink({ href }).run()
-    else editor.chain().unsetLink().run()
-    closeLink()
-  }
   const toolbar = (
     <div
       role="toolbar"
       aria-label="Text formatting"
       className="glass fixed z-[70] flex h-9 w-fit -translate-x-1/2 -translate-y-[calc(100%+8px)] items-center gap-0.5 rounded-full px-1.5 text-fg animate-pop"
       style={{ left: at.left, top: at.top }}
-      onPointerDown={preventSelectionLoss}
       data-testid="canvas-rich-text-toolbar"
     >
       {link !== null ? (
@@ -147,11 +165,10 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
             onKeyDown={event => {
               if (event.key === 'Enter') {
                 event.preventDefault()
-                commitLink()
+                commitLink(link)
               } else if (event.key === 'Escape') {
                 event.preventDefault()
-                setLink(null)
-                editor.commands.focus()
+                closeLink()
               }
             }}
             placeholder="Paste a link"
@@ -160,10 +177,29 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
           />
           <button
             type="button"
-            onClick={commitLink}
-            className="h-6 shrink-0 rounded-full bg-fg px-2.5 text-xs font-semibold text-ink-900 transition-all active:scale-95"
+            aria-label="Open link"
+            disabled={link.trim() === ''}
+            onPointerDown={preventSelectionLoss}
+            onClick={() => {
+              const href = normalizeLink(link)
+              if (href) editor.view.dom.ownerDocument.defaultView?.open(href, '_blank')
+              closeLink()
+            }}
+            className="grid h-7 w-7 place-items-center rounded-full text-fg/70 transition-all hover:bg-fg/[0.08] hover:text-fg active:scale-95 disabled:opacity-35"
           >
-            Link
+            <ExternalLinkGlyph className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Remove link"
+            onPointerDown={preventSelectionLoss}
+            onClick={() => {
+              editor.chain().unsetLink().run()
+              closeLink()
+            }}
+            className="grid h-7 w-7 place-items-center rounded-full text-fg/70 transition-all hover:bg-fg/[0.08] hover:text-fg active:scale-95"
+          >
+            <TrashGlyph className="h-4 w-4" />
           </button>
         </>
       ) : (
@@ -175,6 +211,7 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
             type="button"
             aria-label="Link"
             aria-pressed={editor.isActive('link')}
+            onPointerDown={preventSelectionLoss}
             onClick={() => openLinkEditor(editor, setLink)}
             className={buttonClass(editor.isActive('link'))}
           >
@@ -192,11 +229,13 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
 
 function openLinkEditor(editor: TipTapEditor, setLink: (value: string) => void): void {
   if (editor.isActive('link') && editor.state.selection.empty) {
-    const range = getMarkRange(
-      editor.state.doc.resolve(editor.state.selection.from),
-      editor.schema.marks.link as MarkType
-    )
-    if (range) editor.commands.setTextSelection(range)
+    try {
+      const range = getMarkRange(
+        editor.state.doc.resolve(editor.state.selection.from),
+        editor.schema.marks.link as MarkType
+      )
+      if (range) editor.commands.setTextSelection(range)
+    } catch {}
   }
   setLink(editor.isActive('link') ? String(editor.getAttributes('link').href ?? '') : '')
 }
@@ -209,12 +248,17 @@ function ToolbarButton({ editor, item }: { editor: TipTapEditor; item: ActionSpe
       type="button"
       aria-label={item.label}
       aria-pressed={active}
+      onPointerDown={preventSelectionLoss}
       onClick={() => runRichTextAction(editor, item.action)}
       className={buttonClass(active)}
     >
       <Glyph className="h-4 w-4" />
     </button>
   )
+}
+
+function preventSelectionLoss(event: ReactPointerEvent): void {
+  event.preventDefault()
 }
 
 function buttonClass(active: boolean): string {
