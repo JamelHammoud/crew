@@ -238,6 +238,11 @@ interface Thread {
   // The thread a question on the side was asked from. It is read for context and
   // nothing is ever said back into it, so the work in it carries on untouched.
   aside?: string
+  // The thread this one carried on from, and the moment it was carried. The talk
+  // before that moment is read for context and the thread it came from is left
+  // exactly as it was, so several forks off one good place all start there.
+  forkedFrom?: string
+  forkedAt?: number
   // A thread another one sent out. It reads inside its parent rather than as a
   // card of its own, and it answers back into whatever the parent is doing.
   parentThreadId?: string
