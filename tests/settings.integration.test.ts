@@ -40,11 +40,44 @@ describe('provider settings map to command line flags', () => {
     expect(args).not.toContain('claude-opus-4-8')
   })
 
-  it('kimi passes the model alias and stays free of approval flags', () => {
-    const args = kimiArgs('hi', reader({ model: 'kimi-code/k3' }))
-    expect(args.join(' ')).toContain('--model kimi-code/k3')
-    expect(args).not.toContain('--yolo')
-    expect(args).not.toContain('--auto')
+  it('kimi walks the acp handshake and allows what it is asked', () => {
+    expect(kimiArgs()).toEqual(['acp'])
+    const dialog = kimiDialog('hi', '/tmp/work', reader({ model: 'kimi-code/k3' }))
+    const sent: string[] = [...dialog.begin()]
+    const init = JSON.parse(sent[0])
+    expect(init.method).toBe('initialize')
+    expect(init.params.clientCapabilities.fs).toEqual({ readTextFile: false, writeTextFile: false })
+
+    sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 1, result: { protocolVersion: 1 } })))
+    const session = JSON.parse(sent[sent.length - 1])
+    expect(session.method).toBe('session/new')
+    expect(session.params).toMatchObject({ cwd: '/tmp/work', mcpServers: [] })
+
+    sent.push(...dialog.answer(JSON.stringify({ jsonrpc: '2.0', id: 2, result: { sessionId: 's1' } })))
+    const turn = JSON.parse(sent[sent.length - 1])
+    expect(turn.method).toBe('session/prompt')
+    expect(turn.params.sessionId).toBe('s1')
+    expect(turn.params.prompt).toEqual([{ type: 'text', text: 'hi' }])
+
+    const asked = {
+      jsonrpc: '2.0',
+      id: 9,
+      method: 'session/request_permission',
+      params: {
+        sessionId: 's1',
+        options: [
+          { optionId: 'approve_once', kind: 'allow_once' },
+          { optionId: 'approve_always', kind: 'allow_always' },
+          { optionId: 'reject', kind: 'reject_once' }
+        ]
+      }
+    }
+    const [answer] = dialog.answer(JSON.stringify(asked))
+    expect(JSON.parse(answer)).toEqual({
+      jsonrpc: '2.0',
+      id: 9,
+      result: { outcome: { outcome: 'selected', optionId: 'approve_always' } }
+    })
   })
 
   it('codex bypasses approvals and sets reasoning effort', () => {
