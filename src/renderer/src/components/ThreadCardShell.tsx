@@ -32,6 +32,7 @@ export default function ThreadCardShell({
   if (thread.mode === 'plan') chips.push('plan')
   if (thread.ghost) chips.push('ghost')
   if (thread.voice) chips.push('voice')
+  if (thread.forkedFrom) chips.push('fork')
 
   return (
     <FeedCard
