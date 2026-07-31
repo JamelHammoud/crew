@@ -176,21 +176,22 @@ export default function ThreadView({ threadId }: { threadId: string }) {
 
   const send = () => {
     if (!text.trim() && pendingCount(threadId) === 0) return
-    // A question on the side is answered in the panel and never lands here, so
-    // it is not a reply to anything in the thread.
-    const asking = command === 'btw'
+    // A question on the side is answered in the panel and a fork carries on in a
+    // thread of its own. Neither lands here, so neither is a reply to anything in
+    // this thread and neither is anything to scroll down to.
+    const elsewhere = command === 'btw' || command === 'fork'
     sendChat(
       text,
       threadId,
       undefined,
-      asking ? undefined : replyTo?.reactionTargetId,
+      elsewhere ? undefined : replyTo?.reactionTargetId,
       undefined,
       command ? [command] : undefined
     )
     setReplyTo(null)
     mention.close()
     slash.close()
-    if (!asking) jumpToBottom()
+    if (!elsewhere) jumpToBottom()
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
