@@ -355,6 +355,76 @@ describe('the end of a turn', () => {
     expect(kimiParser().parse(reply(1, { protocolVersion: 1, agentCapabilities: {} }))).toEqual([])
     expect(kimiParser().parse(reply(2, { sessionId: 'session_abc', configOptions: [] }))).toEqual([])
   })
+
+  it('leaves the run open on a turn cancelled to make room for a steer', () => {
+    expect(stopped('cancelled')).toEqual([])
+  })
+})
+
+describe('steering a kimi run', () => {
+  const live = (dialog: ReturnType<typeof kimiDialog>) => {
+    dialog.begin()
+    dialog.answer(reply(1, { protocolVersion: 1, agentCapabilities: {} }))
+    dialog.answer(reply(2, OPENED))
+    dialog.answer(reply(3, {}))
+    return dialog
+  }
+
+  const started = () => live(kimiDialog('go', '/repo', reader()))
+
+  const sent = (lines: string[]) => lines.map(line => JSON.parse(line))
+
+  it('asks the turn already in flight to stand down', () => {
+    const line = started().steer('stop and say pineapple')
+    expect(line).not.toBeNull()
+    const cancel = JSON.parse(line!)
+    expect(cancel.method).toBe('session/cancel')
+    expect(cancel.params).toEqual({ sessionId: 'session_abc' })
+    expect(cancel.id).toBeUndefined()
+  })
+
+  it('carries what was typed into a turn of its own once the last one lets go', () => {
+    const dialog = started()
+    dialog.steer('say pineapple')
+    const next = sent(dialog.answer(reply(4, { stopReason: 'cancelled' })))
+    expect(next).toHaveLength(1)
+    expect(next[0].method).toBe('session/prompt')
+    expect(next[0].params.sessionId).toBe('session_abc')
+    expect(next[0].params.prompt).toEqual([{ type: 'text', text: 'say pineapple' }])
+  })
+
+  it('says nothing twice over, so two written in one breath arrive together', () => {
+    const dialog = started()
+    dialog.steer('first')
+    dialog.steer('second')
+    const next = sent(dialog.answer(reply(4, { stopReason: 'cancelled' })))
+    expect(next).toHaveLength(1)
+    expect(next[0].params.prompt).toEqual([{ type: 'text', text: 'first\nsecond' }])
+  })
+
+  it('holds a message written before there is a turn to steer, so it queues instead', () => {
+    expect(kimiDialog('go', '/repo', reader()).steer('too early')).toBeNull()
+  })
+
+  it('holds one written a breath after the turn ended, so it gets a run of its own', () => {
+    const dialog = started()
+    dialog.answer(reply(4, { stopReason: 'end_turn' }))
+    expect(dialog.steer('too late')).toBeNull()
+  })
+
+  it('loses nothing when the turn it was steering fell over', () => {
+    const dialog = started()
+    dialog.steer('carry on')
+    const next = sent(dialog.answer(failed(4, 'the turn fell over')))
+    expect(next).toHaveLength(1)
+    expect(next[0].method).toBe('session/prompt')
+    expect(next[0].params.prompt).toEqual([{ type: 'text', text: 'carry on' }])
+  })
+
+  it('leaves the turn alone when nothing was written into it', () => {
+    const dialog = started()
+    expect(dialog.answer(reply(4, { stopReason: 'end_turn' }))).toEqual([])
+  })
 })
 
 describe('a parser a run', () => {
