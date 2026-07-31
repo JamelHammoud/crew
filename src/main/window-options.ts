@@ -108,7 +108,54 @@ export function createWindowOptions(
       contextIsolation: true,
       sandbox: false,
       spellcheck: true,
-      webviewTag: true
+      webviewTag: true,
+      devTools
     }
   }
+}
+
+// Without an application menu the standard clipboard accelerators (copy, cut,
+// paste, select-all, undo, redo) are never registered, so they do nothing
+// inside the app. Registering the roles wires them up on every platform.
+//
+// The View menu is written out rather than taken as the `viewMenu` role,
+// because that role carries Toggle Developer Tools and its accelerator, and a
+// shipped Crew has no dev tools to toggle. Reload and the zoom stay: `⌘R` is
+// the app's own and the canvas is written around it.
+export function appMenuTemplate(
+  platform: NodeJS.Platform,
+  devTools: boolean
+): MenuItemConstructorOptions[] {
+  const isMac = platform === 'darwin'
+  return [
+    ...(isMac ? [{ role: 'appMenu' as const }] : []),
+    { role: 'fileMenu' },
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectAll' }
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        ...(devTools ? [{ role: 'toggleDevTools' as const }] : []),
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    { role: 'windowMenu' }
+  ]
 }
