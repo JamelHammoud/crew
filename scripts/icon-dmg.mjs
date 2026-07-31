@@ -52,7 +52,7 @@ export function dmgDefs() {
 export function dmgBackground(picture) {
   const ground = picture
     ? `  <image x="0" y="0" width="${DMG.width}" height="${DMG.height}" preserveAspectRatio="xMidYMid slice" href="data:image/png;base64,${picture}" />`
-    : `  <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="#ececec" />`
+    : `  <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="#f4f4f4" />`
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${DMG.width}" height="${DMG.height}" viewBox="0 0 ${DMG.width} ${DMG.height}">
   <defs>
 ${dmgDefs()}
