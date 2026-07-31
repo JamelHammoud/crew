@@ -385,7 +385,7 @@ describe('canvas copyAs', () => {
   it('hands SVG to the clipboard synchronously as text/plain', async () => {
     const image = deferred<{ blob: Blob; width: number; height: number }>()
     const toImage = vi.fn(() => image.promise)
-    const write = vi.fn(() => Promise.resolve())
+    const write = vi.fn((_items: unknown[]) => Promise.resolve())
     const editor = {
       getCurrentPageShapeIds: () => ['shape:one'],
       getSvgString: vi.fn(),
@@ -407,7 +407,7 @@ describe('canvas copyAs', () => {
 
   it('writes canonical and unsanitized PNG types from one render', async () => {
     const toImage = vi.fn(async () => ({ blob: new Blob(['png'], { type: 'image/png' }), width: 20, height: 10 }))
-    const write = vi.fn(() => Promise.resolve())
+    const write = vi.fn((_items: unknown[]) => Promise.resolve())
     const editor = {
       getCurrentPageShapeIds: () => ['shape:one'],
       getSvgString: vi.fn(),
@@ -441,7 +441,10 @@ describe('canvas copyAs', () => {
   })
 
   it('retries with resolved blobs when a clipboard rejects promised values', async () => {
-    const write = vi.fn().mockRejectedValueOnce(new Error('promises unsupported')).mockResolvedValueOnce(undefined)
+    const write = vi
+      .fn((_items: unknown[]) => Promise.resolve())
+      .mockRejectedValueOnce(new Error('promises unsupported'))
+      .mockResolvedValueOnce(undefined)
     const editor = {
       getCurrentPageShapeIds: () => ['shape:one'],
       getSvgString: vi.fn(),

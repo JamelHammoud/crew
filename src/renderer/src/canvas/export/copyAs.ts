@@ -50,7 +50,10 @@ export function copyAs(
   if (typeof navigator === 'undefined' || !navigator.clipboard) return Promise.reject(new Error('Copy not supported'))
   const chosen = selectedIds(editor, ids)
   const imageOptions: ImageExportOptions = { ...options, format: options.format }
-  const clipboard = navigator.clipboard as Clipboard & { write?: (items: ClipboardItem[]) => Promise<void> }
+  const clipboard = navigator.clipboard as unknown as {
+    write?: (items: ClipboardItem[]) => Promise<void>
+    writeText?: (value: string) => Promise<void>
+  }
   if (clipboard.write) {
     const type = options.format === 'png' ? 'image/png' : 'text/plain'
     const blob = editor.toImage(chosen, imageOptions).then(result => rewritten(result.blob, type))
