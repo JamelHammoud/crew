@@ -6,12 +6,12 @@
   const BLOOM = {
     x: 0,
     y: 0.515,
-    radius: 0.75,
+    radius: 0.88,
     strength: 1,
     wide: 0.045,
     shape: [1, 1.5],
-    fade: 2.6,
-    lift: 0.28
+    fade: 3,
+    lift: 0.24
   }
 
   const LAYERS = [
