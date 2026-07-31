@@ -8,7 +8,7 @@ import type { PropsConfig } from '../schema/shapeProps'
 export interface ShapeEditor {
   getColorMode?(): 'light' | 'dark'
   getCurrentThemeId?(): string
-  getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, string | Record<string, string>>>> }
+  getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, unknown>>> }
   getEditingShapeId?(): CrewShapeId | null
   getAsset?(id: string): CrewAsset | undefined
   getBindingsFromShape?(id: CrewShapeId, type?: CrewBindingType): CrewBinding[]
@@ -70,12 +70,24 @@ export interface ShapeUtilConstructor<Shape extends CrewShape = CrewShape> {
   handledAssetTypes?: readonly string[]
 }
 
+type ConfiguredShapeUtilConstructor<
+  Constructor extends ShapeUtilConstructor,
+  Options extends Record<string, unknown>
+> = Constructor & {
+  new (...args: ConstructorParameters<Constructor>): InstanceType<Constructor> & {
+    options: InstanceType<Constructor>['options'] & Options
+  }
+}
+
 export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   static type: string
   static props?: PropsConfig<CrewShape['props']>
   static handledAssetTypes?: readonly string[]
 
-  static configure<T extends ShapeUtilConstructor>(this: T, options: Record<string, unknown>): T {
+  static configure<Constructor extends ShapeUtilConstructor, Options extends Record<string, unknown>>(
+    this: Constructor,
+    options: Options
+  ): ConfiguredShapeUtilConstructor<Constructor, Options> {
     const Parent: any = this
     class ConfiguredShapeUtil extends Parent {
       constructor(...args: any[]) {
@@ -83,7 +95,7 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
         this.options = { ...this.options, ...options }
       }
     }
-    return ConfiguredShapeUtil as unknown as T
+    return ConfiguredShapeUtil as unknown as ConfiguredShapeUtilConstructor<Constructor, Options>
   }
 
   options: Record<string, unknown> = {}
