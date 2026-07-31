@@ -182,7 +182,7 @@ void main() {
 
   vec3 ground = mix(uPaper, vec3(1.0), clamp(glow * 0.5, 0.0, 1.0));
   vec3 lit = mix(ground, colour, clamp(glow + wide, 0.0, 1.0));
-  lit += (grain(vUv * uSize) - 0.5) * 0.015;
+  lit += (grain(vUv * uSize) - 0.5) * uGrain;
   gl_FragColor = vec4(clamp(lit, 0.0, 1.0), 1.0);
 }`
 
