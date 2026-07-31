@@ -1,0 +1,67 @@
+import { useState } from 'react'
+import { filePathOf, pageName } from '../../../shared/urls'
+import { useBrowser } from '../state/browser'
+import { isPrivate, PrivateChip, useLocated } from './fileLinks'
+import { openShown, shownPaths } from './openShown'
+import { Chevron, FilePathLink, Label, Mark, rowClass, SUBJECT, SUBJECT_MONO } from './StepRow'
+import type { Shown } from './thread'
+import type { ToolAction } from './toolActions'
+import { FilesGlyph, GlobeGlyph, PageGlyph } from './toolGlyphs'
+
+const allFiles = (pages: string[]): boolean => shownPaths(pages).length === pages.length
+
+const markFor = (pages: string[]): ToolAction['icon'] => {
+  if (!allFiles(pages)) return GlobeGlyph
+  return pages.length > 1 ? FilesGlyph : PageGlyph
+}
+
+const countOf = (pages: string[]): string => `${pages.length} ${allFiles(pages) ? 'files' : 'pages'}`
+
+function ShownLink({ page }: { page: string }) {
+  const path = filePathOf(page)
+  if (path !== null) return <FilePathLink path={path} className={SUBJECT_MONO} />
+  return (
+    <button
+      type="button"
+      onClick={() => useBrowser.getState().showPage(page)}
+      className={`${SUBJECT_MONO} cursor-pointer transition-colors hover:text-fg hover:underline underline-offset-2`}
+    >
+      {pageName(page)}
+    </button>
+  )
+}
+
+// A run showing its work, as the row it leaves behind. It reads the way every
+// other step in the thread reads, because it is one: what the agent did, what
+// it did it to, and the rest of it a press away.
+export default function PageRow({ shown }: { shown: Shown }) {
+  const [open, setOpen] = useState(false)
+  const { pages, title } = shown
+  useLocated(shownPaths(pages))
+  const many = pages.length > 1
+  const one = pages[0] ?? ''
+  const path = filePathOf(one)
+  const away = !many && path !== null && isPrivate(path)
+  const where = many ? countOf(pages) : pageName(one)
+  const action: ToolAction = { icon: markFor(pages), run: 'Showing', done: 'Showed', prose: true }
+  const press = many ? () => setOpen(!open) : away ? null : () => void openShown(pages)
+
+  return (
+    <div className="animate-rise pl-14">
+      <button onClick={press ?? undefined} className={rowClass(press !== null)}>
+        <Mark icon={action.icon} running={false} />
+        <Label action={action} running={false} />
+        {title && <span className={SUBJECT}>{title}</span>}
+        {away ? <PrivateChip /> : where !== title && <span className={SUBJECT_MONO}>{where}</span>}
+        {many && <Chevron open={open} />}
+      </button>
+      {many && open && (
+        <div className="mt-1 mb-1.5 pl-7 flex flex-col items-start gap-1">
+          {pages.map(page => (
+            <ShownLink key={page} page={page} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

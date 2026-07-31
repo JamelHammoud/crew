@@ -62,6 +62,7 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   )
   const threadSteps = useFamilySteps(threadId)
   const start = threadEvents.find(event => event.kind === 'agent.start' && event.promptId === promptId)
+  const ended = lastEnd(threadId, threadEvents)
 
   useLayoutEffect(() => {
     follow()

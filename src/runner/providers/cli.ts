@@ -317,7 +317,7 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
       stdout.on('data', data => {
         bump()
         const chunk = data.toString()
-        if (!opts.parser) {
+        if (!parse) {
           text += chunk
           raw += chunk
           written += chunk.length
