@@ -1,0 +1,186 @@
+import { Vec, type VecLike } from '../../math/Vec'
+import type { TLShape } from '../../schema'
+import { snapAngle } from './rotation'
+import {
+  TransformState,
+  type HandleDragInfo,
+  type ShapeUpdate,
+  type TransformEditor,
+  type TransformHandle,
+  type TransformParent
+} from './types'
+
+export interface DragHandleOptions {
+  initialHandle: TransformHandle
+  initialAdjacentHandle?: TransformHandle | null
+  originPagePoint: VecLike
+  currentPagePoint: VecLike
+  pageRotation: number
+  shiftKey?: boolean
+}
+
+export function dragHandle(options: DragHandleOptions): TransformHandle {
+  const {
+    initialHandle,
+    initialAdjacentHandle,
+    originPagePoint,
+    currentPagePoint,
+    pageRotation,
+    shiftKey = false
+  } = options
+
+  let point = Vec.Sub(currentPagePoint, originPagePoint)
+    .rot(-pageRotation)
+    .add(initialHandle)
+
+  if (shiftKey && initialAdjacentHandle && initialHandle.id !== 'middle') {
+    const angle = Vec.Angle(initialAdjacentHandle, point)
+    point = Vec.RotWith(
+      point,
+      initialAdjacentHandle,
+      snapAngle(angle, 24) - angle
+    )
+  }
+
+  return { ...initialHandle, x: point.x, y: point.y }
+}
+
+export const dragHandleToPoint = dragHandle
+
+export interface DraggingHandleInfo<Shape extends TLShape = TLShape> {
+  target?: 'handle'
+  shape: Shape
+  handle: TransformHandle
+  adjacentHandle?: TransformHandle | null
+  pageRotation?: number
+  onInteractionEnd?: string | (() => void)
+  isCreating?: boolean
+  creatingMarkId?: string
+}
+
+export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformState<
+  TransformEditor<Shape>,
+  DraggingHandleInfo<Shape>
+> {
+  static override id = 'dragging_handle'
+  static override trackPerformance = true
+
+  info!: DraggingHandleInfo<Shape>
+  initialHandle!: TransformHandle
+  adjacentHandle: TransformHandle | null = null
+  initialPagePoint = new Vec()
+  pageRotation = 0
+  markId = ''
+  isPrecise = false
+
+  constructor(editor: TransformEditor<Shape>, parent?: TransformParent) {
+    super(editor, parent)
+  }
+
+  override onEnter(info: DraggingHandleInfo<Shape>): void {
+    this.info = info
+    this.parent.setCurrentToolIdMask?.(
+      typeof info.onInteractionEnd === 'string' ? info.onInteractionEnd : undefined
+    )
+    this.initialHandle = { ...info.handle }
+    this.adjacentHandle = info.adjacentHandle ? { ...info.adjacentHandle } : null
+    this.initialPagePoint = this.editor.inputs.getOriginPagePoint().clone()
+    this.pageRotation =
+      info.pageRotation ??
+      (this.editor.getShapePageTransform
+        ? this.editor.getShapePageTransform(info.shape)?.rotation?.() ?? 0
+        : 0)
+    this.markId =
+      info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('dragging handle') ?? ''
+    this.editor.setCursor?.({ type: info.isCreating ? 'cross' : 'grabbing', rotation: 0 })
+    const start = this.editor.getShapeUtil?.(info.shape).onHandleDragStart?.(
+      info.shape,
+      this.dragInfo()
+    )
+    if (start) this.editor.updateShapes([start])
+    this.update()
+  }
+
+  override onExit(): void {
+    this.parent.setCurrentToolIdMask?.(undefined)
+    this.editor.setCursor?.({ type: 'default', rotation: 0 })
+  }
+
+  onPointerMove(): void {
+    this.update()
+  }
+
+  onKeyDown(): void {
+    this.update()
+  }
+
+  onKeyUp(): void {
+    this.update()
+  }
+
+  onPointerUp(): void {
+    this.complete()
+  }
+
+  onComplete(): void {
+    this.update()
+    this.complete()
+  }
+
+  onCancel(): void {
+    const shape = this.editor.getShape(this.info.shape.id)
+    if (shape) this.editor.getShapeUtil?.(shape).onHandleDragCancel?.(shape, this.dragInfo())
+    if (this.markId) this.editor.bailToMark?.(this.markId)
+    this.finish(false)
+  }
+
+  private dragInfo(handle = this.initialHandle): HandleDragInfo<Shape> {
+    return {
+      handle,
+      isPrecise: this.isPrecise || !!this.editor.inputs.getAltKey?.(),
+      isCreatingShape: !!this.info.isCreating,
+      initial: this.info.shape
+    }
+  }
+
+  private update(): void {
+    const shape = this.editor.getShape(this.info.shape.id)
+    if (!shape) return
+    const handle = dragHandle({
+      initialHandle: this.initialHandle,
+      initialAdjacentHandle: this.adjacentHandle,
+      originPagePoint: this.initialPagePoint,
+      currentPagePoint: this.editor.inputs.getCurrentPagePoint(),
+      pageRotation: this.pageRotation,
+      shiftKey: this.editor.inputs.getShiftKey()
+    })
+    const changes = this.editor.getShapeUtil?.(shape).onHandleDrag?.(
+      shape,
+      this.dragInfo(handle)
+    )
+    if (changes) {
+      this.editor.updateShapes([
+        { id: shape.id, type: shape.type, ...changes } as ShapeUpdate<Shape>
+      ])
+    }
+  }
+
+  private complete(): void {
+    const shape = this.editor.getShape(this.info.shape.id)
+    if (shape) {
+      const changes = this.editor.getShapeUtil?.(shape).onHandleDragEnd?.(
+        shape,
+        this.dragInfo()
+      )
+      if (changes) this.editor.updateShapes([changes])
+    }
+    this.finish(true)
+  }
+
+  private finish(completed: boolean): void {
+    const end = this.info.onInteractionEnd
+    if (typeof end === 'function') end()
+    else if (typeof end === 'string') this.editor.setCurrentTool?.(end, { shapeId: this.info.shape.id })
+    else if (completed || !this.info.isCreating) this.parent.transition('idle')
+  }
+}

@@ -86,7 +86,7 @@ interface NearestPointsSnap {
 
 type NearestSnap =
   | NearestPointsSnap
-  | { type: 'gap_center'; gap: Gap; nudge: number }
+  | { type: 'gap_center'; gap: BoundsSnapGap; nudge: number }
   | {
       type: 'gap_duplicate'
       gap: BoundsSnapGap
