@@ -39,6 +39,7 @@ import {
   ChevronLeftGlyph,
   EyeGlyph,
   PanelRightGlyph,
+  StopGlyph,
   WarningGlyph
 } from '../icons'
 import { useBrowser } from '../state/browser'

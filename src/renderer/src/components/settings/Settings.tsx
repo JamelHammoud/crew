@@ -4,6 +4,7 @@ import { closeSettings, openSettings, useSettings, type SettingsTab } from '../.
 import { useCrew } from '../../state/store'
 import Avatar from '../Avatar'
 import Modal from '../Modal'
+import About from './About'
 import Agents from './Agents'
 import Appearance from './Appearance'
 import Emoji from './Emoji'
@@ -29,6 +30,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'people') return <People />
   if (tab === 'emoji') return <Emoji />
   if (tab === 'files') return <Files />
+  if (tab === 'about') return <About />
   return <Agents />
 }
 
