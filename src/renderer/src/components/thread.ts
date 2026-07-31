@@ -381,7 +381,8 @@ export function buildThread(
             subject: event.subject,
             agentId: event.agentId,
             ok: home?.ok,
-            ms: home?.ms
+            ms: home?.ms,
+            stopped: home?.stopped
           }
         ]
       })
