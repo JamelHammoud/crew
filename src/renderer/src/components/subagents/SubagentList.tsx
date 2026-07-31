@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { WarningGlyph } from '../../icons'
+import { StopGlyph, WarningGlyph } from '../../icons'
 import ScrollFade from '../ScrollFade'
 import Spinner from '../Spinner'
 import SubagentMark from '../SubagentMark'
