@@ -378,16 +378,6 @@ export function soundFor(event: SessionEvent, selfId: string, state: ReviewState
     if (event.authorId === selfId || event.authorId === SYSTEM_AUTHOR_ID) return null
     return 'receive'
   }
-  // Going out and coming home are the helper's own two, in a voice of their own,
-  // because a helper is work somebody else's agent sent for itself. Heard in the
-  // voice that means a thread landed, four of them going out and coming back
-  // through an afternoon is the app saying the work you asked for is done, over
-  // and over, while it carries on in front of you.
-  if (event.kind === 'subagent.started') return 'helper.out'
-  if (event.kind === 'subagent.ended') return 'helper.home'
-  // A helper's own turn ending is already said by the pair above, once, when it
-  // has really gone quiet. Read here as well it would be said twice, and the
-  // second time in the voice that means something you were waiting on.
   if (event.kind === 'agent.end' && event.threadId && state.threads[event.threadId]?.parentThreadId) return null
   // An aside answering itself and a turn with more waiting behind it both end an
   // agent without ending anything anybody asked about, and a chime for one of
