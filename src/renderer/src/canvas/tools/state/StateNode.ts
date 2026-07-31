@@ -18,9 +18,7 @@ export interface StateNodeConstructor<Editor extends StateNodeEditor = StateNode
   trackPerformance: boolean
 }
 
-export abstract class StateNode<Editor extends StateNodeEditor = StateNodeEditor>
-  implements StateEventHandlers
-{
+export abstract class StateNode<Editor extends StateNodeEditor = StateNodeEditor> implements StateEventHandlers {
   static id: string
   static initial?: string
   static children?: () => StateNodeConstructor[]
@@ -68,9 +66,7 @@ export abstract class StateNode<Editor extends StateNodeEditor = StateNodeEditor
 
     if (Constructor.children && Constructor.initial) {
       this.initial = Constructor.initial
-      this.children = Object.fromEntries(
-        Constructor.children().map(Child => [Child.id, new Child(this.editor, this)])
-      )
+      this.children = Object.fromEntries(Constructor.children().map(Child => [Child.id, new Child(this.editor, this)]))
       const initial = this.children[this.initial]
       if (!initial) throw new Error(`${this.id} - no child state exists with the id ${this.initial}.`)
       this.currentState.set(initial)

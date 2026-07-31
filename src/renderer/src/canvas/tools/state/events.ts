@@ -40,6 +40,4 @@ export const EVENT_NAME_MAP = {
 
 export type StateEventHandler = (info: any) => void
 
-export type StateEventHandlers = Partial<
-  Record<(typeof EVENT_NAME_MAP)[CanvasEventName], StateEventHandler>
->
+export type StateEventHandlers = Partial<Record<(typeof EVENT_NAME_MAP)[CanvasEventName], StateEventHandler>>

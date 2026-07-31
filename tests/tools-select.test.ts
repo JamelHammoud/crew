@@ -96,7 +96,7 @@ describe('StateNode', () => {
     expect(root.getIsActive()).toBe(true)
     expect(root.getCurrent()?.getCurrent()?.getIsActive()).toBe(true)
     root.handleEvent({ name: 'pointer_down' })
-    expect((root.getCurrent()?.getCurrent() as First).events).toEqual(['pointer'])
+    expect((root.getCurrent()?.getCurrent() as First | undefined)?.events).toEqual(['pointer'])
   })
 
   it('transitions across a nested path and reports missing children', () => {

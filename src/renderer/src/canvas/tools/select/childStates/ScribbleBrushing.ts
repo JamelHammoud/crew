@@ -10,9 +10,7 @@ export class ScribbleBrushing extends StateNode<SelectEditor> {
   private newlySelectedShapeIds = new Set<any>()
 
   onEnter(): void {
-    this.initialSelectedShapeIds = new Set(
-      this.editor.inputs.getShiftKey() ? this.editor.getSelectedShapeIds() : []
-    )
+    this.initialSelectedShapeIds = new Set(this.editor.inputs.getShiftKey() ? this.editor.getSelectedShapeIds() : [])
     this.newlySelectedShapeIds = new Set()
     this.scribbleId = this.editor.scribbles.addScribble({
       color: 'selection-stroke',
@@ -64,9 +62,7 @@ export class ScribbleBrushing extends StateNode<SelectEditor> {
     if (addPoint) this.editor.scribbles.addPoint(this.scribbleId, current.x, current.y)
     const lineBounds = Box.FromPoints([previous, current])
     const candidates = this.editor.getShapeIdsInsideBounds(lineBounds)
-    const shapes = this.editor
-      .getCurrentPageRenderingShapesSorted()
-      .filter((shape: any) => candidates.has(shape.id))
+    const shapes = this.editor.getCurrentPageRenderingShapesSorted().filter((shape: any) => candidates.has(shape.id))
     for (const shape of shapes) {
       if (
         this.editor.isShapeOfType(shape, 'group') ||
