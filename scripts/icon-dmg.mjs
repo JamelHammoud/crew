@@ -54,7 +54,7 @@ function trail(geometry) {
 
 export function dmgBackground(geometry, cover) {
   const { masks, drawn } = trail(geometry)
-  const headline = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" xml:space="preserve" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Text&quot;, sans-serif" font-size="16" font-weight="500" fill="${INK}" fill-opacity="0.72">Drag <tspan dy="1" font-family="&quot;SF Mono&quot;, Menlo, ui-monospace, monospace" font-size="14.5" font-weight="600">Crew</tspan><tspan dy="-1"> into Applications</tspan></text>`
+  const headline = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" xml:space="preserve" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Text&quot;, sans-serif" font-size="16" font-weight="500" fill="${INK}" fill-opacity="0.8">Drag <tspan dy="1" font-family="&quot;SF Mono&quot;, Menlo, ui-monospace, monospace" font-size="14.5" font-weight="600">Crew</tspan><tspan dy="-1"> into Applications</tspan></text>`
   const picture = cover
     ? `  <image x="0" y="0" width="${DMG.width}" height="${DMG.height}" preserveAspectRatio="xMidYMid slice" href="data:image/png;base64,${cover}" />`
     : `  <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="#c9c3e4" />`
