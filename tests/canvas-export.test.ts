@@ -58,11 +58,14 @@ function allShapes() {
     props: { title: 'Crew', description: 'Shared work', image: '', favicon: '', src: 'https://crew.test' },
     meta: {}
   }
-  const drawPath = encodePoints([
-    { x: 0, y: 0 },
-    { x: 20, y: 10 },
-    { x: 40, y: 0 }
-  ], DIM_2D)
+  const drawPath = encodePoints(
+    [
+      { x: 0, y: 0 },
+      { x: 20, y: 10 },
+      { x: 40, y: 0 }
+    ],
+    DIM_2D
+  )
   const records = [
     shape('01', 'geo', {
       ...base,

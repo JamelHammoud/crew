@@ -64,7 +64,11 @@ describe('the Crew canvas schema', () => {
     })
     store.put([page, shape])
     const snapshot = getSnapshot(store).document
-    expect(Object.values(snapshot.store).map(record => record.typeName).sort()).toEqual(['page', 'shape'])
+    expect(
+      Object.values(snapshot.store)
+        .map(record => record.typeName)
+        .sort()
+    ).toEqual(['page', 'shape'])
     expect(snapshot.schema).toEqual(createTLSchema().serialize())
   })
 
