@@ -1,81 +1,20 @@
 import type { AgentSettingField } from '../../shared/llm'
-import { choices, flag, makeCliProvider, type SettingReader } from './cli'
-import { activityDetail, fileChanges, stepTodos } from './detail'
+import { choices, makeCliProvider } from './cli'
+import { kimiDialog, kimiParser } from './kimi-acp'
 import { kimiModels } from './kimi-models'
-import { resultText } from './output'
-import { taskCall } from './tasks'
-import { usageFrom } from './tokens'
-import type { OutputParser, Provider } from './types'
-
-const SUBAGENT_TOOLS = new Set(['Agent'])
-
-export const parseKimiLine: OutputParser = line => {
-  let msg: any
-  try {
-    msg = JSON.parse(line)
-  } catch {
-    return []
-  }
-  const out = []
-  if (msg?.role === 'assistant') {
-    if (typeof msg.reasoning_content === 'string' && msg.reasoning_content.trim()) {
-      out.push({ thinking: msg.reasoning_content })
-    }
-    if (typeof msg.content === 'string' && msg.content.trim()) {
-      out.push({ text: msg.content })
-    }
-    if (Array.isArray(msg.tool_calls)) {
-      for (const call of msg.tool_calls) {
-        const name = call?.function?.name
-        if (!call?.id || !name) continue
-        let input: unknown
-        try {
-          input = JSON.parse(call.function.arguments ?? '{}')
-        } catch {
-          input = undefined
-        }
-        out.push({
-          activity: {
-            id: call.id,
-            kind: SUBAGENT_TOOLS.has(name) ? ('subagent' as const) : ('tool' as const),
-            name,
-            status: 'started' as const,
-            detail: activityDetail(input),
-            files: fileChanges(name, input),
-            todos: stepTodos(input),
-            task: taskCall(name, input)
-          }
-        })
-      }
-    }
-  }
-  if (msg?.role === 'tool' && typeof msg.tool_call_id === 'string') {
-    out.push({
-      activity: {
-        id: msg.tool_call_id,
-        kind: 'tool' as const,
-        name: '',
-        status: 'finished' as const,
-        output: resultText(msg.content)
-      }
-    })
-  }
-  const usage = usageFrom(msg?.usage, msg?.model ?? msg?.message?.model)
-  if (usage) out.push({ usage })
-  return out
-}
+import type { Provider } from './types'
 
 export const kimiFields = (): AgentSettingField[] => [
   { key: 'model', label: 'Model', options: choices(['', ...kimiModels()]), default: '' }
 ]
 
-export const kimiArgs = (prompt: string, get: SettingReader): string[] => [
-  '-p',
-  prompt,
-  '--output-format',
-  'stream-json',
-  ...flag('--model', get('model'))
-]
+// Kimi runs on `kimi acp`, the Agent Client Protocol server inside the same CLI
+// everybody already has. `kimi -p --output-format stream-json` was the door
+// crew knocked on before, and it only ever says what has already happened: a
+// whole answer at the end, a tool call with no arguments until it lands, and no
+// reasoning at all. Live thinking, a streamed answer and a named tool with real
+// arguments were three names for one thing, which is the transport.
+export const kimiArgs = (): string[] => ['acp']
 
 const INSTALL_SH = 'curl -LsSf https://code.kimi.com/install.sh | bash'
 
@@ -85,7 +24,8 @@ export const kimiProvider: Provider = makeCliProvider({
   command: 'kimi',
   fields: kimiFields,
   args: kimiArgs,
-  parser: parseKimiLine,
+  makeParser: kimiParser,
+  dialog: (prompt, cwd, get) => kimiDialog(prompt, cwd, get),
   install: {
     darwin: INSTALL_SH,
     linux: INSTALL_SH,
