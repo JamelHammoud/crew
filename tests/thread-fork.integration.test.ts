@@ -401,6 +401,10 @@ describe('forking a thread', () => {
     expect(answer.text).toContain('gamma one')
     expect(answer.text).not.toContain('alpha two')
     expect(answer.text).not.toContain('beta two')
-    expect(times(answer.text ?? '', 'Thread so far:')).toBe(1)
+    // The line runs oldest first, all of it under the one heading.
+    const block = soFar(answer.text)
+    expect(block.indexOf('alpha one')).toBeLessThan(block.indexOf('beta one'))
+    expect(block.indexOf('beta one')).toBeLessThan(block.indexOf('gamma one'))
+    expect(block.indexOf('gamma one')).toBeLessThan(block.indexOf('gamma two'))
   })
 })
