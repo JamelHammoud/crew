@@ -1,5 +1,6 @@
 import { atom, type Atom } from '../signals'
 import { EVENT_NAME_MAP, type CanvasEventInfo } from '../tools/state/events'
+import { StateNode, type StateNodeConstructor } from '../tools/state/StateNode'
 import { DraggingHandle, Resizing, Rotating, Translating } from '../tools/transforms'
 
 interface ToolInstance {
@@ -71,9 +72,30 @@ function addTransformChildren(instance: ToolInstance): void {
   const addChild = instance.addChild
   const children = instance.children as Record<string, unknown> | undefined
   if (typeof addChild !== 'function') return
-  for (const Child of [Translating, Resizing, Rotating, DraggingHandle]) {
-    if (!children?.[Child.id]) addChild.call(instance, Child)
+  for (const Transform of [Translating, Resizing, Rotating, DraggingHandle]) {
+    if (!children?.[Transform.id]) addChild.call(instance, transformNode(Transform))
   }
+}
+
+function transformNode(Transform: new (editor: any, parent: any) => any): StateNodeConstructor<any> {
+  class TransformNode extends StateNode<any> {
+    static id = (Transform as unknown as { id: string }).id
+    private readonly transform = new Transform(this.editor, this.parent)
+
+    override onEnter(info: unknown, from: string): void {
+      this.transform.enter(info, from)
+    }
+
+    override onExit(info: unknown, to: string): void {
+      this.transform.exit(info, to)
+    }
+
+    override handleEvent(info: CanvasEventInfo): void {
+      const handler = this.transform[EVENT_NAME_MAP[info.name]]
+      if (typeof handler === 'function') handler.call(this.transform, info)
+    }
+  }
+  return TransformNode
 }
 
 function transitionPath(instance: ToolInstance | undefined, path: string[], info: unknown): void {

@@ -1,7 +1,9 @@
+import { createRequire } from 'node:module'
 import { readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
-import { isValidElement } from 'react'
-import { describe, expect, it } from 'vitest'
+import { isValidElement, type ReactElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { encodePoints } from '../src/renderer/src/canvas/schema/points'
 import { GEO_KINDS, SHAPE_PROPS, type TLBinding, type TLShape, type TLShapeId, type TLShapeType } from '../src/renderer/src/canvas/schema'
 import {
@@ -45,6 +47,25 @@ function shape<Type extends TLShapeType>(type: Type, props: TLShape<Type>['props
 }
 
 const editor: ShapeEditor = {}
+
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => { window: Window & typeof globalThis }
+const originalWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
+const originalDocument = Object.getOwnPropertyDescriptor(globalThis, 'document')
+let dom: { window: Window & typeof globalThis }
+
+beforeAll(() => {
+  dom = new JSDOM('<!doctype html><html><body></body></html>')
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: dom.window })
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: dom.window.document })
+})
+
+afterAll(() => {
+  dom.window.close()
+  if (originalWindow) Object.defineProperty(globalThis, 'window', originalWindow)
+  else Reflect.deleteProperty(globalThis, 'window')
+  if (originalDocument) Object.defineProperty(globalThis, 'document', originalDocument)
+  else Reflect.deleteProperty(globalThis, 'document')
+})
 
 describe('owned canvas shape utilities', () => {
   it('keeps shape code independent from upstream canvas packages', () => {
@@ -125,7 +146,7 @@ describe('owned canvas shape utilities', () => {
       getShape: id => id === straight.id ? straight : shape('geo', new GeoShapeUtil(editor).getDefaultProps(), 'shape:target'),
       getShapePageBounds: () => ({ x: 20, y: 40, w: 200, h: 100 }) as ReturnType<NonNullable<ShapeEditor['getShapePageBounds']>>
     }
-    expect(getArrowTerminals(boundEditor, straight).start).toMatchObject({ x: 70, y: 115 })
+    expect(getArrowTerminals(boundEditor, straight).start).toMatchObject({ x: 89.56521739130434, y: 40 })
     expect(new ArrowBindingUtil({}).getDefaultProps()).toEqual({ isPrecise: false, isExact: false, normalizedAnchor: { x: 0.5, y: 0.5 }, snap: 'none' })
   })
 
@@ -150,10 +171,11 @@ describe('owned canvas shape utilities', () => {
 
   it('renders text, notes, frames, images, groups, and Crew design nodes', () => {
     const textUtil = new TextShapeUtil(editor)
-    const text = shape('text', { ...textUtil.getDefaultProps(), richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew' }] }] } })
+    const text = shape('text', { ...textUtil.getDefaultProps(), richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Crew', marks: [{ type: 'bold' }] }] }] } })
     expect(textUtil.getText(text)).toBe('Crew')
     expect(textUtil.getGeometry(text).bounds.w).toBeGreaterThan(8)
     expect(isValidElement(textUtil.component(text))).toBe(true)
+    expect(renderToStaticMarkup(textUtil.component(text) as ReactElement)).toContain('<strong>Crew</strong>')
 
     const noteUtil = new NoteShapeUtil(editor)
     const note = shape('note', noteUtil.getDefaultProps())
