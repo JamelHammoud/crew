@@ -235,11 +235,11 @@ export function ShowGlyph({ className = 'w-4 h-4', strokeWidth }: { className?: 
         />
       </mask>
       <rect
-        x={TILE.at}
-        y={TILE.at}
-        width={TILE.side}
-        height={TILE.side}
-        rx={TILE.r}
+        x={TILE_AT}
+        y={TILE_AT}
+        width={TILE}
+        height={TILE}
+        rx={TILE_R}
         fill="currentColor"
         mask={`url(#${id})`}
       />
