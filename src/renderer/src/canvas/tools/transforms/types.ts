@@ -23,8 +23,11 @@ export interface TransformInputs {
   getPointerVelocity?(): Vec
 }
 
-export interface TransformSnapPoint extends VecLike {
+export interface TransformSnapPoint {
   id: string
+  x: number
+  y: number
+  z?: number
 }
 
 export interface TransformSnapNode {
