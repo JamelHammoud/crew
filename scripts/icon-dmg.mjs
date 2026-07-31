@@ -2,10 +2,10 @@ export const DMG = {
   width: 660,
   height: 400,
   iconSize: 128,
-  line: 210,
+  line: 206,
   app: 172,
   applications: 488,
-  headline: 84,
+  headline: 78,
   chrome: 48,
   iconTextRoom: 22,
   at: 61
@@ -13,7 +13,7 @@ export const DMG = {
 
 const INK = '#141414'
 
-export const TRAVEL = { from: 214, to: 446, radius: 12, glide: 3.8, wake: 96, still: 0.66 }
+export const ARROW = { from: 252, to: 410, head: 13, sweep: 0.62, weight: 3.4, glide: 3.4 }
 
 const round = value => Number(value.toFixed(3))
 
@@ -48,63 +48,50 @@ export function markGroup(geometry, id, radius = TRAVEL.radius) {
   return { mark, masks, discs }
 }
 
-export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Text&quot;, sans-serif" font-size="21" font-weight="500" letter-spacing="-0.2" fill="${INK}" fill-opacity="0.8">Drag Crew into Applications</text>`
+export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.62" fill="${INK}" fill-opacity="0.88">Drag Crew into Applications</text>`
 
-export const DMG_DEFS = `    <radialGradient id="pool" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16" />
-      <stop offset="0.44" stop-color="#ffffff" stop-opacity="0.06" />
+export const DMG_DEFS = `    <radialGradient id="clearing" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="0.46" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="0.78" stop-color="#ffffff" stop-opacity="0.09" />
       <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
-    <linearGradient id="wake" x1="${-TRAVEL.wake}" y1="0" x2="0" y2="0" gradientUnits="userSpaceOnUse">
+    <linearGradient id="shaft" x1="${ARROW.from}" y1="0" x2="${ARROW.to}" y2="0" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${INK}" stop-opacity="0" />
-      <stop offset="0.62" stop-color="${INK}" stop-opacity="0.07" />
-      <stop offset="1" stop-color="${INK}" stop-opacity="0.2" />
-    </linearGradient>
-    <filter id="haze" x="-30%" y="-180%" width="160%" height="460%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="3.4" />
-    </filter>`
+      <stop offset="0.34" stop-color="${INK}" stop-opacity="0.34" />
+      <stop offset="1" stop-color="${INK}" stop-opacity="0.62" />
+    </linearGradient>`
 
-export const DMG_WASH = `  <circle cx="${DMG.app}" cy="${DMG.line - 6}" r="132" fill="url(#pool)" />`
+export const DMG_WASH = `  <ellipse cx="${DMG.width / 2}" cy="${DMG.line - 26}" rx="368" ry="196" fill="url(#clearing)" />`
 
-export function wakePath(geometry) {
-  const { mark } = markGroup(geometry, 'measure')
-  const nose = -mark.width / 2 + mark.radius * 0.4
-  const tail = -TRAVEL.wake
-  const lift = round(mark.radius * 0.92)
-  const bend = round(tail * 0.34)
-  return `M ${tail} 0 C ${round(bend)} ${-lift * 0.72} ${round(nose * 1.5)} ${-lift} ${round(nose)} ${-lift} L ${round(nose)} ${lift} C ${round(nose * 1.5)} ${lift} ${round(bend)} ${lift * 0.72} ${tail} 0 Z`
+export function arrowAt(where) {
+  return round(ARROW.from + (ARROW.to - ARROW.from) * where)
 }
 
-export function markAt(where) {
-  return round(TRAVEL.from + (TRAVEL.to - TRAVEL.from) * where)
-}
-
-export function dmgOverlay(geometry, where = TRAVEL.still) {
-  const { discs } = markGroup(geometry, 'mark')
-  const head = markAt(where)
-  return `  <g transform="translate(${head} ${DMG.line})">
-    <path d="${wakePath(geometry)}" fill="url(#wake)" filter="url(#haze)" />
-    <g fill="${INK}" fill-opacity="0.93">
-${discs}
-    </g>
+export function dmgArrow(where = 1) {
+  const tip = arrowAt(where)
+  const back = round(ARROW.head * ARROW.sweep)
+  return `  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="${ARROW.weight}">
+    <line x1="${ARROW.from}" y1="${DMG.line}" x2="${round(tip - ARROW.weight / 2)}" y2="${DMG.line}" stroke="url(#shaft)" />
+    <path d="M ${round(tip - ARROW.head)} ${round(DMG.line - back)} L ${tip} ${DMG.line} L ${round(tip - ARROW.head)} ${round(DMG.line + back)}" stroke="${INK}" stroke-opacity="0.62" />
   </g>`
 }
 
-export function dmgDefs(geometry) {
-  return `${DMG_DEFS}\n${markGroup(geometry, 'mark').masks}`
+export function dmgDefs() {
+  return DMG_DEFS
 }
 
-export function dmgBackground(geometry, picture) {
+export function dmgBackground(picture) {
   const ground = picture
     ? `  <image x="0" y="0" width="${DMG.width}" height="${DMG.height}" preserveAspectRatio="xMidYMid slice" href="data:image/png;base64,${picture}" />`
     : `  <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" fill="#d0d9ee" />`
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${DMG.width}" height="${DMG.height}" viewBox="0 0 ${DMG.width} ${DMG.height}">
   <defs>
-${dmgDefs(geometry)}
+${dmgDefs()}
   </defs>
 ${ground}
 ${DMG_WASH}
-${dmgOverlay(geometry)}
+${dmgArrow()}
   ${HEADLINE}
 </svg>
 `
