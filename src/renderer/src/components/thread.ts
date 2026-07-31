@@ -415,7 +415,7 @@ export function buildThread(
         self: false,
         text: '',
         streaming: false,
-        promptId: event.promptId,
+        promptId: pageRuns.get(event.id),
         shown: { pages: shownPages(event), title: event.title }
       })
     }
