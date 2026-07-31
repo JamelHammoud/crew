@@ -36,6 +36,57 @@ function counted(value, trail, found) {
   return found
 }
 
+function wireAt(sessionId) {
+  const root = path.join(homedir(), ...SESSIONS)
+  let dirs
+  try {
+    dirs = readdirSync(root)
+  } catch {
+    return null
+  }
+  for (const dir of dirs) {
+    const at = path.join(root, dir, sessionId, ...WIRE)
+    if (existsSync(at)) return at
+  }
+  return null
+}
+
+function records(at) {
+  let text
+  try {
+    text = readFileSync(at, 'utf8')
+  } catch {
+    return []
+  }
+  const out = []
+  for (const line of text.split('\n')) {
+    if (!line.includes('usage.record')) continue
+    let msg
+    try {
+      msg = JSON.parse(line)
+    } catch {
+      continue
+    }
+    if (msg?.type !== 'usage.record' || msg?.usageScope !== SCOPE) continue
+    if (!msg.usage || typeof msg.usage !== 'object') continue
+    out.push(msg)
+  }
+  return out
+}
+
+function summed(found) {
+  const add = (key) => found.reduce((all, one) => all + (Number.isFinite(one.usage[key]) ? one.usage[key] : 0), 0)
+  const model = [...found].reverse().find(one => typeof one.model === 'string' && one.model.trim())
+  return {
+    calls: found.length,
+    model: model?.model ?? '',
+    input: add('inputOther'),
+    output: add('output'),
+    cacheRead: add('inputCacheRead'),
+    cacheWrite: add('inputCacheCreation')
+  }
+}
+
 const dir = await mkdtemp(path.join(tmpdir(), 'crew-kimi-'))
 const work = path.join(dir, 'work')
 let child = null
