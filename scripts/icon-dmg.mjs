@@ -86,7 +86,7 @@ ${discs}
 ${ghosts}
   <g transform="translate(${round(head)} ${DMG.line})" fill="${INK}" fill-opacity="0.94">
 ${discs}
-  </g>`.replace('MASKS', masks)
+  </g>`
 }
 
 export function dmgDefs(geometry) {
