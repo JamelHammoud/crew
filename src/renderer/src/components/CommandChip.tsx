@@ -30,7 +30,8 @@ export const COMMAND_LABELS: Record<CommandName, string> = {
   voice: 'Voice',
   steer: 'Steer',
   queue: 'Queue',
-  btw: 'On the side'
+  btw: 'On the side',
+  fork: 'Fork'
 }
 
 // In the composer a command is a control standing in the row the plus stands in,

@@ -390,6 +390,7 @@ function PanelOpens({ opens }: { opens: PanelOpen[] }) {
 function TabPill({ tab, active, row }: { tab: BrowserTab; active: boolean; row: Reorder }) {
   const pillRef = useRef<HTMLButtonElement>(null)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const others = useBrowser(s => s.tabs.length > 1)
   const FileMark = markFor(tab.mime)
 
   useEffect(() => {
