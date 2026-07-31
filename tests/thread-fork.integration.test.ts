@@ -278,10 +278,10 @@ describe('forking a thread', () => {
     await pat.waitForEvent(e => e.kind === 'agent.online')
 
     const thread = await threadWith(pat, '@Fake tidy the readme', [patsFake])
-    // The thread's own agent is gone, so there is nobody for the fork to open on.
-    for (const runner of runners) runner.close()
-    runners = []
-    await waitUntil(() => sam.events.some(e => e.kind === 'agent.offline'))
+    // The thread's own agent has been taken out of the crew, so there is nobody
+    // for the fork to open on and nobody stands in for it.
+    pat.send({ type: 'agent.remove', agentId: patsFake })
+    await sam.waitFor(m => m.type === 'agent.removed' && m.agentId === patsFake)
 
     fork(sam, 'carry on here', thread.threadId)
     const notice = (await sam.waitFor(msg => msg.type === 'notice')) as Notice
