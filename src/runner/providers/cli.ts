@@ -8,7 +8,16 @@ import { addUsage, priceOf, NO_USAGE, type TokenUsage } from '../../shared/prici
 import { exitReason, failureText } from './failure'
 import { crewPath, resolveCommand } from './path'
 import { taskLedger } from './tasks'
-import type { Dialog, InstallCommands, OutputParser, ParsedUsage, Provider, RunningPrompt } from './types'
+import type {
+  Dialog,
+  InstallCommands,
+  OutputParser,
+  ParsedOutput,
+  ParsedUsage,
+  Provider,
+  RunParser,
+  RunningPrompt
+} from './types'
 
 export function commandExists(command: string, dirs?: string[]): boolean {
   return resolveCommand(command, dirs) !== null
