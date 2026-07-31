@@ -255,11 +255,8 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         }
       }
 
-      const handleLine = (line: string) => {
-        if (!line.trim()) return
-        if (raw.length < RAW_LIMIT) raw += (raw ? '\n' : '') + line
-        if (dialog) for (const body of dialog.answer(line)) write(body)
-        for (const out of parse!(line)) {
+      const apply = (out: ParsedOutput) => {
+        {
           if (out.thinkingStart) openBlock('thinking', out.thinkingStart.index)
           if (out.textStart) openBlock('text', out.textStart.index, out.textStart.aside)
           // A model that is asked not to show its reasoning still sends the
