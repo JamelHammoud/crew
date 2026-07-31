@@ -9,6 +9,7 @@ import { shapeColor } from './theme'
 export type TextShape = CrewShape<'text'>
 
 export interface TextShapeUtilOptions {
+  [key: string]: unknown
   showTextOutline: boolean
   getCustomDisplayValues(
     editor: ShapeEditor,

@@ -902,6 +902,59 @@ export class Editor {
     return { shapes: copiedShapes, bindings, rootShapeIds: roots, assets, schema: this.store.schema.serialize() }
   }
 
+  async getSvgString(
+    shapes: readonly (TLShape | TLShapeId)[],
+    options: ImageExportOptions = {}
+  ): Promise<{ svg: string; width: number; height: number } | undefined> {
+    const shapeIds = shapes
+      .map(shape => typeof shape === 'string' ? shape : shape.id)
+      .filter(id => this.getShape(id) !== undefined)
+    if (shapeIds.length === 0) return undefined
+    const result = snapshotToSvgResult(getSnapshot(this.store).document, {
+      shapeIds,
+      pageId: this.currentPageId,
+      bounds: options.bounds,
+      padding: options.padding === 'auto' ? undefined : options.padding,
+      scale: options.scale,
+      background: options.background,
+      darkMode: options.darkMode ?? this.getColorMode() === 'dark',
+      preserveAspectRatio: options.preserveAspectRatio
+    })
+    if (!result) return undefined
+    return { svg: result.svg, width: result.width, height: result.height }
+  }
+
+  async toImage(
+    shapes: readonly (TLShape | TLShapeId)[],
+    options: ImageExportOptions = {}
+  ): Promise<{ blob: Blob; width: number; height: number }> {
+    const format = options.format ?? 'png'
+    const result = await this.getSvgString(shapes, options)
+    if (!result) throw new Error('Could not create SVG')
+    if (format === 'svg') {
+      return {
+        blob: new Blob([result.svg], { type: 'image/svg+xml' }),
+        width: result.width,
+        height: result.height
+      }
+    }
+    if (typeof document === 'undefined' || typeof Image === 'undefined') {
+      throw new Error('Raster image export requires a browser')
+    }
+    const pixelRatio = positiveNumber(options.pixelRatio, 2)
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.max(1, Math.floor(result.width * pixelRatio))
+    canvas.height = Math.max(1, Math.floor(result.height * pixelRatio))
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Could not create image canvas')
+    const image = await loadImage(svgDataUrl(result.svg))
+    context.imageSmoothingEnabled = true
+    context.imageSmoothingQuality = 'high'
+    context.drawImage(image, 0, 0, canvas.width, canvas.height)
+    const blob = await canvasBlob(canvas, `image/${format}`, options.quality)
+    return { blob, width: result.width, height: result.height }
+  }
+
   putContentOntoCurrentPage(content: TLContent, options: TLPutContentOptions = {}): this {
     const clone = cloneContent(content, options.preserveIds)
     const roots = new Set(clone.rootShapeIds)
