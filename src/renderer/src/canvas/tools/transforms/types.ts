@@ -1,5 +1,6 @@
 import type { MatLike } from '../../math/Mat'
-import type { Vec } from '../../math/Vec'
+import type { BoxLike, SelectionHandle } from '../../math/Box'
+import type { Vec, VecLike } from '../../math/Vec'
 import type { TLCursor, TLShape } from '../../schema'
 import type { ResizeInfo } from './resizeBox'
 
@@ -22,6 +23,43 @@ export interface TransformInputs {
   getPointerVelocity?(): Vec
 }
 
+export interface TransformSnapPoint extends VecLike {
+  id: string
+}
+
+export interface TransformSnapNode {
+  id: string
+  pageBounds: BoxLike
+  points?: readonly VecLike[]
+}
+
+export interface TransformSnapResult {
+  nudge: VecLike
+  indicators: unknown[]
+}
+
+export interface TransformSnaps {
+  snapTranslateBounds?(options: {
+    initialSelectionPageBounds: BoxLike
+    initialSelectionSnapPoints?: readonly TransformSnapPoint[]
+    dragDelta: VecLike
+    snappableShapes: readonly TransformSnapNode[]
+    lockedAxis?: 'x' | 'y' | null
+    zoom?: number
+  }): TransformSnapResult
+  snapResizeBounds?(options: {
+    initialSelectionPageBounds: BoxLike
+    dragDelta: VecLike
+    handle: SelectionHandle
+    isAspectRatioLocked?: boolean
+    isResizingFromCenter?: boolean
+    snappableShapes: readonly TransformSnapNode[]
+    zoom?: number
+  }): TransformSnapResult
+  setIndicators?(indicators: unknown[]): void
+  clearIndicators?(): void
+}
+
 export interface TransformEditor<Shape extends TLShape = TLShape> {
   inputs: TransformInputs
   getShape(id: Shape['id']): Shape | undefined
@@ -34,6 +72,10 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
   getIsReadonly?(): boolean
   getInstanceState?(): { isGridMode?: boolean; isCoarsePointer?: boolean; isToolLocked?: boolean }
   getDocumentSettings?(): { gridSize: number }
+  getIsSnapMode?(): boolean
+  getSnappableShapes?(): readonly TransformSnapNode[]
+  getZoomLevel?(): number
+  snaps?: TransformSnaps
   setCursor?(cursor: TLCursor): unknown
   markHistoryStoppingPoint?(name: string): string
   bailToMark?(id: string): unknown
