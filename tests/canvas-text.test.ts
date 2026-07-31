@@ -25,48 +25,55 @@ import {
   type TLRichText
 } from '../src/renderer/src/canvas/text'
 
-const originalWindow = globalThis.window
-const originalDocument = globalThis.document
-const originalNavigator = globalThis.navigator
-const originalHTMLElement = globalThis.HTMLElement
-const originalElement = globalThis.Element
-const originalNode = globalThis.Node
-const originalMutationObserver = globalThis.MutationObserver
-const originalGetSelection = globalThis.getSelection
+const GLOBAL_KEYS = [
+  'window',
+  'document',
+  'navigator',
+  'HTMLElement',
+  'Element',
+  'Node',
+  'MutationObserver',
+  'getSelection',
+  'innerHeight',
+  'innerWidth',
+  'requestAnimationFrame',
+  'cancelAnimationFrame',
+  'IS_REACT_ACT_ENVIRONMENT'
+] as const
+
+const originalGlobals = new Map(
+  GLOBAL_KEYS.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)] as const)
+)
+
+function setGlobal(key: (typeof GLOBAL_KEYS)[number], value: unknown): void {
+  Object.defineProperty(globalThis, key, { configurable: true, writable: true, value })
+}
 
 function installDom() {
   const dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true })
   const view = dom.window
-  Object.assign(globalThis, {
-    window: view,
-    document: view.document,
-    navigator: view.navigator,
-    HTMLElement: view.HTMLElement,
-    Element: view.Element,
-    Node: view.Node,
-    MutationObserver: view.MutationObserver,
-    getSelection: view.getSelection.bind(view),
-    innerHeight: 900,
-    innerWidth: 1400,
-    requestAnimationFrame: (callback: FrameRequestCallback) => setTimeout(() => callback(Date.now()), 0),
-    cancelAnimationFrame: (id: number) => clearTimeout(id)
-  })
-  Object.defineProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT', { configurable: true, value: true })
+  setGlobal('window', view)
+  setGlobal('document', view.document)
+  setGlobal('navigator', view.navigator)
+  setGlobal('HTMLElement', view.HTMLElement)
+  setGlobal('Element', view.Element)
+  setGlobal('Node', view.Node)
+  setGlobal('MutationObserver', view.MutationObserver)
+  setGlobal('getSelection', view.getSelection.bind(view))
+  setGlobal('innerHeight', 900)
+  setGlobal('innerWidth', 1400)
+  setGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => setTimeout(() => callback(Date.now()), 0))
+  setGlobal('cancelAnimationFrame', (id: number) => clearTimeout(id))
+  setGlobal('IS_REACT_ACT_ENVIRONMENT', true)
   return dom
 }
 
 afterEach(() => {
-  Object.assign(globalThis, {
-    window: originalWindow,
-    document: originalDocument,
-    navigator: originalNavigator,
-    HTMLElement: originalHTMLElement,
-    Element: originalElement,
-    Node: originalNode,
-    MutationObserver: originalMutationObserver,
-    getSelection: originalGetSelection
-  })
-  Reflect.deleteProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT')
+  for (const key of GLOBAL_KEYS) {
+    const descriptor = originalGlobals.get(key)
+    if (descriptor) Object.defineProperty(globalThis, key, descriptor)
+    else Reflect.deleteProperty(globalThis, key)
+  }
 })
 
 const baseMeasure = {
@@ -212,6 +219,7 @@ describe('canvas rich text', () => {
 
 describe('canvas text autosizing', () => {
   it('uses fixed widths for wrapped text and adds wrapping room to automatic widths', () => {
+    installDom()
     const measureHtml = vi.fn(() => ({ x: 0, y: 0, w: 33.4, h: 11, scrollWidth: 0 }))
     const automatic = measureTextLayout(
       { measureHtml },
