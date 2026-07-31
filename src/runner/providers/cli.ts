@@ -152,15 +152,13 @@ export function makeCliProvider(opts: CliProviderOptions): Provider {
         child.stdin?.end()
       }
 
-      const writeMessage = (body: string): boolean => {
+      const write = (body: string): boolean => {
         if (inputClosed || killed || timedOut || !child.stdin?.writable) return false
         if (turnTimer) {
           clearTimeout(turnTimer)
           turnTimer = null
         }
-        child.stdin.write(
-          JSON.stringify({ type: 'user', message: { role: 'user', content: [{ type: 'text', text: body }] } }) + '\n'
-        )
+        child.stdin.write(body + '\n')
         return true
       }
 
