@@ -186,9 +186,7 @@ export class Drawing extends DrawState {
 
   complete(): void {
     if (!this.initialShape) return
-    this.editor.updateShapes([
-      { id: this.initialShape.id, type: this.initialShape.type, props: { isComplete: true } }
-    ])
+    this.editor.updateShapes([{ id: this.initialShape.id, type: this.initialShape.type, props: { isComplete: true } }])
     this.tool.transition('idle')
   }
 
@@ -323,7 +321,8 @@ export class Drawing extends DrawState {
         if (!previousPoint) throw new Error('Expected a previous point')
         this.currentSegmentPoints = pointsBetween(previousPoint, newPoint, 6).map(fixed)
         const nextSegments = [...segments, this.makeSegment('free', this.currentSegmentPoints)]
-        if (this.currentLineLength < this.strokeWidth(shape) * 4) this.currentLineLength = this.getLineLength(nextSegments)
+        if (this.currentLineLength < this.strokeWidth(shape) * 4)
+          this.currentLineLength = this.getLineLength(nextSegments)
         this.updateSegments(shape, nextSegments)
       }
       return
@@ -372,7 +371,11 @@ export class Drawing extends DrawState {
           {
             id: uniqueId(),
             type: 'points',
-            points: [Mat.applyToPoint(transform, a), Mat.applyToPoint(transform, newPoint), Mat.applyToPoint(transform, b)]
+            points: [
+              Mat.applyToPoint(transform, a),
+              Mat.applyToPoint(transform, newPoint),
+              Mat.applyToPoint(transform, b)
+            ]
           }
         ])
       } else {
@@ -405,7 +408,7 @@ export class Drawing extends DrawState {
       const last = cached[cached.length - 1]
       last.x = newPoint.x
       last.y = newPoint.y
-      last.z = last.z ? Math.max(last.z, newPoint.z ?? 0.5) : newPoint.z ?? 0.5
+      last.z = last.z ? Math.max(last.z, newPoint.z ?? 0.5) : (newPoint.z ?? 0.5)
     } else {
       this.currentLineLength += cached.length ? Vec.Dist(cached[cached.length - 1], newPoint) : 0
       cached.push(point(newPoint))

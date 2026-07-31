@@ -4,11 +4,7 @@ import { Mat } from '../src/renderer/src/canvas/math/Mat'
 import { Vec } from '../src/renderer/src/canvas/math/Vec'
 import { decodePoints } from '../src/renderer/src/canvas/schema/points'
 import { DrawTool, type FreehandEditor, type FreehandShape } from '../src/renderer/src/canvas/tools/draw'
-import {
-  EraserTool,
-  type EraserEditor,
-  type EraserShape
-} from '../src/renderer/src/canvas/tools/eraser'
+import { EraserTool, type EraserEditor, type EraserShape } from '../src/renderer/src/canvas/tools/eraser'
 import { HandTool, type HandEditor } from '../src/renderer/src/canvas/tools/hand'
 import { HighlightTool } from '../src/renderer/src/canvas/tools/highlight'
 
@@ -217,7 +213,10 @@ describe('the hand tool', () => {
     expect(editor.menus.clearOpenMenus).toHaveBeenCalled()
     tool.onPointerUp()
     tool.onDoubleClick({ phase: 'settle-up' })
-    expect(editor.zoomIn).toHaveBeenCalledWith(input.current, expect.objectContaining({ animation: expect.any(Object) }))
+    expect(editor.zoomIn).toHaveBeenCalledWith(
+      input.current,
+      expect.objectContaining({ animation: expect.any(Object) })
+    )
   })
 
   it('returns to select when idle is cancelled', () => {

@@ -67,11 +67,7 @@ export interface EraserEditor {
   isShapeOrAncestorLocked(shape: EraserShape): boolean
   isShapeOfType(shape: EraserShape, type: string): boolean
   isShapeFrameLike(shape: EraserShape): boolean
-  isPointInShape(
-    shape: EraserShape,
-    point: VecModel,
-    options: { hitInside: false; margin: number }
-  ): boolean
+  isPointInShape(shape: EraserShape, point: VecModel, options: { hitInside: false; margin: number }): boolean
   setErasingShapes(ids: string[]): void
   markHistoryStoppingPoint(label: string): string
   bailToMark(id: string): void
@@ -198,7 +194,7 @@ export class EraserErasing extends EraserState {
     this.excludedShapeIds = new Set(
       this.editor
         .getCurrentPageShapes()
-        .filter((shape) => {
+        .filter(shape => {
           if (this.editor.isShapeOrAncestorLocked(shape)) return true
           if (this.editor.isShapeOfType(shape, 'group') || this.editor.isShapeFrameLike(shape)) {
             const local = this.editor.getPointInShapeSpace(shape, origin)
@@ -206,15 +202,13 @@ export class EraserErasing extends EraserState {
           }
           return false
         })
-        .map((shape) => shape.id)
+        .map(shape => shape.id)
     )
     this.erasingShapeIds = this.editor
       .getShapesAtPoint(origin)
-      .filter((shape) => !this.excludedShapeIds.has(shape.id))
-      .map((shape) => shape.id)
-    this.editor.setErasingShapes([
-      ...new Set([...this.editor.getErasingShapeIds(), ...this.erasingShapeIds])
-    ])
+      .filter(shape => !this.excludedShapeIds.has(shape.id))
+      .map(shape => shape.id)
+    this.editor.setErasingShapes([...new Set([...this.editor.getErasingShapeIds(), ...this.erasingShapeIds])])
     this.scribbleId = this.editor.scribbles.addScribble({ color: 'muted-1', size: 12 }).id
     this.update()
   }
@@ -252,7 +246,7 @@ export class EraserErasing extends EraserState {
       this.editor.setErasingShapes([...erasing])
       return
     }
-    const shapes = this.editor.getCurrentPageRenderingShapesSorted().filter((shape) => candidateIds.has(shape.id))
+    const shapes = this.editor.getCurrentPageRenderingShapesSorted().filter(shape => candidateIds.has(shape.id))
     for (const shape of shapes) {
       if (this.editor.isShapeOfType(shape, 'group')) continue
       const mask = this.editor.getShapeMask(shape.id)
@@ -276,7 +270,7 @@ export class EraserErasing extends EraserState {
         const outermost = this.editor.getOutermostSelectableShape(shape)
         if (this.excludedShapeIds.has(outermost.id)) {
           erasing.add(
-            this.editor.getOutermostSelectableShape(shape, (candidate) => !this.excludedShapeIds.has(candidate.id)).id
+            this.editor.getOutermostSelectableShape(shape, candidate => !this.excludedShapeIds.has(candidate.id)).id
           )
         } else {
           erasing.add(outermost.id)
@@ -284,7 +278,7 @@ export class EraserErasing extends EraserState {
       }
       this.erasingShapeIds = [...erasing]
     }
-    this.editor.setErasingShapes(this.erasingShapeIds.filter((id) => !this.excludedShapeIds.has(id)))
+    this.editor.setErasingShapes(this.erasingShapeIds.filter(id => !this.excludedShapeIds.has(id)))
   }
 
   complete(info?: EraserPointerEvent): void {
