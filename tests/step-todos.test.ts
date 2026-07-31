@@ -155,23 +155,38 @@ describe('a tool that hands over the whole list', () => {
     ])
   })
 
-  it('still reads the boolean Codex says it with', async () => {
+  it('still reads a list that says done with a boolean rather than a word', () => {
+    expect(
+      stepTodos({
+        items: [
+          { text: 'Read the file', completed: true },
+          { text: 'Draw the rows', completed: false }
+        ]
+      })
+    ).toEqual([
+      { text: 'Read the file', status: 'done' },
+      { text: 'Draw the rows', status: 'todo' }
+    ])
+  })
+
+  it('folds the plan Codex really sends into the same three states', async () => {
     const steps = await run(codexCli, [
       JSON.stringify({
-        type: 'item.completed',
-        item: {
-          id: 'x1',
-          type: 'todo_list',
-          items: [
-            { text: 'Read the file', completed: true },
-            { text: 'Draw the rows', completed: false }
+        jsonrpc: '2.0',
+        method: 'turn/plan/updated',
+        params: {
+          plan: [
+            { step: 'Read the file', status: 'completed' },
+            { step: 'Draw the rows', status: 'inProgress' },
+            { step: 'Ship it', status: 'pending' }
           ]
         }
       })
     ])
-    expect(listOn(steps, 'x1')).toEqual([
+    expect(listOn(steps, 'plan')).toEqual([
       { text: 'Read the file', status: 'done' },
-      { text: 'Draw the rows', status: 'todo' }
+      { text: 'Draw the rows', status: 'doing' },
+      { text: 'Ship it', status: 'todo' }
     ])
   })
 })
