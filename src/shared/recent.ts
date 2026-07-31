@@ -13,5 +13,6 @@ export interface RecentProject {
   home: CrewHome
   key: string
   sync: boolean
+  shared: boolean
   openedAt: number
 }
