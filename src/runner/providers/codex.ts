@@ -35,9 +35,14 @@ const completed = (item: any): ParsedOutput[] => {
     return text && str(item.phase) !== 'commentary' ? [stop, { text }] : [stop]
   }
   if (type === 'reasoning') {
-    const summary: string[] = (Array.isArray(item.summary) ? item.summary : []).map(str).filter(Boolean)
-    const out: ParsedOutput[] = summary.map((_, index) => ({ blockStop: { index: index + 1 } }))
-    const text = summary.join('\n\n')
+    const parts = (value: unknown): string[] => (Array.isArray(value) ? value : []).map(str)
+    const summary = parts(item.summary)
+    const content = parts(item.content)
+    const out: ParsedOutput[] = [
+      ...summary.map((_, index) => ({ blockStop: { index: thinkIndex(index) } })),
+      ...content.map((_, index) => ({ blockStop: { index: rawIndex(index) } }))
+    ]
+    const text = [...summary, ...content].filter(Boolean).join('\n\n')
     if (text) out.push({ thinking: text })
     return out
   }
