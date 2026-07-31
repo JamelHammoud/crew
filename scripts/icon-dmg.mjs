@@ -17,37 +17,6 @@ export const ARROW = { from: 252, to: 410, head: 13, sweep: 0.62, weight: 3.4, g
 
 const round = value => Number(value.toFixed(3))
 
-export function dmgMark({ bite, step }, radius = TRAVEL.radius) {
-  const gap = radius * step
-  const centres = [-gap, 0, gap]
-  return {
-    radius,
-    cut: round(radius * (1 + bite)),
-    centres: centres.map(round),
-    width: round(gap * 2 + radius * 2)
-  }
-}
-
-export function markGroup(geometry, id, radius = TRAVEL.radius) {
-  const mark = dmgMark(geometry, radius)
-  const masks = mark.centres
-    .slice(0, -1)
-    .map(
-      (_, index) => `    <mask id="${id}-cut-${index}" maskUnits="userSpaceOnUse" x="-80" y="-40" width="160" height="80">
-      <rect x="-80" y="-40" width="160" height="80" fill="#ffffff" />
-      <circle cx="${mark.centres[index + 1]}" cy="0" r="${mark.cut}" fill="#000000" />
-    </mask>`
-    )
-    .join('\n')
-  const discs = mark.centres
-    .map(
-      (cx, index) =>
-        `    <circle cx="${cx}" cy="0" r="${mark.radius}"${index < mark.centres.length - 1 ? ` mask="url(#${id}-cut-${index})"` : ''} />`
-    )
-    .join('\n')
-  return { mark, masks, discs }
-}
-
 export const HEADLINE = `<text x="${DMG.width / 2}" y="${DMG.headline}" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, &quot;SF Pro Display&quot;, &quot;SF Pro Text&quot;, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.62" fill="${INK}" fill-opacity="0.88">Drag Crew into Applications</text>`
 
 export const DMG_DEFS = `    <radialGradient id="clearing" cx="0.5" cy="0.5" r="0.5">
