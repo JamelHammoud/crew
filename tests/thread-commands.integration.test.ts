@@ -123,7 +123,7 @@ describe('commands inside a thread', () => {
     // thread it was asked about, and the question.
     expect(answer.text).toContain('tidy the readme')
     expect(answer.text).toContain('what is a changelog for')
-    expect(answer.text).toContain('This is a question asked on the side')
+    expect(answer.text).toContain('This is a conversation on the side')
     await settle()
 
     // Nothing about it landed in the thread it was asked from.
