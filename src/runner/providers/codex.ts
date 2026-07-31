@@ -17,7 +17,7 @@ const thinkIndex = (summaryIndex: unknown): number => (typeof summaryIndex === '
 
 const started = (item: any): ParsedOutput[] => {
   const type = str(item?.type)
-  if (type === 'agentMessage') return [{ textStart: { index: TEXT } }]
+  if (type === 'agentMessage') return [{ textStart: { index: TEXT, aside: str(item.phase) === 'commentary' } }]
   if (type === 'reasoning' || type === 'userMessage') return []
   const activity = itemActivity(item, false)
   return activity ? [{ activity }] : []
