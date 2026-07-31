@@ -1338,6 +1338,46 @@ export class CrewSession {
     this.startThread(member, agent, text, attachments, { ghost: ws, aside: parent.id })
   }
 
+  // The thread so far, carried on in one of its own. What was said up to this
+  // moment is read for context and the thread it came from is left exactly as it
+  // was, so a good place can be gone on from several ways at once. A fork of a
+  // hidden thread is hidden, or a hidden thread leaks the moment anybody forks
+  // it, and it takes the plan and the board with it because it is that
+  // conversation carrying on rather than a new one.
+  private startFork(
+    ws: WebSocket,
+    member: Member,
+    parent: Thread,
+    mentions: string[],
+    text: string,
+    attachments: Attachment[],
+    forkId?: string
+  ): void {
+    if (!text) {
+      this.notice('Say what to carry on with.', ws)
+      return
+    }
+    const ghost = this.ghostOf(parent.id)?.ws
+    const named = [...new Set(mentions)].filter(
+      id => this.agents.has(id) && (ghost === undefined || this.ownAgent(member, id))
+    )
+    const agent = this.agents.get(named[0] ?? '') ?? this.agents.get(parent.agentId)
+    if (!agent) {
+      this.notice('Mention an agent with @ to say who should take it.', ws)
+      return
+    }
+    this.startThread(member, agent, text, attachments, {
+      ghost,
+      threadId: forkId,
+      mode: parent.mode,
+      plan: parent.plan,
+      boardId: parent.boardId,
+      tickets: parent.tickets,
+      mentions: named.length > 0 ? named : [agent.id],
+      fork: { from: parent.id, at: Date.now() }
+    })
+  }
+
   private handleTodoAdd(member: Member, text: string, agentId?: string): void {
     const trimmed = text.trim()
     if (!trimmed) return
