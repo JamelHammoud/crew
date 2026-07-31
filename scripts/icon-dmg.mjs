@@ -79,7 +79,6 @@ ${masks}
 ${picture}
   <ellipse cx="${DMG.width / 2}" cy="196" rx="430" ry="168" fill="url(#clearing)" />
   <circle cx="${DMG.app}" cy="${DMG.line - 6}" r="132" fill="url(#pool)" />
-  <ellipse cx="340" cy="${DMG.line}" rx="96" ry="15" fill="url(#run)" filter="url(#soften)" />
 ${drawn}
   ${headline}
   <rect x="0" y="0" width="${DMG.width}" height="${DMG.height}" filter="url(#grain)" opacity="0.05" />
