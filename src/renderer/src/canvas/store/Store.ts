@@ -1,16 +1,12 @@
 import { atom, computed, transact, unsafe__withoutCapture, type Atom, type Computed } from '../signals'
 import { hasAnyKey, squashRecordDiffs, type RecordsDiff } from './RecordsDiff'
+import { HistoryAccumulator, type ChangeSource, type HistoryEntry } from './historyAccumulator'
 import { SideEffectManager } from './SideEffectManager'
 import type { IdOf, RecordScope, UnknownRecord } from './RecordType'
 import type { RecordValidationPhase, StoreSchema } from './StoreSchema'
 import { uniqueId } from './uniqueId'
 
-export type ChangeSource = 'user' | 'remote'
-
-export interface HistoryEntry<R extends UnknownRecord> {
-  changes: RecordsDiff<R>
-  source: ChangeSource
-}
+export type { ChangeSource, HistoryEntry }
 
 export interface StoreListenerFilters {
   source: ChangeSource | 'all'
