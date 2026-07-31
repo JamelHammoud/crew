@@ -59,8 +59,10 @@ export default function AsideView({ threadId }: { threadId: string }) {
           className="h-full overflow-y-auto overflow-x-hidden px-5 py-4 space-y-5 select-text"
         >
           <ThreadItems items={items} />
-          {promptId && startedAt && (
+          {promptId && startedAt ? (
             <RunStatus startedAt={startedAt} tokens={tokens} cost={cost} steps={steps[promptId] ?? []} />
+          ) : (
+            ended && <RunEnded end={ended} />
           )}
         </div>
         <ScrollFade edges={edges} />
