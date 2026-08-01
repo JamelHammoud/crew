@@ -266,6 +266,7 @@ export function cleanType(value: unknown): TypeStyle | null {
     color: isHex(type.color) ? type.color : BASE_TYPE.color,
     transform: type.transform === 'upper' || type.transform === 'lower' ? type.transform : 'none',
     decoration: type.decoration === 'underline' || type.decoration === 'strike' ? type.decoration : 'none',
+    trim: type.trim === 'cap' ? 'cap' : 'none',
     italic: type.italic === true
   }
 }
