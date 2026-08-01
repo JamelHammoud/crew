@@ -138,9 +138,7 @@ describe('several threads open side by side', () => {
     open(['thread-1'], 'thread-1')
 
     fireEvent.click(screen.getByRole('button', { name: 'Tasks' }))
-    const task = screen
-      .getAllByRole('button')
-      .find(button => button.textContent?.includes('look at the footer'))!
+    const task = screen.getAllByRole('button').find(button => button.textContent?.includes('look at the footer'))!
     fireEvent.click(task)
 
     expect(useCrew.getState().openThreadIds).toEqual(['thread-2'])
