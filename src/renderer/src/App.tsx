@@ -3,6 +3,7 @@ import HuddlePanel from './components/huddle/HuddlePanel'
 import Settings from './components/settings/Settings'
 import Sidebar from './components/Sidebar'
 import SidePanel from './components/SidePanel'
+import ThreadColumns from './components/ThreadColumns'
 import Spinner from './components/Spinner'
 import TasksPanel from './components/TasksPanel'
 import Toaster from './components/Toaster'
@@ -19,7 +20,6 @@ import Boot from './views/Boot'
 import Chat from './views/Chat'
 import Docs from './views/Docs'
 import Home from './views/Home'
-import ThreadView from './views/ThreadView'
 
 const Design = lazy(() => import('./views/Design'))
 
@@ -124,7 +124,7 @@ function Session() {
       )}
       <div className="flex-1 min-w-0 relative">
         <main className="absolute inset-0">
-          {tab === 'chat' && (openThreadId ? <ThreadView threadId={openThreadId} /> : <Chat />)}
+          {tab === 'chat' && (openThreadIds.length > 0 ? <ThreadColumns ids={openThreadIds} /> : <Chat />)}
           {tab === 'docs' && <Docs />}
           {tab === 'design' && (
             <Suspense fallback={<Loading />}>
