@@ -1,7 +1,32 @@
+import type { PointerEvent as Press } from 'react'
 import type { LiveThread } from '../../../../shared/threads'
 import type { Place } from '../../views/home/place'
 
 export const NO_THREADS: LiveThread[] = []
+
+export interface PlaceGroupProps {
+  place: Place
+  here: boolean
+  busy: boolean
+  stoppable: boolean
+  threads: LiveThread[]
+  openThreadIds: string[]
+  onOpen: (place: Place) => void
+  onOpenThread: (place: Place, threadId: string, toRight: boolean) => void
+  onStop: (place: Place) => void
+  onForget: (place: Place) => void
+  take: (id: string) => (event: Press) => void
+  dragged: () => boolean
+}
+
+export interface ThreadRowProps {
+  thread: LiveThread
+  open: boolean
+  here: boolean
+  placeKey: string
+  onOpen: (threadId: string) => void
+  onOpenToRight: (threadId: string) => void
+}
 
 export const samePlace = (a: Place, b: Place): boolean =>
   a === b ||
@@ -18,3 +43,25 @@ export const sameLiveThread = (a: LiveThread, b: LiveThread): boolean =>
 
 export const sameLiveThreads = (a: LiveThread[], b: LiveThread[]): boolean =>
   a === b || (a.length === b.length && a.every((thread, index) => sameLiveThread(thread, b[index])))
+
+export const samePlaceGroup = (a: PlaceGroupProps, b: PlaceGroupProps): boolean =>
+  a.here === b.here &&
+  a.busy === b.busy &&
+  a.stoppable === b.stoppable &&
+  a.openThreadIds === b.openThreadIds &&
+  a.onOpen === b.onOpen &&
+  a.onOpenThread === b.onOpenThread &&
+  a.onStop === b.onStop &&
+  a.onForget === b.onForget &&
+  a.take === b.take &&
+  a.dragged === b.dragged &&
+  samePlace(a.place, b.place) &&
+  sameLiveThreads(a.threads, b.threads)
+
+export const sameThreadRow = (a: ThreadRowProps, b: ThreadRowProps): boolean =>
+  a.open === b.open &&
+  a.here === b.here &&
+  a.placeKey === b.placeKey &&
+  a.onOpen === b.onOpen &&
+  a.onOpenToRight === b.onOpenToRight &&
+  sameLiveThread(a.thread, b.thread)
