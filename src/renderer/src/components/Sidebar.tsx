@@ -50,7 +50,13 @@ export default function Sidebar({
   const peek = useSidebar(s => s.peek)
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [asking, setAsking] = useState<string | null>(null)
-  const order = useReorder((key, to) => move(key, to), 'vertical')
+  const order = useReorder((key, to) => move(key, to), {
+    axis: 'vertical',
+    carry: key => {
+      const place = places.find(one => one.key === key)
+      return place ? <PlaceFace place={place} lit /> : null
+    }
+  })
   const scroller = useRef<HTMLDivElement | null>(null)
   useScrollFade(scroller)
 
