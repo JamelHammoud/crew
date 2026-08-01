@@ -818,7 +818,7 @@ export class Editor {
   }
 
   setHintingShapes(ids: TLShapeId[]): this {
-    this.instance.hintingShapeIds = ids.filter(id => this.getShape(id) !== undefined)
+    this.patchInstance({ hintingShapeIds: ids.filter(id => this.getShape(id) !== undefined) })
     return this
   }
 
@@ -827,7 +827,7 @@ export class Editor {
   }
 
   setErasingShapes(ids: TLShapeId[]): this {
-    this.instance.erasingShapeIds = ids.filter(id => this.getShape(id) !== undefined)
+    this.patchInstance({ erasingShapeIds: ids.filter(id => this.getShape(id) !== undefined) })
     return this
   }
 
@@ -853,7 +853,7 @@ export class Editor {
   }
 
   setCursor(cursor: { type: string; rotation: number }): this {
-    this.instance.cursor = cursor
+    this.patchInstance({ cursor })
     return this
   }
 
