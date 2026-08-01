@@ -58,6 +58,30 @@ function shape<Type extends TLShapeType>(
   return { ...base, id: id as TLShapeId, type, props } as TLShape<Type>
 }
 
+function boundArrowEditor(arrow: TLShape, target: TLShape, bindings: TLBinding[]): ShapeEditor {
+  const util = new GeoShapeUtil({} as ShapeEditor)
+  const find = (id: unknown) => (id === arrow.id ? arrow : target)
+  const of = (value: unknown) => (typeof value === 'string' ? find(value) : (value as TLShape))
+  return {
+    getBindingsFromShape: () => bindings,
+    getShape: id => find(id),
+    getShapeGeometry: value =>
+      of(value).type === 'arrow'
+        ? new Rectangle2d({ width: 1, height: 1, isFilled: false })
+        : util.getGeometry(of(value) as TLShape<'geo'>),
+    getShapePageTransform: value => {
+      const found = of(value)
+      return { applyToPoint: point => new Vec(point.x, point.y).rot(found.rotation).addXY(found.x, found.y) }
+    },
+    getPointInShapeSpace: (found, point) => new Vec(point.x - found.x, point.y - found.y).rot(-found.rotation),
+    getShapePageBounds: value => {
+      const found = of(value)
+      const props = found.props as { w?: number; h?: number }
+      return new Box(found.x, found.y, props.w ?? 1, props.h ?? 1)
+    }
+  }
+}
+
 const editor: ShapeEditor = {}
 
 const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (
