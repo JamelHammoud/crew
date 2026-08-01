@@ -555,7 +555,7 @@ export default function TasksPanel({
                       >
                         <span className="h-[22px] shrink-0 flex items-center">
                           <span className="w-4 h-4 rounded-full border-[1.5px] border-dashed border-fg-faint flex items-center justify-center">
-                            <PlusGlyph className="w-3 h-3" />
+                            <PlusGlyph className="w-3 h-3 text-fg-faint" strokeWidth={3} />
                           </span>
                         </span>
                         <span className="text-base">Add a task</span>

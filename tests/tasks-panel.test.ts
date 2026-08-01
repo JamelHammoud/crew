@@ -234,3 +234,21 @@ describe('the task menu', () => {
     expect(screen.getByText('Open to right')).toBeTruthy()
   })
 })
+
+describe('the add task row', () => {
+  it('draws its plus at the same weight and colour as its dashed ring', () => {
+    useCrew.setState({
+      threads: {},
+      threadPrompts: {},
+      queues: {},
+      steps: {},
+      todos: [],
+      events: []
+    })
+    panel()
+
+    const plus = screen.getByRole('button', { name: 'Add a task' }).querySelector('svg')
+    expect(plus?.getAttribute('stroke-width')).toBe('3')
+    expect(plus?.classList.contains('text-fg-faint')).toBe(true)
+  })
+})
