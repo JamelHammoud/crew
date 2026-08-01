@@ -59,6 +59,18 @@ export type BrowserTab = {
 
 export const DEFAULT_WIDTH = 480
 
+// Everything in the panel that belongs to a project, lifted out of it whole so
+// it can be put back the way it was. A terminal is this machine's own shell and
+// is not in here: it stays standing while the project under it changes.
+export type PanelMemory = {
+  tabs: BrowserTab[]
+  activeTabId: string | null
+  width: number
+  open: boolean
+  closedPlans: string[]
+  closedBoards: string[]
+}
+
 type BrowserState = {
   width: number
   // Whether the panel is standing. It is a place rather than a side effect of a
