@@ -357,6 +357,7 @@ const EMPTY = {
   scores: [],
   boards: [],
   typists: [],
+  openThreadIds: [],
   openThreadId: null,
   docsTarget: null,
   designTarget: null,

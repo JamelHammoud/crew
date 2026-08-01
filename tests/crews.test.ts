@@ -165,6 +165,40 @@ describe('several crews in one app', () => {
     expect(app.keyInView(9)).toBe(projectPlace(one))
   })
 
+  it('carries the threads a crew is really running out to the rail', async () => {
+    const app = crews('crews-threads')
+    const one = await repo('crews-threads-one')
+    const started = await app.start(1, one, 'Jamel')
+    const pushed: LivePlace[][] = []
+    app.onLive = places => pushed.push(places)
+
+    const ui = await TestUi.connect(started.wsUrl, 'Jamel', started.code)
+    uis.push(ui)
+    await agentIn(started, one)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('draw the rail @Fake', [agentId('jamel', 'fake')])
+    const opened = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Extract<
+      SessionEvent,
+      { kind: 'thread.started' }
+    >
+
+    const here = app.places().find(place => place.key === projectPlace(one))
+    expect(here?.threads.map(thread => thread.id)).toContain(opened.threadId)
+    expect(here?.threads.find(thread => thread.id === opened.threadId)?.title).toContain('draw the rail')
+
+    const said = pushed.at(-1)?.find(place => place.key === projectPlace(one))
+    expect(said?.threads.map(thread => thread.id)).toContain(opened.threadId)
+  })
+
+  it('shows no threads for a crew this app is not running', async () => {
+    const app = crews('crews-threads-elsewhere')
+    const one = await repo('crews-threads-elsewhere-one')
+    await app.start(1, one, 'Jamel')
+
+    expect(app.places().find(place => place.key === projectPlace('/elsewhere'))).toBeUndefined()
+  })
+
   it('remembers every project it has opened rather than only the one in view', async () => {
     const app = crews('crews-recent')
     const one = await repo('crews-recent-one')
