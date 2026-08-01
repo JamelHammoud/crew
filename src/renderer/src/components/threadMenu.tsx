@@ -1,0 +1,73 @@
+import { useState, type MouseEvent, type ReactNode } from 'react'
+import { threadMenuActions, type ThreadOpenAction } from '../../../shared/threadViews'
+import { CloseGlyph, ColumnsGlyph, ColumnsRightGlyph, PopOutGlyph } from '../icons'
+import { useCrew } from '../state/store'
+import { MenuItem, Popover } from './Popover'
+
+const LABEL: Record<ThreadOpenAction, string> = {
+  open: 'Open',
+  beside: 'Open beside this one',
+  window: 'Open in its own window',
+  close: 'Close'
+}
+
+const MARK: Record<ThreadOpenAction, ReactNode> = {
+  open: <ColumnsGlyph />,
+  beside: <ColumnsRightGlyph />,
+  window: <PopOutGlyph />,
+  close: <CloseGlyph />
+}
+
+export function ThreadOpenItems({
+  threadId,
+  here = true,
+  placeKey,
+  onOpen,
+  onDone
+}: {
+  threadId: string
+  here?: boolean
+  placeKey?: string
+  onOpen: () => void
+  onDone: () => void
+}) {
+  const open = useCrew(s => s.openThreadIds)
+  const closeThread = useCrew(s => s.closeThread)
+
+  const take = (action: ThreadOpenAction) => {
+    onDone()
+    if (action === 'close') return closeThread(threadId)
+    if (action !== 'window') return onOpen()
+    void window.crew?.popOutThread?.(threadId, placeKey)
+    if (here && open.includes(threadId)) closeThread(threadId)
+  }
+
+  return (
+    <>
+      {threadMenuActions(open, threadId, here).map(action => (
+        <MenuItem key={action} icon={MARK[action]} label={LABEL[action]} onClick={() => take(action)} />
+      ))}
+    </>
+  )
+}
+
+export function useThreadMenu(props: {
+  threadId: string
+  here?: boolean
+  placeKey?: string
+  onOpen: () => void
+}): { onContextMenu: (event: MouseEvent) => void; menu: ReactNode } {
+  const [at, setAt] = useState<{ x: number; y: number } | null>(null)
+
+  return {
+    onContextMenu: event => {
+      event.preventDefault()
+      setAt({ x: event.clientX, y: event.clientY })
+    },
+    menu: (
+      <Popover open={at !== null} onClose={() => setAt(null)} at={at ?? undefined} className="min-w-52">
+        <ThreadOpenItems {...props} onDone={() => setAt(null)} />
+      </Popover>
+    )
+  }
+}
