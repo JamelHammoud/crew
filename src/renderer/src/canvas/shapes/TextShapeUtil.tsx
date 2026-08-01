@@ -5,6 +5,7 @@ import { textShapeProps, type TLShape as CrewShape } from '../schema'
 import {
   compensateTextGrowth,
   measureTextLayout,
+  richTextChanged,
   textGrowthMatters,
   type TextGrowthState,
   type TextLayoutSize,
@@ -165,7 +166,7 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
         color: shapeColor(this.editor, shape.props.color),
         fontFamily: FONT_FAMILIES[shape.props.font],
         fontSize: TEXT_FONT_SIZES[shape.props.size],
-        lineHeight: 1.35,
+        lineHeight: TEXT_LINE_HEIGHT,
         textAlign: shape.props.textAlign === 'middle' ? 'center' : shape.props.textAlign === 'end' ? 'right' : 'left',
         whiteSpace: 'pre-wrap',
         overflowWrap: 'break-word',
