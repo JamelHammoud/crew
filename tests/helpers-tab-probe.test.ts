@@ -154,9 +154,6 @@ describe('the helpers a thread sent out', () => {
     expect(helperTab()!.parentThreadId).toBe(PARENT)
   })
 
-  // A helper can send one out itself, and what it sent is still work this thread
-  // sent out. It stands in the one list under the helper that sent it, so the
-  // order says who sent whom without a word.
   it('holds what a helper sent out itself, under the helper that sent it', () => {
     const { getByText } = render(createElement(BrowserPanel))
     sent(spawned(CHILD, 'reading the schema'), spawned(GRAND, 'reading the tests', CHILD))
