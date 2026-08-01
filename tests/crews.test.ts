@@ -59,11 +59,15 @@ describe('several crews in one app', () => {
     await app.start(1, one, 'Jamel')
     await app.start(2, two, 'Jamel')
 
-    await app.inView(1).writeFile('who.txt', 'the first')
-    await app.inView(2).writeFile('who.txt', 'the second')
+    writeFileSync(path.join(one, 'who.txt'), 'the first')
+    writeFileSync(path.join(two, 'who.txt'), 'the second')
 
-    expect((await app.inView(1).readFile('who.txt'))?.text).toBe('the first')
-    expect((await app.inView(2).readFile('who.txt'))?.text).toBe('the second')
+    const read = async (window: number): Promise<string> => {
+      const file = await app.inView(window).readFile('who.txt')
+      return file?.kind === 'file' ? file.text : ''
+    }
+    expect(await read(1)).toBe('the first')
+    expect(await read(2)).toBe('the second')
   })
 
   it('leaves the other window where it was when one of them switches', async () => {
