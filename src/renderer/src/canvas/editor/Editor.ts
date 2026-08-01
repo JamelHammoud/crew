@@ -916,7 +916,7 @@ export class Editor {
 
   deselect(...shapes: Array<TLShape | TLShapeId>): this {
     const removing = new Set(shapes.map(shape => (typeof shape === 'string' ? shape : shape.id)))
-    this.selection.setSelectedShapeIds(this.getSelectedShapeIds().filter(id => !removing.has(id)))
+    this.commitSelection(this.getSelectedShapeIds().filter(id => !removing.has(id)))
     return this
   }
 
