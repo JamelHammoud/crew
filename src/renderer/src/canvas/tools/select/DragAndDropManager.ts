@@ -1,5 +1,5 @@
 import { Vec } from '../../math'
-import { findShapeAncestor, getShapeParent, hasAncestor } from './shapeTree'
+import { getShapeParent, hasAncestor } from './shapeTree'
 import type { SelectEditor } from './types'
 
 const SLOW_POINTER_LAG_DURATION = 320

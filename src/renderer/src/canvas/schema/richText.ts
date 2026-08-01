@@ -84,6 +84,20 @@ function childrenHtml(node: TLRichTextNode): string {
   return (node.content ?? []).map(renderNode).join('')
 }
 
+const MAX_HEADING_LEVEL = 6
+
+function headingTag(node: TLRichTextNode): string {
+  const level = Number(node.attrs?.level)
+  if (!Number.isInteger(level) || level < 1 || level > MAX_HEADING_LEVEL) return 'h1'
+  return `h${level}`
+}
+
+function orderedListOpenTag(node: TLRichTextNode): string {
+  const start = Number(node.attrs?.start)
+  if (!Number.isInteger(start) || start === 1) return '<ol dir="auto">'
+  return `<ol dir="auto" start="${start}">`
+}
+
 function renderNode(node: TLRichTextNode): string {
   if (node.type === 'text') return wrapInMarks(escapeText(node.text ?? ''), node.marks)
   if (node.type === 'hardBreak') return '<br dir="auto">'
@@ -91,6 +105,13 @@ function renderNode(node: TLRichTextNode): string {
     const inner = childrenHtml(node)
     return inner === '' ? '<p><br /></p>' : `<p dir="auto">${inner}</p>`
   }
+  if (node.type === 'heading') {
+    const tag = headingTag(node)
+    return `<${tag} dir="auto">${childrenHtml(node)}</${tag}>`
+  }
+  if (node.type === 'bulletList') return `<ul dir="auto">${childrenHtml(node)}</ul>`
+  if (node.type === 'orderedList') return `${orderedListOpenTag(node)}${childrenHtml(node)}</ol>`
+  if (node.type === 'listItem') return `<li dir="auto">${childrenHtml(node)}</li>`
   return childrenHtml(node)
 }
 
