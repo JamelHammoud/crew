@@ -192,7 +192,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
           ref={holds(line)}
           data-reorder-line
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 z-10 flex -translate-y-1/2 items-center justify-center opacity-0 transition-opacity duration-100"
+          className="pointer-events-none absolute inset-x-0 z-10 flex -translate-y-1/2 items-center justify-center opacity-0"
         >
           <span className="mx-2 flex min-w-0 flex-1 items-center">
             <span
