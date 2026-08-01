@@ -67,6 +67,33 @@ export function richTextSchema(source: Extensions = richTextExtensions): Schema 
   return schema
 }
 
+class DocumentCache<Value> {
+  private readonly bySource = new WeakMap<Extensions, WeakMap<RichTextDocument, Value>>()
+
+  get(source: Extensions, richText: RichTextDocument, build: () => Value): Value {
+    let documents = this.bySource.get(source)
+    if (!documents) {
+      documents = new WeakMap()
+      this.bySource.set(source, documents)
+    }
+    const cached = documents.get(richText)
+    if (cached !== undefined) return cached
+    const value = build()
+    documents.set(richText, value)
+    return value
+  }
+}
+
+const htmlCache = new DocumentCache<string>()
+const plainTextCache = new DocumentCache<string>()
+
+export function isEmptyRichText(richText: RichTextDocument | null | undefined): boolean {
+  if (!richText?.content || richText.content.length === 0) return true
+  if (richText.content.length > 1) return false
+  const only = richText.content[0]
+  return !only.content || only.content.length === 0
+}
+
 export function richTextToProseMirror(
   richText: RichTextDocument,
   source: Extensions = richTextExtensions

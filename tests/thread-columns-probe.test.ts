@@ -147,10 +147,11 @@ describe('several threads open side by side', () => {
   it('gives every column its own way out, and closing one leaves the other standing', () => {
     open(['thread-1', 'thread-2'], 'thread-1')
 
-    const closes = screen.getAllByLabelText('Close')
-    expect(closes).toHaveLength(2)
+    const [first, second] = columns()
+    const close = within(first!).getByLabelText('Close')
+    expect(within(second!).getByLabelText('Close')).toBeTruthy()
 
-    fireEvent.click(closes[0]!)
+    fireEvent.click(close)
     expect(useCrew.getState().openThreadIds).toEqual(['thread-2'])
     expect(useCrew.getState().openThreadId).toBe('thread-2')
 
