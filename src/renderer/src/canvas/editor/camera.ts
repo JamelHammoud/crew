@@ -92,13 +92,19 @@ export class CameraManager {
     return Box.From(this.screenBounds.get())
   }
 
-  setScreenBounds(bounds: ViewportBounds): void {
-    this.screenBounds.set({
+  setScreenBounds(bounds: ViewportBounds): boolean {
+    const next = {
       x: finite(bounds.x, 0),
       y: finite(bounds.y, 0),
-      w: Math.max(0, finite(bounds.w, 0)),
-      h: Math.max(0, finite(bounds.h, 0))
-    })
+      w: Math.max(1, finite(bounds.w, 1)),
+      h: Math.max(1, finite(bounds.h, 1))
+    }
+    const current = this.screenBounds.get()
+    if (current.x === next.x && current.y === next.y && current.w === next.w && current.h === next.h) {
+      return false
+    }
+    this.screenBounds.set(next)
+    return true
   }
 
   getScreenCenter(): Vec {
