@@ -175,9 +175,6 @@ window.faces = () => {
     white.translate(-50 * unit, -54 * unit)
     white.scale(unit, unit)
     const body = new Path2D(pet.body)
-    white.shadowColor = 'rgba(0,0,0,0.3)'
-    white.shadowOffsetY = box * 0.02
-    white.shadowBlur = box * 0.05
     white.fillStyle = '#ffffff'
     white.strokeStyle = '#ffffff'
     white.lineWidth = 7
@@ -185,13 +182,11 @@ window.faces = () => {
     white.lineCap = 'round'
     white.fill(body)
     white.stroke(body)
-    white.shadowColor = 'transparent'
-    white.shadowOffsetY = 0
-    white.shadowBlur = 0
     white.globalCompositeOperation = 'destination-out'
+    const gap = eyeGapAt(pet, box)
     for (const side of [-1, 1]) {
       white.beginPath()
-      white.arc(50 + (side * pet.eyeGap) / 2, pet.eyeY, EYE_RADIUS, 0, Math.PI * 2)
+      white.arc(50 + (side * gap) / 2, pet.eyeY, EYE_RADIUS, 0, Math.PI * 2)
       white.fill()
     }
     white.globalCompositeOperation = 'source-over'
