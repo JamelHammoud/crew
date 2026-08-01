@@ -362,9 +362,14 @@ const driveSource = String.raw`(async () => {
     editor.select(editable.id)
     await settle()
     const centre = viewport(boundsOf(editable).center)
-    ;(nodeOf(editable.id) || surface).dispatchEvent(
-      new MouseEvent('dblclick', { bubbles: true, cancelable: true, clientX: centre.x, clientY: centre.y })
-    )
+    const onto = nodeOf(editable.id) || surface
+    for (const round of [0, 1]) {
+      pointer('pointerdown', centre.x, centre.y, 1, onto)
+      await frame()
+      pointer('pointerup', centre.x, centre.y, 0, onto)
+      if (round === 0) await frame()
+    }
+    onto.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true, clientX: centre.x, clientY: centre.y }))
     await settle(6)
     const editing = editor.getEditingShapeId()
     const caret = document.querySelector('[contenteditable="true"], textarea')

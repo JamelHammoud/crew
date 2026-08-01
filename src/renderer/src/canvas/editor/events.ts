@@ -17,9 +17,27 @@ export interface CanvasEventHandlers {
   onTouchCancel(event: TouchEvent): void
 }
 
+const MAX_ZOOM_STEP = 10
+const PINCH_ZOOM_THRESHOLD = 24
+const PINCH_PAN_THRESHOLD = 16
+const PINCH_PAN_TO_ZOOM_THRESHOLD = 64
+
+export function normalizeWheel(event: WheelEvent): { x: number; y: number; z: number } {
+  let { deltaX, deltaY } = event
+  let deltaZ = 0
+  if (event.ctrlKey || event.altKey || event.metaKey) {
+    deltaZ = (Math.abs(deltaY) > MAX_ZOOM_STEP ? MAX_ZOOM_STEP * Math.sign(deltaY) : deltaY) / 100
+  }
+  return { x: -deltaX, y: -deltaY, z: -deltaZ }
+}
+
 export class CanvasEventBridge {
   private readonly pointers = new Map<number, { x: number; y: number }>()
+  private pinchState: 'not sure' | 'zooming' | 'panning' = 'not sure'
   private pinchDistance = 0
+  private pinchInitialDistance = 1
+  private pinchOrigin = { x: 0, y: 0 }
+  private pinchPrevious = { x: 0, y: 0 }
   private pinchCamera: { x: number; y: number; z: number } | null = null
 
   constructor(private readonly editor: Editor) {}
