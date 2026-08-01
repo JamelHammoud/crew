@@ -1,8 +1,9 @@
-import type { Box, VecLike } from '../math'
+import { Box, Mat, Vec, type VecLike } from '../math'
 import type { CanvasOverlay, CanvasOverlayEntry, CanvasOverlayUtil } from '../render/types'
 import type { TLShape, TLShapeId } from '../schema'
 import type { ShapeHandle, ShapeUtil } from '../shapes'
 import type { BoundsSnapIndicator } from '../tools/snaps'
+import type { TLScribble } from './scribbles'
 
 interface OverlayEditor {
   getSelectionRotatedPageBounds(): Box | undefined
@@ -11,17 +12,26 @@ interface OverlayEditor {
   getOnlySelectedShape(): TLShape | null
   getShapeUtil(shape: TLShape): ShapeUtil
   getShapePageTransform(shape: TLShape): { applyToPoint(point: VecLike): VecLike }
+  getShapeGeometry(shape: TLShape): { vertices: VecLike[]; isClosed: boolean }
+  getHoveredShape(): TLShape | undefined
   getEditingShapeId(): TLShapeId | null
   getZoomLevel(): number
-  getCurrentTheme(): { colors: Record<'light' | 'dark', { selectionStroke: string }> }
+  getCurrentTheme(): { colors: Record<'light' | 'dark', Record<string, unknown>> }
   getColorMode(): 'light' | 'dark'
-  getInstanceState(): { brush?: { x: number; y: number; w: number; h: number } | null }
+  getInstanceState(): { brush?: { x: number; y: number; w: number; h: number } | null; scribbles?: TLScribble[] }
   snaps: { getIndicators(): BoundsSnapIndicator[] }
 }
 
 interface ToolOverlayUtil extends CanvasOverlayUtil {
+  options?: { zIndex?: number }
   getOverlays?(): CanvasOverlay[]
   onPointerDown?(overlay: CanvasOverlay, info: unknown): boolean | undefined
+}
+
+interface HitTarget {
+  origin: VecLike
+  rotation: number
+  rect: { x: number; y: number; w: number; h: number }
 }
 
 export class OverlayManager {
@@ -32,9 +42,11 @@ export class OverlayManager {
     private readonly editor: OverlayEditor,
     constructors: readonly unknown[] = []
   ) {
+    this.register(new ShapeIndicatorOverlayUtil(editor))
     this.register(new SelectionForegroundOverlayUtil(editor))
     this.register(new BrushOverlayUtil(editor))
     this.register(new SnapOverlayUtil(editor))
+    this.register(new ScribbleOverlayUtil(editor))
     this.register(new ShapeHandleOverlayUtil(editor))
     for (const Constructor of constructors) {
       const value =
@@ -55,12 +67,12 @@ export class OverlayManager {
   }
 
   getActiveOverlayEntries(): CanvasOverlayEntry[] {
-    const entries: CanvasOverlayEntry[] = []
+    const entries: Array<CanvasOverlayEntry & { zIndex: number }> = []
     for (const value of this.values.values()) {
       if (!value.isActive()) continue
-      entries.push({ util: value, overlays: value.getOverlays?.() ?? [] })
+      entries.push({ util: value, overlays: value.getOverlays?.() ?? [], zIndex: value.options?.zIndex ?? 0 })
     }
-    return entries
+    return entries.sort((a, b) => a.zIndex - b.zIndex)
   }
 
   getOverlayUtil<Util extends ToolOverlayUtil = ToolOverlayUtil>(type: string): Util
@@ -75,15 +87,12 @@ export class OverlayManager {
   getOverlayAtPoint(point: VecLike, margin = 0): CanvasOverlay | null {
     const entries = this.getActiveOverlayEntries()
     for (let entryIndex = entries.length - 1; entryIndex >= 0; entryIndex--) {
-      const overlays = entries[entryIndex].overlays
-      for (let overlayIndex = overlays.length - 1; overlayIndex >= 0; overlayIndex--) {
-        const overlay = overlays[overlayIndex]
-        const props = overlay.props as { point?: VecLike; radius?: number; bounds?: Box }
-        if (props.point) {
+      for (const overlay of entries[entryIndex].overlays) {
+        const props = overlay.props as { point?: VecLike; radius?: number; hit?: HitTarget }
+        if (props.hit && hitsTarget(props.hit, point, margin)) return overlay
+        if (!props.hit && props.point) {
           const radius = (props.radius ?? 6 / this.editor.getZoomLevel()) + margin
-          if ((point.x - props.point.x) ** 2 + (point.y - props.point.y) ** 2 <= radius ** 2) return overlay
-        } else if (props.bounds?.containsPoint(point, margin)) {
-          return overlay
+          if (Vec.Dist2(point, props.point) <= radius ** 2) return overlay
         }
       }
     }
@@ -109,8 +118,23 @@ export class OverlayManager {
   }
 }
 
+function hitsTarget(target: HitTarget, point: VecLike, margin: number): boolean {
+  const local = Mat.Identity()
+    .translate(target.origin.x, target.origin.y)
+    .rotate(target.rotation)
+    .invert()
+    .applyToPoint(point)
+  const { x, y, w, h } = target.rect
+  return local.x >= x - margin && local.x <= x + w + margin && local.y >= y - margin && local.y <= y + h + margin
+}
+
+const CORNERS = ['top_left', 'top_right', 'bottom_right', 'bottom_left'] as const
+const EDGES = ['top', 'right', 'bottom', 'left'] as const
+const ROTATE_CORNERS = ['top_left_rotate', 'top_right_rotate', 'bottom_right_rotate', 'bottom_left_rotate'] as const
+
 class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   static type = 'selection_foreground'
+  readonly options = { zIndex: 100 }
 
   constructor(private readonly editor: OverlayEditor) {}
 
@@ -122,14 +146,43 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
     const bounds = this.editor.getSelectionRotatedPageBounds()
     if (!bounds) return []
     const zoom = this.editor.getZoomLevel()
-    const radius = 6 / zoom
-    const points = selectionHandlePoints(bounds, this.editor.getSelectionRotation(), 24 / zoom)
-    const handles = Object.entries(points).map(([handle, point]) => ({
+    const rotation = this.editor.getSelectionRotation()
+    const origin = { x: bounds.x, y: bounds.y }
+    const { w, h } = bounds
+    const size = 6 / zoom
+    const hitX = (w < (8 / zoom) * 4 ? size / 2 : size) * 0.75
+    const hitY = (h < (8 / zoom) * 4 ? size / 2 : size) * 0.75
+    const corner = Math.max(hitX, hitY) * 1.5
+    const rotateSize = Math.max(hitX, hitY) * 1.62
+    const overlay = (handle: string, rect: HitTarget['rect']): CanvasOverlay => ({
       id: `selection:${handle}`,
       type: 'selection_foreground',
-      props: { handle, point, radius }
-    }))
-    return [{ id: 'selection:bounds', type: 'selection_foreground', props: { bounds } }, ...handles]
+      props: {
+        handle,
+        point: Mat.Identity().translate(origin.x, origin.y).rotate(rotation).applyToPoint({
+          x: rect.x + rect.w / 2,
+          y: rect.y + rect.h / 2
+        }),
+        radius: 6 / zoom,
+        hit: { origin, rotation, rect }
+      }
+    })
+    return [
+      ...CORNERS.map(handle => {
+        const at = cornerPoint(handle, w, h)
+        return overlay(handle, { x: at.x - corner, y: at.y - corner, w: corner * 2, h: corner * 2 })
+      }),
+      ...EDGES.map(handle => overlay(handle, edgeRect(handle, w, h, hitX, hitY))),
+      ...ROTATE_CORNERS.map(handle => {
+        const at = rotateCornerPoint(handle, w, h, rotateSize)
+        return overlay(handle, {
+          x: at.x - rotateSize,
+          y: at.y - rotateSize,
+          w: rotateSize * 2,
+          h: rotateSize * 2
+        })
+      })
+    ]
   }
 
   render(context: CanvasRenderingContext2D): void {
@@ -137,46 +190,90 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
     if (!bounds) return
     const zoom = this.editor.getZoomLevel()
     const rotation = this.editor.getSelectionRotation()
-    const stroke = this.editor.getCurrentTheme().colors[this.editor.getColorMode()].selectionStroke
-    context.strokeStyle = stroke
-    context.fillStyle = '#ffffff'
-    context.lineWidth = 1.5 / zoom
+    const stroke = colorOf(this.editor, 'selectionStroke')
     context.save()
     context.translate(bounds.x, bounds.y)
     context.rotate(rotation)
+    context.strokeStyle = stroke
+    context.fillStyle = '#ffffff'
+    context.lineWidth = 1.5 / zoom
     context.strokeRect(0, 0, bounds.w, bounds.h)
-    context.restore()
-    const points = selectionHandlePoints(bounds, rotation, 24 / zoom)
     const radius = 4 / zoom
-    for (const point of Object.values(points)) {
+    for (const handle of CORNERS) {
+      const point = cornerPoint(handle, bounds.w, bounds.h)
       context.beginPath()
       context.arc(point.x, point.y, radius, 0, Math.PI * 2)
       context.fill()
       context.stroke()
     }
+    context.restore()
+  }
+}
+
+class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
+  static type = 'shape_indicator'
+  readonly options = { zIndex: 50 }
+
+  constructor(private readonly editor: OverlayEditor) {}
+
+  isActive(): boolean {
+    return this.indicated().length > 0
+  }
+
+  getOverlays(): CanvasOverlay[] {
+    return this.indicated().map(shape => ({
+      id: `shape-indicator:${shape.id}`,
+      type: 'shape_indicator',
+      props: { shapeId: shape.id }
+    }))
+  }
+
+  render(context: CanvasRenderingContext2D): void {
+    const shapes = this.indicated()
+    if (shapes.length === 0) return
+    context.strokeStyle = colorOf(this.editor, 'selectionStroke')
+    context.lineWidth = 1.5 / this.editor.getZoomLevel()
+    for (const shape of shapes) {
+      const transform = this.editor.getShapePageTransform(shape)
+      const geometry = this.editor.getShapeGeometry(shape)
+      const vertices = geometry.vertices.map(vertex => transform.applyToPoint(vertex))
+      if (vertices.length < 2) continue
+      context.beginPath()
+      context.moveTo(vertices[0].x, vertices[0].y)
+      for (const vertex of vertices.slice(1)) context.lineTo(vertex.x, vertex.y)
+      if (geometry.isClosed) context.closePath()
+      context.stroke()
+    }
+  }
+
+  private indicated(): TLShape[] {
+    if (this.editor.getEditingShapeId() !== null) return []
+    const hovered = this.editor.getHoveredShape()
+    if (!hovered || this.editor.getSelectedShapeIds().includes(hovered.id)) return []
+    return [hovered]
   }
 }
 
 class BrushOverlayUtil implements ToolOverlayUtil {
   static type = 'brush'
+  readonly options = { zIndex: 10 }
 
   constructor(private readonly editor: OverlayEditor) {}
 
   isActive(): boolean {
-    return this.editor.getInstanceState().brush !== null
+    return Boolean(this.editor.getInstanceState().brush)
   }
 
   getOverlays(): CanvasOverlay[] {
     const brush = this.editor.getInstanceState().brush
-    return brush ? [{ id: 'brush:current', type: 'brush', props: { bounds: brush } }] : []
+    return brush ? [{ id: 'brush:current', type: 'brush', props: { box: { ...brush } } }] : []
   }
 
   render(context: CanvasRenderingContext2D): void {
     const brush = this.editor.getInstanceState().brush
     if (!brush) return
-    const colors = this.editor.getCurrentTheme().colors[this.editor.getColorMode()] as Record<string, string>
-    context.fillStyle = colors.brushFill ?? 'rgba(128,128,128,.1)'
-    context.strokeStyle = colors.brushStroke ?? 'rgba(128,128,128,.25)'
+    context.fillStyle = colorOf(this.editor, 'brushFill')
+    context.strokeStyle = colorOf(this.editor, 'brushStroke')
     context.lineWidth = 1 / this.editor.getZoomLevel()
     context.fillRect(brush.x, brush.y, brush.w, brush.h)
     context.strokeRect(brush.x, brush.y, brush.w, brush.h)
@@ -185,6 +282,7 @@ class BrushOverlayUtil implements ToolOverlayUtil {
 
 class SnapOverlayUtil implements ToolOverlayUtil {
   static type = 'snap_indicator'
+  readonly options = { zIndex: 20 }
 
   constructor(private readonly editor: OverlayEditor) {}
 
@@ -196,7 +294,7 @@ class SnapOverlayUtil implements ToolOverlayUtil {
     return this.editor.snaps.getIndicators().map(indicator => ({
       id: indicator.id,
       type: 'snap_indicator',
-      props: indicator
+      props: { indicator }
     }))
   }
 
@@ -204,7 +302,7 @@ class SnapOverlayUtil implements ToolOverlayUtil {
     const indicators = this.editor.snaps.getIndicators()
     if (indicators.length === 0) return
     const zoom = this.editor.getZoomLevel()
-    const stroke = this.editor.getCurrentTheme().colors[this.editor.getColorMode()].selectionStroke
+    const stroke = colorOf(this.editor, 'snap')
     context.strokeStyle = stroke
     context.fillStyle = stroke
     context.lineWidth = 1 / zoom
@@ -217,8 +315,47 @@ class SnapOverlayUtil implements ToolOverlayUtil {
   }
 }
 
+class ScribbleOverlayUtil implements ToolOverlayUtil {
+  static type = 'scribble'
+  readonly options = { zIndex: 30 }
+
+  constructor(private readonly editor: OverlayEditor) {}
+
+  isActive(): boolean {
+    return (this.editor.getInstanceState().scribbles?.length ?? 0) > 0
+  }
+
+  getOverlays(): CanvasOverlay[] {
+    return (this.editor.getInstanceState().scribbles ?? []).map(scribble => ({
+      id: `scribble:${scribble.id}`,
+      type: 'scribble',
+      props: { scribble }
+    }))
+  }
+
+  render(context: CanvasRenderingContext2D): void {
+    const scribbles = this.editor.getInstanceState().scribbles ?? []
+    const zoom = this.editor.getZoomLevel()
+    for (const scribble of scribbles) {
+      if (scribble.points.length < 2) continue
+      context.save()
+      context.globalAlpha = scribble.opacity
+      context.strokeStyle = colorOf(this.editor, scribble.color)
+      context.lineWidth = scribble.size / zoom
+      context.lineCap = 'round'
+      context.lineJoin = 'round'
+      context.beginPath()
+      context.moveTo(scribble.points[0].x, scribble.points[0].y)
+      for (const point of scribble.points.slice(1)) context.lineTo(point.x, point.y)
+      context.stroke()
+      context.restore()
+    }
+  }
+}
+
 class ShapeHandleOverlayUtil implements ToolOverlayUtil {
   static type = 'shape_handle'
+  readonly options = { zIndex: 200 }
 
   constructor(private readonly editor: OverlayEditor) {}
 
@@ -238,8 +375,7 @@ class ShapeHandleOverlayUtil implements ToolOverlayUtil {
     const handles = this.handles()
     if (handles.length === 0) return
     const zoom = this.editor.getZoomLevel()
-    const stroke = this.editor.getCurrentTheme().colors[this.editor.getColorMode()].selectionStroke
-    context.strokeStyle = stroke
+    context.strokeStyle = colorOf(this.editor, 'selectionStroke')
     context.fillStyle = '#ffffff'
     context.lineWidth = 1.5 / zoom
     for (const { handle, point } of handles) {
@@ -260,26 +396,43 @@ class ShapeHandleOverlayUtil implements ToolOverlayUtil {
   }
 }
 
-function selectionHandlePoints(bounds: Box, rotation: number, rotateDistance: number): Record<string, VecLike> {
-  const local: Record<string, VecLike> = {
-    top_left: { x: bounds.x, y: bounds.y },
-    top: { x: bounds.midX, y: bounds.y },
-    top_right: { x: bounds.maxX, y: bounds.y },
-    right: { x: bounds.maxX, y: bounds.midY },
-    bottom_right: { x: bounds.maxX, y: bounds.maxY },
-    bottom: { x: bounds.midX, y: bounds.maxY },
-    bottom_left: { x: bounds.x, y: bounds.maxY },
-    left: { x: bounds.x, y: bounds.midY },
-    mobile_rotate: { x: bounds.midX, y: bounds.y - rotateDistance }
-  }
-  if (rotation === 0) return local
-  for (const point of Object.values(local)) {
-    const dx = point.x - bounds.x
-    const dy = point.y - bounds.y
-    point.x = bounds.x + dx * Math.cos(rotation) - dy * Math.sin(rotation)
-    point.y = bounds.y + dx * Math.sin(rotation) + dy * Math.cos(rotation)
-  }
-  return local
+function cornerPoint(handle: (typeof CORNERS)[number], width: number, height: number): VecLike {
+  if (handle === 'top_left') return { x: 0, y: 0 }
+  if (handle === 'top_right') return { x: width, y: 0 }
+  if (handle === 'bottom_right') return { x: width, y: height }
+  return { x: 0, y: height }
+}
+
+function rotateCornerPoint(
+  handle: (typeof ROTATE_CORNERS)[number],
+  width: number,
+  height: number,
+  size: number
+): VecLike {
+  if (handle === 'top_left_rotate') return { x: -size, y: -size }
+  if (handle === 'top_right_rotate') return { x: width + size, y: -size }
+  if (handle === 'bottom_right_rotate') return { x: width + size, y: height + size }
+  return { x: -size, y: height + size }
+}
+
+function edgeRect(
+  handle: (typeof EDGES)[number],
+  width: number,
+  height: number,
+  hitX: number,
+  hitY: number
+): HitTarget['rect'] {
+  if (handle === 'top') return { x: 0, y: -hitY, w: width, h: hitY * 2 }
+  if (handle === 'right') return { x: width - hitX, y: 0, w: hitX * 2, h: height }
+  if (handle === 'bottom') return { x: 0, y: height - hitY, w: width, h: hitY * 2 }
+  return { x: -hitX, y: 0, w: hitX * 2, h: height }
+}
+
+function colorOf(editor: OverlayEditor, name: string): string {
+  const value = editor.getCurrentTheme().colors[editor.getColorMode()][name]
+  if (typeof value === 'string') return value
+  const solid = (value as { solid?: unknown } | undefined)?.solid
+  return typeof solid === 'string' ? solid : 'hsl(214, 84%, 56%)'
 }
 
 function drawPointIndicator(context: CanvasRenderingContext2D, points: VecLike[], zoom: number): void {
