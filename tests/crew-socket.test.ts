@@ -107,4 +107,22 @@ describe('CrewSocket', () => {
 
     expect(made[1].sent.map(message => JSON.parse(message).type)).toEqual(['hello'])
   })
+
+  it('retries a socket that stays alive without welcoming the window', () => {
+    const socket = new CrewSocket()
+    const statuses: SocketStatus[] = []
+    socket.onStatus = status => statuses.push(status)
+    socket.connect('ws://127.0.0.1:1001/ws', hello('One'))
+    made[0].open()
+    made[0].message({ type: 'ping' })
+
+    vi.advanceTimersByTime(10000)
+
+    expect(made[0].closed).toBe(true)
+    made[0].finishClose()
+    vi.advanceTimersByTime(1000)
+
+    expect(made).toHaveLength(2)
+    expect(statuses).toEqual(['connecting', 'open', 'closed', 'connecting'])
+  })
 })

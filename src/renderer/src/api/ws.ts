@@ -4,6 +4,7 @@ export type SocketStatus = 'connecting' | 'open' | 'closed'
 
 const MAX_DELAY_MS = 10000
 const SILENCE_TIMEOUT_MS = 60000
+const WELCOME_TIMEOUT_MS = 10000
 
 export class CrewSocket {
   private ws: WebSocket | null = null
@@ -16,6 +17,7 @@ export class CrewSocket {
   private pending: ClientMessage[] = []
   private lastSeen = 0
   private watchdog: number | null = null
+  private welcomeTimer: number | null = null
   onMessage: (msg: ServerMessage) => void = () => {}
   onStatus: (status: SocketStatus) => void = () => {}
 
@@ -24,7 +26,9 @@ export class CrewSocket {
     if (this.standby && this.standby !== previous) this.standby.close()
     this.standby = previous
     if (this.reconnectTimer !== null) window.clearTimeout(this.reconnectTimer)
+    if (this.welcomeTimer !== null) window.clearTimeout(this.welcomeTimer)
     this.reconnectTimer = null
+    this.welcomeTimer = null
     this.pending = []
     this.url = url
     this.hello = hello
@@ -46,8 +50,10 @@ export class CrewSocket {
     this.pending = []
     if (this.reconnectTimer !== null) window.clearTimeout(this.reconnectTimer)
     if (this.watchdog !== null) window.clearInterval(this.watchdog)
+    if (this.welcomeTimer !== null) window.clearTimeout(this.welcomeTimer)
     this.reconnectTimer = null
     this.watchdog = null
+    this.welcomeTimer = null
     this.ws?.close()
     this.standby?.close()
     this.ws = null
@@ -65,6 +71,9 @@ export class CrewSocket {
       this.lastSeen = Date.now()
       if (this.hello) ws.send(JSON.stringify(this.hello))
       this.onStatus('open')
+      this.welcomeTimer = window.setTimeout(() => {
+        if (this.ws === ws) ws.close()
+      }, WELCOME_TIMEOUT_MS)
       const queued = this.pending
       this.pending = []
       for (const msg of queued) this.send(msg)
@@ -75,6 +84,8 @@ export class CrewSocket {
       try {
         const message = JSON.parse(event.data) as ServerMessage
         if (message.type === 'welcome') {
+          if (this.welcomeTimer !== null) window.clearTimeout(this.welcomeTimer)
+          this.welcomeTimer = null
           this.standby?.close()
           this.standby = null
         }
@@ -86,7 +97,9 @@ export class CrewSocket {
     ws.onclose = () => {
       if (this.ws !== ws) return
       if (this.watchdog !== null) window.clearInterval(this.watchdog)
+      if (this.welcomeTimer !== null) window.clearTimeout(this.welcomeTimer)
       this.watchdog = null
+      this.welcomeTimer = null
       this.onStatus('closed')
       if (this.intentionalClose) return
       const wait = Math.min(1000 * 2 ** this.attempts, MAX_DELAY_MS)

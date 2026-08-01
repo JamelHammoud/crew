@@ -24,7 +24,10 @@ function savedOrder(): string[] {
 
 function arranged(places: Place[]): Place[] {
   const order = savedOrder()
-  if (order.length === 0) return places
+  if (order.length === 0) {
+    if (places.length > 0) keepOrder(places)
+    return places
+  }
   const byKey = new Map(places.map(place => [place.key, place]))
   const known = order.flatMap(key => {
     const place = byKey.get(key)
@@ -32,7 +35,15 @@ function arranged(places: Place[]): Place[] {
     byKey.delete(key)
     return [place]
   })
-  return [...places.filter(place => byKey.has(place.key)), ...known]
+  const added = places.filter(place => byKey.has(place.key))
+  if (added.length > 0) {
+    try {
+      globalThis.localStorage?.setItem(ORDER_KEY, JSON.stringify([...added.map(place => place.key), ...order]))
+    } catch {
+      return [...added, ...known]
+    }
+  }
+  return [...added, ...known]
 }
 
 function keepOrder(places: Place[]): void {

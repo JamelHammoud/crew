@@ -53,15 +53,15 @@ describe('CrewSocket project switching', () => {
     const socket = new CrewSocket()
     sockets.push(socket)
 
-    const localWelcome = welcomeFrom(socket)
-    socket.connect(local.wsUrl, hello(local.name, local.code))
-    expect((await localWelcome).snapshot.code).toBe(local.code)
-
-    const back = app.switchTo(1, projectPlace(hostedFolder))
-    expect(back).not.toBeNull()
-    const hostedWelcome = welcomeFrom(socket)
-    socket.connect(back!.wsUrl, hello(back!.name, back!.code))
-    expect((await hostedWelcome).snapshot.code).toBe(hosted.code)
+    for (let index = 0; index < 20; index++) {
+      const key = index % 2 === 0 ? projectPlace(localFolder) : projectPlace(hostedFolder)
+      const expected = index % 2 === 0 ? local : hosted
+      const selected = app.switchTo(1, key)
+      expect(selected).not.toBeNull()
+      const welcome = welcomeFrom(socket)
+      socket.connect(selected!.wsUrl, hello(selected!.name, selected!.code))
+      expect((await welcome).snapshot.code).toBe(expected.code)
+    }
   }, 40000)
 
   it('switches between two live Crews and back through one renderer socket', async () => {
