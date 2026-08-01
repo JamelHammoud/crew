@@ -24,7 +24,7 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
   static override type = 'frame' as const
   static override props = frameShapeProps
 
-  override options = { getCustomDisplayValues: () => ({}) }
+  override options = { resizeChildren: false, getCustomDisplayValues: () => ({}) }
 
   getDefaultProps(): FrameShape['props'] {
     return { w: 320, h: 180, name: '', color: 'black' }
@@ -50,6 +50,15 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
   }
   override getClipPath(shape: FrameShape): Vec[] | undefined {
     return new Rectangle2d({ width: shape.props.w, height: shape.props.h, isFilled: false }).vertices
+  }
+  override canEdit(): boolean {
+    return true
+  }
+  override canResizeChildren(): boolean {
+    return this.options.resizeChildren
+  }
+  override isExportBoundsContainer(): boolean {
+    return true
   }
   override isFrameLike(_shape: FrameShape): boolean {
     return true

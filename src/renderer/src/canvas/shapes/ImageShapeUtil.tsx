@@ -32,6 +32,9 @@ export class ImageShapeUtil extends BaseBoxShapeUtil<ImageShape> {
   override isExportBoundsContainer(): boolean {
     return true
   }
+  override getAriaDescriptor(shape: ImageShape): string {
+    return shape.props.altText
+  }
 
   createShapeForAsset(asset: CrewAsset, position: { x: number; y: number }): CrewShapePartial<ImageShape> | null {
     if (asset.type !== 'image') return null

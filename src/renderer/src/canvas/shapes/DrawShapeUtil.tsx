@@ -1,12 +1,18 @@
 import { createElement, type ReactNode } from 'react'
 import { Circle2d, Polygon2d, Polyline2d, type Geometry2d } from '../geometry'
 import { drawShapeProps, type TLShape as CrewShape } from '../schema'
+import { isSinglePoint } from '../schema/points'
 import { ShapeUtil, type ShapeResizeInfo } from './ShapeUtil'
 import { freehandCenterline, freehandOptions, freehandOutline } from './freehand'
 import { STROKES, pathFromPoints, segmentPoints } from './shared'
 import { canvasSurface, shapeColor } from './theme'
 
 export type DrawShape = CrewShape<'draw'>
+
+export function isDot(shape: DrawShape | CrewShape<'highlight'>): boolean {
+  const segment = shape.props.segments[0]
+  return shape.props.segments.length === 1 && isSinglePoint(segment.path, segment.dim)
+}
 
 export class DrawShapeUtil extends ShapeUtil<DrawShape> {
   static override type = 'draw' as const
@@ -30,6 +36,15 @@ export class DrawShapeUtil extends ShapeUtil<DrawShape> {
   }
   override canEdit(): boolean {
     return true
+  }
+  override hideResizeHandles(shape: DrawShape): boolean {
+    return isDot(shape)
+  }
+  override hideRotateHandle(shape: DrawShape): boolean {
+    return isDot(shape)
+  }
+  override hideSelectionBoundsFg(shape: DrawShape): boolean {
+    return isDot(shape)
   }
   getGeometry(shape: DrawShape): Geometry2d {
     const points = segmentPoints(shape.props.segments, shape.props.scaleX, shape.props.scaleY)

@@ -2,6 +2,7 @@ import { createElement, type ReactNode } from 'react'
 import { Circle2d, Polygon2d, type Geometry2d } from '../geometry'
 import { highlightShapeProps, type TLShape as CrewShape } from '../schema'
 import { ShapeUtil, type ShapeResizeInfo } from './ShapeUtil'
+import { isDot } from './DrawShapeUtil'
 import { freehandOutline, highlightOptions } from './freehand'
 import { STROKES, pathFromPoints, segmentPoints } from './shared'
 import { shapeColor } from './theme'
@@ -15,6 +16,15 @@ export class HighlightShapeUtil extends ShapeUtil<HighlightShape> {
 
   getDefaultProps(): HighlightShape['props'] {
     return { segments: [], color: 'black', size: 'm', isComplete: false, isPen: false, scale: 1, scaleX: 1, scaleY: 1 }
+  }
+  override hideResizeHandles(shape: HighlightShape): boolean {
+    return isDot(shape)
+  }
+  override hideRotateHandle(shape: HighlightShape): boolean {
+    return isDot(shape)
+  }
+  override hideSelectionBoundsFg(shape: HighlightShape): boolean {
+    return isDot(shape)
   }
   getGeometry(shape: HighlightShape): Geometry2d {
     const points = segmentPoints(shape.props.segments, shape.props.scaleX, shape.props.scaleY)

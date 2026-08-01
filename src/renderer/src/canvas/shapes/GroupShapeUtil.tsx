@@ -35,6 +35,12 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
   override canBind(): boolean {
     return false
   }
+  override hideSelectionBoundsFg(): boolean {
+    return true
+  }
+  override canResizeChildren(): boolean {
+    return true
+  }
   override canResize(): boolean {
     return true
   }

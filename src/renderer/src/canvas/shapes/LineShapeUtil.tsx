@@ -50,6 +50,18 @@ export class LineShapeUtil extends ShapeUtil<LineShape> {
   override canResize(): boolean {
     return true
   }
+  override hideResizeHandles(): boolean {
+    return true
+  }
+  override hideRotateHandle(): boolean {
+    return true
+  }
+  override hideSelectionBoundsFg(): boolean {
+    return true
+  }
+  override hideSelectionBoundsBg(): boolean {
+    return true
+  }
   override getHandles(shape: LineShape): ShapeHandle[] {
     return Object.values(shape.props.points)
       .sort((a, b) => a.index.localeCompare(b.index))

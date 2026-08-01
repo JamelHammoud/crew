@@ -234,6 +234,24 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
   override canResize(): boolean {
     return false
   }
+  override canBind(): boolean {
+    return false
+  }
+  override canSnap(): boolean {
+    return false
+  }
+  override hideResizeHandles(): boolean {
+    return true
+  }
+  override hideRotateHandle(): boolean {
+    return true
+  }
+  override hideSelectionBoundsBg(): boolean {
+    return true
+  }
+  override hideSelectionBoundsFg(): boolean {
+    return true
+  }
   override getText(shape: ArrowShape): string {
     return plainText(shape.props.richText)
   }
