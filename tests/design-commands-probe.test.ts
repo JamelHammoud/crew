@@ -6,14 +6,15 @@ import { fakeBoard, type FakeShape } from './helpers/design-editor'
 const { availableCommands, commandForKey, DESIGN_COMMANDS, runCommand } = await import(
   '../src/renderer/src/design/commands'
 )
-const { chordHint } = await import('../src/renderer/src/design/designKeys')
+const { BOARD_CHAT_MARK, chordHint, matchesChord } = await import('../src/renderer/src/design/designKeys')
 type Chord = Parameters<typeof chordHint>[0]
 
 const chord = (keys: Chord) => ({
   key: keys.shift ? keys.key.toUpperCase() : keys.key,
   metaKey: !!keys.meta,
   shiftKey: !!keys.shift,
-  ctrlKey: !!keys.ctrl
+  ctrlKey: !!keys.ctrl,
+  altKey: !!keys.alt
 })
 const { maskCandidate, maskOf, removeMask, useAsMask } = await import('../src/renderer/src/design/mask')
 const { nodeOutline } = await import('../src/renderer/src/design/nodeShape')
@@ -215,9 +216,9 @@ describe('the shortcuts the menu names', () => {
 
   it('takes no keystroke that is not its own', () => {
     const { ctx } = board([node('shape:a')], 'shape:a')
-    expect(commandForKey(press({ key: 'a', metaKey: true }), ctx)).toBe(null)
+    expect(commandForKey(press({ key: 'k', metaKey: true }), ctx)).toBe(null)
     expect(commandForKey(press({ key: 'A', metaKey: true, shiftKey: true, altKey: true }), ctx)).toBe(null)
-    expect(commandForKey(press({ key: 'A', shiftKey: true }), ctx)).toBe(null)
+    expect(commandForKey(press({ key: 'S', shiftKey: true }), ctx)).toBe(null)
   })
 
   it('asks for nothing while a shape is being written in', () => {
