@@ -13,9 +13,10 @@ const SLIDE = 'translate 150ms cubic-bezier(0.4, 0, 0.2, 1)'
 // How far what is in hand hangs off the pointer, so the pointer is beside it
 // rather than standing on it.
 const HAND = 12
-// What is left of the one that was picked up. It is still there and still says
-// what is being carried, and it is plainly not where the work is.
-const LIFTED = '0.35'
+// What is left of the one that was picked up. It has to read as a hole the thing
+// came out of rather than as another row of the list, and the rows around it are
+// already quiet, so this is well under the opacity a row rests at.
+const LIFTED = '0.2'
 
 export type Reorder = {
   ref: (node: HTMLElement | null) => void
