@@ -246,7 +246,7 @@ const sameList = <T>(
 
 const sameText = (a: string, b: string): boolean => a === b
 
-const sameShown = (a: Shown | undefined, b: Shown | undefined): boolean => {
+export const sameShown = (a: Shown | undefined, b: Shown | undefined): boolean => {
   if (a === b) return true
   if (!a || !b) return false
   return a.title === b.title && sameList(a.pages, b.pages, sameText)
@@ -301,6 +301,8 @@ export function sameItem(a: ThreadItem, b: ThreadItem): boolean {
 }
 
 export const sameItems = (a: ThreadItem[], b: ThreadItem[]): boolean => sameList(a, b, sameItem)
+
+export const sameSubagentRuns = (a: SubagentRun[], b: SubagentRun[]): boolean => sameList(a, b, sameSubagentRun)
 
 // Somebody typing three lines in a row is one person talking, so the lines
 // after the first drop the face and the name and close up under it. Seven
