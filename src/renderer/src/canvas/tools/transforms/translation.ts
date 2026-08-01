@@ -312,6 +312,21 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.applyLifecycle('update')
   }
 
+  private recordDuplicateProps(moving: TLShape[]): void {
+    if (!this.isCloning || moving.length === 0) return
+    const points = moving.flatMap(shape => {
+      const transform = this.editor.getShapePageTransform?.(shape.id as Shape['id'])
+      return transform ? [Mat.Point(transform)] : []
+    })
+    if (points.length === 0) return
+    const before = Vec.Average(this.selectionSnapshots.map(snapshot => snapshot.pagePoint))
+    const offset = Vec.Sub(Vec.Average(points), before)
+    if (Number.isNaN(offset.x) || Number.isNaN(offset.y)) return
+    this.editor.updateInstanceState?.({
+      duplicateProps: { shapeIds: moving.map(shape => shape.id as string), offset: { x: offset.x, y: offset.y } }
+    })
+  }
+
   private applyLifecycle(stage: 'start' | 'update' | 'end'): void {
     const updates: ShapeUpdate<Shape>[] = []
     for (const { shape } of this.snapshots) {
