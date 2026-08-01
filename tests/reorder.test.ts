@@ -68,8 +68,18 @@ describe('where the line that says where it lands stands', () => {
     expect(boundary(boxes, 1, 1)).toBe(95)
   })
 
-  it('stands at the head of the row without reaching for a box that is not there', () => {
-    expect(boundary(boxes, 2, 0)).toBe(-5)
+  // Half of the mark at its head stands above the line, and the list clips, so a
+  // line on the very edge of it comes out with its top half gone.
+  it('stands inside the padding at either end rather than on the edge of it', () => {
+    const padded = [
+      { left: 8, width: 90 },
+      { left: 108, width: 90 }
+    ]
+    expect(boundary(padded, 1, 0)).toBe(4)
+    expect(boundary(boxes, 2, 0)).toBe(0)
+  })
+
+  it('reaches for no box that is not there', () => {
     expect(boundary(boxes, 0, 9)).toBe(0)
   })
 })
