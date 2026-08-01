@@ -60,8 +60,8 @@ export function threadFinished(event: SessionEvent, state: ReviewState): boolean
 // Nothing is said about the thread somebody already has open, since it says it
 // there. That is the row's own clause and not the rule's: a sound is not on the
 // screen, so it still plays for the thread being read. Whether anybody is
-// looking at the window is not part of this either: the app says it every time,
-// and only the system banner waits for the window to be in the background.
+// looking at the window is not part of this either, and nothing downstream asks:
+// the row and the system banner both go out every time.
 export function finishedAlert(event: SessionEvent, state: AlertState): AgentAlert | null {
   if (event.kind !== 'agent.end') return null
   if (!threadFinished(event, state)) return null

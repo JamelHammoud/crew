@@ -7,7 +7,8 @@ import { toolAction } from './toolActions'
 
 export default function StepGroup({ items, linked }: { items: ThreadItem[]; linked?: boolean }) {
   const [open, setOpen] = useState<boolean | null>(null)
-  const action = toolAction(items[0].name, items[0].subagent)
+  const thinking = items[0].kind === 'thinking'
+  const action = thinking ? THINKING : toolAction(items[0].name, items[0].subagent)
   const live = items.some(item => item.streaming)
   const found = carries(useFindQuery(), items.flatMap(stepText))
   const expanded = open ?? (found || live)
@@ -16,9 +17,9 @@ export default function StepGroup({ items, linked }: { items: ThreadItem[]; link
   return (
     <div className={`pl-14 animate-rise ${linked ? '-mt-3' : ''}`}>
       <button onClick={() => setOpen(!expanded)} className={rowClass(true)}>
-        <Mark icon={action.icon} running={live} />
+        {thinking ? <ThinkingMark running={live} /> : <Mark icon={action.icon} running={live} />}
         {live ? (
-          <Label action={action} running />
+          <Label action={action} running swap={thinking} />
         ) : (
           <span className="shrink-0 text-fg-muted group-hover:text-fg-secondary transition-colors">
             {action.many ?? action.done}

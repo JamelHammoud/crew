@@ -447,7 +447,7 @@ export const useCrew = create<CrewState>((set, get) => {
           useBrowser.getState().openPanel()
         }
       })
-      if (!document.hasFocus()) void window.crew?.notify?.(alert)
+      void window.crew?.notify?.(alert)
     }
     // A question asked on the side opens where it is answered. It is a ghost, so
     // this only ever runs in the window that asked it.
