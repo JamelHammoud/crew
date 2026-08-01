@@ -38,6 +38,7 @@ import type { ClientMessage, MemberInfo, QueuedItem, ServerMessage } from '../..
 import { messageReactionTarget, type ReactionEmoji } from '../../../shared/reactions'
 import { shownPages } from '../../../shared/showPage'
 import { isTicketEvent, type TicketEvent } from '../../../shared/tickets'
+import { closeOne, focusAfterClose, isFull, openBeside } from '../../../shared/threadViews'
 import { TYPING_PING, type Typist } from '../../../shared/typing'
 import type { CurrentSession } from '../../../shared/session'
 import { CrewSocket } from '../api/ws'
