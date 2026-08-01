@@ -80,5 +80,3 @@ export function keepPreviews(ids: Set<string>): void {
     urls.delete(id)
   }
 }
-
-export const heldCount = (): number => held.size
