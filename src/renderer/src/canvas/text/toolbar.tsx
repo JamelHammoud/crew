@@ -147,7 +147,6 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
 
   useEffect(() => {
     if (!editor || link === null) return
-    const document = editor.view.dom.ownerDocument
     const outside = (event: PointerEvent) => {
       const toolbar = document.querySelector('[data-testid="canvas-rich-text-toolbar"]')
       if (toolbar?.contains(event.target as Node)) return
