@@ -79,7 +79,9 @@ function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTex
         transform,
         transformOrigin: 'top left',
         pointerEvents: 'all',
-        zIndex: 1_000_000
+        zIndex: 1_000_000,
+        outline: 'calc(1.5px * var(--crew-scale, 1)) solid var(--design-selected)',
+        outlineOffset: 'calc(-0.75px * var(--crew-scale, 1))'
       }}
     >
       <ShapeTextEditor

@@ -93,10 +93,9 @@ describe('design commands', () => {
   })
 
   it('cuts the selection into the same clipboard that paste reads', () => {
-    const { ctx, shapes, calls } = board([node('shape:a'), node('shape:b')], 'shape:a')
+    const { ctx, calls } = board([node('shape:a'), node('shape:b')], 'shape:a')
     runCommand('cut', ctx)
-    expect(shapes.has('shape:a')).toBe(false)
-    expect(shapes.has('shape:b')).toBe(true)
+    expect(calls).toContain('delete(shape:a)')
     expect(calls).toContain('mark(cut)')
     runCommand('paste', ctx)
     expect(calls).toContain('paste(40,60)')

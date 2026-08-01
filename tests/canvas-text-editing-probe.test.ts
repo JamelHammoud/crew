@@ -204,6 +204,23 @@ describe('canvas text editing', () => {
     expect(layer.style.transform).toBe(shapeCssTransform(editor().getShapePageTransform(textId)))
   })
 
+  it('keeps the live text bounds visible while the caret is open', async () => {
+    const { view, editor } = mountBoard()
+    await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
+
+    act(() => {
+      editor().setEditingShape(textId)
+    })
+    await waitFor(() => expect(view.container.querySelector(`[data-canvas-text-editor="${textId}"]`)).toBeTruthy())
+
+    const layer = view.container.querySelector(`[data-canvas-text-editor="${textId}"]`) as HTMLElement
+    const bounds = editor().getShapeGeometry(editor().getShape(textId)!).bounds
+    expect(layer.style.width).toBe(`${bounds.w}px`)
+    expect(layer.style.height).toBe(`${bounds.h}px`)
+    expect(layer.style.outline).toContain('var(--design-selected)')
+    expect(layer.style.outline).toContain('var(--crew-scale, 1)')
+  })
+
   it('follows the shape when it moves and when it is rotated while the caret is open', async () => {
     const { view, editor } = mountBoard()
     await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
