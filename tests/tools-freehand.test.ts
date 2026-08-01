@@ -164,7 +164,6 @@ function eraserEditor() {
     getPointInShapeSpace: (_shape, p) => p,
     getOutermostSelectableShape: shape => shape,
     getErasingShapeIds: () => erasing,
-    getCurrentPageState: () => ({ erasingShapeIds: erasing }),
     isShapeOrAncestorLocked: () => false,
     isShapeOfType: (shape, type) => shape.type === type,
     isShapeFrameLike: shape => shape.type === 'frame',
