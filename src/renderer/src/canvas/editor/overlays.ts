@@ -3,6 +3,7 @@ import type { CanvasOverlay, CanvasOverlayEntry, CanvasOverlayUtil } from '../re
 import type { TLShape, TLShapeId } from '../schema'
 import type { ShapeHandle, ShapeUtil } from '../shapes'
 import type { BoundsSnapIndicator } from '../tools/snaps'
+import { drawSnapGuides } from './guides'
 import type { TLScribble } from './scribbles'
 
 interface OverlayEditor {
