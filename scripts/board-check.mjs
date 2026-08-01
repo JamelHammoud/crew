@@ -223,6 +223,7 @@ const driveSource = String.raw`(async () => {
     const corner = viewport({ x: before.maxX, y: before.maxY })
     await drag(corner, { x: corner.x + 60, y: corner.y + 4 }, { modifiers: { shiftKey: true } })
     const after = boundsOf(box.id)
+    if (Math.abs(after.w - before.w) < 1) return { ok: false, note: 'it did not resize at all' }
     return { ok: Math.abs(after.w / after.h - ratio) < 0.05, note: ratio.toFixed(3) + ' to ' + (after.w / after.h).toFixed(3) }
   })
 

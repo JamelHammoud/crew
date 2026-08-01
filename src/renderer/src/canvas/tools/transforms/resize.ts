@@ -131,7 +131,7 @@ export function resizeShape<Shape extends TLShape>(
   options: ResizeShapeOptions<Shape>
 ): ShapeUpdate<Shape> {
   const { shape, bounds, pageTransform, parentTransform } = snapshot
-  const isAspectRatioLocked = snapshot.isAspectRatioLocked
+  const isAspectRatioLocked = snapshot.isAspectRatioLocked || (options.isAspectRatioLocked ?? false)
   const pageRotation = Mat.Rotation(pageTransform)
   const requestedScale = Vec.From(scale)
   const adjustedScale = Vec.From(scale)
@@ -276,7 +276,7 @@ export class Resizing<Shape extends TLShape = TLShape> extends TransformState<
       this.selectionBounds.point,
       this.selectionRotation
     )
-    this.cursorHandleOffset = new Vec()
+    this.cursorHandleOffset = Vec.Sub(this.editor.inputs.getOriginPagePoint(), handlePoint)
     this.markId = info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('starting resizing') ?? ''
     if (info.isCreating) this.editor.setCursor?.({ type: 'cross', rotation: 0 })
     this.applyLifecycle('start')
