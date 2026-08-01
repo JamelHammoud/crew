@@ -75,6 +75,30 @@ type ShapeCreate = CrewShapePartial<TLShape> & {
   isLocked?: boolean
 }
 
+interface EditorInstanceState {
+  brush: ViewportBounds | null
+  duplicateProps: { shapeIds: TLShapeId[]; offset: { x: number; y: number } } | null
+  isGridMode: boolean
+  isChangingStyle: boolean
+  isCoarsePointer: boolean
+  isToolLocked: boolean
+  cursor: { type: string; rotation: number }
+  isReadonly: boolean
+  erasingShapeIds: TLShapeId[]
+  hintingShapeIds: TLShapeId[]
+  hoveredShapeId: TLShapeId | null
+  scribbles: TLScribble[]
+}
+
+function sameInstanceValue(one: unknown, two: unknown): boolean {
+  if (Object.is(one, two)) return true
+  if (!one || !two || typeof one !== 'object' || typeof two !== 'object') return false
+  if (Array.isArray(one) !== Array.isArray(two)) return false
+  const keys = Object.keys(one)
+  if (keys.length !== Object.keys(two).length) return false
+  return keys.every(key => Object.is((one as Record<string, unknown>)[key], (two as Record<string, unknown>)[key]))
+}
+
 export class Editor {
   readonly id = uniqueId()
   readonly store
