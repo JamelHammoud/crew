@@ -1335,6 +1335,20 @@ export class Editor {
     return this.history.markHistoryStoppingPoint(name)
   }
 
+  getCanUndo(): boolean {
+    return this.history.getNumUndos() > 0
+  }
+
+  getCanRedo(): boolean {
+    return this.history.getNumRedos() > 0
+  }
+
+  bail(): this {
+    this.history.bail()
+    this.cleanSelection()
+    return this
+  }
+
   bailToMark(id: string): this {
     this.history.bailToMark(id)
     this.cleanSelection()
