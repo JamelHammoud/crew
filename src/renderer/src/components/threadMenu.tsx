@@ -87,6 +87,21 @@ export function ThreadStatusItems({ threadId, onDone }: { threadId: string; onDo
   )
 }
 
+export function ThreadIdItem({ threadId, onDone }: { threadId: string; onDone: () => void }) {
+  return (
+    <MenuItem
+      icon={<ClipboardGlyph />}
+      label="Copy thread ID"
+      onClick={() => {
+        onDone()
+        void navigator.clipboard.writeText(threadId).then(() => {
+          toast.done('Thread ID copied', { key: 'thread-id' })
+        })
+      }}
+    />
+  )
+}
+
 export function useThreadMenu({
   status,
   ...props
