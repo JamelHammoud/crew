@@ -57,6 +57,18 @@ describe('the canvas editor', () => {
     expect(subject.getViewportPageBounds().contains(new Box(100, 100, 200, 100))).toBe(true)
   })
 
+  it('holds culling steady during a pointer interaction and refreshes it on release', () => {
+    const subject = editor()
+    subject.setViewportScreenBounds({ x: 0, y: 0, w: 100, h: 100 })
+    const id = frame(subject, 'culled-drag', 200, 0, 40, 40)
+    expect(subject.getCulledShapes().has(id)).toBe(true)
+    subject.inputs.pointerDown({ x: 10, y: 10 }, { x: 10, y: 10 }, {}, 'mouse')
+    subject.updateShape({ id, type: 'frame', x: 20 })
+    expect(subject.getCulledShapes().has(id)).toBe(true)
+    subject.inputs.pointerUp({ x: 10, y: 10 }, { x: 10, y: 10 }, {})
+    expect(subject.getCulledShapes().has(id)).toBe(false)
+  })
+
   it('orders siblings without changing their relative selected order', () => {
     const subject = editor()
     const a = frame(subject, 'a', 0, 0)
