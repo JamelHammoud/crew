@@ -197,7 +197,7 @@ describe('geo painting', () => {
   it('gives the label a box of its own inside the shape', () => {
     const util = new GeoShapeUtil(editor)
     const withText = geo({ richText: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hello' }] }] } })
-    const geometry = util.getGeometry(withText) as { children: { isLabel: boolean }[] }
+    const geometry = util.getGeometry(withText) as unknown as { children: { isLabel: boolean }[] }
     expect(geometry.children.length).toBe(2)
     expect(geometry.children[1].isLabel).toBe(true)
   })
