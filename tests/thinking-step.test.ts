@@ -104,6 +104,13 @@ describe('a thinking step', () => {
     expect(screen.getByText(LONG).closest('.md-quiet')).not.toBeNull()
   })
 
+  it('leaves the row upright and keeps the italic for what opens under it', () => {
+    render(createElement(StepRow, { item: thought(`**Planning the edit**\n\n${LONG}`, true) }))
+    expect(screen.getByText('Planning the edit').closest('.italic')).toBeNull()
+    expect(document.querySelector('button .italic')).toBeNull()
+    expect(screen.getByText(LONG).closest('.md-quiet')).not.toBeNull()
+  })
+
   it('folds a run of thoughts into one that opens onto every one of them', () => {
     const run = ['a', 'b', 'c'].map((key, index) => thought(`**Thought ${index + 1}**`, false, { key, promptId: 'p1' }))
     expect(stepBlocks(run).map(block => block.items.length)).toEqual([3])

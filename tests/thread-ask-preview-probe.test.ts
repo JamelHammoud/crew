@@ -110,6 +110,7 @@ const hover = (line: HTMLElement) => {
 const card = (): HTMLElement | null => document.querySelector('.glass.fixed')
 
 beforeEach(() => {
+  watchers.length = 0
   vi.useFakeTimers()
   Element.prototype.scrollIntoView = vi.fn()
   window.crew = { warmTerminal: () => undefined } as unknown as CrewBridge
