@@ -94,6 +94,28 @@ export class Group2d extends Geometry2d {
     return smallest
   }
 
+  override hitTestPoint(
+    point: VecLike,
+    margin: number,
+    hitInside: boolean,
+    filters: Geometry2dFilters = Geometry2dFilters.EXCLUDE_LABELS
+  ): boolean {
+    return this.children.some(
+      child => !child.isExcludedByFilter(filters) && child.hitTestPoint(point, margin, hitInside)
+    )
+  }
+
+  override hitTestLineSegment(
+    a: VecLike,
+    b: VecLike,
+    zoom: number,
+    filters: Geometry2dFilters = Geometry2dFilters.EXCLUDE_LABELS
+  ): boolean {
+    return this.children.some(
+      child => !child.isExcludedByFilter(filters) && child.hitTestLineSegment(a, b, zoom)
+    )
+  }
+
   override overlapsPolygon(polygon: VecLike[]): boolean {
     return this.children.some(child => child.overlapsPolygon(polygon))
   }
