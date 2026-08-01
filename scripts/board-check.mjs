@@ -1457,13 +1457,12 @@ const driveSource = String.raw`(async () => {
     }
   }
   const measure = async (from, step, modifiers) => {
-    probe.canvasCommits = 0
-    probe.appCommits = 0
     const handler = []
     const painted = []
     pointer('pointerdown', from.x, from.y, 1, undefined, modifiers)
     await frame()
     probe.canvasCommits = 0
+    probe.overlayCommits = 0
     probe.appCommits = 0
     for (let at = 1; at <= MOVES; at++) {
       const began = performance.now()
@@ -1473,7 +1472,7 @@ const driveSource = String.raw`(async () => {
       handler.push(done - began)
       painted.push(performance.now() - began)
     }
-    const commits = { canvas: probe.canvasCommits, app: probe.appCommits }
+    const commits = { canvas: probe.canvasCommits, overlay: probe.overlayCommits, app: probe.appCommits }
     pointer('pointerup', from.x + step.x * MOVES, from.y + step.y * MOVES, 0, undefined, modifiers)
     await settle()
     return { handler: summarise(handler), painted: summarise(painted), commits }
