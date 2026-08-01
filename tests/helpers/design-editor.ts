@@ -183,6 +183,10 @@ export function fakeBoard(list: FakeShape[]): FakeBoard {
     select: (...next: string[]) => {
       selected = next
     },
-    shape: (id: string) => shapes.get(id as TLShapeId as string)!
+    shape: (id: string) => shapes.get(id as TLShapeId as string)!,
+    step: () => {
+      undos += 1
+      redos = 0
+    }
   }
 }
