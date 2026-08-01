@@ -53,12 +53,14 @@ async function boardFile() {
 function probeSource(snapshot) {
   const canvas = JSON.stringify(path.join(root, 'src/renderer/src/canvas/index.ts'))
   const shapes = JSON.stringify(path.join(root, 'src/renderer/src/design/shapeUtils.ts'))
+  const nodeTool = JSON.stringify(path.join(root, 'src/renderer/src/design/DesignNodeTool.ts'))
   const react = JSON.stringify(resolve('react'))
   const reactDom = JSON.stringify(resolve('react-dom/client'))
   return `import React from ${react}
 import { createRoot } from ${reactDom}
 import { CrewCanvas, createTLStore, defaultBindingUtils, loadSnapshot } from ${canvas}
 import { designShapeUtils } from ${shapes}
+import { DesignNodeTool } from ${nodeTool}
 import './probe.css'
 
 const store = createTLStore({ id: 'board-check' })
