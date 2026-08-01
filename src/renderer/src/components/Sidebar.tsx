@@ -50,6 +50,8 @@ export default function Sidebar({
   const [busyKey, setBusyKey] = useState<string | null>(null)
   const [asking, setAsking] = useState<string | null>(null)
   const order = useReorder((key, to) => move(key, to), 'vertical')
+  const scroller = useRef<HTMLDivElement | null>(null)
+  useScrollFade(scroller)
 
   const held = useRef(order)
   held.current = order
