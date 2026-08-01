@@ -32,21 +32,34 @@ function pointer(e: Editor, name: string, x: number, y: number): void {
   } as never)
 }
 
-describe('dragging a shape onto a frame', () => {
-  it('reparents it into the frame the way tldraw does', () => {
+function path(e: Editor): string {
+  let node: { id: string; getCurrent?: () => unknown } | undefined = (e as never as { root: never }).root as never
+  const parts: string[] = []
+  while (node) {
+    parts.push(node.id)
+    node = node.getCurrent?.() as never
+  }
+  return parts.join('.')
+}
+
+describe('dragging a shape', () => {
+  it('moves it, and drops it into a frame the way tldraw does', () => {
     const e = ed()
     const frame = createShapeId('frame')
     e.createShape({ id: frame, type: 'frame', x: 300, y: 60, props: { w: 300, h: 300, name: 'Card' } })
     const box = createShapeId('box')
     e.createShape({ id: box, type: 'geo', x: 20, y: 20, props: { w: 60, h: 60, fill: 'solid' } })
-    const before = e.getShape(box)!.parentId
     e.setSelectedShapes([box])
+
     pointer(e, 'pointer_down', 50, 50)
-    for (let i = 1; i <= 12; i++) pointer(e, 'pointer_move', 50 + i * 33, 50 + i * 12)
+    console.log('page point after down:', JSON.stringify(e.inputs.getCurrentPagePoint()))
+    console.log('state after down:', path(e))
+    pointer(e, 'pointer_move', 90, 60)
+    console.log('isDragging after 40px:', e.inputs.getIsDragging(), 'state:', path(e))
+    for (let i = 2; i <= 12; i++) pointer(e, 'pointer_move', 50 + i * 33, 50 + i * 12)
+    console.log('state before up:', path(e), 'shape at:', e.getShape(box)!.x, e.getShape(box)!.y)
     pointer(e, 'pointer_up', 446, 194)
-    const after = e.getShape(box)!.parentId
-    console.log('parent before:', before, 'after:', after, 'frame is:', frame)
-    console.log('shape now at:', e.getShape(box)!.x, e.getShape(box)!.y)
-    expect(after).toBe(frame)
+    console.log('final at:', e.getShape(box)!.x, e.getShape(box)!.y, 'parent:', e.getShape(box)!.parentId)
+    expect(e.getShape(box)!.parentId).toBe(frame)
   })
 })
