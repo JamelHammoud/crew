@@ -78,7 +78,18 @@ export default function HoverCard({
     if (rect && el) setSize({ w: el.offsetWidth, h: el.offsetHeight })
   }, [rect])
 
+  // Nothing to say is nothing to stand up. Said here rather than by whoever
+  // wraps it: a caller that swaps the card out for the plain thing underneath
+  // takes the thing out of the tree and puts it back, which loses whatever it
+  // had measured about itself.
+  const empty = content === null || content === undefined || content === false
+
+  useEffect(() => {
+    if (empty && rect) hide()
+  }, [empty, rect, hide])
+
   const enter = () => {
+    if (empty) return
     if (enterTimer.current !== null) window.clearTimeout(enterTimer.current)
     enterTimer.current = window.setTimeout(() => {
       const next = anchorRef.current?.getBoundingClientRect()

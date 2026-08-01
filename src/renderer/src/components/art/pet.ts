@@ -73,7 +73,7 @@ function blobPath(rand: () => number, straight: boolean): string {
     c[1] += 53 - cy
   }
   if (straight) {
-    return `M ${coords.map(c => c.join(' ')).join(' L ')} Z`
+    return turned(coords)
   }
   const mid = (a: [number, number], b: [number, number]): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
   let path = `M ${mid(coords[points - 1], coords[0]).join(' ')}`
