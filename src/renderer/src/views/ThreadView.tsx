@@ -367,9 +367,7 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                           panelOpen ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
                         }`}
                       >
-                        <PanelRightGlyph
-                          className={`w-5 h-5 transition-transform duration-200 ${panelOpen ? '' : 'scale-x-[-1]'}`}
-                        />
+                        <PanelRightGlyph className="w-5 h-5" />
                       </button>
                     </Tooltip>
                   </div>
