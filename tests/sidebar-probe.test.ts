@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LivePlace } from '../src/shared/places'
 import type { CurrentSession } from '../src/shared/session'
 
+Element.prototype.getAnimations ??= () => []
+
 const kept = new Map<string, string>()
 Object.defineProperty(globalThis, 'localStorage', {
   configurable: true,
