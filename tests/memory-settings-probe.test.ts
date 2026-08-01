@@ -63,6 +63,7 @@ describe('the memory page', () => {
     expect(screen.getByRole('heading', { name: 'Memory' })).toBeTruthy()
     const toggle = screen.getByRole('switch', { name: 'Let agents use memory' })
     expect(toggle.getAttribute('aria-checked')).toBe('false')
+    expect(screen.getByRole('separator').className).toContain('-mx-8')
     expect(screen.getByRole('button', { name: 'Add a memory' })).toBeTruthy()
 
     fireEvent.click(toggle)
