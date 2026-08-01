@@ -46,7 +46,7 @@ export function activeThreads(
     }
     const stirred = stirs(event)
     const thread = stirred ? open.get(stirred) : undefined
-    if (thread && event.ts > thread.at) thread.at = event.ts
+    if (thread) thread.at = event.ts
   }
   return [...open]
     .sort(([, a], [, b]) => b.at - a.at)
