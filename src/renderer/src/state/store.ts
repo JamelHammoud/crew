@@ -189,6 +189,7 @@ interface CrewState {
   // events because a board is folded off these rather than scrolled past.
   tickets: TicketEvent[]
   tools: CrewTool[]
+  memories: CrewMemory[]
   // The emoji the crew drew themselves. They are everyone's here, so they come
   // off the host rather than out of this window's own storage.
   emoji: CustomEmoji[]
