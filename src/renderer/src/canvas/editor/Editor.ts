@@ -222,11 +222,12 @@ export class Editor {
     return this
   }
 
-  private tick(elapsed: number): void {
+  tick(elapsed: number): void {
     if (this.disposed) return
     this.camera.tick(elapsed)
     this.scribbles.tick(elapsed)
     this.inputs.updatePointerVelocity(elapsed)
+    this.tools.dispatch({ name: 'tick', elapsed })
     this.emitter.emit('tick', elapsed)
   }
 
