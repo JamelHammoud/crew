@@ -4,7 +4,7 @@ import { grokProvider } from './grok'
 import { kimiProvider } from './kimi'
 import type { Provider } from './types'
 
-export const builtinProviders: Provider[] = [kimiProvider, codexProvider, claudeProvider, grokProvider]
+export const builtinProviders: Provider[] = [claudeProvider, codexProvider, kimiProvider, grokProvider]
 
 export async function detectProviders(): Promise<Provider[]> {
   const found: Provider[] = []
