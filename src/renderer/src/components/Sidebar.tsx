@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
-import type { LiveThread } from '../../../shared/threads'
 import { PlusGlyph } from '../icons'
 import { isLive, threadsIn, usePlaces } from '../state/places'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
@@ -109,10 +108,11 @@ export default function Sidebar() {
             busy={busyKey === place.key}
             threads={threadsIn(live, place.key)}
             openThreadId={place.key === here ? openThreadId : null}
-            onOpen={() => void go(place)}
-            onOpenThread={threadId =>
-              void goToThread(place, { id: threadId, title: '', working: false })
-            }
+            onOpen={() => {
+              useCrew.getState().wantThread(null)
+              void go(place)
+            }}
+            onOpenThread={threadId => void goToThread(place, threadId)}
             onStop={isLive(live, place.key) ? () => void closePlace(place.key) : undefined}
             onForget={() => void forget(place)}
           />
