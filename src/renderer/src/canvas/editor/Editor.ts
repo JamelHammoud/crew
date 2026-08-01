@@ -180,14 +180,49 @@ export class Editor {
     this.tools = new ToolManager(this, options.tools, options.initialState)
     this.root = { handleEvent: info => this.tools.dispatch(info), getCurrent: () => this.tools.getCurrent() }
     this.eventBridge = new CanvasEventBridge(this)
+    this.bindings = new BindingManager(this, options.bindingUtils)
+    this.stopSideEffects = registerDefaultSideEffects(this)
+    this.ticks.start()
   }
 
   dispose(): void {
     if (this.disposed) return
     this.disposed = true
+    this.ticks.dispose()
+    this.stopSideEffects()
+    this.emitter.clear()
     this.history.dispose()
     this.fonts.dispose()
+    this.user.dispose()
     this.textMeasure.dispose?.()
+  }
+
+  on(event: string, handler: (...args: never[]) => void): this {
+    this.emitter.on(event, handler)
+    return this
+  }
+
+  once(event: string, handler: (...args: never[]) => void): this {
+    this.emitter.once(event, handler)
+    return this
+  }
+
+  off(event: string, handler: (...args: never[]) => void): this {
+    this.emitter.off(event, handler)
+    return this
+  }
+
+  emit(event: string, ...args: unknown[]): this {
+    this.emitter.emit(event, ...args)
+    return this
+  }
+
+  private tick(elapsed: number): void {
+    if (this.disposed) return
+    this.camera.tick(elapsed)
+    this.scribbles.tick(elapsed)
+    this.inputs.updatePointerVelocity(elapsed)
+    this.emitter.emit('tick', elapsed)
   }
 
   getContainer(): HTMLElement {
