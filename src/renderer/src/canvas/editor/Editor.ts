@@ -1492,7 +1492,7 @@ export class Editor {
       this.getCurrentPageShapesSorted()
         .filter(shape => {
           const shapeBounds = this.getShapePageBounds(shape)
-          return shapeBounds ? bounds.includes(shapeBounds) : false
+          return shapeBounds ? bounds.collides(shapeBounds) : false
         })
         .map(shape => shape.id)
     )
