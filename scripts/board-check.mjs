@@ -1595,23 +1595,43 @@ const driveSource = String.raw`(async () => {
     return { ok: speed.drag.handler.p95 <= 8, note: 'p95 ' + speed.drag.handler.p95 + 'ms, worst ' + speed.drag.handler.worst + 'ms, painted p95 ' + speed.drag.painted.p95 + 'ms' }
   })
 
+  const commitsOver = async (from, step, buttons) => {
+    probe.canvasCommits = 0
+    probe.overlayCommits = 0
+    for (let at = 1; at <= MOVES; at++) {
+      pointer('pointermove', from.x + step.x * at, from.y + step.y * at, buttons)
+      await frame()
+    }
+    return { canvas: probe.canvasCommits, overlay: probe.overlayCommits }
+  }
+
   await attempt('a drag commits nothing in React', async () => {
     await clear()
     await scratch()
     const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
     await settle()
+    editor.selectNone()
+    await settle()
+    const over = viewport(boundsOf(one).center)
+    const hovering = await commitsOver({ x: over.x - 40, y: over.y }, { x: 1.5, y: 1 }, 0)
     editor.select(one)
     await settle()
-    const clean = await measure(viewport(boundsOf(one).center), { x: 1.5, y: 1 })
-    const alone =
-      'a shape on its own: ' + clean.commits.canvas + ' in the canvas, ' + clean.commits.overlay +
-      ' in the selection overlay, ' + clean.commits.app + ' in the whole window, over ' + MOVES + ' moves'
-    if (!speed.drag) return { ok: clean.commits.canvas === 0 && clean.commits.overlay === 0, note: alone }
-    const drift = speed.drag.drift
-    const busy =
-      '. On the whole board: ' + speed.drag.commits.canvas + ' in the canvas, and the list of shapes to render reads as changed on ' +
-      (drift ? drift.drifted + ' of ' + drift.moves + ' moves because ' + (drift.reasons.length ? drift.reasons.join(' and ') : 'nothing it compares') : 'an unmeasured number of moves')
-    return { ok: clean.commits.canvas === 0 && clean.commits.overlay === 0, note: alone + busy }
+    const from = viewport(boundsOf(one).center)
+    pointer('pointerdown', from.x, from.y, 1)
+    await frame()
+    const dragging = await commitsOver(from, { x: 1.5, y: 1 }, 1)
+    pointer('pointerup', from.x + 90, from.y + 60, 0)
+    await settle()
+    const drift = speed.drag && speed.drag.drift
+    const list = drift
+      ? ', while the list of shapes to render read as unchanged on ' + (drift.moves - drift.drifted) + ' of ' + drift.moves + ' moves'
+      : ''
+    return {
+      ok: dragging.canvas === 0 && dragging.overlay === 0,
+      note:
+        'over ' + MOVES + ' moves of one shape on its own: dragging commits ' + dragging.canvas + ' in the canvas and ' +
+        dragging.overlay + ' in the selection overlay, hovering commits ' + hovering.canvas + ' and ' + hovering.overlay + list
+    }
   })
 
   await attempt('a resize stays under eight milliseconds a move', async () => {
