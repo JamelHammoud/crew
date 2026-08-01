@@ -18,6 +18,13 @@ const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 // sharing it would mean starting somewhere else's place in somebody's message.
 const SCAN = new RegExp(CUSTOM_EMOJI_SCAN.source, CUSTOM_EMOJI_SCAN.flags)
 
+// Walking a line grapheme by grapheme costs something, and almost no line has a
+// picture in it. One test over the whole string says whether the walk is worth
+// making, and it is the same rule the walk itself reads.
+export function anyEmoji(text: string): boolean {
+  return PICTOGRAPHIC.test(text)
+}
+
 function entryFor(segment: string): EmojiEntry | undefined {
   if (!PICTOGRAPHIC.test(segment)) return undefined
   return (
