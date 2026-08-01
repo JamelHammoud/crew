@@ -4466,7 +4466,13 @@ export class CrewSession {
     return ghost !== undefined && ghost.ws !== ws
   }
 
+  liveThreads(): LiveThread[] {
+    const running = new Set([...this.prompts.values()].map(prompt => prompt.threadId))
+    return activeThreads(this.events, threadId => running.has(threadId))
+  }
+
   private emit(event: SessionEvent, opts: { persist?: boolean; to?: WebSocket } = {}): void {
+    this.onEvent?.(event)
     const ghost = this.ghostEventOf(event)
     if (ghost || opts.to) {
       ghost?.events.push(event)
