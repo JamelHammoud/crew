@@ -180,6 +180,49 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.finish(false)
   }
 
+  private startCloning(): void {
+    const ids = this.editor.getSelectedShapeIds?.() ?? []
+    if (!ids.length) return
+    if (this.editor.canCreateShapes && !this.editor.canCreateShapes(ids)) return
+    this.isCloning = true
+    if (this.markId) this.editor.bailToMark?.(this.markId)
+    this.markId = this.editor.markHistoryStoppingPoint?.('translate cloning') ?? ''
+    this.editor.duplicateShapes?.(this.editor.getSelectedShapeIds?.() ?? [])
+    this.snapshots = this.createSnapshots()
+    this.handleStart()
+    this.update()
+  }
+
+  private stopCloning(): void {
+    this.isCloning = false
+    this.snapshots = this.selectionSnapshots
+    if (this.markId) this.editor.bailToMark?.(this.markId)
+    this.markId = this.editor.markHistoryStoppingPoint?.('translate') ?? ''
+    this.update()
+  }
+
+  private handleStart(): void {
+    this.applyLifecycle('start')
+    const shapes = this.snapshots
+      .map(snapshot => this.editor.getShape(snapshot.shape.id))
+      .filter(Boolean) as TLShape[]
+    this.dragTargets?.startDraggingShapes(shapes, Vec.From(this.editor.inputs.getOriginPagePoint()), () =>
+      this.refreshParentTransforms()
+    )
+    this.editor.setHoveredShape?.(null)
+  }
+
+  private refreshParentTransforms(): void {
+    for (const snapshot of this.snapshots) {
+      const shape = this.editor.getShape(snapshot.shape.id)
+      if (!shape) continue
+      const parentPageTransform = shape.parentId.startsWith('shape:')
+        ? this.editor.getShapePageTransform?.(shape.parentId as Shape['id'])
+        : undefined
+      snapshot.parentTransform = parentPageTransform ? Mat.Inverse(parentPageTransform) : null
+    }
+  }
+
   private createSnapshots(): TranslationSnapshot<Shape>[] {
     return (this.editor.getSelectedShapeIds?.() ?? []).flatMap(id => {
       const shape = this.editor.getShape(id)

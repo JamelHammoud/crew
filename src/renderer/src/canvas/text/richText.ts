@@ -106,7 +106,9 @@ export function richTextFromProseMirror(node: ProseMirrorNode): RichTextDocument
 }
 
 export function richTextToHtml(richText: RichTextDocument, source: Extensions = richTextExtensions): string {
-  return generateHTML(richText as JSONContent, source).replaceAll('<p dir="auto"></p>', '<p><br /></p>')
+  return htmlCache.get(source, richText, () =>
+    generateHTML(richText as JSONContent, source).replaceAll('<p dir="auto"></p>', '<p><br /></p>')
+  )
 }
 
 export function richTextForMeasurement(richText: RichTextDocument, source: Extensions = richTextExtensions): string {
@@ -118,6 +120,8 @@ export function richTextFromHtml(html: string, source: Extensions = richTextExte
 }
 
 export function richTextToPlainText(richText: RichTextDocument, source: Extensions = richTextExtensions): string {
-  if (richText.content.length === 0) return ''
-  return generateText(richText as JSONContent, source, { blockSeparator: '\n' })
+  if (isEmptyRichText(richText)) return ''
+  return plainTextCache.get(source, richText, () =>
+    generateText(richText as JSONContent, source, { blockSeparator: '\n' })
+  )
 }
