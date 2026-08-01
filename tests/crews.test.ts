@@ -12,7 +12,7 @@ import { crewsAt } from './helpers/crews'
 import { makeFakeProvider } from './helpers/fake-provider'
 import { initRepo } from './helpers/git'
 import { testRunner } from './helpers/runner'
-import { TestUi, tmpDir } from './helpers/session'
+import { linkOf, TestUi, tmpDir, waitUntil } from './helpers/session'
 
 function statePaths(prefix: string): { agents: string; session: string; projects: string } {
   const dir = tmpDir(prefix)
@@ -203,6 +203,46 @@ describe('several crews in one app', () => {
 
     const said = pushed.at(-1)?.find(place => place.key === projectPlace(one))
     expect(said?.threads.map(thread => thread.id)).toContain(opened.threadId)
+  })
+
+  it('carries the host threads out to a joiner rail', async () => {
+    const host = crews('crews-join-threads-host')
+    const guest = crews('crews-join-threads-guest')
+    const hostRepo = await repo('crews-join-threads-host-repo')
+    const guestRepo = await repo('crews-join-threads-guest-repo')
+    const started = await host.start(1, hostRepo, 'Jamel')
+    const ui = await TestUi.connect(started.wsUrl, 'Jamel', started.code)
+    uis.push(ui)
+    await agentIn(started, hostRepo)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.chat('check the joiner rail @Fake', [agentId('jamel', 'fake')])
+    const existing = (await ui.waitForEvent(e => e.kind === 'thread.started')) as Extract<
+      SessionEvent,
+      { kind: 'thread.started' }
+    >
+
+    const pushed: LivePlace[][] = []
+    guest.onLive = places => pushed.push(places)
+    await guest.join(2, linkOf(started), guestRepo, 'Ali')
+    await waitUntil(
+      () => guest.places().some(place => place.threads.some(thread => thread.id === existing.threadId)),
+      2000
+    )
+
+    ui.chat('keep the joiner rail current @Fake', [agentId('jamel', 'fake')])
+    const added = (await ui.waitForEvent(
+      e => e.kind === 'thread.started' && e.threadId !== existing.threadId
+    )) as Extract<SessionEvent, { kind: 'thread.started' }>
+    await waitUntil(
+      () => guest.places().some(place => place.threads.some(thread => thread.id === added.threadId)),
+      2000
+    )
+
+    const joined = guest.places()[0]
+    expect(joined.hosting).toBe(false)
+    expect(joined.threads.map(thread => thread.id)).toEqual(expect.arrayContaining([existing.threadId, added.threadId]))
+    expect(pushed.at(-1)?.[0]?.threads.map(thread => thread.id)).toContain(added.threadId)
   })
 
   it('shows no threads for a crew this app is not running', async () => {
