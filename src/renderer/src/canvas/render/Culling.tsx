@@ -71,6 +71,5 @@ export function useCullingReactor(name: string, reactFn: () => void, deps: unkno
     scheduler.attach()
     scheduler.execute()
     return () => scheduler.detach()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 }
