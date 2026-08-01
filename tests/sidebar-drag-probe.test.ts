@@ -97,8 +97,6 @@ const SidebarView = (await import('../src/renderer/src/components/Sidebar')).def
 
 const Sidebar = () => createElement(SidebarView, { tab: 'chat' as const, onTab: () => {} })
 
-// The list as it really stands: two groups 80 tall with the 16 the row leaves
-// between them, in a scroller that starts 8 below its own top edge.
 const TOP = 8
 const TALL = 80
 const GAP = 16

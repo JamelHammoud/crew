@@ -7,9 +7,6 @@ export function markOf(place: Place) {
   return <FolderGlyph className="w-4 h-4" />
 }
 
-// What a place is called and the mark that says where it is kept. It is the row
-// in the list and it is what travels with the pointer while one is being moved,
-// which is one drawing rather than two: what is in hand is the thing itself.
 export default function PlaceFace({ place, lit }: { place: Place; lit?: boolean }) {
   return (
     <>

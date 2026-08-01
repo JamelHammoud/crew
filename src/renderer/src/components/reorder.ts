@@ -30,9 +30,6 @@ export function landing(boxes: Box[], from: number, dx: number): number {
   return to
 }
 
-// The room the row leaves between one and the next, read off the boxes rather
-// than off the class that set it. Every gap in a row is the same width, so the
-// first one that is really a gap answers for all of them.
 export function gapOf(boxes: Box[]): number {
   for (let index = 1; index < boxes.length; index++) {
     const gap = boxes[index].left - end(boxes[index - 1])
@@ -41,9 +38,6 @@ export function gapOf(boxes: Box[]): number {
   return 0
 }
 
-// Where the line that says where it lands stands. It is the middle of the gap
-// the held one would drop into, so it belongs to neither of the two it sits
-// between: drawn on the edge of one of them it reads as a rule under a row.
 export function boundary(boxes: Box[], from: number, to: number): number {
   const box = boxes[to]
   if (!box) return 0

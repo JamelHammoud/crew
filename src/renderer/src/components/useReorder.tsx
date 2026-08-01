@@ -10,12 +10,7 @@ const TAKES = 4
 const EDGE = 56
 const STEP = 12
 const SLIDE = 'translate 150ms cubic-bezier(0.4, 0, 0.2, 1)'
-// How far what is in hand hangs off the pointer, so the pointer is beside it
-// rather than standing on it.
 const HAND = 12
-// What is left of the one that was picked up. It has to read as a hole the thing
-// came out of rather than as another row of the list, and the rows around it are
-// already quiet, so this is well under the opacity a row rests at.
 const LIFTED = '0.2'
 
 export type Reorder = {
@@ -29,9 +24,6 @@ type Axis = 'horizontal' | 'vertical'
 
 type Options = {
   axis?: Axis
-  // How to draw the thing being carried. A row handed one of these is lifted out
-  // of the list rather than pushed along it: the one picked up stays where it is,
-  // a copy of it travels with the pointer, and a line says where it would land.
   carry?: (id: string) => ReactNode
 }
 
@@ -49,9 +41,6 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
   const put = useRef<(() => void) | null>(null)
   const [carried, setCarried] = useState<string | null>(null)
 
-  // Both are placed on the commit that mounts them rather than on the frame
-  // after it, or the first thing anybody sees of a drag is the pill standing in
-  // the corner of the window on its way to the pointer.
   const holds = (keep: typeof hand) => (node: HTMLDivElement | null) => {
     keep.current = node
     if (node) put.current?.()
@@ -88,10 +77,6 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     let frame = 0
     dragged.current = false
 
-    // What is picked up is dimmed where it stands and the list stops answering
-    // the pointer, so nothing lights up under a drag that is only passing over
-    // it. The cursor is the window's for the length of it, since the row it was
-    // taken from is no longer the thing being aimed.
     const lift = () => {
       held.style.opacity = LIFTED
       strip.style.pointerEvents = 'none'
@@ -195,9 +180,6 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     frame = requestAnimationFrame(step)
   }
 
-  // The line stands in the list, so it scrolls with what it is pointing between.
-  // What is in hand stands in the body above everything, since the list it came
-  // out of clips whatever runs past its own edge.
   const view =
     carry && carried !== null ? (
       <>
