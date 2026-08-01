@@ -185,4 +185,29 @@ describe('placing a text shape with the text tool', () => {
 
     expect(editor().getShapeUtil(editor().getShape(id)!).getText?.(editor().getShape(id)!)).toBe('typed')
   })
+
+  it('focuses a fixed-width text immediately after dragging it out', async () => {
+    const { view, editor } = mountBoard()
+    const surface = view.container.querySelector('[data-canvas="true"]') as HTMLElement
+
+    act(() => {
+      editor().setCurrentTool('text')
+      surface.dispatchEvent(pointer('pointerdown', 120, 120, 1))
+    })
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 170))
+      surface.dispatchEvent(pointer('pointermove', 320, 120, 1))
+      surface.dispatchEvent(pointer('pointerup', 320, 120, 0))
+    })
+    await settle()
+
+    const shape = editor().getCurrentPageShapes()[0]
+    expect(shape).toMatchObject({ type: 'text', props: expect.objectContaining({ autoSize: false }) })
+    expect(editor().getEditingShapeId()).toBe(shape.id)
+    const live = editor().getRichTextEditor() as unknown as { isDestroyed: boolean; isFocused: boolean }
+    expect(live.isDestroyed).toBe(false)
+    expect(live.isFocused).toBe(true)
+    const writing = view.container.querySelector('[contenteditable="true"]') as HTMLElement
+    expect(writing.contains(dom.window.document.activeElement)).toBe(true)
+  })
 })
