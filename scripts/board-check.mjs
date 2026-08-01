@@ -202,21 +202,38 @@ const driveSource = String.raw`(async () => {
   })
 
   await attempt('an edge handle resizes a text', async () => {
-    const text = oneOf('text')
+    const text = shapes.find(shape => shape.type === 'text' && shape.props.autoSize) || oneOf('text')
     if (!text) return null
     const original = editor.getShape(text.id)
+    const camera = editor.getCamera()
     editor.select(text.id)
+    editor.zoomToBounds(boundsOf(text.id), { targetZoom: 1, immediate: true })
     await settle()
     const before = boundsOf(text.id)
+    const beforeProps = editor.getShape(text.id).props
     const handle = viewport({ x: before.maxX, y: before.center.y })
     await drag(handle, { x: handle.x + 90, y: handle.y })
     const after = boundsOf(text.id)
-    const grew = after.w - before.w > 1
-    if (grew) {
-      editor.updateShape({ id: original.id, type: original.type, props: original.props })
-      await settle()
+    const afterProps = editor.getShape(text.id).props
+    const widened =
+      after.w - before.w > 1 &&
+      afterProps.w > beforeProps.w &&
+      afterProps.autoSize === false &&
+      afterProps.scale === beforeProps.scale
+    editor.updateShape({ id: original.id, type: original.type, props: original.props })
+    editor.setCamera(camera, { immediate: true })
+    await settle()
+    return {
+      ok: widened,
+      note:
+        Math.round(before.w) +
+        ' wide to ' +
+        Math.round(after.w) +
+        ', fixed ' +
+        String(afterProps.autoSize === false) +
+        ', scale held ' +
+        String(afterProps.scale === beforeProps.scale)
     }
-    return { ok: grew, note: Math.round(before.w) + ' wide to ' + Math.round(after.w) }
   })
 
   await attempt('the rotate handle rotates', async () => {
