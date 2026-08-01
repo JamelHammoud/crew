@@ -195,8 +195,6 @@ function sameShapeContent<Shape extends CanvasShapeRecord>(
   previous: CanvasShapeProps<Shape>,
   next: CanvasShapeProps<Shape>
 ): boolean {
-  const probe = (globalThis as never as { __render?: Record<string, number> }).__render
-  if (probe) probe.compares = (probe.compares ?? 0) + 1
   return (
     previous.host === next.host &&
     previous.renderer === next.renderer &&
