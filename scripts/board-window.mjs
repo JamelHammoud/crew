@@ -77,6 +77,8 @@ import './probe.css'
 const store = createTLStore({ id: 'board-check' })
 loadSnapshot(store, ${JSON.stringify(snapshot)})
 
+const WITH_PANEL = ${process.env.CREW_BOARD_PANEL !== '0'}
+
 window.__probe = { canvasCommits: 0, overlayCommits: 0, appCommits: 0, renamed: 0, asked: 0 }
 
 function Board() {
