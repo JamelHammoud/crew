@@ -115,7 +115,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     }
 
     const draw = () => {
-      if (hand.current) hand.current.style.translate = `${at.x + HAND}px calc(${at.y}px - 50%)`
+      if (hand.current) hand.current.style.translate = `${at.x + HAND}px ${at.y}px`
       if (line.current) line.current.style.top = `${Math.max(0, boundary(boxes, from, to))}px`
     }
 
