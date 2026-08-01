@@ -34,6 +34,11 @@ export function handleShortcut(editor: ShortcutEditor, event: KeyboardEvent): bo
   if (!accel || event.altKey) return false
   const key = event.key.toLowerCase()
 
+  if (key === 'a' && !event.shiftKey) {
+    editor.selectAll()
+    return true
+  }
+
   if (key === 'd' && !event.shiftKey) {
     if (ids.length === 0) return false
     editor.markHistoryStoppingPoint('duplicate shapes')
