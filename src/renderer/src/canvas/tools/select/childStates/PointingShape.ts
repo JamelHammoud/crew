@@ -1,5 +1,5 @@
 import { StateNode } from '../../state'
-import { findShapeAncestor } from '../shapeTree'
+import { findShapeAncestor } from '../../shapeTree'
 import type { SelectEditor, SelectPointerInfo } from '../types'
 
 export class PointingShape extends StateNode<SelectEditor> {

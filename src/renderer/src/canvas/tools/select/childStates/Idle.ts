@@ -9,7 +9,7 @@ import {
   selectOnCanvasPointerUp,
   updateHoveredShape
 } from '../helpers'
-import { findShapeAncestor, getShapeParent, selectionHasBoundsBg } from '../shapeTree'
+import { findShapeAncestor, getShapeParent, selectionHasBoundsBg } from '../../shapeTree'
 import type { SelectEditor, SelectPointerInfo } from '../types'
 
 export const MAJOR_NUDGE_FACTOR = 10
