@@ -193,7 +193,7 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
             onPointerDown={preventSelectionLoss}
             onClick={() => {
               const href = normalizeLink(link)
-              if (href) editor.view.dom.ownerDocument.defaultView?.open(href, '_blank')
+              if (href) window.open(href, '_blank')
               closeLink()
             }}
             className="grid h-7 w-7 place-items-center rounded-full text-fg/70 transition-all hover:bg-fg/[0.08] hover:text-fg active:scale-95 disabled:opacity-35"
