@@ -38,11 +38,19 @@ export function gapOf(boxes: Box[]): number {
   return 0
 }
 
+// The middle of the room the drop would land in. At either end of the row that
+// room is the list's own padding rather than a gap, and it is read the same way,
+// so the line at the head of the list stands inside the scroller instead of on
+// its edge, where the list clips it and half the dot is gone.
 export function boundary(boxes: Box[], from: number, to: number): number {
   const box = boxes[to]
   if (!box) return 0
-  const half = gapOf(boxes) / 2
-  return to > from ? end(box) + half : box.left - half
+  if (to > from) {
+    const after = boxes[to + 1]
+    return end(box) + (after ? after.left - end(box) : gapOf(boxes)) / 2
+  }
+  const before = boxes[to - 1]
+  return box.left - (before ? box.left - end(before) : box.left) / 2
 }
 
 // How far the one standing at index steps aside while from is on its way to to.
