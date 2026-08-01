@@ -22,7 +22,7 @@ export default function ThreadRow({
         onClick={onOpen}
         onContextMenu={onContextMenu}
         className={`w-full rounded-xl pl-8 pr-2 py-1.5 flex items-center gap-2 text-left text-sm transition-colors duration-150 ${
-          open ? 'bg-ink-700 text-fg' : 'text-fg-secondary hover:bg-ink-700/60 hover:text-fg'
+          open ? 'bg-fg/[0.10] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
         }`}
       >
         <span className="min-w-0 flex-1 truncate">{thread.title}</span>
