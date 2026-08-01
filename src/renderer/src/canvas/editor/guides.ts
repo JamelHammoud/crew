@@ -66,7 +66,9 @@ function drawGaps(
       context.lineTo(off(edge, cap).x, off(edge, cap).y)
     }
     context.stroke()
-    drawLabel(context, String(Math.round(Math.abs(end - start))), at((start + end) / 2), zoom, color)
+    const length = Math.abs(end - start)
+    if (length * zoom >= LABEL_HEIGHT)
+      drawLabel(context, String(Math.round(length)), at((start + end) / 2), zoom, color)
   }
 }
 
