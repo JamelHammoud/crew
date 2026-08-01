@@ -6,7 +6,10 @@ import { Mat } from '../src/renderer/src/canvas/math'
 import { atom } from '../src/renderer/src/canvas/signals'
 import {
   Canvas,
+  CANVAS_SCALE_VARIABLE,
+  CANVAS_ZOOM_VARIABLE,
   cameraCssTransform,
+  cameraZoomVariables,
   cameraOffset,
   sortRenderingShapes,
   type CanvasOverlayEntry,

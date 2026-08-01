@@ -124,6 +124,8 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     }
     this.markId = info.creatingMarkId ?? this.editor.markHistoryStoppingPoint?.('translating') ?? ''
     this.editor.setCursor?.({ type: 'move', rotation: 0 })
+    this.info.initialPageBounds ??= this.editor.getSelectionPageBounds?.()
+    this.info.initialSnapPoints ??= this.selectionSnapPoints()
 
     if (!info.isCreating && this.editor.inputs.getAltKey?.()) {
       this.startCloning()
