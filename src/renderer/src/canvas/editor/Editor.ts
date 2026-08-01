@@ -323,34 +323,54 @@ export class Editor {
     return this
   }
 
-  zoomIn(point?: VecLike, options?: TLCameraMoveOptions): this {
-    this.camera.zoomBy(1, point, options)
+  zoomIn(point: VecLike = this.getViewportScreenCenter(), options?: TLCameraMoveOptions): this {
+    this.camera.zoomIn(point, options)
     this.refreshInputPagePoint()
     return this
   }
 
-  zoomOut(point?: VecLike, options?: TLCameraMoveOptions): this {
-    this.camera.zoomBy(-1, point, options)
+  zoomOut(point: VecLike = this.getViewportScreenCenter(), options?: TLCameraMoveOptions): this {
+    this.camera.zoomOut(point, options)
     this.refreshInputPagePoint()
     return this
   }
 
-  resetZoom(point?: VecLike, _options?: TLCameraMoveOptions): this {
-    this.camera.resetZoom(point)
+  resetZoom(point: VecLike = this.getViewportScreenCenter(), options?: TLCameraMoveOptions): this {
+    this.camera.resetZoom(point, options)
     this.refreshInputPagePoint()
     return this
   }
 
-  zoomToFit(_options?: TLCameraMoveOptions): this {
+  zoomToBounds(bounds: Box, options?: { targetZoom?: number; inset?: number } & TLCameraMoveOptions): this {
+    this.camera.zoomToBounds(bounds, options)
+    this.refreshInputPagePoint()
+    return this
+  }
+
+  zoomToFit(options?: TLCameraMoveOptions): this {
     const bounds = this.getCurrentPageBounds()
-    if (bounds) this.camera.zoomToBounds(bounds)
+    if (bounds) this.camera.zoomToBounds(bounds, options)
     this.refreshInputPagePoint()
     return this
   }
 
-  zoomToSelection(_options?: TLCameraMoveOptions): this {
+  zoomToSelection(options?: TLCameraMoveOptions): this {
     const bounds = this.getSelectionPageBounds()
-    if (bounds) this.camera.zoomToBounds(bounds)
+    if (!bounds) return this
+    const isAtDefaultZoom = Math.abs(this.getZoomLevel() - 1) < 0.01
+    this.camera.zoomToBounds(bounds, isAtDefaultZoom ? options : { targetZoom: 1, ...options })
+    this.refreshInputPagePoint()
+    return this
+  }
+
+  centerOnPoint(point: VecLike, options?: TLCameraMoveOptions): this {
+    this.camera.centerOnPoint(point, options)
+    this.refreshInputPagePoint()
+    return this
+  }
+
+  pan(offset: VecLike, options?: TLCameraMoveOptions): this {
+    this.camera.pan(offset, options)
     this.refreshInputPagePoint()
     return this
   }
