@@ -250,6 +250,12 @@ export class Idle extends StateNode<SelectEditor> {
     else if (this.editor.canEditShape(info.shape)) this.startEditingShape(info.shape, info, true)
   }
 
+  private groupUnder(point: { x: number; y: number }): TLShape | undefined {
+    return this.editor
+      .getShapesAtPoint(point, { hitInside: true, margin: 0 })
+      .find((shape: any) => this.editor.isShapeOfType(shape, 'group') && !shape.isLocked)
+  }
+
   onRightClick(info: SelectPointerInfo): void {
     if (info.target === 'canvas') {
       const point = this.editor.inputs.getCurrentPagePoint()
