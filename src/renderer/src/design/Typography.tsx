@@ -49,7 +49,7 @@ const CASES = [
 ] as const
 
 const TRIMS = [
-  { value: 'standard', label: 'Standard', icon: <TrimStandardGlyph className="w-4 h-4" /> },
+  { value: 'none', label: 'Standard', icon: <TrimStandardGlyph className="w-4 h-4" /> },
   { value: 'cap', label: 'Cap height to baseline', icon: <TrimCapGlyph className="w-4 h-4" /> }
 ] as const
 
