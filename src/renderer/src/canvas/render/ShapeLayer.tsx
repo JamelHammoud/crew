@@ -153,8 +153,6 @@ interface CanvasShapeProps<Shape extends CanvasShapeRecord> {
 }
 
 function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, result }: CanvasShapeProps<Shape>) {
-  tally(`shape:${result.shape.type}:${result.id}`)
-  tally('shape:*')
   const foregroundRef = useRef<HTMLDivElement>(null)
   const backgroundRef = useRef<HTMLDivElement>(null)
   const memoized = useRef({ transform: '', clipPath: '', width: '', height: '' })

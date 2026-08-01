@@ -1636,13 +1636,12 @@ const driveSource = String.raw`(async () => {
     await frame()
     const context = overlayNode.getContext('2d')
     const shell = overlayNode.getBoundingClientRect()
-    const alphaAt = (x, y) =>
-      context.getImageData(
-        Math.round((x - shell.left) * (overlayNode.width / shell.width)),
-        Math.round((y - shell.top) * (overlayNode.height / shell.height)),
-        1,
-        1
-      ).data[3]
+    const pixels = context.getImageData(0, 0, overlayNode.width, overlayNode.height).data
+    const alphaAt = (x, y) => {
+      const across = Math.round((x - shell.left) * (overlayNode.width / shell.width))
+      const down = Math.round((y - shell.top) * (overlayNode.height / shell.height))
+      return pixels[(down * overlayNode.width + across) * 4 + 3]
+    }
     const middle = alphaAt((from.x + to.x) / 2, (from.y + to.y) / 2)
     const edge = alphaAt((from.x + to.x) / 2, from.y)
     const beyond = alphaAt(shell.right - 40, shell.bottom - 40)
