@@ -300,6 +300,7 @@ interface CrewState {
   focusThread: (threadId: string) => void
   closeThread: (threadId?: string) => void
   closeThreads: () => void
+  setChatColumn: (open: boolean) => void
   openDoc: (page: string) => void
   clearDocsTarget: () => void
   openBoard: (boardId: string) => void
@@ -357,6 +358,7 @@ const EMPTY = {
   typists: [],
   openThreadIds: [],
   openThreadId: null,
+  chatColumn: false,
   docsTarget: null,
   designTarget: null,
   chatDraft: '',
