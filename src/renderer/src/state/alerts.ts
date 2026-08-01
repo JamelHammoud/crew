@@ -97,14 +97,29 @@ export function questionAlert(event: SessionEvent, state: AlertState, boardOnScr
   }
 }
 
-export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadIds: string[]): AgentAlert | null {
+type ChatMessage = Extract<SessionEvent, { kind: 'message' }>
+
+const wordToYou = (event: SessionEvent, selfId: string, openThreadIds: string[]): ChatMessage | null => {
   if (event.kind !== 'message' || event.authorId === selfId) return null
   if (event.threadId && openThreadIds.includes(event.threadId)) return null
-  if (!event.memberMentionRefs?.some(ref => ref.id === selfId)) return null
-  return {
-    title: `${event.authorName} mentioned you`,
-    body: event.text,
-    threadId: event.threadId,
-    from: event.authorName
-  }
+  return event
+}
+
+const wordFrom = (message: ChatMessage, did: string): AgentAlert => ({
+  title: `${message.authorName} ${did} you`,
+  body: message.text,
+  threadId: message.threadId,
+  from: message.authorName
+})
+
+export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadIds: string[]): AgentAlert | null {
+  const message = wordToYou(event, selfId, openThreadIds)
+  if (!message?.memberMentionRefs?.some(ref => ref.id === selfId)) return null
+  return wordFrom(message, 'mentioned')
+}
+
+export function memberReplyAlert(event: SessionEvent, selfId: string, openThreadIds: string[]): AgentAlert | null {
+  const message = wordToYou(event, selfId, openThreadIds)
+  if (!message || message.replyTo?.authorId !== selfId) return null
+  return wordFrom(message, 'replied to')
 }
