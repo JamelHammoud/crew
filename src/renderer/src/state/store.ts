@@ -262,6 +262,9 @@ interface CrewState {
   addTool: (name: string, mark: string, action: ToolAction) => void
   editTool: (toolId: string, name: string, mark: string, action: ToolAction) => void
   removeTool: (toolId: string) => void
+  addMemory: (text: string) => string | null
+  editMemory: (memoryId: string, text: string) => string | null
+  removeMemory: (memoryId: string) => void
   // What comes back is the line to say about a picture that never made it, and
   // nothing at all where it did.
   addCustomEmoji: (name: string, file: File) => Promise<string | null>

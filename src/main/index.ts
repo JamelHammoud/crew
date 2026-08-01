@@ -81,14 +81,14 @@ const scribe = new ScribeWindow(rendererPage)
 const awake = new KeepAwake()
 // The crew command opens one Crew per folder, so several are ordinary here and
 // none of them can see the others through electron.
-const crews = new OtherInstances(path.join(app.getPath('userData'), 'live'))
+const instances = new OtherInstances(path.join(app.getPath('userData'), 'live'))
 // Whatever quitting puts down is put down once, whether the app is quitting or
 // being replaced under itself by an update.
 let settling: Promise<void> | null = null
-const settle = (): Promise<void> => (settling ??= session.shutdown())
+const settle = (): Promise<void> => (settling ??= crews.shutdownAll())
 const updates = new Updates({
   windows: () => appWindows(),
-  others: () => crews.count(),
+  others: () => instances.count(),
   settle,
   log: path.join(app.getPath('userData'), 'updates.log')
 })
