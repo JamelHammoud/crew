@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LivePlace } from '../src/shared/places'
@@ -174,7 +174,7 @@ describe('the sidebar', () => {
     expect(asked).toEqual([`project:${TWO}`])
   })
 
-  it('opens a thread in the place you are already in without going anywhere', async () => {
+  it('replaces the open thread from a thread in the place you are already in', async () => {
     live = [
       {
         key: `project:${ONE}`,
@@ -187,6 +187,7 @@ describe('the sidebar', () => {
     await act(async () => {
       await usePlaces.getState().load()
     })
+    useCrew.setState({ openThreadIds: ['t8'], openThreadId: 't8' })
     const { container } = render(createElement(Sidebar))
     const row = [...container.querySelectorAll('button')].find(
       b => b.textContent === 'Fix tracked files'
@@ -195,6 +196,31 @@ describe('the sidebar', () => {
       fireEvent.click(row)
     })
     expect(asked).toEqual([])
+    expect(useCrew.getState().openThreadIds).toEqual(['t9'])
+    expect(useCrew.getState().openThreadId).toBe('t9')
+  })
+
+  it('opens a thread to the right from its menu', async () => {
+    live = [
+      {
+        key: `project:${ONE}`,
+        folder: ONE,
+        name: 'Jamel',
+        hosting: true,
+        threads: [{ id: 't9', title: 'Fix tracked files', working: false }]
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    useCrew.setState({ openThreadIds: ['t8'], openThreadId: 't8' })
+    render(createElement(Sidebar))
+
+    fireEvent.contextMenu(screen.getByText('Fix tracked files'))
+    fireEvent.click(screen.getByText('Open to right'))
+
+    expect(asked).toEqual([])
+    expect(useCrew.getState().openThreadIds).toEqual(['t8', 't9'])
     expect(useCrew.getState().openThreadId).toBe('t9')
   })
 
