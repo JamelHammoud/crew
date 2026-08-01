@@ -401,6 +401,25 @@ function countedEvents(events: SessionEvent[]): number {
   return count
 }
 
+// Two runs of events into one, in the order they happened. A page of the chat
+// is older than everything already held and goes on the front, but one thread
+// read back out of the log reaches across whatever else has happened since, so
+// it is merged by when rather than pushed anywhere. Anything already held wins
+// the tie and its own id, since what arrived live is the fresher copy.
+export function mergeEvents(older: SessionEvent[], held: SessionEvent[]): SessionEvent[] {
+  const ids = new Set(held.map(event => event.id))
+  const fresh = older.filter(event => !ids.has(event.id))
+  if (fresh.length === 0) return held
+  const out: SessionEvent[] = []
+  let i = 0
+  for (const event of held) {
+    while (i < fresh.length && fresh[i].ts <= event.ts) out.push(fresh[i++])
+    out.push(event)
+  }
+  for (; i < fresh.length; i++) out.push(fresh[i])
+  return out
+}
+
 // The page before the one somebody is holding, and whether anything stands
 // behind it. Named with no `before` it is the tail, which is what the snapshot
 // carries, so the same rule decides both what arrives first and what arrives

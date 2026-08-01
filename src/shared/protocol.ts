@@ -114,6 +114,10 @@ export type ClientMessage =
       forkId?: string
     }
   | { type: 'history'; before: string }
+  // One thread's own history, for a window whose window on the log has scrolled
+  // past it. A thread opened months after it ran has none of its own events
+  // left to draw from, and the rail still lists it.
+  | { type: 'thread.history'; threadId: string }
   // Said again every couple of seconds while somebody is still writing, and once
   // with `on` false the moment they stop or send.
   | { type: 'typing'; where?: string; on: boolean }
