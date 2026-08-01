@@ -203,8 +203,9 @@ export default function Sidebar({
           scroller.current = node
           order.ref(node)
         }}
-        className="scroll-fade flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-1"
+        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag flex flex-col gap-4 px-2 pt-2"
       >
+        {order.view}
         {places.map(place => (
           <PlaceGroup
             key={place.key}
