@@ -69,6 +69,10 @@ export default function ChangeRow({
   const name = change.path.split('/').pop() ?? change.path
   const folder = change.path.slice(0, change.path.length - name.length).replace(/\/$/, '')
 
+  // A conflict is settled by staging it, and taking it back to what the index
+  // holds would throw away both sides of it rather than one edit. Nothing here
+  // offers to do that, the same as everywhere else this feels like.
+  const mayDiscard = !change.staged && change.kind !== 'conflict'
   const shut = () => setMenu(null)
   const held = (event: MouseEvent) => {
     event.preventDefault()
