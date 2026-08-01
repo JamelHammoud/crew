@@ -321,7 +321,8 @@ const driveSource = String.raw`(async () => {
     }
     if (made < 1) return { ok: false, note: 'the tool made nothing' }
     if (!editing) return { ok: false, note: 'it made a text and nothing is being edited' }
-    return { ok: focused, note: focused ? 'the caret is in the new text' : 'editing, but the caret never landed' }
+    if (!focused) return { ok: false, note: 'editing, but the caret never landed' }
+    return { ok: waited <= 1, note: 'the caret landed after ' + waited + ' frames' }
   })
 
   await attempt('the hand tool pans', async () => {
