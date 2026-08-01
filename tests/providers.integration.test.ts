@@ -478,7 +478,7 @@ describe('capabilities list every builtin provider', () => {
   })
 
   it('refuses to install a provider it does not know', async () => {
-    await expect(new AppSession().installProvider('nope')).rejects.toThrow(/Unknown provider/)
+    await expect(new Crews().installProvider('nope')).rejects.toThrow(/Unknown provider/)
   })
 })
 
