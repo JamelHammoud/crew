@@ -37,12 +37,7 @@ jobs:
 
       - name: Formatting of the files this change touches
         run: |
-          if [ "${{ github.event_name }}" = pull_request ]; then
-            base="origin/${{ github.base_ref }}"
-          else
-            base="${{ github.event.before }}"
-            git cat-file -e "$base^{commit}" 2>/dev/null || base=HEAD~1
-          fi
+          base="origin/${{ github.base_ref }}"
           echo "comparing against $base"
           yarn biome format --changed --since="$base" --no-errors-on-unmatched . || {
             echo "Run yarn format to fix the files listed above." >&2
