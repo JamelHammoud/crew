@@ -1,7 +1,9 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { createRequire } from 'node:module'
+import type { Box, Vec } from '../src/renderer/src/canvas/math'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   BindingRecordType,
   CameraRecordType,
@@ -302,6 +304,94 @@ describe('every saved board', () => {
     const current = createTLSchema().serialize()
     for (const document of boards) {
       expect(document.schema.schemaVersion).toBe(current.schemaVersion)
+    }
+  })
+})
+
+describe('what a saved board is worth once it is open', () => {
+  it.skipIf(boards.length === 0)('writes back the very same bytes', () => {
+    for (const document of boards) {
+      const store = createTLStore()
+      loadSnapshot(store, document)
+      const once = getSnapshot(store).document
+      const again = createTLStore()
+      loadSnapshot(again, once)
+      expect(JSON.stringify(getSnapshot(again).document)).toBe(JSON.stringify(once))
+    }
+  })
+
+  it.skipIf(boards.length === 0)('keeps every record the file held', () => {
+    for (const document of boards) {
+      const store = createTLStore()
+      loadSnapshot(store, document)
+      const out = Object.keys(getSnapshot(store).document.store).sort()
+      expect(out).toEqual(Object.keys(document.store).sort())
+    }
+  })
+
+  it.skipIf(boards.length === 0)('reads every path it holds back to finite points', () => {
+    for (const { path, dim } of paths) {
+      const points = decodePoints(path, dim as 2 | 3)
+      expect(points.length).toBeGreaterThan(0)
+      for (const point of points) {
+        expect(Number.isFinite(point.x)).toBe(true)
+        expect(Number.isFinite(point.y)).toBe(true)
+      }
+      const written = encodePoints(points, dim as 2 | 3)
+      expect(decodePoints(written, dim as 2 | 3)).toEqual(points)
+      expect(encodePoints(decodePoints(written, dim as 2 | 3), dim as 2 | 3)).toBe(written)
+    }
+  })
+})
+
+describe('the geometry every saved shape stands on', () => {
+  const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as new (html: string) => {
+    window: Window & typeof globalThis
+  }
+  const previousWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
+  const previousDocument = Object.getOwnPropertyDescriptor(globalThis, 'document')
+  let dom: { window: Window & typeof globalThis }
+
+  beforeAll(() => {
+    dom = new JSDOM('<!doctype html><html><body></body></html>')
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: dom.window })
+    Object.defineProperty(globalThis, 'document', { configurable: true, value: dom.window.document })
+  })
+
+  afterAll(() => {
+    dom.window.close()
+    if (previousWindow) Object.defineProperty(globalThis, 'window', previousWindow)
+    else Reflect.deleteProperty(globalThis, 'window')
+    if (previousDocument) Object.defineProperty(globalThis, 'document', previousDocument)
+    else Reflect.deleteProperty(globalThis, 'document')
+  })
+
+  it.skipIf(boards.length === 0)('is a real box around every shape on every board', async () => {
+    const { defaultShapeUtils } = await import('../src/renderer/src/canvas/shapes')
+    const { DesignNodeUtil } = await import('../src/renderer/src/design/DesignNodeUtil')
+    const utils = new Map<string, { getGeometry(shape: TLRecord): { bounds: Box; vertices: Vec[] } }>()
+    for (const Util of [...defaultShapeUtils, DesignNodeUtil] as unknown as (new (editor: object) => {
+      getGeometry(shape: TLRecord): { bounds: Box; vertices: Vec[] }
+    })[]) {
+      utils.set((Util as unknown as { type: string }).type, new Util({}))
+    }
+
+    for (const document of boards) {
+      const store = createTLStore()
+      loadSnapshot(store, document)
+      for (const record of store.records()) {
+        if (record.typeName !== 'shape') continue
+        const type = (record as { type: string }).type
+        const util = utils.get(type)
+        expect(util, type).toBeTruthy()
+        const geometry = util!.getGeometry(record)
+        const { bounds } = geometry
+        expect(Number.isFinite(bounds.x) && Number.isFinite(bounds.y), `${type} ${record.id}`).toBe(true)
+        expect(Number.isFinite(bounds.w) && Number.isFinite(bounds.h), `${type} ${record.id}`).toBe(true)
+        for (const vertex of geometry.vertices) {
+          expect(Number.isFinite(vertex.x) && Number.isFinite(vertex.y), `${type} ${record.id}`).toBe(true)
+        }
+      }
     }
   })
 })

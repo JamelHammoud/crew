@@ -787,7 +787,7 @@ const driveSource = String.raw`(async () => {
     const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
     setter.call(input, String(value))
     input.dispatchEvent(new Event('input', { bubbles: true }))
-    input.dispatchEvent(new FocusEvent('blur', { bubbles: false }))
+    await settle(2)
     input.blur()
     await settle(4)
     return true

@@ -106,10 +106,20 @@ function heldDrag(subject: Editor, fromX: number, fromY: number, toX: number, to
   }
 }
 
+function shiftClick(subject: Editor, x: number, y: number): void {
+  pointerDown(subject, x, y, { shiftKey: true })
+  pointerUp(subject, x, y, { shiftKey: true })
+}
+
 function geo(subject: Editor, id: string, x: number, y: number, w = 100, h = 100): TLShapeId {
   const shapeId = createShapeId(id)
-  subject.createShape({ id: shapeId, type: 'geo', x, y, props: { w, h } })
+  subject.createShape({ id: shapeId, type: 'geo', x, y, props: { w, h, fill: 'solid' } })
   return shapeId
+}
+
+function points(subject: Editor, id: TLShapeId): { x: number; y: number }[] {
+  const shape = subject.getShape(id) as { props: { points: Record<string, { x: number; y: number }> } } | undefined
+  return Object.values(shape?.props.points ?? {})
 }
 
 describe('every tool reports the state it is standing in', () => {
