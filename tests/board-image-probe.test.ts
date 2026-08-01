@@ -59,8 +59,7 @@ describe('board preview', () => {
 
   it('stands the skeleton down once the picture has painted', () => {
     const { container } = render(createElement(BoardImage, { document: boardWith(card) }))
-    const image = container.querySelector('img')!
-    image.dispatchEvent(new Event('load'))
+    fireEvent.load(container.querySelector('img')!)
     expect(container.querySelector('.skeleton')).toBeNull()
   })
 
