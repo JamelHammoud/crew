@@ -472,10 +472,11 @@ describe('the sidebar', () => {
     expect(useSidebar.getState().peeking).toBe(false)
   })
 
-  it('stands over the whole page, whatever the page stacks inside itself', () => {
-    const app = readFileSync(`${process.cwd()}/src/renderer/src/App.tsx`, 'utf8')
-    const page = app.lastIndexOf('<div className="', app.indexOf('<main'))
-    expect(app.slice(page, app.indexOf('<main'))).toContain('isolate')
+  it('stands over the whole page, whatever the page stacks inside itself', async () => {
+    const app = (await import('../src/renderer/src/App.tsx?raw')).default as string
+    const main = app.indexOf('<main')
+    expect(main).toBeGreaterThan(-1)
+    expect(app.slice(app.lastIndexOf('<div className="', main), main)).toContain('isolate')
   })
 
   it('switches to a place that is already running rather than opening it again', async () => {
