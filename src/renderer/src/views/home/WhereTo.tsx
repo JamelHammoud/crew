@@ -1,5 +1,5 @@
 import type { CrewHome } from '../../../../shared/project'
-import { DesktopGlyph, FolderGlyph } from '../../icons'
+import { ComputerGlyph, FolderGlyph } from '../../icons'
 
 // The one question a project is ever asked, and only the first time it is
 // opened. The two stand side by side rather than stacked, because it is a
@@ -14,7 +14,7 @@ export default function WhereTo({ busy, onPick }: { busy: boolean; onPick: (home
     },
     {
       home: 'private',
-      mark: <DesktopGlyph className="w-5 h-5" />,
+      mark: <ComputerGlyph className="w-5 h-5" />,
       title: 'In the Crew app',
       line: 'The chat, docs and designs are kept here, outside your project folder.'
     }

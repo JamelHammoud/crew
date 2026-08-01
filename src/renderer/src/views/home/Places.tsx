@@ -1,6 +1,6 @@
 import CrewLogo from '../../components/CrewLogo'
 import Spinner from '../../components/Spinner'
-import { DesktopGlyph, FolderGlyph, GlobeGlyph, PlusGlyph } from '../../icons'
+import { ComputerGlyph, FolderGlyph, GlobeGlyph, PlusGlyph } from '../../icons'
 import PlaceRow from './PlaceRow'
 import type { Place } from './place'
 
@@ -38,7 +38,7 @@ export default function Places({
                 place.join ? (
                   <GlobeGlyph className="w-4 h-4 text-fg-secondary" />
                 ) : place.project?.home === 'private' ? (
-                  <DesktopGlyph className="w-4 h-4 text-fg-secondary" />
+                  <ComputerGlyph className="w-4 h-4 text-fg-secondary" />
                 ) : (
                   <FolderGlyph className="w-4 h-4 text-fg-secondary" />
                 )

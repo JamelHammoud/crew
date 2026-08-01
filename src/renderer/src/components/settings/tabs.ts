@@ -1,6 +1,6 @@
 import type { Glyph } from '../../icons'
 import {
-  DesktopGlyph,
+  ComputerGlyph,
   FileGlyph,
   InfoGlyph,
   MemoryGlyph,
@@ -31,7 +31,7 @@ export const SETTINGS_TABS: TabDef[] = [
   { id: 'reactions', label: 'Reactions', group: 'You', mark: SmileGlyph },
   { id: 'sound', label: 'Sound and video', group: 'You', mark: SpeakerGlyph },
   { id: 'scribe', label: 'Scribe', group: 'You', mark: ScribeGlyph },
-  { id: 'machine', label: 'This computer', group: 'You', mark: DesktopGlyph },
+  { id: 'machine', label: 'This computer', group: 'You', mark: ComputerGlyph },
   { id: 'people', label: 'People', group: 'Crew', mark: PeopleGlyph },
   { id: 'agents', label: 'Agents', group: 'Crew', mark: SparkGlyph },
   { id: 'memory', label: 'Memory', group: 'Crew', mark: MemoryGlyph },
