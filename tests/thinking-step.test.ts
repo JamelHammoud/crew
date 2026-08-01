@@ -13,15 +13,18 @@ if (!Element.prototype.getAnimations) {
 
 afterEach(cleanup)
 
-const thought = (text: string, streaming: boolean): ThreadItem => ({
+const thought = (text: string, streaming: boolean, patch: Partial<ThreadItem> = {}): ThreadItem => ({
   key: 'p1:b0',
   ts: 0,
   kind: 'thinking',
   author: 'Claude',
   self: false,
   text,
-  streaming
+  streaming,
+  ...patch
 })
+
+const LONG = 'The panel reads the file off the disk itself, so the whole of it is work it can do rather than something described to it.'
 
 const readStyles = (): string =>
   (require('node:fs') as typeof import('node:fs')).readFileSync(
