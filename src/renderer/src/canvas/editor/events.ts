@@ -269,12 +269,14 @@ function pointerInfo(
     phase,
     pointerId: event.pointerId,
     pointerType: event.pointerType,
+    isPen: event.pointerType === 'pen',
     button: event.button,
     buttons: event.buttons,
     pressure: event.pressure,
     shiftKey: event.shiftKey,
     altKey: event.altKey,
-    ctrlKey: event.ctrlKey,
+    ctrlKey: event.metaKey || event.ctrlKey,
+    metaKey: event.metaKey,
     accelKey: event.metaKey || event.ctrlKey,
     originalEvent: event
   }
