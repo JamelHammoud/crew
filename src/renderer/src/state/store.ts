@@ -1343,12 +1343,15 @@ export const useCrew = create<CrewState>((set, get) => {
       const state = get()
       const closing = threadId ?? state.openThreadId
       if (!closing) return
+      const left = closeOne(state.openThreadIds, closing)
       set({
-        openThreadIds: closeOne(state.openThreadIds, closing),
-        openThreadId: focusAfterClose(state.openThreadIds, closing, state.openThreadId)
+        openThreadIds: left,
+        openThreadId: focusAfterClose(state.openThreadIds, closing, state.openThreadId),
+        chatColumn: left.length > 0 && state.chatColumn
       })
     },
-    closeThreads: () => set({ openThreadIds: [], openThreadId: null }),
+    closeThreads: () => set({ openThreadIds: [], openThreadId: null, chatColumn: false }),
+    setChatColumn: open => set({ chatColumn: open }),
     openDoc: page => set({ docsTarget: page }),
     clearDocsTarget: () => set({ docsTarget: null }),
     openBoard: boardId => set({ designTarget: boardId }),
