@@ -1,5 +1,9 @@
-import { useRef, type PointerEvent } from 'react'
-import { clampSplit } from './split'
+import { useRef, type KeyboardEvent, type PointerEvent } from 'react'
+import { clampSplit, DIFF_MIN, LIST_MIN } from './split'
+
+// What one press of an arrow is worth. A row of the list, so a press moves the
+// boundary by a whole file rather than by a pixel nobody can see.
+const STEP = 28
 
 // Where the two panes meet. It is taken hold of and worked from where it was
 // grabbed rather than from wherever the pointer is now, the way the Scribe pill
