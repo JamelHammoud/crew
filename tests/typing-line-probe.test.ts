@@ -46,11 +46,22 @@ describe('the line over the composer', () => {
     expect(container.querySelectorAll('.typing-dot')).toHaveLength(3)
   })
 
-  it('nothing on it is set in a solid grey, because it floats', () => {
+  // Under the composer, where there is nothing to cover. Over it the line stood
+  // on the last thing anybody said.
+  it('stands under the composer', () => {
     writing([{ id: 'jamel', name: 'Jamel' }])
     const line = show().container.firstElementChild as HTMLElement
-    expect(line.className).toContain('glass')
-    expect(line.className).toContain('text-fg/70')
-    expect(line.className).not.toContain('text-fg-muted')
+    expect(line.className).toContain('absolute')
+    expect(line.className).toContain('top-full')
+    expect(line.className).not.toContain('-top-')
+  })
+
+  it('is quiet, and wears no surface of its own', () => {
+    writing([{ id: 'jamel', name: 'Jamel' }])
+    const line = show().container.firstElementChild as HTMLElement
+    expect(line.className).toContain('text-xs')
+    expect(line.className).toContain('text-fg-muted')
+    expect(line.className).not.toContain('glass')
+    expect(line.className).not.toContain('rounded-full')
   })
 })
