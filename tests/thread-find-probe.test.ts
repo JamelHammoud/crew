@@ -135,6 +135,7 @@ const openThread = () => {
     steps: { 'prompt-1': steps },
     tokens: {},
     pending: {},
+    openThreadIds: ['thread-1'],
     openThreadId: 'thread-1'
   })
   render(createElement(App))
