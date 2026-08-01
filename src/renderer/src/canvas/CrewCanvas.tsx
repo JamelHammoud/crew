@@ -150,7 +150,7 @@ export function CrewCanvas({
     const pointerUp = (event: PointerEvent) => {
       if (taken(event)) return
       take(event)
-      flushSync(() => handlers.onPointerUp(event))
+      handlers.onPointerUp(event)
     }
     const contextMenu = (event: MouseEvent) => {
       event.preventDefault()
