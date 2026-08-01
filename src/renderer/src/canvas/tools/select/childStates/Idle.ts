@@ -299,13 +299,13 @@ export class Idle extends StateNode<SelectEditor> {
       selectAdjacentShape(this.editor, info.code.replace('Arrow', '').toLowerCase())
       return
     }
-    this.nudgeSelectedShapes(false)
+    this.nudgeSelectedShapes(false, info)
   }
 
   onKeyRepeat(info: any): void {
     if (ARROW_CODES.includes(info.code)) {
       if (info.accelKey) selectAdjacentShape(this.editor, info.code.replace('Arrow', '').toLowerCase())
-      else this.nudgeSelectedShapes(true)
+      else this.nudgeSelectedShapes(true, info)
       return
     }
     if (info.code === 'Tab' && this.editor.getSelectedShapes().length && !info.altKey) {
