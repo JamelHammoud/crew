@@ -477,6 +477,7 @@ describe('the sidebar', () => {
     const main = app.indexOf('<main')
     expect(main).toBeGreaterThan(-1)
     expect(app.slice(app.lastIndexOf('<div className="', main), main)).toContain('isolate')
+    expect(app.indexOf('className="rail')).toBeGreaterThan(main)
   })
 
   it('switches to a place that is already running rather than opening it again', async () => {
