@@ -304,7 +304,7 @@ export class Drawing extends DrawState {
           next = this.makeSegment('straight', [changedLocal, newPoint])
         }
         const nextSegments = [...segments, next]
-        this.updateSegments(shape, nextSegments)
+        this.updateSegments(shape, nextSegments, segments)
       }
       return
     }
