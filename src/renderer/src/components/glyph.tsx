@@ -1,5 +1,5 @@
-import type { ComponentType, ReactNode } from 'react'
-import { STROKE, wearWeight } from '../icons/keylines'
+import { useId, type ComponentType, type ReactNode } from 'react'
+import { GRID, STROKE, wearWeight } from '../icons/keylines'
 
 export type Glyph = ComponentType<{ className?: string; strokeWidth?: number }>
 
@@ -17,19 +17,27 @@ export function glyph(art: ReactNode, weight = STROKE): Glyph {
     className?: string
     strokeWidth?: number
   }) {
+    const id = useId().replace(/[^a-zA-Z0-9-]/g, '')
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={strokeWidth ?? wearWeight(weight, className)}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        viewBox={`0 0 ${GRID} ${GRID}`}
         className={className}
       >
-        {art}
+        <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width={GRID} height={GRID}>
+          <g
+            style={{ color: '#fff' }}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={strokeWidth ?? wearWeight(weight, className)}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {art}
+          </g>
+        </mask>
+        <rect width={GRID} height={GRID} fill="currentColor" mask={`url(#${id})`} />
       </svg>
     )
   }
