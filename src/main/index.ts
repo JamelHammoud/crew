@@ -58,10 +58,12 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 const session = new AppSession()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
-// A shipped Crew has no dev tools, in any window and from any way in. It is the
-// same gate the icon and the updates read, so a run from source keeps them and
-// nothing about the path check is loosened for this.
-const inspectable = fromSource(app.getAppPath())
+// Whether this Crew was installed or is being run out of a checkout. It is the
+// one answer the icon, the dev tools and the updates all read, and nothing about
+// the path check is loosened for any of them.
+const shipping = !fromSource(app.getAppPath())
+// A shipped Crew has no dev tools, in any window and from any way in.
+const inspectable = !shipping
 const rendererPage = {
   preload: path.join(dirname, '../preload/preload.mjs'),
   devUrl: process.env['ELECTRON_RENDERER_URL'],
@@ -391,8 +393,12 @@ app.whenReady().then(() => {
   applyIcon(iconTheme, chosenIcon)
   installMenu()
   tray.install()
-  crews.mark()
-  updates.start(!fromSource(app.getAppPath()))
+  // An installed Crew is the only kind an installer replaces, so it is the only
+  // kind an update waits for. A run from source stands nowhere the installer will
+  // reach and holding an update for one means every machine with a checkout open
+  // is told to close a window that has nothing to do with it.
+  if (shipping) crews.mark()
+  updates.start(shipping)
   // The command ships inside the app, so which file goes on PATH is read off
   // this app rather than off wherever a checkout happens to be.
   command = new CrewCommand(
