@@ -98,7 +98,9 @@ describe('the review tab', () => {
 
     fireEvent.click(rows[1]!)
     await waitFor(() => expect(screen.getByText('loose')).not.toBeNull())
-    expect(screen.queryByText('staged')).not.toBeNull()
+    // Once in the file it was added to and once in the file it was taken out
+    // of, which is both diffs standing open together.
+    expect(screen.getAllByText('staged')).toHaveLength(2)
   })
 
   // A line with nothing around it cannot be judged. Git already sends three
