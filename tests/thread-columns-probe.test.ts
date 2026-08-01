@@ -251,6 +251,19 @@ describe('the chat standing beside a thread', () => {
     expect(useCrew.getState().chatColumn).toBe(true)
   })
 
+  it('says beside on a card, now that the feed can stand with a column', () => {
+    open(['thread-1'], 'thread-1')
+    fireEvent.click(slot())
+
+    const card = within(chatColumn())
+      .getAllByRole('button')
+      .find(one => one.textContent?.includes('look at the footer'))!
+    fireEvent.contextMenu(card)
+
+    expect(screen.getByText('Open beside')).toBeTruthy()
+    expect(screen.queryByText('Open')).toBeNull()
+  })
+
   it('leaves no way in once the row is full', () => {
     open(
       Array.from({ length: VIEW_LIMIT }, (_, i) => `row-${i + 1}`),
