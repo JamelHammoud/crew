@@ -7,7 +7,6 @@ import {
   BoxGlyph,
   BranchGlyph,
   ChecklistGlyph,
-  ClipboardGlyph,
   ClockGlyph,
   CodeGlyph,
   DoneGlyph,
