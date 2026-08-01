@@ -149,11 +149,12 @@ const driveSource = String.raw`(async () => {
     return id
   }
   const clear = async () => {
+    editor.setEditingShape(null)
+    editor.setCurrentTool('select.idle')
+    await frame()
     const alive = made.splice(0, made.length).filter(id => editor.getShape(id) !== undefined)
     if (alive.length) editor.deleteShapes(alive)
     editor.selectNone()
-    editor.setEditingShape(null)
-    editor.setCurrentTool('select.idle')
     await settle()
   }
   const scratch = async () => {
