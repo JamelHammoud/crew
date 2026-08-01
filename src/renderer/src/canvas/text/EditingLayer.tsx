@@ -27,18 +27,20 @@ function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTex
   const mark = useRef<string | null>(null)
   const transform = useValue(
     'canvas editing transform',
-    () => shapeCssTransform(editor.getShapePageTransform(shape.id)),
-    [editor, shape.id]
-  )
-  const bounds = useValue(
-    'canvas editing bounds',
     () => {
-      const current = editor.getShape(shape.id)
-      const box = current ? editor.getShapeGeometry(current).bounds : null
-      return { w: Math.max(1, box?.w ?? 1), h: Math.max(1, box?.h ?? 1) }
+      const matrix = editor.getShapePageTransform(shape.id)
+      return matrix ? shapeCssTransform(matrix) : ''
     },
     [editor, shape.id]
   )
+  const width = useValue('canvas editing width', () => Math.max(1, editingBounds(editor, shape.id).w), [
+    editor,
+    shape.id
+  ])
+  const height = useValue('canvas editing height', () => Math.max(1, editingBounds(editor, shape.id).h), [
+    editor,
+    shape.id
+  ])
   const richText = shape.props.richText as RichTextDocument
 
   useEffect(() => {
