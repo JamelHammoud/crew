@@ -165,7 +165,7 @@ describe('the sidebar', () => {
     expect(scroller.className).toContain('scroll-fade')
     expect(scroller.previousElementSibling?.textContent).toBe('Projects')
     expect(scroller.className).toContain('pt-2')
-    expect(scroller.firstElementChild?.nextElementSibling?.className).toContain('gap-3')
+    expect(scroller.querySelector('.flex-col')?.className).toContain('gap-3')
     expect(container.querySelector('nav[aria-label="Main navigation"]')?.className).toContain('shrink-0')
     expect(screen.getByRole('button', { name: 'Open a folder' }).parentElement?.className).toContain('shrink-0')
   })
