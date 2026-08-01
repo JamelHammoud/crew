@@ -99,6 +99,7 @@ export default function FindBar({
     const onKey = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey
       if (mod && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'f') {
+        if (!listensRef.current && !openRef.current) return
         e.preventDefault()
         setOpen(true)
         setFindQuery(queryRef.current)
