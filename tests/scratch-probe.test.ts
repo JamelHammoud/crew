@@ -112,16 +112,44 @@ describe('probe: reactive core', () => {
   it('caches a thrown value until a parent changes', () => {
     const a = atom('a', 1)
     const derive = vi.fn(() => {
-      if (a.get() === 1) throw new Error('boom')
+      if (a.get() === 2) throw new Error('boom')
       return a.get()
     })
     const c = computed('c', derive)
-    expect(() => c.get()).toThrow('boom')
-    expect(() => c.get()).toThrow('boom')
+    expect(c.get()).toBe(1)
     expect(derive).toHaveBeenCalledTimes(1)
     a.set(2)
-    expect(c.get()).toBe(2)
+    expect(() => c.get()).toThrow('boom')
+    expect(() => c.get()).toThrow('boom')
+    expect(() => c.get()).toThrow('boom')
     expect(derive).toHaveBeenCalledTimes(2)
+    a.set(3)
+    expect(c.get()).toBe(3)
+  })
+
+  it('entering the error state notifies effects but a second error does not', () => {
+    const a = atom('a', 1)
+    const derive = vi.fn(() => {
+      if (a.get() % 2 === 0) throw new Error('boom')
+      return a.get()
+    })
+    const c = computed('c', derive)
+    const effect = vi.fn(() => {
+      try {
+        c.get()
+      } catch {
+        // intentional
+      }
+    })
+    react('r', effect)
+    expect(effect).toHaveBeenCalledTimes(1)
+    a.set(2)
+    expect(effect).toHaveBeenCalledTimes(2)
+    a.set(4)
+    expect(derive).toHaveBeenCalledTimes(3)
+    expect(effect).toHaveBeenCalledTimes(2)
+    a.set(3)
+    expect(effect).toHaveBeenCalledTimes(3)
   })
 
   it('gives UNINITIALIZED as the previous value after an error', () => {
