@@ -234,17 +234,6 @@ export interface ThreadItem {
   shown?: Shown
 }
 
-// A rebuilt thread is a new object for every row in it. A run streaming one
-// step rewrites the whole list, and typing a letter re-renders the view that
-// holds it, so a row is compared by what it draws rather than by the identity
-// of the object it was drawn from: three thousand rows that read the same as
-// they did a moment ago are three thousand rows with nothing to draw again.
-//
-// Every field is named rather than walked, because a field left out here is a
-// row that quietly stops updating, which is the one way this can be wrong.
-// `tests/thread-item-same.test.ts` types its fixture as `Required<ThreadItem>`
-// and changes each field in turn, so a field added to the interface and not to
-// this fails to compile before it can fail on screen.
 const sameList = <T>(
   a: T[] | undefined,
   b: T[] | undefined,
