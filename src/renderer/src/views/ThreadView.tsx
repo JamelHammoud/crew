@@ -279,7 +279,12 @@ export default function ThreadView({
           placeholder="Find in thread"
           listens={focused}
         />
-        <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-6">
+        <div
+          ref={scrollRef}
+          onScroll={onScroll}
+          onContextMenu={onBackground}
+          className="h-full overflow-y-auto overflow-x-hidden px-6"
+        >
           <div
             ref={contentRef}
             className="max-w-[660px] mx-auto pt-28 space-y-5"

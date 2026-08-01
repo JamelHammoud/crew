@@ -63,7 +63,7 @@ createRoot(document.getElementById('root')).render(
 `
 }
 
-const driveSource = String.raw`(async (stage, zoom, look) => {
+const driveSource = String.raw`(async (stage, zoom, look, still) => {
   const editor = window.canvasEditor
   if (!editor) return { failed: 'the editor never mounted' }
   const surface = document.querySelector('[data-canvas="true"]')
@@ -115,11 +115,13 @@ const driveSource = String.raw`(async (stage, zoom, look) => {
   const bounds = editor.getViewportScreenBounds()
   editor.setCamera({ x: bounds.w / 2 / zoom - look.x, y: bounds.h / 2 / zoom - look.y, z: zoom }, { immediate: true })
   await frame()
-  for (let rest = 0; rest < 12; rest++) {
-    const at = editor.pageToViewport(held)
-    pointer('pointermove', at.x, at.y, 1)
-    await frame()
-  }
+  if (!still)
+    for (let rest = 0; rest < 12; rest++) {
+      const at = editor.pageToViewport(held)
+      pointer('pointermove', at.x, at.y, 1)
+      await frame()
+    }
+  await frame()
   const indicators = editor.snaps.getIndicators()
   return {
     zoom: editor.getZoomLevel(),
@@ -136,7 +138,8 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 const zooms = [
   { name: 'whole', z: 1, look: { x: 420, y: 60 } },
   { name: 'far', z: 0.14, look: { x: 420, y: 60 } },
-  { name: 'near', z: 4, look: { x: 700, y: 60 } }
+  { name: 'near', z: 4, look: { x: 700, y: 60 } },
+  { name: 'near-held', z: 4, look: { x: 700, y: 60 }, still: true }
 ]
 
 app.whenReady().then(async () => {
@@ -155,10 +158,10 @@ app.whenReady().then(async () => {
   const drive = args => win.webContents.executeJavaScript('(' + ${JSON.stringify(driveSource)} + ')(' + args + ')')
   const shots = []
   await drive("'start'")
-  for (const { name, z, look } of zooms) {
+  for (const { name, z, look, still } of zooms) {
     let result = null
     try {
-      result = await drive("'at'," + z + ',' + JSON.stringify(look))
+      result = await drive("'at'," + z + ',' + JSON.stringify(look) + ',' + Boolean(still))
     } catch (error) {
       result = { failed: String((error && error.message) || error) }
     }
