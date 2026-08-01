@@ -22,11 +22,17 @@ export function useThreadRead(threadId: string): {
   useEffect(() => {
     if (online) readThread(threadId)
   }, [online, readThread, threadId])
-  return useMemo(
-    () =>
-      readEvents.length === 0
-        ? { events, steps }
-        : { events: mergeEvents(readEvents, events), steps: { ...readSteps, ...steps } },
-    [events, readEvents, readSteps, steps]
+  // The two halves are held apart because a step lands about once a frame while
+  // an agent works, and merged together the log was folded again for every one
+  // of them: a fresh array on every flush, which is every memo downstream of it
+  // rebuilding a thread that has not changed.
+  const merged = useMemo(
+    () => (readEvents.length === 0 ? events : mergeEvents(readEvents, events)),
+    [events, readEvents]
   )
+  const mergedSteps = useMemo(
+    () => (readEvents.length === 0 ? steps : { ...readSteps, ...steps }),
+    [readEvents, readSteps, steps]
+  )
+  return useMemo(() => ({ events: merged, steps: mergedSteps }), [merged, mergedSteps])
 }
