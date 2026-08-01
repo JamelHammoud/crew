@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { createElement, memo, type ComponentType } from 'react'
+import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CrewBridge } from '../src/renderer/src/env'
 import ThreadView from '../src/renderer/src/views/ThreadView'
@@ -22,24 +22,34 @@ landed()
 
 const drawn = vi.hoisted(() => ({ items: 0, rows: 0 }))
 
-const counted = <P extends object>(real: ComponentType<P>, tally: () => void): ComponentType<P> =>
-  memo((props: P) => {
-    tally()
-    return createElement(real, props)
-  }) as unknown as ComponentType<P>
-
 vi.mock('../src/renderer/src/components/ThreadItems', async () => {
+  const { createElement, memo } = await import('react')
   const actual = await vi.importActual<typeof import('../src/renderer/src/components/ThreadItems')>(
     '../src/renderer/src/components/ThreadItems'
   )
-  return { ...actual, default: counted(actual.default, () => (drawn.items += 1)) }
+  const real = actual.default
+  return {
+    ...actual,
+    default: memo((props: Parameters<typeof real>[0]) => {
+      drawn.items += 1
+      return createElement(real, props)
+    })
+  }
 })
 
 vi.mock('../src/renderer/src/components/StepRow', async () => {
+  const { createElement, memo } = await import('react')
   const actual = await vi.importActual<typeof import('../src/renderer/src/components/StepRow')>(
     '../src/renderer/src/components/StepRow'
   )
-  return { ...actual, default: counted(actual.default, () => (drawn.rows += 1)) }
+  const real = actual.default
+  return {
+    ...actual,
+    default: memo((props: Parameters<typeof real>[0]) => {
+      drawn.rows += 1
+      return createElement(real, props)
+    })
+  }
 })
 
 const AGENT: PooledAgent = {
