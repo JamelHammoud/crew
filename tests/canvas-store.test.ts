@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   createEmptyRecordsDiff,
   createRecordType,
@@ -419,5 +419,228 @@ describe('history', () => {
     history.clear()
     expect(history.getNumUndos()).toBe(0)
     expect(history.getNumRedos()).toBe(0)
+  })
+})
+
+describe('the squash rules the diff algebra rests on', () => {
+  it('turns an add over a remove into an update', () => {
+    const before = shape('a', { x: 1 })
+    const after = shape('a', { x: 2 })
+    const squashed = squashRecordDiffs<Rec>([diffOf({ removed: { [before.id]: before } }), diffOf({ added: { [after.id]: after } })])
+    expect(squashed.removed).toEqual({})
+    expect(squashed.added).toEqual({})
+    expect(squashed.updated[after.id]).toEqual([before, after])
+  })
+
+  it('cancels an add over a remove of the very same record', () => {
+    const record = shape('a', { x: 1 })
+    const squashed = squashRecordDiffs<Rec>([
+      diffOf({ removed: { [record.id]: record } }),
+      diffOf({ added: { [record.id]: record } })
+    ])
+    expect(squashed.added).toEqual({})
+    expect(squashed.removed).toEqual({})
+    expect(squashed.updated).toEqual({})
+  })
+
+  it('keeps the original from value when a remove lands over an update', () => {
+    const first = shape('a', { x: 1 })
+    const second = { ...first, x: 2 }
+    const squashed = squashRecordDiffs<Rec>([
+      diffOf({ updated: { [first.id]: [first, second] } }),
+      diffOf({ removed: { [second.id]: second } })
+    ])
+    expect(squashed.updated).toEqual({})
+    expect(squashed.removed[first.id]).toEqual(first)
+  })
+
+  it('drops a record a remove lands over an add of', () => {
+    const record = shape('a', { x: 1 })
+    const squashed = squashRecordDiffs<Rec>([
+      diffOf({ added: { [record.id]: record } }),
+      diffOf({ removed: { [record.id]: record } })
+    ])
+    expect(squashed.added).toEqual({})
+    expect(squashed.removed).toEqual({})
+    expect(squashed.updated).toEqual({})
+  })
+
+  it('keeps the first from and the last to across two updates', () => {
+    const first = shape('a', { x: 1 })
+    const second = { ...first, x: 2 }
+    const third = { ...first, x: 3 }
+    const squashed = squashRecordDiffs<Rec>([
+      diffOf({ updated: { [first.id]: [first, second] } }),
+      diffOf({ updated: { [first.id]: [second, third] } })
+    ])
+    expect(squashed.updated[first.id]).toEqual([first, third])
+  })
+
+  it('leaves the diffs it was handed exactly as they were', () => {
+    const first = shape('a', { x: 1 })
+    const second = { ...first, x: 2 }
+    const third = { ...first, x: 3 }
+    const one = diffOf({ updated: { [first.id]: [first, second] } })
+    const two = diffOf({ updated: { [first.id]: [second, third] } })
+    squashRecordDiffs<Rec>([one, two])
+    expect(one.updated[first.id]).toEqual([first, second])
+    expect(two.updated[first.id]).toEqual([second, third])
+  })
+
+  it('reverses every part of a diff', () => {
+    const first = shape('a', { x: 1 })
+    const second = { ...first, x: 2 }
+    const added = shape('b')
+    const removed = shape('c')
+    const reversed = reverseRecordsDiff(
+      diffOf({
+        added: { [added.id]: added },
+        updated: { [first.id]: [first, second] },
+        removed: { [removed.id]: removed }
+      })
+    )
+    expect(reversed.added).toEqual({ [removed.id]: removed })
+    expect(reversed.removed).toEqual({ [added.id]: added })
+    expect(reversed.updated[first.id]).toEqual([second, first])
+    expect(isRecordsDiffEmpty(createEmptyRecordsDiff<Rec>())).toBe(true)
+  })
+})
+
+describe('where a change came from', () => {
+  it('stamps a remote merge remote and a local edit user', () => {
+    const store = makeStore()
+    const seen: HistoryEntry<Rec>[] = []
+    store.listen(entry => seen.push(entry))
+    store.put([shape('a', { x: 1 })])
+    store.flushHistory()
+    store.mergeRemoteChanges(() => {
+      store.put([shape('b', { x: 2 })])
+    })
+    store.flushHistory()
+    expect(seen.map(entry => entry.source)).toEqual(['user', 'remote'])
+  })
+
+  it('tells a history interceptor the same thing', () => {
+    const store = makeStore()
+    const sources: string[] = []
+    store.addHistoryInterceptor((_entry, source) => sources.push(source))
+    store.put([shape('a', { x: 1 })])
+    store.mergeRemoteChanges(() => {
+      store.put([shape('b', { x: 2 })])
+    })
+    expect(sources).toEqual(['user', 'remote'])
+  })
+
+  it('keeps a collaborator out of a listener that only wants your own', () => {
+    const store = makeStore()
+    const mine: HistoryEntry<Rec>[] = []
+    store.listen(entry => mine.push(entry), { source: 'user' })
+    store.mergeRemoteChanges(() => {
+      store.put([shape('a', { x: 1 })])
+    })
+    store.flushHistory()
+    expect(mine).toHaveLength(0)
+    store.put([shape('b', { x: 2 })])
+    store.flushHistory()
+    expect(mine).toHaveLength(1)
+  })
+
+  it('refuses to merge remote changes inside an atomic operation', () => {
+    const store = makeStore()
+    expect(() =>
+      store.atomic(() => {
+        store.mergeRemoteChanges(() => {
+          store.put([shape('a')])
+        })
+      })
+    ).toThrow()
+  })
+})
+
+describe('the scope a listener asked for', () => {
+  it('hands each listener only the records of its own scope', () => {
+    const store = makeStore()
+    const document: HistoryEntry<Rec>[] = []
+    const session: HistoryEntry<Rec>[] = []
+    store.listen(entry => document.push(entry), { scope: 'document' })
+    store.listen(entry => session.push(entry), { scope: 'session' })
+    store.put([CameraType.create({ id: CameraType.createId('c'), zoom: 2 })])
+    store.flushHistory()
+    expect(document).toHaveLength(0)
+    expect(session).toHaveLength(1)
+    store.put([shape('a', { x: 1 })])
+    store.flushHistory()
+    expect(document).toHaveLength(1)
+    expect(session).toHaveLength(1)
+  })
+
+  it('serializes only the scope it was asked for', () => {
+    const store = makeStore()
+    store.put([
+      shape('a', { x: 1 }),
+      CameraType.create({ id: CameraType.createId('c'), zoom: 2 }),
+      CursorType.create({ id: CursorType.createId('p'), x: 3 })
+    ])
+    expect(Object.keys(store.serialize('document'))).toHaveLength(1)
+    expect(Object.keys(store.serialize('session'))).toHaveLength(1)
+    expect(Object.keys(store.serialize('presence'))).toHaveLength(1)
+    expect(Object.keys(store.serialize('all'))).toHaveLength(3)
+  })
+})
+
+describe('what a side effect is told about', () => {
+  it('says nothing when a record is replaced by one just like it', () => {
+    const store = makeStore()
+    store.put([shape('a', { x: 1 })])
+    const afterChange = vi.fn()
+    store.sideEffects.registerAfterChangeHandler('shape', afterChange)
+    const existing = store.get(ShapeType.createId('a'))!
+    store.put([{ ...existing }])
+    expect(afterChange).not.toHaveBeenCalled()
+  })
+
+  it('says so when something really moved', () => {
+    const store = makeStore()
+    store.put([shape('a', { x: 1 })])
+    const afterChange = vi.fn()
+    store.sideEffects.registerAfterChangeHandler('shape', afterChange)
+    const existing = store.get(ShapeType.createId('a'))!
+    store.put([{ ...existing, x: 9 }])
+    expect(afterChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('reads a nested value rather than the reference it arrived under', () => {
+    const store = makeStore()
+    store.put([shape('a', { x: 1 })])
+    const afterChange = vi.fn()
+    store.sideEffects.registerAfterChangeHandler('shape', afterChange)
+    const existing = store.get(ShapeType.createId('a'))!
+    store.put([{ ...existing, meta: { ...(existing as { meta?: object }).meta } } as Rec])
+    expect(afterChange).not.toHaveBeenCalled()
+  })
+})
+
+describe('a snapshot of the whole store', () => {
+  it('comes back the same on the other side', () => {
+    const store = makeStore()
+    store.put([
+      shape('a', { x: 1 }),
+      shape('b', { x: 2 }),
+      CameraType.create({ id: CameraType.createId('c'), zoom: 3 })
+    ])
+    const snapshot = getStoreSnapshot(store, 'all')
+    const next = makeStore()
+    loadStoreSnapshot(next, snapshot)
+    expect(JSON.stringify(getStoreSnapshot(next, 'all'))).toBe(JSON.stringify(snapshot))
+  })
+
+  it('takes what was there before it away', () => {
+    const store = makeStore()
+    store.put([shape('old', { x: 1 })])
+    const other = makeStore()
+    other.put([shape('new', { x: 2 })])
+    loadStoreSnapshot(store, getStoreSnapshot(other, 'all'))
+    expect(store.get(ShapeType.createId('old'))).toBeUndefined()
+    expect(store.get(ShapeType.createId('new'))).toBeDefined()
   })
 })
