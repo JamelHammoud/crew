@@ -67,6 +67,7 @@ describe('responsive top bar', () => {
     const tabs = within(navigation).getAllByRole('button')
 
     expect(navigation.classList.contains('hidden')).toBe(true)
+    expect(document.querySelector('.top-bar > div')?.classList.contains('col-start-3')).toBe(true)
     expect(tabs.map(tab => tab.getAttribute('aria-label'))).toEqual(['Chat', 'Docs', 'Design'])
     expect(navigation.querySelectorAll('.tab-icon')).toHaveLength(3)
     expect(navigation.querySelectorAll('.top-bar-tab-label')).toHaveLength(3)

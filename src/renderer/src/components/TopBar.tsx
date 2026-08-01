@@ -130,7 +130,7 @@ export default function TopBar({
         )}
       </nav>
 
-      <div className={`app-no-drag flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
+      <div className={`app-no-drag col-start-3 flex items-center justify-end ${compact ? 'gap-1' : 'gap-2'}`}>
         {connection === 'reconnecting' && (
           <span className="text-xs text-fg-muted animate-pulse mr-1">Connection lost. Trying again…</span>
         )}
