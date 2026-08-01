@@ -126,11 +126,57 @@ describe('the sidebar', () => {
     expect(titles.slice(0, 2)).toEqual(['one', 'two'])
   })
 
-  it('says which place this window is in and offers no way into it', async () => {
+  it('holds the threads running in a place under it', async () => {
+    live = [
+      {
+        key: `project:${TWO}`,
+        folder: TWO,
+        name: 'Jamel',
+        hosting: true,
+        threads: [
+          { id: 't1', title: 'Check the plan charge', working: true },
+          { id: 't2', title: 'Locate the STL files', working: false }
+        ]
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
     const { container } = render(createElement(Sidebar))
-    const rows = [...container.querySelectorAll('button[aria-current="true"]')]
-    expect(rows).toHaveLength(1)
-    expect(rows[0].textContent).toContain('one')
+    const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
+    expect(rows).toContain('Check the plan charge')
+    expect(rows).toContain('Locate the STL files')
+  })
+
+  it('goes to the place a thread is in and opens that thread', async () => {
+    live = [
+      {
+        key: `project:${TWO}`,
+        folder: TWO,
+        name: 'Jamel',
+        hosting: true,
+        threads: [{ id: 't1', title: 'Check the plan charge', working: false }]
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    const { container } = render(createElement(Sidebar))
+    const row = [...container.querySelectorAll('button')].find(
+      b => b.textContent === 'Check the plan charge'
+    ) as HTMLElement
+    await act(async () => {
+      fireEvent.click(row)
+    })
+    expect(asked).toEqual([`project:${TWO}`])
+    expect(useCrew.getState().openThreadId).toBe('t1')
+  })
+
+  it('holds a place with nothing running as a row on its own', async () => {
+    const { container } = render(createElement(Sidebar))
+    const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
+    expect(rows).toContain('one')
+    expect(rows).toContain('two')
   })
 
   it('peeks on a hover without pushing the page over', () => {
