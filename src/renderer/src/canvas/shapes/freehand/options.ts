@@ -1,14 +1,7 @@
+import { modulate } from '../rng'
 import { easeOutSine, linear, type StrokeOptions } from './types'
 
 const penEasing = (value: number) => value * 0.65 + Math.sin((value * Math.PI) / 2) * 0.35
-
-export function modulate(value: number, from: [number, number], to: [number, number], clamp = false): number {
-  const result = to[0] + ((value - from[0]) / (from[1] - from[0])) * (to[1] - to[0])
-  if (!clamp) return result
-  return to[0] < to[1]
-    ? Math.max(Math.min(result, to[1]), to[0])
-    : Math.max(Math.min(result, to[0]), to[1])
-}
 
 function simulatedPressure(strokeWidth: number): StrokeOptions {
   return {
