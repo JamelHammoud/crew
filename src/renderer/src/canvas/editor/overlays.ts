@@ -15,6 +15,7 @@ interface OverlayEditor {
   getShapePageTransform(shape: TLShape): { applyToPoint(point: VecLike): VecLike }
   getShapeGeometry(shape: TLShape): { vertices: VecLike[]; isClosed: boolean }
   getHoveredShape(): TLShape | undefined
+  getShape(id: TLShapeId): TLShape | undefined
   getEditingShapeId(): TLShapeId | null
   getZoomLevel(): number
   getCurrentToolPath(): string
@@ -28,6 +29,7 @@ interface OverlayEditor {
     scribbles?: TLScribble[]
     isCoarsePointer?: boolean
     isChangingStyle?: boolean
+    hintingShapeIds?: TLShapeId[]
   }
   snaps: { getIndicators(): BoundsSnapIndicator[] }
 }
@@ -150,6 +152,18 @@ function hitsTarget(target: HitTarget, point: VecLike, margin: number): boolean 
 const CORNERS = ['top_left', 'top_right', 'bottom_right', 'bottom_left'] as const
 const EDGES = ['top', 'right', 'bottom', 'left'] as const
 const ROTATE_CORNERS = ['top_left_rotate', 'top_right_rotate', 'bottom_right_rotate', 'bottom_left_rotate'] as const
+const INDICATOR_WIDTH = 1.5
+const HINTED_INDICATOR_WIDTH = 2.5
+const IDLE_INDICATOR_PATHS = new Set(['select.idle', 'select.editing_shape'])
+const SELECTING_INDICATOR_PATHS = new Set([
+  'select.brushing',
+  'select.scribble_brushing',
+  'select.pointing_shape',
+  'select.pointing_selection',
+  'select.pointing_handle',
+  'select.pointing_resize_handle',
+  'select.pointing_rotate_handle'
+])
 
 interface SelectionForegroundState {
   bounds: Box

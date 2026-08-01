@@ -339,18 +339,27 @@ describe('the line tool', () => {
     expect(subject.getCurrentToolPath()).toBe('line.idle')
   })
 
-  it('adds a point to the line it just made on a shift click', () => {
+  it('moves the end rather than adding a point while the two ends sit together', () => {
     const subject = editor()
     subject.setCurrentTool('line')
     click(subject, 100, 100)
-    const before = subject.getCurrentPageShapes()[0]
-    pointerDown(subject, 200, 160, { shiftKey: true })
-    pointerUp(subject, 200, 160, { shiftKey: true })
+    const id = subject.getCurrentPageShapes()[0].id
+    shiftClick(subject, 200, 160)
     expect(subject.getCurrentPageShapes().length).toBe(1)
-    const after = subject.getShape(before.id)
-    expect(Object.keys((after?.props as { points: Record<string, unknown> }).points).length).toBeGreaterThan(
-      Object.keys((before.props as { points: Record<string, unknown> }).points).length
-    )
+    expect(points(subject, id).length).toBe(2)
+    expect(points(subject, id)[1]).toMatchObject({ x: 100.1, y: 60.1 })
+  })
+
+  it('adds a point on every shift click once the line has length', () => {
+    const subject = editor()
+    subject.setCurrentTool('line')
+    click(subject, 100, 100)
+    const id = subject.getCurrentPageShapes()[0].id
+    shiftClick(subject, 200, 160)
+    shiftClick(subject, 300, 100)
+    expect(points(subject, id).length).toBe(3)
+    shiftClick(subject, 400, 200)
+    expect(points(subject, id).length).toBe(4)
   })
 
   it('takes the line back off on a cancel', () => {

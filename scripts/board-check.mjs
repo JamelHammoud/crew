@@ -657,10 +657,16 @@ const driveSource = String.raw`(async () => {
 
   section = 'Text'
 
+  const wordsOf = id => {
+    const shape = editor.getShape(id)
+    if (!shape) return ''
+    return JSON.stringify(shape.props.richText || shape.props.text || '')
+  }
+
   const caretIn = () => {
     const held = document.querySelector('[data-canvas-text-editor] [contenteditable="true"]')
     if (!held) return { ok: false, why: 'there is no box to type in' }
-    const rect = held.getBoundingClientRect()
+    const shell = held.getBoundingClientRect()
     const style = getComputedStyle(held)
     const size = parseFloat(style.fontSize) || 0
     const colour = style.caretColor
@@ -674,39 +680,36 @@ const driveSource = String.raw`(async () => {
       line = rects.length ? rects[0].height : range.getBoundingClientRect().height
     }
     const why = []
-    if (rect.height < size * 0.8) why.push('the box is ' + round(rect.height) + ' tall for ' + round(size) + ' type')
+    if (shell.height < size * 0.8) why.push('the box is ' + round(shell.height) + ' tall for ' + round(size) + ' type')
     if (!focused) why.push('nothing in it has the keyboard')
     if (!inside) why.push('the caret is not inside it')
     if (colour === 'transparent' || colour === 'rgba(0, 0, 0, 0)') why.push('the caret is painted in nothing')
     return {
       ok: why.length === 0,
       why: why.join(', '),
-      note: 'box ' + round(rect.height) + ' tall, caret ' + round(line) + ', painted ' + colour
+      note: 'box ' + round(shell.height) + ' tall, caret ' + round(line) + ', painted ' + colour
     }
   }
 
   const typeInto = async text => {
     const held = document.querySelector('[data-canvas-text-editor] [contenteditable="true"]')
     if (!held) return false
+    const id = editor.getEditingShapeId()
+    const before = id ? wordsOf(id) : held.textContent
     held.focus()
-    let done = false
     try {
-      done = document.execCommand('insertText', false, text)
+      document.execCommand('insertText', false, text)
     } catch (error) {
-      done = false
-    }
-    if (!done) {
-      const line = held.querySelector('p') || held
-      line.textContent = (line.textContent || '') + text
-      held.dispatchEvent(new InputEvent('input', { bubbles: true }))
+      void error
     }
     await settle(4)
+    const landed = id ? wordsOf(id) !== before : held.textContent !== before
+    if (landed) return true
+    const line = held.querySelector('p') || held
+    line.textContent = (line.textContent || '') + text
+    held.dispatchEvent(new InputEvent('input', { bubbles: true }))
+    await settle(4)
     return true
-  }
-  const wordsOf = id => {
-    const shape = editor.getShape(id)
-    if (!shape) return ''
-    return JSON.stringify(shape.props.richText || shape.props.text || '')
   }
 
   await attempt('the text tool places a box you can see and type in', async () => {

@@ -204,14 +204,13 @@ describe('owned canvas shape utilities', () => {
       },
       meta: {}
     }
-    const boundEditor: ShapeEditor = {
-      getBindingsFromShape: () => [binding],
-      getShape: id =>
-        id === straight.id ? straight : shape('geo', new GeoShapeUtil(editor).getDefaultProps(), 'shape:target'),
-      getShapePageBounds: () =>
-        ({ x: 20, y: 40, w: 200, h: 100 }) as ReturnType<NonNullable<ShapeEditor['getShapePageBounds']>>
-    }
-    expect(getArrowTerminals(boundEditor, straight).start).toMatchObject({ x: 89.56521739130434, y: 40 })
+    const target = shape(
+      'geo',
+      { ...new GeoShapeUtil(editor).getDefaultProps(), w: 200, h: 100 },
+      'shape:target'
+    )
+    const boundEditor: ShapeEditor = boundArrowEditor(straight, target, [binding])
+    expect(getArrowTerminals(boundEditor, straight).start).toMatchObject({ x: 50, y: 75 })
     expect(new ArrowBindingUtil({}).getDefaultProps()).toEqual({
       isPrecise: false,
       isExact: false,
