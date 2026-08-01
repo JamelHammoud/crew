@@ -20,6 +20,7 @@ export const OverlayCanvas = memo(function OverlayCanvas<Shape extends CanvasSha
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
+    let frame: number | null = null
     const inputs = computed<OverlayRenderInputs>(
       'canvas overlay render inputs',
       () => {
@@ -45,33 +46,48 @@ export const OverlayCanvas = memo(function OverlayCanvas<Shape extends CanvasSha
       }
     )
 
-    const scheduler = new EffectScheduler('canvas overlay render', () => {
-      const canvas = canvasRef.current
-      const context = canvas?.getContext('2d')
-      if (!canvas || !context) return
-      const { dpr, width, height, cameraX, cameraY, zoom } = inputs.get()
-      const canvasWidth = Math.ceil(width * dpr)
-      const canvasHeight = Math.ceil(height * dpr)
-      if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
-        canvas.width = canvasWidth
-        canvas.height = canvasHeight
-        canvas.style.width = `${width}px`
-        canvas.style.height = `${height}px`
+    const scheduler = new EffectScheduler(
+      'canvas overlay render',
+      () => {
+        const canvas = canvasRef.current
+        const context = canvas?.getContext('2d')
+        if (!canvas || !context) return
+        const { dpr, width, height, cameraX, cameraY, zoom } = inputs.get()
+        const canvasWidth = Math.ceil(width * dpr)
+        const canvasHeight = Math.ceil(height * dpr)
+        if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
+          canvas.width = canvasWidth
+          canvas.height = canvasHeight
+          canvas.style.width = `${width}px`
+          canvas.style.height = `${height}px`
+        }
+        context.setTransform(1, 0, 0, 1, 0, 0)
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        const scale = dpr * zoom
+        context.setTransform(scale, 0, 0, scale, scale * cameraX, scale * cameraY)
+        for (const { util, overlays } of host.overlays.getActiveOverlayEntries()) {
+          context.save()
+          util.render(context, overlays)
+          context.restore()
+        }
+      },
+      {
+        scheduleEffect: execute => {
+          if (frame !== null) return
+          frame = requestAnimationFrame(() => {
+            frame = null
+            execute()
+          })
+        }
       }
-      context.setTransform(1, 0, 0, 1, 0, 0)
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      const scale = dpr * zoom
-      context.setTransform(scale, 0, 0, scale, scale * cameraX, scale * cameraY)
-      for (const { util, overlays } of host.overlays.getActiveOverlayEntries()) {
-        context.save()
-        util.render(context, overlays)
-        context.restore()
-      }
-    })
+    )
 
     scheduler.attach()
     scheduler.execute()
-    return () => scheduler.detach()
+    return () => {
+      scheduler.detach()
+      if (frame !== null) cancelAnimationFrame(frame)
+    }
   }, [host])
 
   return (

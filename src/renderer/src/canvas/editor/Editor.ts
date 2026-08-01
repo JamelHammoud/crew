@@ -723,7 +723,7 @@ export class Editor {
   }
 
   getSelectedShapeIds(): TLShapeId[] {
-    return this.selection.getSelectedShapeIds().filter(id => this.getShape(id) !== undefined)
+    return this.selection.getSelectedShapeIds()
   }
 
   getSelectedShapes(): TLShape[] {

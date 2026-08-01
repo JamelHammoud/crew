@@ -7,7 +7,7 @@ export class SelectionManager {
   private readonly focusedGroup: Atom<TLShapeId | null>
 
   constructor() {
-    this.selected = atom('editor.selectedShapeIds', [])
+    this.selected = atom('editor.selectedShapeIds', [], { isEqual: sameOrderedIds })
     this.editing = atom('editor.editingShapeId', null)
     this.focusedGroup = atom('editor.focusedGroupId', null)
   }
@@ -35,4 +35,8 @@ export class SelectionManager {
   setFocusedGroupId(id: TLShapeId | null): void {
     this.focusedGroup.set(id)
   }
+}
+
+function sameOrderedIds(one: TLShapeId[], two: TLShapeId[]): boolean {
+  return one.length === two.length && one.every((id, index) => id === two[index])
 }
