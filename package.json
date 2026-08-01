@@ -98,7 +98,6 @@
     "media-check": "node scripts/media-check.mjs",
     "voice-check": "node scripts/voice-check.mjs",
     "selection-check": "node scripts/selection-check.mjs",
-    "caret-check": "node scripts/caret-check.mjs",
     "board-check": "node scripts/board-check.mjs",
     "board-perf": "node scripts/board-perf.mjs",
     "snap-check": "node scripts/snap-check.mjs",
