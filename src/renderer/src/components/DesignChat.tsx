@@ -142,29 +142,29 @@ export default function DesignChat({ boardId }: { boardId: string }) {
         </div>
         <ScrollFade edges={edges} />
       </div>
-      <div className="px-3 pb-4 shrink-0">
+      <div className="px-3 pb-5 shrink-0">
         <div className="relative">
+          <Composer
+            attachmentKey={key}
+            value={text}
+            placeholder={threadId ? 'Send a message or @ someone' : 'Ask an agent to design something'}
+            inputRef={inputRef}
+            onChange={mention.onChange}
+            onKeyDown={onKeyDown}
+            onSend={send}
+            onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
+            replyTo={replyTo ?? undefined}
+            onCancelReply={() => setReplyTo(null)}
+          >
+            <MentionMenu
+              matches={mention.matches}
+              activeIndex={mention.activeIndex}
+              onPick={mention.pick}
+              onHover={mention.setActive}
+            />
+          </Composer>
           <TypingLine where={key} />
         </div>
-        <Composer
-          attachmentKey={key}
-          value={text}
-          placeholder={threadId ? 'Send a message or @ someone' : 'Ask an agent to design something'}
-          inputRef={inputRef}
-          onChange={mention.onChange}
-          onKeyDown={onKeyDown}
-          onSend={send}
-          onStop={activePromptId ? () => cancelPrompt(activePromptId) : undefined}
-          replyTo={replyTo ?? undefined}
-          onCancelReply={() => setReplyTo(null)}
-        >
-          <MentionMenu
-            matches={mention.matches}
-            activeIndex={mention.activeIndex}
-            onPick={mention.pick}
-            onHover={mention.setActive}
-          />
-        </Composer>
       </div>
     </div>
   )
