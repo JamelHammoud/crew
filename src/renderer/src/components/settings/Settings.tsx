@@ -29,6 +29,7 @@ function Panel({ tab }: { tab: SettingsTab }) {
   if (tab === 'scribe') return <Scribe />
   if (tab === 'machine') return <Machine />
   if (tab === 'people') return <People />
+  if (tab === 'memory') return <Memory />
   if (tab === 'emoji') return <Emoji />
   if (tab === 'files') return <Files />
   if (tab === 'about') return <About />

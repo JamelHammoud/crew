@@ -333,9 +333,6 @@ describe('the board on screen', () => {
   })
 })
 
-// A switch of project hands the panel over: what belongs to the crew goes with
-// the project it belongs to, and a terminal is this machine's own shell, so it
-// stays standing under whatever is put back over it.
 describe('handing the panel over on a switch', () => {
   const kinds = () => useBrowser.getState().tabs.map(t => t.kind)
   const panel = () => useBrowser.getState()
@@ -395,8 +392,6 @@ describe('handing the panel over on a switch', () => {
     expect(panel().activeTabId).toBe(first.id)
   })
 
-  // Nothing left standing is nothing to stand on, whether the tabs went by hand
-  // or with the project they belonged to.
   it('stands on nothing and puts the panel away when no shell is left', () => {
     useBrowser.getState().openUrl('https://example.com/one')
 
@@ -435,8 +430,6 @@ describe('handing the panel over on a switch', () => {
     expect(order()[2]).toBe(shell.id)
   })
 
-  // You were typing in a shell and you still are: the one thing that persists is
-  // the one thing that must not move under the pointer.
   it('leaves the shell you were typing in up through the switch', () => {
     useBrowser.getState().openUrl('https://example.com/one')
     const memory = useBrowser.getState().stash()
@@ -488,8 +481,6 @@ describe('handing the panel over on a switch', () => {
     expect(panel().open).toBe(false)
   })
 
-  // A plan that was put away waits to be asked for again, and that is the
-  // project's own memory rather than the window's.
   it('takes what was put away with it and hands it back', () => {
     useBrowser.getState().showPlan('t1')
     useBrowser.getState().closeTab(useBrowser.getState().tabs[0]!.id)
@@ -504,8 +495,6 @@ describe('handing the panel over on a switch', () => {
     expect(panel().closedPlans).toEqual(['t1'])
   })
 
-  // A switch is not somebody pressing something, so tabs arriving in the panel
-  // never stand it up on their own.
   it('leaves the panel put away when the project it opens was put away', () => {
     useBrowser.getState().openUrl('https://example.com/one')
     useBrowser.getState().closePanel()

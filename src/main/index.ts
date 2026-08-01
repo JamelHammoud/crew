@@ -444,48 +444,60 @@ app.whenReady().then(() => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return result.canceled ? null : result.filePaths[0]
   })
-  ipcMain.handle('session:start', async (_event, folder: string, name: string, opts?: OpenOptions) => {
-    const info = await session.startHost(folder, name, opts ?? {})
+  ipcMain.handle('session:start', async (event, folder: string, name: string, opts?: OpenOptions) => {
+    const info = await crews.start(event.sender.id, folder, name, opts ?? {})
     sharing()
     warmTerminals()
     return info
   })
-  ipcMain.handle('session:plan', (_event, folder: string) => session.projectPlan(folder))
-  ipcMain.handle('crew:connect', (_event, remote: string) => session.connectCrew(remote))
-  ipcMain.handle('session:sync', (_event, on: boolean) => session.setProjectSync(on))
-  ipcMain.handle('session:projects', () => session.recentProjects())
-  ipcMain.handle('session:forget', (_event, folder: string) => session.forgetProject(folder))
-  ipcMain.handle('session:forget-join', (_event, link: string) => session.forgetJoin(link))
-  ipcMain.handle('session:share', async (_event, shared: boolean) => {
-    const info = await session.setShared(shared)
+  ipcMain.handle('session:plan', (_event, folder: string) => crews.projectPlan(folder))
+  ipcMain.handle('crew:connect', (event, remote: string) => crews.inView(event.sender.id).connectCrew(remote))
+  ipcMain.handle('session:sync', (event, on: boolean) => crews.inView(event.sender.id).setProjectSync(on))
+  ipcMain.handle('session:projects', () => crews.recentProjects())
+  ipcMain.handle('session:forget', (_event, folder: string) => crews.forgetProject(folder))
+  ipcMain.handle('session:forget-join', (_event, link: string) => crews.forgetJoin(link))
+  ipcMain.handle('session:share', async (event, shared: boolean) => {
+    const info = await crews.inView(event.sender.id).setShared(shared)
     sharing()
     return info
   })
-  ipcMain.handle('session:join', async (_event, link: string, folder: string, name: string) => {
-    const info = await session.startJoin(link, folder, name)
+  ipcMain.handle('session:join', async (event, link: string, folder: string, name: string) => {
+    const info = await crews.join(event.sender.id, link, folder, name)
     sharing()
     warmTerminals()
     return info
   })
-  ipcMain.handle('session:leave', async () => {
-    await session.leave()
+  ipcMain.handle('session:leave', async event => {
+    await crews.leave(event.sender.id)
     sharing()
   })
-  ipcMain.handle('session:current', async () => {
+  ipcMain.handle('session:current', async event => {
     await resumed
-    return session.current()
+    return crews.current(event.sender.id)
   })
-  ipcMain.handle('session:recent', () => session.recentJoins())
-  ipcMain.handle('agents:capabilities', () => session.capabilities())
-  ipcMain.handle('agents:install', (_event, provider: string) => session.installProvider(provider))
-  ipcMain.handle('agents:create', (_event, input: NewAgent) => session.createAgent(input))
-  ipcMain.handle('agents:remove', (_event, instanceId: string) => session.removeAgent(instanceId))
-  ipcMain.handle('repo:status', () => session.repoStatus())
-  ipcMain.handle('repo:changes', () => session.repoChanges())
-  ipcMain.handle('repo:pull', () => session.pullRepo())
-  ipcMain.handle('repo:push', () => session.pushRepo())
-  ipcMain.handle('repo:work', () => session.repoWork())
-  ipcMain.handle('repo:run', (_event, command: RepoCommand) => session.runRepo(command))
+  ipcMain.handle('session:switch', (event, key: string) => {
+    const info = crews.switchTo(event.sender.id, key)
+    if (info) warmTerminals()
+    return info
+  })
+  ipcMain.handle('session:close', async (_event, key: string) => {
+    await crews.close(key)
+    sharing()
+  })
+  ipcMain.handle('session:live', () => crews.places())
+  ipcMain.handle('session:recent', () => crews.recentJoins())
+  ipcMain.handle('agents:capabilities', () => crews.capabilities())
+  ipcMain.handle('agents:install', (_event, provider: string) => crews.installProvider(provider))
+  ipcMain.handle('agents:create', (event, input: NewAgent) => crews.inView(event.sender.id).createAgent(input))
+  ipcMain.handle('agents:remove', (event, instanceId: string) =>
+    crews.inView(event.sender.id).removeAgent(instanceId)
+  )
+  ipcMain.handle('repo:status', event => crews.inView(event.sender.id).repoStatus())
+  ipcMain.handle('repo:changes', event => crews.inView(event.sender.id).repoChanges())
+  ipcMain.handle('repo:pull', event => crews.inView(event.sender.id).pullRepo())
+  ipcMain.handle('repo:push', event => crews.inView(event.sender.id).pushRepo())
+  ipcMain.handle('repo:work', event => crews.inView(event.sender.id).repoWork())
+  ipcMain.handle('repo:run', (event, command: RepoCommand) => crews.inView(event.sender.id).runRepo(command))
   ipcMain.handle('media:access', (_event, kind: MediaKind) => mediaAccess(kind))
   ipcMain.handle('media:ask', (_event, kind: 'microphone' | 'camera') => askForMedia(kind))
   ipcMain.handle('media:settings', (_event, kind: MediaKind) => openMediaSettings(kind))

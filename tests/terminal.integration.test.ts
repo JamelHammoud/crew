@@ -54,8 +54,6 @@ function terminals(): Terminals {
   return made
 }
 
-// A folder of its own to warm a shell in, resolved through its links because
-// that is the path the shell itself reports standing in it.
 function den(name: string): string {
   const made = realpathSync(mkdtempSync(path.join(os.tmpdir(), `crew-pty-${name}-`)))
   dens.push(made)
