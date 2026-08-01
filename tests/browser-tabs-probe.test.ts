@@ -3,7 +3,7 @@ import { act, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { boardOnScreen, useBrowser } = await import('../src/renderer/src/state/browser')
+const { boardOnScreen, DEFAULT_WIDTH, useBrowser } = await import('../src/renderer/src/state/browser')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
 
 const scrolled: Element[] = []

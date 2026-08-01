@@ -57,7 +57,7 @@ app.commandLine.appendSwitch('disable-renderer-backgrounding')
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
-const session = new AppSession()
+const crews = new Crews()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
 // Whether this Crew was installed or is being run out of a checkout. It is the
