@@ -132,7 +132,11 @@ const path = require('node:path')
 const fs = require('node:fs/promises')
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
-const zooms = [{ name: 'fit', z: 1 }, { name: 'far', z: 0.14 }, { name: 'near', z: 4 }]
+const zooms = [
+  { name: 'whole', z: 1, look: { x: 420, y: 60 } },
+  { name: 'far', z: 0.14, look: { x: 420, y: 60 } },
+  { name: 'near', z: 4, look: { x: 700, y: 60 } }
+]
 
 app.whenReady().then(async () => {
   const errors = []
