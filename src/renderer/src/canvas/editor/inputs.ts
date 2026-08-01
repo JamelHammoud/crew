@@ -180,6 +180,48 @@ export class InputsManager {
     return this.metaKey || this.ctrlKey
   }
 
+  updateFromEvent(info: InputEventInfo, view: InputView): void {
+    const name = info.name ?? ''
+    if (!POINTER_NAMES.has(name)) return
+    const source = info.screenPoint ?? info.point
+    if (!source) return
+    this.updateModifiers(info)
+
+    const { x: cx, y: cy, z: cz } = view.camera
+    const screen = new Vec(source.x - view.screenBounds.x, source.y - view.screenBounds.y)
+    const nx = screen.x / cz - cx
+    const ny = screen.y / cz - cy
+    const page =
+      isFinite(nx) && isFinite(ny) ? new Vec(nx, ny, info.point?.z ?? 0.5) : Vec.From(this.pagePoint.get())
+    this.update(screen, page)
+    if (typeof info.isPen === 'boolean') this.pen = info.isPen
+
+    if (info.phase ? info.phase === 'down' : DOWN_NAMES.has(name)) {
+      this.originScreenPoint = screen.clone()
+      this.originPagePoint = page.clone()
+      this.velocity.set(new Vec())
+      this.velocityPrevious = screen.clone()
+      this.pointing.set(true)
+      this.dragging = false
+      if (typeof info.button === 'number') this.setButton(info.button, true)
+      return
+    }
+
+    if (name === 'pointer_move') {
+      const threshold = view.dragDistanceSquared ?? 16
+      if (this.pointing.get() && Vec.Dist2(this.originScreenPoint, screen) >= threshold) this.dragging = true
+      return
+    }
+
+    if (name === 'pointer_up') {
+      this.pointing.set(false)
+      this.rightPointing = false
+      this.dragging = false
+      this.pen = false
+      this.buttons.clear()
+    }
+  }
+
   pointerDown(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers, pointerType?: string): void {
     this.updateModifiers(modifiers)
     this.update(screenPoint, pagePoint)
