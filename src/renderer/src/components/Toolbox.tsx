@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CrewTool } from '../../../shared/toolbox'
 import {
+  BranchGlyph,
   CheckGlyph,
   FolderGlyph,
   GameGlyph,
-  MicGlyph,
   MusicGlyph,
   PencilGlyph,
   PlusGlyph,
@@ -16,7 +16,6 @@ import { useBrowser } from '../state/browser'
 import { useHuddle } from '../state/huddle'
 import { useMusic } from '../state/music'
 import { useCrew } from '../state/store'
-import { useVoice } from '../state/voice'
 import { Popover } from './Popover'
 import { opensPanel, runTool, saidAfter, toolSlots } from './runTool'
 import ToolBuilder from './ToolBuilder'
@@ -57,7 +56,6 @@ export default function Toolbox({
   const tools = useCrew(s => s.tools)
   const joined = useHuddle(s => s.joined)
   const playing = useMusic(s => s.room.playing)
-  const talking = useVoice(s => s.open)
   const [building, setBuilding] = useState<{ tool: CrewTool | null } | null>(null)
   const [filling, setFilling] = useState<{ tool: CrewTool; slots: string[] } | null>(null)
   const [said, setSaid] = useState<{ toolId: string; word: string } | null>(null)
@@ -84,15 +82,11 @@ export default function Toolbox({
       }
     },
     {
-      id: 'voice',
-      name: 'Voice',
-      mark: MicGlyph,
-      on: talking,
-      run: () => {
-        const voice = useVoice.getState()
-        if (voice.open) voice.end()
-        else void voice.start()
-      }
+      id: 'review',
+      name: 'Review',
+      mark: BranchGlyph,
+      panel: true,
+      run: () => useBrowser.getState().openReview()
     },
     {
       id: 'terminal',

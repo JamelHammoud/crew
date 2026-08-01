@@ -89,8 +89,9 @@ describe('the toolbox', () => {
   it('holds the built-in tools, every one of them live', () => {
     toolbox()
 
-    for (const built of ['Huddle', 'Terminal', 'Files', 'Music', 'Games'])
+    for (const built of ['Huddle', 'Review', 'Terminal', 'Files', 'Music', 'Games'])
       expect(screen.getByText(built).closest('button')?.disabled).toBe(false)
+    expect(screen.queryByText('Voice')).toBeNull()
   })
 
   // Both halves stand on the same three columns, so the app's own hand and the
@@ -108,6 +109,15 @@ describe('the toolbox', () => {
     fireEvent.click(screen.getByText('Games'))
 
     expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'game' })])
+    expect(switched).toBe(1)
+  })
+
+  it('opens Review in the Browser', () => {
+    toolbox()
+    fireEvent.click(screen.getByText('Review'))
+
+    expect(useBrowser.getState().tabs).toEqual([expect.objectContaining({ kind: 'review' })])
+    expect(useBrowser.getState().open).toBe(true)
     expect(switched).toBe(1)
   })
 
