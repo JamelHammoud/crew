@@ -15,18 +15,23 @@ export const MEMORY_FULL = `The crew has as many memories as it can hold. Take o
 export const cleanMemoryLine = (raw: unknown): string =>
   typeof raw === 'string' ? raw.replace(/\s+/g, ' ').trim().slice(0, MEMORY_TEXT_LIMIT) : ''
 
+export const memoryKey = (text: string): string => text.toLowerCase().replace(/\s+/g, ' ').trim()
+
 export function cleanMemoryLines(raw: unknown): string[] {
   const list = Array.isArray(raw) ? raw : typeof raw === 'string' ? [raw] : []
   const lines: string[] = []
+  const keys = new Set<string>()
   for (const entry of list) {
     const line = cleanMemoryLine(typeof entry === 'string' ? entry : (entry as { text?: unknown })?.text)
-    if (line && !lines.includes(line)) lines.push(line)
+    const key = memoryKey(line)
+    if (line && !keys.has(key)) {
+      keys.add(key)
+      lines.push(line)
+    }
     if (lines.length >= MEMORY_ADD_LIMIT) break
   }
   return lines
 }
-
-export const memoryKey = (text: string): string => text.toLowerCase().replace(/\s+/g, ' ').trim()
 
 const draw = (width: number): string => {
   let out = ''
