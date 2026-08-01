@@ -386,6 +386,7 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
     }
     if (serveAgents(session, req.url ?? '', req, res)) return
     if (serveTickets(session, req.url ?? '', req, res)) return
+    if (serveMemory(session, req.url ?? '', req, res)) return
     if (servePage(session, req.url ?? '', req, res)) return
     const designOps = /^\/design\/([a-z0-9][a-z0-9-]*)\/ops$/.exec(req.url ?? '')
     if (req.method === 'POST' && designOps) {
