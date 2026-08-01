@@ -25,7 +25,7 @@ export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
 }
 
 export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TypeStyle>): void {
-  const live = (editor.getShape(shape.id) as TLTextShape | undefined) ?? shape
+  const live = shape
   const { align, ...type } = { ...textShapeType(editor, live), ...patch }
   editor.markHistoryStoppingPoint()
   editor.updateShape<TLTextShape>({

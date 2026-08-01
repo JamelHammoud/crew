@@ -556,32 +556,39 @@ describe('a stroke that was never a drag', () => {
 })
 
 describe('a note dropped beside another note', () => {
-  it('lands in the pit rather than where the pointer was', () => {
-    const subject = editor()
+  function firstNote(subject: Editor): void {
     subject.setCurrentTool('note')
     click(subject, 200, 200)
     subject.dispatch({ name: 'cancel' })
     subject.selectNone()
+  }
+
+  function nearRightPit(subject: Editor): number {
+    return 200 + 300 + (subject.options.adjacentShapeMargin as number) + 4
+  }
+
+  it('lands in the pit rather than where the pointer was', () => {
+    const subject = editor()
+    firstNote(subject)
+    const aim = nearRightPit(subject)
     subject.setCurrentTool('note')
-    click(subject, 522, 200)
+    click(subject, aim, 200)
     const notes = subject.getCurrentPageShapes().filter(shape => shape.type === 'note')
     expect(notes.length).toBe(2)
-    expect(notes[1].x).toBe(320)
+    expect(notes[1].x).toBe(aim - 104)
     expect(notes[1].y).toBe(100)
   })
 
   it('leaves a rotated note out of the pits it offers', () => {
     const subject = editor()
-    subject.setCurrentTool('note')
-    click(subject, 200, 200)
-    subject.dispatch({ name: 'cancel' })
+    firstNote(subject)
     const first = subject.getCurrentPageShapes()[0]
     subject.updateShape({ id: first.id, type: 'note', rotation: 0.4 })
-    subject.selectNone()
+    const aim = nearRightPit(subject)
     subject.setCurrentTool('note')
-    click(subject, 522, 200)
+    click(subject, aim, 200)
     const notes = subject.getCurrentPageShapes().filter(shape => shape.type === 'note')
-    expect(notes[1].x).toBe(422)
+    expect(notes[1].x).toBe(aim - 100)
   })
 })
 
