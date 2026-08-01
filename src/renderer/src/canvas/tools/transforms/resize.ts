@@ -40,6 +40,29 @@ const OPPOSITE_HANDLE: Record<SelectionHandle, SelectionHandle> = {
   top_left: 'bottom_right'
 }
 
+const ORDERED_SELECTION_HANDLES: SelectionHandle[] = [
+  'top',
+  'top_right',
+  'right',
+  'bottom_right',
+  'bottom',
+  'bottom_left',
+  'left',
+  'top_left'
+]
+
+export function rotateSelectionHandle(handle: SelectionHandle, rotation: number): SelectionHandle {
+  const steps = Math.round((rotation % (Math.PI * 2)) / (Math.PI / 4))
+  const index = ORDERED_SELECTION_HANDLES.indexOf(handle)
+  if (index === -1) return handle
+  const next = (index + steps) % ORDERED_SELECTION_HANDLES.length
+  return ORDERED_SELECTION_HANDLES[(next + ORDERED_SELECTION_HANDLES.length) % ORDERED_SELECTION_HANDLES.length]
+}
+
+export function areAnglesCompatible(a: number, b: number): boolean {
+  return a === b || approximately((a % HALF_PI) - (b % HALF_PI), 0)
+}
+
 export function calculateResize(options: CalculateResizeOptions): ResizeCalculation {
   const {
     selectionBounds,
