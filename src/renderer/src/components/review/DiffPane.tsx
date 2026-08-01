@@ -60,7 +60,7 @@ export default function DiffPane({
   // the second file lands wherever the first one was left standing.
   // biome-ignore lint/correctness/useExhaustiveDependencies: the path is what says a different file arrived
   useEffect(() => {
-    scroller.current?.scrollTo({ top: 0 })
+    if (scroller.current) scroller.current.scrollTop = 0
   }, [change.path, change.staged])
 
   return (
