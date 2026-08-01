@@ -58,7 +58,7 @@ const state = (over: Partial<AlertState> = {}): AlertState => ({
   threadPrompts: {},
   queues: {},
   agents: AGENTS,
-  openThreadId: null,
+  openThreadIds: [],
   ...over
 })
 
@@ -117,12 +117,12 @@ describe('finished alerts', () => {
   })
 
   it('stays quiet while that thread is on screen', () => {
-    expect(finishedAlert(ended('t1'), state({ openThreadId: 't1' }))).toBeNull()
+    expect(finishedAlert(ended('t1'), state({ openThreadIds: ['t1'] }))).toBeNull()
   })
 
   it('speaks up when another thread is on screen', () => {
     const threads = { t1: thread('t1'), t2: thread('t2') }
-    expect(finishedAlert(ended('t1'), state({ threads, openThreadId: 't2' }))).not.toBeNull()
+    expect(finishedAlert(ended('t1'), state({ threads, openThreadIds: ['t2'] }))).not.toBeNull()
   })
 
   it('waits when there is more work queued behind the run', () => {
@@ -194,7 +194,7 @@ describe('a question raised on the board', () => {
   it('speaks up while another board is on screen, or the thread alone is', () => {
     const threads = { t1: thread('t1'), t2: thread('t2') }
     expect(questionAlert(asked(), state({ threads }), 't2')).not.toBeNull()
-    expect(questionAlert(asked(), state({ openThreadId: 't1' }), null)).not.toBeNull()
+    expect(questionAlert(asked(), state({ openThreadIds: ['t1'] }), null)).not.toBeNull()
   })
 
   it('ignores everything that is not a question', () => {
@@ -216,7 +216,7 @@ describe('member mention alerts', () => {
   })
 
   it('alerts the named member, and carries who it came from', () => {
-    expect(memberMentionAlert(message(), 'ali', null)).toEqual({
+    expect(memberMentionAlert(message(), 'ali', [])).toEqual({
       title: 'Jamel mentioned you',
       body: 'Can you look at this @ALI?',
       threadId: 't1',
@@ -225,12 +225,12 @@ describe('member mention alerts', () => {
   })
 
   it('stays quiet inside the thread it was said in, and for your own message', () => {
-    expect(memberMentionAlert(message(), 'ali', 't1')).toBeNull()
-    expect(memberMentionAlert(message('ali'), 'ali', null)).toBeNull()
+    expect(memberMentionAlert(message(), 'ali', ['t1'])).toBeNull()
+    expect(memberMentionAlert(message('ali'), 'ali', [])).toBeNull()
   })
 
   it('still speaks up while another thread is open', () => {
-    expect(memberMentionAlert(message(), 'ali', 't2')).not.toBeNull()
+    expect(memberMentionAlert(message(), 'ali', ['t2'])).not.toBeNull()
   })
 })
 
