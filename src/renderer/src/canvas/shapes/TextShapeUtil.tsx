@@ -111,7 +111,10 @@ export class TextShapeUtil extends ShapeUtil<TextShape> {
   override onBeforeUpdate(previous: TextShape, next: TextShape): TextShape | undefined {
     const before = this.growthState(previous)
     const after = this.growthState(next)
-    const contentChanged = previous.props.richText !== next.props.richText
+    const contentChanged = richTextChanged(
+      previous.props.richText as RichTextDocument,
+      next.props.richText as RichTextDocument
+    )
     if (!textGrowthMatters(before, after, contentChanged)) return undefined
     const grown = compensateTextGrowth(
       before,
