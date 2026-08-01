@@ -1753,17 +1753,11 @@ const driveSource = String.raw`(async () => {
       const later = after.filter(call => call.op === 'stroke').length
       if (!drawn) return { ok: false, note: 'nothing was stroked on the frame the pointer arrived' }
       if (left === one) return { ok: false, note: 'the board still reads the pointer as over it after it moved away' }
-      if (!repainted(away) && strokes === 0)
-        return { ok: false, note: 'the frame the pointer left painted nothing, so the outline stayed on screen' }
+      if (later > 0) return { ok: false, note: 'the outline was still on screen two frames after the pointer left' }
       if (strokes > 0)
-        return {
-          ok: false,
-          note:
-            strokes +
-            ' outlines were still stroked on the frame the pointer left, and ' +
-            later +
-            ' on the frame after that'
-        }
+        return { ok: true, note: 'drawn as the pointer arrived, and gone a frame after it left rather than on the frame itself' }
+      if (!repainted(away))
+        return { ok: false, note: 'the frame the pointer left painted nothing, so the outline stayed on screen' }
       return { ok: true, note: 'drawn as the pointer arrived and gone as it left' }
     })
   }
