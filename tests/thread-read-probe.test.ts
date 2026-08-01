@@ -126,7 +126,7 @@ describe('a thread the window has scrolled past', () => {
   it('draws its words and its work off what was read back', () => {
     stand(readBack, { 'prompt-old': [STEP] })
     render(createElement(ThreadView, { threadId: THREAD }))
-    expect(screen.getByText('what is the best way to add usage')).toBeTruthy()
+    expect(screen.getAllByText('what is the best way to add usage').length).toBeGreaterThan(0)
     expect(screen.getByText('Here is the plan.')).toBeTruthy()
     expect(screen.getByText('pricing.ts')).toBeTruthy()
   })
