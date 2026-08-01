@@ -1876,6 +1876,61 @@ const driveSource = String.raw`(async () => {
   stopPainting()
   await clear()
 
+  section = 'The panel'
+
+  const halfOf = which => {
+    const half = document.querySelector('[data-design-' + which + ']')
+    return half ? { half, scroller: half.querySelector('.overflow-y-auto') } : null
+  }
+  const scrolls = which => {
+    const found = halfOf(which)
+    if (!found) return { ok: false, note: 'the panel draws no ' + which }
+    if (!found.scroller) return { ok: false, note: 'nothing in the ' + which + ' is set up to scroll' }
+    const scroller = found.scroller
+    if (scroller.scrollHeight <= scroller.clientHeight)
+      return {
+        ok: false,
+        note: 'it holds ' + scroller.scrollHeight + 'px of rows in ' + scroller.clientHeight + 'px, so there is nothing to scroll'
+      }
+    scroller.scrollTop = 0
+    scroller.scrollTop = 9999
+    const landed = scroller.scrollTop
+    scroller.scrollTop = 0
+    return {
+      ok: landed > 0,
+      note: landed > 0
+        ? scroller.scrollHeight + 'px of rows in ' + scroller.clientHeight + 'px, scrolled to ' + landed
+        : scroller.scrollHeight + 'px of rows in ' + scroller.clientHeight + 'px and it would not move'
+    }
+  }
+
+  await attempt('the layers scroll inside the panel', async () => {
+    if (!document.querySelector('[data-probe-panel]')) return null
+    editor.selectNone()
+    await settle(4)
+    return scrolls('layers')
+  })
+
+  await attempt('the inspector scrolls inside the panel', async () => {
+    if (!document.querySelector('[data-probe-panel]')) return null
+    editor.select(shapes[0].id)
+    await settle(6)
+    const answer = scrolls('inspector')
+    editor.selectNone()
+    await settle(2)
+    return answer
+  })
+
+  await attempt('the panel is no taller than the window', async () => {
+    const panel = document.querySelector('[data-probe-panel] aside')
+    if (!panel) return null
+    const height = panel.getBoundingClientRect().height
+    return {
+      ok: height <= window.innerHeight + 1 && panel.scrollHeight <= window.innerHeight + 1,
+      note: round(height) + 'px of panel and ' + panel.scrollHeight + 'px of content in a ' + window.innerHeight + 'px window'
+    }
+  })
+
   section = 'Speed'
 
   const MOVES = 60
