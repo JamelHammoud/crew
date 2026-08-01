@@ -908,18 +908,19 @@ const driveSource = String.raw`(async () => {
     stopEditing()
     editor.select(id)
     await settle(6)
-    if (!field('Size')) return { ok: false, note: 'the typography fields never appeared for a text shape' }
+    const type = sectionNamed('Typography')
+    if (!type || !field('Size', type)) return { ok: false, note: 'the typography fields never appeared for a text shape' }
     const took = []
-    await setField('Size', 33)
+    await setField('Size', 33, type)
     if (!near((typeOf(id) || {}).size, 33, 0.01)) took.push('setting the size did nothing')
-    await setField('Letter spacing', 7)
+    await setField('Letter spacing', 7, type)
     if (!near((typeOf(id) || {}).spacing, 7, 0.01)) took.push('setting the spacing did nothing')
-    await setField('Line height', 175)
+    await setField('Line height', 175, type)
     if (!near((typeOf(id) || {}).lineHeight, 1.75, 0.01)) took.push('setting the line height did nothing')
-    await pressButton('Align center')
+    await pressButton('Align center', type)
     if (editor.getShape(id).props.textAlign !== 'middle') took.push('pressing centre did nothing')
     let family = null
-    if (await pressButton('Font')) {
+    if (await pressButton('Font', type)) {
       const rows = [...document.querySelectorAll('div[class*="max-h-72"] button')]
       const wanted = rows.find(row => (row.textContent || '').trim() && row.textContent.trim() !== (typeOf(id) || {}).family)
       if (wanted) {
@@ -943,12 +944,13 @@ const driveSource = String.raw`(async () => {
       return { ok: false, note: 'clicking the text back selected ' + editor.getSelectedShapeIds().length + ' shapes' }
     const held = typeOf(id)
     const align = editor.getShape(id).props.textAlign
+    const back = sectionNamed('Typography')
     const shown = label => {
-      const input = field(label)
+      const input = field(label, back)
       return input ? input.value : 'no field'
     }
     const pressed = label => {
-      const button = document.querySelector('button[aria-label="' + label + '"]')
+      const button = back && back.querySelector('button[aria-label="' + label + '"]')
       return Boolean(button) && button.getAttribute('aria-pressed') === 'true'
     }
     const wrong = []
@@ -980,7 +982,8 @@ const driveSource = String.raw`(async () => {
     editor.select(id)
     await settle(6)
     const before = boundsOf(id)
-    if (!(await setField('Letter spacing', 12))) return { ok: false, note: 'there is no letter spacing field' }
+    if (!(await setField('Letter spacing', 12, sectionNamed('Typography'))))
+      return { ok: false, note: 'there is no letter spacing field' }
     await settle(6)
     const after = boundsOf(id)
     return { ok: after.w > before.w + 8, note: round(before.w) + ' wide to ' + round(after.w) }
