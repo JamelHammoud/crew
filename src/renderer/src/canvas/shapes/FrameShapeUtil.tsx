@@ -21,8 +21,27 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
   getDefaultProps(): FrameShape['props'] {
     return { w: 320, h: 180, name: '', color: 'black' }
   }
-  getGeometry(shape: FrameShape) {
-    return new Rectangle2d({ width: shape.props.w, height: shape.props.h, isFilled: false })
+  getGeometry(shape: FrameShape): Geometry2d {
+    const body = new Rectangle2d({ width: shape.props.w, height: shape.props.h, isFilled: false })
+    if (!shape.props.name) return body
+    const width = Math.min(shape.props.w, headingWidth(shape.props.name))
+    return new Group2d({
+      children: [
+        body,
+        new Rectangle2d({
+          x: 0,
+          y: -(HEADING_HEIGHT + HEADING_GAP),
+          width: Math.max(1, width),
+          height: HEADING_HEIGHT,
+          isFilled: true,
+          isLabel: true,
+          excludeFromShapeBounds: true
+        })
+      ]
+    })
+  }
+  override getClipPath(shape: FrameShape): Vec[] | undefined {
+    return new Rectangle2d({ width: shape.props.w, height: shape.props.h, isFilled: false }).vertices
   }
   override isFrameLike(_shape: FrameShape): boolean {
     return true
@@ -30,8 +49,14 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
   override providesBackgroundForChildren(_shape: FrameShape): boolean {
     return true
   }
-  override canReceiveNewChildrenOfType(_shape: FrameShape): boolean {
-    return true
+  override canReceiveNewChildrenOfType(shape: FrameShape): boolean {
+    return !shape.isLocked
+  }
+  override canRemoveChildrenOfType(shape: FrameShape): boolean {
+    return !shape.isLocked
+  }
+  override getText(shape: FrameShape): string {
+    return shape.props.name
   }
   override getAriaDescriptor(shape: FrameShape): string {
     return shape.props.name
@@ -62,8 +87,8 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
               position: 'absolute',
               bottom: '100%',
               left: 0,
-              paddingBottom: 4,
-              fontSize: 12,
+              paddingBottom: HEADING_GAP,
+              fontSize: HEADING_FONT_SIZE,
               color: stroke,
               whiteSpace: 'nowrap'
             }

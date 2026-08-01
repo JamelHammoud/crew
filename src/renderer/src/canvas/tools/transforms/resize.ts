@@ -234,6 +234,7 @@ export interface ResizingInfo<Shape extends TLShape = TLShape> {
   zoom?: number
   isCreating?: boolean
   creatingMarkId?: string
+  creationCursorOffset?: VecLike
   onCreate?(shape: Shape | null): void
   onInteractionEnd?: string | (() => void)
 }

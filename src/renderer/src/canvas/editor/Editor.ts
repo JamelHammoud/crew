@@ -473,28 +473,40 @@ export class Editor {
     return record?.typeName === 'asset' ? record : undefined
   }
 
-  getBindingsFromShape(id: TLShapeId, type?: TLBinding['type']): TLBinding[] {
-    return this.store
-      .query('binding')
-      .get()
-      .filter(binding => (binding.fromId === id || binding.toId === id) && (!type || binding.type === type))
+  getBinding(id: TLBindingId): TLBinding | undefined {
+    return this.bindings.get(id)
   }
 
-  deleteBinding(id: string): this {
-    this.store.remove([id as TLBindingId])
+  getBindingsFromShape(shapeOrId: TLShape | TLShapeId, type?: TLBinding['type']): TLBinding[] {
+    return this.bindings.fromShape(idOf(shapeOrId), type)
+  }
+
+  getBindingsToShape(shapeOrId: TLShape | TLShapeId, type?: TLBinding['type']): TLBinding[] {
+    return this.bindings.toShape(idOf(shapeOrId), type)
+  }
+
+  getBindingsInvolvingShape(shapeOrId: TLShape | TLShapeId, type?: TLBinding['type']): TLBinding[] {
+    return this.bindings.involvingShape(idOf(shapeOrId), type)
+  }
+
+  deleteBinding(binding: TLBinding | TLBindingId, options?: { isolateShapes?: boolean }): this {
+    return this.deleteBindings([binding], options)
+  }
+
+  deleteBindings(bindings: readonly (TLBinding | TLBindingId)[], options?: { isolateShapes?: boolean }): this {
+    this.bindings.delete(
+      bindings.map(binding => (typeof binding === 'string' ? binding : binding.id)),
+      options
+    )
     return this
   }
 
-  createBinding(partial: Omit<TLBinding<'arrow'>, 'id' | 'typeName' | 'meta'> & { id?: TLBindingId }): this {
-    this.store.put([
-      BindingRecordType.create({
-        id: partial.id ?? createBindingId(),
-        type: 'arrow',
-        fromId: partial.fromId,
-        toId: partial.toId,
-        props: partial.props
-      })
-    ])
+  createBinding(partial: BindingPartial): this {
+    return this.createBindings([partial])
+  }
+
+  createBindings(partials: BindingPartial[]): this {
+    this.bindings.create(partials)
     return this
   }
 
