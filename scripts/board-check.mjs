@@ -301,11 +301,18 @@ const driveSource = String.raw`(async () => {
     pointer('pointerdown', at.x, at.y, 1)
     await frame()
     pointer('pointerup', at.x, at.y, 0)
-    await settle(6)
+    const focus = () => {
+      const found = document.querySelector('[contenteditable="true"], textarea')
+      return Boolean(found) && (document.activeElement === found || found.contains(document.activeElement))
+    }
+    let waited = 0
+    while (waited < 12 && !focus()) {
+      await frame()
+      waited++
+    }
     const made = editor.getCurrentPageShapes().length - start
     const editing = editor.getEditingShapeId()
-    const caret = document.querySelector('[contenteditable="true"], textarea')
-    const focused = Boolean(caret) && (document.activeElement === caret || caret.contains(document.activeElement))
+    const focused = focus()
     editor.setCurrentTool('select')
     await settle()
     if (made > 0) {

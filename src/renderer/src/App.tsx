@@ -113,19 +113,20 @@ function Session() {
   return (
     <div className="h-full flex relative">
       <div
-        className="shrink-0 overflow-hidden transition-[width] duration-200"
-        style={{ width: pinned ? SIDEBAR_W : 0 }}
+        className="shrink-0 overflow-hidden transition-[width]"
+        style={{ width: pinned ? SIDEBAR_W : 0, transitionDuration: `${PIN_MS}ms` }}
       >
         <div className="h-full" style={{ width: SIDEBAR_W }}>
           <Sidebar />
         </div>
       </div>
-      {peeking && (
+      {(!pinned || peeking) && (
         <div
           onMouseEnter={() => peek(true)}
           onMouseLeave={() => peek(false)}
+          data-open={peeking || undefined}
           style={{ width: SIDEBAR_W }}
-          className="absolute inset-y-0 left-0 z-50 animate-rail"
+          className="rail absolute inset-y-0 left-0 z-50"
         >
           <Sidebar overlay strong={tab === 'design'} />
         </div>
