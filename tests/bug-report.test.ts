@@ -49,8 +49,10 @@ describe('a bug report', () => {
     expect(new URL(bugMailto(said, mac)).searchParams.get('body')).toContain(said)
   })
 
-  it('stays inside what a shell will read', () => {
-    const url = bugMailto('x'.repeat(REPORT_LIMIT), mac)
-    expect(url.length).toBeLessThan(2000)
+  it('stays inside what a shell will read, at the length a report is really written to', () => {
+    const prose = 'the panel went blank when i pressed it and it came back after a while '
+    const full = prose.repeat(40).slice(0, REPORT_LIMIT)
+    expect(full.length).toBe(REPORT_LIMIT)
+    expect(bugMailto(full, mac).length).toBeLessThan(2000)
   })
 })
