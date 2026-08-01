@@ -212,10 +212,10 @@ describe('locatePath', () => {
     expect(await locatePath(null, path.join(outside, 'preview.mjs'))).toEqual({ kind: 'local', exists: true })
   })
 
-  it('keeps back a full path that is not on this computer', async () => {
+  it('shows a full path that is nobody’s own file as it was written', async () => {
     const root = makeRepo()
-    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({ kind: 'private' })
-    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'private' })
+    expect(await locatePath(root, '/tmp/somebody-elses/preview.mjs')).toEqual({ kind: 'local', exists: false })
+    expect(await locatePath(root, 'D:\\shared\\build.log')).toEqual({ kind: 'local', exists: false })
   })
 
   it('matches a windows path onto the same file here', async () => {
