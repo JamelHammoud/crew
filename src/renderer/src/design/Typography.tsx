@@ -99,7 +99,7 @@ function SizePicker({ onPick }: { onPick: (size: number) => void }) {
   )
 }
 
-function TypeSettings({ value, set }: { value: TrimmedType; set: (patch: Partial<TrimmedType>) => void }) {
+function TypeSettings({ value, set }: { value: TypeStyle; set: (patch: Partial<TypeStyle>) => void }) {
   const [open, setOpen] = useState(false)
   return (
     <span className="relative flex">
