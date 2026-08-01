@@ -11,19 +11,25 @@ import { applyTheme, showTheme, storedTheme } from './state/theme'
 import { publishPresence } from './state/trayPresence'
 import { setFullScreen } from './state/windowShape'
 import ScribeWindow from './views/ScribeWindow'
+import ThreadWindow from './views/ThreadWindow'
 import TrayPanel from './views/TrayPanel'
+import { threadIdInHash } from '../../shared/threadViews'
 import './styles.css'
 
-// One renderer, three windows. The app itself, the panel under the menu bar, and
-// the pill that stands over whatever you are dictating into. Only the first of
-// them joins the session: the other two are this machine talking to itself.
+// One renderer, four windows. The app itself, a thread somebody popped out, the
+// panel under the menu bar, and the pill that stands over whatever you are
+// dictating into. The last two are this machine talking to itself and join
+// nothing; a popped out thread is the app's own session seen through one thread,
+// so it boots the way the app does.
 const WINDOWS: Record<string, () => JSX.Element> = {
   '#tray': TrayPanel,
   '#scribe': ScribeWindow
 }
 
 const hash = window.location.hash
-const Aside = WINDOWS[hash] ?? null
+const popped = threadIdInHash(hash) !== null
+const Aside = popped ? ThreadWindow : (WINDOWS[hash] ?? null)
+const joins = Aside === null || popped
 const root = document.getElementById('root')!
 
 applyPlatform()
