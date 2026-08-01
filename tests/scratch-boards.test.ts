@@ -68,6 +68,7 @@ describe('probe: real boards on disk', () => {
 
     it(`${name}: draw paths decode and re-encode unchanged`, () => {
       const file = JSON.parse(readFileSync(path, 'utf8'))
+      const drifted: { name: string; from: string; to: string }[] = []
       let checked = 0
       for (const record of Object.values(file.document.store) as any[]) {
         if (record?.typeName !== 'shape') continue
@@ -87,7 +88,11 @@ describe('probe: real boards on disk', () => {
           checked++
         }
       }
-      console.log(`${name}: checked ${checked} draw segments`)
+      console.log(`${name}: checked ${checked} draw segments, ${drifted.length} not byte identical`)
+      for (const d of drifted) {
+        const at = [...d.from].findIndex((c, i) => c !== d.to[i])
+        console.log(`  differs at char ${at}: ${d.from.slice(at, at + 2)} vs ${d.to.slice(at, at + 2)}`)
+      }
     })
   }
 })

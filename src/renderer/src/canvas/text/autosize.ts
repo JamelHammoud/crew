@@ -28,6 +28,7 @@ export interface TextGrowthState {
   autoSize: boolean
   textAlign: 'start' | 'middle' | 'end'
   width: number
+  style: string
 }
 
 export interface TextGrowthResult extends TextGrowthState {
@@ -35,16 +36,26 @@ export interface TextGrowthResult extends TextGrowthState {
 }
 
 export function measureTextLayout(measurer: TextMeasurer, request: TextLayoutRequest): TextLayoutSize {
-  const fixedWidth = request.autoSize ? null : Math.max(16, Math.floor(request.width))
+  const fixedWidth = request.autoSize ? null : Math.max(MIN_TEXT_WIDTH, Math.floor(request.width))
   const measured = measurer.measureHtml(richTextForMeasurement(request.richText), {
     ...request.options,
     fontSize: request.fontSize,
     maxWidth: fixedWidth
   })
   return {
-    width: fixedWidth ?? Math.max(16, measured.w + 1),
+    width: fixedWidth ?? Math.max(MIN_TEXT_WIDTH, measured.w + 1),
     height: Math.max(request.fontSize, measured.h)
   }
+}
+
+export function textGrowthMatters(
+  previous: TextGrowthState,
+  next: TextGrowthState,
+  contentChanged: boolean
+): boolean {
+  if (!next.autoSize) return false
+  if (contentChanged || previous.style !== next.style) return true
+  return previous.scale !== 1 && next.scale === 1
 }
 
 export function compensateTextGrowth(
