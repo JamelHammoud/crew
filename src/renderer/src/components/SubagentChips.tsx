@@ -44,6 +44,7 @@ function Chip({ run, parentThreadId }: { run: SubagentRun; parentThreadId: strin
 
 export default function SubagentChips({ runs, threadId }: { runs: SubagentRun[]; threadId: string }) {
   const showSubagents = useBrowser(state => state.showSubagents)
+  const parentThreadId = useCrew(state => rootThread(threadId, state.threads))
   const rest = runs.length - SHOWN
 
   // A chip stands in the column the steps stand in, so the mark lines up with
@@ -51,12 +52,12 @@ export default function SubagentChips({ runs, threadId }: { runs: SubagentRun[];
   return (
     <div className="flex flex-wrap items-center gap-1.5 pl-13 pr-4 py-1 select-none">
       {runs.slice(0, SHOWN).map(run => (
-        <Chip key={run.threadId} run={run} threadId={threadId} />
+        <Chip key={run.threadId} run={run} parentThreadId={parentThreadId} />
       ))}
       {rest > 0 && (
         <button
           type="button"
-          onClick={() => showSubagents(threadId)}
+          onClick={() => showSubagents(parentThreadId)}
           className="px-3 py-1 rounded-full text-sm text-fg-faint hover:text-fg-secondary transition-colors active:scale-[0.98]"
         >
           and {rest} {rest === 1 ? 'other' : 'others'}

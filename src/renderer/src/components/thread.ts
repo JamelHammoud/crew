@@ -173,6 +173,17 @@ export function endPreview(end: Extract<SessionEvent, { kind: 'agent.end' }> | u
   return reply.replace(/\s+/g, ' ').trim().slice(0, 70)
 }
 
+export function thoughtPreview(text: string): string {
+  const first = text.split(/\n\s*\n/)[0] ?? ''
+  return first
+    .replace(/^\s*#{1,6}\s+/gm, '')
+    .replace(/^\s*>\s?/gm, '')
+    .replace(/^\s*[-*+]\s+/gm, '')
+    .replace(/\*\*|__|`/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 // One helper a thread sent out, as it reads in the thread that sent it. The
 // chip is truth and does not need the parent to say anything: it reads its own
 // thread's state and its own latest step, so it reports whether or not the
