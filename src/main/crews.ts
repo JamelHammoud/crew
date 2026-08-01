@@ -87,17 +87,15 @@ export class Crews {
   // it, and a crew is only reachable while that address is its own. Opening is
   // one at a time, so whoever asks second is answered by whoever went first.
   async start(id: number, folder: string, name: string, opts: OpenOptions = {}): Promise<CurrentSession> {
-    return this.inTurn(async () => {
-      const standing = this.standing(projectPlace(folder))
-      if (standing) {
-        this.look(id, standing.key)
-        return standing.current
-      }
-      const session = this.make()
-      const current = await session.startHost(folder, name, opts)
-      this.hold(id, session)
-      return current
-    })
+    const standing = this.standing(projectPlace(folder))
+    if (standing) {
+      this.look(id, standing.key)
+      return standing.current
+    }
+    const session = this.make()
+    const current = await session.startHost(folder, name, opts)
+    this.hold(id, session)
+    return current
   }
 
   async join(id: number, link: string, folder: string, name: string): Promise<CurrentSession> {
