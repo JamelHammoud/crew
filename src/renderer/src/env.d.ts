@@ -80,7 +80,7 @@ declare global {
     closeTerminal(id: string): void
     onTerminalData(listener: (id: string, chunk: string) => void): () => void
     onTerminalExit(listener: (id: string) => void): () => void
-    onNotificationOpen(listener: (threadId: string) => void): () => void
+    onNotificationOpen(listener: (threadId: string, place: string | null) => void): () => void
     applyScribe(settings: ScribeSettings): Promise<ScribeKeyState>
     scribeState(): Promise<ScribeKeyState>
     openScribePermission(): Promise<void>
