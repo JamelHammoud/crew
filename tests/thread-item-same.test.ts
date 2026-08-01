@@ -42,11 +42,16 @@ const changed = (value: unknown): unknown => {
   return undefined
 }
 
-const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
+const rebuilt = (item: Required<ThreadItem>): ThreadItem => ({
+  ...item,
+  reactions: item.reactions.map(group => ({ ...group, names: [...group.names] })),
+  runs: item.runs.map(run => ({ ...run })),
+  shown: { pages: [...item.shown.pages], title: item.shown.title }
+})
 
 describe('telling a redrawn row from a changed one', () => {
   it('reads a rebuilt row with the same words as the same row', () => {
-    expect(sameItem(base, clone(base))).toBe(true)
+    expect(sameItem(base, rebuilt(base))).toBe(true)
   })
 
   it('notices every field a row is drawn from', () => {
@@ -59,9 +64,9 @@ describe('telling a redrawn row from a changed one', () => {
   it('reads the lists it rebuilds by what is in them', () => {
     expect(sameShown({ pages: ['a'], title: 'One' }, { pages: ['a'], title: 'One' })).toBe(true)
     expect(sameShown({ pages: ['a'], title: 'One' }, { pages: ['b'], title: 'One' })).toBe(false)
-    expect(sameSubagentRuns(clone(base.runs), clone(base.runs))).toBe(true)
+    expect(sameSubagentRuns(base.runs, base.runs.map(run => ({ ...run })))).toBe(true)
     expect(sameSubagentRuns(base.runs, [{ ...base.runs[0], ok: false }])).toBe(false)
-    expect(sameItems([base], [clone(base)])).toBe(true)
+    expect(sameItems([base], [rebuilt(base)])).toBe(true)
     expect(sameItems([base], [base, base])).toBe(false)
   })
 
