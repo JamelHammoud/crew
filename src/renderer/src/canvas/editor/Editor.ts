@@ -165,6 +165,7 @@ export class Editor {
       isLocked: options.options?.camera?.isLocked
     })
     this.scribbles = new ScribbleManager(this)
+    this.bindings = new BindingManager(this, options.bindingUtils)
     this.ticks = new TickManager(elapsed => this.tick(elapsed))
     this.user = new UserPreferencesManager({
       initial: {
@@ -183,7 +184,6 @@ export class Editor {
     this.tools = new ToolManager(this, options.tools, options.initialState)
     this.root = { handleEvent: info => this.tools.dispatch(info), getCurrent: () => this.tools.getCurrent() }
     this.eventBridge = new CanvasEventBridge(this)
-    this.bindings = new BindingManager(this, options.bindingUtils)
     this.stopSideEffects = registerDefaultSideEffects(this)
     this.ticks.start()
   }

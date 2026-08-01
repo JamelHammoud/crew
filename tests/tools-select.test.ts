@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { Mat } from '../src/renderer/src/canvas/math'
 import { StateNode } from '../src/renderer/src/canvas/tools/state'
 import {
   EditingShape,
