@@ -451,7 +451,8 @@ const driveSource = String.raw`(async () => {
     await doubleClick(viewport(boundsOf(one).center))
     const from = boundsOf(one)
     const held = boundsOf(two)
-    await drag(viewport(from.center), inCanvas({ x: viewport(from.center).x - box().left + 100, y: viewport(from.center).y - box().top }))
+    const at = viewport(from.center)
+    await drag(at, { x: at.x + 100, y: at.y })
     const moved = boundsOf(one)
     const other = boundsOf(two)
     return {
