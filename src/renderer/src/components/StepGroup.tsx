@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import Counts from './Counts'
 import { carries, stepText, useFindQuery } from './find'
 import StepRow, { Chevron, Label, Mark, rowClass, stepFiles, stepTotals } from './StepRow'
-import type { ThreadItem } from './thread'
+import { sameItems, type ThreadItem } from './thread'
 import ThinkingMark from './ThinkingMark'
 import { THINKING, toolAction } from './toolActions'
 
-export default function StepGroup({ items, linked }: { items: ThreadItem[]; linked?: boolean }) {
+function StepGroup({ items, linked }: { items: ThreadItem[]; linked?: boolean }) {
   const [open, setOpen] = useState<boolean | null>(null)
   const thinking = items[0].kind === 'thinking'
   const action = thinking ? THINKING : toolAction(items[0].name, items[0].subagent)
