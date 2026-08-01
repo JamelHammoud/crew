@@ -235,7 +235,7 @@ export function RichTextToolbar({ editor, disabled = false }: RichTextToolbarPro
       )}
     </div>
   )
-  return createPortal(toolbar, editor.view.dom.ownerDocument.body)
+  return createPortal(toolbar, document.body)
 }
 
 function openLinkEditor(editor: TipTapEditor, setLink: (value: string) => void): void {

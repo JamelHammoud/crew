@@ -56,37 +56,59 @@ export async function boardFile(score = byShapeTypes) {
 }
 
 export function probeSource(snapshot) {
-  const canvas = JSON.stringify(path.join(root, 'src/renderer/src/canvas/index.ts'))
-  const shapes = JSON.stringify(path.join(root, 'src/renderer/src/design/shapeUtils.ts'))
-  const nodeTool = JSON.stringify(path.join(root, 'src/renderer/src/design/DesignNodeTool.ts'))
+  const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
   const react = JSON.stringify(resolve('react'))
   const reactDom = JSON.stringify(resolve('react-dom/client'))
   return `import React from ${react}
 import { createRoot } from ${reactDom}
-import { CrewCanvas, createTLStore, defaultBindingUtils, loadSnapshot } from ${canvas}
-import { designShapeUtils } from ${shapes}
-import { DesignNodeTool } from ${nodeTool}
+import { createTLStore, defaultBindingUtils, loadSnapshot, useValue } from ${from('canvas/index.ts')}
+import { CrewCanvas } from ${from('canvas/CrewCanvas.tsx')}
+import { applyDesignCursors, DESIGN_CURSORS } from ${from('design/cursors.tsx')}
+import { applyDesignDefaults } from ${from('design/defaults.ts')}
+import { DesignNodeTool } from ${from('design/DesignNodeTool.ts')}
+import SelectionOverlay from ${from('design/SelectionOverlay.tsx')}
+import { selectionStroke } from ${from('design/selectionColor.ts')}
+import { designShapeUtils } from ${from('design/shapeUtils.ts')}
+import { keepWholePixels } from ${from('design/wholePixels.ts')}
 import './probe.css'
 
 const store = createTLStore({ id: 'board-check' })
 loadSnapshot(store, ${JSON.stringify(snapshot)})
-const mounted = editor => {
-  window.canvasEditor = editor
-  requestAnimationFrame(() => {
-    editor.zoomToFit({ immediate: true })
-    window.canvasReady = true
-  })
-  return undefined
+
+function Board() {
+  const [editor, setEditor] = React.useState(null)
+  const selected = useValue('design selected color', () => (editor ? selectionStroke(editor) : null), [editor])
+  const mounted = React.useCallback(editor => {
+    applyDesignDefaults(editor)
+    applyDesignCursors(editor.getContainer())
+    editor.user.updateUserPreferences({ isSnapMode: true, colorScheme: 'light' })
+    const stopRounding = keepWholePixels(editor)
+    setEditor(editor)
+    window.canvasEditor = editor
+    requestAnimationFrame(() => {
+      editor.zoomToFit({ immediate: true })
+      window.canvasReady = true
+    })
+    return () => stopRounding()
+  }, [])
+  return React.createElement(
+    'div',
+    {
+      className: 'absolute inset-0 design',
+      style: { ...DESIGN_CURSORS, cursor: 'var(--crew-cursor-default)', '--design-selected': selected }
+    },
+    React.createElement(CrewCanvas, {
+      store,
+      shapeUtils: designShapeUtils,
+      bindingUtils: defaultBindingUtils,
+      tools: [DesignNodeTool],
+      onMount: mounted
+    }),
+    React.createElement(SelectionOverlay, { editor })
+  )
 }
-createRoot(document.getElementById('root')).render(
-  React.createElement(CrewCanvas, {
-    store,
-    shapeUtils: designShapeUtils,
-    bindingUtils: defaultBindingUtils,
-    tools: [DesignNodeTool],
-    onMount: mounted
-  })
-)
+
+createRoot(document.getElementById('root')).render(React.createElement(Board))
 `
 }
 
