@@ -152,11 +152,6 @@ afterEach(cleanup)
 
 describe('what a keystroke costs', () => {
   it('measures', () => {
-    const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
-    useCrew.setState(seed(steps))
-    render(createElement(ThreadView, { threadId: THREAD }))
-    console.log(`events held: ${useCrew.getState().events.length}`)
-
     const time = (label: string, runs: number, fn: (i: number) => void): void => {
       fn(0)
       const t = performance.now()
@@ -164,17 +159,25 @@ describe('what a keystroke costs', () => {
       console.log(`  ${label}: ${((performance.now() - t) / runs).toFixed(2)}ms`)
     }
 
-    time('a store write nothing here reads', 20, i => {
-      useCrew.setState({ chatDraft: `x${i}` })
-    })
-    time('setThreadDraft through the store', 20, i => {
-      useCrew.getState().setThreadDraft(THREAD, `hello${i}`)
-    })
-    time('a keystroke in the composer', 16, i => {
-      fireEvent.change(composer(), { target: { value: `hello there crew`.slice(0, i) } })
-    })
-    time('a step landing', 20, i => {
-      useCrew.setState({ steps: { [PROMPT]: [...steps, stepAt(STEPS + i)] } })
-    })
+    for (const size of [0, 50, 300, 1200]) {
+      cleanup()
+      const steps = Array.from({ length: size }, (_, index) => stepAt(index))
+      useCrew.setState(seed(steps))
+      render(createElement(ThreadView, { threadId: THREAD }))
+      console.log(`--- ${size} steps, ${useCrew.getState().events.length} events`)
+      time('store write nothing reads', 20, i => {
+        useCrew.setState({ chatDraft: `x${i}` })
+      })
+      time('keystroke, empty box', 16, i => {
+        fireEvent.change(composer(), { target: { value: 'hello there crew'.slice(0, i) } })
+      })
+      const long = 'the quick brown fox jumps over the lazy dog and keeps going for a while yet '.repeat(3)
+      time('keystroke, long draft', 16, i => {
+        fireEvent.change(composer(), { target: { value: long + i } })
+      })
+      time('step landing', 20, i => {
+        useCrew.setState({ steps: { [PROMPT]: [...steps, stepAt(size + i)] } })
+      })
+    }
   })
 })
