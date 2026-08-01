@@ -379,10 +379,15 @@ export default function ThreadView({
                         </button>
                       </>
                     )}
+                    {/* It stands over there rather than in both places at once,
+                        so the column it was in goes with the press. */}
                     {!alone && (
                       <Tooltip label="Open in its own window" className="ml-1">
                         <button
-                          onClick={() => void window.crew?.popOutThread?.(threadId)}
+                          onClick={() => {
+                            void window.crew?.popOutThread?.(threadId)
+                            closeThread(threadId)
+                          }}
                           aria-label="Open in its own window"
                           className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
                         >
