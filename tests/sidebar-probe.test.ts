@@ -500,6 +500,7 @@ describe('the sidebar', () => {
         finishAway = () => resolve(sessionFor(TWO))
       })
     })
+    useBrowser.getState().openUrl('https://example.com/host')
     const { container } = render(createElement(Sidebar))
     const row = (name: string) =>
       [...container.querySelectorAll<HTMLButtonElement>('[data-reorder] > button')].find(
@@ -512,6 +513,7 @@ describe('the sidebar', () => {
     await waitFor(() => expect(asked).toEqual([`project:${TWO}`, `project:${ONE}`]))
     await act(async () => finishAway?.())
     expect(useCrew.getState().place).toBe(`project:${ONE}`)
+    expect(useBrowser.getState().tabs.map(tab => tab.kind)).toEqual(['web'])
   })
 
   it('carries the panel over to the place it switches to and leaves the shells alone', async () => {

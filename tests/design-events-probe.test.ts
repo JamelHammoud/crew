@@ -11,6 +11,30 @@ import type { Editor } from '../src/renderer/src/canvas/editor'
 
 const BOX = { left: 40, top: 24, width: 800, height: 600 }
 
+class StubResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = StubResizeObserver
+;(HTMLCanvasElement.prototype as unknown as { getContext(): unknown }).getContext = () => null
+Element.prototype.getBoundingClientRect = function boundingRect(this: Element): DOMRect {
+  if ((this as HTMLElement).dataset?.canvas === 'true') {
+    return {
+      left: BOX.left,
+      top: BOX.top,
+      width: BOX.width,
+      height: BOX.height,
+      right: BOX.left + BOX.width,
+      bottom: BOX.top + BOX.height,
+      x: BOX.left,
+      y: BOX.top,
+      toJSON: () => ({})
+    } as DOMRect
+  }
+  return { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect
+}
+
 function stand(): { editor: Editor; surface: HTMLElement; unmount(): void } {
   let editor: Editor | null = null
   const store = createTLStore({ id: 'events-probe' })
@@ -26,8 +50,6 @@ function stand(): { editor: Editor; surface: HTMLElement; unmount(): void } {
     })
   )
   const surface = view.container.querySelector('[data-canvas="true"]') as HTMLElement
-  surface.getBoundingClientRect = () =>
-    ({ left: BOX.left, top: BOX.top, width: BOX.width, height: BOX.height, right: BOX.left + BOX.width, bottom: BOX.top + BOX.height, x: BOX.left, y: BOX.top }) as DOMRect
   if (!editor) throw new Error('the canvas never mounted')
   return { editor: editor as Editor, surface, unmount: () => view.unmount() }
 }

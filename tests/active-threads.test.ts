@@ -17,6 +17,42 @@ const started = (threadId: string, title: string, extra: Partial<SessionEvent> =
     ...extra
   }) as SessionEvent
 
+const ran = (threadId: string): SessionEvent =>
+  ({
+    id: `e${(n += 1)}`,
+    ts: n,
+    kind: 'agent.start',
+    promptId: `p${n}`,
+    agentId: 'a',
+    agentLabel: 'Bubbles',
+    promptText: 'go',
+    byName: 'Jamel',
+    threadId
+  }) as SessionEvent
+
+const said = (threadId: string): SessionEvent =>
+  ({
+    id: `e${(n += 1)}`,
+    ts: n,
+    kind: 'message.route',
+    messageId: `m${n}`,
+    threadId,
+    promptId: `p${n}`,
+    mode: 'queued'
+  }) as SessionEvent
+
+const stepped = (threadId: string): SessionEvent =>
+  ({
+    id: `e${(n += 1)}`,
+    ts: n,
+    kind: 'agent.step',
+    promptId: `p${n}`,
+    agentId: 'a',
+    agentLabel: 'Bubbles',
+    step: { kind: 'text', text: 'working' },
+    threadId
+  }) as SessionEvent
+
 const none = () => false
 
 describe('the threads a place is showing', () => {
