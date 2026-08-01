@@ -176,13 +176,12 @@ export function CrewCanvas({
     element.addEventListener('touchend', handlers.onTouchEnd)
     element.addEventListener('touchcancel', handlers.onTouchCancel)
 
-    const size = () => editor.setViewportScreenBounds(element)
+    const size = () => {
+      const bounds = element.getBoundingClientRect()
+      editor.setViewportScreenBounds({ x: 0, y: 0, w: bounds.width, h: bounds.height })
+    }
     const observer = new ResizeObserver(size)
     observer.observe(element)
-    const ownerWindow = ownerDocument.defaultView ?? window
-    ownerWindow.addEventListener('resize', size)
-    ownerDocument.addEventListener('scroll', size, { capture: true, passive: true })
-    const settle = ownerWindow.setInterval(size, VIEWPORT_SETTLE_MS)
     size()
     const stopMount = onMount?.(editor)
     return () => {
