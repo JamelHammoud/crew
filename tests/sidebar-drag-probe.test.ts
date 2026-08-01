@@ -2,7 +2,6 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { CrewBridge } from '../src/renderer/src/env'
 import type { LivePlace } from '../src/shared/places'
 import type { CurrentSession } from '../src/shared/session'
 
