@@ -73,9 +73,10 @@ export default function Sidebar() {
     return true
   }
 
-  const goToThread = async (place: Place, thread: LiveThread) => {
-    if (!(await go(place))) return
-    useCrew.getState().openThread(thread.id)
+  const goToThread = async (place: Place, threadId: string) => {
+    useCrew.getState().wantThread(threadId)
+    if (place.key === here) useCrew.getState().openThread(threadId)
+    else await go(place)
   }
 
   const forget = async (place: Place) => {
