@@ -9,8 +9,10 @@ let watching = false
 function say(why: UpdateWhy): void {
   // An update that did not happen is a moment rather than a record: the pill is
   // still standing there offering it again.
+  // Several windows on one folder are one Crew, so closing windows does nothing
+  // about this. What holds an update is another Crew open on another project.
   if (why === 'others') {
-    toast('Close your other Crew windows to update', { key: 'update' })
+    toast('Quit your other Crews to update', { key: 'update' })
     return
   }
   const word = why === 'install' ? 'Crew did not update' : 'The update did not arrive'
