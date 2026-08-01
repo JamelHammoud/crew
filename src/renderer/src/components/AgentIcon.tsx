@@ -81,8 +81,8 @@ export default function AgentIcon({
             <mask id={mask}>
               <g transform={`rotate(${pet.tilt} 50 54)`}>
                 <path d={pet.body} fill="#fff" stroke="#fff" strokeWidth={7} strokeLinejoin="round" />
-                <circle cx={50 - pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
-                <circle cx={50 + pet.eyeGap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+                <circle cx={50 - gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
+                <circle cx={50 + gap / 2} cy={pet.eyeY} r={EYE_RADIUS} fill="#000" />
               </g>
             </mask>
             <rect width={PET_GRID} height={PET_GRID} fill="#fff" mask={`url(#${mask})`} />
