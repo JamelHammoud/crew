@@ -325,7 +325,9 @@ const directory = await stage(file)
 try {
   const result = await run(await compile(directory), 'PERF')
   if (result.failed) throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
-  console.log(`${path.basename(file)}: ${result.shapes} shapes, ${result.mounted} mounted, ${result.culled} culled\n`)
+  console.log(
+    `${path.basename(file)}: ${result.shapes} shapes, ${result.mounted} mounted, ${result.culled} culled, ${result.mountMs}ms to open\n`
+  )
   for (const run of result.results) {
     console.log(`${run.label}, ${MOVES} pointer moves`)
     console.log(
