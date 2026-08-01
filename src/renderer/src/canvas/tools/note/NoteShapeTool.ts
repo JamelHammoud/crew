@@ -36,8 +36,12 @@ export class NoteShapeTool implements BoxStateParent {
     this.current.onExit()
   }
 
-  getCurrentStateId(): string {
+  getPath(): string {
     return `${this.id}.${this.current.id}`
+  }
+
+  getCurrentStateId(): string {
+    return this.getPath()
   }
   onPointerDown(info: BoxPointerInfo = {}): void {
     this.current.onPointerDown(info)

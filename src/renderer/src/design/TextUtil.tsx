@@ -36,11 +36,29 @@ const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _g
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
   const type = textShapeType(editor, shape)
-  editor.fonts.trackFontsForShape(shape as unknown as { props?: Record<string, unknown> })
-  const fixed = shape.props.autoSize ? null : Math.max(16, Math.floor(shape.props.w))
-  const html = renderHtmlFromRichTextForMeasurement(shape.props.richText)
-  const size = editor.textMeasure.measureHtml(html, typeMeasure(type, fixed))
-  return { width: fixed ?? Math.max(16, size.w + 1), height: Math.max(type.size, size.h) }
+  editor.fonts.trackFontsForShape({ props: { font: type.family } })
+  const { maxWidth: _ignored, ...options } = typeMeasure(type, null)
+  return measureTextLayout(editor.textMeasure, {
+    richText: shape.props.richText,
+    autoSize: shape.props.autoSize,
+    width: shape.props.w,
+    fontSize: type.size,
+    options
+  })
+}
+
+function growthState(editor: Editor, shape: TLTextShape): TextGrowthState {
+  const type = textShapeType(editor, shape)
+  return {
+    x: shape.x,
+    y: shape.y,
+    rotation: shape.rotation,
+    scale: shape.props.scale,
+    autoSize: shape.props.autoSize,
+    textAlign: shape.props.textAlign,
+    width: shape.props.w,
+    style: JSON.stringify(type)
+  }
 }
 
 const measured = new WeakMap<TLTextShape, { at: number; size: { width: number; height: number } }>()
