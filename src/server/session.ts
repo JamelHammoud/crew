@@ -914,6 +914,9 @@ export class CrewSession {
       case 'history':
         if (meta.role === 'ui') this.sendHistory(ws, msg.before)
         break
+      case 'thread.history':
+        if (meta.role === 'ui') this.sendThreadHistory(ws, msg.threadId)
+        break
       case 'typing':
         if (meta.role === 'ui') this.handleTyping(ws, member, msg.where, msg.on)
         break
