@@ -1445,7 +1445,7 @@ export class Editor {
     this.inputs.updateFromEvent(info, {
       camera: this.getCamera(),
       screenBounds: this.getViewportScreenBounds(),
-      dragDistanceSquared: (this.instance.isCoarsePointer
+      dragDistanceSquared: (this.peekInstance().isCoarsePointer
         ? this.options.coarseDragDistanceSquared
         : this.options.dragDistanceSquared) as number
     })
