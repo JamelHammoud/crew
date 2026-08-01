@@ -1159,6 +1159,18 @@ export const useCrew = create<CrewState>((set, get) => {
       set({ loadingHistory: true })
       socket.send({ type: 'history', before: oldest.id })
     },
+    // A thread the window has scrolled past, asked for on its own. What says it
+    // has is the thread's own beginning: a thread starts once, so a window
+    // holding that event holds everything the thread has done since, and one
+    // that does not is a row in the rail with nothing under it. A ghost is the
+    // one thread this can be asked for and come back empty, since it was never
+    // written down, and it is asked once either way.
+    readThread: threadId => {
+      if (get().connection !== 'online' || threadsRead.has(threadId)) return
+      if (get().events.some(event => event.kind === 'thread.started' && event.threadId === threadId)) return
+      threadsRead.add(threadId)
+      socket.send({ type: 'thread.history', threadId })
+    },
     // Turning sharing on and off moves the listener and nothing else, so the
     // session stays exactly where it is and the socket comes back on its own.
     share: async shared => {
