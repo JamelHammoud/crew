@@ -84,7 +84,11 @@ export function closePutsAway(platform: NodeJS.Platform, quitting: boolean): boo
   return platform === 'darwin' && !quitting
 }
 
-export function createWindowOptions(
+// Everything a window of the app's own wears but the size it opens at. A thread
+// stood out on its own is the same window in a narrower column, so the shape,
+// the transparency and what the page is allowed are decided once here rather
+// than written down twice and left to drift apart.
+function windowShell(
   platform: NodeJS.Platform,
   preload: string,
   devTools: boolean
@@ -92,10 +96,6 @@ export function createWindowOptions(
   const isWindows = platform === 'win32'
 
   return {
-    width: 1200,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
     transparent: !isWindows,
     backgroundColor: isWindows ? '#141414' : '#00000000',
     resizable: true,
@@ -111,6 +111,37 @@ export function createWindowOptions(
       webviewTag: true,
       devTools
     }
+  }
+}
+
+export function createWindowOptions(
+  platform: NodeJS.Platform,
+  preload: string,
+  devTools: boolean
+): BrowserWindowConstructorOptions {
+  return {
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    ...windowShell(platform, preload, devTools)
+  }
+}
+
+// One thread on its own. It holds a column of messages and nothing beside it,
+// so it opens narrow and tall and may be taken in further than the app window
+// ever goes.
+export function createThreadWindowOptions(
+  platform: NodeJS.Platform,
+  preload: string,
+  devTools: boolean
+): BrowserWindowConstructorOptions {
+  return {
+    width: 720,
+    height: 900,
+    minWidth: 460,
+    minHeight: 520,
+    ...windowShell(platform, preload, devTools)
   }
 }
 
