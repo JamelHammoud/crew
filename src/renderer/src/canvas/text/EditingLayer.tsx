@@ -87,7 +87,7 @@ function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTex
         transformOrigin: 'top left',
         pointerEvents: 'all',
         zIndex: 1_000_000,
-        outline: 'calc(1.5px * var(--crew-scale, 1)) solid var(--design-selected)',
+        outline: `calc(1.5px * var(--crew-scale, 1)) solid var(--design-selected, ${stroke})`,
         outlineOffset: 'calc(-0.75px * var(--crew-scale, 1))'
       }}
     >
@@ -126,23 +126,25 @@ function ShapeTextEditor({
       options?: { getCustomDisplayValues?: (...args: unknown[]) => CSSProperties }
     }
     const custom = { ...util.options?.getCustomDisplayValues?.(editor, shape), ...paintedTypeStyle(util, shape) }
+    const bounds = editor.getShapeGeometry(shape).bounds
     return (
       <RichTextEditor
         {...common}
         className="crew-text-shape-editor"
         editorClassName="crew-rich-text"
         transform={{ x: 0, y: 0, rotation: 0, scaleX: shape.props.scale, scaleY: shape.props.scale }}
-        style={{
-          width: editor.getShapeGeometry(shape).bounds.w / shape.props.scale,
-          minHeight: TEXT_FONT_SIZES[shape.props.size] * 1.35,
+        style={withResolvedLineHeight({
+          width: bounds.w / shape.props.scale,
+          minHeight: bounds.h / shape.props.scale,
           color: shapeColor(editor, shape.props.color),
           fontFamily: FONT_FAMILIES[shape.props.font],
           fontSize: TEXT_FONT_SIZES[shape.props.size],
-          lineHeight: 1.35,
+          lineHeight: TEXT_LINE_HEIGHT,
           textAlign: textAlign(shape.props.textAlign),
           whiteSpace: 'pre-wrap',
+          overflowWrap: 'break-word',
           ...custom
-        }}
+        })}
       />
     )
   }

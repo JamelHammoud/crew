@@ -241,7 +241,7 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
     return arrowGeometry(this.editor, shape)
   }
   override getHandles(shape: ArrowShape): ShapeHandle[] {
-    const { start, end } = getArrowTerminals(this.editor, shape)
+    const { start, end } = getArrowHandles(this.editor, shape)
     const middle =
       shape.props.kind === 'elbow'
         ? Vec.Lrp(start, end, shape.props.elbowMidPoint)
