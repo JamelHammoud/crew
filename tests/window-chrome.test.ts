@@ -140,7 +140,12 @@ describe('the drag the top bar takes', () => {
 describe('the scrim behind the tasks panel', () => {
   it('stands under the top bar, so the bar is still there to press', () => {
     const { container } = render(
-      createElement(TasksPanel, { open: true, onClose: () => {}, onOpenThread: () => {} })
+      createElement(TasksPanel, {
+        open: true,
+        onClose: () => {},
+        onOpenThread: () => {},
+        onOpenThreadBeside: () => {}
+      })
     )
 
     const scrim = container.querySelector('.inset-0[class*="z-"]')!

@@ -55,7 +55,14 @@ const todo = (id: string, text: string, extra: Partial<Todo> = {}): Todo => ({
 const day = (ts: number): number => Date.now() - ts * 86_400_000
 
 const panel = () =>
-  render(createElement(TasksPanel, { open: true, onClose: () => {}, onOpenThread: () => {} }))
+  render(
+    createElement(TasksPanel, {
+      open: true,
+      onClose: () => {},
+      onOpenThread: () => {},
+      onOpenThreadBeside: () => {}
+    })
+  )
 
 const needsReviewShown = (): number => {
   const heading = screen.getByText('Needs review').closest('h3')
@@ -202,5 +209,27 @@ describe('the needs review list', () => {
 
     expect(needsReviewShown()).toBe(1)
     expect(needsReviewShown()).toBe(reviewCount(useCrew.getState()))
+  })
+})
+
+describe('the task menu', () => {
+  it('belongs to agent tasks and not todos', () => {
+    useCrew.setState({
+      threads: { t1: thread('t1') },
+      threadPrompts: {},
+      queues: {},
+      steps: {},
+      todos: [todo('todo-1', 'water the plants', { checked: false })],
+      events: [],
+      openThreadIds: ['standing'],
+      openThreadId: 'standing'
+    })
+    panel()
+
+    fireEvent.contextMenu(screen.getByText('water the plants'))
+    expect(screen.queryByText('Open beside')).toBeNull()
+
+    fireEvent.contextMenu(screen.getByText('fix the sync loop'))
+    expect(screen.getByText('Open beside')).toBeTruthy()
   })
 })
