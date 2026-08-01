@@ -1281,16 +1281,23 @@ const driveSource = String.raw`(async () => {
       .slice(0, 2)
       .map(shape => shape.id)
     if (pair.length < 2) return null
+    const before = editor.getCurrentPageShapes().filter(shape => shape.type === 'group').map(shape => shape.id)
     editor.setSelectedShapes(pair)
     editor.getContainer().focus()
     await settle()
     press('g', { metaKey: true })
     await settle()
-    const grouped = editor.getCurrentPageShapes().some(shape => shape.type === 'group')
+    const made = editor
+      .getCurrentPageShapes()
+      .filter(shape => shape.type === 'group' && !before.includes(shape.id))
+      .map(shape => shape.id)
     press('g', { metaKey: true, shiftKey: true })
     await settle()
-    const ungrouped = !editor.getCurrentPageShapes().some(shape => shape.type === 'group')
-    return { ok: grouped && ungrouped, note: 'grouped ' + grouped + ' ungrouped ' + ungrouped }
+    const gone = made.every(id => editor.getShape(id) === undefined)
+    return {
+      ok: made.length === 1 && gone,
+      note: 'grouped ' + (made.length === 1) + ' ungrouped ' + gone + ', beside ' + before.length + ' the board already had'
+    }
   })
 
   for (const type of present) {
