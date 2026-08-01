@@ -568,13 +568,13 @@ describe('steps and thinking', () => {
   })
 
   it('opens a picture an agent read from a folder named in two words', async () => {
-    render(createElement(StepRow, { item: item({ name: 'Read', detail: SENT }) }))
+    const { container } = render(createElement(StepRow, { item: item({ name: 'Read', detail: SENT }) }))
     await screen.findByText(SENT)
     await waitFor(() => {
       fireEvent.click(screen.getByRole('button'))
       expect(useBrowser.getState().tabs[0]?.path).toBe(SENT)
     })
-    expect(document.querySelector('svg + span + span')?.textContent).not.toContain('\n')
+    expect(container.querySelectorAll('svg').length).toBe(1)
   })
 
   it('hides a thought about a file on someone else’s computer', async () => {

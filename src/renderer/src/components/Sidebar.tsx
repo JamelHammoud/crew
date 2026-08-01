@@ -203,26 +203,28 @@ export default function Sidebar({
           scroller.current = node
           order.ref(node)
         }}
-        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag flex flex-col gap-4 px-2 pt-2"
+        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2"
       >
         {order.view}
-        {places.map(place => (
-          <PlaceGroup
-            key={place.key}
-            place={place}
-            here={place.key === here}
-            busy={busyKey === place.key}
-            stoppable={liveKeys.has(place.key)}
-            threads={threadsOf.get(place.key) ?? NO_THREADS}
-            openThreadIds={place.key === here ? openThreadIds : EMPTY_THREADS}
-            onOpen={goToPlace}
-            onOpenThread={goToThread}
-            onStop={stop}
-            onForget={forgetPlace}
-            take={take}
-            dragged={dragged}
-          />
-        ))}
+        <div className="flex flex-col gap-4">
+          {places.map(place => (
+            <PlaceGroup
+              key={place.key}
+              place={place}
+              here={place.key === here}
+              busy={busyKey === place.key}
+              stoppable={liveKeys.has(place.key)}
+              threads={threadsOf.get(place.key) ?? NO_THREADS}
+              openThreadIds={place.key === here ? openThreadIds : EMPTY_THREADS}
+              onOpen={goToPlace}
+              onOpenThread={goToThread}
+              onStop={stop}
+              onForget={forgetPlace}
+              take={take}
+              dragged={dragged}
+            />
+          ))}
+        </div>
       </div>
       <div className="app-no-drag shrink-0 px-4 pb-4 pt-2">
         <button
