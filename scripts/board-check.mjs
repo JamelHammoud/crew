@@ -1552,9 +1552,11 @@ const driveSource = String.raw`(async () => {
     if (!bounds) return null
     const margin = editor.options.hitTestMargin / editor.getZoomLevel()
     const tries = [bounds.center, { x: bounds.minX + 1, y: bounds.center.y }, { x: bounds.center.x, y: bounds.minY + 1 }]
-    for (const point of tries) {
-      const hit = editor.getShapeAtPoint(point, { margin, hitInside: true, renderingOnly: true })
-      if (hit && hit.id === id) return viewport(point)
+    for (const inside of [false, true]) {
+      for (const point of tries) {
+        const hit = editor.getShapeAtPoint(point, { margin, hitInside: inside, renderingOnly: true })
+        if (hit && hit.id === id) return viewport(point)
+      }
     }
     return null
   }
