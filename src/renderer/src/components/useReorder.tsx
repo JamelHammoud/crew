@@ -45,7 +45,16 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
   const dragged = useRef(false)
   const hand = useRef<HTMLDivElement | null>(null)
   const line = useRef<HTMLDivElement | null>(null)
+  const put = useRef<(() => void) | null>(null)
   const [carried, setCarried] = useState<string | null>(null)
+
+  // Both are placed on the commit that mounts them rather than on the frame
+  // after it, or the first thing anybody sees of a drag is the pill standing in
+  // the corner of the window on its way to the pointer.
+  const holds = (keep: typeof hand) => (node: HTMLDivElement | null) => {
+    keep.current = node
+    if (node) put.current?.()
+  }
 
   const take = (id: string) => (event: Press) => {
     const strip = row.current
