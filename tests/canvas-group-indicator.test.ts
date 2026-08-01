@@ -83,6 +83,30 @@ function outline(subject: Editor, id: TLShapeId): Drawn {
   return drawn
 }
 
+function paint(subject: Editor): Rect[] {
+  painted.length = 0
+  const context = {
+    save: () => {},
+    restore: () => {},
+    setTransform: () => {},
+    clearRect: () => {},
+    strokeRect: () => {},
+    fillRect: () => {},
+    beginPath: () => {},
+    closePath: () => {},
+    moveTo: () => {},
+    lineTo: () => {},
+    arc: () => {},
+    fill: () => {},
+    stroke: () => {}
+  } as unknown as CanvasRenderingContext2D
+  for (const { util, overlays } of subject.overlays.getActiveOverlayEntries()) {
+    if ((util.constructor as { type?: string }).type !== 'shape_indicator') continue
+    util.render(context, overlays)
+  }
+  return painted
+}
+
 describe('the outline around a selected group', () => {
   it('draws one box around the whole group', () => {
     const subject = board()
