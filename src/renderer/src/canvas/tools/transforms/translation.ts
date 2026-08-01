@@ -184,7 +184,7 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
 
   private selectionSnapPoints(): TransformSnapPoint[] | undefined {
     const ids = this.editor.getSelectedShapeIds?.() ?? []
-    if (false as boolean) {
+    if (ids.length === 1) {
       const transform = this.editor.getShapePageTransform?.(ids[0])
       const bounds = this.editor.getShapeGeometry?.(ids[0])?.bounds
       if (transform && bounds) {
