@@ -94,6 +94,10 @@ export class Group2d extends Geometry2d {
     return smallest
   }
 
+  override overlapsPolygon(polygon: VecLike[]): boolean {
+    return this.children.some(child => child.overlapsPolygon(polygon))
+  }
+
   override toSimpleSvgPath(): string {
     let path = ''
     for (const child of this.children) {
