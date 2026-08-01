@@ -479,7 +479,7 @@ export const useCrew = create<CrewState>((set, get) => {
     // the system, and neither one waits on the window being in the background.
     const alert =
       finishedAlert(event, get()) ??
-      memberMentionAlert(event, get().selfId, get().openThreadId) ??
+      memberMentionAlert(event, get().selfId, get().openThreadIds) ??
       questionAlert(event, get(), boardOnScreen())
     if (alert) {
       alertToast(alert, threadId => {
@@ -506,7 +506,7 @@ export const useCrew = create<CrewState>((set, get) => {
     // shown in, which is the whole of what showing something is. Anywhere else
     // it is the row in that thread, so nobody's panel is taken over by work
     // they are not watching.
-    if (event.kind === 'page.shown' && event.threadId === get().openThreadId) {
+    if (event.kind === 'page.shown' && get().openThreadIds.includes(event.threadId)) {
       void openShown(shownPages(event))
     }
     if (event.kind === 'message.deleted') {
