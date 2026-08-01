@@ -397,11 +397,7 @@ export const CHAT_KEY = 'chat'
 
 const byTime = (a: AgentStep, b: AgentStep): number => a.ts - b.ts
 
-// A step landing is almost always the last one being written again or a new one
-// after it, and either way the run it belongs to is already in order, so the
-// walk and the sort a step used to cost are only paid where the order can
-// really have moved.
-const upsertStep = (steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
+const upsertStep =(steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
   const held = steps ?? []
   const last = held[held.length - 1]
   if (!last) return [step]

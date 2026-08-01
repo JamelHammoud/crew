@@ -55,16 +55,17 @@ export function LineText({ row, tokens, tint }: { row: Row; tokens: ThemedToken[
 
 export function useHighlight(path: string, rows: Row[], delay = 0): (row: Row) => ThemedToken[] | undefined {
   const theme = useTheme()
-  const [, landed] = useState(0)
+  const [highlight, setHighlight] = useState<Highlighted | null>(null)
   const source = useMemo(() => docText(rows), [rows])
 
+  useEffect(() => setHighlight(null), [path, theme])
+
   useEffect(() => {
-    if (highlightedNow(path, source, theme)) return
     let alive = true
     const timer = setTimeout(
       () =>
         void highlightLines(path, source, theme).then(result => {
-          if (alive && result) landed(count => count + 1)
+          if (alive && result) setHighlight(result)
         }),
       delay
     )
@@ -73,8 +74,6 @@ export function useHighlight(path: string, rows: Row[], delay = 0): (row: Row) =
       clearTimeout(timer)
     }
   }, [path, source, theme, delay])
-
-  const highlight = highlightedNow(path, source, theme)
 
   return (row: Row) => {
     if (row.line === null || !highlight) return undefined
