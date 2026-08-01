@@ -49,6 +49,11 @@ const CASES = [
   { value: 'lower', label: 'Lower case', icon: <span className="text-xs font-semibold">ag</span> }
 ] as const
 
+const TRIMS = [
+  { value: 'standard', label: 'Standard', icon: <TrimStandardGlyph className="w-4 h-4" /> },
+  { value: 'cap', label: 'Cap height to baseline', icon: <TrimCapGlyph className="w-4 h-4" /> }
+] as const
+
 const DECORATIONS = [
   { value: 'none', label: 'No decoration', icon: <MinusGlyph className="w-4 h-4" /> },
   { value: 'underline', label: 'Underline', icon: <UnderlineGlyph className="w-4 h-4" /> },
