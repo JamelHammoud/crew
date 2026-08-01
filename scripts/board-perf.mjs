@@ -289,6 +289,21 @@ async function stage(file) {
   return directory
 }
 
+async function compile(directory) {
+  const { build } = await import('vite')
+  const tailwind = (await import('@tailwindcss/vite')).default
+  await build({
+    root: directory,
+    base: './',
+    logLevel: 'silent',
+    mode: DEV ? 'development' : 'production',
+    define: DEV ? { 'process.env.NODE_ENV': '"development"' } : undefined,
+    plugins: [tailwind()],
+    build: { outDir: path.join(directory, 'dist'), emptyOutDir: true, minify: !DEV }
+  })
+  return directory
+}
+
 const file = await boardFile(byShapeCount)
 const directory = await stage(file)
 try {
