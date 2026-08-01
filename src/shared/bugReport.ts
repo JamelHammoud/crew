@@ -4,11 +4,12 @@
 
 export const BUG_EMAIL = 'devjamel@gmail.com'
 
-// A mailto is handed to the shell as one string, and Windows stops reading one
-// somewhere around two thousand characters. A report longer than this is a
-// conversation rather than a report, so the field stops taking words at the
-// limit instead of the shell quietly cutting the end off.
-export const REPORT_LIMIT = 1500
+// A mailto is handed to the shell as one string and Windows stops reading one
+// at around two thousand characters, so the field stops taking words rather
+// than the end being cut off on the way out. It is well under the count it
+// could be because every space in a report is three characters by the time the
+// shell sees it: prose comes out around a quarter longer than it was written.
+export const REPORT_LIMIT = 1000
 
 export interface SystemDetails {
   version: string
