@@ -100,7 +100,7 @@ function SizePicker({ onPick }: { onPick: (size: number) => void }) {
   )
 }
 
-function TypeSettings({ value, set }: { value: TypeStyle; set: (patch: Partial<TypeStyle>) => void }) {
+function TypeSettings({ value, set }: { value: TrimmedType; set: (patch: Partial<TrimmedType>) => void }) {
   const [open, setOpen] = useState(false)
   return (
     <span className="relative flex">
@@ -113,6 +113,8 @@ function TypeSettings({ value, set }: { value: TypeStyle; set: (patch: Partial<T
           <Choice value={value.transform} options={CASES} onPick={transform => set({ transform })} />
           <SubLabel>Decoration</SubLabel>
           <Choice value={value.decoration} options={DECORATIONS} onPick={decoration => set({ decoration })} />
+          <SubLabel>Vertical trim</SubLabel>
+          <Choice value={trimOf(value)} options={TRIMS} onPick={trim => set({ trim })} />
         </div>
       </Popover>
     </span>

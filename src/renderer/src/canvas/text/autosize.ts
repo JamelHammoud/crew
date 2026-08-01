@@ -45,9 +45,10 @@ export function measureTextLayout(measurer: TextMeasurer, request: TextLayoutReq
     fontSize: request.fontSize,
     maxWidth: fixedWidth
   })
+  const trim = request.trim
   return {
     width: fixedWidth ?? Math.max(MIN_TEXT_WIDTH, measured.w + 1),
-    height: Math.max(request.fontSize, measured.h)
+    height: trim ? Math.max(trim.cap, measured.h - trim.total) : Math.max(request.fontSize, measured.h)
   }
 }
 
