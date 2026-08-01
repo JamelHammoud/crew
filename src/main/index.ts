@@ -500,28 +500,34 @@ app.whenReady().then(() => {
     if (info) warmTerminals()
     return info
   })
-  // A thread stood out into a window of its own. It opens on the crew the window
-  // that asked is looking at, and that is set the moment the window is made
-  // rather than once the page has loaded: loading is the slow half, and every
-  // handler the renderer reaches for asks which crew this window is in.
-  ipcMain.handle('window:pop-thread', (event, threadId: string) => {
-    const standing = popped.get(threadId)
+  // A thread stood out into a window of its own. It opens on the crew it names,
+  // or on the one the window that asked is looking at, and that is set the moment
+  // the window is made rather than once the page has loaded: loading is the slow
+  // half, and every handler the renderer reaches for asks which crew this window
+  // is in.
+  ipcMain.handle('window:pop-thread', (event, threadId: string, key?: string) => {
+    const asking = BrowserWindow.fromWebContents(event.sender)
+    const place = popOutTarget(
+      asking ? crews.keyInView(asking.webContents.id) : null,
+      key,
+      crews.openKeys()
+    )
+    // A crew that is not running has no thread to hand over, so nothing opens
+    // rather than a window landing on the way in with a thread named in its URL.
+    if (!place) return
+    const at = poppedKey(place, threadId)
+    const standing = popped.get(at)
     if (standing && !standing.isDestroyed()) {
       if (standing.isMinimized()) standing.restore()
       standing.show()
       standing.focus()
       return
     }
-    const asking = BrowserWindow.fromWebContents(event.sender)
-    const key = asking ? crews.keyInView(asking.webContents.id) : null
-    // A window looking at nothing has no thread to hand over, so nothing opens
-    // rather than a window landing on the way in with a thread named in its URL.
-    if (!key) return
     const win = createWindow(threadId)
-    crews.switchTo(win.webContents.id, key)
-    popped.set(threadId, win)
+    crews.switchTo(win.webContents.id, place)
+    popped.set(at, win)
     win.on('closed', () => {
-      if (popped.get(threadId) === win) popped.delete(threadId)
+      if (popped.get(at) === win) popped.delete(at)
     })
   })
   ipcMain.handle('session:close', async (_event, key: string) => {
