@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { PathLocation } from '../shared/files'
+import { personalPath, type PathLocation } from '../shared/files'
 import { insideRoot, statRepoFile } from './files'
 
 const WINDOWS_PATH = /^(?:[A-Za-z]:[\\/]|\\\\)/
