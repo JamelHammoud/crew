@@ -566,7 +566,9 @@ export class Editor {
     if (records.length === 0) return undefined
     if (records.length === 1) {
       const parentId = records[0].parentId
-      return parentId.startsWith('shape:') ? (parentId as TLShapeId) : undefined
+      if (!parentId.startsWith('shape:')) return undefined
+      if (!predicate) return parentId as TLShapeId
+      return this.findShapeAncestor(records[0], predicate)?.id
     }
     const [first, ...rest] = records
     let ancestors = this.getShapeAncestors(first)
