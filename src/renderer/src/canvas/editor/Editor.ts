@@ -573,6 +573,7 @@ export class Editor {
     const [first, ...rest] = records
     let ancestors = this.getShapeAncestors(first)
     for (const shape of rest) {
+      if (!ancestors.length) break
       const others = new Set(this.getShapeAncestors(shape).map(ancestor => ancestor.id))
       ancestors = ancestors.filter(ancestor => others.has(ancestor.id))
     }
