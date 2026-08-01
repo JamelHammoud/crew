@@ -22,6 +22,18 @@ describe('a picture over a character takes the room the character takes', () => 
     return styles.slice(at, styles.indexOf('\n}', at))
   }
 
+  // A caret takes the color of the text it stands in, and the one after an emoji
+  // stands in the emoji, so the color that hides the machine's own glyph was
+  // painting the caret away with it. Nothing about the size of the picture could
+  // ever have answered that one.
+  it('says what color the caret beside a hidden glyph is drawn in', () => {
+    const at = styles.indexOf('.doc .doc-emoji {')
+    expect(at).toBeGreaterThan(-1)
+    const span = styles.slice(at, styles.indexOf('\n}', at))
+    expect(span).toContain('color: transparent')
+    expect(span).toContain('caret-color: var(--color-fg)')
+  })
+
   it('draws the sheet in a doc as a square inside the character box', () => {
     expect(rule()).toContain('aspect-ratio: 1')
     expect(rule()).toContain('width: calc(100% - 2px)')

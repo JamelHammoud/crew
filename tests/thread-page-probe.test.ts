@@ -30,11 +30,14 @@ Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
   }
 })
 
+const SAID = /^step number \d+$/
+
+const rows = (): number => screen.queryAllByText(SAID).length
+
 Object.defineProperty(HTMLElement.prototype, 'scrollHeight', {
   configurable: true,
   get(this: HTMLElement) {
-    if (this.dataset.scroller === undefined) return 0
-    return this.querySelectorAll('[data-step]').length * ROW
+    return this.dataset.scroller === undefined ? 0 : rows() * ROW
   }
 })
 
