@@ -444,21 +444,7 @@ export function buildThread(
   const labelOf = (agentId: string, written: string) => agents.find(a => a.id === agentId)?.label ?? written
   const wroteIt = (agentId: string, written: string) =>
     as ? { author: as.name, helperSeed: as.seed } : { author: labelOf(agentId, written), authorId: agentId }
-  const ended = new Set(events.filter(e => e.kind === 'agent.end').map(e => e.promptId))
-  const started = new Set(events.filter(e => e.kind === 'agent.start').map(e => e.promptId))
-  // The last route wins: a steer the agent turned down is re-emitted as queued.
-  const routes = new Map<string, Extract<SessionEvent, { kind: 'message.route' }>>()
-  for (const event of events) {
-    if (event.kind === 'message.route') routes.set(event.messageId, event)
-  }
-  const pageRuns = runOfPages(events)
-  const reactions = reactionGroups(events, selfId)
-  // The end of a helper is a fact about the chip that stands where it started,
-  // so it is folded onto that chip rather than landing as a row of its own.
-  const returned = new Map<string, Extract<SessionEvent, { kind: 'subagent.ended' }>>()
-  for (const event of events) {
-    if (event.kind === 'subagent.ended') returned.set(event.threadId, event)
-  }
+  const { ended, started, routes, pageRuns, reactions, returned } = threadIndex(events, selfId)
   const items: ThreadItem[] = []
   for (const event of events) {
     if (event.kind === 'subagent.started') {
