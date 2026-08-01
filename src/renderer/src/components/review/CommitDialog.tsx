@@ -1,4 +1,4 @@
-import { useEffect, type KeyboardEvent } from 'react'
+import type { KeyboardEvent } from 'react'
 import Modal from '../Modal'
 import Spinner from '../Spinner'
 import { useAutoResize } from '../useAutoResize'
