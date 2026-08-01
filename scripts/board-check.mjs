@@ -1634,7 +1634,7 @@ try {
   for (const [name, run] of Object.entries(result.speed ?? {}))
     console.log(
       `${name.padEnd(8)} handler mean ${run.handler.mean}ms  p95 ${run.handler.p95}ms  worst ${run.handler.worst}ms, to frame p95 ${run.painted.p95}ms${
-        run.commits ? `, ${run.commits.canvas} canvas commits` : ''
+        run.commits ? `, commits ${run.commits.canvas} canvas ${run.commits.overlay} overlay ${run.commits.app} window` : ''
       }`
     )
   if (problems.length) throw new Error(`\n${problems.join('\n')}`)
