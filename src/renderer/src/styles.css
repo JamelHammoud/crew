@@ -1244,6 +1244,30 @@ textarea:placeholder-shown {
   @apply font-mono text-[0.875em] bg-ink-800 rounded-md px-1.5 py-0.5;
 }
 
+/* The sheet is painted over the glyph rather than in place of it, so the
+   character keeps its box and the caret, the selection band and a highlight
+   behind it all stay the app's own. A transparent color is what takes the
+   machine's own picture away: it is a bitmap glyph and nothing else hides it. */
+.doc .doc-emoji {
+  position: relative;
+  color: transparent;
+}
+
+.doc .doc-emoji::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.15em;
+  height: 1.15em;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background-image: var(--doc-emoji-image);
+  background-size: var(--doc-emoji-size);
+  background-position: var(--doc-emoji-at);
+  background-repeat: no-repeat;
+}
+
 .doc .bn-editor .bn-inline-content strong {
   font-weight: 600;
 }
