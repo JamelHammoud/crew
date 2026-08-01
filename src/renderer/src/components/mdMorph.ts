@@ -123,9 +123,7 @@ function patch(live: Element, next: Element, animate: boolean): void {
   }
 }
 
-export function morph(live: Element, html: string, animate: boolean): void {
-  const next = document.createElement('div')
-  next.innerHTML = html
+export function morph(live: Element, next: Element, animate: boolean): void {
   const grew = (next.textContent?.length ?? 0) > (live.textContent?.length ?? 0)
   patch(live, next, animate && grew)
   for (const span of Array.from(live.querySelectorAll(`.${WRAP}`))) {
