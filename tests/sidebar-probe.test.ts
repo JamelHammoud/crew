@@ -157,7 +157,7 @@ describe('the sidebar', () => {
   })
 
   it('switches to a place that is already running rather than opening it again', async () => {
-    live = [{ key: `project:${TWO}`, folder: TWO, name: 'Jamel', hosting: true }]
+    live = [{ key: `project:${TWO}`, folder: TWO, name: 'Jamel', hosting: true, threads: [] }]
     await act(async () => {
       await usePlaces.getState().load()
     })
@@ -170,7 +170,7 @@ describe('the sidebar', () => {
   })
 
   it('carries the panel over to the place it switches to and leaves the shells alone', async () => {
-    live = [{ key: `project:${TWO}`, folder: TWO, name: 'Jamel', hosting: true }]
+    live = [{ key: `project:${TWO}`, folder: TWO, name: 'Jamel', hosting: true, threads: [] }]
     await act(async () => {
       await usePlaces.getState().load()
     })
