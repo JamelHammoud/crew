@@ -1519,7 +1519,11 @@ const driveSource = String.raw`(async () => {
 
   await attempt('a drag commits nothing in React', async () => {
     if (!speed.drag) return null
-    return { ok: speed.drag.commits.canvas === 0, note: speed.drag.commits.canvas + ' canvas commits, ' + speed.drag.commits.app + ' in the whole window, over ' + MOVES + ' moves' }
+    const commits = speed.drag.commits
+    return {
+      ok: commits.canvas === 0 && commits.overlay === 0,
+      note: 'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay + ' in the selection overlay, ' + commits.app + ' in the whole window'
+    }
   })
 
   await attempt('a resize stays under eight milliseconds a move', async () => {
