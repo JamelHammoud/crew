@@ -366,7 +366,12 @@ export class Idle extends StateNode<SelectEditor> {
         type: 'text',
         x,
         y,
-        props: { richText: fromPlainText(''), autoSize: true, scale: this.editor.getResizeScaleFactor() }
+        props: {
+          richText: fromPlainText(''),
+          autoSize: true,
+          scale: this.editor.getResizeScaleFactor(),
+          color: textInkAt(this.editor as unknown as ContrastEditor, { x, y })
+        }
       }
     ])
     const shape = this.editor.getShape(id)
