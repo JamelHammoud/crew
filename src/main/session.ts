@@ -473,14 +473,10 @@ export class AppSession {
       tracked: true,
       projectSync: true
     }
+    const link = makeLink(target.host, target.port, target.code)
     this.folder = repoPath
-    this.place = joinPlace(linkRaw)
-    this.keep({
-      mode: 'join',
-      folder: repoPath,
-      name,
-      link: makeLink(target.host, target.port, target.code)
-    })
+    this.place = joinPlace(link)
+    this.keep({ mode: 'join', folder: repoPath, name, link })
     return this.live
   }
 
@@ -498,6 +494,8 @@ export class AppSession {
   private async stop(): Promise<void> {
     this.live = null
     this.folder = null
+    this.place = null
+    this.written = null
     this.hosted = null
     this.projectAuto = false
     this.runner?.close()
