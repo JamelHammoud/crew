@@ -9,6 +9,7 @@ import TasksPanel from '../src/renderer/src/components/TasksPanel'
 import TopBar from '../src/renderer/src/components/TopBar'
 import WindowCorner from '../src/renderer/src/components/WindowCorner'
 import { applyPlatform, onMac } from '../src/renderer/src/state/platform'
+import { useTasks } from '../src/renderer/src/state/tasks'
 import { fullScreen, setFullScreen } from '../src/renderer/src/state/windowShape'
 
 const MAC = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 crew/1.0'
@@ -135,9 +136,9 @@ describe('the drag the top bar takes', () => {
 
 describe('the scrim behind the tasks panel', () => {
   it('stands under the top bar, so the bar is still there to press', () => {
+    useTasks.setState({ pinned: true, peeking: false })
     const { container } = render(
       createElement(TasksPanel, {
-
         onOpenThread: () => {},
         onOpenThreadBeside: () => {}
       })

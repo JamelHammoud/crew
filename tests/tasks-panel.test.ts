@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TasksPanel from '../src/renderer/src/components/TasksPanel'
 import { reviewCount } from '../src/renderer/src/state/alerts'
 import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
+import { useTasks } from '../src/renderer/src/state/tasks'
 import type { SessionEvent, Todo } from '../src/shared/events'
 
 Element.prototype.getAnimations ??= () => []
@@ -54,14 +55,15 @@ const todo = (id: string, text: string, extra: Partial<Todo> = {}): Todo => ({
 
 const day = (ts: number): number => Date.now() - ts * 86_400_000
 
-const panel = () =>
-  render(
+const panel = () => {
+  useTasks.setState({ pinned: true, peeking: false })
+  return render(
     createElement(TasksPanel, {
-
       onOpenThread: () => {},
       onOpenThreadBeside: () => {}
     })
   )
+}
 
 const needsReviewShown = (): number => {
   const heading = screen.getByText('Needs review').closest('h3')

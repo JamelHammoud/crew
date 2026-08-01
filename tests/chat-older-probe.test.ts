@@ -76,6 +76,7 @@ Object.defineProperty(HTMLElement.prototype, 'scrollTop', {
 const { default: Chat } = await import('../src/renderer/src/views/Chat')
 const { default: TasksPanel } = await import('../src/renderer/src/components/TasksPanel')
 const { useCrew } = await import('../src/renderer/src/state/store')
+const { useTasks } = await import('../src/renderer/src/state/tasks')
 
 const said = (n: number): SessionEvent => ({
   id: `m${n}`,
@@ -169,9 +170,9 @@ const recent = Array.from({ length: 8 }, (_, i) => said(100 + i))
 describe('tasks outside the first page of chat', () => {
   it('keeps old open and working threads in the Tasks drawer', () => {
     join(recent, true, [started(1), started(2)], { 'thread-2': 'prompt-2' })
+    useTasks.setState({ pinned: true, peeking: false })
     const view = render(
       createElement(TasksPanel, {
-
         onOpenThread: () => {},
         onOpenThreadBeside: () => {}
       })

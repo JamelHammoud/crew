@@ -85,7 +85,9 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
     isToolLocked?: boolean
     cursor?: TLCursor
   }
+  updateInstanceState?(change: { duplicateProps?: TransformDuplicateProps | null }): unknown
   getDocumentSettings?(): { gridSize: number }
+  edgeScrollManager?: { updateEdgeScrolling(elapsed: number): void }
   getIsSnapMode?(): boolean
   getSnappableShapes?(): readonly TransformSnapNode[]
   getZoomLevel?(): number

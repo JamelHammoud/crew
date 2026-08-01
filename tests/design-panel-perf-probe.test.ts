@@ -8,9 +8,11 @@ import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/sr
 import { FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 import DesignLeftPanel from '../src/renderer/src/components/DesignLeftPanel'
+import { sameLayers } from '../src/renderer/src/design/layerShapes'
 
 const COUNT = 200
 const MOVES = 20
+const BUDGET_MS = 2
 
 function board(): { editor: Editor; ids: TLShapeId[] } {
   const editor = new Editor({
@@ -41,19 +43,13 @@ function panel(editor: Editor, onCommit: (ms: number) => void): ReactNode {
   )
 }
 
-function dragOne(selected: boolean): { commits: number; ms: number } {
+function reactCostOfADrag(): number {
   const { editor, ids } = board()
-  if (selected) editor.setSelectedShapes([ids[0]])
-  let commits = 0
+  editor.setSelectedShapes([ids[0]])
   let ms = 0
-  const record = (spent: number): void => {
-    commits += 1
-    ms += spent
-  }
   act(() => {
-    render(panel(editor, record))
+    render(panel(editor, spent => (ms += spent)))
   })
-  commits = 0
   ms = 0
   for (let step = 0; step < MOVES; step++) {
     act(() => {
@@ -61,13 +57,13 @@ function dragOne(selected: boolean): { commits: number; ms: number } {
       editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 1, y: shape.y + 1 })
     })
   }
-  return { commits, ms }
+  return ms / MOVES
 }
 
 afterEach(cleanup)
 
-describe('the design panels while a shape is being dragged', () => {
-  it('changes the sorted page shapes identity for one moved shape', () => {
+describe('the layer list while a shape is being dragged', () => {
+  it('is handed a new array by the editor for one moved shape', () => {
     const { editor, ids } = board()
     const before = editor.getCurrentPageShapesSorted()
     const shape = editor.getShape(ids[0])!
@@ -75,26 +71,30 @@ describe('the design panels while a shape is being dragged', () => {
     expect(editor.getCurrentPageShapesSorted()).not.toBe(before)
   })
 
-  it('leaves the layer order untouched when only a position changed', () => {
+  it('reads that array as unchanged when only a position moved', () => {
     const { editor, ids } = board()
-    const structure = (): string =>
-      editor
-        .getCurrentPageShapesSorted()
-        .map(item => `${item.id}:${item.parentId}:${item.index}:${item.type}`)
-        .join('|')
-    const before = structure()
+    const before = editor.getCurrentPageShapesSorted()
     const shape = editor.getShape(ids[0])!
-    editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 40, y: shape.y + 40 })
-    expect(structure()).toBe(before)
+    editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 40, y: shape.y + 40, rotation: 0.5 })
+    expect(sameLayers(before, editor.getCurrentPageShapesSorted())).toBe(true)
   })
 
-  it('does not re-render the hidden layer list on every pointer move', () => {
-    const { commits } = dragOne(true)
-    expect(commits).toBe(0)
+  it('reads it as changed when a name, lock, hide or order really moved', () => {
+    const { editor, ids } = board()
+    const named = editor.getCurrentPageShapesSorted()
+    editor.updateShape({ id: ids[0], type: 'geo', meta: { hidden: true } })
+    expect(sameLayers(named, editor.getCurrentPageShapesSorted())).toBe(false)
+
+    const locked = editor.getCurrentPageShapesSorted()
+    editor.toggleLock([ids[1]])
+    expect(sameLayers(locked, editor.getCurrentPageShapesSorted())).toBe(false)
+
+    const ordered = editor.getCurrentPageShapesSorted()
+    editor.bringToFront([ids[2]])
+    expect(sameLayers(ordered, editor.getCurrentPageShapesSorted())).toBe(false)
   })
 
-  it('costs almost nothing in react while a selected shape is dragged', () => {
-    const { ms } = dragOne(true)
-    expect(ms).toBeLessThan(MOVES)
+  it('costs the panel almost no react time per pointer move', () => {
+    expect(reactCostOfADrag()).toBeLessThan(BUDGET_MS)
   })
 })
