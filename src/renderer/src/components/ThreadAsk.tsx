@@ -65,7 +65,7 @@ export default function ThreadAsk({
         onClick={onJump}
         className="block max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
       >
-        {ask}
+        <EmojiText text={ask} />
       </button>
     </HoverCard>
   )
