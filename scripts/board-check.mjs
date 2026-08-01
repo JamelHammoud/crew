@@ -1527,16 +1527,24 @@ const driveSource = String.raw`(async () => {
     await settle()
     editor.select(target.id)
     await settle()
+    const propsBefore = editor.getShape(target.id).props
     speed.drag = await measure(viewport(boundsOf(target).center), { x: 1.5, y: 1 })
+    const propsAfter = editor.getShape(target.id).props
+    speed.drag.propsHeld = propsBefore === propsAfter
+    speed.drag.sizeHeld = propsBefore.w === propsAfter.w && propsBefore.h === propsAfter.h
     return { ok: speed.drag.handler.p95 <= 8, note: 'p95 ' + speed.drag.handler.p95 + 'ms, worst ' + speed.drag.handler.worst + 'ms, painted p95 ' + speed.drag.painted.p95 + 'ms' }
   })
 
   await attempt('a drag commits nothing in React', async () => {
     if (!speed.drag) return null
     const commits = speed.drag.commits
+    const why =
+      !speed.drag.propsHeld && speed.drag.sizeHeld
+        ? ', and a move that changed no size still handed the shape a new props object, which is what the rendering list compares by identity'
+        : ''
     return {
       ok: commits.canvas === 0 && commits.overlay === 0,
-      note: 'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay + ' in the selection overlay, ' + commits.app + ' in the whole window'
+      note: 'over ' + MOVES + ' moves: ' + commits.canvas + ' in the canvas, ' + commits.overlay + ' in the selection overlay, ' + commits.app + ' in the whole window' + why
     }
   })
 
