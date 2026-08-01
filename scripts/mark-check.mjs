@@ -14,7 +14,7 @@ import electron from 'electron'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
-const AT = 96
+const AT = 64
 const ALPHA = 0.45
 
 const ENTRY = `import { createRoot } from 'react-dom/client'
