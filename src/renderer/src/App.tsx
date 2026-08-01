@@ -117,9 +117,9 @@ function Session() {
           onMouseEnter={() => peek(true)}
           onMouseLeave={() => peek(false)}
           style={{ width: SIDEBAR_W }}
-          className="absolute inset-y-0 left-0 z-40 animate-rail shadow-[0_0_40px_rgba(0,0,0,0.5)]"
+          className="absolute inset-y-0 left-0 z-50 animate-rail"
         >
-          <Sidebar />
+          <Sidebar overlay />
         </div>
       )}
       <div className="flex-1 min-w-0 relative">
