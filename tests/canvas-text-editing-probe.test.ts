@@ -231,8 +231,25 @@ describe('canvas text editing', () => {
     const bounds = editor().getShapeGeometry(editor().getShape(textId)!).bounds
     expect(layer.style.width).toBe(`${bounds.w}px`)
     expect(layer.style.height).toBe(`${bounds.h}px`)
-    expect(layer.style.outline).toContain('var(--design-selected)')
+    expect(layer.style.outline).toContain('var(--design-selected')
     expect(layer.style.outline).toContain('var(--crew-scale, 1)')
+    expect(layer.style.outline).toMatch(/var\(--design-selected,\s*\S+\)/)
+  })
+
+  it('draws the bounds in a real colour where nothing sets the design variable', async () => {
+    const { view, editor } = mountBoard()
+    await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
+
+    act(() => {
+      editor().setEditingShape(textId)
+    })
+    await waitFor(() => expect(view.container.querySelector(`[data-canvas-text-editor="${textId}"]`)).toBeTruthy())
+
+    const layer = view.container.querySelector(`[data-canvas-text-editor="${textId}"]`) as HTMLElement
+    const fallback = /var\(--design-selected,\s*([^)]+)\)/.exec(layer.style.outline)?.[1]
+    expect(fallback).toBeTruthy()
+    expect(fallback).not.toBe('')
+    expect(fallback).toMatch(/^(#|rgb|hsl)/)
   })
 
   it('follows the shape when it moves and when it is rotated while the caret is open', async () => {

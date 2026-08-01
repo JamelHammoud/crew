@@ -217,9 +217,7 @@ describe('the text tool', () => {
   it('makes a fixed width text on a wide drag and puts the caret in it', () => {
     const subject = editor()
     subject.setCurrentTool('text')
-    pointerDown(subject, 100, 100)
-    pointerMove(subject, 400, 100)
-    pointerUp(subject, 400, 100)
+    heldDrag(subject, 100, 100, 400, 100)
     const shape = subject.getCurrentPageShapes()[0]
     expect(shape.type).toBe('text')
     expect(shape.props).toMatchObject({ autoSize: false })
@@ -229,9 +227,7 @@ describe('the text tool', () => {
   it('reads a short drag as a click rather than a fixed width', () => {
     const subject = editor()
     subject.setCurrentTool('text')
-    pointerDown(subject, 100, 100)
-    pointerMove(subject, 105, 100)
-    pointerUp(subject, 105, 100)
+    heldDrag(subject, 100, 100, 105, 100)
     expect(subject.getCurrentPageShapes()[0].props).toMatchObject({ autoSize: true })
   })
 
@@ -240,9 +236,7 @@ describe('the text tool', () => {
     subject.updateInstanceState({ isToolLocked: true })
     subject.setCurrentTool('text')
     click(subject, 100, 100)
-    expect(subject.getCurrentToolId()).toBe('text')
-    subject.setEditingShape(null)
-    subject.setCurrentTool('select.idle')
+    subject.dispatch({ name: 'cancel' })
     expect(subject.getCurrentToolPath()).toBe('text.idle')
   })
 
@@ -250,9 +244,17 @@ describe('the text tool', () => {
     const subject = editor()
     subject.setCurrentTool('text')
     click(subject, 100, 100)
-    subject.setEditingShape(null)
-    subject.setCurrentTool('select.idle')
+    subject.dispatch({ name: 'cancel' })
     expect(subject.getCurrentToolPath()).toBe('select.idle')
+  })
+
+  it('comes back to the text tool after a fixed width text under tool lock', () => {
+    const subject = editor()
+    subject.updateInstanceState({ isToolLocked: true })
+    subject.setCurrentTool('text')
+    heldDrag(subject, 100, 100, 400, 100)
+    subject.dispatch({ name: 'cancel' })
+    expect(subject.getCurrentToolPath()).toBe('text.idle')
   })
 })
 

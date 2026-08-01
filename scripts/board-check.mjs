@@ -97,11 +97,11 @@ const driveSource = String.raw`(async () => {
   }
   const doubleClick = async (at, target) => {
     const onto = target || surface
-    for (const round of [0, 1]) {
+    for (const tap of [0, 1]) {
       pointer('pointerdown', at.x, at.y, 1, onto)
       await frame()
       pointer('pointerup', at.x, at.y, 0, onto)
-      if (round === 0) await frame()
+      if (tap === 0) await frame()
     }
     onto.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true, clientX: at.x, clientY: at.y }))
     await settle(6)
@@ -149,7 +149,8 @@ const driveSource = String.raw`(async () => {
     return id
   }
   const clear = async () => {
-    if (made.length) editor.deleteShapes(made.splice(0, made.length))
+    const alive = made.splice(0, made.length).filter(id => editor.getShape(id) !== undefined)
+    if (alive.length) editor.deleteShapes(alive)
     editor.selectNone()
     editor.setEditingShape(null)
     editor.setCurrentTool('select')
