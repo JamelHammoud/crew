@@ -302,6 +302,7 @@ interface CrewState {
   removeAgent: (agentId: string) => void
   openThread: (threadId: string) => void
   openThreadAlone: (threadId: string) => void
+  openAlertThread: (threadId: string, place: string | null) => void
   focusThread: (threadId: string) => void
   closeThread: (threadId?: string) => void
   closeThreads: () => void

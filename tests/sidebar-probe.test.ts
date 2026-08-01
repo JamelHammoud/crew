@@ -119,7 +119,10 @@ beforeEach(async () => {
   })
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 describe('the sidebar', () => {
   it('wears its lighter glass when it stands over the page', () => {
@@ -507,8 +510,8 @@ describe('the sidebar', () => {
     fireEvent.click(row('one'))
 
     await waitFor(() => expect(asked).toEqual([`project:${TWO}`, `project:${ONE}`]))
-    finishAway?.()
-    await waitFor(() => expect(useCrew.getState().place).toBe(`project:${ONE}`))
+    await act(async () => finishAway?.())
+    expect(useCrew.getState().place).toBe(`project:${ONE}`)
   })
 
   it('carries the panel over to the place it switches to and leaves the shells alone', async () => {
