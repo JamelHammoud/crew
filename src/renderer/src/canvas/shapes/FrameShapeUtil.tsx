@@ -87,14 +87,22 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
         createElement(
           'div',
           {
+            className: 'crew-frame-heading',
             style: {
               position: 'absolute',
               bottom: '100%',
               left: 0,
+              maxWidth: `calc(var(${ZOOM_VAR}, 1) * ${Math.ceil(shape.props.w)}px)`,
+              transformOrigin: '0% 100%',
+              transform: `scale(min(var(${SCALE_VAR}, 1), ${MAX_HEADING_SCALE}))`,
               paddingBottom: HEADING_GAP,
               fontSize: HEADING_FONT_SIZE,
+              lineHeight: `${HEADING_HEIGHT}px`,
               color: stroke,
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              pointerEvents: 'all'
             }
           },
           shape.props.name
