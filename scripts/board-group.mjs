@@ -427,6 +427,54 @@ const driveSource = String.raw`(async () => {
       groupLeft: walk({ x: bounds.minX, y: bounds.minY }, { x: bounds.minX, y: bounds.maxY })
     }
 
+    const profile = (() => {
+      const left = deviceOf({ x: bounds.minX, y: bounds.minY })
+      const right = deviceOf({ x: bounds.maxX, y: bounds.minY })
+      const from = Math.max(0, Math.round(Math.min(left.x, right.x)) + 20)
+      const to = Math.min(overlay.width - 1, Math.round(Math.max(left.x, right.x)) - 20)
+      let best = null
+      for (let dy = -4; dy <= 4; dy++) {
+        const y = Math.round(left.y) + dy
+        if (y < 0 || y >= overlay.height) continue
+        let lit = 0
+        for (let x = from; x <= to; x++) if (at(x, y)) lit += 1
+        if (!best || lit > best.lit) best = { y, lit, dy }
+      }
+      if (!best) return null
+      const runs = []
+      const gaps = []
+      let run = 0
+      let gap = 0
+      for (let x = from; x <= to; x++) {
+        if (at(x, best.y)) {
+          if (gap) {
+            gaps.push(gap)
+            gap = 0
+          }
+          run += 1
+        } else {
+          if (run) {
+            runs.push(run)
+            run = 0
+          }
+          gap += 1
+        }
+      }
+      if (run) runs.push(run)
+      if (gap) gaps.push(gap)
+      const mean = list => (list.length ? round(list.reduce((sum, one) => sum + one, 0) / list.length) : 0)
+      return {
+        row: best.dy,
+        span: to - from + 1,
+        litOnRow: best.lit,
+        coverage: round(best.lit / (to - from + 1)),
+        dashes: runs.length,
+        gaps: gaps.length,
+        meanDashPx: mean(runs),
+        meanGapPx: mean(gaps)
+      }
+    })()
+
     const childEdges = childIds.map(id => {
       const shape = editor.getShape(id)
       const kid = editor.getShapePageBounds(shape)
