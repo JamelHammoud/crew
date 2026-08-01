@@ -203,6 +203,68 @@ describe('counting the other instances in a real folder', () => {
   })
 })
 
+// A pid is handed out again after a reboot, so a mark left behind by a Crew that
+// died without tidying up answers as a live Crew forever once anything else is
+// wearing its number. Nothing about that clears itself and it holds up every
+// update from then on.
+describe('a mark older than the machine coming up', () => {
+  const booted = 1_000 * BOOT_MARGIN_MS
+
+  it('is nothing, however alive the pid it names is', () => {
+    expect(outlivedBoot(booted - BOOT_MARGIN_MS - 1, booted)).toBe(true)
+  })
+
+  it('stands while it was written since', () => {
+    expect(outlivedBoot(booted + 1, booted)).toBe(false)
+  })
+
+  // Reading a live Crew as gone is what lets an installer take its work down, so
+  // a mark is only stale when it is clearly older than the boot. A clock that
+  // moved a little under us is not enough.
+  it('gives a mark written around the boot the benefit of the doubt', () => {
+    expect(outlivedBoot(booted - 1, booted)).toBe(false)
+    expect(outlivedBoot(booted - BOOT_MARGIN_MS, booted)).toBe(false)
+  })
+
+  it('makes nothing of a mark nobody can read', () => {
+    expect(outlivedBoot(0, booted)).toBe(true)
+  })
+})
+
+describe('a folder holding a mark from before the machine came up', () => {
+  const aged = (file: string) => {
+    const then = new Date(Date.now() - os.uptime() * 1000 - BOOT_MARGIN_MS - 60_000)
+    fs.utimesSync(file, then, then)
+  }
+
+  it('makes nothing of it even though its pid answers, and clears it away', async () => {
+    const child = await idle()
+    const file = wrote(pidFileName(child.pid as number))
+    aged(file)
+    const instances = new OtherInstances(dir)
+    instances.mark()
+    expect(instances.count()).toBe(0)
+    expect(fs.existsSync(file)).toBe(false)
+  })
+
+  it('leaves one written since the machine came up where it stands', async () => {
+    const child = await idle()
+    const file = wrote(pidFileName(child.pid as number))
+    const instances = new OtherInstances(dir)
+    instances.mark()
+    expect(instances.others()).toEqual([child.pid])
+    expect(fs.existsSync(file)).toBe(true)
+  })
+
+  it('never reads our own mark as an old one', () => {
+    const instances = new OtherInstances(dir)
+    instances.mark()
+    aged(path.join(dir, pidFileName(process.pid)))
+    expect(instances.count()).toBe(0)
+    expect(fs.existsSync(path.join(dir, pidFileName(process.pid)))).toBe(true)
+  })
+})
+
 describe('asking whether a pid is alive', () => {
   it('says so for this very process', () => {
     expect(alive(process.pid)).toBe(true)
