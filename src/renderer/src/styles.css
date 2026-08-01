@@ -439,6 +439,28 @@ textarea:placeholder-shown {
   background: rgb(252 252 252 / 0.975);
 }
 
+.rail {
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform 0.14s ease-out,
+    visibility 0s linear 0.14s;
+}
+
+.rail[data-open] {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail,
+  .rail[data-open] {
+    transition-duration: 1ms;
+    transition-delay: 0s;
+  }
+}
+
 /* The dictation pill, which is the one panel in the app that floats over another
    application rather than over Crew. Nothing can blur what is back there: a
    backdrop filter samples the page it is drawn in, and behind this window there
