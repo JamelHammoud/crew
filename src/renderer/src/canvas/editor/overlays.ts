@@ -240,7 +240,12 @@ const BOX_PATHS = new Set([
 class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   static type = 'selection_foreground'
   readonly options = { zIndex: 100 }
-  constructor(private readonly editor: OverlayEditor) {}
+  private readonly memo = new PaintMemo<SelectionForegroundState | null>()
+
+  constructor(
+    private readonly editor: OverlayEditor,
+    private readonly pass: PaintPass
+  ) {}
 
   isActive(): boolean {
     const path = this.editor.getCurrentToolPath()
