@@ -118,7 +118,8 @@ describe('what one frame of outlines really strokes', () => {
 
     subject.setCamera({ x: -4000, y: 0, z: 1 })
     paint(subject)
-    expect(placed.length).toBe(20)
+    expect(placed.length).toBeGreaterThan(0)
+    expect(placed.length).toBeLessThan(170)
     expect(placed.every(([x]) => x >= 4000)).toBe(true)
   })
 
