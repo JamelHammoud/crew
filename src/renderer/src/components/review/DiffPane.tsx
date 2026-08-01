@@ -139,7 +139,7 @@ export default function DiffPane({
           </button>
         </Tooltip>
       </div>
-      <div ref={scroller} className={`min-h-0 flex-1 overflow-y-auto bg-ink-850 ${room ? 'pb-14' : ''}`}>
+      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto bg-ink-850">
         {change.binary ? (
           <p className="p-4 text-xs text-fg-muted">This one is not text, so there is nothing to read here.</p>
         ) : rows.length === 0 ? (
