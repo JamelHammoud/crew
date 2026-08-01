@@ -15,6 +15,12 @@ import type { ThreadItem } from './thread'
 // The textarea keeps its own glyph under the caret, so the sheet is painted
 // over it rather than in place of it. The patch is opaque, which takes the band
 // the textarea draws under a selection with it, so it paints that band itself.
+//
+// It takes the room the character takes and no more. As tall as the line it was
+// standing over the whole caret, and a pixel wider on each side it was standing
+// over the one drawn against the emoji's own edge, so a box with a picture in it
+// read as one nothing could be typed into. Held to the character's own square,
+// the caret is met above and below the picture and the band runs on either side.
 function EmojiHighlight({
   text,
   at,
