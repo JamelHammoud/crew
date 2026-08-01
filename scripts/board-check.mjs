@@ -186,7 +186,7 @@ const driveSource = String.raw`(async () => {
         hitInside: true,
         renderingOnly: true
       })
-      if (!grabbed) return { ok: true, note: 'nothing sits at its centre, as in tldraw' }
+      if (!grabbed) return { ok: true, note: 'nothing sits at its centre' }
       const before = editor.getShape(grabbed.id)
       const at = viewport(centre)
       await drag(at, { x: at.x + 44, y: at.y + 32 }, { target: nodeOf(grabbed.id) })
@@ -196,7 +196,7 @@ const driveSource = String.raw`(async () => {
       const selected = editor.getSelectedShapeIds().includes(grabbed.id)
       const over = grabbed.id === shape.id ? '' : ', over it'
       if (moved) return { ok: true, note: 'moved the ' + grabbed.type + over }
-      if (selected) return { ok: true, note: 'selected the ' + grabbed.type + over + ', which tldraw also does not move here' }
+      if (selected) return { ok: true, note: 'selected the ' + grabbed.type + over + ', which is not dragged from here' }
       return { ok: false, note: 'pressing the ' + grabbed.type + over + ' neither moved nor selected anything' }
     })
     if (type === 'geo' && shape.props && shape.props.fill !== 'none')
