@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID } from 'node:crypto'
+import { activeThreads, type LiveThread } from '../shared/threads'
 import type { WebSocket } from 'ws'
 import {
   attachmentBytes,
