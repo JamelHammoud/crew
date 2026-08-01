@@ -77,7 +77,7 @@ export class CanvasEventBridge {
         page,
         'down'
       ),
-      ...resolveTarget(event, page, this.editor, this.editor.options.hitTestMargin / this.editor.getZoomLevel())
+      ...resolveTarget(event, page, this.editor)
     })
   }
 
