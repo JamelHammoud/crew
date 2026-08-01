@@ -123,7 +123,7 @@ export class PointingShape extends StateNode<SelectEditor> {
           ...selected.filter((id: any) => !ancestors.some((ancestor: any) => ancestor.id === id)),
           outermost.id
         ])
-      } else {
+      } else if (!(selecting && outermost.id !== selecting.id && selected.includes(selecting.id))) {
         this.editor.markHistoryStoppingPoint('selecting on pointer up')
         this.editor.setSelectedShapes([outermost.id])
       }
