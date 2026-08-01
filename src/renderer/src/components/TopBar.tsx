@@ -54,6 +54,10 @@ export default function TopBar({ tab, onTab }: { tab: Tab; onTab: (tab: Tab) => 
     if (!collapsedNav) setMoreOpen(false)
   }, [collapsedNav])
 
+  useEffect(() => {
+    if (pinned) setMoreOpen(false)
+  }, [pinned])
+
   const selectTab = (next: NavTab) => {
     if (next !== tab) playSound(`tab.${next}`)
     onTab(next)
