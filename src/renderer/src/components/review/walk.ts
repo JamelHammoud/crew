@@ -36,13 +36,7 @@ export function stepTo(walk: RepoChange[], key: string, by: 1 | -1): RepoChange 
   return walk[at + by] ?? null
 }
 
-export function placeOf(walk: RepoChange[], key: string): { at: number; of: number } | null {
-  const at = walk.findIndex(change => keyOf(change) === key)
-  if (at < 0) return null
-  return { at: at + 1, of: walk.length }
-}
-
-// What the reading screen is standing on. Staging a file from inside it moves
+// What the reading pane is standing on. Staging a file from inside it moves
 // that file to another group, and the key carries which group it was in, so the
 // key it was opened under is gone the moment it is staged. It is the same file
 // and the same reading, so the screen follows the path when the key it had has
