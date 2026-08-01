@@ -147,9 +147,14 @@ export default function ReviewView() {
       goTo(open ? stepTo(walk, keyOf(open), by) : (walk[0] ?? null))
       return
     }
-    if (event.key === 'v' && open) {
+    if (!open) return
+    if (event.key === 'v') {
       event.preventDefault()
       done()
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      setReading(null)
     }
   }
 
