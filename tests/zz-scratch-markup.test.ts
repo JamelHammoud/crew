@@ -1,4 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { createRequire } from 'node:module'
+import { beforeAll, describe, expect, it } from 'vitest'
+const JSDOM = createRequire(import.meta.url)('jsdom').JSDOM as any
+beforeAll(() => {
+  const dom = new JSDOM('<!doctype html><html><body></body></html>')
+  for (const k of ['window','document','navigator','HTMLElement','Element','Node','DocumentFragment','DOMParser','XMLSerializer'])
+    Object.defineProperty(globalThis, k, { configurable: true, writable: true, value: (dom.window as any)[k] })
+})
 import { renderHtmlFromRichTextForMeasurement } from '../src/renderer/src/canvas/schema/richText'
 import { richTextForMeasurement } from '../src/renderer/src/canvas/text/richText'
 
