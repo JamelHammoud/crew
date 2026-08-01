@@ -60,12 +60,23 @@ export default function GeneratedField({
     setDrawn(true)
   }, [subject, box])
 
+  // Taken off the picture rather than laid over it as an ink. What is wanted is
+  // the same scene under less light, which keeps every color in it and its
+  // relation to the others, where a black scrim is a grey film that flattens the
+  // palette it covers.
+  const shade = light === undefined ? '' : ` brightness(${light})`
+  const mesh = meshOf(subject, box)
+
   return (
     <span aria-hidden className={`absolute inset-0 ${className}`} style={clip ? { clipPath: clip } : undefined}>
       {drawn ? (
-        <canvas ref={tile} className="absolute inset-0 w-full h-full" />
+        <canvas
+          ref={tile}
+          style={shade ? { filter: shade.trim() } : undefined}
+          className="absolute inset-0 w-full h-full"
+        />
       ) : (
-        <span style={meshOf(subject, box)} className="absolute inset-0" />
+        <span style={{ ...mesh, filter: `${mesh.filter}${shade}` }} className="absolute inset-0" />
       )}
       <span
         style={{ backgroundImage: GRAIN, backgroundSize: '160px 160px' }}
