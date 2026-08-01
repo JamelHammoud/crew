@@ -95,13 +95,13 @@ describe('the settings', () => {
     expect(document.querySelector('.glass.fixed')).toBeNull()
   })
 
-  it('keeps the main navigation hidden', () => {
+  it('leaves the three pages standing in the header, each named', () => {
     render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn() }))
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     const labels = within(navigation)
       .getAllByRole('button')
       .map(tab => tab.getAttribute('aria-label'))
-    expect(navigation.classList.contains('hidden')).toBe(true)
+    expect(navigation.hasAttribute('data-away')).toBe(false)
     expect(labels).toEqual(['Chat', 'Docs', 'Design'])
   })
 
