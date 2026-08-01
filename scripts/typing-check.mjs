@@ -215,35 +215,41 @@ const driveSource = `(async () => {
     return Number(((ended - began) / 400).toFixed(4))
   }
 
-  const measure = async (rows, contained) => {
+  const measure = async (into, rows, contained) => {
     window.seedThread(rows)
     await settle(8)
     const box = scroller()
     box.style.contain = contained ? 'layout' : ''
     await settle(4)
-    const flat = []
-    const grew = []
-    const framed = []
     for (let pass = 0; pass < ${PASSES}; pass++) {
       const run = await typeLine()
-      flat.push(...run.flat)
-      grew.push(...run.grew)
-      framed.push(...run.framed)
+      into.flat.push(...run.flat)
+      into.grew.push(...run.grew)
+      into.framed.push(...run.framed)
+      into.passes += 1
     }
-    return {
-      rows,
-      contained,
-      drawn: box.querySelectorAll('.space-y-5 > *').length,
-      tall: box.scrollHeight,
-      keystrokes: flat.length + grew.length,
-      lines: grew.length / ${PASSES},
-      sync: summarise(flat),
-      growing: grew.length > 0 ? summarise(grew) : null,
-      frame: summarise(framed),
-      once: forced(1),
-      twice: forced(2)
-    }
+    into.once.push(forced(1))
+    into.twice.push(forced(2))
+    into.drawn = box.querySelectorAll('.space-y-5 > *').length
+    into.tall = box.scrollHeight
+    box.style.contain = ''
   }
+
+  const middle = samples => [...samples].sort((a, b) => a - b)[Math.floor(samples.length / 2)]
+
+  const fold = held => ({
+    rows: held.rows,
+    contained: held.contained,
+    drawn: held.drawn,
+    tall: held.tall,
+    keystrokes: held.flat.length + held.grew.length,
+    lines: held.grew.length / held.passes,
+    sync: summarise(held.flat),
+    growing: held.grew.length > 0 ? summarise(held.grew) : null,
+    frame: summarise(held.framed),
+    once: Number(middle(held.once).toFixed(4)),
+    twice: Number(middle(held.twice).toFixed(4))
+  })
 
   if (!composer()) return { failed: 'the composer never drew' }
   if (!scroller()) return { failed: 'the thread scroller never drew' }
