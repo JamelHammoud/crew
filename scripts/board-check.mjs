@@ -1244,8 +1244,17 @@ const driveSource = String.raw`(async () => {
     editor.selectNone()
     editor.zoomToFit({ immediate: true })
     await settle()
+    await stillCamera()
     const all = editor.getCurrentPageBounds()
-    await drag(viewport({ x: all.minX - 30, y: all.minY - 30 }), viewport(all.center))
+    const shell = box()
+    const from = { x: shell.left + 10, y: shell.top + 10 }
+    const under = editor.getShapeAtPoint(pageAt(from), {
+      margin: editor.options.hitTestMargin / editor.getZoomLevel(),
+      hitInside: true,
+      renderingOnly: true
+    })
+    if (under) return { ok: false, note: 'a ' + under.type + ' sits where the marquee would start, so it would drag the board about' }
+    await drag(from, viewport(all.center))
     return { ok: editor.getSelectedShapeIds().length > 1, note: editor.getSelectedShapeIds().length + ' selected' }
   })
 

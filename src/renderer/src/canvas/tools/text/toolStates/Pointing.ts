@@ -103,7 +103,8 @@ export class Pointing extends BoxStateNode {
           richText: fromPlainText(''),
           autoSize,
           w: width,
-          scale: this.editor.getResizeScaleFactor()
+          scale: this.editor.getResizeScaleFactor(),
+          color: textInkAt(this.editor, point)
         }
       }
     ])
