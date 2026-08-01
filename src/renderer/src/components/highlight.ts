@@ -132,6 +132,56 @@ export function languageFor(path: string): string | null {
 let corePromise: Promise<HighlighterCore> | null = null
 const loading = new Map<string, Promise<void>>()
 
+// Tokenizing is the whole cost of drawing code, and a thread asks for the same
+// answer over and over: the same command run twenty times, the same file edited
+// all morning, and every card mounting again the moment somebody scrolls back
+// to it. It is settled by the text, the grammar and the theme and by nothing
+// else, so it is worked out once and handed out after that.
+//
+// What is held is capped by how much text it stands for rather than by a count
+// of entries, since one file is worth a thousand shell lines, and the least
+// lately read is what goes when the cap is reached.
+const CACHE_CHARS = 4_000_000
+
+interface Held {
+  tokens: ThemedToken[][]
+  chars: number
+}
+
+const cache = new Map<string, Map<string, Held>>()
+let cached = 0
+
+function shelf(lang: string, theme: Theme): Map<string, Held> {
+  const key = `${theme} ${lang}`
+  let found = cache.get(key)
+  if (!found) {
+    found = new Map()
+    cache.set(key, found)
+  }
+  return found
+}
+
+function recall(shelved: Map<string, Held>, text: string): ThemedToken[][] | undefined {
+  const found = shelved.get(text)
+  if (!found) return undefined
+  shelved.delete(text)
+  shelved.set(text, found)
+  return found.tokens
+}
+
+function keep(shelved: Map<string, Held>, text: string, tokens: ThemedToken[][]): void {
+  shelved.set(text, { tokens, chars: text.length })
+  cached += text.length
+  if (cached <= CACHE_CHARS) return
+  for (const other of cache.values()) {
+    for (const [stale, held] of other) {
+      if (cached <= CACHE_CHARS) return
+      other.delete(stale)
+      cached -= held.chars
+    }
+  }
+}
+
 function core(): Promise<HighlighterCore> {
   corePromise ??= createHighlighterCore({
     themes: [import('@shikijs/themes/github-dark-default'), import('@shikijs/themes/github-light-default')],
