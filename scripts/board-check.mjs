@@ -2036,11 +2036,17 @@ const driveSource = String.raw`(async () => {
     editor.selectNone()
     editor.zoomToFit({ immediate: true })
     const centre = editor.getViewportPageBounds().center
+    const zoom = editor.getZoomLevel()
     return editor
       .getCurrentPageShapes()
       .filter(shape => {
         const bounds = boundsOf(shape)
-        return bounds && bounds.w > 30 && bounds.h > 30 && editor.getShapeUtil(shape).canResize(shape)
+        return (
+          bounds &&
+          bounds.w * zoom > 60 &&
+          bounds.h * zoom > 60 &&
+          editor.getShapeUtil(shape).canResize(shape)
+        )
       })
       .sort((one, other) => {
         const a = boundsOf(one).center
