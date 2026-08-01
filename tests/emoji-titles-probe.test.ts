@@ -2,18 +2,17 @@
 import { cleanup, render } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { SessionEvent, Todo } from '../src/shared/events'
+import { holdCustomEmoji } from '../src/renderer/src/components/customEmojiSheet'
+import ThreadAsk from '../src/renderer/src/components/ThreadAsk'
+import ThreadRow from '../src/renderer/src/components/sidebar/ThreadRow'
+import TasksPanel from '../src/renderer/src/components/TasksPanel'
+import { useCrew, type ThreadMeta } from '../src/renderer/src/state/store'
+import { useTasks } from '../src/renderer/src/state/tasks'
 import type { CustomEmoji } from '../src/shared/customEmoji'
+import type { SessionEvent, Todo } from '../src/shared/events'
 import type { LiveThread } from '../src/shared/threads'
 
 Element.prototype.getAnimations ??= () => []
-
-const { holdCustomEmoji } = await import('../src/renderer/src/components/customEmojiSheet')
-const { useCrew, type ThreadMeta } = await import('../src/renderer/src/state/store')
-const { useTasks } = await import('../src/renderer/src/state/tasks')
-const ThreadRow = (await import('../src/renderer/src/components/sidebar/ThreadRow')).default
-const ThreadAsk = (await import('../src/renderer/src/components/ThreadAsk')).default
-const TasksPanel = (await import('../src/renderer/src/components/TasksPanel')).default
 
 const BASE = 'http://127.0.0.1:4321'
 const PICTURE = `${BASE}/emoji/a.gif`
