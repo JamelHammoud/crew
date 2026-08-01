@@ -13,7 +13,7 @@ export {
 export { BaseBoxShapeTool } from './tools'
 export { resizeBox } from './tools/transforms/resizeBox'
 export { copyAs } from './export'
-export { atom, useValue } from './signals'
+export { atom, computed, useValue } from './signals'
 export { Ellipse2d, Polygon2d, Rectangle2d } from './geometry'
 export { Vec } from './math'
 export {
