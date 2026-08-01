@@ -4,6 +4,7 @@ import type { CrewHome } from './project'
 // six are the same place with different answers to `shared`.
 export interface CurrentSession {
   wsUrl: string
+  place: string
   name: string
   code: string
   link: string | null

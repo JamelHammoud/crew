@@ -302,6 +302,7 @@ export class AppSession {
     this.runner.connect(url)
     this.live = {
       wsUrl: url,
+      place: projectPlace(repoPath),
       name,
       code: session.code,
       link: shared ? makeLink(lanAddress(), server.port(), session.code) : null,
