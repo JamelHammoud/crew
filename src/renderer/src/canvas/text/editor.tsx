@@ -61,7 +61,7 @@ export function RichTextEditor({
       element: mount.current,
       extensions,
       content: current.current as JSONContent,
-      autofocus: true,
+      autofocus: selectAll ? 'all' : 'end',
       editable: true,
       coreExtensionOptions: { clipboardTextSerializer: { blockSeparator: '\n' } },
       enableCoreExtensions: { textDirection: false },
@@ -96,6 +96,11 @@ export function RichTextEditor({
         handleDoubleClick: (_view, _position, event) => callbacks.current.onDoubleClick?.(event) === true
       }
     })
+    if (caret) {
+      const position = editor.view.posAtCoords({ left: caret.x, top: caret.y })?.pos
+      if (position !== undefined) editor.commands.setTextSelection(position)
+    }
+    editor.view.dom.focus({ preventScroll: true })
     instance.current = editor
     callbacks.current.onReady?.(editor)
     return () => {
