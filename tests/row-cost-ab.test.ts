@@ -45,6 +45,37 @@ function best(label: string, work: () => void): number {
   return low
 }
 
+const PICTOGRAPHIC = /[\p{Extended_Pictographic}\p{Regional_Indicator}\u{20E3}]/u
+const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+
+const NODES = [...built().querySelectorAll('p, li')].map(el => el.textContent ?? '')
+
+const walked = (): number => {
+  let seen = 0
+  for (const text of NODES) for (const { segment } of segmenter.segment(text)) if (segment) seen += 1
+  return seen
+}
+
+const guarded = (): number => {
+  let seen = 0
+  for (const text of NODES) {
+    if (!PICTOGRAPHIC.test(text)) {
+      seen += 1
+      continue
+    }
+    for (const { segment } of segmenter.segment(text)) if (segment) seen += 1
+  }
+  return seen
+}
+
+describe('the emoji walk, both ways, in one run', () => {
+  it('times every grapheme against one test for a picture', () => {
+    const a = best('walk every grapheme', walked)
+    const b = best('test, then walk', guarded)
+    console.log(`saved ${(a - b).toFixed(4)} ms a row, ${(((a - b) * 3832) / 1000).toFixed(2)} s over 3832`)
+  })
+})
+
 describe('the markdown pipeline, both ways, in one run', () => {
   it('times the string round trip against the nodes it already built', () => {
     wasDrawn()
