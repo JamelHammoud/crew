@@ -62,11 +62,6 @@ export class Idle extends StateNode<SelectEditor> {
   onPointerDown(info: SelectPointerInfo): void {
     if (info.target === 'canvas') {
       const point = this.editor.inputs.getCurrentPagePoint()
-      const overlay = this.editor.overlays?.getOverlayAtPoint(
-        point,
-        this.editor.options.hitTestMargin / this.editor.getZoomLevel()
-      )
-      if (overlay) return this.onPointerDown({ ...info, target: 'overlay', overlay })
       const shape = getHitShapeOnCanvasPointerDown(this.editor)
       if (shape && (this.editor.options.selectLockedShapes || !shape.isLocked)) {
         return this.onPointerDown({ ...info, target: 'shape', shape })

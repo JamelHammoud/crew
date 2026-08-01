@@ -77,7 +77,7 @@ export class CanvasEventBridge {
         page,
         'down'
       ),
-      ...resolveTarget(event, page, this.editor)
+      ...resolveTarget(event, page, this.editor, this.editor.options.hitTestMargin / this.editor.getZoomLevel())
     })
   }
 
@@ -88,7 +88,7 @@ export class CanvasEventBridge {
     this.editor.inputs.pointerMove(screen, page, event, this.editor.options.dragDistanceSquared as number)
     this.dispatch({
       ...pointerInfo('pointer_move', event, screen, page, 'move'),
-      ...resolveTarget(event, page, this.editor)
+      ...resolveTarget(event, page, this.editor, null)
     })
   }
 
@@ -253,15 +253,22 @@ export class CanvasEventBridge {
   }
 }
 
-function resolveTarget(event: Event, page: { x: number; y: number }, editor: Editor): Record<string, unknown> {
+function resolveTarget(
+  event: Event,
+  page: { x: number; y: number },
+  editor: Editor,
+  overlayMargin: number | null = 0
+): Record<string, unknown> {
   const target =
     event.target && typeof (event.target as Element).closest === 'function' ? (event.target as Element) : null
   const taggedHandle = target?.closest('[data-canvas-handle]') as HTMLElement | null
   if (taggedHandle?.dataset.canvasHandle) {
     return { target: 'selection', handle: taggedHandle.dataset.canvasHandle }
   }
-  const overlay = editor.overlays.getOverlayAtPoint(page)
-  if (overlay) return { target: 'overlay', overlay }
+  if (overlayMargin !== null) {
+    const overlay = editor.overlays.getOverlayAtPoint(page, overlayMargin)
+    if (overlay) return { target: 'overlay', overlay }
+  }
   const shapeElement = target?.closest('[data-shape-id]') as HTMLElement | null
   const id = shapeElement?.dataset.shapeId
   const shape = id ? editor.getShape(id as never) : undefined
