@@ -493,11 +493,21 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   }
 
   private pathOf(shape: TLShape): Path2D | null {
-    const cached = this.paths.get(shape.props)
-    if (cached !== undefined) return cached
-    const path = this.editor.getShapeUtil(shape).getIndicatorPath(shape as never) ?? null
-    this.paths.set(shape.props, path)
-    return path
+    let value = this.paths.get(shape.id)
+    if (!value) {
+      const outlined = computed(
+        `overlay.indicatorShape:${shape.id}`,
+        () => this.editor.getShape(shape.id),
+        { isEqual: (a: TLShape | undefined, b: TLShape | undefined) => a?.props === b?.props }
+      )
+      value = computed(`overlay.indicatorPath:${shape.id}`, () => {
+        const current = outlined.get()
+        if (!current) return null
+        return this.editor.getShapeUtil(current).getIndicatorPath(current as never) ?? null
+      })
+      this.paths.set(shape.id, value)
+    }
+    return value.get()
   }
 
   private trace(context: CanvasRenderingContext2D, shape: TLShape, transform: Mat): void {
