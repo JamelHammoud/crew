@@ -173,18 +173,26 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
   }
 
   private complete(): void {
+    this.editor.snaps?.clearIndicators?.()
+    this.editor.kickoutOccludedShapes?.([this.info.shape.id])
     const shape = this.editor.getShape(this.info.shape.id)
     if (shape) {
       const changes = this.editor.getShapeUtil?.(shape).onHandleDragEnd?.(shape, this.dragInfo(this.currentHandle))
       if (changes) this.editor.updateShapes([changes])
     }
-    this.finish(true)
+    this.finish(false)
   }
 
-  private finish(completed: boolean): void {
+  private finish(cancelled: boolean): void {
     const end = this.info.onInteractionEnd
-    if (typeof end === 'function') end()
-    else if (typeof end === 'string') this.editor.setCurrentTool?.(end, { shapeId: this.info.shape.id })
-    else if (completed || !this.info.isCreating) this.parent.transition('idle')
+    if (typeof end === 'function') {
+      end()
+      return
+    }
+    if (typeof end === 'string' && (cancelled || this.editor.getInstanceState?.().isToolLocked)) {
+      this.editor.setCurrentTool?.(end, { shapeId: this.info.shape.id })
+      return
+    }
+    this.parent.transition('idle')
   }
 }
