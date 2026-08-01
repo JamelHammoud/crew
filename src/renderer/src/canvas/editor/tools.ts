@@ -32,6 +32,11 @@ export class ToolManager {
     return this.currentId.get()
   }
 
+  getCurrentToolPath(): string {
+    const current = this.getCurrent()
+    return typeof current?.getPath === 'function' ? (current.getPath() as string) : this.currentId.get()
+  }
+
   getCurrent(): ToolInstance | undefined {
     return this.instances.get(this.currentId.get())
   }

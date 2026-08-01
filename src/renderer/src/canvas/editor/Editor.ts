@@ -436,6 +436,7 @@ export class Editor {
   }
 
   getCulledShapes(): ReadonlySet<TLShapeId> {
+    if (this.inputs.getIsPointing()) return this.culled
     const visible = this.getShapeIdsInsideBounds(this.getViewportPageBounds())
     const next = new Set<TLShapeId>()
     for (const shape of this.getCurrentPageShapesSorted()) {
@@ -1318,6 +1319,10 @@ export class Editor {
 
   getCurrentToolId(): string {
     return this.toolIdMask ?? this.tools.getCurrentToolId()
+  }
+
+  getCurrentToolPath(): string {
+    return this.tools.getCurrentToolPath()
   }
 
   setCurrentToolIdMask(id: string | undefined): this {

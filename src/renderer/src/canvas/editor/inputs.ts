@@ -21,10 +21,10 @@ export class InputsManager {
   private readonly previousScreen: Atom<Vec>
   private readonly previousPage: Atom<Vec>
   private readonly velocity: Atom<Vec>
+  private readonly pointing: Atom<boolean>
   private originScreenPoint = new Vec()
   private originPagePoint = new Vec()
   private velocityPrevious = new Vec()
-  private pointing = false
   private rightPointing = false
   private dragging = false
   private panning = false
@@ -43,6 +43,7 @@ export class InputsManager {
     this.previousScreen = atom('editor.inputs.previousScreenPoint', new Vec())
     this.previousPage = atom('editor.inputs.previousPagePoint', new Vec())
     this.velocity = atom('editor.inputs.pointerVelocity', new Vec())
+    this.pointing = atom('editor.inputs.isPointing', false)
   }
 
   get currentScreenPoint(): Vec {
@@ -86,7 +87,7 @@ export class InputsManager {
   }
 
   getIsPointing(): boolean {
-    return this.pointing
+    return this.pointing.get()
   }
 
   getIsRightPointing(): boolean {
@@ -168,7 +169,7 @@ export class InputsManager {
     this.originPagePoint = Vec.From(pagePoint)
     this.velocity.set(new Vec())
     this.velocityPrevious = Vec.From(screenPoint)
-    this.pointing = true
+    this.pointing.set(true)
     this.dragging = false
     this.pen = pointerType === 'pen'
   }
@@ -176,13 +177,13 @@ export class InputsManager {
   pointerMove(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers, dragDistanceSquared = 16): void {
     this.updateModifiers(modifiers)
     this.update(screenPoint, pagePoint)
-    if (this.pointing && Vec.Dist2(this.originScreenPoint, screenPoint) >= dragDistanceSquared) this.dragging = true
+    if (this.pointing.get() && Vec.Dist2(this.originScreenPoint, screenPoint) >= dragDistanceSquared) this.dragging = true
   }
 
   pointerUp(screenPoint: VecLike, pagePoint: VecLike, modifiers: InputModifiers): void {
     this.updateModifiers(modifiers)
     this.update(screenPoint, pagePoint)
-    this.pointing = false
+    this.pointing.set(false)
     this.rightPointing = false
     this.dragging = false
     this.pen = false
@@ -190,7 +191,7 @@ export class InputsManager {
   }
 
   cancelPointer(): void {
-    this.pointing = false
+    this.pointing.set(false)
     this.rightPointing = false
     this.dragging = false
     this.pen = false
