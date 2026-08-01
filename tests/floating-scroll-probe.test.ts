@@ -22,19 +22,20 @@ const wait = () =>
 
 const floating = () => document.querySelectorAll('.glass.fixed')
 
-const stage = (which: 'tooltip' | 'card') =>
-  render(
+const stage = (which: 'tooltip' | 'card') => {
+  const floater =
+    which === 'tooltip'
+      ? h(Tooltip, { label: 'Show panel', children: h('button', null, 'panel') })
+      : h(HoverCard, { content: 'the whole of what was asked', children: h('button', null, 'ask') })
+  return render(
     h(
       'div',
       null,
       h('div', { 'data-testid': 'thread' }, 'a thread that scrolls itself'),
-      h('div', { 'data-testid': 'bar' }, [
-        which === 'tooltip'
-          ? h(Tooltip, { key: 'f', label: 'Show panel' }, h('button', null, 'panel'))
-          : h(HoverCard, { key: 'f', content: 'the whole of what was asked' }, h('button', null, 'ask'))
-      ])
+      h('div', { 'data-testid': 'bar' }, floater)
     )
   )
+}
 
 describe('a tooltip while another part of the app scrolls', () => {
   it('stands while the thread scrolls under it', () => {

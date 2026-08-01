@@ -152,47 +152,29 @@ afterEach(cleanup)
 
 describe('what a keystroke costs', () => {
   it('measures', () => {
-    const realSubscribe = useCrew.subscribe.bind(useCrew)
-    let live = 0
-    ;(useCrew as unknown as { subscribe: typeof realSubscribe }).subscribe = (listener => {
-      live += 1
-      const off = realSubscribe(listener as never)
-      return () => {
-        live -= 1
-        off()
-      }
-    }) as typeof realSubscribe
-
     const steps = Array.from({ length: STEPS }, (_, index) => stepAt(index))
     useCrew.setState(seed(steps))
     render(createElement(ThreadView, { threadId: THREAD }))
-
     console.log(`events held: ${useCrew.getState().events.length}`)
-    console.log(`live useCrew subscribers: ${live}`)
 
-    const letters = 'hello there crew'.split('')
-    let value = ''
-    act(() => {
-      fireEvent.change(composer(), { target: { value: 'x' } })
+    const time = (label: string, runs: number, fn: (i: number) => void): void => {
+      fn(0)
+      const t = performance.now()
+      for (let i = 1; i <= runs; i++) act(() => fn(i))
+      console.log(`  ${label}: ${((performance.now() - t) / runs).toFixed(2)}ms`)
+    }
+
+    time('a store write nothing here reads', 20, i => {
+      useCrew.setState({ chatDraft: `x${i}` })
     })
-    value = ''
-    const t = performance.now()
-    for (const letter of letters) {
-      value += letter
-      act(() => {
-        fireEvent.change(composer(), { target: { value } })
-      })
-    }
-    const each = (performance.now() - t) / letters.length
-    console.log(`per keystroke: ${each.toFixed(2)}ms`)
-
-    const s = performance.now()
-    for (let i = 0; i < 30; i++) {
-      act(() => {
-        useCrew.setState({ steps: { [PROMPT]: [...steps, stepAt(STEPS + i)] } })
-      })
-    }
-    console.log(`per step landing: ${((performance.now() - s) / 30).toFixed(2)}ms`)
-    ;(useCrew as unknown as { subscribe: typeof realSubscribe }).subscribe = realSubscribe
+    time('setThreadDraft through the store', 20, i => {
+      useCrew.getState().setThreadDraft(THREAD, `hello${i}`)
+    })
+    time('a keystroke in the composer', 16, i => {
+      fireEvent.change(composer(), { target: { value: `hello there crew`.slice(0, i) } })
+    })
+    time('a step landing', 20, i => {
+      useCrew.setState({ steps: { [PROMPT]: [...steps, stepAt(STEPS + i)] } })
+    })
   })
 })
