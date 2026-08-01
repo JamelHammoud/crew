@@ -6,13 +6,25 @@ import type { SessionEvent } from '../src/shared/events'
 import type { PooledAgent } from '../src/shared/llm'
 import type { ThreadMeta } from '../src/renderer/src/state/store'
 
+// Nothing in here has a width, so the one box that has to be measured is
+// written on by hand and its own observer is the thing that reads it again.
+const watchers: Array<{ el: Element; run: () => void }> = []
+
 class TestResizeObserver {
-  observe(): void {}
+  constructor(private readonly run: () => void) {}
+  observe(el: Element): void {
+    watchers.push({ el, run: this.run })
+  }
   unobserve(): void {}
   disconnect(): void {}
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+
+const resized = (el: Element) =>
+  act(() => {
+    for (const watcher of watchers) if (watcher.el === el) watcher.run()
+  })
 
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useCrew } = await import('../src/renderer/src/state/store')
