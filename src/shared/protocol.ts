@@ -244,6 +244,9 @@ export type ServerMessage =
       // that side knows the address.
       tickets?: boolean
       goal?: boolean
+      // What the crew has learned. The host knows the facts and the machine
+      // knows the address, so the words are written there.
+      memories?: CrewMemory[]
     }
   | {
       type: 'steer'
