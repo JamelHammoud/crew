@@ -16,12 +16,6 @@ import type { CanvasProps, CanvasRenderHost, CanvasShapeRecord } from './types'
 
 const join = (...parts: Array<string | undefined>) => parts.filter(Boolean).join(' ')
 
-function HitTestBlocker<Shape extends CanvasShapeRecord>({ host }: { host: CanvasRenderHost<Shape> }) {
-  const moving = useValue('canvas camera state', () => host.getCameraState() === 'moving', [host])
-  if (!moving) return null
-  return <div data-canvas-hit-test-blocker="true" className="crew-hit-test-blocker" />
-}
-
 export function Canvas<Shape extends CanvasShapeRecord>({
   host,
   shapeRenderer,
@@ -62,16 +56,15 @@ export function Canvas<Shape extends CanvasShapeRecord>({
     )
   }, [host])
 
-  const assignRoot = useCallback(
-    (element: HTMLDivElement | null) => {
-      rootRef.current = element
-      if (typeof canvasRef === 'function') canvasRef(element)
-      else if (canvasRef) {
-        canvasRef.current = element
-      }
-    },
-    [canvasRef]
-  )
+  const cameraMoving = useValue('canvas camera state', () => host.getCameraState() === 'moving', [host])
+
+  const assignRoot = (element: HTMLDivElement | null) => {
+    rootRef.current = element
+    if (typeof canvasRef === 'function') canvasRef(element)
+    else if (canvasRef) {
+      canvasRef.current = element
+    }
+  }
 
   return (
     <>
@@ -105,7 +98,7 @@ export function Canvas<Shape extends CanvasShapeRecord>({
         </div>
         <OverlayCanvas host={host} />
         {viewportOverlay && <div style={viewportLayerStyle}>{viewportOverlay}</div>}
-        <HitTestBlocker host={host} />
+        {cameraMoving && <div data-canvas-hit-test-blocker="true" className="crew-hit-test-blocker" />}
       </div>
       {inFrontOfCanvas && (
         <div className="crew-canvas-in-front" style={viewportLayerStyle}>
