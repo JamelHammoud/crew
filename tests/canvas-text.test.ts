@@ -284,7 +284,8 @@ describe('canvas text autosizing', () => {
       scale: 2,
       autoSize: true,
       textAlign: 'end' as const,
-      width: 20
+      width: 20,
+      style: 'm|draw|end'
     }
     const next = { ...previous, width: 20 }
     const content = compensateTextGrowth(previous, next, { width: 20, height: 10 }, { width: 30, height: 20 }, true)
