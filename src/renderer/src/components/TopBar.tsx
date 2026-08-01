@@ -86,7 +86,8 @@ export default function TopBar({
       style={{ height: TOP_BAR_H }}
       className="top-bar app-drag relative grid grid-cols-[1fr_auto_1fr] items-center px-6 shrink-0"
     >
-      <span className={`flex items-center gap-1 ${full || pinned ? '' : 'mac:pl-[64px]'}`}>
+      <span className={`flex items-center gap-2 ${full || pinned ? '' : 'mac:pl-[64px]'}`}>
+        <CrewLogo />
         <Tooltip label={pinned ? 'Hide projects' : 'Projects'}>
           <button
             onClick={toggleSidebar}
@@ -98,10 +99,9 @@ export default function TopBar({
               pinned ? 'bg-ink-800 text-fg' : 'text-fg-muted hover:text-fg-secondary hover:bg-fg/[0.04]'
             }`}
           >
-            <PanelLeftGlyph className={`w-[18px] h-[18px] ${pinned ? '' : 'scale-x-[-1]'}`} />
+            <PanelLeftGlyph className="w-[18px] h-[18px]" />
           </button>
         </Tooltip>
-        <CrewLogo />
       </span>
 
       <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">
