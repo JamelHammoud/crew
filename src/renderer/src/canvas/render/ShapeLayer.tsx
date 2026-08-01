@@ -41,6 +41,8 @@ interface CanvasShapeProps<Shape extends CanvasShapeRecord> {
 }
 
 function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, result }: CanvasShapeProps<Shape>) {
+  const probe = (globalThis as never as { __render?: Record<string, number> }).__render
+  if (probe) probe.shapeRenders = (probe.shapeRenders ?? 0) + 1
   const foregroundRef = useRef<HTMLDivElement>(null)
   const backgroundRef = useRef<HTMLDivElement>(null)
   const memoized = useRef({ transform: '', clipPath: '', width: '', height: '' })
