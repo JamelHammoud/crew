@@ -1,6 +1,6 @@
-import { isImageType, type Attachment } from '../../../shared/attachments'
+import type { Attachment } from '../../../shared/attachments'
 import type { SessionEvent } from '../../../shared/events'
-import { messageReactionTarget } from '../../../shared/reactions'
+import { eventIndex } from './eventIndex'
 
 const FLASH = 'message-flash'
 const FLASH_MS = 520
