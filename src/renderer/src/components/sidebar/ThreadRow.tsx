@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { EmojiText } from '../Emoji'
 import Spinner from '../Spinner'
 import { useThreadMenu } from '../threadMenu'
 import { sameThreadRow, type ThreadRowProps } from './placeItems'
