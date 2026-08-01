@@ -441,6 +441,11 @@ const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]):
 // landing was your own, and nobody else's window moves for it.
 let forkWanted: string | null = null
 
+// The thread this window was reading in the project it is going back to. The
+// welcome is what opens it, since it is the welcome that says which threads
+// there are to open.
+let threadWanted: string | null = null
+
 export const useCrew = create<CrewState>((set, get) => {
   const applyEvent = (event: SessionEvent) => {
     const cue = soundFor(event, get().selfId, get())
