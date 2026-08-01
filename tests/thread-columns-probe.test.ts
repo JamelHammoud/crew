@@ -234,9 +234,11 @@ describe('the chat standing beside a thread', () => {
   const reveal = (): void => {
     fireEvent.pointerMove(columns()[0]!, { clientX: 5000 })
   }
+  const standing = (): HTMLElement | null =>
+    document.querySelector<HTMLElement>('button[aria-pressed][aria-label="Chat"]')
   const slot = (): HTMLElement => {
     reveal()
-    return screen.getByLabelText('Chat')
+    return standing()!
   }
   const chatColumn = (): HTMLElement => document.querySelector<HTMLElement>('[data-column="chat"]')!
 
