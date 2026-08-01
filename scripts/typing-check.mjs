@@ -358,8 +358,10 @@ function run(dir) {
 
 const say = result => {
   const what = result.contained ? `${result.rows} rows, contained` : `${result.rows} rows`
-  console.log(`  ${what.padEnd(22)} keystroke mean ${result.sync.mean}ms  median ${result.sync.median}ms  p95 ${result.sync.p95}ms  worst ${result.sync.worst}ms`)
+  console.log(`  ${what.padEnd(22)} ${result.drawn} rows drawn, ${result.tall}px of thread`)
+  console.log(`  ${''.padEnd(22)} keystroke mean ${result.sync.mean}ms  median ${result.sync.median}ms  p95 ${result.sync.p95}ms  worst ${result.sync.worst}ms`)
   console.log(`  ${''.padEnd(22)} to frame  mean ${result.frame.mean}ms  median ${result.frame.median}ms  p95 ${result.frame.p95}ms`)
+  console.log(`  ${''.padEnd(22)} the reflow itself, one read ${result.once.median}ms, two reads ${result.twice.median}ms`)
 }
 
 let bad = false
