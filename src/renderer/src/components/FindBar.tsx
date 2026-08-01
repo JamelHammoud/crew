@@ -49,12 +49,18 @@ export default function FindBar({
   containerRef,
   scrollerRef,
   placeholder = 'Find in page',
-  className = 'top-[78px] right-8'
+  className = 'top-[78px] right-8',
+  listens = true
 }: {
   containerRef: RefObject<HTMLElement | null>
   scrollerRef: RefObject<HTMLElement | null>
   placeholder?: string
   className?: string
+  // Several of these can stand on the page at once, one to a thread, and the
+  // shortcut belongs to the one you are writing in. A bar already open still
+  // answers it, or the way to close the bar in front of you would depend on
+  // which column was last touched.
+  listens?: boolean
 }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
