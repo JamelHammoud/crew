@@ -1,7 +1,7 @@
 import { Group2d, Rectangle2d, intersectPolygonPolygon, type Geometry2d } from '../geometry'
 import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../export'
 import { Box, Mat, Vec, pointInPolygon } from '../math'
-import { computed, unsafe__withoutCapture, type Computed } from '../signals'
+import { atom, computed, unsafe__withoutCapture, type Atom, type Computed } from '../signals'
 import {
   DocumentRecordType,
   BindingRecordType,
