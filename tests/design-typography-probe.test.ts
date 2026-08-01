@@ -4,7 +4,15 @@ import { createElement } from 'react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { CrewCanvas } from '../src/renderer/src/canvas/CrewCanvas'
 import { Editor } from '../src/renderer/src/canvas/editor'
-import { createShapeId, createTLStore, fromPlainText, getSnapshot, loadSnapshot } from '../src/renderer/src/canvas/schema'
+import {
+  createShapeId,
+  createTLStore,
+  fromPlainText,
+  getSnapshot,
+  loadSnapshot,
+  renderHtmlFromRichTextForMeasurement
+} from '../src/renderer/src/canvas/schema'
+import { resolveLineHeight, richTextForMeasurement } from '../src/renderer/src/canvas/text'
 import type { TLTextShape } from '../src/renderer/src/canvas'
 import { DesignTextUtil } from '../src/renderer/src/design/TextUtil'
 import { setTextShapeType, textShapeType } from '../src/renderer/src/design/textType'
