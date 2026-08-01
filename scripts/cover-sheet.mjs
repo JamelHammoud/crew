@@ -159,11 +159,13 @@ window.faces = () => {
     paint.arc(x + box / 2, y + box / 2, box / 2, 0, Math.PI * 2)
     paint.clip()
     const art = coverFor({ id, colors: paletteFor(id) })
+    paint.filter = 'brightness(' + FIELD_LIGHT + ')'
     if (art) paint.drawImage(art, x, y, box, box)
     else {
       paint.fillStyle = '#777'
       paint.fillRect(x, y, box, box)
     }
+    paint.filter = 'none'
     const room = Math.ceil(box * 0.3)
     const over = document.createElement('canvas')
     over.width = box + room * 2
