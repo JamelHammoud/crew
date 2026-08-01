@@ -26,6 +26,7 @@ import {
   buildThread,
   eventsOfThread,
   lastEnd,
+  lastStart,
   threadAsk,
   THREAD_STATE_LABELS,
   threadState,
