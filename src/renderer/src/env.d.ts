@@ -52,7 +52,7 @@ declare global {
     openMediaSettings(kind: MediaKind): Promise<void>
     screenSources(): Promise<ScreenSource[]>
     pickScreenSource(id: string | null): Promise<void>
-    openExternal(url: string): Promise<void>
+    openExternal(url: string): Promise<boolean>
     copyImage(src: string): Promise<boolean>
     readFile(path: string): Promise<RepoFile | null>
     listFiles(): Promise<string[]>
