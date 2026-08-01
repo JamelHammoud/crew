@@ -439,6 +439,24 @@ textarea:placeholder-shown {
   background: rgb(252 252 252 / 0.975);
 }
 
+.sidebar-glass {
+  background: rgb(24 24 24 / 0.68);
+  backdrop-filter: blur(32px) saturate(180%);
+}
+
+.sidebar-glass.glass-strong {
+  background: rgb(24 24 24 / 0.84);
+  backdrop-filter: blur(48px) saturate(180%);
+}
+
+.light .sidebar-glass {
+  background: rgb(252 252 252 / 0.76);
+}
+
+.light .sidebar-glass.glass-strong {
+  background: rgb(252 252 252 / 0.88);
+}
+
 .rail {
   transform: translateX(-100%);
   visibility: hidden;

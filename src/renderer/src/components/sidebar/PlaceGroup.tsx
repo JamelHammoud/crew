@@ -36,9 +36,18 @@ export default function PlaceGroup({
   onForget: () => void
 }) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const held = here || threads.length > 0
 
   return (
-    <div className="pb-2.5">
+    <div
+      className={`mb-2 rounded-[16px] p-1 transition-colors duration-150 ${
+        here
+          ? 'bg-fg/[0.055] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.045),0_8px_24px_rgb(0_0_0/0.1)]'
+          : held
+            ? 'bg-fg/[0.022]'
+            : 'hover:bg-fg/[0.025]'
+      }`}
+    >
       <button
         onClick={onOpen}
         onContextMenu={event => {
@@ -46,29 +55,29 @@ export default function PlaceGroup({
           setMenuAt({ x: event.clientX, y: event.clientY })
         }}
         aria-current={here ? 'page' : undefined}
-        className={`group relative w-full min-h-10 rounded-xl px-2 py-1.5 flex items-center gap-2 text-left transition-colors duration-150 hover:bg-fg/[0.055] ${
-          here
-            ? 'bg-fg/[0.045] text-fg before:absolute before:left-0 before:top-1/2 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-fg/80'
-            : 'text-fg/65 hover:text-fg/85'
+        className={`group w-full min-h-11 rounded-xl px-1.5 py-1.5 flex items-center gap-2.5 text-left transition-colors duration-150 ${
+          here ? 'text-fg' : 'text-fg/70 hover:bg-fg/[0.04] hover:text-fg'
         }`}
       >
         <span
-          className={`w-6 h-6 shrink-0 grid place-items-center transition-colors duration-150 ${
-            here ? 'text-fg/75' : 'text-fg/35 group-hover:text-fg/60'
+          className={`w-8 h-8 shrink-0 rounded-[10px] grid place-items-center border transition-colors duration-150 ${
+            here
+              ? 'border-fg/[0.1] bg-fg/[0.1] text-fg/85'
+              : 'border-fg/[0.055] bg-fg/[0.035] text-fg/45 group-hover:border-fg/[0.08] group-hover:bg-fg/[0.055] group-hover:text-fg/70'
           }`}
         >
           {markOf(place)}
         </span>
         <span className="min-w-0 flex-1 flex flex-col">
           <span className="truncate text-sm font-medium leading-[17px]">{place.title}</span>
-          <span className={`truncate text-xs leading-4 ${here ? 'text-fg/40' : 'text-fg/25 group-hover:text-fg/40'}`}>
+          <span className={`truncate text-xs leading-4 ${here ? 'text-fg/45' : 'text-fg/30 group-hover:text-fg/45'}`}>
             {place.line}
           </span>
         </span>
         {busy && <Spinner size={13} className="text-fg/45" />}
       </button>
       {threads.length > 0 && (
-        <div className="mt-0.5 space-y-0.5">
+        <div className="mt-1 space-y-0.5 border-t border-fg/[0.055] pt-1">
           {threads.map(thread => (
             <ThreadRow
               key={thread.id}
