@@ -65,12 +65,14 @@ export class PointingShape extends StateNode<SelectEditor> {
     const focusedGroupId = this.editor.getFocusedGroupId()
     const point = this.editor.inputs.getCurrentPagePoint()
     const additive = Boolean(info.shiftKey || info.accelKey)
+    const pressed = this.editor.getShape(this.hitShape.id)
     const hit =
+      pressed ??
       this.editor.getShapeAtPoint(point, {
         margin: this.editor.options.hitTestMargin / this.editor.getZoomLevel(),
         hitInside: true,
         renderingOnly: true
-      }) ?? this.hitShape
+      })
     if (!hit || !this.editor.getShape(hit.id)) {
       this.parent.transition('idle', info)
       return
