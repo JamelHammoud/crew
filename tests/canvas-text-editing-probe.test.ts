@@ -245,10 +245,7 @@ describe('canvas text editing', () => {
     await waitFor(() => expect(view.container.querySelector(`[data-canvas-text-editor="${textId}"]`)).toBeTruthy())
 
     const layer = view.container.querySelector(`[data-canvas-text-editor="${textId}"]`) as HTMLElement
-    const fallback = /var\(--design-selected,\s*([^)]+)\)/.exec(layer.style.outline)?.[1]
-    expect(fallback).toBeTruthy()
-    expect(fallback).not.toBe('')
-    expect(fallback).toMatch(/^(#|rgb|hsl)/)
+    expect(layer.style.outline).toMatch(/var\(--design-selected,\s*(#|rgb|hsl)/)
   })
 
   it('follows the shape when it moves and when it is rotated while the caret is open', async () => {
