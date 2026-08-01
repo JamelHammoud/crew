@@ -1702,6 +1702,10 @@ class FallbackShapeUtil extends ShapeUtil<TLShape> {
   }
 }
 
+function idOf(shapeOrId: TLShape | TLShapeId): TLShapeId {
+  return typeof shapeOrId === 'string' ? shapeOrId : shapeOrId.id
+}
+
 function defaultContainer(): HTMLElement {
   if (typeof document === 'undefined') return {} as HTMLElement
   return document.body

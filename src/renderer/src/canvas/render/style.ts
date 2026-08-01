@@ -34,6 +34,13 @@ export function setStyle(element: HTMLElement | null, property: string, value: s
   element?.style.setProperty(property, value)
 }
 
+export const CANVAS_ZOOM_VARIABLE = '--crew-canvas-zoom'
+export const CANVAS_SCALE_VARIABLE = '--crew-canvas-scale'
+
+export function cameraZoomVariables(zoom: number): { zoom: string; scale: string } {
+  return { zoom: String(toDomPrecision(zoom)), scale: String(toDomPrecision(1 / zoom)) }
+}
+
 export const canvasStyle: CSSProperties = {
   position: 'absolute',
   inset: 0,
