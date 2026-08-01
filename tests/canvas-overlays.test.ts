@@ -45,6 +45,7 @@ function recorder(): Recorder {
     lineTo: note('lineTo'),
     arc: note('arc'),
     roundRect: note('roundRect'),
+    setLineDash: note('setLineDash'),
     fill: note('fill'),
     stroke: note('stroke'),
     set lineWidth(value: number) {
