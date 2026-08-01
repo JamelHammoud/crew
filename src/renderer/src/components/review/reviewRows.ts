@@ -50,8 +50,11 @@ export function reviewRows(diff: string): Row[] {
     if (head) {
       settle()
       // The first stretch opens the reading rather than interrupting it, so
-      // only the ones after it stand a row for what was skipped.
-      if (started) rows.push({ text: '', line: null, changed: false, inner: [], gap: true })
+      // only the ones after it stand a row for what was skipped. Git names what
+      // the lines below it sit inside, which is the one thing a reader landing
+      // partway down a file cannot work out from the lines themselves, so the
+      // row carries it rather than throwing it away.
+      if (started) rows.push({ text: head[2].trim(), line: null, changed: false, inner: [], gap: true })
       started = true
       at = Number(head[1])
       continue
