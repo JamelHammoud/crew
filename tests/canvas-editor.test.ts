@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { Box } from '../src/renderer/src/canvas/math'
-import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
-import { ArrowShapeUtil, FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } from '../src/renderer/src/canvas/shapes'
+import { createShapeId, createTLStore, fromPlainText, type TLShapeId } from '../src/renderer/src/canvas/schema'
+import {
+  ArrowShapeUtil,
+  FrameShapeUtil,
+  GeoShapeUtil,
+  GroupShapeUtil,
+  TextShapeUtil
+} from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
 function editor() {
@@ -205,6 +211,39 @@ describe('the canvas editor', () => {
     expect(entry?.overlays).toHaveLength(result.indicators.length)
     subject.snaps.clearIndicators()
     expect(subject.overlays.getOverlayUtil('snap_indicator').isActive()).toBe(false)
+  })
+
+  it('keeps resize targets out of a short text selection and restores the horizontal edges when large enough', () => {
+    const subject = new Editor({
+      store: createTLStore({ id: 'text-overlay-test' }),
+      shapeUtils: [TextShapeUtil],
+      tools: [SelectTool],
+      getContainer: () => document.body
+    })
+    const id = createShapeId('short-text')
+    subject.createShape({
+      id,
+      type: 'text',
+      x: 20,
+      y: 30,
+      props: { richText: fromPlainText('Crew'), autoSize: false, w: 200 }
+    })
+    subject.select(id)
+    subject.setCamera({ x: 0, y: 0, z: 0.15 })
+    const shortBounds = subject.getShapePageBounds(id)!
+    expect(subject.overlays.getOverlayAtPoint(shortBounds.center)).toBeNull()
+    const smallHandles = subject.overlays
+      .getActiveOverlayEntries()
+      .flatMap(entry => entry.overlays)
+      .filter(overlay => overlay.type === 'selection_foreground')
+      .map(overlay => overlay.props.handle)
+    expect(smallHandles).toEqual(['top_left', 'bottom_right'])
+
+    subject.setCamera({ x: 0, y: 0, z: 1 })
+    const largeBounds = subject.getShapePageBounds(id)!
+    expect(subject.overlays.getOverlayAtPoint({ x: largeBounds.maxX, y: largeBounds.center.y })?.props.handle).toBe(
+      'right'
+    )
   })
 
   it('binds arrow terminals to shapes and exposes editable arrow handles', () => {
