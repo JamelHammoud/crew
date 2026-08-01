@@ -1,4 +1,5 @@
 import { parseLink } from '../../../../shared/link'
+import { joinPlace, projectPlace } from '../../../../shared/places'
 import type { RecentJoin, RecentProject } from '../../../../shared/recent'
 
 export interface Place {
@@ -36,7 +37,7 @@ function serverName(link: string): string {
 // choice.
 export function placesOf(projects: RecentProject[], joins: RecentJoin[]): Place[] {
   const fromProjects = projects.map<Place>(project => ({
-    key: `project:${project.folder}`,
+    key: projectPlace(project.folder),
     at: project.openedAt,
     title: folderName(project.folder),
     line: folderLine(project.folder),
