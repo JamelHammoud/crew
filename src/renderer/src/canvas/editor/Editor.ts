@@ -793,7 +793,7 @@ export class Editor {
     const ids = shapes
       .map(shape => (typeof shape === 'string' ? shape : shape.id))
       .filter(id => this.getShape(id) !== undefined)
-    this.selection.setSelectedShapeIds(rootIds(this.allShapes(), ids))
+    this.commitSelection(rootIds(this.allShapes(), ids))
     return this
   }
 
@@ -802,7 +802,7 @@ export class Editor {
   }
 
   selectNone(): this {
-    this.selection.setSelectedShapeIds([])
+    this.commitSelection([])
     return this
   }
 
