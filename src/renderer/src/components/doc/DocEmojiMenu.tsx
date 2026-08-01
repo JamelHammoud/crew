@@ -1,5 +1,5 @@
 import type { BlockNoteEditor } from '@blocknote/core'
-import type { SuggestionMenuProps } from '@blocknote/react'
+import { useBlockNoteEditor, type SuggestionMenuProps } from '@blocknote/react'
 import { useEffect, useRef } from 'react'
 import Emoji from '../Emoji'
 import { searchEmoji, type EmojiEntry } from '../emojiData'
