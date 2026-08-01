@@ -1714,12 +1714,11 @@ const driveSource = String.raw`(async () => {
       .filter(shape => {
         const bounds = boundsOf(shape)
         if (!bounds || bounds.w * zoom < 24 || bounds.h * zoom < 24) return false
-        const hit = editor.getShapeAtPoint(bounds.center, { margin: 0, hitInside: true, renderingOnly: true })
-        return hit && hit.id === shape.id
+        return Boolean(aimAt(shape.id))
       })
       .pop()
     if (!target) return null
-    const at = viewport(boundsOf(target).center)
+    const at = aimAt(target.id)
     openPaint()
     const onto = await stepPaint(async () => {
       pointer('pointermove', at.x, at.y, 0, nodeOf(target.id) || surface)
