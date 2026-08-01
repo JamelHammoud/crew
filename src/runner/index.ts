@@ -14,6 +14,10 @@ export interface RunnerOptions {
   name: string
   code: string
   repoPath: string
+  // The folder the crew lives in on this machine, which is the project itself
+  // only when the crew rides in it. Left out, nothing of the crew's is written
+  // into the project at all.
+  crewBase?: string | null
   providers: Provider[]
   agents?: AgentDef[]
   reconnectDelayMs?: number
