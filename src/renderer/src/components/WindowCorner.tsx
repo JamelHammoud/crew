@@ -7,12 +7,17 @@ import { TOP_BAR_H } from './TopBar'
 
 export default function WindowCorner() {
   const pinned = useSidebar(s => s.pinned)
+  const peeking = useSidebar(s => s.peeking)
   const peek = useSidebar(s => s.peek)
   const toggle = useSidebar(s => s.toggle)
   const full = useFullScreen()
 
   return (
     <div
+      onMouseEnter={() => {
+        if (peeking) peek(true)
+      }}
+      onMouseLeave={() => peek(false)}
       style={{ height: TOP_BAR_H }}
       className="app-drag absolute top-0 left-0 z-[55] flex items-center px-6"
     >
@@ -22,7 +27,6 @@ export default function WindowCorner() {
           <button
             onClick={toggle}
             onMouseEnter={() => peek(true)}
-            onMouseLeave={() => peek(false)}
             aria-label="Projects"
             aria-expanded={pinned}
             className={`app-no-drag w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
