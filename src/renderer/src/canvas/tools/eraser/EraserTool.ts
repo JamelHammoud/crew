@@ -301,17 +301,12 @@ export class EraserTool {
   stateId: EraserStateId = 'idle'
   info: { onInteractionEnd?: string } = {}
 
-  constructor(
-    readonly editor: EraserEditor,
-    info: EraserPointerEvent & { onInteractionEnd?: string } = {}
-  ) {
+  constructor(readonly editor: EraserEditor) {
     this.children = {
       idle: new EraserIdle(this, editor),
       pointing: new EraserPointing(this, editor),
       erasing: new EraserErasing(this, editor)
     }
-    this.onEnter(info)
-    this.children.idle.onEnter(info)
   }
 
   get state(): EraserState {

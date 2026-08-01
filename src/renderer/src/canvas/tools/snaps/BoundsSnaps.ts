@@ -280,7 +280,7 @@ function collectGapSnaps(
     if (gap.length > selectionPageBounds.width && rounded(Math.abs(centerNudge)) <= rounded(minOffset.x)) {
       if (rounded(Math.abs(centerNudge)) < rounded(minOffset.x)) nearestSnapsX.length = 0
       minOffset.x = Math.abs(centerNudge)
-      addCenterSnap(nearestSnapsX, { type: 'gap_center', gap, nudge: centerNudge })
+      addCenterSnap(nearestSnapsX, { type: 'gap_center', gap, nudge: centerNudge }, breadthsIntersect)
     }
 
     const leftNudge = gap.startNode.pageBounds.minX - gap.length - selectionPageBounds.maxX
@@ -324,7 +324,7 @@ function collectGapSnaps(
     if (gap.length > selectionPageBounds.height && rounded(Math.abs(centerNudge)) <= rounded(minOffset.y)) {
       if (rounded(Math.abs(centerNudge)) < rounded(minOffset.y)) nearestSnapsY.length = 0
       minOffset.y = Math.abs(centerNudge)
-      addCenterSnap(nearestSnapsY, { type: 'gap_center', gap, nudge: centerNudge })
+      addCenterSnap(nearestSnapsY, { type: 'gap_center', gap, nudge: centerNudge }, breadthsOverlap)
       continue
     }
 
