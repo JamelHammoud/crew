@@ -28,6 +28,11 @@ describe('no real address is written into a suite', () => {
     expect(offenders(`ws://${madeUp}:2739/ws`)).toEqual([madeUp])
   })
 
+  it('catches one written out as a pattern', () => {
+    const madeUp = [198, 18, 0, 1].join('\\.')
+    expect(offenders(`name: /${madeUp}:2739/`)).toEqual(['198.18.0.1'])
+  })
+
   it('leaves loopback and the documentation ranges alone', () => {
     expect(offenders('http://127.0.0.1:2739 0.0.0.0 192.0.2.10 198.51.100.4 203.0.113.7')).toEqual([])
   })
