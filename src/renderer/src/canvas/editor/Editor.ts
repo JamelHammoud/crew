@@ -1419,12 +1419,36 @@ export class Editor {
     return null
   }
 
-  isPointInShape(shape: TLShape, point: VecLike): boolean {
-    return this.getShapeGeometry(shape).hitTestPoint(this.getPointInShapeSpace(shape, point), 0, true)
+  isPointInShape(
+    shapeOrId: TLShape | TLShapeId,
+    point: VecLike,
+    options: { margin?: number; hitInside?: boolean } = {}
+  ): boolean {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return false
+    const mask = this.getShapeMask(shape)
+    if (mask && !pointInPolygon(point, mask)) return false
+    return this.getShapeGeometry(shape).hitTestPoint(
+      this.getPointInShapeSpace(shape, point),
+      options.margin ?? 0,
+      options.hitInside ?? false
+    )
   }
 
-  isPointInShapeLabel(shape: TLShape, point: VecLike): boolean {
-    return this.isPointInShape(shape, point)
+  isPointInShapeLabel(shapeOrId: TLShape | TLShapeId, point: VecLike): boolean {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape) return false
+    const geometry = this.getShapeGeometry(shape)
+    if (!(geometry instanceof Group2d)) return false
+    const inShape = this.getPointInShapeSpace(shape, point)
+    return geometry.children.some(child => child.isLabel && child.isPointInBounds(inShape))
+  }
+
+  isOverArrowLabel(shapeOrId: TLShape | TLShapeId | undefined): boolean {
+    const shape = typeof shapeOrId === 'string' ? this.getShape(shapeOrId) : shapeOrId
+    if (!shape || shape.type !== 'arrow') return false
+    if (!this.getShapeText(shape)?.trim()) return false
+    return this.isPointInShapeLabel(shape, this.inputs.getCurrentPagePoint())
   }
 
   getShapeIdsInsideBounds(bounds: Box): Set<TLShapeId> {

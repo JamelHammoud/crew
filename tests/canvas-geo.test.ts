@@ -9,7 +9,9 @@ import {
   type TLShapeId
 } from '../src/renderer/src/canvas/schema'
 import {
+  FrameShapeUtil,
   GeoShapeUtil,
+  LineShapeUtil,
   PathBuilder,
   defaultGeoTypeDefinitions,
   geoGeometry,
@@ -236,6 +238,117 @@ describe('geo painting', () => {
     const bounds = util.getGeometry(geo()).bounds
     expect(Math.round(bounds.w)).toBe(140)
     expect(Math.round(bounds.h)).toBe(90)
+  })
+})
+
+describe('frames', () => {
+  it('clips whatever is put inside it', () => {
+    const util = new FrameShapeUtil(editor)
+    const frame = {
+      id: 'shape:f' as TLShapeId,
+      typeName: 'shape',
+      type: 'frame',
+      x: 0,
+      y: 0,
+      rotation: 0,
+      index: 'a1',
+      parentId: 'page:page',
+      isLocked: false,
+      opacity: 1,
+      meta: {},
+      props: { ...util.getDefaultProps(), w: 300, h: 200, name: 'Home' }
+    } as unknown as TLShape<'frame'>
+
+    const clip = util.getClipPath(frame)
+    expect(clip).toBeDefined()
+    expect(clip?.map(point => [point.x, point.y])).toEqual([
+      [0, 0],
+      [300, 0],
+      [300, 200],
+      [0, 200]
+    ])
+  })
+
+  it('can be grabbed by its name', () => {
+    const util = new FrameShapeUtil(editor)
+    const named = {
+      id: 'shape:f' as TLShapeId,
+      typeName: 'shape',
+      type: 'frame',
+      x: 0,
+      y: 0,
+      rotation: 0,
+      index: 'a1',
+      parentId: 'page:page',
+      isLocked: false,
+      opacity: 1,
+      meta: {},
+      props: { ...util.getDefaultProps(), w: 300, h: 200, name: 'Home' }
+    } as unknown as TLShape<'frame'>
+
+    const geometry = util.getGeometry(named) as unknown as {
+      children?: { isLabel: boolean; isPointInBounds(point: { x: number; y: number }): boolean }[]
+    }
+    const label = geometry.children?.find(child => child.isLabel)
+    expect(label).toBeDefined()
+    expect(label?.isPointInBounds({ x: 4, y: -12 })).toBe(true)
+    expect(util.getText(named)).toBe('Home')
+  })
+
+  it('keeps the frame bounds off its name', () => {
+    const util = new FrameShapeUtil(editor)
+    const named = {
+      id: 'shape:f' as TLShapeId,
+      typeName: 'shape',
+      type: 'frame',
+      x: 0,
+      y: 0,
+      rotation: 0,
+      index: 'a1',
+      parentId: 'page:page',
+      isLocked: false,
+      opacity: 1,
+      meta: {},
+      props: { ...util.getDefaultProps(), w: 300, h: 200, name: 'A very long frame name indeed' }
+    } as unknown as TLShape<'frame'>
+    const bounds = util.getGeometry(named).bounds
+    expect(bounds.minY).toBe(0)
+    expect(bounds.h).toBe(200)
+  })
+})
+
+describe('lines', () => {
+  it('paints every dash style, wobble included', () => {
+    const util = new LineShapeUtil(editor)
+    const line = (dash: TLShape<'line'>['props']['dash']) =>
+      ({
+        id: 'shape:l' as TLShapeId,
+        typeName: 'shape',
+        type: 'line',
+        x: 0,
+        y: 0,
+        rotation: 0,
+        index: 'a1',
+        parentId: 'page:page',
+        isLocked: false,
+        opacity: 1,
+        meta: {},
+        props: {
+          ...util.getDefaultProps(),
+          dash,
+          points: {
+            a1: { id: 'a1', index: 'a1', x: 0, y: 0 },
+            a2: { id: 'a2', index: 'a2', x: 60, y: 40 },
+            a3: { id: 'a3', index: 'a3', x: 120, y: 0 }
+          }
+        }
+      }) as unknown as TLShape<'line'>
+
+    expect(markup(util.component(line('dashed')))).toContain('stroke-dasharray')
+    expect(markup(util.component(line('dotted')))).toContain('stroke-dasharray')
+    expect(markup(util.component(line('draw')))).toContain('Q')
+    expect(markup(util.component(line('solid')))).not.toContain('stroke-dasharray')
+    expect(markup(util.component(line('none')))).not.toContain('<path')
   })
 })
 

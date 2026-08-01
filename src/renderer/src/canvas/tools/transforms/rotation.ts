@@ -83,6 +83,14 @@ export function rotateShapes<Shape extends TLShape>(
 
 export const applyRotationToSnapshotShapes = rotateShapes
 
+export const ROTATE_CURSOR_TYPES: Record<string, string> = {
+  bottom_left_rotate: 'swne-rotate',
+  bottom_right_rotate: 'senw-rotate',
+  top_left_rotate: 'nwse-rotate',
+  top_right_rotate: 'nesw-rotate',
+  mobile_rotate: 'grabbing'
+}
+
 export interface RotatingInfo<Shape extends TLShape = TLShape> {
   target?: 'selection'
   handle?: string
@@ -204,13 +212,14 @@ export class Rotating<Shape extends TLShape = TLShape> extends TransformState<
     }
     if (lifecycle.length) this.editor.updateShapes(lifecycle)
     this.editor.setCursor?.({
-      type: this.info.handle === 'mobile_rotate' ? 'grabbing' : 'rotate',
+      type: ROTATE_CURSOR_TYPES[this.info.handle ?? ''] ?? 'rotate',
       rotation: delta + this.snapshot.initialShapesRotation
     })
   }
 
   private complete(): void {
     this.apply('end', true)
+    this.editor.kickoutOccludedShapes?.(this.snapshot.shapeSnapshots.map(snapshot => snapshot.shape.id))
     this.finish()
   }
 
