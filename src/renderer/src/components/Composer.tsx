@@ -44,11 +44,11 @@ function EmojiHighlight({
         ) : (
           <span key={index} className="relative inline-block">
             {token.text}
-            <span className={`absolute inset-y-0 -inset-x-px flex items-center justify-center ${surface}`}>
-              {covers(selection, start, end) && (
-                <span className="absolute inset-y-0 inset-x-px bg-selection" />
-              )}
-              <Emoji char={token.entry.char} size="1.15em" />
+            <span
+              className={`absolute inset-x-0 top-1/2 -translate-y-1/2 aspect-square flex items-center justify-center ${surface}`}
+            >
+              {covers(selection, start, end) && <span className="absolute inset-0 bg-selection" />}
+              <Emoji char={token.entry.char} size="100%" />
             </span>
           </span>
         )
