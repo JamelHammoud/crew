@@ -2,7 +2,7 @@ import type { PanelMemory } from './browser'
 
 export interface ProjectMemory {
   panel: PanelMemory
-  openThreadId: string | null
+  openThreadIds: string[]
 }
 
 const held = new Map<string, ProjectMemory>()

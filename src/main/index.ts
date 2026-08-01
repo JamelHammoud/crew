@@ -318,14 +318,13 @@ function warmTerminals(): void {
   }
 }
 
-function createWindow(): BrowserWindow {
+function createWindow(threadId?: string): BrowserWindow {
   const devUrl = process.env['ELECTRON_RENDERER_URL']
+  const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
-    createWindowOptions(
-      process.platform,
-      path.join(dirname, '../preload/preload.mjs'),
-      inspectable
-    )
+    threadId
+      ? createThreadWindowOptions(process.platform, preload, inspectable)
+      : createWindowOptions(process.platform, preload, inspectable)
   )
   if (process.platform !== 'darwin') win.setIcon(appIcon(iconTheme, chosenIcon))
   const isAppUrl = (url: string) => url.startsWith('file://') || (devUrl ? url.startsWith(devUrl) : false)
