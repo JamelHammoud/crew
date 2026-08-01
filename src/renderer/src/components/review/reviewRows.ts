@@ -79,10 +79,3 @@ export function reviewRows(diff: string): Row[] {
   settle()
   return rows
 }
-
-// How much of a file the change really touches. A row that is only context is
-// still a row, so a file drawn at two hundred rows for four changed lines is
-// worth folding rather than opening.
-export function changedRows(rows: Row[]): number {
-  return rows.filter(row => row.changed).length
-}
