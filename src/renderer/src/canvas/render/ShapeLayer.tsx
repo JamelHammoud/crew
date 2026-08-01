@@ -107,6 +107,44 @@ function CullingController<Shape extends CanvasShapeRecord>({ host }: { host: Ca
   return null
 }
 
+interface ShapeContentProps<Shape extends CanvasShapeRecord> {
+  host: CanvasRenderHost<Shape>
+  renderer: CanvasShapeRenderer<Shape>
+  shape: Shape
+  behind: boolean
+}
+
+function ShapeContentView<Shape extends CanvasShapeRecord>({
+  host,
+  renderer,
+  shape,
+  behind
+}: ShapeContentProps<Shape>): ReactNode {
+  return useStateTracking(
+    `canvas shape content ${shape.type}`,
+    () => {
+      const latest = unsafe__withoutCapture(() => host.getShape(shape.id)) ?? shape
+      return behind ? renderer.renderBackground?.(latest) : renderer.render(latest)
+    },
+    [host, renderer, shape.id, behind]
+  )
+}
+
+function sameShapeContentProps<Shape extends CanvasShapeRecord>(
+  previous: ShapeContentProps<Shape>,
+  next: ShapeContentProps<Shape>
+): boolean {
+  return (
+    previous.host === next.host &&
+    previous.renderer === next.renderer &&
+    previous.behind === next.behind &&
+    previous.shape.props === next.shape.props &&
+    previous.shape.meta === next.shape.meta
+  )
+}
+
+const ShapeContent = memo(ShapeContentView, sameShapeContentProps) as typeof ShapeContentView
+
 interface CanvasShapeProps<Shape extends CanvasShapeRecord> {
   host: CanvasRenderHost<Shape>
   renderer: CanvasShapeRenderer<Shape>
@@ -118,7 +156,6 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
   const backgroundRef = useRef<HTMLDivElement>(null)
   const memoized = useRef({ transform: '', clipPath: '', width: '', height: '' })
   const culling = useMountedShapeCulling()
-  const background = renderer.renderBackground?.(result.shape)
 
   useCanvasLayoutReactor(
     `canvas shape ${result.id}`,
