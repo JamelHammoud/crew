@@ -70,12 +70,15 @@ describe('CrewSocket', () => {
     const second = made[1]
     second.open()
 
+    expect(first.closed).toBe(false)
+    second.message({ type: 'welcome', selfId: 'two', snapshot: {} })
+
     first.finishClose()
     first.message({ type: 'typing.room', typists: [{ memberId: 'old', where: null }] })
     vi.advanceTimersByTime(20000)
 
     expect(statuses).toEqual(['connecting', 'open', 'connecting', 'open'])
-    expect(messages).toEqual([])
+    expect(messages).toEqual([{ type: 'welcome', selfId: 'two', snapshot: {} }])
     expect(made).toHaveLength(2)
     expect(first.closed).toBe(true)
     expect(JSON.parse(second.sent[0])).toMatchObject({ type: 'hello', name: 'Two' })
@@ -88,8 +91,20 @@ describe('CrewSocket', () => {
 
     socket.connect('ws://127.0.0.1:1002/ws', hello('Two'))
     made[1].open()
+    made[1].message({ type: 'welcome', selfId: 'two', snapshot: {} })
     vi.advanceTimersByTime(2000)
 
     expect(made.map(item => item.url)).toEqual(['ws://127.0.0.1:1001/ws', 'ws://127.0.0.1:1002/ws'])
+  })
+
+  it('keeps messages queued for one Crew out of the next Crew', () => {
+    const socket = new CrewSocket()
+    socket.connect('ws://127.0.0.1:1001/ws', hello('One'))
+    socket.send({ type: 'typing', on: true })
+
+    socket.connect('ws://127.0.0.1:1002/ws', hello('Two'))
+    made[1].open()
+
+    expect(made[1].sent.map(message => JSON.parse(message).type)).toEqual(['hello'])
   })
 })

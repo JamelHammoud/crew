@@ -7,6 +7,7 @@ const SILENCE_TIMEOUT_MS = 60000
 
 export class CrewSocket {
   private ws: WebSocket | null = null
+  private standby: WebSocket | null = null
   private hello: ClientMessage | null = null
   private url = ''
   private attempts = 0
@@ -20,14 +21,16 @@ export class CrewSocket {
 
   connect(url: string, hello: ClientMessage): void {
     const previous = this.ws
+    if (this.standby && this.standby !== previous) this.standby.close()
+    this.standby = previous
     if (this.reconnectTimer !== null) window.clearTimeout(this.reconnectTimer)
     this.reconnectTimer = null
+    this.pending = []
     this.url = url
     this.hello = hello
     this.intentionalClose = false
     this.attempts = 0
     this.open()
-    previous?.close()
   }
 
   send(msg: ClientMessage): void {
@@ -46,6 +49,9 @@ export class CrewSocket {
     this.reconnectTimer = null
     this.watchdog = null
     this.ws?.close()
+    this.standby?.close()
+    this.ws = null
+    this.standby = null
   }
 
   private open(): void {
@@ -67,7 +73,12 @@ export class CrewSocket {
       if (this.ws !== ws) return
       this.lastSeen = Date.now()
       try {
-        this.onMessage(JSON.parse(event.data))
+        const message = JSON.parse(event.data) as ServerMessage
+        if (message.type === 'welcome') {
+          this.standby?.close()
+          this.standby = null
+        }
+        this.onMessage(message)
       } catch {
         return
       }

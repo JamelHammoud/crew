@@ -1016,7 +1016,6 @@ export const useCrew = create<CrewState>((set, get) => {
       }
       const { useHuddle } = await import('./huddle')
       useHuddle.getState().leave()
-      socket.close()
       threadsWanted = threadsWanted.length > 0 ? threadsWanted : (memory?.openThreadIds ?? [])
       set({ connection: 'connecting', ...BLANK })
       get().connect(info)

@@ -42,12 +42,10 @@ describe('CrewSocket project switching', () => {
     socket.connect(first.url, hello('Jamel', first.code))
     expect((await firstWelcome).snapshot.code).toBe(first.code)
 
-    socket.close()
     const secondWelcome = welcomeFrom(socket)
     socket.connect(second.url, hello('Jamel', second.code))
     expect((await secondWelcome).snapshot.code).toBe(second.code)
 
-    socket.close()
     const backWelcome = welcomeFrom(socket)
     socket.connect(first.url, hello('Jamel', first.code))
     expect((await backWelcome).snapshot.code).toBe(first.code)
