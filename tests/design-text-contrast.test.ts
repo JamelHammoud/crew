@@ -5,7 +5,7 @@ import { createShapeId, createTLStore, type TLShape, type TLShapeId } from '../s
 import { defaultBindingUtils, defaultShapeUtils } from '../src/renderer/src/canvas/shapes'
 import { SelectTool, TextShapeTool } from '../src/renderer/src/canvas/tools'
 import { DesignNodeUtil } from '../src/renderer/src/design/DesignNodeUtil'
-import { nodeDefaults, solid } from '../src/shared/designNode'
+import { nodeDefaults, solid, type Paint } from '../src/shared/designNode'
 import {
   BOARD_SURFACE,
   backgroundBehind,
@@ -17,6 +17,7 @@ import {
   readColor,
   textInkAt
 } from '../src/renderer/src/design/textContrast'
+import { DARK_INK, WHITE_INK, contrastRatio, fillsInk, inkOn, readInk } from '../src/shared/textContrast'
 
 function editor(): Editor {
   const subject = new Editor({
