@@ -474,3 +474,132 @@ describe('two lines', () => {
     expect(linesIntersect(new Vec(0, 0), new Vec(10, 0), new Vec(0, 1), new Vec(10, 1))).toBe(false)
   })
 })
+
+function seeded(seed: number): () => number {
+  let state = seed >>> 0
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0
+    return state / 0x100000000
+  }
+}
+
+const random = seeded(20260801)
+const spread = (scale = 400): number => (random() - 0.5) * scale
+
+describe('the identities every vector operation rests on', () => {
+  it('holds across four hundred random pairs', () => {
+    for (let run = 0; run < 400; run++) {
+      const a = new Vec(spread(), spread())
+      const b = new Vec(spread(), spread())
+      expect(Vec.Add(a, b)).toMatchObject({ x: a.x + b.x, y: a.y + b.y })
+      expect(Vec.Sub(Vec.Add(a, b), b).toFixed(6)).toEqual(a.clone().toFixed(6))
+      expect(Vec.Dpr(a, b)).toBeCloseTo(a.x * b.x + a.y * b.y, 6)
+      expect(Vec.Cpr(a, b)).toBeCloseTo(a.x * b.y - a.y * b.x, 6)
+      expect(Vec.Len(a)).toBeCloseTo(Math.hypot(a.x, a.y), 6)
+      expect(Vec.Len2(a)).toBeCloseTo(a.x * a.x + a.y * a.y, 6)
+      expect(Vec.Dist(a, b)).toBeCloseTo(Math.hypot(a.x - b.x, a.y - b.y), 6)
+      expect(Vec.Neg(Vec.Neg(a))).toMatchObject({ x: a.x, y: a.y })
+      expect(Vec.Dpr(a, Vec.Per(a))).toBeCloseTo(0, 6)
+      expect(Vec.Lrp(a, b, 0)).toMatchObject({ x: a.x, y: a.y })
+      expect(Vec.Lrp(a, b, 1).toFixed(6)).toEqual(b.clone().toFixed(6))
+      expect(Vec.Med(a, b).toFixed(6)).toEqual(Vec.Lrp(a, b, 0.5).toFixed(6))
+      if (Vec.Len(a) > 0.001) expect(Vec.Len(Vec.Uni(a))).toBeCloseTo(1, 6)
+    }
+  })
+
+  it('turns a whole way round back onto itself', () => {
+    for (let run = 0; run < 200; run++) {
+      const a = new Vec(spread(), spread())
+      const whole = Vec.Rot(a, PI * 2)
+      expect(whole.x).toBeCloseTo(a.x, 6)
+      expect(whole.y).toBeCloseTo(a.y, 6)
+      const quarter = Vec.Rot(a, PI / 2)
+      expect(Vec.Len(quarter)).toBeCloseTo(Vec.Len(a), 6)
+      expect(Vec.Dpr(a, quarter)).toBeCloseTo(0, 5)
+    }
+  })
+
+  it('keeps the nearest point on a segment inside that segment', () => {
+    for (let run = 0; run < 300; run++) {
+      const a = new Vec(spread(), spread())
+      const b = new Vec(spread(), spread())
+      const point = new Vec(spread(), spread())
+      const nearest = Vec.NearestPointOnLineSegment(a, b, point, true)
+      expect(Vec.Dist(a, nearest) + Vec.Dist(nearest, b)).toBeCloseTo(Vec.Dist(a, b), 4)
+      expect(Vec.Dist(point, nearest)).toBeLessThanOrEqual(Vec.Dist(point, a) + 1e-6)
+      expect(Vec.Dist(point, nearest)).toBeLessThanOrEqual(Vec.Dist(point, b) + 1e-6)
+    }
+  })
+})
+
+describe('what a box says about the points it was built from', () => {
+  it('reads its own edges and corners back', () => {
+    const box = new Box(10, 20, 30, 40)
+    expect([box.minX, box.minY, box.maxX, box.maxY]).toEqual([10, 20, 40, 60])
+    expect(box.center).toMatchObject({ x: 25, y: 40 })
+    expect(box.corners.map(corner => [corner.x, corner.y])).toEqual([
+      [10, 20],
+      [40, 20],
+      [40, 60],
+      [10, 60]
+    ])
+  })
+
+  it('holds every point it was built from', () => {
+    for (let run = 0; run < 200; run++) {
+      const points = Array.from({ length: 2 + Math.floor(random() * 8) }, () => new Vec(spread(), spread()))
+      const box = Box.FromPoints(points)
+      for (const point of points) expect(box.containsPoint(point, 1e-9)).toBe(true)
+      expect(box.w).toBeGreaterThanOrEqual(0)
+      expect(box.h).toBeGreaterThanOrEqual(0)
+    }
+  })
+
+  it('collides either way round and never contains itself', () => {
+    for (let run = 0; run < 300; run++) {
+      const a = new Box(spread(), spread(), Math.abs(spread(100)) + 1, Math.abs(spread(100)) + 1)
+      const b = new Box(spread(), spread(), Math.abs(spread(100)) + 1, Math.abs(spread(100)) + 1)
+      if (a.contains(b)) expect(a.collides(b)).toBe(true)
+      expect(a.collides(b)).toBe(b.collides(a))
+      expect(a.collides(a)).toBe(true)
+      expect(a.contains(a)).toBe(false)
+    }
+  })
+})
+
+describe('what a matrix does and undoes', () => {
+  it('inverts back onto the point it started from', () => {
+    for (let run = 0; run < 200; run++) {
+      const matrix = Mat.Compose(
+        Mat.Translate(spread(), spread()),
+        Mat.Rotate(random() * PI * 2),
+        Mat.Scale(1 + random() * 3, 1 + random() * 3)
+      )
+      const point = new Vec(spread(), spread())
+      const back = Mat.applyToPoint(Mat.Inverse(matrix), Mat.applyToPoint(matrix, point))
+      expect(back.x).toBeCloseTo(point.x, 5)
+      expect(back.y).toBeCloseTo(point.y, 5)
+    }
+  })
+
+  it('decomposes what it composed, with the turn read the short way', () => {
+    for (let run = 0; run < 200; run++) {
+      const x = spread()
+      const y = spread()
+      const rotation = (random() - 0.5) * PI
+      const scale = 0.5 + random() * 3
+      const decomposed = Mat.Decompose(
+        Mat.Compose(Mat.Translate(x, y), Mat.Rotate(rotation), Mat.Scale(scale, scale))
+      )
+      expect(decomposed.x).toBeCloseTo(x, 5)
+      expect(decomposed.y).toBeCloseTo(y, 5)
+      expect(decomposed.scaleX).toBeCloseTo(scale, 5)
+      expect(Math.cos(decomposed.rotation)).toBeCloseTo(Math.cos(rotation), 5)
+      expect(Math.sin(decomposed.rotation)).toBeCloseTo(Math.sin(rotation), 5)
+    }
+  })
+
+  it('leaves a point where it found it under the identity', () => {
+    expect(Mat.applyToPoint(Mat.Identity(), new Vec(3, 7))).toMatchObject({ x: 3, y: 7 })
+  })
+})
