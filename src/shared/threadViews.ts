@@ -12,10 +12,6 @@ export function threadIdInHash(hash: string): string | null {
   return id ? id : null
 }
 
-export function openOne(threadId: string): string[] {
-  return [threadId]
-}
-
 // Beside the one already open rather than in place of it. A thread already
 // being watched is brought to the front of nothing: it stays where it stands,
 // so the columns never reorder under somebody reading one of them.
