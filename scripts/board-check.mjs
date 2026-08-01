@@ -863,11 +863,14 @@ const driveSource = String.raw`(async () => {
     const input = field(label)
     if (!input) return false
     input.focus()
+    input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
     const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
     setter.call(input, String(value))
     input.dispatchEvent(new Event('input', { bubbles: true }))
     await settle(2)
+    input.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter', code: 'Enter' }))
     input.blur()
+    input.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
     await settle(4)
     return true
   }
