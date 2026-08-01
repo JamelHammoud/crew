@@ -294,7 +294,8 @@ function keyInfo(name: CanvasEventInfo['name'], event: KeyboardEvent): CanvasEve
     code: event.code,
     shiftKey: event.shiftKey,
     altKey: event.altKey,
-    ctrlKey: event.ctrlKey,
+    ctrlKey: event.metaKey || event.ctrlKey,
+    metaKey: event.metaKey,
     accelKey: event.metaKey || event.ctrlKey,
     originalEvent: event
   }
