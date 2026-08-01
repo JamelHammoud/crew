@@ -92,6 +92,16 @@ describe('design commands', () => {
     expect(calls).toContain('paste(40,60)')
   })
 
+  it('cuts the selection into the same clipboard that paste reads', () => {
+    const { ctx, shapes, calls } = board([node('shape:a'), node('shape:b')], 'shape:a')
+    runCommand('cut', ctx)
+    expect(shapes.has('shape:a')).toBe(false)
+    expect(shapes.has('shape:b')).toBe(true)
+    expect(calls).toContain('mark(cut)')
+    runCommand('paste', ctx)
+    expect(calls).toContain('paste(40,60)')
+  })
+
   it('wraps the selection in a frame and takes it in', () => {
     const { ctx, calls, shapes } = board([node('shape:a'), node('shape:b')], 'shape:a', 'shape:b')
     runCommand('frame', ctx)
@@ -182,6 +192,7 @@ describe('the shortcuts the menu names', () => {
     expect(reached({ key: 'd', metaKey: true })).toBe('duplicate')
     expect(reached({ key: 'g', metaKey: true })).toBe('group')
     expect(reached({ key: 'c', metaKey: true })).toBe('copy')
+    expect(reached({ key: 'x', metaKey: true })).toBe('cut')
     expect(reached({ key: ']' })).toBe('to-front')
     expect(reached({ key: '[' })).toBe('to-back')
     expect(reached({ key: ']', metaKey: true })).toBe('forward')

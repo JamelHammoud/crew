@@ -73,6 +73,7 @@ const LOCK: Chord = { key: 'l', meta: true, shift: true }
 const MASK: Chord = { key: 'm', meta: true, ctrl: true }
 const UNDO: Chord = { key: 'z', meta: true }
 const REDO: Chord = { key: 'z', meta: true, shift: true }
+const CUT: Chord = { key: 'x', meta: true }
 const COPY: Chord = { key: 'c', meta: true }
 const PASTE: Chord = { key: 'v', meta: true }
 const COPY_PNG: Chord = { key: 'c', meta: true, shift: true }
@@ -112,6 +113,10 @@ const only = (ctx: CommandContext): TLShape | null => {
 }
 
 const ids = (editor: Editor): TLShapeId[] => editor.getSelectedShapeIds()
+
+function holdSelection(editor: Editor): void {
+  held = editor.getContentFromCurrentPage(ids(editor))
+}
 
 function hidden(shape: TLShape): boolean {
   return shape.meta.hidden === true
@@ -198,8 +203,21 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
     Icon: DuplicateGlyph,
     keys: COPY,
     when: some,
+    run: ctx => holdSelection(ctx.editor)
+  },
+  {
+    id: 'cut',
+    label: 'Cut',
+    hint: chordHint(CUT),
+    group: 'clipboard',
+    Icon: TrashGlyph,
+    keys: CUT,
+    when: some,
     run: ctx => {
-      held = ctx.editor.getContentFromCurrentPage(ids(ctx.editor))
+      const selected = ids(ctx.editor)
+      holdSelection(ctx.editor)
+      ctx.editor.markHistoryStoppingPoint('cut')
+      ctx.editor.deleteShapes(selected)
     }
   },
   {
