@@ -123,10 +123,14 @@ export function renderHtmlFromRichTextForMeasurement(richText: TLRichText): stri
   return `<div class="crew-rich-text">${renderHtmlFromRichText(richText)}</div>`
 }
 
+const BLOCK_NODES = new Set(['paragraph', 'heading', 'listItem', 'bulletList', 'orderedList'])
+
 function nodeText(node: TLRichTextNode): string {
   if (node.type === 'text') return node.text ?? ''
   if (node.type === 'hardBreak') return '\n'
-  return (node.content ?? []).map(nodeText).join('')
+  const children = node.content ?? []
+  const separator = children.some(child => BLOCK_NODES.has(child.type)) ? '\n' : ''
+  return children.map(nodeText).join(separator)
 }
 
 export function toPlainText(richText: TLRichText | null | undefined): string {
