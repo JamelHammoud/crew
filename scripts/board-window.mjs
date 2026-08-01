@@ -137,9 +137,11 @@ export async function compile(directory) {
   await build({
     root: directory,
     base: './',
+    mode: 'development',
     logLevel: 'silent',
+    define: { 'process.env.NODE_ENV': '"development"' },
     plugins: [tailwind()],
-    build: { outDir: path.join(directory, 'dist'), emptyOutDir: true }
+    build: { outDir: path.join(directory, 'dist'), emptyOutDir: true, minify: false }
   })
   return directory
 }
