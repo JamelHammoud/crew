@@ -1318,8 +1318,36 @@ export const useCrew = create<CrewState>((set, get) => {
     removeAgent: agentId => {
       socket.send({ type: 'agent.remove', agentId })
     },
-    openThread: threadId => set({ openThreadId: threadId }),
-    closeThread: () => set({ openThreadId: null }),
+    // Opening one never closes one. A thread already being read is the column
+    // it already stands in, and a row with no room left says the move rather
+    // than quietly dropping whichever column somebody was reading.
+    openThread: threadId => {
+      const open = get().openThreadIds
+      if (open.includes(threadId)) {
+        set({ openThreadId: threadId })
+        return
+      }
+      if (isFull(open)) {
+        toast('Close a thread to open another.', { key: 'thread-views' })
+        return
+      }
+      set({ openThreadIds: openBeside(open, threadId), openThreadId: threadId })
+    },
+    focusThread: threadId => {
+      if (get().openThreadId === threadId) return
+      if (!get().openThreadIds.includes(threadId)) return
+      set({ openThreadId: threadId })
+    },
+    closeThread: threadId => {
+      const state = get()
+      const closing = threadId ?? state.openThreadId
+      if (!closing) return
+      set({
+        openThreadIds: closeOne(state.openThreadIds, closing),
+        openThreadId: focusAfterClose(state.openThreadIds, closing, state.openThreadId)
+      })
+    },
+    closeThreads: () => set({ openThreadIds: [], openThreadId: null }),
     openDoc: page => set({ docsTarget: page }),
     clearDocsTarget: () => set({ docsTarget: null }),
     openBoard: boardId => set({ designTarget: boardId }),
