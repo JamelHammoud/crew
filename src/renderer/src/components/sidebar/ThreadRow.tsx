@@ -1,34 +1,31 @@
+import { memo } from 'react'
 import type { LiveThread } from '../../../../shared/threads'
 import Spinner from '../Spinner'
 import { useThreadMenu } from '../threadMenu'
+import { sameLiveThread } from './placeItems'
 
-export default function ThreadRow({
-  thread,
-  open,
-  here,
-  placeKey,
-  onOpen,
-  onOpenToRight
-}: {
+interface ThreadRowProps {
   thread: LiveThread
   open: boolean
   here: boolean
   placeKey: string
-  onOpen: () => void
-  onOpenToRight: () => void
-}) {
+  onOpen: (threadId: string) => void
+  onOpenToRight: (threadId: string) => void
+}
+
+function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: ThreadRowProps) {
   const { onContextMenu, menu } = useThreadMenu({
     threadId: thread.id,
     here,
     placeKey,
     status: here,
-    onOpen: onOpenToRight
+    onOpen: () => onOpenToRight(thread.id)
   })
 
   return (
     <>
       <button
-        onClick={onOpen}
+        onClick={() => onOpen(thread.id)}
         onContextMenu={onContextMenu}
         className={`w-full rounded-xl pl-8 pr-2 py-1.5 flex items-center gap-2 text-left text-sm transition-colors duration-150 ${
           open ? 'bg-fg/[0.10] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
@@ -41,3 +38,14 @@ export default function ThreadRow({
     </>
   )
 }
+
+export default memo(
+  ThreadRow,
+  (a, b) =>
+    a.open === b.open &&
+    a.here === b.here &&
+    a.placeKey === b.placeKey &&
+    a.onOpen === b.onOpen &&
+    a.onOpenToRight === b.onOpenToRight &&
+    sameLiveThread(a.thread, b.thread)
+)
