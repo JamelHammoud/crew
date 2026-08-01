@@ -89,11 +89,11 @@ export function trimEdges(font: TrimFont, trim: VerticalTrim): TrimEdges | null 
   const descent = face.descent * font.fontSize
   const cap = face.cap * font.fontSize
   const leading = (line - ascent - descent) / 2
-  return { top: leading + ascent - cap, bottom: leading + descent, cap }
+  return { top: leading + ascent - cap, bottom: leading + descent, total: line - cap, cap }
 }
 
 export function trimmedHeight(height: number, edges: TrimEdges): number {
-  return Math.max(edges.cap, height - edges.top - edges.bottom)
+  return Math.max(edges.cap, height - edges.total)
 }
 
 export function trimStyle(edges: TrimEdges | null, scale: number): CSSProperties {

@@ -178,7 +178,7 @@ export default function ChangeRow({
               else onStage()
             }}
           />
-          {!change.staged && (
+          {mayDiscard && (
             <MenuItem
               icon={<UndoGlyph className="w-4 h-4" />}
               label="Discard changes"
