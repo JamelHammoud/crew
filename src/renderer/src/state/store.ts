@@ -299,7 +299,9 @@ interface CrewState {
   setMyPhoto: (file: File | null) => void
   removeAgent: (agentId: string) => void
   openThread: (threadId: string) => void
-  closeThread: () => void
+  focusThread: (threadId: string) => void
+  closeThread: (threadId?: string) => void
+  closeThreads: () => void
   openDoc: (page: string) => void
   clearDocsTarget: () => void
   openBoard: (boardId: string) => void
