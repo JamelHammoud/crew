@@ -5,11 +5,11 @@ import { DOT_R, THINKING_DOTS } from './toolGlyphs'
 
 const DOTS = THINKING_DOTS.map((cx, index) => ({ cx, delay: `${index * 140}ms` }))
 
-// The ellipsis after the name is the app's own: the same three dots on the same
-// grid, carrying the same wave a thought carries while it is still going.
+// The ellipsis is the app's own: the same three dots on the same grid, carrying
+// the same wave a thought carries while it is still going.
 function TypingDots() {
   return (
-    <svg aria-hidden viewBox="0 0 24 24" fill="none" className="typing-dots w-4 h-4 shrink-0">
+    <svg aria-hidden viewBox="0 0 24 24" fill="none" className="typing-dots w-3 h-3 shrink-0">
       {DOTS.map(dot => (
         <circle
           key={dot.cx}
@@ -25,9 +25,10 @@ function TypingDots() {
   )
 }
 
-// Who else is writing into the same box, standing over the composer so nothing
-// under it moves when somebody starts or stops. It is glass, so the words on it
-// take the foreground at an opacity rather than a solid grey.
+// Who else is writing into the same box. It stands under the composer, in the
+// room that is already there, so it covers no message and nothing moves when
+// somebody starts or stops. Quiet: the smallest size in the ramp, muted, no
+// surface of its own, and it fades in rather than popping.
 export default function TypingLine({ where }: { where?: string }) {
   const selfId = useCrew(state => state.selfId)
   const typists = useCrew(state => state.typists)
@@ -35,9 +36,9 @@ export default function TypingLine({ where }: { where?: string }) {
   if (here.length === 0) return null
 
   return (
-    <div className="glass absolute -top-14 left-0 z-20 pointer-events-none flex items-center h-9 gap-1 pl-3.5 pr-2.5 rounded-full text-sm font-medium text-fg/70 animate-pop">
-      {typingLine(here.map(typist => typist.name))}
+    <div className="absolute left-0 top-full max-w-full z-20 pointer-events-none flex items-center h-4 gap-1.5 pl-5 pr-3 text-xs text-fg-muted animate-fade">
       <TypingDots />
+      <span className="truncate">{typingLine(here.map(typist => typist.name))}</span>
     </div>
   )
 }
