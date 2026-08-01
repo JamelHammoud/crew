@@ -175,6 +175,10 @@ const HELLO: RichTextDocument = {
 }
 
 describe('canvas rich text rendering', () => {
+  beforeEach(() => {
+    installDom()
+  })
+
   it('renders every stored mark and both kinds of list', () => {
     const document: RichTextDocument = {
       type: 'doc',
