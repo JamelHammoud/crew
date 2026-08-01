@@ -362,6 +362,10 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   }
 
   private state(): SelectionForegroundState | null {
+    return this.memo.read(this.pass, () => this.computeState())
+  }
+
+  private computeState(): SelectionForegroundState | null {
     const bounds = this.editor.getSelectionRotatedPageBounds()
     if (!bounds) return null
     const onlyShape = this.editor.getOnlySelectedShape()
