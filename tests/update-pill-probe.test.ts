@@ -138,19 +138,28 @@ describe('the word about an update that did not happen', () => {
     expect(failed).toHaveBeenCalledWith('Crew did not update', { key: 'update' })
   })
 
-  it('asks for the other Crew windows rather than taking their work down', () => {
-    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 1 })
-    expect(said).toHaveBeenCalledWith('Close your other Crew windows to update', {
-      key: 'update'
-    })
+  it('asks for the other Crews rather than taking their work down', () => {
+    put({ stage: 'ready', version: '0.1.1', percent: 100, why: 'others', told: 1 })
+    expect(said).toHaveBeenCalledWith('Quit your other Crews to update', { key: 'update' })
     expect(failed).not.toHaveBeenCalled()
   })
 
   it('says it again on the next press, and never for the same word twice', () => {
-    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 1 })
-    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 1 })
+    put({ stage: 'ready', version: '0.1.1', percent: 100, why: 'others', told: 1 })
+    put({ stage: 'ready', version: '0.1.1', percent: 100, why: 'others', told: 1 })
     expect(said).toHaveBeenCalledTimes(1)
-    put({ stage: 'failed', version: '0.1.1', why: 'others', told: 2 })
+    put({ stage: 'ready', version: '0.1.1', percent: 100, why: 'others', told: 2 })
     expect(said).toHaveBeenCalledTimes(2)
+  })
+
+  // Held, the pill has not changed what it is offering, and the word about it is
+  // a toast rather than a stage. A pill that fell back to Update available read
+  // as the download coming undone.
+  it('keeps offering the restart after an install that was held', () => {
+    render(createElement(UpdatePill))
+    put({ stage: 'ready', version: '0.1.1', percent: 100, why: 'others', told: 1 })
+    expect(pill()?.textContent).toBe('Restart to update')
+    pill()?.click()
+    expect(pressed).toHaveBeenCalled()
   })
 })
