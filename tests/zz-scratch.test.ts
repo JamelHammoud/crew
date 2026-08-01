@@ -3,6 +3,8 @@ import { createTLStore, getSnapshot } from '../src/renderer/src/canvas'
 import { snapshotToSvg, svgDataUrl } from '../src/renderer/src/canvas/export'
 import { designShapeUtils } from '../src/renderer/src/design/shapeUtils'
 import { createShapeId } from '../src/renderer/src/canvas/schema'
+import { Editor } from '../src/renderer/src/canvas/editor'
+import { SelectTool } from '../src/renderer/src/canvas/tools'
 
 describe('scratch preview', () => {
   it('draws an empty board and a full one', () => {
@@ -14,22 +16,14 @@ describe('scratch preview', () => {
     )
     console.log('empty svg', svgEmpty === null ? 'null' : typeof svgEmpty, svgEmpty ? String(svgEmpty).slice(0, 60) : '')
 
-    store.put([
-      {
-        id: createShapeId('a'),
-        typeName: 'shape',
-        type: 'design-node',
-        x: 0,
-        y: 0,
-        rotation: 0,
-        index: 'a1',
-        parentId: [...store.allRecords()].find(r => r.typeName === 'page')!.id,
-        isLocked: false,
-        opacity: 1,
-        meta: {},
-        props: { w: 100, h: 60, name: 'a' }
-      } as never
-    ])
+    const editor = new Editor({
+      store,
+      shapeUtils: designShapeUtils,
+      tools: [SelectTool],
+      getContainer: () => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) }) as HTMLElement
+    })
+    editor.setViewportScreenBounds({ x: 0, y: 0, w: 800, h: 600 })
+    editor.createShape({ id: createShapeId('a'), type: 'design-node', x: 0, y: 0, props: { w: 100, h: 60, name: 'a' } })
     const full = getSnapshot(store).document
     const svgFull = snapshotToSvg(
       { store: full.store, schema: full.schema },
