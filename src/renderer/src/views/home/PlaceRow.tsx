@@ -15,7 +15,10 @@ export default function PlaceRow({
   line,
   busy,
   disabled,
+  here,
+  live,
   onOpen,
+  onClose,
   onForget
 }: {
   mark: ReactNode
@@ -23,7 +26,12 @@ export default function PlaceRow({
   line: string
   busy?: boolean
   disabled?: boolean
+  // The place this window is in right now, and a place that is running whether
+  // or not anybody is watching it.
+  here?: boolean
+  live?: boolean
   onOpen: () => void
+  onClose?: () => void
   onForget?: () => void
 }) {
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
@@ -33,7 +41,7 @@ export default function PlaceRow({
       <button
         onClick={onOpen}
         onContextMenu={
-          onForget && !busy
+          (onForget || onClose) && !busy
             ? event => {
                 event.preventDefault()
                 setMenuAt({ x: event.clientX, y: event.clientY })
@@ -41,9 +49,16 @@ export default function PlaceRow({
             : undefined
         }
         disabled={disabled}
-        className="w-full rounded-2xl px-3 py-2.5 flex items-center gap-3 text-left transition-all duration-150 hover:bg-ink-700 active:scale-[0.99] disabled:opacity-50 disabled:scale-100"
+        aria-current={here ? 'true' : undefined}
+        className={`w-full rounded-2xl px-3 py-2.5 flex items-center gap-3 text-left transition-all duration-150 active:scale-[0.99] disabled:opacity-50 disabled:scale-100 ${
+          here ? 'bg-ink-700' : 'hover:bg-ink-700'
+        }`}
       >
-        <span className="w-9 h-9 rounded-full bg-ink-700 flex items-center justify-center shrink-0 transition-colors duration-150 group-hover:bg-ink-600">
+        <span
+          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors duration-150 ${
+            here ? 'bg-ink-600' : 'bg-ink-700 group-hover:bg-ink-600'
+          }`}
+        >
           {mark}
         </span>
         <span className="min-w-0 flex-1">
@@ -52,21 +67,35 @@ export default function PlaceRow({
         </span>
         {busy ? (
           <Spinner size={15} className="text-fg-muted" />
+        ) : here ? null : live ? (
+          <span className="w-1.5 h-1.5 rounded-full bg-positive shrink-0" />
         ) : (
           <ArrowRightGlyph className="w-4 h-4 text-fg-faint transition-all duration-150 group-hover:text-fg-secondary group-hover:translate-x-0.5" />
         )}
       </button>
-      {onForget && (
+      {(onForget || onClose) && (
         <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-40">
-          <MenuItem
-            icon={<TrashGlyph className="w-4 h-4" />}
-            label="Remove from the list"
-            danger
-            onClick={() => {
-              setMenuAt(null)
-              onForget()
-            }}
-          />
+          {onClose && (
+            <MenuItem
+              icon={<CloseGlyph className="w-4 h-4" />}
+              label="Stop this crew"
+              onClick={() => {
+                setMenuAt(null)
+                onClose()
+              }}
+            />
+          )}
+          {onForget && (
+            <MenuItem
+              icon={<TrashGlyph className="w-4 h-4" />}
+              label="Remove from the list"
+              danger
+              onClick={() => {
+                setMenuAt(null)
+                onForget()
+              }}
+            />
+          )}
         </Popover>
       )}
     </div>
