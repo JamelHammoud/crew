@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { SessionEvent } from '../../../../shared/events'
 import { useCrew } from '../../state/store'
+import { eventIndex } from '../eventIndex'
 import type { SubagentRun } from '../thread'
 
 export interface SubagentRow extends SubagentRun {
