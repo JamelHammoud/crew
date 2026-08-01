@@ -183,39 +183,22 @@ export default function Chat() {
               </div>
             ))}
           {feed.map((entry, index) => {
-            const tsOf = (e: Feed) => (e.kind === 'msg' ? e.item.ts : e.ts)
-            const ts = tsOf(entry)
             const before = index > 0 ? feed[index - 1] : undefined
-            const prev = before && tsOf(before)
             const linked = entry.kind === 'msg' && before?.kind === 'msg' && sameRun(before.item, entry.item)
+            const card = entry.kind === 'card'
             return (
-              <Fragment key={entry.key}>
-                {isNewDay(prev, ts) && <DayDivider ts={ts} />}
-                {entry.kind === 'huddle' ? (
-                  <HuddleCard record={entry.record} />
-                ) : entry.kind === 'card' ? (
-                  entry.thread.mode === 'plan' && entry.thread.plan && !threadPrompts[entry.thread.id] ? (
-                    <PlanCard thread={entry.thread} ts={entry.ts} onOpen={() => openThread(entry.thread.id)} />
-                  ) : (
-                    <ThreadCard
-                      thread={entry.thread}
-                      ts={entry.ts}
-                      onOpen={() => openThread(entry.thread.id)}
-                      {...threadStatus(entry.thread)}
-                    />
-                  )
-                ) : (
-                  <ChatMessage
-                    item={entry.item}
-                    editable
-                    linked={linked}
-                    onReply={item => {
-                      setReplyTo(item)
-                      inputRef.current?.focus()
-                    }}
-                  />
-                )}
-              </Fragment>
+              <FeedRow
+                key={entry.key}
+                entry={entry}
+                dayTs={isNewDay(before?.ts, entry.ts) ? entry.ts : undefined}
+                linked={linked}
+                planned={
+                  card && entry.thread.mode === 'plan' && Boolean(entry.thread.plan) && !threadPrompts[entry.thread.id]
+                }
+                status={card ? threadStatus(entry.thread) : RESTING}
+                onOpenThread={openThread}
+                onReply={reply}
+              />
             )
           })}
         </div>
