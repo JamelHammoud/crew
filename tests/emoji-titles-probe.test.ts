@@ -78,7 +78,7 @@ afterEach(() => {
 
 describe('what somebody wrote, read back as pictures', () => {
   it('draws them on the line the thread header is about', () => {
-    useCrew.setState({ agents: {} })
+    useCrew.setState({ agents: [] })
     const { container } = render(
       createElement(ThreadAsk, {
         ask: `put made with ${HEART} :shipit: in the About page`,
