@@ -872,13 +872,15 @@ const driveSource = String.raw`(async () => {
     const id = made[made.length - 1]
     if (!id || editor.getShape(id) === undefined) return null
     const before = JSON.stringify(typeOf(id))
-    const box = JSON.stringify(boundsOf(id))
+    const shell = JSON.stringify(boundsOf(id))
     editor.selectNone()
     await settle(2)
     await click(viewport(boundsOf(id).center))
     await settle(4)
     const after = JSON.stringify(typeOf(id))
-    return { ok: before === after && box === JSON.stringify(boundsOf(id)), note: before === after ? 'held' : 'changed to ' + after.slice(0, 60) }
+    const settled = JSON.stringify(boundsOf(id))
+    if (before !== after) return { ok: false, note: 'the type changed to ' + after.slice(0, 60) }
+    return { ok: shell === settled, note: shell === settled ? 'held' : 'the box moved to ' + settled.slice(0, 60) }
   })
 
   section = 'Clipboard and history'

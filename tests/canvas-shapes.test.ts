@@ -4,6 +4,9 @@ import path from 'node:path'
 import { isValidElement, type ReactElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { Rectangle2d } from '../src/renderer/src/canvas/geometry'
+import { Box } from '../src/renderer/src/canvas/math/Box'
+import { Vec } from '../src/renderer/src/canvas/math/Vec'
 import { encodePoints } from '../src/renderer/src/canvas/schema/points'
 import {
   GEO_KINDS,
