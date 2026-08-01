@@ -67,6 +67,7 @@ function Session() {
   const openThreadIds = useCrew(s => s.openThreadIds)
   const closeThreads = useCrew(s => s.closeThreads)
   const openThread = useCrew(s => s.openThread)
+  const openThreadAlone = useCrew(s => s.openThreadAlone)
   const docsTarget = useCrew(s => s.docsTarget)
   const designTarget = useCrew(s => s.designTarget)
 
@@ -106,7 +107,7 @@ function Session() {
 
   const openFromTasks = (threadId: string) => {
     setTab('chat')
-    openThread(threadId)
+    openThreadAlone(threadId)
     setTasksOpen(false)
   }
 

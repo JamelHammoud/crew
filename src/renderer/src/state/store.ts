@@ -297,6 +297,7 @@ interface CrewState {
   setMyPhoto: (file: File | null) => void
   removeAgent: (agentId: string) => void
   openThread: (threadId: string) => void
+  openThreadAlone: (threadId: string) => void
   focusThread: (threadId: string) => void
   closeThread: (threadId?: string) => void
   closeThreads: () => void
@@ -1334,6 +1335,7 @@ export const useCrew = create<CrewState>((set, get) => {
       }
       set({ openThreadIds: openBeside(open, threadId), openThreadId: threadId })
     },
+    openThreadAlone: threadId => set({ openThreadIds: [threadId], openThreadId: threadId, chatColumn: false }),
     focusThread: threadId => {
       if (get().openThreadId === threadId) return
       if (!get().openThreadIds.includes(threadId)) return
