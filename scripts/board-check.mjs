@@ -307,6 +307,29 @@ const driveSource = String.raw`(async () => {
     return { ok: before === zoomed && before === panned, note: 'zoom ' + (before === zoomed) + ' pan ' + (before === panned) }
   })
 
+  await attempt('nothing floats over the middle of a selected shape', async () => {
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    editor.select(one)
+    await settle()
+    const middle = overlayAt(boundsOf(one).center)
+    const inside = overlayAt({ x: boundsOf(one).minX + 30, y: boundsOf(one).minY + 30 })
+    return {
+      ok: middle === 'nothing' && inside === 'nothing',
+      note: 'the middle answers as ' + middle + ', a corner of the inside as ' + inside
+    }
+  })
+
+  await attempt('a selected shape draws an outline', async () => {
+    const one = made[0]
+    const util = editor.overlays.getOverlayUtil('shape_indicator')
+    const marks = util.isActive() ? util.getOverlays() : []
+    const outlined = marks.reduce((all, mark) => all.concat(mark.props.indicated || []), [])
+    return { ok: outlined.includes(one), note: outlined.length + ' outlined, ' + (util.isActive() ? 'drawing' : 'standing down') }
+  })
+
   await attempt('a click still lands at a fitted zoom', async () => {
     await clear()
     editor.selectNone()
