@@ -141,8 +141,8 @@ describe('the sidebar', () => {
   it('stands the folder action off the bottom edge by what it stands off the sides', () => {
     render(createElement(Sidebar))
     const action = screen.getByRole('button', { name: 'Open a folder' })
-    expect(action.parentElement?.className).toContain('px-3')
-    expect(action.parentElement?.className).toContain('pb-3')
+    expect(action.parentElement?.className).toContain('px-4')
+    expect(action.parentElement?.className).toContain('pb-4')
   })
 
   it('holds every place the app knows, newest first', async () => {
