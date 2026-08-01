@@ -14,9 +14,9 @@ export const usePlaces = create<PlacesState>(set => ({
   live: [],
   load: async () => {
     const [projects, joins, live] = await Promise.all([
-      window.crew?.projects().catch(() => [] as RecentProject[]) ?? [],
-      window.crew?.recentJoins().catch(() => [] as RecentJoin[]) ?? [],
-      window.crew?.liveProjects().catch(() => [] as LivePlace[]) ?? []
+      window.crew?.projects?.().catch(() => [] as RecentProject[]) ?? [],
+      window.crew?.recentJoins?.().catch(() => [] as RecentJoin[]) ?? [],
+      window.crew?.liveProjects?.().catch(() => [] as LivePlace[]) ?? []
     ])
     set({ places: placesOf(projects, joins), live })
   }
