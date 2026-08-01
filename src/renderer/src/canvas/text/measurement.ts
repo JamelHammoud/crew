@@ -1,6 +1,6 @@
 import './text.css'
 
-export interface TextMeasureOptions {
+export type TextMeasureOptions = {
   fontStyle: string
   fontWeight: string
   fontFamily: string
