@@ -123,6 +123,9 @@ function Board() {
   const onCanvasRender = React.useCallback(() => {
     window.__probe.canvasCommits += 1
   }, [])
+  const onOverlayRender = React.useCallback(() => {
+    window.__probe.overlayCommits += 1
+  }, [])
   const onAppRender = React.useCallback(() => {
     window.__probe.appCommits += 1
   }, [])
