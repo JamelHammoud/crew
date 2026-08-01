@@ -350,6 +350,11 @@ const SNAPSHOT_EVENT_LIMIT = 500
 // session that has run for months rather than a size anyone should reach.
 const TICKET_HISTORY_LIMIT = 600
 const HISTORY_PAGE = 200
+
+// How much of one thread is handed back at once. A thread runs to a handful of
+// messages and the runs between them, so this is the backstop against one that
+// has been worked in all year rather than a length anybody reaches.
+const THREAD_HISTORY_LIMIT = 500
 const CONTEXT_EVENT_LIMIT = 20
 
 // How far back down a line of forks one is read. A fork always points at a
