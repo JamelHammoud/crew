@@ -438,7 +438,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   static type = 'shape_indicator'
   readonly options = { zIndex: 50 }
   private readonly memo = new PaintMemo<MarkedShapes>()
-  private readonly paths = new WeakMap<TLShape['props'], Path2D | null>()
+  private readonly paths = new Map<TLShapeId, Computed<Path2D | null>>()
 
   constructor(
     private readonly editor: OverlayEditor,
