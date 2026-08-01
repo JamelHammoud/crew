@@ -99,3 +99,35 @@ export function getPerfectDashProps(
     strokeDashoffset: strokeDashoffset.toString()
   }
 }
+
+export function dashedBoxPath(sides: Array<[{ x: number; y: number }, { x: number; y: number }]>, strokeWidth: number): Path2D | undefined {
+  if (typeof Path2D === 'undefined') return undefined
+  const path = new Path2D()
+  for (const [start, end] of sides) {
+    const length = Math.hypot(end.x - start.x, end.y - start.y)
+    if (length <= 0) continue
+    const { strokeDasharray, strokeDashoffset } = getPerfectDashProps(length, strokeWidth, {
+      style: 'dashed',
+      lengthRatio: 4
+    })
+    if (strokeDasharray === 'none') {
+      path.moveTo(start.x, start.y)
+      path.lineTo(end.x, end.y)
+      continue
+    }
+    const [dashLength, gapLength] = strokeDasharray.split(' ').map(Number)
+    const period = dashLength + gapLength
+    if (!Number.isFinite(period) || period <= 0) continue
+    const offset = Number(strokeDashoffset)
+    const dx = (end.x - start.x) / length
+    const dy = (end.y - start.y) / length
+    for (let at = -offset; at < length; at += period) {
+      const to = Math.min(length, at + dashLength)
+      const from = Math.max(0, at)
+      if (to <= from) continue
+      path.moveTo(start.x + dx * from, start.y + dy * from)
+      path.lineTo(start.x + dx * to, start.y + dy * to)
+    }
+  }
+  return path
+}

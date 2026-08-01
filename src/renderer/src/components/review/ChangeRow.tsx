@@ -62,7 +62,7 @@ export default function ChangeRow({
   onUnstage: () => void
   onDiscard: () => void
 }) {
-  const [menu, setMenu] = useState<At | 'row' | null>(null)
+  const [menu, setMenu] = useState<At | null>(null)
   const openFile = useBrowser(s => s.openFile)
   const rows = useMemo(() => (open ? reviewRows(change.diff) : []), [open, change.diff])
   const mark = change.kind === 'added' && !change.staged ? UNTRACKED : LETTERS[change.kind]

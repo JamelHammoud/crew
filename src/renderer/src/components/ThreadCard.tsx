@@ -57,6 +57,8 @@ export default function ThreadCard({
         <ThreadOpenItems threadId={thread.id} onOpen={onOpen} onDone={() => setMenuAt(null)} />
         <MenuDivider />
         <ThreadStatusItems threadId={thread.id} onDone={() => setMenuAt(null)} />
+        <MenuDivider />
+        <ThreadIdItem threadId={thread.id} onDone={() => setMenuAt(null)} />
       </Popover>
     </>
   )
