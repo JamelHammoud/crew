@@ -66,6 +66,7 @@ const online = {
   steps: {},
   tokens: {},
   pending: {},
+  openThreadIds: [],
   openThreadId: null
 }
 
@@ -107,6 +108,7 @@ describe('plans in the app', () => {
     useCrew.setState({
       ...online,
       events,
+      openThreadIds: ['thread-1'],
       openThreadId: 'thread-1',
       threads: {
         'thread-1': {
