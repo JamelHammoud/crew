@@ -92,6 +92,7 @@ export class AppSession {
   } | null = null
   private projectAuto = false
   onTrouble: (message: string) => void = () => {}
+  onEvent: ((event: SessionEvent) => void) | null = null
 
   constructor(paths: { agents?: string; session?: string; projects?: string } = {}) {
     this.agentsPath = paths.agents ?? null
