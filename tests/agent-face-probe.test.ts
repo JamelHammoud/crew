@@ -128,6 +128,27 @@ describe('an agent face', () => {
     expect(eyeGapAt(petOf(SEED), 48)).toBe(petOf(SEED).eyeGap)
   })
 
+  // Less light on the scene rather than an ink over it, so every color in the
+  // palette is still there and the white shape is the brightest thing in the
+  // tile. A helper's mark is the picture itself and carries nothing white, so
+  // it is left at the light the covers are photographed in.
+  it('stands the pet on the same picture under less light, and only the pet', () => {
+    const picture = (box: HTMLElement): HTMLElement =>
+      Array.from(box.querySelectorAll('span')).find(one => one.style.filter)!
+
+    const worn = picture(face()).style.filter
+    cleanup()
+    const bare = picture(
+      render(createElement(SubagentMark, { seed: SEED })).container.firstElementChild as HTMLElement
+    ).style.filter
+
+    expect(FIELD_LIGHT).toBeLessThan(1)
+    expect(worn).toContain(`brightness(${FIELD_LIGHT})`)
+    expect(worn).toContain('blur')
+    expect(bare).toContain('blur')
+    expect(bare).not.toContain('brightness')
+  })
+
   it('draws none of it where somebody has put a photo on', () => {
     const box = face({ photo: PHOTO })
 
