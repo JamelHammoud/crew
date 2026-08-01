@@ -241,6 +241,13 @@ export default function ThreadView({
     }
   }
 
+  const openMenu = useThreadMenu({ threadId, onOpen: () => focusThread(threadId) })
+  const onBackground = (event: React.MouseEvent) => {
+    if (alone || selecting()) return
+    if ((event.target as HTMLElement).closest(OWN_MENU)) return
+    openMenu.onContextMenu(event)
+  }
+
   if (!thread) return null
 
   const ask = threadAsk(thread, agents)
