@@ -20,6 +20,7 @@ export interface TransformInputs {
   getCtrlKey?(): boolean
   getAccelKey?(): boolean
   getIsDragging?(): boolean
+  getIsPanning?(): boolean
   getPointerVelocity?(): Vec
 }
 

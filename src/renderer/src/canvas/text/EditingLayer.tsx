@@ -1,5 +1,5 @@
 import type { Editor as TipTapEditor } from '@tiptap/core'
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { Editor } from '../editor'
 import { shapeCssTransform } from '../render'
 import type { TLShape } from '../schema'
@@ -9,6 +9,7 @@ import { useValue } from '../signals'
 import { RichTextEditor } from './editor'
 import type { RichTextDocument } from './richText'
 import { RichTextToolbar } from './toolbar'
+import { paintedTypeStyle } from './typeStyle'
 
 type EditableTextShape = TLShape<'text' | 'geo' | 'note' | 'arrow'>
 
