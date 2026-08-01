@@ -29,13 +29,4 @@ function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: Thre
   )
 }
 
-export default memo(
-  ThreadRow,
-  (a, b) =>
-    a.open === b.open &&
-    a.here === b.here &&
-    a.placeKey === b.placeKey &&
-    a.onOpen === b.onOpen &&
-    a.onOpenToRight === b.onOpenToRight &&
-    sameLiveThread(a.thread, b.thread)
-)
+export default memo(ThreadRow, sameThreadRow)
