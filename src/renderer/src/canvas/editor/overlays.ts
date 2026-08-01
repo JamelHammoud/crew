@@ -1,4 +1,5 @@
 import { Box, Mat, Vec, type VecLike } from '../math'
+import { computed, type Computed } from '../signals'
 import type { CanvasOverlay, CanvasOverlayEntry, CanvasOverlayUtil } from '../render/types'
 import type { TLShape, TLShapeId } from '../schema'
 import type { ShapeHandle, ShapeUtil } from '../shapes'
