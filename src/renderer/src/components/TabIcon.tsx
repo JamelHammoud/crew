@@ -1,21 +1,22 @@
-import type { NavTab } from './TopBar'
+import type { NavTab } from './navTabs'
 
-const SVG = {
-  className: 'tab-icon-svg',
-  width: 20,
-  height: 20,
-  viewBox: '0 0 20 20',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 1.67,
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round'
-} as const
+const svg = (size: number) =>
+  ({
+    className: 'tab-icon-svg',
+    width: size,
+    height: size,
+    viewBox: '0 0 20 20',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.67,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round'
+  }) as const
 
 /** Bubble strokes itself in one pass, then the three dots land left to right. */
-function ChatIcon() {
+function ChatIcon({ size }: { size: number }) {
   return (
-    <svg {...SVG}>
+    <svg {...svg(size)}>
       <path
         className="tab-icon-draw"
         pathLength={1}
@@ -39,9 +40,9 @@ function ChatIcon() {
 }
 
 /** Page outline draws, the corner folds over, then the text lines rule themselves in. */
-function DocsIcon() {
+function DocsIcon({ size }: { size: number }) {
   return (
-    <svg {...SVG}>
+    <svg {...svg(size)}>
       <path
         className="tab-icon-draw"
         pathLength={1}
@@ -74,9 +75,9 @@ function DocsIcon() {
 }
 
 /** Frame crop marks: the two rules draw across, then the two posts drop through them. */
-function DesignIcon() {
+function DesignIcon({ size }: { size: number }) {
   return (
-    <svg {...SVG}>
+    <svg {...svg(size)}>
       <path
         className="tab-icon-draw"
         pathLength={1}
@@ -105,17 +106,17 @@ function DesignIcon() {
   )
 }
 
-const ICONS: Record<NavTab, () => React.ReactElement> = {
+const ICONS: Record<NavTab, (props: { size: number }) => React.ReactElement> = {
   chat: ChatIcon,
   docs: DocsIcon,
   design: DesignIcon
 }
 
-export default function TabIcon({ tab }: { tab: NavTab }) {
+export default function TabIcon({ tab, size = 20 }: { tab: NavTab; size?: number }) {
   const Icon = ICONS[tab]
   return (
     <span className="tab-icon" aria-hidden="true">
-      <Icon />
+      <Icon size={size} />
     </span>
   )
 }
