@@ -23,7 +23,6 @@ import type {
   RepoStatus,
   RepoWork
 } from '../shared/repository'
-import type { RecentJoin, RecentProject } from '../shared/recent'
 import { AgentStore } from './agents-store'
 import type { SavedSession } from './saved-session'
 import {
