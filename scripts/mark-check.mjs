@@ -112,7 +112,9 @@ app.whenReady().then(async () => {
 })`
 
 async function stage() {
-  const dir = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-mark-')))
+  // Staged inside the project rather than in a temp folder of its own, so react
+  // and the rest resolve the way they do for any other file here.
+  const dir = await realpath(await mkdtemp(path.join(root, 'node_modules/.crew-mark-')))
   await writeFile(path.join(dir, 'index.html'), PAGE)
   await writeFile(
     path.join(dir, 'probe.css'),
