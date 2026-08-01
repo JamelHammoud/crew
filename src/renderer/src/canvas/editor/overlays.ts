@@ -327,7 +327,9 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
     const controls = CONTROL_PATHS.has(path) && !instance.isChangingStyle && !this.editor.getIsReadonly()
     const locked = Boolean(onlyShape && this.editor.isShapeOrAncestorLocked(onlyShape))
     const showResizeHandles =
-      controls && !locked && (!onlyShape || (util?.canResize(onlyShape as never) && !util.hideResizeHandles(onlyShape as never)))
+      controls &&
+      !locked &&
+      (!onlyShape || Boolean(util?.canResize(onlyShape as never) && !util.hideResizeHandles(onlyShape as never)))
     const showRotateHandles =
       controls &&
       !locked &&
