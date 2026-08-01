@@ -1,5 +1,4 @@
 import { randomBytes, randomUUID } from 'node:crypto'
-import { activeThreads, type LiveThread } from '../shared/threads'
 import type { WebSocket } from 'ws'
 import {
   attachmentBytes,
@@ -102,6 +101,7 @@ import {
 } from '../shared/tickets'
 import { pageName } from '../shared/urls'
 import { PAGE_LIMIT, pagesNamed, pageTitle } from '../shared/showPage'
+import { activeThreads, type LiveThread } from '../shared/threads'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
   agentId,
