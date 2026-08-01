@@ -938,7 +938,7 @@ export class Editor {
 
   setHoveredShape(shapeOrId: TLShape | TLShapeId | null): this {
     const id = typeof shapeOrId === 'string' ? shapeOrId : (shapeOrId?.id ?? null)
-    this.instance.hoveredShapeId = id && this.getShape(id) ? id : null
+    this.patchInstance({ hoveredShapeId: id && this.getShape(id) ? id : null })
     return this
   }
 
