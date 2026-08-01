@@ -73,10 +73,8 @@ describe('an agent face', () => {
 
     expect(eyes).toHaveLength(2)
     for (const eye of eyes) expect(eye.getAttribute('fill')).toBe('#000')
-    expect(eyes.map(eye => Number(eye.getAttribute('cx')))).toEqual([
-      50 - pet.eyeGap / 2,
-      50 + pet.eyeGap / 2
-    ])
+    const gap = eyeGapAt(pet, 40)
+    expect(eyes.map(eye => Number(eye.getAttribute('cx')))).toEqual([50 - gap / 2, 50 + gap / 2])
   })
 
   it('stands the picture behind the face rather than over it', () => {
