@@ -101,6 +101,7 @@ import {
 } from '../shared/tickets'
 import { pageName } from '../shared/urls'
 import { PAGE_LIMIT, pagesNamed, pageTitle } from '../shared/showPage'
+import { RESHAPES_THREADS } from '../shared/places'
 import { activeThreads, type LiveThread } from '../shared/threads'
 import { VOICE_INSTRUCTIONS } from '../shared/voice'
 import {
@@ -4570,6 +4571,7 @@ export class CrewSession {
     if (!ephemeral) this.events.push(event)
     if (opts.persist !== false) this.store.appendEvent(event)
     this.broadcast({ type: 'event', event })
+    if (RESHAPES_THREADS.has(event.kind)) this.broadcastRunners({ type: 'event', event })
     if (opts.persist !== false) this.onSyncNeeded?.()
   }
 
@@ -4582,6 +4584,12 @@ export class CrewSession {
   private broadcastExcept(skip: WebSocket, msg: ServerMessage): void {
     for (const [ws, meta] of this.meta) {
       if (meta.role === 'ui' && ws !== skip) this.send(ws, msg)
+    }
+  }
+
+  private broadcastRunners(msg: ServerMessage): void {
+    for (const [ws, meta] of this.meta) {
+      if (meta.role === 'runner') this.send(ws, msg)
     }
   }
 
