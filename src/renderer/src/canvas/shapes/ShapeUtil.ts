@@ -190,6 +190,7 @@ export abstract class ShapeUtil<Shape extends CrewShape = CrewShape> {
   }
   getClipPath?(_shape: Shape): Vec[] | undefined
   getText?(_shape: Shape): string
+  getReferencedUserIds?(_shape: Shape): string[]
   getAriaDescriptor?(_shape: Shape): string
   getHandles?(_shape: Shape): ShapeHandle[]
   onBeforeCreate?(_next: Shape): Shape | undefined
