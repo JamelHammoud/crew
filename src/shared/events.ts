@@ -298,6 +298,11 @@ const EPHEMERAL_KINDS = new Set([
   'tool.added',
   'tool.edited',
   'tool.removed',
+  // A fact the crew learned months ago is still a fact after its event has
+  // fallen off the window, so the memory rides in the snapshot the same way.
+  'memory.added',
+  'memory.edited',
+  'memory.removed',
   // The size limit rides in the snapshot the same way, so a number somebody
   // picked months ago is still the number after its event has fallen off the
   // window.
