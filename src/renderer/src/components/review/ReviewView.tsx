@@ -221,7 +221,6 @@ export default function ReviewView() {
             <DiffPane
               change={open}
               viewed={isViewed(open)}
-              room={bar}
               onViewed={done}
               onClose={() => setReading(null)}
               onStage={() => void send({ do: 'stage', paths: [open.path] })}
