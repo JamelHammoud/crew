@@ -41,6 +41,13 @@ const work = (over: Partial<RepoWork> = {}): RepoWork => ({
 const line = (text: string): Element | undefined =>
   [...document.querySelectorAll('.whitespace-pre')].find(el => el.textContent === text)
 
+// The one press that confirms, rather than the heading over it saying the same
+// words.
+const button = (label: string): HTMLButtonElement => {
+  const found = screen.getAllByText(label).find(el => el.closest('button'))
+  return found?.closest('button') as HTMLButtonElement
+}
+
 let sent: RepoCommand[] = []
 
 function bridge(next: RepoWork) {
@@ -65,8 +72,9 @@ afterEach(cleanup)
 
 describe('the review tab', () => {
   // A file staged and then edited again is two different diffs, so it stands in
-  // both lists rather than in one of them under a name that only half fits.
-  it('keeps what is going in apart from what is not', async () => {
+  // both lists rather than in one of them under a name that only half fits. The
+  // groups are named the way every git client names them.
+  it('keeps the staged changes apart from the rest', async () => {
     bridge(
       work({
         changes: [
@@ -78,9 +86,52 @@ describe('the review tab', () => {
 
     render(createElement(ReviewView))
 
-    expect(await screen.findByText('Going in')).not.toBeNull()
-    expect(screen.getByText('Changed')).not.toBeNull()
+    expect(await screen.findByText('Staged Changes')).not.toBeNull()
+    expect(screen.getByText('Changes')).not.toBeNull()
     expect(screen.getAllByText('app.ts')).toHaveLength(2)
+  })
+
+  // A conflict is neither staged nor unstaged until somebody has settled it, and
+  // it is the one thing on this screen that has to be dealt with by hand, so it
+  // stands in a group of its own at the head of the list.
+  it('stands a conflict in its own group', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/clash.ts', false, '@@ -1 +1 @@\n-a\n+b', { kind: 'conflict' }),
+          change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+
+    expect(await screen.findByText('Merge Changes')).not.toBeNull()
+    const groups = [...document.querySelectorAll('h3')].map(el => el.textContent)
+    expect(groups).toEqual(['Merge Changes', 'Changes'])
+  })
+
+  // The letter every git client puts at the end of the row. A file git has never
+  // been told about is an add that is not staged, since nothing can stage
+  // itself, and that is the one kind the record does not name on its own.
+  it('marks each row with the letter git would', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/new.ts', false, '@@ -0,0 +1 @@\n+a', { kind: 'added' }),
+          change('src/gone.ts', false, '@@ -1 +0,0 @@\n-a', { kind: 'deleted' }),
+          change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b'),
+          change('src/kept.ts', true, '@@ -0,0 +1 @@\n+a', { kind: 'added' })
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+
+    expect(await screen.findByText('U')).not.toBeNull()
+    expect(screen.getByText('D')).not.toBeNull()
+    expect(screen.getByText('M')).not.toBeNull()
+    expect(screen.getByText('A')).not.toBeNull()
   })
 
   // Reading a change is reading several files, so opening one never puts away
@@ -106,6 +157,21 @@ describe('the review tab', () => {
     // Once in the file it was added to and once in the file it was taken out
     // of, which is both diffs standing open together.
     expect(screen.getAllByText('staged')).toHaveLength(2)
+  })
+
+  // A long group is a group somebody wants out of the way, the way it folds in
+  // every other client.
+  it('folds a group away', async () => {
+    bridge(work({ changes: [change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
+
+    render(createElement(ReviewView))
+    expect(await screen.findByText('app.ts')).not.toBeNull()
+
+    fireEvent.click(screen.getByLabelText('Changes'))
+    await waitFor(() => expect(screen.queryByText('app.ts')).toBeNull())
+
+    fireEvent.click(screen.getByLabelText('Changes'))
+    expect(await screen.findByText('app.ts')).not.toBeNull()
   })
 
   // A line with nothing around it cannot be judged. Git already sends three
@@ -148,13 +214,29 @@ describe('the review tab', () => {
     expect(screen.getByText('42')).not.toBeNull()
   })
 
-  it('stages and unstages the file the button stands on', async () => {
+  it('stages the file the button stands on', async () => {
     bridge(work({ changes: [change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
 
     render(createElement(ReviewView))
-    fireEvent.click(await screen.findByLabelText('Put it in'))
+    fireEvent.click(await screen.findByLabelText('Stage app.ts'))
 
     await waitFor(() => expect(sent).toEqual([{ do: 'stage', paths: ['src/app.ts'] }]))
+  })
+
+  it('stages the whole group from its heading', async () => {
+    bridge(
+      work({
+        changes: [
+          change('src/one.ts', false, '@@ -1 +1 @@\n-a\n+b'),
+          change('src/two.ts', false, '@@ -1 +1 @@\n-a\n+b')
+        ]
+      })
+    )
+
+    render(createElement(ReviewView))
+    fireEvent.click(await screen.findByLabelText('Stage all changes'))
+
+    await waitFor(() => expect(sent).toEqual([{ do: 'stage', paths: ['src/one.ts', 'src/two.ts'] }]))
   })
 
   // The commit is a card of its own now, so nothing about it stands at the top
@@ -175,19 +257,19 @@ describe('the review tab', () => {
     render(createElement(ReviewView))
     fireEvent.click(await screen.findByText('Commit 1 file'))
 
-    const button = (await screen.findByText('Commit')).closest('button') as HTMLButtonElement
-    expect(button.disabled).toBe(true)
+    const commit = (await screen.findByText('Commit')).closest('button') as HTMLButtonElement
+    expect(commit.disabled).toBe(true)
 
     fireEvent.change(screen.getByPlaceholderText('What changed'), { target: { value: 'A change' } })
-    await waitFor(() => expect(button.disabled).toBe(false))
+    await waitFor(() => expect(commit.disabled).toBe(false))
 
-    fireEvent.click(button)
+    fireEvent.click(commit)
     await waitFor(() => expect(sent).toEqual([{ do: 'commit', message: 'A change' }]))
   })
 
   // Which files you have already been through is the one question nobody can
   // answer halfway through a review, and it is yours rather than the crew's.
-  it('remembers what you have read and says how much is left', async () => {
+  it('remembers what you have viewed and says how far through you are', async () => {
     bridge(
       work({
         changes: [
@@ -198,42 +280,41 @@ describe('the review tab', () => {
     )
 
     render(createElement(ReviewView))
-    const marks = await screen.findAllByLabelText('Mark as read')
-    fireEvent.click(marks[0]!)
+    fireEvent.click(await screen.findByLabelText('Mark one.ts as viewed'))
 
-    expect(await screen.findByText('1 to read')).not.toBeNull()
-    expect(screen.getByLabelText('Read it again')).not.toBeNull()
+    expect(await screen.findByText('1 of 2 viewed')).not.toBeNull()
+    expect(screen.getByLabelText('Mark one.ts as not viewed')).not.toBeNull()
   })
 
-  // What was read is that version of it. A file an agent has written to again
-  // comes back unread, or the mark is a promise the screen cannot keep.
+  // What was viewed is that version of it. A file an agent has written to again
+  // comes back unviewed, or the mark is a promise the screen cannot keep.
   it('brings a file back once it has changed again', async () => {
     bridge(work({ changes: [change('src/one.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
 
     const { unmount } = render(createElement(ReviewView))
-    fireEvent.click(await screen.findByLabelText('Mark as read'))
-    await screen.findByLabelText('Read it again')
+    fireEvent.click(await screen.findByLabelText('Mark one.ts as viewed'))
+    await screen.findByLabelText('Mark one.ts as not viewed')
     unmount()
 
     bridge(work({ changes: [change('src/one.ts', false, '@@ -1 +1 @@\n-a\n+c')] }))
     render(createElement(ReviewView))
 
-    expect(await screen.findByLabelText('Mark as read')).not.toBeNull()
+    expect(await screen.findByLabelText('Mark one.ts as viewed')).not.toBeNull()
   })
 
   // Discarding is the one thing here nobody can undo, so it is asked about
   // before it happens rather than after.
-  it('asks before it throws edits away', async () => {
+  it('asks before it throws changes away', async () => {
     bridge(work({ changes: [change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
 
     render(createElement(ReviewView))
-    fireEvent.click(await screen.findByText('Discard all'))
+    fireEvent.click(await screen.findByLabelText('Discard all changes'))
 
-    expect(screen.getByText('Discard these edits')).not.toBeNull()
+    expect(screen.getByText('The changes in 1 file go for good.')).not.toBeNull()
     expect(sent).toEqual([])
 
-    fireEvent.click(screen.getByText('Keep them'))
-    await waitFor(() => expect(screen.queryByText('Discard these edits')).toBeNull())
+    fireEvent.click(screen.getByText('Cancel'))
+    await waitFor(() => expect(screen.queryByText('The changes in 1 file go for good.')).toBeNull())
     expect(sent).toEqual([])
   })
 
@@ -241,8 +322,8 @@ describe('the review tab', () => {
     bridge(work({ changes: [change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
 
     render(createElement(ReviewView))
-    fireEvent.click(await screen.findByText('Discard all'))
-    fireEvent.click(screen.getByText('Discard'))
+    fireEvent.click(await screen.findByLabelText('Discard all changes'))
+    fireEvent.click(button('Discard changes'))
 
     await waitFor(() => expect(sent).toEqual([{ do: 'discard', paths: ['src/app.ts'] }]))
   })
@@ -250,33 +331,38 @@ describe('the review tab', () => {
   // Restoring a file takes it back to what the index holds, so discarding a
   // staged change would only throw half of it away. It is unstaged first.
   it('offers discard on what is not staged and nowhere else', async () => {
-    bridge(
-      work({
-        changes: [
-          change('src/app.ts', true, '@@ -1 +1 @@\n-a\n+b'),
-          change('src/other.ts', false, '@@ -1 +1 @@\n-a\n+b')
-        ]
-      })
-    )
+    bridge(work({ changes: [change('src/app.ts', true, '@@ -1 +1 @@\n-a\n+b')] }))
 
     render(createElement(ReviewView))
+    await screen.findByText('app.ts')
 
-    fireEvent.click(await screen.findByLabelText('More for app.ts'))
-    expect(screen.queryByText('Discard')).toBeNull()
-    fireEvent.keyDown(window, { key: 'Escape' })
-
-    fireEvent.click(screen.getByLabelText('More for other.ts'))
-    expect(await screen.findByText('Discard')).not.toBeNull()
+    expect(screen.queryByLabelText('Discard changes in app.ts')).toBeNull()
+    expect(screen.getByLabelText('Unstage app.ts')).not.toBeNull()
   })
 
-  it('says what has been put aside and puts it back', async () => {
+  // The right click is where the rest of what a file can do lives, the way it
+  // does in Files and the way it does in every client this is meant to feel
+  // like.
+  it('opens the file's own menu on a right click', async () => {
+    bridge(work({ changes: [change('src/app.ts', false, '@@ -1 +1 @@\n-a\n+b')] }))
+
+    render(createElement(ReviewView))
+    fireEvent.contextMenu(await screen.findByText('app.ts'))
+
+    expect(await screen.findByText('Open changes')).not.toBeNull()
+    expect(screen.getByText('Copy path')).not.toBeNull()
+    expect(screen.getByText('Stage changes')).not.toBeNull()
+  })
+
+  it('says what is stashed and puts it back', async () => {
     bridge(work({ stashes: [{ ref: 'stash@{0}', message: 'Half a feature', branch: 'main' }] }))
 
     render(createElement(ReviewView))
     expect(await screen.findByText('Half a feature')).not.toBeNull()
+    expect(screen.getByText('Stashes')).not.toBeNull()
 
     fireEvent.click(screen.getByLabelText('More for Half a feature'))
-    fireEvent.click(await screen.findByText('Put it back'))
+    fireEvent.click(await screen.findByText('Apply stash'))
 
     await waitFor(() => expect(sent).toEqual([{ do: 'apply', ref: 'stash@{0}' }]))
   })
@@ -294,9 +380,8 @@ describe('the review tab', () => {
     )
 
     render(createElement(ReviewView))
-    const buttons = await screen.findAllByLabelText('Put it in')
-    fireEvent.click(buttons[0]!)
-    fireEvent.click(buttons[1]!)
+    fireEvent.click(await screen.findByLabelText('Stage one.ts'))
+    fireEvent.click(screen.getByLabelText('Stage two.ts'))
 
     await waitFor(() =>
       expect(sent).toEqual([
