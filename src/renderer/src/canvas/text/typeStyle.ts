@@ -1,6 +1,5 @@
 import { isValidElement, type CSSProperties, type ReactNode } from 'react'
 import { resolveLineHeight } from './measurement'
-import type { TextTrim } from './metrics'
 
 export const TEXT_LINE_HEIGHT = 1.35
 
