@@ -1836,9 +1836,22 @@ export class Editor {
   }
 
   private cleanSelection(): void {
-    this.selection.setSelectedShapeIds(this.getSelectedShapeIds())
+    this.commitSelection(this.getSelectedShapeIds())
     const editing = this.selection.getEditingShapeId()
     if (editing && !this.getShape(editing)) this.selection.setEditingShapeId(null)
+  }
+
+  private commitSelection(ids: readonly TLShapeId[]): void {
+    transact(() => {
+      this.selection.setSelectedShapeIds([...ids])
+      const focused = this.getFocusedGroupId()
+      if (focused.startsWith('shape:') && !this.getShape(focused as TLShapeId)) {
+        this.selection.setFocusedGroupId(null)
+      }
+      if (!ids.length) return
+      const group = this.findCommonAncestor(ids, shape => this.isShapeOfType(shape, 'group'))
+      this.selection.setFocusedGroupId(group ?? null)
+    })
   }
 }
 
