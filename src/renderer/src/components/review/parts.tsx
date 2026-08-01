@@ -80,17 +80,20 @@ export function SectionAction({
 // It is the one fact a list of files cannot say about itself, and said in words
 // it costs a row of the panel for the whole of a session to carry a number that
 // is only ever glanced at. It stands only once there is something to say.
+//
+// It wears no `Tooltip`, and that is the rule rather than an omission. A tooltip
+// is an inline-flex box that shrinks to what is inside it, so a bar asking for
+// the whole width comes out at nothing at all, and being inline it stands on a
+// line box of its own, which is twenty pixels of nothing under the header.
+// Anything full width that has to be measured has the same two problems.
 export function Progress({ seen, of }: { seen: number; of: number }) {
   if (seen === 0 || of === 0) return null
-  const label = `${seen} of ${of} viewed`
   return (
-    <Tooltip label={label}>
-      <div aria-label={label} className="h-0.5 w-full bg-fg/[0.06]">
-        <div
-          className="h-full bg-fg/25 transition-[width] duration-300"
-          style={{ width: `${Math.round((seen / of) * 100)}%` }}
-        />
-      </div>
-    </Tooltip>
+    <div aria-label={`${seen} of ${of} viewed`} className="h-0.5 w-full bg-fg/[0.06]">
+      <div
+        className="h-full bg-fg/30 transition-[width] duration-300"
+        style={{ width: `${Math.round((seen / of) * 100)}%` }}
+      />
+    </div>
   )
 }
