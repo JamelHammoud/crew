@@ -22,6 +22,11 @@ function editingBounds(editor: Editor, id: TLShape['id']): { w: number; h: numbe
   return shape ? editor.getShapeGeometry(shape).bounds : { w: 1, h: 1 }
 }
 
+function boundsStroke(editor: Editor): string {
+  const value = editor.getCurrentTheme().colors[editor.getColorMode()].selectionStroke
+  return typeof value === 'string' ? value : 'hsl(214, 84%, 56%)'
+}
+
 export function EditingLayer({ editor }: { editor: Editor }) {
   const shape = useValue('canvas editing shape', () => editor.getEditingShape(), [editor])
   if (!shape || !isEditableTextShape(shape)) return null
@@ -48,6 +53,7 @@ function EditingRichText({ editor, shape }: { editor: Editor; shape: EditableTex
     shape.id
   ])
   const richText = shape.props.richText as RichTextDocument
+  const stroke = useValue('canvas editing stroke', () => boundsStroke(editor), [editor])
 
   useEffect(() => {
     mark.current = editor.markHistoryStoppingPoint('edit text')

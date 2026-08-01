@@ -13,6 +13,7 @@ import {
   type ShapeHandle,
   type ShapeHandleDragInfo
 } from './ShapeUtil'
+import { straightArrowTerminals, terminalsInArrowSpace } from './arrowTerminals'
 import { ARROW_FONT_SIZES, FONT_FAMILIES, STROKES, plainText, richText } from './shared'
 import { canvasSurface, shapeColor } from './theme'
 
