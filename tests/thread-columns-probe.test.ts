@@ -161,7 +161,6 @@ describe('several threads open side by side', () => {
       asked.push(key)
       return null
     }
-    useCrew.setState({ place: 'project:here' })
     open(['thread-1'], 'thread-1')
 
     await act(async () => openNotification?.('thread-2', 'project:there'))

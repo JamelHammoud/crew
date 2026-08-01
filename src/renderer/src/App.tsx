@@ -154,16 +154,11 @@ function Session() {
         </main>
         <div className="absolute top-0 inset-x-0 z-40 pointer-events-none">
           <div className="top-bar-container pointer-events-auto bg-ink-900">
-            <TopBar tab={tab} onTab={switchTab} tasksOpen={tasksOpen} onToggleTasks={() => setTasksOpen(v => !v)} />
+            <TopBar tab={tab} onTab={switchTab} />
           </div>
           {tab !== 'design' && <div className="h-10 bg-gradient-to-b from-ink-900 to-transparent" />}
         </div>
-        <TasksPanel
-          open={tasksOpen}
-          onClose={() => setTasksOpen(false)}
-          onOpenThread={openFromTasks}
-          onOpenThreadBeside={openFromTasksBeside}
-        />
+        <TasksPanel onOpenThread={openFromTasks} onOpenThreadBeside={openFromTasksBeside} />
       </div>
       <SidePanel visible={tab === 'chat'} />
       <WindowCorner />
