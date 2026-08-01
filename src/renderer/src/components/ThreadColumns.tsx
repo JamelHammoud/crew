@@ -3,8 +3,11 @@ import ThreadView from '../views/ThreadView'
 
 // A column never goes narrower than this. It holds a composer, a diff and a
 // terminal card, and the row scrolls sideways rather than squeezing them: a
-// column too narrow to read is a column nobody opened on purpose.
-export const COLUMN_MIN = 460
+// column too narrow to read is a column nobody opened on purpose. It is half
+// the width the window itself may be, so two columns fit in the smallest window
+// there is and the row only ever scrolls once there is really nowhere to put
+// the next one.
+export const COLUMN_MIN = 400
 
 export default function ThreadColumns({ ids }: { ids: string[] }) {
   const focused = useCrew(s => s.openThreadId)
