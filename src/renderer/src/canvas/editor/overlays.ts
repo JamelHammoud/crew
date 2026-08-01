@@ -47,16 +47,50 @@ interface HitTarget {
   filled: boolean
 }
 
+class PaintPass {
+  private token = 0
+  private live = false
+
+  begin(): void {
+    this.token += 1
+    if (this.live) return
+    this.live = true
+    queueMicrotask(() => {
+      this.live = false
+      this.token += 1
+    })
+  }
+
+  key(): number {
+    return this.live ? this.token : 0
+  }
+}
+
+class PaintMemo<Value> {
+  private key = 0
+  private value: Value | undefined
+
+  read(pass: PaintPass, compute: () => Value): Value {
+    const key = pass.key()
+    if (key !== 0 && key === this.key) return this.value as Value
+    const value = compute()
+    this.key = key
+    this.value = value
+    return value
+  }
+}
+
 export class OverlayManager {
   private readonly values = new Map<string, ToolOverlayUtil>()
+  private readonly pass = new PaintPass()
   private hoveredId: string | null = null
 
   constructor(
     private readonly editor: OverlayEditor,
     constructors: readonly unknown[] = []
   ) {
-    this.register(new ShapeIndicatorOverlayUtil(editor))
-    this.register(new SelectionForegroundOverlayUtil(editor))
+    this.register(new ShapeIndicatorOverlayUtil(editor, this.pass))
+    this.register(new SelectionForegroundOverlayUtil(editor, this.pass))
     this.register(new BrushOverlayUtil(editor))
     this.register(new SnapOverlayUtil(editor))
     this.register(new ScribbleOverlayUtil(editor))
