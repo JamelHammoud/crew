@@ -764,6 +764,7 @@ export const useCrew = create<CrewState>((set, get) => {
         set({
           connection: 'online',
           selfId: msg.selfId,
+          selfName: msg.snapshot.members.find(member => member.id === msg.selfId)?.name ?? get().selfName,
           code: msg.snapshot.code,
           members: msg.snapshot.members,
           agents: msg.snapshot.agents,
