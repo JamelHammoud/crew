@@ -427,6 +427,11 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
   }
 }
 
+interface MarkedShapes {
+  indicated: TLShape[]
+  hinted: TLShape[]
+}
+
 class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   static type = 'shape_indicator'
   readonly options = { zIndex: 50 }
