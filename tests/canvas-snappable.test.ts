@@ -80,13 +80,17 @@ describe('which shapes are snap targets', () => {
     expect(found).not.toContain(dragged)
   })
 
-  it('holds the frame as a target even where the frame runs past the viewport', () => {
+  it('holds the frame as a target where the viewport has left it behind, and drops its siblings', () => {
     const subject = editor()
-    const holder = frame(subject, 'holder', 0, 0, 5000, 5000)
+    const holder = frame(subject, 'holder', 0, 0)
+    const sibling = geo(subject, 'sibling', 10, 10)
     const dragged = geo(subject, 'dragged', 20, 20)
-    subject.reparentShapes([dragged], holder)
+    subject.reparentShapes([sibling, dragged], holder)
     subject.select(dragged)
-    expect(targets(subject)).toEqual([holder])
+    subject.setCamera({ x: -4000, y: -4000 })
+    const found = targets(subject)
+    expect(found).toEqual([holder])
+    expect(found).not.toContain(sibling)
   })
 
   it('answers the same array while nothing but the selection has moved', () => {
