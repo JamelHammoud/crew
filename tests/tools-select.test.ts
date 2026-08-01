@@ -165,13 +165,25 @@ describe('SelectTool', () => {
   })
 
   it('reaches translating from a pointer state without anything registering it', () => {
-    const host = editor()
+    const host = translatable()
     const tool = new SelectTool(host)
     tool.enter()
     tool.transition(PointingSelection.id)
     host.inputs.dragging = true
     tool.handleEvent({ name: 'pointer_move', target: 'selection' })
     expect(tool.getPath()).toBe('select.translating')
+  })
+
+  it('moves the selection by the drag delta once translating', () => {
+    const host = translatable()
+    const tool = new SelectTool(host)
+    tool.enter()
+    tool.transition(PointingSelection.id)
+    host.inputs.dragging = true
+    tool.handleEvent({ name: 'pointer_move', target: 'selection' })
+    expect(host.updateShapes).toHaveBeenCalled()
+    const [update] = host.updateShapes.mock.calls.at(-1)[0]
+    expect(update).toMatchObject({ id: 'shape:a', x: 10, y: 10 })
   })
 
   it('starts editing an editable shape from idle', () => {
