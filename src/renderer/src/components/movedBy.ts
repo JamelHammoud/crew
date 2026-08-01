@@ -1,5 +1,3 @@
-export function movedBy(event: Event, el: Element | null): boolean {
-  if (!el) return false
-  const target = event.target
-  return target instanceof Node ? target.contains(el) : true
+export function movedBy(_event: Event, _el: Element | null): boolean {
+  return true
 }
