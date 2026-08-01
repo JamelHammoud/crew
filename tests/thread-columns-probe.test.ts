@@ -188,7 +188,7 @@ describe('several threads open side by side', () => {
     expect(within(second!).queryByLabelText('Show panel')).toBeNull()
   })
 
-  it('carries the pop out in every column, naming that column own thread', () => {
+  it('carries the pop out in every column, each naming its own thread', () => {
     open(['thread-1', 'thread-2'], 'thread-1')
 
     const outs = screen.getAllByLabelText('Open in its own window')
