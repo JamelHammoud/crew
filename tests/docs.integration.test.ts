@@ -158,7 +158,30 @@ describe('doc pages', () => {
     await host.close()
   })
 
-  it('names the root page Genesis and every other page after its own slug', async () => {
+  it('opens a new crew on a welcome page', async () => {
+    const repoPath = tmpDir('docs-welcome')
+    const host = await startHost(repoPath)
+
+    const page = host.session.snapshot().docs['main']
+    expect(page?.title).toBe('Welcome')
+    expect(page?.text).toBe(ROOT_TEXT)
+    expect(new Store(repoPath).loadDocs()['main']?.text).toBe(ROOT_TEXT)
+
+    await host.close()
+
+    const again = await startHost(repoPath)
+    const ui = await TestUi.connect(again.url, 'sam', again.code)
+    ui.send({ type: 'doc.update', page: 'main', text: 'ours now' })
+    await waitUntil(() => new Store(repoPath).loadDocs()['main']?.text === 'ours now')
+    ui.close()
+    await again.close()
+
+    const third = await startHost(repoPath)
+    expect(third.session.snapshot().docs['main']?.text).toBe('ours now')
+    await third.close()
+  })
+
+  it('names the root page Welcome and every other page after its own slug', async () => {
     const repoPath = tmpDir('docs-root-title')
     const host = await startHost(repoPath)
     const ui = await TestUi.connect(host.url, 'sam', host.code)
