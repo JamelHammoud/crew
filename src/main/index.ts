@@ -404,7 +404,7 @@ app.whenReady().then(() => {
   command = new CrewCommand(
     commandScript({
       platform: process.platform,
-      fromSource: fromSource(app.getAppPath()),
+      fromSource: !shipping,
       appPath: app.getAppPath(),
       resourcesPath: process.resourcesPath
     })
