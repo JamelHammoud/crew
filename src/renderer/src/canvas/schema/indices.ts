@@ -14,19 +14,42 @@ const keysBetween =
     : (below: string | null, above: string | null, count: number) =>
         generateNJitteredKeysBetween(below, above, count, CHAR_SET)
 
-function integerLength(head: string): number {
-  if (head >= 'a' && head <= 'z') return head.charCodeAt(0) - 'a'.charCodeAt(0) + 2
-  if (head >= 'A' && head <= 'Z') return 'Z'.charCodeAt(0) - head.charCodeAt(0) + 2
-  throw new Error('invalid index: ' + head)
+function distanceBetween(a: string, b: string): number {
+  return Math.abs(CHAR_SET.byChar[a] - CHAR_SET.byChar[b])
+}
+
+function lengthFromSecondLevel(key: string, positive: boolean): number {
+  const head = key[0]
+  if (head === undefined || head > CHAR_SET.mostPositive || head < CHAR_SET.mostNegative) {
+    throw new Error('invalid index: ' + key)
+  }
+  if (head === CHAR_SET.mostPositive && positive) {
+    return distanceBetween(head, CHAR_SET.mostNegative) + 1 + lengthFromSecondLevel(key.slice(1), positive)
+  }
+  if (head === CHAR_SET.mostNegative && !positive) {
+    return distanceBetween(head, CHAR_SET.mostPositive) + 1 + lengthFromSecondLevel(key.slice(1), positive)
+  }
+  return distanceBetween(head, positive ? CHAR_SET.mostNegative : CHAR_SET.mostPositive) + 2
+}
+
+function integerLength(key: string): number {
+  const head = key[0]
+  if (head === undefined || head > CHAR_SET.mostPositive || head < CHAR_SET.mostNegative) {
+    throw new Error('invalid index: ' + key)
+  }
+  if (head === CHAR_SET.mostPositive) {
+    return distanceBetween(head, CHAR_SET.firstPositive) + 1 + lengthFromSecondLevel(key.slice(1), true)
+  }
+  if (head === CHAR_SET.mostNegative) {
+    return distanceBetween(head, CHAR_SET.firstNegative) + 1 + lengthFromSecondLevel(key.slice(1), false)
+  }
+  if (head >= CHAR_SET.firstPositive) return distanceBetween(head, CHAR_SET.firstPositive) + 2
+  return distanceBetween(head, CHAR_SET.firstNegative) + 2
 }
 
 export function validateIndexKey(index: string): asserts index is IndexKey {
   if (index === SMALLEST_INTEGER) throw new Error('invalid index: ' + index)
-  const length = integerLength(index[0])
-  if (length > index.length) throw new Error('invalid index: ' + index)
-  if (index.length > length && index[index.length - 1] === ZERO) {
-    throw new Error('invalid index: ' + index)
-  }
+  if (integerLength(index) > index.length) throw new Error('invalid index: ' + index)
 }
 
 export function isIndexKey(index: string): index is IndexKey {
