@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../src/renderer/src/App'
@@ -134,6 +134,21 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('several threads open side by side', () => {
+  it('replaces the row when a system notification is opened', () => {
+    let openNotification: ((threadId: string) => void) | undefined
+    window.crew.onNotificationOpen = listener => {
+      openNotification = listener
+      return () => undefined
+    }
+    open(['thread-1'], 'thread-1')
+
+    act(() => openNotification?.('thread-2'))
+
+    expect(useCrew.getState().openThreadIds).toEqual(['thread-2'])
+    expect(useCrew.getState().openThreadId).toBe('thread-2')
+    expect(columns()).toHaveLength(1)
+  })
+
   it('replaces the row when a task is opened from the task list', () => {
     open(['thread-1'], 'thread-1')
 

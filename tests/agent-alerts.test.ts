@@ -267,6 +267,18 @@ describe('an alert in the app', () => {
     expect(opened).toHaveBeenCalledWith('t1')
   })
 
+  it('opens the thread to the right from its right-click menu', () => {
+    const opened = vi.fn()
+    const openedToRight = vi.fn()
+    render(createElement(Toaster))
+    act(() => alertToast(finished(), opened, openedToRight))
+
+    fireEvent.contextMenu(screen.getByText('Bubbles finished'))
+    fireEvent.click(screen.getByText('Open to right'))
+    expect(openedToRight).toHaveBeenCalledWith('t1')
+    expect(opened).not.toHaveBeenCalled()
+  })
+
   it('a run that stopped short is one to notice', () => {
     render(createElement(Toaster))
     act(() => alertToast(finishedAlert(ended('t1', false), state())!, () => {}))

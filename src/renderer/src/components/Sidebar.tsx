@@ -107,8 +107,8 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />
-      <div className="app-no-drag shrink-0 px-4 pb-2">
-        <span className="text-xs font-medium text-fg/40">Projects</span>
+      <div className="app-no-drag shrink-0 px-5 pb-2.5">
+        <span className="text-sm font-semibold text-fg/65">Projects</span>
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-3 pb-2">
         {places.map(place => (
@@ -133,10 +133,10 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
       <div className="app-no-drag shrink-0 border-t border-fg/[0.05] px-3 py-2.5">
         <button
           onClick={() => void pick()}
-          className="w-full h-9 rounded-xl px-2 flex items-center gap-2.5 text-sm font-medium text-fg/60 transition-colors duration-150 hover:bg-fg/[0.06] hover:text-fg active:scale-[0.98]"
+          className="w-full h-9 rounded-xl px-2 flex items-center gap-2 text-sm font-medium text-fg/55 transition-colors duration-150 hover:bg-fg/[0.06] hover:text-fg active:scale-[0.98]"
         >
-          <span className="w-6 h-6 rounded-lg border border-fg/[0.08] bg-fg/[0.03] grid place-items-center text-fg/55">
-            <PlusGlyph className="w-3.5 h-3.5" />
+          <span className="w-6 h-6 grid place-items-center text-fg/45">
+            <PlusGlyph className="w-4 h-4" />
           </span>
           Open a folder
         </button>
