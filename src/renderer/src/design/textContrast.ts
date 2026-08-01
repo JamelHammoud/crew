@@ -1,7 +1,6 @@
 import type { Paint } from '../../../shared/designNode'
 import { DEFAULT_COLORS, type TLDefaultColorStyle, type TLShape } from '../canvas/schema'
 import { getColorValue } from '../canvas/styles'
-import type { BoxToolEditor } from '../canvas/tools/box/types'
 import { frameBackground } from './frameFill'
 
 export interface Ink {
