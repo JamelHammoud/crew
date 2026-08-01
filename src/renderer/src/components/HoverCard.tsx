@@ -98,8 +98,8 @@ export default function HoverCard({
     enterTimer.current = window.setTimeout(() => {
       const next = anchorRef.current?.getBoundingClientRect()
       if (!next) return
-      if (closeActive && closeActive !== hide) closeActive()
-      closeActive = hide
+      if (active && active.hide !== hide) active.hide()
+      active = { anchor: () => anchorRef.current, hide }
       setRect(next)
     }, 300)
   }
