@@ -741,6 +741,9 @@ export const useCrew = create<CrewState>((set, get) => {
             if (event.threadId && threadPrompts[event.threadId] === event.promptId) delete threadPrompts[event.threadId]
           }
         }
+        // A thread that has gone since is not one to come back to, so the row is
+        // read against what the welcome really holds.
+        const wanted = threadsWanted.filter(id => threads[id])
         for (const agent of msg.snapshot.agents) {
           for (const [promptId, run] of Object.entries(agent.runs)) {
             for (const step of run.steps) steps[promptId] = upsertStep(steps[promptId], step)

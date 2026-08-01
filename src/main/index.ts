@@ -46,8 +46,14 @@ import { Crews } from './crews'
 import type { LivePlace } from '../shared/places'
 import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
+import { threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
-import { appMenuTemplate, closePutsAway, createWindowOptions } from './window-options'
+import {
+  appMenuTemplate,
+  closePutsAway,
+  createThreadWindowOptions,
+  createWindowOptions
+} from './window-options'
 
 app.setName('Crew')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
