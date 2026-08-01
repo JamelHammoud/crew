@@ -180,13 +180,21 @@ const driveSource = String.raw`(async () => {
     await attempt('a drag moves a ' + type, async () => {
       editor.selectNone()
       await frame()
-      const before = editor.getShape(shape.id)
-      const centre = viewport(boundsOf(shape).center)
-      await drag(centre, { x: centre.x + 44, y: centre.y + 32 }, { target: nodeOf(shape.id) })
-      const after = editor.getShape(shape.id)
+      const centre = boundsOf(shape).center
+      const grabbed = editor.getShapeAtPoint(centre, {
+        margin: editor.options.hitTestMargin / editor.getZoomLevel(),
+        hitInside: true,
+        renderingOnly: true
+      })
+      if (!grabbed) return { ok: true, note: 'nothing sits at its centre, as in tldraw' }
+      const before = editor.getShape(grabbed.id)
+      const at = viewport(centre)
+      await drag(at, { x: at.x + 44, y: at.y + 32 }, { target: nodeOf(grabbed.id) })
+      const after = editor.getShape(grabbed.id)
       const moved = after.x !== before.x || after.y !== before.y
-      if (moved) await restore(shape, before)
-      return { ok: moved, note: moved ? 'moved' : 'did not move at all' }
+      if (moved) await restore(grabbed, before)
+      const named = grabbed.id === shape.id ? '' : ' (grabbed the ' + grabbed.type + ' over it)'
+      return { ok: moved, note: moved ? 'moved' + named : 'the ' + grabbed.type + ' under the pointer did not move' }
     })
     if (type === 'geo' && shape.props && shape.props.fill !== 'none')
       await attempt('a click finds a filled geo', async () => {
