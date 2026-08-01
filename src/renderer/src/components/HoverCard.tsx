@@ -16,10 +16,12 @@ function within(rect: DOMRect | undefined, x: number, y: number, pad: number): b
 
 export default function HoverCard({
   content,
+  width = CARD_WIDTH,
   className = '',
   children
 }: {
   content: ReactNode
+  width?: number
   className?: string
   children: ReactNode
 }) {
