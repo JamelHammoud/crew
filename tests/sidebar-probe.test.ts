@@ -481,6 +481,36 @@ describe('the sidebar', () => {
     expect(asked).toEqual([`project:${TWO}`])
   })
 
+  it('returns to the first project before the switch away finishes', async () => {
+    live = [
+      { key: `project:${ONE}`, folder: ONE, name: 'Jamel', hosting: true, threads: [] },
+      { key: `project:${TWO}`, folder: TWO, name: 'Jamel', hosting: true, threads: [] }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    let finishAway: (() => void) | undefined
+    vi.spyOn(window.crew, 'switchTo').mockImplementation(key => {
+      asked.push(key)
+      if (key === `project:${ONE}`) return Promise.resolve(sessionFor(ONE))
+      return new Promise(resolve => {
+        finishAway = () => resolve(sessionFor(TWO))
+      })
+    })
+    const { container } = render(createElement(Sidebar))
+    const row = (name: string) =>
+      [...container.querySelectorAll<HTMLButtonElement>('[data-reorder] > button')].find(
+        button => button.textContent === name
+      )!
+
+    fireEvent.click(row('two'))
+    fireEvent.click(row('one'))
+
+    await waitFor(() => expect(asked).toEqual([`project:${TWO}`, `project:${ONE}`]))
+    finishAway?.()
+    await waitFor(() => expect(useCrew.getState().place).toBe(`project:${ONE}`))
+  })
+
   it('carries the panel over to the place it switches to and leaves the shells alone', async () => {
     live = [{ key: `project:${TWO}`, folder: TWO, name: 'Jamel', hosting: true, threads: [] }]
     await act(async () => {

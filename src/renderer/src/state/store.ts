@@ -313,6 +313,8 @@ interface CrewState {
 }
 
 const socket = new CrewSocket()
+let destination = ''
+let transition = 0
 
 // A window says it is writing at most every couple of seconds, and says it has
 // stopped the moment the box empties, the message goes, or the composer is left.
@@ -992,6 +994,8 @@ export const useCrew = create<CrewState>((set, get) => {
       if (get().connection === 'booting') set({ connection: 'home' })
     },
     connect: session => {
+      destination = session.place
+      transition++
       set({
         connection: 'connecting',
         selfName: session.name,
@@ -1010,17 +1014,22 @@ export const useCrew = create<CrewState>((set, get) => {
     // unmounts and what the window holds for itself stays where it is.
     switchTo: async key => {
       const from = get().place
-      if (from === key) return
+      if (destination === key) return
+      destination = key
+      const request = ++transition
       const panel = useBrowser.getState()
       if (from) stashProject(from, { panel: panel.stash(), openThreadIds: get().openThreadIds })
       const info = await window.crew.switchTo(key).catch(() => null)
+      if (request !== transition) return
       const memory = recallProject(key)
       if (!info) {
+        destination = from
         if (from) panel.restore(recallProject(from)?.panel ?? null)
         toast.fail('That project is not open any more.', { key: 'switch' })
         return
       }
       const { useHuddle } = await import('./huddle')
+      if (request !== transition) return
       useHuddle.getState().leave()
       threadsWanted = threadsWanted.length > 0 ? threadsWanted : (memory?.openThreadIds ?? [])
       set({ connection: 'connecting', ...BLANK })

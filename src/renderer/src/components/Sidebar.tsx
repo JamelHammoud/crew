@@ -53,12 +53,12 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
 
   const go = async (place: Place): Promise<boolean> => {
     if (busyKey) return false
-    if (place.key === here) return true
     peek(false)
     if (isLive(live, place.key)) {
       await switchTo(place.key)
       return true
     }
+    if (place.key === here) return true
     if (place.join) {
       setBusyKey(place.key)
       try {
