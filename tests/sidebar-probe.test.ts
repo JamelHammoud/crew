@@ -96,6 +96,9 @@ const { useCrew } = await import('../src/renderer/src/state/store')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const Sidebar = (await import('../src/renderer/src/components/Sidebar')).default
 const TopBar = (await import('../src/renderer/src/components/TopBar')).default
+const WindowCorner = (await import('../src/renderer/src/components/WindowCorner')).default
+
+const corner = () => render(createElement(WindowCorner))
 
 const topBar = () =>
   render(
