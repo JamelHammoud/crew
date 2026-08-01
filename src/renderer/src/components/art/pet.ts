@@ -131,7 +131,7 @@ export const MIN_BRIDGE = 1.2
 // size, and what changes is what the size can hold. Seeding it wider instead
 // would redraw everybody's face for the sake of the smallest one it is worn at.
 export function eyeGapAt(pet: Pet, box: number): number {
-  return Math.max(pet.eyeGap, EYE_RADIUS * 2 + (MIN_BRIDGE * PET_GRID) / box)
+  return Math.max(pet.eyeGap, EYE_RADIUS * 2 + (MIN_BRIDGE * PET_GRID) / (box * BODY))
 }
 
 // The one number a cursor takes off a pet. A cursor has to be one legible color
