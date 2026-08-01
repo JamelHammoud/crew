@@ -53,6 +53,12 @@ export class Crews {
     return this.places().length > 0
   }
 
+  openKeys(): string[] {
+    const keys: string[] = []
+    for (const [key, session] of this.open) if (session.current()) keys.push(key)
+    return keys
+  }
+
   inView(id: number): AppSession {
     const key = this.view.get(id)
     return (key ? this.open.get(key) : null) ?? this.idle
