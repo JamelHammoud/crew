@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from 'react'
-import { useEditor, useValue, type TLShape } from '../canvas'
+import { useEditor, type TLShape } from '../canvas'
 import { DesignRenameContext } from '../components/DesignPanels'
 import Appearance from './Appearance'
 import { glyphForShape } from './glyphs'
