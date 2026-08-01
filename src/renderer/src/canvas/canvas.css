@@ -1,6 +1,11 @@
 @import "./text/text.css";
 
 .crew-canvas {
+  --crew-layer-background: 100;
+  --crew-layer-in-front: 250;
+  --crew-layer-shapes: 300;
+  --crew-layer-overlays: 500;
+  --crew-layer-blocker: 10000;
   background: var(--design-canvas);
   color: var(--color-fg);
   outline: none;
@@ -24,6 +29,29 @@
 .crew-canvas-in-front {
   position: absolute;
   inset: 0;
+}
+
+.crew-background-wrapper {
+  z-index: var(--crew-layer-background);
+}
+
+.crew-canvas-in-front {
+  z-index: var(--crew-layer-in-front);
+}
+
+.crew-shapes {
+  z-index: var(--crew-layer-shapes);
+}
+
+.crew-canvas-overlays {
+  z-index: var(--crew-layer-overlays);
+}
+
+.crew-hit-test-blocker {
+  position: absolute;
+  inset: 0;
+  z-index: var(--crew-layer-blocker);
+  pointer-events: all;
 }
 
 .design .crew-text::selection,
