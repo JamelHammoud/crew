@@ -169,10 +169,13 @@ describe('the mounted Crew canvas', () => {
 
     await waitFor(() => expect(view.container.querySelectorAll('[data-canvas-shape="true"]')).toHaveLength(2))
     const frame = view.container.querySelector(`[data-shape-id="${frameId}"]`) as HTMLElement
-    act(() => frame.dispatchEvent(pointer('pointerdown', 20, 20, 1)))
+    act(() => frame.dispatchEvent(pointer('pointerdown', 60, 40, 1)))
+    expect(editor?.getSelectedShapeIds()).toEqual([])
+    act(() => frame.dispatchEvent(pointer('pointerup', 60, 40, 0)))
+    act(() => frame.dispatchEvent(pointer('pointerdown', 12, 30, 1)))
     expect(editor?.getSelectedShapeIds()).toEqual([frameId])
-    act(() => frame.dispatchEvent(pointer('pointermove', 40, 20, 1)))
-    act(() => frame.dispatchEvent(pointer('pointerup', 40, 20, 0)))
+    act(() => frame.dispatchEvent(pointer('pointermove', 32, 30, 1)))
+    act(() => frame.dispatchEvent(pointer('pointerup', 32, 30, 0)))
     expect(editor?.getShape(frameId)?.x).toBe(30)
 
     const canvas = view.container.querySelector('[data-canvas="true"]') as HTMLElement

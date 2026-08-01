@@ -267,10 +267,13 @@ describe('the canvas editor', () => {
         currentTarget: null
       }) as unknown as PointerEvent
     const handlers = subject.getCanvasEventHandlers()
-    handlers.onPointerDown(pointer(10, 1))
+    handlers.onPointerDown(pointer(50, 1))
+    expect(subject.getSelectedShapeIds()).toEqual([])
+    handlers.onPointerUp(pointer(50, 0))
+    handlers.onPointerDown(pointer(4, 1))
     expect(subject.getSelectedShapeIds()).toEqual([id])
-    handlers.onPointerMove(pointer(30, 1))
-    handlers.onPointerUp(pointer(30, 0))
+    handlers.onPointerMove(pointer(24, 1))
+    handlers.onPointerUp(pointer(24, 0))
     expect(subject.getShape(id)?.x).toBe(20)
   })
 
