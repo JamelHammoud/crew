@@ -51,7 +51,8 @@ function fakeFace(): void {
 function measuredByLines(): void {
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
     const line = Number.parseFloat(this.style.lineHeight) || 24
-    const rows = Math.max(1, this.childElementCount)
+    const markup = this.innerHTML
+    const rows = Math.max(1, (markup.match(/<p[\s>]/g) ?? []).length) + (markup.match(/<br/g) ?? []).length
     const width = (this.textContent ?? '').length * 10
     const height = rows * line
     return { x: 0, y: 0, left: 0, top: 0, right: width, bottom: height, width, height, toJSON: () => ({}) } as DOMRect
