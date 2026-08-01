@@ -156,8 +156,13 @@ export class Editor {
     this.camera = new CameraManager({
       zoomMin: options.options?.camera?.zoomMin,
       zoomMax: options.options?.camera?.zoomMax,
-      zoomSteps: options.options?.camera?.zoomSteps
+      zoomSteps: options.options?.camera?.zoomSteps,
+      panSpeed: options.options?.camera?.panSpeed,
+      zoomSpeed: options.options?.camera?.zoomSpeed,
+      isLocked: options.options?.camera?.isLocked
     })
+    this.scribbles = new ScribbleManager(this)
+    this.ticks = new TickManager(elapsed => this.tick(elapsed))
     this.user = new UserPreferencesManager({
       initial: {
         colorScheme: options.colorScheme ?? options.user?.getUserPreferences?.().colorScheme ?? 'light',
