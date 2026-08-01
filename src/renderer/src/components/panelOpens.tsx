@@ -12,6 +12,7 @@ import {
 } from '../icons'
 import { useBrowser } from '../state/browser'
 import { useCrew } from '../state/store'
+import { eventIndex } from './eventIndex'
 
 // The one table of what the side panel can hold. The menu the plus opens and
 // the screen an empty panel shows both read it, so the words somebody picked
