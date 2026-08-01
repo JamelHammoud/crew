@@ -25,13 +25,14 @@ export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
 }
 
 export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TypeStyle>): void {
-  const { align, ...type } = { ...textShapeType(editor, shape), ...patch }
+  const live = (editor.getShape(shape.id) as TLTextShape | undefined) ?? shape
+  const { align, ...type } = { ...textShapeType(editor, live), ...patch }
   editor.markHistoryStoppingPoint()
   editor.updateShape<TLTextShape>({
-    id: shape.id,
+    id: live.id,
     type: 'text',
     props: { textAlign: labelAlign(align) as TLTextShape['props']['textAlign'] },
-    meta: { ...shape.meta, type }
+    meta: { ...live.meta, type }
   })
 }
 
