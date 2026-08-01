@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Editor } from '../src/renderer/src/canvas/editor'
 import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
 import { defaultBindingUtils, defaultShapeUtils } from '../src/renderer/src/canvas/shapes'
