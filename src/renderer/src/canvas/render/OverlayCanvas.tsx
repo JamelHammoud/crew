@@ -52,8 +52,6 @@ export const OverlayCanvas = memo(function OverlayCanvas<Shape extends CanvasSha
         const canvas = canvasRef.current
         const context = canvas?.getContext('2d')
         if (!canvas || !context) return
-        const probe = (globalThis as never as { __render?: Record<string, number> }).__render
-        if (probe) probe.overlayPaints = (probe.overlayPaints ?? 0) + 1
         const { dpr, width, height, cameraX, cameraY, zoom } = inputs.get()
         const canvasWidth = Math.ceil(width * dpr)
         const canvasHeight = Math.ceil(height * dpr)
