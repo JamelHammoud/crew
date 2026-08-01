@@ -9,6 +9,7 @@ import TypingLine from '../components/TypingLine'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
 import PlanCard from '../components/PlanCard'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
+import Skeleton from '../components/Skeleton'
 import Spinner from '../components/Spinner'
 import ThreadCard from '../components/ThreadCard'
 import HuddleCard from '../components/huddle/HuddleCard'
@@ -55,6 +56,7 @@ export default function Chat() {
   const commands = useCrew(s => s.chatCommands)
   const setChatCommands = useCrew(s => s.setChatCommands)
   const agents = useCrew(s => s.agents)
+  const connection = useCrew(s => s.connection)
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   // Voice is a mode rather than a mark on a message: a chip that made the agent
@@ -200,7 +202,9 @@ export default function Chat() {
           )}
           {feed.length === 0 && (
             <div className="mt-16 flex flex-col items-center gap-4">
-              {agents.length === 0 ? (
+              {connection !== 'online' ? (
+                <Skeleton className="h-10 w-32 rounded-full" />
+              ) : agents.length === 0 ? (
                 <CreateAgent compact />
               ) : (
                 <p className="text-base text-fg-muted text-center">Say hi, or mention someone with @.</p>
