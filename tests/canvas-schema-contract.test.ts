@@ -199,23 +199,38 @@ describe('the paths the saved boards were drawn with', () => {
 })
 
 describe('the compact codec a path is written with', () => {
-  it('spends sixteen characters on the first point and eight on each one after it', () => {
+  const base64Length = (bytes: number) => Math.ceil(bytes / 3) * 4
+
+  it('spends twelve bytes on the first point and six on each one after it', () => {
     const points = [
       { x: 1, y: 2, z: 0.5 },
       { x: 3, y: 4, z: 0.5 },
       { x: 5, y: 6, z: 0.5 }
     ]
-    expect(encodePoints(points, DIM_3D)).toHaveLength(16 + 8 * 2)
+    expect(encodePoints(points, DIM_3D)).toHaveLength(base64Length(12 + 6 * 2))
+    expect(encodePoints([points[0]], DIM_3D)).toHaveLength(16)
   })
 
-  it('spends twelve characters on the first point and four on each one after it without pressure', () => {
+  it('spends eight bytes on the first point and four on each one after it without pressure', () => {
     const points = [
       { x: 1, y: 2, z: 0.5 },
       { x: 3, y: 4, z: 0.5 },
       { x: 5, y: 6, z: 0.5 },
       { x: 7, y: 8, z: 0.5 }
     ]
-    expect(encodePoints(points, DIM_2D)).toHaveLength(12 + 4 * 3)
+    expect(encodePoints(points, DIM_2D)).toHaveLength(base64Length(8 + 4 * 3))
+    expect(encodePoints([points[0]], DIM_2D)).toHaveLength(12)
+  })
+
+  it('reads a delta that shrank to nothing back as no movement, whichever zero it was written as', () => {
+    const points = [
+      { x: 0, y: 0, z: 0.5 },
+      { x: -1e-9, y: 0, z: 0.5 }
+    ]
+    const written = encodePoints(points, DIM_2D)
+    const decoded = decodePoints(written, DIM_2D)
+    expect(decoded[1].x).toBe(0)
+    expect(decodePoints(encodePoints(decoded, DIM_2D), DIM_2D)).toEqual(decoded)
   })
 
   it('reads one point on its own as one point', () => {

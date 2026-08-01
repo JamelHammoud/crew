@@ -12,6 +12,10 @@ const HEADING_FONT_SIZE = 12
 const HEADING_HEIGHT = 20
 const HEADING_GAP = 4
 
+function headingWidth(name: string): number {
+  return name.length * HEADING_FONT_SIZE * 0.58
+}
+
 export class FrameShapeUtil extends BaseBoxShapeUtil<FrameShape> {
   static override type = 'frame' as const
   static override props = frameShapeProps

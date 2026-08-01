@@ -27,6 +27,7 @@ import {
 } from '../schema'
 import { ShapeUtil, type CrewShapePartial, type ShapeResizeInfo } from '../shapes/ShapeUtil'
 import { uniqueId } from '../store'
+import type { BindingPartial } from './bindingTypes'
 import { BindingManager } from './bindings'
 import { cloneContent } from './clipboard'
 import { CameraManager } from './camera'
