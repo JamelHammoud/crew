@@ -22,11 +22,13 @@ export function useThreadRead(threadId: string): {
   useEffect(() => {
     if (online) readThread(threadId)
   }, [online, readThread, threadId])
-  return useMemo(
-    () =>
-      readEvents.length === 0
-        ? { events, steps }
-        : { events: mergeEvents(readEvents, events), steps: { ...readSteps, ...steps } },
-    [events, readEvents, readSteps, steps]
+  const merged = useMemo(
+    () => (readEvents.length === 0 ? events : mergeEvents(readEvents, events)),
+    [events, readEvents]
   )
+  const mergedSteps = useMemo(
+    () => (readEvents.length === 0 ? steps : { ...readSteps, ...steps }),
+    [readEvents, readSteps, steps]
+  )
+  return useMemo(() => ({ events: merged, steps: mergedSteps }), [merged, mergedSteps])
 }

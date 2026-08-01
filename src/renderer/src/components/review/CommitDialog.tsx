@@ -36,7 +36,8 @@ export default function CommitDialog({
       onClose={onClose}
       title={`Commit ${staged} ${staged === 1 ? 'file' : 'files'}`}
     >
-      <textarea
+      <TextArea
+        glass
         ref={ref}
         rows={2}
         autoFocus
@@ -44,7 +45,7 @@ export default function CommitDialog({
         onChange={event => onMessage(event.target.value)}
         onKeyDown={keys}
         placeholder="What changed"
-        className="mt-4 w-full resize-none rounded-card border border-fg/10 bg-fg/[0.04] px-3.5 py-2.5 text-sm text-fg placeholder:text-fg/30 focus:border-fg/25 focus:outline-none"
+        className="mt-4"
       />
       <div className="mt-5 flex items-center justify-end gap-2">
         <button
