@@ -488,6 +488,7 @@ export const useCrew = create<CrewState>((set, get) => {
     const alert =
       finishedAlert(event, get()) ??
       memberMentionAlert(event, get().selfId, get().openThreadIds) ??
+      memberReplyAlert(event, get().selfId, get().openThreadIds) ??
       questionAlert(event, get(), boardOnScreen())
     if (alert) {
       const showAlertThread = (threadId: string, beside: boolean) => {
