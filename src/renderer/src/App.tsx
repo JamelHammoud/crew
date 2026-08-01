@@ -126,7 +126,7 @@ function Session() {
           style={{ width: SIDEBAR_W }}
           className="absolute inset-y-0 left-0 z-50 animate-rail"
         >
-          <Sidebar overlay />
+          <Sidebar overlay strong={tab === 'design'} />
         </div>
       )}
       <div className="flex-1 min-w-0 relative bg-ink-900">
