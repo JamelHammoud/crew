@@ -957,7 +957,7 @@ export const useCrew = create<CrewState>((set, get) => {
       const from = get().place
       if (from === key) return
       const panel = useBrowser.getState()
-      if (from) stashProject(from, { panel: panel.stash(), openThreadId: get().openThreadId })
+      if (from) stashProject(from, { panel: panel.stash(), openThreadIds: get().openThreadIds })
       const info = await window.crew.switchTo(key).catch(() => null)
       const memory = recallProject(key)
       if (!info) {

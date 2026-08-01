@@ -66,6 +66,10 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 const crews = new Crews()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
+// One window a thread. Asked for a thread that already has one, the window that
+// is standing is brought forward rather than a second one opened onto the same
+// conversation.
+const popped = new Map<string, BrowserWindow>()
 // Whether this Crew was installed or is being run out of a checkout. It is the
 // one answer the icon, the dev tools and the updates all read, and nothing about
 // the path check is loosened for any of them.
