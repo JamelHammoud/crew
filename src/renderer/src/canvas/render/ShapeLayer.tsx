@@ -91,6 +91,7 @@ export function ShapeLayer<Shape extends CanvasShapeRecord>({
     [host, sorter]
   )
   const shapes = useValue(rendering)
+  tally('layer:*')
   return (
     <MountedShapeCullingProvider>
       {shapes.map(shape => (
