@@ -1790,6 +1790,61 @@ export class CrewSession {
     return { ok: true }
   }
 
+  private memoryFrom(promptId: string): Thread | { error: string } {
+    const thread = this.askingThread(promptId)
+    if (!thread) return { error: NOT_RUNNING }
+    if (this.ghostOf(thread.id)) return { error: GHOST_MEMORY }
+    return thread
+  }
+
+  memoryPut(promptId: string, raw: unknown): { ids: string[] } | { error: string } {
+    const asking = this.memoryFrom(promptId)
+    if ('error' in asking) return asking
+    const lines = cleanMemoryLines(raw)
+    if (lines.length === 0) return { error: 'Say what to write down.' }
+    if (this.memories.size + lines.filter(text => !this.memoryLike(text)).length > MEMORY_LIMIT) {
+      return { error: MEMORY_FULL }
+    }
+    const ids = lines.map(text => {
+      const already = this.memoryLike(text)
+      return already ? already.id : this.writeMemory(text, asking.agentLabel, asking.agentId)
+    })
+    return { ids }
+  }
+
+  memoryEdit(promptId: string, memoryId: string, raw: unknown): Done {
+    const asking = this.memoryFrom(promptId)
+    if ('error' in asking) return asking
+    const memory = this.memories.get(memoryId)
+    if (!memory) return { error: 'No memory with that id. The list is in front of you.' }
+    const text = cleanMemoryLine(raw)
+    if (!text) return { error: 'Say what it should say instead.' }
+    const already = this.memoryLike(text, memoryId)
+    if (already) return { error: 'The crew already knows that one.' }
+    this.rewriteMemory(memory, text, asking.agentLabel, asking.agentId)
+    return { ok: true }
+  }
+
+  memoryForget(promptId: string, memoryId: string): Done {
+    const asking = this.memoryFrom(promptId)
+    if ('error' in asking) return asking
+    if (!this.memories.delete(memoryId)) return { error: 'No memory with that id. The list is in front of you.' }
+    this.emit({
+      id: randomUUID(),
+      ts: Date.now(),
+      kind: 'memory.removed',
+      memoryId,
+      byName: asking.agentLabel
+    })
+    return { ok: true }
+  }
+
+  memoryRead(promptId: string): { memories: CrewMemory[] } | { error: string } {
+    const asking = this.memoryFrom(promptId)
+    if ('error' in asking) return asking
+    return { memories: [...this.memories.values()] }
+  }
+
   // What an agent wants looked at. It goes through emit like everything else a
   // run says about itself, so a ghost thread's page is shown to the one window
   // that opened the thread and is never written down.
