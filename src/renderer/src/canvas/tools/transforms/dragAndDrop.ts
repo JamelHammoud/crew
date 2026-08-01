@@ -48,7 +48,7 @@ export class DragAndDropManager {
       this.initialIndices.set(shape.id, shape.index)
     }
 
-    const sorted = this.editor.getCurrentPageShapesSorted()
+    const sorted = this.editor.getCurrentPageShapesSorted?.() ?? []
     this.shapesToActuallyMove = [...moving]
       .filter(shape => !shape.isLocked)
       .sort((a, b) => sorted.indexOf(a) - sorted.indexOf(b))
@@ -92,7 +92,7 @@ export class DragAndDropManager {
     this.shapesToActuallyMove = []
     this.initialDraggingOverShape = undefined
     this.prevDraggingOverShape = undefined
-    this.editor.setHintingShapes([])
+    this.editor.setHintingShapes?.([])
   }
 
   private info(extra: Partial<DragTargetInfo> = {}): DragTargetInfo {
@@ -108,7 +108,7 @@ export class DragAndDropManager {
     const draggingIds = new Set(dropping.map((shape: any) => shape.id))
     const candidates = this.editor
       .getShapesAtPoint(point, { hitInside: true, margin: 0 })
-      .filter((shape: any) => !draggingIds.has(shape.id) && !shape.isLocked && !this.editor.isShapeHidden(shape))
+      .filter((shape: any) => !draggingIds.has(shape.id) && !shape.isLocked && !this.editor.isShapeHidden?.(shape))
     for (const candidate of candidates) {
       const util = this.editor.getShapeUtil(candidate)
       if (
@@ -172,12 +172,12 @@ export class DragAndDropManager {
         const info = this.info({ prevDraggingOverShapeId: this.prevDraggingOverShape?.id ?? null })
         if (util.onDragShapesIn) util.onDragShapesIn(next, receivable, info)
         else this.reparentIn(next, receivable)
-        this.editor.setHintingShapes([next.id])
+        this.editor.setHintingShapes?.([next.id])
       } else if (this.prevDraggingOverShape) {
-        this.editor.setHintingShapes([])
+        this.editor.setHintingShapes?.([])
       }
     } else if (this.prevDraggingOverShape) {
-      this.editor.setHintingShapes([])
+      this.editor.setHintingShapes?.([])
     }
 
     onReparent?.()
@@ -199,18 +199,18 @@ export class DragAndDropManager {
       )
     }
 
-    this.editor.reparentShapes(dragging, target.id)
+    this.editor.reparentShapes?.(dragging, target.id)
 
     if (!restoreIndices) return
     for (const shape of previousChildren) {
       const index = this.initialIndices.get(shape.id)
-      if (index) this.editor.updateShape({ id: shape.id, type: shape.type, index })
+      if (index) this.editor.updateShape?.({ id: shape.id, type: shape.type, index })
     }
   }
 
   private reparentOut(target: any, dragging: any[]): void {
     const leaving = dragging.filter((shape: any) => shape.parentId === target.id)
     if (!leaving.length) return
-    this.editor.reparentShapes(leaving, this.editor.getCurrentPageId())
+    this.editor.reparentShapes?.(leaving, this.editor.getCurrentPageId())
   }
 }
