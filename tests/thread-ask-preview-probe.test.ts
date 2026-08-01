@@ -142,6 +142,21 @@ describe('the whole of what a thread was asked, off its own header', () => {
     expect(card()?.textContent).toContain('\n')
   })
 
+  // The one line the header holds is as wide as the header, and a message that
+  // fits neither the title nor the box is the case this was asked for.
+  it('stands up for a line cut off in its own box', () => {
+    const one = 'the composer header holds one line of this and cuts the rest off in the box'
+    const { container } = open(`@Bubbles ${one}`, `@Bubbles ${one}`)
+    const line = askLine(container)
+    Object.defineProperty(line, 'scrollWidth', { value: 640, configurable: true })
+    Object.defineProperty(line, 'clientWidth', { value: 220, configurable: true })
+
+    resized(line)
+    hover(askLine(container))
+
+    expect(card()?.textContent).toContain(one)
+  })
+
   // A card that says what the line already says is a card earning nothing.
   it('says nothing where the whole of it is already on the line', () => {
     const { container } = open('@Bubbles the composer header fits this one', '@Bubbles the composer header fits this one')
