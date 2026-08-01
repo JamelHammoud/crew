@@ -142,7 +142,8 @@ export class DraggingHandle<Shape extends TLShape = TLShape> extends TransformSt
     const shape = this.editor.getShape(this.info.shape.id)
     if (shape) this.editor.getShapeUtil?.(shape).onHandleDragCancel?.(shape, this.dragInfo())
     if (this.markId) this.editor.bailToMark?.(this.markId)
-    this.finish(false)
+    this.editor.snaps?.clearIndicators?.()
+    this.finish(true)
   }
 
   private dragInfo(handle = this.initialHandle): HandleDragInfo<Shape> {
