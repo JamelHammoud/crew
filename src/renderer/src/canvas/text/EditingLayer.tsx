@@ -118,7 +118,7 @@ function ShapeTextEditor({
     component(shape: EditableTextShape): ReactNode
     options?: { getCustomDisplayValues?: (...args: unknown[]) => CSSProperties }
   }
-  const custom = { ...util.options?.getCustomDisplayValues?.(editor, shape), ...paintedTypeStyle(util, shape) }
+  const custom = { ...util.options?.getCustomDisplayValues?.(editor, shape) }
   if (shape.type === 'text') {
     return (
       <RichTextEditor
