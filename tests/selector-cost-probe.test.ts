@@ -322,6 +322,15 @@ describe('what one store write costs a thread column', () => {
     expect(seen.at(-1)).toBe(seen[0])
   })
 
+  it('folds the read-back page in once across a burst of steps', () => {
+    stand()
+    merges.count = 0
+    for (let index = 0; index < 20; index++) {
+      act(() => useCrew.setState({ steps: { [PROMPT]: [...steps, steps[index % steps.length]] } }))
+    }
+    expect(merges.count).toBe(0)
+  })
+
   it('hands back a new log when an event lands', () => {
     const seen: SessionEvent[][] = []
     useCrew.setState(seed())
