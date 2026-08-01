@@ -219,53 +219,27 @@ describe('several threads open side by side', () => {
   })
 })
 
-const cardFor = (title: string): HTMLElement =>
-  screen.getAllByRole('button').find(one => one.textContent?.includes(title))!
+describe('the right click on a card in the feed', () => {
+  const card = (title: string): HTMLElement =>
+    screen.getAllByRole('button').find(one => one.textContent?.includes(title))!
 
-const rightClick = (title: string): void => {
-  fireEvent.contextMenu(cardFor(title))
-}
-
-describe('the right click on a thread', () => {
-  it('offers the row and a window of its own, and opens the thread where it says', () => {
+  it('opens the thread, and the feed only ever stands with the row empty', () => {
     open([], null)
+    fireEvent.contextMenu(card('look at the header'))
 
-    rightClick('look at the header')
     expect(screen.getByText('Open')).toBeTruthy()
-    expect(screen.getByText('Open in its own window')).toBeTruthy()
     expect(screen.queryByText('Open beside')).toBeNull()
 
     fireEvent.click(screen.getByText('Open'))
     expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
   })
 
-  it('says beside once a thread is already open, and joins the row rather than taking its place', () => {
-    open(['thread-1'], 'thread-1')
-
-    rightClick('look at the footer')
-    fireEvent.click(screen.getByText('Open beside'))
-
-    expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
-    expect(useCrew.getState().openThreadId).toBe('thread-2')
-  })
-
-  it('pops one out of the feed without it standing in both places at once', () => {
-    open(['thread-1'], 'thread-1')
-
-    rightClick('look at the footer')
+  it('pops one out without it standing in both places at once', () => {
+    open([], null)
+    fireEvent.contextMenu(card('look at the footer'))
     fireEvent.click(screen.getByText('Open in its own window'))
 
     expect(popOutThread).toHaveBeenLastCalledWith('thread-2', undefined)
-    expect(useCrew.getState().openThreadIds).toEqual(['thread-1'])
-  })
-
-  it('offers the way out of the row for a thread already in it', () => {
-    open(['thread-1', 'thread-2'], 'thread-1')
-
-    fireEvent.click(within(columns()[0]!).getByLabelText('Close'))
-    rightClick('look at the header')
-
-    expect(screen.getByText('Open beside')).toBeTruthy()
-    expect(screen.queryByText('Close')).toBeNull()
+    expect(useCrew.getState().openThreadIds).toEqual([])
   })
 })
