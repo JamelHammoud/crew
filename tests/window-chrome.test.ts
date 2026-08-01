@@ -44,6 +44,11 @@ const topBar = () =>
     })
   )
 
+// The stoplights are cleared by whatever stands at the window's left edge, and
+// that is the corner rather than the top bar: the rail runs the whole height of
+// the window and the mark and its button stand over it.
+const inset = () => render(createElement(WindowCorner)).container.firstElementChild!.firstElementChild!
+
 describe('window chrome', () => {
   it('marks the document on macOS so the stoplight inset applies', () => {
     asPlatform(MAC)
