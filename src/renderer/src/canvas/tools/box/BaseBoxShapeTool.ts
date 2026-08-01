@@ -17,7 +17,6 @@ export abstract class BaseBoxShapeTool implements BoxStateParent {
       pointing: new Pointing(editor, this)
     }
     this.current = this.states.idle
-    this.current.onEnter({})
   }
 
   get id(): string {
@@ -30,6 +29,15 @@ export abstract class BaseBoxShapeTool implements BoxStateParent {
     this.current.onExit()
     this.current = next
     next.onEnter(info)
+  }
+
+  enter(info: BoxPointerInfo = {}): void {
+    this.current = this.states[(this.constructor as typeof BaseBoxShapeTool).initial]
+    this.current.onEnter(info)
+  }
+
+  exit(): void {
+    this.current.onExit()
   }
 
   getCurrentStateId(): string {
