@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, beforeEach, describe, it } from 'vitest'
+import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import ThreadView from '../src/renderer/src/views/ThreadView'
 import { useBrowser } from '../src/renderer/src/state/browser'
 import { useCrew } from '../src/renderer/src/state/store'
@@ -200,9 +200,12 @@ describe('what a keystroke costs', () => {
       time('store write nothing reads', 20, i => {
         useCrew.setState({ chatDraft: `x${i}` })
       })
+      drawn.composer = 0
+      drawn.rows = 0
       time('keystroke, empty box', 16, i => {
         fireEvent.change(composer(), { target: { value: 'hello there crew'.slice(0, i) } })
       })
+      console.log(`    composer drawn ${drawn.composer} times, rows ${drawn.rows}, over 17 keystrokes`)
       const long = 'the quick brown fox jumps over the lazy dog and keeps going for a while yet '.repeat(3)
       time('keystroke, long draft', 16, i => {
         fireEvent.change(composer(), { target: { value: long + i } })

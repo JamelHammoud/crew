@@ -16,6 +16,8 @@ if (!Element.prototype.getAnimations) Element.prototype.getAnimations = () => []
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const { useReviewed } = await import('../src/renderer/src/state/reviewed')
 const ReviewView = (await import('../src/renderer/src/components/review/ReviewView')).default
+const DiffLines = (await import('../src/renderer/src/components/DiffLines')).default
+const { clampSplit, defaultSplit, DIFF_MIN, LIST_MIN } = await import('../src/renderer/src/components/review/split')
 
 const change = (path: string, staged: boolean, diff: string, over: Partial<RepoChange> = {}): RepoChange => ({
   path,
