@@ -99,6 +99,10 @@ export class Editor {
   }
   readonly edgeScrollManager = { start: () => undefined, stop: () => undefined, update: () => undefined }
   readonly snaps = new SnapManager()
+  readonly scribbles: ScribbleManager
+  readonly bindings: BindingManager
+  private readonly emitter = new EditorEmitter()
+  private readonly ticks: TickManager
   private readonly camera: CameraManager
   private readonly selection = new SelectionManager()
   private readonly tools: ToolManager

@@ -558,6 +558,24 @@ Everything the app can stand beside the chat: a web page, a terminal, the projec
 - Start is that table as a list, and nothing else. A line over it naming what the rows are would be the screen read back to whoever is already looking at it, and no row promises a key, because nothing in the app listens for one. It wears a tab of its own, so what is on screen is always a tab, and it has no close: closing it is closing the panel, and that button is an inch to the right of it.
 - The close in its own corner puts the panel away and keeps the tabs, the same as the button in the thread.
 
+## Several threads at once
+
+The chat holds up to ten threads side by side, as columns, and any one of them can be stood out into a window of its own. `openThreadIds` on the store is the row, left to right, and `openThreadId` is the one the caret is in.
+
+- Opening a thread never closes one. It joins the row, or it is the column it already stands in, and a row with no room left says the move rather than dropping whichever column somebody was reading. That is one rule wherever a thread is opened from, a card, the rail, a task, a toast or a fork, so the way in to a second column is opening a second thread and there is no gesture to learn.
+- `src/shared/threadViews.ts` holds the whole of it as numbers, the limit, what joining a row does, what closing one leaves, and where the caret goes afterwards, so `tests/thread-views.test.ts` reads the rules with no window anywhere near it and `tests/thread-columns-probe.test.ts` reads the columns in a real render.
+- The way out of a column is the button that was the way back to the chat. One thread open is a way back and several is a close, so nothing was added to the row to say the same thing twice, and the chat is what is left once the last column goes.
+- A column never goes narrower than `COLUMN_MIN`. It holds a composer, a diff and a terminal card, so past that the row scrolls sideways rather than squeezing them: a column too narrow to read is a column nobody opened on purpose.
+- There is one side panel and it holds the things of the thread you are in, so its button stands in the focused column and nowhere else. Every column pointing at the same box would be several buttons for one panel, and pressing one in a column the panel is not following would have to guess whether it meant show me this or put it away.
+- The same goes for `⌘F`. Every column draws a find bar of its own, so the shortcut belongs to the column you are writing in, which is `listens` on `FindBar`. A bar already open still answers it, or the way to close the one in front of you would depend on which column was last touched.
+- The panel's own thread tabs are read against the whole row rather than the one thread, which is `leaveThreads`. Read the old way, opening a second column took the first one's helpers off the screen.
+- What is already on the screen is not said again, and with a row of them that is every thread in it. `finishedAlert` and `memberMentionAlert` take the row, or a thread being read in the second column raises a banner about itself.
+- A thread in a window of its own is the same session seen through one thread. The window is opened by main, looking at the crew the window that asked was looking at, and the thread rides in the hash so it survives a reload: `threadWindowHash` writes it and `main.tsx` is where a window with one in it becomes `ThreadWindow` rather than the app. It boots the way the app does and joins nothing extra, since two windows on one folder are already one member.
+- It pins the store's row to its own thread, which is what makes everything downstream true there: a page an agent shows opens in that window, the panel holds that thread's things, and nothing raises a banner about the thread being read.
+- Popping out takes the column with it. Standing in both places at once is two composers on one thread and nobody asked for the thread twice.
+- It closes for real. On a Mac the app's own window is put away rather than taken down, and a window standing on one thread wearing that close would be hidden with the thread still spoken for, so the next press would open nothing.
+- Nothing this machine says about itself is said by a popped out window: the presence, the dictation settings, the awake switch and the dock's icon are the app's own window's, and the dock has one icon however many windows are open.
+
 ## Find
 
 `⌘F` opens `FindBar` over a doc and over a thread. It walks the text nodes of whatever it is handed and paints the hits through `CSS.highlights`, so nothing anywhere is re-rendered to mark a match.

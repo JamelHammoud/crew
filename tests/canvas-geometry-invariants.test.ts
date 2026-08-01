@@ -164,8 +164,9 @@ describe('the signed distance every geometry measures', () => {
 
 describe('a closed and filled geometry', () => {
   const filled = named.filter(([, geometry]) => geometry.isClosed && geometry.isFilled)
+  const solid = filled.filter(([name, geometry]) => name !== 'a polygon with a notch' && !(geometry instanceof Point2d))
 
-  it.each(filled)('reads its own middle as inside for %s', (_name, geometry) => {
+  it.each(solid)('reads its own middle as inside for %s', (_name, geometry) => {
     expect(geometry.distanceToPoint(geometry.bounds.center)).toBeLessThan(0)
     expect(geometry.hitTestPoint(geometry.bounds.center, 0, false)).toBe(true)
   })
@@ -174,6 +175,23 @@ describe('a closed and filled geometry', () => {
     const far = new Vec(geometry.bounds.maxX + 500, geometry.bounds.maxY + 500)
     expect(geometry.distanceToPoint(far)).toBeGreaterThan(0)
     expect(geometry.hitTestPoint(far, 0, true)).toBe(false)
+  })
+
+  it('reads the middle of a notch as outside the shape it is cut into', () => {
+    const notched = new Polygon2d({
+      points: [new Vec(0, 0), new Vec(100, 0), new Vec(100, 100), new Vec(50, 40), new Vec(0, 100)],
+      isFilled: true
+    })
+    expect(notched.bounds.center.y).toBe(50)
+    expect(notched.distanceToPoint(notched.bounds.center)).toBeGreaterThan(0)
+    expect(notched.distanceToPoint(new Vec(50, 10))).toBeLessThan(0)
+  })
+
+  it('holds no inside at all when it is one point', () => {
+    const point = new Point2d({ point: new Vec(15, -25), margin: 0 })
+    expect(point.isFilled).toBe(true)
+    expect(point.distanceToPoint(new Vec(15, -25))).toBe(0)
+    expect(point.distanceToPoint(new Vec(15, -20))).toBeCloseTo(5, 10)
   })
 })
 

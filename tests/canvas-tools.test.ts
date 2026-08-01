@@ -234,14 +234,16 @@ function arrowEditor() {
     updateArrowTargetState: () => null,
     clearArrowTargetState: vi.fn(),
     markHistoryStoppingPoint: () => 'mark',
-    createShape: vi.fn(),
+    createShape: (shape: { id: TLShapeId; x: number; y: number }) => {
+      shapes.set(shape.id, { ...shape, type: 'arrow', props: {} } as unknown as TLArrowShape)
+    },
     updateShapes: vi.fn(),
     select: vi.fn(),
     bailToMark: vi.fn(),
     setCurrentTool: vi.fn(),
     setCursor: vi.fn()
   } as unknown as ArrowToolEditor
-  return { editor }
+  return { editor, shapes }
 }
 
 describe('picking a tool up again', () => {

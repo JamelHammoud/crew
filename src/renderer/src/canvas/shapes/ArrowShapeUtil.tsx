@@ -388,33 +388,29 @@ export class ArrowShapeUtil extends ShapeUtil<ArrowShape> {
       createElement(
         'svg',
         { width: '100%', height: '100%', style: { overflow: 'visible', pointerEvents: 'all' } },
-        createElement('path', {
-          d: body.toSimpleSvgPath(),
-          fill: 'none',
-          stroke: 'currentColor',
-          strokeWidth,
-          strokeDasharray: dash,
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round'
-        }),
-        startHead &&
-          createElement('path', {
-            d: startHead,
-            fill: fillHead(shape.props.arrowheadStart),
+        createElement(
+          'g',
+          {
+            fill: 'none',
             stroke: 'currentColor',
             strokeWidth,
-            strokeLinecap: 'round',
-            strokeLinejoin: 'round'
+            strokeLinejoin: 'round',
+            strokeLinecap: 'round'
+          },
+          arrowBodyPath(body, start, end).toSvg({
+            style: shape.props.dash,
+            strokeWidth,
+            randomSeed: shape.id
           }),
-        endHead &&
-          createElement('path', {
-            d: endHead,
-            fill: fillHead(shape.props.arrowheadEnd),
-            stroke: 'currentColor',
-            strokeWidth,
-            strokeLinecap: 'round',
-            strokeLinejoin: 'round'
-          })
+          fillColor && startHead && isClosedArrowhead(shape.props.arrowheadStart)
+            ? createElement('path', { key: 'start-fill', fill: fillColor, stroke: 'none', d: startHead })
+            : null,
+          fillColor && endHead && isClosedArrowhead(shape.props.arrowheadEnd)
+            ? createElement('path', { key: 'end-fill', fill: fillColor, stroke: 'none', d: endHead })
+            : null,
+          startHead ? createElement('path', { key: 'start-head', d: startHead }) : null,
+          endHead ? createElement('path', { key: 'end-head', d: endHead }) : null
+        )
       ),
       text &&
         createElement('div', {
