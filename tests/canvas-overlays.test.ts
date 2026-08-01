@@ -248,19 +248,22 @@ describe('what the canvas draws over the artwork', () => {
     expect(corner.args[2]).toBeCloseTo(handleSize, 6)
   })
 
-  it('collapses the corners on a shape too small to hold them', () => {
+  it('drops to two corners and no edges on a shape narrower than two handles', () => {
     const subject = editor()
-    const id = geo(subject, 'tiny', 0, 0, 10, 10)
+    const id = geo(subject, 'thin', 0, 0, 10, 200)
     subject.select(id)
 
     const drawn = paint(subject)
-    expect(drawn.named('fillRect').length).toBe(2)
+    expect(drawn.named('fillRect').map(call => call.args.slice(0, 2))).toEqual([
+      [-4, -4],
+      [10 - 4, 200 - 4]
+    ])
     expect(handlesOf(subject)).toEqual(['top_left', 'bottom_right'])
   })
 
-  it('leaves one corner and no rotate targets on a shape smaller than a handle', () => {
+  it('leaves one corner and no rotate targets on a shape smaller than a handle both ways', () => {
     const subject = editor()
-    const id = geo(subject, 'speck', 0, 0, 8, 8)
+    const id = geo(subject, 'speck', 0, 0, 10, 10)
     subject.select(id)
 
     const drawn = paint(subject)
