@@ -43,8 +43,18 @@ export function useContextMenu(editor: ReturnType<typeof useEditor> | null): {
       event.preventDefault()
       const page = editor.screenToPage({ x: event.clientX, y: event.clientY })
       const under = shapesUnder(editor, page)[0]
-      if (under && !editor.getSelectedShapeIds().includes(under.id)) editor.setSelectedShapes([under.id])
-      if (!under && editor.getSelectedShapeIds().length > 0) editor.selectNone()
+      const selected = editor.getSelectedShapeIds()
+      if (under) {
+        const outermost = editor.getOutermostSelectableShape(under)
+        const focused = editor.getFocusedGroupId()
+        const target =
+          outermost.id === under.id || outermost.id === focused || selected.includes(outermost.id)
+            ? under
+            : outermost
+        if (!selected.includes(target.id)) editor.setSelectedShapes([target.id])
+      } else if (selected.length > 0) {
+        editor.selectNone()
+      }
       setSpot({ screen: { x: event.clientX, y: event.clientY }, page })
     }
     container.addEventListener('contextmenu', onContextMenu)
