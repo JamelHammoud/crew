@@ -161,7 +161,7 @@ app.whenReady().then(async () => {
 `
 
 async function stage() {
-  const directory = await mkdtemp(path.join(tmpdir(), 'crew-guides-'))
+  const directory = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-guides-')))
   await writeFile(
     path.join(directory, 'index.html'),
     '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>'
