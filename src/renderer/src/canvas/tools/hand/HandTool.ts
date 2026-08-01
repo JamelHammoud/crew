@@ -35,7 +35,7 @@ abstract class HandState {
   ) {}
 
   onEnter(_info?: HandPointerEvent): void {}
-  onExit(_info?: HandPointerEvent, _to?: HandStateId): void {}
+  onExit(_info?: HandPointerEvent, _to?: string): void {}
   onPointerDown(_info?: HandPointerEvent): void {}
   onPointerMove(_info?: HandPointerEvent): void {}
   onPointerUp(_info?: HandPointerEvent): void {}
@@ -241,7 +241,7 @@ export class HandTool {
     this.state.onEnter(info)
   }
 
-  exit(info?: HandPointerEvent, to?: HandStateId): void {
+  exit(info?: HandPointerEvent, to?: string): void {
     this.state.onExit(info, to)
   }
 

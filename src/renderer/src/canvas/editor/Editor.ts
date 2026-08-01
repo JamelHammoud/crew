@@ -128,6 +128,8 @@ export class Editor {
   }
   private currentPageId: TLPageId
   private disposed = false
+  private stopSideEffects: () => void = () => undefined
+  private toolIdMask: string | undefined
   private richTextEditor: {
     commands?: { focus(position?: unknown): unknown }
     isFocused?: boolean
@@ -233,8 +235,8 @@ export class Editor {
     return this.camera.getCamera()
   }
 
-  setCamera(point: VecLike, _options?: TLCameraMoveOptions): this {
-    this.camera.setCamera(point)
+  setCamera(point: VecLike, options?: TLCameraMoveOptions): this {
+    this.camera.setCamera(point, options)
     this.refreshInputPagePoint()
     return this
   }

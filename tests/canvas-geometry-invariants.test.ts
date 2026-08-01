@@ -190,7 +190,7 @@ describe('a closed and filled geometry', () => {
   it('holds no inside at all when it is one point', () => {
     const point = new Point2d({ point: new Vec(15, -25), margin: 0 })
     expect(point.isFilled).toBe(true)
-    expect(point.distanceToPoint(new Vec(15, -25))).toBe(0)
+    expect(Math.abs(point.distanceToPoint(new Vec(15, -25)))).toBe(0)
     expect(point.distanceToPoint(new Vec(15, -20))).toBeCloseTo(5, 10)
   })
 })

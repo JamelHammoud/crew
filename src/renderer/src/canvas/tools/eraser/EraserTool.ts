@@ -83,7 +83,7 @@ abstract class EraserState {
   ) {}
 
   onEnter(_info?: EraserPointerEvent): void {}
-  onExit(_info?: EraserPointerEvent, _to?: EraserStateId): void {}
+  onExit(_info?: EraserPointerEvent, _to?: string): void {}
   onPointerDown(_info: EraserPointerEvent): void {}
   onPointerMove(_info: EraserPointerEvent): void {}
   onPointerUp(_info: EraserPointerEvent): void {}
@@ -140,7 +140,7 @@ export class EraserPointing extends EraserState {
     if (!info.accelKey) this.tool.transition('erasing', info)
   }
 
-  override onExit(_info: EraserPointerEvent | undefined, to?: EraserStateId): void {
+  override onExit(_info: EraserPointerEvent | undefined, to?: string): void {
     if (to !== 'erasing') this.editor.setErasingShapes([])
   }
 
@@ -334,7 +334,7 @@ export class EraserTool {
     this.state.onEnter(info)
   }
 
-  exit(info?: EraserPointerEvent, to?: EraserStateId): void {
+  exit(info?: EraserPointerEvent, to?: string): void {
     this.onExit()
     this.state.onExit(info, to)
   }
