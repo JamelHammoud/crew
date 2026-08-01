@@ -207,6 +207,41 @@ describe('attachments', () => {
     expect(fs.readFileSync(copied).equals(PNG)).toBe(true)
   })
 
+  it('keeps it beside the crew rather than in the project when the crew is kept on this machine', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const project = tmpDir('project')
+    const beside = tmpDir('crew-home')
+    await connectRunner('jamel', project, beside)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.send({ type: 'chat.send', text: 'read it @Fake', mentions: [fake], attachments: [image()] })
+    const sent = (await ui.waitForEvent(e => e.kind === 'message' && !!e.threadId)) as Message
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end')) as Ended
+
+    const kept = path.join(beside, '.crew', 'attachments', sent.attachments![0].file)
+    expect(fs.readFileSync(kept).equals(PNG)).toBe(true)
+    expect(end.text).toContain(kept)
+    expect(fs.existsSync(path.join(project, '.crew'))).toBe(false)
+  })
+
+  it('writes nothing into the project for a machine with no crew of its own', async () => {
+    const ui = await TestUi.connect(host.url, 'sam', host.code)
+    uis.push(ui)
+    const project = tmpDir('guest')
+    await connectRunner('jamel', project, null)
+    await ui.waitForEvent(e => e.kind === 'agent.online')
+
+    ui.send({ type: 'chat.send', text: 'read it @Fake', mentions: [fake], attachments: [image()] })
+    const sent = (await ui.waitForEvent(e => e.kind === 'message' && !!e.threadId)) as Message
+    const end = (await ui.waitForEvent(e => e.kind === 'agent.end')) as Ended
+
+    const kept = path.join(os.tmpdir(), 'crew-attachments', sent.attachments![0].file)
+    expect(fs.readFileSync(kept).equals(PNG)).toBe(true)
+    expect(end.text).toContain(kept)
+    expect(fs.existsSync(path.join(project, '.crew'))).toBe(false)
+  })
+
   it('keeps a file beside an image and turns away only what is too big', async () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
