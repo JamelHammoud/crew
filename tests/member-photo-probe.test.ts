@@ -18,7 +18,7 @@ function seed(members: MemberInfo[], setMyPhoto = vi.fn()) {
     members,
     agents: [],
     activePrompts: {},
-    httpBase: 'http://10.0.0.2:2739',
+    httpBase: 'http://192.0.2.10:2739',
     setMyPhoto
   })
   return setMyPhoto
@@ -35,7 +35,7 @@ describe('a person photo in the settings', () => {
 
     const faces = people().querySelectorAll('img')
     expect(faces).toHaveLength(1)
-    expect(faces[0].getAttribute('src')).toBe('http://10.0.0.2:2739/attachments/me.png')
+    expect(faces[0].getAttribute('src')).toBe('http://192.0.2.10:2739/attachments/me.png')
     expect(within(people()).getByText('A')).toBeTruthy()
   })
 

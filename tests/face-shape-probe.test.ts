@@ -8,7 +8,7 @@ import Avatar from '../src/renderer/src/components/Avatar'
 import TopBar from '../src/renderer/src/components/TopBar'
 import { useCrew } from '../src/renderer/src/state/store'
 
-const PHOTO = 'http://10.0.0.2:2739/attachments/me.png'
+const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
 
 const store = new Map<string, string>()
 

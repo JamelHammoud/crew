@@ -22,7 +22,7 @@ import { useCrew } from '../src/renderer/src/state/store'
 // paint, and a picture behind that is the agent's own.
 
 const SEED = 'jamel/claude'
-const PHOTO = 'http://10.0.0.2:2739/attachments/me.png'
+const PHOTO = 'http://192.0.2.10:2739/attachments/me.png'
 
 beforeEach(() => {
   useCrew.setState({ agents: [], httpBase: '' })

@@ -20,18 +20,18 @@ describe('saved session store', () => {
     })
     expect(store.recentJoins()).toEqual([])
 
-    store.save({ mode: 'join', folder: '/tmp/repo', name: 'jamel', link: 'crew://1.2.3.4:2739/abc123' })
+    store.save({ mode: 'join', folder: '/tmp/repo', name: 'jamel', link: 'crew://192.0.2.10:2739/abc123' })
     expect(store.load()).toEqual({
       mode: 'join',
       folder: '/tmp/repo',
       name: 'jamel',
-      link: 'crew://1.2.3.4:2739/abc123'
+      link: 'crew://192.0.2.10:2739/abc123'
     })
     expect(store.recentJoins()).toEqual([
       expect.objectContaining({
         folder: '/tmp/repo',
         name: 'jamel',
-        link: 'crew://1.2.3.4:2739/abc123'
+        link: 'crew://192.0.2.10:2739/abc123'
       })
     ])
 
@@ -57,13 +57,13 @@ describe('saved session store', () => {
   // invited you to alike, so a join is forgotten by its own link.
   it('forgets a joined session without touching the rest of the list', () => {
     const store = new SavedSessionStore(path.join(tmpDir('saved-forget-join'), 'session.json'))
-    store.save({ mode: 'join', folder: '/tmp/one', name: 'jamel', link: 'crew://1.2.3.4:2739/one' })
-    store.save({ mode: 'join', folder: '/tmp/two', name: 'jamel', link: 'crew://1.2.3.4:2739/two' })
+    store.save({ mode: 'join', folder: '/tmp/one', name: 'jamel', link: 'crew://192.0.2.10:2739/one' })
+    store.save({ mode: 'join', folder: '/tmp/two', name: 'jamel', link: 'crew://192.0.2.10:2739/two' })
 
-    store.forgetJoin('crew://1.2.3.4:2739/one')
+    store.forgetJoin('crew://192.0.2.10:2739/one')
 
-    expect(store.recentJoins().map(recent => recent.link)).toEqual(['crew://1.2.3.4:2739/two'])
-    store.forgetJoin('crew://1.2.3.4:2739/nothing')
+    expect(store.recentJoins().map(recent => recent.link)).toEqual(['crew://192.0.2.10:2739/two'])
+    store.forgetJoin('crew://192.0.2.10:2739/nothing')
     expect(store.recentJoins()).toHaveLength(1)
   })
 
@@ -74,19 +74,19 @@ describe('saved session store', () => {
         mode: 'join',
         folder: `/tmp/repo-${index}`,
         name: 'jamel',
-        link: `crew://1.2.3.4:2739/abc12${index}`
+        link: `crew://192.0.2.10:2739/abc12${index}`
       })
     }
     store.save({
       mode: 'join',
       folder: '/tmp/moved',
       name: 'ali',
-      link: 'crew://1.2.3.4:2739/abc123'
+      link: 'crew://192.0.2.10:2739/abc123'
     })
 
     const recent = store.recentJoins()
     expect(recent).toHaveLength(5)
     expect(recent[0]).toEqual(expect.objectContaining({ folder: '/tmp/moved', name: 'ali' }))
-    expect(recent.filter(item => item.link === 'crew://1.2.3.4:2739/abc123')).toHaveLength(1)
+    expect(recent.filter(item => item.link === 'crew://192.0.2.10:2739/abc123')).toHaveLength(1)
   })
 })

@@ -20,7 +20,7 @@ const ImageView = (await import('../src/renderer/src/components/ImageView')).def
 const { copyImage } = await import('../src/main/clipboard')
 
 const PICTURE = 'data:image/png;base64,iVBORw0KGgo='
-const ADDRESS = 'http://192.168.1.4:2739/attachments/a1b2.jpg'
+const ADDRESS = 'http://192.0.2.10:2739/attachments/a1b2.jpg'
 
 const asked = vi.fn()
 

@@ -10,7 +10,7 @@ import { installLocalStorage } from './helpers/local-storage'
 const storage = installLocalStorage()
 
 function installBridge(recentJoins: RecentJoin[]) {
-  const join = vi.fn().mockResolvedValue({ wsUrl: 'ws://10.0.0.2:2739/ws' })
+  const join = vi.fn().mockResolvedValue({ wsUrl: 'ws://192.0.2.10:2739/ws' })
   const recent = vi.fn().mockResolvedValue(recentJoins)
   const projects = vi.fn().mockResolvedValue([])
   const forgetJoin = vi.fn().mockResolvedValue(undefined)
@@ -67,7 +67,7 @@ describe('Home places', () => {
     const saved = {
       folder: 'C:\\work\\crew-project',
       name: 'Ali',
-      link: 'crew://10.0.0.2:2739/abc123',
+      link: 'crew://192.0.2.10:2739/abc123',
       joinedAt: Date.now()
     }
     const { join } = installBridge([saved])
@@ -87,7 +87,7 @@ describe('Home places', () => {
     const saved = {
       folder: '/tmp/crew-project',
       name: 'Ali',
-      link: 'crew://10.0.0.2:2739/abc123',
+      link: 'crew://192.0.2.10:2739/abc123',
       joinedAt: Date.now()
     }
     const { forgetJoin, recent } = installBridge([saved])

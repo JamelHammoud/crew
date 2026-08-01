@@ -39,8 +39,8 @@ describe('the crew command', () => {
   })
 
   it('joins with a link, in the folder it was given', () => {
-    const request = opened(['../api', '--join', 'crew://192.168.1.4:2739/abc123'])
-    expect(request.link).toBe('crew://192.168.1.4:2739/abc123')
+    const request = opened(['../api', '--join', 'crew://192.0.2.10:2739/abc123'])
+    expect(request.link).toBe('crew://192.0.2.10:2739/abc123')
     expect(request.folder).toBe(path.resolve(CWD, '../api'))
   })
 

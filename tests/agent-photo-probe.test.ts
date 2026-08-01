@@ -27,7 +27,7 @@ function seed(one: PooledAgent, setAgentAvatar = vi.fn()) {
     members: [{ id: 'jamel', name: 'Jamel', connected: true }],
     agents: [one],
     activePrompts: {},
-    httpBase: 'http://10.0.0.2:2739',
+    httpBase: 'http://192.0.2.10:2739',
     setAgentAvatar
   })
   return setAgentAvatar
@@ -43,7 +43,7 @@ describe('agent photos in the settings', () => {
     seed({ ...agent, avatar: 'a-photo.png' })
     render(createElement(Agents))
 
-    expect(section().querySelector('img')?.getAttribute('src')).toBe('http://10.0.0.2:2739/attachments/a-photo.png')
+    expect(section().querySelector('img')?.getAttribute('src')).toBe('http://192.0.2.10:2739/attachments/a-photo.png')
     expect(section().querySelector('svg[viewBox="0 0 100 100"]')).toBeNull()
   })
 

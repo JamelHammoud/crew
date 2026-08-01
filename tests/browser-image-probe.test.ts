@@ -7,7 +7,7 @@ const { isImageUrl } = await import('../src/shared/files')
 const { useBrowser } = await import('../src/renderer/src/state/browser')
 const BrowserPanel = (await import('../src/renderer/src/components/BrowserPanel')).default
 
-const ATTACHMENT = 'http://192.168.139.3:2739/attachments/bddedeb9-da97-493f-8b0d-659360345cfa.jpg'
+const ATTACHMENT = 'http://192.0.2.10:2739/attachments/bddedeb9-da97-493f-8b0d-659360345cfa.jpg'
 
 beforeEach(() => useBrowser.setState({ tabs: [], activeTabId: null }))
 
