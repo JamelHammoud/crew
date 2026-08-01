@@ -234,8 +234,8 @@ describe('the sidebar', () => {
   it('holds a place with nothing running as a row on its own', async () => {
     const { container } = render(createElement(Sidebar))
     const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
-    expect(rows).toContain('one')
-    expect(rows).toContain('two')
+    expect(rows).toContain('one~')
+    expect(rows).toContain('two~')
   })
 
   it('peeks on a hover without pushing the page over', () => {
