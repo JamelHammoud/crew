@@ -16,7 +16,9 @@ export default function StashRow({
   const [menu, setMenu] = useState(false)
 
   return (
-    <div className="group flex h-7 items-center gap-2 rounded-xl pl-2 pr-1 transition-colors hover:bg-fg/[0.04]">
+    {/* The name starts where a file's name starts, past the column the status
+        letter stands in, so the two kinds of row read as one list. */}
+    <div className="group flex h-7 items-center gap-2 rounded-xl pl-7 pr-1 transition-colors hover:bg-fg/[0.04]">
       <span className="min-w-0 flex-1 truncate text-[13px] text-fg-secondary">{stash.message}</span>
       {stash.branch && <span className="max-w-24 shrink-0 truncate text-xs text-fg-faint">{stash.branch}</span>}
       <div className="relative shrink-0">

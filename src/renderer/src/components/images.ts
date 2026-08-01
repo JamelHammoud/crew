@@ -1,5 +1,5 @@
 import { isImageType, MAX_ATTACHMENTS, mimeForFile } from '../../../shared/attachments'
-import { holdPending } from './attachment/pending'
+import { holdPending, type PendingAttachment } from './attachment/pending'
 
 export type { PendingAttachment } from './attachment/pending'
 export { keepPreviews, previewSrc } from './attachment/pending'
