@@ -164,7 +164,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
       <div className="app-no-drag shrink-0 px-2 pt-2 pb-5">
         <button
           onClick={() => void pick()}
-          className="w-full h-9 rounded-xl flex items-center justify-center gap-2 text-sm font-medium text-fg/70 transition-colors duration-150 hover:bg-fg/[0.06] hover:text-fg active:scale-[0.98]"
+          className="w-full h-9 rounded-full flex items-center justify-center gap-2 text-sm font-medium bg-fg/[0.10] text-fg/70 transition-colors duration-150 hover:bg-fg/[0.14] hover:text-fg active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
           Open a folder
