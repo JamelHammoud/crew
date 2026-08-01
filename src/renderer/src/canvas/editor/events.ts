@@ -81,7 +81,6 @@ export class CanvasEventBridge {
     const screen = screenPoint(event, this.editor.getContainer())
     const page = this.editor.screenToPage(screen)
     this.pointers.set(event.pointerId, screen)
-    this.editor.inputs.pointerMove(screen, page, event, this.editor.options.dragDistanceSquared as number)
     this.dispatch(pointerInfo('pointer_move', event, screen, page, 'move'))
   }
 
