@@ -9,6 +9,20 @@ export interface LiveThread {
 
 export const THREAD_LIMIT = 6
 
+// Which events a thread is built from. Almost every one of them names the
+// thread it happened on, and the two a helper raises are the exception: they
+// name the helper's own thread and belong to the one that sent it out. Read
+// the plain way, a chip lands inside the helper pointing at itself and never
+// lands in the thread that has something to say about it, which is a spawn
+// that leaves no mark on screen anywhere. The host reads it too, since what it
+// hands back for one thread has to be what that thread is drawn from.
+export const eventsOfThread = (events: SessionEvent[], threadId: string): SessionEvent[] =>
+  events.filter(event =>
+    event.kind === 'subagent.started' || event.kind === 'subagent.ended'
+      ? event.parentThreadId === threadId
+      : 'threadId' in event && event.threadId === threadId
+  )
+
 const liveTitle = (title: string, agentLabel: string): string => {
   const clean = stripMention(title, agentLabel) || 'Untitled'
   return clean.charAt(0).toUpperCase() + clean.slice(1)
