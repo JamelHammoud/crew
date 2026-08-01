@@ -182,6 +182,18 @@ describe('scribble brushing matches tldraw', () => {
     expect(subject.getSelectedShapeIds()).toEqual([])
   })
 
+  it('leaves out the clipped part of a shape inside a frame', () => {
+    const subject = editor()
+    const f = frame(subject, 'f', 0, 0, 200, 200)
+    const a = geo(subject, 'a', 150, 50)
+    subject.reparentShapes([a], f)
+    expect(subject.getShapeMask(a)).toBeTruthy()
+    down(subject, 100, 100, { altKey: true })
+    move(subject, 140, 100, { altKey: true })
+    move(subject, 250, 100, { altKey: true })
+    expect(subject.getSelectedShapeIds()).not.toContain(a)
+  })
+
   it('takes a frame the scribble crossed from outside', () => {
     const subject = editor()
     const f = frame(subject, 'f', 0, 0)
