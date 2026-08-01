@@ -109,7 +109,7 @@ describe('an agent face', () => {
     const bridge = (size: string, box: number): number => {
       const eyes = Array.from(face({ size }).querySelectorAll('svg mask circle'))
       const gap = eyes.map(eye => Number(eye.getAttribute('cx')))
-      return ((gap[1] - gap[0] - EYE_RADIUS * 2) / PET_GRID) * box
+      return ((gap[1] - gap[0] - EYE_RADIUS * 2) / PET_GRID) * box * BODY
     }
     const small = bridge('xs', 20)
     cleanup()
