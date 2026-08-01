@@ -108,10 +108,11 @@ export class DesignTextUtil extends Configured {
   override component(shape: TLTextShape) {
     const label = super.component(shape) as ReactElement<{ style?: CSSProperties }>
     const type = textShapeType(this.editor as Editor, shape)
+    const trim = textTrim(type)
     const style = {
       ...label.props.style,
       ...textInkStyle(type),
-      ...trimStyle(textTrim(type), shape.props.scale)
+      ...(trim ? { marginTop: -trim.top * shape.props.scale } : {})
     }
     return cloneElement(label, { style })
   }
