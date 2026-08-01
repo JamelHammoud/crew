@@ -173,7 +173,31 @@ export default function Sidebar({
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />
-      <div ref={order.ref} className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-1">
+      <nav aria-label="Main navigation" className="app-no-drag shrink-0 px-2">
+        {TABS.map(one => (
+          <button
+            key={one.id}
+            onClick={() => goToTab(one.id)}
+            aria-current={tab === one.id ? 'page' : undefined}
+            className={`w-full rounded-xl px-2 py-1.5 flex items-center gap-2 text-left text-sm font-medium transition-[color,background-color,scale] duration-150 active:scale-[0.99] ${
+              tab === one.id ? 'bg-fg/[0.08] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
+            }`}
+          >
+            <span className={tab === one.id ? 'text-fg/70' : 'text-fg/45'}>
+              <TabIcon tab={one.id} size={16} />
+            </span>
+            {one.label}
+          </button>
+        ))}
+      </nav>
+      <h2 className="app-no-drag shrink-0 px-4 pt-5 pb-1 text-xs font-medium text-fg/45">Projects</h2>
+      <div
+        ref={node => {
+          scroller.current = node
+          order.ref(node)
+        }}
+        className="scroll-fade flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-1"
+      >
         {places.map(place => (
           <PlaceGroup
             key={place.key}
