@@ -63,19 +63,21 @@ const FIRST_SIZE: TerminalSize = { cols: 80, rows: 24 }
 
 const HELD_LIMIT = 64 * 1024
 
+const SPARE_LIMIT = 2
+
 export class Terminals {
   private sessions = new Map<string, IPty>()
-  private spare: Spare | null = null
+  private spares = new Map<string, Spare>()
   private lastSize: TerminalSize = FIRST_SIZE
 
-  // A login shell reads the whole profile before it says anything, which is
-  // seconds on a machine that loads a version manager, and all of it is spent
-  // watching a bare cursor blink. One shell is kept ready from the moment the
-  // panel is open, so the tab lands on a prompt that is already there.
   warm(folder: string | null): void {
     const where = startingFolder(folder)
-    if (this.spare && !this.spare.ended && this.spare.folder === where) return
-    this.cool()
+    const standing = this.spares.get(where)
+    if (standing && !standing.ended) {
+      this.touch(where, standing)
+      return
+    }
+    this.drop(where)
     let pty: IPty
     try {
       pty = this.start(where, this.lastSize)
@@ -83,14 +85,15 @@ export class Terminals {
       return
     }
     const spare: Spare = { pty, folder: where, held: '', ended: false }
-    this.spare = spare
+    this.touch(where, spare)
+    this.evict()
     pty.onData(chunk => {
-      if (this.spare !== spare || spare.held.length > HELD_LIMIT) return
+      if (this.spares.get(where) !== spare || spare.held.length > HELD_LIMIT) return
       spare.held += chunk
     })
     pty.onExit(() => {
       spare.ended = true
-      if (this.spare === spare) this.spare = null
+      if (this.spares.get(where) === spare) this.spares.delete(where)
     })
   }
 

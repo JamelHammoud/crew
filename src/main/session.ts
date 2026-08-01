@@ -46,7 +46,7 @@ export interface NewAgent {
   settings: AgentSettings
 }
 
-function isGitRepo(repoPath: string): Promise<boolean> {
+export function isGitRepo(repoPath: string): Promise<boolean> {
   if (!existsSync(path.join(repoPath, '.git'))) return Promise.resolve(false)
   return new Promise(resolve => {
     execFile('git', ['rev-parse', '--is-inside-work-tree'], { cwd: repoPath }, (error, stdout) => {

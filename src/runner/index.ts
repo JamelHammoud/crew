@@ -387,7 +387,8 @@ export class Runner {
     spawnRoom = 0,
     spawnProviders: string[] = [],
     tickets = false,
-    goal = false
+    goal = false,
+    memories: CrewMemory[] = []
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
