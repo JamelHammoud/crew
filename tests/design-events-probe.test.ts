@@ -97,6 +97,44 @@ describe('design canvas event pipeline', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'a', code: 'KeyA' }))
     console.log('KEY ON DOCUMENT REACHED BRIDGE:', seen.some(info => String(info.name).startsWith('key')))
 
+    const outside = document.createElement('input')
+    document.body.appendChild(outside)
+    outside.focus()
+    seen.length = 0
+    outside.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape', code: 'Escape' }))
+    console.log('KEY WHILE FOCUS ELSEWHERE REACHED BRIDGE:', seen.some(info => String(info.name).startsWith('key')))
+    surface.focus()
+
+    unmount()
+    expect(true).toBe(true)
+  })
+
+  it('reports what a brush drag and a shape drag do today', () => {
+    const { editor, surface, unmount } = stand()
+    const id = createShapeId('drag-geo')
+    editor.createShape({ id, type: 'geo', x: 100, y: 100, props: { w: 100, h: 100 } } as never)
+    const node = () => surface.querySelector(`[data-shape-id="${id}"]`) as HTMLElement | null
+    console.log('SHAPE NODE IN DOM:', Boolean(node()))
+
+    surface.dispatchEvent(pointerEvent('pointerdown', 40 + 400, 24 + 400))
+    surface.dispatchEvent(pointerEvent('pointermove', 40 + 420, 24 + 420))
+    surface.dispatchEvent(pointerEvent('pointermove', 40 + 450, 24 + 450))
+    console.log('AFTER BRUSH MOVES, PATH:', editor.getPath?.() ?? 'no getPath')
+    console.log('IS DRAGGING:', editor.inputs.getIsDragging())
+    console.log('BRUSH:', JSON.stringify(editor.getInstanceState().brush ?? null))
+    surface.dispatchEvent(pointerEvent('pointerup', 40 + 450, 24 + 450))
+
+    const target = node() ?? surface
+    editor.setSelectedShapes([])
+    surface.dispatchEvent(pointerEvent('pointerdown', 40 + 150, 24 + 150))
+    console.log('DOWN ON SHAPE POINT, SELECTED:', JSON.stringify(editor.getSelectedShapeIds()))
+    console.log('DOWN ON SHAPE POINT, PATH:', editor.getPath?.())
+    surface.dispatchEvent(pointerEvent('pointermove', 40 + 200, 24 + 200))
+    console.log('AFTER MOVE, PATH:', editor.getPath?.())
+    console.log('SHAPE NOW AT:', JSON.stringify({ x: editor.getShape(id)?.x, y: editor.getShape(id)?.y }))
+    surface.dispatchEvent(pointerEvent('pointerup', 40 + 200, 24 + 200))
+    void target
+
     unmount()
     expect(true).toBe(true)
   })

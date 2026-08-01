@@ -93,6 +93,7 @@ const threads = {
 
 const online = {
   connection: 'online' as const,
+  place: 'project:here',
   selfId: 'ali',
   selfName: 'ALI',
   members: [{ id: 'ali', name: 'ALI', connected: true }],

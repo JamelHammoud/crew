@@ -112,13 +112,13 @@ function Session() {
   const openFromTasks = (threadId: string) => {
     setTab('chat')
     openThreadAlone(threadId)
-    setTasksOpen(false)
+    closeTasks()
   }
 
   const openFromTasksBeside = (threadId: string) => {
     setTab('chat')
     openThread(threadId)
-    setTasksOpen(false)
+    closeTasks()
   }
 
   return (

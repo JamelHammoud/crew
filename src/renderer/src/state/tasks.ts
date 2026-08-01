@@ -50,7 +50,6 @@ export const useTasks = create<TasksState>((set, get) => ({
       arming = setTimeout(() => {
         arming = null
         if (get().pinned) return
-        playSound('tasks.open')
         set({ peeking: true })
       }, ARM_MS)
       return
