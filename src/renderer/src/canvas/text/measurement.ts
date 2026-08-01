@@ -287,8 +287,8 @@ export class TextMeasurement {
       'font-size': `${options.fontSize}px`,
       'line-height': `${resolveLineHeight(options.fontSize, options.lineHeight)}px`,
       padding: options.padding,
-      'max-width': options.maxWidth === null ? undefined : `${options.maxWidth}px`,
-      'min-width': options.minWidth == null ? undefined : `${options.minWidth}px`,
+      'max-width': options.maxWidth ? `${options.maxWidth}px` : undefined,
+      'min-width': options.minWidth ? `${options.minWidth}px` : undefined,
       'overflow-wrap': options.disableOverflowWrapBreaking ? 'normal' : 'break-word',
       ...options.otherStyles
     }
