@@ -65,12 +65,7 @@ export default function AgentIcon({
               cut out of the tile it stands in, so what comes through them is
               whatever the picture is doing behind rather than one fixed colour
               over a surface that changes under it. */}
-          <svg
-            viewBox={`0 0 ${PET_GRID} ${PET_GRID}`}
-            style={{ filter: shadowOf(box) }}
-            className="absolute inset-0 w-full h-full"
-            aria-hidden
-          >
+          <svg viewBox={`0 0 ${PET_GRID} ${PET_GRID}`} className="absolute inset-0 w-full h-full" aria-hidden>
             <mask id={mask}>
               <g transform={`rotate(${pet.tilt} 50 54)`}>
                 <path d={pet.body} fill="#fff" stroke="#fff" strokeWidth={7} strokeLinejoin="round" />
