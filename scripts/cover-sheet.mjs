@@ -17,6 +17,7 @@ const out = process.argv[2] ? path.resolve(process.argv[2]) : path.join(root, 'c
 // The second page: every helper mark at the sizes one is worn at. Same reason
 // as the first, and it cannot be judged from its numbers either.
 const marksOut = out.replace(/\.png$/, '-marks.png')
+const facesOut = out.replace(/\.png$/, '-faces.png')
 
 // Written into the temp folder and pointed at the repo by absolute path, so a
 // run of this leaves nothing behind in a tree that commits itself.
