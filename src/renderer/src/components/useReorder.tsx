@@ -204,7 +204,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
           ref={holds(line)}
           data-reorder-line
           aria-hidden
-          className="pointer-events-none absolute left-2 right-2 z-10 -mt-px h-0.5 rounded-full bg-fg"
+          className="pointer-events-none absolute left-2 right-2 z-10 h-px bg-fg"
         >
           <span className="absolute -left-0.5 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-fg" />
         </div>
