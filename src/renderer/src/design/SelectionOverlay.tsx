@@ -98,13 +98,19 @@ function RadiusHandles({
       const dy = corner.top ? point.y - bounds.minY : bounds.maxY - point.y
       return (dx + dy) / 2
     }
+    const oldReach = (client: { clientX: number; clientY: number }) => {
+      const point = editor.screenToPage({ x: client.clientX, y: client.clientY })
+      const dx = corner.left ? point.x - bounds.minX : bounds.maxX - point.x
+      const dy = corner.top ? point.y - bounds.minY : bounds.maxY - point.y
+      return Math.min(dx, dy)
+    }
     const held = reach(event) - props.radius[at]
     const handle = event.currentTarget
     handle.setPointerCapture(event.pointerId)
     const mark = editor.markHistoryStoppingPoint()
 
     const move = (moved: PointerEvent) => {
-      const next = Math.round(Math.max(0, Math.min(limit, reach(moved) - held)))
+      const next = Math.round(Math.max(0, Math.min(limit, oldReach(moved))))
       const radius = [next, next, next, next] as Corner
       editor.updateShape({ id: shape.id, type: 'design-node', props: { radius } })
     }
