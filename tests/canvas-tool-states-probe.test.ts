@@ -117,6 +117,11 @@ function geo(subject: Editor, id: string, x: number, y: number, w = 100, h = 100
   return shapeId
 }
 
+function segments(subject: Editor): { type: string }[] {
+  const shape = subject.getCurrentPageShapes()[0] as { props: { segments: { type: string }[] } }
+  return shape.props.segments
+}
+
 function points(subject: Editor, id: TLShapeId): { x: number; y: number }[] {
   const shape = subject.getShape(id) as { props: { points: Record<string, { x: number; y: number }> } } | undefined
   return Object.values(shape?.props.points ?? {})
