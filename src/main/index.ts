@@ -390,10 +390,13 @@ function createWindow(threadId?: string): BrowserWindow {
   win.on('closed', () => {
     if (appWindows().length === 0) tray.update({ here: [], known: false })
   })
+  const page = path.join(dirname, '../renderer/index.html')
   if (devUrl) {
-    win.loadURL(devUrl)
+    win.loadURL(threadId ? devUrl + threadWindowHash(threadId) : devUrl)
+  } else if (threadId) {
+    win.loadFile(page, { hash: threadWindowHash(threadId).slice(1) })
   } else {
-    win.loadFile(path.join(dirname, '../renderer/index.html'))
+    win.loadFile(page)
   }
   return win
 }

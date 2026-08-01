@@ -65,7 +65,7 @@ export function threadFinished(event: SessionEvent, state: ReviewState): boolean
 export function finishedAlert(event: SessionEvent, state: AlertState): AgentAlert | null {
   if (event.kind !== 'agent.end') return null
   if (!threadFinished(event, state)) return null
-  if (event.threadId && state.openThreadId === event.threadId) return null
+  if (event.threadId && state.openThreadIds.includes(event.threadId)) return null
   const thread = event.threadId ? state.threads[event.threadId] : undefined
   const label = state.agents.find(agent => agent.id === event.agentId)?.label ?? event.agentLabel
   const title = relabelMentions(thread?.title ?? '', thread?.titleRefs, state.agents)
@@ -97,9 +97,9 @@ export function questionAlert(event: SessionEvent, state: AlertState, boardOnScr
   }
 }
 
-export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadId: string | null): AgentAlert | null {
+export function memberMentionAlert(event: SessionEvent, selfId: string, openThreadIds: string[]): AgentAlert | null {
   if (event.kind !== 'message' || event.authorId === selfId) return null
-  if (event.threadId && event.threadId === openThreadId) return null
+  if (event.threadId && openThreadIds.includes(event.threadId)) return null
   if (!event.memberMentionRefs?.some(ref => ref.id === selfId)) return null
   return {
     title: `${event.authorName} mentioned you`,
