@@ -110,6 +110,7 @@ describe('what somebody wrote, read back as pictures', () => {
   it('draws them on a task and on a todo in the Tasks panel', () => {
     const title = `@Bubbles made with ${HEART} :shipit:`
     useCrew.setState({
+      agents: [],
       threads: { t1: thread(title) },
       threadPrompts: {},
       queues: {},
