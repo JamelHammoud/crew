@@ -22,7 +22,7 @@ function hexOf(at: number): string {
   return `#${part(at * 12)}00${part(200 - at * 12)}`
 }
 
-function fakeEditor(edits: Edit[]): Editor {
+function fakeEditor(edits: Edit[], live?: TLTextShape): Editor {
   const colors: Record<string, { solid: string }> = {}
   DefaultColorStyle.values.forEach((name, at) => {
     colors[name] = { solid: hexOf(at) }
@@ -30,6 +30,7 @@ function fakeEditor(edits: Edit[]): Editor {
   return {
     markHistoryStoppingPoint: () => {},
     updateShape: (edit: Edit) => edits.push(edit),
+    getShape: () => live,
     getCurrentTheme: () => ({ colors: { light: colors }, lineHeight: 1.35 }),
     getColorMode: () => 'light'
   } as unknown as Editor
