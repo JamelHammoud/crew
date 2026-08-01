@@ -168,6 +168,6 @@ describe('what the rail draws again', () => {
     })
 
     expect(drawn.groups).toBe(1)
-    expect(drawn.rows).toBe(PER_PLACE + 1)
+    expect(drawn.rows).toBe(1)
   })
 })
