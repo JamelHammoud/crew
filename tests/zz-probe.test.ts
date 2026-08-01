@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it } from 'vitest'
 import { richTextToHtml } from '../src/renderer/src/canvas/text/richText'
 import { renderHtmlFromRichText } from '../src/renderer/src/canvas/schema/richText'

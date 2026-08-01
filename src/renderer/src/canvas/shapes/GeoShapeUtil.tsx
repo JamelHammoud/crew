@@ -1,202 +1,46 @@
-import { createElement, type ReactNode } from 'react'
-import { Edge2d, Ellipse2d, Group2d, Polygon2d, Rectangle2d, Stadium2d, type Geometry2d } from '../geometry'
+import { createElement, type CSSProperties, type ReactNode } from 'react'
+import { Group2d, Rectangle2d, type Geometry2d } from '../geometry'
 import { Vec } from '../math/Vec'
-import { geoShapeProps, type TLGeoShapeGeoStyle as GeoKind, type TLShape as CrewShape } from '../schema'
+import { lerp } from '../math/utils'
+import { geoShapeProps, type TLGeoShapeProps as CrewGeoProps } from '../schema'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
-import { BaseBoxShapeUtil } from './ShapeUtil'
-import { FONT_FAMILIES, LABEL_FONT_SIZES, STROKES, plainText, shapeElement } from './shared'
+import { getGeoShapePath, getGeoTypeDefinition, type GeoShape } from './geoPaths'
+import { BaseBoxShapeUtil, type ShapeEditor, type ShapeResizeInfo } from './ShapeUtil'
+import { FONT_FAMILIES, LABEL_FONT_SIZES, LABEL_PADDING, STROKES, plainText } from './shared'
 import { canvasSurface, shapeColor } from './theme'
 
-export type GeoShape = CrewShape<'geo'>
+export type { GeoShape } from './geoPaths'
 
-const POLYGONS: Partial<Record<GeoKind, readonly [number, number][]>> = {
-  triangle: [
-    [0.5, 0],
-    [1, 1],
-    [0, 1]
-  ],
-  diamond: [
-    [0.5, 0],
-    [1, 0.5],
-    [0.5, 1],
-    [0, 0.5]
-  ],
-  pentagon: [
-    [0.5, 0],
-    [0.976, 0.345],
-    [0.794, 0.905],
-    [0.206, 0.905],
-    [0.024, 0.345]
-  ],
-  hexagon: [
-    [0.25, 0],
-    [0.75, 0],
-    [1, 0.5],
-    [0.75, 1],
-    [0.25, 1],
-    [0, 0.5]
-  ],
-  octagon: [
-    [0.293, 0],
-    [707 / 1000, 0],
-    [1, 0.293],
-    [1, 707 / 1000],
-    [707 / 1000, 1],
-    [0.293, 1],
-    [0, 707 / 1000],
-    [0, 0.293]
-  ],
-  star: [
-    [0.5, 0],
-    [0.612, 0.346],
-    [0.976, 0.346],
-    [0.682, 0.559],
-    [0.794, 0.905],
-    [0.5, 0.691],
-    [0.206, 0.905],
-    [0.318, 0.559],
-    [0.024, 0.346],
-    [0.388, 0.346]
-  ],
-  rhombus: [
-    [0.2, 0],
-    [1, 0],
-    [0.8, 1],
-    [0, 1]
-  ],
-  'rhombus-2': [
-    [0, 0],
-    [0.8, 0],
-    [1, 1],
-    [0.2, 1]
-  ],
-  trapezoid: [
-    [0.2, 0],
-    [0.8, 0],
-    [1, 1],
-    [0, 1]
-  ],
-  'arrow-right': [
-    [0, 0.25],
-    [0.6, 0.25],
-    [0.6, 0],
-    [1, 0.5],
-    [0.6, 1],
-    [0.6, 0.75],
-    [0, 0.75]
-  ],
-  'arrow-left': [
-    [1, 0.25],
-    [0.4, 0.25],
-    [0.4, 0],
-    [0, 0.5],
-    [0.4, 1],
-    [0.4, 0.75],
-    [1, 0.75]
-  ],
-  'arrow-up': [
-    [0.25, 1],
-    [0.25, 0.4],
-    [0, 0.4],
-    [0.5, 0],
-    [1, 0.4],
-    [0.75, 0.4],
-    [0.75, 1]
-  ],
-  'arrow-down': [
-    [0.25, 0],
-    [0.25, 0.6],
-    [0, 0.6],
-    [0.5, 1],
-    [1, 0.6],
-    [0.75, 0.6],
-    [0.75, 0]
-  ],
-  'x-box': [
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [0, 1]
-  ],
-  'check-box': [
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [0, 1]
-  ]
+const MIN_LABEL_WIDTHS = { s: 12, m: 14, l: 16, xl: 20 } as const
+const HORIZONTAL_ALIGNS = {
+  start: 'start',
+  middle: 'center',
+  end: 'end',
+  'start-legacy': 'start',
+  'end-legacy': 'end',
+  'middle-legacy': 'center'
+} as const
+const VERTICAL_ALIGNS = { start: 'start', middle: 'middle', end: 'end' } as const
+const LABEL_EDGE_MARGIN = 8
+const MIN_SIZE_WITH_LABEL = (LABEL_PADDING + 1) * 3
+const LINE_HEIGHT = 1.35
+
+interface GeoDisplayValues {
+  strokeColor: string
+  strokeWidth: number
+  strokeRoundness: number
+  fillColor: string
+  labelColor: string
+  labelFontFamily: string
+  labelFontSize: number
+  labelMinWidth: number
+  labelExtraPadding: number
+  labelHorizontalAlign: 'start' | 'center' | 'end'
+  labelVerticalAlign: 'start' | 'middle' | 'end'
 }
 
-function radialPoints(count: number, inner: number, rotate = -Math.PI / 2): Vec[] {
-  return Array.from({ length: count }, (_, index) => {
-    const radius = index % 2 === 0 ? 0.5 : inner
-    const angle = rotate + (index * Math.PI * 2) / count
-    return new Vec(0.5 + Math.cos(angle) * radius, 0.5 + Math.sin(angle) * radius)
-  })
-}
-
-function cloudPoints(): Vec[] {
-  return Array.from({ length: 48 }, (_, index) => {
-    const angle = (index * Math.PI * 2) / 48
-    const radius = 0.45 + Math.sin(angle * 6 + 0.4) * 0.055 + Math.sin(angle * 9) * 0.025
-    return new Vec(0.5 + Math.cos(angle) * radius, 0.5 + Math.sin(angle) * radius)
-  })
-}
-
-function heartPoints(): Vec[] {
-  return Array.from({ length: 48 }, (_, index) => {
-    const t = (index * Math.PI * 2) / 48
-    const x = 16 * Math.sin(t) ** 3
-    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)
-    return new Vec(0.5 + x / 34, 0.47 - y / 34)
-  })
-}
-
-export function geoPoints(kind: GeoKind, w: number, h: number): Vec[] | null {
-  const source =
-    kind === 'cloud'
-      ? cloudPoints()
-      : kind === 'heart'
-        ? heartPoints()
-        : kind === 'star'
-          ? radialPoints(10, 0.2)
-          : POLYGONS[kind]?.map(([x, y]) => new Vec(x, y))
-  return source?.map(point => new Vec(point.x * w, point.y * h)) ?? null
-}
-
-export function geoGeometry(kind: GeoKind, w: number, h: number): Geometry2d {
-  if (kind === 'ellipse') return new Ellipse2d({ width: w, height: h, isFilled: true })
-  if (kind === 'oval') return new Stadium2d({ width: w, height: h, isFilled: true })
-  const points = geoPoints(kind, w, h)
-  const outline = points
-    ? new Polygon2d({ points, isFilled: true })
-    : new Rectangle2d({ width: w, height: h, isFilled: true })
-  if (kind === 'x-box') {
-    return new Group2d({
-      children: [
-        outline,
-        new Edge2d({ start: new Vec(0, 0), end: new Vec(w, h) }),
-        new Edge2d({ start: new Vec(w, 0), end: new Vec(0, h) })
-      ]
-    })
-  }
-  if (kind === 'check-box') {
-    return new Group2d({
-      children: [
-        outline,
-        new Edge2d({ start: new Vec(w * 0.2, h * 0.52), end: new Vec(w * 0.43, h * 0.75) }),
-        new Edge2d({ start: new Vec(w * 0.43, h * 0.75), end: new Vec(w * 0.82, h * 0.25) })
-      ]
-    })
-  }
-  return outline
-}
-
-function fillFor(editor: GeoShapeUtil['editor'], shape: GeoShape): string {
-  if (shape.props.fill === 'none') return 'none'
-  if (shape.props.fill === 'semi') return canvasSurface(editor)
-  const variant =
-    shape.props.fill === 'solid' ? 'semi' : shape.props.fill === 'lined-fill' ? 'linedFill' : shape.props.fill
-  return shapeColor(editor, shape.props.color, variant)
+function isEmptyRichText(value: unknown): boolean {
+  return plainText(value).length === 0
 }
 
 export class GeoShapeUtil extends BaseBoxShapeUtil<GeoShape> {
@@ -229,56 +73,385 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<GeoShape> {
     return true
   }
 
+  displayValues(shape: GeoShape): GeoDisplayValues {
+    const { color, size, labelColor, fill, align, verticalAlign, font } = shape.props
+    return {
+      strokeColor: shapeColor(this.editor, color),
+      strokeWidth: STROKES[size],
+      strokeRoundness: STROKES[size] * 2,
+      fillColor:
+        fill === 'none'
+          ? 'transparent'
+          : fill === 'semi'
+            ? canvasSurface(this.editor)
+            : shapeColor(this.editor, color, fill === 'solid' ? 'semi' : fill === 'lined-fill' ? 'linedFill' : fill),
+      labelColor: shapeColor(this.editor, labelColor),
+      labelFontFamily: FONT_FAMILIES[font],
+      labelFontSize: LABEL_FONT_SIZES[size],
+      labelMinWidth: MIN_LABEL_WIDTHS[size],
+      labelExtraPadding: STROKES[size],
+      labelHorizontalAlign: HORIZONTAL_ALIGNS[align],
+      labelVerticalAlign: VERTICAL_ALIGNS[verticalAlign]
+    }
+  }
+
   getGeometry(shape: GeoShape): Geometry2d {
-    return geoGeometry(shape.props.geo, Math.max(1, shape.props.w), Math.max(1, shape.props.h + shape.props.growY))
+    const { props } = shape
+    const { scale } = props
+    const dv = this.displayValues(shape)
+    const pathGeometry = getGeoShapePath(shape, dv.strokeWidth).toGeometry()
+
+    const scaledW = Math.max(1, props.w)
+    const scaledH = Math.max(1, props.h + props.growY)
+    const unscaledShapeW = scaledW / scale
+    const unscaledShapeH = scaledH / scale
+
+    const isEmptyLabel = isEmptyRichText(props.richText)
+    const unscaledLabelSize = isEmptyLabel ? { w: 0, h: 0 } : this.unscaledLabelSize(shape)
+
+    const unscaledMinWidth = Math.min(100, unscaledShapeW / 2)
+    const unscaledMinHeight = Math.min(
+      Math.round(dv.labelFontSize * LINE_HEIGHT) + LABEL_PADDING * 2,
+      unscaledShapeH / 2
+    )
+
+    const unscaledLabelW = Math.min(
+      unscaledShapeW,
+      Math.max(unscaledLabelSize.w, Math.min(unscaledMinWidth, Math.max(1, unscaledShapeW - LABEL_EDGE_MARGIN)))
+    )
+    const unscaledLabelH = Math.min(
+      unscaledShapeH,
+      Math.max(unscaledLabelSize.h, Math.min(unscaledMinHeight, Math.max(1, unscaledShapeH - LABEL_EDGE_MARGIN)))
+    )
+
+    const unscaledX =
+      dv.labelHorizontalAlign === 'start'
+        ? 0
+        : dv.labelHorizontalAlign === 'end'
+          ? unscaledShapeW - unscaledLabelW
+          : (unscaledShapeW - unscaledLabelW) / 2
+
+    const unscaledY =
+      dv.labelVerticalAlign === 'start'
+        ? 0
+        : dv.labelVerticalAlign === 'end'
+          ? unscaledShapeH - unscaledLabelH
+          : (unscaledShapeH - unscaledLabelH) / 2
+
+    return new Group2d({
+      children: [
+        pathGeometry,
+        new Rectangle2d({
+          x: unscaledX * scale,
+          y: unscaledY * scale,
+          width: unscaledLabelW * scale,
+          height: unscaledLabelH * scale,
+          isFilled: true,
+          isLabel: true,
+          excludeFromShapeBounds: true
+        })
+      ]
+    })
+  }
+
+  getHandleSnapGeometry(shape: GeoShape): { outline: Geometry2d; points: Vec[] } {
+    const geometry = this.getGeometry(shape) as Group2d
+    const outline = geometry.children[0]
+    const definition = getGeoTypeDefinition(shape.props.geo)
+    if (definition?.snapType === 'blobby') return { outline, points: [geometry.bounds.center] }
+    return { outline, points: [...outline.vertices, geometry.bounds.center] }
   }
 
   override getText(shape: GeoShape): string {
     return plainText(shape.props.richText)
   }
 
+  override getIndicatorPath(shape: GeoShape): Path2D | undefined {
+    if (typeof Path2D === 'undefined') return undefined
+    const { dash, scale } = shape.props
+    const dv = this.displayValues(shape)
+    return getGeoShapePath(shape, dv.strokeWidth).toPath2D({
+      style: dash === 'draw' ? 'draw' : 'solid',
+      strokeWidth: 1,
+      passes: 1,
+      randomSeed: shape.id,
+      offset: 0,
+      roundness: dv.strokeRoundness * scale
+    })
+  }
+
   component(shape: GeoShape): ReactNode {
     const { props } = shape
-    const geometry = this.getGeometry(shape)
+    const dv = this.displayValues(shape)
     const text = plainText(props.richText)
     const editing = this.editor.getEditingShapeId?.() === shape.id
-    const label = text
-      ? createElement('div', {
-          className: 'crew-rich-text',
-          style: {
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: props.align.startsWith('start')
-              ? 'flex-start'
-              : props.align.startsWith('end')
-                ? 'flex-end'
-                : 'center',
-            justifyContent:
-              props.verticalAlign === 'start' ? 'flex-start' : props.verticalAlign === 'end' ? 'flex-end' : 'center',
-            padding: 8,
-            color: shapeColor(this.editor, props.labelColor),
-            fontFamily: FONT_FAMILIES[props.font],
-            fontSize: LABEL_FONT_SIZES[props.size] * props.scale,
-            whiteSpace: 'pre-wrap',
-            textAlign: props.align.startsWith('end') ? 'right' : props.align.startsWith('middle') ? 'center' : 'left',
-            pointerEvents: 'all',
-            visibility: editing ? 'hidden' : undefined
-          },
-          dangerouslySetInnerHTML: { __html: richTextToHtml(props.richText as RichTextDocument) }
-        })
-      : null
+
     return createElement(
       'div',
       { style: { position: 'relative', width: props.w, height: props.h + props.growY } },
-      shapeElement(geometry.toSimpleSvgPath(), {
-        editor: this.editor,
-        color: props.color,
-        fill: fillFor(this.editor, shape),
-        width: STROKES[props.size] * props.scale
-      }),
-      label
+      createElement(
+        'svg',
+        {
+          className: 'crew-shape',
+          width: '100%',
+          height: '100%',
+          style: { overflow: 'visible', pointerEvents: 'all' } as CSSProperties
+        },
+        geoBody(shape, dv)
+      ),
+      text ? this.label(shape, dv, editing) : null
     )
   }
+
+  private label(shape: GeoShape, dv: GeoDisplayValues, editing: boolean): ReactNode {
+    const { props } = shape
+    return createElement('div', {
+      className: 'crew-rich-text',
+      style: {
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems:
+          dv.labelHorizontalAlign === 'start'
+            ? 'flex-start'
+            : dv.labelHorizontalAlign === 'end'
+              ? 'flex-end'
+              : 'center',
+        justifyContent:
+          dv.labelVerticalAlign === 'start' ? 'flex-start' : dv.labelVerticalAlign === 'end' ? 'flex-end' : 'center',
+        padding: LABEL_PADDING,
+        color: dv.labelColor,
+        fontFamily: dv.labelFontFamily,
+        fontSize: dv.labelFontSize * props.scale,
+        lineHeight: LINE_HEIGHT,
+        whiteSpace: 'pre-wrap',
+        overflowWrap: 'break-word',
+        textAlign: dv.labelHorizontalAlign,
+        pointerEvents: 'all',
+        visibility: editing ? 'hidden' : undefined
+      } as CSSProperties,
+      dangerouslySetInnerHTML: { __html: richTextToHtml(props.richText as RichTextDocument) }
+    })
+  }
+
+  override onResize(shape: GeoShape, info: ShapeResizeInfo<GeoShape>): GeoShape {
+    const { handle, newPoint, scaleX, scaleY, initialShape } = info
+    const { scale } = shape.props
+    const unscaledInitialW = initialShape.props.w / initialShape.props.scale
+    const unscaledInitialH = (initialShape.props.h + initialShape.props.growY) / initialShape.props.scale
+
+    let unscaledW = unscaledInitialW * scaleX
+    let unscaledH = unscaledInitialH * scaleY
+    let overShrinkX = 0
+    let overShrinkY = 0
+
+    if (!isEmptyRichText(shape.props.richText)) {
+      const absW = Math.abs(unscaledW)
+      const absH = Math.abs(unscaledH)
+      const labelSize = this.measureUnscaledLabel({
+        ...shape,
+        props: {
+          ...shape.props,
+          w: Math.max(absW, MIN_SIZE_WITH_LABEL) * scale,
+          h: Math.max(absH, MIN_SIZE_WITH_LABEL) * scale
+        }
+      })
+
+      const constrainedW = Math.max(absW, labelSize.w)
+      const constrainedH = Math.max(absH, labelSize.h)
+
+      overShrinkX = constrainedW - absW
+      overShrinkY = constrainedH - absH
+
+      unscaledW = constrainedW * Math.sign(unscaledW || 1)
+      unscaledH = constrainedH * Math.sign(unscaledH || 1)
+    }
+
+    const scaledW = unscaledW * scale
+    const scaledH = unscaledH * scale
+    const offset = new Vec(0, 0)
+
+    if (scaleX < 0) offset.x += scaledW
+    if (handle === 'left' || handle === 'top_left' || handle === 'bottom_left') {
+      offset.x += scaleX < 0 ? overShrinkX : -overShrinkX
+    }
+
+    if (scaleY < 0) offset.y += scaledH
+    if (handle === 'top' || handle === 'top_left' || handle === 'top_right') {
+      offset.y += scaleY < 0 ? overShrinkY : -overShrinkY
+    }
+
+    const { x, y } = offset.rot(shape.rotation).add(newPoint)
+
+    return {
+      ...shape,
+      x,
+      y,
+      props: { ...shape.props, w: Math.max(Math.abs(scaledW), 1), h: Math.max(Math.abs(scaledH), 1), growY: 0 }
+    }
+  }
+
+  override onBeforeCreate(next: GeoShape): GeoShape | undefined {
+    const { props } = next
+
+    if (isEmptyRichText(props.richText)) {
+      return props.growY !== 0 ? { ...next, props: { ...props, growY: 0 } } : undefined
+    }
+
+    const unscaledShapeH = props.h / props.scale
+    const unscaledLabelH = this.unscaledLabelSize(next).h
+    const unscaledGrowY = growYFor(unscaledShapeH, unscaledLabelH, props.growY / props.scale)
+
+    if (unscaledGrowY === null) return undefined
+    return { ...next, props: { ...props, growY: unscaledGrowY * props.scale } }
+  }
+
+  override onBeforeUpdate(previous: GeoShape, next: GeoShape): GeoShape | undefined {
+    const before = previous.props
+    const after = next.props
+
+    if (
+      richTextToHtml(before.richText as RichTextDocument) === richTextToHtml(after.richText as RichTextDocument) &&
+      before.font === after.font &&
+      before.size === after.size
+    ) {
+      return undefined
+    }
+
+    const wasEmpty = isEmptyRichText(before.richText)
+    const isEmpty = isEmptyRichText(after.richText)
+
+    if (wasEmpty && isEmpty) return undefined
+    if (isEmpty) return after.growY !== 0 ? { ...next, props: { ...after, growY: 0 } } : undefined
+
+    const { scale } = after
+    const unscaledPrevW = before.w / before.scale
+    const unscaledPrevH = before.h / before.scale
+    const unscaledPrevGrowY = before.growY / before.scale
+    const labelSize = this.unscaledLabelSize(next)
+
+    if (wasEmpty) {
+      let w = Math.max(unscaledPrevW, labelSize.w)
+      let h = Math.max(unscaledPrevH, labelSize.h)
+      if (unscaledPrevW < MIN_SIZE_WITH_LABEL && unscaledPrevH < MIN_SIZE_WITH_LABEL) {
+        const side = Math.max(Math.max(w, MIN_SIZE_WITH_LABEL), Math.max(h, MIN_SIZE_WITH_LABEL))
+        w = side
+        h = side
+      }
+      return { ...next, props: { ...after, w: w * scale, h: h * scale, growY: 0 } }
+    }
+
+    const unscaledNextW = after.w / scale
+    const needsWidthExpand = labelSize.w > unscaledNextW
+    const unscaledGrowY = growYFor(unscaledPrevH, labelSize.h, unscaledPrevGrowY)
+
+    if (unscaledGrowY === null && !needsWidthExpand) return undefined
+
+    return {
+      ...next,
+      props: {
+        ...after,
+        growY: (unscaledGrowY ?? unscaledPrevGrowY) * scale,
+        w: Math.max(unscaledNextW, labelSize.w) * scale
+      }
+    }
+  }
+
+  getInterpolatedProps(start: GeoShape, end: GeoShape, t: number): CrewGeoProps {
+    return {
+      ...(t > 0.5 ? end.props : start.props),
+      w: lerp(start.props.w, end.props.w, t),
+      h: lerp(start.props.h, end.props.h, t),
+      scale: lerp(start.props.scale, end.props.scale, t)
+    }
+  }
+
+  private unscaledLabelSize(shape: GeoShape): { w: number; h: number } {
+    return this.measureUnscaledLabel(shape)
+  }
+
+  private measureUnscaledLabel(shape: GeoShape): { w: number; h: number } {
+    const dv = this.displayValues(shape)
+    const maxWidth = Math.max(
+      0,
+      Math.ceil(dv.labelMinWidth + dv.labelExtraPadding),
+      Math.ceil(shape.props.w / shape.props.scale - LABEL_PADDING * 2)
+    )
+    const size = measureLabel(this.editor, richTextToHtml(shape.props.richText as RichTextDocument), {
+      fontFamily: dv.labelFontFamily,
+      fontSize: dv.labelFontSize,
+      lineHeight: LINE_HEIGHT,
+      maxWidth,
+      minWidth: dv.labelMinWidth,
+      text: plainText(shape.props.richText)
+    })
+    return { w: size.w + LABEL_PADDING * 2, h: size.h + LABEL_PADDING * 2 }
+  }
+}
+
+function growYFor(unscaledShapeH: number, unscaledLabelH: number, unscaledCurrentGrowY: number): number | null {
+  if (unscaledLabelH > unscaledShapeH) return unscaledLabelH - unscaledShapeH
+  if (unscaledCurrentGrowY > 0) return 0
+  return null
+}
+
+interface LabelMeasureOptions {
+  fontFamily: string
+  fontSize: number
+  lineHeight: number
+  maxWidth: number
+  minWidth: number
+  text: string
+}
+
+function measureLabel(
+  editor: ShapeEditor,
+  html: string,
+  options: LabelMeasureOptions
+): { w: number; h: number } {
+  const measure = editor.textMeasure?.measureHtml
+  if (measure) {
+    return editor.textMeasure!.measureHtml(html, {
+      fontFamily: options.fontFamily,
+      fontSize: options.fontSize,
+      lineHeight: options.lineHeight,
+      maxWidth: options.maxWidth
+    })
+  }
+  const lines = options.text.split('\n')
+  const widest = Math.max(options.minWidth, ...lines.map(line => line.length * options.fontSize * 0.58))
+  const w = Math.min(widest, options.maxWidth || widest)
+  const wrapped = lines.reduce((total, line) => {
+    const width = line.length * options.fontSize * 0.58
+    return total + Math.max(1, Math.ceil(width / Math.max(1, w)))
+  }, 0)
+  return { w, h: wrapped * Math.round(options.fontSize * options.lineHeight) }
+}
+
+function geoBody(shape: GeoShape, dv: GeoDisplayValues): ReactNode {
+  const { dash, fill, scale } = shape.props
+  const strokeWidth = dv.strokeWidth * scale
+  const path = getGeoShapePath(shape, dv.strokeWidth)
+
+  const fillPath =
+    dash === 'draw'
+      ? path.toDrawD({ strokeWidth, randomSeed: shape.id, passes: 1, offset: 0, onlyFilled: true })
+      : path.toD({ onlyFilled: true })
+
+  return [
+    fill === 'none'
+      ? null
+      : createElement('path', { key: 'fill', fill: dv.fillColor, d: fillPath, stroke: 'none' }),
+    createElement(
+      'g',
+      { key: 'stroke' },
+      path.toSvg({
+        style: dash,
+        strokeWidth,
+        randomSeed: shape.id,
+        props: { fill: 'none', stroke: dv.strokeColor, strokeLinecap: 'round', strokeLinejoin: 'round' }
+      })
+    )
+  ]
 }

@@ -13,7 +13,7 @@ export class PointingShape extends StateNode<SelectEditor> {
   onEnter(info: SelectPointerInfo): void {
     const selected = this.editor.getSelectedShapeIds()
     const outermost = this.editor.getOutermostSelectableShape(info.shape)
-    const selectedAncestor = this.editor.findShapeAncestor?.(outermost, (shape: any) => selected.includes(shape.id))
+    const selectedAncestor = findShapeAncestor(this.editor, outermost, (shape: any) => selected.includes(shape.id))
     const inSelection =
       selected.length > 1 &&
       this.editor.getSelectionRotatedPageBounds?.()?.containsPoint(this.editor.inputs.getCurrentPagePoint())
