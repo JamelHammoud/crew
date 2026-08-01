@@ -89,7 +89,9 @@ const held = () => {
 
 const moved = (before: ReturnType<typeof held>): string[] => {
   const after = held()
-  return Object.keys(before).filter(key => before[key as keyof typeof before] !== after[key as keyof typeof after])
+  return Object.keys(before)
+    .filter(key => before[key as keyof typeof before] !== after[key as keyof typeof after])
+    .sort()
 }
 
 const upsert = (steps: AgentStep[] | undefined, one: AgentStep): AgentStep[] =>
