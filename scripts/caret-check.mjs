@@ -110,12 +110,17 @@ app.whenReady().then(async () => {
           await win.webContents.executeJavaScript('JSON.stringify(window.aimCaret(' + JSON.stringify(where) + ',' + JSON.stringify(side) + '))')
         )
         if (aim.failed) throw new Error(aim.failed)
-        let lit = 0
-        for (let frame = 0; frame < 8; frame++) {
+        // A caret is the one thing on the screen that blinks, so what says it is
+        // there is the pixels that changed rather than a colour picked in
+        // advance. The text either side of it holds still.
+        const frames = []
+        for (let frame = 0; frame < 10; frame++) {
           await wait(110)
           const shot = await win.webContents.capturePage()
-          lit = Math.max(lit, count(shot.toBitmap(), shot.getSize(), aim.at, width))
+          frames.push({ bits: shot.toBitmap(), size: shot.getSize() })
         }
+        let lit = 0
+        for (const frame of frames) lit = Math.max(lit, count(frames[0], frame, aim.at, width))
         seen.push({ where, side, focused: aim.focused, lit })
       }
     }
