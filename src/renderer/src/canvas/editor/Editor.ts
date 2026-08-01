@@ -125,7 +125,7 @@ export class Editor {
     erasingShapeIds: [] as TLShapeId[],
     hintingShapeIds: [] as TLShapeId[],
     hoveredShapeId: null as TLShapeId | null,
-    scribbles: [] as unknown[]
+    scribbles: [] as TLScribble[]
   }
   private currentPageId: TLPageId
   private disposed = false

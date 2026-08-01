@@ -2,7 +2,16 @@ import { useRef } from 'react'
 import { useQuickReactor, useValue } from '../signals'
 import { OverlayCanvas } from './OverlayCanvas'
 import { ShapeLayer } from './ShapeLayer'
-import { cameraCssTransform, canvasStyle, pageLayerStyle, setStyle, viewportLayerStyle } from './style'
+import {
+  CANVAS_SCALE_VARIABLE,
+  CANVAS_ZOOM_VARIABLE,
+  cameraCssTransform,
+  cameraZoomVariables,
+  canvasStyle,
+  pageLayerStyle,
+  setStyle,
+  viewportLayerStyle
+} from './style'
 import type { CanvasProps, CanvasShapeRecord } from './types'
 
 const join = (...parts: Array<string | undefined>) => parts.filter(Boolean).join(' ')

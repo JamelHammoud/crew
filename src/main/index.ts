@@ -551,7 +551,10 @@ app.whenReady().then(() => {
     tray.update({ waiting: count })
   })
   ipcMain.handle('app:version', () => app.getVersion())
-  ipcMain.handle('app:theme', (_event, theme: IconTheme) => applyIcon(theme, chosenIcon))
+  ipcMain.handle('app:theme', (_event, theme: IconTheme) => {
+    nativeTheme.themeSource = theme === 'light' ? 'light' : 'dark'
+    applyIcon(theme, chosenIcon)
+  })
   ipcMain.handle('app:icon', (_event, icon: unknown) => applyIcon(iconTheme, cleanAppIcon(icon)))
   // Whether the machine sleeps is this window's own answer, said again on every
   // start, and the machine stays up while any window is asking.
