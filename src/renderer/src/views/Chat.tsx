@@ -1,29 +1,23 @@
-import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import ChatMessage from '../components/ChatMessage'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatListSkeleton from '../components/ChatListSkeleton'
 import CommandChip from '../components/CommandChip'
 import Composer from '../components/Composer'
 import CreateAgent from '../components/CreateAgent'
-import DayDivider from '../components/DayDivider'
 import { JumpToBottom } from '../components/OverComposer'
 import TypingLine from '../components/TypingLine'
 import { MentionMenu, useMentionAutocomplete } from '../components/MentionAutocomplete'
-import PlanCard from '../components/PlanCard'
 import { SlashMenu, useSlashCommands } from '../components/SlashCommands'
 import Spinner from '../components/Spinner'
-import ThreadCard from '../components/ThreadCard'
-import HuddleCard from '../components/huddle/HuddleCard'
-import { huddleRecords, type HuddleRecord } from '../components/huddle/log'
+import FeedRow from '../components/feed/FeedRow'
 import {
-  describeStep,
-  endPreview,
-  lastEnd,
-  sameRun,
-  threadState,
-  type ThreadItem,
-  type ThreadState
-} from '../components/thread'
-import { reactionGroups } from '../components/reactionGroups'
+  buildFeed,
+  lastEnds,
+  RESTING,
+  runStarts,
+  type FeedEntry,
+  type ThreadStatus
+} from '../components/feed/feedItems'
+import { describeStep, endPreview, lastEnd, sameRun, threadState, type ThreadItem } from '../components/thread'
 import { formatCost, formatElapsed, formatTokens, isNewDay } from '../components/time'
 import { useAutoResize } from '../components/useAutoResize'
 import { useLoadOlder } from '../components/useLoadOlder'
@@ -33,12 +27,6 @@ import { usePrefs } from '../state/prefs'
 import { CHAT_KEY, pendingCount, useCrew, type ThreadMeta } from '../state/store'
 import { useVoice } from '../state/voice'
 import { cleanCommands, commandsIn, commandTyped, type CommandName } from '../../../shared/commands'
-import { messageReactionTarget } from '../../../shared/reactions'
-
-type Feed =
-  | { kind: 'msg'; key: string; item: ThreadItem }
-  | { kind: 'card'; key: string; ts: number; thread: ThreadMeta }
-  | { kind: 'huddle'; key: string; ts: number; record: HuddleRecord }
 
 export default function Chat() {
   const events = useCrew(s => s.events)
