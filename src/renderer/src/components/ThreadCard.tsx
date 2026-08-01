@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, UndoGlyph, WarningGlyph } from '../icons'
-import { useCrew, type ThreadMeta } from '../state/store'
-import { MenuDivider, MenuItem, Popover } from './Popover'
+import { ArchiveGlyph, CheckGlyph, EyeGlyph, StopGlyph, WarningGlyph } from '../icons'
+import { type ThreadMeta } from '../state/store'
+import { MenuDivider, Popover } from './Popover'
 import Spinner from './Spinner'
 import { THREAD_STATE_LABELS, type ThreadState } from './thread'
 import ThreadCardShell from './ThreadCardShell'
 import ThreadStatusBar from './ThreadStatusBar'
-import { ThreadOpenItems } from './threadMenu'
+import { ThreadOpenItems, ThreadStatusItems } from './threadMenu'
 
 export function StateIcon({ state }: { state: ThreadState }) {
   if (state === 'working') return <Spinner size={16} className="text-fg" />
