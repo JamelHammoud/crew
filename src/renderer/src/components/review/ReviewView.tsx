@@ -229,9 +229,9 @@ export default function ReviewView() {
             />
           </>
         )}
-
-        <CommitBar staged={groups.staged.length} onOpen={() => setCommitting(true)} />
       </div>
+
+      <CommitBar staged={groups.staged.length} onOpen={() => setCommitting(true)} />
 
       <CommitDialog
         open={committing}

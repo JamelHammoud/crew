@@ -214,7 +214,7 @@ function Screen(): ReactNode {
         key: index,
         // Half of them point at a message the window still holds and half at one
         // that has fallen out of it, which is the walk that finds nothing.
-        targetId: `message:msg-${index % 2 === 0 ? READ_EVENTS + index * 4 : index}`,
+        targetId: `message:msg-${index % 2 === 0 ? READ_EVENTS + index * 10 : index}`,
         authorId: 'ali',
         authorName: 'ALI',
         label: 'Replying to ALI',
