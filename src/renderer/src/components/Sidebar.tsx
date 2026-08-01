@@ -203,7 +203,7 @@ export default function Sidebar({
           scroller.current = node
           order.ref(node)
         }}
-        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pt-2"
+        className="scroll-fade relative flex-1 min-h-0 overflow-y-auto app-no-drag px-2 py-3"
       >
         {order.view}
         <div className="flex flex-col gap-4">
