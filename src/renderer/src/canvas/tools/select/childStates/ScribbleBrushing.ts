@@ -58,6 +58,7 @@ export class ScribbleBrushing extends StateNode<SelectEditor> {
   }
 
   private updateScribbleSelection(addPoint: boolean): void {
+    const origin = this.editor.inputs.getOriginPagePoint()
     const previous = this.editor.inputs.getPreviousPagePoint()
     const current = this.editor.inputs.getCurrentPagePoint()
     if (addPoint) this.editor.scribbles.addPoint(this.scribbleId, current.x, current.y)
