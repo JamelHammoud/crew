@@ -1606,31 +1606,42 @@ const driveSource = String.raw`(async () => {
   }
 
   await attempt('a drag commits nothing in React', async () => {
-    await clear()
-    await scratch()
-    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
-    await settle()
-    editor.selectNone()
-    await settle()
-    const over = viewport(boundsOf(one).center)
-    const hovering = await commitsOver({ x: over.x - 40, y: over.y }, { x: 1.5, y: 1 }, 0)
-    editor.select(one)
-    await settle()
-    const from = viewport(boundsOf(one).center)
-    pointer('pointerdown', from.x, from.y, 1)
-    await frame()
-    const dragging = await commitsOver(from, { x: 1.5, y: 1 }, 1)
-    pointer('pointerup', from.x + 90, from.y + 60, 0)
-    await settle()
+    const counted = []
+    let hovering = null
+    for (const type of ['design-node', 'note', 'geo', 'text', 'draw']) {
+      await clear()
+      await scratch()
+      const one = build(type, { x: 0, y: 0 }, type === 'design-node' || type === 'geo' ? { w: 200, h: 160 } : {})
+      await settle()
+      const bounds = boundsOf(one)
+      if (!bounds || bounds.w < 4 || bounds.h < 4) continue
+      if (!hovering) {
+        editor.selectNone()
+        await settle()
+        const over = viewport(bounds.center)
+        hovering = await commitsOver({ x: over.x - 60, y: over.y }, { x: 1.5, y: 1 }, 0)
+      }
+      editor.select(one)
+      await settle()
+      const from = viewport(boundsOf(one).center)
+      pointer('pointerdown', from.x, from.y, 1)
+      await frame()
+      const dragging = await commitsOver(from, { x: 1.5, y: 1 }, 1)
+      pointer('pointerup', from.x + 90, from.y + 60, 0)
+      await settle()
+      counted.push({ type, canvas: dragging.canvas, overlay: dragging.overlay })
+    }
+    const noisy = counted.filter(one => one.canvas > 0 || one.overlay > 0)
     const drift = speed.drag && speed.drag.drift
     const list = drift
-      ? ', while the list of shapes to render read as unchanged on ' + (drift.moves - drift.drifted) + ' of ' + drift.moves + ' moves'
+      ? ', and the list of shapes to render read as unchanged on ' + (drift.moves - drift.drifted) + ' of ' + drift.moves + ' moves'
       : ''
     return {
-      ok: dragging.canvas === 0 && dragging.overlay === 0,
+      ok: noisy.length === 0,
       note:
-        'over ' + MOVES + ' moves of one shape on its own: dragging commits ' + dragging.canvas + ' in the canvas and ' +
-        dragging.overlay + ' in the selection overlay, hovering commits ' + hovering.canvas + ' and ' + hovering.overlay + list
+        'over ' + MOVES + ' moves of one shape on its own, with nothing bound to it: ' +
+        counted.map(one => one.type + ' ' + one.canvas).join(', ') +
+        ' in the canvas, where hovering commits ' + (hovering ? hovering.canvas : 0) + list
     }
   })
 
