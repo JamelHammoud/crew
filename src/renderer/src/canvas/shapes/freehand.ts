@@ -4,7 +4,7 @@ import { strokeOutline } from './freehand/outline'
 import type { StrokeOptions } from './freehand/types'
 
 export type { StrokeOptions, StrokePoint } from './freehand/types'
-export { freehandOptions, highlightOptions, modulate } from './freehand/options'
+export { freehandOptions, highlightOptions } from './freehand/options'
 export { strokePoints, computeRadii } from './freehand/points'
 export { strokeOutline, strokeTracks } from './freehand/outline'
 
