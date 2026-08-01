@@ -899,10 +899,15 @@ const driveSource = String.raw`(async () => {
     editor.select(id)
     await settle(6)
     if (!field('Size')) return { ok: false, note: 'the typography fields never appeared for a text shape' }
+    const took = []
     await setField('Size', 33)
+    if (!near((typeOf(id) || {}).size, 33, 0.01)) took.push('setting the size did nothing')
     await setField('Letter spacing', 7)
+    if (!near((typeOf(id) || {}).spacing, 7, 0.01)) took.push('setting the spacing did nothing')
     await setField('Line height', 175)
+    if (!near((typeOf(id) || {}).lineHeight, 1.75, 0.01)) took.push('setting the line height did nothing')
     await pressButton('Align center')
+    if (editor.getShape(id).props.textAlign !== 'middle') took.push('pressing centre did nothing')
     let family = null
     if (await pressButton('Font')) {
       const rows = [...document.querySelectorAll('div[class*="max-h-72"] button')]
@@ -915,12 +920,17 @@ const driveSource = String.raw`(async () => {
         await pressButton('Font')
       }
     }
+    if (took.length) return { ok: false, note: took.join(', ') }
     const set = typeOf(id)
     if (!set) return { ok: false, note: 'the shape carries no type at all' }
+    press('Escape')
+    await settle(2)
     editor.selectNone()
     await settle(4)
     await click(viewport(boundsOf(id).center))
     await settle(4)
+    if (editor.getSelectedShapeIds().length !== 1)
+      return { ok: false, note: 'clicking the text back selected ' + editor.getSelectedShapeIds().length + ' shapes' }
     const held = typeOf(id)
     const align = editor.getShape(id).props.textAlign
     const shown = label => {
