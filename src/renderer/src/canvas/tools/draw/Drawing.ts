@@ -429,7 +429,7 @@ export class Drawing extends DrawState {
         return
       }
       const splitPoint = point(this.editor.inputs.getCurrentPagePoint())
-      const initialPoint = new Vec(0, 0, this.isPenOrStylus ? +((newPoint.z ?? 0.5) * 1.25).toFixed() : 0.5)
+      const initialPoint = new Vec(0, 0, this.isPenOrStylus ? +((local.z ?? 0.5) * 1.25).toFixed() : 0.5)
       this.currentSegmentPoints = [initialPoint]
       this.editor.createShape({
         id,
