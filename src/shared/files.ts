@@ -16,6 +16,18 @@ export type PathLocation =
 
 const slashed = (text: string): string => text.split('\\').join('/')
 
+const HOME_ROOT = /^(?:[A-Za-z]:)?\/(?:Users|home)\/[^/]+\//i
+const NAMED_FILE = /\/[^/]*\.[A-Za-z0-9]{1,8}$/
+
+// A file in somebody's own folder is the one path worth covering over. Both
+// halves have to hold, or an address a server answers on reads as a file
+// nobody here can see: `/agents/spawn` and `/users/12/posts` are words in a
+// sentence, and a chip standing where they were takes them off the screen.
+export function personalPath(target: string): boolean {
+  const value = slashed(target)
+  return HOME_ROOT.test(value) && NAMED_FILE.test(value)
+}
+
 const rootPattern = (root: string): string =>
   slashed(root)
     .replace(/\/+$/, '')
