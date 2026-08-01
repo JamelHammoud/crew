@@ -111,6 +111,31 @@ describe('the design panels on a real board', () => {
     expect(view.container.querySelector('[aria-label="Design"]')).toBeTruthy()
   })
 
+  it('lines the selection up from the inspector', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    const label = node(editor, 'Label', 260)
+    editor.setSelectedShapes([card, label])
+    inside(editor, createElement(DesignLeftPanel))
+    fireEvent.click(screen.getByLabelText('Align left'))
+    expect(editor.getShape(label)!.x).toBe(editor.getShape(card)!.x)
+  })
+
+  it('moves and resizes the one shape from its number fields', () => {
+    const editor = board()
+    const card = node(editor, 'Card', 0)
+    editor.setSelectedShapes([card])
+    inside(editor, createElement(DesignLeftPanel))
+    const x = screen.getByLabelText('X') as HTMLInputElement
+    fireEvent.change(x, { target: { value: '48' } })
+    fireEvent.blur(x)
+    expect(editor.getShape(card)!.x).toBe(48)
+    const width = screen.getByLabelText('W') as HTMLInputElement
+    fireEvent.change(width, { target: { value: '240' } })
+    fireEvent.blur(width)
+    expect((editor.getShape(card)!.props as { w: number }).w).toBe(240)
+  })
+
   it('follows the tool the toolbar was clicked on', () => {
     const editor = board()
     inside(editor, createElement(DesignToolbar, { onAsk: () => {}, onRename: () => {} }))
