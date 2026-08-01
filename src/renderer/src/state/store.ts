@@ -605,54 +605,54 @@ export const useCrew = create<CrewState>((set, get) => {
       return
     }
     set(state => {
-      const all = [...state.events, event]
-      const events = trimEvents(all, state.eventLimit)
-      const members = [...state.members]
-      const agents = [...state.agents]
-      const activePrompts = { ...state.activePrompts }
-      const steps = { ...state.steps }
-      const threads = { ...state.threads }
-      const threadPrompts = { ...state.threadPrompts }
-      foldThread(threads, event)
+      const events = appendEvent(state.events, event, state.eventLimit)
+      const threads = foldedThreads(state.threads, event)
+      let members = state.members
+      let agents = state.agents
+      let activePrompts = state.activePrompts
+      let steps = state.steps
+      let threadPrompts = state.threadPrompts
       switch (event.kind) {
         case 'person.joined': {
-          const member = members.find(m => m.id === event.memberId)
-          if (member) member.connected = true
-          else members.push({ id: event.memberId, name: event.name, connected: true })
+          members = members.some(m => m.id === event.memberId)
+            ? members.map(m => (m.id === event.memberId ? { ...m, connected: true } : m))
+            : [...members, { id: event.memberId, name: event.name, connected: true }]
           break
         }
         case 'person.left': {
-          const member = members.find(m => m.id === event.memberId)
-          if (member) member.connected = false
+          members = members.map(m => (m.id === event.memberId ? { ...m, connected: false } : m))
           break
         }
         case 'agent.online': {
-          const agent = agents.find(a => a.id === event.agentId)
-          if (agent) agent.status = 'idle'
+          agents = withAgent(agents, event.agentId, agent => ({ ...agent, status: 'idle' }))
           break
         }
         case 'agent.updated': {
-          const agent = agents.find(a => a.id === event.agentId)
-          if (agent) agent.settings = event.settings
+          agents = withAgent(agents, event.agentId, agent => ({ ...agent, settings: event.settings }))
           break
         }
         case 'agent.offline': {
-          const agent = agents.find(a => a.id === event.agentId)
-          if (agent) agent.status = 'offline'
+          agents = withAgent(agents, event.agentId, agent => ({ ...agent, status: 'offline' }))
           break
         }
         case 'agent.start': {
-          activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
-          if (event.threadId) threadPrompts[event.threadId] = event.promptId
+          activePrompts = { ...activePrompts, [event.agentId]: addPrompt(activePrompts, event.agentId, event.promptId) }
+          if (event.threadId) threadPrompts = { ...threadPrompts, [event.threadId]: event.promptId }
           break
         }
         case 'agent.step': {
-          steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
+          steps = { ...steps, [event.promptId]: upsertStep(steps[event.promptId], event.step) }
           break
         }
         case 'agent.end': {
-          activePrompts[event.agentId] = (activePrompts[event.agentId] ?? []).filter(id => id !== event.promptId)
-          if (event.threadId && threadPrompts[event.threadId] === event.promptId) delete threadPrompts[event.threadId]
+          activePrompts = {
+            ...activePrompts,
+            [event.agentId]: (activePrompts[event.agentId] ?? []).filter(id => id !== event.promptId)
+          }
+          if (event.threadId && threadPrompts[event.threadId] === event.promptId) {
+            threadPrompts = { ...threadPrompts }
+            delete threadPrompts[event.threadId]
+          }
           break
         }
         case 'doc': {
