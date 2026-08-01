@@ -60,6 +60,28 @@ const ASK: Chord = { key: 'a', meta: true, shift: true }
 const HIDE: Chord = { key: 'h', meta: true, shift: true }
 const LOCK: Chord = { key: 'l', meta: true, shift: true }
 const MASK: Chord = { key: 'm', meta: true, ctrl: true }
+const UNDO: Chord = { key: 'z', meta: true }
+const REDO: Chord = { key: 'z', meta: true, shift: true }
+const COPY: Chord = { key: 'c', meta: true }
+const PASTE: Chord = { key: 'v', meta: true }
+const COPY_PNG: Chord = { key: 'c', meta: true, shift: true }
+const COPY_STYLE: Chord = { key: 'c', meta: true, alt: true }
+const PASTE_STYLE: Chord = { key: 'v', meta: true, alt: true }
+const DUPLICATE: Chord = { key: 'd', meta: true }
+const TO_FRONT: Chord = { key: ']' }
+const FORWARD: Chord = { key: ']', meta: true }
+const BACKWARD: Chord = { key: '[', meta: true }
+const TO_BACK: Chord = { key: '[' }
+const GROUP: Chord = { key: 'g', meta: true }
+const UNGROUP: Chord = { key: 'g', meta: true, shift: true }
+const FRAME: Chord = { key: 'g', meta: true, alt: true }
+const LAYOUT: Chord = { key: 'a', shift: true }
+const NO_LAYOUT_KEY: Chord = { key: 'a', shift: true, alt: true }
+const DELETE: Chord = { key: 'backspace' }
+const SELECT_ALL: Chord = { key: 'a', meta: true }
+const ZOOM_FIT: Chord = { key: '1', shift: true }
+const ZOOM_SELECTION: Chord = { key: '2', shift: true }
+const ZOOM_ONE: Chord = { key: '0', shift: true }
 
 let held: ReturnType<Editor['getContentFromCurrentPage']> | undefined
 
