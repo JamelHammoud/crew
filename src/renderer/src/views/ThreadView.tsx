@@ -377,23 +377,41 @@ export default function ThreadView({
                         </button>
                       </>
                     )}
+                    {!alone && (
+                      <Tooltip label="Open in its own window" className="ml-1">
+                        <button
+                          onClick={() => void window.crew?.popOutThread?.(threadId)}
+                          aria-label="Open in its own window"
+                          className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95"
+                        >
+                          <PopOutGlyph className="w-5 h-5" />
+                        </button>
+                      </Tooltip>
+                    )}
                     {/* One button for the panel rather than one per thing the
                         panel can hold. What is in it is picked in the panel,
                         where the plus and the Start tab both read the one
                         table of it. It is the back button's own size, standing
-                        at the other end of the same row. */}
-                    <Tooltip label={panelOpen ? 'Hide panel' : 'Show panel'} className="ml-1">
-                      <button
-                        onClick={() => useBrowser.getState().togglePanel()}
-                        aria-label={panelOpen ? 'Hide panel' : 'Show panel'}
-                        aria-pressed={panelOpen}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
-                          panelOpen ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
-                        }`}
-                      >
-                        <PanelRightGlyph className="w-5 h-5" />
-                      </button>
-                    </Tooltip>
+                        at the other end of the same row.
+
+                        There is one panel and it holds the things of the thread
+                        you are in, so with a row of threads open the button
+                        stands in the one the panel is following rather than in
+                        every column pointing at the same box. */}
+                    {focused && (
+                      <Tooltip label={panelOpen ? 'Hide panel' : 'Show panel'} className="ml-1">
+                        <button
+                          onClick={() => useBrowser.getState().togglePanel()}
+                          aria-label={panelOpen ? 'Hide panel' : 'Show panel'}
+                          aria-pressed={panelOpen}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 ${
+                            panelOpen ? 'bg-ink-700 text-fg' : 'bg-ink-800 text-fg-secondary hover:bg-ink-700 hover:text-fg'
+                          }`}
+                        >
+                          <PanelRightGlyph className="w-5 h-5" />
+                        </button>
+                      </Tooltip>
+                    )}
                   </div>
                 </div>
               </div>
