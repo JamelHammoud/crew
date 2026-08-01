@@ -4,21 +4,32 @@ import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/sr
 import { GeoShapeUtil, GroupShapeUtil, defaultBindingUtils } from '../src/renderer/src/canvas/shapes'
 import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 
-const drawn: Array<{ x: number; y: number }> = []
+interface Drawn {
+  rects: Array<{ x: number; y: number; w: number; h: number }>
+  lines: Array<{ x: number; y: number }>
+}
+
+const drawn: Drawn = { rects: [], lines: [] }
 
 class Recorder {
+  rect(x: number, y: number, w: number, h: number): void {
+    drawn.rects.push({ x, y, w, h })
+  }
   moveTo(x: number, y: number): void {
-    drawn.push({ x, y })
+    drawn.lines.push({ x, y })
   }
   lineTo(x: number, y: number): void {
-    drawn.push({ x, y })
+    drawn.lines.push({ x, y })
   }
+  ellipse(): void {}
+  roundRect(): void {}
 }
 
 const had = (globalThis as { Path2D?: unknown }).Path2D
 
 beforeEach(() => {
-  drawn.length = 0
+  drawn.rects = []
+  drawn.lines = []
   ;(globalThis as { Path2D?: unknown }).Path2D = Recorder
 })
 
@@ -39,10 +50,10 @@ function board() {
   return subject
 }
 
-function grouped(subject: Editor): TLShapeId {
+function grouped(subject: Editor, gap = 100): TLShapeId {
   for (const [name, x] of [
     ['one', 0],
-    ['two', 200]
+    ['two', 100 + gap]
   ] as const) {
     subject.createShape({ id: createShapeId(name), type: 'geo', x, y: 0, props: { w: 100, h: 100 } })
   }
@@ -50,45 +61,60 @@ function grouped(subject: Editor): TLShapeId {
   return subject.getSelectedShapeIds()[0]
 }
 
-function pathOf(subject: Editor, id: TLShapeId): Array<{ x: number; y: number }> {
+function outline(subject: Editor, id: TLShapeId): Drawn {
   const shape = subject.getShape(id)!
   subject.getShapeUtil(shape).getIndicatorPath?.(shape)
   return drawn
 }
 
-const onPerimeter = (point: { x: number; y: number }, box: { w: number; h: number }): boolean =>
-  Math.abs(point.x) < 0.01 ||
-  Math.abs(point.x - box.w) < 0.01 ||
-  Math.abs(point.y) < 0.01 ||
-  Math.abs(point.y - box.h) < 0.01
-
 describe('the outline around a selected group', () => {
-  it('traces the bounds of the group and never the shapes inside it', () => {
+  it('draws one box around the whole group', () => {
     const subject = board()
     const group = grouped(subject)
-    const points = pathOf(subject, group)
-    expect(points.length).toBeGreaterThan(0)
-    for (const point of points) expect(onPerimeter(point, { w: 300, h: 100 }), `${point.x},${point.y}`).toBe(true)
+    expect(outline(subject, group).rects).toEqual([{ x: 0, y: 0, w: 300, h: 100 }])
   })
 
-  it('never draws along the gap between two shapes in the group', () => {
+  it('never outlines the shapes inside it', () => {
     const subject = board()
     const group = grouped(subject)
-    const points = pathOf(subject, group)
-    expect(points.some(point => Math.abs(point.x - 100) < 0.01 || Math.abs(point.x - 200) < 0.01)).toBe(false)
+    const shown = outline(subject, group)
+    expect(shown.rects.length).toBe(1)
+    expect(shown.lines).toEqual([])
   })
 
-  it('reaches both far corners of the group', () => {
+  it('holds one box however many shapes are in the group', () => {
     const subject = board()
-    const group = grouped(subject)
-    const points = pathOf(subject, group)
-    expect(Math.max(...points.map(point => point.x))).toBeCloseTo(300, 1)
-    expect(Math.max(...points.map(point => point.y))).toBeCloseTo(100, 1)
+    for (const [name, x] of [
+      ['a', 0],
+      ['b', 200],
+      ['c', 400],
+      ['d', 600]
+    ] as const) {
+      subject.createShape({ id: createShapeId(name), type: 'geo', x, y: 0, props: { w: 100, h: 100 } })
+    }
+    subject.groupShapes(['a', 'b', 'c', 'd'].map(name => createShapeId(name)))
+    const group = subject.getSelectedShapeIds()[0]
+    expect(outline(subject, group).rects).toEqual([{ x: 0, y: 0, w: 700, h: 100 }])
   })
 
-  it('closes the outline as one box rather than many', () => {
+  it('leaves the box solid rather than breaking it into dashes', () => {
     const subject = board()
     const group = grouped(subject)
-    expect(pathOf(subject, group).length).toBe(1)
+    expect(outline(subject, group).lines.length).toBe(0)
+  })
+
+  it('draws nothing on the canvas for the group itself', () => {
+    const subject = board()
+    const group = grouped(subject)
+    const shape = subject.getShape(group)!
+    const painted = subject.getShapeUtil(shape).component(shape) as { props?: { children?: unknown } }
+    expect(painted?.props?.children).toBeUndefined()
+  })
+
+  it('keeps the selection box and its handles for a group', () => {
+    const subject = board()
+    const group = grouped(subject)
+    const shape = subject.getShape(group)!
+    expect(subject.getShapeUtil(shape).hideSelectionBoundsFg?.(shape as never)).toBeFalsy()
   })
 })

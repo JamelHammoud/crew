@@ -388,7 +388,7 @@ export default function ThreadView({
                         ask={ask}
                         whole={opening?.text}
                         mentionRefs={opening?.mentionRefs}
-                        onJump={jumpToTop}
+                        onJump={reachTop}
                       />
                     )}
                   </div>
