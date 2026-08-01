@@ -87,14 +87,22 @@ export class OverlayManager {
   getOverlayAtPoint(point: VecLike, margin = 0): CanvasOverlay | null {
     const entries = this.getActiveOverlayEntries()
     for (let entryIndex = entries.length - 1; entryIndex >= 0; entryIndex--) {
+      let nearest: CanvasOverlay | null = null
+      let nearestDistance = Infinity
       for (const overlay of entries[entryIndex].overlays) {
         const props = overlay.props as { point?: VecLike; radius?: number; hit?: HitTarget }
-        if (props.hit && hitsTarget(props.hit, point, margin)) return overlay
-        if (!props.hit && props.point) {
-          const radius = (props.radius ?? 6 / this.editor.getZoomLevel()) + margin
-          if (Vec.Dist2(point, props.point) <= radius ** 2) return overlay
+        if (props.hit) {
+          if (hitsTarget(props.hit, point, margin)) return overlay
+          continue
         }
+        if (!props.point) continue
+        const radius = (props.radius ?? 6 / this.editor.getZoomLevel()) + margin
+        const distance = Vec.Dist2(point, props.point)
+        if (distance > radius ** 2 || distance >= nearestDistance) continue
+        nearestDistance = distance
+        nearest = overlay
       }
+      if (nearest) return nearest
     }
     return null
   }

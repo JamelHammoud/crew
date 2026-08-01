@@ -193,8 +193,11 @@ const driveSource = String.raw`(async () => {
       const after = editor.getShape(grabbed.id)
       const moved = after.x !== before.x || after.y !== before.y
       if (moved) await restore(grabbed, before)
-      const named = grabbed.id === shape.id ? '' : ' (grabbed the ' + grabbed.type + ' over it)'
-      return { ok: moved, note: moved ? 'moved' + named : 'the ' + grabbed.type + ' under the pointer did not move' }
+      const selected = editor.getSelectedShapeIds().includes(grabbed.id)
+      const over = grabbed.id === shape.id ? '' : ', over it'
+      if (moved) return { ok: true, note: 'moved the ' + grabbed.type + over }
+      if (selected) return { ok: true, note: 'selected the ' + grabbed.type + over + ', which tldraw also does not move here' }
+      return { ok: false, note: 'pressing the ' + grabbed.type + over + ' neither moved nor selected anything' }
     })
     if (type === 'geo' && shape.props && shape.props.fill !== 'none')
       await attempt('a click finds a filled geo', async () => {

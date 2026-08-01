@@ -831,10 +831,7 @@ export class Editor {
   }
 
   updateHoveredOverlayId(): boolean {
-    const overlay = this.overlays.getOverlayAtPoint(
-      this.inputs.getCurrentPagePoint(),
-      this.hitTestMargin / this.getZoomLevel()
-    )
+    const overlay = this.overlays.getOverlayAtPoint(this.inputs.getCurrentPagePoint())
     this.overlays.setHoveredOverlay(overlay?.id ?? null)
     return Boolean(overlay)
   }
@@ -1501,10 +1498,14 @@ export class Editor {
 
   getSnappableShapes(): Array<{ id: TLShapeId; pageBounds: Box; points: Vec[] }> {
     const selected = new Set(this.getSelectedShapeIds())
+    const viewport = this.getViewportPageBounds()
+    const renderingOnly = new Set(this.getCurrentPageRenderingShapesSorted().map(shape => shape.id))
     return this.getCurrentPageShapesSorted().flatMap(shape => {
-      if (selected.has(shape.id) || shape.isLocked || !this.getShapeUtil(shape).canSnap(shape as never)) return []
+      if (selected.has(shape.id) || shape.isLocked || !renderingOnly.has(shape.id)) return []
+      if (!this.getShapeUtil(shape).canSnap(shape as never)) return []
       const pageBounds = this.getShapePageBounds(shape)
-      return pageBounds ? [{ id: shape.id, pageBounds, points: pageBounds.cornersAndCenter }] : []
+      if (!pageBounds || !viewport.includes(pageBounds)) return []
+      return [{ id: shape.id, pageBounds, points: pageBounds.cornersAndCenter }]
     })
   }
 

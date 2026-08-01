@@ -1,5 +1,6 @@
 import type { CanvasEventInfo } from '../tools/state/events'
 import type { Editor } from './Editor'
+import { handleShortcut } from './shortcuts'
 
 export interface CanvasEventHandlers {
   onPointerDown(event: PointerEvent): void
@@ -171,6 +172,10 @@ export class CanvasEventBridge {
       this.editor.focus()
       return
     }
+    if (handleShortcut(this.editor, event)) {
+      event.preventDefault()
+      return
+    }
     this.dispatch(keyInfo(event.repeat ? 'key_repeat' : 'key_down', event))
   }
 
@@ -255,10 +260,7 @@ function resolveTarget(event: Event, page: { x: number; y: number }, editor: Edi
   if (taggedHandle?.dataset.canvasHandle) {
     return { target: 'selection', handle: taggedHandle.dataset.canvasHandle }
   }
-  const overlay = editor.overlays.getOverlayAtPoint(
-    page,
-    (editor.options.hitTestMargin as number) / editor.getZoomLevel()
-  )
+  const overlay = editor.overlays.getOverlayAtPoint(page)
   if (overlay) return { target: 'overlay', overlay }
   const shapeElement = target?.closest('[data-shape-id]') as HTMLElement | null
   const id = shapeElement?.dataset.shapeId

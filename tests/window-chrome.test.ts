@@ -7,6 +7,7 @@ import Modal from '../src/renderer/src/components/Modal'
 import { Popover } from '../src/renderer/src/components/Popover'
 import TasksPanel from '../src/renderer/src/components/TasksPanel'
 import TopBar from '../src/renderer/src/components/TopBar'
+import WindowCorner from '../src/renderer/src/components/WindowCorner'
 import { applyPlatform, onMac } from '../src/renderer/src/state/platform'
 import { fullScreen, setFullScreen } from '../src/renderer/src/state/windowShape'
 

@@ -46,71 +46,20 @@ function node(subject: Editor, name: string, x: number, y: number): TLShapeId {
 }
 
 describe('scratch', () => {
-  it('reorders', () => {
-    const subject = editor()
-    const a = node(subject, 'a', 0, 0)
-    const b = node(subject, 'b', 20, 0)
-    const c = node(subject, 'c', 40, 0)
-    const order = () => subject.getCurrentPageShapesSorted().map(s => s.id.replace('shape:', ''))
-    console.log('start', order())
-    subject.setSelectedShapes([a])
-    subject.bringToFront([a])
-    console.log('a to front', order())
-    subject.sendToBack([a])
-    console.log('a to back', order())
-    subject.bringForward([a])
-    console.log('a forward', order())
-    subject.sendBackward([a])
-    console.log('a backward', order())
-    console.log('unused', b, c)
-  })
-
-  it('zooms', () => {
+  it('animates the camera when given time', async () => {
     const subject = editor()
     node(subject, 'a', 500, 500)
-    console.log('camera at start', subject.getCamera())
-    subject.setCamera({ x: 0, y: 0, z: 3 })
-    console.log('camera after set', subject.getCamera(), 'zoom', subject.getZoomLevel())
-    subject.resetZoom()
-    console.log('camera after resetZoom', subject.getCamera(), 'zoom', subject.getZoomLevel())
-    subject.zoomToFit()
-    console.log('camera after zoomToFit', subject.getCamera(), 'zoom', subject.getZoomLevel())
     subject.setCamera({ x: 0, y: 0, z: 1 })
-    subject.zoomToFit({ animation: { duration: 180 } })
-    console.log('camera after animated zoomToFit', subject.getCamera(), 'zoom', subject.getZoomLevel())
-    subject.setCamera({ x: 0, y: 0, z: 1 })
-    subject.selectAll()
-    subject.zoomToSelection({ animation: { duration: 180 } })
-    console.log('camera after animated zoomToSelection', subject.getCamera())
-    subject.setCamera({ x: 0, y: 0, z: 1 })
-    subject.zoomIn()
-    console.log('camera after zoomIn', subject.getCamera())
-    subject.zoomOut()
-    console.log('camera after zoomOut', subject.getCamera())
+    subject.zoomToFit({ animation: { duration: 120 } })
+    console.log('immediately after', subject.getCamera())
+    await new Promise(resolve => setTimeout(resolve, 400))
+    console.log('after 400ms', subject.getCamera())
   })
 
-  it('exports', async () => {
-    const subject = editor()
-    const a = node(subject, 'a', 0, 0)
-    const mod = await import('../src/renderer/src/canvas')
-    console.log('copyAs type', typeof mod.copyAs)
-    try {
-      await mod.copyAs(subject, [a], { format: 'svg' })
-      console.log('copyAs svg ok')
-    } catch (error) {
-      console.log('copyAs svg threw', (error as Error).message)
+  it('has the export surface', () => {
+    const subject = editor() as unknown as Record<string, unknown>
+    for (const name of ['getSvgString', 'toImage', 'getSvgElement', 'getCurrentPageShapeIds']) {
+      console.log(name, typeof subject[name])
     }
-    try {
-      await mod.copyAs(subject, [a], { format: 'png' })
-      console.log('copyAs png ok')
-    } catch (error) {
-      console.log('copyAs png threw', (error as Error).message)
-    }
-  })
-
-  it('checks presence records land', () => {
-    const subject = editor()
-    console.log('collaborators', typeof (subject as unknown as { getCollaborators?: unknown }).getCollaborators)
-    console.log('overlays', subject.overlays.all().map(u => (u.constructor as { type?: string }).type))
   })
 })
