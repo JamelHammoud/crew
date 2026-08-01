@@ -1,37 +1,38 @@
+import { TextMeasurement, type TextMeasureOptions } from '../text/measurement'
 import type { TLTextMeasure, TLTextMeasureOptions } from './types'
 
 export class TextMeasure implements TLTextMeasure {
+  private measurement: TextMeasurement | null = null
+
   constructor(private readonly getContainer?: () => HTMLElement) {}
 
   measureHtml(html: string, options: TLTextMeasureOptions = {}): { w: number; h: number } {
-    if (typeof document === 'undefined') return estimate(stripHtml(html), options)
-    const node = document.createElement('div')
-    node.innerHTML = html
-    apply(node, options)
-    const parent = this.getContainer?.() ?? document.body
-    parent.appendChild(node)
-    const rect = node.getBoundingClientRect()
-    const result = { w: Math.ceil(rect.width), h: Math.ceil(rect.height) }
-    node.remove()
-    if (result.w === 0 && result.h === 0) return estimate(node.textContent ?? stripHtml(html), options)
-    return result
+    const measurement = this.measurer()
+    if (!measurement) return estimate(stripHtml(html), options)
+    const { w, h } = measurement.measureHtml(html, resolve(options))
+    return { w: Math.ceil(w), h: Math.ceil(h) }
   }
 
   measureText(text: string, options: TLTextMeasureOptions = {}): { w: number; h: number } {
-    if (typeof document === 'undefined') return estimate(text, options)
-    const node = document.createElement('div')
-    node.textContent = text
-    apply(node, options)
-    const parent = this.getContainer?.() ?? document.body
-    parent.appendChild(node)
-    const rect = node.getBoundingClientRect()
-    const result = { w: Math.ceil(rect.width), h: Math.ceil(rect.height) }
-    node.remove()
-    if (result.w === 0 && result.h === 0) return estimate(text, options)
-    return result
+    const measurement = this.measurer()
+    if (!measurement) return estimate(text, options)
+    const { w, h } = measurement.measureText(text, resolve(options))
+    return { w: Math.ceil(w), h: Math.ceil(h) }
   }
 
-  dispose(): void {}
+  dispose(): void {
+    this.measurement?.dispose()
+    this.measurement = null
+  }
+
+  private measurer(): TextMeasurement | null {
+    if (this.measurement) return this.measurement
+    if (typeof document === 'undefined') return null
+    const container = this.getContainer?.() ?? document.body
+    if (!container?.appendChild) return null
+    this.measurement = new TextMeasurement(document, container)
+    return this.measurement
+  }
 }
 
 export class FontManager {
@@ -53,24 +54,19 @@ export class FontManager {
   }
 }
 
-function apply(node: HTMLDivElement, options: TLTextMeasureOptions): void {
-  const style = node.style
-  style.position = 'absolute'
-  style.left = '-100000px'
-  style.top = '-100000px'
-  style.visibility = 'hidden'
-  style.pointerEvents = 'none'
-  style.whiteSpace = options.width || options.maxWidth ? 'pre-wrap' : 'pre'
-  style.boxSizing = 'border-box'
-  if (options.fontFamily) style.fontFamily = options.fontFamily
-  if (options.fontSize) style.fontSize = `${options.fontSize}px`
-  if (options.fontWeight) style.fontWeight = String(options.fontWeight)
-  if (options.fontStyle) style.fontStyle = options.fontStyle
-  if (options.lineHeight) style.lineHeight = String(options.lineHeight)
-  if (options.letterSpacing) style.letterSpacing = `${options.letterSpacing}px`
-  if (options.padding) style.padding = options.padding
-  if (options.width) style.width = `${options.width}px`
-  else if (options.maxWidth) style.maxWidth = `${options.maxWidth}px`
+function resolve(options: TLTextMeasureOptions): TextMeasureOptions {
+  const width = options.width ?? null
+  return {
+    fontStyle: options.fontStyle ?? 'normal',
+    fontWeight: String(options.fontWeight ?? 'normal'),
+    fontFamily: options.fontFamily ?? 'inherit',
+    fontSize: options.fontSize ?? 16,
+    lineHeight: options.lineHeight ?? 1.35,
+    maxWidth: width ?? options.maxWidth ?? null,
+    minWidth: width,
+    padding: options.padding ?? '0px',
+    otherStyles: options.letterSpacing ? { 'letter-spacing': `${options.letterSpacing}px` } : undefined
+  }
 }
 
 function estimate(text: string, options: TLTextMeasureOptions): { w: number; h: number } {
