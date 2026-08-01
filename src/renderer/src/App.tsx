@@ -68,6 +68,7 @@ function Session() {
   const closeThreads = useCrew(s => s.closeThreads)
   const openThread = useCrew(s => s.openThread)
   const openThreadAlone = useCrew(s => s.openThreadAlone)
+  const openAlertThread = useCrew(s => s.openAlertThread)
   const docsTarget = useCrew(s => s.docsTarget)
   const designTarget = useCrew(s => s.designTarget)
 
@@ -91,7 +92,10 @@ function Session() {
     return () => root?.classList.remove('railed')
   }, [pinned])
 
-  useEffect(() => window.crew?.onNotificationOpen?.(threadId => openThreadAlone(threadId)), [openThreadAlone])
+  useEffect(
+    () => window.crew?.onNotificationOpen?.((threadId, place) => openAlertThread(threadId, place)),
+    [openAlertThread]
+  )
 
   useEffect(() => watchUpdates(), [])
 

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useEditor, useValue, type Editor, type TLShape, type TLShapeId } from '../canvas'
 import DesignPanel from '../design/DesignPanel'
 import { glyphForShape } from '../design/glyphs'
+import { useLayerShapes } from '../design/layerShapes'
 import { canRename, layerName, renameShape } from '../design/tools'
 import {
   ChevronRightGlyph,
@@ -67,7 +68,7 @@ function Layers({ editor }: { editor: Editor }) {
   const [searching, setSearching] = useState(false)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const [renaming, setRenaming] = useState<string | null>(null)
-  const shapes = useValue('design shapes', () => editor.getCurrentPageShapesSorted(), [editor])
+  const shapes = useLayerShapes(editor)
 
   const closeSearch = () => {
     setSearching(false)
