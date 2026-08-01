@@ -103,7 +103,7 @@ export default function ChangeRow({
               on the row travels as it is reached for, and a staged row with one
               move in it lines up with an unstaged row that has two. */}
           <span className="flex w-14 items-center justify-end opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-within:opacity-100">
-            {!change.staged && (
+            {mayDiscard && (
               <Tooltip label="Discard changes">
                 <button aria-label={`Discard changes in ${name}`} onClick={onDiscard} className={action}>
                   <UndoGlyph className="w-4 h-4" />

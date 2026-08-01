@@ -20,6 +20,7 @@ export interface FaceMetrics {
 export interface TrimEdges {
   top: number
   bottom: number
+  total: number
   cap: number
 }
 
