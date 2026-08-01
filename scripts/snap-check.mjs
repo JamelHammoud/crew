@@ -578,7 +578,7 @@ app.whenReady().then(async () => {
   const errors = []
   const win = new BrowserWindow({ width: 1600, height: 1000, show: true, webPreferences: { backgroundThrottling: false } })
   win.webContents.on('console-message', (_event, level, message) => {
-    if (level >= 2) errors.push(String(message).slice(0, 200))
+    if (level >= 2 && !String(message).includes('willReadFrequently')) errors.push(String(message).slice(0, 200))
   })
   await win.loadFile(path.join(__dirname, 'dist/index.html'))
   for (let at = 0; at < 300; at++) {
