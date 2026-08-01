@@ -289,6 +289,7 @@ const driveSource = String.raw`(async () => {
     surface
   )
   wide.covered = editor.getSelectedShapeIds().length
+  wide.topLevel = shapes.filter(shape => shape.parentId === editor.getCurrentPageId()).length
   results.push(wide)
 
   editor.selectNone()
