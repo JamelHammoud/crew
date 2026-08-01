@@ -23,12 +23,6 @@ export default function CommitDialog({
   const ref = useAutoResize(message, 200)
   const ready = message.trim().length > 0 && !busy
 
-  // The card is opened to write in, so the caret is already in the one field on
-  // it rather than a press away.
-  useEffect(() => {
-    if (open) ref.current?.focus()
-  }, [open, ref])
-
   const keys = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key !== 'Enter' || !(event.metaKey || event.ctrlKey)) return
     event.preventDefault()

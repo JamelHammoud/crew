@@ -314,9 +314,9 @@ export class Editor {
     let next: EditorInstanceState | null = null
     for (const [key, value] of Object.entries(update)) {
       if (value === undefined) continue
-      if (sameInstanceValue((current as Record<string, unknown>)[key], value)) continue
+      if (sameInstanceValue((current as unknown as Record<string, unknown>)[key], value)) continue
       next ??= { ...current }
-      ;(next as Record<string, unknown>)[key] = value
+      ;(next as unknown as Record<string, unknown>)[key] = value
     }
     if (next) this.instanceState.set(next)
   }
