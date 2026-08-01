@@ -50,6 +50,7 @@ import { type NewAgent, type OpenOptions } from './session'
 import { Terminals, type TerminalSize } from './terminal'
 import { threadWindowHash } from '../shared/threadViews'
 import { Updates } from './updates'
+import { runtimeStateDir } from './runtime-state'
 import {
   appMenuTemplate,
   closePutsAway,
@@ -65,6 +66,8 @@ app.commandLine.appendSwitch('disable-renderer-backgrounding')
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
+const devUrl = process.env['ELECTRON_RENDERER_URL']
+const stateDir = runtimeStateDir(app.getPath('userData'), devUrl)
 const crews = new Crews()
 const terminals = new Map<number, Terminals>()
 const previews = new Map<number, Previews>()
@@ -80,7 +83,7 @@ const shipping = !fromSource(app.getAppPath())
 const inspectable = !shipping
 const rendererPage = {
   preload: path.join(dirname, '../preload/preload.mjs'),
-  devUrl: process.env['ELECTRON_RENDERER_URL'],
+  devUrl,
   file: path.join(dirname, '../renderer/index.html'),
   devTools: inspectable
 }
@@ -93,7 +96,7 @@ const scribe = new ScribeWindow(rendererPage)
 const awake = new KeepAwake()
 // The crew command opens one Crew per folder, so several are ordinary here and
 // none of them can see the others through electron.
-const instances = new OtherInstances(path.join(app.getPath('userData'), 'live'))
+const instances = new OtherInstances(path.join(stateDir, 'live'))
 // Whatever quitting puts down is put down once, whether the app is quitting or
 // being replaced under itself by an update.
 let settling: Promise<void> | null = null
@@ -102,7 +105,7 @@ const updates = new Updates({
   windows: () => appWindows(),
   others: () => instances.count(),
   settle,
-  log: path.join(app.getPath('userData'), 'updates.log')
+  log: path.join(stateDir, 'updates.log')
 })
 const said = new ScribeHistory()
 let scribeSettings: ScribeSettings = cleanSettings(null, process.platform)
@@ -321,7 +324,6 @@ function warmTerminals(): void {
 }
 
 function createWindow(threadId?: string): BrowserWindow {
-  const devUrl = process.env['ELECTRON_RENDERER_URL']
   const preload = path.join(dirname, '../preload/preload.mjs')
   const win = new BrowserWindow(
     threadId
@@ -441,9 +443,9 @@ app.whenReady().then(() => {
       resourcesPath: process.resourcesPath
     })
   )
-  crews.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
-  crews.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
-  crews.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
+  crews.setAgentsPath(path.join(stateDir, 'agents.json'))
+  crews.setSessionPath(path.join(stateDir, 'session.json'))
+  crews.setProjectsPath(path.join(stateDir, 'projects'))
   crews.onTrouble = message => {
     for (const win of appWindows()) win.webContents.send('crew:trouble', message)
   }
