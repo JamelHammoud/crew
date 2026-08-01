@@ -1739,8 +1739,16 @@ const driveSource = String.raw`(async () => {
     let frozen = 0
     let followed = 0
     let quiet = 0
-    let held = []
     openPaint()
+    editor.selectNone()
+    await frame()
+    let held = await stepPaint(async () => {
+      editor.select(one)
+    })
+    if (!boxesOf(held, 'strokeRect').some(box => boxOff(box, stale) <= 2)) {
+      shutPaint()
+      return { ok: false, note: 'a shape sitting still and selected draws no box around itself' }
+    }
     pointer('pointerdown', at.x, at.y, 1, nodeOf(one) || surface)
     await frame()
     for (let move = 1; move <= steps; move++) {
