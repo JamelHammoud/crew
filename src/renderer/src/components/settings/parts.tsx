@@ -8,10 +8,11 @@ import type { ReactNode } from 'react'
 // happens to be showing, so the words take the foreground at an opacity and sit
 // above the surface rather than beside it.
 
-export function Page({ title, children }: { title: string; children: ReactNode }) {
+export function Page({ title, line, children }: { title: string; line?: string; children: ReactNode }) {
   return (
     <section className="px-8 pt-7 pb-10">
       <h2 className="text-lg font-semibold text-fg pr-10">{title}</h2>
+      {line && <p className="mt-1 text-sm text-fg/45">{line}</p>}
       <div className="mt-5">{children}</div>
     </section>
   )

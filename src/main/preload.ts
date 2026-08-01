@@ -29,6 +29,16 @@ const bridge = {
     ipcRenderer.invoke('session:join', link, folder, name),
   leave: (): Promise<void> => ipcRenderer.invoke('session:leave'),
   current: (): Promise<CurrentSession | null> => ipcRenderer.invoke('session:current'),
+  switchTo: (key: string): Promise<CurrentSession | null> => ipcRenderer.invoke('session:switch', key),
+  closeProject: (key: string): Promise<void> => ipcRenderer.invoke('session:close', key),
+  liveProjects: (): Promise<LivePlace[]> => ipcRenderer.invoke('session:live'),
+  onLive: (listener: (places: LivePlace[]) => void): (() => void) => {
+    const handler = (_event: unknown, places: LivePlace[]) => listener(places)
+    ipcRenderer.on('session:live', handler)
+    return () => {
+      ipcRenderer.off('session:live', handler)
+    }
+  },
   recentJoins: (): Promise<RecentJoin[]> => ipcRenderer.invoke('session:recent'),
   projects: (): Promise<RecentProject[]> => ipcRenderer.invoke('session:projects'),
   forgetProject: (folder: string): Promise<void> => ipcRenderer.invoke('session:forget', folder),
