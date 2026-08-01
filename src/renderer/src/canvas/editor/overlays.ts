@@ -484,7 +484,7 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
       const path = batch ? this.pathOf(shape) : null
       if (batch && path) {
         batch.addPath(path, transform)
-        batched = true
+        context.stroke(batch)
         continue
       }
       this.trace(context, shape, transform)
