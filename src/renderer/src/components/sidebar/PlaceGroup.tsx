@@ -1,31 +1,15 @@
-import { memo, useCallback, useState, type PointerEvent as Press } from 'react'
-import type { LiveThread } from '../../../../shared/threads'
+import { memo, useCallback, useState } from 'react'
 import { DesktopGlyph, FolderGlyph, GlobeGlyph, TrashGlyph } from '../../icons'
 import Spinner from '../Spinner'
 import { MenuItem, Popover } from '../Popover'
 import type { Place } from '../../views/home/place'
 import ThreadRow from './ThreadRow'
-import { samePlace, sameLiveThreads } from './placeItems'
+import { samePlaceGroup, type PlaceGroupProps } from './placeItems'
 
 function markOf(place: Place) {
   if (place.join) return <GlobeGlyph className="w-4 h-4" />
   if (place.project?.home === 'private') return <DesktopGlyph className="w-4 h-4" />
   return <FolderGlyph className="w-4 h-4" />
-}
-
-interface PlaceGroupProps {
-  place: Place
-  here: boolean
-  busy: boolean
-  stoppable: boolean
-  threads: LiveThread[]
-  openThreadIds: string[]
-  onOpen: (place: Place) => void
-  onOpenThread: (place: Place, threadId: string, toRight: boolean) => void
-  onStop: (place: Place) => void
-  onForget: (place: Place) => void
-  take: (id: string) => (event: Press) => void
-  dragged: () => boolean
 }
 
 function PlaceGroup({

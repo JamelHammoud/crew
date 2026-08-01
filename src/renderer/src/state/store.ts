@@ -794,14 +794,19 @@ export const useCrew = create<CrewState>((set, get) => {
         const threads: Record<string, ThreadMeta> = {}
         const threadPrompts: Record<string, string> = {}
         const activePrompts: Record<string, string[]> = {}
-        const steps: Record<string, AgentStep[]> = {}
+        const gathered: Record<string, AgentStep[]> = {}
         const tokens: Record<string, number> = {}
         const costs: Record<string, number> = {}
+        const gather = (promptId: string, step: AgentStep): void => {
+          const held = gathered[promptId]
+          if (held) held.push(step)
+          else gathered[promptId] = [step]
+        }
         for (const event of [...(msg.snapshot.threadEvents ?? []), ...msg.snapshot.events]) {
           foldThread(threads, event)
         }
         for (const event of msg.snapshot.events) {
-          if (event.kind === 'agent.step') steps[event.promptId] = upsertStep(steps[event.promptId], event.step)
+          if (event.kind === 'agent.step') gather(event.promptId, event.step)
           if (event.kind === 'agent.start') {
             activePrompts[event.agentId] = addPrompt(activePrompts, event.agentId, event.promptId)
             if (event.threadId) threadPrompts[event.threadId] = event.promptId
