@@ -10,10 +10,8 @@ interface MountedShape {
 
 export class MountedShapeCulling {
   private shapes = new Map<string, MountedShape>()
-  private culled: ReadonlySet<string> = new Set()
 
-  register(id: string, foreground: HTMLElement, background: HTMLElement | null): void {
-    const culled = this.culled.has(id)
+  register(id: string, foreground: HTMLElement, background: HTMLElement | null, culled: boolean): void {
     const shape = { foreground, background, culled }
     this.shapes.set(id, shape)
     this.write(shape, culled)
@@ -24,7 +22,6 @@ export class MountedShapeCulling {
   }
 
   update(culledIds: ReadonlySet<string>): void {
-    this.culled = culledIds
     for (const [id, shape] of this.shapes) {
       const culled = culledIds.has(id)
       if (culled === shape.culled) continue
@@ -49,15 +46,15 @@ export function MountedShapeCullingProvider({ children }: { children: ReactNode 
 }
 
 export function useMountedShapeCulling(): {
-  register(id: string, foreground: HTMLElement, background: HTMLElement | null): void
+  register(id: string, foreground: HTMLElement, background: HTMLElement | null, culled: boolean): void
   unregister(id: string): void
   update(culledIds: ReadonlySet<string>): void
 } {
   const culling = useContext(CullingContext)
   if (!culling) throw new Error('useMountedShapeCulling requires MountedShapeCullingProvider')
   const register = useCallback(
-    (id: string, foreground: HTMLElement, background: HTMLElement | null) =>
-      culling.register(id, foreground, background),
+    (id: string, foreground: HTMLElement, background: HTMLElement | null, culled: boolean) =>
+      culling.register(id, foreground, background, culled),
     [culling]
   )
   const unregister = useCallback((id: string) => culling.unregister(id), [culling])
@@ -65,7 +62,7 @@ export function useMountedShapeCulling(): {
   return useMemo(() => ({ register, unregister, update }), [register, unregister, update])
 }
 
-export function useCullingReactor(name: string, reactFn: () => void, deps: unknown[]): void {
+export function useCanvasLayoutReactor(name: string, reactFn: () => void, deps: unknown[]): void {
   useLayoutEffect(() => {
     const scheduler = new EffectScheduler(name, reactFn)
     scheduler.attach()
