@@ -94,11 +94,6 @@ export function threadFamily(
   return family
 }
 
-// The thread in the chat a helper hangs off, however far down it is. A helper's
-// own helpers belong to the list the thread that started all of it holds, so
-// what a chip inside one opens is that list rather than a second one, and the
-// walk stops on a parent it has already been through rather than locking the
-// window on a thread named in a circle.
 export function rootThread(
   threadId: string,
   threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>>
