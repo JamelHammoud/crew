@@ -158,6 +158,24 @@ const driveSource = String.raw`(async () => {
     return { ok: Math.abs(after.w / after.h - ratio) < 0.05, note: ratio.toFixed(3) + ' to ' + (after.w / after.h).toFixed(3) }
   })
 
+  await attempt('an edge handle resizes a text', async () => {
+    const text = oneOf('text')
+    if (!text) return null
+    const original = editor.getShape(text.id)
+    editor.select(text.id)
+    await settle()
+    const before = boundsOf(text.id)
+    const handle = viewport({ x: before.maxX, y: before.center.y })
+    await drag(handle, { x: handle.x + 90, y: handle.y })
+    const after = boundsOf(text.id)
+    const grew = after.w - before.w > 1
+    if (grew) {
+      editor.updateShape({ id: original.id, type: original.type, props: original.props })
+      await settle()
+    }
+    return { ok: grew, note: Math.round(before.w) + ' wide to ' + Math.round(after.w) }
+  })
+
   await attempt('the rotate handle rotates', async () => {
     editor.select(box.id)
     await settle()
