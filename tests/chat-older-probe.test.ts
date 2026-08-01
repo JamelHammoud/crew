@@ -125,6 +125,7 @@ const held = (): string[] => useCrew.getState().events.map(e => e.id)
 function join(events: SessionEvent[], moreEvents = true) {
   useCrew.getState().connect({
     wsUrl: 'ws://127.0.0.1:7777/ws',
+    place: 'project:/tmp/crew',
     name: 'Jamel',
     code: 'abc123',
     link: null,
