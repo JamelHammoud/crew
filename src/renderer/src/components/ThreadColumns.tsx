@@ -5,6 +5,7 @@ import Chat from '../views/Chat'
 import ThreadView from '../views/ThreadView'
 import Tooltip from './Tooltip'
 
+
 export const COLUMN_MIN = 400
 export const SLOT_W = 44
 
