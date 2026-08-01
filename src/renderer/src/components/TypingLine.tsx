@@ -36,9 +36,9 @@ export default function TypingLine({ where }: { where?: string }) {
   if (here.length === 0) return null
 
   return (
-    <div className="absolute left-0 top-full max-w-full z-20 pointer-events-none flex items-center h-4 gap-1.5 pl-5 pr-3 text-xs text-fg-muted animate-fade">
+    <div className="absolute left-0 top-full mt-1 max-w-full z-20 pointer-events-none flex items-center h-4 gap-1.5 pl-5 pr-3 text-xs text-fg-muted animate-fade">
       <TypingDots />
-      <span className="truncate">{typingLine(here.map(typist => typist.name))}</span>
+      <span className="min-w-0 truncate">{typingLine(here.map(typist => typist.name))}</span>
     </div>
   )
 }
