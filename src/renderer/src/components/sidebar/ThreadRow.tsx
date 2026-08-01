@@ -22,7 +22,9 @@ function ThreadRow({ thread, open, here, placeKey, onOpen, onOpenToRight }: Thre
           open ? 'bg-fg/[0.10] text-fg' : 'text-fg/70 hover:bg-fg/[0.06] hover:text-fg'
         }`}
       >
-        <span className="min-w-0 flex-1 truncate">{thread.title}</span>
+        <span className="min-w-0 flex-1 truncate">
+          <EmojiText text={thread.title} />
+        </span>
         {thread.working && <Spinner size={10} className="text-fg" />}
       </button>
       {menu}
