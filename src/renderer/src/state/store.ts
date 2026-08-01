@@ -223,6 +223,7 @@ interface CrewState {
   connect: (session: CurrentSession) => void
   switchTo: (key: string) => Promise<void>
   closePlace: (key: string) => Promise<void>
+  wantThread: (threadId: string | null) => void
   loadHistory: () => void
   share: (shared: boolean) => Promise<string | null>
   leave: () => void
@@ -954,10 +955,13 @@ export const useCrew = create<CrewState>((set, get) => {
       const { useHuddle } = await import('./huddle')
       useHuddle.getState().leave()
       socket.close()
-      threadWanted = memory?.openThreadId ?? null
+      threadWanted = threadWanted ?? memory?.openThreadId ?? null
       set({ connection: 'connecting', ...BLANK })
       get().connect(info)
       panel.restore(memory?.panel ?? null)
+    },
+    wantThread: threadId => {
+      threadWanted = threadId
     },
     closePlace: async key => {
       const others = usePlaces.getState().live.filter(place => place.key !== key)
