@@ -52,7 +52,7 @@ const hover = (element: Element) => {
 }
 
 describe('responsive top bar', () => {
-  it('keeps every tab icon available when labels collapse', () => {
+  it('hides the main navigation while keeping every tab available', () => {
     const onTab = vi.fn()
     render(
       createElement(TopBar, {
@@ -66,6 +66,7 @@ describe('responsive top bar', () => {
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     const tabs = within(navigation).getAllByRole('button')
 
+    expect(navigation.classList.contains('hidden')).toBe(true)
     expect(tabs.map(tab => tab.getAttribute('aria-label'))).toEqual(['Chat', 'Docs', 'Design'])
     expect(navigation.querySelectorAll('.tab-icon')).toHaveLength(3)
     expect(navigation.querySelectorAll('.top-bar-tab-label')).toHaveLength(3)

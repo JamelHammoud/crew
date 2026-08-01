@@ -95,12 +95,13 @@ describe('the settings', () => {
     expect(document.querySelector('.glass.fixed')).toBeNull()
   })
 
-  it('leaves the main navigation with Chat, Docs and Design', () => {
+  it('keeps the main navigation hidden', () => {
     render(createElement(TopBar, { tab: 'chat' as const, onTab: vi.fn(), tasksOpen: false, onToggleTasks: () => {} }))
     const navigation = screen.getByRole('navigation', { name: 'Main navigation' })
     const labels = within(navigation)
       .getAllByRole('button')
       .map(tab => tab.getAttribute('aria-label'))
+    expect(navigation.classList.contains('hidden')).toBe(true)
     expect(labels).toEqual(['Chat', 'Docs', 'Design'])
   })
 

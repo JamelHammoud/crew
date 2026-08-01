@@ -81,7 +81,7 @@ export default function TopBar({
     >
       <span />
 
-      <nav aria-label="Main navigation" className="app-no-drag flex items-center gap-2">
+      <nav aria-label="Main navigation" className="app-no-drag hidden items-center gap-2">
         {visibleTabs.map(t => (
           <Tooltip key={t.id} label={t.label} disabled={!compact}>
             <button
