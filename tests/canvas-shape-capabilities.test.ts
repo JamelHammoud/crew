@@ -58,7 +58,7 @@ describe('what each shape lets you do to it', () => {
     expect([arrow.hideSelectionBoundsBg(), arrow.hideSelectionBoundsFg()]).toEqual([true, true])
     expect([line.hideResizeHandles(), line.hideRotateHandle()]).toEqual([true, true])
     expect([line.hideSelectionBoundsBg(), line.hideSelectionBoundsFg()]).toEqual([true, true])
-    expect(group.hideSelectionBoundsFg()).toBe(true)
+    expect(group.hideSelectionBoundsFg({} as never)).toBe(false)
   })
 
   it('will not bind an arrow to another arrow or to a group', () => {
