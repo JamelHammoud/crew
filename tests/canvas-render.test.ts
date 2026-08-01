@@ -290,4 +290,118 @@ describe('canvas rendering', () => {
     expect(paint).toHaveBeenCalledTimes(1)
     expect(paint.mock.calls[0][1]).toEqual([{ id: 'latest', type: 'test', props: {} }])
   })
+
+  it('redraws a shape that reads anything beyond its own props', () => {
+    const context = canvasContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const state = setup()
+    const theme = atom('render theme', 'day')
+    let shapeRenders = 0
+    const renderer: CanvasShapeRenderer<Shape> = {
+      render: () => {
+        shapeRenders++
+        return createElement('span', null, theme.get())
+      }
+    }
+    const view = render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
+    const node = view.container.querySelector('[data-canvas-shape="true"]') as HTMLElement
+
+    expect(shapeRenders).toBe(1)
+    expect(node.textContent).toBe('day')
+
+    act(() => theme.set('night'))
+    expect(shapeRenders).toBe(2)
+    expect(node.textContent).toBe('night')
+    expect(view.container.querySelector('[data-canvas-shape="true"]')).toBe(node)
+  })
+
+  it('hands a shape the record as it stands rather than the one it was mounted with', () => {
+    const context = canvasContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const state = setup()
+    const seen: string[] = []
+    const renderer: CanvasShapeRenderer<Shape> = {
+      render: current => {
+        seen.push(current.props.label)
+        return null
+      }
+    }
+    render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
+    act(() => {
+      const current = state.shape.get()
+      state.shape.set({ ...current, props: { ...current.props, label: 'Away' } })
+    })
+    expect(seen).toEqual(['Home', 'Away'])
+  })
+
+  it('lets the paint loop own the size of the overlay canvas', () => {
+    const context = canvasContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const state = setup()
+    const renderer: CanvasShapeRenderer<Shape> = { render: () => null }
+    const view = render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
+    const canvas = view.container.querySelector('canvas') as HTMLCanvasElement
+
+    expect(canvas.style.width).toBe('300px')
+    expect(canvas.style.height).toBe('200px')
+
+    act(() => state.instance.set({ devicePixelRatio: 1, screenBounds: { x: 0, y: 0, w: 640, h: 480 } }))
+    expect(canvas.style.width).toBe('640px')
+    expect(canvas.style.height).toBe('480px')
+    expect(canvas.width).toBe(640)
+    expect(canvas.height).toBe(480)
+  })
+
+  it('holds the hit test blocker over everything while the camera is moving', () => {
+    const context = canvasContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const state = setup()
+    const renderer: CanvasShapeRenderer<Shape> = { render: () => null }
+    const view = render(createElement(Canvas<Shape>, { host: state.host, shapeRenderer: renderer }))
+
+    expect(view.container.querySelector('[data-canvas-hit-test-blocker="true"]')).toBeNull()
+    act(() => state.cameraState.set('moving'))
+    const blocker = view.container.querySelector('[data-canvas-hit-test-blocker="true"]') as HTMLElement
+    expect(blocker.className).toBe('crew-hit-test-blocker')
+    expect(blocker.getAttribute('style')).toBeNull()
+  })
+})
+
+const canvasCss = readFileSync(
+  path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), 'src/renderer/src/canvas/canvas.css'),
+  'utf8'
+)
+
+const layerOf = (name: string): number => {
+  const match = canvasCss.match(new RegExp(`--crew-layer-${name}:\\s*(\\d+)`))
+  expect(match).not.toBeNull()
+  return Number(match?.[1])
+}
+
+describe('what the canvas draws over what', () => {
+  it('stands the chrome above every shape and the shapes above the background', () => {
+    expect(layerOf('background')).toBeLessThan(layerOf('shapes'))
+    expect(layerOf('shapes')).toBeLessThan(layerOf('overlays'))
+    expect(layerOf('overlays')).toBeLessThan(layerOf('blocker'))
+  })
+
+  it('gives every layer of the canvas a place on that ladder', () => {
+    for (const [selector, name] of [
+      ['.crew-background-wrapper', 'background'],
+      ['.crew-shapes', 'shapes'],
+      ['.crew-canvas-overlays', 'overlays'],
+      ['.crew-hit-test-blocker', 'blocker']
+    ] as const) {
+      const at = canvasCss.indexOf(`${selector} {`)
+      expect(at).toBeGreaterThan(-1)
+      expect(canvasCss.slice(at, canvasCss.indexOf('}', at))).toContain(`z-index: var(--crew-layer-${name})`)
+    }
+  })
+
+  it('writes the ladder inside the canvas, which holds its own stacking context', () => {
+    const at = canvasCss.indexOf('.crew-canvas {')
+    expect(at).toBeGreaterThan(-1)
+    expect(canvasCss.slice(at, canvasCss.indexOf('}', at))).toContain('--crew-layer-overlays')
+    expect(canvasCss).toMatch(/\.crew-hit-test-blocker\s*\{[^}]*pointer-events:\s*all/)
+  })
 })

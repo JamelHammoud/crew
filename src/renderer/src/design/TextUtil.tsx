@@ -10,7 +10,13 @@ import {
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { textShapeType, typeMeasure } from './textType'
-import { compensateTextGrowth } from '../canvas/text'
+import {
+  compensateTextGrowth,
+  measureTextLayout,
+  richTextChanged,
+  textGrowthMatters,
+  type TextGrowthState
+} from '../canvas/text'
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => generation.set(generation.get() + 1))
