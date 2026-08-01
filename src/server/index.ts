@@ -459,7 +459,10 @@ export function createCrewServer(session: CrewSession, opts: CrewServerOptions =
   }, opts.heartbeatMs ?? HEARTBEAT_MS)
 
   return new Promise((resolve, reject) => {
-    httpServer.once('error', reject)
+    httpServer.once('error', err => {
+      clearInterval(heartbeat)
+      reject(err)
+    })
     httpServer.listen(opts.port ?? 0, opts.host ?? '0.0.0.0', () => {
       const address = httpServer.address()
       const port = typeof address === 'object' && address ? address.port : 0
