@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import type { AgentStep } from '../../../shared/llm'
 import { ChevronRightGlyph, DocGlyph } from '../icons'
 import Counts from './Counts'
 import { FilePathLink } from './StepRow'
 
-export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
+function FilesChanged({ steps }: { steps: AgentStep[] }) {
   const [open, setOpen] = useState(false)
   const files = useMemo(() => {
     const map = new Map<string, { added: number; removed: number; diff: string }>()
@@ -59,3 +59,5 @@ export default function FilesChanged({ steps }: { steps: AgentStep[] }) {
     </div>
   )
 }
+
+export default memo(FilesChanged)
