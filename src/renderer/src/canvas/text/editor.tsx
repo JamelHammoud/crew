@@ -29,6 +29,15 @@ function sameDocument(one: RichTextDocument, two: RichTextDocument): boolean {
   return JSON.stringify(one) === JSON.stringify(two)
 }
 
+function focusEditor(editor: TipTapEditor, selectAll: boolean, caret: TextPoint | null): void {
+  if (selectAll) editor.commands.selectAll()
+  else if (caret) {
+    const position = editor.view.posAtCoords({ left: caret.x, top: caret.y })?.pos
+    editor.commands.setTextSelection(position ?? editor.state.doc.content.size)
+  } else editor.commands.setTextSelection(editor.state.doc.content.size)
+  editor.view.dom.focus({ preventScroll: true })
+}
+
 export function RichTextEditor({
   richText,
   editing,
@@ -61,7 +70,7 @@ export function RichTextEditor({
       element: mount.current,
       extensions,
       content: current.current as JSONContent,
-      autofocus: selectAll ? 'all' : 'end',
+      autofocus: false,
       editable: true,
       coreExtensionOptions: { clipboardTextSerializer: { blockSeparator: '\n' } },
       enableCoreExtensions: { textDirection: false },
@@ -73,15 +82,7 @@ export function RichTextEditor({
       },
       onFocus: () => callbacks.current.onFocus?.(),
       onBlur: () => callbacks.current.onBlur?.(),
-      onCreate: ({ editor: next }) => {
-        if (selectAll) next.chain().focus().selectAll().run()
-        else if (caret) {
-          const position = next.view.posAtCoords({ left: caret.x, top: caret.y })?.pos
-          if (position !== undefined) next.chain().focus().setTextSelection(position).run()
-          else next.chain().focus('end').run()
-        } else next.chain().focus('end').run()
-        next.view.dom.focus({ preventScroll: true })
-      },
+      onCreate: ({ editor: next }) => focusEditor(next, selectAll, caret),
       editorProps: {
         handleKeyDown: (_view, event) => {
           if (event.key === 'Tab' && !customTabBehavior) handleTextTab(editor, event)
@@ -96,11 +97,7 @@ export function RichTextEditor({
         handleDoubleClick: (_view, _position, event) => callbacks.current.onDoubleClick?.(event) === true
       }
     })
-    if (caret) {
-      const position = editor.view.posAtCoords({ left: caret.x, top: caret.y })?.pos
-      if (position !== undefined) editor.commands.setTextSelection(position)
-    }
-    editor.view.dom.focus({ preventScroll: true })
+    focusEditor(editor, selectAll, caret)
     instance.current = editor
     callbacks.current.onReady?.(editor)
     return () => {
