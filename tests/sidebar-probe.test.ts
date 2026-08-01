@@ -223,7 +223,7 @@ describe('the sidebar', () => {
 
   it('marks the current project', async () => {
     const { container } = render(Sidebar())
-    const current = container.querySelector('button[aria-current="page"]')
+    const current = container.querySelector('button[aria-current="true"]')
     expect(current?.textContent).toBe('one')
     expect(current?.querySelectorAll('span')).toHaveLength(2)
     expect(current?.closest('[data-reorder]')?.className).toContain('opacity-100')
