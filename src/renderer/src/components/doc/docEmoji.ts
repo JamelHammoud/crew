@@ -1,7 +1,7 @@
 import { createExtension } from '@blocknote/core'
-import type { Node } from 'prosemirror-model'
-import { Plugin, PluginKey } from 'prosemirror-state'
-import { Decoration, DecorationSet } from 'prosemirror-view'
+import type { Node } from '@tiptap/pm/model'
+import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { Decoration, DecorationSet } from '@tiptap/pm/view'
 import { spriteStyle, type EmojiEntry } from '../emojiData'
 import { anyEmoji, tokenizeEmoji } from '../emojiTokens'
 
