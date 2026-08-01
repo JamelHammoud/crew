@@ -1,4 +1,4 @@
-import { TOOL_MARKS, type ToolMark } from '../../../shared/toolbox'
+import { cleanMark, TOOL_MARKS, type ToolMark } from '../../../shared/toolbox'
 import {
   ArchiveGlyph,
   BoltGlyph,
