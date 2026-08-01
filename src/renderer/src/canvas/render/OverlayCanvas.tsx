@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react'
+import { memo, useLayoutEffect, useRef } from 'react'
 import { computed, EffectScheduler } from '../signals'
 import { viewportLayerStyle } from './style'
 import type { CanvasRenderHost, CanvasShapeRecord } from './types'
