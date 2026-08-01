@@ -27,13 +27,6 @@ const DOTS = {
   lg: 'w-3 h-3 ring-[2.5px]'
 } as const
 
-// A white shape standing on a photograph reads by its shadow, the way a disc on
-// the app icon does. It is a share of the box rather than a number of pixels, or
-// the same face is lifted off the picture at 48 and pressed flat into it at 20.
-// Keep it gentle: a hard black edge under a white mark turns it into a sticker.
-const shadowOf = (box: number): string =>
-  `drop-shadow(0 ${(box * 0.02).toFixed(2)}px ${(box * 0.05).toFixed(2)}px rgb(0 0 0 / 0.3))`
-
 export default function AgentIcon({
   seed,
   size = 'md',
