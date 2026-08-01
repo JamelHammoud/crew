@@ -76,7 +76,7 @@ export function usePanelOpens(): PanelOpen[] {
         label: 'Terminal',
         mark: <TerminalGlyph />,
         scope: 'panel',
-        open: () => browser().addTerminal()
+        open: () => browser().addTerminal(undefined, useCrew.getState().folder)
       },
       { id: 'file', label: 'Files', mark: <FolderGlyph />, scope: 'panel', open: () => browser().openFiles() },
       { id: 'review', label: 'Review', mark: <BranchGlyph />, scope: 'panel', open: () => browser().openReview() },

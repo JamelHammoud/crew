@@ -99,7 +99,7 @@ export default function Toolbox({
       name: 'Terminal',
       mark: TerminalGlyph,
       panel: true,
-      run: () => useBrowser.getState().addTerminal()
+      run: () => useBrowser.getState().addTerminal(undefined, useCrew.getState().folder)
     },
     {
       id: 'files',

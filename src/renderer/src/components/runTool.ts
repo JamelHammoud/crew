@@ -44,7 +44,7 @@ function runStep(action: ToolAction): void {
     if (action.external) void window.crew?.openExternal(action.url)
     else useBrowser.getState().openUrl(action.url)
   }
-  if (action.kind === 'terminal') useBrowser.getState().addTerminal(action.command && typed(action.command))
+  if (action.kind === 'terminal') useBrowser.getState().addTerminal(action.command && typed(action.command), useCrew.getState().folder)
   if (action.kind === 'file') useBrowser.getState().openFile(action.path)
   if (action.kind === 'doc') useCrew.getState().openDoc(action.page)
   if (action.kind === 'board') useCrew.getState().openBoard(action.boardId)
