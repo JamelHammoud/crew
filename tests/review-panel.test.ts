@@ -37,9 +37,11 @@ const work = (over: Partial<RepoWork> = {}): RepoWork => ({
 })
 
 // A row of a diff is one line of the file however many spans the word picking
-// broke it into, so it is read off the row rather than off a span.
+// broke it into, so it is read off the row rather than off a span. A line being
+// reviewed wraps and a line in a thread step does not, which is two classes for
+// the one thing.
 const line = (text: string): Element | undefined =>
-  [...document.querySelectorAll('.whitespace-pre')].find(el => el.textContent === text)
+  [...document.querySelectorAll('.whitespace-pre, .whitespace-pre-wrap')].find(el => el.textContent === text)
 
 // The one press that confirms, rather than the heading over it saying the same
 // words.
