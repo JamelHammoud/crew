@@ -155,7 +155,7 @@ describe('dragging a project up the list', () => {
     expect(groups[1]!.style.translate).toBe('')
     expect(groups[0]!.style.translate).toBe('')
     expect(hand()?.textContent).toBe('two')
-    expect(hand()?.style.translate).toBe('72px calc(40px - 50%)')
+    expect(hand()?.style.translate).toBe('72px 40px')
     expect(strip.style.pointerEvents).toBe('none')
     expect(document.body.style.cursor).toBe('grabbing')
     fireEvent.pointerUp(window)
