@@ -239,10 +239,19 @@ describe('several crews in one app', () => {
       2000
     )
 
+    await ui.waitForEvent(e => e.kind === 'agent.end' && e.threadId === added.threadId)
+    ui.send({ type: 'thread.archive', threadId: added.threadId })
+    await waitUntil(
+      () => guest.places().every(place => place.threads.every(thread => thread.id !== added.threadId)),
+      2000
+    )
+
     const joined = guest.places()[0]
     expect(joined.hosting).toBe(false)
-    expect(joined.threads.map(thread => thread.id)).toEqual(expect.arrayContaining([existing.threadId, added.threadId]))
-    expect(pushed.at(-1)?.[0]?.threads.map(thread => thread.id)).toContain(added.threadId)
+    expect(joined.threads.map(thread => thread.id)).toContain(existing.threadId)
+    expect(joined.threads.map(thread => thread.id)).not.toContain(added.threadId)
+    expect(pushed.some(places => places[0]?.threads.some(thread => thread.id === added.threadId))).toBe(true)
+    expect(pushed.at(-1)?.[0]?.threads.map(thread => thread.id)).not.toContain(added.threadId)
   })
 
   it('shows no threads for a crew this app is not running', async () => {
