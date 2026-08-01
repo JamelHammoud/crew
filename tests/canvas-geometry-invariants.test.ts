@@ -389,3 +389,216 @@ describe('the filters a geometry is read through', () => {
     expect(internal.isExcludedByFilter(Geometry2dFilters.INCLUDE_ALL)).toBe(false)
   })
 })
+
+function seededRandom(seed: number): () => number {
+  let state = seed >>> 0
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0
+    return state / 0x100000000
+  }
+}
+
+const roll = seededRandom(20260801)
+const scatter = (scale = 400): number => (roll() - 0.5) * scale
+
+describe('the sign a distance carries', () => {
+  const filled = new Rectangle2d({ x: 0, y: 0, width: 100, height: 60, isFilled: true })
+  const hollow = new Rectangle2d({ x: 0, y: 0, width: 100, height: 60, isFilled: false })
+  const circle = new Circle2d({ x: 0, y: 0, radius: 50, isFilled: true })
+
+  it('goes negative inside a filled shape', () => {
+    expect(filled.distanceToPoint({ x: 50, y: 30 })).toBeLessThan(0)
+    expect(circle.distanceToPoint({ x: 50, y: 50 })).toBeLessThan(0)
+  })
+
+  it('stays positive outside, filled or hollow', () => {
+    for (let run = 0; run < 200; run++) {
+      const point = { x: 200 + roll() * 100, y: 200 + roll() * 100 }
+      expect(filled.distanceToPoint(point)).toBeGreaterThan(0)
+      expect(hollow.distanceToPoint(point)).toBeGreaterThan(0)
+    }
+  })
+
+  it('reads the middle of a hollow shape as outside until it is let in', () => {
+    expect(hollow.distanceToPoint({ x: 50, y: 30 })).toBeGreaterThan(0)
+    expect(hollow.distanceToPoint({ x: 50, y: 30 }, true)).toBeLessThan(0)
+  })
+
+  it('measures to the nearest point of a circle', () => {
+    expect(circle.distanceToPoint({ x: 150, y: 50 })).toBeCloseTo(50, 5)
+    expect(Math.abs(circle.distanceToPoint({ x: 100, y: 50 }))).toBeCloseTo(0, 5)
+  })
+
+  it('agrees with the nearest point everywhere outside', () => {
+    const shapes = [filled, hollow, circle, new Stadium2d({ x: 0, y: 0, width: 90, height: 40 })]
+    for (const shape of shapes) {
+      for (let run = 0; run < 100; run++) {
+        const point = { x: 300 + scatter(50), y: 300 + scatter(50) }
+        expect(shape.distanceToPoint(point)).toBeCloseTo(Vec.Dist(point, shape.nearestPoint(point)), 5)
+      }
+    }
+  })
+})
+
+describe('the margin a hit is allowed', () => {
+  const filled = new Rectangle2d({ x: 0, y: 0, width: 100, height: 60, isFilled: true })
+  const hollow = new Rectangle2d({ x: 0, y: 0, width: 100, height: 60, isFilled: false })
+
+  it('takes it exactly', () => {
+    expect(hollow.hitTestPoint({ x: -5, y: 30 }, 4.9)).toBe(false)
+    expect(hollow.hitTestPoint({ x: -5, y: 30 }, 5)).toBe(true)
+    expect(hollow.hitTestPoint({ x: -5, y: 30 }, 5.1)).toBe(true)
+  })
+
+  it('says the same thing as the signed distance at every margin', () => {
+    for (let run = 0; run < 300; run++) {
+      const point = { x: scatter(300), y: scatter(300) }
+      const margin = roll() * 40
+      for (const shape of [filled, hollow]) {
+        expect(shape.hitTestPoint(point, margin)).toBe(shape.distanceToPoint(point) <= margin)
+      }
+    }
+  })
+
+  it('reads a line that never moves by the edges alone', () => {
+    expect(filled.hitTestLineSegment({ x: 50, y: 30 }, { x: 50, y: 30 })).toBe(false)
+    expect(filled.hitTestLineSegment({ x: 0, y: 30 }, { x: 0, y: 30 })).toBe(true)
+    expect(filled.hitTestLineSegment({ x: 500, y: 500 }, { x: 500, y: 500 })).toBe(false)
+  })
+
+  it('catches a line only once it comes within the distance asked about', () => {
+    expect(filled.hitTestLineSegment({ x: -50, y: 70 }, { x: 150, y: 70 }, 9)).toBe(false)
+    expect(filled.hitTestLineSegment({ x: -50, y: 70 }, { x: 150, y: 70 }, 10)).toBe(true)
+  })
+})
+
+describe('what each geometry measures of itself', () => {
+  it('measures a rectangle and a triangle against their own formulas', () => {
+    expect(new Rectangle2d({ x: 0, y: 0, width: 100, height: 60, isFilled: true }).area).toBeCloseTo(6000, 3)
+    const triangle = new Polygon2d({ points: [new Vec(0, 0), new Vec(100, 0), new Vec(0, 60)], isFilled: true })
+    expect(Math.abs(triangle.area)).toBeCloseTo(3000, 3)
+  })
+
+  it('measures a circle by the ring of points it is drawn with', () => {
+    const area = new Circle2d({ x: 0, y: 0, radius: 50, isFilled: true }).area
+    expect(area).toBeLessThan(PI * 2500)
+    expect(area).toBeGreaterThan(PI * 2500 * 0.95)
+  })
+
+  it('measures the length of an edge and a run of points', () => {
+    expect(new Edge2d({ start: new Vec(0, 0), end: new Vec(3, 4) }).length).toBeCloseTo(5, 6)
+    expect(new Polyline2d({ points: [new Vec(0, 0), new Vec(3, 4), new Vec(3, 8)] }).length).toBeCloseTo(9, 6)
+  })
+
+  it('gives an open run no area at all', () => {
+    expect(new Polyline2d({ points: [new Vec(0, 0), new Vec(10, 0), new Vec(10, 10)] }).area).toBe(0)
+  })
+
+  it('holds every one of its own vertices inside its own box', () => {
+    const shapes = [
+      new Rectangle2d({ x: 5, y: 7, width: 100, height: 60, isFilled: true }),
+      new Circle2d({ x: 0, y: 0, radius: 50, isFilled: false }),
+      new Stadium2d({ x: 0, y: 0, width: 90, height: 40 }),
+      new Polyline2d({ points: [new Vec(0, 0), new Vec(30, 40), new Vec(-10, 5)] })
+    ]
+    for (const shape of shapes) {
+      for (const vertex of shape.vertices) expect(shape.bounds.containsPoint(vertex, 1e-6)).toBe(true)
+    }
+  })
+
+  it('puts a single point nowhere but on itself', () => {
+    const point = new Point2d({ point: new Vec(4, 9) })
+    expect(point.nearestPoint({ x: 100, y: 100 })).toMatchObject({ x: 4, y: 9 })
+    expect(point.bounds.w).toBe(0)
+    expect(point.bounds.h).toBe(0)
+  })
+})
+
+describe('each flag a geometry can be read through', () => {
+  const plain = (): Rectangle2d => new Rectangle2d({ x: 0, y: 0, width: 10, height: 10, isFilled: true })
+  const label = (): Rectangle2d =>
+    new Rectangle2d({ x: 20, y: 0, width: 10, height: 10, isFilled: true, isLabel: true })
+  const internal = (): Rectangle2d =>
+    new Rectangle2d({ x: 40, y: 0, width: 10, height: 10, isFilled: true, isInternal: true })
+
+  it('answers for a label, an internal and a plain one', () => {
+    expect(plain().isExcludedByFilter(Geometry2dFilters.EXCLUDE_NON_STANDARD)).toBe(false)
+    expect(label().isExcludedByFilter(Geometry2dFilters.EXCLUDE_LABELS)).toBe(true)
+    expect(label().isExcludedByFilter(Geometry2dFilters.INCLUDE_ALL)).toBe(false)
+    expect(internal().isExcludedByFilter(Geometry2dFilters.EXCLUDE_INTERNAL)).toBe(true)
+    expect(internal().isExcludedByFilter(Geometry2dFilters.INCLUDE_ALL)).toBe(false)
+    expect(label().isExcludedByFilter(undefined)).toBe(false)
+    expect(internal().isExcludedByFilter(undefined)).toBe(false)
+  })
+
+  it('leaves a label out of a group unless labels are asked for', () => {
+    const group = new Group2d({ children: [plain(), label()] })
+    expect(group.getVertices(Geometry2dFilters.EXCLUDE_LABELS)).toHaveLength(4)
+    expect(group.getVertices(Geometry2dFilters.INCLUDE_ALL)).toHaveLength(8)
+  })
+
+  it('leaves an internal one out unless internals are asked for', () => {
+    const group = new Group2d({ children: [plain(), internal()] })
+    expect(group.getVertices(Geometry2dFilters.EXCLUDE_NON_STANDARD)).toHaveLength(4)
+    expect(group.getVertices(Geometry2dFilters.INCLUDE_ALL)).toHaveLength(8)
+  })
+
+  it('keeps one that says so out of the box but not out of the vertices', () => {
+    const excluded = new Rectangle2d({
+      x: 1000,
+      y: 1000,
+      width: 10,
+      height: 10,
+      isFilled: true,
+      excludeFromShapeBounds: true
+    })
+    const group = new Group2d({ children: [plain(), excluded] })
+    expect(group.bounds.maxX).toBeLessThan(100)
+    expect(group.getVertices(Geometry2dFilters.INCLUDE_ALL)).toHaveLength(8)
+    expect(excluded.getBoundsVertices()).toEqual([])
+  })
+
+  it('puts one that says to ignore it to one side', () => {
+    const ignored = new Rectangle2d({ x: 60, y: 0, width: 10, height: 10, isFilled: true, ignore: true })
+    const group = new Group2d({ children: [plain(), ignored] })
+    expect(group.children).toHaveLength(1)
+    expect(group.ignoredChildren).toHaveLength(1)
+  })
+})
+
+describe('how far down a group flattens', () => {
+  const leaf = (x: number): Rectangle2d => new Rectangle2d({ x, y: 0, width: 10, height: 10, isFilled: true })
+
+  it('holds no group of its own', () => {
+    const inner = new Group2d({ children: [leaf(0), leaf(20)] })
+    const outer = new Group2d({ children: [inner, leaf(40)] })
+    expect(outer.children).toHaveLength(3)
+    expect(outer.children.every(child => !(child instanceof Group2d))).toBe(true)
+  })
+
+  it('flattens three deep', () => {
+    const first = new Group2d({ children: [leaf(0)] })
+    const second = new Group2d({ children: [first, leaf(20)] })
+    const third = new Group2d({ children: [second, leaf(40)] })
+    expect(third.children).toHaveLength(3)
+  })
+
+  it('is as far from a point as its nearest child is', () => {
+    const group = new Group2d({ children: [leaf(0), leaf(200)] })
+    const point = { x: 205, y: 5 }
+    expect(group.distanceToPoint(point)).toBeCloseTo(leaf(200).distanceToPoint(point), 6)
+  })
+
+  it('is hit wherever any one of its children is hit', () => {
+    const group = new Group2d({ children: [leaf(0), leaf(200)] })
+    expect(group.hitTestPoint({ x: 5, y: 5 }, 0, true)).toBe(true)
+    expect(group.hitTestPoint({ x: 205, y: 5 }, 0, true)).toBe(true)
+    expect(group.hitTestPoint({ x: 105, y: 5 }, 0, true)).toBe(false)
+  })
+
+  it('boxes itself around every child that counts', () => {
+    const group = new Group2d({ children: [leaf(0), leaf(200)] })
+    expect(group.bounds.minX).toBeCloseTo(0, 6)
+    expect(group.bounds.maxX).toBeCloseTo(210, 6)
+  })
+})
