@@ -146,6 +146,21 @@ describe('several threads open side by side', () => {
     expect(columns()).toHaveLength(1)
   })
 
+  it('opens a task beside the row from its right-click menu', () => {
+    open(['thread-1'], 'thread-1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tasks' }))
+    const task = screen.getAllByRole('button').find(button => button.textContent?.includes('look at the footer'))!
+    fireEvent.contextMenu(task)
+
+    expect(screen.getByText('Open beside')).toBeTruthy()
+    fireEvent.click(screen.getByText('Open beside'))
+
+    expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
+    expect(useCrew.getState().openThreadId).toBe('thread-2')
+    expect(columns()).toHaveLength(2)
+  })
+
   it('draws a column each and takes the chat feed off the screen', () => {
     open(['thread-1', 'thread-2'], 'thread-1')
 

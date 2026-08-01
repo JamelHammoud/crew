@@ -285,6 +285,10 @@ export default function TasksPanel({
     <div key={row.thread.id} className="group relative">
       <button
         onClick={() => onOpenThread(row.thread.id)}
+        onContextMenu={(event: MouseEvent) => {
+          event.preventDefault()
+          setThreadMenu({ threadId: row.thread.id, at: { x: event.clientX, y: event.clientY } })
+        }}
         className="w-full text-left px-3 py-2.5 rounded-xl flex items-start gap-3 transition-colors duration-150 group-hover:bg-ink-hover"
       >
         <span className="h-[22px] shrink-0 flex items-center">
@@ -627,6 +631,20 @@ export default function TasksPanel({
               }}
             />
           ))
+        )}
+      </Popover>
+      <Popover
+        open={threadMenu !== null}
+        onClose={() => setThreadMenu(null)}
+        at={threadMenu?.at}
+        className="min-w-52"
+      >
+        {threadMenu && (
+          <ThreadOpenItems
+            threadId={threadMenu.threadId}
+            onOpen={() => onOpenThreadBeside(threadMenu.threadId)}
+            onDone={() => setThreadMenu(null)}
+          />
         )}
       </Popover>
     </>
