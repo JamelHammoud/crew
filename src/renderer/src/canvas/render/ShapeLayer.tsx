@@ -30,7 +30,7 @@ export function ShapeLayer<Shape extends CanvasShapeRecord>({
 
 function CullingController<Shape extends CanvasShapeRecord>({ host }: { host: CanvasRenderHost<Shape> }) {
   const culling = useMountedShapeCulling()
-  useQuickReactor('canvas mounted shape culling', () => culling.update(host.getCulledShapes()), [host, culling])
+  useCullingReactor('canvas mounted shape culling', () => culling.update(host.getCulledShapes()), [host, culling])
   return null
 }
 
