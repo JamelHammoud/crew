@@ -1056,7 +1056,7 @@ export class Editor {
     )
     const deleting = new Set(ids)
     this.store.remove(ids)
-    this.selection.setSelectedShapeIds(this.getSelectedShapeIds().filter(id => !deleting.has(id)))
+    this.commitSelection(this.getSelectedShapeIds().filter(id => !deleting.has(id)))
     return this
   }
 
