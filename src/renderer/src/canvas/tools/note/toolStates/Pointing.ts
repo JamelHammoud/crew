@@ -114,16 +114,11 @@ export function getAvailableNoteAdjacentPositions(
   editor: BoxToolEditor,
   scale: number,
   noteWidth: number,
-  noteHeight: number,
-  rotation = 0
+  noteHeight: number
 ): Vec[] {
   const selected = new Set(editor.getSelectedShapeIds?.() ?? [])
   const notes = (editor.getCurrentPageShapes?.() ?? []).filter(
-    (shape): shape is NoteShape =>
-      shape.type === 'note' &&
-      shape.props.scale === scale &&
-      !selected.has(shape.id) &&
-      editor.getShapePageTransform?.(shape.id)?.rotation() === rotation
+    (shape): shape is NoteShape => shape.type === 'note' && shape.props.scale === scale && !selected.has(shape.id)
   )
   const positions = notes.flatMap(shape => getNoteAdjacentPositions(editor, shape, noteWidth, noteHeight))
   return positions.filter(position =>

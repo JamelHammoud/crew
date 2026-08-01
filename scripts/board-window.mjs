@@ -156,7 +156,11 @@ function Board() {
             bindingUtils: defaultBindingUtils,
             tools: [DesignNodeTool],
             onMount: mounted
-          }),
+          })
+        ),
+        React.createElement(
+          React.Profiler,
+          { id: 'overlay', onRender: onOverlayRender },
           React.createElement(SelectionOverlay, { editor })
         )
       )

@@ -63,6 +63,7 @@ export interface EraserEditor {
   getPointInShapeSpace(shape: EraserShape, point: VecModel): VecModel
   getOutermostSelectableShape(shape: EraserShape, filter?: (shape: EraserShape) => boolean): EraserShape
   getErasingShapeIds(): string[]
+  getCurrentPageState(): { erasingShapeIds: string[] }
   isShapeOrAncestorLocked(shape: EraserShape): boolean
   isShapeOfType(shape: EraserShape, type: string): boolean
   isShapeFrameLike(shape: EraserShape): boolean
@@ -281,7 +282,7 @@ export class EraserErasing extends EraserState {
   }
 
   complete(info?: EraserPointerEvent): void {
-    this.editor.deleteShapes(this.editor.getErasingShapeIds())
+    this.editor.deleteShapes(this.editor.getCurrentPageState().erasingShapeIds)
     this.tool.transition('idle', info)
     this.erasingShapeIds = []
   }
@@ -314,10 +315,6 @@ export class EraserTool {
 
   get state(): EraserState {
     return this.children[this.stateId]
-  }
-
-  getPath(): string {
-    return `${EraserTool.id}.${this.stateId}`
   }
 
   onEnter(info: EraserPointerEvent & { onInteractionEnd?: string } = {}): void {

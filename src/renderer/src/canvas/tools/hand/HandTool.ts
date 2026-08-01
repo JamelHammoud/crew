@@ -228,10 +228,6 @@ export class HandTool {
     return this.children[this.stateId]
   }
 
-  getPath(): string {
-    return `${HandTool.id}.${this.stateId}`
-  }
-
   transition(id: HandStateId, info?: HandPointerEvent): void {
     if (id === this.stateId) return
     const previous = this.state

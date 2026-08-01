@@ -49,7 +49,7 @@ export class Pointing extends BoxStateNode {
       creatingMarkId: this.markId,
       creationCursorOffset: { x: width * scale, y: 1 },
       onInteractionEnd: 'text',
-      onCreate: () => startEditingShapeWithRichText(this.editor, shape.id, { info: this.editInfo() })
+      onCreate: () => startEditingShapeWithRichText(this.editor, shape.id)
     })
   }
 
@@ -78,12 +78,7 @@ export class Pointing extends BoxStateNode {
     const shape = this.createTextShape(id, point, true, 20)
     if (!shape) return
     this.editor.select(id)
-    startEditingShapeWithRichText(this.editor, id, { info: this.editInfo() })
-  }
-
-  private editInfo(): BoxPointerInfo | undefined {
-    if (!this.editor.getInstanceState().isToolLocked) return undefined
-    return { isCreatingTextWhileToolLocked: true }
+    startEditingShapeWithRichText(this.editor, id)
   }
 
   private cancel(): void {
