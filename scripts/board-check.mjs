@@ -1680,16 +1680,24 @@ const driveSource = String.raw`(async () => {
       const away = await stepPaint(async () => {
         pointer('pointermove', empty().x, empty().y, 0)
       })
+      const left = editor.getHoveredShapeId ? editor.getHoveredShapeId() : null
+      const after = await stepPaint(async () => {})
       shutPaint()
-      const drawn = onto.some(call => call.op === 'stroke')
-      const lifted = repainted(away) && !away.some(call => call.op === 'stroke')
+      const drawn = onto.filter(call => call.op === 'stroke').length
+      const strokes = away.filter(call => call.op === 'stroke').length
+      const later = after.filter(call => call.op === 'stroke').length
       if (!drawn) return { ok: false, note: 'nothing was stroked on the frame the pointer arrived' }
-      if (!lifted)
+      if (left === one) return { ok: false, note: 'the board still reads the pointer as over it after it moved away' }
+      if (!repainted(away) && strokes === 0)
+        return { ok: false, note: 'the frame the pointer left painted nothing, so the outline stayed on screen' }
+      if (strokes > 0)
         return {
           ok: false,
-          note: repainted(away)
-            ? 'it was still being stroked a frame after the pointer left'
-            : 'the frame the pointer left painted nothing, so the outline stayed on screen'
+          note:
+            strokes +
+            ' outlines were still stroked on the frame the pointer left, and ' +
+            later +
+            ' on the frame after that'
         }
       return { ok: true, note: 'drawn as the pointer arrived and gone as it left' }
     })
