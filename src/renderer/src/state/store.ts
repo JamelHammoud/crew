@@ -206,12 +206,9 @@ interface CrewState {
   // Who is writing right now. It is never written down and never in the log, so
   // it lives here and nowhere else.
   typists: Typist[]
-  // The threads being read side by side, left to right, and the one the caret
-  // is in. Opening a thread never takes another off the screen, so the panel,
-  // the rail and everything else that used to follow the one thread open
-  // follows whichever of them was last touched.
   openThreadIds: string[]
   openThreadId: string | null
+  chatColumn: boolean
   docsTarget: string | null
   designTarget: string | null
   chatDraft: string
