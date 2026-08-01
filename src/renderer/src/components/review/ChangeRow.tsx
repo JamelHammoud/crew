@@ -1,6 +1,6 @@
 import { useState, type MouseEvent } from 'react'
 import type { RepoChange, RepoChangeKind } from '../../../../shared/repository'
-import { CheckGlyph, ClipboardGlyph, DocGlyph, MinusGlyph, PlusGlyph, UndoGlyph } from '../../icons'
+import { CheckGlyph, CopyGlyph, DocGlyph, MinusGlyph, PlusGlyph, UndoGlyph } from '../../icons'
 import { useBrowser } from '../../state/browser'
 import { toast } from '../../state/toast'
 import Counts from '../Counts'
@@ -157,7 +157,7 @@ export default function ChangeRow({
           }}
         />
         <MenuItem
-          icon={<ClipboardGlyph className="w-4 h-4" />}
+          icon={<CopyGlyph className="w-4 h-4" />}
           label="Copy path"
           onClick={() => {
             shut()

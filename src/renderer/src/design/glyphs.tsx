@@ -2,9 +2,9 @@ import type { TLShape } from '../canvas'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 import { glyph, type Glyph } from '../components/glyph'
 import {
-  ClipboardGlyph,
+  CopyGlyph,
   CloudGlyph,
-  DuplicateGlyph,
+  CopyGlyph,
   EyeGlyph,
   EyeOffGlyph,
   FilmGlyph,
@@ -32,7 +32,7 @@ export type { Glyph }
 // over here: it is drawn with its thumb on the left already, like the cursor.
 export {
   CloudGlyph,
-  DuplicateGlyph,
+  CopyGlyph,
   EyeGlyph,
   EyeOffGlyph,
   GroupGlyph,
@@ -48,7 +48,7 @@ export {
   UnlockGlyph
 }
 
-export { ClipboardGlyph as PasteGlyph, PhotoGlyph as ImageGlyph }
+export { CopyGlyph as PasteGlyph, PhotoGlyph as ImageGlyph }
 
 export const CursorGlyph = glyph(<path d={ARROW_BODY} transform={ARROW_ON_GRID} />, 2.13)
 

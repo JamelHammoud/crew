@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type MouseEvent } from 'react'
-import { DuplicateGlyph } from '../icons'
+import { CopyGlyph } from '../icons'
 import { MenuItem, Popover } from './Popover'
 import ZoomView from './ZoomView'
 
@@ -50,7 +50,7 @@ export default function ImageView({
       </ZoomView>
       <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
         <MenuItem
-          icon={<DuplicateGlyph />}
+          icon={<CopyGlyph />}
           label="Copy image"
           onClick={() => {
             setMenuAt(null)

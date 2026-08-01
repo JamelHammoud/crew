@@ -4,7 +4,7 @@ import { useLayoutEffect, useState, type DragEvent } from 'react'
 import {
   ArrowDownGlyph,
   ArrowUpGlyph,
-  DuplicateGlyph,
+  CopyGlyph,
   HandleGlyph,
   PlusGlyph,
   TrashGlyph
@@ -75,7 +75,7 @@ export default function DocSideMenu() {
         </button>
         <Popover open={menu} onClose={close} align="start" className="min-w-44">
           <MenuItem
-            icon={<DuplicateGlyph />}
+            icon={<CopyGlyph />}
             label="Duplicate"
             onClick={() => {
               duplicate()

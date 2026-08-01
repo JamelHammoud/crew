@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RepoChange } from '../../../../shared/repository'
 import {
   CheckGlyph,
-  ClipboardGlyph,
+  CopyGlyph,
   CloseGlyph,
   DocGlyph,
   MinusGlyph,
@@ -108,7 +108,7 @@ export default function DiffPane({
               }}
             />
             <MenuItem
-              icon={<ClipboardGlyph className="w-4 h-4" />}
+              icon={<CopyGlyph className="w-4 h-4" />}
               label="Copy path"
               onClick={() => {
                 shut()

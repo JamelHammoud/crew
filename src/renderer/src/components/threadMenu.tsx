@@ -3,7 +3,7 @@ import { threadMenuActions, type ThreadOpenAction } from '../../../shared/thread
 import {
   ArchiveGlyph,
   CheckGlyph,
-  ClipboardGlyph,
+  CopyGlyph,
   CloseGlyph,
   ColumnsGlyph,
   PopOutGlyph,
@@ -90,7 +90,7 @@ export function ThreadStatusItems({ threadId, onDone }: { threadId: string; onDo
 export function ThreadIdItem({ threadId, onDone }: { threadId: string; onDone: () => void }) {
   return (
     <MenuItem
-      icon={<ClipboardGlyph />}
+      icon={<CopyGlyph />}
       label="Copy thread ID"
       onClick={() => {
         onDone()

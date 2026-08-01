@@ -6,7 +6,7 @@ import {
   AutoLayoutGlyph,
   BackwardGlyph,
   DeselectGlyph,
-  DuplicateGlyph,
+  CopyGlyph,
   EyeGlyph,
   EyeOffGlyph,
   ForwardGlyph,
@@ -200,7 +200,7 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
     label: 'Copy',
     hint: chordHint(COPY),
     group: 'clipboard',
-    Icon: DuplicateGlyph,
+    Icon: CopyGlyph,
     keys: COPY,
     when: some,
     run: ctx => holdSelection(ctx.editor)
@@ -295,7 +295,7 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
     label: 'Duplicate',
     hint: chordHint(DUPLICATE),
     group: 'clipboard',
-    Icon: DuplicateGlyph,
+    Icon: CopyGlyph,
     keys: DUPLICATE,
     when: some,
     run: ctx => {
