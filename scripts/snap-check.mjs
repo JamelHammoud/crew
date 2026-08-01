@@ -702,7 +702,7 @@ try {
     const thickness = picture.pixels?.thickness ?? 0
     const dpr = picture.pixels?.dpr ?? 1
     console.log(
-      `at ${Math.round(picture.zoom * 100)}%: ${picture.indicators} indicators, ${picture.pixels?.count ?? 0} red pixels, guide ${thickness} device px (${(thickness / dpr).toFixed(2)} css px)`
+      `at ${Math.round(picture.zoom * 100)}%: ${picture.indicators} indicators, ${picture.pixels?.count ?? 0} red pixels, guide ${thickness} device px (${(thickness / dpr).toFixed(2)} css px), landed aligned ${picture.aligned}, ${picture.tries} tries, in ${picture.where}`
     )
     console.log(`  ${picture.whole}`)
     console.log(`  ${picture.close}`)
