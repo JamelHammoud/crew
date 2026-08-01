@@ -253,12 +253,17 @@ const driveSource = `(async () => {
 
   if (!composer()) return { failed: 'the composer never drew' }
   if (!scroller()) return { failed: 'the thread scroller never drew' }
-  await measure(${LONG}, false)
 
-  const results = []
-  results.push(await measure(${SHORT}, false))
-  results.push(await measure(${LONG}, false))
-  results.push(await measure(${LONG}, true))
+  const held = [
+    { rows: ${SHORT}, contained: false },
+    { rows: ${LONG}, contained: false },
+    { rows: ${LONG}, contained: true }
+  ].map(one => ({ ...one, flat: [], grew: [], framed: [], once: [], twice: [], passes: 0, drawn: 0, tall: 0 }))
+
+  await measure({ flat: [], grew: [], framed: [], once: [], twice: [], passes: 0 }, ${LONG}, false)
+  for (const one of held) await measure(one, one.rows, one.contained)
+  for (const one of [...held].reverse()) await measure(one, one.rows, one.contained)
+  const results = held.map(fold)
 
   const box = scroller()
   box.style.contain = 'layout'
