@@ -54,9 +54,11 @@ const repo: Record<string, RepoFile> = {
 }
 
 const SHOT = '/tmp/qlout/cursor-preview.svg.png'
+const SENT = '/Users/me/Library/Application Support/Crew/attachments/c3f7789a.png'
 
 const machine: Record<string, RepoFile> = {
   [SHOT]: { kind: 'image', path: SHOT, url: 'data:image/png;base64,BBBB', size: 12 },
+  [SENT]: { kind: 'image', path: SENT, url: 'data:image/png;base64,CCCC', size: 14 },
   '/tmp/qlout/run.log': { kind: 'file', path: '/tmp/qlout/run.log', text: 'started\ndone', truncated: false }
 }
 
