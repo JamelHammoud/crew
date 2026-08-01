@@ -301,7 +301,27 @@ export class Editor {
     return this.getViewportPageBounds().center
   }
 
-  getInstanceState(): typeof this.instance & { devicePixelRatio: number; screenBounds: ViewportBounds } {
+  private get instance(): EditorInstanceState {
+    return this.instanceState.get()
+  }
+
+  private peekInstance(): EditorInstanceState {
+    return this.instanceState.__unsafe__getWithoutCapture()
+  }
+
+  private patchInstance(update: Partial<EditorInstanceState>): void {
+    const current = this.peekInstance()
+    let next: EditorInstanceState | null = null
+    for (const [key, value] of Object.entries(update)) {
+      if (value === undefined) continue
+      if (sameInstanceValue((current as Record<string, unknown>)[key], value)) continue
+      next ??= { ...current }
+      ;(next as Record<string, unknown>)[key] = value
+    }
+    if (next) this.instanceState.set(next)
+  }
+
+  getInstanceState(): EditorInstanceState & { devicePixelRatio: number; screenBounds: ViewportBounds } {
     const bounds = this.camera.getScreenBounds()
     return {
       devicePixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio,
@@ -310,12 +330,11 @@ export class Editor {
     }
   }
 
-  updateInstanceState(update: Partial<typeof this.instance> & { screenBounds?: ViewportBounds }): this {
+  updateInstanceState(update: Partial<EditorInstanceState> & { screenBounds?: ViewportBounds }): this {
     if (update.screenBounds) this.setViewportScreenBounds(update.screenBounds)
-    for (const [key, value] of Object.entries(update)) {
-      if (key === 'screenBounds' || value === undefined) continue
-      ;(this.instance as Record<string, unknown>)[key] = value
-    }
+    const { screenBounds, ...rest } = update
+    void screenBounds
+    this.patchInstance(rest)
     return this
   }
 
