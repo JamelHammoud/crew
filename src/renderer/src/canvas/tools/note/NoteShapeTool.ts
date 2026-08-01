@@ -16,7 +16,6 @@ export class NoteShapeTool implements BoxStateParent {
       pointing: new Pointing(editor, this)
     }
     this.current = this.states.idle
-    this.current.onEnter({})
   }
 
   transition(id: string, info: BoxPointerInfo = {}): void {
@@ -25,6 +24,15 @@ export class NoteShapeTool implements BoxStateParent {
     this.current.onExit()
     this.current = next
     next.onEnter(info)
+  }
+
+  enter(info: BoxPointerInfo = {}): void {
+    this.current = this.states[NoteShapeTool.initial]
+    this.current.onEnter(info)
+  }
+
+  exit(): void {
+    this.current.onExit()
   }
 
   getCurrentStateId(): string {
