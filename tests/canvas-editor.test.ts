@@ -236,14 +236,13 @@ describe('the canvas editor', () => {
       .getActiveOverlayEntries()
       .flatMap(entry => entry.overlays)
       .filter(overlay => overlay.type === 'selection_foreground')
-      .map(overlay => overlay.props.handle)
+      .map(overlay => (overlay.props as { handle: string }).handle)
     expect(smallHandles).toEqual(['top_left', 'bottom_right'])
 
     subject.setCamera({ x: 0, y: 0, z: 1 })
     const largeBounds = subject.getShapePageBounds(id)!
-    expect(subject.overlays.getOverlayAtPoint({ x: largeBounds.maxX, y: largeBounds.center.y })?.props.handle).toBe(
-      'right'
-    )
+    const right = subject.overlays.getOverlayAtPoint({ x: largeBounds.maxX, y: largeBounds.center.y })
+    expect((right?.props as { handle?: string } | undefined)?.handle).toBe('right')
   })
 
   it('binds arrow terminals to shapes and exposes editable arrow handles', () => {
