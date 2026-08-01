@@ -2,6 +2,7 @@ import { Fragment, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from '../components/ChatMessage'
 import CommandChip from '../components/CommandChip'
 import Composer from '../components/Composer'
+import CreateAgent from '../components/CreateAgent'
 import DayDivider from '../components/DayDivider'
 import { JumpToBottom } from '../components/OverComposer'
 import TypingLine from '../components/TypingLine'
@@ -198,9 +199,13 @@ export default function Chat() {
             </div>
           )}
           {feed.length === 0 && (
-            <p className="text-base text-fg-muted mt-16 text-center">
-              Say hi, or mention someone with @.
-            </p>
+            <div className="mt-16 flex flex-col items-center gap-4">
+              {agents.length === 0 ? (
+                <CreateAgent compact />
+              ) : (
+                <p className="text-base text-fg-muted text-center">Say hi, or mention someone with @.</p>
+              )}
+            </div>
           )}
           {feed.map((entry, index) => {
             const tsOf = (e: Feed) => (e.kind === 'msg' ? e.item.ts : e.ts)
