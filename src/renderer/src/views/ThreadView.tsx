@@ -85,6 +85,7 @@ export default function ThreadView({
   const editQueued = useCrew(s => s.editQueued)
   const removeQueued = useCrew(s => s.removeQueued)
   const closeThread = useCrew(s => s.closeThread)
+  const focusThread = useCrew(s => s.focusThread)
   const text = useCrew(s => s.threadDrafts[threadId] ?? '')
   const setThreadDraft = useCrew(s => s.setThreadDraft)
   const agents = useCrew(s => s.agents)

@@ -496,9 +496,11 @@ const probeSource = String.raw`(() => {
         await settle(3)
         const from = view(moverAt.center)
         const to = view({ x: moverAt.center.x + want - off, y: moverAt.center.y })
-        await hold(from, to, { target: nodeOf(mover), modifiers: { metaKey: true } })
+        await hold(from, to, { target: nodeOf(mover), pressAfter: { metaKey: true } })
         const live = indicators()
         const pixels = redPixels()
+        const where = statePath()
+        const accel = editor.inputs.getAccelKey()
         await letGo(to, { metaKey: true })
         const landed = boundsOf(mover)
         const drift = round(landed.minX - (moverAt.minX + want - off))
@@ -513,7 +515,10 @@ const probeSource = String.raw`(() => {
             live.length +
             ' indicators, ' +
             pixels.count +
-            ' red pixels'
+            ' red pixels, in ' +
+            where +
+            ', accel ' +
+            accel
         }
       })
 
