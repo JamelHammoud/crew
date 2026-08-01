@@ -1247,7 +1247,9 @@ textarea:placeholder-shown {
 /* The sheet is painted over the glyph rather than in place of it, so the
    character keeps its box and the caret, the selection band and a highlight
    behind it all stay the app's own. A transparent color is what takes the
-   machine's own picture away: it is a bitmap glyph and nothing else hides it. */
+   machine's own picture away: it is a bitmap glyph and nothing else hides it.
+   The picture takes the room the character takes and no more, or it stands over
+   the caret beside it and the line reads as one nothing can be typed into. */
 .doc .doc-emoji {
   position: relative;
   color: transparent;
