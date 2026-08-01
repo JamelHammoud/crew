@@ -317,9 +317,6 @@ export default function ThreadView({
                 }`}
               >
                 <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
-                  {/* One thread open is a way back to the chat. Several is a row
-                      of them, so the same button takes this one off the row and
-                      the chat is what is left once the last one goes. */}
                   {!alone && (
                     <Tooltip label={many ? 'Close' : 'Back to chat'}>
                       <button
@@ -395,8 +392,6 @@ export default function ThreadView({
                         </button>
                       </>
                     )}
-                    {/* It stands over there rather than in both places at once,
-                        so the column it was in goes with the press. */}
                     {!alone && (
                       <Tooltip label="Open in its own window" className="ml-1">
                         <button

@@ -66,7 +66,7 @@ declare global {
     onTrayTheme(listener: (theme: 'dark' | 'light') => void): () => void
     resizeTray(height: number): void
     openWindow(): void
-    popOutThread(threadId: string): Promise<void>
+    popOutThread(threadId: string, key?: string): Promise<void>
     closeTray(): void
     appVersion(): Promise<string>
     setTheme(theme: 'dark' | 'light'): Promise<void>
