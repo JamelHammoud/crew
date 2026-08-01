@@ -105,7 +105,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
       className={`h-full flex flex-col ${
         overlay
           ? `glass sidebar-glass rounded-r-card ${strong ? 'glass-strong' : ''}`
-          : 'bg-ink-800 mac:bg-[var(--glass-bg)] border-r border-[var(--glass-line)]'
+          : 'sidebar-pinned bg-ink-800 border-r border-[var(--glass-line)]'
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />

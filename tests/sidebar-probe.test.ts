@@ -130,6 +130,11 @@ describe('the sidebar', () => {
     expect(sidebar?.className).toContain('glass-strong')
   })
 
+  it('wears its pinned surface when it expands beside the page', () => {
+    const { container } = render(createElement(Sidebar))
+    expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
+  })
+
   it('keeps the folder action clear of the bottom edge', () => {
     render(createElement(Sidebar))
     const action = screen.getByRole('button', { name: 'Open a folder' })

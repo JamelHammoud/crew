@@ -31,6 +31,20 @@ describe('the glass the hovered rail wears', () => {
   })
 })
 
+describe('the glass the expanded sidebar wears on macOS', () => {
+  it('lets more of the desktop through than the general glass surface', () => {
+    const sidebar = rule('.mac .sidebar-pinned {')
+    expect(opacity(sidebar)).toBeLessThan(opacity(rule(':root {')))
+    expect(sidebar).toMatch(/backdrop-filter:\s*blur\(32px\)/)
+  })
+
+  it('keeps the light surface translucent too', () => {
+    expect(opacity(rule('.mac.light .sidebar-pinned {'))).toBeLessThan(
+      opacity(rule('.light {'))
+    )
+  })
+})
+
 describe('the way the hovered rail arrives and leaves', () => {
   it('is a transition rather than a keyframe, so one caught halfway turns around', () => {
     expect(styles).not.toContain('@keyframes rail')
