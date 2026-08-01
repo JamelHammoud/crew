@@ -193,6 +193,34 @@ const driveSource = String.raw`(async () => {
   say('no retired canvas terms', !document.documentElement.innerHTML.toLowerCase().includes('tld' + 'raw'))
   say('the inspector stands beside the board', Boolean(document.querySelector('[data-probe-panel]')))
 
+  await attempt('the checks aim where they mean to', async () => {
+    await clear()
+    await scratch()
+    const one = rect({ x: 0, y: 0 }, { w: 200, h: 160 })
+    await settle()
+    const centre = boundsOf(one).center
+    const at = viewport(centre)
+    const back = pageAt(at)
+    const under = document.elementFromPoint(at.x, at.y)
+    const painted = under && under.closest ? under.closest('[data-canvas-shape="true"]') : null
+    const landed = painted ? painted.getAttribute('data-shape-id') : 'nothing painted'
+    await clear()
+    return {
+      ok: near(back.x, centre.x, 1) && near(back.y, centre.y, 1) && landed === one,
+      note:
+        'a point ' +
+        round(centre.x) +
+        ',' +
+        round(centre.y) +
+        ' on the board reads back as ' +
+        round(back.x) +
+        ',' +
+        round(back.y) +
+        ' and the window draws ' +
+        (landed === one ? 'that shape there' : landed + ' there')
+    }
+  })
+
   section = 'Selecting'
 
   await attempt('a click selects one', async () => {
