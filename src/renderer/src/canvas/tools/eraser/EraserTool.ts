@@ -63,7 +63,6 @@ export interface EraserEditor {
   getPointInShapeSpace(shape: EraserShape, point: VecModel): VecModel
   getOutermostSelectableShape(shape: EraserShape, filter?: (shape: EraserShape) => boolean): EraserShape
   getErasingShapeIds(): string[]
-  getCurrentPageState(): { erasingShapeIds: string[] }
   isShapeOrAncestorLocked(shape: EraserShape): boolean
   isShapeOfType(shape: EraserShape, type: string): boolean
   isShapeFrameLike(shape: EraserShape): boolean
