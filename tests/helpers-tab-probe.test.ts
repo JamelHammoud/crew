@@ -60,6 +60,7 @@ beforeEach(() => {
       [OTHER]: thread(OTHER, PARENT),
       [GRAND]: thread(GRAND, CHILD)
     },
+    openThreadIds: [PARENT],
     openThreadId: PARENT,
     events: [],
     steps: {},
@@ -112,7 +113,7 @@ describe('the helpers a thread sent out', () => {
     sent(spawned(CHILD, 'reading the schema'))
     act(() => useBrowser.getState().openSubagent(CHILD, PARENT))
 
-    act(() => useCrew.setState({ openThreadId: null }))
+    act(() => useCrew.setState({ openThreadIds: [], openThreadId: null }))
 
     expect(helperTab()).toBeNull()
     expect(useBrowser.getState().activeTabId).toBeNull()
@@ -124,7 +125,7 @@ describe('the helpers a thread sent out', () => {
     act(() => useBrowser.getState().openUrl('https://example.com/one'))
     act(() => useBrowser.getState().openSubagent(CHILD, PARENT))
 
-    act(() => useCrew.setState({ openThreadId: 'somewhere-else' }))
+    act(() => useCrew.setState({ openThreadIds: ['somewhere-else'], openThreadId: 'somewhere-else' }))
 
     expect(helperTab()).toBeNull()
     expect(useBrowser.getState().tabs.map(t => t.kind)).toEqual(['web'])

@@ -73,6 +73,17 @@ const DEFAULT_STYLES: Record<string, string | null> = {
 
 const NEW_LINES = /\r?\n|\r/g
 
+const SPACE_CHARACTER = /\s/
+
+const LTR_TEXT_ALIGNMENTS: Record<TextSpanAlign, string> = {
+  start: 'left',
+  'start-legacy': 'left',
+  middle: 'center',
+  'middle-legacy': 'center',
+  end: 'right',
+  'end-legacy': 'right'
+}
+
 export function resolveLineHeight(fontSize: number, lineHeight: number): number {
   return Math.round(fontSize * lineHeight)
 }

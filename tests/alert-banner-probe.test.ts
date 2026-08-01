@@ -64,6 +64,7 @@ describe('the system banner', () => {
     vi.spyOn(document, 'hasFocus').mockReturnValue(true)
     useCrew.setState({
       selfId: 'me',
+      openThreadIds: [],
       openThreadId: null,
       agents: [{ id: 'a1', label: 'Bubbles' }] as never,
       threads: {
@@ -94,7 +95,7 @@ describe('the system banner', () => {
   })
 
   it('says nothing about the thread already on the screen', () => {
-    useCrew.setState({ openThreadId: 'thread-1' })
+    useCrew.setState({ openThreadIds: ['thread-1'], openThreadId: 'thread-1' })
     socket().onMessage({ type: 'event', event: finished('thread-1') })
     expect(banners).toEqual([])
   })
