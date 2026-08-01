@@ -19,6 +19,7 @@ const CORNERS: Array<{ at: number; label: string; left: boolean; top: boolean }>
 ]
 
 const MIN_FOR_HANDLES = 72
+const GRAB_ROOM = 11
 
 function rounds(shape: { type: string; props: unknown }): boolean {
   return shape.type === 'design-node' && hasCorners(nodeShapeOf((shape.props as { shape?: unknown }).shape))
