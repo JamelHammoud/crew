@@ -150,7 +150,28 @@ const buildLog = (): { events: SessionEvent[]; readEvents: SessionEvent[] } => {
       promptText: 'replace the canvas',
       byName: 'ALI'
     },
-    ...helperEvents(1001)
+    ...helperEvents(1001),
+    {
+      id: 'helper-0-end',
+      ts: 1050,
+      kind: 'agent.end',
+      threadId: helperThread(0),
+      promptId: `${PROMPT}-0`,
+      agentId: AGENT.id,
+      agentLabel: AGENT.label,
+      ok: false,
+      stopped: true
+    },
+    {
+      id: 'helper-1-end',
+      ts: 1051,
+      kind: 'agent.end',
+      threadId: helperThread(1),
+      promptId: `${PROMPT}-1`,
+      agentId: AGENT.id,
+      agentLabel: AGENT.label,
+      ok: false
+    }
   ]
   for (let index = 0; index < WINDOW_EVENTS; index++) {
     const at = 1100 + index
