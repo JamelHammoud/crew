@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import type { RepoChange, RepoCommand } from '../../../../shared/repository'
-import { ArchiveGlyph, ArrowDownGlyph, ArrowUpGlyph, BranchGlyph, MoreGlyph, RefreshGlyph, UndoGlyph } from '../../icons'
+import { ArchiveGlyph, ArrowDownGlyph, ArrowUpGlyph, BranchGlyph, MinusGlyph, MoreGlyph, PlusGlyph, RefreshGlyph, UndoGlyph } from '../../icons'
 import { useCrew } from '../../state/store'
 import { digestOf, rowKey, useReviewed } from '../../state/reviewed'
 import { toast } from '../../state/toast'
@@ -32,18 +32,27 @@ export default function ReviewView() {
   const forgetRead = useReviewed(s => s.forget)
   const [message, setMessage] = useState('')
   const [open, setOpen] = useState<string[]>([])
+  const [shut, setShut] = useState<string[]>([])
   const [menu, setMenu] = useState(false)
   const [committing, setCommitting] = useState(false)
   const [ask, setAsk] = useState<Ask | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const { edges } = useScrollEdges(scrollRef)
 
+  // A conflict is neither staged nor unstaged until somebody has settled it, so
+  // it stands in a group of its own at the head of the list. It is the one thing
+  // on this screen that has to be dealt with by hand, and it read as an ordinary
+  // edit with a mark on it when it sat in among them.
+  const clashing = useMemo(() => work.changes.filter(change => change.kind === 'conflict'), [work.changes])
   const staged = useMemo(() => work.changes.filter(change => change.staged), [work.changes])
-  const loose = useMemo(() => work.changes.filter(change => !change.staged), [work.changes])
+  const loose = useMemo(
+    () => work.changes.filter(change => !change.staged && change.kind !== 'conflict'),
+    [work.changes]
+  )
   const { status, stashes } = work
 
-  // What was read is that version of it, so the digest is what the mark is
-  // held against and a file an agent has written to again comes back unread.
+  // What was viewed is that version of it, so the digest is what the mark is
+  // held against and a file an agent has written to again comes back unviewed.
   const digests = useMemo(() => {
     const of: Record<string, string> = {}
     for (const change of work.changes) of[keyOf(change)] = digestOf(change.diff)
@@ -51,8 +60,8 @@ export default function ReviewView() {
   }, [work.changes])
 
   const mine = held[place]
-  const isRead = (change: RepoChange): boolean => mine?.[keyOf(change)] === digests[keyOf(change)]
-  const unread = work.changes.filter(change => !isRead(change)).length
+  const isViewed = (change: RepoChange): boolean => mine?.[keyOf(change)] === digests[keyOf(change)]
+  const seen = work.changes.filter(isViewed).length
   const totals = work.changes.reduce(
     (sum, change) => ({ added: sum.added + change.added, removed: sum.removed + change.removed }),
     { added: 0, removed: 0 }
@@ -85,6 +94,11 @@ export default function ReviewView() {
     await send(command)
   }
 
+  const folded = (title: string) => ({
+    open: !shut.includes(title),
+    onToggle: () => setShut(now => (now.includes(title) ? now.filter(one => one !== title) : [...now, title]))
+  })
+
   const row = (change: RepoChange) => {
     const key = keyOf(change)
     return (
@@ -94,9 +108,9 @@ export default function ReviewView() {
         // Reading a change is reading several files, so opening one never puts
         // away the one already open.
         open={open.includes(key)}
-        read={isRead(change)}
+        viewed={isViewed(change)}
         onToggle={() => setOpen(now => (now.includes(key) ? now.filter(one => one !== key) : [...now, key]))}
-        onRead={read => (read ? markRead(place, key, digests[key]) : markUnread(place, key))}
+        onViewed={seenNow => (seenNow ? markRead(place, key, digests[key]) : markUnread(place, key))}
         onStage={() => void send({ do: 'stage', paths: [change.path] })}
         onUnstage={() => void send({ do: 'unstage', paths: [change.path] })}
         onDiscard={() => setAsk({ kind: 'discard', paths: [change.path], what: change.path })}
@@ -156,27 +170,27 @@ export default function ReviewView() {
                   {work.changes.length > 0 && (
                     <MenuItem
                       icon={<ArchiveGlyph className="w-4 h-4" />}
-                      label="Put the changes aside"
+                      label="Stash changes"
                       onClick={() => {
                         setMenu(false)
-                        void send({ do: 'stash' }, 'Put aside')
+                        void send({ do: 'stash' }, 'Stashed')
                       }}
                     />
                   )}
-                  {unread < work.changes.length && (
+                  {seen > 0 && (
                     <MenuItem
                       icon={<UndoGlyph className="w-4 h-4" />}
-                      label="Read it all again"
+                      label="Mark all as not viewed"
                       onClick={() => {
                         setMenu(false)
                         forgetRead(place)
                       }}
                     />
                   )}
-                  {(work.changes.length > 0 || unread < work.changes.length) && <MenuDivider />}
+                  {(work.changes.length > 0 || seen > 0) && <MenuDivider />}
                   <MenuItem
                     icon={<RefreshGlyph className="w-4 h-4" />}
-                    label="Look again"
+                    label="Refresh"
                     onClick={() => {
                       setMenu(false)
                       refresh()
@@ -185,9 +199,9 @@ export default function ReviewView() {
                 </Popover>
               </div>
             </div>
-            {/* How much there is to get through. The list says which files, and
-                nothing else on the screen says how big the whole of it is or
-                how much of it is still waiting on you. */}
+            {/* How much there is to get through. The groups say how many files
+                are in each, and nothing else on the screen says how big the
+                whole of it is or how far through it somebody already is. */}
             {work.changes.length > 0 && (
               <div className="flex items-center gap-2 px-1 text-xs">
                 <span className="text-fg-muted">
@@ -195,8 +209,10 @@ export default function ReviewView() {
                 </span>
                 <Counts added={totals.added} removed={totals.removed} />
                 <span className="flex-1" />
-                {unread > 0 && unread < work.changes.length && (
-                  <span className="text-fg-faint">{unread} to read</span>
+                {seen > 0 && (
+                  <span className="text-fg-faint">
+                    {seen} of {work.changes.length} viewed
+                  </span>
                 )}
               </div>
             )}
@@ -212,13 +228,32 @@ export default function ReviewView() {
             <p className="px-1 pt-6 text-center text-sm text-fg-muted">Nothing has changed since the last commit.</p>
           ) : (
             <div className="space-y-4">
-              {staged.length > 0 && (
+              {clashing.length > 0 && (
                 <Section
-                  title="Going in"
-                  count={staged.length}
+                  title="Merge Changes"
+                  count={clashing.length}
+                  {...folded('Merge Changes')}
                   actions={
                     <SectionAction
-                      label="Take all out"
+                      label="Stage all changes"
+                      icon={<PlusGlyph className="w-3.5 h-3.5" />}
+                      onClick={() => void send({ do: 'stage', paths: clashing.map(one => one.path) })}
+                    />
+                  }
+                >
+                  {clashing.map(row)}
+                </Section>
+              )}
+
+              {staged.length > 0 && (
+                <Section
+                  title="Staged Changes"
+                  count={staged.length}
+                  {...folded('Staged Changes')}
+                  actions={
+                    <SectionAction
+                      label="Unstage all changes"
+                      icon={<MinusGlyph className="w-3.5 h-3.5" />}
                       onClick={() => void send({ do: 'unstage', paths: staged.map(one => one.path) })}
                     />
                   }
@@ -229,16 +264,14 @@ export default function ReviewView() {
 
               {loose.length > 0 && (
                 <Section
-                  title="Changed"
+                  title="Changes"
                   count={loose.length}
+                  {...folded('Changes')}
                   actions={
                     <>
                       <SectionAction
-                        label="Put all in"
-                        onClick={() => void send({ do: 'stage', paths: loose.map(one => one.path) })}
-                      />
-                      <SectionAction
-                        label="Discard all"
+                        label="Discard all changes"
+                        icon={<UndoGlyph className="w-3.5 h-3.5" />}
                         danger
                         onClick={() =>
                           setAsk({
@@ -248,6 +281,11 @@ export default function ReviewView() {
                           })
                         }
                       />
+                      <SectionAction
+                        label="Stage all changes"
+                        icon={<PlusGlyph className="w-3.5 h-3.5" />}
+                        onClick={() => void send({ do: 'stage', paths: loose.map(one => one.path) })}
+                      />
                     </>
                   }
                 >
@@ -256,12 +294,12 @@ export default function ReviewView() {
               )}
 
               {stashes.length > 0 && (
-                <Section title="Put aside" count={stashes.length}>
+                <Section title="Stashes" count={stashes.length} {...folded('Stashes')}>
                   {stashes.map(stash => (
                     <StashRow
                       key={stash.ref}
                       stash={stash}
-                      onApply={() => void send({ do: 'apply', ref: stash.ref }, 'Put back')}
+                      onApply={() => void send({ do: 'apply', ref: stash.ref }, 'Stash applied')}
                       onDrop={() => setAsk({ kind: 'drop', ref: stash.ref })}
                     />
                   ))}
@@ -284,28 +322,24 @@ export default function ReviewView() {
         onCommit={() => void commit()}
       />
 
-      <Modal
-        open={ask !== null}
-        onClose={() => setAsk(null)}
-        title={ask?.kind === 'drop' ? 'Throw this away' : 'Discard these edits'}
-      >
+      <Modal open={ask !== null} onClose={() => setAsk(null)} title={ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}>
         <p className="mt-3 text-sm text-fg/45">
           {ask?.kind === 'drop'
-            ? 'What was put aside here goes for good.'
-            : `The edits to ${ask?.kind === 'discard' ? ask.what : ''} go for good.`}
+            ? 'What is in this stash goes for good.'
+            : `The changes in ${ask?.kind === 'discard' ? ask.what : ''} go for good.`}
         </p>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
             onClick={() => setAsk(null)}
             className="h-10 rounded-full px-4 text-sm font-semibold text-fg/45 transition-colors hover:text-fg"
           >
-            {ask?.kind === 'drop' ? 'Keep it' : 'Keep them'}
+            Cancel
           </button>
           <button
             onClick={() => void settle()}
             className="h-10 rounded-full bg-danger px-5 text-sm font-semibold text-fg transition-all duration-150 hover:scale-[1.03] active:scale-95"
           >
-            {ask?.kind === 'drop' ? 'Throw away' : 'Discard'}
+            {ask?.kind === 'drop' ? 'Drop stash' : 'Discard changes'}
           </button>
         </div>
       </Modal>
