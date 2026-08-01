@@ -218,6 +218,59 @@ describe('several threads open side by side', () => {
   })
 })
 
+describe('the chat standing beside a thread', () => {
+  const slot = (): HTMLElement => screen.getByLabelText('The chat')
+  const chatColumn = (): HTMLElement => document.querySelector<HTMLElement>('[data-column="chat"]')!
+
+  it('stands the chat beside the thread and puts it away again', () => {
+    open(['thread-1'], 'thread-1')
+    expect(screen.queryByPlaceholderText(CHAT_COMPOSER)).toBeNull()
+
+    fireEvent.click(slot())
+    expect(useCrew.getState().chatColumn).toBe(true)
+    expect(columns()).toHaveLength(2)
+    expect(within(chatColumn()).getByPlaceholderText(CHAT_COMPOSER)).toBeTruthy()
+
+    fireEvent.click(slot())
+    expect(useCrew.getState().chatColumn).toBe(false)
+    expect(columns()).toHaveLength(1)
+    expect(screen.queryByPlaceholderText(CHAT_COMPOSER)).toBeNull()
+  })
+
+  it('opens a card from it beside what is already there', () => {
+    open(['thread-1'], 'thread-1')
+    fireEvent.click(slot())
+
+    const card = within(chatColumn())
+      .getAllByRole('button')
+      .find(one => one.textContent?.includes('look at the footer'))!
+    fireEvent.click(card)
+
+    expect(useCrew.getState().openThreadIds).toEqual(['thread-1', 'thread-2'])
+    expect(useCrew.getState().openThreadId).toBe('thread-2')
+    expect(useCrew.getState().chatColumn).toBe(true)
+  })
+
+  it('leaves no way in once the row is full', () => {
+    open(
+      Array.from({ length: VIEW_LIMIT }, (_, i) => `row-${i + 1}`),
+      'row-1'
+    )
+    expect(screen.queryByLabelText('The chat')).toBeNull()
+  })
+
+  it('goes with the last column', () => {
+    open(['thread-1'], 'thread-1')
+    fireEvent.click(slot())
+
+    fireEvent.click(within(columns()[0]!).getByLabelText('Close'))
+    expect(useCrew.getState().openThreadIds).toEqual([])
+    expect(useCrew.getState().chatColumn).toBe(false)
+    expect(columns()).toHaveLength(0)
+    expect(screen.getByPlaceholderText(CHAT_COMPOSER)).toBeTruthy()
+  })
+})
+
 describe('the right click on a card in the feed', () => {
   const card = (title: string): HTMLElement =>
     screen.getAllByRole('button').find(one => one.textContent?.includes(title))!
