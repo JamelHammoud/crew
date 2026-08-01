@@ -158,6 +158,68 @@ describe('the canvas pointer bridge', () => {
   })
 })
 
+describe('dispatching straight at the state chart', () => {
+  it('reads the pointer out of the event rather than waiting to be told', () => {
+    const { editor, unmount } = stand()
+
+    editor.dispatch({
+      name: 'pointer_down',
+      target: 'canvas',
+      point: { x: 50, y: 50 },
+      button: 0,
+      shiftKey: false,
+      altKey: false,
+      ctrlKey: false,
+      accelKey: false
+    } as never)
+
+    expect(editor.inputs.getCurrentPagePoint().x).toBe(50)
+    expect(editor.inputs.getCurrentPagePoint().y).toBe(50)
+    expect(editor.inputs.getOriginPagePoint().x).toBe(50)
+    expect(editor.inputs.getIsPointing()).toBe(true)
+    unmount()
+  })
+
+  it('drags a shape across a run of dispatches alone', () => {
+    const { editor, unmount } = stand()
+    const id = createShapeId('dispatch-geo')
+    editor.createShape({ id, type: 'geo', x: 20, y: 20, props: { w: 60, h: 60 } } as never)
+    editor.select(id as never)
+
+    const at = (name: string, x: number, y: number) =>
+      editor.dispatch({
+        name,
+        target: 'canvas',
+        point: { x, y },
+        button: 0,
+        shiftKey: false,
+        altKey: false,
+        ctrlKey: false,
+        accelKey: false
+      } as never)
+
+    at('pointer_down', 50, 50)
+    for (let step = 1; step <= 12; step++) at('pointer_move', 50 + step * 10, 50)
+    at('pointer_up', 170, 50)
+
+    expect(editor.getShape(id as never)?.x).toBe(140)
+    unmount()
+  })
+
+  it('keeps the previous point a step behind the current one while panning', () => {
+    const { editor, unmount } = stand()
+    const at = (name: string, x: number, y: number) =>
+      editor.dispatch({ name, target: 'canvas', point: { x, y }, button: 0 } as never)
+
+    at('pointer_down', 100, 100)
+    at('pointer_move', 140, 100)
+
+    expect(editor.inputs.getPreviousScreenPoint().x).toBe(100)
+    expect(editor.inputs.getCurrentScreenPoint().x).toBe(140)
+    unmount()
+  })
+})
+
 describe('where the canvas listens', () => {
   it('keeps following the pointer once it has left the canvas element', () => {
     const { editor, surface, seen, unmount } = stand()
