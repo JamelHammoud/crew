@@ -400,6 +400,7 @@ try {
     )
     console.log(`  react     ${run.commitsPerMove} commits a move, ${run.reactMsPerMove}ms a move`)
     if (run.selected !== undefined) console.log(`  selected  ${run.selected} distinct selections`)
+    if (run.covered !== undefined) console.log(`  covered   ${run.covered} shapes by the end of it`)
     const calls = Object.entries(run.perMove)
       .filter(([, count]) => count > 0)
       .sort((a, b) => b[1] - a[1])
