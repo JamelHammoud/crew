@@ -31,6 +31,7 @@ import {
   threadState,
   type ThreadItem
 } from '../components/thread'
+import { useThreadRead } from '../components/useThreadRead'
 import { useFamilySteps } from '../components/useThreadSteps'
 import { useAutoResize } from '../components/useAutoResize'
 import { useDrawnTail } from '../components/useDrawnTail'
