@@ -1388,8 +1388,8 @@ const driveSource = String.raw`(async () => {
     editor.selectNone()
     editor.zoomToFit({ immediate: true })
     await settle()
-    const rect = box()
-    speed.marquee = await measure({ x: rect.left + 10, y: rect.top + 10 }, { x: 6, y: 4 })
+    const shell = box()
+    speed.marquee = await measure({ x: shell.left + 10, y: shell.top + 10 }, { x: 6, y: 4 })
     return { ok: speed.marquee.handler.p95 <= 8, note: 'p95 ' + speed.marquee.handler.p95 + 'ms, worst ' + speed.marquee.handler.worst + 'ms, painted p95 ' + speed.marquee.painted.p95 + 'ms' }
   })
 
