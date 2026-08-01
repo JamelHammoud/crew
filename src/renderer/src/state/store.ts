@@ -1063,9 +1063,6 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     // Turning sharing on and off moves the listener and nothing else, so the
     // session stays exactly where it is and the socket comes back on its own.
-    // It only comes back on its own while the crew is at the address it was
-    // reached at: a port taken in the moment the old listener was down moves
-    // the crew, and a window reconnecting to where it used to be waits forever.
     share: async shared => {
       const was = get().httpBase
       const info = await window.crew.setShared(shared).catch(() => null)
