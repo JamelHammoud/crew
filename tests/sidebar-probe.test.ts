@@ -101,9 +101,7 @@ const WindowCorner = (await import('../src/renderer/src/components/WindowCorner'
 const corner = () => render(createElement(WindowCorner))
 
 const topBar = () =>
-  render(
-    createElement(TopBar, { tab: 'chat' as const, onTab: () => {}, tasksOpen: false, onToggleTasks: () => {} })
-  )
+  render(createElement(TopBar, { tab: 'chat' as const, onTab: () => {}, tasksOpen: false, onToggleTasks: () => {} }))
 
 const toggleIn = (root: HTMLElement) => root.querySelector('[aria-label="Projects"]') as HTMLElement
 

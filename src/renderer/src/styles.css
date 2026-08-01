@@ -218,7 +218,7 @@
 }
 
 .message-flash::after {
-  content: '';
+  content: "";
   position: absolute;
   z-index: -1;
   inset: -6px -12px;
@@ -329,7 +329,7 @@ body {
 
   input,
   textarea,
-  [contenteditable]:not([contenteditable='false']) {
+  [contenteditable]:not([contenteditable="false"]) {
     user-select: text;
   }
 }
@@ -404,17 +404,13 @@ textarea:placeholder-shown {
   --check-mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8.2 12.2 2.6 2.6 5-5.5'/%3E%3C/svg%3E");
   --glass-bg: rgb(28 28 28 / 0.78);
   --glass-line: rgb(255 255 255 / 0.08);
-  --glass-shadow:
-    0 16px 48px rgb(0 0 0 / 0.55),
-    0 2px 8px rgb(0 0 0 / 0.35);
+  --glass-shadow: 0 16px 48px rgb(0 0 0 / 0.55), 0 2px 8px rgb(0 0 0 / 0.35);
 }
 
 .light {
   --glass-bg: rgb(255 255 255 / 0.85);
   --glass-line: rgb(0 0 0 / 0.08);
-  --glass-shadow:
-    0 16px 48px rgb(0 0 0 / 0.14),
-    0 2px 8px rgb(0 0 0 / 0.08);
+  --glass-shadow: 0 16px 48px rgb(0 0 0 / 0.14), 0 2px 8px rgb(0 0 0 / 0.08);
 }
 
 .glass {
@@ -500,18 +496,12 @@ textarea:placeholder-shown {
    off flat. */
 .glass-pill {
   --glass-bg: linear-gradient(rgb(40 40 40 / 0.9), rgb(18 18 18 / 0.94));
-  --glass-shadow:
-    0 8px 24px rgb(0 0 0 / 0.5),
-    0 2px 6px rgb(0 0 0 / 0.35),
-    inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --glass-shadow: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.12);
 }
 
 .light .glass-pill {
   --glass-bg: linear-gradient(rgb(255 255 255 / 0.9), rgb(243 243 243 / 0.94));
-  --glass-shadow:
-    0 8px 24px rgb(0 0 0 / 0.18),
-    0 2px 6px rgb(0 0 0 / 0.1),
-    inset 0 1px 0 rgb(255 255 255 / 0.8);
+  --glass-shadow: 0 8px 24px rgb(0 0 0 / 0.18), 0 2px 6px rgb(0 0 0 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.8);
 }
 
 /* Glass with a light of its own behind it, the way the music bar is lit by the
@@ -560,9 +550,7 @@ textarea:placeholder-shown {
    stack. A toast throws a shorter, lighter one, and it is said as the same
    variable the glass reads, so nothing here invents a second shadow. */
 .toast-card {
-  --glass-shadow:
-    0 6px 20px rgb(0 0 0 / 0.32),
-    0 1px 3px rgb(0 0 0 / 0.24);
+  --glass-shadow: 0 6px 20px rgb(0 0 0 / 0.32), 0 1px 3px rgb(0 0 0 / 0.24);
   transition:
     transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 0.18s ease-out;
@@ -576,9 +564,7 @@ textarea:placeholder-shown {
 }
 
 .light .toast-card {
-  --glass-shadow:
-    0 6px 20px rgb(0 0 0 / 0.1),
-    0 1px 3px rgb(0 0 0 / 0.06);
+  --glass-shadow: 0 6px 20px rgb(0 0 0 / 0.1), 0 1px 3px rgb(0 0 0 / 0.06);
 }
 
 @keyframes toast-in {
@@ -667,8 +653,7 @@ textarea:placeholder-shown {
 
 .tab-icon-draw {
   stroke-dasharray: 1 1.2;
-  animation: tab-icon-draw var(--draw-dur, 320ms) cubic-bezier(0.4, 0, 0.2, 1) var(--draw-delay, 0ms)
-    both;
+  animation: tab-icon-draw var(--draw-dur, 320ms) cubic-bezier(0.4, 0, 0.2, 1) var(--draw-delay, 0ms) both;
 }
 
 .tab-icon-pop {
@@ -937,11 +922,11 @@ textarea:placeholder-shown {
   transform-origin: center;
 }
 
-.thinking-mark[data-state='thinking'] .thinking-dot {
+.thinking-mark[data-state="thinking"] .thinking-dot {
   animation: thinking-wave 1.25s cubic-bezier(0.4, 0, 0.2, 1) var(--dot-delay, 0ms) infinite;
 }
 
-.thinking-mark[data-state='thought'] .thinking-dot {
+.thinking-mark[data-state="thought"] .thinking-dot {
   opacity: 0;
   transform: translateX(var(--gather, 0)) scale(0.2);
 }
@@ -973,7 +958,7 @@ textarea:placeholder-shown {
     opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.thinking-mark[data-state='thought'] .thinking-ring {
+.thinking-mark[data-state="thought"] .thinking-ring {
   opacity: 1;
 }
 
@@ -983,7 +968,7 @@ textarea:placeholder-shown {
   transition: stroke-dashoffset 0.26s cubic-bezier(0.4, 0, 0.2, 1) 0.16s;
 }
 
-.thinking-mark[data-state='thought'] .thinking-check {
+.thinking-mark[data-state="thought"] .thinking-check {
   stroke-dashoffset: 0;
 }
 
@@ -1011,7 +996,6 @@ textarea:placeholder-shown {
   }
 }
 
-
 /* The toolbox in the top bar opens while its panel is open. The lid comes up off
    the mouth of the case and turns away from you, on a hinge that is behind the
    drawing rather than on it, so it lifts, flattens, and keeps a little less of
@@ -1030,14 +1014,14 @@ textarea:placeholder-shown {
   transition: d 0.2s cubic-bezier(0.4, 0, 0.75, 0.6);
 }
 
-.toolbox-mark[data-state='open'] .toolbox-turn {
+.toolbox-mark[data-state="open"] .toolbox-turn {
   d: var(--open);
   transition: d 0.34s cubic-bezier(0.34, 1.3, 0.64, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .toolbox-mark .toolbox-turn,
-  .toolbox-mark[data-state='open'] .toolbox-turn {
+  .toolbox-mark[data-state="open"] .toolbox-turn {
     transition: none;
   }
 }
@@ -1059,7 +1043,7 @@ textarea:placeholder-shown {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .thinking-mark[data-state='thinking'] .thinking-dot,
+  .thinking-mark[data-state="thinking"] .thinking-dot,
   .word-swap {
     animation: none;
   }
@@ -1096,7 +1080,6 @@ textarea:placeholder-shown {
     animation-duration: 1ms;
   }
 }
-
 
 /* react-colorful ships its own sizes, and they are built for a page, not a popover. */
 .design-picker .react-colorful {
@@ -1144,7 +1127,7 @@ textarea:placeholder-shown {
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
 }
 
-.design-picker__opacity input[type='range'] {
+.design-picker__opacity input[type="range"] {
   appearance: none;
   position: absolute;
   inset: 0;
@@ -1155,7 +1138,7 @@ textarea:placeholder-shown {
   outline: none;
 }
 
-.design-picker__opacity input[type='range']::-webkit-slider-thumb {
+.design-picker__opacity input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
   height: 14px;
@@ -1166,11 +1149,11 @@ textarea:placeholder-shown {
   cursor: grab;
 }
 
-.design-picker__opacity input[type='range']:active::-webkit-slider-thumb {
+.design-picker__opacity input[type="range"]:active::-webkit-slider-thumb {
   cursor: grabbing;
 }
 
-.design-style-panel input[type='range'] {
+.design-style-panel input[type="range"] {
   appearance: none;
   height: 3px;
   border-radius: 999px;
@@ -1178,7 +1161,7 @@ textarea:placeholder-shown {
   outline: none;
 }
 
-.design-style-panel input[type='range']::-webkit-slider-thumb {
+.design-style-panel input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 12px;
   height: 12px;
@@ -1251,10 +1234,10 @@ textarea:placeholder-shown {
   padding-block: 4px;
 }
 
-.doc .bn-block-content[data-content-type='bulletListItem'],
-.doc .bn-block-content[data-content-type='numberedListItem'],
-.doc .bn-block-content[data-content-type='checkListItem'],
-.doc .bn-block-content[data-content-type='toggleListItem'] {
+.doc .bn-block-content[data-content-type="bulletListItem"],
+.doc .bn-block-content[data-content-type="numberedListItem"],
+.doc .bn-block-content[data-content-type="checkListItem"],
+.doc .bn-block-content[data-content-type="toggleListItem"] {
   padding-block: 2px;
 }
 
@@ -1262,50 +1245,50 @@ textarea:placeholder-shown {
   padding-top: 0;
 }
 
-.doc [data-content-type='heading'] {
+.doc [data-content-type="heading"] {
   --level: 1.625em;
 }
 
-.doc [data-content-type='heading'][data-level='2'] {
+.doc [data-content-type="heading"][data-level="2"] {
   --level: 1.3125em;
 }
 
-.doc [data-content-type='heading'][data-level='3'] {
+.doc [data-content-type="heading"][data-level="3"] {
   --level: 1.0625em;
 }
 
-.doc [data-prev-level='1'] {
+.doc [data-prev-level="1"] {
   --prev-level: 1.625em;
 }
 
-.doc [data-prev-level='2'] {
+.doc [data-prev-level="2"] {
   --prev-level: 1.3125em;
 }
 
-.doc [data-prev-level='3'] {
+.doc [data-prev-level="3"] {
   --prev-level: 1.0625em;
 }
 
-.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'] {
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type="heading"] {
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.02em;
   padding-top: 30px;
 }
 
-.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'][data-level='2'] {
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type="heading"][data-level="2"] {
   letter-spacing: -0.015em;
   padding-top: 24px;
 }
 
-.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type='heading'][data-level='3'] {
+.doc .bn-editor .bn-block-outer .bn-block .bn-block-content[data-content-type="heading"][data-level="3"] {
   line-height: 1.4;
   letter-spacing: -0.01em;
   padding-top: 18px;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='bulletListItem']::before,
-.doc .bn-editor .bn-block-content[data-content-type='numberedListItem']::before {
+.doc .bn-editor .bn-block-content[data-content-type="bulletListItem"]::before,
+.doc .bn-editor .bn-block-content[data-content-type="numberedListItem"]::before {
   color: var(--color-fg-muted);
 }
 
@@ -1313,7 +1296,7 @@ textarea:placeholder-shown {
   border-left: 1px solid var(--color-ink-700);
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input {
+.doc .bn-editor .bn-block-content[data-content-type="checkListItem"] > div > input {
   appearance: none;
   position: relative;
   width: 15px;
@@ -1327,17 +1310,17 @@ textarea:placeholder-shown {
     border-color 0.12s;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:hover {
+.doc .bn-editor .bn-block-content[data-content-type="checkListItem"] > div > input:hover {
   border-color: var(--color-ink-500);
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:checked {
+.doc .bn-editor .bn-block-content[data-content-type="checkListItem"] > div > input:checked {
   background: var(--color-fg);
   border-color: var(--color-fg);
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input::after {
-  content: '';
+.doc .bn-editor .bn-block-content[data-content-type="checkListItem"] > div > input::after {
+  content: "";
   @apply absolute inset-0 scale-50 opacity-0;
   background: var(--color-ink-900);
   mask-image: var(--check-mark);
@@ -1349,27 +1332,27 @@ textarea:placeholder-shown {
     transform 0.12s;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'] > div > input:checked::after {
+.doc .bn-editor .bn-block-content[data-content-type="checkListItem"] > div > input:checked::after {
   @apply scale-100 opacity-100;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='checkListItem'][data-checked='true'] .bn-inline-content {
+.doc .bn-editor .bn-block-content[data-content-type="checkListItem"][data-checked="true"] .bn-inline-content {
   color: var(--color-fg-muted);
   text-decoration-color: var(--color-fg-faint);
 }
 
-.doc .bn-editor [data-content-type='quote'] blockquote {
+.doc .bn-editor [data-content-type="quote"] blockquote {
   border-left: 2px solid var(--color-ink-600);
   color: var(--color-fg-secondary);
   padding-left: 16px;
 }
 
-.doc .bn-editor [data-content-type='divider'] hr {
+.doc .bn-editor [data-content-type="divider"] hr {
   border-top: 1px solid var(--color-ink-600);
   margin-block: 10px;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] {
+.doc .bn-editor .bn-block-content[data-content-type="codeBlock"] {
   background: var(--color-ink-850);
   border: 1px solid var(--color-ink-700);
   border-radius: 14px;
@@ -1377,14 +1360,14 @@ textarea:placeholder-shown {
   margin-block: 6px;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > pre {
+.doc .bn-editor .bn-block-content[data-content-type="codeBlock"] > pre {
   @apply font-mono;
   padding: 14px 16px;
   font-size: 13px;
   line-height: 1.6;
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select {
+.doc .bn-editor .bn-block-content[data-content-type="codeBlock"] > div > select {
   top: 7px;
   right: 9px;
   left: auto;
@@ -1396,8 +1379,8 @@ textarea:placeholder-shown {
   background: var(--color-ink-800);
 }
 
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock']:hover > div > select,
-.doc .bn-editor .bn-block-content[data-content-type='codeBlock'] > div > select:focus {
+.doc .bn-editor .bn-block-content[data-content-type="codeBlock"]:hover > div > select,
+.doc .bn-editor .bn-block-content[data-content-type="codeBlock"] > div > select:focus {
   opacity: 1;
   color: var(--color-fg-secondary);
 }
@@ -1414,17 +1397,17 @@ textarea:placeholder-shown {
   font-weight: var(--shiki-light-font-weight, inherit);
 }
 
-.doc .bn-editor [data-content-type='table'] table {
+.doc .bn-editor [data-content-type="table"] table {
   font-size: var(--text-base);
 }
 
-.doc .bn-editor [data-content-type='table'] th,
-.doc .bn-editor [data-content-type='table'] td {
+.doc .bn-editor [data-content-type="table"] th,
+.doc .bn-editor [data-content-type="table"] td {
   border: 1px solid var(--color-ink-700);
   padding: 6px 10px;
 }
 
-.doc .bn-editor [data-content-type='table'] th {
+.doc .bn-editor [data-content-type="table"] th {
   background: var(--color-ink-850);
   font-weight: 600;
 }
@@ -1499,7 +1482,7 @@ textarea:placeholder-shown {
   color: var(--color-fg);
 }
 
-.bn-drag-preview [data-content-type='heading'] {
+.bn-drag-preview [data-content-type="heading"] {
   --level: 1.15em;
 }
 
@@ -1717,7 +1700,7 @@ textarea:placeholder-shown {
 }
 
 .md .md-check[data-checked]::after {
-  content: '';
+  content: "";
   @apply absolute inset-0;
   background: var(--color-ink-900);
   mask-image: var(--check-mark);
@@ -1834,7 +1817,7 @@ textarea:placeholder-shown {
 
 .skeleton::after {
   @apply absolute inset-0;
-  content: '';
+  content: "";
   background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.13), transparent);
   animation: shimmer 1.4s ease-in-out infinite;
 }

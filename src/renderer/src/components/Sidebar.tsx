@@ -78,8 +78,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
     if (place.key === here) {
       if (toRight) useCrew.getState().openThread(threadId)
       else useCrew.getState().openThreadAlone(threadId)
-    }
-    else await go(place)
+    } else await go(place)
   }
 
   const forget = async (place: Place) => {
