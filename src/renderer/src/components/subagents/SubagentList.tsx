@@ -3,18 +3,20 @@ import { StopGlyph, WarningGlyph } from '../../icons'
 import ScrollFade from '../ScrollFade'
 import Spinner from '../Spinner'
 import SubagentMark from '../SubagentMark'
-import type { SubagentRun } from '../thread'
 import { formatSpan } from '../time'
 import useScrollEdges from '../useScrollEdges'
-import { useRunState, useSubagentRuns } from './runs'
+import { useRunState, useSubagentRuns, type SubagentRow } from './runs'
 
-function Row({ run, onOpen }: { run: SubagentRun; onOpen: (threadId: string) => void }) {
+const INDENT = ['pl-4', 'pl-9', 'pl-14']
+
+function Row({ run, onOpen }: { run: SubagentRow; onOpen: (threadId: string) => void }) {
   const state = useRunState(run.threadId)
+  const indent = INDENT[Math.min(run.depth, INDENT.length - 1)]
   return (
     <button
       type="button"
       onClick={() => onOpen(run.threadId)}
-      className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-fg/[0.04] active:scale-[0.995]"
+      className={`w-full flex items-center gap-3 ${indent} pr-4 py-2.5 text-left transition-colors hover:bg-fg/[0.04] active:scale-[0.995]`}
     >
       <SubagentMark seed={run.threadId} size="sm" />
       <span className="min-w-0 flex-1 text-sm text-fg truncate">{run.subject}</span>
