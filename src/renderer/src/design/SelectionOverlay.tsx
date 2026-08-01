@@ -91,23 +91,32 @@ function RadiusHandles({
     event.stopPropagation()
     const bounds = editor.getShapePageBounds(shape.id)
     if (!bounds) return
-    editor.markHistoryStoppingPoint()
     const corner = CORNERS[at]
-
-    const move = (moved: PointerEvent) => {
-      const point = editor.screenToPage({ x: moved.clientX, y: moved.clientY })
+    const reach = (client: { clientX: number; clientY: number }) => {
+      const point = editor.screenToPage({ x: client.clientX, y: client.clientY })
       const dx = corner.left ? point.x - bounds.minX : bounds.maxX - point.x
       const dy = corner.top ? point.y - bounds.minY : bounds.maxY - point.y
-      const next = Math.round(Math.max(0, Math.min(limit, Math.min(dx, dy))))
+      return (dx + dy) / 2
+    }
+    const held = reach(event) - props.radius[at]
+    const handle = event.currentTarget
+    handle.setPointerCapture(event.pointerId)
+    const mark = editor.markHistoryStoppingPoint()
+
+    const move = (moved: PointerEvent) => {
+      const next = Math.round(Math.max(0, Math.min(limit, reach(moved) - held)))
       const radius = [next, next, next, next] as Corner
-      editor.updateShape({ id: shape.id, type: 'design-node', props: { ...props, radius } })
+      editor.updateShape({ id: shape.id, type: 'design-node', props: { radius } })
     }
     const stop = () => {
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', stop)
+      window.removeEventListener('pointercancel', stop)
+      editor.squashToMark(mark)
     }
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', stop)
+    window.addEventListener('pointercancel', stop)
   }
 
   return (
