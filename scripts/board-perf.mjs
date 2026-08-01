@@ -218,6 +218,7 @@ const driveSource = String.raw`(async () => {
     resetCounts()
     const sync = []
     const framed = []
+    const selected = new Set()
     for (let at = 0; at < ${MOVES}; at++) {
       const target = targets[at % targets.length]
       const bounds = editor.getShapePageBounds(target.id)
@@ -225,6 +226,7 @@ const driveSource = String.raw`(async () => {
       const began = performance.now()
       pointer('pointerdown', point.x, point.y, 1, nodeOf(target.id))
       pointer('pointerup', point.x, point.y, 0, nodeOf(target.id))
+      selected.add(editor.getSelectedShapeIds().join(','))
       const dispatched = performance.now()
       await frame()
       const painted = performance.now()
@@ -243,6 +245,7 @@ const driveSource = String.raw`(async () => {
       reactMsPerMove: Number((perf.duration / ${MOVES}).toFixed(2)),
       perMove: counts,
       msPerMove: times
+      ,selected: selected.size
     }
   }
 
@@ -383,6 +386,7 @@ try {
       `  to frame  mean ${run.frame.mean}ms  median ${run.frame.median}ms  p95 ${run.frame.p95}ms  worst ${run.frame.worst}ms`
     )
     console.log(`  react     ${run.commitsPerMove} commits a move, ${run.reactMsPerMove}ms a move`)
+    if (run.selected !== undefined) console.log(`  selected  ${run.selected} distinct selections`)
     const calls = Object.entries(run.perMove)
       .filter(([, count]) => count > 0)
       .sort((a, b) => b[1] - a[1])
