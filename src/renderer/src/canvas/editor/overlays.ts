@@ -525,16 +525,17 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
     const editor = this.editor
     const path = editor.getCurrentToolPath()
     const instance = editor.getInstanceState()
+    const onScreen = Box.ExpandBy(editor.getViewportPageBounds(), HINTED_INDICATOR_WIDTH / editor.getZoomLevel())
     const indicated: TLShape[] = []
     const idle = IDLE_INDICATOR_PATHS.has(path)
     if (!instance.isChangingStyle && (idle || SELECTING_INDICATOR_PATHS.has(path))) {
       for (const id of editor.getSelectedShapeIds()) {
         const shape = editor.getShape(id)
-        if (shape && !editor.isShapeHidden(shape)) indicated.push(shape)
+        if (shape && this.outlines(shape, onScreen)) indicated.push(shape)
       }
       if (idle && !instance.isCoarsePointer) {
         const hovered = editor.getHoveredShape()
-        if (hovered && !editor.isShapeHidden(hovered) && !indicated.some(shape => shape.id === hovered.id)) {
+        if (hovered && this.outlines(hovered, onScreen) && !indicated.some(shape => shape.id === hovered.id)) {
           indicated.push(hovered)
         }
       }
@@ -542,9 +543,16 @@ class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
     const hinted: TLShape[] = []
     for (const id of instance.hintingShapeIds ?? []) {
       const shape = editor.getShape(id)
-      if (shape && !editor.isShapeHidden(shape)) hinted.push(shape)
+      if (shape && this.outlines(shape, onScreen)) hinted.push(shape)
     }
     return { indicated, hinted }
+  }
+
+  private outlines(shape: TLShape, onScreen: Box): boolean {
+    if (shape.isLocked) return false
+    if (this.editor.isShapeHidden(shape)) return false
+    const bounds = this.editor.getShapePageBounds(shape)
+    return !bounds || Box.Collides(bounds, onScreen)
   }
 }
 
