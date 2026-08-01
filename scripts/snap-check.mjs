@@ -371,12 +371,12 @@ const probeSource = String.raw`(() => {
 
       await attempt('a frame does not snap to its own children', async () => {
         const centre = (await room(1)).center
-        const held = box(Math.round(centre.x - 150), Math.round(centre.y - 100), 320, 220)
-        if (!held) return { ok: false, note: 'harness: no frame was created' }
-        editor.updateShape({ id: held, type: 'geo' })
-        editor.deleteShapes([held])
-        madeHere.pop()
-        const outer = put({ type: 'frame', x: Math.round(centre.x - 150), y: Math.round(centre.y - 100), props: { w: 320, h: 220, name: '' } })
+        const outer = put({
+          type: 'frame',
+          x: Math.round(centre.x - 150),
+          y: Math.round(centre.y - 100),
+          props: { w: 320, h: 220, name: '' }
+        })
         if (!outer) return { ok: false, note: 'harness: no frame was created' }
         const inner = box(3, 20, 140, 100, outer)
         await settle(4)
