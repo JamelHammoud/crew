@@ -14,6 +14,7 @@ import {
   UndoGlyph
 } from '../icons'
 import { useCrew, type ThreadMeta } from '../state/store'
+import { tasksShowing, useTasks } from '../state/tasks'
 import { AgentName } from './Mention'
 import { AgentRow, MentionMenu, useMentionAutocomplete } from './MentionAutocomplete'
 import ScrollFade from './ScrollFade'
