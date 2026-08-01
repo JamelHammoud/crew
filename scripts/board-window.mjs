@@ -139,11 +139,12 @@ function Board() {
         className: 'absolute inset-0 flex design',
         style: { ...DESIGN_CURSORS, cursor: 'var(--crew-cursor-default)', '--design-selected': selected }
       },
-      ${process.env.CREW_BOARD_PANEL === '0' ? 'false &&' : ''} React.createElement(
-        'div',
-        { className: 'w-64 shrink-0 flex min-h-0', 'data-probe-panel': 'true' },
-        editor && React.createElement(EditorContext.Provider, { value: editor }, React.createElement(DesignLeftPanel))
-      ),
+      WITH_PANEL &&
+        React.createElement(
+          'div',
+          { className: 'w-64 shrink-0 flex min-h-0', 'data-probe-panel': 'true' },
+          editor && React.createElement(EditorContext.Provider, { value: editor }, React.createElement(DesignLeftPanel))
+        ),
       React.createElement(
         'div',
         { className: 'relative flex-1 min-w-0' },
