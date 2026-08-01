@@ -35,6 +35,11 @@ function entryFor(segment: string): EmojiEntry | undefined {
 // What is between the crew's own is walked grapheme by grapheme, since a flag
 // and a skin tone are each one picture written in several code points.
 function pushRun(tokens: EmojiToken[], text: string): void {
+  if (!text) return
+  if (!anyEmoji(text)) {
+    tokens.push({ kind: 'text', text })
+    return
+  }
   let run = ''
   for (const { segment } of segmenter.segment(text)) {
     const entry = entryFor(segment)
