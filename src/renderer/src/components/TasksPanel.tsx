@@ -211,11 +211,11 @@ export default function TasksPanel({
       const working = threadWorking(thread.id, threadPrompts, queues, threads)
       const detail = promptId
         ? describeStep((steps[promptId] ?? []).at(-1))
-        : endPreview(lastEnd(thread.id, events))
-      list.push({ thread, state: threadState(thread, events, working), detail })
+        : endPreview(lastEnd(thread.id, ends))
+      list.push({ thread, state: threadState(thread, ends, working), detail })
     }
     return list.reverse()
-  }, [events, threads, threadPrompts, queues, steps])
+  }, [ends, threads, threadPrompts, queues, steps])
 
   // When a thread last spoke: its start counts as the first message, then any
   // chat message or agent activity in it moves it up, like a chat history.
