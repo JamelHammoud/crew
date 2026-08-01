@@ -6,6 +6,8 @@ import { Mat } from '../src/renderer/src/canvas/math'
 import { atom } from '../src/renderer/src/canvas/signals'
 import {
   Canvas,
+  canvasStyle,
+  pageLayerStyle,
   RenderingShapeOrder,
   sameRenderingShapes,
   shapeStyle,
