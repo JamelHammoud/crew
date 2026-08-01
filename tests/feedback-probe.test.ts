@@ -47,19 +47,19 @@ const card = () => screen.getByRole('dialog')
 
 const write = async (said: string) => {
   render(createElement(About))
-  fireEvent.click(screen.getByRole('button', { name: 'Write a report' }))
-  await waitFor(() => expect(within(card()).getByLabelText('Report')).toBeTruthy())
-  fireEvent.change(within(card()).getByLabelText('Report'), { target: { value: said } })
+  fireEvent.click(screen.getByRole('button', { name: 'Submit feedback' }))
+  await waitFor(() => expect(within(card()).getByLabelText('Feedback')).toBeTruthy())
+  fireEvent.change(within(card()).getByLabelText('Feedback'), { target: { value: said } })
 }
 
-describe('reporting a problem', () => {
+describe('submitting feedback', () => {
   it('stands on the About page and opens a card', async () => {
     render(createElement(About))
-    expect(screen.getByText('Report a problem')).toBeTruthy()
+    expect(screen.getByText('Feedback')).toBeTruthy()
     expect(screen.queryByRole('dialog')).toBeNull()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Write a report' }))
-    expect(within(card()).getByLabelText('Report')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Submit feedback' }))
+    expect(within(card()).getByLabelText('Feedback')).toBeTruthy()
     expect(within(card()).getByRole('button', { name: 'Send' })).toBeTruthy()
   })
 
@@ -75,7 +75,7 @@ describe('reporting a problem', () => {
     await waitFor(() => expect(opened.length).toBe(1))
     const asked = new URL(opened[0]).searchParams
     expect(opened[0].startsWith('mailto:devjamel@gmail.com?')).toBe(true)
-    expect(asked.get('subject')).toBe('Crew 0.1.0 bug report')
+    expect(asked.get('subject')).toBe('Crew 0.1.0 feedback')
     expect(asked.get('body')).toBe('The panel went blank\n\nCrew 0.1.0\nmacOS 25.5.0 arm64')
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   })
@@ -87,18 +87,18 @@ describe('reporting a problem', () => {
 
     await waitFor(() => expect(within(card()).getByText(/No mail app opened/)).toBeTruthy())
     expect(within(card()).getByText('devjamel@gmail.com')).toBeTruthy()
-    expect((within(card()).getByLabelText('Report') as HTMLTextAreaElement).value).toBe(
+    expect((within(card()).getByLabelText('Feedback') as HTMLTextAreaElement).value).toBe(
       'The panel went blank'
     )
 
-    fireEvent.click(within(card()).getByRole('button', { name: 'Copy the report' }))
+    fireEvent.click(within(card()).getByRole('button', { name: 'Copy' }))
     await waitFor(() => expect(copied).toEqual(['The panel went blank\n\nCrew 0.1.0\nmacOS 25.5.0 arm64']))
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   })
 
   it('stops taking words where the shell stops reading them', async () => {
     await write('anything')
-    expect(within(card()).getByLabelText('Report').getAttribute('maxlength')).toBe(String(FEEDBACK_LIMIT))
+    expect(within(card()).getByLabelText('Feedback').getAttribute('maxlength')).toBe(String(FEEDBACK_LIMIT))
   })
 
   it('holds no solid grey, since the card it stands on is glass', async () => {
