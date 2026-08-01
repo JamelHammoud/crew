@@ -46,9 +46,13 @@ createRoot(document.getElementById('root')).render(
 const PAGE = `<!doctype html>
 <html><head><meta charset="utf-8"><script type="module" src="./probe.js"></script>
 <style>
-  body { margin:0; background:#0a0a0b; color: rgba(255,255,255,${ALPHA}); }
+  /* Said over the app's own base rule, which paints the foreground at full
+     strength: the whole of what is being read here is what a mark does when it
+     is handed a color that is not. */
+  body { margin:0 !important; background:#0a0a0b !important; }
   #root { display:flex; flex-wrap:wrap; }
-  .cell { width:${AT}px; height:${AT}px; display:grid; place-items:center; }
+  .cell { width:${AT}px; height:${AT}px; display:grid; place-items:center;
+          color: rgba(255,255,255,${ALPHA}) !important; }
   /* The wrapper opens a fixed slot and clips: the mark's own paint is what is
      being read here, so it is let out of it for the length of the check. */
   .cell .tab-icon { width:auto !important; height:auto !important; overflow:visible !important; }
