@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from 'react'
+import { Fragment, memo, useMemo } from 'react'
 import ChatMessage from './ChatMessage'
 import DayDivider from './DayDivider'
 import PageRow from './PageRow'
@@ -25,7 +25,7 @@ const follows = (previous: StepBlock | undefined, block: StepBlock): boolean => 
   )
 }
 
-export default function ThreadItems({
+function ThreadItems({
   items,
   threadId = '',
   onReply
@@ -62,3 +62,5 @@ export default function ThreadItems({
     </>
   )
 }
+
+export default memo(ThreadItems)
