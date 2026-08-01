@@ -256,3 +256,98 @@ describe('text made on a board', () => {
     expect(inkOf(subject.getShape(text.id) as TLShape)).toBe('blue')
   })
 })
+
+function filled(subject: Editor, fills: Paint[]): TLShapeId {
+  const id = createShapeId()
+  subject.createShape({ id, type: 'design-node', x: 0, y: 0, props: { ...nodeDefaults(), w: 200, h: 200, fills } })
+  return id
+}
+
+function gradient(stops: string[], opacity = 1, visible = true): Paint {
+  return { type: 'linear', angle: 180, stops: stops.map((color, at) => ({ color, at })), opacity, visible }
+}
+
+describe('the maths on its own', () => {
+  it('reads a colour and weighs the channels without a board anywhere near it', () => {
+    expect(readInk('#0d0d0d')).toEqual({ r: 13, g: 13, b: 13, a: 1 })
+    expect(inkOn({ r: 13, g: 13, b: 13, a: 1 })).toBe('white')
+    expect(inkOn({ r: 242, g: 242, b: 242, a: 1 })).toBe('black')
+  })
+
+  it('picks the ink with the better ratio rather than a luminance threshold', () => {
+    const grey = readInk('#808080')
+    if (!grey) throw new Error('mid grey would not read')
+    expect(contrastRatio(grey, WHITE_INK)).toBeCloseTo(3.95, 2)
+    expect(contrastRatio(grey, DARK_INK)).toBeCloseTo(4.27, 2)
+    expect(inkOn(grey)).toBe('black')
+  })
+
+  it('takes a gradient on the average of its stops', () => {
+    const ink = fillsInk([gradient(['#000000', '#ffffff'])], readInk)
+    if (!ink) throw new Error('the gradient would not read')
+    expect(hexOf(ink)).toBe('#808080')
+  })
+
+  it('leaves an invisible fill out and a fill too faint to matter with it', () => {
+    expect(fillsInk([gradient(['#ffffff', '#ffffff'], 1, false)], readInk)).toBeNull()
+    expect(fillsInk([{ ...solid('#ffffff'), opacity: 0.01 }], readInk)).toBeNull()
+    expect(fillsInk([], readInk)).toBeNull()
+  })
+
+  it('reads down to the first fill that really covers what is under it', () => {
+    const ink = fillsInk([{ ...solid('#ffffff'), visible: false }, solid('#222222'), solid('#ffffff')], readInk)
+    if (!ink) throw new Error('the fills would not read')
+    expect(hexOf(ink)).toBe('#222222')
+  })
+})
+
+describe('fills that are not a background', () => {
+  it('leaves out an invisible fill and lands on what is really painted', () => {
+    const subject = editor()
+    filled(subject, [{ ...solid('#ffffff'), visible: false }, solid('#222222')])
+    expect(backgroundBehind(subject, { x: 100, y: 100 })).toBe('#222222')
+    expect(inkOf(writeText(subject, 100, 100))).toBe('white')
+  })
+
+  it('falls through an invisible fill to the board', () => {
+    const subject = editor()
+    filled(subject, [{ ...solid('#ffffff'), visible: false }])
+    expect(backgroundBehind(subject, { x: 100, y: 100 })).toBe(BOARD_SURFACE)
+    expect(inkOf(writeText(subject, 100, 100))).toBe('white')
+  })
+
+  it('falls through a fill too faint to matter', () => {
+    const subject = editor()
+    filled(subject, [{ ...solid('#ffffff'), opacity: 0.01 }])
+    expect(backgroundBehind(subject, { x: 100, y: 100 })).toBe(BOARD_SURFACE)
+    expect(inkOf(writeText(subject, 100, 100))).toBe('white')
+  })
+
+  it('never takes a line as a background', () => {
+    const subject = editor()
+    const id = createShapeId()
+    subject.createShape({ id, type: 'line', x: 0, y: 0 })
+    expect(backgroundBehind(subject, { x: 0, y: 0 })).toBe(BOARD_SURFACE)
+  })
+})
+
+describe('text over a gradient', () => {
+  it('lands white where the stops average dark', () => {
+    const subject = editor()
+    filled(subject, [gradient(['#000000', '#222222'])])
+    expect(inkOf(writeText(subject, 100, 100))).toBe('white')
+  })
+
+  it('lands black where the stops average light', () => {
+    const subject = editor()
+    filled(subject, [gradient(['#ffffff', '#dddddd'])])
+    expect(inkOf(writeText(subject, 100, 100))).toBe('black')
+  })
+
+  it('reads the average rather than the stop it happens to sit on', () => {
+    const subject = editor()
+    filled(subject, [gradient(['#000000', '#ffffff'])])
+    expect(backgroundBehind(subject, { x: 10, y: 10 })).toBe('#808080')
+    expect(inkOf(writeText(subject, 10, 10))).toBe('black')
+  })
+})
