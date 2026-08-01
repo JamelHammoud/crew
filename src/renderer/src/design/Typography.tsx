@@ -15,12 +15,15 @@ import {
   TextBottomGlyph,
   TextMiddleGlyph,
   TextTopGlyph,
+  TrimCapGlyph,
+  TrimStandardGlyph,
   TypeSettingsGlyph,
   UnderlineGlyph
 } from './glyphs'
 import { Choice, ColorInput, NumberInput, Row, Section, SubLabel, Trailing } from './InspectorFields'
 import type { TextControl } from './nodeView'
 import { FACES, SIZES, faceStyle, faceValue } from './typeFaces'
+import { trimOf, type TrimmedType } from './verticalTrim'
 
 const SYSTEM_FAMILIES = [
   { value: 'sans', label: 'Sans' },
