@@ -170,6 +170,34 @@ describe('typography while a Design text shape is being edited', () => {
   })
 })
 
+describe('what a Design text shape is measured with', () => {
+  it('paints the line height in the pixels it was measured in', async () => {
+    const { editor } = mountBoard()
+    await act(async () => {
+      setTextShapeType(editor(), shapeOf(editor()), { size: 21, lineHeight: 1.4 })
+    })
+    const painted = dom.window.document.querySelector('.crew-rich-text') as HTMLElement
+    expect(painted.style.lineHeight).toBe(`${resolveLineHeight(21, 1.4)}px`)
+  })
+
+  it('measures with the markup it paints', () => {
+    const docs = [
+      fromPlainText('Hello'),
+      { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi', marks: [{ type: 'bold' }] }] }] },
+      { type: 'doc', content: [{ type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'H' }] }] },
+      {
+        type: 'doc',
+        content: [
+          { type: 'bulletList', content: [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }] }] }
+        ]
+      }
+    ]
+    for (const doc of docs) {
+      expect(renderHtmlFromRichTextForMeasurement(doc as never)).toBe(richTextForMeasurement(doc as never))
+    }
+  })
+})
+
 describe('typography settings on a Design text shape', () => {
   it('keeps every typography prop on the record after the edit session ends', async () => {
     const { editor } = mountBoard()
