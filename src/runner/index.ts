@@ -95,6 +95,10 @@ export class Runner {
     this.send({ type: 'agent.deregister', agentId: agent.id })
   }
 
+  renameOwner(name: string): void {
+    this.opts.name = name
+  }
+
   private define(def: AgentDef): string | null {
     const provider = this.providersByName.get(def.provider)
     if (!provider) return null

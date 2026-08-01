@@ -9,6 +9,12 @@ export interface MemberMentionRef {
   name: string
 }
 
+export const MEMBER_NAME_LIMIT = 40
+
+export function cleanMemberName(name: string): string {
+  return name.replace(/\s+/g, ' ').trim().slice(0, MEMBER_NAME_LIMIT)
+}
+
 // A message carries the name of whoever wrote it rather than their id, and the
 // host keys people by name too, so a face is matched the same way.
 export function memberPhoto(members: Array<{ name: string; avatar?: string }>, name: string): string | undefined {

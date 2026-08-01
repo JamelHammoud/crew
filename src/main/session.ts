@@ -39,6 +39,7 @@ import {
 import { locatePath } from './locate'
 import { SavedSessionStore } from './saved-session'
 import type { PathLocation, RepoFile } from '../shared/files'
+import { cleanMemberName } from '../shared/people'
 
 export type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
 
@@ -132,6 +133,18 @@ export class AppSession {
 
   saved(): SavedSession | null {
     return this.written
+  }
+
+  rename(name: string): CurrentSession | null {
+    const clean = cleanMemberName(name)
+    if (!clean || !this.live || !this.written) return this.live
+    this.live = { ...this.live, name: clean }
+    this.written = { ...this.written, name: clean }
+    if (this.hosted) this.hosted = { ...this.hosted, name: clean }
+    this.runner?.renameOwner(clean)
+    this.savedStore()?.save(this.written)
+    this.rememberProject()
+    return this.live
   }
 
   async repoStatus(): Promise<RepoStatus> {

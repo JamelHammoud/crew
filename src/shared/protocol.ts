@@ -97,6 +97,7 @@ export interface SessionSnapshot {
 export type ClientMessage =
   | { type: 'hello'; role: 'ui'; name: string; code: string }
   | { type: 'hello'; role: 'runner'; name: string; code: string; llms: RegisteredLlm[]; running?: string[] }
+  | { type: 'member.rename'; name: string }
   | { type: 'member.avatar'; image: OutgoingAttachment | null }
   | {
       type: 'chat.send'
@@ -195,6 +196,7 @@ export type ServerMessage =
   | { type: 'welcome'; selfId: string; snapshot: SessionSnapshot }
   | { type: 'event'; event: SessionEvent }
   | { type: 'history'; events: SessionEvent[]; more: boolean }
+  | { type: 'member.renamed'; fromId: string; member: MemberInfo }
   | { type: 'member.avatar'; memberId: string; file: string | null }
   | { type: 'queue.state'; threadId: string; items: QueuedItem[] }
   | { type: 'agent.added'; agent: PooledAgent }

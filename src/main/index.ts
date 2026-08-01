@@ -496,6 +496,7 @@ app.whenReady().then(() => {
     await resumed
     return crews.current(event.sender.id)
   })
+  ipcMain.handle('session:rename', (event, name: string) => crews.rename(event.sender.id, name))
   ipcMain.handle('session:switch', (event, key: string) => {
     const info = crews.switchTo(event.sender.id, key)
     if (info) warmTerminals()

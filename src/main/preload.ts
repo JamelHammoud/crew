@@ -30,6 +30,7 @@ const bridge = {
     ipcRenderer.invoke('session:join', link, folder, name),
   leave: (): Promise<void> => ipcRenderer.invoke('session:leave'),
   current: (): Promise<CurrentSession | null> => ipcRenderer.invoke('session:current'),
+  rename: (name: string): Promise<CurrentSession | null> => ipcRenderer.invoke('session:rename', name),
   switchTo: (key: string): Promise<CurrentSession | null> => ipcRenderer.invoke('session:switch', key),
   closeProject: (key: string): Promise<void> => ipcRenderer.invoke('session:close', key),
   liveProjects: (): Promise<LivePlace[]> => ipcRenderer.invoke('session:live'),

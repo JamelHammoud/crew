@@ -23,6 +23,7 @@ declare global {
     join(link: string, folder: string, name: string): Promise<CurrentSession>
     leave(): Promise<void>
     current(): Promise<CurrentSession | null>
+    rename(name: string): Promise<CurrentSession | null>
     switchTo(key: string): Promise<CurrentSession | null>
     closeProject(key: string): Promise<void>
     liveProjects(): Promise<LivePlace[]>

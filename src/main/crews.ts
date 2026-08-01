@@ -114,6 +114,12 @@ export class Crews {
     return current
   }
 
+  rename(id: number, name: string): CurrentSession | null {
+    const current = this.inView(id).rename(name)
+    if (current) this.onLive(this.places())
+    return current
+  }
+
   async close(key: string): Promise<void> {
     const session = this.open.get(key)
     if (!session) return
