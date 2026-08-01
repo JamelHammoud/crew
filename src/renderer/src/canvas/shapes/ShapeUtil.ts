@@ -18,6 +18,8 @@ export interface ShapeTextMeasure {
 
 export interface ShapeEditor {
   textMeasure?: ShapeTextMeasure
+  getZoomLevel?(): number
+  getInstanceState?(): { isCoarsePointer?: boolean }
   getColorMode?(): 'light' | 'dark'
   getCurrentThemeId?(): string
   getCurrentTheme?(): { colors?: Partial<Record<'light' | 'dark', Record<string, unknown>>> }

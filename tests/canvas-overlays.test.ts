@@ -175,30 +175,20 @@ describe('what the canvas draws over the artwork', () => {
     expect(drawn.named('strokeRect').some(call => call.args[2] === 200 && call.args[3] === 100)).toBe(true)
   })
 
-  it('draws the outline of every selected shape, not only the one under the pointer', () => {
+  it('outlines the shape under the pointer along its own edges rather than its box', () => {
     const subject = editor()
-    const first = geo(subject, 'one', 0, 0)
-    const second = geo(subject, 'two', 300, 0)
-    subject.select(first, second)
+    const id = geo(subject, 'one', 40, 20, 100, 60)
+    subject.setHoveredShape(id)
 
     const indicator = subject.overlays.getOverlayUtil('shape_indicator')
     expect(indicator.isActive()).toBe(true)
     const drawn = recorder()
     indicator.render(drawn.context, indicator.getOverlays?.() ?? [])
-    expect(drawn.named('stroke').length).toBeGreaterThanOrEqual(2)
-  })
-
-  it('outlines the shape under the pointer as well as the selection', () => {
-    const subject = editor()
-    const first = geo(subject, 'one', 0, 0)
-    const second = geo(subject, 'two', 300, 0)
-    subject.select(first)
-    subject.setHoveredShape(second)
-
-    const indicator = subject.overlays.getOverlayUtil('shape_indicator')
-    const drawn = recorder()
-    indicator.render(drawn.context, indicator.getOverlays?.() ?? [])
-    expect(drawn.named('stroke').length).toBeGreaterThanOrEqual(2)
+    expect(drawn.named('strokeRect').length).toBe(0)
+    expect(drawn.named('moveTo')[0].args).toEqual([40, 20])
+    expect(drawn.named('lineTo').length).toBeGreaterThanOrEqual(3)
+    expect(drawn.named('closePath').length).toBe(1)
+    expect(drawn.named('stroke').length).toBe(1)
   })
 
   it('keeps the outline on a shape standing inside a frame', () => {
