@@ -32,6 +32,8 @@ import { useStickToBottom } from '../useStickToBottom'
 // overflow-x-auto inside their own box, so clipping the column costs none of it.
 // The aside holds the same rule for the same reason.
 
+const HELPER_PAGE = 400
+
 export default function SubagentRun({ threadId }: { threadId: string }) {
   const events = useCrew(state => state.events)
   const steps = useCrew(state => state.steps)
@@ -88,9 +90,9 @@ export default function SubagentRun({ threadId }: { threadId: string }) {
   return (
     <div className="absolute inset-0 flex flex-col">
       <div className="relative flex-1 min-h-0 min-w-0">
-        <div ref={scrollRef} onScroll={onScroll} className="h-full overflow-y-auto overflow-x-hidden px-4">
+        <div ref={scrollRef} onScroll={scrolled} className="h-full overflow-y-auto overflow-x-hidden px-4">
           <div className="space-y-4 pt-1 pb-4 select-text">
-            <ThreadItems threadId={threadId} items={items} />
+            <ThreadItems threadId={threadId} items={drawn} />
             {working && start?.kind === 'agent.start' ? (
               <RunStatus
                 startedAt={start.ts}

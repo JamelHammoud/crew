@@ -48,12 +48,15 @@ describe('bench', () => {
 
   it('lands what trimming the whole real log again lands', () => {
     const all = load()
-    for (const limit of [500, 2000]) {
-      let held = trimEvents(all.slice(0, 2000), limit)
-      for (const event of all.slice(2000, 12000)) {
+    for (const limit of [200, 500]) {
+      let held: SessionEvent[] = []
+      let whole: SessionEvent[] = []
+      for (const event of all.slice(0, 6000)) {
         held = appendEvent(held, event, limit)
-        expect(held.map(e => e.id)).toEqual(trimEvents([...held.slice(0, -1), event], limit).map(e => e.id))
+        whole = trimEvents([...whole, event], limit)
+        expect(held.map(e => e.id)).toEqual(whole.map(e => e.id))
       }
+      console.log(`limit ${limit}: agreed over 6000 real events, window ${held.length}`)
     }
   }, 300000)
 })
