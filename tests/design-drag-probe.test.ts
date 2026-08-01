@@ -70,9 +70,9 @@ describe('reproduction', () => {
     const subject = editor()
     const a = geo(subject, 'a', 100, 100)
     down(subject, 10, 10)
-    expect(subject.root.getPath()).toBe('select.pointing_canvas')
+    expect(subject.getCurrentToolPath()).toBe('select.pointing_canvas')
     move(subject, 300, 300)
-    expect(subject.root.getPath()).toBe('select.brushing')
+    expect(subject.getCurrentToolPath()).toBe('select.brushing')
     expect(subject.getSelectedShapeIds()).toEqual([a])
   })
 
@@ -90,9 +90,9 @@ describe('reproduction', () => {
       phase: 'down',
       ...MODS
     } as never)
-    expect(subject.root.getPath()).toBe('select.pointing_shape')
+    expect(subject.getCurrentToolPath()).toBe('select.pointing_shape')
     move(subject, 220, 220)
-    expect(subject.root.getPath()).toBe('select.translating')
+    expect(subject.getCurrentToolPath()).toBe('select.translating')
     expect(subject.getShape(a)?.x).toBe(200)
   })
 })
