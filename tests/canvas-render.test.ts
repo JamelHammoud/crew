@@ -265,9 +265,15 @@ describe('canvas rendering', () => {
     context.clearRect.mockClear()
 
     act(() => {
-      state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [{ id: 'one' }] }])
-      state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [{ id: 'two' }] }])
-      state.entries.set([{ util: { isActive: () => true, render: paint }, overlays: [{ id: 'latest' }] }])
+      state.entries.set([
+        { util: { isActive: () => true, render: paint }, overlays: [{ id: 'one', type: 'test', props: {} }] }
+      ])
+      state.entries.set([
+        { util: { isActive: () => true, render: paint }, overlays: [{ id: 'two', type: 'test', props: {} }] }
+      ])
+      state.entries.set([
+        { util: { isActive: () => true, render: paint }, overlays: [{ id: 'latest', type: 'test', props: {} }] }
+      ])
     })
 
     expect(context.clearRect).not.toHaveBeenCalled()
@@ -279,6 +285,6 @@ describe('canvas rendering', () => {
     })
     expect(context.clearRect).toHaveBeenCalledTimes(1)
     expect(paint).toHaveBeenCalledTimes(1)
-    expect(paint.mock.calls[0][1]).toEqual([{ id: 'latest' }])
+    expect(paint.mock.calls[0][1]).toEqual([{ id: 'latest', type: 'test', props: {} }])
   })
 })
