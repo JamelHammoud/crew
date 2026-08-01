@@ -20,8 +20,6 @@ export function useBoardThreads(boardId: string): ThreadMeta[] {
 }
 
 export default function DesignChat({ boardId }: { boardId: string }) {
-  const events = useCrew(s => s.events)
-  const steps = useCrew(s => s.steps)
   const selfId = useCrew(s => s.selfId)
   const threads = useCrew(s => s.threads)
   const agents = useCrew(s => s.agents)
@@ -52,6 +50,7 @@ export default function DesignChat({ boardId }: { boardId: string }) {
   const threadId = composeNew ? null : picked && threads[picked] ? picked : fallback
   const key = threadId ?? boardId
   const text = threadDrafts[key] ?? ''
+  const { events, steps } = useThreadRead(threadId ?? '')
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const { pinnedRef, onScroll } = useStickToBottom(scrollRef)
