@@ -167,8 +167,9 @@ Somebody at a keyboard, said over the composer they are writing in: "Jamel is ty
 - A window arriving mid-sentence is told once, straight after the welcome. Typing is too short lived to ride in the snapshot and too quiet to reach a new window on its own, since a ping only goes out when it changes something.
 - Nothing typed in a ghost thread is recorded at all, rather than recorded and filtered on the way out. A hidden thread whose typing is not hidden is a hidden thread that leaks.
 - `where` is which composer somebody is writing in, a thread's id or a board's id, and absent for the chat itself. `typistsIn` is what a line asks for, and it leaves out your own keyboard and everyone writing somewhere else.
-- The line floats over the composer rather than standing above it, so nothing under it moves when somebody starts or stops. It is glass, so nothing on it is set in a solid grey, and it shares its row with the way back to the foot of the thread.
-- The ellipsis is the app's own: the same three dots on the same grid carrying the same wave a thought carries, from `THINKING_DOTS`. Standing still they read as a sentence that was abandoned rather than as one being written.
+- The line stands under the composer, in the room the padding already leaves, so it covers nothing and nothing moves when somebody starts or stops. Above the composer it was a glass pill laid over the last thing anybody said, which is the one place on the screen everybody is reading. Under it there is a strip of the app's own chrome and no message ever goes there.
+- It is the quietest thing in the column: the smallest size in the ramp, `fg-muted`, no surface of its own, and it fades in rather than popping. A half written sentence is somebody about to say something and not something that has happened, so it is read out of the corner of the eye or not at all. The row above the composer is left to the way back to the foot of the thread, which is a thing to press and has earned it.
+- The ellipsis is the app's own: the same three dots on the same grid carrying the same wave a thought carries, from `THINKING_DOTS`. Standing still they read as a sentence that was abandoned rather than as one being written. They stand in front of the name rather than after it, so a glance lands on a mark that is moving instead of on somebody's name.
 
 ## Huddles
 
