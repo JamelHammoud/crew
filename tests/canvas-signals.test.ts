@@ -1,13 +1,17 @@
 // @vitest-environment jsdom
 import { act, cleanup, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   atom,
   computed,
+  getGlobalEpoch,
   isAtom,
   isSignal,
   react,
+  reactor,
+  RESET_VALUE,
+  unsafe__withoutCapture,
   track,
   transact,
   transaction,
