@@ -3,14 +3,6 @@ import type { NavTab } from './navTabs'
 
 const BOX = 20
 
-// A mark fades as one drawing rather than one stroke at a time. These are drawn
-// as separate strokes so each can rule itself in, and a translucent color laid
-// on each of them in turn paints twice wherever two cross: the hash came out
-// with a darker square at all four of its crossings and the page with a dark
-// pair either end of its fold, which reads as a mark that will not come into
-// focus. So the strokes are cut as a mask and the color is laid through it once.
-// Everything inside it is white, which `color` says rather than the art, so a
-// part drawn as a fill still asks for `currentColor` the way it does anywhere.
 function Mark({ size, children }: { size: number; children: ReactNode }): React.ReactElement {
   const id = useId().replace(/[^a-zA-Z0-9-]/g, '')
   return (
@@ -35,7 +27,7 @@ function Mark({ size, children }: { size: number; children: ReactNode }): React.
 /** Bubble strokes itself in one pass, then the three dots land left to right. */
 function ChatIcon({ size }: { size: number }) {
   return (
-    <svg {...svg(size)}>
+    <Mark size={size}>
       <path
         className="tab-icon-draw"
         pathLength={1}
@@ -54,14 +46,14 @@ function ChatIcon({ size }: { size: number }) {
           style={{ '--pop-delay': `${215 + i * 65}ms` } as React.CSSProperties}
         />
       ))}
-    </svg>
+    </Mark>
   )
 }
 
 /** Page outline draws, the corner folds over, then the text lines rule themselves in. */
 function DocsIcon({ size }: { size: number }) {
   return (
-    <svg {...svg(size)}>
+    <Mark size={size}>
       <path
         className="tab-icon-draw"
         pathLength={1}
@@ -89,14 +81,14 @@ function DocsIcon({ size }: { size: number }) {
           }
         />
       ))}
-    </svg>
+    </Mark>
   )
 }
 
 /** Frame crop marks: the two rules draw across, then the two posts drop through them. */
 function DesignIcon({ size }: { size: number }) {
   return (
-    <svg {...svg(size)}>
+    <Mark size={size}>
       <path
         className="tab-icon-draw"
         pathLength={1}
@@ -121,7 +113,7 @@ function DesignIcon({ size }: { size: number }) {
         d="M12.7 16.6V3.4"
         style={{ '--draw-dur': '200ms', '--draw-delay': '290ms' } as React.CSSProperties}
       />
-    </svg>
+    </Mark>
   )
 }
 
