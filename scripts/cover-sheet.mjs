@@ -280,7 +280,12 @@ try {
       const line = text.split('\n').find(one => one.startsWith('SHEET '))
       if (!line) return reject(new Error('the sheet said nothing:\n' + text))
       const marks = text.split('\n').find(one => one.startsWith('MARKS '))
-      resolve({ said: JSON.parse(line.slice(6)), kinds: marks ? JSON.parse(marks.slice(6)) : {} })
+      const faces = text.split('\n').find(one => one.startsWith('FACES '))
+      resolve({
+        said: JSON.parse(line.slice(6)),
+        kinds: marks ? JSON.parse(marks.slice(6)) : {},
+        bodies: faces ? JSON.parse(faces.slice(6)) : {}
+      })
     })
   })
 
