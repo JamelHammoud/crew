@@ -502,3 +502,46 @@ describe('the review tab', () => {
     expect(useBrowser.getState().open).toBe(true)
   })
 })
+
+// A line running off the right of a 480 column is the line being judged, so the
+// reading wraps. A glance at what an agent did is read past rather than read,
+// and it scrolls the way it always has: this is the boundary between the two
+// and the one way the reading could quietly change every diff in every thread.
+describe('a line too long for the column', () => {
+  const rows = [{ text: 'const x = 1', line: 1, at: 1, changed: false, inner: [] }]
+
+  it('wraps where it is being read and nowhere else', () => {
+    const { container, unmount } = render(createElement(DiffLines, { path: 'a.ts', rows, wrap: true }))
+    expect(container.querySelector('.whitespace-pre-wrap')).not.toBeNull()
+    expect(container.querySelector('.overflow-x-auto')).toBeNull()
+    unmount()
+
+    const step = render(createElement(DiffLines, { path: 'a.ts', rows }))
+    expect(step.container.querySelector('.whitespace-pre')).not.toBeNull()
+    expect(step.container.querySelector('.whitespace-pre-wrap')).toBeNull()
+    expect(step.container.querySelector('.overflow-x-auto')).not.toBeNull()
+  })
+})
+
+// Where the list stops and the file being read begins. Both panes have a floor,
+// because a list under a heading and a few rows and a diff under a hunk are
+// furniture rather than somewhere to work.
+describe('the split between the two panes', () => {
+  it('holds both panes above their floor', () => {
+    expect(clampSplit(10, 900)).toBe(LIST_MIN)
+    expect(clampSplit(880, 900)).toBe(900 - DIFF_MIN)
+    expect(clampSplit(300, 900)).toBe(300)
+  })
+
+  // A panel dragged short has no room for either floor, so it is halved rather
+  // than handing the list more than the window has.
+  it('halves a panel too short for both', () => {
+    expect(clampSplit(500, 200)).toBe(100)
+  })
+
+  it('opens on a list that is worth reading', () => {
+    const first = defaultSplit(900)
+    expect(first).toBeGreaterThanOrEqual(LIST_MIN)
+    expect(first).toBeLessThanOrEqual(900 - DIFF_MIN)
+  })
+})
