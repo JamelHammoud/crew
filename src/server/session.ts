@@ -116,7 +116,7 @@ import {
   type PooledAgent,
   type RunStep
 } from '../shared/llm'
-import { memberMentionRefsIn } from '../shared/people'
+import { cleanMemberName, memberMentionRefsIn } from '../shared/people'
 import { cleanTool, type CrewTool, type ToolAction } from '../shared/toolbox'
 import {
   cleanHelperName,
@@ -1071,6 +1071,9 @@ export class CrewSession {
         break
       case 'agent.avatar':
         if (meta.role === 'ui') this.handleAvatar(member, msg.agentId, msg.image)
+        break
+      case 'member.rename':
+        if (meta.role === 'ui') this.handleMemberRename(member, msg.name)
         break
       case 'member.avatar':
         if (meta.role === 'ui') this.handleMemberAvatar(member, msg.image)
@@ -4165,6 +4168,69 @@ export class CrewSession {
     const renamed: ServerMessage = { type: 'agent.renamed', agentId: id, label: agent.label }
     this.broadcast(renamed)
     if (agent.runner) this.send(agent.runner, renamed)
+    this.persistMeta()
+  }
+
+  private handleMemberRename(member: Member, name: string): void {
+    const wanted = cleanMemberName(name)
+    if (!wanted || wanted === member.name) return
+    const fromId = member.id
+    const oldKey = member.name.toLowerCase()
+    const key = wanted.toLowerCase()
+    const existing = this.members.get(key)
+    const target = existing && existing !== member ? existing : member
+
+    if (target !== member) {
+      for (const connection of member.connections) target.connections.add(connection)
+      member.connections.clear()
+      if (!target.avatar && member.avatar) target.avatar = member.avatar
+      this.members.delete(oldKey)
+    } else {
+      this.members.delete(oldKey)
+      this.members.set(key, member)
+    }
+    target.name = wanted
+
+    for (const meta of this.meta.values()) {
+      if (meta.memberKey === oldKey) meta.memberKey = key
+    }
+    for (const agent of this.agents.values()) {
+      if (agent.ownerId !== fromId) continue
+      agent.ownerId = target.id
+      agent.ownerName = wanted
+    }
+    for (const thread of this.threads.values()) {
+      for (const queued of thread.queue) {
+        if (queued.authorId !== fromId) continue
+        queued.authorId = target.id
+        queued.byName = wanted
+      }
+    }
+    for (const typist of this.typing.values()) {
+      if (typist.id !== fromId) continue
+      typist.id = target.id
+      typist.name = wanted
+    }
+    for (const peer of this.huddle.values()) {
+      if (peer.memberId !== fromId) continue
+      peer.memberId = target.id
+      peer.name = wanted
+    }
+    if (this.huddleNamed.delete(fromId)) this.huddleNamed.add(target.id)
+    for (const board of this.designs.values()) {
+      const presence = board.presence.get(fromId)
+      if (!presence) continue
+      board.presence.delete(fromId)
+      board.presence.set(target.id, { ...presence, userId: target.id, name: wanted })
+    }
+
+    this.broadcast({
+      type: 'member.renamed',
+      fromId,
+      member: { id: target.id, name: wanted, connected: target.connections.size > 0, avatar: target.avatar }
+    })
+    if (this.typing.size > 0) this.broadcastTyping()
+    if (this.huddle.size > 0) this.broadcastHuddle()
     this.persistMeta()
   }
 
