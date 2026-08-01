@@ -336,6 +336,7 @@ const EMPTY = {
   todos: [],
   tickets: [],
   tools: [],
+  memories: [],
   emoji: [],
   scores: [],
   boards: [],

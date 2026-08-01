@@ -420,17 +420,18 @@ app.whenReady().then(() => {
       resourcesPath: process.resourcesPath
     })
   )
-  session.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
-  session.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
-  session.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
-  session.onTrouble = message => {
+  crews.setAgentsPath(path.join(app.getPath('userData'), 'agents.json'))
+  crews.setSessionPath(path.join(app.getPath('userData'), 'session.json'))
+  crews.setProjectsPath(path.join(app.getPath('userData'), 'projects'))
+  crews.onTrouble = message => {
     for (const win of appWindows()) win.webContents.send('crew:trouble', message)
   }
+  crews.onLive = places => tellLive(places)
   scribe.remember(path.join(app.getPath('userData'), 'scribe-spot.json'))
   said.remember(path.join(app.getPath('userData'), 'scribe-said.json'))
   resumed = opening
     ? Promise.resolve(null)
-    : session.resume().then(() => {
+    : crews.resume().then(() => {
         sharing()
         warmTerminals()
       })

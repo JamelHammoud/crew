@@ -9,6 +9,7 @@ export type SettingsTab =
   | 'machine'
   | 'people'
   | 'agents'
+  | 'memory'
   | 'emoji'
   | 'files'
   | 'about'
