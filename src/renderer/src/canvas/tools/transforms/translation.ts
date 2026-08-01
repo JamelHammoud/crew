@@ -182,9 +182,20 @@ export class Translating<Shape extends TLShape = TLShape> extends TransformState
     this.finish(false)
   }
 
-  private selectionSnapPoints(): TransformSnapPoint[] {
+  private selectionSnapPoints(): TransformSnapPoint[] | undefined {
+    const ids = this.editor.getSelectedShapeIds?.() ?? []
+    if (ids.length === 1) {
+      const transform = this.editor.getShapePageTransform?.(ids[0])
+      const bounds = this.editor.getShapeGeometry?.(ids[0])?.bounds
+      if (transform && bounds) {
+        return bounds.cornersAndCenter.map((point, index) => {
+          const at = Mat.applyToPoint(transform, point)
+          return { id: `selection:${index}`, x: at.x, y: at.y }
+        })
+      }
+    }
     const bounds = this.editor.getSelectionPageBounds?.()
-    if (!bounds) return []
+    if (!bounds) return undefined
     return bounds.cornersAndCenter.map((point, index) => ({ id: `selection:${index}`, x: point.x, y: point.y }))
   }
 
