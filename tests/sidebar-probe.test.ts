@@ -128,6 +128,12 @@ describe('the sidebar', () => {
     expect(sidebar?.className).toContain('glass-strong')
   })
 
+  it('keeps the folder action clear of the bottom edge', () => {
+    render(createElement(Sidebar))
+    const action = screen.getByRole('button', { name: 'Open a folder' })
+    expect(action.parentElement?.className).toContain('pb-5')
+  })
+
   it('holds every place the app knows, newest first', async () => {
     const { container } = render(createElement(Sidebar))
     await waitFor(() => expect(container.querySelectorAll('button[aria-current], button').length).toBeGreaterThan(1))
@@ -162,6 +168,26 @@ describe('the sidebar', () => {
     const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
     expect(rows).toContain('Check the plan charge')
     expect(rows).toContain('Locate the STL files')
+  })
+
+  it('keeps the open thread highlighted beneath its project', async () => {
+    live = [
+      {
+        key: `project:${ONE}`,
+        folder: ONE,
+        name: 'Jamel',
+        hosting: true,
+        threads: [{ id: 't1', title: 'Check the plan charge', working: false }]
+      }
+    ]
+    await act(async () => {
+      await usePlaces.getState().load()
+    })
+    useCrew.setState({ openThreadIds: ['t1'], openThreadId: 't1' })
+    render(createElement(Sidebar))
+    const thread = screen.getByRole('button', { name: 'Check the plan charge' })
+    expect(thread.className).toContain('bg-fg/[0.10]')
+    expect(thread.previousElementSibling?.textContent).toBe('one')
   })
 
   it('goes to the place a thread is in and opens that thread', async () => {
