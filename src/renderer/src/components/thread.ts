@@ -457,7 +457,16 @@ function readIndex(events: SessionEvent[], selfId: string): ThreadIndex {
 }
 
 function threadIndex(events: SessionEvent[], selfId: string): ThreadIndex {
-  return readIndex(events, selfId)
+  let bySelf = indexes.get(events)
+  if (!bySelf) {
+    bySelf = new Map()
+    indexes.set(events, bySelf)
+  }
+  const held = bySelf.get(selfId)
+  if (held) return held
+  const read = readIndex(events, selfId)
+  bySelf.set(selfId, read)
+  return read
 }
 
 // Every name an agent wrote under is read back off its id, so a rename shows on
