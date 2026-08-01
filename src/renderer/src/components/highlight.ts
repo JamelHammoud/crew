@@ -215,9 +215,14 @@ export async function highlightLines(
 ): Promise<ThemedToken[][] | null> {
   const lang = languageFor(path)
   if (!lang || text.length > MAX_CHARS) return null
+  const shelved = shelf(lang, theme)
+  const known = recall(shelved, text)
+  if (known) return known
   try {
     const highlighter = await withLanguage(lang)
-    return highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] })
+    const tokens = highlighter.codeToTokensBase(text, { lang, theme: THEME_NAMES[theme] })
+    keep(shelved, text, tokens)
+    return tokens
   } catch {
     return null
   }
