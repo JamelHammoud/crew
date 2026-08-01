@@ -47,8 +47,19 @@ export class OtherInstances {
       return []
     }
     const { others, stale } = instancesIn(names, process.pid, alive)
+    const booted = Date.now() - os.uptime() * 1000
+    const live: number[] = []
+    for (const pid of others) {
+      const name = pidFileName(pid)
+      if (outlivedBoot(this.written(name), booted)) stale.push(name)
+      else live.push(pid)
+    }
     for (const name of stale) this.drop(name)
-    return others
+    return live
+  }
+
+  private written(name: string): number {
+    return fs.statSync(path.join(this.dir, name), { throwIfNoEntry: false })?.mtimeMs ?? 0
   }
 
   count(): number {
