@@ -1749,8 +1749,10 @@ const driveSource = String.raw`(async () => {
       shutPaint()
       return { ok: false, note: 'a shape sitting still and selected draws no box around itself' }
     }
-    pointer('pointerdown', at.x, at.y, 1, nodeOf(one) || surface)
-    await frame()
+    const down = await stepPaint(async () => {
+      pointer('pointerdown', at.x, at.y, 1, nodeOf(one) || surface)
+    })
+    if (repainted(down)) held = down
     for (let move = 1; move <= steps; move++) {
       const to = { x: at.x + step.x * move, y: at.y + step.y * move }
       const drawn = await stepPaint(async () => {
