@@ -6,14 +6,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import electron from 'electron'
 
-// A caret is the one thing no source test can read. Anything the app paints over
-// a character somebody can type beside is paint over the caret drawn against its
-// edge, and the sheet is exactly that: an emoji in a doc and in the composer is
-// the machine's own glyph with a picture standing on it. Drawn a little larger
-// than the character, the picture covered the whole caret and the whole band
-// under it, and the box read as one nothing could be typed into. Every suite
-// passed. This focuses a real window, puts the caret against a real emoji, and
-// counts the pixels it left on the screen.
+// A caret is the one thing no source test can read. An emoji in a doc and in the
+// composer is the machine's own glyph with a picture of ours standing on it, and
+// a picture drawn a little larger than the character it stands on covers the
+// caret against its edge and the band under it, so the line reads as one nothing
+// can be typed into. Every suite passed the whole time it did. This focuses a
+// real window, puts the caret against a real emoji, and counts what it left on
+// the screen.
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
@@ -28,8 +27,8 @@ const APP = `import './probe.css'
 import '@blocknote/mantine/style.css'
 import { createElement as h, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import DocEditor from '${root}/src/renderer/src/components/DocEditor'
 import Composer from '${root}/src/renderer/src/components/Composer'
+import DocEditor from '${root}/src/renderer/src/components/DocEditor'
 
 const LINE = 'aa\\u{1F600}bb'
 
@@ -51,61 +50,16 @@ function Probe() {
 }
 
 createRoot(document.getElementById('root')).render(h(Probe))
-`
 
-const MAIN = `const { app, BrowserWindow } = require('electron')
-const path = require('node:path')
-app.disableHardwareAcceleration()
-
-const wait = ms => new Promise(r => setTimeout(r, ms))
-
-app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 760, height: 520, show: true })
-  try {
-    await win.loadFile(path.join(__dirname, 'dist/index.html'))
-    await wait(1600)
-    const width = await win.webContents.executeJavaScript('innerWidth')
-    const drawn = await win.webContents.executeJavaScript('document.querySelectorAll(".doc-emoji").length')
-    const seen = []
-    for (const where of ['doc', 'composer']) {
-      for (const side of ['plain', 'before', 'after']) {
-        win.setAlwaysOnTop(true)
-        win.show()
-        win.focus()
-        app.focus({ steal: true })
-        win.webContents.focus()
-        await wait(400)
-        const focused = await win.webContents.executeJavaScript(aim(where, side))
-        const at = JSON.parse(await win.webContents.executeJavaScript('JSON.stringify(window.caretAt)'))
-        let lit = 0
-        for (let frame = 0; frame < 8; frame++) {
-          await wait(110)
-          const shot = await win.webContents.capturePage()
-          lit = Math.max(lit, count(shot.toBitmap(), shot.getSize(), at, width))
-        }
-        seen.push({ where, side, focused, lit })
-      }
-    }
-    console.log('SEEN ' + JSON.stringify({ drawn, seen }))
-  } catch (e) {
-    console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) }))
-  }
-  app.exit(0)
-})
-
-function aim(where, side) {
-  return \`(() => {
-    const which = ${JSON.stringify('$WHERE$')}
-    return null })()\`.replace(/[\\s\\S]*/, '') || AIM.replace(/__WHERE__/g, where).replace(/__SIDE__/g, side)
-}
-
-const AIM = \`(() => {
-  const where = '__WHERE__'
-  const side = '__SIDE__'
+// The caret is put where a person would put it and where it lands is read off
+// the picture's own box, since a collapsed range at the edge of an element hands
+// back nothing to measure.
+window.aimCaret = (where, side) => {
   const host = document.querySelector('[data-say="' + where + '"]')
-  const mark = host.querySelector('.doc-emoji, .bn-inline-content') && where === 'doc'
-    ? host.querySelector('.doc-emoji')
-    : host.querySelector('[data-emoji-box]')
+  const mark = where === 'doc' ? host.querySelector('.doc-emoji') : host.querySelector('.relative.inline-block')
+  if (!mark) return { failed: 'nothing in the ' + where + ' is drawing an emoji' }
+  const box = mark.getBoundingClientRect()
+  let spot = side === 'before' ? box.x : box.x + box.width
   if (where === 'doc') {
     const line = host.querySelector('.bn-inline-content')
     line.closest('[contenteditable]').focus()
@@ -117,20 +71,60 @@ const AIM = \`(() => {
     const sel = getSelection()
     sel.removeAllRanges()
     sel.addRange(range)
-    const box = mark.getBoundingClientRect()
-    const spot = side === 'plain' ? range.getBoundingClientRect().x : side === 'before' ? box.x : box.x + box.width
-    window.caretAt = { x: spot - 2, y: box.y - 3, w: 5, h: box.height + 6 }
+    if (side === 'plain') spot = range.getBoundingClientRect().x
   } else {
     const field = host.querySelector('textarea')
     field.focus()
     const at = side === 'plain' ? 1 : side === 'before' ? 2 : 4
     field.setSelectionRange(at, at)
-    const box = mark.getBoundingClientRect()
-    const spot = side === 'plain' ? box.x - 8 : side === 'before' ? box.x : box.x + box.width
-    window.caretAt = { x: spot - 2, y: box.y - 3, w: 5, h: box.height + 6 }
+    if (side === 'plain') spot = box.x - 8
   }
-  return document.hasFocus()
-})()\`
+  return { focused: document.hasFocus(), at: { x: spot - 2, y: box.y - 3, w: 5, h: box.height + 6 } }
+}
+`
+
+const MAIN = `const { app, BrowserWindow } = require('electron')
+const path = require('node:path')
+app.disableHardwareAcceleration()
+
+const wait = ms => new Promise(r => setTimeout(r, ms))
+const SIDES = ['plain', 'before', 'after']
+
+app.whenReady().then(async () => {
+  const win = new BrowserWindow({ width: 760, height: 520, show: true })
+  try {
+    await win.loadFile(path.join(__dirname, 'dist/index.html'))
+    await wait(1600)
+    const width = await win.webContents.executeJavaScript('innerWidth')
+    const drawn = await win.webContents.executeJavaScript('document.querySelectorAll(".doc-emoji").length')
+    const seen = []
+    for (const where of ['doc', 'composer']) {
+      for (const side of SIDES) {
+        win.setAlwaysOnTop(true)
+        win.show()
+        win.focus()
+        app.focus({ steal: true })
+        win.webContents.focus()
+        await wait(400)
+        const aim = JSON.parse(
+          await win.webContents.executeJavaScript('JSON.stringify(window.aimCaret(' + JSON.stringify(where) + ',' + JSON.stringify(side) + '))')
+        )
+        if (aim.failed) throw new Error(aim.failed)
+        let lit = 0
+        for (let frame = 0; frame < 8; frame++) {
+          await wait(110)
+          const shot = await win.webContents.capturePage()
+          lit = Math.max(lit, count(shot.toBitmap(), shot.getSize(), aim.at, width))
+        }
+        seen.push({ where, side, focused: aim.focused, lit })
+      }
+    }
+    console.log('SEEN ' + JSON.stringify({ drawn, seen }))
+  } catch (e) {
+    console.log('SEEN ' + JSON.stringify({ failed: String(e && e.message) }))
+  }
+  app.exit(0)
+})
 
 function count(bits, size, box, width) {
   const scale = size.width / width
@@ -211,7 +205,7 @@ try {
 
   const problems = []
   for (const read of seen.seen) {
-    if (!read.focused) problems.push(`the window was not focused for ${read.where} ${read.side}, so no caret was ever drawn`)
+    if (!read.focused) problems.push(`the window was not focused for the ${read.where}, so no caret was ever drawn`)
   }
   for (const where of ['doc', 'composer']) {
     const plain = seen.seen.find(read => read.where === where && read.side === 'plain')
