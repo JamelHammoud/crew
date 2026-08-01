@@ -305,7 +305,7 @@ const driveSource = String.raw`(async () => {
 
   editor.selectNone()
   await settle()
-  editor.setFocusedGroupId(group.id)
+  editor.setFocusedGroup(group.id)
   editor.setSelectedShapes([spot.hit])
   await settle()
   const focusedIds = availableCommands({ ...ctx, point: pageAt(spot.screen) }).map(command => command.id)
@@ -318,7 +318,7 @@ const driveSource = String.raw`(async () => {
   const afterFocusedIds = availableCommands({ ...ctx, point: pageAt(spot.screen) }).map(command => command.id)
   report.insideTheGroup.selectionAfterRightClick = selection()
   report.insideTheGroup.hasUngroupAfterRightClick = afterFocusedIds.includes('ungroup')
-  editor.setFocusedGroupId(editor.getCurrentPageId())
+  editor.setFocusedGroup(null)
   await settle()
 
   await rightClick(spot.screen, childNode ?? undefined)
