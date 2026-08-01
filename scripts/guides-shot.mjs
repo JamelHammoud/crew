@@ -137,9 +137,9 @@ const fs = require('node:fs/promises')
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 const zooms = [
   { name: 'whole', z: 1, look: { x: 420, y: 60 } },
+  { name: 'near-gap', z: 4, look: { x: 720, y: 60 }, still: true },
   { name: 'far', z: 0.14, look: { x: 420, y: 60 } },
-  { name: 'near', z: 4, look: { x: 700, y: 60 } },
-  { name: 'near-held', z: 4, look: { x: 700, y: 60 }, still: true }
+  { name: 'near', z: 4, look: { x: 700, y: 60 } }
 ]
 
 app.whenReady().then(async () => {

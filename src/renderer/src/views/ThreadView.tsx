@@ -478,6 +478,7 @@ export default function ThreadView({
             </div>
           </div>
         </div>
+        {openMenu.menu}
       </div>
     </div>
   )
