@@ -367,8 +367,8 @@ export class Idle extends StateNode<SelectEditor> {
     this.parent.transition('editing_shape', { ...info, target: 'shape', shape })
   }
 
-  private nudgeSelectedShapes(ephemeral: boolean): void {
-    const keys = this.editor.inputs.keys as Set<string>
+  private nudgeSelectedShapes(ephemeral: boolean, info: any): void {
+    const keys: Set<string> = this.editor.inputs.keys ?? new Set([info.code])
     const delta = new Vec(0, 0)
     if (keys.has('ArrowLeft')) delta.x -= 1
     if (keys.has('ArrowRight')) delta.x += 1
@@ -377,7 +377,7 @@ export class Idle extends StateNode<SelectEditor> {
     if (delta.equals(new Vec(0, 0))) return
     if (!ephemeral) this.editor.markHistoryStoppingPoint('nudge shapes')
     this.editor.updateInstanceState({ isChangingStyle: true })
-    const shift = keys.has('ShiftLeft')
+    const shift = keys.has('ShiftLeft') || keys.has('ShiftRight') || Boolean(info.shiftKey)
     const settings = this.editor.getDocumentSettings()
     const grid = this.editor.getInstanceState().isGridMode
     const step = grid
