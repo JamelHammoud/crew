@@ -38,7 +38,7 @@ export interface TextGrowthResult extends TextGrowthState {
 
 export function measureTextLayout(measurer: TextMeasurer, request: TextLayoutRequest): TextLayoutSize {
   const fixedWidth = request.autoSize ? null : Math.max(MIN_TEXT_WIDTH, Math.floor(request.width))
-  const measured = measurer.measureHtml(richTextForMeasurement(request.richText), {
+  const measured = measurer.measureHtml(renderHtmlFromRichTextForMeasurement(request.richText as TLRichText), {
     ...request.options,
     fontSize: request.fontSize,
     maxWidth: fixedWidth
