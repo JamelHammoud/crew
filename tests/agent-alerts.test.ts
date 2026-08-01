@@ -9,6 +9,7 @@ import TopBar from '../src/renderer/src/components/TopBar'
 import {
   finishedAlert,
   memberMentionAlert,
+  memberReplyAlert,
   questionAlert,
   reviewCount,
   type AlertState

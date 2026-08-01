@@ -38,6 +38,14 @@ const driveSource = String.raw`(async () => {
     const rect = box()
     return { x: at.x + rect.left, y: at.y + rect.top }
   }
+  const pageAt = at => {
+    const rect = box()
+    return editor.screenToPage({ x: at.x - rect.left, y: at.y - rect.top })
+  }
+  const stillCamera = async (times = 20) => {
+    for (let at = 0; at < times && editor.getCameraState() === 'moving'; at++) await frame()
+    return editor.getCameraState()
+  }
   const pointer = (name, x, y, buttons, target, modifiers) =>
     (target || surface).dispatchEvent(
       new PointerEvent(name, {
