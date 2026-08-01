@@ -22,7 +22,10 @@ export {
   cameraCssTransform,
   cameraOffset,
   cameraZoomVariables,
-  shapeCssTransform
+  canvasStyle,
+  pageLayerStyle,
+  shapeCssTransform,
+  shapeStyle
 } from './style'
 export type {
   CanvasBounds,
