@@ -279,6 +279,19 @@ const driveSource = String.raw`(async () => {
   results.push(await measure('marquee', marqueeStart, { x: 6, y: 4 }, surface))
 
   editor.selectNone()
+  editor.zoomToFit({ immediate: true })
+  await settle()
+  const whole = editor.getViewportScreenBounds()
+  const wide = await measure(
+    'marquee across the board',
+    { x: whole.minX + 6, y: whole.minY + 6 },
+    { x: (whole.w - 12) / ${MOVES}, y: (whole.h - 12) / ${MOVES} },
+    surface
+  )
+  wide.covered = editor.getSelectedShapeIds().length
+  results.push(wide)
+
+  editor.selectNone()
   await settle()
   const grabAt = viewport(editor.getShapePageBounds(near).center)
   const grabbed = editor.getShapeAtPoint(editor.getShapePageBounds(near).center, {
