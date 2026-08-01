@@ -47,8 +47,6 @@ export class DragAndDropManager {
       const parent = getShapeParent(this.editor, shape)
       if (parent) this.initialParentIds.set(shape.id, parent.id)
       this.initialIndices.set(shape.id, shape.index)
-      const group = findShapeAncestor(this.editor, shape, (s: any) => this.editor.isShapeOfType(s, 'group'))
-      if (group) this.initialParentIds.set(shape.id, this.initialParentIds.get(shape.id) ?? group.id)
     }
 
     const sorted = this.editor.getCurrentPageShapesSorted()
@@ -108,10 +106,7 @@ export class DragAndDropManager {
   }
 
   private draggingOverShape(point: Vec, dropping = this.shapesToActuallyMove): any {
-    const dragging = dropping
-      .map((shape: any) => this.editor.getShape(shape.id ?? shape))
-      .filter((shape: any) => shape && !shape.isLocked && !this.editor.isShapeHidden(shape))
-    const draggingIds = new Set(dragging.map((shape: any) => shape.id))
+    const draggingIds = new Set(dropping.map((shape: any) => shape.id))
     const candidates = this.editor
       .getShapesAtPoint(point, { hitInside: true, margin: 0 })
       .filter((shape: any) => !draggingIds.has(shape.id) && !shape.isLocked && !this.editor.isShapeHidden(shape))
