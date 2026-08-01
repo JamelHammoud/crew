@@ -16,6 +16,7 @@ export class TextShapeTool implements BoxStateParent {
       pointing: new Pointing(editor, this)
     }
     this.current = this.states.idle
+    this.current.onEnter({})
   }
 
   transition(id: string, info: BoxPointerInfo = {}): void {
