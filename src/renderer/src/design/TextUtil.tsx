@@ -1,9 +1,9 @@
 import { cloneElement, type CSSProperties, type ReactElement } from 'react'
 import { atom, TextShapeUtil, type Editor, type ShapeUtil, type TLTextShape } from '../canvas'
+import type { TypeStyle } from '../../../shared/designNode'
 import { fontStack, loadFonts, whenFontsLoad } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { textShapeType, typeMeasure } from './textType'
-import { trimOf, type TrimmedType } from './verticalTrim'
 import {
   compensateTextGrowth,
   measureTextLayout,
@@ -11,11 +11,11 @@ import {
   textGrowthMatters,
   type TextGrowthState
 } from '../canvas/text'
-import { forgetFaceMetrics, trimEdges, trimHeight, trimStyle, type TrimEdges } from '../canvas/text/trim'
+import { clearFontMetrics, fontMetrics, trimOf, type TextTrim } from '../canvas/text/metrics'
 
 const generation = atom('loaded fonts', 0)
 whenFontsLoad(() => {
-  forgetFaceMetrics()
+  clearFontMetrics()
   generation.set(generation.get() + 1)
 })
 
