@@ -1,7 +1,14 @@
 // @vitest-environment jsdom
 import { fireEvent, render } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createElement } from 'react'
 import { describe, expect, it, vi } from 'vitest'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const styles = readFileSync(path.join(root, 'src/renderer/src/styles.css'), 'utf8')
+const composer = readFileSync(path.join(root, 'src/renderer/src/components/Composer.tsx'), 'utf8')
 
 window.matchMedia = ((query: string) => ({
   matches: false,
