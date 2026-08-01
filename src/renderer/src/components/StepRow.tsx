@@ -166,7 +166,7 @@ export default function StepRow({ item, linked, inGroup }: { item: ThreadItem; l
           </>
         )}
         {subject && (
-          <span className={thinking ? `${SUBJECT} italic` : action.prose ? SUBJECT : SUBJECT_MONO}>
+          <span className={action.prose ? SUBJECT : SUBJECT_MONO}>
             <TextWithFileLinks text={subject} inline again={!item.streaming} />
           </span>
         )}
