@@ -1,28 +1,17 @@
-import { isImageType, MAX_ATTACHMENTS, mimeForFile, type OutgoingAttachment } from '../../../shared/attachments'
+import { isImageType, MAX_ATTACHMENTS, mimeForFile } from '../../../shared/attachments'
+import { holdPending } from './attachment/pending'
 
-export interface PendingAttachment extends OutgoingAttachment {
-  id: string
-  size: number
-}
-
-const previews = new Map<string, string>()
-
-export function previewSrc(attachment: PendingAttachment): string {
-  const made = previews.get(attachment.id)
-  if (made) return made
-  const src = `data:${attachment.mime};base64,${attachment.data}`
-  previews.set(attachment.id, src)
-  return src
-}
-
-export function keepPreviews(ids: Set<string>): void {
-  for (const id of previews.keys()) if (!ids.has(id)) previews.delete(id)
-}
+export type { PendingAttachment } from './attachment/pending'
+export { keepPreviews, previewSrc } from './attachment/pending'
 
 const readAsBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '')
+    reader.onload = () => {
+      const url = String(reader.result)
+      const comma = url.indexOf(',')
+      resolve(comma < 0 ? '' : url.slice(comma + 1))
+    }
     reader.onerror = () => reject(reader.error)
     reader.readAsDataURL(file)
   })
