@@ -3,10 +3,16 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { EditorContext } from '../src/renderer/src/canvas'
+import { Editor } from '../src/renderer/src/canvas/editor'
+import { createShapeId, createTLStore, type TLShapeId } from '../src/renderer/src/canvas/schema'
+import { GeoShapeUtil, GroupShapeUtil, defaultBindingUtils } from '../src/renderer/src/canvas/shapes'
+import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 import { nodeDefaults } from '../src/shared/designNode'
 import { fakeBoard, type FakeShape } from './helpers/design-editor'
 
-const { default: DesignContextMenu } = await import('../src/renderer/src/components/DesignContextMenu')
+const { default: DesignContextMenu, useContextMenu } = await import(
+  '../src/renderer/src/components/DesignContextMenu'
+)
 
 const node = (id: string, name: string): FakeShape => ({
   id,
