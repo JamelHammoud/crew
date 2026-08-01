@@ -9,6 +9,7 @@ import { loopbackAnswers, portToAsk } from '../src/server/port'
 import { CrewSession } from '../src/server/session'
 import { Store } from '../src/server/store'
 import type { ServerMessage } from '../src/shared/protocol'
+import { initRepo } from './helpers/git'
 import { tmpDir } from './helpers/session'
 
 function crewOn(port: number, host: string): Promise<CrewServer> {
