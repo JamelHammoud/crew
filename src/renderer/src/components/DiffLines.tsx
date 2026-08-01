@@ -60,16 +60,24 @@ function Gap({ says }: { says: string }) {
   )
 }
 
+// A glance at what an agent did scrolls sideways, because a step in a thread is
+// read past rather than read and the line it cuts off is one nobody was going
+// to reach anyway. A file being reviewed in a 480 column is the opposite: the
+// line running off the right is the one being judged, and a column that cuts it
+// off is a column the work cannot be done in. So the reading wraps, and the
+// wrapped part hangs under the code rather than under the gutter.
 export default function DiffLines({
   path,
   rows,
   more,
-  numbers = false
+  numbers = false,
+  wrap = false
 }: {
   path: string
   rows: Row[]
   more?: ReactNode
   numbers?: boolean
+  wrap?: boolean
 }) {
   const tokensFor = useHighlight(path, rows)
   if (rows.length === 0) return null
@@ -78,13 +86,13 @@ export default function DiffLines({
   const width = Math.max(2, String(rows.reduce((high, row) => Math.max(high, row.at ?? 0), 0)).length) + 1
 
   return (
-    <div className="select-text bg-ink-850 py-1.5 font-mono text-xs leading-5 overflow-x-auto">
-      <div className="w-max min-w-full">
+    <div className={`select-text bg-ink-850 py-1.5 font-mono text-xs leading-5 ${wrap ? '' : 'overflow-x-auto'}`}>
+      <div className={wrap ? '' : 'w-max min-w-full'}>
         {rows.map((row, index) =>
           row.gap ? (
             <Gap key={index} says={row.text} />
           ) : (
-            <Line key={index} row={row} tokens={tokensFor(row)} numbers={numbers} width={width} />
+            <Line key={index} row={row} tokens={tokensFor(row)} numbers={numbers} width={width} wrap={wrap} />
           )
         )}
         {more}
