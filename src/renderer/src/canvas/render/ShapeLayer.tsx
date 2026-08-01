@@ -1,13 +1,76 @@
-import { memo, useLayoutEffect, useRef } from 'react'
-import { useQuickReactor, useValue } from '../signals'
-import { MountedShapeCullingProvider, useCullingReactor, useMountedShapeCulling } from './Culling'
+import { memo, useLayoutEffect, useMemo, useRef } from 'react'
+import { computed, useValue } from '../signals'
+import { MountedShapeCullingProvider, useCanvasLayoutReactor, useMountedShapeCulling } from './Culling'
 import { setStyle, shapeCssTransform, shapeStyle } from './style'
 import type { CanvasRenderHost, CanvasRenderingShape, CanvasShapeRecord, CanvasShapeRenderer } from './types'
+
+const SORT_CACHE_THRESHOLD = 32
+
+const byId = (a: { id: string }, b: { id: string }) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
 
 export function sortRenderingShapes<Shape extends CanvasShapeRecord>(
   shapes: CanvasRenderingShape<Shape>[]
 ): CanvasRenderingShape<Shape>[] {
-  return shapes.length < 2 ? shapes : [...shapes].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+  return shapes.length < 2 ? shapes : [...shapes].sort(byId)
+}
+
+export class RenderingShapeOrder {
+  private positions: Map<string, number> | null = null
+
+  sort<Shape extends CanvasShapeRecord>(shapes: CanvasRenderingShape<Shape>[]): CanvasRenderingShape<Shape>[] {
+    if (shapes.length < 2) return shapes
+    if (shapes.length <= SORT_CACHE_THRESHOLD) {
+      this.positions = null
+      return shapes.sort(byId)
+    }
+    const positions = this.positions
+    if (positions && positions.size === shapes.length) {
+      const sorted = new Array<CanvasRenderingShape<Shape>>(shapes.length)
+      let matched = true
+      for (let at = 0; at < shapes.length; at++) {
+        const position = positions.get(shapes[at].id)
+        if (position === undefined) {
+          matched = false
+          break
+        }
+        sorted[position] = shapes[at]
+      }
+      if (matched) return sorted
+    }
+    shapes.sort(byId)
+    const next = new Map<string, number>()
+    for (let at = 0; at < shapes.length; at++) next.set(shapes[at].id, at)
+    this.positions = next
+    return shapes
+  }
+}
+
+function sameRenderingShape<Shape extends CanvasShapeRecord>(
+  previous: CanvasRenderingShape<Shape>,
+  next: CanvasRenderingShape<Shape>
+): boolean {
+  return (
+    previous.id === next.id &&
+    previous.index === next.index &&
+    previous.backgroundIndex === next.backgroundIndex &&
+    previous.opacity === next.opacity &&
+    previous.isEditing === next.isEditing &&
+    previous.shape.type === next.shape.type &&
+    previous.shape.props === next.shape.props &&
+    previous.shape.meta === next.shape.meta
+  )
+}
+
+export function sameRenderingShapes<Shape extends CanvasShapeRecord>(
+  previous: CanvasRenderingShape<Shape>[],
+  next: CanvasRenderingShape<Shape>[]
+): boolean {
+  if (previous === next) return true
+  if (previous.length !== next.length) return false
+  for (let at = 0; at < previous.length; at++) {
+    if (!sameRenderingShape(previous[at], next[at])) return false
+  }
+  return true
 }
 
 export function ShapeLayer<Shape extends CanvasShapeRecord>({
@@ -17,7 +80,17 @@ export function ShapeLayer<Shape extends CanvasShapeRecord>({
   host: CanvasRenderHost<Shape>
   renderer: CanvasShapeRenderer<Shape>
 }) {
-  const shapes = useValue('canvas rendering shapes', () => sortRenderingShapes(host.getRenderingShapes()), [host])
+  const order = useRef<RenderingShapeOrder>()
+  if (!order.current) order.current = new RenderingShapeOrder()
+  const sorter = order.current
+  const rendering = useMemo(
+    () =>
+      computed('canvas rendering shapes', () => sorter.sort(host.getRenderingShapes()), {
+        isEqual: sameRenderingShapes
+      }),
+    [host, sorter]
+  )
+  const shapes = useValue(rendering)
   const probe = (globalThis as never as { __render?: Record<string, number> }).__render
   if (probe) probe.layerRenders = (probe.layerRenders ?? 0) + 1
   return (
@@ -32,7 +105,7 @@ export function ShapeLayer<Shape extends CanvasShapeRecord>({
 
 function CullingController<Shape extends CanvasShapeRecord>({ host }: { host: CanvasRenderHost<Shape> }) {
   const culling = useMountedShapeCulling()
-  useCullingReactor('canvas mounted shape culling', () => culling.update(host.getCulledShapes()), [host, culling])
+  useCanvasLayoutReactor('canvas mounted shape culling', () => culling.update(host.getCulledShapes()), [host, culling])
   return null
 }
 
@@ -51,27 +124,31 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
   const culling = useMountedShapeCulling()
   const background = renderer.renderBackground?.(result.shape)
 
-  useQuickReactor(`canvas shape ${result.id}`, () => {
-    const shape = host.getShape(result.id)
-    const transform = host.getShapePageTransform(result.id)
-    if (!shape || !transform) return
-    const bounds = host.getShapeGeometry(shape).bounds
-    const clipPath = host.getShapeClipPath(result.id) ?? 'none'
-    const next = {
-      transform: shapeCssTransform(transform),
-      clipPath,
-      width: `${Math.max(bounds.w, 1)}px`,
-      height: `${Math.max(bounds.h, 1)}px`
-    }
-    const previous = memoized.current
-    for (const key of Object.keys(next) as Array<keyof typeof next>) {
-      if (next[key] === previous[key]) continue
-      const property = key === 'clipPath' ? 'clip-path' : key
-      setStyle(foregroundRef.current, property, next[key])
-      setStyle(backgroundRef.current, property, next[key])
-      previous[key] = next[key]
-    }
-  }, [host, result.id])
+  useCanvasLayoutReactor(
+    `canvas shape ${result.id}`,
+    () => {
+      const shape = host.getShape(result.id)
+      const transform = host.getShapePageTransform(result.id)
+      if (!shape || !transform) return
+      const bounds = host.getShapeGeometry(shape).bounds
+      const clipPath = host.getShapeClipPath(result.id) ?? 'none'
+      const next = {
+        transform: shapeCssTransform(transform),
+        clipPath,
+        width: `${Math.max(bounds.w, 1)}px`,
+        height: `${Math.max(bounds.h, 1)}px`
+      }
+      const previous = memoized.current
+      for (const key of Object.keys(next) as Array<keyof typeof next>) {
+        if (next[key] === previous[key]) continue
+        const property = key === 'clipPath' ? 'clip-path' : key
+        setStyle(foregroundRef.current, property, next[key])
+        setStyle(backgroundRef.current, property, next[key])
+        previous[key] = next[key]
+      }
+    },
+    [host, result.id]
+  )
 
   useLayoutEffect(() => {
     setStyle(foregroundRef.current, 'opacity', String(result.opacity))
@@ -83,9 +160,9 @@ function CanvasShapeView<Shape extends CanvasShapeRecord>({ host, renderer, resu
   useLayoutEffect(() => {
     const foreground = foregroundRef.current
     if (!foreground) return
-    culling.register(result.id, foreground, backgroundRef.current)
+    culling.register(result.id, foreground, backgroundRef.current, host.getCulledShapes().has(result.id))
     return () => culling.unregister(result.id)
-  }, [culling, result.id])
+  }, [culling, host, result.id])
 
   return (
     <>
@@ -123,25 +200,12 @@ function sameShapeContent<Shape extends CanvasShapeRecord>(
   next: CanvasShapeProps<Shape>
 ): boolean {
   const probe = (globalThis as never as { __render?: Record<string, number> }).__render
-  const checks: Array<[string, boolean]> = [
-    ['host', previous.host === next.host],
-    ['renderer', previous.renderer === next.renderer],
-    ['id', previous.result.id === next.result.id],
-    ['index', previous.result.index === next.result.index],
-    ['backgroundIndex', previous.result.backgroundIndex === next.result.backgroundIndex],
-    ['opacity', previous.result.opacity === next.result.opacity],
-    ['isEditing', previous.result.isEditing === next.result.isEditing],
-    ['type', previous.result.shape.type === next.result.shape.type],
-    ['props', previous.result.shape.props === next.result.shape.props],
-    ['meta', previous.result.shape.meta === next.result.shape.meta]
-  ]
   if (probe) probe.compares = (probe.compares ?? 0) + 1
-  for (const [name, ok] of checks) {
-    if (ok) continue
-    if (probe) probe[`miss.${name}`] = (probe[`miss.${name}`] ?? 0) + 1
-    return false
-  }
-  return true
+  return (
+    previous.host === next.host &&
+    previous.renderer === next.renderer &&
+    sameRenderingShape(previous.result, next.result)
+  )
 }
 
 const CanvasShape = memo(CanvasShapeView, sameShapeContent) as typeof CanvasShapeView
