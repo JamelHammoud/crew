@@ -41,6 +41,27 @@ export function dragHandle(options: DragHandleOptions): TransformHandle {
 
 export const dragHandleToPoint = dragHandle
 
+export function findAdjacentHandle(
+  handles: readonly TransformHandle[],
+  handle: TransformHandle
+): TransformHandle | null {
+  const sorted = [...handles].sort((a, b) => (a.index ?? '').localeCompare(b.index ?? ''))
+  if (handle.snapReferenceHandleId) {
+    const named = sorted.find(other => other.id === handle.snapReferenceHandleId)
+    if (named) return named
+  }
+  const isVertex = (other: TransformHandle): boolean =>
+    other.type === 'vertex' && other.id !== 'middle' && other.id !== handle.id
+  const index = sorted.findIndex(other => other.id === handle.id)
+  for (let i = index + 1; i < sorted.length; i++) {
+    if (isVertex(sorted[i])) return sorted[i]
+  }
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (isVertex(sorted[i])) return sorted[i]
+  }
+  return null
+}
+
 export interface DraggingHandleInfo<Shape extends TLShape = TLShape> {
   target?: 'handle'
   shape: Shape

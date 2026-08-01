@@ -33,6 +33,10 @@ export class EditorHistory {
     this.manager.undo()
   }
 
+  bail(): void {
+    this.manager.bail()
+  }
+
   redo(): void {
     this.manager.redo()
   }
