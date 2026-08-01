@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 
 export const SIDEBAR_W = 264
+export const PIN_MS = 200
 
 const KEY = 'crew.sidebar'
-const GRACE_MS = 160
+const GRACE_MS = 100
 
 const held = (): boolean => {
   try {
