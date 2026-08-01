@@ -1,35 +1,57 @@
 import { useMemo } from 'react'
+import type { SessionEvent } from '../../../../shared/events'
 import { useCrew } from '../../state/store'
 import type { SubagentRun } from '../thread'
+
+export interface SubagentRow extends SubagentRun {
+  depth: number
+}
+
+type Started = Extract<SessionEvent, { kind: 'subagent.started' }>
 
 // The helpers one thread sent out, read off the log rather than held anywhere.
 // The record of a run is two events, and the second one is a fact about the
 // first, so they are folded back into one thing here the way the chat block
 // folds the three events of a call.
-export function useSubagentRuns(parentThreadId: string): SubagentRun[] {
+export function useSubagentRuns(parentThreadId: string): SubagentRow[] {
   const events = useCrew(state => state.events)
   return useMemo(() => {
     const ended = new Map<string, { ok: boolean; ms: number; stopped?: boolean }>()
+    const sent = new Map<string, Started[]>()
     for (const event of events) {
       if (event.kind === 'subagent.ended') {
         ended.set(event.threadId, { ok: event.ok, ms: event.ms, stopped: event.stopped })
       }
+      if (event.kind === 'subagent.started') {
+        const out = sent.get(event.parentThreadId) ?? []
+        out.push(event)
+        sent.set(event.parentThreadId, out)
+      }
     }
-    const runs: SubagentRun[] = []
-    for (const event of events) {
-      if (event.kind !== 'subagent.started' || event.parentThreadId !== parentThreadId) continue
-      const home = ended.get(event.threadId)
-      runs.push({
-        threadId: event.threadId,
-        name: event.name,
-        subject: event.subject,
-        agentId: event.agentId,
-        ok: home?.ok,
-        ms: home?.ms,
-        stopped: home?.stopped
-      })
+    const rows: SubagentRow[] = []
+    const seen = new Set([parentThreadId])
+    const walk = (threadId: string, depth: number): void => {
+      const out = sent.get(threadId) ?? []
+      for (let i = out.length - 1; i >= 0; i--) {
+        const event = out[i]
+        if (seen.has(event.threadId)) continue
+        seen.add(event.threadId)
+        const home = ended.get(event.threadId)
+        rows.push({
+          threadId: event.threadId,
+          name: event.name,
+          subject: event.subject,
+          agentId: event.agentId,
+          ok: home?.ok,
+          ms: home?.ms,
+          stopped: home?.stopped,
+          depth
+        })
+        walk(event.threadId, depth + 1)
+      }
     }
-    return runs.reverse()
+    walk(parentThreadId, 0)
+    return rows
   }, [events, parentThreadId])
 }
 

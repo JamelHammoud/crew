@@ -5,7 +5,13 @@ import os from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { OtherInstances, alive } from '../src/main/instances'
-import { instancesIn, pidFileName, pidInFileName } from '../src/shared/instances'
+import {
+  BOOT_MARGIN_MS,
+  instancesIn,
+  outlivedBoot,
+  pidFileName,
+  pidInFileName
+} from '../src/shared/instances'
 
 // Whether any other Crew is live on this machine, against a real folder and real
 // processes. Nothing here goes near electron: the folder is handed in the way the
