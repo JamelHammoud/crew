@@ -55,14 +55,14 @@ describe('which shapes are snap targets', () => {
     expect(targets(subject)).not.toContain(group)
   })
 
-  it('leaves out a shape that is not wholly inside the viewport', () => {
+  it('leaves out a shape the viewport does not reach, and keeps one it only overlaps', () => {
     const subject = editor()
     const near = geo(subject, 'near', 100, 100)
     geo(subject, 'far', 5000, 5000)
-    geo(subject, 'straddling', 995, 100)
+    const straddling = geo(subject, 'straddling', 995, 100)
     const dragged = geo(subject, 'dragged', 0, 0)
     subject.select(dragged)
-    expect(targets(subject)).toEqual([near])
+    expect(targets(subject)).toEqual([near, straddling].sort())
   })
 
   it('snaps to the siblings under the same parent, and to the frame itself', () => {
