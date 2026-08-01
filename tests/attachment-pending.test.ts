@@ -53,6 +53,8 @@ class TestCanvas {
   }
 }
 
+const drawnBy = (url: string): number => sources.get(url)?.size ?? -1
+
 const bitmap = (width: number, height: number) => ({ width, height, close: () => {} })
 
 beforeEach(() => {

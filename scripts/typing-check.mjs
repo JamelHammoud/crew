@@ -359,10 +359,14 @@ function run(dir) {
 
 const say = result => {
   const what = result.contained ? `${result.rows} rows, contained` : `${result.rows} rows`
+  const pad = ''.padEnd(22)
   console.log(`  ${what.padEnd(22)} ${result.drawn} rows drawn, ${result.tall}px of thread`)
-  console.log(`  ${''.padEnd(22)} keystroke mean ${result.sync.mean}ms  median ${result.sync.median}ms  p95 ${result.sync.p95}ms  worst ${result.sync.worst}ms`)
-  console.log(`  ${''.padEnd(22)} to frame  mean ${result.frame.mean}ms  median ${result.frame.median}ms  p95 ${result.frame.p95}ms`)
-  console.log(`  ${''.padEnd(22)} the reflow itself, one read ${result.once.median}ms, two reads ${result.twice.median}ms`)
+  console.log(`  ${pad} keystroke mean ${result.sync.mean}ms  median ${result.sync.median}ms  p95 ${result.sync.p95}ms  worst ${result.sync.worst}ms`)
+  if (result.growing) {
+    console.log(`  ${pad} a line more mean ${result.growing.mean}ms  median ${result.growing.median}ms  worst ${result.growing.worst}ms, ${result.lines} of them`)
+  }
+  console.log(`  ${pad} to frame  mean ${result.frame.mean}ms  median ${result.frame.median}ms  p95 ${result.frame.p95}ms`)
+  console.log(`  ${pad} the reflow itself, one read ${result.once}ms, two reads ${result.twice}ms`)
 }
 
 let bad = false

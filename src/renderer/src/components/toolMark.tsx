@@ -45,7 +45,7 @@ const GLYPHS: Record<ToolMark, Glyph> = {
   folder: FolderGlyph,
   file: FileGlyph,
   doc: DocGlyph,
-  clipboard: CopyGlyph,
+  copy: CopyGlyph,
   checklist: ChecklistGlyph,
   archive: ArchiveGlyph,
   photo: PhotoGlyph,
