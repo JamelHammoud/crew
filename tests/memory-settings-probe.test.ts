@@ -102,12 +102,12 @@ describe('the memory page', () => {
     })
     fireEvent.click(within(card()).getByRole('button', { name: 'Save' }))
     expect(sent).toEqual([
-      { type: 'memory.edit', memoryId: 'The t', text: 'The tests boot real servers on loopback' }
+      { type: 'memory.edit', memoryId: 'The te', text: 'The tests boot real servers on loopback' }
     ])
 
     fireEvent.click(screen.getByRole('button', { name: 'More for The tests boot real servers' }))
     fireEvent.click(screen.getByRole('button', { name: 'Delete memory' }))
-    expect(sent[1]).toEqual({ type: 'memory.remove', memoryId: 'The t' })
+    expect(sent[1]).toEqual({ type: 'memory.remove', memoryId: 'The te' })
   })
 
   it('wears the pet for an agent and the face for a person', () => {
