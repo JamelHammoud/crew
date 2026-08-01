@@ -21,14 +21,14 @@ export interface AlertState extends ReviewState {
 // not a task of its own, or six of them finishing puts six rows on the list and
 // six on the badge for one piece of work. A question asked on the side is not
 // one either: it was answered where it was asked, and there is nothing to review.
-export const reviewCount = (state: ReviewState): number =>
-  Object.values(state.threads).filter(
-    thread =>
-      thread.status === 'open' &&
-      !thread.parentThreadId &&
-      !thread.aside &&
-      !threadWorking(thread.id, state.threadPrompts, state.queues, state.threads)
-  ).length
+export const reviewCount = (state: ReviewState): number => {
+  const working = workingThreads(state.threadPrompts, state.queues, state.threads)
+  let count = 0
+  for (const thread of Object.values(state.threads)) {
+    if (thread.status === 'open' && !thread.parentThreadId && !thread.aside && !working.has(thread.id)) count += 1
+  }
+  return count
+}
 
 // A turn ending is not a thread finishing, and this is the one place that tells
 // the two apart. Everything that says a thread is done reads it: the row, the
