@@ -1,17 +1,36 @@
+import { useId, type ReactNode } from 'react'
 import type { NavTab } from './navTabs'
 
-const svg = (size: number) =>
-  ({
-    className: 'tab-icon-svg',
-    width: size,
-    height: size,
-    viewBox: '0 0 20 20',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.67,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round'
-  }) as const
+const BOX = 20
+
+// A mark fades as one drawing rather than one stroke at a time. These are drawn
+// as separate strokes so each can rule itself in, and a translucent color laid
+// on each of them in turn paints twice wherever two cross: the hash came out
+// with a darker square at all four of its crossings and the page with a dark
+// pair either end of its fold, which reads as a mark that will not come into
+// focus. So the strokes are cut as a mask and the color is laid through it once.
+// Everything inside it is white, which `color` says rather than the art, so a
+// part drawn as a fill still asks for `currentColor` the way it does anywhere.
+function Mark({ size, children }: { size: number; children: ReactNode }): React.ReactElement {
+  const id = useId().replace(/[^a-zA-Z0-9-]/g, '')
+  return (
+    <svg className="tab-icon-svg" width={size} height={size} viewBox={`0 0 ${BOX} ${BOX}`}>
+      <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width={BOX} height={BOX}>
+        <g
+          style={{ color: '#fff' }}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.67}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {children}
+        </g>
+      </mask>
+      <rect width={BOX} height={BOX} fill="currentColor" mask={`url(#${id})`} />
+    </svg>
+  )
+}
 
 /** Bubble strokes itself in one pass, then the three dots land left to right. */
 function ChatIcon({ size }: { size: number }) {
