@@ -87,7 +87,9 @@ describe('reporting a problem', () => {
 
     await waitFor(() => expect(within(card()).getByText(/No mail app opened/)).toBeTruthy())
     expect(within(card()).getByText('devjamel@gmail.com')).toBeTruthy()
-    expect(within(card()).getByLabelText('Report').getAttribute('value') ?? '').not.toBe('')
+    expect((within(card()).getByLabelText('Report') as HTMLTextAreaElement).value).toBe(
+      'The panel went blank'
+    )
 
     fireEvent.click(within(card()).getByRole('button', { name: 'Copy the report' }))
     await waitFor(() => expect(copied).toEqual(['The panel went blank\n\nCrew 0.1.0\nmacOS 25.5.0 arm64']))
