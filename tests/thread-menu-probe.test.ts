@@ -40,12 +40,16 @@ const rows = (): string[] =>
     map(one => one.textContent ?? '').
     filter(text => text.startsWith('Open') || text === 'Close')
 
+const said = (): string[] =>
+  Array.from(document.querySelectorAll('[role="menuitem"], button')).map(one => one.textContent ?? '')
+
 beforeEach(() => {
   popOutThread.mockClear()
   onOpen.mockClear()
   onOpenToRight.mockClear()
+  sent.mockClear()
   window.crew = { popOutThread } as unknown as CrewBridge
-  useCrew.setState({ openThreadIds: ['thread-1'], openThreadId: 'thread-1' })
+  useCrew.setState({ openThreadIds: ['thread-1'], openThreadId: 'thread-1', threads: meta('open') })
 })
 
 afterEach(cleanup)
