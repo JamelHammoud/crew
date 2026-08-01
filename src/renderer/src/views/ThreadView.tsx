@@ -319,12 +319,12 @@ export default function ThreadView({ threadId }: { threadId: string }) {
                       </span>
                     </MemberName>
                     {ask && nameWidth >= ASK_MIN_WIDTH && (
-                      <button
-                        onClick={jumpToTop}
-                        className="block max-w-full truncate text-sm text-fg-muted transition-colors duration-150 hover:text-fg-secondary"
-                      >
-                        {ask}
-                      </button>
+                      <ThreadAsk
+                        ask={ask}
+                        whole={opening?.text}
+                        mentionRefs={opening?.mentionRefs}
+                        onJump={jumpToTop}
+                      />
                     )}
                   </div>
                   <div ref={setHeaderStatus} className="ml-auto flex items-center gap-2 shrink-0">
