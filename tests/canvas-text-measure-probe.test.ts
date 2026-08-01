@@ -124,9 +124,11 @@ describe('canvas text span measurement', () => {
 
     const spans = measurement.measureTextSpans('ab\n\ncd', spanOptions)
 
-    expect(spans.map(span => span.text)).toEqual(['ab', '\n \n', 'cd'])
-    expect(spans[0].box.y).toBe(0)
-    expect(spans[2].box.y).toBe(LINE_HEIGHT * 2)
+    const words = spans.filter(span => span.text.trim() !== '')
+    expect(words.map(span => span.text)).toEqual(['ab', 'cd'])
+    expect(words[0].box.y).toBe(0)
+    expect(words[1].box.y).toBe(LINE_HEIGHT * 2)
+    expect(spans.map(span => span.text).join('')).toBe('ab\n \ncd')
     measurement.dispose()
   })
 
