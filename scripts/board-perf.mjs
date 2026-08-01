@@ -18,8 +18,9 @@ function probeSource(snapshot) {
   const reactDom = JSON.stringify(resolve('react-dom/client'))
   return `import React from ${react}
 import { createRoot } from ${reactDom}
-import { createTLStore, defaultBindingUtils, loadSnapshot, useValue } from ${from('canvas/index.ts')}
+import { createTLStore, defaultBindingUtils, EditorContext, loadSnapshot, useValue } from ${from('canvas/index.ts')}
 import { CrewCanvas } from ${from('canvas/CrewCanvas.tsx')}
+import DesignPanel from ${from('design/DesignPanel.tsx')}
 import { applyDesignCursors, DESIGN_CURSORS } from ${from('design/cursors.tsx')}
 import { applyDesignDefaults } from ${from('design/defaults.ts')}
 import { DesignNodeTool } from ${from('design/DesignNodeTool.ts')}
@@ -71,7 +72,8 @@ function Board() {
         tools: [DesignNodeTool],
         onMount: mounted
       }),
-      React.createElement(SelectionOverlay, { editor })
+      React.createElement(SelectionOverlay, { editor }),
+      editor && React.createElement(EditorContext.Provider, { value: editor }, React.createElement(DesignPanel))
     )
   )
 }
