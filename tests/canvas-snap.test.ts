@@ -146,3 +146,119 @@ describe('canvas bounds snapping', () => {
     expect(result.indicators.some(indicator => indicator.id === 'point:x:100')).toBe(true)
   })
 })
+
+describe('how far a snap reaches', () => {
+  const reach = (dragDelta: number, zoom: number, snapThreshold?: number) =>
+    snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 10, 10),
+      initialSelectionSnapPoints: [{ id: 'corner', x: 0, y: 0 }],
+      dragDelta: new Vec(dragDelta, 0),
+      snappableShapes: [at('target', new Box(100, 0, 10, 10), new Vec(100, 0))],
+      zoom,
+      snapThreshold
+    }).nudge.x
+
+  for (const { zoom, snapThreshold, page } of [
+    { zoom: 1, snapThreshold: undefined, page: 8 },
+    { zoom: 2, snapThreshold: undefined, page: 4 },
+    { zoom: 0.5, snapThreshold: undefined, page: 16 },
+    { zoom: 0.1, snapThreshold: undefined, page: 80 },
+    { zoom: 10, snapThreshold: undefined, page: 0.8 },
+    { zoom: 1, snapThreshold: 16, page: 16 },
+    { zoom: 2, snapThreshold: 16, page: 8 }
+  ]) {
+    it(`covers ${page} across the page at ${zoom}x on a ${snapThreshold ?? 8} pixel reach`, () => {
+      expect(reach(100 - page, zoom, snapThreshold)).toBeCloseTo(page, 8)
+      expect(reach(100 - page - 0.001, zoom, snapThreshold)).toBe(0)
+    })
+  }
+
+  it('reads a point a hair beyond the reach as being on it', () => {
+    expect(reach(92 - 1e-9, 1)).toBeCloseTo(8, 8)
+    expect(reach(92 - 1e-6, 1)).toBe(0)
+  })
+})
+
+describe('snapping the way Figma does', () => {
+  it('takes the edges of a shape it is standing on top of', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 20, 20),
+      dragDelta: new Vec(52, 52),
+      snappableShapes: [node('under', 50, 50, 100, 100)]
+    })
+
+    expect(result.nudge).toEqual(new Vec(-2, -2))
+    expect(result.indicators.some(indicator => indicator.id === 'point:x:50')).toBe(true)
+  })
+
+  it('centers a shape inside a larger one on both axes at once', () => {
+    const result = snapTranslateBounds({
+      initialSelectionPageBounds: new Box(0, 0, 20, 20),
+      dragDelta: new Vec(137, 137),
+      snappableShapes: [node('frame', 100, 100, 100, 100)]
+    })
+
+    expect(result.nudge).toEqual(new Vec(3, 3))
+    expect(result.indicators.map(indicator => indicator.id)).toEqual(['point:x:150', 'point:y:150'])
+  })
+
+  for (const axis of axes) {
+    for (const { where, drag, nudge } of [
+      { where: 'between two others', drag: 24, nudge: 1 },
+      { where: 'ahead of a pair', drag: -49, nudge: -1 },
+      { where: 'behind a pair', drag: 99, nudge: 1 }
+    ]) {
+      it(`spaces a shape evenly ${where} along ${axis}`, () => {
+        const result = snapTranslateBounds({
+          initialSelectionPageBounds: along(axis, 0, 0, 10, 10),
+          dragDelta: towards(axis, drag),
+          snappableShapes: [
+            { id: 'first', pageBounds: along(axis, 0, 0, 10, 10) },
+            { id: 'second', pageBounds: along(axis, 50, 0, 10, 10) }
+          ]
+        })
+
+        expect(result.nudge[axis]).toBe(nudge)
+        expect(result.indicators.some(indicator => indicator.type === 'gaps')).toBe(true)
+      })
+    }
+  }
+})
+
+describe('both axes snap alike', () => {
+  for (const axis of axes) {
+    it(`takes a closer equal distance over a center that was also in reach along ${axis}`, () => {
+      const result = snapTranslateBounds({
+        initialSelectionPageBounds: along(axis, -1, 0, 1, 10),
+        dragDelta: new Vec(0, 0),
+        snappableShapes: [
+          at('first', along(axis, 0, 0, 1, 10)),
+          at('second', along(axis, 3, 0, 1, 10))
+        ]
+      })
+
+      expect(result.nudge[axis]).toBe(-2)
+    })
+
+    it(`keeps a center for each gap whose breadths only touch along ${axis}`, () => {
+      const result = snapTranslateBounds({
+        initialSelectionPageBounds: along(axis, 19, 5, 10, 10),
+        dragDelta: new Vec(0, 0),
+        snappableShapes: [
+          at('a', along(axis, 0, 0, 10, 10)),
+          at('b', along(axis, 40, 0, 10, 10)),
+          at('c', along(axis, 0, 10, 10, 10)),
+          at('d', along(axis, 40, 10, 10, 10))
+        ]
+      })
+
+      const drawn = result.indicators.filter(
+        (indicator): indicator is GapsSnapIndicator => indicator.type === 'gaps'
+      )
+      expect(result.nudge[axis]).toBe(1)
+      expect(drawn).toHaveLength(2)
+      const cross = axis === 'x' ? 'y' : 'x'
+      expect(drawn.map(indicator => indicator.gaps[0].startEdge[0][cross])).toEqual([0, 10])
+    })
+  }
+})
