@@ -191,7 +191,7 @@ export function strokeOutline(points: StrokePoint[], options: StrokeOptions = {}
 
   const startCap: Vec[] = []
   if (taperStart || (taperEnd && count === 1)) {
-    // the start is tapered to a point, so it needs no cap
+    startCap.length = 0
   } else if (capStart) {
     const steps = arcSteps(firstRadius, FIXED_PI, capTolerance, 4, 8)
     for (let step = 1 / steps, along = step; along <= 1; along += step)
