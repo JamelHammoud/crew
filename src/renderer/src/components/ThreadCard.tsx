@@ -32,13 +32,7 @@ export default function ThreadCard({
   detail: string
   onOpen: () => void
 }) {
-  const setThreadStatus = useCrew(s => s.setThreadStatus)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
-
-  const setStatus = (status: ThreadMeta['status']) => {
-    setMenuAt(null)
-    setThreadStatus(thread.id, status)
-  }
 
   return (
     <>
