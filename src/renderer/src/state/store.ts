@@ -643,6 +643,28 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         case 'tool.removed':
           return { events, tools: state.tools.filter(t => t.id !== event.toolId) }
+        case 'memory.added': {
+          if (state.memories.some(one => one.id === event.memoryId)) return { events }
+          const memory: CrewMemory = {
+            id: event.memoryId,
+            text: event.text,
+            by: event.byName,
+            byAgentId: event.agentId,
+            ts: event.ts
+          }
+          return { events, memories: [...state.memories, memory] }
+        }
+        case 'memory.edited':
+          return {
+            events,
+            memories: state.memories.map(one =>
+              one.id === event.memoryId
+                ? { ...one, text: event.text, by: event.byName, byAgentId: event.agentId }
+                : one
+            )
+          }
+        case 'memory.removed':
+          return { events, memories: state.memories.filter(one => one.id !== event.memoryId) }
         case 'attachment.limit':
           return { events, attachmentMb: event.mb }
       }

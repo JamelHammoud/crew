@@ -343,7 +343,10 @@ function createWindow(): BrowserWindow {
   // is let go of by the last one out rather than left awake by a window that
   // died with the switch on.
   const asked = win.webContents.id
-  win.webContents.once('destroyed', () => awake.forget(asked))
+  win.webContents.once('destroyed', () => {
+    awake.forget(asked)
+    crews.forget(asked)
+  })
   win.webContents.on('did-finish-load', syncWindowShape)
   win.webContents.once('did-finish-load', () => {
     warmTerminals()
@@ -405,7 +408,7 @@ app.whenReady().then(() => {
   // kind an update waits for. A run from source stands nowhere the installer will
   // reach and holding an update for one means every machine with a checkout open
   // is told to close a window that has nothing to do with it.
-  if (shipping) crews.mark()
+  if (shipping) instances.mark()
   updates.start(shipping)
   // The command ships inside the app, so which file goes on PATH is read off
   // this app rather than off wherever a checkout happens to be.
