@@ -157,6 +157,10 @@ export const TicketGlyph = glyph(
   <path d="M4.75 4.5H19.25A2.25 2.25 0 0 1 21.5 6.75V9.25A2.75 2.75 0 0 0 21.5 14.75V17.25A2.25 2.25 0 0 1 19.25 19.5H4.75A2.25 2.25 0 0 1 2.5 17.25V14.75A2.75 2.75 0 0 0 2.5 9.25V6.75A2.25 2.25 0 0 1 4.75 4.5Z" />
 )
 
+export const MemoryGlyph = glyph(
+  <path d="M6.65 2.7H17.35A2.25 2.25 0 0 1 19.6 4.95V20.5Q19.6 21.7 18.59 21.05L12.84 17.34Q12 16.8 11.16 17.34L5.41 21.05Q4.4 21.7 4.4 20.5V4.95A2.25 2.25 0 0 1 6.65 2.7Z" />
+)
+
 // The bare prompt, for a step in a thread that ran a command. No frame, because
 // it stands in a line of text rather than in a row of objects.
 export const PromptGlyph = glyph(

@@ -74,9 +74,9 @@ export class Terminals {
 
   warm(folder: string | null): void {
     const where = startingFolder(folder)
-    const standing = this.spares.get(where)
-    if (standing && !standing.ended) {
-      this.touch(where, standing)
+    const already = this.spares.get(where)
+    if (already && !already.ended) {
+      this.touch(where, already)
       return
     }
     this.drop(where)
