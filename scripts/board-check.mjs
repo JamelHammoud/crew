@@ -1768,6 +1768,7 @@ const driveSource = String.raw`(async () => {
     editor.selectNone()
     editor.zoomToFit({ immediate: true })
     await settle()
+    await stillCamera()
     const zoom = editor.getZoomLevel()
     const target = shapes
       .filter(shape => {
