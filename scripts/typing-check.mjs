@@ -15,6 +15,7 @@ const LINE =
   'the composer has to stay quick with the whole thread standing behind it, however long the thread has got, and it has to stay quick on the keystroke that costs a line as well as on the ones before it'
 const SHORT = 6
 const LONG = 400
+const HUGE = 1200
 const PASSES = 4
 const OLD = process.env.CREW_TYPING_OLD === '1'
 
@@ -105,7 +106,7 @@ const seed = rows => {
   const steps = []
   const said = []
   for (let index = 0; index < rows; index++) {
-    if (index > 0 && index % 20 === 0) said.push(messageAt(index))
+    if (index > 0 && index % 4 === 0) said.push(messageAt(index))
     else steps.push(stepAt(index))
   }
   return {
@@ -257,7 +258,8 @@ const driveSource = `(async () => {
   const held = [
     { rows: ${SHORT}, contained: false },
     { rows: ${LONG}, contained: false },
-    { rows: ${LONG}, contained: true }
+    { rows: ${LONG}, contained: true },
+    { rows: ${HUGE}, contained: false }
   ].map(one => ({ ...one, flat: [], grew: [], framed: [], once: [], twice: [], passes: 0, drawn: 0, tall: 0 }))
 
   await measure({ flat: [], grew: [], framed: [], once: [], twice: [], passes: 0 }, ${LONG}, false)
