@@ -119,7 +119,9 @@ describe('an answer arriving as it is written', () => {
 
 describe('a thought read in the same hand as an answer', () => {
   it('renders the model markup rather than leaving it on the page', () => {
-    const { container } = render(createElement(StepRow, { item: thought('**Checking** the parser', true) }))
+    const { container } = render(
+      createElement(StepRow, { item: thought(`**Checking** the parser\n\n${REST}`, true) })
+    )
 
     expect(container.querySelector('strong')?.textContent).toBe('Checking')
     expect(container.textContent).toContain('Checking the parser')
@@ -127,10 +129,10 @@ describe('a thought read in the same hand as an answer', () => {
   })
 
   it('fades a thought in as it is written', () => {
-    const item = thought('Reading the', true)
+    const item = thought(`${REST}\n\nReading the`, true)
     const { container, rerender } = render(createElement(StepRow, { item }))
 
-    rerender(createElement(StepRow, { item: thought('Reading the parser', true) }))
+    rerender(createElement(StepRow, { item: thought(`${REST}\n\nReading the parser`, true) }))
 
     expect(fading(container)).toEqual([' parser'])
   })

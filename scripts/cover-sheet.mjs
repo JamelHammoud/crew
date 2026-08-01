@@ -137,6 +137,92 @@ window.marks = () => {
   }
   return { png: canvas.toDataURL('image/png'), kinds }
 }
+window.faces = () => {
+  const { coverFor, paletteFor, petOf, EYE_RADIUS, PET_GRID } = window.CrewCovers
+  const SIZES = [20, 28, 40, 48]
+  const COLS = 8
+  const ids = Array.from({ length: 48 }, (_, i) => 'every-' + i)
+  const CELL = 162
+  const TALL = 64
+  const LABEL = 26
+  const rows = Math.ceil(ids.length / COLS)
+  const strip = rows * (TALL + LABEL)
+  const canvas = document.createElement('canvas')
+  canvas.width = COLS * CELL
+  canvas.height = strip * 2
+  const paint = canvas.getContext('2d')
+  const draw = (id, x, y, box) => {
+    const pet = petOf(id)
+    const unit = box / PET_GRID
+    paint.save()
+    paint.beginPath()
+    paint.arc(x + box / 2, y + box / 2, box / 2, 0, Math.PI * 2)
+    paint.clip()
+    const art = coverFor({ id, colors: paletteFor(id) })
+    if (art) paint.drawImage(art, x, y, box, box)
+    else {
+      paint.fillStyle = '#777'
+      paint.fillRect(x, y, box, box)
+    }
+    const room = Math.ceil(box * 0.3)
+    const over = document.createElement('canvas')
+    over.width = box + room * 2
+    over.height = box + room * 2
+    const white = over.getContext('2d')
+    white.translate(room, room)
+    white.translate(50 * unit, 54 * unit)
+    white.rotate((pet.tilt * Math.PI) / 180)
+    white.translate(-50 * unit, -54 * unit)
+    white.scale(unit, unit)
+    const body = new Path2D(pet.body)
+    white.shadowColor = 'rgba(0,0,0,0.3)'
+    white.shadowOffsetY = box * 0.02
+    white.shadowBlur = box * 0.05
+    white.fillStyle = '#ffffff'
+    white.strokeStyle = '#ffffff'
+    white.lineWidth = 7
+    white.lineJoin = 'round'
+    white.lineCap = 'round'
+    white.fill(body)
+    white.stroke(body)
+    white.shadowColor = 'transparent'
+    white.shadowOffsetY = 0
+    white.shadowBlur = 0
+    white.globalCompositeOperation = 'destination-out'
+    for (const side of [-1, 1]) {
+      white.beginPath()
+      white.arc(50 + (side * pet.eyeGap) / 2, pet.eyeY, EYE_RADIUS, 0, Math.PI * 2)
+      white.fill()
+    }
+    white.globalCompositeOperation = 'source-over'
+    paint.drawImage(over, x - room, y - room)
+    paint.restore()
+  }
+  const sheet = (top, back, ink) => {
+    paint.fillStyle = back
+    paint.fillRect(0, top, canvas.width, strip)
+    ids.forEach((id, i) => {
+      const x = (i % COLS) * CELL
+      const y = top + Math.floor(i / COLS) * (TALL + LABEL)
+      let at = 6
+      for (const box of SIZES.slice().reverse()) {
+        draw(id, x + at, y + 8 + (SIZES[SIZES.length - 1] - box) / 2, box)
+        at += box + 4
+      }
+      paint.fillStyle = ink
+      paint.font = '11px -apple-system, system-ui, sans-serif'
+      paint.fillText(id, x + 6, y + TALL + 12)
+    })
+  }
+  sheet(0, '#161616', '#dedede')
+  sheet(strip, '#f4f4f4', '#333')
+  const bodies = {}
+  for (const id of ids) {
+    const kind = petOf(id).body.includes(' Q ') ? 'curved' : 'straight'
+    bodies[kind] = (bodies[kind] || 0) + 1
+  }
+  return { png: canvas.toDataURL('image/png'), bodies }
+}
 </script></body></html>`
 
 const MAIN = `import { app, BrowserWindow } from 'electron'
