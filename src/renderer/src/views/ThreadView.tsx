@@ -38,8 +38,10 @@ import {
   ArchiveGlyph,
   CheckGlyph,
   ChevronLeftGlyph,
+  CloseGlyph,
   EyeGlyph,
   PanelRightGlyph,
+  PopOutGlyph,
   StopGlyph,
   WarningGlyph
 } from '../icons'
