@@ -3,12 +3,13 @@ import { BASE_TYPE, cleanType, type Paint, type TypeStyle } from '../../../share
 import { fontStack } from './fonts'
 import { textInkStyle } from './nodeCss'
 import { alignOf, familyOf, labelAlign, paletteHex, sizeFont } from './palette'
+import { trimOf, withTrim, type TrimmedType } from './verticalTrim'
 
 export function autoLineHeight(editor: Editor): number {
   return editor.getCurrentTheme().lineHeight ?? BASE_TYPE.lineHeight
 }
 
-export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
+export function textShapeType(editor: Editor, shape: TLTextShape): TrimmedType {
   const { font, size, textAlign, color } = shape.props
   const drawn = familyOf(font)
   const base: TypeStyle = {
@@ -21,18 +22,19 @@ export function textShapeType(editor: Editor, shape: TLTextShape): TypeStyle {
   }
   const stored = shape.meta?.type
   if (!stored || typeof stored !== 'object') return base
-  return cleanType({ ...base, ...(stored as object), align: base.align }) ?? base
+  const clean = cleanType({ ...base, ...(stored as object), align: base.align }) ?? base
+  return withTrim(clean, trimOf(stored as Partial<TrimmedType>))
 }
 
-export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TypeStyle>): void {
+export function setTextShapeType(editor: Editor, shape: TLTextShape, patch: Partial<TrimmedType>): void {
   const live = (editor.getShape(shape.id) as TLTextShape | undefined) ?? shape
-  const { align, ...type } = { ...textShapeType(editor, live), ...patch }
+  const { align, trim, ...rest } = { ...textShapeType(editor, live), ...patch }
   editor.markHistoryStoppingPoint()
   editor.updateShape<TLTextShape>({
     id: live.id,
     type: 'text',
     props: { textAlign: labelAlign(align) as TLTextShape['props']['textAlign'] },
-    meta: { ...live.meta, type }
+    meta: { ...live.meta, type: withTrim(rest, trimOf({ trim })) }
   })
 }
 

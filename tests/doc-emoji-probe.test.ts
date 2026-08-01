@@ -77,7 +77,8 @@ describe('the doc emoji menu', () => {
 
   it('takes the one somebody moved to rather than always the first', () => {
     const took = vi.fn()
-    const { editor, items } = stand('tada', took, 1)
+    const { editor, items } = stand('smil', took, 1)
+    expect(items.length).toBeGreaterThan(1)
     fireEvent.keyDown(editor.domElement as HTMLElement, { key: 'Tab' })
     expect(took.mock.calls[0][0]).toBe(items[1])
   })
