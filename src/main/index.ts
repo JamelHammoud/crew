@@ -686,8 +686,17 @@ app.whenReady().then(() => {
   ipcMain.handle('command:state', () => command.state())
   ipcMain.handle('command:install', () => command.install())
   ipcMain.handle('command:remove', () => command.remove())
-  ipcMain.handle('shell:openExternal', (_event, url: string) => {
-    if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url)
+  // Whether it really opened, because a machine with no mail app set up fails
+  // the same way a machine with one succeeds, and silence there is a report
+  // somebody wrote that nobody ever receives.
+  ipcMain.handle('shell:openExternal', async (_event, url: string) => {
+    if (!/^(https?|mailto):/i.test(url)) return false
+    try {
+      await shell.openExternal(url)
+      return true
+    } catch {
+      return false
+    }
   })
   ipcMain.handle('clipboard:image', (_event, src: string) => copyImage(src))
   ipcMain.handle('file:read', (event, target: string) => crews.inView(event.sender.id).readFile(target))
