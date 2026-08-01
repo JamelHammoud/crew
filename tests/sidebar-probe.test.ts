@@ -5,6 +5,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LivePlace } from '../src/shared/places'
 import type { CurrentSession } from '../src/shared/session'
 
+const kept = new Map<string, string>()
+Object.defineProperty(globalThis, 'localStorage', {
+  configurable: true,
+  value: {
+    getItem: (key: string) => kept.get(key) ?? null,
+    setItem: (key: string, value: string) => kept.set(key, value),
+    removeItem: (key: string) => kept.delete(key),
+    clear: () => kept.clear()
+  }
+})
+
 window.matchMedia = ((query: string) => ({
   matches: false,
   media: query,
