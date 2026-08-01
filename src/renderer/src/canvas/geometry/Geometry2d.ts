@@ -195,6 +195,23 @@ export abstract class Geometry2d {
     return this.distanceToLineSegment(a, b, filters) <= distance
   }
 
+  overlapsPolygon(polygon: VecLike[]): boolean {
+    const { vertices, center, isFilled, isEmptyLabel, isClosed } = this
+
+    if (isEmptyLabel) return false
+
+    if (vertices.some(vertex => pointInPolygon(vertex, polygon))) return true
+
+    if (!isClosed) return polygonIntersectsPolyline(polygon, vertices)
+
+    if (isFilled) {
+      if (pointInPolygon(center, polygon)) return true
+      if (polygon.every(vertex => pointInPolygon(vertex, vertices))) return true
+    }
+
+    return polygonsIntersect(polygon, vertices)
+  }
+
   isPointInBounds(point: VecLike, margin = 0): boolean {
     const { bounds } = this
     return !(

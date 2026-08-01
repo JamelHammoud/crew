@@ -59,7 +59,9 @@ export default function ThreadCard({
           danger={state === 'failed'}
         />
       </ThreadCardShell>
-      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined}>
+      <Popover open={menuAt !== null} onClose={() => setMenuAt(null)} at={menuAt ?? undefined} className="min-w-52">
+        <ThreadOpenItems threadId={thread.id} onOpen={onOpen} onDone={() => setMenuAt(null)} />
+        <MenuDivider />
         {thread.status === 'done' ? (
           <MenuItem icon={<UndoGlyph />} label="Reopen" onClick={() => setStatus('open')} />
         ) : (
