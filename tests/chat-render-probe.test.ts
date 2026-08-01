@@ -16,6 +16,7 @@ class TestResizeObserver {
 }
 
 global.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver
+Element.prototype.getAnimations ??= () => []
 landed()
 
 const drawn = vi.hoisted(() => ({ cards: 0, messages: 0, huddles: 0 }))
