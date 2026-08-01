@@ -98,7 +98,7 @@ export default function Sidebar({ overlay, strong }: { overlay?: boolean; strong
     <aside
       style={{ width: SIDEBAR_W }}
       className={`h-full flex flex-col ${
-        overlay ? 'glass glass-strong rounded-r-card' : 'border-r border-fg/[0.08]'
+        overlay ? `glass rounded-r-card ${strong ? 'glass-strong' : ''}` : 'border-r border-fg/[0.08]'
       }`}
     >
       <div className="app-drag h-[70px] shrink-0" />
