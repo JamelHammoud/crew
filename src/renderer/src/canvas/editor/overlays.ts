@@ -430,8 +430,12 @@ class SelectionForegroundOverlayUtil implements ToolOverlayUtil {
 class ShapeIndicatorOverlayUtil implements ToolOverlayUtil {
   static type = 'shape_indicator'
   readonly options = { zIndex: 50 }
+  private readonly memo = new PaintMemo<MarkedShapes>()
 
-  constructor(private readonly editor: OverlayEditor) {}
+  constructor(
+    private readonly editor: OverlayEditor,
+    private readonly pass: PaintPass
+  ) {}
 
   isActive(): boolean {
     const { indicated, hinted } = this.marked()
