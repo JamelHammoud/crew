@@ -54,6 +54,10 @@ const NAME_MIN_WIDTH = 96
 // A few words of the ask or none of it. Truncated past this the line is one
 // word and an ellipsis, which says less than the space it takes.
 const ASK_MIN_WIDTH = 180
+// Under this the status word, the button beside it and the two marks at the end
+// of the row leave the name nothing at all, so the word goes and its mark stands
+// in for it.
+const TIGHT_ROW = 460
 const EMPTY_COMMANDS: CommandName[] = []
 
 // `many` is a row of threads rather than one, so the way out of this one is a

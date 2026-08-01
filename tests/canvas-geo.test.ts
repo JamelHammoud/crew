@@ -202,6 +202,35 @@ describe('geo painting', () => {
     expect(geometry.children[1].isLabel).toBe(true)
   })
 
+  it('says it is filled so a click inside lands on it', () => {
+    const util = new GeoShapeUtil(editor)
+    for (const kind of GEO_KINDS) {
+      const filled = util.getGeometry(geo({ geo: kind, fill: 'semi' })) as unknown as {
+        children: { isFilled: boolean; distanceToPoint(point: { x: number; y: number }): number }[]
+      }
+      expect(filled.children[0].isFilled, kind).toBe(true)
+      expect(filled.children[0].distanceToPoint({ x: 70, y: 45 }), kind).toBeLessThan(0)
+
+      const hollow = util.getGeometry(geo({ geo: kind, fill: 'none' })) as unknown as {
+        children: { isFilled: boolean }[]
+      }
+      expect(hollow.children[0].isFilled, kind).toBe(false)
+    }
+  })
+
+  it('carries a label box a hollow shape can be grabbed by', () => {
+    const util = new GeoShapeUtil(editor)
+    const text = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Continue' }] }] }
+    for (const fill of ['none', 'semi'] as const) {
+      const geometry = util.getGeometry(geo({ fill, richText: text })) as unknown as {
+        children: { isLabel: boolean; isPointInBounds(point: { x: number; y: number }): boolean }[]
+      }
+      const label = geometry.children.find(child => child.isLabel)
+      expect(label, fill).toBeDefined()
+      expect(label?.isPointInBounds({ x: 70, y: 45 }), fill).toBe(true)
+    }
+  })
+
   it('keeps the shape bounds off the label box', () => {
     const util = new GeoShapeUtil(editor)
     const bounds = util.getGeometry(geo()).bounds
