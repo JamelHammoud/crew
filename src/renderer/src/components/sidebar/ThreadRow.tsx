@@ -1,4 +1,5 @@
 import type { LiveThread } from '../../../../shared/threads'
+import Spinner from '../Spinner'
 import { useThreadMenu } from '../threadMenu'
 
 export default function ThreadRow({
@@ -33,7 +34,7 @@ export default function ThreadRow({
         }`}
       >
         <span className="min-w-0 flex-1 truncate">{thread.title}</span>
-        {thread.working && <span className="w-1.5 h-1.5 rounded-full bg-positive shrink-0 animate-pulse" />}
+        {thread.working && <Spinner size={10} className="text-fg" />}
       </button>
       {menu}
     </>

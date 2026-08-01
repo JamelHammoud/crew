@@ -222,6 +222,13 @@ describe('the sidebar', () => {
     const rows = [...container.querySelectorAll('button')].map(b => b.textContent)
     expect(rows).toContain('Check the plan charge')
     expect(rows).toContain('Locate the STL files')
+    const working = [...container.querySelectorAll('button')].find(b => b.textContent === 'Check the plan charge')!
+    const idle = [...container.querySelectorAll('button')].find(b => b.textContent === 'Locate the STL files')!
+    const spinner = working.querySelector('[role="status"]') as HTMLElement
+    expect(spinner.ariaLabel).toBe('Working')
+    expect(spinner.style.width).toBe('10px')
+    expect(working.querySelector('.bg-positive')).toBe(null)
+    expect(idle.querySelector('[role="status"]')).toBe(null)
   })
 
   it('keeps the open thread highlighted beneath its project', async () => {
