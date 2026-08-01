@@ -199,6 +199,7 @@ interface CrewState {
   tickets: TicketEvent[]
   tools: CrewTool[]
   memories: CrewMemory[]
+  memoryEnabled: boolean
   // The emoji the crew drew themselves. They are everyone's here, so they come
   // off the host rather than out of this window's own storage.
   emoji: CustomEmoji[]
@@ -278,6 +279,7 @@ interface CrewState {
   addMemory: (text: string) => string | null
   editMemory: (memoryId: string, text: string) => string | null
   removeMemory: (memoryId: string) => void
+  setMemoryEnabled: (enabled: boolean) => void
   // What comes back is the line to say about a picture that never made it, and
   // nothing at all where it did.
   addCustomEmoji: (name: string, file: File) => Promise<string | null>
@@ -355,6 +357,7 @@ const EMPTY = {
   tickets: [],
   tools: [],
   memories: [],
+  memoryEnabled: false,
   emoji: [],
   scores: [],
   boards: [],
@@ -709,6 +712,8 @@ export const useCrew = create<CrewState>((set, get) => {
           }
         case 'memory.removed':
           return { events, memories: state.memories.filter(one => one.id !== event.memoryId) }
+        case 'memory.setting':
+          return { events, memoryEnabled: event.enabled }
         case 'attachment.limit':
           return { events, attachmentMb: event.mb }
       }
@@ -778,6 +783,7 @@ export const useCrew = create<CrewState>((set, get) => {
           tickets: msg.snapshot.tickets ?? [],
           tools: msg.snapshot.tools ?? [],
           memories: msg.snapshot.memories ?? [],
+          memoryEnabled: msg.snapshot.memoryEnabled ?? false,
           emoji: msg.snapshot.emoji ?? [],
           attachmentMb: msg.snapshot.attachmentMb ?? DEFAULT_ATTACHMENT_MB,
           scores: msg.snapshot.gameScores ?? [],
@@ -1249,6 +1255,9 @@ export const useCrew = create<CrewState>((set, get) => {
     },
     removeMemory: memoryId => {
       socket.send({ type: 'memory.remove', memoryId })
+    },
+    setMemoryEnabled: enabled => {
+      socket.send({ type: 'memory.set', enabled })
     },
     // A picture the whole crew will have. The host keeps it beside the session
     // and says so to everyone, so nothing is written down here on the way out.

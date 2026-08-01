@@ -132,6 +132,7 @@ export type SessionEvent =
   | { id: string; ts: number; kind: 'memory.added'; memoryId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'memory.edited'; memoryId: string; text: string; agentId?: string; byName: string }
   | { id: string; ts: number; kind: 'memory.removed'; memoryId: string; byName: string }
+  | { id: string; ts: number; kind: 'memory.setting'; enabled: boolean; byName: string }
   // How big a file the crew may send. It is one number for everyone, since the
   // host is what turns a big one away and everything sent lands in the folder
   // they share.
@@ -301,6 +302,7 @@ const EPHEMERAL_KINDS = new Set([
   'memory.added',
   'memory.edited',
   'memory.removed',
+  'memory.setting',
   // The size limit rides in the snapshot the same way, so a number somebody
   // picked months ago is still the number after its event has fallen off the
   // window.

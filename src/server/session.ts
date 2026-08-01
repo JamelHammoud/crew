@@ -336,6 +336,7 @@ type TicketAdded = Extract<SessionEvent, { kind: 'ticket.added' }>
 const NOT_RUNNING = 'That promptId is not a run this session has going.'
 
 const GHOST_MEMORY = 'This thread is hidden, so nothing in it can go in the crew memory.'
+const MEMORY_OFF = 'Crew memory is turned off.'
 
 // A call over http either happened or is refused in words, and nothing about
 // one is worth a code.
@@ -451,6 +452,7 @@ export class CrewSession {
   // The emoji the crew drew themselves, written down the way the shelf is: one
   // somebody added is still theirs tomorrow.
   private emoji = new Map<string, CustomEmoji>()
+  private memoryEnabled = false
   private docTitles = new Map<string, string>()
   private docRenames = new Map<string, { to: string; ts: number }>()
   private meta = new Map<WebSocket, ConnMeta>()
@@ -635,6 +637,9 @@ export class CrewSession {
       }
       if (event.kind === 'memory.removed') {
         this.memories.delete(event.memoryId)
+      }
+      if (event.kind === 'memory.setting') {
+        this.memoryEnabled = event.enabled
       }
       if (event.kind === 'attachment.limit') {
         this.attachmentMb = cleanAttachmentMb(event.mb) ?? this.attachmentMb
@@ -836,6 +841,7 @@ export class CrewSession {
       todos: [...this.todos.values()],
       tools: [...this.tools.values()],
       memories: [...this.memories.values()],
+      memoryEnabled: this.memoryEnabled,
       attachmentMb: this.attachmentMb,
       boards: this.boardList(),
       huddle: this.huddleRoom(),
@@ -950,6 +956,9 @@ export class CrewSession {
         break
       case 'memory.remove':
         if (meta.role === 'ui') this.handleMemoryRemove(member, msg.memoryId)
+        break
+      case 'memory.set':
+        if (meta.role === 'ui') this.handleMemorySetting(member, msg.enabled)
         break
       case 'attachment.limit':
         if (meta.role === 'ui') this.handleAttachmentLimit(member, msg.mb)
@@ -1672,6 +1681,12 @@ export class CrewSession {
     this.emit({ id: randomUUID(), ts: Date.now(), kind: 'memory.removed', memoryId, byName: member.name })
   }
 
+  private handleMemorySetting(member: Member, enabled: boolean): void {
+    if (enabled === this.memoryEnabled) return
+    this.memoryEnabled = enabled
+    this.emit({ id: randomUUID(), ts: Date.now(), kind: 'memory.setting', enabled, byName: member.name })
+  }
+
   // The size limit is the crew's, so it is refused from a runner the way the
   // music controls are: an agent's machine is connected the whole time it is
   // joined.
@@ -1814,6 +1829,7 @@ export class CrewSession {
   }
 
   private memoryFrom(promptId: string): Thread | { error: string } {
+    if (!this.memoryEnabled) return { error: MEMORY_OFF }
     const thread = this.askingThread(promptId)
     if (!thread) return { error: NOT_RUNNING }
     if (this.ghostOf(thread.id)) return { error: GHOST_MEMORY }
@@ -3875,7 +3891,7 @@ export class CrewSession {
       spawnProviders: canSend ? this.spawnProviders() : undefined,
       tickets: thread.tickets,
       goal: entry.goal,
-      memories: [...this.memories.values()]
+      memories: this.memoryEnabled ? [...this.memories.values()] : undefined
     }
   }
 

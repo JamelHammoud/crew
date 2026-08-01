@@ -70,6 +70,7 @@ export interface SessionSnapshot {
   // Absent from a host running an older build, which has no toolbox to send.
   tools?: CrewTool[]
   memories?: CrewMemory[]
+  memoryEnabled?: boolean
   // How big a file the crew may send, in megabytes. Absent from a host running
   // an older build, whose limit is the one this shipped with.
   attachmentMb?: number
@@ -133,6 +134,7 @@ export type ClientMessage =
   | { type: 'memory.add'; text: string }
   | { type: 'memory.edit'; memoryId: string; text: string }
   | { type: 'memory.remove'; memoryId: string }
+  | { type: 'memory.set'; enabled: boolean }
   | { type: 'attachment.limit'; mb: number }
   | { type: 'subagent.stop'; threadId: string }
   // What one person lets helpers do on their own machine. It is kept in that

@@ -7,7 +7,8 @@ import Avatar from '../Avatar'
 import Modal from '../Modal'
 import { MenuItem, Popover } from '../Popover'
 import Tooltip from '../Tooltip'
-import { Page, Section } from './parts'
+import Toggle from '../Toggle'
+import { Page, Row, Section } from './parts'
 
 const FIELD =
   'w-full h-24 px-3.5 py-3 rounded-xl bg-fg/[0.07] text-sm text-fg placeholder:text-fg/35 outline-none border-none resize-none transition-colors focus:bg-fg/[0.11]'
@@ -174,9 +175,16 @@ function AddMemory() {
 
 export default function Memory() {
   const memories = useCrew(s => s.memories)
+  const enabled = useCrew(s => s.memoryEnabled)
+  const setEnabled = useCrew(s => s.setMemoryEnabled)
 
   return (
-    <Page title="Memory" line="Every agent reads these before it starts.">
+    <Page title="Memory">
+      <Section>
+        <Row label="Let agents use memory">
+          <Toggle on={enabled} label="Let agents use memory" onChange={setEnabled} />
+        </Row>
+      </Section>
       <Section>
         {memories.length > 0 && (
           <div className="space-y-0.5 mb-4">
