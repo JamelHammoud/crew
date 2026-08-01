@@ -234,6 +234,85 @@ export interface ThreadItem {
   shown?: Shown
 }
 
+// A rebuilt thread is a new object for every row in it. A run streaming one
+// step rewrites the whole list, and typing a letter re-renders the view that
+// holds it, so a row is compared by what it draws rather than by the identity
+// of the object it was drawn from: three thousand rows that read the same as
+// they did a moment ago are three thousand rows with nothing to draw again.
+//
+// Every field is named rather than walked, because a field left out here is a
+// row that quietly stops updating, which is the one way this can be wrong.
+// `tests/thread-item-same.test.ts` types its fixture as `Required<ThreadItem>`
+// and changes each field in turn, so a field added to the interface and not to
+// this fails to compile before it can fail on screen.
+const sameList = <T>(
+  a: T[] | undefined,
+  b: T[] | undefined,
+  same: (one: T, two: T) => boolean
+): boolean => {
+  if (a === b) return true
+  if (!a || !b || a.length !== b.length) return false
+  return a.every((one, index) => same(one, b[index]))
+}
+
+const sameText = (a: string, b: string): boolean => a === b
+
+const sameShown = (a: Shown | undefined, b: Shown | undefined): boolean => {
+  if (a === b) return true
+  if (!a || !b) return false
+  return a.title === b.title && sameList(a.pages, b.pages, sameText)
+}
+
+const sameSubagentRun = (a: SubagentRun, b: SubagentRun): boolean =>
+  a.threadId === b.threadId &&
+  a.name === b.name &&
+  a.subject === b.subject &&
+  a.agentId === b.agentId &&
+  a.ok === b.ok &&
+  a.ms === b.ms &&
+  a.stopped === b.stopped
+
+const sameReaction = (a: ReactionGroup, b: ReactionGroup): boolean =>
+  a.emoji === b.emoji && a.count === b.count && a.self === b.self && sameList(a.names, b.names, sameText)
+
+export function sameItem(a: ThreadItem, b: ThreadItem): boolean {
+  if (a === b) return true
+  return (
+    a.key === b.key &&
+    a.ts === b.ts &&
+    a.kind === b.kind &&
+    a.author === b.author &&
+    a.authorId === b.authorId &&
+    a.self === b.self &&
+    a.text === b.text &&
+    a.streaming === b.streaming &&
+    a.promptId === b.promptId &&
+    a.agentId === b.agentId &&
+    a.error === b.error &&
+    a.stopped === b.stopped &&
+    a.helperSeed === b.helperSeed &&
+    a.name === b.name &&
+    a.detail === b.detail &&
+    a.output === b.output &&
+    a.subagent === b.subagent &&
+    a.route === b.route &&
+    a.reactionTargetId === b.reactionTargetId &&
+    a.editedTs === b.editedTs &&
+    a.voice === b.voice &&
+    a.files === b.files &&
+    a.attachments === b.attachments &&
+    a.mentionRefs === b.mentionRefs &&
+    a.docMentions === b.docMentions &&
+    a.boardMentions === b.boardMentions &&
+    a.replyTo === b.replyTo &&
+    sameShown(a.shown, b.shown) &&
+    sameList(a.runs, b.runs, sameSubagentRun) &&
+    sameList(a.reactions, b.reactions, sameReaction)
+  )
+}
+
+export const sameItems = (a: ThreadItem[], b: ThreadItem[]): boolean => sameList(a, b, sameItem)
+
 // Somebody typing three lines in a row is one person talking, so the lines
 // after the first drop the face and the name and close up under it. Seven
 // minutes is where the run breaks, long enough to hold a train of thought and
