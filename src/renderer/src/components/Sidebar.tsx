@@ -23,7 +23,7 @@ export default function Sidebar({ overlay }: { overlay?: boolean }) {
   const live = usePlaces(s => s.live)
   const load = usePlaces(s => s.load)
   const here = useCrew(s => s.place)
-  const openThreadId = useCrew(s => s.openThreadId)
+  const openThreadIds = useCrew(s => s.openThreadIds)
   const name = useCrew(s => s.selfName)
   const switchTo = useCrew(s => s.switchTo)
   const closePlace = useCrew(s => s.closePlace)
@@ -115,7 +115,7 @@ export default function Sidebar({ overlay }: { overlay?: boolean }) {
             here={place.key === here}
             busy={busyKey === place.key}
             threads={threadsIn(live, place.key)}
-            openThreadId={place.key === here ? openThreadId : null}
+            openThreadIds={place.key === here ? openThreadIds : EMPTY_THREADS}
             onOpen={() => {
               useCrew.getState().wantThread(null)
               void go(place)

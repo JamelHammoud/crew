@@ -16,7 +16,7 @@ export default function PlaceGroup({
   here,
   busy,
   threads,
-  openThreadId,
+  openThreadIds,
   onOpen,
   onOpenThread,
   onStop,
@@ -26,7 +26,7 @@ export default function PlaceGroup({
   here: boolean
   busy: boolean
   threads: LiveThread[]
-  openThreadId: string | null
+  openThreadIds: string[]
   onOpen: () => void
   onOpenThread: (threadId: string) => void
   onStop?: () => void
@@ -56,7 +56,7 @@ export default function PlaceGroup({
           key={thread.id}
           onClick={() => onOpenThread(thread.id)}
           className={`w-full rounded-xl pl-8 pr-2 py-1.5 flex items-center gap-2 text-left text-sm transition-colors duration-150 ${
-            thread.id === openThreadId
+            openThreadIds.includes(thread.id)
               ? 'bg-ink-700 text-fg'
               : 'text-fg-secondary hover:bg-ink-700/60 hover:text-fg'
           }`}
