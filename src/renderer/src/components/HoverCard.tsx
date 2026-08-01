@@ -67,7 +67,7 @@ export default function HoverCard({
     const onScroll = (event: Event) => {
       const target = event.target
       if (target instanceof Node && cardRef.current?.contains(target)) return
-      hide()
+      if (movedBy(event, anchorRef.current)) hide()
     }
     window.addEventListener('pointermove', onMove, { passive: true })
     window.addEventListener('scroll', onScroll, { capture: true, passive: true })
