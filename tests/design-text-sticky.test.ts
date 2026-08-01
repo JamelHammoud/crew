@@ -98,6 +98,40 @@ describe('type on a text shape sticks', () => {
     expect(type.size).toBe(30)
   })
 
+  it('keeps alignment on the shape itself rather than beside the rest of the type', () => {
+    installDom()
+    const editor = board()
+    const { id, shape } = makeText(editor)
+
+    setTextShapeType(editor, shape, { align: 'center' })
+    editor.selectNone()
+    editor.select(id)
+
+    const held = editor.getShape(id) as TLTextShape
+    expect(held.props.textAlign).toBe('middle')
+    expect((held.meta.type as Record<string, unknown>).align).toBeUndefined()
+    expect(textShapeType(editor, held).align).toBe('center')
+  })
+
+  it('keeps alignment alongside every other field set before it', () => {
+    installDom()
+    const editor = board()
+    const { id, shape } = makeText(editor)
+
+    setTextShapeType(editor, shape, { size: 33 })
+    setTextShapeType(editor, shape, { spacing: 7 })
+    setTextShapeType(editor, shape, { lineHeight: 1.75 })
+    setTextShapeType(editor, shape, { align: 'center' })
+    editor.selectNone()
+    editor.select(id)
+
+    const type = textShapeType(editor, editor.getShape(id) as TLTextShape)
+    expect(type.size).toBe(33)
+    expect(type.spacing).toBe(7)
+    expect(type.lineHeight).toBe(1.75)
+    expect(type.align).toBe('center')
+  })
+
   it('widens the box when the letters are spaced out', () => {
     installDom()
     const editor = board()
