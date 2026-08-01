@@ -395,9 +395,38 @@ const BLANK = {
 
 export const CHAT_KEY = 'chat'
 
+const byTime = (a: AgentStep, b: AgentStep): number => a.ts - b.ts
+
+// A step landing is almost always the last one being written again or a new one
+// after it, and either way the run it belongs to is already in order, so the
+// walk and the sort a step used to cost are only paid where the order can
+// really have moved.
 const upsertStep = (steps: AgentStep[] | undefined, step: AgentStep): AgentStep[] => {
-  const rest = (steps ?? []).filter(s => s.id !== step.id)
-  return [...rest, step].sort((a, b) => a.ts - b.ts)
+  const held = steps ?? []
+  const last = held[held.length - 1]
+  if (!last) return [step]
+  if (last.id === step.id) {
+    const next = [...held.slice(0, -1), step]
+    return last.ts === step.ts ? next : next.sort(byTime)
+  }
+  if (step.ts >= last.ts && !held.some(one => one.id === step.id)) return [...held, step]
+  return [...held.filter(one => one.id !== step.id), step].sort(byTime)
+}
+
+// The same run built from a pile of steps at once. Upserting them one at a time
+// sorts the whole run again per step, which is what a thread of a few thousand
+// of them spent its first second doing.
+const settleSteps = (gathered: Record<string, AgentStep[]>): Record<string, AgentStep[]> => {
+  const steps: Record<string, AgentStep[]> = {}
+  for (const [promptId, held] of Object.entries(gathered)) {
+    const byId = new Map<string, AgentStep>()
+    for (const step of held) {
+      byId.delete(step.id)
+      byId.set(step.id, step)
+    }
+    steps[promptId] = [...byId.values()].sort(byTime)
+  }
+  return steps
 }
 
 const addPrompt = (active: Record<string, string[]>, agentId: string, promptId: string): string[] => [
