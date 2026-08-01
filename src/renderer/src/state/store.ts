@@ -726,6 +726,7 @@ export const useCrew = create<CrewState>((set, get) => {
           todos: msg.snapshot.todos ?? [],
           tickets: msg.snapshot.tickets ?? [],
           tools: msg.snapshot.tools ?? [],
+          memories: msg.snapshot.memories ?? [],
           emoji: msg.snapshot.emoji ?? [],
           attachmentMb: msg.snapshot.attachmentMb ?? DEFAULT_ATTACHMENT_MB,
           scores: msg.snapshot.gameScores ?? [],

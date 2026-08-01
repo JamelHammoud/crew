@@ -663,6 +663,6 @@ app.on('before-quit', () => {
   scribeKeys.close()
   scribe.close()
   updates.close()
-  crews.forget()
+  instances.forget()
   void settle()
 })
