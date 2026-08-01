@@ -74,14 +74,30 @@ export interface TransformEditor<Shape extends TLShape = TLShape> {
   getShapeGeometry?(shape: Shape | Shape['id']): { bounds: import('../../math/Box').Box }
   getSelectionRotation?(): number
   getSelectionRotatedPageBounds?(): import('../../math/Box').Box | undefined
+  getSelectionPageBounds?(): import('../../math/Box').Box | undefined
+  getShapePageBounds?(shape: Shape | Shape['id']): import('../../math/Box').Box | undefined
+  getShapeHandles?(shape: Shape | Shape['id']): TransformHandle[] | undefined
   getIsReadonly?(): boolean
-  getInstanceState?(): { isGridMode?: boolean; isCoarsePointer?: boolean; isToolLocked?: boolean }
+  getInstanceState?(): {
+    isGridMode?: boolean
+    isCoarsePointer?: boolean
+    isToolLocked?: boolean
+    cursor?: TLCursor
+  }
   getDocumentSettings?(): { gridSize: number }
   getIsSnapMode?(): boolean
   getSnappableShapes?(): readonly TransformSnapNode[]
   getZoomLevel?(): number
   snaps?: TransformSnaps
   setCursor?(cursor: TLCursor): unknown
+  setHintingShapes?(ids: readonly Shape['id'][]): unknown
+  setHoveredShape?(id: Shape['id'] | null): unknown
+  select?(...ids: Shape['id'][]): unknown
+  canCreateShapes?(ids: readonly Shape['id'][]): boolean
+  duplicateShapes?(ids: readonly Shape['id'][]): unknown
+  kickoutOccludedShapes?(ids: readonly Shape['id'][]): unknown
+  isShapeOfType?(shape: Shape, type: string): boolean
+  isShapeFrameLike?(shape: Shape | Shape['id']): boolean
   markHistoryStoppingPoint?(name: string): string
   bailToMark?(id: string): unknown
   setCurrentTool?(id: string, info?: unknown): unknown
