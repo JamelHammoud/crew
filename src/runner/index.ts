@@ -394,7 +394,7 @@ export class Runner {
     spawnProviders: string[] = [],
     tickets = false,
     goal = false,
-    memories: CrewMemory[] = []
+    memories?: CrewMemory[]
   ): void {
     const agent = this.agents.get(forAgentId)
     if (!agent) {
@@ -406,7 +406,7 @@ export class Runner {
     // Every preamble is written here rather than on the host because only this
     // side knows the http address it reaches the server at.
     const preambles = [
-      memoryPreamble(this.httpBase, promptId, memories),
+      memories ? memoryPreamble(this.httpBase, promptId, memories) : '',
       boardsPreamble(this.httpBase, forAgentId, designBoard, designBoards),
       subagentPreamble(this.httpBase, promptId, spawnRoom, spawnProviders),
       pagePreamble(this.httpBase, promptId),
