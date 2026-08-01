@@ -1,0 +1,300 @@
+import { rm } from 'node:fs/promises'
+import { mkdtemp, readFile, realpath, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { createRequire } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { boardFile, byShapeCount, compile, root, run } from './board-window.mjs'
+
+const here = path.dirname(fileURLToPath(import.meta.url))
+const resolve = createRequire(path.join(root, 'package.json')).resolve
+
+const MOVES = 60
+
+function probeSource(snapshot) {
+  const from = file => JSON.stringify(path.join(root, 'src/renderer/src', file))
+  const react = JSON.stringify(resolve('react'))
+  const reactDom = JSON.stringify(resolve('react-dom/client'))
+  return `import React from ${react}
+import { createRoot } from ${reactDom}
+import { createTLStore, defaultBindingUtils, loadSnapshot, useValue } from ${from('canvas/index.ts')}
+import { CrewCanvas } from ${from('canvas/CrewCanvas.tsx')}
+import { applyDesignCursors, DESIGN_CURSORS } from ${from('design/cursors.tsx')}
+import { applyDesignDefaults } from ${from('design/defaults.ts')}
+import { DesignNodeTool } from ${from('design/DesignNodeTool.ts')}
+import SelectionOverlay from ${from('design/SelectionOverlay.tsx')}
+import { selectionStroke } from ${from('design/selectionColor.ts')}
+import { designShapeUtils } from ${from('design/shapeUtils.ts')}
+import { keepWholePixels } from ${from('design/wholePixels.ts')}
+import './probe.css'
+
+const store = createTLStore({ id: 'board-perf' })
+loadSnapshot(store, ${JSON.stringify(snapshot)})
+
+window.__perf = { commits: 0, duration: 0, counts: {} }
+
+function Board() {
+  const [editor, setEditor] = React.useState(null)
+  const selected = useValue('design selected color', () => (editor ? selectionStroke(editor) : null), [editor])
+  const mounted = React.useCallback(editor => {
+    applyDesignDefaults(editor)
+    applyDesignCursors(editor.getContainer())
+    editor.user.updateUserPreferences({ isSnapMode: true, colorScheme: 'light' })
+    const stopRounding = keepWholePixels(editor)
+    setEditor(editor)
+    window.canvasEditor = editor
+    requestAnimationFrame(() => {
+      editor.zoomToFit({ immediate: true })
+      window.canvasReady = true
+    })
+    return () => stopRounding()
+  }, [])
+  const onRender = React.useCallback((_id, _phase, actual) => {
+    window.__perf.commits += 1
+    window.__perf.duration += actual
+  }, [])
+  return React.createElement(
+    React.Profiler,
+    { id: 'board', onRender },
+    React.createElement(
+      'div',
+      {
+        className: 'absolute inset-0 design',
+        style: { ...DESIGN_CURSORS, cursor: 'var(--crew-cursor-default)', '--design-selected': selected }
+      },
+      React.createElement(CrewCanvas, {
+        store,
+        shapeUtils: designShapeUtils,
+        bindingUtils: defaultBindingUtils,
+        tools: [DesignNodeTool],
+        onMount: mounted
+      }),
+      React.createElement(SelectionOverlay, { editor })
+    )
+  )
+}
+
+createRoot(document.getElementById('root')).render(React.createElement(Board))
+`
+}
+
+const driveSource = String.raw`(async () => {
+  const editor = window.canvasEditor
+  if (!editor) return { failed: 'the editor never mounted' }
+  const perf = window.__perf
+  const surface = document.querySelector('[data-canvas="true"]')
+  const nodeOf = id => document.querySelector('[data-shape-id="' + id + '"][data-canvas-shape="true"]')
+  const frame = () => new Promise(done => requestAnimationFrame(done))
+  const settle = async (times = 3) => {
+    for (let at = 0; at < times; at++) await frame()
+  }
+
+  const watched = [
+    'getCurrentPageShapesSorted',
+    'getCurrentPageShapes',
+    'getCurrentPageShapeIds',
+    'getRenderingShapes',
+    'getCulledShapes',
+    'getShapeGeometry',
+    'getShapePageBounds',
+    'getShapePageTransform',
+    'getShapeIdsInsideBounds',
+    'getSnappableShapes',
+    'getSortedChildIdsForParent',
+    'getShapeClipPath'
+  ]
+  for (const name of watched) {
+    if (typeof editor[name] !== 'function') continue
+    const original = editor[name].bind(editor)
+    perf.counts[name] = 0
+    editor[name] = function (...args) {
+      perf.counts[name] += 1
+      return original(...args)
+    }
+  }
+  const resetCounts = () => {
+    for (const name of Object.keys(perf.counts)) perf.counts[name] = 0
+    perf.commits = 0
+    perf.duration = 0
+  }
+
+  const pointer = (name, x, y, buttons, target) =>
+    (target || surface).dispatchEvent(
+      new PointerEvent(name, {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 0,
+        buttons,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+        pressure: buttons ? 0.5 : 0
+      })
+    )
+
+  const summarise = samples => {
+    const sorted = [...samples].sort((a, b) => a - b)
+    const total = sorted.reduce((sum, value) => sum + value, 0)
+    return {
+      mean: Number((total / sorted.length).toFixed(2)),
+      median: Number(sorted[Math.floor(sorted.length / 2)].toFixed(2)),
+      p95: Number(sorted[Math.floor(sorted.length * 0.95)].toFixed(2)),
+      worst: Number(sorted[sorted.length - 1].toFixed(2))
+    }
+  }
+
+  const measure = async (label, start, step, target) => {
+    resetCounts()
+    const sync = []
+    const framed = []
+    pointer('pointerdown', start.x, start.y, 1, target)
+    await frame()
+    const before = JSON.parse(JSON.stringify(perf.counts))
+    resetCounts()
+    for (let at = 1; at <= ${MOVES}; at++) {
+      const x = start.x + step.x * at
+      const y = start.y + step.y * at
+      const began = performance.now()
+      pointer('pointermove', x, y, 1)
+      const dispatched = performance.now()
+      await frame()
+      const painted = performance.now()
+      sync.push(dispatched - began)
+      framed.push(painted - began)
+    }
+    const counts = {}
+    for (const [name, value] of Object.entries(perf.counts)) counts[name] = Math.round(value / ${MOVES})
+    const commits = perf.commits
+    const duration = perf.duration
+    pointer('pointerup', start.x + step.x * ${MOVES}, start.y + step.y * ${MOVES}, 0)
+    await settle()
+    void before
+    return {
+      label,
+      sync: summarise(sync),
+      frame: summarise(framed),
+      commitsPerMove: Number((commits / ${MOVES}).toFixed(2)),
+      reactMsPerMove: Number((duration / ${MOVES}).toFixed(2)),
+      perMove: counts
+    }
+  }
+
+  const viewport = point => editor.pageToViewport(point)
+  const shapes = editor.getCurrentPageShapesSorted()
+  const centre = editor.getViewportPageBounds().center
+  const near = shapes
+    .filter(shape => {
+      const bounds = editor.getShapePageBounds(shape)
+      return bounds && bounds.w > 30 && bounds.h > 30 && editor.getShapeUtil(shape).canResize(shape)
+    })
+    .sort((a, b) => {
+      const one = editor.getShapePageBounds(a).center
+      const other = editor.getShapePageBounds(b).center
+      return (one.x - centre.x) ** 2 + (one.y - centre.y) ** 2 - ((other.x - centre.x) ** 2 + (other.y - centre.y) ** 2)
+    })[0]
+  if (!near) return { failed: 'no resizable shape to drag' }
+
+  const results = []
+
+  editor.selectNone()
+  await settle()
+  const grabAt = viewport(editor.getShapePageBounds(near).center)
+  const grabbed = editor.getShapeAtPoint(editor.getShapePageBounds(near).center, {
+    margin: editor.options.hitTestMargin / editor.getZoomLevel(),
+    hitInside: true,
+    renderingOnly: true
+  })
+  results.push(await measure('drag', grabAt, { x: 1.5, y: 1 }, nodeOf((grabbed || near).id)))
+
+  const home = editor.getShape((grabbed || near).id)
+  editor.select(near.id)
+  await settle()
+  const bounds = editor.getShapePageBounds(near)
+  const corner = viewport({ x: bounds.maxX, y: bounds.maxY })
+  results.push(await measure('resize', corner, { x: 1.5, y: 1 }, undefined))
+  void home
+
+  return {
+    results,
+    shapes: shapes.length,
+    mounted: document.querySelectorAll('[data-canvas-shape="true"]').length,
+    culled: editor.getCulledShapes().size
+  }
+})()`
+
+const mainSource = `const { app, BrowserWindow } = require('electron')
+const path = require('node:path')
+
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+app.whenReady().then(async () => {
+  const errors = []
+  const win = new BrowserWindow({ width: 1400, height: 900, show: true, webPreferences: { backgroundThrottling: false } })
+  win.webContents.on('console-message', (_event, level, message) => {
+    if (level >= 2) errors.push(String(message).slice(0, 200))
+  })
+  await win.loadFile(path.join(__dirname, 'dist/index.html'))
+  for (let at = 0; at < 200; at++) {
+    const ready = await win.webContents.executeJavaScript('Boolean(window.canvasReady)').catch(() => false)
+    if (ready) break
+    await wait(50)
+  }
+  await wait(1200)
+  let result = null
+  try {
+    result = await win.webContents.executeJavaScript(${JSON.stringify(driveSource)})
+  } catch (error) {
+    result = { failed: String((error && error.message) || error) }
+  }
+  console.log('PERF ' + JSON.stringify({ ...result, errors: [...new Set(errors)].slice(0, 12) }))
+  app.exit(0)
+}).catch(error => {
+  console.log('PERF ' + JSON.stringify({ failed: String((error && error.stack) || error) }))
+  app.exit(1)
+})
+`
+
+async function stage(file) {
+  const saved = JSON.parse(await readFile(file, 'utf8'))
+  if (!saved.document?.store || !saved.document?.schema) throw new Error(`${file} is not a Crew board`)
+  const directory = await realpath(await mkdtemp(path.join(tmpdir(), 'crew-perf-')))
+  await writeFile(
+    path.join(directory, 'index.html'),
+    '<!doctype html><html><head><meta charset="utf-8"><script type="module" src="/probe.tsx"></script></head><body><div id="root"></div></body></html>'
+  )
+  await writeFile(path.join(directory, 'probe.tsx'), probeSource(saved.document))
+  await writeFile(
+    path.join(directory, 'probe.css'),
+    `@import "${path.join(root, 'src/renderer/src/styles.css')}";\n@import "${path.join(root, 'src/renderer/src/canvas/canvas.css')}";\n@source "${path.join(root, 'src/renderer/src')}";\nhtml, body, #root { width: 100%; height: 100%; margin: 0; }\n#root { position: relative; }\n`
+  )
+  await writeFile(path.join(directory, 'main.cjs'), mainSource)
+  return directory
+}
+
+const file = await boardFile(byShapeCount)
+const directory = await stage(file)
+try {
+  const result = await run(await compile(directory), 'PERF')
+  if (result.failed) throw new Error(`${result.failed}${result.errors?.length ? `\n${result.errors.join('\n')}` : ''}`)
+  console.log(`${path.basename(file)}: ${result.shapes} shapes, ${result.mounted} mounted, ${result.culled} culled\n`)
+  for (const run of result.results) {
+    console.log(`${run.label}, ${MOVES} pointer moves`)
+    console.log(
+      `  handler   mean ${run.sync.mean}ms  median ${run.sync.median}ms  p95 ${run.sync.p95}ms  worst ${run.sync.worst}ms`
+    )
+    console.log(
+      `  to frame  mean ${run.frame.mean}ms  median ${run.frame.median}ms  p95 ${run.frame.p95}ms  worst ${run.frame.worst}ms`
+    )
+    console.log(`  react     ${run.commitsPerMove} commits a move, ${run.reactMsPerMove}ms a move`)
+    const calls = Object.entries(run.perMove)
+      .filter(([, count]) => count > 0)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => `${name} ${count}`)
+    console.log(`  a move    ${calls.join(', ')}\n`)
+  }
+  for (const error of result.errors ?? []) console.log(`window error: ${error}`)
+} finally {
+  await rm(directory, { recursive: true, force: true })
+}
