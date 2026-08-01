@@ -2,7 +2,6 @@ import type { TLShape } from '../canvas'
 import { nodeShapeOf, type NodeShape } from '../../../shared/designNode'
 import { glyph, type Glyph } from '../components/glyph'
 import {
-  CopyGlyph,
   CloudGlyph,
   CopyGlyph,
   EyeGlyph,

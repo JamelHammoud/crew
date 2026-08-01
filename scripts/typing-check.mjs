@@ -197,21 +197,19 @@ const driveSource = `(async () => {
 
   const reflow = reads => {
     const el = composer()
-    const held = el.style.height
     el.style.height = 'auto'
-    const began = performance.now()
     const full = el.scrollHeight
     el.style.height = Math.min(full, 200) + 'px'
     if (reads > 1) void el.scrollHeight
-    const ended = performance.now()
-    el.style.height = held
-    return ended - began
   }
 
   const forced = reads => {
-    const samples = []
-    for (let at = 0; at < 40; at++) samples.push(reflow(reads))
-    return summarise(samples)
+    const held = composer().style.height
+    const began = performance.now()
+    for (let at = 0; at < 400; at++) reflow(reads)
+    const ended = performance.now()
+    composer().style.height = held
+    return Number(((ended - began) / 400).toFixed(4))
   }
 
   const measure = async (rows, contained) => {
