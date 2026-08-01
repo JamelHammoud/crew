@@ -567,6 +567,48 @@ export const useBrowser = create<BrowserState>((write, get) => {
       }))
       settle()
     },
+    stash: () => {
+      const { tabs, activeTabId, width, open, closedPlans, closedBoards } = get()
+      const mine = tabs.filter(t => t.kind !== 'terminal')
+      const terminals = tabs.filter(t => t.kind === 'terminal')
+      const held = terminals.some(t => t.id === activeTabId) ? activeTabId : null
+      write({ tabs: terminals, activeTabId: held ?? terminals[0]?.id ?? null })
+      settle()
+      return {
+        tabs: mine,
+        activeTabId: mine.some(t => t.id === activeTabId) ? activeTabId : null,
+        width,
+        open,
+        closedPlans,
+        closedBoards
+      }
+    },
+    restore: memory => {
+      const { tabs, activeTabId } = get()
+      const terminals = tabs.filter(t => t.kind === 'terminal')
+      const held = terminals.some(t => t.id === activeTabId) ? activeTabId : null
+      if (!memory) {
+        write({
+          tabs: terminals,
+          activeTabId: held ?? terminals[0]?.id ?? null,
+          width: DEFAULT_WIDTH,
+          open: terminals.length > 0,
+          closedPlans: [],
+          closedBoards: []
+        })
+        settle()
+        return
+      }
+      write({
+        tabs: [...memory.tabs, ...terminals],
+        activeTabId: held ?? memory.activeTabId,
+        width: memory.width,
+        open: memory.open,
+        closedPlans: memory.closedPlans,
+        closedBoards: memory.closedBoards
+      })
+      settle()
+    },
     navigateTab: (id, url) =>
       set(s => ({ tabs: s.tabs.map(t => (t.id === id ? { ...t, initialUrl: url, url } : t)) })),
     navigateFile: (id, path) =>

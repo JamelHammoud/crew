@@ -5,7 +5,6 @@ import os from 'node:os'
 import path from 'node:path'
 import { Runner } from '../runner'
 import { builtinProviders, detectProviders } from '../runner/providers/detect'
-import { installCommand, runInstall } from '../runner/providers/install'
 import type { Provider } from '../runner/providers/types'
 import { createCrewServer, type CrewServer } from '../server/index'
 import { cloneCrew, crewHere, crewRepoUrl, publishCrew } from '../server/crewRepo'
@@ -13,9 +12,10 @@ import { GitSync } from '../server/git'
 import { CrewSession } from '../server/session'
 import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
-import { agentId, type AgentDef, type AgentSettings, type ProviderCapability } from '../shared/llm'
+import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
+import { joinPlace, projectPlace } from '../shared/places'
 import { projectKey, readCrewRemote, writeCrewRemote, type CrewHome } from '../shared/project'
-import type { CurrentSession, OpenOptions, ProjectPlan } from '../shared/session'
+import type { CurrentSession, OpenOptions } from '../shared/session'
 import type {
   RepoActionResult,
   RepoChange,
@@ -25,6 +25,7 @@ import type {
 } from '../shared/repository'
 import type { RecentJoin, RecentProject } from '../shared/recent'
 import { AgentStore } from './agents-store'
+import type { SavedSession } from './saved-session'
 import {
   absolutePathOf,
   listRepoFiles,
