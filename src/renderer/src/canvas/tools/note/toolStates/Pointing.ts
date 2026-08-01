@@ -122,8 +122,7 @@ export function getAvailableNoteAdjacentPositions(
     (shape): shape is NoteShape =>
       shape.type === 'note' &&
       shape.props.scale === scale &&
-      !selected.has(shape.id) &&
-      editor.getShapePageTransform?.(shape.id)?.rotation() === rotation
+      !selected.has(shape.id)
   )
   const positions = notes.flatMap(shape => getNoteAdjacentPositions(editor, shape, noteWidth, noteHeight))
   return positions.filter(position =>
