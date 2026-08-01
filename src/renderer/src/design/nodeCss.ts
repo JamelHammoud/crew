@@ -98,6 +98,16 @@ export function textInkStyle(type: TypeStyle): CSSProperties {
   }
 }
 
+export function typeFont(type: TypeStyle): TrimFont {
+  return {
+    fontFamily: fontStack(type.family),
+    fontSize: type.size,
+    fontStyle: type.italic ? 'italic' : 'normal',
+    fontWeight: String(type.weight),
+    lineHeight: type.lineHeight
+  }
+}
+
 export function textStyle(type: TypeStyle): CSSProperties {
   return {
     fontFamily: fontStack(type.family),
@@ -107,7 +117,8 @@ export function textStyle(type: TypeStyle): CSSProperties {
     textAlign: type.align,
     color: type.color,
     fontStyle: type.italic ? 'italic' : 'normal',
-    ...textInkStyle(type)
+    ...textInkStyle(type),
+    ...trimStyle(trimEdges(typeFont(type), type.trim), 1)
   }
 }
 
