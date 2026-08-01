@@ -688,24 +688,27 @@ textarea:placeholder-shown {
    flickers. Nothing beside it moves, since the middle column is centred and
    both ends are pinned to their own edges.
 
+   It stands down where it is, and travels nowhere at all. The whole bar is
+   already sliding the width of the sidebar while this happens, so anything of
+   its own added to that reads as the tabs being thrown off the side rather than
+   as them stepping back. What is left is the fade and a little of the depth
+   behind it.
+
    It goes quicker than it comes back, the rule the rail already holds. */
 .top-bar-nav {
   transition:
     opacity 0.2s ease-out 0.04s,
-    translate 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s,
     scale 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s,
     visibility 0s linear 0s;
 }
 
 .top-bar-nav[data-away] {
   opacity: 0;
-  translate: 0 -6px;
-  scale: 0.96;
+  scale: 0.97;
   visibility: hidden;
   pointer-events: none;
   transition:
     opacity 0.13s ease-in,
-    translate 0.13s ease-in,
     scale 0.13s ease-in,
     visibility 0s linear 0.13s;
 }
