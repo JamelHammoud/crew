@@ -240,12 +240,14 @@ describe('canvas text editing', () => {
     await waitFor(() => expect(editor().getRichTextEditor?.()).toBeTruthy())
 
     await act(async () => {
-      editor().getRichTextEditor!()!.commands.focus('end')
-      editor().getRichTextEditor!()!.commands.insertContent(' crew')
+      const commands = (editor().getRichTextEditor?.() as { commands: Record<string, (value?: unknown) => unknown> })
+        .commands
+      commands.focus('end')
+      commands.insertContent(' crew')
       await new Promise(resolve => setTimeout(resolve, 10))
     })
 
-    const written = editor().getShape(textId)!.props.richText as RichTextDocument
+    const written = (editor().getShape(textId)!.props as { richText: RichTextDocument }).richText
     expect(richTextToPlainText(written)).toBe('Hello crew')
   })
 
