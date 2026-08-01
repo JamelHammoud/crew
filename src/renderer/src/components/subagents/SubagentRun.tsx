@@ -35,8 +35,7 @@ import { useStickToBottom } from '../useStickToBottom'
 const HELPER_PAGE = 400
 
 export default function SubagentRun({ threadId }: { threadId: string }) {
-  const events = useCrew(state => state.events)
-  const steps = useCrew(state => state.steps)
+  const { events, steps } = useThreadRead(threadId)
   const selfId = useCrew(state => state.selfId)
   const agents = useCrew(state => state.agents)
   const thread = useCrew(state => state.threads[threadId])
