@@ -50,4 +50,23 @@ describe('rich text toolbar', () => {
   it('takes no editor at all', () => {
     expect(() => render(createElement(RichTextToolbar, { editor: null }))).not.toThrow()
   })
+
+  it('opens a caret in the app and does not take the board down with it', () => {
+    const written = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hello' }] }] }
+    function Editing() {
+      const [textEditor, setTextEditor] = useState<TipTapEditor | null>(null)
+      return createElement(
+        'div',
+        null,
+        createElement(RichTextEditor, {
+          richText: written,
+          editing: true,
+          onChange: () => undefined,
+          onReady: setTextEditor
+        }),
+        createElement(RichTextToolbar, { editor: textEditor })
+      )
+    }
+    expect(() => render(createElement(StrictMode, null, createElement(Editing)))).not.toThrow()
+  })
 })

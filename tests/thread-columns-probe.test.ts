@@ -200,10 +200,11 @@ describe('several threads open side by side', () => {
     expect(popOutThread).toHaveBeenCalledTimes(2)
   })
 
-  it('leaves a right click on a message to the words in it', () => {
-    open(['thread-1'], 'thread-1')
+  it('says nothing of its own in a window standing on one thread', () => {
+    useCrew.setState({ ...online, openThreadIds: ['thread-1'], openThreadId: 'thread-1' })
+    render(createElement(ThreadView, { threadId: 'thread-1', alone: true }))
 
-    fireEvent.contextMenu(screen.getByRole('link', { name: LINK }))
+    fireEvent.contextMenu(background(document.body))
     expect(screen.queryByText('Open in window')).toBeNull()
   })
 
