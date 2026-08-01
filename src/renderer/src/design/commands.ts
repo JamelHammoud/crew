@@ -160,9 +160,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'copy',
     label: 'Copy',
-    hint: '⌘C',
+    hint: chordHint(COPY),
     group: 'clipboard',
     Icon: DuplicateGlyph,
+    keys: COPY,
     when: some,
     run: ctx => {
       held = ctx.editor.getContentFromCurrentPage(ids(ctx.editor))
@@ -171,9 +172,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'paste',
     label: 'Paste here',
-    hint: '⌘V',
+    hint: chordHint(PASTE),
     group: 'clipboard',
     Icon: PasteGlyph,
+    keys: PASTE,
     when: () => held !== undefined,
     run: ctx => {
       if (!held) return
@@ -184,10 +186,11 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'copy-png',
     label: 'Copy as PNG',
-    hint: '⇧⌘C',
+    hint: chordHint(COPY_PNG),
     group: 'clipboard',
     Icon: ImageGlyph,
     terms: 'image export',
+    keys: COPY_PNG,
     when: some,
     run: ctx => void copyAs(ctx.editor, ids(ctx.editor), { format: 'png' }).catch(() => {})
   },
@@ -203,10 +206,11 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'copy-style',
     label: 'Copy properties',
-    hint: '⌥⌘C',
+    hint: chordHint(COPY_STYLE),
     group: 'clipboard',
     Icon: StyleGlyph,
     terms: 'style fill stroke',
+    keys: COPY_STYLE,
     when: ctx => only(ctx)?.type === 'design-node',
     run: ctx => {
       const shape = only(ctx)
@@ -218,10 +222,11 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'paste-style',
     label: 'Paste properties',
-    hint: '⌥⌘V',
+    hint: chordHint(PASTE_STYLE),
     group: 'clipboard',
     Icon: StyleGlyph,
     terms: 'style fill stroke',
+    keys: PASTE_STYLE,
     when: ctx => heldStyle !== null && selection(ctx.editor).some(shape => shape.type === 'design-node'),
     run: ctx => {
       if (!heldStyle) return
@@ -237,9 +242,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'duplicate',
     label: 'Duplicate',
-    hint: '⌘D',
+    hint: chordHint(DUPLICATE),
     group: 'clipboard',
     Icon: DuplicateGlyph,
+    keys: DUPLICATE,
     when: some,
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('duplicate')
@@ -249,45 +255,50 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'to-front',
     label: 'Bring to front',
-    hint: ']',
+    hint: chordHint(TO_FRONT),
     group: 'order',
     Icon: ToFrontGlyph,
+    keys: TO_FRONT,
     when: some,
     run: ctx => ctx.editor.bringToFront(ids(ctx.editor))
   },
   {
     id: 'forward',
     label: 'Bring forward',
-    hint: '⌘]',
+    hint: chordHint(FORWARD),
     group: 'order',
     Icon: ForwardGlyph,
+    keys: FORWARD,
     when: some,
     run: ctx => ctx.editor.bringForward(ids(ctx.editor))
   },
   {
     id: 'backward',
     label: 'Send backward',
-    hint: '⌘[',
+    hint: chordHint(BACKWARD),
     group: 'order',
     Icon: BackwardGlyph,
+    keys: BACKWARD,
     when: some,
     run: ctx => ctx.editor.sendBackward(ids(ctx.editor))
   },
   {
     id: 'to-back',
     label: 'Send to back',
-    hint: '[',
+    hint: chordHint(TO_BACK),
     group: 'order',
     Icon: ToBackGlyph,
+    keys: TO_BACK,
     when: some,
     run: ctx => ctx.editor.sendToBack(ids(ctx.editor))
   },
   {
     id: 'group',
     label: 'Group selection',
-    hint: '⌘G',
+    hint: chordHint(GROUP),
     group: 'group',
     Icon: GroupGlyph,
+    keys: GROUP,
     when: many,
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('group')
@@ -297,9 +308,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'ungroup',
     label: 'Ungroup',
-    hint: '⌘⌫',
+    hint: chordHint(UNGROUP),
     group: 'group',
     Icon: UngroupGlyph,
+    keys: UNGROUP,
     when: ctx => groups(ctx).length > 0,
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('ungroup')
@@ -309,20 +321,22 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'frame',
     label: 'Frame selection',
-    hint: '⌘⌥G',
+    hint: chordHint(FRAME),
     group: 'group',
     Icon: FrameGlyph,
     terms: 'wrap container',
+    keys: FRAME,
     when: some,
     run: ctx => frameSelection(ctx.editor)
   },
   {
     id: 'auto-layout',
     label: 'Add auto layout',
-    hint: '⇧A',
+    hint: chordHint(LAYOUT),
     group: 'group',
     Icon: AutoLayoutGlyph,
     terms: 'stack flex',
+    keys: LAYOUT,
     when: ctx => {
       const node = layoutNode(ctx)
       return node !== null && !hasLayout(node)
@@ -341,9 +355,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'remove-auto-layout',
     label: 'Remove auto layout',
-    hint: '⇧⌥A',
+    hint: chordHint(NO_LAYOUT_KEY),
     group: 'group',
     Icon: AutoLayoutGlyph,
+    keys: NO_LAYOUT_KEY,
     when: ctx => {
       const node = layoutNode(ctx)
       return node !== null && hasLayout(node)
@@ -380,7 +395,6 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'flip-h',
     label: 'Flip horizontal',
-    hint: '⇧H',
     group: 'transform',
     Icon: FlipHorizontalGlyph,
     when: some,
@@ -392,7 +406,6 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'flip-v',
     label: 'Flip vertical',
-    hint: '⇧V',
     group: 'transform',
     Icon: FlipVerticalGlyph,
     when: some,
@@ -473,9 +486,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'delete',
     label: 'Delete',
-    hint: '⌫',
+    hint: chordHint(DELETE),
     group: 'remove',
     Icon: TrashGlyph,
+    keys: DELETE,
     when: some,
     run: ctx => {
       ctx.editor.markHistoryStoppingPoint('delete')
@@ -485,9 +499,10 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'select-all',
     label: 'Select all',
-    hint: '⌘A',
+    hint: chordHint(SELECT_ALL),
     group: 'canvas',
     Icon: SelectAllGlyph,
+    keys: SELECT_ALL,
     when: () => true,
     run: ctx => ctx.editor.selectAll()
   },
@@ -532,27 +547,30 @@ export const DESIGN_COMMANDS: DesignCommand[] = [
   {
     id: 'zoom-fit',
     label: 'Zoom to fit',
-    hint: '⇧1',
+    hint: chordHint(ZOOM_FIT),
     group: 'canvas',
     Icon: ZoomFitGlyph,
+    keys: ZOOM_FIT,
     when: () => true,
     run: ctx => ctx.editor.zoomToFit({ animation: { duration: 180 } })
   },
   {
     id: 'zoom-selection',
     label: 'Zoom to selection',
-    hint: '⇧2',
+    hint: chordHint(ZOOM_SELECTION),
     group: 'canvas',
     Icon: ZoomSelectionGlyph,
+    keys: ZOOM_SELECTION,
     when: some,
     run: ctx => ctx.editor.zoomToSelection({ animation: { duration: 180 } })
   },
   {
     id: 'zoom-100',
     label: 'Zoom to 100%',
-    hint: '⇧0',
+    hint: chordHint(ZOOM_ONE),
     group: 'canvas',
     Icon: ZoomOneGlyph,
+    keys: ZOOM_ONE,
     when: () => true,
     run: ctx => ctx.editor.resetZoom()
   }
