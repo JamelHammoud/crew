@@ -267,4 +267,26 @@ describe('what one store write costs a thread column', () => {
     stand()
     expect(document.body.textContent).toContain(`piece ${HELPERS - 1}`)
   })
+
+  it('marks the helper whose run fell over', () => {
+    stand()
+    expect(document.querySelectorAll('.text-danger').length).toBe(1)
+  })
+
+  it('hands back the same log a step landed on', () => {
+    const seen: SessionEvent[][] = []
+    useCrew.setState(seed())
+    render(createElement(Reader, { seen }))
+    act(() => useCrew.setState({ steps: { [PROMPT]: [...steps, steps[0]] } }))
+    expect(seen.length).toBeGreaterThan(1)
+    expect(seen.at(-1)).toBe(seen[0])
+  })
+
+  it('hands back a new log when an event lands', () => {
+    const seen: SessionEvent[][] = []
+    useCrew.setState(seed())
+    render(createElement(Reader, { seen }))
+    act(() => useCrew.setState({ events: [...events, message(9999, 9999)] }))
+    expect(seen.at(-1)).not.toBe(seen[0])
+  })
 })
