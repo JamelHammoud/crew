@@ -305,15 +305,20 @@ export default function ThreadView({
                 }`}
               >
                 <div ref={setHeaderRow} className="flex items-center gap-3 px-3 pt-2.5">
-                  <Tooltip label="Back to chat">
-                    <button
-                      onClick={closeThread}
-                      aria-label="Back to chat"
-                      className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
-                    >
-                      <ChevronLeftGlyph className="w-5 h-5" />
-                    </button>
-                  </Tooltip>
+                  {/* One thread open is a way back to the chat. Several is a row
+                      of them, so the same button takes this one off the row and
+                      the chat is what is left once the last one goes. */}
+                  {!alone && (
+                    <Tooltip label={many ? 'Close' : 'Back to chat'}>
+                      <button
+                        onClick={() => closeThread(threadId)}
+                        aria-label={many ? 'Close' : 'Back to chat'}
+                        className="w-10 h-10 rounded-full bg-ink-800 text-fg-secondary flex items-center justify-center transition-all duration-150 hover:bg-ink-700 hover:text-fg active:scale-95 shrink-0"
+                      >
+                        {many ? <CloseGlyph className="w-5 h-5" /> : <ChevronLeftGlyph className="w-5 h-5" />}
+                      </button>
+                    </Tooltip>
+                  )}
                   {/* Who the thread is with, and what it is about. The ask is
                       the thread's own name for itself and the one thing this row
                       could not say, so it stands under the agent's name and
