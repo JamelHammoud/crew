@@ -198,62 +198,6 @@ export class AppSession {
     return absolutePathOf(this.folder, target)
   }
 
-  async resume(): Promise<CurrentSession | null> {
-    if (this.live) return this.live
-    const saved = this.savedStore()?.load()
-    if (!saved) return null
-    try {
-      if (saved.mode === 'host') {
-        await this.startHost(saved.folder, saved.name, { home: saved.home, share: saved.shared })
-      } else {
-        await this.startJoin(saved.link, saved.folder, saved.name)
-      }
-    } catch {
-      return null
-    }
-    return this.live
-  }
-
-  // What opening this folder would do, so the app only asks where a crew should
-  // live the first time it is opened.
-  async projectPlan(folder: string): Promise<ProjectPlan> {
-    const tracked = await isGitRepo(folder)
-    const known = this.savedStore()?.projects().find(project => project.folder === folder) ?? null
-    const crewRemote = await readCrewRemote(folder)
-    const key = known?.key || (await projectKey(folder))
-    return {
-      home: known?.home ?? (crewRemote ? 'private' : tracked ? 'folder' : 'private'),
-      tracked,
-      known: known !== null || crewRemote !== null,
-      crewRemote,
-      crewHere: this.projectsPath ? crewHere(path.join(this.projectsPath, key)) : false
-    }
-  }
-
-  // Every builtin provider is listed, installed or not, so the UI can offer a
-  // one-click install for the ones that are missing.
-  async capabilities(): Promise<ProviderCapability[]> {
-    return Promise.all(
-      builtinProviders.map(async p => ({
-        provider: p.name,
-        label: p.label,
-        fields: p.fields(),
-        installed: await p.detect(),
-        installable: installCommand(p) !== null
-      }))
-    )
-  }
-
-  async installProvider(name: string): Promise<ProviderCapability[]> {
-    const provider = builtinProviders.find(p => p.name === name)
-    if (!provider) throw new Error(`Unknown provider: ${name}`)
-    await runInstall(provider)
-    if (!(await provider.detect())) {
-      throw new Error(`The ${provider.label} installer finished, but its CLI still was not found.`)
-    }
-    return this.capabilities()
-  }
-
   createAgent(input: NewAgent): AgentDef {
     const store = this.agentStore()
     const instanceId = randomUUID()

@@ -65,6 +65,8 @@ const HELD_LIMIT = 64 * 1024
 
 const SPARE_LIMIT = 2
 
+const standing = (spare: Spare): boolean => !spare.ended && spare.held.length > 0
+
 export class Terminals {
   private sessions = new Map<string, IPty>()
   private spares = new Map<string, Spare>()
