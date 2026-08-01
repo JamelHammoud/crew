@@ -1323,9 +1323,6 @@ export const useCrew = create<CrewState>((set, get) => {
     removeAgent: agentId => {
       socket.send({ type: 'agent.remove', agentId })
     },
-    // Opening one never closes one. A thread already being read is the column
-    // it already stands in, and a row with no room left says the move rather
-    // than quietly dropping whichever column somebody was reading.
     openThread: threadId => {
       const open = get().openThreadIds
       if (open.includes(threadId)) {
