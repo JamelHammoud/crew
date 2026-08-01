@@ -1,6 +1,6 @@
 import CreditsRow from './CreditsRow'
+import FeedbackRow from './FeedbackRow'
 import { Page, Section } from './parts'
-import ReportRow from './ReportRow'
 import VersionRow from './VersionRow'
 
 export default function About() {
