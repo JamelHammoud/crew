@@ -465,25 +465,34 @@ const foldThread = (threads: Record<string, ThreadMeta>, event: SessionEvent): b
         subject: event.subject,
         depth: event.depth
       }
-      break
+      return true
     case 'thread.plan':
-      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], plan: event.text }
-      break
+      if (!threads[event.threadId]) return false
+      threads[event.threadId] = { ...threads[event.threadId], plan: event.text }
+      return true
     case 'thread.implement':
-      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], mode: 'build' }
-      break
+      if (!threads[event.threadId]) return false
+      threads[event.threadId] = { ...threads[event.threadId], mode: 'build' }
+      return true
     case 'thread.archived':
-      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], status: 'archived' }
-      break
+      if (!threads[event.threadId]) return false
+      threads[event.threadId] = { ...threads[event.threadId], status: 'archived' }
+      return true
     case 'thread.status':
-      if (threads[event.threadId]) threads[event.threadId] = { ...threads[event.threadId], status: event.status }
-      break
+      if (!threads[event.threadId]) return false
+      threads[event.threadId] = { ...threads[event.threadId], status: event.status }
+      return true
     case 'thread.agent':
-      if (threads[event.threadId]) {
-        threads[event.threadId] = { ...threads[event.threadId], agentId: event.agentId, agentLabel: event.agentLabel }
-      }
-      break
+      if (!threads[event.threadId]) return false
+      threads[event.threadId] = { ...threads[event.threadId], agentId: event.agentId, agentLabel: event.agentLabel }
+      return true
   }
+  return false
+}
+
+const foldedThreads = (threads: Record<string, ThreadMeta>, event: SessionEvent): Record<string, ThreadMeta> => {
+  const next = { ...threads }
+  return foldThread(next, event) ? next : threads
 }
 
 const pruneSteps = (steps: Record<string, AgentStep[]>, events: SessionEvent[]): Record<string, AgentStep[]> => {
