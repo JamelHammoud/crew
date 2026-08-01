@@ -234,6 +234,15 @@ describe('the way a geometry meets a line', () => {
     const point = new Vec(20, 20)
     expect(rectangle.distanceToLineSegment(point, point)).toBe(rectangle.distanceToPoint(point, false))
   })
+
+  it('catches a line by a single point only inside the margin it is asked about', () => {
+    const point = new Point2d({ point: new Vec(0, 0), margin: 0 })
+    const a = new Vec(-100, 5)
+    const b = new Vec(100, 5)
+    expect(point.hitTestLineSegment(a, b, 10)).toBe(true)
+    expect(point.hitTestLineSegment(a, b, 4)).toBe(false)
+    expect(point.hitTestLineSegment(a, b, 0)).toBe(false)
+  })
 })
 
 describe('what a geometry says about itself', () => {
