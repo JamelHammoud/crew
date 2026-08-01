@@ -16,6 +16,23 @@ Object.defineProperty(globalThis, 'localStorage', {
   }
 })
 
+class NoResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+globalThis.ResizeObserver = NoResizeObserver as unknown as typeof ResizeObserver
+
+class NoSocket {
+  static OPEN = 1
+  readyState = 0
+  close(): void {}
+  send(): void {}
+  addEventListener(): void {}
+  removeEventListener(): void {}
+}
+globalThis.WebSocket = NoSocket as unknown as typeof WebSocket
+
 window.matchMedia = ((query: string) => ({
   matches: false,
   media: query,
