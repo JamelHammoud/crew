@@ -23,9 +23,9 @@ function geo(subject: Editor, name: string, x: number): TLShapeId {
   return id
 }
 
-function grouped(subject: Editor): { group: TLShapeId; child: TLShapeId } {
+function grouped(subject: Editor, gap = 100): { group: TLShapeId; child: TLShapeId } {
   const one = geo(subject, 'one', 0)
-  const two = geo(subject, 'two', 200)
+  const two = geo(subject, 'two', 100 + gap)
   subject.groupShapes([one, two])
   const group = subject.getSelectedShapeIds()[0]
   subject.selectNone()
