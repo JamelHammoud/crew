@@ -72,6 +72,12 @@ const driveSource = String.raw`(async () => {
     pointer('pointerup', to.x, to.y, 0, undefined, settings.modifiers)
     await settle()
   }
+  const click = async (at, options) => {
+    const settings = options || {}
+    pointer('pointerdown', at.x, at.y, 1, settings.target, settings.modifiers)
+    pointer('pointerup', at.x, at.y, 0, settings.target, settings.modifiers)
+    await settle()
+  }
   const viewport = point => editor.pageToViewport(point)
   const boundsOf = shape => editor.getShapePageBounds(shape)
   const restore = async (shape, before) => {
@@ -90,6 +96,43 @@ const driveSource = String.raw`(async () => {
   if (byType.text || byType.note || byType.geo)
     say('rich text painted', document.querySelectorAll('.crew-rich-text').length > 0, document.querySelectorAll('.crew-rich-text').length + ' runs')
   say('no retired canvas terms', !document.documentElement.innerHTML.toLowerCase().includes('tld' + 'raw'))
+
+  const clickTargets = shapes
+    .filter(shape => {
+      const bounds = boundsOf(shape)
+      if (!bounds || bounds.w < 40 || bounds.h < 40) return false
+      const hit = editor.getShapeAtPoint(bounds.center, {
+        margin: 0,
+        hitInside: true,
+        renderingOnly: true
+      })
+      return hit && hit.id === shape.id
+    })
+    .slice(0, 2)
+
+  await attempt('click and shift click select predictably', async () => {
+    if (clickTargets.length < 2) return null
+    const [one, two] = clickTargets
+    editor.selectNone()
+    await settle()
+    await click(viewport(boundsOf(one).center), { target: nodeOf(one.id) })
+    const first = editor.getSelectedShapeIds()
+    await click(viewport(boundsOf(two).center), { target: nodeOf(two.id), modifiers: { shiftKey: true } })
+    const added = editor.getSelectedShapeIds()
+    await click(viewport(boundsOf(one).center), { target: nodeOf(one.id), modifiers: { shiftKey: true } })
+    const removed = editor.getSelectedShapeIds()
+    editor.selectNone()
+    return {
+      ok:
+        first.length === 1 &&
+        first[0] === one.id &&
+        added.includes(one.id) &&
+        added.includes(two.id) &&
+        !removed.includes(one.id) &&
+        removed.includes(two.id),
+      note: first.length + ' then ' + added.length + ' then ' + removed.length
+    }
+  })
 
   for (const type of present) {
     const shape = oneOf(type)
