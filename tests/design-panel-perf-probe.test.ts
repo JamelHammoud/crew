@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render } from '@testing-library/react'
+import { act, cleanup, render } from '@testing-library/react'
 import { createElement, Profiler, type ReactNode } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { EditorContext } from '../src/renderer/src/canvas/react'
@@ -10,7 +10,7 @@ import { SelectTool } from '../src/renderer/src/canvas/tools/select'
 import DesignLeftPanel from '../src/renderer/src/components/DesignLeftPanel'
 
 const COUNT = 200
-const MOVES = 30
+const MOVES = 20
 
 function board(): { editor: Editor; ids: TLShapeId[] } {
   const editor = new Editor({
@@ -29,63 +29,53 @@ function board(): { editor: Editor; ids: TLShapeId[] } {
   return { editor, ids }
 }
 
-function counted(editor: Editor, onCommit: (ms: number) => void): ReactNode {
+function panel(editor: Editor, onCommit: (ms: number) => void): ReactNode {
   return createElement(
     EditorContext.Provider,
     { value: editor },
     createElement(
       Profiler,
-      { id: 'left-panel', onRender: (_id, _phase, actual: number) => onCommit(actual) },
+      { id: 'left-panel', onRender: (_id: string, _phase: string, actual: number) => onCommit(actual) },
       createElement(DesignLeftPanel)
     )
   )
 }
 
-function drag(editor: Editor, id: TLShapeId): { commits: number; ms: number } {
+function dragOne(selected: boolean): { commits: number; ms: number } {
+  const { editor, ids } = board()
+  if (selected) editor.setSelectedShapes([ids[0]])
   let commits = 0
   let ms = 0
-  const view = render(counted(editor, spent => (ms += spent)))
-  const settled = () => {
-    commits = 0
-    ms = 0
+  const record = (spent: number): void => {
+    commits += 1
+    ms += spent
   }
-  settled()
+  act(() => {
+    render(panel(editor, record))
+  })
+  commits = 0
+  ms = 0
   for (let step = 0; step < MOVES; step++) {
-    const shape = editor.getShape(id)
-    if (!shape) break
-    editor.updateShape({ id, type: shape.type, x: shape.x + 1, y: shape.y + 1 })
-    commits++
+    act(() => {
+      const shape = editor.getShape(ids[0])!
+      editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 1, y: shape.y + 1 })
+    })
   }
-  view.rerender(counted(editor, spent => (ms += spent)))
   return { commits, ms }
 }
 
 afterEach(cleanup)
 
 describe('the design panels while a shape is being dragged', () => {
-  it('leaves the layer list alone when only a position changed', () => {
-    const { editor, ids } = board()
-    editor.setSelectedShapes([ids[0]])
-    let rendered = 0
-    render(counted(editor, () => (rendered += 1)))
-    const settledAt = rendered
-    for (let step = 0; step < MOVES; step++) {
-      const shape = editor.getShape(ids[0])!
-      editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 1 })
-    }
-    expect(rendered - settledAt).toBeLessThanOrEqual(MOVES)
-  })
-
-  it('does not rebuild the whole layer list for one moved shape', () => {
+  it('changes the sorted page shapes identity for one moved shape', () => {
     const { editor, ids } = board()
     const before = editor.getCurrentPageShapesSorted()
     const shape = editor.getShape(ids[0])!
     editor.updateShape({ id: ids[0], type: shape.type, x: shape.x + 1 })
-    const after = editor.getCurrentPageShapesSorted()
-    expect(after).not.toBe(before)
+    expect(editor.getCurrentPageShapesSorted()).not.toBe(before)
   })
 
-  it('keeps the layer list identity stable when nothing structural changed', () => {
+  it('leaves the layer order untouched when only a position changed', () => {
     const { editor, ids } = board()
     const structure = (): string =>
       editor
@@ -98,10 +88,13 @@ describe('the design panels while a shape is being dragged', () => {
     expect(structure()).toBe(before)
   })
 
-  it('costs no measurable react time in the layer list for a drag', () => {
-    const { editor, ids } = board()
-    editor.setSelectedShapes([ids[0]])
-    const { ms } = drag(editor, ids[0])
-    expect(ms).toBeLessThan(MOVES * 2)
+  it('does not re-render the hidden layer list on every pointer move', () => {
+    const { commits } = dragOne(true)
+    expect(commits).toBe(0)
+  })
+
+  it('costs almost nothing in react while a selected shape is dragged', () => {
+    const { ms } = dragOne(true)
+    expect(ms).toBeLessThan(MOVES)
   })
 })
