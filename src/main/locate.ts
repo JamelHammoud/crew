@@ -41,8 +41,6 @@ function fromAnotherSystem(target: string): boolean {
   return ON_WINDOWS && target.startsWith('/')
 }
 
-// Anything that cannot be found here is shown as it was written, unless it is
-// a file in somebody's own folder.
 const unfound = (target: string): PathLocation =>
   personalPath(target) ? { kind: 'private' } : { kind: 'local', exists: false }
 
