@@ -7,9 +7,18 @@ export function sortedChildren(shapes: readonly TLShape[], parentId: TLParentId)
 }
 
 export function sortedPageShapes(shapes: readonly TLShape[], pageId: TLPageId): TLShape[] {
+  const byParent = new Map<TLParentId, TLShape[]>()
+  for (const shape of shapes) {
+    const children = byParent.get(shape.parentId)
+    if (children) children.push(shape)
+    else byParent.set(shape.parentId, [shape])
+  }
+  for (const children of byParent.values()) {
+    children.sort((a, b) => a.index.localeCompare(b.index) || a.id.localeCompare(b.id))
+  }
   const result: TLShape[] = []
   const visit = (parentId: TLParentId) => {
-    for (const shape of sortedChildren(shapes, parentId)) {
+    for (const shape of byParent.get(parentId) ?? []) {
       result.push(shape)
       visit(shape.id)
     }

@@ -1,6 +1,7 @@
 import { Group2d, Rectangle2d, intersectPolygonPolygon, type Geometry2d } from '../geometry'
 import { snapshotToSvgResult, svgDataUrl, type ImageExportOptions } from '../export'
 import { Box, Mat, Vec, pointInPolygon } from '../math'
+import { computed, type Computed } from '../signals'
 import {
   DocumentRecordType,
   BindingRecordType,
@@ -112,6 +113,10 @@ export class Editor {
   private readonly eventBridge: CanvasEventBridge
   private readonly themes: ThemeManager
   private readonly shapeUtils = new Map<TLShape['type'], ShapeUtil>()
+  private readonly geometryCache = new Map<TLShapeId, Computed<Geometry2d>>()
+  private readonly pageBoundsCache = new Map<TLShapeId, Computed<Box | undefined>>()
+  private readonly pageShapesCache = new Map<TLPageId, Computed<TLShape[]>>()
+  private readonly pageTransformCache = new Map<TLShapeId, Computed<Mat>>()
   private readonly getContainerFn: () => HTMLElement
   private readonly opacityForNextShape = { value: 1 }
   private readonly stylesForNextShape = new Map<string, unknown>()
@@ -408,7 +413,13 @@ export class Editor {
   }
 
   getCurrentPageShapesSorted(): TLShape[] {
-    return sortedPageShapes(this.allShapes(), this.currentPageId)
+    let value = this.pageShapesCache.get(this.currentPageId)
+    if (!value) {
+      const pageId = this.currentPageId
+      value = computed(`editor.pageShapes:${pageId}`, () => sortedPageShapes(this.allShapes(), pageId))
+      this.pageShapesCache.set(pageId, value)
+    }
+    return value.get()
   }
 
   getCurrentPageRenderingShapesSorted(): TLShape[] {
@@ -588,6 +599,17 @@ export class Editor {
   getShapeGeometry(shapeOrId: TLShape | TLShapeId): Geometry2d {
     const shape = this.liveShape(shapeOrId)
     if (!shape) return new Rectangle2d({ width: 1, height: 1, isFilled: true })
+    let value = this.geometryCache.get(shape.id)
+    if (!value) {
+      value = computed(`editor.shapeGeometry:${shape.id}`, () => this.computeShapeGeometry(shape.id))
+      this.geometryCache.set(shape.id, value)
+    }
+    return value.get()
+  }
+
+  private computeShapeGeometry(shapeId: TLShapeId): Geometry2d {
+    const shape = this.getShape(shapeId)
+    if (!shape) return new Rectangle2d({ width: 1, height: 1, isFilled: true })
     if (shape.type === 'group') {
       const children = this.getSortedChildIdsForParent(shape.id)
         .map(id => this.getShapePageBounds(id))
@@ -616,7 +638,16 @@ export class Editor {
   getShapePageTransform(shapeOrId: TLShape | TLShapeId): Mat {
     const shape = this.liveShape(shapeOrId)
     if (!shape) return Mat.Identity()
-    return Mat.Compose(this.getShapeParentTransform(shape), this.getShapeLocalTransform(shape))
+    let value = this.pageTransformCache.get(shape.id)
+    if (!value) {
+      value = computed(`editor.shapePageTransform:${shape.id}`, () => {
+        const current = this.getShape(shape.id)
+        if (!current) return Mat.Identity()
+        return Mat.Compose(this.getShapeParentTransform(current), this.getShapeLocalTransform(current))
+      })
+      this.pageTransformCache.set(shape.id, value)
+    }
+    return value.get()
   }
 
   getPointInShapeSpace(shapeOrId: TLShape | TLShapeId, point: VecLike): Vec {
@@ -626,8 +657,17 @@ export class Editor {
   getShapePageBounds(shapeOrId: TLShape | TLShapeId): Box | undefined {
     const shape = this.liveShape(shapeOrId)
     if (!shape) return undefined
-    const geometry = this.getShapeGeometry(shape)
-    return Box.FromPoints(this.getShapePageTransform(shape).applyToPoints(geometry.boundsVertices))
+    let value = this.pageBoundsCache.get(shape.id)
+    if (!value) {
+      value = computed(`editor.shapePageBounds:${shape.id}`, () => {
+        const current = this.getShape(shape.id)
+        if (!current) return undefined
+        const geometry = this.getShapeGeometry(current)
+        return Box.FromPoints(this.getShapePageTransform(current).applyToPoints(geometry.boundsVertices))
+      })
+      this.pageBoundsCache.set(shape.id, value)
+    }
+    return value.get()
   }
 
   getSelectionPageBounds(): Box | null {
