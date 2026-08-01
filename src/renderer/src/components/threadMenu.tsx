@@ -7,7 +7,7 @@ import { MenuItem, Popover } from './Popover'
 const LABEL: Record<ThreadOpenAction, string> = {
   open: 'Open',
   beside: 'Open beside',
-  window: 'Open in its own window',
+  window: 'Open in window',
   close: 'Close'
 }
 
