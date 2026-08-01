@@ -12,6 +12,24 @@ export interface InputModifiers {
   metaKey?: boolean
 }
 
+export interface InputEventInfo extends InputModifiers {
+  name?: string
+  phase?: string
+  point?: VecLike
+  screenPoint?: VecLike
+  isPen?: boolean
+  button?: number
+}
+
+export interface InputView {
+  camera: { x: number; y: number; z: number }
+  screenBounds: { x: number; y: number }
+  dragDistanceSquared?: number
+}
+
+const DOWN_NAMES = new Set(['pointer_down', 'middle_click', 'right_click', 'double_click'])
+const POINTER_NAMES = new Set([...DOWN_NAMES, 'pointer_move', 'pointer_up'])
+
 export class InputsManager {
   readonly keys = new Set<string>()
   readonly buttons = new Set<number>()
