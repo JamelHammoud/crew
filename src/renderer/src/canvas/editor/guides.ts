@@ -7,8 +7,8 @@ const LABEL_HEIGHT = 16
 const LABEL_RADIUS = 3
 const LABEL_PAD = 5
 const LABEL_SIZE = 11
-const LABEL_FACE =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
+const LABEL_ROOM = 16
+const LABEL_FACE = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif'
 const LABEL_INK = '#ffffff'
 
 export function drawSnapGuides(
