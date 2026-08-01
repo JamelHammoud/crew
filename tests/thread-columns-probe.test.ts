@@ -290,15 +290,15 @@ describe('the chat standing beside a thread', () => {
       'row-1'
     )
     reveal()
-    expect(screen.queryByLabelText('Chat')).toBeNull()
+    expect(standing()).toBeNull()
   })
 
   it('stands out of the way until the pointer comes near the right', () => {
     open(['thread-1'], 'thread-1')
-    expect(screen.queryByLabelText('Chat')).toBeNull()
+    expect(standing()).toBeNull()
 
     reveal()
-    expect(screen.getByLabelText('Chat')).toBeTruthy()
+    expect(standing()).toBeTruthy()
   })
 
   it('goes with the last column', () => {
