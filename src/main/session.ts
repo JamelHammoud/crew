@@ -13,10 +13,11 @@ import { CrewSession } from '../server/session'
 import { Store } from '../server/store'
 import { makeLink, parseLink, wsUrl } from '../shared/link'
 import { agentId, type AgentDef, type AgentSettings } from '../shared/llm'
-import { joinPlace, projectPlace } from '../shared/places'
+import { joinPlace, projectPlace, RESHAPES_THREADS } from '../shared/places'
 import { projectKey, readCrewRemote, writeCrewRemote, type CrewHome } from '../shared/project'
 import type { SessionEvent } from '../shared/events'
-import type { LiveThread } from '../shared/threads'
+import { activeThreads, type LiveThread } from '../shared/threads'
+import type { ServerMessage } from '../shared/protocol'
 import type { CurrentSession, OpenOptions } from '../shared/session'
 import type {
   RepoActionResult,
@@ -94,8 +95,11 @@ export class AppSession {
     sync: boolean
   } | null = null
   private projectAuto = false
+  private joinedThreadEvents: SessionEvent[] = []
+  private joinedThreadPrompts = new Map<string, string>()
   onTrouble: (message: string) => void = () => {}
   onEvent: ((event: SessionEvent) => void) | null = null
+  onThreadsChanged: (() => void) | null = null
 
   constructor(paths: { agents?: string; session?: string; projects?: string } = {}) {
     this.agentsPath = paths.agents ?? null
@@ -128,7 +132,10 @@ export class AppSession {
   }
 
   liveThreads(): LiveThread[] {
-    return this.hosted?.session.liveThreads() ?? []
+    return (
+      this.hosted?.session.liveThreads() ??
+      activeThreads(this.joinedThreadEvents, threadId => this.joinedThreadPrompts.has(threadId))
+    )
   }
 
   saved(): SavedSession | null {
@@ -298,7 +305,10 @@ export class AppSession {
     const crewUrl = home === 'private' ? await crewRepoUrl(base) : null
     const crew = crewUrl ? this.crewLoop(base) : null
     session.onSyncNeeded = () => this.scheduleSync()
-    session.onEvent = event => this.onEvent?.(event)
+    session.onEvent = event => {
+      this.onEvent?.(event)
+      if (RESHAPES_THREADS.has(event.kind)) this.onThreadsChanged?.()
+    }
     const server = await this.listen(session, shared, PREFERRED_PORT)
     this.server = server
     this.git = git
@@ -477,7 +487,8 @@ export class AppSession {
       agents: this.agentDefs(detected, name),
       onBeforeRun: () => git.syncNow(),
       onForget: instanceId => this.forgetAgent(instanceId),
-      onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName)
+      onRename: (instanceId, agentName) => this.renameAgent(instanceId, agentName),
+      onMessage: message => this.trackJoinedThreads(message)
     })
     const url = wsUrl(target)
     this.runner.connect(url)
@@ -503,6 +514,29 @@ export class AppSession {
     return this.live
   }
 
+  private trackJoinedThreads(message: ServerMessage): void {
+    if (message.type === 'welcome') {
+      this.joinedThreadEvents = [...(message.snapshot.threadEvents ?? message.snapshot.events)]
+      this.joinedThreadPrompts = new Map(Object.entries(message.snapshot.threadPrompts ?? {}))
+      this.onThreadsChanged?.()
+      return
+    }
+    if (message.type !== 'event' || !RESHAPES_THREADS.has(message.event.kind)) return
+    const event = message.event
+    this.joinedThreadEvents.push(event)
+    if (event.kind === 'agent.start' && event.threadId) {
+      this.joinedThreadPrompts.set(event.threadId, event.promptId)
+    }
+    if (
+      event.kind === 'agent.end' &&
+      event.threadId &&
+      this.joinedThreadPrompts.get(event.threadId) === event.promptId
+    ) {
+      this.joinedThreadPrompts.delete(event.threadId)
+    }
+    this.onThreadsChanged?.()
+  }
+
   // Quitting the app keeps the saved session so the next launch rejoins it.
   // Only an explicit leave forgets it.
   async leave(): Promise<void> {
@@ -521,6 +555,8 @@ export class AppSession {
     this.written = null
     this.hosted = null
     this.projectAuto = false
+    this.joinedThreadEvents = []
+    this.joinedThreadPrompts.clear()
     this.runner?.close()
     this.runner = null
     const git = this.git

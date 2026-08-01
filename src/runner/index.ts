@@ -31,6 +31,7 @@ export interface RunnerOptions {
   onForget?: (instanceId: string) => void
   // Called when one of this runner's agents is renamed in the session.
   onRename?: (instanceId: string, name: string) => void
+  onMessage?: (message: ServerMessage) => void
 }
 
 interface RunnerAgent {
@@ -161,6 +162,7 @@ export class Runner {
       } catch {
         return
       }
+      this.opts.onMessage?.(msg)
       this.handle(msg)
     })
     ws.on('ping', () => {

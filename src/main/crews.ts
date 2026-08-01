@@ -250,9 +250,7 @@ export class Crews {
       projects: this.projectsPath ?? undefined
     })
     session.onTrouble = message => this.onTrouble(message)
-    session.onEvent = event => {
-      if (RESHAPES_THREADS.has(event.kind)) this.onLive(this.places())
-    }
+    session.onThreadsChanged = () => this.onLive(this.places())
     return session
   }
 
