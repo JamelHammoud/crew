@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react'
 import { projectPlace } from '../../../shared/places'
 import type { CrewHome } from '../../../shared/project'
-import { DesktopGlyph, FolderGlyph, GlobeGlyph, PlusGlyph } from '../icons'
-import { isLive, usePlaces } from '../state/places'
+import type { LiveThread } from '../../../shared/threads'
+import { PlusGlyph } from '../icons'
+import { isLive, threadsIn, usePlaces } from '../state/places'
 import { SIDEBAR_W, useSidebar } from '../state/sidebar'
 import { useCrew } from '../state/store'
 import { toast } from '../state/toast'
-import PlaceRow from '../views/home/PlaceRow'
 import WhereTo from '../views/home/WhereTo'
 import type { Place } from '../views/home/place'
 import Modal from './Modal'
-
-function markOf(place: Place) {
-  if (place.join) return <GlobeGlyph className="w-4 h-4 text-fg-secondary" />
-  if (place.project?.home === 'private') return <DesktopGlyph className="w-4 h-4 text-fg-secondary" />
-  return <FolderGlyph className="w-4 h-4 text-fg-secondary" />
-}
+import PlaceGroup from './sidebar/PlaceGroup'
 
 function said(err: unknown): string {
   return String(err instanceof Error ? err.message : err).replace(
@@ -29,6 +24,7 @@ export default function Sidebar() {
   const live = usePlaces(s => s.live)
   const load = usePlaces(s => s.load)
   const here = useCrew(s => s.place)
+  const openThreadId = useCrew(s => s.openThreadId)
   const name = useCrew(s => s.selfName)
   const switchTo = useCrew(s => s.switchTo)
   const closePlace = useCrew(s => s.closePlace)
@@ -52,24 +48,34 @@ export default function Sidebar() {
     }
   }
 
-  const go = async (place: Place) => {
-    if (place.key === here || busyKey) return
+  const go = async (place: Place): Promise<boolean> => {
+    if (busyKey) return false
+    if (place.key === here) return true
     peek(false)
-    if (isLive(live, place.key)) return switchTo(place.key)
+    if (isLive(live, place.key)) {
+      await switchTo(place.key)
+      return true
+    }
     if (place.join) {
       setBusyKey(place.key)
       try {
-        useCrew
-          .getState()
-          .connect(await window.crew.join(place.join.link, place.join.folder, place.join.name))
+        useCrew.getState().connect(await window.crew.join(place.join.link, place.join.folder, place.join.name))
+        return true
       } catch (err) {
         toast.fail(said(err), { key: 'open-place' })
+        return false
       } finally {
         setBusyKey(null)
       }
-      return
     }
-    if (place.project) await open(place.project.folder, place.key)
+    if (!place.project) return false
+    await open(place.project.folder, place.key)
+    return true
+  }
+
+  const goToThread = async (place: Place, thread: LiveThread) => {
+    if (!(await go(place))) return
+    useCrew.getState().openThread(thread.id)
   }
 
   const forget = async (place: Place) => {
@@ -93,19 +99,20 @@ export default function Sidebar() {
       className="h-full flex flex-col bg-ink-800 border-r border-ink-700"
     >
       <div className={`app-drag h-[70px] shrink-0 ${pinned ? 'mac:pl-[64px]' : ''}`} />
-      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2 pb-2">
+      <div className="flex-1 min-h-0 overflow-y-auto app-no-drag px-2">
         {places.map(place => (
-          <PlaceRow
+          <PlaceGroup
             key={place.key}
-            mark={markOf(place)}
-            title={place.title}
-            line={place.line}
+            place={place}
             here={place.key === here}
-            live={isLive(live, place.key)}
             busy={busyKey === place.key}
-            disabled={busyKey !== null && busyKey !== place.key}
+            threads={threadsIn(live, place.key)}
+            openThreadId={place.key === here ? openThreadId : null}
             onOpen={() => void go(place)}
-            onClose={isLive(live, place.key) ? () => void closePlace(place.key) : undefined}
+            onOpenThread={threadId =>
+              void goToThread(place, { id: threadId, title: '', working: false })
+            }
+            onStop={isLive(live, place.key) ? () => void closePlace(place.key) : undefined}
             onForget={() => void forget(place)}
           />
         ))}
@@ -113,7 +120,7 @@ export default function Sidebar() {
       <div className="app-no-drag shrink-0 p-2">
         <button
           onClick={() => void pick()}
-          className="w-full h-10 rounded-full flex items-center justify-center gap-2 text-sm font-medium text-fg-secondary transition-colors duration-150 hover:bg-ink-700 hover:text-fg active:scale-[0.98]"
+          className="w-full h-9 rounded-xl flex items-center justify-center gap-2 text-sm font-medium text-fg-secondary transition-colors duration-150 hover:bg-ink-700 hover:text-fg active:scale-[0.98]"
         >
           <PlusGlyph className="w-4 h-4" />
           Open a folder
