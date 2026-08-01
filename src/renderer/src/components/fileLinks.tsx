@@ -14,7 +14,12 @@ const BARE_FILE = String.raw`[\w-]+(?:\.[\w-]+)*\.[A-Za-z][A-Za-z0-9]{1,6}`
 const LINE_SUFFIX = String.raw`:\d+(?::\d+)?`
 const DOMAINS = new Set(['com', 'net', 'org', 'io', 'dev', 'ai', 'app', 'co', 'edu', 'gov'])
 
-const FULL_RE = new RegExp(`^(${ABS_PATH}|${SLASH_PATH}|${BARE_FILE})(${LINE_SUFFIX})?$`)
+const ROOMY_PART = String.raw`(?:[\w.-][\w .-]*)?[\w.-]`
+const ROOMY_END = String.raw`(?:[\w.-][\w .-]*)?\w`
+const ROOMY_ABS = String.raw`~?\/(?:${ROOMY_PART}\/)*${ROOMY_END}`
+const ROOMY_SLASH = String.raw`(?:\.\/)?(?:${ROOMY_PART}\/)+${ROOMY_END}`
+
+const FULL_RE = new RegExp(`^(${ROOMY_ABS}|${ROOMY_SLASH}|${BARE_FILE})(${LINE_SUFFIX})?$`)
 const SUFFIX_RE = new RegExp(`(${LINE_SUFFIX})$`)
 const PROSE_RE = new RegExp(
   String.raw`(?<![\w/.@:~-])(${ABS_PATH}|${SLASH_PATH}|${BARE_FILE})(${LINE_SUFFIX})?(?![\w/])`,
