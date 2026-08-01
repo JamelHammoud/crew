@@ -138,10 +138,10 @@ describe('the sidebar', () => {
     expect(container.querySelector('aside')?.className).toContain('sidebar-pinned')
   })
 
-  it('keeps the folder action clear of the bottom edge', () => {
+  it('stands the folder action off the bottom edge by what it stands off the sides', () => {
     render(createElement(Sidebar))
     const action = screen.getByRole('button', { name: 'Open a folder' })
-    expect(action.parentElement?.className).toContain('pb-5')
+    expect(action.parentElement?.className).toContain('p-2')
   })
 
   it('holds every place the app knows, newest first', async () => {
