@@ -71,6 +71,7 @@ export function useReorder(onMove: (id: string, to: number) => void, options: Op
     const startAt = coordinate(event) - start + scroll()
 
     let at = { x: event.clientX, y: event.clientY }
+    let half = 0
     let pointer = coordinate(event)
     let taken = false
     let to = from
