@@ -41,12 +41,17 @@ function fromAnotherSystem(target: string): boolean {
   return ON_WINDOWS && target.startsWith('/')
 }
 
+// Anything that cannot be found here is shown as it was written, unless it is
+// a file in somebody's own folder.
+const unfound = (target: string): PathLocation =>
+  personalPath(target) ? { kind: 'private' } : { kind: 'local', exists: false }
+
 async function elsewhere(base: string | null, target: string): Promise<PathLocation> {
   if (base) {
     const mirrored = await mirroredInRepo(base, target)
     if (mirrored) return { kind: 'repo', path: mirrored, exists: true }
   }
-  return { kind: 'private' }
+  return unfound(target)
 }
 
 // Outside the project, a full path is only worth showing if the file is really
@@ -72,7 +77,5 @@ export async function locatePath(root: string | null, target: string): Promise<P
   if (await onThisMachine(absolute)) return { kind: 'local', exists: true }
   // A file an agent is still writing belongs to this machine when the folder it
   // is going into is here, and calling that someone else's file would be a lie.
-  return (await onThisMachine(path.dirname(absolute)))
-    ? { kind: 'local', exists: false }
-    : { kind: 'private' }
+  return (await onThisMachine(path.dirname(absolute))) ? { kind: 'local', exists: false } : unfound(absolute)
 }
