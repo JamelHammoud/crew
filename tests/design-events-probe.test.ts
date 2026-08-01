@@ -1,46 +1,56 @@
 // @vitest-environment jsdom
 import { render } from '@testing-library/react'
-import { act, createElement } from 'react'
-import { describe, expect, it } from 'vitest'
+import { createElement } from 'react'
+import { beforeAll, describe, expect, it } from 'vitest'
+import type { Editor } from '../src/renderer/src/canvas/editor'
 
 const { CrewCanvas } = await import('../src/renderer/src/canvas/CrewCanvas')
 const { createShapeId, createTLStore } = await import('../src/renderer/src/canvas/schema')
-const { GeoShapeUtil, FrameShapeUtil, GroupShapeUtil } = await import('../src/renderer/src/canvas/shapes')
+const { FrameShapeUtil, GeoShapeUtil, GroupShapeUtil } = await import('../src/renderer/src/canvas/shapes')
 const { SelectTool } = await import('../src/renderer/src/canvas/tools/select')
-import type { Editor } from '../src/renderer/src/canvas/editor'
 
 const BOX = { left: 40, top: 24, width: 800, height: 600 }
 
-class StubResizeObserver {
-  observe(): void {}
-  unobserve(): void {}
-  disconnect(): void {}
-}
-;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = StubResizeObserver
-;(HTMLCanvasElement.prototype as unknown as { getContext(): unknown }).getContext = () => null
-Element.prototype.getBoundingClientRect = function boundingRect(this: Element): DOMRect {
-  if ((this as HTMLElement).dataset?.canvas === 'true') {
+beforeAll(() => {
+  class StubResizeObserver {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  ;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = StubResizeObserver
+  ;(HTMLCanvasElement.prototype as unknown as { getContext(): unknown }).getContext = () => null
+  Element.prototype.getBoundingClientRect = function boundingRect(this: Element): DOMRect {
+    const canvas = (this as HTMLElement).dataset?.canvas === 'true'
+    const left = canvas ? BOX.left : 0
+    const top = canvas ? BOX.top : 0
+    const width = canvas ? BOX.width : 0
+    const height = canvas ? BOX.height : 0
     return {
-      left: BOX.left,
-      top: BOX.top,
-      width: BOX.width,
-      height: BOX.height,
-      right: BOX.left + BOX.width,
-      bottom: BOX.top + BOX.height,
-      x: BOX.left,
-      y: BOX.top,
+      left,
+      top,
+      width,
+      height,
+      right: left + width,
+      bottom: top + height,
+      x: left,
+      y: top,
       toJSON: () => ({})
     } as DOMRect
   }
-  return { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => ({}) } as DOMRect
+})
+
+interface Stand {
+  editor: Editor
+  surface: HTMLElement
+  seen: Record<string, unknown>[]
+  unmount(): void
 }
 
-function stand(): { editor: Editor; surface: HTMLElement; unmount(): void } {
+function stand(): Stand {
   let editor: Editor | null = null
-  const store = createTLStore({ id: 'events-probe' })
   const view = render(
     createElement(CrewCanvas, {
-      store,
+      store: createTLStore({ id: 'events-probe' }),
       shapeUtils: [FrameShapeUtil, GroupShapeUtil, GeoShapeUtil],
       tools: [SelectTool],
       onMount: (made: Editor) => {
@@ -49,93 +59,160 @@ function stand(): { editor: Editor; surface: HTMLElement; unmount(): void } {
       }
     })
   )
-  const surface = view.container.querySelector('[data-canvas="true"]') as HTMLElement
   if (!editor) throw new Error('the canvas never mounted')
-  return { editor: editor as Editor, surface, unmount: () => view.unmount() }
+  const made = editor as Editor
+  const surface = view.container.querySelector('[data-canvas="true"]') as HTMLElement
+  const seen: Record<string, unknown>[] = []
+  const dispatch = made.dispatch.bind(made)
+  ;(made as unknown as { dispatch(info: unknown): unknown }).dispatch = (info: Record<string, unknown>) => {
+    seen.push(info)
+    return dispatch(info as never)
+  }
+  return { editor: made, surface, seen, unmount: () => view.unmount() }
 }
 
-function pointerEvent(name: string, x: number, y: number, extra: Record<string, unknown> = {}): PointerEvent {
-  const event = new MouseEvent(name, { bubbles: true, cancelable: true, clientX: x, clientY: y, ...extra })
+function pointer(name: string, x: number, y: number, extra: Record<string, unknown> = {}): PointerEvent {
+  const { pointerType = 'mouse', ...rest } = extra
+  const event = new MouseEvent(name, {
+    bubbles: true,
+    cancelable: true,
+    clientX: BOX.left + x,
+    clientY: BOX.top + y,
+    ...rest
+  })
   Object.defineProperty(event, 'pointerId', { value: 1 })
-  Object.defineProperty(event, 'pointerType', { value: 'mouse' })
+  Object.defineProperty(event, 'pointerType', { value: pointerType })
   Object.defineProperty(event, 'pressure', { value: 0.5 })
   return event as PointerEvent
 }
 
-describe('design canvas event pipeline', () => {
-  it('reports what the pipeline does today', () => {
-    const { editor, surface, unmount } = stand()
-    const seen: Record<string, unknown>[] = []
-    const original = editor.dispatch.bind(editor)
-    ;(editor as unknown as { dispatch(info: unknown): unknown }).dispatch = (info: Record<string, unknown>) => {
-      seen.push(info)
-      return original(info as never)
-    }
+function hollowGeo(editor: Editor, x: number, y: number): string {
+  const id = createShapeId(`geo-${x}-${y}`)
+  editor.createShape({ id, type: 'geo', x, y, props: { w: 200, h: 200, fill: 'none' } } as never)
+  return id as unknown as string
+}
 
-    const id = createShapeId('probe-geo')
-    editor.createShape({ id, type: 'geo', x: 100, y: 100, props: { w: 100, h: 100 } } as never)
+function shapeNode(surface: HTMLElement, id: string): HTMLElement {
+  const node = document.createElement('div')
+  node.setAttribute('data-shape-id', id)
+  node.setAttribute('data-canvas-shape', 'true')
+  surface.appendChild(node)
+  return node
+}
 
-    surface.dispatchEvent(pointerEvent('pointerdown', 40 + 300, 24 + 300, { metaKey: true, ctrlKey: false }))
+describe('the canvas pointer bridge', () => {
+  it('leaves which shape was hit to the state chart rather than reading it off the DOM', () => {
+    const { editor, surface, seen, unmount } = stand()
+    const id = hollowGeo(editor, 100, 100)
+    const centre = { x: 200, y: 200 }
+    const margin = editor.options.hitTestMargin / editor.getZoomLevel()
+
+    expect(editor.getShapeAtPoint(centre, { hitInside: false, margin })).toBeFalsy()
+
+    const node = shapeNode(surface, id)
+    node.dispatchEvent(pointer('pointerdown', centre.x, centre.y))
+
     const down = seen.find(info => info.name === 'pointer_down')
-    console.log('POINTER DOWN INFO', JSON.stringify({ ...down, originalEvent: undefined }, null, 1))
-    console.log('SCREEN BOUNDS', JSON.stringify(editor.getViewportScreenBounds().toJson()))
-    console.log('ORIGIN SCREEN', JSON.stringify(editor.inputs.getOriginScreenPoint()))
-    console.log('ORIGIN PAGE', JSON.stringify(editor.inputs.getOriginPagePoint()))
-
-    seen.length = 0
-    document.body.dispatchEvent(pointerEvent('pointermove', 40 + 360, 24 + 360))
-    console.log('MOVE ON DOCUMENT REACHED BRIDGE:', seen.some(info => info.name === 'pointer_move'))
-
-    seen.length = 0
-    surface.dispatchEvent(pointerEvent('pointermove', 40 + 360, 24 + 360))
-    console.log('MOVE ON SURFACE REACHED BRIDGE:', seen.some(info => info.name === 'pointer_move'))
-
-    console.log('TABINDEX', surface.getAttribute('tabindex'))
-    console.log('ACTIVE IS SURFACE', document.activeElement === surface)
-
-    seen.length = 0
-    document.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'a', code: 'KeyA' }))
-    console.log('KEY ON DOCUMENT REACHED BRIDGE:', seen.some(info => String(info.name).startsWith('key')))
-
-    const outside = document.createElement('input')
-    document.body.appendChild(outside)
-    outside.focus()
-    seen.length = 0
-    outside.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape', code: 'Escape' }))
-    console.log('KEY WHILE FOCUS ELSEWHERE REACHED BRIDGE:', seen.some(info => String(info.name).startsWith('key')))
-    surface.focus()
-
+    expect(down?.target).toBe('canvas')
+    expect(editor.getSelectedShapeIds()).toEqual([])
     unmount()
-    expect(true).toBe(true)
   })
 
-  it('reports what a brush drag and a shape drag do today', () => {
-    const { editor, surface, unmount } = stand()
-    const id = createShapeId('drag-geo')
-    editor.createShape({ id, type: 'geo', x: 100, y: 100, props: { w: 100, h: 100 } } as never)
-    const node = () => surface.querySelector(`[data-shape-id="${id}"]`) as HTMLElement | null
-    console.log('SHAPE NODE IN DOM:', Boolean(node()))
+  it('draws a brush when a drag starts inside the hollow of an unfilled shape', () => {
+    const { editor, surface, seen, unmount } = stand()
+    const id = hollowGeo(editor, 100, 100)
+    const node = shapeNode(surface, id)
 
-    surface.dispatchEvent(pointerEvent('pointerdown', 40 + 400, 24 + 400))
-    surface.dispatchEvent(pointerEvent('pointermove', 40 + 420, 24 + 420))
-    surface.dispatchEvent(pointerEvent('pointermove', 40 + 450, 24 + 450))
-    console.log('AFTER BRUSH MOVES, PATH:', editor.getPath?.() ?? 'no getPath')
-    console.log('IS DRAGGING:', editor.inputs.getIsDragging())
-    console.log('BRUSH:', JSON.stringify(editor.getInstanceState().brush ?? null))
-    surface.dispatchEvent(pointerEvent('pointerup', 40 + 450, 24 + 450))
+    node.dispatchEvent(pointer('pointerdown', 200, 200))
+    surface.dispatchEvent(pointer('pointermove', 240, 240))
+    surface.dispatchEvent(pointer('pointermove', 280, 280))
 
-    const target = node() ?? surface
-    editor.setSelectedShapes([])
-    surface.dispatchEvent(pointerEvent('pointerdown', 40 + 150, 24 + 150))
-    console.log('DOWN ON SHAPE POINT, SELECTED:', JSON.stringify(editor.getSelectedShapeIds()))
-    console.log('DOWN ON SHAPE POINT, PATH:', editor.getPath?.())
-    surface.dispatchEvent(pointerEvent('pointermove', 40 + 200, 24 + 200))
-    console.log('AFTER MOVE, PATH:', editor.getPath?.())
-    console.log('SHAPE NOW AT:', JSON.stringify({ x: editor.getShape(id)?.x, y: editor.getShape(id)?.y }))
-    surface.dispatchEvent(pointerEvent('pointerup', 40 + 200, 24 + 200))
-    void target
-
+    expect(editor.getInstanceState().brush).toBeTruthy()
+    expect(editor.getShape(id as never)?.x).toBe(100)
+    void seen
     unmount()
-    expect(true).toBe(true)
+  })
+
+  it('carries metaKey, an accel-aware ctrlKey and isPen on the dispatched event', () => {
+    const { surface, seen, unmount } = stand()
+
+    surface.dispatchEvent(pointer('pointerdown', 300, 300, { metaKey: true, pointerType: 'pen' }))
+
+    const down = seen.find(info => info.name === 'pointer_down')
+    expect(down?.metaKey).toBe(true)
+    expect(down?.ctrlKey).toBe(true)
+    expect(down?.isPen).toBe(true)
+    unmount()
+  })
+
+  it('carries metaKey and an accel-aware ctrlKey on a key event', () => {
+    const { surface, seen, unmount } = stand()
+
+    surface.focus()
+    surface.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'z', code: 'KeyZ', metaKey: true }))
+
+    const key = seen.find(info => String(info.name).startsWith('key'))
+    expect(key?.metaKey).toBe(true)
+    expect(key?.ctrlKey).toBe(true)
+    unmount()
+  })
+})
+
+describe('where the canvas listens', () => {
+  it('keeps following the pointer once it has left the canvas element', () => {
+    const { editor, surface, seen, unmount } = stand()
+
+    surface.dispatchEvent(pointer('pointerdown', 300, 300))
+    seen.length = 0
+    document.body.dispatchEvent(pointer('pointermove', 500, 420))
+
+    expect(seen.some(info => info.name === 'pointer_move')).toBe(true)
+    expect(editor.inputs.getCurrentScreenPoint().x).toBe(500)
+    expect(editor.inputs.getCurrentScreenPoint().y).toBe(420)
+    unmount()
+  })
+
+  it('hears the keyboard when the canvas element does not hold focus', () => {
+    const { surface, seen, unmount } = stand()
+    const elsewhere = document.createElement('div')
+    elsewhere.tabIndex = 0
+    document.body.appendChild(elsewhere)
+    elsewhere.focus()
+    expect(document.activeElement).not.toBe(surface)
+
+    seen.length = 0
+    elsewhere.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Delete', code: 'Delete' }))
+
+    expect(seen.some(info => info.name === 'key_down')).toBe(true)
+    elsewhere.remove()
+    unmount()
+  })
+
+  it('leaves the keyboard alone while somebody is typing', () => {
+    const { seen, unmount } = stand()
+    const field = document.createElement('input')
+    document.body.appendChild(field)
+    field.focus()
+
+    seen.length = 0
+    field.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'r', code: 'KeyR' }))
+
+    expect(seen.some(info => String(info.name).startsWith('key'))).toBe(false)
+    field.remove()
+    unmount()
+  })
+
+  it('dispatches a pointer move once when two canvases are mounted', () => {
+    const first = stand()
+    const second = stand()
+
+    first.seen.length = 0
+    second.seen.length = 0
+    document.body.dispatchEvent(pointer('pointermove', 320, 300))
+
+    const moves = [...first.seen, ...second.seen].filter(info => info.name === 'pointer_move')
+    expect(moves).toHaveLength(1)
+    first.unmount()
+    second.unmount()
   })
 })
