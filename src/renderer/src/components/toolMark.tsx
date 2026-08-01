@@ -68,8 +68,15 @@ const GLYPHS: Record<ToolMark, Glyph> = {
   eye: EyeGlyph
 }
 
-export const glyphFor = (mark: string): Glyph | null =>
-  (TOOL_MARKS as readonly string[]).includes(mark) ? GLYPHS[mark as ToolMark] : null
+// A name this build has never heard of comes back as the default rather than as
+// a mark, which is what `cleanMark` already says on the way in. It is asked
+// again on the way out because a tool picked in another build is read from the
+// log as it was written: a mark that has since been renamed would otherwise fall
+// through to the emoji and draw the word.
+export const glyphFor = (mark: string): Glyph | null => {
+  const known = cleanMark(mark)
+  return (TOOL_MARKS as readonly string[]).includes(known) ? GLYPHS[known as ToolMark] : null
+}
 
 // A mark is one of the app's own drawings or an emoji, and every tool is shown
 // through here, so the two are always the same size. The size is the one the

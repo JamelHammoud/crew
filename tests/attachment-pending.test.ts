@@ -53,8 +53,6 @@ class TestCanvas {
   }
 }
 
-const drawnBy = (url: string): number => sources.get(url)?.size ?? -1
-
 const bitmap = (width: number, height: number) => ({ width, height, close: () => {} })
 
 beforeEach(() => {
@@ -231,7 +229,7 @@ describe('ten megabytes through a real session', () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
 
-    const [item] = await readFiles([new File([raw], 'archive.zip', { type: 'application/zip' })], 0)
+    const [item] = await readFiles([new page.File([raw], 'archive.zip', { type: 'application/zip' }) as unknown as File], 0)
     expect(item!.size).toBe(BIG)
     ui.send({
       type: 'chat.send',
@@ -257,7 +255,7 @@ describe('ten megabytes through a real session', () => {
     const ui = await TestUi.connect(host.url, 'sam', host.code)
     uis.push(ui)
 
-    const [item] = await readFiles([new File([raw], 'photo.png', { type: 'image/png' })], 0)
+    const [item] = await readFiles([new page.File([raw], 'photo.png', { type: 'image/png' }) as unknown as File], 0)
     expect(painted).toEqual([{ width: 168, height: 128 }])
     ui.send({
       type: 'chat.send',
