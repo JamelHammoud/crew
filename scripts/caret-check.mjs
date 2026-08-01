@@ -131,7 +131,9 @@ app.whenReady().then(async () => {
   app.exit(0)
 })
 
-function count(bits, size, box, width) {
+function count(first, other, box, width) {
+  const size = first.size
+  if (other.size.width !== size.width || other.size.height !== size.height) return 0
   const scale = size.width / width
   const x0 = Math.max(0, Math.floor(box.x * scale))
   const y0 = Math.max(0, Math.floor(box.y * scale))
@@ -141,7 +143,11 @@ function count(bits, size, box, width) {
   for (let y = y0; y < y1; y++) {
     for (let x = x0; x < x1; x++) {
       const at = (y * size.width + x) * 4
-      if (bits[at] > 248 && bits[at + 1] > 248 && bits[at + 2] > 248) lit++
+      const moved =
+        Math.abs(first.bits[at] - other.bits[at]) +
+        Math.abs(first.bits[at + 1] - other.bits[at + 1]) +
+        Math.abs(first.bits[at + 2] - other.bits[at + 2])
+      if (moved > 60) lit++
     }
   }
   return lit
