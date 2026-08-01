@@ -36,13 +36,13 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
   override canBind(): boolean {
     return false
   }
-  override hideSelectionBoundsFg(): boolean {
-    return true
-  }
   override getIndicatorPath(shape: GroupShape): Path2D | undefined {
-    const geometry = this.editor.getShapeGeometry?.(shape)
-    if (!geometry) return undefined
-    return dashedBoxPath(geometry.bounds.sides, 1 / Math.max(0.0001, this.editor.getZoomLevel?.() ?? 1))
+    if (typeof Path2D === 'undefined') return undefined
+    const bounds = this.editor.getShapeGeometry?.(shape)?.bounds
+    if (!bounds) return undefined
+    const path = new Path2D()
+    path.rect(bounds.x, bounds.y, bounds.w, bounds.h)
+    return path
   }
   override canResizeChildren(): boolean {
     return true
@@ -50,41 +50,7 @@ export class GroupShapeUtil extends ShapeUtil<GroupShape> {
   override canResize(): boolean {
     return true
   }
-  component(shape: GroupShape): ReactNode {
-    if (!this.showsOutline(shape)) return createElement('div')
-    const bounds = this.editor.getShapeGeometry?.(shape)?.bounds
-    if (!bounds) return createElement('div')
-    const zoom = Math.max(0.0001, this.editor.getZoomLevel?.() ?? 1)
-    return createElement(
-      'svg',
-      { className: 'crew-group-outline', width: bounds.w, height: bounds.h },
-      bounds.sides.map(([start, end], at) => {
-        const { strokeDasharray, strokeDashoffset } = getPerfectDashProps(
-          Math.hypot(end.x - start.x, end.y - start.y),
-          1 / zoom,
-          { style: 'dashed', lengthRatio: 4 }
-        )
-        return createElement('line', {
-          key: at,
-          x1: start.x - bounds.x,
-          y1: start.y - bounds.y,
-          x2: end.x - bounds.x,
-          y2: end.y - bounds.y,
-          strokeDasharray,
-          strokeDashoffset
-        })
-      })
-    )
-  }
-  private showsOutline(shape: GroupShape): boolean {
-    if (this.editor.getErasingShapeIds?.()?.includes(shape.id)) return true
-    const state = this.editor.getCurrentPageState?.()
-    if (state?.focusedGroupId !== shape.id) return false
-    const hinting = state?.hintingShapeIds ?? []
-    return !hinting.some(id => {
-      if (id === shape.id) return false
-      const other = this.editor.getShape?.(id)
-      return Boolean(other && other.type === 'group')
-    })
+  component(_shape: GroupShape): ReactNode {
+    return createElement('div')
   }
 }
