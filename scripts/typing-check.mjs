@@ -11,10 +11,11 @@ const root = path.resolve(here, '..')
 const resolve = createRequire(path.join(root, 'package.json')).resolve
 
 const VERDICT = 'typing-check:'
-const LINE = 'the composer has to stay quick with the whole thread standing behind it'
+const LINE =
+  'the composer has to stay quick with the whole thread standing behind it, however long the thread has got, and it has to stay quick on the keystroke that costs a line as well as on the ones before it'
 const SHORT = 6
 const LONG = 400
-const PASSES = 3
+const PASSES = 4
 const OLD = process.env.CREW_TYPING_OLD === '1'
 
 const OLD_HOOK = `import { useLayoutEffect, useRef } from 'react'

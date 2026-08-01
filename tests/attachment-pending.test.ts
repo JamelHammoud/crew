@@ -65,6 +65,7 @@ beforeEach(() => {
   readers = 0
   decoded = 0
   globalThis.FileReader = CountingFileReader as unknown as typeof FileReader
+  globalThis.Blob = page.Blob as unknown as typeof Blob
   globalThis.OffscreenCanvas = TestCanvas as unknown as typeof OffscreenCanvas
   globalThis.createImageBitmap = ((_source: unknown, opts?: ImageBitmapOptions) => {
     decoded += 1
