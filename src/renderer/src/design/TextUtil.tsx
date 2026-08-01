@@ -32,8 +32,9 @@ const customDisplayValues = (editor: ShapeUtil['editor'], shape: TLTextShape, _g
   }
 }
 
-export function textTrim(type: TypeStyle): TrimEdges | null {
-  return trimEdges(typeMeasure(type, null), type.trim)
+export function textTrim(type: TypeStyle): TextTrim | null {
+  if (type.trim !== 'cap') return null
+  return trimOf(fontMetrics(fontStack(type.family), type.weight, type.italic), type.size, type.lineHeight)
 }
 
 function measure(editor: Editor, shape: TLTextShape): { width: number; height: number } {
