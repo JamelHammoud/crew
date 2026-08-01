@@ -1,6 +1,7 @@
 import { Mat, type MatLike } from '../../math/Mat'
 import { Vec, type VecLike } from '../../math/Vec'
 import type { TLShape } from '../../schema'
+import { updateEdgeScrolling } from './edgeScroll'
 import {
   TransformState,
   type ShapeUpdate,
