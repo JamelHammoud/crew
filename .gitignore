@@ -17,3 +17,4 @@ dist/
 /*.png
 /probe.css
 /shot.json
+/.guides-shots/
