@@ -1,12 +1,29 @@
 import { createElement, type CSSProperties, type ReactNode } from 'react'
 import { Rectangle2d } from '../geometry'
+import { Vec } from '../math/Vec'
 import { textShapeProps, type TLShape as CrewShape } from '../schema'
 import { richTextToHtml, type RichTextDocument } from '../text/richText'
-import { ShapeUtil, type ShapeEditor } from './ShapeUtil'
+import { ShapeUtil, type ShapeEditor, type ShapeResizeInfo } from './ShapeUtil'
 import { FONT_FAMILIES, TEXT_FONT_SIZES, plainText, richText } from './shared'
 import { shapeColor } from './theme'
 
 export type TextShape = CrewShape<'text'>
+
+function scaleDelta(info: ShapeResizeInfo<TextShape>): number {
+  if (info.handle === 'left' || info.handle === 'right') return Math.max(0.01, Math.abs(info.scaleX))
+  if (info.handle === 'top' || info.handle === 'bottom') return Math.max(0.01, Math.abs(info.scaleY))
+  return Math.max(0.01, Math.max(Math.abs(info.scaleX), Math.abs(info.scaleY)))
+}
+
+function resizeScaled(shape: TextShape, info: ShapeResizeInfo<TextShape>): TextShape {
+  const delta = scaleDelta(info)
+  const offset = new Vec(
+    info.scaleX < 0 ? -(info.initialBounds.width * delta) : 0,
+    info.scaleY < 0 ? -(info.initialBounds.height * delta) : 0
+  )
+  const point = Vec.Add(info.newPoint, offset.rot(shape.rotation))
+  return { ...shape, x: point.x, y: point.y, props: { ...shape.props, scale: delta * shape.props.scale } }
+}
 
 export interface TextShapeUtilOptions {
   [key: string]: unknown
