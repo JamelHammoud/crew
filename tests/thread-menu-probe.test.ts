@@ -50,6 +50,7 @@ beforeEach(() => {
   popOutThread.mockClear()
   onOpen.mockClear()
   onOpenToRight.mockClear()
+  written.mockClear()
   sent.mockClear()
   window.crew = { popOutThread } as unknown as CrewBridge
   useCrew.setState({ openThreadIds: ['thread-1'], openThreadId: 'thread-1', threads: meta('open') })
