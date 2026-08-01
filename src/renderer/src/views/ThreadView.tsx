@@ -93,7 +93,6 @@ export default function ThreadView({
   const [replyTo, setReplyTo] = useState<ThreadItem | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const focusInput = useRef<() => void>(() => {})
   const contentRef = useRef<HTMLDivElement>(null)
   const { scrolledUp, atBottom, onScroll, jumpToBottom, jumpToTop, follow } = useStickToBottom(
     scrollRef,
