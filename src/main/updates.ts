@@ -118,9 +118,14 @@ export class Updates {
   private say(said: UpdateWord): void {
     const next = nextUpdate(this.state, said)
     if (next === this.state) return
+    // Landing is what asks for the install, rather than standing there landed. An
+    // install that was held leaves the stage where it is, so anything read off
+    // the stage alone would ask again for the thing that was just refused, and
+    // answer itself, forever.
+    const landing = next.stage === 'ready' && this.state.stage !== 'ready'
     this.state = next
     for (const win of this.host.windows()) this.tell(win)
-    if (next.stage === 'ready') void this.install()
+    if (landing) void this.install()
   }
 
   // Silent and running again on the other side, because the press was somebody
