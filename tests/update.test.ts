@@ -99,7 +99,7 @@ describe('an update that came down and did not go on', () => {
 
   it('says which of the two ways it did not happen', () => {
     const held = nextUpdate(landed, { word: 'stuck', why: 'others' })
-    expect(held).toMatchObject({ stage: 'failed', why: 'others', version: '0.2.0', percent: 0 })
+    expect(held).toMatchObject({ why: 'others', version: '0.2.0' })
     expect(nextUpdate(landed, { word: 'stuck', why: 'install' }).why).toBe('install')
   })
 
@@ -107,7 +107,6 @@ describe('an update that came down and did not go on', () => {
     const once = nextUpdate(landed, { word: 'stuck', why: 'others' })
     const twice = nextUpdate(once, { word: 'stuck', why: 'others' })
     expect(twice.told).toBe(once.told + 1)
-    expect(twice.stage).toBe('failed')
   })
 
   it('is nothing to say before anything has landed', () => {
@@ -116,8 +115,18 @@ describe('an update that came down and did not go on', () => {
     }
   })
 
-  it('offers the whole of it again, since the bytes are already here', () => {
-    expect(pressDoes(nextUpdate(landed, { word: 'stuck', why: 'others' }).stage)).toBe('get')
+  // The bytes are here and the restart is still the only thing left to do, so
+  // being held leaves the offer exactly where it was. Standing back down to a
+  // stage that says an update is available read as the whole thing coming undone.
+  it('leaves the restart standing, since the bytes are already here', () => {
+    const held = nextUpdate(landed, { word: 'stuck', why: 'others' })
+    expect(held.stage).toBe('ready')
+    expect(held.percent).toBe(100)
+    expect(pressDoes(held.stage)).toBe('restart')
+  })
+
+  it('is still nowhere to look again, held or not', () => {
+    expect(worthChecking(nextUpdate(landed, { word: 'stuck', why: 'others' }).stage)).toBe(false)
   })
 })
 

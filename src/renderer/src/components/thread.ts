@@ -94,6 +94,25 @@ export function threadFamily(
   return family
 }
 
+// The thread in the chat a helper hangs off, however far down it is. A helper's
+// own helpers belong to the list the thread that started all of it holds, so
+// what a chip inside one opens is that list rather than a second one, and the
+// walk stops on a parent it has already been through rather than locking the
+// window on a thread named in a circle.
+export function rootThread(
+  threadId: string,
+  threads: Record<string, Pick<ThreadMeta, 'id' | 'parentThreadId'>>
+): string {
+  const seen = new Set([threadId])
+  let at = threadId
+  for (;;) {
+    const parent = threads[at]?.parentThreadId
+    if (!parent || seen.has(parent)) return at
+    seen.add(parent)
+    at = parent
+  }
+}
+
 // The steps of a thread's own turns, and nothing a helper took. What a run is
 // narrating and what its list of work says are read off these, and a helper
 // keeps a list of its own: folded in, whichever of them wrote last would take
